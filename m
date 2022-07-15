@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C385C5761D0
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3735761D1
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbiGOMge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 08:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50390 "EHLO
+        id S234531AbiGOMgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 08:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233344AbiGOMgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:36:22 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2058.outbound.protection.outlook.com [40.107.100.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6C074348
+        with ESMTP id S234491AbiGOMgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:36:23 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659DE70985
         for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:36:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Idj3nQAUSdm7wQzBgh8Ej5F/CnsFzGOKpa1U8kuA6ND7Bjo+bHs+esXCESHLeWUAYdpkVpgCB4bsq76FL/mBXc9e2PVbm75p1V1snrArmNZGmPjm2/LctESRNGImMdmp6FFzXmyOGeRlRE5WVJ4XfY2UHlZHKXZ1zyaa+gLULdZHEY9/Eu6pghn+JsGNFeJ6LtM1fr8vTtLwQuEN0ExpEzQiVfPT8UBZx7HfWLL3Bm4Y6Nwx0t2YRZ5CRimeXUB3lGsV8mAdEPe+I383Gvsm376T6bkspx/aYmtatOCetsIadRAjHsGnCciCQewxlr8GF9M7h0moQcoHzkmRvdRjAQ==
+ b=dEfkOqBXnbLItVdvSjIgvlcDbnd41yHxdxX/GpX+gc6MiwvRSFD4Kf+v0j2DpUWwFo6Cismg3SNje5eQnH3MqsQl4P0A+hkRLchiPr9cTvqT9Pqkb1k6QVLGN4RjxEoI8HUvaQla5gUnuebOP8+ySVun1Hw6ObxX/5yt0UOikKVWuAvboOcFsHXF3OHxN2vZ3QAfWL9YmLrPpqd0qYRDyVtrzoXqCkaeDMOb0ZO80RRNzA0GTi9YWLjm+FzVaubzJjLweKKVQLMOiCL4nhmDJgB9CVvuu21mmxuOh6MrXuc2BB4W+YKsawPaXiDD+TWE/MAHymNdHpwxYWNHFaRA2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZlMEyl6o+mA4TG0B+xkYRwFAcBs2wedqd89OR9kdwk8=;
- b=LAAAWtAWC2SHUB+vhFsfGeE+zC8S9Lv61vwfgeWVFxNnxGEnQUcavliMoNge5HichO73wuwg0jHz/XsFb/3VEgYuFrXCWNcVtUIPah4lbwQs2sYqdhzT5qHTz2dG7M1iPmPh+VpnFrBlbd0hHWd5o22NJeC2ywnQ2g7ZxLpLim+xpLpz4w4c4OHvzyPvAh81mKon/bnj1lEI/PgXT2thBUatY0jCeRMwtF+rwS9BaVIChAlE6L7jBC0JIJ11Pua7B3/Xs8R2phNqBCZSV8jHZaBUoRAVp+97Xvy4zq25c+Ku7uVIZy9W7X0XJMLybi+RzRIQBxNB2YzhbnAWnPc1WQ==
+ bh=wBs07lQS2eEZjFLo9Ma4b3b1gtg3Yv6h/bOO1tsoHtA=;
+ b=a5vnY97fklxUifLWxvlKBc8o1Gpqp9PGwl9PVd3fgl7gxRwhabR9q4p9Q4hPVtdiWhbQkRhQbeRXgLFm+cjZJGQOL7KS7MRC/NJ2PlkRRkGUBMXF2yaEccTV0WUR0i1/L/yLqvHANPQCUxwtfymCMgO/9Uls7syvm7/7yX4sdjeaastJ9b5X+Rpsl3v4Od076tbBUBLnzw7hjM7YzKnWXQ880nJIfGuBZ9UJB1cEspV/loXi/OBIYlLoLk1uCL0hRE1H3g9PQ9B6MM5kgxA/gJqjjcwq54siBgYXzjV1dhVbn8LJapBFcG/aaFeROu60mv94ZUhQmLcya3hZgxcivQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -28,47 +28,47 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZlMEyl6o+mA4TG0B+xkYRwFAcBs2wedqd89OR9kdwk8=;
- b=Ghe8FAXAgdsgoYv6I4eVvXTVUziXkL9xg7K1r09CO5vK/yAb4Y68005P4lebG3JtSnV1kzTHkVfJoPVar9beBPdRpcgjEpfg3hGU1zzyr3MukcbvsHG5UdmmMj3VRjFEa0GR6/Jv+d/sP5MbY5poPJKRfLcxjnvrFAU9/ezrFsxbXr44DnpQqDepUOe59tJi69RhlokxoRmw3lwLpEb8SKGUjXNALVeDfRwGHdYM6SuAjOdCmXLgxCIOqGUuO/9m3cQr3DJocJc1u0XpWI9YgQ+/fnatf6EWgOwhFOcs4JLRdSGPKyzaUII84E3WuKH4+kSoBbYPLN4vFj1AAsX1JQ==
-Received: from MW4PR03CA0260.namprd03.prod.outlook.com (2603:10b6:303:b4::25)
- by DM6PR12MB4809.namprd12.prod.outlook.com (2603:10b6:5:1f9::22) with
+ bh=wBs07lQS2eEZjFLo9Ma4b3b1gtg3Yv6h/bOO1tsoHtA=;
+ b=KQdZlCbgHU6R7V+wD6mf17/z8WRcEs/93JWNxMomYZ3i1QaECtwMQHioFEiSwJCtas/TitGsDliUv9awm7bQGDTodOLYkNKanV0nZGv9EB3iiJj2Fz61NIWxiURGm3D0QrUp9O4qmI9jXTizcJl2x+bO7hGzSle/cPSJK5mhJKVUuV8UjBfl+pjO8cIv8uxeqBeQGMpj+5uqXUnHYmKzwzbmstHMRij42rnxozbikFpXGjXQtJubliS/feg9Hq2UmyVdbHWskumwptnBWa7DoKRKdHZIaOMnLWSGI6feL2qQXQFhULu45gyO2/lnhBgI1W7svRdzhmDgYZJfScplog==
+Received: from BN9PR03CA0191.namprd03.prod.outlook.com (2603:10b6:408:f9::16)
+ by BN6PR1201MB2483.namprd12.prod.outlook.com (2603:10b6:404:a6::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.23; Fri, 15 Jul
- 2022 12:36:18 +0000
-Received: from CO1NAM11FT020.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b4:cafe::5d) by MW4PR03CA0260.outlook.office365.com
- (2603:10b6:303:b4::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
- Transport; Fri, 15 Jul 2022 12:36:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Fri, 15 Jul
+ 2022 12:36:19 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f9:cafe::f4) by BN9PR03CA0191.outlook.office365.com
+ (2603:10b6:408:f9::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.22 via Frontend
+ Transport; Fri, 15 Jul 2022 12:36:19 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT020.mail.protection.outlook.com (10.13.174.149) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Fri, 15 Jul 2022 12:36:17 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5438.12 via Frontend Transport; Fri, 15 Jul 2022 12:36:18 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 15 Jul
- 2022 07:36:17 -0500
+ 2022 07:36:18 -0500
 Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
  (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 15 Jul
- 2022 05:36:16 -0700
+ 2022 05:36:17 -0700
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Fri, 15 Jul 2022 07:36:15 -0500
+ Transport; Fri, 15 Jul 2022 07:36:16 -0500
 From:   <ecree@xilinx.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux-net-drivers@amd.com>
 CC:     <netdev@vger.kernel.org>, Edward Cree <ecree.xilinx@gmail.com>
-Subject: [PATCH net-next 07/10] sfc: determine representee m-port for EF100 representors
-Date:   Fri, 15 Jul 2022 13:33:29 +0100
-Message-ID: <b2e4c5f36ab34d9b3585dadb28e2865c528b0df7.1657878101.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next 08/10] sfc: support passing a representor to the EF100 TX path
+Date:   Fri, 15 Jul 2022 13:33:30 +0100
+Message-ID: <d1002e0511e7fbd1204cfe9bca3318599750139f.1657878101.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1657878101.git.ecree.xilinx@gmail.com>
 References: <cover.1657878101.git.ecree.xilinx@gmail.com>
@@ -77,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e6cc14d2-d230-4173-19ad-08da665e9d7a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4809:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66382ea6-f456-4dd0-9900-08da665e9ded
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB2483:EE_
 X-MS-Exchange-SenderADCheck: 0
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n1vJSeeNqOcTQcz4kZhr10/onWFWFoJp0kEyjPegz4lqpv4PcjrJh2qiWJ/lwVJ5DvdWmsDKm28Y3mQIn4BK9Wpcgcm2s8j5Xzq9pxhwYW/VwQiUEgP1E7da113zfU7goifCaYnJxM9CzMzqmEv6sWvYD2RURp4p9LcSv8Orr4ECD5udPARFAvzJfBhcvFGQOZz+Po0WroEZfKyN2hf/4PmPvEmBnrqLkm6HTVdM1vgyWYBhkkaB+8awg6zc18vGMLszX29pYiAYlJtNEdkajbF2y/nCYe7cA+gA7aRqlUEjlju6PF8TzrLQ9aScxrB9kNa5hNobPmwwKgo8dZR295P1Tl9j1VWPzGvHyE0kBsEWJKO+dIoza7eyNp8KjmYMFq7dViIj78Zd3b3dkywFYUj6MRkrRnCkLn4UIBpPv2bB0W3gnRhl3PhlInrPgWzVMuburQEQt0236pcGVnKwYwqg2YNcYmIezdB2WaZprsseM0t2JdJdWI2TEhAvGcJnCVPTO/oTZvfQU3yrImja4weqOYemhHwTTVOJcXtJWca+ABioQ/nO3u8OdB+7BzXEer7LevH3VBc4n8kdOii099ymOZ5X7cp2oGJ4Kknjjx+HGT9Jxfi4pF189sM+dVoRChVHP69TUI/CJr6NvF+mGv5tSwvztUkO4+40r5d/L1jJw2swdFYGvCwuQ9ARvMaz7TSPnDYxqABY79t5TWWN/4KAhKLgKC8ezoMJL93+ZZTXtBJc1nZlcEeZ2zbhxtxc9d+IBWTtu2/vtMmILqffyQGBRPu+nfI66MMECjp5a+Lbjb3lBOtKtpOmNJHKaa403nv/ubBe+cLw95BpJgLW88+BhpcCOlERT7l3YxosZpQlKv17RQqBjFxMLk+MHGCC
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(396003)(136003)(346002)(36840700001)(46966006)(40470700004)(54906003)(55446002)(41300700001)(82310400005)(478600001)(6666004)(40460700003)(2876002)(9686003)(26005)(5660300002)(2906002)(8936002)(36756003)(47076005)(40480700001)(4326008)(83170400001)(83380400001)(70206006)(110136005)(336012)(70586007)(42882007)(8676002)(316002)(81166007)(82740400003)(356005)(186003)(36860700001)(2004002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xyQIkhhgPm1P41ZeYAZZffEWj8VnoVPeMg0XpvxSNSaUJqM+fexHHE/BidD/CQLZbvWkDsZZz2fBJiinYNgu8SjIfjILuAoxQLt5tt9BPoL0qivjybi3kqAst4AJyULs55dEwEzmYVDfjWEqD2hZG9tZL83NHu6YyxdP7ws9O9JC9Q8iF2Y4zRi4rLSVgWwVFrsnEP3ng7fZBnzgqC16lMQBSCNCaqHkQ5iQhOSAVTySpLqvApfcgVeFzutmtVh9o6illlMkXCIwJigpACyTFedpv/9B6AUnx477iQ6InClD+X3zjCprynj1wQxoHiUFw5OXXUssbbf34NO1heLTNC9zRj0qLC0VI0je6rDvrRhPAIQMuVr6VhfStAGFNFSUwx6OF/8+SCEobg2gSExhz2CbqAiCUr91s9lJfqaHKkSQyIMbo7ijw0kvHROBCFhHH1Mq98X1OI7jLXOn9EI6N8ew5GtQ4HHFlEQpRLM1WQ+mxztDqMcplS/tfJqjhpS370bQT+V/C8kni+U8r1lJTY24aqffdIS57Gb322kFDVkov7lGwfmIg+k6x3IjKuXbt5/fqWkIY/An5pFYJnOJpfmCzNhQctFOcBFRiJ489FPsLTCKA90pwyp0qJm1wfWfyg3BrA0g8Sfr0bk0FCfob90Ahc5iOwZmw/TzREAIb+mI6Ho0WV3RkhRRsEtRGo+/gHMrhbb2NP6KTtWagUb8E+29izG+w/37zrq+fydx/92cz4UInJ1LbZdEwa/RtNpQ69Y2Rep1ve3vl1vbZ+d8K0fdrK3Ysh3/llvzZ54lch9kwdqFpizRaFvYe+Z5XEGj+TY2N68KOXnYyUzFIxlsnzJVBvzRQvOp1aIgp+/2p/Q=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(346002)(396003)(46966006)(36840700001)(40470700004)(26005)(70586007)(8676002)(336012)(83170400001)(47076005)(82740400003)(42882007)(5660300002)(70206006)(4326008)(83380400001)(54906003)(82310400005)(81166007)(2906002)(41300700001)(186003)(110136005)(6666004)(356005)(316002)(36756003)(30864003)(36860700001)(9686003)(8936002)(478600001)(40480700001)(55446002)(40460700003)(2876002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 12:36:17.9455
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 12:36:18.8274
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6cc14d2-d230-4173-19ad-08da665e9d7a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66382ea6-f456-4dd0-9900-08da665e9ded
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT020.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4809
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2483
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
@@ -106,177 +106,371 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-An MAE port, or m-port, is a port (source/destination for traffic) on
- the Match-Action Engine (the internal switch on EF100).
-Representors will use their representee's m-port for two purposes: as
- a destination override on TX from the representor, and as a source
- match in 'default rules' to steer representee traffic (when not
- matched by e.g. a TC flower rule) to representor RX via the parent
- PF's receive queue.
+A non-null efv in __ef100_enqueue_skb() indicates that the packet is
+ from that representor, should be transmitted with a suitable option
+ descriptor (to instruct the switch to deliver it to the representee),
+ and should not be accounted to the parent PF's stats or BQL.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/Makefile    |  2 +-
- drivers/net/ethernet/sfc/ef100_rep.c | 27 +++++++++++++++++
- drivers/net/ethernet/sfc/ef100_rep.h |  1 +
- drivers/net/ethernet/sfc/mae.c       | 44 ++++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/mae.h       | 22 ++++++++++++++
- 5 files changed, 95 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/sfc/mae.c
- create mode 100644 drivers/net/ethernet/sfc/mae.h
+ drivers/net/ethernet/sfc/ef100_rep.h  |  7 +++
+ drivers/net/ethernet/sfc/ef100_tx.c   | 84 +++++++++++++++++++++++++--
+ drivers/net/ethernet/sfc/ef100_tx.h   |  3 +
+ drivers/net/ethernet/sfc/net_driver.h |  1 +
+ drivers/net/ethernet/sfc/tx.c         |  6 +-
+ drivers/net/ethernet/sfc/tx_common.c  | 35 +++++++----
+ drivers/net/ethernet/sfc/tx_common.h  |  3 +-
+ 7 files changed, 122 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-index 7a6772bfde06..4c759488fc77 100644
---- a/drivers/net/ethernet/sfc/Makefile
-+++ b/drivers/net/ethernet/sfc/Makefile
-@@ -8,7 +8,7 @@ sfc-y			+= efx.o efx_common.o efx_channels.o nic.o \
- 			   ef100.o ef100_nic.o ef100_netdev.o \
- 			   ef100_ethtool.o ef100_rx.o ef100_tx.o
- sfc-$(CONFIG_SFC_MTD)	+= mtd.o
--sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o
-+sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o mae.o
- 
- obj-$(CONFIG_SFC)	+= sfc.o
- 
-diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
-index 0b4f7d536ae6..cf0eac920592 100644
---- a/drivers/net/ethernet/sfc/ef100_rep.c
-+++ b/drivers/net/ethernet/sfc/ef100_rep.c
-@@ -11,6 +11,7 @@
- 
- #include "ef100_rep.h"
- #include "ef100_nic.h"
-+#include "mae.h"
- 
- #define EFX_EF100_REP_DRIVER	"efx_ef100_rep"
- 
-@@ -124,6 +125,25 @@ static struct efx_rep *efx_ef100_rep_create_netdev(struct efx_nic *efx,
- 	return ERR_PTR(rc);
- }
- 
-+static int efx_ef100_configure_rep(struct efx_rep *efv)
-+{
-+	struct efx_nic *efx = efv->parent;
-+	u32 selector;
-+	int rc;
-+
-+	/* Construct mport selector for corresponding VF */
-+	efx_mae_mport_vf(efx, efv->idx, &selector);
-+	/* Look up actual mport ID */
-+	rc = efx_mae_lookup_mport(efx, selector, &efv->mport);
-+	if (rc)
-+		return rc;
-+	pci_dbg(efx->pci_dev, "VF %u has mport ID %#x\n", efv->idx, efv->mport);
-+	/* mport label should fit in 16 bits */
-+	WARN_ON(efv->mport >> 16);
-+
-+	return 0;
-+}
-+
- static void efx_ef100_rep_destroy_netdev(struct efx_rep *efv)
- {
- 	struct efx_nic *efx = efv->parent;
-@@ -147,6 +167,13 @@ int efx_ef100_vfrep_create(struct efx_nic *efx, unsigned int i)
- 			rc);
- 		return rc;
- 	}
-+	rc = efx_ef100_configure_rep(efv);
-+	if (rc) {
-+		pci_err(efx->pci_dev,
-+			"Failed to configure representor for VF %d, rc %d\n",
-+			i, rc);
-+		goto fail;
-+	}
- 	rc = register_netdev(efv->net_dev);
- 	if (rc) {
- 		pci_err(efx->pci_dev,
 diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
-index 7bd12aa5d980..a2f16bd59771 100644
+index a2f16bd59771..9365986f2841 100644
 --- a/drivers/net/ethernet/sfc/ef100_rep.h
 +++ b/drivers/net/ethernet/sfc/ef100_rep.h
-@@ -20,6 +20,7 @@ struct efx_rep {
+@@ -15,6 +15,12 @@
+ 
+ #include "net_driver.h"
+ 
++struct efx_rep_sw_stats {
++	atomic64_t rx_packets, tx_packets;
++	atomic64_t rx_bytes, tx_bytes;
++	atomic64_t rx_dropped, tx_errors;
++};
++
+ /* Private data for an Efx representor */
+ struct efx_rep {
  	struct efx_nic *parent;
- 	struct net_device *net_dev;
- 	u32 msg_enable;
-+	u32 mport; /* m-port ID of corresponding VF */
+@@ -23,6 +29,7 @@ struct efx_rep {
+ 	u32 mport; /* m-port ID of corresponding VF */
  	unsigned int idx; /* VF index  */
  	struct list_head list; /* entry on efx->vf_reps */
++	struct efx_rep_sw_stats stats;
  };
-diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-new file mode 100644
-index 000000000000..011ebd46ada5
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/mae.c
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/****************************************************************************
-+ * Driver for Solarflare network controllers and boards
-+ * Copyright 2019 Solarflare Communications Inc.
-+ * Copyright 2020-2022 Xilinx Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
+ 
+ int efx_ef100_vfrep_create(struct efx_nic *efx, unsigned int i);
+diff --git a/drivers/net/ethernet/sfc/ef100_tx.c b/drivers/net/ethernet/sfc/ef100_tx.c
+index 26ef51d6b542..102ddc7e206a 100644
+--- a/drivers/net/ethernet/sfc/ef100_tx.c
++++ b/drivers/net/ethernet/sfc/ef100_tx.c
+@@ -254,7 +254,8 @@ static void ef100_make_tso_desc(struct efx_nic *efx,
+ 
+ static void ef100_tx_make_descriptors(struct efx_tx_queue *tx_queue,
+ 				      const struct sk_buff *skb,
+-				      unsigned int segment_count)
++				      unsigned int segment_count,
++				      struct efx_rep *efv)
+ {
+ 	unsigned int old_write_count = tx_queue->write_count;
+ 	unsigned int new_write_count = old_write_count;
+@@ -272,6 +273,20 @@ static void ef100_tx_make_descriptors(struct efx_tx_queue *tx_queue,
+ 	else
+ 		next_desc_type = ESE_GZ_TX_DESC_TYPE_SEND;
+ 
++	if (unlikely(efv)) {
++		/* Create TX override descriptor */
++		write_ptr = new_write_count & tx_queue->ptr_mask;
++		txd = ef100_tx_desc(tx_queue, write_ptr);
++		++new_write_count;
 +
-+#include "mae.h"
-+#include "mcdi.h"
-+#include "mcdi_pcol.h"
++		tx_queue->packet_write_count = new_write_count;
++		EFX_POPULATE_OWORD_3(*txd,
++				     ESF_GZ_TX_DESC_TYPE, ESE_GZ_TX_DESC_TYPE_PREFIX,
++				     ESF_GZ_TX_PREFIX_EGRESS_MPORT, efv->mport,
++				     ESF_GZ_TX_PREFIX_EGRESS_MPORT_EN, 1);
++		nr_descs--;
++	}
 +
-+void efx_mae_mport_vf(struct efx_nic *efx __always_unused, u32 vf_id, u32 *out)
+ 	/* if it's a raw write (such as XDP) then always SEND single frames */
+ 	if (!skb)
+ 		nr_descs = 1;
+@@ -306,6 +321,9 @@ static void ef100_tx_make_descriptors(struct efx_tx_queue *tx_queue,
+ 		/* if it's a raw write (such as XDP) then always SEND */
+ 		next_desc_type = skb ? ESE_GZ_TX_DESC_TYPE_SEG :
+ 				       ESE_GZ_TX_DESC_TYPE_SEND;
++		/* mark as an EFV buffer if applicable */
++		if (unlikely(efv))
++			buffer->flags |= EFX_TX_BUF_EFV;
+ 
+ 	} while (new_write_count != tx_queue->insert_count);
+ 
+@@ -324,7 +342,7 @@ static void ef100_tx_make_descriptors(struct efx_tx_queue *tx_queue,
+ 
+ void ef100_tx_write(struct efx_tx_queue *tx_queue)
+ {
+-	ef100_tx_make_descriptors(tx_queue, NULL, 0);
++	ef100_tx_make_descriptors(tx_queue, NULL, 0, NULL);
+ 	ef100_tx_push_buffers(tx_queue);
+ }
+ 
+@@ -350,6 +368,12 @@ void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event)
+  * function will free the SKB.
+  */
+ int ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
 +{
-+	efx_dword_t mport;
-+
-+	EFX_POPULATE_DWORD_3(mport,
-+			     MAE_MPORT_SELECTOR_TYPE, MAE_MPORT_SELECTOR_TYPE_FUNC,
-+			     MAE_MPORT_SELECTOR_FUNC_PF_ID, MAE_MPORT_SELECTOR_FUNC_PF_ID_CALLER,
-+			     MAE_MPORT_SELECTOR_FUNC_VF_ID, vf_id);
-+	*out = EFX_DWORD_VAL(mport);
++	return __ef100_enqueue_skb(tx_queue, skb, NULL);
 +}
 +
-+/* id is really only 24 bits wide */
-+int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_MPORT_LOOKUP_OUT_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_MPORT_LOOKUP_IN_LEN);
-+	size_t outlen;
-+	int rc;
++int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
++			struct efx_rep *efv)
+ {
+ 	unsigned int old_insert_count = tx_queue->insert_count;
+ 	struct efx_nic *efx = tx_queue->efx;
+@@ -376,16 +400,64 @@ int ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+ 			return 0;
+ 	}
+ 
++	if (unlikely(efv)) {
++		struct efx_tx_buffer *buffer = __efx_tx_queue_get_insert_buffer(tx_queue);
 +
-+	MCDI_SET_DWORD(inbuf, MAE_MPORT_LOOKUP_IN_MPORT_SELECTOR, selector);
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_MPORT_LOOKUP, inbuf, sizeof(inbuf),
-+			  outbuf, sizeof(outbuf), &outlen);
-+	if (rc)
-+		return rc;
-+	if (outlen < sizeof(outbuf))
-+		return -EIO;
-+	*id = MCDI_DWORD(outbuf, MAE_MPORT_LOOKUP_OUT_MPORT_ID);
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/sfc/mae.h b/drivers/net/ethernet/sfc/mae.h
-new file mode 100644
-index 000000000000..27e69e8a54b6
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/mae.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/****************************************************************************
-+ * Driver for Solarflare network controllers and boards
-+ * Copyright 2019 Solarflare Communications Inc.
-+ * Copyright 2020-2022 Xilinx Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
++		/* Drop representor packets if the queue is stopped.
++		 * We currently don't assert backoff to representors so this is
++		 * to make sure representor traffic can't starve the main
++		 * net device.
++		 * And, of course, if there are no TX descriptors left.
++		 */
++		if (netif_tx_queue_stopped(tx_queue->core_txq) ||
++		    unlikely(efx_tx_buffer_in_use(buffer))) {
++			atomic64_inc(&efv->stats.tx_errors);
++			rc = -ENOSPC;
++			goto err;
++		}
 +
-+#ifndef EF100_MAE_H
-+#define EF100_MAE_H
-+/* MCDI interface for the ef100 Match-Action Engine */
++		/* Also drop representor traffic if it could cause us to
++		 * stop the queue. If we assert backoff and we haven't
++		 * received traffic on the main net device recently then the
++		 * TX watchdog can go off erroneously.
++		 */
++		fill_level = efx_channel_tx_old_fill_level(tx_queue->channel);
++		fill_level += efx_tx_max_skb_descs(efx);
++		if (fill_level > efx->txq_stop_thresh) {
++			struct efx_tx_queue *txq2;
 +
-+#include "net_driver.h"
++			/* Refresh cached fill level and re-check */
++			efx_for_each_channel_tx_queue(txq2, tx_queue->channel)
++				txq2->old_read_count = READ_ONCE(txq2->read_count);
 +
-+void efx_mae_mport_vf(struct efx_nic *efx, u32 vf_id, u32 *out);
++			fill_level = efx_channel_tx_old_fill_level(tx_queue->channel);
++			fill_level += efx_tx_max_skb_descs(efx);
++			if (fill_level > efx->txq_stop_thresh) {
++				atomic64_inc(&efv->stats.tx_errors);
++				rc = -ENOSPC;
++				goto err;
++			}
++		}
 +
-+int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id);
++		buffer->flags = EFX_TX_BUF_OPTION | EFX_TX_BUF_EFV;
++		tx_queue->insert_count++;
++	}
 +
-+#endif /* EF100_MAE_H */
+ 	/* Map for DMA and create descriptors */
+ 	rc = efx_tx_map_data(tx_queue, skb, segments);
+ 	if (rc)
+ 		goto err;
+-	ef100_tx_make_descriptors(tx_queue, skb, segments);
++	ef100_tx_make_descriptors(tx_queue, skb, segments, efv);
+ 
+ 	fill_level = efx_channel_tx_old_fill_level(tx_queue->channel);
+ 	if (fill_level > efx->txq_stop_thresh) {
+ 		struct efx_tx_queue *txq2;
+ 
++		/* Because of checks above, representor traffic should
++		 * not be able to stop the queue.
++		 */
++		WARN_ON(efv);
++
+ 		netif_tx_stop_queue(tx_queue->core_txq);
+ 		/* Re-read after a memory barrier in case we've raced with
+ 		 * the completion path. Otherwise there's a danger we'll never
+@@ -404,8 +476,12 @@ int ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+ 	/* If xmit_more then we don't need to push the doorbell, unless there
+ 	 * are 256 descriptors already queued in which case we have to push to
+ 	 * ensure we never push more than 256 at once.
++	 *
++	 * Always push for representor traffic, and don't account it to parent
++	 * PF netdevice's BQL.
+ 	 */
+-	if (__netdev_tx_sent_queue(tx_queue->core_txq, skb->len, xmit_more) ||
++	if (unlikely(efv) ||
++	    __netdev_tx_sent_queue(tx_queue->core_txq, skb->len, xmit_more) ||
+ 	    tx_queue->write_count - tx_queue->notify_count > 255)
+ 		ef100_tx_push_buffers(tx_queue);
+ 
+diff --git a/drivers/net/ethernet/sfc/ef100_tx.h b/drivers/net/ethernet/sfc/ef100_tx.h
+index ddc4b98fa6db..e9e11540fcde 100644
+--- a/drivers/net/ethernet/sfc/ef100_tx.h
++++ b/drivers/net/ethernet/sfc/ef100_tx.h
+@@ -13,6 +13,7 @@
+ #define EFX_EF100_TX_H
+ 
+ #include "net_driver.h"
++#include "ef100_rep.h"
+ 
+ int ef100_tx_probe(struct efx_tx_queue *tx_queue);
+ void ef100_tx_init(struct efx_tx_queue *tx_queue);
+@@ -22,4 +23,6 @@ unsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);
+ void ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);
+ 
+ netdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
++int __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
++			struct efx_rep *efv);
+ #endif
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 80ee2c936f59..83631fab7994 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -178,6 +178,7 @@ struct efx_tx_buffer {
+ #define EFX_TX_BUF_OPTION	0x10	/* empty buffer for option descriptor */
+ #define EFX_TX_BUF_XDP		0x20	/* buffer was sent with XDP */
+ #define EFX_TX_BUF_TSO_V3	0x40	/* empty buffer for a TSO_V3 descriptor */
++#define EFX_TX_BUF_EFV		0x100	/* buffer was sent from representor */
+ 
+ /**
+  * struct efx_tx_queue - An Efx TX queue
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 79cc0bb76321..d12474042c84 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -559,6 +559,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
+ {
+ 	unsigned int pkts_compl = 0, bytes_compl = 0;
++	unsigned int efv_pkts_compl = 0;
+ 	unsigned int read_ptr;
+ 	bool finished = false;
+ 
+@@ -580,7 +581,8 @@ void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
+ 		/* Need to check the flag before dequeueing. */
+ 		if (buffer->flags & EFX_TX_BUF_SKB)
+ 			finished = true;
+-		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl,
++				   &efv_pkts_compl);
+ 
+ 		++tx_queue->read_count;
+ 		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
+@@ -589,7 +591,7 @@ void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
+ 	tx_queue->pkts_compl += pkts_compl;
+ 	tx_queue->bytes_compl += bytes_compl;
+ 
+-	EFX_WARN_ON_PARANOID(pkts_compl != 1);
++	EFX_WARN_ON_PARANOID(pkts_compl + efv_pkts_compl != 1);
+ 
+ 	efx_xmit_done_check_empty(tx_queue);
+ }
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
+index 658ea2d34070..67e789b96c43 100644
+--- a/drivers/net/ethernet/sfc/tx_common.c
++++ b/drivers/net/ethernet/sfc/tx_common.c
+@@ -109,9 +109,11 @@ void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
+ 	/* Free any buffers left in the ring */
+ 	while (tx_queue->read_count != tx_queue->write_count) {
+ 		unsigned int pkts_compl = 0, bytes_compl = 0;
++		unsigned int efv_pkts_compl = 0;
+ 
+ 		buffer = &tx_queue->buffer[tx_queue->read_count & tx_queue->ptr_mask];
+-		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl,
++				   &efv_pkts_compl);
+ 
+ 		++tx_queue->read_count;
+ 	}
+@@ -146,7 +148,8 @@ void efx_remove_tx_queue(struct efx_tx_queue *tx_queue)
+ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 			struct efx_tx_buffer *buffer,
+ 			unsigned int *pkts_compl,
+-			unsigned int *bytes_compl)
++			unsigned int *bytes_compl,
++			unsigned int *efv_pkts_compl)
+ {
+ 	if (buffer->unmap_len) {
+ 		struct device *dma_dev = &tx_queue->efx->pci_dev->dev;
+@@ -164,9 +167,15 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 	if (buffer->flags & EFX_TX_BUF_SKB) {
+ 		struct sk_buff *skb = (struct sk_buff *)buffer->skb;
+ 
+-		EFX_WARN_ON_PARANOID(!pkts_compl || !bytes_compl);
+-		(*pkts_compl)++;
+-		(*bytes_compl) += skb->len;
++		if (unlikely(buffer->flags & EFX_TX_BUF_EFV)) {
++			EFX_WARN_ON_PARANOID(!efv_pkts_compl);
++			(*efv_pkts_compl)++;
++		} else {
++			EFX_WARN_ON_PARANOID(!pkts_compl || !bytes_compl);
++			(*pkts_compl)++;
++			(*bytes_compl) += skb->len;
++		}
++
+ 		if (tx_queue->timestamping &&
+ 		    (tx_queue->completed_timestamp_major ||
+ 		     tx_queue->completed_timestamp_minor)) {
+@@ -199,7 +208,8 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
+ 				unsigned int index,
+ 				unsigned int *pkts_compl,
+-				unsigned int *bytes_compl)
++				unsigned int *bytes_compl,
++				unsigned int *efv_pkts_compl)
+ {
+ 	struct efx_nic *efx = tx_queue->efx;
+ 	unsigned int stop_index, read_ptr;
+@@ -218,7 +228,8 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
+ 			return;
+ 		}
+ 
+-		efx_dequeue_buffer(tx_queue, buffer, pkts_compl, bytes_compl);
++		efx_dequeue_buffer(tx_queue, buffer, pkts_compl, bytes_compl,
++				   efv_pkts_compl);
+ 
+ 		++tx_queue->read_count;
+ 		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
+@@ -241,15 +252,17 @@ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ {
+ 	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
++	unsigned int efv_pkts_compl = 0;
+ 	struct efx_nic *efx = tx_queue->efx;
+ 
+ 	EFX_WARN_ON_ONCE_PARANOID(index > tx_queue->ptr_mask);
+ 
+-	efx_dequeue_buffers(tx_queue, index, &pkts_compl, &bytes_compl);
++	efx_dequeue_buffers(tx_queue, index, &pkts_compl, &bytes_compl,
++			    &efv_pkts_compl);
+ 	tx_queue->pkts_compl += pkts_compl;
+ 	tx_queue->bytes_compl += bytes_compl;
+ 
+-	if (pkts_compl > 1)
++	if (pkts_compl + efv_pkts_compl > 1)
+ 		++tx_queue->merge_events;
+ 
+ 	/* See if we need to restart the netif queue.  This memory
+@@ -274,6 +287,7 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+ 			unsigned int insert_count)
+ {
++	unsigned int efv_pkts_compl = 0;
+ 	struct efx_tx_buffer *buffer;
+ 	unsigned int bytes_compl = 0;
+ 	unsigned int pkts_compl = 0;
+@@ -282,7 +296,8 @@ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+ 	while (tx_queue->insert_count != insert_count) {
+ 		--tx_queue->insert_count;
+ 		buffer = __efx_tx_queue_get_insert_buffer(tx_queue);
+-		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl,
++				   &efv_pkts_compl);
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
+index bbab7f248250..d87aecbc7bf1 100644
+--- a/drivers/net/ethernet/sfc/tx_common.h
++++ b/drivers/net/ethernet/sfc/tx_common.h
+@@ -19,7 +19,8 @@ void efx_remove_tx_queue(struct efx_tx_queue *tx_queue);
+ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 			struct efx_tx_buffer *buffer,
+ 			unsigned int *pkts_compl,
+-			unsigned int *bytes_compl);
++			unsigned int *bytes_compl,
++			unsigned int *efv_pkts_compl);
+ 
+ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
+ {
