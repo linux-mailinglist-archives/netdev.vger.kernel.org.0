@@ -2,63 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7055F5768F4
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:35:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D3A5768FA
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbiGOVfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 17:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
+        id S231599AbiGOVg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 17:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiGOVfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:35:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C06158841;
-        Fri, 15 Jul 2022 14:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657920949; x=1689456949;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vFAX1UVh0i4rvEsH7mYrdzd8F6INE5/AtplT3ycQd/M=;
-  b=LSH6UYujYW71I7Lrvh46GbvmFMapnuXFqQUuzIzlxQy3FxvJTtEIdvVf
-   TCL5ZnoMTMQLXJ7N2Kw6hTiZTNbI6yHdWwOCg7jvVFoSS7jOnvKN6Op58
-   m/LoITxgLbe1d7RfBCK55HCw3DofHTs5HYeGdAWtEIUf+tXf+O/Tvgnx+
-   nbutFP5nWAdCTNcXBKDfuCANIVhtaD/TlLEaJ6XsN28hfNTKMuHqNzNqh
-   8ktQbH5h3sWAh7xz8PBlRrDBn6F0fdi7YgIBLCRoVRAjGaIrxNL15qKh1
-   c7fsi4mpFxEoStF+sT/uTbqmXXzOdcf9p1Mkb0E+r2FPnG4n47CzmNZdP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="286640942"
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="286640942"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 14:35:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="571689965"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 15 Jul 2022 14:35:46 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCSyP-0000mO-Bd;
-        Fri, 15 Jul 2022 21:35:45 +0000
-Date:   Sat, 16 Jul 2022 05:35:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mathias Lark <mathiaslark@gmail.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org
-Subject: Re: [PATCH net-next] improve handling of ICMP_EXT_ECHO icmp type
-Message-ID: <202207160519.M8OOdyfX-lkp@intel.com>
-References: <20220714151358.GA16615@debian>
+        with ESMTP id S231669AbiGOVgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:36:52 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10239868A0;
+        Fri, 15 Jul 2022 14:36:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lQRhVAEYMEEm9RW02pF+UuHE6aUESSqzeKHULVuhjPM=; b=BiF8ThJ16Z0gr8pYciLlOa6n9n
+        Kmit6hxcJOIi6f5sxSGgG0UQ+m8wX9OUgCJ7fC++3bQ2O6Hf5fMBi1h1DSSf8NfozaA70f/wk2t3x
+        Et1DrtMooxKlLnyCjIaze5xxuam7hQdA5pPhopyBkMbTT0vE/B1e9K0YwUEG5Z+wm61KCFXxbEc5a
+        2aAg3jW5SSQx4YCHYgTvFp7+fn4pQLulfboT5fLknVA7t4SJJzvzdaqZjhZP0QF7SA2M+yeha9L/v
+        H/qtXedCHs0ldn6jCeMotSe7urRF6zMkjNXzeR/tV+lyKwWfKsVk7rJLoIylCc7nv8ow+s6SHrSBJ
+        qWJVfWzQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33368)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oCSz9-0007Yu-UV; Fri, 15 Jul 2022 22:36:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oCSz7-0007sn-6W; Fri, 15 Jul 2022 22:36:29 +0100
+Date:   Fri, 15 Jul 2022 22:36:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 5/6] net: dsa: use swnode fixed-link if using
+ default params
+Message-ID: <YtHd3f22AtrIzZ1K@shell.armlinux.org.uk>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
+ <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220714151358.GA16615@debian>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,38 +88,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mathias,
+On Fri, Jul 15, 2022 at 11:11:18PM +0300, Andy Shevchenko wrote:
+> On Fri, Jul 15, 2022 at 05:01:48PM +0100, Russell King (Oracle) wrote:
+> > Create and use a swnode fixed-link specification for phylink if no
+> > parameters are given in DT for a fixed-link. This allows phylink to
+> > be used for "default" cases for DSA and CPU ports. Enable the use
+> > of phylink in all cases for DSA and CPU ports.
+> 
+> > Co-developed by Vladimir Oltean and myself.
+> 
+> Why not to use
+> 
+>   Co-developed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Thank you for the patch! Yet something to improve:
+Ah, that's an official thing. Thanks.
 
-[auto build test ERROR on net-next/master]
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Reviewed-by: Marek Behún <kabel@kernel.org>
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> ...
+> 
+> > +static struct {
+> > +	unsigned long mask;
+> > +	int speed;
+> > +	int duplex;
+> > +} phylink_caps_params[] = {
+> > +	{ MAC_400000FD, SPEED_400000, DUPLEX_FULL },
+> > +	{ MAC_200000FD, SPEED_200000, DUPLEX_FULL },
+> > +	{ MAC_100000FD, SPEED_100000, DUPLEX_FULL },
+> > +	{ MAC_56000FD,  SPEED_56000,  DUPLEX_FULL },
+> > +	{ MAC_50000FD,  SPEED_50000,  DUPLEX_FULL },
+> > +	{ MAC_40000FD,  SPEED_40000,  DUPLEX_FULL },
+> > +	{ MAC_25000FD,  SPEED_25000,  DUPLEX_FULL },
+> > +	{ MAC_20000FD,  SPEED_20000,  DUPLEX_FULL },
+> > +	{ MAC_10000FD,  SPEED_10000,  DUPLEX_FULL },
+> > +	{ MAC_5000FD,   SPEED_5000,   DUPLEX_FULL },
+> > +	{ MAC_2500FD,   SPEED_2500,   DUPLEX_FULL },
+> > +	{ MAC_1000FD,   SPEED_1000,   DUPLEX_FULL },
+> > +	{ MAC_100FD,    SPEED_100,    DUPLEX_FULL },
+> > +	{ MAC_10FD,     SPEED_10,     DUPLEX_FULL },
+> > +	{ MAC_1000HD,   SPEED_1000,   DUPLEX_HALF },
+> > +	{ MAC_100HD,    SPEED_100,    DUPLEX_HALF },
+> > +	{ MAC_10HD,     SPEED_10,     DUPLEX_HALF },
+> > +};
+> > +
+> > +static int dsa_port_find_max_speed(unsigned long caps, int *speed, int *duplex)
+> > +{
+> > +	int i;
+> > +
+> > +	*speed = SPEED_UNKNOWN;
+> > +	*duplex = DUPLEX_UNKNOWN;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(phylink_caps_params); i++) {
+> > +		if (caps & phylink_caps_params[i].mask) {
+> > +			*speed = phylink_caps_params[i].speed;
+> > +			*duplex = phylink_caps_params[i].duplex;
+> 
+> > +			break;
+> 
+> With the below check it's way too protective programming.
+> 
+> 			return 0;
+> 
+> > +		}
+> > +	}
+> > +
+> > +	return *speed == SPEED_UNKNOWN ? -EINVAL : 0;
+> 
+> 	return -EINVAL;
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mathias-Lark/improve-handling-of-ICMP_EXT_ECHO-icmp-type/20220714-231818
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b126047f43f11f61f1dd64802979765d71795dae
-config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220716/202207160519.M8OOdyfX-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e61b9c556267086ef9b743a0b57df302eef831b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d238a024060b9cf5095b5027301f5921c9140c4e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mathias-Lark/improve-handling-of-ICMP_EXT_ECHO-icmp-type/20220714-231818
-        git checkout d238a024060b9cf5095b5027301f5921c9140c4e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Ok.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> > +static struct fwnode_handle *dsa_port_get_fwnode(struct dsa_port *dp,
+> > +						 phy_interface_t mode)
+> > +{
+> 
+> > +	struct property_entry fixed_link_props[3] = { };
+> > +	struct property_entry port_props[3] = {};
+> 
+> A bit of consistency in the assignments?
+> 
+> Also it seems you are using up to 2 for the first one and only 1 in the second
+> one. IIUC it requires a terminator entry, so it means 3 and 2. Do we really
+> need 3 in the second case?
 
-All errors (new ones prefixed by >>):
+Probably not - that came from Vladimir's patch, and I removed the "reg"
+property without fixing this up. Thanks for spotting.
 
-   In file included from <built-in>:1:
->> ./usr/include/linux/icmp.h:163:19: error: unknown type name 'bool'
-   static __inline__ bool icmp_is_valid_type(__u8 type)
-                     ^
-   1 error generated.
+> > +	struct fwnode_handle *fixed_link_fwnode;
+> > +	struct fwnode_handle *new_port_fwnode;
+> > +	struct device_node *dn = dp->dn;
+> > +	struct device_node *phy_node;
+> > +	int err, speed, duplex;
+> > +	unsigned long caps;
+> > +
+> > +	phy_node = of_parse_phandle(dn, "phy-handle", 0);
+> 
+> fwnode in the name, why not to use fwnode APIs?
+> 
+> 	fwnode_find_reference();
+
+Marcin has a series converting DSA to use fwnode things - currently DSA
+does not support ACPI, so converting it to fwnode doesn't make that much
+sese until the proper ACPI patches get merged, which have now been
+rebased on this series by Marcin in the expectation that these patches
+would be merged... so I don't want to tred on Marcin's feet on that.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
