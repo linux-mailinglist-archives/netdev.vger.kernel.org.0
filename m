@@ -2,70 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E08575927
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 03:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27A2575936
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 03:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbiGOBn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 21:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38900 "EHLO
+        id S232645AbiGOBs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 21:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiGOBn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 21:43:58 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFDAA13CFD
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 18:43:57 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x184so3426157pfx.2
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 18:43:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=nxbx2Gu3pNsGIIkHE4Aq6pFS7gVhLt0Luwdty16xoJY=;
-        b=PIWM2esWN5nmOPQaGq45xXCt1IfHUgbcCzIG99Himi0AVnIIiMtojiZ5MvnpXyAUDJ
-         NrZhCfzvxU2RGLBqcZeZ3y/XG6POztGrgr9p/KgQcYhZYnkp186lVTHsa+f29uH9fpuc
-         OAi3ik/5qnkNT3Y3/xurYREnMcCflyTEDrYVFhTHiZP5VAIppyt2aS0ntfsK6MIFLU3z
-         MSyb1JaxullwOS1SflTjB9a7IItRG0oGn1i+Zoq0gNtAg3vnR3meZb/bse9FZmZPVcc8
-         t2mNGcnoeGT/XigL4CdkekqNrgLFKyIZm23UPF29xgfwhVwD07XOiireWJmw4PWXMRVd
-         qmXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nxbx2Gu3pNsGIIkHE4Aq6pFS7gVhLt0Luwdty16xoJY=;
-        b=jN7htxzqdGDdOkOmQ1O/dRbTFaHZEn+QD89spyaj7khLKK3dmDAZSOon5QqVUMd8Hb
-         yQ40/5BNmhaykJRhNopxX25j1qUtIt+4UPxIBWwU7/wvSnqzUPkXBXxYIcHo/SnvuwDP
-         4Yjged+8J7fwPhZepmIBYcZ70veGrwcIpgMFKWsyZ/DqP3spgTcpYc9VA1gHJOdJa7Uc
-         BwrIhWnW7IggEqHcD81n/maALT+mierm/Rgbm6aq5BMG/ma0KkAUv8SBG+8Lu7Hg8gPG
-         Wuh3YWt336Woeur4daCq03anHh5wIhA5rmRIVQKRuk/81SulQNswNQRlrGDjaZZZfMDK
-         NpJg==
-X-Gm-Message-State: AJIora99+z9qzwZXgabTVaLUny4+ZWAjrw5F3PPe/UEGHZLAo91EvVWd
-        g9uELg3TOfTAd2tLjkWybUw4VFt7xns=
-X-Google-Smtp-Source: AGRyM1uq3R9x49Lq0T9IbT8PgI6ixYUhfWXHVKhygHqYpz17ZzibBqyUrGgcH7JWZUli8v/DDPMN1A==
-X-Received: by 2002:a63:2004:0:b0:412:5add:d041 with SMTP id g4-20020a632004000000b004125addd041mr9747742pgg.480.1657849437178;
-        Thu, 14 Jul 2022 18:43:57 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id i27-20020a63541b000000b004161e62a3a5sm1991078pgb.78.2022.07.14.18.43.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 18:43:56 -0700 (PDT)
-Message-ID: <5751e5c6-c7c0-70be-912f-46acb8c687cf@gmail.com>
-Date:   Thu, 14 Jul 2022 18:43:55 -0700
+        with ESMTP id S229996AbiGOBsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 21:48:25 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1807866BA5;
+        Thu, 14 Jul 2022 18:48:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LkZ502Xqbz4xj3;
+        Fri, 15 Jul 2022 11:48:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657849701;
+        bh=yV9vq1Lt3C+nO9r4f9S/GlxG5/N8GYHsFwZ8YFzwp38=;
+        h=Date:From:To:Cc:Subject:From;
+        b=tQV2ZliHVY9T1TSHIX2YmWHGjy3+I7QsAZPXRGrMdoUII8MhmY/hlMTJPiz9ShD4M
+         P9rqe7bcks2DYlKVZZzFERTl2EyJfHL0/BOyZmNmo1XDyZLiL3OL+US1iHp5AxL4xF
+         A0igBfrmlFrLYEZsJZJdiC+XIkpt8OINMA6j/dKzO+dJrVFQiAzhAE+GcgpKS2JUJX
+         s6j9w8HAIkScxQWTDfKZbuGd3lHYlh9Vx8Nu5J2OdxNYUD8EJL1rdWMx4UCeLCJIsL
+         vAglA+1POzN+rYtbfAtYTq2BjOfqUr/xGjQpLCmzwvRpwME54U4RG+mbx4BnUE8Lio
+         8GAroiKHba0QQ==
+Date:   Fri, 15 Jul 2022 11:48:16 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: linux-next: manual merge of the net-next tree with Linus' tree
+Message-ID: <20220715114816.671335e2@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH 1/2] net: stmmac: fix dma queue left shift overflow issue
-Content-Language: en-US
-To:     Junxiao Chang <junxiao.chang@intel.com>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        netdev@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>
-References: <20220713084728.1311465-1-junxiao.chang@intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220713084728.1311465-1-junxiao.chang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/WlX1wDD_8Q5BjVh6UzueOm2";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,62 +53,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/WlX1wDD_8Q5BjVh6UzueOm2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 7/13/2022 1:47 AM, Junxiao Chang wrote:
-> When queue number is > 4, left shift overflows due to 32 bits
-> integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
-> 
-> If CONFIG_UBSAN is enabled, kernel dumps below warning:
-> [   10.363842] ==================================================================
-> [   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
-> linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
-> [   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
-> [   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
-> [   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
-> [   10.363958] Call Trace:
-> [   10.363960]  <TASK>
-> [   10.363963]  dump_stack_lvl+0x4a/0x5f
-> [   10.363971]  dump_stack+0x10/0x12
-> [   10.363974]  ubsan_epilogue+0x9/0x45
-> [   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
-> [   10.363979]  ? wake_up_klogd+0x4a/0x50
-> [   10.363983]  ? vprintk_emit+0x8f/0x240
-> [   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
-> [   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
-> [   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
-> [   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
-> [   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
-> [   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
-> [   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
-> [   10.364050]  __dev_open+0xf0/0x1a0
-> [   10.364054]  __dev_change_flags+0x188/0x1f0
-> [   10.364057]  dev_change_flags+0x26/0x60
-> [   10.364059]  do_setlink+0x908/0xc40
-> [   10.364062]  ? do_setlink+0xb10/0xc40
-> [   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
-> [   10.364068]  __rtnl_newlink+0x597/0xa10
-> [   10.364072]  ? __nla_reserve+0x41/0x50
-> [   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
-> [   10.364079]  ? pskb_expand_head+0x75/0x310
-> [   10.364082]  ? nla_reserve_64bit+0x21/0x40
-> [   10.364086]  ? skb_free_head+0x65/0x80
-> [   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
-> [   10.364094]  ? __cond_resched+0x19/0x30
-> [   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
-> [   10.364100]  rtnl_newlink+0x49/0x70
-> 
-> This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
-> mapping warning.
-> 
-> Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
-> Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Thanks for addressing it, maybe a:
+  net/ipv4/fib_semantics.c
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
-Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
+between commit:
 
-would be courteous.
--- 
-Florian
+  747c14307214 ("ip: fix dflt addr selection for connected nexthop")
+
+from Linus' tree and commit:
+
+  d62607c3fe45 ("net: rename reference+tracking helpers")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/ipv4/fib_semantics.c
+index d9fdcbae16ee,a5439a8414d4..000000000000
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@@ -1229,8 -1230,8 +1230,8 @@@ static int fib_check_nh_nongw(struct ne
+  	}
+ =20
+  	nh->fib_nh_dev =3D in_dev->dev;
+- 	dev_hold_track(nh->fib_nh_dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
++ 	netdev_hold(nh->fib_nh_dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
+ -	nh->fib_nh_scope =3D RT_SCOPE_HOST;
+ +	nh->fib_nh_scope =3D RT_SCOPE_LINK;
+  	if (!netif_carrier_ok(nh->fib_nh_dev))
+  		nh->fib_nh_flags |=3D RTNH_F_LINKDOWN;
+  	err =3D 0;
+
+--Sig_/WlX1wDD_8Q5BjVh6UzueOm2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLQx2AACgkQAVBC80lX
+0GzZbwf/cZvD+gHvsN/EER7RKngzUIHySDYlqp82TwWJsGhAW55exVprRrjbZRvt
+RkzNL5EfnlRz26TBar9z4jU9PyxiAwCGFpx3be/2ai6wOAyo8tpDWvSl+c4lQmgN
+RAjpcSUBF+p54rIwdYhx2OJNxWpNQsqmgRo7quP/NWT6dqzWw35mt1gxfeWiqUke
+KlSM7JQ23kJ+189Shlts/MjP+LL3AR5pGo+uWqgQ1P/LDSPLNRD/78rP/AuDDXnn
+G0MXdEHqjizTSjQAVF6y/1fp19z3MEXmCkM9FyOj3Vg9b9TGa3l1m3VqPpU73TA0
+SUQpcIe5mSNo843UOmg0tinaltN1uA==
+=Hu04
+-----END PGP SIGNATURE-----
+
+--Sig_/WlX1wDD_8Q5BjVh6UzueOm2--
