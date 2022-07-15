@@ -2,78 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67CB2575C0F
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 09:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B6D575C4E
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 09:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbiGOHDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 03:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
+        id S231812AbiGOH2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 03:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiGOHDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 03:03:43 -0400
-Received: from mail-vk1-xa2e.google.com (mail-vk1-xa2e.google.com [IPv6:2607:f8b0:4864:20::a2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85F1B480
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 00:03:40 -0700 (PDT)
-Received: by mail-vk1-xa2e.google.com with SMTP id u204so1761649vkb.7
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 00:03:40 -0700 (PDT)
+        with ESMTP id S231747AbiGOH2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 03:28:43 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B848ACE37
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 00:28:41 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id h17so5624804wrx.0
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 00:28:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=b7l8UB69ciBHFK+HSJk/t0bNGx0C2FnSlKtUoBY9IH4=;
-        b=IZVeXddVDe0qK2HNmNIfFjuo+QNjkkMgMRVACO4S8VKCCKzUwL/lANX6dmx+/jKHWT
-         RfghstCTGhT6RfaYqpiwzXDDm4lBZbDkIOtgl5xjXcAVsg6eJijPVZJjgbA10oMS5lQe
-         DI2Iqr6463KdCU3J7wVtJR4QFV/J78KHnRLCTDyae76X3WcFLXdDgD+0Z5KOefOig5Qc
-         bclq9NQ8PBVqvitmvPwEfDdCoI83Rqwm7HYOxK/ljpRB8qxei0/yIhyTiSktzzuYVBwz
-         Sq/oZDgiCpcnAaZtrMpf05i2pOsR37ABIt4OvMal9u9eArhQFVtYiLdVNIIfN1YPEFtw
-         pjgQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=oUPyocyhF7nsNR51kTPtLMQc/jcxuy3IheUiifeVadI=;
+        b=Zo/f+IERnanGjW/jcCBYYsWVzVNHcqxkmzie5QKs/55VpMB5E7v9wskDI02ABdYNa8
+         dJliXL+kaCHDoS0oujrgXPn6GUO+6cfTrfIiHTP+wcSbDZo3zokCN8C0oWksaLuKYtk+
+         eOKHd5Z709HeoN8wBpnp1qg7OQFLM9z0ZYMzKfzcUVZGkBUQ37nomelobYoAdKALBQwx
+         JKfkYM2a+2jQvagiBmvxREuBhFL82yYX3fxuDEeCEIwHr7QLAvCXdGfkoQBpN/SkNnqm
+         oztcKOzHO0Dl/sZ5VS6W7NuZACHPvLD/Rml68/f+lWhkJKCUIs1cwusM6XxxdVyGdv6e
+         cGJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=b7l8UB69ciBHFK+HSJk/t0bNGx0C2FnSlKtUoBY9IH4=;
-        b=UqltraMvFPuBHBF7S92z/jxpe7ZA0eXyUrfBvglvNn2soB9+NjhI6TWaxEeCf+e1ap
-         7QngopHQr3XkNQAR2H6zjOI49t9d/ElAlzLpJS04PBMk9e9omR8NIXgtyam0bkU+2XiM
-         HxPTkcF5woY1RuKvJbS45NQ7m8wyj+SOXqYbokjYSf6LXaXM+XKswsa57gUWp4X9y4yA
-         53WqVSEbEqzDHBBuEg2mC0+DVJhpmatXIQfW6QI1Uqob9advR+Gxn9lka1/Cmcj2qN5D
-         xXI+agFidCkw3bs8n519LWGSiNnEIFYoEqgBH6RAypwXJyZOLt9K6XfWySnl+XVf9jJI
-         /kcg==
-X-Gm-Message-State: AJIora+6QSitUIxlIXfD37QaCYnIMQz0iPmIkc+pVkSLKCFy3vcaqSLf
-        thgpygGwzZ63KrcjOqgek4tpANmfQdSEzHBs43c=
-X-Google-Smtp-Source: AGRyM1vdTiSbvV8hCnYLcKVcPEcEFVBSAu2oJBv3FVptzgZh51Y/woQ4OmlETjqEYqhsNz23uvvYt06v7NGbTUlvDrY=
-X-Received: by 2002:a1f:294c:0:b0:374:834f:366b with SMTP id
- p73-20020a1f294c000000b00374834f366bmr5051213vkp.21.1657868619779; Fri, 15
- Jul 2022 00:03:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=oUPyocyhF7nsNR51kTPtLMQc/jcxuy3IheUiifeVadI=;
+        b=Yj4C/VbxCthJELzbCwahtCTNyewY9DmVf+kY4JIA5y73/GWpoVg/wPyjoRgOk3QCiD
+         lRkKdCfZTcbOMQ3GntG9oEomRv+l9cedf4Wytb1Z+M5Dzr8q7r9qdBoPGClTPD0pBP8L
+         cTF6UMEZ5FWzy2+I2obN5mSL0HtjNVXytD/MKARxWchEsjBNsiiNNhH4GaaWBCKqo/Jl
+         xJ4Bnvg6H6rPkzj8n+fu84ZEeeEwJcTv15P+TdVZpXrefTb2S71/bP4jkHUG88HBEHwZ
+         ho6KZJJYxoXBTgVbejIj/4JPflPMkceEaVfDkIcH9VXFpxQznkceJCHigD68eWm3DJdP
+         FH5Q==
+X-Gm-Message-State: AJIora/xZywXZt6tdB1xveuzSquhMbl92SotsFz9A91ypH2jh7wuf3Xl
+        aHJUzBXd/WXsPxyaB0Ce0D2zNw==
+X-Google-Smtp-Source: AGRyM1vHH32zvSkvS4Mr4+dOJdgonHSMCGgCq4dttb1qQVeMugXCYAY6gbmndZ8xKiLXkKPuRWKbQA==
+X-Received: by 2002:a5d:414b:0:b0:21d:6e93:59c8 with SMTP id c11-20020a5d414b000000b0021d6e9359c8mr11686011wrq.290.1657870120167;
+        Fri, 15 Jul 2022 00:28:40 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056000118600b0021d7050ace4sm3212357wrx.77.2022.07.15.00.28.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 00:28:39 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 08:28:37 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
+ put/destroy invokation
+Message-ID: <YtEXJRpOx9kADVcs@google.com>
+References: <20220622082716.478486-1-lee.jones@linaro.org>
+ <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
+ <CABBYNZ+C=MQ7577Fr5_W8tQ4iWRSDBSiC4fkRBY3x=9ph+YAzA@mail.gmail.com>
+ <CABBYNZLysdh3NFK+G8=NUQ=G=hvS8X0PdMp=bVqiwPDPCAokmg@mail.gmail.com>
+ <YrxvgIiWuFVlXBaQ@google.com>
+ <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
+ <YsVptCjpzHjR8Scv@google.com>
+ <CABBYNZKvVKRRdWnX3uFWdTXJ_S+oAj6z72zgyV148VmFtUnPpA@mail.gmail.com>
+ <CABBYNZLTzW3afEPVfg=uS=xsPP-JpW6UBp6W=Urhhab+ai+dcA@mail.gmail.com>
+ <CABBYNZJXiGHB+pyKq3uPaGfP29VdauevrBPeXbcU0LEHcEf_hg@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6130:3a6:0:0:0:0 with HTTP; Fri, 15 Jul 2022 00:03:39
- -0700 (PDT)
-From:   VARAL CONSULTANCY DUBAI <boabanqueafrica857@gmail.com>
-Date:   Fri, 15 Jul 2022 10:03:39 +0300
-Message-ID: <CAD8gZvNG4ECnQJr_f-qnr=x7hh16q+WGCWd4-_UTCJTfFiY6og@mail.gmail.com>
-Subject: CEO
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.8 required=5.0 tests=BAYES_50,DEAR_SOMETHING,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLY,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABBYNZJXiGHB+pyKq3uPaGfP29VdauevrBPeXbcU0LEHcEf_hg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> Hi Lee,
+> > > > > > I'm struggling to apply this for test:
+> > > > > >
+> > > > > >   "error: corrupt patch at line 6"
+> > > > >
+> > > > > Check with the attached patch.
+> > > >
+> > > > With the patch applied:
+> > > >
+> > > > [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
+> > > > [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
+> > >
+> > > Looks like the changes just make the issue more visible since we are
+> > > trying to add a refcount when it is already 0 so this proves the
+> > > design is not quite right since it is removing the object from the
+> > > list only when destroying it while we probably need to do it before.
+> > >
+> > > How about we use kref_get_unless_zero as it appears it was introduced
+> > > exactly for such cases (patch attached.)
+> >
+> > Looks like I missed a few places like l2cap_global_chan_by_psm so here
+> > is another version.
+> 
+> Any feedback regarding these changes?
+
+Not yet.  I'll have time to test this next week.
+
+Things really stacked up this week, apologies.
+
 -- 
-Dear sir,
-
-please i want you to contact me asap, i have lucrative project to run
-with you or with your company. kindly contact me immediately further
-discussion.
-
-regards,
-
-Mr Gwada Sikumar.
-varal consultancy DMCC Dubai.
-united arab emirates.
-officemanagement234@gmail.com
-WHAT'S APP NUM +971521456648
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
