@@ -2,180 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D69E57657D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7765765E9
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiGOQ5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 12:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S235562AbiGORFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 13:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235004AbiGOQ5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 12:57:33 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C647A519;
-        Fri, 15 Jul 2022 09:57:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mC/I1TGVynLxX6gCwbhhhvIs9Ywe5U9HmzmxGzHJ5FyvqRi16qIAOZ/KsCyCNk11bP9NlHLKlTPQcE4LFmYc8yDOR8PSYRab5IancpRzi0m76J2f01QWxBncLdnYTKASnHC3hv6WATLffqxf3fYODmNPXWpaKU/M95N5dm50pyvu+kURHNMp+Mv2c2V82KnoWq+u8JiFN4q6fkW6y3YejlukOYK/QiuUVPcUVOCmecOmnEatVja6Fsvv2AZk3a6ukHY6sP8ZOVWMmpamPyZ36dcCWSFr1agZe1+bNDXgOBL0MxgKVGUBzvflI9y1kGTAtskjmqlqsKBvaxXltwE6Hw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gD4gazgNu9PW3lMT1FhAM8irxci+wgDlQnavQZouMhM=;
- b=fxnbBMcnel6J7qniEiR2Ci9PW7ACKtL2+V8IxmSJQKa6uEVaYc1RVyIQq4+StfwW6Ohi6gfQ7n7Y1DCLK/sN+xP/07PL5rX+LY1KiiysrcgpahhXy32wPpA2uuQrRfb4u5SSllosFJmbc1qwMg39QOFL2DE7inMLn9GBiwhBaWaOxsaXaUukiXTyTxHMNT8xa9O+pHnrmpiro4plr2jOmjO9FQa/GWkZU0k/TzBdwYoPLeqLUPTyTLDbCtvaegC/Vq1t88K8lNo8I7kEymfhMY03U0hp2ADGS5ulH7cYr+b5MrZZyxzl7Zui94l5wu6gbnY5Okfw1/fwkHrE/nleFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+        with ESMTP id S235537AbiGORFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:05:39 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1650F13E0D
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 10:05:38 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so6678572pjl.4
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 10:05:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gD4gazgNu9PW3lMT1FhAM8irxci+wgDlQnavQZouMhM=;
- b=v4/pd4ZkEw0/lwWwd1+y5VR9yWf/4/dJ6NkaEx7KkuAwc2/+b3JY07qndl5YC3hpbEKvmyIBS3y5qUA71uN6z04+eE0MqsgRT3sXWAUwFJLeuI0JCiBF4sQyIhNtrGcjKA9nYPHCqfP4hQrZackn3Xl5VGVvuwPaVSwGeiLC5i0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by BLAPR10MB4867.namprd10.prod.outlook.com
- (2603:10b6:208:321::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Fri, 15 Jul
- 2022 16:57:29 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5395.020; Fri, 15 Jul 2022
- 16:57:28 +0000
-Date:   Fri, 15 Jul 2022 09:57:24 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
-Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over SPI
-Message-ID: <YtGcdGj6yi546oWk@euler>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220708200918.131c0950@kernel.org>
- <YsvWh8YJGeJNbQFB@google.com>
- <20220711112116.2f931390@kernel.org>
- <YszYKLxNyuLdH35Q@COLIN-DESKTOP1.localdomain>
- <20220712220856.qbfyhll5o7ygloka@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712220856.qbfyhll5o7ygloka@skbuf>
-X-ClientProxiedBy: SJ0PR13CA0135.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::20) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3F2Dyav1qJ5Ymnprccu3h+/op3LDhQRCn24iGv/mXi4=;
+        b=B6RV0gNkNpL7CxjM3yr5/X6s39SewbqYQW5lBBG63+Pefp2pE1SgxSsyV5UWh1vt3+
+         rc0ZbJoKBVU8xX99s9CTItshFLGPMoYa+E99ErWDIjWaAZ1jgJPLSzjsyjMco48S+EPt
+         aFt9LtETeZbniwfBHE4T7EuFAblDAeNUaq7VP7bZc6b8aNmh/F2v5xfOMb93Io1QWhLW
+         Xbz8bnTqvFMPOL/yHrpt85OXu/GLmZRoGLEs9dqf3QQqAkP6/Ako8wsqpTZoRHffBqdQ
+         kabwqqsgNVeVRq1stWL4UPMNVNZWEz4A2H5wCrWBwn+yLGOpuO2A6I4wIQmLy7jQZ730
+         8+4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3F2Dyav1qJ5Ymnprccu3h+/op3LDhQRCn24iGv/mXi4=;
+        b=tVgzKdJlAzfCsMekcvaqLJ/roKAs1cXBaiWZHZul10/p9QZcNdxPnnYdaItGjvSqQw
+         u0XH5c2XmxOQZDiiPROIYJOSmJ6C1buBJYqCtB1C4Wj8Y/DTJ0Vc9igmaPkwqxDHSF2P
+         HKEatIqkdPRKOMco9U01vt4NS5/4xFVHYltvHF5WOphQp0A6YPgxqaOKTRNkor0ye7VY
+         882ob+KbdJUCgLDBQpe8e7E4np2xONN7fUc9SsZXHGLcSMOcAQLFmgixVHgoLnUXQrXs
+         JOGBYm2nAZGOJTFU3V1i6xadEefk0JofXDv8bJ2jR9MOBVS8uFaIxCqgZwN3zsY73rw6
+         63fQ==
+X-Gm-Message-State: AJIora/Pw8isRyct+86wuQ042vMyOlsf+szhPl1B6T4lOj6g0X81cGLR
+        YG5WU22wKD7K8p5zqRmWC5Y=
+X-Google-Smtp-Source: AGRyM1tz3FRIhzFUz7drLCRi9SZYYj78Ri/KA5ucb3y6J4xkZkTjaL58Eq1AQTUzIxBY0wYQmkr4Rg==
+X-Received: by 2002:a17:902:cece:b0:16c:3683:8835 with SMTP id d14-20020a170902cece00b0016c36838835mr14824814plg.104.1657904732702;
+        Fri, 15 Jul 2022 10:05:32 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u9-20020a170903124900b0016cabb9d77dsm3902963plh.169.2022.07.15.10.05.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jul 2022 10:05:32 -0700 (PDT)
+Message-ID: <8b875407-0321-8d50-7e34-077f48e11de2@gmail.com>
+Date:   Fri, 15 Jul 2022 10:05:30 -0700
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb47ac58-5e83-47b8-7dcc-08da668319be
-X-MS-TrafficTypeDiagnostic: BLAPR10MB4867:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ipFxhs8LyiZcL5MZNzwFNhYA2NTNUQrzV1zhGOczaENQ8cxr3Sra9uLRniJfPiSpFngUMcEaxWdZIIXKJ3Y+dBreKnt8MCMGyXDbYer5gZY6XkAnr+QByVbNJGP9QoBq7/UtuQ+DUPvciyfYh8+VLZ5Ly1Hdh9NxtQy+N7brcdkCqq4vHSZV6FobwcBvvNIOfBHQsefKOTjjjE0oeOy/5Blr3RPw4O1KCdPGfwc6WMZLGG+E34JaTdAeZlDTg3FRhn3q+ge2qcul9GG8FK8oBEvNnIhA9BhQnZmi/X6NjRjPBJwqz9j4hRSDB+FH+dsQRVlNySOXY9bgV6liDj0GnGlG3ZOpB/kirgn9D9wE3cp/artfU5ZKB/CCm3LOjDIWIJbwdmUiAsn3T2tSFVL/uTKn2SvUkZjAZiiImhaTv+926Q6TL/7Yok8mZkA1U2Wieb7F3Y3eJuz15G91w48qvPtB6wZE1hrqN3TTVJXLoJB/ONyhWA4WpzcDNdtvo8P3Z6ehVG/XU4Oq/G2pWBcCUqF+ukV572SZiIg3OhJ4i7PoDeLVbwLIMUh3wxYto8MGgcG/Irrd4IR3uNsD8TfRsXb8yYpOSyGoT4auyYluwQ95+Hso9YgYbubP7OwW1j2Ou3AXIO8eFYxKduo+sPTXXdMowy3pwqocTy8kG2bCgs6CvW8ZJOmPHSFUbtJ9euqSqtoH8oGYc7SACe4+aQUM2laVm3Fss0j6ZVeGOy0iObYc4C3s04nhnbWVbaZMWRod
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(396003)(346002)(136003)(39830400003)(366004)(41300700001)(6486002)(6506007)(86362001)(478600001)(107886003)(6666004)(186003)(6512007)(9686003)(83380400001)(38100700002)(26005)(2906002)(8936002)(5660300002)(7416002)(8676002)(6916009)(33716001)(66476007)(66556008)(66946007)(44832011)(54906003)(316002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MbtvOdWfDMM4fGYIXkmzg4WE1jAEe9C0zxiWfXAkrSCOeiKpBS1oqrgjkfBC?=
- =?us-ascii?Q?uUZUKrVXadu4a2cH+90eSNXFfWBZPNDnZVbSsmNv3Ll+dvSH1bcskPjfdcTq?=
- =?us-ascii?Q?SQ8y5qrmC24J2qamh0etppzoU3dvsRVlQP/CTEwhjAnQQWDLKiVWP82Ts58R?=
- =?us-ascii?Q?kSc3eUtVzHMKLVPf+hS0c3WpepuNw7tTQhlN1gFej1WwYsoPizQY/sfWrv17?=
- =?us-ascii?Q?5llz76k0c6jKs5937C8mqLoyi5RixHKV0UEPFNCTq3XLb3FPHBlSDC67HHsh?=
- =?us-ascii?Q?u/JbDlwQYE4hOjoVtnSYVZphX4XtjpjW6op7u6l4dE7VovoagHdC+MMGAqIq?=
- =?us-ascii?Q?ySrQfnJPuU2ZQOVrG+Qy66XqRTcfiHb2D4x9939oAHe6BaIQT4LPAXpI6n66?=
- =?us-ascii?Q?Ilf8WOA2NtszqFbrkYNMN3zJwn44M3oQB+P1M5Die4YEQ+nDxUTarSIsARAU?=
- =?us-ascii?Q?C5cEeAnwFXmGzmhOeAxHwxe8mgWD9slmegzVl60k8WcMGtnTPFWelwg/ivOs?=
- =?us-ascii?Q?xurEYzqF4znb1jFpg1OEPiLVy250k0LBRJkCR2vXLMUB/xg8GjcltfpjXF0X?=
- =?us-ascii?Q?lqEFa4XUY02NNi0IKm/502Lbr8y7lZRZXeAWofOouru1hzUBGiMUxEBYMjdA?=
- =?us-ascii?Q?0l7rQZKml7SeejyEeW7jrbxpAcq+6t8UZIbKb/rKX2EW9DmsGbKTI7QuSv8V?=
- =?us-ascii?Q?9u5Enk5ynWSTDTvtQPXKK+XZhDV+8ltXv/sK++3OUDigP7FRjyM/zps8yn6O?=
- =?us-ascii?Q?EUUmADlodvH4Icjnk8yiSGc74L9FVcgqA4hMqgMNaHf8FvHNACqWtTRTQ7n7?=
- =?us-ascii?Q?v0AHupaRmuq7BjDVDm92JMjdZEaEXCocp3CZccohUKM3UxsEPKAILpMr/UFh?=
- =?us-ascii?Q?31RHHOu5b4yNdgnuxKZQJ264QFDonV8mqlJjw0AJRopciDcM6B//otULCPMJ?=
- =?us-ascii?Q?fp8b20Dj0PAjyIB3ZsaWmp9Ssb6EjTVg6Bi9R5n9cKH0yOoi6445MW/GtQR5?=
- =?us-ascii?Q?fA+2HX06roYfRQWq+wC4owhiKob/LpAO5WTqkhDkB+bC58A7DNJvHpdDXDIN?=
- =?us-ascii?Q?mL/Ox7UDlBz+EHmy8F3GsRg0C7/+krO1SuQAbWaHwT9qDWuHDSmo+ATFdJtS?=
- =?us-ascii?Q?GaHZHGLf2ONpGKdtj7OK7uZd23qrdUYE395PIsSIOHl0wTbeb801WYQ7Uqni?=
- =?us-ascii?Q?f1hFUOSMbPxqiS0M49LlbgUFSWaaMkbgs92T4rRxJSZQ5QmirG3LewYX5n0Z?=
- =?us-ascii?Q?BmoVOwkTMtpj/z/pEkQ7PnL69wUJI3Wq8oYmFt2x2+1vjRzmyiTNmsbDzuGq?=
- =?us-ascii?Q?5vhfT7bOZknygwLLtAFOZmut/HmUnxcSlRBjVG7lHYEDZh2f/uF7j49FfKGg?=
- =?us-ascii?Q?AnaBb+NOxOFPxRtd3Mk53FQOZj4p9Sz+21BH45NkjiSGxoaXEVR9pDC9QHbF?=
- =?us-ascii?Q?EieBjQbSYaMtqDlSXUBKqAZ4JZyKs8Nk+TKCqQZ65KemigWz9ItkN2tTePuP?=
- =?us-ascii?Q?aSzf3rhVXjHgPVRQGqm3ljY3gI524XTFJ52fG69QNYM4QiAE8kElYrAIqdlN?=
- =?us-ascii?Q?7EtNFv7KSF2ivroGYvP/P/9wYFB3CRv8gczj6LdRCU7No9Y06hyMDXZel/pU?=
- =?us-ascii?Q?Kg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb47ac58-5e83-47b8-7dcc-08da668319be
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 16:57:28.7822
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zlSEVrMS7saN3oZpjz4w6kbF99DYYWgQN1BPCv56Sp2MH4UhQiEltvuXK1xE9i8FHlxwjikmHhHmgVeeUVidu9muFJ8VmqkoRh8gS08QeSY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4867
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net] net: stmmac: fix dma queue left shift overflow issue
+Content-Language: en-US
+To:     Junxiao Chang <junxiao.chang@intel.com>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, Joao.Pinto@synopsys.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, cedric@bytespeed.nl
+References: <20220715074701.194776-1-junxiao.chang@intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220715074701.194776-1-junxiao.chang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 10:08:57PM +0000, Vladimir Oltean wrote:
-> On Mon, Jul 11, 2022 at 07:10:48PM -0700, Colin Foster wrote:
-> > On Mon, Jul 11, 2022 at 11:21:16AM -0700, Jakub Kicinski wrote:
-> > > On Mon, 11 Jul 2022 08:51:35 +0100 Lee Jones wrote:
-> > > > > Can this go into net-next if there are no more complains over the
-> > > > > weekend? Anyone still planning to review?  
-> > > > 
-> > > > As the subsystem with the fewest changes, I'm not sure why it would.
-> > > 
-> > > Yeah, just going by the tag in the subject. I have no preference,
-> > > looks like it applies cleanly to Linus'.
-> > > 
-> > > > I'd planed to route this in via MFD and send out a pull-request for
-> > > > other sub-system maintainers to pull from.
-> > > > 
-> > > > If you would like to co-ordinate it instead, you'd be welcome to.
-> > > > However, I (and probably Linus) would need a succinct immutable branch
-> > > > to pull from.
-> > > 
-> > > Oh, that'd be perfect, sorry, I didn't realize there was already a plan.
-> > > If you're willing to carry on as intended, please do.
-> > > 
-> > > Colin if there is another version please make a note of the above
-> > > merging plan in the cover letter and drop the net-next tag. 
-> > > Just in  case my goldfish brain forgets.
-> > 
-> > I wasn't sure of the plan, but this makes sense to bring it through MFD.
-> > Fortunately there's enough work for me on the DSA front that there's no
-> > way that'll land before this merge window - so I have no objection to it
-> > going any non-net-next path.
-> > 
-> > I'll look to Lee as to whether there should be a v14 with the header
-> > guard addition per Vladimir's review, or whether that should be in a
-> > future patch set. I'm happy to go either way.
+On 7/15/22 00:47, Junxiao Chang wrote:
+> When queue number is > 4, left shift overflows due to 32 bits
+> integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
 > 
-> From my side, the changes to this patch set can be incremental, I'd be
-> happy if Lee would take them as is.
+> If CONFIG_UBSAN is enabled, kernel dumps below warning:
+> [   10.363842] ==================================================================
+> [   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
+> linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
+> [   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
+> [   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
+> [   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
+> [   10.363958] Call Trace:
+> [   10.363960]  <TASK>
+> [   10.363963]  dump_stack_lvl+0x4a/0x5f
+> [   10.363971]  dump_stack+0x10/0x12
+> [   10.363974]  ubsan_epilogue+0x9/0x45
+> [   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
+> [   10.363979]  ? wake_up_klogd+0x4a/0x50
+> [   10.363983]  ? vprintk_emit+0x8f/0x240
+> [   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
+> [   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
+> [   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
+> [   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
+> [   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
+> [   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
+> [   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
+> [   10.364050]  __dev_open+0xf0/0x1a0
+> [   10.364054]  __dev_change_flags+0x188/0x1f0
+> [   10.364057]  dev_change_flags+0x26/0x60
+> [   10.364059]  do_setlink+0x908/0xc40
+> [   10.364062]  ? do_setlink+0xb10/0xc40
+> [   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
+> [   10.364068]  __rtnl_newlink+0x597/0xa10
+> [   10.364072]  ? __nla_reserve+0x41/0x50
+> [   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
+> [   10.364079]  ? pskb_expand_head+0x75/0x310
+> [   10.364082]  ? nla_reserve_64bit+0x21/0x40
+> [   10.364086]  ? skb_free_head+0x65/0x80
+> [   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
+> [   10.364094]  ? __cond_resched+0x19/0x30
+> [   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
+> [   10.364100]  rtnl_newlink+0x49/0x70
+> 
+> This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
+> mapping warning.
+> 
+> Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
+> Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
+> Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
 
-Just making sure this hasn't slipped through the cracks. Should I resend
-this next week (Monday / Tuesday?) with the Reviewed-by tags and switch
-it to MFD instead of net-next?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Thank you!
+-- 
+Florian
