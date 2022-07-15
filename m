@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8DE5763BB
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 16:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADBA55763B8
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 16:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbiGOOim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 10:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
+        id S231560AbiGOOhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 10:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231622AbiGOOil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 10:38:41 -0400
-X-Greylist: delayed 478 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 07:38:38 PDT
-Received: from violet.hashi.re (13.169.3.93.rev.sfr.net [93.3.169.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B65C63FD;
-        Fri, 15 Jul 2022 07:38:38 -0700 (PDT)
-Received: from [192.168.43.7] (5.205.136.77.rev.sfr.net [77.136.205.5])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        with ESMTP id S229962AbiGOOho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 10:37:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67A56EE98;
+        Fri, 15 Jul 2022 07:37:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: elliu)
-        by violet.hashi.re (Postfix) with ESMTPSA id BD00B860276;
-        Fri, 15 Jul 2022 16:30:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=hashi.re; s=mail;
-        t=1657895438; bh=d7Q4OGi47iBgLbolyA/55pua9XUw9DdMbLz7RsFPDc8=;
-        h=Date:From:Subject:To:From;
-        b=Inu6cXsIXbPUcdFHLoKyLu74E/UkhHxnG5GzfR0AvfHCgSSA1VFffkaGMIPV9Snmw
-         9PlASDnu57Ax5gvSHI1G5PFpRHVYKiQtirY5Z07UJfxICnAKlGCbtYYaiU20yBC+IN
-         vWoa1reaZLBTihU8OrV7WSX4YvegpQYf+F6MxdZOMf2oPvn0R6WIfJnEOUe8MYeprm
-         aqB56k03fklIJkNpNqczAqhTE7Kx3Jzk3TWQLK10bCo1QvXdNU/0BngZqB+5wEyhTy
-         iDJriviib7cPp6AqpjzVzAzhaG5k+jAFE4gUjzOUmVWLuXhPL0/psZstfiou1VK6dJ
-         vdyzUB85d5NqA==
-Message-ID: <0e60fe4b-5bc6-19bb-a061-23acbfa606c4@hashi.re>
-Date:   Fri, 15 Jul 2022 16:30:37 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 606F361DA6;
+        Fri, 15 Jul 2022 14:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19EFBC34115;
+        Fri, 15 Jul 2022 14:37:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657895862;
+        bh=qkVcpST2o3Jr1fVSdgL/7dqsGupR5VwFKlLsdoSgiKA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=keKvmYrJwxGuSdCTA1/9asZho0tJKw4B5JLSzoIyIo/2qdgP5BVhLY4C70jbmpgcr
+         WkIRiFliZ6FyV0Ny1wAsNEfMCrg6JDPWKEsUCWlykcH3efgW0xWs6agvcqlbk8Zkv4
+         FT1soll7ROBO2TIo/+Pc03PiGqYMcrD1QKdalKOg=
+Date:   Fri, 15 Jul 2022 16:37:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, stable@vger.kernel.org,
+        Doug Berger <opendmb@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        andrew@lunn.ch
+Subject: Re: [PATCH stable 4.14 v3] net: dsa: bcm_sf2: force pause link
+ settings
+Message-ID: <YtF7s1bZQPJ90czR@kroah.com>
+References: <20220708001405.1743251-1-f.fainelli@gmail.com>
+ <20220708001405.1743251-2-f.fainelli@gmail.com>
+ <Ys3JIVVpKvEts/Am@kroah.com>
+ <b3c1d411-34c5-197c-5643-6fe4c4ee3723@gmail.com>
+ <20220712220728.zqhq3okafzwz6cvb@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-From:   Louis Goyard <louis.goyard@hashi.re>
-Subject: [PATCH] staging: qlge: fix indentation
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712220728.zqhq3okafzwz6cvb@skbuf>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Goyard <louis.goyard@hashi.re>
+On Wed, Jul 13, 2022 at 01:07:28AM +0300, Vladimir Oltean wrote:
+> On Tue, Jul 12, 2022 at 12:30:00PM -0700, Florian Fainelli wrote:
+> > On 7/12/22 12:18, Greg Kroah-Hartman wrote:
+> > > On Thu, Jul 07, 2022 at 05:14:05PM -0700, Florian Fainelli wrote:
+> > > > From: Doug Berger <opendmb@gmail.com>
+> > > > 
+> > > > commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream
+> > > > 
+> > > > The pause settings reported by the PHY should also be applied to the
+> > > > GMII port status override otherwise the switch will not generate pause
+> > > > frames towards the link partner despite the advertisement saying
+> > > > otherwise.
+> > > > 
+> > > > Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+> > > > Signed-off-by: Doug Berger <opendmb@gmail.com>
+> > > > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > > Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+> > > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > > > ---
+> > > > Changes in v3:
+> > > > 
+> > > > - gate the flow control enabling to links that are auto-negotiated and
+> > > >    in full duplex
+> > > > 
+> > > 
+> > > Are these versions better / ok now?
+> > 
+> > Vladimir "soft" acked it when posting the v3 to v2 incremental diff here:
+> > 
+> > https://lore.kernel.org/stable/20220707221537.atc4b2k7fifhvaej@skbuf/
+> > 
+> > so yes, these are good now. Thanks and sorry for the noise.
+> > -- 
+> > Florian
+> 
+> Sorry, I tend not to leave review tags on backported patches. I should
+> have left a message stating that I looked at these patches and they look ok.
 
-Adhere to linux coding style. Reported by checkpatch:
-WARNING: suspect code indent for conditional statements (16, 32)
+Thanks, both now queued up.
 
-Signed-off-by: Louis Goyard <louis.goyard@hashi.re>
----
-  drivers/staging/qlge/qlge_main.c | 12 ++++++------
-  1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_main.c 
-b/drivers/staging/qlge/qlge_main.c
-index 1a378330d775..8eb0048c596d 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -3008,9 +3008,9 @@ static int qlge_start_rx_ring(struct qlge_adapter 
-*qdev, struct rx_ring *rx_ring
-  		base_indirect_ptr = rx_ring->lbq.base_indirect;
-
-  		for (page_entries = 0; page_entries <
--			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
--				base_indirect_ptr[page_entries] =
--					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+				MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
-+			base_indirect_ptr[page_entries] =
-+				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-  		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
-  		cqicb->lbq_buf_size =
-  			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
-@@ -3023,9 +3023,9 @@ static int qlge_start_rx_ring(struct qlge_adapter 
-*qdev, struct rx_ring *rx_ring
-  		base_indirect_ptr = rx_ring->sbq.base_indirect;
-
-  		for (page_entries = 0; page_entries <
--			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
--				base_indirect_ptr[page_entries] =
--					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+				MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
-+			base_indirect_ptr[page_entries] =
-+				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-  		cqicb->sbq_addr =
-  			cpu_to_le64(rx_ring->sbq.base_indirect_dma);
-  		cqicb->sbq_buf_size = cpu_to_le16(SMALL_BUFFER_SIZE);
--- 
-2.37.1
+greg k-h
