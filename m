@@ -2,130 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1D1575A3C
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 06:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CDB8575A74
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 06:26:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229559AbiGOEO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 00:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S229563AbiGOEWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 00:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGOEO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 00:14:56 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558D06B762;
-        Thu, 14 Jul 2022 21:14:55 -0700 (PDT)
+        with ESMTP id S229436AbiGOEWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 00:22:44 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097687822B;
+        Thu, 14 Jul 2022 21:22:43 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id b8so4576861pjo.5;
+        Thu, 14 Jul 2022 21:22:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657858495; x=1689394495;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=8DVo+qwHUu8VtpFIn+3JfXR4ObpIx4rVkOkakIa/ISI=;
-  b=qzE24QqkZFv4SDWkvdGnsXmg3FgL1bYj3ja4FeOs803212hmz5sBlH0m
-   Xin+rMQ6G3cPwd0uomGP3278uyLfBVS+7PdlXiHCVg9meElV3pka8O3/T
-   smye9xgEKfPkFiFmyK2LzsXDAlEzQnZzl5opYdYtRzCFsg6s28jQKjFaC
-   k=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jul 2022 21:14:55 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 21:14:54 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 21:14:51 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <luiz.von.dentz@intel.com>, <quic_zijuhu@quicinc.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v2] Bluetooth: hci_sync: Remove redundant func definition
-Date:   Fri, 15 Jul 2022 12:14:47 +0800
-Message-ID: <1657858487-29052-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=BDXd1YFYJN/5jr3L+WHptmtZJbqUiq71TSQ8jDVxf1Y=;
+        b=aPzTOBFSudBhnuQRVvjn8x/dSfJC+fySXJi8HTpccyi1GEVZMmxm7E/b0FVxDXECsE
+         KZCYROU101PrKzlmEMl9tCngfP7jeMlHDtl1X9q36gXSAHo6z76zfarOFnS6GoOIgmE1
+         7eo1zRi2qN4Blu0gTBvvswQxCYYZi7q1zBoYUgrUCeQAwlHfOGq+PnYsICL6ZISP2UBX
+         7+SDgTNOUkIbUD4MkwD/FUaip/C6zCv673SrvunVrCVxFchAwLBTJBqRzccvD/Sq5s2C
+         sVrsqaxbhyfhvqowNIxFOlNReD2u5d/J1li2Xye+pIbvIt9CQMo7pXeQ/H6PiHFeOsft
+         D32w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BDXd1YFYJN/5jr3L+WHptmtZJbqUiq71TSQ8jDVxf1Y=;
+        b=gIUUGSFrZfMWWS5c74gLLdGtUsH3xKMScxo5rAGOzQvq1Qw3buqG8FEzzJeMtsBfEy
+         LHQR43jHrisczPOf8Eb9miWCSbysQc2ueb66ij2bgF0QI99tY9I0PveXh+por5jlBbCU
+         BpNGj/k3M/z5Ui252i+JMV6GDG/B/QoQrjmloFiMXV8AM9Hx4AGKu4uhp9HAti5EwJvq
+         UWFPgcsiCI5t14XngIoFKnAQpx5veyop9w7r9SVt3wCzghsSpXlq9msLkqGfehFk9jSx
+         mLRfOwgUfLISE5eH1WAbjc9Ww5FUwN/CmOoKOZ8uHccEHQ2X44lXrdiPRnQVj9O7tmQx
+         +6Yw==
+X-Gm-Message-State: AJIora9nS0/omhGSBqg2qBrkWovu9M+H1Fv3aj4x4T0GVrkPZ5OzyEdw
+        1Vw0YX0PDKp9c7r5jJX4O2c=
+X-Google-Smtp-Source: AGRyM1sq4PubJiDAeGNZhSO8GA4QDZ0eyTZWG3JGb0xj2JnyYBxeXxHPp6Gs4Ji4AOr/vdyy98C3yQ==
+X-Received: by 2002:a17:902:efc6:b0:16b:dd12:4d30 with SMTP id ja6-20020a170902efc600b0016bdd124d30mr11513832plb.29.1657858962209;
+        Thu, 14 Jul 2022 21:22:42 -0700 (PDT)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id q18-20020a17090311d200b0016a5384071bsm2345714plh.1.2022.07.14.21.22.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 21:22:41 -0700 (PDT)
+From:   Sieng-Piaw Liew <liew.s.piaw@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sieng-Piaw Liew <liew.s.piaw@gmail.com>
+Subject: [PATCH] atl1c: use netif_tx_napi_add() for Tx NAPI
+Date:   Fri, 15 Jul 2022 12:21:31 +0800
+Message-Id: <20220715042131.1237-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-both hci_request.c and hci_sync.c have the same definition
-for disconnected_accept_list_entries(), so remove a redundant
-copy.
+Use netif_tx_napi_add() for NAPI in Tx direction instead of the regular
+netif_napi_add() function.
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Signed-off-by: Sieng-Piaw Liew <liew.s.piaw@gmail.com>
 ---
-v1->v2
-	-remove the func copy within hci_request.c instead of hci_sync.c
- net/bluetooth/hci_request.c | 18 ------------------
- net/bluetooth/hci_request.h |  2 ++
- net/bluetooth/hci_sync.c    |  2 +-
- 3 files changed, 3 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 635cc5fb451e..edec0447aaa7 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
- 	return 0;
- }
- 
--static bool disconnected_accept_list_entries(struct hci_dev *hdev)
--{
--	struct bdaddr_list *b;
--
--	list_for_each_entry(b, &hdev->accept_list, list) {
--		struct hci_conn *conn;
--
--		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
--		if (!conn)
--			return true;
--
--		if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
--			return true;
--	}
--
--	return false;
--}
--
- void __hci_req_update_scan(struct hci_request *req)
- {
- 	struct hci_dev *hdev = req->hdev;
-diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
-index 7f8df258e295..e80b500878d9 100644
---- a/net/bluetooth/hci_request.h
-+++ b/net/bluetooth/hci_request.h
-@@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
- int hci_update_random_address(struct hci_request *req, bool require_privacy,
- 			      bool use_rpa, u8 *own_addr_type);
- 
-+bool disconnected_accept_list_entries(struct hci_dev *hdev);
-+
- int hci_abort_conn(struct hci_conn *conn, u8 reason);
- void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
- 		      u8 reason);
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 212b0cdb25f5..48a262f0ae49 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
- 	return err;
- }
- 
--static bool disconnected_accept_list_entries(struct hci_dev *hdev)
-+bool disconnected_accept_list_entries(struct hci_dev *hdev)
- {
- 	struct bdaddr_list *b;
- 
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index 948584761e66..bf293a3ed4c9 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -2734,8 +2734,8 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		netif_napi_add(netdev, &adapter->rrd_ring[i].napi,
+ 			       atl1c_clean_rx, 64);
+ 	for (i = 0; i < adapter->tx_queue_count; ++i)
+-		netif_napi_add(netdev, &adapter->tpd_ring[i].napi,
+-			       atl1c_clean_tx, 64);
++		netif_napi_add_tx_weight(netdev, &adapter->tpd_ring[i].napi,
++					 atl1c_clean_tx, 64);
+ 	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
+ 	/* setup the private structure */
+ 	err = atl1c_sw_init(adapter);
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+2.17.1
 
