@@ -2,156 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26089575EE1
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 11:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A81F575F5C
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 12:29:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbiGOJ5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 05:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
+        id S231963AbiGOK3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 06:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbiGOJ5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 05:57:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92DE67B37E
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 02:57:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657879022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Hrnh4xSI/kevtIOtrai4yHB4Q/NHMbskcGk41P5Ttk=;
-        b=Rn7fzpngq6bD7XgSZDSOvJqjFABmCn92kAMa2kfPWZ6Q7ydKqHZKYYMLL5+TqKrNKZ3Jhg
-        VEUL0QVIsvnkSghjISNyPqagy0UwecfFvQCynGRmhfRl7dgAHuZ7LSNIRdUblfT7g1VucE
-        WSIiaDXuk8jTtt8ITmI3W/GcW/nCx1c=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-z9exsyjUMfm6Ih-rRAEfGg-1; Fri, 15 Jul 2022 05:56:59 -0400
-X-MC-Unique: z9exsyjUMfm6Ih-rRAEfGg-1
-Received: by mail-pf1-f198.google.com with SMTP id u14-20020a056a00098e00b0052b433b04d6so214048pfg.12
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 02:56:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8Hrnh4xSI/kevtIOtrai4yHB4Q/NHMbskcGk41P5Ttk=;
-        b=3xc83zOFyQ4eMQPPAWJACPZUOtwIwe8gjjAZ/KLTIdp8g9GD4oYEqx6dkZGIRtFNxU
-         0oHTFyIdMg7jDrbzIOJwAu4EX0RPtODFLjbDZsPQGnZHTNeRPeytZzHBpGl594ycDKpW
-         +u92XMOtyrk0oZ/7F8De9eJJqJP3eGigVTzsefWqaKbR7fiP8/JChqeMMJifVZVvZoZZ
-         HWz6meU4hG3rCPuDcnTFz/O1Pux8J5zCGADWGOlwfq8DylIcF2wf0wUFiT+/VDvlKKR1
-         F6Tn1bNuV0RTwgSGTX5jOuBb3aPqZ+MD0OO7LO/nPQxsRDMYeFCzIaPZw/5KMUvlcoBg
-         2+qA==
-X-Gm-Message-State: AJIora/Aup/mVGCH8piZFsZdFctuWhWjL3St7ab3FiZpyQqGOiOnEeXB
-        ZzBAmiEpHcYMoLaAHnetOA/c/i1r4lGxBUerWbveywiJD7P7pXj2AKEBVW2rXYvC5wgIMTJIqTl
-        q+UA0QfpCscYBw+UK2x0pLqR+xQYcUIIb
-X-Received: by 2002:a17:90a:be0c:b0:1ef:accb:23a5 with SMTP id a12-20020a17090abe0c00b001efaccb23a5mr14728440pjs.113.1657879018489;
-        Fri, 15 Jul 2022 02:56:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vH3VKnUSifYcKOV2DL1yCJLfK4VppjP4mBn1OJIP42LQAI4oYiGA7TAcUy7OJJe7owCfc/M0euZYcsf4hCj2s=
-X-Received: by 2002:a17:90a:be0c:b0:1ef:accb:23a5 with SMTP id
- a12-20020a17090abe0c00b001efaccb23a5mr14728406pjs.113.1657879018230; Fri, 15
- Jul 2022 02:56:58 -0700 (PDT)
+        with ESMTP id S229923AbiGOK3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 06:29:44 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5AB5D5B4;
+        Fri, 15 Jul 2022 03:29:41 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LknfQ3Tg5z4xMW;
+        Fri, 15 Jul 2022 20:29:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1657880976;
+        bh=bqpck9qXiLgGXy3pehpjRmLSLJxC7X3rsD323WSFrwE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=iPwlFZL0q5mfku7CxJ6pIAjh7bFVShunhPkIdjJmfIIcrOkV60NDkQ0Q8zFlNh84i
+         mfkxazMyVXNAI/0ndvLf3NDBprpIg6XqtN2GqVVOaG79rrIRbNBpn+IQbdkkf5n5u8
+         08bQFc4cmQ6g4uvixTWoDOKVwzE7mBcs9dsMAsHl/29tolTQUnTTr61UPUyCQJLscc
+         2t9ZshcOGotXGIcgR046WAQTm4KCWSAxWTfdJWqdWH1MlQm8a22ZdkW+ZkJ6oIKMLr
+         yu/lOC15DFrR2TiM/lZ2f0jLMU+Wo4X+Lv9leBT893GKy+DdRlFlVSZfSI6nLX6UNc
+         nTfRNemNTUeow==
+Date:   Fri, 15 Jul 2022 20:29:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Yury Norov <yury.norov@gmail.com>, Dave Airlie <airlied@linux.ie>,
+        David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ratheesh Kannoth <rkannoth@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the bitmap tree
+Message-ID: <20220715202933.661a3c79@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
- <20220712145850.599666-13-benjamin.tissoires@redhat.com> <YtD09KwkxvJAbgCy@kroah.com>
-In-Reply-To: <YtD09KwkxvJAbgCy@kroah.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Fri, 15 Jul 2022 11:56:46 +0200
-Message-ID: <CAO-hwJ+d6mNO2L5kZtOC6QVrDy+LZ6ECoY2f83C93GFPKbSx7g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 12/23] HID: initial BPF implementation
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/TL/efpjyde5+J69K0R.hLrs";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 7:02 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jul 12, 2022 at 04:58:39PM +0200, Benjamin Tissoires wrote:
-> > --- /dev/null
-> > +++ b/drivers/hid/bpf/Kconfig
-> > @@ -0,0 +1,19 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only
-> > +menu "HID-BPF support"
-> > +     #depends on x86_64
-> > +
-> > +config HID_BPF
-> > +     bool "HID-BPF support"
-> > +     default y
->
-> Things are only default y if you can't boot your machine without it.
-> Perhaps just mirror what HID is to start with and do not select HID?
->
-> > +     depends on BPF && BPF_SYSCALL
-> > +     select HID
->
-> select is rough, why not depend?
+--Sig_/TL/efpjyde5+J69K0R.hLrs
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Let me try to explain this mess, maybe you can give me the piece that
-I am missing:
+Hi all,
 
-The requirements I have (or want) are:
-- HID-BPF should be "part" of HID-core (or something similar of "part"):
-  I intend to have device fixes as part of the regular HID flow, so
-allowing distros to opt out seems a little bit dangerous
-- the HID tree is not as clean as some other trees:
-  drivers/hid/ sees both core elements and leaf drivers
-  transport layers are slightly better, they are in their own
-subdirectories, but some transport layers are everywhere in the kernel
-code or directly in drivers/hid (uhid and hid-logitech-dj for
-instance)
-- HID can be loaded as a module (only ubuntu is using that), and this
-is less and less relevant because of all of the various transport
-layers we have basically prevent a clean unloading of the module
+After merging the bitmap tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-These made me think that I should have a separate bpf subdir for
-HID-BPF, to keep things separated, which means I can not include
-HID-BPF in hid.ko directly, it goes into a separate driver. And then I
-have a chicken and egg problem:
-- HID-core needs to call functions from HID-BPF (to hook into it)
-- but HID-BPF needs to also call functions from HID-core (for
-accessing HID internals)
+drivers/gpu/drm/i915/gt/intel_sseu.c: In function 'intel_sseu_print_ss_info=
+':
+drivers/gpu/drm/i915/gt/intel_sseu.c:868:52: error: format '%u' expects arg=
+ument of type 'unsigned int', but argument 4 has type 'long unsigned int' [=
+-Werror=3Dformat=3D]
+  868 |                 seq_printf(m, "  %s Geometry DSS: %u\n", type,
+      |                                                   ~^
+      |                                                    |
+      |                                                    unsigned int
+      |                                                   %lu
+  869 |                            bitmap_weight(sseu->geometry_subslice_ma=
+sk.xehp,
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~
+      |                            |
+      |                            long unsigned int
+  870 |                                          XEHP_BITMAP_BITS(sseu->geo=
+metry_subslice_mask)));
+      |                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/gt/intel_sseu.c:871:51: error: format '%u' expects arg=
+ument of type 'unsigned int', but argument 4 has type 'long unsigned int' [=
+-Werror=3Dformat=3D]
+  871 |                 seq_printf(m, "  %s Compute DSS: %u\n", type,
+      |                                                  ~^
+      |                                                   |
+      |                                                   unsigned int
+      |                                                  %lu
+  872 |                            bitmap_weight(sseu->compute_subslice_mas=
+k.xehp,
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~
+      |                            |
+      |                            long unsigned int
+  873 |                                          XEHP_BITMAP_BITS(sseu->com=
+pute_subslice_mask)));
+      |                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+In file included from include/linux/printk.h:573,
+                 from include/linux/kernel.h:29,
+                 from arch/x86/include/asm/percpu.h:27,
+                 from arch/x86/include/asm/nospec-branch.h:14,
+                 from arch/x86/include/asm/paravirt_types.h:40,
+                 from arch/x86/include/asm/ptrace.h:97,
+                 from arch/x86/include/asm/math_emu.h:5,
+                 from arch/x86/include/asm/processor.h:13,
+                 from arch/x86/include/asm/timex.h:5,
+                 from include/linux/timex.h:67,
+                 from include/linux/time32.h:13,
+                 from include/linux/time.h:60,
+                 from include/linux/stat.h:19,
+                 from include/linux/module.h:13,
+                 from drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_has=
+h.c:9:
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_=
+npc_exact_alloc_mem_table_entry':
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:454:27: error: for=
+mat '%u' expects argument of type 'unsigned int', but argument 5 has type '=
+long unsigned int' [-Werror=3Dformat=3D]
+  454 |         dev_dbg(rvu->dev, "%s: No space in 4 way exact way, weight=
+=3D%u\n", __func__,
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~
+include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynam=
+ic_func_call'
+  134 |                 func(&id, ##__VA_ARGS__);               \
+      |                             ^~~~~~~~~~~
+include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_=
+func_call'
+  166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
+      |         ^~~~~~~~~~~~~~~~~~
+include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_=
+dbg'
+  155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+      |         ^~~~~~~~~~~~~~~
+include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
+  155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+      |                              ^~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:454:9: note: in ex=
+pansion of macro 'dev_dbg'
+  454 |         dev_dbg(rvu->dev, "%s: No space in 4 way exact way, weight=
+=3D%u\n", __func__,
+      |         ^~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:454:69: note: form=
+at string is defined here
+  454 |         dev_dbg(rvu->dev, "%s: No space in 4 way exact way, weight=
+=3D%u\n", __func__,
+      |                                                                    =
+~^
+      |                                                                    =
+ |
+      |                                                                    =
+ unsigned int
+      |                                                                    =
+%lu
+In file included from include/linux/device.h:15,
+                 from include/linux/pci.h:37,
+                 from drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_has=
+h.c:10:
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_=
+npc_exact_alloc_id':
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:492:35: error: for=
+mat '%d' expects argument of type 'int', but argument 4 has type 'long unsi=
+gned int' [-Werror=3Dformat=3D]
+  492 |                 dev_err(rvu->dev, "%s: No space in id bitmap (%d)\n=
+",
+      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk=
+_index_wrap'
+  110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                  =
+     \
+      |                              ^~~
+include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+  144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt)=
+, ##__VA_ARGS__)
+      |                                                        ^~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:492:17: note: in e=
+xpansion of macro 'dev_err'
+  492 |                 dev_err(rvu->dev, "%s: No space in id bitmap (%d)\n=
+",
+      |                 ^~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:492:64: note: form=
+at string is defined here
+  492 |                 dev_err(rvu->dev, "%s: No space in id bitmap (%d)\n=
+",
+      |                                                               ~^
+      |                                                                |
+      |                                                                int
+      |                                                               %ld
+In file included from include/linux/device.h:15,
+                 from include/linux/pci.h:37,
+                 from drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_has=
+h.c:10:
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_=
+npc_exact_alloc_cam_table_entry':
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:525:36: error: for=
+mat '%u' expects argument of type 'unsigned int', but argument 4 has type '=
+long unsigned int' [-Werror=3Dformat=3D]
+  525 |                 dev_info(rvu->dev, "%s: No space in exact cam table=
+, weight=3D%u\n", __func__,
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~~~~~~
+include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk=
+_index_wrap'
+  110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                  =
+     \
+      |                              ^~~
+include/linux/dev_printk.h:150:58: note: in expansion of macro 'dev_fmt'
+  150 |         dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fm=
+t), ##__VA_ARGS__)
+      |                                                          ^~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:525:17: note: in e=
+xpansion of macro 'dev_info'
+  525 |                 dev_info(rvu->dev, "%s: No space in exact cam table=
+, weight=3D%u\n", __func__,
+      |                 ^~~~~~~~
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:525:78: note: form=
+at string is defined here
+  525 |                 dev_info(rvu->dev, "%s: No space in exact cam table=
+, weight=3D%u\n", __func__,
+      |                                                                    =
+         ~^
+      |                                                                    =
+          |
+      |                                                                    =
+          unsigned int
+      |                                                                    =
+         %lu
+cc1: all warnings being treated as errors
 
-I have solved that situation with struct hid_bpf_ops but it is not the
-cleanest possible way.
+Caused by commit
 
-And that's also why I did "select HID", because HID-BPF without HID is
-pointless.
+  31563fb891aa ("lib/bitmap: change type of bitmap_weight to unsigned long")
 
-One last bit I should add. hid-bpf.ko should be allowed to be compiled
-in as a module, but I had issues at boot because kfuncs were not
-getting registered properly (though it works for the net test driver).
-So I decided to make hid-bpf a boolean instead of a tristate.
+interacting with commits
 
-As I type all of this, I am starting to wonder if I should not tackle
-the very first point and separate hid-core in its own subdir. This way
-I can have a directory with only the core part, and having hid-bpf in
-here wouldn't be too much of an issue.
+  b87d39019651 ("drm/i915/sseu: Disassociate internal subslice mask represe=
+ntation from uapi")
 
-Thoughts?
+from the drm tree and
 
+  b747923afff8 ("octeontx2-af: Exact match support")
+
+from the net-next tree.
+
+I have applied the following merge resolution patch.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 15 Jul 2022 20:20:15 +1000
+Subject: [PATCH] fix up for bitmap_weight return value changing
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/gpu/drm/i915/gt/intel_sseu.c                     | 4 ++--
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_sseu.c b/drivers/gpu/drm/i915/gt=
+/intel_sseu.c
+index c6d3050604c8..79fa564785b6 100644
+--- a/drivers/gpu/drm/i915/gt/intel_sseu.c
++++ b/drivers/gpu/drm/i915/gt/intel_sseu.c
+@@ -865,10 +865,10 @@ void intel_sseu_print_ss_info(const char *type,
+ 	int s;
+=20
+ 	if (sseu->has_xehp_dss) {
+-		seq_printf(m, "  %s Geometry DSS: %u\n", type,
++		seq_printf(m, "  %s Geometry DSS: %lu\n", type,
+ 			   bitmap_weight(sseu->geometry_subslice_mask.xehp,
+ 					 XEHP_BITMAP_BITS(sseu->geometry_subslice_mask)));
+-		seq_printf(m, "  %s Compute DSS: %u\n", type,
++		seq_printf(m, "  %s Compute DSS: %lu\n", type,
+ 			   bitmap_weight(sseu->compute_subslice_mask.xehp,
+ 					 XEHP_BITMAP_BITS(sseu->compute_subslice_mask)));
+ 	} else {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/dri=
+vers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+index 1195b690f483..2f4ce41df83c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+@@ -451,7 +451,7 @@ static int rvu_npc_exact_alloc_mem_table_entry(struct r=
+vu *rvu, u8 *way,
+ 	}
+ 	mutex_unlock(&table->lock);
+=20
+-	dev_dbg(rvu->dev, "%s: No space in 4 way exact way, weight=3D%u\n", __fun=
+c__,
++	dev_dbg(rvu->dev, "%s: No space in 4 way exact way, weight=3D%lu\n", __fu=
+nc__,
+ 		bitmap_weight(table->mem_table.bmap, table->mem_table.depth));
+ 	return -ENOSPC;
+ }
+@@ -489,7 +489,7 @@ static bool rvu_npc_exact_alloc_id(struct rvu *rvu, u32=
+ *seq_id)
+ 	idx =3D find_first_zero_bit(table->id_bmap, table->tot_ids);
+ 	if (idx =3D=3D table->tot_ids) {
+ 		mutex_unlock(&table->lock);
+-		dev_err(rvu->dev, "%s: No space in id bitmap (%d)\n",
++		dev_err(rvu->dev, "%s: No space in id bitmap (%lu)\n",
+ 			__func__, bitmap_weight(table->id_bmap, table->tot_ids));
+=20
+ 		return false;
+@@ -522,7 +522,7 @@ static int rvu_npc_exact_alloc_cam_table_entry(struct r=
+vu *rvu, int *index)
+ 	idx =3D find_first_zero_bit(table->cam_table.bmap, table->cam_table.depth=
+);
+ 	if (idx =3D=3D table->cam_table.depth) {
+ 		mutex_unlock(&table->lock);
+-		dev_info(rvu->dev, "%s: No space in exact cam table, weight=3D%u\n", __f=
+unc__,
++		dev_info(rvu->dev, "%s: No space in exact cam table, weight=3D%lu\n", __=
+func__,
+ 			 bitmap_weight(table->cam_table.bmap, table->cam_table.depth));
+ 		return -ENOSPC;
+ 	}
+--=20
+2.35.1
+
+--=20
 Cheers,
-Benjamin
+Stephen Rothwell
 
+--Sig_/TL/efpjyde5+J69K0R.hLrs
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLRQY0ACgkQAVBC80lX
+0Gz8rgf9FGiVCloB9lKWlqt7t7b2Bw3zJC/vKBO+96jf6deD8tRNWVULtpXhYIWy
+XwBOF3sNSpsTRUPjeP8S2txf9w7tysyUS7estRayi36YZZl6ExgId9luDMygO2Fp
+slK/aa85/f3wd9V/UvSdPxifSc9tAmCnjOG26/F1LzG23UUbIM9DPeIBFnXa8Em9
+4jgNRMbodGFgpfBV1Jw6EZ2ksCa5V9BkqJCO9IWb4CBSNpUPmdMYdcS74r0fDv6L
+qdcn++AgpByRuZqfkcM9h/nXrcFrwtHneAibF4tcP22mh7aGsf5JFnzCGveSTTjG
+jgIglAqjTjHVUUttbaqttddlgqzjUw==
+=2+Wp
+-----END PGP SIGNATURE-----
+
+--Sig_/TL/efpjyde5+J69K0R.hLrs--
