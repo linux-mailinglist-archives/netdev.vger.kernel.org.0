@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CFD576AE2
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 01:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2FD576AE1
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 01:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbiGOXzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 19:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S229875AbiGOXze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 19:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiGOXzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 19:55:35 -0400
-X-Greylist: delayed 1785 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:34 PDT
+        with ESMTP id S229586AbiGOXzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 19:55:33 -0400
+X-Greylist: delayed 1774 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:32 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7D8904EA
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 16:55:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4E9904DA
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 16:55:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=HRgmsvyQc5R1HqZKiatrCeJDIA/6CkbTdpYiY2zKJhY=; b=Rq8Ur
-        FXiEZjgbvLBKHRYMhXFkV36zqPA0exg1NpNzlek1Qkbup154jUInbQ9KzFnnAy1DZXMM0f6Zdih1H
-        yEatOg4iZF+fb66Ivo+CwYQC5E1xXOs7j5SzlJdTACI3dNU5CKPefBhW+oZ8gWbhvw9kr+D51TTnD
-        RpSY+x6d03BH0xsxW1urFLmbBUXcDxa1vlf35WynvV4nTzlxKEcUQCf6S8ViCVsajA6H1QV4mWpCK
-        RkGrHAdsXxZW5nsXy1Qz8wHhoaN/vwXuA6e8AXh2nG8TdI7eFBvQzme4idLIRfeoxXWGL0IkVOQ2Q
-        64hJ8faeq+AMHRjCE8Uzta1nrbiOQ==;
-Message-Id: <ce9d58cc48a3bb65d4ed5b906eb5f0311030fddd.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=03PxLEg7NiaMvhSBPzBFP/XCwo9SFsyuKqJNcoKWY/4=; b=FNoOh
+        ADE4Hg8xvSWs3nC3arwY3n/D4KpC24+zbudVWzCQzQ9Jt44t0D4LfPFv3WNSlveHgFc6/KI89jp4e
+        LC0pEv1M5mVVRvKv+N7xBo9IjLpOl+pyG+ci+ZFb00tI3deorUKHOt6ymu9Zazq4QzWQsBXP3PhGF
+        2FTl5gNBAbd+9kOPgN6LEW+UHH9eTFypF8WmTbSoX4MxMbEAU7uZO4++cR3Fb04edNhHoWl3J/WaW
+        qzP1rvKlrtZ2sASOR7SA6QFTOU6CcyuZMfLSKmYNzTLM2CprP6GhQJR9/AXSBVavTNCZgOZ7RWKrJ
+        xLhnwIfB3xkgI3w00xTLP83GSiuGw==;
+Message-Id: <ebca00c2659755411269303881aad5da8590eefe.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:20 +0200
-Subject: [PATCH v6 04/11] net/9p: add trans_maxsize to struct p9_client
+Date:   Fri, 15 Jul 2022 23:32:22 +0200
+Subject: [PATCH v6 05/11] 9p/trans_virtio: support larger msize values
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -45,66 +45,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This new field 'trans_maxsize' optionally allows transport to
-update it to reflect the actual maximum msize supported by
-allocated transport channel.
+The virtio transport supports by default a 9p 'msize' of up to
+approximately 500 kB. This patch adds support for larger 'msize'
+values by resizing the amount of scatter/gather lists if required.
+
+To be more precise, for the moment this patch increases the 'msize'
+limit for the virtio transport to slightly below 4 MB, virtio
+transport actually supports much more (tested successfully with an
+experimental QEMU version and some dirty 9p Linux client hacks up
+to msize=128MB), but client still uses linear buffers, which in
+turn are limited to KMALLOC_MAX_SIZE (4M).
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- include/net/9p/client.h |  2 ++
- net/9p/client.c         | 12 ++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index ec1d1706f43c..f5718057fca4 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -87,6 +87,7 @@ struct p9_req_t {
-  * struct p9_client - per client instance state
-  * @lock: protect @fids and @reqs
-  * @msize: maximum data size negotiated by protocol
-+ * @trans_maxsize: actual maximum msize supported by transport channel
-  * @proto_version: 9P protocol version to use
-  * @trans_mod: module API instantiated with this client
-  * @status: connection state
-@@ -101,6 +102,7 @@ struct p9_req_t {
- struct p9_client {
- 	spinlock_t lock;
- 	unsigned int msize;
-+	unsigned int trans_maxsize;
- 	unsigned char proto_version;
- 	struct p9_trans_module *trans_mod;
- 	enum p9_trans_status status;
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 8bba0d9cf975..20054addd81b 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -1031,6 +1031,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 		goto free_client;
+I am not sure if it is safe the way SG lists are resized here. I "think"
+Dominique said before there should be no concurrency here, but probably
+deserves a revisit.
+
+ net/9p/trans_virtio.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index 5ac533f83322..921caa022570 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -36,6 +36,16 @@
+ #include <linux/virtio_9p.h>
+ #include "trans_common.h"
+ 
++/*
++ * Maximum amount of virtio descriptors allowed per virtio round-trip
++ * message.
++ *
++ * This effectively limits msize to (slightly below) 4M, virtio transport
++ * actually supports much more, but client still uses linear buffers, which
++ * in turn are limited to KMALLOC_MAX_SIZE (4M).
++ */
++#define VIRTIO_MAX_DESCRIPTORS 1024
++
+ /**
+  * struct virtqueue_sg - (chained) scatter gather lists for virtqueue data
+  * transmission
+@@ -203,6 +213,31 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
+ 	return vq_sg;
+ }
+ 
++/**
++ * vq_sg_resize - resize passed virtqueue scatter/gather lists to the passed
++ * amount of lists
++ * @_vq_sg: scatter/gather lists to be resized
++ * @nsgl: new amount of scatter/gather lists
++ */
++static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
++{
++	struct virtqueue_sg *vq_sg;
++
++	BUG_ON(!_vq_sg || !nsgl);
++	vq_sg = *_vq_sg;
++	if (vq_sg->nsgl == nsgl)
++		return 0;
++
++	/* lazy resize implementation for now */
++	vq_sg = vq_sg_alloc(nsgl);
++	if (!vq_sg)
++		return -ENOMEM;
++
++	kfree(*_vq_sg);
++	*_vq_sg = vq_sg;
++	return 0;
++}
++
+ /**
+  * p9_virtio_close - reclaim resources of a channel
+  * @client: client instance
+@@ -774,6 +809,10 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 	struct virtio_chan *chan;
+ 	int ret = -ENOENT;
+ 	int found = 0;
++#if !defined(CONFIG_ARCH_NO_SG_CHAIN)
++	size_t npages;
++	size_t nsgl;
++#endif
+ 
+ 	if (devname == NULL)
+ 		return -EINVAL;
+@@ -796,6 +835,46 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 		return ret;
  	}
  
 +	/*
-+	 * transport will get a chance to increase trans_maxsize (if
-+	 * necessary) and it may update trans_maxsize in create() function
-+	 * below accordingly to reflect the actual maximum size supported by
-+	 * the allocated transport channel
++	 * if user supplied an 'msize' option that's larger than what this
++	 * transport supports by default, then try to allocate more sg lists
 +	 */
-+	clnt->trans_maxsize = clnt->trans_mod->maxsize;
++	if (client->msize > client->trans_maxsize) {
++#ifdef CONFIG_ARCH_NO_SG_CHAIN
++		pr_info("limiting 'msize' to %d because architecture does not "
++			"support chained scatter gather lists\n",
++			client->trans_maxsize);
++#else
++		npages = DIV_ROUND_UP(client->msize, PAGE_SIZE);
++		if (npages > VIRTIO_MAX_DESCRIPTORS)
++			npages = VIRTIO_MAX_DESCRIPTORS;
++		if (npages > chan->p9_max_pages) {
++			npages = chan->p9_max_pages;
++			pr_info("limiting 'msize' as it would exceed the max. "
++				"of %lu pages allowed on this system\n",
++				chan->p9_max_pages);
++		}
++		nsgl = DIV_ROUND_UP(npages, SG_USER_PAGES_PER_LIST);
++		if (nsgl > chan->vq_sg->nsgl) {
++			/*
++			 * if resize fails, no big deal, then just continue with
++			 * whatever we got
++			 */
++			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
++				/*
++				 * decrement 2 pages as both 9p request and 9p reply have
++				 * to fit into the virtio round-trip message
++				 */
++				client->trans_maxsize =
++					PAGE_SIZE *
++					clamp_t(int,
++						(nsgl * SG_USER_PAGES_PER_LIST) - 2,
++						0, VIRTIO_MAX_DESCRIPTORS - 2);
++			}
++		}
++#endif /* CONFIG_ARCH_NO_SG_CHAIN */
++	}
 +
- 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
- 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
- 
-@@ -1038,8 +1046,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 	if (err)
- 		goto put_trans;
- 
--	if (clnt->msize > clnt->trans_mod->maxsize) {
--		clnt->msize = clnt->trans_mod->maxsize;
-+	if (clnt->msize > clnt->trans_maxsize) {
-+		clnt->msize = clnt->trans_maxsize;
- 		pr_info("Limiting 'msize' to %d as this is the maximum "
- 			"supported by transport %s\n",
- 			clnt->msize, clnt->trans_mod->name
+ 	client->trans = (void *)chan;
+ 	client->status = Connected;
+ 	chan->client = client;
 -- 
 2.30.2
 
