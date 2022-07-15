@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0E65769A7
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 00:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 359705769A2
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 00:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbiGOWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 18:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
+        id S232785AbiGOWHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 18:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232653AbiGOWG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 18:06:26 -0400
+        with ESMTP id S232655AbiGOWGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 18:06:42 -0400
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2079.outbound.protection.outlook.com [40.107.20.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE158EEC5;
-        Fri, 15 Jul 2022 15:02:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D251B904D1;
+        Fri, 15 Jul 2022 15:02:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TWVs5j9gG7SVXYmohK9FUwE/iqaIqQ9TuitxHIUPX0X9GMn3J/x6Bk7+DeScDPp91qi1loCLVvmIez8UAtH0BW2z+6qUtwNsg0sEfdreVmIR0RDzAOcE29D4R0oxNyPTaDYyQDSW6VkHqrJ40Uh9TrJvqNoKuqxKTO1i9dDAacOnGQGG3UfXw6yJ2Z0cwXtTaUWP7QotyfU/IkO578EvtMVFYa5/iXJNHTCf7Z+Go17fBrLjmx8FjUhpcW3A86tb4MgdJwTfDqcdAWEenAStrWdPyBR72gqFWKgkrYUreBGn481kjzUteFCxyycpPs00ZC+cYiYX3Qzh2lVRk7sAjg==
+ b=euLGPJFhtX7x/Xz1NyFDuD+vaqKpI+x9bIK1DdnTdP63KbnVXqMyWHbqcQwzxEPGEO+0rGmN4dkQIxuBU78gp/ifQe6t2SvX+lz/dKmEC2aWvmtwSS3m9Q/HHj4bRmoUneqwtStEYAe2lxYbCgTY+280Rpw9STOxnyhd6RefHVHMF8d1HpGmWH92bMm5uDCZ/UxelIgbUWPe8gCz5MQ5fS70ZmAdt4rZ0pk+eb1ekOLhfkg5ndOPy2n9LbAL5YRZxFsPZwMTaN4FKrjS4bqO83YMRWTTQ9EjsE84Ddyzj7t5VmwiQBfisMWNT416bXli7iHf6+8/NZWaS5sfo4zckA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fkaQiPnuV3l+B9+GGmEaayl1/1M6ktVvaTFXKN5ZW1M=;
- b=Sp6LL5/WLF245w3ZW+us+IMAgxhULU+bex8o/j69Ck6+itKqQZpO0PeiI2Xaf7bqTxCttJQrMDz36WzxOZg+HdW5WYF+zU8547IicE9SYMAlZsk1Dd2LEW2z6Hdk/ojf6QKeAMaMULVQH6MluNdeVmzndVxs9iGoaeaVGr5PYI4kasrWeqTfplzCOfyVHqgCgeNgzvvZAEw8coxMnZxwoTGIOHVcJPGgMsZNN7GAbQcmAMH3iB40h28aaYbQA7SX7fLsJ2CFU5cSfoEaoLQAQ1E4pLoiPSS6rt0xqRYTThKllLoqX4hgp/SUcn0Ui+TiOb6X817XWqgm/ZiTb5f3EQ==
+ bh=dDBqgQMlNpG+Izo17B4XkBJl6cjZRtIKufy0jFsSqSw=;
+ b=GCy39p8epUnH4b9Ax8ESnK0VrIG8i4UhNDzrrd7vjPktJZ5ehMraWDYxBp+OaeG9HA963mC7tOIApcl+9Zj2J8Kwq+oxamzWr/rxuyKi9dcaBYEayKv6MSiXttt2PGeN9gJGlBZroHBPr87PEKwDhS/5/diEFsIx7L7ud43nr3VC9KDTrrqa2sz0rfYWyyBjuQxBmCZmlcNAiAnLWCbnY5PMxH5Y1s+zmF8UEvFfDe6NAy5SWOmAZ7i/aqZl+qA20UkYV4/LiyYDzvc+Vvov5rITcFNSXWY6+8FLS/AQnhBM+Tv09ZXgWJQPPIkB7ZsH8db/hIouDARCDDcpzOhTog==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fkaQiPnuV3l+B9+GGmEaayl1/1M6ktVvaTFXKN5ZW1M=;
- b=JhfzuN9sYzuwPDWUO/4qD0mdIDwheBT7s7t991ncMsuo8SWM3H/qcf8iS6RWtbtVD6k94N0ztvfh2btH1mqQ5Aos6BkZrCaKRXJY9UNN/b7uumbwHbw9lkexkaFzCAj/LoN+k3CpZ7SWCL8g7Uy4AQvnjsUwICx56keQ5WQ4bjilE3dLBa3hKR5Y+A0Or8OAiXMhQPscITQNHVWRcCM7gm13vYtrbli52aqAdXFoVQjxEEH43Qw2trsBDHD/B/Kr/nV9bU+ycLpwGCQ5Ur/rywhNXP11llzvwfbKCLkXeMKm4xsdHBLvngnBBC0BqW7VJzLQMLCLBCNbKOOcEAH3Xg==
+ bh=dDBqgQMlNpG+Izo17B4XkBJl6cjZRtIKufy0jFsSqSw=;
+ b=ye4KAkXzyaavVD9XTvG6BwWdKmeETMDzVTbemwF/RlSfI/nHnq3ylUkYFSJ69Jynvm0nuG5g5N5V4hNTT0lNSeKmY91tRROay2qbCik6fRnXpueq502TFbWk+3GKsRlXdJn8HMLpngw+LkqDouAT8Qo2p1bmxUVT7DQE8OE9dMA5uc8SkQ1xnSGrZKI5OLei1V5J+fyFqBf1F0Ea8mIYoY6mP/WCzoQuxavBCHwrF2xQz7QdiVltZ3jJj3fA/1EHOP21KmLWV4lq/NmpxAxRlczFkJiSydXZt2hMZePNyEWO5NE1Twv1a2qiLEHC01huiSt8fQTwz3sbByKTYz/MqA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
  by HE1PR03MB2857.eurprd03.prod.outlook.com (2603:10a6:7:5f::30) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Fri, 15 Jul
- 2022 22:01:52 +0000
+ 2022 22:01:54 +0000
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::5c3e:4e46:703b:8558]) by VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::5c3e:4e46:703b:8558%7]) with mapi id 15.20.5438.015; Fri, 15 Jul 2022
- 22:01:52 +0000
+ 22:01:54 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -49,17 +49,12 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-kernel@vger.kernel.org,
         Sean Anderson <sean.anderson@seco.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH net-next v3 43/47] arm64: dts: layerscape: Add nodes for QSGMII PCSs
-Date:   Fri, 15 Jul 2022 17:59:50 -0400
-Message-Id: <20220715215954.1449214-44-sean.anderson@seco.com>
+        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH net-next v3 44/47] arm64: dts: ls1046a: Add serdes bindings
+Date:   Fri, 15 Jul 2022 17:59:51 -0400
+Message-Id: <20220715215954.1449214-45-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220715215954.1449214-1-sean.anderson@seco.com>
 References: <20220715215954.1449214-1-sean.anderson@seco.com>
@@ -70,52 +65,52 @@ X-ClientProxiedBy: CH2PR10CA0009.namprd10.prod.outlook.com
  (2603:10a6:803:c5::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1778d27c-a995-4420-73f7-08da66ad9f90
+X-MS-Office365-Filtering-Correlation-Id: 1a80fd86-61d7-4ebd-e632-08da66ada12c
 X-MS-TrafficTypeDiagnostic: HE1PR03MB2857:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: h++xAtxxzOZgwqF9XoqLSej7y2drnvcROB6arB/kRBxi1WlfN9AHYc08L2yh2icwBvFLIPRI/hcSE69K8q2L5oV5xPA9HHS+Kr7QtbSdi0ckIgWyb8GR6fE8Ds2hTyidn9m3hQz28ziVoEBZVDjkJ2aLs/2Hz3sh9+IjwdJ//WvgsKdu7YbWjkhdiaI4KsmiNn+CKPWd4Og1cYKGizg9UwCfUCyaD0RIVDtIg7ADukri6KzR1IaQkoHbEoHhT5T53IZqW7cVlKBJxnCGJFlwOcdIJ7Yt1CfQUk+Irl/nxLcmLutXb6QjHEoDgeAEYKyUiXgOenydu0vJY1Y7hXW5JpFeDEWCev0ThqXfa56hkEgRfKxNUuEP3Kpaxr725KaiGGN2Ti0xQePBgVWrWkBu/r7JeleR1swyDgYlYlmUHylsCQICuOzcZyYh4bDQfuAjTSvDcazpIOul+dFjGqCCutv9v8hAH4DT4CJX1sVrizxQlMv6ahrN9AEOgSVrnO1X9HRwyzokoflurslKj4AOaW0kg6vmKH7EZ/TiOWDt/IgWQdQpCVPKu3GVAOTRa9fsmwYUSWHWbsgAg4qoPAT9kIeuAaJueY8TBBRqES3p4qDIlmg7cfguLhT/vuvnqQthOeNTCLBOE16NXeUxM7S8FXyREm2NXqzxzBDPnlhFRoVb6mFfAkXUOsJ/H0OHbcpuk4sQdM+fgiLgk+nNGFRMUb0r2P8orKPXfmxMQgdGJUsFORaOwl+1ye3kTWMhGnGUbgdIzDQrUIUJQ72qBnf4qehnSQCDQWjBI2epY9U4iBJFxqdU4Yon5E4S5NXKJLGc
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39850400004)(396003)(366004)(346002)(136003)(316002)(54906003)(38100700002)(2616005)(186003)(36756003)(2906002)(6506007)(38350700002)(26005)(1076003)(86362001)(110136005)(5660300002)(6512007)(66476007)(4326008)(8676002)(7416002)(44832011)(66556008)(52116002)(8936002)(66946007)(478600001)(6486002)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: NgMZ1cO8szdcaopUGgrR/M7AjUQORhsmPvidRblEHDS0pu1YP18qH6J9HTKjQE8SgnbCItKOqec4MOAdV/7nkLBnwwx7XQfcFqlB9cfM4tfHwENPY7ESWe3YroTmLsUpyb9CkXgaG+GsgmM6CPqqKUdQMaS00ZltXXc2RKf4EGYl22RVEO9xUNEsDjCw1FD6AoKyM1CKqizYEGSbeBj6hwUm+sFTxNJ9A7c+QkUj4AX/OE5wv5ARbLDGrIGYkPQUq3OsElPZIaEo3smmYONjirC+TjF2LIKZ8UOdffY1vXd2KFJqMAB8rzFNA+dMdrkPjFDHL0H84el8JKmrcaFr1MT7qepqJadw3J6J+JRt3y8TetcvfJhkc3ZryMWuWR3FTney4oqdnD9A/Xu0Wil+TqbbQ+gQ0ZKNQZHhfkTr2PVrvmoFL0/UiqttyAhjx/3Rt5WBIM5HyWEE36g8ASl/glf8a4ajIhe6UHfnDbmcbC7g1AapWMA4JjF3m+xV1+oZrVIchjLjOmJGCgwUuHDvt7fwQ1hElkegMA7sGveNOwoYC9kZmPcX2PtRgnA04kCdEHGwXIYVkNAM4y+NBBOK5X4k/r81nul1K+pXEy7dz6aLSzSYUheWaiDofLb6cWNR6zTQ30O18QB9i5xBxbujEf8LJjjGXIrrOQpePmoPGfuytL5SfXLxVnBKsFOLKX6jUKLiiypsggkBeYkdRL5GB2LBJPmSH3TahHlcf341x2Wrc7PnLnyXM5Jqd6mT4Q0QHTkvDD27X2rcZXrRMyaCvX/aJOKpNwQdPwLdhOPHdgDB7inic9vBEhdIjCAsThuEtwhekjiM9zzjPPWa2bmIvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39850400004)(396003)(366004)(346002)(136003)(316002)(54906003)(38100700002)(2616005)(186003)(36756003)(2906002)(6506007)(38350700002)(26005)(1076003)(86362001)(110136005)(5660300002)(6666004)(6512007)(66476007)(4326008)(8676002)(7416002)(44832011)(66556008)(52116002)(83380400001)(8936002)(66946007)(478600001)(6486002)(41300700001)(21314003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uNXeWJcRGkx7yxLTDpzyOhQGBqVcgtg8tVyjXx55hq14w0Gas2sdc9xeWOLo?=
- =?us-ascii?Q?pBQAsNXpHgxdoWq+/inSY2Yb3YalRtqO2GKDDZC4LplucSMfh5A5mFaZyC39?=
- =?us-ascii?Q?kidfhXrh1ssOu1tU7i8XfxmvRYDOq4mNhevV+xV4k0Jf6c/qZlyrR8SW9dR4?=
- =?us-ascii?Q?miZ7YURridvbugonRIIqGcJCZuL0vqUqPRbD3v7guNqE+r5Ef+I5Lbl4vjcd?=
- =?us-ascii?Q?Sf5RM1hyfoi59G5A4yKLCp+leA7JKc+7IFdt6rQZ7DK6geX75YTOXaNfgaMw?=
- =?us-ascii?Q?v/6qQJFRrRbn04S58y/PyMDPxWkAwuQy9ROYn75dbKRUBMXYnlKjeWfkO6Ul?=
- =?us-ascii?Q?f4WpdGxOSTYVZDKyEvOlZ8E53Kay6fO2H1qwPz5zPz7x9uQ0Y1l284t/W46N?=
- =?us-ascii?Q?I/v1pCMurqOhP3eczespujFSo+ISlAYqNDMl3Y+SxElRyo1S4Bmi8UhFqlEw?=
- =?us-ascii?Q?WW4aqeu8UQ44fAiIVQqIvXAuQbiB1JuO2VdIcpLLfjthKeDAf7ikgK479rUA?=
- =?us-ascii?Q?QlWij1FirsX8aIRkbCSaIVbawznAUXxvVgDgye3t1yYbcfFB4sCyD3/n/kUM?=
- =?us-ascii?Q?pURJUk9RZSZ9m/cMlmmDuYsI9/gZxYxhwdg097H15wWj6eCxh6PfZgqFwDOF?=
- =?us-ascii?Q?kA2voyjLMKG7WST24BanGizxxpKBW5M/qu0XHZp5FhOb2ga5aQVtZbhIlf8r?=
- =?us-ascii?Q?4j1wf9Hj+T8onD7MSgFsEAShq/ArD4ZyadOH58mNPVucZSCCn7YEOWwUcosn?=
- =?us-ascii?Q?GG6oCLa/I4UNrc5cVvuMuU9Sp5e1ZOLe+Vpd9G9Nga9/xaqYfZSk3fhJy98S?=
- =?us-ascii?Q?dCXjiseW7H57B+kn4Pk+80NpDLDIvhHBXvaeJ+Ci84NbIiq6ZCmk8bDDY6rW?=
- =?us-ascii?Q?TFw64+cPUmhocpCgsMrVdFSTqfA0m4or7abBCqxNA+qgWCYVe75aqB4gIdER?=
- =?us-ascii?Q?fMMdoXJzeuZjG6tV4kHLU0y/HPmWhpn26/ZJK4F1qfyXhEt41ZMfTYA9ZCRY?=
- =?us-ascii?Q?98/uyazVOIs6CO5xkk2V5gH+BYqTKDKVf2cQkwBZRrnz10KreJbUgyFoTS7F?=
- =?us-ascii?Q?DsKHHhTVd89hcwrL8eFpamSYchFso08AY9mMlt2EGneWGa9cBETo+kIIspYl?=
- =?us-ascii?Q?BTm8mj4arrT7Aggnp/+aRLTqKwt9MQaSEcir8WPNQ2s98qusg7kzGBGOHbZl?=
- =?us-ascii?Q?FOQAq4ovPvoI5ftN3EHsCg9YB9z62zm1rKL8MHzA2h683aicufIcQ5Yf/X3N?=
- =?us-ascii?Q?oXQEYfS2WQke+E56cP74c7gd7DIbIQZ3ucJ0rQVh+0MTv3l6fqt2SHZArWIo?=
- =?us-ascii?Q?zyG3UlvvcrynjKkKSa3r+UtiBlW7XW18emup6ZbjihyR2XQFxYRo8Z+7L0k1?=
- =?us-ascii?Q?JOUb57IqcwQhgVXdvYGn5SDUhdt2rLJDATTP4z5sz6fSqD8mjpP7wy2grz+o?=
- =?us-ascii?Q?E1F7PAxSuJwfeZlJzFRBawQvvUKXzC7KJL5HR08pBVzffuNtWEhs4s0e5vCq?=
- =?us-ascii?Q?QG3oqJFcsRu34rx1Ae1e7ieFJk5/jn4D24H80xuraieFJfdY7yG8Lh8fM1md?=
- =?us-ascii?Q?cx1gA3PbxrMeAfdydFuS8wJnA4qPdptRP/ewGkKckgW6nyt4ARdNZZkN8m24?=
- =?us-ascii?Q?ag=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AQXlbxxT8lcqsJ0HOUL5sPsOJLLl1wS/ppPEb89e9NWO4oJSsQrJ0YVHszGb?=
+ =?us-ascii?Q?vu+V8a+z8c0CWdKplV3/uLW8vPD7iMxfSFIfohBGMwMRsSUgszNRWtcwQP/0?=
+ =?us-ascii?Q?ecCfdtZWVy06n8aQqDiI/C+/Gh0RR1wFKR5ManUocuqYbMMETkM0YO+RFuzE?=
+ =?us-ascii?Q?so783gcb780mCoRYaCrL3EC+L0YLeXE85/9ps+LcFj0ZA4MNzBuec4PtNH72?=
+ =?us-ascii?Q?iTXv1PKWu7f5+ccp3a1/MkBF6y/5jH+WWiqyRdYDGz3+bZpEbq9GoS8eCov4?=
+ =?us-ascii?Q?r/lC4Zs6kSlMCdIrWYT/JVLnEIgLHEaegU6gEJhLa6Q+V9Bfrgqsf+jdpm8p?=
+ =?us-ascii?Q?XWJF5xR8Mh3EQ/RG3zFvJMF0yys6TsQ1nQoMg1oEsnAXayXL398j5DH3IwZ4?=
+ =?us-ascii?Q?KDWQjBmI5HgiNx372QqB8bVFGSQMYSJ8/dixUfQ4M6VnE6yVd6AnTWvxqBHn?=
+ =?us-ascii?Q?wc5DZ7v8QUm5WEUoIq0EqmDAi5ZJI09kSwIaqG0xRzcU54ixbcpanN23Q7Wf?=
+ =?us-ascii?Q?amF0PUnnyJy6FGvCbYr1i7X8tZpdJbii2DSLKIv7Tlyl+uhNsKk9iVDioCXb?=
+ =?us-ascii?Q?YmE4JWt1bxfyifY1aKBnX0mZUbmWD4DPVNDzNa7rweyY9bOPRkJ134U4sCyV?=
+ =?us-ascii?Q?4fbzePh+nWEB8eD7h+nTuKXjMeOdFuGPgzOhd7PdeJuSWID824LtMeAtahwp?=
+ =?us-ascii?Q?S4lUylJIjC/5Rvvr+UC90Uws6/9rrd9qVYfyu0Pps/TbBdcHjXuUGQ6bsaEg?=
+ =?us-ascii?Q?WqtT6+ameigCuhnBaXbP63/78isLjMvLp9E0hngiu2nKCL1XJ3asrokXUGZB?=
+ =?us-ascii?Q?LCwdm8Ckr5cM22QcMBXUbCRCkUsBUJK7zdRkSY59Fp64Wjw1v1igfneavU82?=
+ =?us-ascii?Q?ID7na2f2+oruD0OwWagxx60qw/Ns+DP0kfyhCKCPhk01hnOZj/HjD25z7dXG?=
+ =?us-ascii?Q?4NCNRVorUCP4Lne1dogFYdObQ2WcbHlZ4OAFmGsZ512qwgcOjQ9PoMRvHZK8?=
+ =?us-ascii?Q?hf10kKtJUZ/jiJKkDwkYXwVDSlhzKmNyq5G1ol2DvK4T061+q8hqoqP9onlg?=
+ =?us-ascii?Q?x6Tde02L9XTIn5VceuDkb0QnxUFsw1wM+0We2W3gztES2zJckaS/GXsO4SMy?=
+ =?us-ascii?Q?Qz/Hr71wW3w96ARLHlcWEx88aYVbKhadNTusAAzQtwy5xWjMDm0tXWUtQqaW?=
+ =?us-ascii?Q?kGNKoS3nBajmhWyLSN195zbqOOT8OkiREUNyiC+1S5mkdwCHwLS3pwrEQMPE?=
+ =?us-ascii?Q?CaHmZ+udFeRgwyso5xlLO216otWW5TBM/kLuRReWhY1w87Y+FNmpxbsq0DxW?=
+ =?us-ascii?Q?TgxpQAGOgCoauRwoPTAKLLUDiwT/JkYEvgDiySAVWdmQmerlH9GXnf0zDrWJ?=
+ =?us-ascii?Q?ImmT9hOeifanJCTapzkF5wVii+VsrZOWdDQZe3OCyMMdOAUBOTt08QmYgJu7?=
+ =?us-ascii?Q?IfJqsaMM1Kucfs5UEciDlZZu+/G+KKiHa/fuI4VgVMH+q+s3Tr/8uvEsWioA?=
+ =?us-ascii?Q?Jway7KnHllSZRui4mSsF2+QO3qVzeAJcfnihHesBcmew9LcD1Wl2r5Tqa+Kw?=
+ =?us-ascii?Q?aoCBfwaC+tZCtgBXhoLXXO5e21L6ENWNGyFeYiyu3ICs+x4PlVAF4BFPureu?=
+ =?us-ascii?Q?fw=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1778d27c-a995-4420-73f7-08da66ad9f90
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a80fd86-61d7-4ebd-e632-08da66ada12c
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 22:01:51.9703
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 22:01:54.6733
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2M1BbDNlG4ctFnpKKw/4tU8YKqhWsuXhQjv6Xnz9hKE5dD6cKGhcYSJZlW8gywCMSzYhuH62klJ9Hg/lEHsYhw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5aTP9iAET8B9ZrjqDfEVTcanUWa5c8neODiTL7aavuxFmdBHfdoU46s0sArlrESX2lG6LaN4WyGasW8qNrfiOg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR03MB2857
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -127,129 +122,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we actually read registers from QSGMII PCSs, it's important
-that we have the correct address (instead of hoping that we're the MAC
-with all the QSGMII PCSs on its bus). This adds nodes for the QSGMII
-PCSs.  The exact mapping of QSGMII to MACs depends on the SoC.
-
-Since the first QSGMII PCSs share an address with the SGMII and XFI
-PCSs, we only add new nodes for PCSs 2-4. This avoids address conflicts
-on the bus.
+This adds bindings for the SerDes devices. They are disabled by default
+to prevent any breakage on existing boards.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
 Changes in v3:
-- Split this patch off from the previous one
+- Describe modes in device tree
 
 Changes in v2:
-- New
+- Use one phy cell for SerDes1, since no lanes can be grouped
+- Disable SerDes by default to prevent breaking boards inadvertently.
 
- .../boot/dts/freescale/fsl-ls1043-post.dtsi   | 24 ++++++++++++++++++
- .../boot/dts/freescale/fsl-ls1046-post.dtsi   | 25 +++++++++++++++++++
- 2 files changed, 49 insertions(+)
+ .../arm64/boot/dts/freescale/fsl-ls1046a.dtsi | 179 ++++++++++++++++++
+ 1 file changed, 179 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
-index d237162a8744..02c51690b9da 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
-@@ -24,9 +24,12 @@ &fman0 {
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
+index 0085e83adf65..0b3765cad383 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi
+@@ -413,6 +413,185 @@ bportals: bman-portals@508000000 {
+ 			ranges = <0x0 0x5 0x08000000 0x8000000>;
+ 		};
  
- 	/* these aliases provide the FMan ports mapping */
- 	enet0: ethernet@e0000 {
-+		pcs-names = "qsgmii";
- 	};
- 
- 	enet1: ethernet@e2000 {
-+		pcsphy-handle = <&pcsphy1>, <&qsgmiib_pcs1>;
-+		pcs-names = "sgmii", "qsgmii";
- 	};
- 
- 	enet2: ethernet@e4000 {
-@@ -36,11 +39,32 @@ enet3: ethernet@e6000 {
- 	};
- 
- 	enet4: ethernet@e8000 {
-+		pcsphy-handle = <&pcsphy4>, <&qsgmiib_pcs2>;
-+		pcs-names = "sgmii", "qsgmii";
- 	};
- 
- 	enet5: ethernet@ea000 {
-+		pcsphy-handle = <&pcsphy5>, <&qsgmiib_pcs3>;
-+		pcs-names = "sgmii", "qsgmii";
- 	};
- 
- 	enet6: ethernet@f0000 {
- 	};
++		/*
++		 * XXX: For SerDes1, lane A uses pins SD1_RX3_P/N! That is, the
++		 * lane numbers and pin numbers are _reversed_. In addition,
++		 * the PCCR documentation is _inconsistent_ in its usage of
++		 * these terms!
++		 *
++		 * PCCR "Lane 0" refers to...
++		 * ==== =====================
++		 *    0 Lane A
++		 *    2 Lane A
++		 *    8 Lane A
++		 *    9 Lane A
++		 *    B Lane D!
++		 */
++		serdes1: phy@1ea0000 {
++			#clock-cells = <1>;
++			#phy-cells = <1>;
++			compatible = "fsl,ls1046a-serdes", "fsl,lynx-10g";
++			reg = <0x0 0x1ea0000 0x0 0x2000>;
++			status = "disabled";
 +
-+	mdio@e1000 {
-+		qsgmiib_pcs1: ethernet-pcs@1 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x1>;
++			pccr-0 {
++				fsl,pccr = <0x0>;
++
++				/* PCIe.1 x1 */
++				pcie-0 {
++					fsl,index = <0>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <1>;
++					fsl,proto = "pcie";
++				};
++			};
++
++			pccr-8 {
++				fsl,pccr = <0x8>;
++
++				/* SGMII.6 */
++				sgmii-0 {
++					fsl,index = <0>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <0>;
++					fsl,proto = "sgmii";
++				};
++
++				/* SGMII.5 */
++				sgmii-1 {
++					fsl,index = <1>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <1>;
++					fsl,proto = "sgmii25";
++				};
++
++				/* SGMII.10 */
++				sgmii-2 {
++					fsl,index = <2>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <2>;
++					fsl,proto = "sgmii25";
++				};
++
++				/* SGMII.9 */
++				sgmii-3 {
++					fsl,index = <3>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <3>;
++					fsl,proto = "sgmii25";
++				};
++			};
++
++			pccr-9 {
++				fsl,pccr = <0x9>;
++
++				/* QSGMII.6,5,10,1 */
++				qsgmii-1 {
++					fsl,index = <1>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <1>;
++					fsl,proto = "qsgmii";
++				};
++			};
++
++			pccr-b {
++				fsl,pccr = <0xb>;
++
++				/* XFI.10 */
++				xfi-0 {
++					fsl,index = <0>;
++					fsl,cfg = <0x2>;
++					fsl,first-lane = <2>;
++					fsl,proto = "xfi";
++				};
++
++				/* XFI.9 */
++				xfi-1 {
++					fsl,index = <1>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <3>;
++					fsl,proto = "xfi";
++				};
++			};
 +		};
 +
-+		qsgmiib_pcs2: ethernet-pcs@2 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x2>;
++		serdes2: phy@1eb0000 {
++			#clock-cells = <1>;
++			#phy-cells = <2>;
++			compatible = "fsl,ls1046a-serdes", "fsl,lynx-10g";
++			reg = <0x0 0x1eb0000 0x0 0x2000>;
++			status = "disabled";
++
++			pccr-0 {
++				fsl,pccr = <0>;
++
++				pcie-0 {
++					fsl,index = <0>;
++					fsl,proto = "pcie";
++
++					/* PCIe.1 x1 */
++					cfg-1 {
++						fsl,cfg = <0x1>;
++						fsl,first-lane = <1>;
++					};
++
++					/* PCIe.1 x4 */
++					cfg-3 {
++						fsl,cfg = <0x3>;
++						fsl,first-lane = <0>;
++						fsl,last-lane = <3>;
++					};
++				};
++
++				pcie-2 {
++					fsl,index = <2>;
++					fsl,proto = "pcie";
++
++					/* PCIe.2 x1 */
++					cfg-1 {
++						fsl,cfg = <0x1>;
++						fsl,first-lane = <2>;
++					};
++
++					/* PCIe.3 x2 */
++					cfg-2 {
++						fsl,cfg = <0x2>;
++						fsl,first-lane = <2>;
++						fsl,last-lane = <3>;
++					};
++
++					/* PCIe.3 x1 */
++					cfg-3 {
++						fsl,cfg = <0x3>;
++						fsl,first-lane = <3>;
++					};
++				};
++			};
++
++			pccr-2 {
++				fsl,pccr = <0x2>;
++
++				sata-0 {
++					fsl,index = <0>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <3>;
++					fsl,proto = "sata";
++				};
++			};
++
++			pccr-8 {
++				fsl,pccr = <0x8>;
++
++				/* SGMII.2 */
++				sgmii-1 {
++					fsl,index = <1>;
++					fsl,cfg = <0x1>;
++					fsl,first-lane = <1>;
++					fsl,proto = "sgmii";
++				};
++			};
 +		};
 +
-+		qsgmiib_pcs3: ethernet-pcs@3 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x3>;
-+		};
-+	};
- };
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-index d6caaea57d90..1ce40c35f344 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-@@ -23,6 +23,8 @@ &soc {
- &fman0 {
- 	/* these aliases provide the FMan ports mapping */
- 	enet0: ethernet@e0000 {
-+		pcsphy-handle = <&qsgmiib_pcs3>;
-+		pcs-names = "qsgmii";
- 	};
- 
- 	enet1: ethernet@e2000 {
-@@ -35,14 +37,37 @@ enet3: ethernet@e6000 {
- 	};
- 
- 	enet4: ethernet@e8000 {
-+		pcsphy-handle = <&pcsphy4>, <&qsgmiib_pcs1>;
-+		pcs-names = "sgmii", "qsgmii";
- 	};
- 
- 	enet5: ethernet@ea000 {
-+		pcsphy-handle = <&pcsphy5>, <&pcsphy5>;
-+		pcs-names = "sgmii", "qsgmii";
- 	};
- 
- 	enet6: ethernet@f0000 {
- 	};
- 
- 	enet7: ethernet@f2000 {
-+		pcsphy-handle = <&pcsphy7>, <&qsgmiib_pcs2>, <&pcsphy7>;
-+		pcs-names = "sgmii", "qsgmii", "xfi";
-+	};
-+
-+	mdio@eb000 {
-+		qsgmiib_pcs1: ethernet-pcs@1 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x1>;
-+		};
-+
-+		qsgmiib_pcs2: ethernet-pcs@2 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x2>;
-+		};
-+
-+		qsgmiib_pcs3: ethernet-pcs@3 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <0x3>;
-+		};
- 	};
- };
+ 		dcfg: dcfg@1ee0000 {
+ 			compatible = "fsl,ls1046a-dcfg", "syscon";
+ 			reg = <0x0 0x1ee0000 0x0 0x1000>;
 -- 
 2.35.1.1320.gc452695387.dirty
 
