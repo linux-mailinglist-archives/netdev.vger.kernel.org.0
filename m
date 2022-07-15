@@ -2,108 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A39415767DE
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 21:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BFE35767E9
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 22:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiGOT6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 15:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S231392AbiGOUAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 16:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiGOT6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 15:58:08 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8145613F76;
-        Fri, 15 Jul 2022 12:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657915087; x=1689451087;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ehY6mVr5usI1pbUCrRe9NIpChbrEMhuIPu5cO3R+A8k=;
-  b=STj236lGwgtGWu2u0vYygVwG0M16d+xfHiCb+j2pkab0/v5eD1X8QwR+
-   XJCa0G/8syP2Xs1WeH6JMnARBpu7BkqHNeQeDGR2f++Hbqg9l2+lpr/5x
-   B9buEVdQeLf12pNlOmWJuJt/rdA0mB4PYHAFsJAoiounJn/AhMDX7NAKy
-   VAXMCwiL0MW9TbNdR3Z1St/HWRdnvE+rP0PWS94snFyvLV3F6y0ctauU6
-   jX2repe5re74YqS1mc1cFGRAV3Ts1lFFbWUjBHJU0dufoTPaXECYRJbGa
-   DA+cWyelRHuIuuypFEK72lSjeNGWGTl16VBPdMHiPG8dcLkrbrTbpfo2m
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="283447205"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="283447205"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:58:07 -0700
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="842634224"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:58:00 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oCRRk-001JE8-0C;
-        Fri, 15 Jul 2022 22:57:56 +0300
-Date:   Fri, 15 Jul 2022 22:57:55 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
- be created
-Message-ID: <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
-References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
- <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
+        with ESMTP id S231397AbiGOT77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 15:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AB477496;
+        Fri, 15 Jul 2022 12:59:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 025676122A;
+        Fri, 15 Jul 2022 19:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A87C341C0;
+        Fri, 15 Jul 2022 19:59:54 +0000 (UTC)
+Date:   Fri, 15 Jul 2022 15:59:53 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <20220715155953.4fb692e2@gandalf.local.home>
+In-Reply-To: <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
+References: <20220602193706.2607681-1-song@kernel.org>
+        <20220602193706.2607681-4-song@kernel.org>
+        <20220713203343.4997eb71@rorschach.local.home>
+        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
+        <20220714204817.2889e280@rorschach.local.home>
+        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
+        <20220714224646.62d49e36@rorschach.local.home>
+        <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
+        <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
+        <20220715151217.141dc98f@gandalf.local.home>
+        <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 05:01:32PM +0100, Russell King wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, 15 Jul 2022 19:49:00 +0000
+Song Liu <songliubraving@fb.com> wrote:
+
+> > 
+> > What about if we release the lock when doing the callback?  
 > 
-> Allow a named software node to be created, which is needed for software
-> nodes for a fixed-link specification for DSA.
+> We can probably unlock ftrace_lock here. But we may break locking order 
+> with direct mutex (see below).
 
-In general I have no objection, but what's worrying me is a possibility to
-collide in namespace. With the current code the name is generated based on
-unique IDs, how can we make this one more robust?
+You're talking about the multi registering case, right?
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> > 
+> > Then we just need to make sure things are the same after reacquiring the
+> > lock, and if they are different, we release the lock again and do the
+> > callback with the new update. Wash, rinse, repeat, until the state is the
+> > same before and after the callback with locks acquired?  
+> 
+> Personally, I would like to avoid wash-rinse-repeat here.
 
+But it's common to do. Keeps your hair cleaner that way ;-)
 
+> 
+> > 
+> > This is a common way to handle callbacks that need to do something that
+> > takes the lock held before doing a callback.
+> > 
+> > The reason I say this, is because the more we can keep the accounting
+> > inside of ftrace the better.
+> > 
+> > Wouldn't this need to be done anyway if BPF was first and live kernel
+> > patching needed the update? An -EAGAIN would not suffice.  
+> 
+> prepare_direct_functions_for_ipmodify handles BPF-first-livepatch-later
+> case. The benefit of prepare_direct_functions_for_ipmodify() is that it 
+> holds direct_mutex before ftrace_lock, and keeps holding it if necessary. 
+> This is enough to make sure we don't need the wash-rinse-repeat. 
+> 
+> OTOH, if we wait until __ftrace_hash_update_ipmodify(), we already hold
+> ftrace_lock, but not direct_mutex. To make changes to bpf trampoline, we
+> have to unlock ftrace_lock and lock direct_mutex to avoid deadlock. 
+> However, this means we will need the wash-rinse-repeat. 
+> 
+> 
+> For livepatch-first-BPF-later case, we can probably handle this in 
+> __ftrace_hash_update_ipmodify(), since we hold both direct_mutex and 
+> ftrace_lock. We can unlock ftrace_lock and update the BPF trampoline. 
+> It is safe against changes to direct ops, because we are still holding 
+> direct_mutex. But, is this safe against another IPMODIFY ops? I am not 
+> sure yet... Also, this is pretty weird because, we are updating a 
+> direct trampoline before we finish registering it for the first time. 
+> IOW, we are calling modify_ftrace_direct_multi_nolock for the same 
+> trampoline before register_ftrace_direct_multi() returns.
+> 
+> The approach in v2 propagates the -EAGAIN to BPF side, so these are two
+> independent calls of register_ftrace_direct_multi(). This does require
+> some protocol between ftrace core and its user, but I still think this 
+> is a cleaner approach. 
+
+The issue I have with this approach is it couples BPF and ftrace a bit too
+much.
+
+But there is a way with my approach you can still do your approach. That
+is, have ops_func() return zero if everything is fine, and otherwise returns
+a negative value. Then have the register function fail and return whatever
+value that gets returned by the ops_func()
+
+Then have the bpf ops_func() check (does this direct caller handle
+IPMODIFY? if yes, return 0, else return -EAGAIN). Then the registering of
+ftrace fails with your -EAGAIN, and then you can change the direct
+trampoline to handle IPMODIFY and try again. This time when ops_func() is
+called, it sees that the direct trampoline can handle the IPMODIFY and
+returns 0.
+
+Basically, it's a way to still implement my suggestion, but let BPF decide
+to use -EAGAIN to try again. And then BPF and ftrace don't need to have
+these special flags to change the behavior of each other.
+
+-- Steve
