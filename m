@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4A757833E
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5935957838C
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235465AbiGRNK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 09:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        id S235152AbiGRNUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 09:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233833AbiGRNK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:10:27 -0400
+        with ESMTP id S235056AbiGRNUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:20:16 -0400
 Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60591A83D;
-        Mon, 18 Jul 2022 06:10:22 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1658149787tw0f4uoy
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF1322B34;
+        Mon, 18 Jul 2022 06:20:10 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1658150396tbugsu2s
 Received: from localhost.localdomain ( [171.223.96.21])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 21:09:45 +0800 (CST)
+        id ; Mon, 18 Jul 2022 21:19:54 +0800 (CST)
 X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: 9E3Ddn8eo0Kg1vsX00lVxwqcMqmpmrPNqX0bOG/HAXdvLjFwsTqMSEKYHp1cy
-        bRSS4KWsRN3thTAaOjI8whAJGkfp6aaUlNzUOEJET4Hv+D8B/YBquEA/DbZo4aWapTQWxoT
-        xyF/9P7QDmL2Q2Soexnaksx+lCe7wlKMJCaJrkyrvBJTpBVlUQ7fq7mVatOcz9xLf24ALfp
-        ePzLejSPOT18WQnU5SAt9O8lxbh5wDatrf9uRpFK0H4IMxxvSNC54zsqcOVF3NaiAOPl2PJ
-        Xa/rSAl2pQqsTU03MnBZl0yvUaEHOde1nJkUTOA+6wHeLsJ27a/Q70aYpERELoDxkYFcZye
-        PwfTGSQxdJPkoHJ9vjioKdun50zxgCPyiPdqRoHzBYVRI92/lfhQtkuzpYfWQvFpJhNHWT3
-        tcjU/Vxw/1/EJF63N9O2QA==
+X-QQ-FEAT: 4I5p1PuRj8YMPCgAQG8edoQnLKMc1Glv1+H6KI5cJfNfo7JafNV1521jkDo6T
+        BH89+wtVldlxlFYp/Y1XwZVj401ndTmlQTdlmC5efhhfkEN7n9F3pMtlOVhybhTOB/YqU1n
+        2pgknB+aiUI5OGdqDmy07W9sHocMJnOE0GMHHJCMK2JMffxfu0tqnqUi1auXmEl+4Ch0TTT
+        wp9fx6fP7TgNqXlOvLGig0qfhoaum5n2RcVFMQDTXuLAZonC/sd4mI8DBmejmUhjYTa/GBZ
+        bJsiYi+zl3H/90D2q233C/OV+Re0+0htzEUqTni/k9B9G2USV8BGTiImyAU+WRS3B4n5f+p
+        s5aYs3qMIwyew5vG/qWT/he8jOMuoZa2j0CVdZGWOvDgFgL6+Bkczso518kHEYtnNt71n0R
+        hFmNnbGTrvE=
 X-QQ-GoodBg: 0
 From:   Jason Wang <wangborong@cdjrlc.com>
-To:     stefan@datenfreihafen.org
-Cc:     alex.aring@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] net: ieee802154: ca8210: Fix comment typo
-Date:   Fri, 15 Jul 2022 13:07:48 +0800
-Message-Id: <20220715050748.27161-1-wangborong@cdjrlc.com>
+To:     isdn@linux-pingi.de
+Cc:     jiangjian@cdjrlc.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] isdn: mISDN: hfcsusb: Fix comment typo
+Date:   Fri, 15 Jul 2022 13:17:58 +0800
+Message-Id: <20220715051758.30665-1-wangborong@cdjrlc.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,26 +47,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The double `was' is duplicated in line 2296, remove one.
+The double `sending' is duplicated in line 761, remove one.
 
 Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- drivers/net/ieee802154/ca8210.c | 2 +-
+ drivers/isdn/hardware/mISDN/hfcsusb.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 42c0b451088d..450b16ad40a4 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2293,7 +2293,7 @@ static int ca8210_set_csma_params(
-  * @retries:  Number of retries
-  *
-  * Sets the number of times to retry a transmission if no acknowledgment was
-- * was received from the other end when one was requested.
-+ * received from the other end when one was requested.
-  *
-  * Return: 0 or linux error code
-  */
+diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
+index 651f2f8f685b..6fd8e5612227 100644
+--- a/drivers/isdn/hardware/mISDN/hfcsusb.c
++++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
+@@ -758,7 +758,7 @@ hfcsusb_ph_command(struct hfcsusb *hw, u_char command)
+ 
+ 	switch (command) {
+ 	case HFC_L1_ACTIVATE_TE:
+-		/* force sending sending INFO1 */
++		/* force sending INFO1 */
+ 		write_reg(hw, HFCUSB_STATES, 0x14);
+ 		/* start l1 activation */
+ 		write_reg(hw, HFCUSB_STATES, 0x04);
 -- 
 2.35.1
 
