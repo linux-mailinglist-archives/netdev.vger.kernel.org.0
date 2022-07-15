@@ -2,50 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C79DE576ACB
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 01:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B66576AD1
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 01:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiGOXiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 19:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
+        id S231327AbiGOXoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 19:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbiGOXiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 19:38:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE4295B0A
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 16:38:04 -0700 (PDT)
+        with ESMTP id S229499AbiGOXoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 19:44:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0BC13E06
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 16:44:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A60D61DC1
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 23:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1716FC34115;
-        Fri, 15 Jul 2022 23:38:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF50E6204D
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 23:44:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03CA7C341C0;
+        Fri, 15 Jul 2022 23:44:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657928283;
-        bh=Oa0db7zuqD53pwFcvK4xXrwv946iYZPVfBWeoJFbTAk=;
+        s=k20201202; t=1657928659;
+        bh=+DMHe8SSIn9I0C6Mi1SK0ytQbR8W/BxJwOC3n8ThWxg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nm7l91PbSYwZ5mXP7sg9RqtysVmuNhzYD+/y074FQ0izzI2F4/iJTqypAs1pMRTR4
-         pUy+LboS+JfjtlV7ydtjx4tDeELa8nixXbdxj+2WKN7kHUDRpr9ysSY8YM74MfS2ms
-         Zh+t7zbMHVyVlx9XjNYgHAznCgMkigYytIPp5oN+LAA1vPqYzGmGjbW626+BODEsjH
-         BAi/1PaRbWuru4nnsqn2RxriLjEM9Pv5tpi98ZROjtxnT06LK46Pfph6Mrbr0q8Gn9
-         5TjJLKCc8ULyANSgeY9kSjllVOctjpebUg5nrqTjpO1ULGd6kqtZg5/OLy4ujEXuQw
-         KyMhGyEL3QoRw==
-Date:   Fri, 15 Jul 2022 16:38:02 -0700
+        b=G87Cto2Z1dpkTXrklNVydoHtMtg0YvjJKgnHCjo3BG4C84e7ruKzsCCChyD/CTE2L
+         3gMIbFyJs0+yi3FDXx75EU/xkvUJylBHXs9nqiR8NZNAUmbn7AwfM06OW/uKo92tBg
+         fozhx2BtFi/rVf6UJXsobryMQyq0ynfI1J1tOmwy4preJYx1Z3+TutKdHMrvGA+G21
+         EzPU4QMQVCczdfZSt7IQ4FTe2+oFNOQuFJTk58RSGLNm/gr5n8pfxhuiezZQ47mQ/L
+         hlhXuIqs67FgSQxgQ5bE6zbOwT9u8ZsCXiFNRreJd/dryvWfYif64GMCleT+NQjMz5
+         gVEvFIr739pLw==
+Date:   Fri, 15 Jul 2022 16:44:17 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [PATCH net] net/tls: Fix race in TLS device down flow
-Message-ID: <20220715163802.6f49d03d@kernel.org>
-In-Reply-To: <20220715084216.4778-1-tariqt@nvidia.com>
-References: <20220715084216.4778-1-tariqt@nvidia.com>
+To:     Denis Kirjanov <kda@linux-powerpc.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] net: altera: Handle dma_set_coherent_mask error codes
+Message-ID: <20220715164417.577cbae3@kernel.org>
+In-Reply-To: <20220714132342.13051-1-kda@linux-powerpc.org>
+References: <20220714132342.13051-1-kda@linux-powerpc.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,30 +51,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jul 2022 11:42:16 +0300 Tariq Toukan wrote:
-> Socket destruction flow and tls_device_down function sync against each
-> other using tls_device_lock and the context refcount, to guarantee the
-> device resources are freed via tls_dev_del() by the end of
-> tls_device_down.
+On Thu, 14 Jul 2022 16:23:42 +0300 Denis Kirjanov wrote:
+> handle the error in the case that DMA mask is not supportyed
 > 
-> In the following unfortunate flow, this won't happen:
-> - refcount is decreased to zero in tls_device_sk_destruct.
-> - tls_device_down starts, skips the context as refcount is zero, going
->   all the way until it flushes the gc work, and returns without freeing
->   the device resources.
-> - only then, tls_device_queue_ctx_destruction is called, queues the gc
->   work and frees the context's device resources.
+> Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> ---
+>  drivers/net/ethernet/altera/altera_tse_main.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 > 
-> Solve it by decreasing the refcount in the socket's destruction flow
-> under the tls_device_lock, for perfect synchronization.  This does not
-> slow down the common likely destructor flow, in which both the refcount
-> is decreased and the spinlock is acquired, anyway.
-> 
-> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-> Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+> index 8c5828582c21..7773d978321a 100644
+> --- a/drivers/net/ethernet/altera/altera_tse_main.c
+> +++ b/drivers/net/ethernet/altera/altera_tse_main.c
+> @@ -1439,10 +1439,14 @@ static int altera_tse_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	if (!dma_set_mask(priv->device, DMA_BIT_MASK(priv->dmaops->dmamask))) {
+> -		dma_set_coherent_mask(priv->device,
+> +		ret = dma_set_coherent_mask(priv->device,
+>  				      DMA_BIT_MASK(priv->dmaops->dmamask));
+> +		if (ret)
+> +			goto err_free_netdev;
+>  	} else if (!dma_set_mask(priv->device, DMA_BIT_MASK(32))) {
+> -		dma_set_coherent_mask(priv->device, DMA_BIT_MASK(32));
+> +		ret = dma_set_coherent_mask(priv->device, DMA_BIT_MASK(32));
+> +		if (ret)
+> +			goto err_free_netdev;
+>  	} else {
+>  		ret = -EIO;
+>  		goto err_free_netdev;
 
-Oh, so it was already racy? Sad this has missed the PR, another delay 
-for your -next patches :S
+Practically speaking this can't fail, see Christophe's patches like 
+b6f2f0352c0302
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+If you want to be on the safe side just replace the dma_set_mask()
+with dma_set_mask_and_coherent() and let the else branch handle the
+failure.
+
+Please CC maintainers when reposting.
