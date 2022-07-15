@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B075765CD
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA785765D2
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235787AbiGORWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 13:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S235661AbiGORVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 13:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235771AbiGORWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:22:04 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C0D83F31
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 10:22:01 -0700 (PDT)
+        with ESMTP id S235652AbiGORVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:21:01 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D32D79682;
+        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y141so5181216pfb.7;
+        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657905722; x=1689441722;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DIQXXk3cbjelaUBbUNfF1EcgxQcOTSnGD8rnLw1GJDY=;
-  b=NMOk6RAVsUlZa1OEAEWy0o8f1btE7YRVAMGOk/XeaVmOc3fO2bRcOR+p
-   Sbkfd8Rsr9VcWHjhdn49grbb7PWaSpee/64eG8BQ0hHNzIZmv/Ki2Wsz7
-   etS1d1sHl4b1/R6uAlkfmFlVOwODeNMldMbrM5uX3x4df2NCyP7wymkon
-   w=;
-X-IronPort-AV: E=Sophos;i="5.92,274,1650931200"; 
-   d="scan'208";a="218896622"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 15 Jul 2022 17:22:00 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com (Postfix) with ESMTPS id 6279444330;
-        Fri, 15 Jul 2022 17:21:59 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 15 Jul 2022 17:21:58 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.124) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Fri, 15 Jul 2022 17:21:55 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Wei Wang <weiwan@google.com>
-Subject: [PATCH v1 net 15/15] tcp: Fix data-races around sysctl_tcp_fastopen_blackhole_timeout.
-Date:   Fri, 15 Jul 2022 10:17:55 -0700
-Message-ID: <20220715171755.38497-16-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220715171755.38497-1-kuniyu@amazon.com>
-References: <20220715171755.38497-1-kuniyu@amazon.com>
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
+        b=QYRuWFCmTvZa/x5P+uESITLhb+SAnK3Ep6RjijQpXs9D9HQ6zQtjDb73w8plJ7rrTN
+         jl9TfKRIr00Y3U4c2O7IK+l52IfmISjdi5DVoOjQuaZRup6uS7Zr3K0ncXMTg8Qth2S+
+         YjK81IU2OOpN0VPXjCGK9FYDqDEur07qD4W2lFxHiX7RFLZstkKrPM9XjqL7l2cJ6kur
+         SeL7QRXbm8BwPLNS/cwAAkRIow9e+DD8dHprPzQ/rc36raoPBVQv/Ar1FXytFjBJP3os
+         gqEOZlIgjrszm0i74uR/LUDHByRmKG4im7M5Tqfx5rz+s8jfFMTlNp4BawIxEr2QvlQF
+         1jUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
+        b=LP2izyH7hW0MLFzJzz0Ef5EJ4OgRAvvcH93cR/cO4FoSL8qG1i6CW/mr/G5BLErdDQ
+         VbF8UOGP0F4wT19qSr+jr4aipnj2BHp1Yg8GJzD6qPAK2HmdWgXftaJAQhDBMZDAPPrT
+         9GcZh8RXn3bNM47Mwf5suWbzn6CU4etzvUPQw3TVNI+9nDi/a+UA33Lb+LNAAM9m2o3S
+         NY760hBsoO3SQ612IJawTzDHkkjryq8NufXYibGCg4qrqgyTnYxQwld/mebt5W5vBwEU
+         HWwl+ccgTJsJi0IvXK16yJbXXHXQ/Wxv0GgTw0feD9MrFdMuGvMzqt2OZ9vVWqlLAn2S
+         zN+A==
+X-Gm-Message-State: AJIora9W2A+BJbF9s98oZEDVMwzbaWV4+xrdjsmf2Y0tzbCnXS6FZMWM
+        cxtHVojxsUbMoKHdt72zLdo=
+X-Google-Smtp-Source: AGRyM1vINHbIiII2lUdhE4U0lB3RwsmwOrfFF+r+w8TiBpauAFR5zNUGcFsSpEsGUrmUqgFtL4r48A==
+X-Received: by 2002:a05:6a00:993:b0:52a:dd93:f02d with SMTP id u19-20020a056a00099300b0052add93f02dmr15211567pfg.12.1657905659970;
+        Fri, 15 Jul 2022 10:20:59 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ot8-20020a17090b3b4800b001ef89019352sm13427194pjb.3.2022.07.15.10.20.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jul 2022 10:20:58 -0700 (PDT)
+Message-ID: <a5b55fb3-3326-eb3c-99e6-3fd6b7e4c2fe@gmail.com>
+Date:   Fri, 15 Jul 2022 10:20:55 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.124]
-X-ClientProxiedBy: EX13D31UWA003.ant.amazon.com (10.43.160.130) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [net-next: PATCH v2 1/8] net: phy: fixed_phy: switch to fwnode_
+ API
+Content-Language: en-US
+To:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
+Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
+        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
+        upstream@semihalf.com
+References: <20220715085012.2630214-1-mw@semihalf.com>
+ <20220715085012.2630214-2-mw@semihalf.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220715085012.2630214-2-mw@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading sysctl_tcp_fastopen_blackhole_timeout, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+On 7/15/22 01:50, Marcin Wojtas wrote:
+> This patch allows to use fixed_phy driver and its helper
+> functions without Device Tree dependency, by swtiching from
+> of_ to fwnode_ API.
+> 
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> ---
+>  include/linux/phy_fixed.h   |  4 +-
+>  drivers/net/mdio/of_mdio.c  |  2 +-
+>  drivers/net/phy/fixed_phy.c | 39 +++++++-------------
+>  3 files changed, 17 insertions(+), 28 deletions(-)
+> 
+> diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
+> index 52bc8e487ef7..449a927231ec 100644
+> --- a/include/linux/phy_fixed.h
+> +++ b/include/linux/phy_fixed.h
+> @@ -19,7 +19,7 @@ extern int fixed_phy_add(unsigned int irq, int phy_id,
+>  			 struct fixed_phy_status *status);
+>  extern struct phy_device *fixed_phy_register(unsigned int irq,
+>  					     struct fixed_phy_status *status,
+> -					     struct device_node *np);
+> +					     struct fwnode_handle *fwnode);
 
-Fixes: cf1ef3f0719b ("net/tcp_fastopen: Disable active side TFO in certain scenarios")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-CC: Wei Wang <weiwan@google.com>
----
- net/ipv4/tcp_fastopen.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I think this ought to require a forward declaration of struct fwnode_handle and a removal of the forward declaration of device_node.
 
-diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
-index 0acdb5473850..825b216d11f5 100644
---- a/net/ipv4/tcp_fastopen.c
-+++ b/net/ipv4/tcp_fastopen.c
-@@ -489,7 +489,7 @@ void tcp_fastopen_active_disable(struct sock *sk)
- {
- 	struct net *net = sock_net(sk);
- 
--	if (!sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout)
-+	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout))
- 		return;
- 
- 	/* Paired with READ_ONCE() in tcp_fastopen_active_should_disable() */
-@@ -510,7 +510,8 @@ void tcp_fastopen_active_disable(struct sock *sk)
-  */
- bool tcp_fastopen_active_should_disable(struct sock *sk)
- {
--	unsigned int tfo_bh_timeout = sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout;
-+	unsigned int tfo_bh_timeout =
-+		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout);
- 	unsigned long timeout;
- 	int tfo_da_times;
- 	int multiplier;
+With that fixes:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.30.2
-
+Florian
