@@ -2,132 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D284E575B98
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 08:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 581C9575B9D
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 08:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231571AbiGOGbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 02:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        id S231663AbiGOGdF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 15 Jul 2022 02:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiGOGaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 02:30:52 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B0F17046;
-        Thu, 14 Jul 2022 23:30:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657866651; x=1689402651;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=IKTE0WsoHbdtCDClI7Fv5lrmNNiRt8z95iB21d4OgXE=;
-  b=PfAUa8jbYjjqES2iv10HPKqFzxPUHJEBg+dR2WSTLRmLb5dbuO6ZbA5t
-   bLJX7EbKepBkti2OfsTxv6cMB+KpWW6l+tnOd0OwA0KoClLAmkfgSqCQF
-   rO1UER3a+ZAYfA/ZwqkP/n0rFViMZRx9dwfDwRMaBVaJbXDWNq5kXxHid
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jul 2022 23:30:50 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 23:30:50 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 23:30:45 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <luiz.von.dentz@intel.com>, <quic_zijuhu@quicinc.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v3] Bluetooth: hci_sync: Remove redundant func definition
-Date:   Fri, 15 Jul 2022 14:30:41 +0800
-Message-ID: <1657866641-16668-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        with ESMTP id S231607AbiGOGdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 02:33:03 -0400
+Received: from relay5.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B7F101F2
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 23:33:01 -0700 (PDT)
+Received: from omf12.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id A206D803A7;
+        Fri, 15 Jul 2022 06:32:58 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf12.hostedemail.com (Postfix) with ESMTPA id 391E81C;
+        Fri, 15 Jul 2022 06:32:54 +0000 (UTC)
+Message-ID: <84e873c27f2426ce003e650004fe856bf72c634b.camel@perches.com>
+Subject: Re: [PATCH] mediatek: mt7601u: fix clang -Wformat warning
+From:   Joe Perches <joe@perches.com>
+To:     Justin Stitt <justinstitt@google.com>,
+        Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Date:   Thu, 14 Jul 2022 23:32:53 -0700
+In-Reply-To: <20220711212932.1501592-1-justinstitt@google.com>
+References: <20220711212932.1501592-1-justinstitt@google.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        KHOP_HELO_FCRDNS,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY autolearn=no autolearn_force=no version=3.4.6
+X-Stat-Signature: 1hso3syzywufyzhw636x1fz9p96yse9u
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 391E81C
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18D0NiRIZaOhSqXbeaEBffV+4ygx6yiPXw=
+X-HE-Tag: 1657866774-101434
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-both hci_request.c and hci_sync.c have the same definition
-for disconnected_accept_list_entries(), so remove a redundant
-copy.
+On Mon, 2022-07-11 at 14:29 -0700, Justin Stitt wrote:
+> When building with Clang we encounter this warning:
+> > drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
+> > specifies type 'unsigned char' but the argument has type 'int'
+> > [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
+> 
+> The format specifier used is `%hhu` which describes a u8. Both
+> `dev->ee->reg.start` and `.num` are u8 as well. However, the expression
+> as a whole is promoted to an int as you cannot get smaller-than-int from
+> addition. Therefore, to fix the warning, use the promoted-to-type's
+> format specifier -- in this case `%d`.
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+I think whenever a sizeof(unsigned type) that is less than sizeof(int) is
+emitted with vsprintf, the preferred format specifier should be %u not %d.
+
+> diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+[]
+> @@ -88,7 +88,7 @@ mt7601u_eeprom_param_show(struct seq_file *file, void *data)
+>  		   dev->ee->rssi_offset[0], dev->ee->rssi_offset[1]);
+>  	seq_printf(file, "Reference temp: %hhx\n", dev->ee->ref_temp);
+>  	seq_printf(file, "LNA gain: %hhx\n", dev->ee->lna_gain);
+> -	seq_printf(file, "Reg channels: %hhu-%hhu\n", dev->ee->reg.start,
+> +	seq_printf(file, "Reg channels: %hhu-%d\n", dev->ee->reg.start,
+>  		   dev->ee->reg.start + dev->ee->reg.num - 1);
+
+And this is not a promotion of an argument to int via varargs.
+The arithmetic did the promotion.
+
+I suggest s/%hh/%/ for all the uses here, not just this one.
+
+checkpatch could do this somewhat automatically.
+Of course any changes it suggests need human review.
+
+$ ./scripts/checkpatch.pl -f drivers/net/wireless/mediatek/mt7601u/debugfs.c --show-types --types=unnecessary_modifier --fix-inplace
+$ git diff --stat -p drivers/net/wireless/mediatek/mt7601u/debugfs.c
 ---
-v2->v3
- -remove table char to solve gitlint checking failure
-v1->v2
- -remove the func copy within hci_request.c instead of hci_sync.c
- net/bluetooth/hci_request.c | 18 ------------------
- net/bluetooth/hci_request.h |  2 ++
- net/bluetooth/hci_sync.c    |  2 +-
- 3 files changed, 3 insertions(+), 19 deletions(-)
+ drivers/net/wireless/mediatek/mt7601u/debugfs.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 635cc5fb451e..edec0447aaa7 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
- 	return 0;
- }
+diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+index 20669eacb66ea..b7a6376e3352e 100644
+--- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+@@ -83,28 +83,28 @@ mt7601u_eeprom_param_show(struct seq_file *file, void *data)
+ 	struct tssi_data *td = &dev->ee->tssi_data;
+ 	int i;
  
--static bool disconnected_accept_list_entries(struct hci_dev *hdev)
--{
--	struct bdaddr_list *b;
--
--	list_for_each_entry(b, &hdev->accept_list, list) {
--		struct hci_conn *conn;
--
--		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
--		if (!conn)
--			return true;
--
--		if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
--			return true;
--	}
--
--	return false;
--}
--
- void __hci_req_update_scan(struct hci_request *req)
- {
- 	struct hci_dev *hdev = req->hdev;
-diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
-index 7f8df258e295..e80b500878d9 100644
---- a/net/bluetooth/hci_request.h
-+++ b/net/bluetooth/hci_request.h
-@@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
- int hci_update_random_address(struct hci_request *req, bool require_privacy,
- 			      bool use_rpa, u8 *own_addr_type);
+-	seq_printf(file, "RF freq offset: %hhx\n", dev->ee->rf_freq_off);
+-	seq_printf(file, "RSSI offset: %hhx %hhx\n",
++	seq_printf(file, "RF freq offset: %x\n", dev->ee->rf_freq_off);
++	seq_printf(file, "RSSI offset: %x %x\n",
+ 		   dev->ee->rssi_offset[0], dev->ee->rssi_offset[1]);
+-	seq_printf(file, "Reference temp: %hhx\n", dev->ee->ref_temp);
+-	seq_printf(file, "LNA gain: %hhx\n", dev->ee->lna_gain);
+-	seq_printf(file, "Reg channels: %hhu-%hhu\n", dev->ee->reg.start,
++	seq_printf(file, "Reference temp: %x\n", dev->ee->ref_temp);
++	seq_printf(file, "LNA gain: %x\n", dev->ee->lna_gain);
++	seq_printf(file, "Reg channels: %u-%u\n", dev->ee->reg.start,
+ 		   dev->ee->reg.start + dev->ee->reg.num - 1);
  
-+bool disconnected_accept_list_entries(struct hci_dev *hdev);
-+
- int hci_abort_conn(struct hci_conn *conn, u8 reason);
- void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
- 		      u8 reason);
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 212b0cdb25f5..48a262f0ae49 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
- 	return err;
- }
+ 	seq_puts(file, "Per rate power:\n");
+ 	for (i = 0; i < 2; i++)
+-		seq_printf(file, "\t raw:%02hhx bw20:%02hhx bw40:%02hhx\n",
++		seq_printf(file, "\t raw:%02x bw20:%02x bw40:%02x\n",
+ 			   rp->cck[i].raw, rp->cck[i].bw20, rp->cck[i].bw40);
+ 	for (i = 0; i < 4; i++)
+-		seq_printf(file, "\t raw:%02hhx bw20:%02hhx bw40:%02hhx\n",
++		seq_printf(file, "\t raw:%02x bw20:%02x bw40:%02x\n",
+ 			   rp->ofdm[i].raw, rp->ofdm[i].bw20, rp->ofdm[i].bw40);
+ 	for (i = 0; i < 4; i++)
+-		seq_printf(file, "\t raw:%02hhx bw20:%02hhx bw40:%02hhx\n",
++		seq_printf(file, "\t raw:%02x bw20:%02x bw40:%02x\n",
+ 			   rp->ht[i].raw, rp->ht[i].bw20, rp->ht[i].bw40);
  
--static bool disconnected_accept_list_entries(struct hci_dev *hdev)
-+bool disconnected_accept_list_entries(struct hci_dev *hdev)
- {
- 	struct bdaddr_list *b;
+ 	seq_puts(file, "Per channel power:\n");
+ 	for (i = 0; i < 7; i++)
+-		seq_printf(file, "\t tx_power  ch%u:%02hhx ch%u:%02hhx\n",
++		seq_printf(file, "\t tx_power  ch%u:%02x ch%u:%02x\n",
+ 			   i * 2 + 1, dev->ee->chan_pwr[i * 2],
+ 			   i * 2 + 2, dev->ee->chan_pwr[i * 2 + 1]);
  
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+@@ -112,8 +112,8 @@ mt7601u_eeprom_param_show(struct seq_file *file, void *data)
+ 		return 0;
+ 
+ 	seq_puts(file, "TSSI:\n");
+-	seq_printf(file, "\t slope:%02hhx\n", td->slope);
+-	seq_printf(file, "\t offset=%02hhx %02hhx %02hhx\n",
++	seq_printf(file, "\t slope:%02x\n", td->slope);
++	seq_printf(file, "\t offset=%02x %02x %02x\n",
+ 		   td->offset[0], td->offset[1], td->offset[2]);
+ 	seq_printf(file, "\t delta_off:%08x\n", td->tx0_delta_offset);
+ 
 
