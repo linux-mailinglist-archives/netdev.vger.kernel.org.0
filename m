@@ -2,59 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE95C5768E4
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F175768E8
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231470AbiGOV30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 17:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        id S231473AbiGOVbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 17:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbiGOV3Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:29:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95ED474786;
-        Fri, 15 Jul 2022 14:29:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 329A861874;
-        Fri, 15 Jul 2022 21:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CF20C341C6;
-        Fri, 15 Jul 2022 21:29:21 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 17:29:19 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <20220715172919.76d60b47@gandalf.local.home>
-In-Reply-To: <6271DEDF-F585-4A3B-90BF-BA2EB76DDC01@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-4-song@kernel.org>
-        <20220713203343.4997eb71@rorschach.local.home>
-        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
-        <20220714204817.2889e280@rorschach.local.home>
-        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
-        <20220714224646.62d49e36@rorschach.local.home>
-        <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
-        <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
-        <20220715151217.141dc98f@gandalf.local.home>
-        <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
-        <20220715155953.4fb692e2@gandalf.local.home>
-        <6271DEDF-F585-4A3B-90BF-BA2EB76DDC01@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S230513AbiGOVbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:31:44 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00E078224;
+        Fri, 15 Jul 2022 14:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=th86onA+v2g7seSKwNaiqJkIXZJBTye47OvI+lvc2mU=; b=QiuHDj8gvLUaAYVWuCRdkJng82
+        yV5Qfgn1oiUkP0TfG7/m6IvkjBO9bJ1V2d1Sk+eYTM70zVUhXcW6OOY+q0s/yIgryKMV+fcnXKgqS
+        CKbXdXPeKga6zKDiil62Opc+ICod4RBr4hkQXBOWsYgAn0Mp1QiQ/0ikP/2GgdRlWlKMKhwcw3qj9
+        nSflYxlRY9FWgCm4KRM6ytSHb/M1s5zYJrS6bgOvwMz6P3DXe+kPaItHwahbx+895SSG2nlVkAD4h
+        +zE+UrLs1d0PEB0u+U1Z3EwHJnFggwY1XPxjokxdjectbeW63iFWY5h/x9fTUub7NXjE5wZFwwFqg
+        cpSlRdzA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33366)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oCSuB-0007YD-02; Fri, 15 Jul 2022 22:31:23 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oCSu5-0007sf-S7; Fri, 15 Jul 2022 22:31:17 +0100
+Date:   Fri, 15 Jul 2022 22:31:17 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <20220715172444.yins4kb2b6b35aql@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220715172444.yins4kb2b6b35aql@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,66 +90,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jul 2022 20:21:49 +0000
-Song Liu <songliubraving@fb.com> wrote:
-
-> >>> Wouldn't this need to be done anyway if BPF was first and live kernel
-> >>> patching needed the update? An -EAGAIN would not suffice.    
-> >> 
-> >> prepare_direct_functions_for_ipmodify handles BPF-first-livepatch-later
-> >> case. The benefit of prepare_direct_functions_for_ipmodify() is that it 
-> >> holds direct_mutex before ftrace_lock, and keeps holding it if necessary. 
-> >> This is enough to make sure we don't need the wash-rinse-repeat. 
-> >> 
-> >> OTOH, if we wait until __ftrace_hash_update_ipmodify(), we already hold
-> >> ftrace_lock, but not direct_mutex. To make changes to bpf trampoline, we
-> >> have to unlock ftrace_lock and lock direct_mutex to avoid deadlock. 
-> >> However, this means we will need the wash-rinse-repeat.   
+On Fri, Jul 15, 2022 at 08:24:44PM +0300, Vladimir Oltean wrote:
+> On Fri, Jul 15, 2022 at 05:01:37PM +0100, Russell King (Oracle) wrote:
+> > DSA port bindings allow for an optional phy interface mode. When an
+> > interface mode is not specified, DSA uses the NA interface mode type.
+> > 
+> > However, phylink needs to know the parameters of the link, and this
+> > will become especially important when using phylink for ports that
+> > are devoid of all properties except the required "reg" property, so
+> > that phylink can select the maximum supported link settings. Without
+> > knowing the interface mode, phylink can't truely know the maximum
+> > link speed.
+> > 
+> > Update the prototype for the phylink_get_caps method to allow drivers
+> > to report this information back to DSA, and update all DSA
+> > implementations function declarations to cater for this change. No
+> > code is added to the implementations.
+> > 
+> > Reviewed-by: Marek Behún <kabel@kernel.org>
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> (...)
+> > diff --git a/include/net/dsa.h b/include/net/dsa.h
+> > index b902b31bebce..7c6870d2c607 100644
+> > --- a/include/net/dsa.h
+> > +++ b/include/net/dsa.h
+> > @@ -852,7 +852,8 @@ struct dsa_switch_ops {
+> >  	 * PHYLINK integration
+> >  	 */
+> >  	void	(*phylink_get_caps)(struct dsa_switch *ds, int port,
+> > -				    struct phylink_config *config);
+> > +				    struct phylink_config *config,
+> > +				    phy_interface_t *default_interface);
 > 
-> What do you think about the prepare_direct_functions_for_ipmodify() 
-> approach? If this is not ideal, maybe we can simplify it so that it only
-> holds direct_mutex (when necessary). The benefit is that we are sure
-> direct_mutex is already held in __ftrace_hash_update_ipmodify(). However, 
-> I think it is not safe to unlock ftrace_lock in __ftrace_hash_update_ipmodify(). 
-> We can get parallel do_for_each_ftrace_rec(), which is dangerous, no? 
+> I would prefer having a dedicated void (*port_max_speed_interface),
+> because the post-phylink DSA drivers (which are not few) will generally
+> not need to concern themselves with implementing this, and I don't want
+> driver writers to think they need to populate every parameter they see
+> in phylink_get_caps. So the new function needs to be documented
+> appropriately (specify who needs and who does not need to implement it,
+> on which ports it will be called, etc).
+> 
+> In addition, if we have a dedicated ds->ops->port_max_speed_interface(),
+> we can do a better job of avoiding breakage with this patch set, since
+> if DSA cannot find a valid phylink fwnode, AND there is no
+> port_max_speed_interface() callback for this driver, DSA can still
+> preserve the current logic of not putting the port down, and not
+> registering it with phylink. That can be accompanied by a dev_warn() to
+> state that the CPU/DSA port isn't registered with phylink, please
+> implement port_max_speed_interface() to address that.
 
-I'm fine with it. But one nit on the logic:
+To continue my previous email...
 
->  int register_ftrace_function(struct ftrace_ops *ops)
-> +	__releases(&direct_mutex)
->  {
-> +	bool direct_mutex_locked;
->  	int ret;
->  
->  	ftrace_ops_init(ops);
->  
-> +	ret = prepare_direct_functions_for_ipmodify(ops);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	direct_mutex_locked = ret == 1;
-> +
+This is a great illustration why posting RFC series is a waste of time.
+This patch was posted as RFC on:
 
-Please make the above:
+24th June
+29th June
+5th July
+13th July
 
-	if (ret < 0)
-		return ret;
-	else if (ret == 1)
-		direct_mutex_locked = true;
+Only when it's been posted today has there been a concern raised about
+the approach. So, what's the use of asking for comments if comments only
+come when patches are posted for merging. None what so ever. So, we've
+lost the last three weeks because I decided to "be kind" and post RFC.
+Total waste of effort.
 
-It's much easier to read that way.
+Now, on your point... the series posted on the 24th June was using
+the mv88e6xxx port_max_speed_interface() but discussion off the mailing
+list:
 
--- Steve
+20:19 < rmk> kabel: hmm, is mv88e6393x_port_max_speed_mode() correct?
+20:20 < rmk> it seems to be suggesting to use PHY_INTERFACE_MODE_10GBASER for
+             port 9
+09:50 < kabel> rmk: yes, 10gbase-r is correct for 6393x. But we need to add
+               exception for 6191x, as is done in chip.c function
+               mv88e6393x_phylink_get_caps()
+09:51 < kabel> rmk: on 6191x only port 10 supports >1g speeds
+11:51 < rmk> kabel: moving it into the get_caps function makes it easier to set
+             the default_interfaces for 6193x
+14:20 < kabel> rmk: yes, get_caps doing it would be better
 
->  	mutex_lock(&ftrace_lock);
->  
->  	ret = ftrace_startup(ops, 0);
->  
->  	mutex_unlock(&ftrace_lock);
->  
-> +	if (direct_mutex_locked)
-> +		mutex_unlock(&direct_mutex);
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(register_ftrace_function);
-> -- 
+The problem is this - we call get_caps(), and we have to read registers
+to work out what the port supports. If we have a separate callback, then
+we need to re-read those registers to get the same information to report
+what the default interface should be.
+
+Since almost all of the Marvell implementations the values for both the
+list of supported interfaces and the default interface both require
+reading a register and translating it to a phy_interface_t, and then
+setting the support mask, it seems logical to combine these two
+functioalities into one function.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
