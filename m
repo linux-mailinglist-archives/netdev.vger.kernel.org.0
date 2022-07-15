@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0FD35782DB
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 14:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36DEA5782F0
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233853AbiGRM7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 08:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        id S233962AbiGRNA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 09:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234962AbiGRM7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 08:59:10 -0400
+        with ESMTP id S234901AbiGRNAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:00:08 -0400
 Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB902726;
-        Mon, 18 Jul 2022 05:59:04 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1658149110te6osiag
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5489DDFE4;
+        Mon, 18 Jul 2022 05:59:44 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1658149162tfelxvk3
 Received: from localhost.localdomain ( [171.223.96.21])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 18 Jul 2022 20:58:28 +0800 (CST)
+        id ; Mon, 18 Jul 2022 20:59:21 +0800 (CST)
 X-QQ-SSF: 01000000002000E0U000C00A0000020
-X-QQ-FEAT: 9E3Ddn8eo0Ir/TAsJSsCKAcE96jed3OfcR+pklTVuob7Ys9mOHe9t480id+8A
-        Q3zhQaTDZV0DcUNgQgRGdAE/ZO7VSdfFsoFwprNnGG3wjrMYyMUKx6MHslI8v6v1zGmgTrV
-        GdyqTo74x99Wnw9fZYua1cG7cG3U0PCwAGNeTyhr22X1+9s4jo04M8K5yaBhIS0QOV5NolQ
-        st5/NaJBQHwN3fUaN/xghov1yCDHKXVJRBeyxJfigT/Zj4okhFcKrcu1urUry8FAt2ggooZ
-        OPS+6F/VLy6kP8+jPeorj2W515DyMSWOyEeKKipbQMser0n0zT7AdDUftkxJWI+OdIR853o
-        mL8E26o//6QNVv4QLp4sL+O6/qxWoADE3h1Ov17qQ86VFNJ64qny2sN6mUkVeTdUnaWfxzw
-        sF2g++nbdRc8gTpVE9otgg==
+X-QQ-FEAT: lp8jUtqYSiBbr9yqnSSK6hoScHKcUOATX/VASvxsqgeJfL/g9Vg3hT/QRbOda
+        WjcpQFKgh9m1iYPf4WdKcThFPQRxHx4fz8Qbz0y5bRYCaHFqYIY4q+sPf8ZTAeeLj6pNvp7
+        aQczUxnaTGT4oiOa8Ufa+HfPMoULbimzNh1TchMRO4c65oZSZDmsCoyvvEKOsbkT0ESTocf
+        zaEVPQgo3v17MeRK9wom76GeFViZYtsmnGkCGZP1UhK9eIHCvSyAGL67W+ivTA2suq/9+Pp
+        0cj6+EHUcDgwdGaORob92Uk1oC0e8omNQ2XH2wxOwIFbpgl0F0DlN4erz9ZJJvtPyaWvEc2
+        oIXcc9j6O77+1JhHwGwWfOKbPPafABkplDTgny8XfjVkQ7FK32Why1lC2u4UJ0tvUOUy+n2
+        wCaC0CV9aEY=
 X-QQ-GoodBg: 0
 From:   Jason Wang <wangborong@cdjrlc.com>
 To:     edumazet@google.com
-Cc:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] bnx2x: Fix comment typo
-Date:   Fri, 15 Jul 2022 12:56:30 +0800
-Message-Id: <20220715045630.22682-1-wangborong@cdjrlc.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        christophe.jaillet@wanadoo.fr, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] cnic: Fix comment typo
+Date:   Fri, 15 Jul 2022 12:57:24 +0800
+Message-Id: <20220715045724.23052-1-wangborong@cdjrlc.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,26 +48,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The double `the' is duplicated in line 13847, remove one.
+The double `never' is duplicated in line 4130, remove one.
 
 Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c | 2 +-
+ drivers/net/ethernet/broadcom/cnic.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-index 7071604f9984..02808513ffe4 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-@@ -13844,7 +13844,7 @@ static void bnx2x_check_kr2_wa(struct link_params *params,
- 
- 	/* Once KR2 was disabled, wait 5 seconds before checking KR2 recovery
- 	 * Since some switches tend to reinit the AN process and clear the
--	 * the advertised BP/NP after ~2 seconds causing the KR2 to be disabled
-+	 * advertised BP/NP after ~2 seconds causing the KR2 to be disabled
- 	 * and recovered many times
+diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
+index e86503d97f32..544f17735b8b 100644
+--- a/drivers/net/ethernet/broadcom/cnic.c
++++ b/drivers/net/ethernet/broadcom/cnic.c
+@@ -4127,7 +4127,7 @@ static int cnic_ready_to_close(struct cnic_sock *csk, u32 opcode)
+ 	 * 2. If the expected event is CLOSE_COMP or RESET_COMP, we accept any
+ 	 *    event
+ 	 * 3. If the expected event is 0, meaning the connection was never
+-	 *    never established, we accept the opcode from cm_abort.
++	 *    established, we accept the opcode from cm_abort.
  	 */
- 	if (vars->check_kr2_recovery_cnt > 0) {
+ 	if (opcode == csk->state || csk->state == 0 ||
+ 	    csk->state == L4_KCQE_OPCODE_VALUE_CLOSE_COMP ||
 -- 
 2.35.1
 
