@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 266BD5765DB
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E655765E0
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233497AbiGORTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 13:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
+        id S235315AbiGORUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 13:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233509AbiGORTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:19:32 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1392B241
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 10:19:31 -0700 (PDT)
+        with ESMTP id S233509AbiGORUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:20:01 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4D46C129
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 10:20:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657905571; x=1689441571;
+  t=1657905601; x=1689441601;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7fPXuiq0rMB93VdS21wNgtI69TjjTnA2Z4FmCzsgMxY=;
-  b=DFx0++ziooTQuA4IwqJ6TvLJsHTFI1hdCuLwXLVxbQMJDfNp8BQrklhw
-   zrEg7utD2ledNYg3PpRwH5QROo9LLKkTRMKSPsjpplL+cL1oXkxZGMAxC
-   tDaa+RjdvrhJN7a6259PXYRswdrnSIiLkGuGPYWN8AVr/fA0dNHmW5PKn
-   g=;
+  bh=+rRR3BHOx4/irfYDHgKxn278I25c5ki6gnfK2Fq/Na4=;
+  b=mqcjOHI9jbkfdmG3z1WGz0o5XFDqfoUU196I8ETyRAvzhaOCIkm7hbVT
+   Ug10/83DN+vBl3vOYvKUunnZv+co/KAPholt/pigKcekY4QrRDJ7TJnnI
+   dblfdKQm5iz5OEKDrdN5lHDcI/7UtxDAZ4FhDHgzi3ifH/oi3kJKmpK3h
+   E=;
 X-IronPort-AV: E=Sophos;i="5.92,274,1650931200"; 
-   d="scan'208";a="1034624939"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-b09ea7fa.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 15 Jul 2022 17:19:31 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-b09ea7fa.us-west-2.amazon.com (Postfix) with ESMTPS id E9A07441B9;
-        Fri, 15 Jul 2022 17:19:30 +0000 (UTC)
+   d="scan'208";a="108935386"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 15 Jul 2022 17:19:45 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com (Postfix) with ESMTPS id 04CC383B0E;
+        Fri, 15 Jul 2022 17:19:45 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 15 Jul 2022 17:19:30 +0000
+ id 15.0.1497.36; Fri, 15 Jul 2022 17:19:44 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.124) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Fri, 15 Jul 2022 17:19:27 +0000
+ Fri, 15 Jul 2022 17:19:41 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -47,9 +47,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v1 net 05/15] tcp: Fix data-races around keepalive sysctl knobs.
-Date:   Fri, 15 Jul 2022 10:17:45 -0700
-Message-ID: <20220715171755.38497-6-kuniyu@amazon.com>
+Subject: [PATCH v1 net 06/15] tcp: Fix data-races around sysctl_tcp_syn(ack)?_retries.
+Date:   Fri, 15 Jul 2022 10:17:46 -0700
+Message-ID: <20220715171755.38497-7-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220715171755.38497-1-kuniyu@amazon.com>
 References: <20220715171755.38497-1-kuniyu@amazon.com>
@@ -61,69 +61,85 @@ X-ClientProxiedBy: EX13D31UWA003.ant.amazon.com (10.43.160.130) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading sysctl_tcp_keepalive_(time|probes|intvl), they can be changed
+While reading sysctl_tcp_syn(ack)?_retries, they can be changed
 concurrently.  Thus, we need to add READ_ONCE() to their readers.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- include/net/tcp.h | 9 ++++++---
- net/smc/smc_llc.c | 2 +-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ net/ipv4/inet_connection_sock.c |  3 ++-
+ net/ipv4/tcp.c                  |  3 ++-
+ net/ipv4/tcp_timer.c            | 10 +++++++---
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 1e99f5c61f84..7e5a3da4682e 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1493,21 +1493,24 @@ static inline int keepalive_intvl_when(const struct tcp_sock *tp)
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 2c44556af452..eb31c7158b39 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -833,7 +833,8 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 
+ 	icsk = inet_csk(sk_listener);
+ 	net = sock_net(sk_listener);
+-	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
++	max_syn_ack_retries = icsk->icsk_syn_retries ? :
++		READ_ONCE(net->ipv4.sysctl_tcp_synack_retries);
+ 	/* Normally all the openreqs are young and become mature
+ 	 * (i.e. converted to established socket) for first timeout.
+ 	 * If synack was not acknowledged for 1 second, it means
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 2222dfdde316..19ce08c9fbdc 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3967,7 +3967,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ 		val = keepalive_probes(tp);
+ 		break;
+ 	case TCP_SYNCNT:
+-		val = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
++		val = icsk->icsk_syn_retries ? :
++			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
+ 		break;
+ 	case TCP_LINGER2:
+ 		val = tp->linger2;
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 4f3b9ab222b6..a234704e8163 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -239,7 +239,8 @@ static int tcp_write_timeout(struct sock *sk)
+ 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
+ 		if (icsk->icsk_retransmits)
+ 			__dst_negative_advice(sk);
+-		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
++		retry_until = icsk->icsk_syn_retries ? :
++			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
+ 		expired = icsk->icsk_retransmits >= retry_until;
+ 	} else {
+ 		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
+@@ -406,12 +407,15 @@ abort:		tcp_write_err(sk);
+ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
  {
- 	struct net *net = sock_net((struct sock *)tp);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+-	int max_retries = icsk->icsk_syn_retries ? :
+-	    sock_net(sk)->ipv4.sysctl_tcp_synack_retries + 1; /* add one more retry for fastopen */
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	int max_retries;
  
--	return tp->keepalive_intvl ? : net->ipv4.sysctl_tcp_keepalive_intvl;
-+	return tp->keepalive_intvl ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_intvl);
- }
+ 	req->rsk_ops->syn_ack_timeout(req);
  
- static inline int keepalive_time_when(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
- 
--	return tp->keepalive_time ? : net->ipv4.sysctl_tcp_keepalive_time;
-+	return tp->keepalive_time ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
- }
- 
- static inline int keepalive_probes(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
- 
--	return tp->keepalive_probes ? : net->ipv4.sysctl_tcp_keepalive_probes;
-+	return tp->keepalive_probes ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_probes);
- }
- 
- static inline u32 keepalive_time_elapsed(const struct tcp_sock *tp)
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index c4d057b2941d..0bde36b56472 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -2122,7 +2122,7 @@ void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc)
- 	init_waitqueue_head(&lgr->llc_flow_waiter);
- 	init_waitqueue_head(&lgr->llc_msg_waiter);
- 	mutex_init(&lgr->llc_conf_mutex);
--	lgr->llc_testlink_time = net->ipv4.sysctl_tcp_keepalive_time;
-+	lgr->llc_testlink_time = READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
- }
- 
- /* called after lgr was removed from lgr_list */
++	/* add one more retry for fastopen */
++	max_retries = icsk->icsk_syn_retries ? :
++		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_synack_retries) + 1;
++
+ 	if (req->num_timeout >= max_retries) {
+ 		tcp_write_err(sk);
+ 		return;
 -- 
 2.30.2
 
