@@ -2,174 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B6D5761C4
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:35:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3AA576218
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiGOMe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 08:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        id S232149AbiGOMu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 08:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiGOMe5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:34:57 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1D9491C7
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:34:56 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id x21so3119795plb.3
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:34:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MEL8uMaMfc0xZ5Unr8VxlficMFLRxwNCPFY/Lu7nYQ0=;
-        b=jNIIFR07gIRVCN6zUiY5o9rMv6t1Y0jNH6e4L02yy2kolfdFMCMvnPlY0ibzLt45sa
-         qqg5SMbD/9Kf1CrppnzN1CS+h+/4gQMa1PDbRVdAcGDds18Eo36vyUppsf0li5m54eMP
-         S3qRekEcq+ZsvZxj+uO29YP73reXZ4mGmV95FuO04ApE5ixun06xOvpgeyihxuRv2pWv
-         0wO8fVjmVdqMFIu5Dl3/aKdwTOr6ASCohUN+/unGw/ZH2qYv6wTqNEi/cGBMEQ+562C3
-         QWFZcA7uKT4TalJ0Ogy92JKMRv8lWyxfilC9IeNC1ztjabgdFRL+L/ylxXvxRduE/zcU
-         d1mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MEL8uMaMfc0xZ5Unr8VxlficMFLRxwNCPFY/Lu7nYQ0=;
-        b=dLID8GUfRuLyh8v7YfowgL1fzADxkHXEBbj626mvciFQMZy4onTshJJeLUONrKFqyT
-         ssuDX4z9wfS9fb01lOgz6SqFaYJj/GAPWmfX73ivrmpiiHkVtKYzNfo3v4nW4H6i8/XU
-         WC4MJvrurGck8qiXE8OIoxhDm+d60qLHHL4pf6Lj+mO93qfLL62lI5QMMZukYvm0L+fd
-         IkCK31TO1OHMZyOoLWCAXU/ECV0TvBob1Xe2GDm/KRIAix53zOdBp7rjHpIWQeTg1e/T
-         m2nPi7aqAk6YqETqFTfHdaoUdE4lyxsVpKG9gmElOw2AdejwFx5gt4ba3MlJzTsglLZi
-         D8zA==
-X-Gm-Message-State: AJIora/OKby2Om6sCTpSTYi73IuKHFS/paiB7+0yUzBCjY9wrSxr2tiR
-        9O8DJiieI9dsmXXvIGi0Sfo=
-X-Google-Smtp-Source: AGRyM1uKmMubPrsKkOusMzy+JUbp4vp0mFJxkhddf2RZXg9dhPiceZkab2njL2z0G3a1f+hLZRmYAw==
-X-Received: by 2002:a17:903:22d0:b0:16b:f798:1cff with SMTP id y16-20020a17090322d000b0016bf7981cffmr13296609plg.23.1657888495547;
-        Fri, 15 Jul 2022 05:34:55 -0700 (PDT)
-Received: from [192.168.0.4] ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id k6-20020aa79986000000b00528c22038f5sm3890915pfh.14.2022.07.15.05.34.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 05:34:54 -0700 (PDT)
-Message-ID: <6d75ddde-c7aa-d134-4d92-3aaa1f96f717@gmail.com>
-Date:   Fri, 15 Jul 2022 21:34:51 +0900
+        with ESMTP id S231292AbiGOMu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:50:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DE532ED5A
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657889427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=yG6DZkuyy9DwOyDsoQVS06AJjtPTlfn1QRvO2HjX0rY=;
+        b=N1lfnIryme9XxbWC4hSW2Jb/cfOSnMgKe9iQeaT31JYP1FGEK7MZAazLOwQd2ELARcSiwP
+        csIa3ODwCDLXmVLM5LDRFmLO6wJ5F7iurYoGn6JzB0SMaQZRoN4OxVOmlt3tepNPbz7ExH
+        UFCAHy20QptBNiIBQ0fMtThwABEH7ls=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-318-DWMnpf_aMruFoaMM0WX1bg-1; Fri, 15 Jul 2022 08:50:16 -0400
+X-MC-Unique: DWMnpf_aMruFoaMM0WX1bg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0A4BE101A58D;
+        Fri, 15 Jul 2022 12:50:16 +0000 (UTC)
+Received: from raketa.redhat.com (unknown [10.40.192.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A1FBF40CFD0A;
+        Fri, 15 Jul 2022 12:50:14 +0000 (UTC)
+From:   Maurizio Lombardi <mlombard@redhat.com>
+To:     alexander.duyck@gmail.com
+Cc:     kuba@kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        chen45464546@163.com
+Subject: [PATCH V3] mm: prevent page_frag_alloc() from corrupting the memory
+Date:   Fri, 15 Jul 2022 14:50:13 +0200
+Message-Id: <20220715125013.247085-1-mlombard@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net 1/8] amt: use workqueue for gateway side message
- handling
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org
-References: <20220712105714.12282-1-ap420073@gmail.com>
- <20220712105714.12282-2-ap420073@gmail.com>
- <20220713205509.2a79563a@kernel.org>
-From:   Taehee Yoo <ap420073@gmail.com>
-In-Reply-To: <20220713205509.2a79563a@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-Thank you so much for your review!
+A number of drivers call page_frag_alloc() with a
+fragment's size > PAGE_SIZE.
+In low memory conditions, __page_frag_cache_refill() may fail the order 3
+cache allocation and fall back to order 0;
+In this case, the cache will be smaller than the fragment, causing
+memory corruptions.
 
-On 7/14/22 12:55, Jakub Kicinski wrote:
- > On Tue, 12 Jul 2022 10:57:07 +0000 Taehee Yoo wrote:
- >> @@ -2392,12 +2429,14 @@ static bool 
-amt_membership_query_handler(struct amt_dev *amt,
- >>   	skb->pkt_type = PACKET_MULTICAST;
- >>   	skb->ip_summed = CHECKSUM_NONE;
- >>   	len = skb->len;
- >> +	rcu_read_lock_bh();
- >>   	if (__netif_rx(skb) == NET_RX_SUCCESS) {
- >>   		amt_update_gw_status(amt, AMT_STATUS_RECEIVED_QUERY, true);
- >>   		dev_sw_netstats_rx_add(amt->dev, len);
- >>   	} else {
- >>   		amt->dev->stats.rx_dropped++;
- >>   	}
- >> +	rcu_read_unlock_bh();
- >>
- >>   	return false;
- >>   }
- >
- > The RCU lock addition looks potentially unrelated?
- >
+Prevent this from happening by checking if the newly allocated cache
+is large enough for the fragment; if not, the allocation will fail
+and page_frag_alloc() will return NULL.
 
-I checked that RCU is not necessary here.
-I tested local_bh_disable(), and it works well. no splats appeared.
-So, as Paolo suggested, I will use local_bh_disable() instead of 
-rcu_read_lock_bh() in the v2.
+V2: do not free the cache page because this could make memory pressure
+even worse, just return NULL.
 
- >> @@ -2892,10 +3007,21 @@ static int amt_dev_stop(struct net_device *dev)
- >>   	struct amt_dev *amt = netdev_priv(dev);
- >>   	struct amt_tunnel_list *tunnel, *tmp;
- >>   	struct socket *sock;
- >> +	struct sk_buff *skb;
- >> +	int i;
- >>
- >>   	cancel_delayed_work_sync(&amt->req_wq);
- >>   	cancel_delayed_work_sync(&amt->discovery_wq);
- >>   	cancel_delayed_work_sync(&amt->secret_wq);
- >> +	cancel_work_sync(&amt->event_wq);
- >
- > Are you sure the work will not get scheduled again?
- > What has stopped packet Rx at this point?
+V3: add a comment to explain why we return NULL.
 
-I expected that RX was already stopped then ->ndo_stop() can be called.
-But as you pointed out, it isn't.
-In order to ensure that no more RX concurrently, amt_rcv() should not be 
-called.
-So, I think cancel_delayed_work() should be called after setting null to 
-the amt socket in amt_dev_stop().
-code looks like:
-    RCU_INIT_POINTER(amt->sock, NULL);
-    synchronize_net();
-    cancel_delayed_work(&amt->event_wq).
+Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
+---
+ mm/page_alloc.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
- >
- >> +	for (i = 0; i < AMT_MAX_EVENTS; i++) {
- >> +		skb = amt->events[i].skb;
- >> +		if (skb)
- >> +			kfree_skb(skb);
- >> +		amt->events[i].event = AMT_EVENT_NONE;
- >> +		amt->events[i].skb = NULL;
- >> +	}
- >>
- >>   	/* shutdown */
- >>   	sock = rtnl_dereference(amt->sock);
- >> @@ -3051,6 +3177,8 @@ static int amt_newlink(struct net *net, struct 
-net_device *dev,
- >>   		amt->max_tunnels = AMT_MAX_TUNNELS;
- >>
- >>   	spin_lock_init(&amt->lock);
- >> +	amt->event_idx = 0;
- >> +	amt->nr_events = 0;
- >
- > no need to init member of netdev_priv() to 0, it's zalloc'ed
- >
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3df0485..59c4dddf379f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5617,6 +5617,18 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+ 		/* reset page count bias and offset to start of new frag */
+ 		nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
+ 		offset = size - fragsz;
++		if (unlikely(offset < 0)) {
++			/*
++			 * The caller is trying to allocate a fragment
++			 * with fragsz > PAGE_SIZE but the cache isn't big
++			 * enough to satisfy the request, this may
++			 * happen in low memory conditions.
++			 * We don't release the cache page because
++			 * it could make memory pressure worse
++			 * so we simply return NULL here.
++			 */
++			return NULL;
++		}
+ 	}
+ 
+ 	nc->pagecnt_bias--;
+-- 
+2.31.1
 
-Thanks a lot for pointing it out.
-This is my mistake.
-If an amt interface is down and then up again, it would have incorrect 
-values of event_idx and nr_events.
-Because there is no init for these values.
-So, init for these variable in ->ndo_open() or ->ndo_stop() is needed.
-Initilization in the ->ndo_newlink() can't fix anything.
-
-As a test, there is a bug certainly.
-So, I will move it to ->ndo_open().
-
- >>   	amt->max_groups = AMT_MAX_GROUP;
- >>   	amt->max_sources = AMT_MAX_SOURCE;
- >>   	amt->hash_buckets = AMT_HSIZE;
-
-I will send the v2 patch after some tests!
-
-Thanks a lot for your review!
-Taehee Yoo
