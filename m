@@ -2,128 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5CD4575B69
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 08:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D284E575B98
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 08:32:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbiGOGR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 02:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        id S231571AbiGOGbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 02:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGOGR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 02:17:56 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7A02719;
-        Thu, 14 Jul 2022 23:17:55 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id s27so3549637pga.13;
-        Thu, 14 Jul 2022 23:17:55 -0700 (PDT)
+        with ESMTP id S229504AbiGOGaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 02:30:52 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B0F17046;
+        Thu, 14 Jul 2022 23:30:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=5MLxTGie+B4QdlEZJxtbc8CtA2pcH2E4OqHrrJEXotI=;
-        b=E9f19W6WnC5o6tUo39/A3LDf0ge61zcqFRst/ixdwUQESK0Kf/5v7f1M0aK6twNDF7
-         HfMWGqil3gsBqmL/cYph1jmoznV1o+eZ+Ypb0oOS+fvhn44oAxJxuW0RgMxb+prc3PjX
-         KcVSrk4QypCpuWy8b1O2Z2N2fCPOXnsYjCSD2K6oZwRSaSLSpP1OrtG5Ik4hkldyTdTn
-         aeDwolSqATu5jzFUNeFQ9anNJa81F4iSxYoOLFP1kWBuyIwUoUmVOaaxyKyXv8+eaKXl
-         57lHL/zPjxLTVDARmFpaShxytqRztVZ9rC/p1HBR8tbtZzMkK2JVYZXK+ld9b+6+ARKo
-         QrlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=5MLxTGie+B4QdlEZJxtbc8CtA2pcH2E4OqHrrJEXotI=;
-        b=0GG2Suvd4OpkbQIVdjGdDrGTHcexouGhInQZS3OndFbdGcqMiSGxT0hkEHuHyQLq/Y
-         ywe8xtsScYCUc802PApsFoq4L85nbUj3EW++fSJYkxXIyflET18WF0t0FqpnTyfRseGW
-         y4vDwwECpvYokR0l5H9gTqW9jCPriPvpHlhTUn5fuqNSljoXYAEXifSpfSgtK3HqXRt1
-         ao4pGFrnIKzOqgNfSBMzZeNQO4R7rdJ3n+QaZ8no89+kHLwrKR8ouAsAXAZxOzcPjG6m
-         zCJvYcxL1zbKGsQsgJ91kfkLda3zf1Z6rXRdoCut4mKWVaLgla35td9yctHzu/f6XJkx
-         ARPw==
-X-Gm-Message-State: AJIora/zJW3c0FsrcJkcLMYZZYpEZxlgIflI0LokvaZJXysMuowbI90p
-        AS+EHd3RGBUJCrql9sMR/IWvzjwSa8z7CQ==
-X-Google-Smtp-Source: AGRyM1vbxon5umiGZ4oZkOf87BbF91J8zDMFcxF6hZr5E5G93STJ3G4ZdDmaxvWUtSOobzYBNx5BAQ==
-X-Received: by 2002:a63:1a18:0:b0:419:aa0d:4f9c with SMTP id a24-20020a631a18000000b00419aa0d4f9cmr7545826pga.389.1657865874986;
-        Thu, 14 Jul 2022 23:17:54 -0700 (PDT)
-Received: from cloud-MacBookPro ([2601:646:8201:c2e0:310b:ff49:22f8:d171])
-        by smtp.gmail.com with ESMTPSA id 77-20020a621950000000b005289627ae6asm2797161pfz.187.2022.07.14.23.17.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 23:17:54 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 23:17:54 -0700
-From:   Binyi Han <dantengknight@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: qlge: refine variable name
-Message-ID: <20220715061754.GA6657@cloud-MacBookPro>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657866651; x=1689402651;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=IKTE0WsoHbdtCDClI7Fv5lrmNNiRt8z95iB21d4OgXE=;
+  b=PfAUa8jbYjjqES2iv10HPKqFzxPUHJEBg+dR2WSTLRmLb5dbuO6ZbA5t
+   bLJX7EbKepBkti2OfsTxv6cMB+KpWW6l+tnOd0OwA0KoClLAmkfgSqCQF
+   rO1UER3a+ZAYfA/ZwqkP/n0rFViMZRx9dwfDwRMaBVaJbXDWNq5kXxHid
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jul 2022 23:30:50 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 23:30:50 -0700
+Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Jul 2022 23:30:45 -0700
+From:   Zijun Hu <quic_zijuhu@quicinc.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <luiz.von.dentz@intel.com>, <quic_zijuhu@quicinc.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH v3] Bluetooth: hci_sync: Remove redundant func definition
+Date:   Fri, 15 Jul 2022 14:30:41 +0800
+Message-ID: <1657866641-16668-1-git-send-email-quic_zijuhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tmp as a variable name don't have much information, change tmp to dma.
+both hci_request.c and hci_sync.c have the same definition
+for disconnected_accept_list_entries(), so remove a redundant
+copy.
 
-Signed-off-by: Binyi Han <dantengknight@gmail.com>
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- drivers/staging/qlge/qlge_main.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+v2->v3
+ -remove table char to solve gitlint checking failure
+v1->v2
+ -remove the func copy within hci_request.c instead of hci_sync.c
+ net/bluetooth/hci_request.c | 18 ------------------
+ net/bluetooth/hci_request.h |  2 ++
+ net/bluetooth/hci_sync.c    |  2 +-
+ 3 files changed, 3 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 4b166c66cfc5..58d1920c4347 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -2955,7 +2955,7 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 	void __iomem *doorbell_area =
- 		qdev->doorbell_area + (DB_PAGE_SIZE * (128 + rx_ring->cq_id));
- 	int err = 0;
--	u64 tmp;
-+	u64 dma;
- 	__le64 *base_indirect_ptr;
- 	int page_entries;
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 635cc5fb451e..edec0447aaa7 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
+ 	return 0;
+ }
  
-@@ -3004,14 +3004,14 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 		FLAGS_LI;		/* Load irq delay values */
- 	if (rx_ring->cq_id < qdev->rss_ring_count) {
- 		cqicb->flags |= FLAGS_LL;	/* Load lbq values */
--		tmp = (u64)rx_ring->lbq.base_dma;
-+		dma = (u64)rx_ring->lbq.base_dma;
- 		base_indirect_ptr = rx_ring->lbq.base_indirect;
+-static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+-{
+-	struct bdaddr_list *b;
+-
+-	list_for_each_entry(b, &hdev->accept_list, list) {
+-		struct hci_conn *conn;
+-
+-		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
+-		if (!conn)
+-			return true;
+-
+-		if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
+-			return true;
+-	}
+-
+-	return false;
+-}
+-
+ void __hci_req_update_scan(struct hci_request *req)
+ {
+ 	struct hci_dev *hdev = req->hdev;
+diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+index 7f8df258e295..e80b500878d9 100644
+--- a/net/bluetooth/hci_request.h
++++ b/net/bluetooth/hci_request.h
+@@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
+ int hci_update_random_address(struct hci_request *req, bool require_privacy,
+ 			      bool use_rpa, u8 *own_addr_type);
  
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
- 		     page_entries++) {
--			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
--			tmp += DB_PAGE_SIZE;
-+			base_indirect_ptr[page_entries] = cpu_to_le64(dma);
-+			dma += DB_PAGE_SIZE;
- 		}
- 		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
- 		cqicb->lbq_buf_size =
-@@ -3021,14 +3021,14 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 		rx_ring->lbq.next_to_clean = 0;
++bool disconnected_accept_list_entries(struct hci_dev *hdev);
++
+ int hci_abort_conn(struct hci_conn *conn, u8 reason);
+ void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
+ 		      u8 reason);
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 212b0cdb25f5..48a262f0ae49 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
+ 	return err;
+ }
  
- 		cqicb->flags |= FLAGS_LS;	/* Load sbq values */
--		tmp = (u64)rx_ring->sbq.base_dma;
-+		dma = (u64)rx_ring->sbq.base_dma;
- 		base_indirect_ptr = rx_ring->sbq.base_indirect;
+-static bool disconnected_accept_list_entries(struct hci_dev *hdev)
++bool disconnected_accept_list_entries(struct hci_dev *hdev)
+ {
+ 	struct bdaddr_list *b;
  
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
- 		     page_entries++) {
--			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
--			tmp += DB_PAGE_SIZE;
-+			base_indirect_ptr[page_entries] = cpu_to_le64(dma);
-+			dma += DB_PAGE_SIZE;
- 		}
- 		cqicb->sbq_addr =
- 			cpu_to_le64(rx_ring->sbq.base_indirect_dma);
 -- 
-2.25.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
 
