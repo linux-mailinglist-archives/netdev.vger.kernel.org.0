@@ -2,146 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E76576244
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A80576251
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 14:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233133AbiGOMwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 08:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
+        id S232176AbiGOMzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 08:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiGOMwe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:52:34 -0400
+        with ESMTP id S229528AbiGOMzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 08:55:40 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D16C402C2
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:52:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 149CC10FDD
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:55:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657889552;
+        s=mimecast20190719; t=1657889738;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Bn/sNX4ffBRjzNPcS5PuemUEc8YHP6wFTJGbO8K7n3w=;
-        b=WpbSfuuHowHosc0Bba5f0Ag39IqrH7Vlzs3Kl5Pa/aQnaNPg1kxjBtcDTEErgMGVlyAOg6
-        /pHNhx79fZ+gVb6Uu6OgZdB4gHRyLyescDXVgmgtu8OhoMl664JNumN5gFHzlpYrFXX8Zs
-        JDRhTQ81JUGc0xyJanaAtGpJ8/mgkqk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=mOV6gCN0knh8EXo83MFRYcVha3MN8ws4cl3JXlY06yM=;
+        b=F2Lfyxk31UHsUy06zeJWPNZoxYHB5zb0vapta+pSU4Fm1p6oVoN2W5WXVIaal6oiKPGSRm
+        qOzPHU1cOPiJZ2KoWccik/L2VRirfDO7K/cGnrqF+fQWL9fA6yZtXA8nvlCrclNlS7u/4B
+        067ysbvGJBAc2sq5cVelMTsSxaZguUg=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-312-C_Sj2__HN3qa7syAvV4R6g-1; Fri, 15 Jul 2022 08:52:29 -0400
-X-MC-Unique: C_Sj2__HN3qa7syAvV4R6g-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7BD285A581;
-        Fri, 15 Jul 2022 12:52:28 +0000 (UTC)
-Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7138F40315D;
-        Fri, 15 Jul 2022 12:52:27 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 14:52:25 +0200
-From:   Artem Savkov <asavkov@redhat.com>
+ us-mta-44-5bvOhm06P0OS3amsnw1Gxg-1; Fri, 15 Jul 2022 08:55:37 -0400
+X-MC-Unique: 5bvOhm06P0OS3amsnw1Gxg-1
+Received: by mail-ed1-f71.google.com with SMTP id z14-20020a056402274e00b0043ae5c003c1so3422340edd.9
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 05:55:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=mOV6gCN0knh8EXo83MFRYcVha3MN8ws4cl3JXlY06yM=;
+        b=IGWsmnoVWXBa2jqEljNFz+WVeT6nQM8GgBk2Eyec3Ip5sy8H7HwVY9B7ZggcGrFP3r
+         As5x0Wy2ycxR1QZs8r/VJ4GfwHbCg4mKcyU2UAnrEYwVHQ5ah7P1pQBjVyTNbum6FRMH
+         fPY3bVdaDNSDbYIG8bNIYCRtyFup7yT7d1SWKJ0ZEAOONJ5EyNZfuAQJ6te+NabBCWn2
+         SrRw/ZWThT72dISCQ9zksHO44K0x8SGvBUZ4K5SfAiq9CLLhD0W+k1XcFn9uYvdv3c8e
+         ncdnSD2HDw0bSD5S1TATWSspTOqfPWjvqSybHjm0F0uYzmelcSbsFa6eP7+VohRHM5ro
+         Ar/g==
+X-Gm-Message-State: AJIora/vp0gM2nTfBdLkx4KMVmyWugYKPytw0qmExSa7Y9wWUYwoWvzV
+        3nQ4f7aqKo3q4Xp8BCRs2ZDRyYZmPB/QZNaDD+0lEj+smDhy/A84gsf3QgU50Aff5b/nVrcZhJm
+        DOjqX/2Rrfiylv2tU
+X-Received: by 2002:aa7:c98f:0:b0:43a:71c2:3f7e with SMTP id c15-20020aa7c98f000000b0043a71c23f7emr18937154edt.60.1657889735774;
+        Fri, 15 Jul 2022 05:55:35 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uRrjFF/vkMl1zjVttTeThbXaMNP0lM2AWToZsG6mZfuHVp4vj/P3g406cXFK7OKBCtmMigCQ==
+X-Received: by 2002:aa7:c98f:0:b0:43a:71c2:3f7e with SMTP id c15-20020aa7c98f000000b0043a71c23f7emr18937100edt.60.1657889735355;
+        Fri, 15 Jul 2022 05:55:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906201200b006f3ef214e13sm1963676ejo.121.2022.07.15.05.55.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 05:55:34 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E3D1B4D9CBF; Fri, 15 Jul 2022 14:55:33 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>, dvacek@redhat.com
-Subject: Re: [RFC PATCH bpf-next 3/4] bpf: add bpf_panic() helper
-Message-ID: <YtFjCSR8YiK8E13J@samus.usersys.redhat.com>
-Mail-Followup-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>, dvacek@redhat.com
-References: <20220711083220.2175036-1-asavkov@redhat.com>
- <20220711083220.2175036-4-asavkov@redhat.com>
- <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
- <CAADnVQ+ju04JAqyEbA_7oVj9uBAuL-fUP1FBr_OTygGf915RfQ@mail.gmail.com>
- <Ys7JL9Ih3546Eynf@wtfbox.lan>
- <CAADnVQ+6aN5nMwaTjoa9ddnT6rakgwb9oPhtdWSsgyaHP8kZ6Q@mail.gmail.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [RFC PATCH 00/17] xdp: Add packet queueing and scheduling
+ capabilities
+In-Reply-To: <20220715011228.tujkugafv6eixbyz@MacBook-Pro-3.local>
+References: <20220713111430.134810-1-toke@redhat.com>
+ <CAKH8qBtdnku7StcQ-SamadvAF==DRuLLZO94yOR1WJ9Bg=uX1w@mail.gmail.com>
+ <877d4gpto8.fsf@toke.dk>
+ <CAKH8qBvODehxeGrqyY6+9TJPePe_KLb6vX9P1rKDgbQhuLpSSQ@mail.gmail.com>
+ <87v8s0nf8h.fsf@toke.dk>
+ <20220715011228.tujkugafv6eixbyz@MacBook-Pro-3.local>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 15 Jul 2022 14:55:33 +0200
+Message-ID: <87k08eo7qy.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+6aN5nMwaTjoa9ddnT6rakgwb9oPhtdWSsgyaHP8kZ6Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 03:20:22PM -0700, Alexei Starovoitov wrote:
-> On Wed, Jul 13, 2022 at 6:31 AM Artem Savkov <asavkov@redhat.com> wrote:
-> >
-> > On Tue, Jul 12, 2022 at 11:08:54AM -0700, Alexei Starovoitov wrote:
-> > > On Tue, Jul 12, 2022 at 10:53 AM Song Liu <song@kernel.org> wrote:
-> > > >
-> > > > >
-> > > > > +BPF_CALL_1(bpf_panic, const char *, msg)
-> > > > > +{
-> > > > > +       panic(msg);
-> > > >
-> > > > I think we should also check
-> > > >
-> > > >    capable(CAP_SYS_BOOT) && destructive_ebpf_enabled()
-> > > >
-> > > > here. Or at least, destructive_ebpf_enabled(). Otherwise, we
-> > > > may trigger panic after the sysctl is disabled.
-> > > >
-> > > > In general, I don't think sysctl is a good API, as it is global, and
-> > > > the user can easily forget to turn it back off. If possible, I would
-> > > > rather avoid adding new BPF related sysctls.
-> > >
-> > > +1. New syscal isn't warranted here.
-> > > Just CAP_SYS_BOOT would be enough here.
-> >
-> > Point taken, I'll remove sysctl knob in any further versions.
-> >
-> > > Also full blown panic() seems unnecessary.
-> > > If the motivation is to get a memory dump then crash_kexec() helper
-> > > would be more suitable.
-> > > If the goal is to reboot the system then the wrapper of sys_reboot()
-> > > is better.
-> > > Unfortunately the cover letter lacks these details.
-> >
-> > The main goal is to get the memory dump, so crash_kexec() should be enough.
-> > However panic() is a bit more versatile and it's consequences are configurable
-> > to some extent. Are there any downsides to using it?
-> 
-> versatile? In what sense? That it does a lot more than kexec?
-> That's a disadvantage.
-> We should provide bpf with minimal building blocks and let
-> bpf program decide what to do.
-> If dmesg (that is part of panic) is useful it should be its
-> own kfunc.
-> If halt is necessary -> separate kfunc as well.
-> reboot -> another kfunc.
-> 
-> Also panic() is not guaranteed to do kexec and just
-> panic is not what you stated is the goal of the helper.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Alright, if the aim is to provide the smallest building blocks then
-crash_kexec() is a better choice.
+> On Thu, Jul 14, 2022 at 12:46:54PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> >
+>> > Maybe a related question here: with the way you do
+>> > BPF_MAP_TYPE_PIFO_GENERIC vs BPF_MAP_TYPE_PIFO_XDP, how hard it would
+>> > be have support for storing xdp_frames/skb in any map? Let's say we
+>> > have generic BPF_MAP_TYPE_RBTREE, where the key is
+>> > priority/timestamp/whatever, can we, based on the value's btf_id,
+>> > figure out the rest? (that the value is kernel structure and needs
+>> > special care and more constraints - can't be looked up from user space
+>> > and so on)
+>> >
+>> > Seems like we really need to have two special cases: where we transfer
+>> > ownership of xdp_frame/skb to/from the map, any other big
+>> > complications?
+>> >
+>> > That way we can maybe untangle the series a bit: we can talk about
+>> > efficient data structures for storing frames/skbs independently of
+>> > some generic support for storing them in the maps. Any major
+>> > complications with that approach?
+>>=20
+>> I've had discussions with Kartikeya on this already (based on his 'kptr
+>> in map' work). That may well end up being feasible, which would be
+>> fantastic. The reason we didn't use it for this series is that there's
+>> still some work to do on the generic verifier/infrastructure support
+>> side of this (the PIFO map is the oldest part of this series), and I
+>> didn't want to hold up the rest of the queueing work until that landed.
+>
+> Certainly makes sense for RFC to be sent out earlier,
+> but Stan's point stands. We have to avoid type-specific maps when
+> generic will do. kptr infra is getting close to be that answer.
 
-> >
-> > > Why this destructive action cannot be delegated to user space?
-> >
-> > Going through userspace adds delays and makes it impossible to hit "exactly
-> > the right moment" thus making it unusable in most cases.
-> 
-> What would be an example of that?
-> kexec is not instant either.
+ACK, I'll iterate on the map types and see how far we can get with the
+kptr approach.
 
-With kexec at least the thread it got called in is in a proper state. I
-guess it is possible to achieve this by signalling userspace to do
-kexec/panic and then block the thread somehow but that won't work in a
-single-cpu case. Or am I missing something?
+Do people feel a generic priority queue type would be generally useful?
+Because in that case I can split out this work into a separate series...
 
--- 
- Artem
+>> >> Maybe I'm missing something, though; could you elaborate on how you'd
+>> >> use kfuncs instead?
+>> >
+>> > I was thinking about the approach in general. In networking bpf, we've
+>> > been adding new program types, new contexts and new explicit hooks.
+>> > This all requires a ton of boiler plate (converting from uapi ctx to
+>> > the kernel, exposing hook points, etc, etc). And looking at Benjamin's
+>> > HID series, it's so much more elegant: there is no uapi, just kernel
+>> > function that allows it to be overridden and a bunch of kfuncs
+>> > exposed. No uapi, no helpers, no fake contexts.
+>> >
+>> > For networking and xdp the ship might have sailed, but I was wondering
+>> > whether we should be still stuck in that 'old' boilerplate world or we
+>> > have a chance to use new nice shiny things :-)
+>> >
+>> > (but it might be all moot if we'd like to have stable upis?)
+>>=20
+>> Right, I see what you mean. My immediate feeling is that having an
+>> explicit stable UAPI for XDP has served us well. We do all kinds of
+>> rewrite tricks behind the scenes (things like switching between xdp_buff
+>> and xdp_frame, bulking, direct packet access, reading ifindexes by
+>> pointer walking txq->dev, etc) which are important ways to improve
+>> performance without exposing too many nitty-gritty details into the API.
+>>=20
+>> There's also consistency to consider: I think the addition of queueing
+>> should work as a natural extension of the existing programming model for
+>> XDP. So I feel like this is more a case of "if we were starting from
+>> scratch today we might do things differently (like the HID series), but
+>> when extending things let's keep it consistent"?
+>
+> "consistent" makes sense when new feature follows established path.
+> The programmable packet scheduling in TX is just as revolutionary as
+> XDP in RX was years ago :)
+> This feature can be done similar to hid-bpf without cast-in-stone uapi
+> and hooks. Such patches would be much easier to land and iterate on top.
+> The amount of bike shedding will be 10 times less.
+> No need for new program type, no new hooks, no new FDs and attach uapi-s.
+> Even libbpf won't need any changes.
+> Add few kfuncs and __weak noinline "hooks" in TX path.
+> Only new map type would be necessary.
+> If it can be made with kptr then it will be the only uapi exposure that
+> will be heavily scrutinized.
+
+I'm not quite convinced it's that obvious that it can be implemented
+this way; but I don't mind trying it out either, if nothing else it'll
+give us something to compare against...
+
+> It doesn't mean that it will stay unstable-api forever. Once it demonstra=
+tes
+> that it is on par with fq/fq_codel/cake feature-wise we can bake it into =
+uapi.
+
+In any case, I don't think we should merge anything until we've shown
+this :)
+
+-Toke
 
