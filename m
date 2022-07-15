@@ -2,78 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA785765D2
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 815165765D9
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 19:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235661AbiGORVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 13:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
+        id S235825AbiGORYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 13:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235652AbiGORVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:21:01 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D32D79682;
-        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id y141so5181216pfb.7;
-        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
+        with ESMTP id S235790AbiGORYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 13:24:50 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5211564ED;
+        Fri, 15 Jul 2022 10:24:49 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w12so7119861edd.13;
+        Fri, 15 Jul 2022 10:24:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
-        b=QYRuWFCmTvZa/x5P+uESITLhb+SAnK3Ep6RjijQpXs9D9HQ6zQtjDb73w8plJ7rrTN
-         jl9TfKRIr00Y3U4c2O7IK+l52IfmISjdi5DVoOjQuaZRup6uS7Zr3K0ncXMTg8Qth2S+
-         YjK81IU2OOpN0VPXjCGK9FYDqDEur07qD4W2lFxHiX7RFLZstkKrPM9XjqL7l2cJ6kur
-         SeL7QRXbm8BwPLNS/cwAAkRIow9e+DD8dHprPzQ/rc36raoPBVQv/Ar1FXytFjBJP3os
-         gqEOZlIgjrszm0i74uR/LUDHByRmKG4im7M5Tqfx5rz+s8jfFMTlNp4BawIxEr2QvlQF
-         1jUQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uzkdv8Dc9Ar4VBcn4GaayOprsDjBshT27fyNEPPxRGo=;
+        b=JUwWMv0ZzCp2g0wjmfhiQKPpxgYLDVk8Bg2DyDo9Nv2vPSfd4QlapKyKP8FZdKkrFc
+         7eERvbWxPsVlaTQHmvMnihm8UJCfDaon/IhDJ8mvs6GITYempO4YeZ1VtXWCAuoagOLv
+         04kwSfFeHfEoT/OCXdSWWkEcjSqjW188bJ9P0NEkeOEl+xrSTHN4CtXpYHNDWUBbLpxO
+         YD8S2ulqe8kgtWrzgGCR/v0e9vq97PtpYq0TKnQmouIaPzHtQqB7Wf4vDH6PqEoZ/T3a
+         OWjGLeSDymCeGZusix2ILZHOmKUODHHj7EEle1ll1IaHPOcgkO2XQwId7AHbJu5Mnq7G
+         CKHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
-        b=LP2izyH7hW0MLFzJzz0Ef5EJ4OgRAvvcH93cR/cO4FoSL8qG1i6CW/mr/G5BLErdDQ
-         VbF8UOGP0F4wT19qSr+jr4aipnj2BHp1Yg8GJzD6qPAK2HmdWgXftaJAQhDBMZDAPPrT
-         9GcZh8RXn3bNM47Mwf5suWbzn6CU4etzvUPQw3TVNI+9nDi/a+UA33Lb+LNAAM9m2o3S
-         NY760hBsoO3SQ612IJawTzDHkkjryq8NufXYibGCg4qrqgyTnYxQwld/mebt5W5vBwEU
-         HWwl+ccgTJsJi0IvXK16yJbXXHXQ/Wxv0GgTw0feD9MrFdMuGvMzqt2OZ9vVWqlLAn2S
-         zN+A==
-X-Gm-Message-State: AJIora9W2A+BJbF9s98oZEDVMwzbaWV4+xrdjsmf2Y0tzbCnXS6FZMWM
-        cxtHVojxsUbMoKHdt72zLdo=
-X-Google-Smtp-Source: AGRyM1vINHbIiII2lUdhE4U0lB3RwsmwOrfFF+r+w8TiBpauAFR5zNUGcFsSpEsGUrmUqgFtL4r48A==
-X-Received: by 2002:a05:6a00:993:b0:52a:dd93:f02d with SMTP id u19-20020a056a00099300b0052add93f02dmr15211567pfg.12.1657905659970;
-        Fri, 15 Jul 2022 10:20:59 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ot8-20020a17090b3b4800b001ef89019352sm13427194pjb.3.2022.07.15.10.20.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 10:20:58 -0700 (PDT)
-Message-ID: <a5b55fb3-3326-eb3c-99e6-3fd6b7e4c2fe@gmail.com>
-Date:   Fri, 15 Jul 2022 10:20:55 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uzkdv8Dc9Ar4VBcn4GaayOprsDjBshT27fyNEPPxRGo=;
+        b=H2xmzqhW9hGRIthOQGOGpq3K19Pn+FxpIR9y6xKidDePlYCpLpabOL+k7DZDim6trd
+         ZfiWBKNNbp73Y9wOF582D6zKOAduWFwOxmJ49yJNwUdf7qTiv9DyeVef+mSbj7UETrH7
+         BZOXJLh9TJl68gqoqgsYT4M/ihCfKvS5TB+UwtRiMfGjdBsBXajoP3aBSUeum1SbZHlL
+         iSD4JTXej5Rw8+HVmmNdFEAzDSZAisceUkxO7XVHHjBKXo5DWcZeIg/y3Ld5LbQF++ml
+         F/sM0sQWLjnM6z8Li3CKGT3OiwtKEHwTtJQVqbSyKkqri9Jm3m483d1T/XKToaxPhblP
+         iV0A==
+X-Gm-Message-State: AJIora+EMatIYa7EXy3xq68CylQG/qiNLq9AcuogvVMLeprp9wwOLFxR
+        4xupJt7HXxJ6s9DSZb83OMk=
+X-Google-Smtp-Source: AGRyM1vuepFFiSFjYf3MRujnZNcXH+xzL522xFIr0DTGyEcuYI+92aAtZbe7Ugkj9wCdR0bqIYTxKw==
+X-Received: by 2002:a05:6402:2802:b0:43a:9098:55a0 with SMTP id h2-20020a056402280200b0043a909855a0mr20176419ede.179.1657905888078;
+        Fri, 15 Jul 2022 10:24:48 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id fu20-20020a170907b01400b0072af2460cd6sm2228086ejc.30.2022.07.15.10.24.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 10:24:47 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 20:24:44 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220715172444.yins4kb2b6b35aql@skbuf>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [net-next: PATCH v2 1/8] net: phy: fixed_phy: switch to fwnode_
- API
-Content-Language: en-US
-To:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
-Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
-        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
-        upstream@semihalf.com
-References: <20220715085012.2630214-1-mw@semihalf.com>
- <20220715085012.2630214-2-mw@semihalf.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220715085012.2630214-2-mw@semihalf.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,33 +104,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/15/22 01:50, Marcin Wojtas wrote:
-> This patch allows to use fixed_phy driver and its helper
-> functions without Device Tree dependency, by swtiching from
-> of_ to fwnode_ API.
+On Fri, Jul 15, 2022 at 05:01:37PM +0100, Russell King (Oracle) wrote:
+> DSA port bindings allow for an optional phy interface mode. When an
+> interface mode is not specified, DSA uses the NA interface mode type.
 > 
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> However, phylink needs to know the parameters of the link, and this
+> will become especially important when using phylink for ports that
+> are devoid of all properties except the required "reg" property, so
+> that phylink can select the maximum supported link settings. Without
+> knowing the interface mode, phylink can't truely know the maximum
+> link speed.
+> 
+> Update the prototype for the phylink_get_caps method to allow drivers
+> to report this information back to DSA, and update all DSA
+> implementations function declarations to cater for this change. No
+> code is added to the implementations.
+> 
+> Reviewed-by: Marek Behún <kabel@kernel.org>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 > ---
->  include/linux/phy_fixed.h   |  4 +-
->  drivers/net/mdio/of_mdio.c  |  2 +-
->  drivers/net/phy/fixed_phy.c | 39 +++++++-------------
->  3 files changed, 17 insertions(+), 28 deletions(-)
-> 
-> diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
-> index 52bc8e487ef7..449a927231ec 100644
-> --- a/include/linux/phy_fixed.h
-> +++ b/include/linux/phy_fixed.h
-> @@ -19,7 +19,7 @@ extern int fixed_phy_add(unsigned int irq, int phy_id,
->  			 struct fixed_phy_status *status);
->  extern struct phy_device *fixed_phy_register(unsigned int irq,
->  					     struct fixed_phy_status *status,
-> -					     struct device_node *np);
-> +					     struct fwnode_handle *fwnode);
+(...)
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index b902b31bebce..7c6870d2c607 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -852,7 +852,8 @@ struct dsa_switch_ops {
+>  	 * PHYLINK integration
+>  	 */
+>  	void	(*phylink_get_caps)(struct dsa_switch *ds, int port,
+> -				    struct phylink_config *config);
+> +				    struct phylink_config *config,
+> +				    phy_interface_t *default_interface);
 
-I think this ought to require a forward declaration of struct fwnode_handle and a removal of the forward declaration of device_node.
+I would prefer having a dedicated void (*port_max_speed_interface),
+because the post-phylink DSA drivers (which are not few) will generally
+not need to concern themselves with implementing this, and I don't want
+driver writers to think they need to populate every parameter they see
+in phylink_get_caps. So the new function needs to be documented
+appropriately (specify who needs and who does not need to implement it,
+on which ports it will be called, etc).
 
-With that fixes:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+In addition, if we have a dedicated ds->ops->port_max_speed_interface(),
+we can do a better job of avoiding breakage with this patch set, since
+if DSA cannot find a valid phylink fwnode, AND there is no
+port_max_speed_interface() callback for this driver, DSA can still
+preserve the current logic of not putting the port down, and not
+registering it with phylink. That can be accompanied by a dev_warn() to
+state that the CPU/DSA port isn't registered with phylink, please
+implement port_max_speed_interface() to address that.
