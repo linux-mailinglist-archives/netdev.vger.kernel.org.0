@@ -2,140 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BFE35767E9
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 22:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA3F576802
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 22:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbiGOUAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 16:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
+        id S229969AbiGOULu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 16:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiGOT77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 15:59:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AB477496;
-        Fri, 15 Jul 2022 12:59:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 025676122A;
-        Fri, 15 Jul 2022 19:59:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A87C341C0;
-        Fri, 15 Jul 2022 19:59:54 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 15:59:53 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <20220715155953.4fb692e2@gandalf.local.home>
-In-Reply-To: <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-4-song@kernel.org>
-        <20220713203343.4997eb71@rorschach.local.home>
-        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
-        <20220714204817.2889e280@rorschach.local.home>
-        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
-        <20220714224646.62d49e36@rorschach.local.home>
-        <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
-        <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
-        <20220715151217.141dc98f@gandalf.local.home>
-        <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229847AbiGOULe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 16:11:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CE267C89;
+        Fri, 15 Jul 2022 13:11:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657915890; x=1689451890;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=FKJ/dIF3JDEjcdCfFHYJXRw3fJQKzGLSXIktrmv9EfU=;
+  b=A9l5ZG6HkNzBX0AhxkYFsEvQyzgCfpu15884ol65Ff+dTI4Pk4AMqa11
+   CxVuhdNMoCcV7DmHU81mde/hrLoXdG7Eow23EnqmvEQOZ5kLUhnaKphQM
+   HMwCx1FKSgyVRtaYXv1pT8eAtbH17jMhFWIxIRSndBMOjktPxkx4k5u7v
+   aB2SwiXr4MprHmSc/6ox5RDNP+n4Q2QrtU9E/USbJLH1f2TfVfccZibVB
+   eWByHHNrORafRmUNnECPDbIvpZTDUc9jCgtnhN+VvS5PovH1Q55L2jeTm
+   pJipBLEkjouYYkyN7CAzrjTanuYEd4D26t6/Opf0TVxbmnvtV09s5uAw7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="283449910"
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="283449910"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 13:11:29 -0700
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="686087461"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 13:11:22 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oCReg-001JEh-2D;
+        Fri, 15 Jul 2022 23:11:18 +0300
+Date:   Fri, 15 Jul 2022 23:11:18 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 5/6] net: dsa: use swnode fixed-link if using
+ default params
+Message-ID: <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jul 2022 19:49:00 +0000
-Song Liu <songliubraving@fb.com> wrote:
+On Fri, Jul 15, 2022 at 05:01:48PM +0100, Russell King (Oracle) wrote:
+> Create and use a swnode fixed-link specification for phylink if no
+> parameters are given in DT for a fixed-link. This allows phylink to
+> be used for "default" cases for DSA and CPU ports. Enable the use
+> of phylink in all cases for DSA and CPU ports.
 
-> > 
-> > What about if we release the lock when doing the callback?  
-> 
-> We can probably unlock ftrace_lock here. But we may break locking order 
-> with direct mutex (see below).
+> Co-developed by Vladimir Oltean and myself.
 
-You're talking about the multi registering case, right?
+Why not to use
 
-> 
-> > 
-> > Then we just need to make sure things are the same after reacquiring the
-> > lock, and if they are different, we release the lock again and do the
-> > callback with the new update. Wash, rinse, repeat, until the state is the
-> > same before and after the callback with locks acquired?  
-> 
-> Personally, I would like to avoid wash-rinse-repeat here.
+  Co-developed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-But it's common to do. Keeps your hair cleaner that way ;-)
+?
 
-> 
-> > 
-> > This is a common way to handle callbacks that need to do something that
-> > takes the lock held before doing a callback.
-> > 
-> > The reason I say this, is because the more we can keep the accounting
-> > inside of ftrace the better.
-> > 
-> > Wouldn't this need to be done anyway if BPF was first and live kernel
-> > patching needed the update? An -EAGAIN would not suffice.  
-> 
-> prepare_direct_functions_for_ipmodify handles BPF-first-livepatch-later
-> case. The benefit of prepare_direct_functions_for_ipmodify() is that it 
-> holds direct_mutex before ftrace_lock, and keeps holding it if necessary. 
-> This is enough to make sure we don't need the wash-rinse-repeat. 
-> 
-> OTOH, if we wait until __ftrace_hash_update_ipmodify(), we already hold
-> ftrace_lock, but not direct_mutex. To make changes to bpf trampoline, we
-> have to unlock ftrace_lock and lock direct_mutex to avoid deadlock. 
-> However, this means we will need the wash-rinse-repeat. 
-> 
-> 
-> For livepatch-first-BPF-later case, we can probably handle this in 
-> __ftrace_hash_update_ipmodify(), since we hold both direct_mutex and 
-> ftrace_lock. We can unlock ftrace_lock and update the BPF trampoline. 
-> It is safe against changes to direct ops, because we are still holding 
-> direct_mutex. But, is this safe against another IPMODIFY ops? I am not 
-> sure yet... Also, this is pretty weird because, we are updating a 
-> direct trampoline before we finish registering it for the first time. 
-> IOW, we are calling modify_ftrace_direct_multi_nolock for the same 
-> trampoline before register_ftrace_direct_multi() returns.
-> 
-> The approach in v2 propagates the -EAGAIN to BPF side, so these are two
-> independent calls of register_ftrace_direct_multi(). This does require
-> some protocol between ftrace core and its user, but I still think this 
-> is a cleaner approach. 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Marek Behún <kabel@kernel.org>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-The issue I have with this approach is it couples BPF and ftrace a bit too
-much.
+...
 
-But there is a way with my approach you can still do your approach. That
-is, have ops_func() return zero if everything is fine, and otherwise returns
-a negative value. Then have the register function fail and return whatever
-value that gets returned by the ops_func()
+> +static struct {
+> +	unsigned long mask;
+> +	int speed;
+> +	int duplex;
+> +} phylink_caps_params[] = {
+> +	{ MAC_400000FD, SPEED_400000, DUPLEX_FULL },
+> +	{ MAC_200000FD, SPEED_200000, DUPLEX_FULL },
+> +	{ MAC_100000FD, SPEED_100000, DUPLEX_FULL },
+> +	{ MAC_56000FD,  SPEED_56000,  DUPLEX_FULL },
+> +	{ MAC_50000FD,  SPEED_50000,  DUPLEX_FULL },
+> +	{ MAC_40000FD,  SPEED_40000,  DUPLEX_FULL },
+> +	{ MAC_25000FD,  SPEED_25000,  DUPLEX_FULL },
+> +	{ MAC_20000FD,  SPEED_20000,  DUPLEX_FULL },
+> +	{ MAC_10000FD,  SPEED_10000,  DUPLEX_FULL },
+> +	{ MAC_5000FD,   SPEED_5000,   DUPLEX_FULL },
+> +	{ MAC_2500FD,   SPEED_2500,   DUPLEX_FULL },
+> +	{ MAC_1000FD,   SPEED_1000,   DUPLEX_FULL },
+> +	{ MAC_100FD,    SPEED_100,    DUPLEX_FULL },
+> +	{ MAC_10FD,     SPEED_10,     DUPLEX_FULL },
+> +	{ MAC_1000HD,   SPEED_1000,   DUPLEX_HALF },
+> +	{ MAC_100HD,    SPEED_100,    DUPLEX_HALF },
+> +	{ MAC_10HD,     SPEED_10,     DUPLEX_HALF },
+> +};
+> +
+> +static int dsa_port_find_max_speed(unsigned long caps, int *speed, int *duplex)
+> +{
+> +	int i;
+> +
+> +	*speed = SPEED_UNKNOWN;
+> +	*duplex = DUPLEX_UNKNOWN;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(phylink_caps_params); i++) {
+> +		if (caps & phylink_caps_params[i].mask) {
+> +			*speed = phylink_caps_params[i].speed;
+> +			*duplex = phylink_caps_params[i].duplex;
 
-Then have the bpf ops_func() check (does this direct caller handle
-IPMODIFY? if yes, return 0, else return -EAGAIN). Then the registering of
-ftrace fails with your -EAGAIN, and then you can change the direct
-trampoline to handle IPMODIFY and try again. This time when ops_func() is
-called, it sees that the direct trampoline can handle the IPMODIFY and
-returns 0.
+> +			break;
 
-Basically, it's a way to still implement my suggestion, but let BPF decide
-to use -EAGAIN to try again. And then BPF and ftrace don't need to have
-these special flags to change the behavior of each other.
+With the below check it's way too protective programming.
 
--- Steve
+			return 0;
+
+> +		}
+> +	}
+> +
+> +	return *speed == SPEED_UNKNOWN ? -EINVAL : 0;
+
+	return -EINVAL;
+
+> +}
+
+...
+
+> +static struct fwnode_handle *dsa_port_get_fwnode(struct dsa_port *dp,
+> +						 phy_interface_t mode)
+> +{
+
+> +	struct property_entry fixed_link_props[3] = { };
+> +	struct property_entry port_props[3] = {};
+
+A bit of consistency in the assignments?
+
+Also it seems you are using up to 2 for the first one and only 1 in the second
+one. IIUC it requires a terminator entry, so it means 3 and 2. Do we really
+need 3 in the second case?
+
+> +	struct fwnode_handle *fixed_link_fwnode;
+> +	struct fwnode_handle *new_port_fwnode;
+> +	struct device_node *dn = dp->dn;
+> +	struct device_node *phy_node;
+> +	int err, speed, duplex;
+> +	unsigned long caps;
+> +
+> +	phy_node = of_parse_phandle(dn, "phy-handle", 0);
+
+fwnode in the name, why not to use fwnode APIs?
+
+	fwnode_find_reference();
+
+> +	of_node_put(phy_node);
+> +	if (phy_node || of_phy_is_fixed_link(dn))
+> +		/* Nothing broken, nothing to fix.
+> +		 * TODO: As discussed with Russell, maybe phylink could provide
+> +		 * a more comprehensive helper to determine what constitutes a
+> +		 * valid fwnode binding than this guerilla kludge.
+> +		 */
+> +		return of_fwnode_handle(dn);
+> +
+> +	if (mode == PHY_INTERFACE_MODE_NA)
+> +		dsa_port_find_max_caps(dp, &mode, &caps);
+> +	else
+> +		caps = dp->pl_config.mac_capabilities &
+> +		       phylink_interface_to_caps(mode);
+> +
+> +	err = dsa_port_find_max_speed(caps, &speed, &duplex);
+> +	if (err)
+> +		return ERR_PTR(err);
+> +
+> +	fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
+> +	if (duplex == DUPLEX_FULL)
+> +		fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
+> +
+> +	port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
+> +
+> +	new_port_fwnode = fwnode_create_software_node(port_props, NULL);
+> +	if (IS_ERR(new_port_fwnode))
+> +		return new_port_fwnode;
+> +
+> +	/* Node needs to be named so that phylink's call to
+> +	 * fwnode_get_named_child_node() finds it.
+> +	 */
+> +	fixed_link_fwnode = fwnode_create_named_software_node(fixed_link_props,
+> +							      new_port_fwnode,
+> +							      "fixed-link");
+> +	if (IS_ERR(fixed_link_fwnode)) {
+> +		fwnode_remove_software_node(new_port_fwnode);
+> +		return fixed_link_fwnode;
+> +	}
+> +
+> +	return new_port_fwnode;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
