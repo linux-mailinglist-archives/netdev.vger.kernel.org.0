@@ -2,199 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D3A5768FA
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:36:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2EDA57692B
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbiGOVg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 17:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
+        id S229663AbiGOVsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 17:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbiGOVgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:36:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10239868A0;
-        Fri, 15 Jul 2022 14:36:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lQRhVAEYMEEm9RW02pF+UuHE6aUESSqzeKHULVuhjPM=; b=BiF8ThJ16Z0gr8pYciLlOa6n9n
-        Kmit6hxcJOIi6f5sxSGgG0UQ+m8wX9OUgCJ7fC++3bQ2O6Hf5fMBi1h1DSSf8NfozaA70f/wk2t3x
-        Et1DrtMooxKlLnyCjIaze5xxuam7hQdA5pPhopyBkMbTT0vE/B1e9K0YwUEG5Z+wm61KCFXxbEc5a
-        2aAg3jW5SSQx4YCHYgTvFp7+fn4pQLulfboT5fLknVA7t4SJJzvzdaqZjhZP0QF7SA2M+yeha9L/v
-        H/qtXedCHs0ldn6jCeMotSe7urRF6zMkjNXzeR/tV+lyKwWfKsVk7rJLoIylCc7nv8ow+s6SHrSBJ
-        qWJVfWzQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33368)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oCSz9-0007Yu-UV; Fri, 15 Jul 2022 22:36:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oCSz7-0007sn-6W; Fri, 15 Jul 2022 22:36:29 +0100
-Date:   Fri, 15 Jul 2022 22:36:29 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 5/6] net: dsa: use swnode fixed-link if using
- default params
-Message-ID: <YtHd3f22AtrIzZ1K@shell.armlinux.org.uk>
-References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
- <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
- <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
+        with ESMTP id S229503AbiGOVsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:48:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543E02B277
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 14:47:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657921679; x=1689457679;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7iL/029uxJ2XBGzpteqOuHQxx3eYmBxGbY65GTk2iKA=;
+  b=PVhU3Iuxp0zpfSTJI7DLUFlxtvZIWY6WlAD3vm9nCUx9Ujx2R9S27YM5
+   tk3k9bJSAND6EotS8T4FCWRGzZPD7HDlt6WmuJSNB7+tM1dXfROAm5GzL
+   pZxNqOJ8B7l/tIzjx1S+JOkmDjiumhRjDtDUowMXnO6hM1u4L0xPb+irz
+   OLHQ0iI/5pHBOxsirFqxT0O02ktXpKdYTqcrYuboU2ByTMFmvQXZWfArO
+   Vq5uB07Wg9+rnh6F+9fR67bCq2mCID1kjIshPcs6AAUGLmtz+nyUGSKgi
+   uq5badFDrb0zNSTTHuF2yJmOwQZXxqvele5h8kQRayDmz3jRY6DkpEOfY
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="266319128"
+X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
+   d="scan'208";a="266319128"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 14:47:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
+   d="scan'208";a="593883578"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga007.jf.intel.com with ESMTP; 15 Jul 2022 14:47:58 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Piotr Skajewski <piotrx.skajewski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net v2 1/1] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+Date:   Fri, 15 Jul 2022 14:44:56 -0700
+Message-Id: <20220715214456.2968711-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 11:11:18PM +0300, Andy Shevchenko wrote:
-> On Fri, Jul 15, 2022 at 05:01:48PM +0100, Russell King (Oracle) wrote:
-> > Create and use a swnode fixed-link specification for phylink if no
-> > parameters are given in DT for a fixed-link. This allows phylink to
-> > be used for "default" cases for DSA and CPU ports. Enable the use
-> > of phylink in all cases for DSA and CPU ports.
-> 
-> > Co-developed by Vladimir Oltean and myself.
-> 
-> Why not to use
-> 
->   Co-developed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Piotr Skajewski <piotrx.skajewski@intel.com>
 
-Ah, that's an official thing. Thanks.
+It is possible to disable VFs while the PF driver is processing requests
+from the VF driver.  This can result in a panic.
 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Reviewed-by: Marek Behún <kabel@kernel.org>
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> 
-> ...
-> 
-> > +static struct {
-> > +	unsigned long mask;
-> > +	int speed;
-> > +	int duplex;
-> > +} phylink_caps_params[] = {
-> > +	{ MAC_400000FD, SPEED_400000, DUPLEX_FULL },
-> > +	{ MAC_200000FD, SPEED_200000, DUPLEX_FULL },
-> > +	{ MAC_100000FD, SPEED_100000, DUPLEX_FULL },
-> > +	{ MAC_56000FD,  SPEED_56000,  DUPLEX_FULL },
-> > +	{ MAC_50000FD,  SPEED_50000,  DUPLEX_FULL },
-> > +	{ MAC_40000FD,  SPEED_40000,  DUPLEX_FULL },
-> > +	{ MAC_25000FD,  SPEED_25000,  DUPLEX_FULL },
-> > +	{ MAC_20000FD,  SPEED_20000,  DUPLEX_FULL },
-> > +	{ MAC_10000FD,  SPEED_10000,  DUPLEX_FULL },
-> > +	{ MAC_5000FD,   SPEED_5000,   DUPLEX_FULL },
-> > +	{ MAC_2500FD,   SPEED_2500,   DUPLEX_FULL },
-> > +	{ MAC_1000FD,   SPEED_1000,   DUPLEX_FULL },
-> > +	{ MAC_100FD,    SPEED_100,    DUPLEX_FULL },
-> > +	{ MAC_10FD,     SPEED_10,     DUPLEX_FULL },
-> > +	{ MAC_1000HD,   SPEED_1000,   DUPLEX_HALF },
-> > +	{ MAC_100HD,    SPEED_100,    DUPLEX_HALF },
-> > +	{ MAC_10HD,     SPEED_10,     DUPLEX_HALF },
-> > +};
-> > +
-> > +static int dsa_port_find_max_speed(unsigned long caps, int *speed, int *duplex)
-> > +{
-> > +	int i;
-> > +
-> > +	*speed = SPEED_UNKNOWN;
-> > +	*duplex = DUPLEX_UNKNOWN;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(phylink_caps_params); i++) {
-> > +		if (caps & phylink_caps_params[i].mask) {
-> > +			*speed = phylink_caps_params[i].speed;
-> > +			*duplex = phylink_caps_params[i].duplex;
-> 
-> > +			break;
-> 
-> With the below check it's way too protective programming.
-> 
-> 			return 0;
-> 
-> > +		}
-> > +	}
-> > +
-> > +	return *speed == SPEED_UNKNOWN ? -EINVAL : 0;
-> 
-> 	return -EINVAL;
+BUG: unable to handle kernel paging request at 000000000000106c
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G I      --------- -
+Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
+Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff
+01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c
+00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
+RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
+RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
+RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
+RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
+R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
+R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
+FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:00000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <IRQ>
+ ? ttwu_do_wakeup+0x19/0x140
+ ? try_to_wake_up+0x1cd/0x550
+ ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
+ ixgbe_msix_other+0x17e/0x310 [ixgbe]
+ __handle_irq_event_percpu+0x40/0x180
+ handle_irq_event_percpu+0x30/0x80
+ handle_irq_event+0x36/0x53
+ handle_edge_irq+0x82/0x190
+ handle_irq+0x1c/0x30
+ do_IRQ+0x49/0xd0
+ common_interrupt+0xf/0xf
 
-Ok.
+This can be eventually be reproduced with the following script:
 
-> > +static struct fwnode_handle *dsa_port_get_fwnode(struct dsa_port *dp,
-> > +						 phy_interface_t mode)
-> > +{
-> 
-> > +	struct property_entry fixed_link_props[3] = { };
-> > +	struct property_entry port_props[3] = {};
-> 
-> A bit of consistency in the assignments?
-> 
-> Also it seems you are using up to 2 for the first one and only 1 in the second
-> one. IIUC it requires a terminator entry, so it means 3 and 2. Do we really
-> need 3 in the second case?
+while :
+do
+    echo 63 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+    echo 0 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+done
 
-Probably not - that came from Vladimir's patch, and I removed the "reg"
-property without fixing this up. Thanks for spotting.
+Add lock when disabling SR-IOV to prevent process VF mailbox communication.
 
-> > +	struct fwnode_handle *fixed_link_fwnode;
-> > +	struct fwnode_handle *new_port_fwnode;
-> > +	struct device_node *dn = dp->dn;
-> > +	struct device_node *phy_node;
-> > +	int err, speed, duplex;
-> > +	unsigned long caps;
-> > +
-> > +	phy_node = of_parse_phandle(dn, "phy-handle", 0);
-> 
-> fwnode in the name, why not to use fwnode APIs?
-> 
-> 	fwnode_find_reference();
+Fixes: d773d1310625 ("ixgbe: Fix memory leak when SR-IOV VFs are direct assigned")
+Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+v2: Hold the lock only around adapter->num_vf instead adapter->vfinfo
 
-Marcin has a series converting DSA to use fwnode things - currently DSA
-does not support ACPI, so converting it to fwnode doesn't make that much
-sese until the proper ACPI patches get merged, which have now been
-rebased on this series by Marcin in the expectation that these patches
-would be merged... so I don't want to tred on Marcin's feet on that.
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 3 +++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 6 ++++++
+ 3 files changed, 10 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index 921a4d977d65..8813b4dd6872 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -779,6 +779,7 @@ struct ixgbe_adapter {
+ #ifdef CONFIG_IXGBE_IPSEC
+ 	struct ixgbe_ipsec *ipsec;
+ #endif /* CONFIG_IXGBE_IPSEC */
++	spinlock_t vfs_lock;
+ };
+ 
+ static inline int ixgbe_determine_xdp_q_idx(int cpu)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 77c2e70b0860..55f91c9ff047 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6403,6 +6403,9 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 	/* n-tuple support exists, always init our spinlock */
+ 	spin_lock_init(&adapter->fdir_perfect_lock);
+ 
++	/* init spinlock to avoid concurrency of VF resources */
++	spin_lock_init(&adapter->vfs_lock);
++
+ #ifdef CONFIG_IXGBE_DCB
+ 	ixgbe_init_dcb(adapter);
+ #endif
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index d4e63f0644c3..a1e69c734863 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -205,10 +205,13 @@ void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs)
+ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
+ {
+ 	unsigned int num_vfs = adapter->num_vfs, vf;
++	unsigned long flags;
+ 	int rss;
+ 
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	/* set num VFs to 0 to prevent access to vfinfo */
+ 	adapter->num_vfs = 0;
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ 
+ 	/* put the reference to all of the vf devices */
+ 	for (vf = 0; vf < num_vfs; ++vf) {
+@@ -1355,8 +1358,10 @@ static void ixgbe_rcv_ack_from_vf(struct ixgbe_adapter *adapter, u32 vf)
+ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ {
+ 	struct ixgbe_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 	u32 vf;
+ 
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	for (vf = 0; vf < adapter->num_vfs; vf++) {
+ 		/* process any reset requests */
+ 		if (!ixgbe_check_for_rst(hw, vf))
+@@ -1370,6 +1375,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ 		if (!ixgbe_check_for_ack(hw, vf))
+ 			ixgbe_rcv_ack_from_vf(adapter, vf);
+ 	}
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ }
+ 
+ static inline void ixgbe_ping_vf(struct ixgbe_adapter *adapter, int vf)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.35.1
+
