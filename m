@@ -2,248 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E35576813
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 22:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EAB576819
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 22:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiGOUV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 16:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        id S230448AbiGOU3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 16:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbiGOUV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 16:21:56 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCA33C151;
-        Fri, 15 Jul 2022 13:21:55 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26FKCk0W029859;
-        Fri, 15 Jul 2022 13:21:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=uNCHDFj0TotbBy6xBe/FUfjcHo450aWCwPcb3jd5y8w=;
- b=dtzcpi2f4xyUt1tSNKCt72HIaEfTYjIC2eAaGSzrR5GMu0BQop9Wu8jsPTKxEQYWLe6L
- Jd7nLZ7R93q6V8BUNKlPe/z8Pb8j/lfDED8QkLBP9zA//VucaCBcQSzaMefeBqO3C44B
- 5Rp6qfGn+3lF85JBTMENuk1PB00UURH5qhA= 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2101.outbound.protection.outlook.com [104.47.55.101])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3haxdg5ecp-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Jul 2022 13:21:54 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U5p42Ngtrm7rYNbqd/O/UUhiBAuqhjtVbRbbfKDbccFXfAjy4eJFgMHc+A1A8aUPlkLD55RKq5XDZ8lewwb+y9+70nmXQU8/8deXBn8fcLBATKf8RCpQ/jRux2DmCRY76V3q9qOO1yRav/TIHBozv6a2soovisyIv4UDtUYQ5HV7XoG7kWCv58UtpymjXCvc0ejYdAN1WVqFjt3uG1sGVnuOwlFst9sFkdUGLub86fX5zrODPZB3qHsy7QhNARZGiDwXswgADKgs1wpW0YjBZ7lSWgJLK2xPN7ptrmGcU8KuSxmpvSdo04ugLJyBJyFIpzQJ6OWHCVI04e9frJBHAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uNCHDFj0TotbBy6xBe/FUfjcHo450aWCwPcb3jd5y8w=;
- b=Q7/69EjbxhHSMZ/y1U4wmpt0gNWzKuEjXj+SM8l/d+3LFCQXfFE/i87ayM8LIfJG/VojT0jRze0g+Oku9FVZPFxI4Rywlw6Qbml/d0XpWZWpRJQTOT31i2H+BFX3MicY0xJx+R8pQwRd9PEf2BnZDuTpuINj7ItiilBh/k6eVrmzD4tUwvAIftkG50FA+bjJhv4MnkoP6VYlp6rH0+R61o6Qm8Weyl/jw1fBn+gaSoRIvmtRCxafOAQ/83BgIv7qXnxKd6napn+6Lj695QcTmx2PuJBK0/Vt8JFYaeBNDl5qwIH6CuI/WD/BNifdYLf9XdGX6iRDMPYG2G6pwuu0yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by MN2PR15MB3070.namprd15.prod.outlook.com (2603:10b6:208:f8::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Fri, 15 Jul
- 2022 20:21:50 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1%4]) with mapi id 15.20.5438.014; Fri, 15 Jul 2022
- 20:21:50 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Thread-Topic: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Thread-Index: AQHYdrjyXTiiEgEgK0K1BTZfHuJgSq19RUuAgAGMyICAAAmfgIAAFU+AgAALzACAAADvgIAA+XEAgAAY+YCAAApDAIAAAwqAgAAGIYA=
-Date:   Fri, 15 Jul 2022 20:21:49 +0000
-Message-ID: <6271DEDF-F585-4A3B-90BF-BA2EB76DDC01@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
- <20220602193706.2607681-4-song@kernel.org>
- <20220713203343.4997eb71@rorschach.local.home>
- <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
- <20220714204817.2889e280@rorschach.local.home>
- <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
- <20220714224646.62d49e36@rorschach.local.home>
- <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
- <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
- <20220715151217.141dc98f@gandalf.local.home>
- <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
- <20220715155953.4fb692e2@gandalf.local.home>
-In-Reply-To: <20220715155953.4fb692e2@gandalf.local.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d59fabec-65e1-4b13-dbc7-08da669fa62d
-x-ms-traffictypediagnostic: MN2PR15MB3070:EE_
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lgPVS5z0jJCgEz06tyZm41l33f0x8eGF+Sp6dP4ODEahOoYCcowHdND4KvGJaawfqQ/maGPjVZ+gDv4pq3wXI1o7JXiCoEIZfOPNOlQtbhnH1qS9cceMMwNcLyLLzaeGXC/4CqZ+4gOjLJ5QBrH3vHmku+6ozW/utATv4weM3O1sFDyDXP58Ac21ismUFMt56XrQIdpr2VGuUEjGzl9XOBQOi9CIBD5Uk3YFMxRmg76u1YBVT4brrqO5wrdcBywazqoK3zVz3yXVEtA+sU+aNqAvm3lwArO3+zBSXDIGBhTvEZZXSumbZtxo1GHsoyAvfermo8Zl0A2di3hRG5HqAtrO3I5ZSF6Bexavf5UuLX7vxtzZiaHEiWeCw8ZX0Wt+iP6G/h/BG4tbpdtU5uF7U8P8ylD+5an4nq9dISc2R15qf46f5zoYwq0cePR1LMaOjlRg9qvkSj8insBi6TpH9owY8nPmvE1qT6abAOD/UykPxltgKdOjIPW9ohjoO/Xk1ISsriiHF1H5NH9n3Hjkhi++lQuLmxSg9B2vYB+YOcB482bMJwRVD2TztiFoBS2rBJ/rJxfW7PJ9blgJbj3+pjnSDhEvopzmdrnWXCa1kWDPiJTfz+GU8hMkc5LxmMIuJXiKj95OJT4jhchS9/CKL+DWmx4/Dg09z74jh2zw40hXhIb83WgpdG+Q7fJPDl4GS8EUDLMm8zGvhhc8riUVCJvXwPfkTmMiWL256nktajBJJRvyNEucV61bz5wzR/7V5np3fm5VA/emZEU/8godRUgeOVooqgz6Ap6nu7ZTQR8hjnszy2bEITGL3YgSEiX/UzQOaN6w1DwtOv7pXki7bHOJzFXhGhw6v+VidY6DbBs=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(2906002)(38100700002)(6512007)(316002)(54906003)(6916009)(478600001)(8936002)(7416002)(5660300002)(33656002)(41300700001)(6486002)(6506007)(36756003)(2616005)(186003)(53546011)(83380400001)(71200400001)(38070700005)(122000001)(8676002)(91956017)(4326008)(76116006)(66446008)(64756008)(66946007)(66556008)(66476007)(86362001)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6HMidZLsFSIdQ4oPY2Q0h6rJnAwpDFJ6hRfY4Ye4ym4d+vief8UUm/tKdjfr?=
- =?us-ascii?Q?E6u4W7dOK6lHI3el39Ahx/uvpTQZYPDUHJ6Qnk5xcuEfvI0OdSb0C2Y/j/Fx?=
- =?us-ascii?Q?ZTUGul9gwGx8YJQT0Dn046kC7pzJvhkBe69u7jJenJrlmGiSJc4evex74RVl?=
- =?us-ascii?Q?g3PwCRm1emKeqkaMpcxC1TjclpBb/8G+0FA2Erxj5BHrhEmB+R9ItaAIOMcv?=
- =?us-ascii?Q?FlF+uOzxrZIHIxr/xmgcve+qHmK2kElb5DUL7eFN8xITXR5Z7jtKHBD2uosE?=
- =?us-ascii?Q?V+CD4qRZxqQY83NQr/jUW1mcRJ45xXfbJFl9OrAIGHrPUiLR0mIQvoC+iKh1?=
- =?us-ascii?Q?M7Fq6uwRnqiDRSmDwxioatDQxiuhV2GpgWHKgGW1/U3EKrOmaYnoqAhrJZWP?=
- =?us-ascii?Q?oZtz+EIDcaiIRqTwOYeXrVyGawBfcc/3VY190ahS0W3SSXrFAN4KuhBfVsOd?=
- =?us-ascii?Q?v0tGT/RBn1+Ugo8TmuWHFLFTTFi3uhIW1lIIS0YGRZzcyWJ5YwOXlKPM7AUr?=
- =?us-ascii?Q?LKFFd4Kvp7WyTCgkteXH4bCWZqqPR8TEJxz8lLg/ErS7wIV9ymKspLAFwnYj?=
- =?us-ascii?Q?lYALov301lxokX5MzN/TyekOttoC5IM2LV4IlVAa8J+/uqztLfyBI0nZWDqT?=
- =?us-ascii?Q?a4STyLxymCb3oj2wJJwAGHMIZ3fgYro9/Zmj2QlirNyq9XgBi5vxF88uN7KP?=
- =?us-ascii?Q?dIQ8ioXXH8R6FX/QFWaBtsmDHYN4YA6PxIrKHc9Ve315DZwYq9OmahJYFXls?=
- =?us-ascii?Q?mps3R2+ktx/s5cZA1LSssNf83Sg1sT0jW8JvPIVVjnGjENHRuhOHesoUOzgU?=
- =?us-ascii?Q?qqihSrMBSPVVYgGN9TJgf+3uj0ArzGvHOBFvrzpWinmRwpJDyfX0uVR5hth9?=
- =?us-ascii?Q?oYIjfpJeiI+B+KFt4eJza7TFBwG8NZlPTIPMxBggDN7WSfr9yXGw8kLMCUl5?=
- =?us-ascii?Q?s9C3fHffdq4OM0x0OZq5jnuC0cXmTYz0tEo2o3vBYPBwwESJcKJVFcYqcnO8?=
- =?us-ascii?Q?zH9xn4B3U14myZGE/at0tAWucXKVOOcwdhQtHjqQhDyi8MnrUFOSEcbOOqmj?=
- =?us-ascii?Q?8Xjg8Q5Rf8GszVFlhmwUuCKH7mx1abt03pEXPfqvcWjG0WzcJouaUZaMTS6h?=
- =?us-ascii?Q?VNcBmhQft5C945GJN3zOCJskeo+RokvXoRC/GfwphioCLTcqgEiPixDWhwaE?=
- =?us-ascii?Q?2BMh3ly1nYYiV90Digw83090aWVWkyuhdtHozUSydjHdtNUtnNgZtZLplOsJ?=
- =?us-ascii?Q?jzrr+6t82e4Z5JRjAO1ZP8gN2v50XY8I1ELhtTQY68ueuF3fckc5c4gl+fPD?=
- =?us-ascii?Q?PfKGX05tvZRo91eD4b9HqKGzh/tec+DT+1It7VSToXG1zuXFjAh26CTJjkRd?=
- =?us-ascii?Q?iNZD0S6Ga9vpbQAohJu9pCyxIozcaMqtvxi5wUt6nxv5rZcGwo0OG5beifJc?=
- =?us-ascii?Q?jBvRZFRVT3VKPcXAd8hVuTx6ytwCV4eM+02Zl/fIAueGBVQsdccwYv1yEITj?=
- =?us-ascii?Q?5xZ2sR8DKNw0lWqOxQPyNtkgoRyFcYbnRA3wyY0lzoeXGKQ6Mgr6iZ0RdcJR?=
- =?us-ascii?Q?/tasJl+9INZKMnqgeMiCMfx0vmbXpoQX/F4WjnlIF4C7Ts8c5FEZffg489Xn?=
- =?us-ascii?Q?Vreiv88lvPi6QChnEa2X4WE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E09626EB48D08140ACA9E7ED9D971B6B@namprd15.prod.outlook.com>
+        with ESMTP id S230210AbiGOU3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 16:29:06 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D13B13E18
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 13:29:04 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220715202901euoutp01998c9b93acce33deb37aa6126c897797~CGqyWu32j1054310543euoutp01W
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 20:29:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220715202901euoutp01998c9b93acce33deb37aa6126c897797~CGqyWu32j1054310543euoutp01W
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657916941;
+        bh=lVOp6I6bfKl0luyaOjOSYlf8wYGlnw7cQl6Oy5MK7HE=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=nkD/G7m1aHj0SKbtn600ifS4fBviWZSt1lT9KMNg2IOJsIqERPFPYzv3JU1JcKjl5
+         slc85h0mDMM24hEYJ2wbDXxH50jpcZ9UUMCuIVHn5TNHiGKuIBbhWesdhxolSTC15V
+         n7MksvntTROeNs3dDzQ+Hosj8XRqqHLKbNdGBwR8=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220715202900eucas1p2667f85772dc79a2012e8e3e9d84014e8~CGqxRewyq1480614806eucas1p2L;
+        Fri, 15 Jul 2022 20:29:00 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 9C.E0.09580.C0EC1D26; Fri, 15
+        Jul 2022 21:29:00 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12~CGqwI_1to1703017030eucas1p10;
+        Fri, 15 Jul 2022 20:28:59 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220715202859eusmtrp24d942479abf37774c31c31273e0a1d40~CGqwIO0wN2146221462eusmtrp24;
+        Fri, 15 Jul 2022 20:28:59 +0000 (GMT)
+X-AuditID: cbfec7f5-9c3ff7000000256c-6b-62d1ce0c6ade
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 4E.6E.09038.A0EC1D26; Fri, 15
+        Jul 2022 21:28:58 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220715202858eusmtip21e9deec70b29bd77e135858064e1b283~CGqvf7NxP1129311293eusmtip2N;
+        Fri, 15 Jul 2022 20:28:58 +0000 (GMT)
+Message-ID: <46439555-644d-08a1-7d66-16f8f9a320f0@samsung.com>
+Date:   Fri, 15 Jul 2022 22:28:58 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d59fabec-65e1-4b13-dbc7-08da669fa62d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2022 20:21:49.9890
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: T40kpuKq1kxJVmxhum6XssBLPK46cgEKiORgCMfCXl1BsNt7dtYNTe5GRDLtZDFOnYUm+fBD1fsQNXcBwEaVEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3070
-X-Proofpoint-GUID: eOzdkrKNpJqdd5LHrezcf1I6A3qxicqx
-X-Proofpoint-ORIG-GUID: eOzdkrKNpJqdd5LHrezcf1I6A3qxicqx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-15_13,2022-07-15_01,2022-06-22_01
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v3 for-next 2/3] net: copy from user before calling
+ __get_compat_msghdr
+Content-Language: en-US
+To:     Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        io-uring@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Kernel-team@fb.com
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20220714110258.1336200-3-dylany@fb.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCKsWRmVeSWpSXmKPExsWy7djPc7o85y4mGaz9wGExZ9U2RovVd/vZ
+        LOacb2GxmPrHw+LpsUfsFu9az7FYHOt7z2pxYVsfq8WxBWIW306/YXTg8tiy8iaTx8Tmd+we
+        O2fdZfdYsKnU4/LZUo9NqzrZPN7vu8rm8XmTXABHFJdNSmpOZllqkb5dAlfG6wvXmQpabCqu
+        vW5jbmDcqN/FyMkhIWAicefxF/YuRi4OIYEVjBKftkyHcr4wSmx/uJAFwvnMKDH5/hF2mJaN
+        s1pYIRLLGSV+vXvMApIQEvjIKHFmgyuIzStgJ9E16xMbiM0ioCpx6u9RVoi4oMTJmU/A6kUF
+        kiXOnb0KViMsECvROe8/2AJmAXGJW0/mM4HYIgJXGCUOvdeBiOtJrOh4DVbPJmAo0fW2C8zm
+        FDCVuHt5DiNEjbxE89bZzBCHNnNKPFvACmG7SDz73AJlC0u8Or4F6hkZif87QXZxANn5En9n
+        GEOEKySuvV4DNcZa4s65X2wgJcwCmhLrd0FDzlFi9c7zbBCdfBI33gpCHMAnMWnbdGaIMK9E
+        R5sQRLWaxKzj6+B2HrxwiXkCo9IspCCZheT1WUhemYWwdwEjyypG8dTS4tz01GLjvNRyveLE
+        3OLSvHS95PzcTYzAhHX63/GvOxhXvPqod4iRiYPxEKMEB7OSCG/3oXNJQrwpiZVVqUX58UWl
+        OanFhxilOViUxHmTMzckCgmkJ5akZqemFqQWwWSZODilGph0ryiuPTVni8QlYf3OI0d6Inc2
+        Cn5mNFE5LfXx22wr59W3rENM4jiM1943jTt378qdOT23L77aubj069mYGVki/1/O6pBctjTE
+        5B9/3nrxJw57DBODY3YIejYeON3c98ndh1fiReSaCi/l0/JX1UVT8pLZNtwzNxSTTMvmW/vE
+        70aj0ZSb/2IPvVxSxVtRcsUyfvd2eTXuD5YndBf2WlV8KuBf6yLxte6AdSNH8qzNJ1YsWFna
+        Pn3Kzne33QzWcyQ6HLmiX9ltsLDz4dav54SjSpn3i03knX9pVXbRWzNR1fWL2kXOTtqp9vGj
+        dRWzdFlpybr7iyf/6XWw4prtsnPpTNu32rY37Lz7REzlf71RYinOSDTUYi4qTgQA4hWnuscD
+        AAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNIsWRmVeSWpSXmKPExsVy+t/xe7pc5y4mGby+bWwxZ9U2RovVd/vZ
+        LOacb2GxmPrHw+LpsUfsFu9az7FYHOt7z2pxYVsfq8WxBWIW306/YXTg8tiy8iaTx8Tmd+we
+        O2fdZfdYsKnU4/LZUo9NqzrZPN7vu8rm8XmTXABHlJ5NUX5pSapCRn5xia1StKGFkZ6hpYWe
+        kYmlnqGxeayVkamSvp1NSmpOZllqkb5dgl7G6wvXmQpabCquvW5jbmDcqN/FyMkhIWAisXFW
+        C2sXIxeHkMBSRomfb5YyQSRkJE5Oa2CFsIUl/lzrYoMoes8o8axpDRtIglfATqJr1icwm0VA
+        VeLU36OsEHFBiZMzn7CA2KICyRLNWw6BDRUWiJXonPefHcRmFhCXuPVkPhPIUBGBa4wSN368
+        YYFI6Ems6HgNNlRIIF7iWNN3RhCbTcBQouttF1icU8BU4u7lOYwQ9WYSXVu7oGx5ieats5kn
+        MArNQnLHLCT7ZiFpmYWkZQEjyypGkdTS4tz03GIjveLE3OLSvHS95PzcTYzAWN127OeWHYwr
+        X33UO8TIxMF4iFGCg1lJhLf70LkkId6UxMqq1KL8+KLSnNTiQ4ymwMCYyCwlmpwPTBZ5JfGG
+        ZgamhiZmlgamlmbGSuK8ngUdiUIC6YklqdmpqQWpRTB9TBycUg1MxvH1q1cYcjkeFah/eqgh
+        75pfS2vIMm33//nussFL771kU7+g73Av+ZzIlzl/7gSYnY966jeh0ZZb4IrcgnepF7fvbUm0
+        ijj9b/nvnzc0kq/7NdvZS3nLeF+ZN2nx5NJVn94+fOLH7XBnm+W5jBMZNo1l2+/mrMtZ8P1g
+        bU6L10ZDYUP+B6cuG327ufDsUbMbSTE/zsRHlU3/HfZnq4NFzQmHdM5tt/SPH5L2mL+2VuRA
+        yeQVb7+LWC+V8b+XcnPajf2qnS9X7tZYUX5e1cAr0Wbn9V0hvVarFZbKyMSdkI32kGX6/HWJ
+        7Zzc+znck17WrvcsfjJzxyn/mPzbkRPNVTc1Np2+85PlQ83CN2vbzZVYijMSDbWYi4oTAbbc
+        BN9eAwAA
+X-CMS-MailID: 20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12
+References: <20220714110258.1336200-1-dylany@fb.com>
+        <20220714110258.1336200-3-dylany@fb.com>
+        <CGME20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12@eucas1p1.samsung.com>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On 14.07.2022 13:02, Dylan Yudaken wrote:
+> this is in preparation for multishot receive from io_uring, where it needs
+> to have access to the original struct user_msghdr.
+>
+> functionally this should be a no-op.
+>
+> Acked-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Dylan Yudaken <dylany@fb.com>
 
-> On Jul 15, 2022, at 12:59 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> On Fri, 15 Jul 2022 19:49:00 +0000
-> Song Liu <songliubraving@fb.com> wrote:
-> 
->>> 
->>> What about if we release the lock when doing the callback?  
->> 
->> We can probably unlock ftrace_lock here. But we may break locking order 
->> with direct mutex (see below).
-> 
-> You're talking about the multi registering case, right?
+This patch landed in linux next-20220715 as commit 1a3e4e94a1b9 ("net: 
+copy from user before calling __get_compat_msghdr"). Unfortunately it 
+causes a serious regression on the ARM64 based Khadas VIM3l board:
 
-We are using the *_ftrace_direct_multi() API here, to be able to specify
-ops_func. The direct single API just uses the shared direct_ops. 
+Unable to handle kernel access to user memory outside uaccess routines 
+at virtual address 00000000ffc4a5c8
+Mem abort info:
+   ESR = 0x000000009600000f
+   EC = 0x25: DABT (current EL), IL = 32 bits
+   SET = 0, FnV = 0
+   EA = 0, S1PTW = 0
+   FSC = 0x0f: level 3 permission fault
+Data abort info:
+   ISV = 0, ISS = 0x0000000f
+   CM = 0, WnR = 0
+user pgtable: 4k pages, 48-bit VAs, pgdp=0000000001909000
+[00000000ffc4a5c8] pgd=0800000001a7b003, p4d=0800000001a7b003, 
+pud=0800000001a0e003, pmd=0800000001913003, pte=00e800000b9baf43
+Internal error: Oops: 9600000f [#1] PREEMPT SMP
+Modules linked in:
+CPU: 0 PID: 247 Comm: systemd-udevd Not tainted 5.19.0-rc6+ #12437
+Hardware name: Khadas VIM3L (DT)
+pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : get_compat_msghdr+0xd0/0x1b0
+lr : get_compat_msghdr+0xcc/0x1b0
+...
+Call trace:
+  get_compat_msghdr+0xd0/0x1b0
+  ___sys_sendmsg+0xd0/0xe0
+  __sys_sendmsg+0x68/0xc4
+  __arm64_compat_sys_sendmsg+0x28/0x3c
+  invoke_syscall+0x48/0x114
+  el0_svc_common.constprop.0+0x60/0x11c
+  do_el0_svc_compat+0x1c/0x50
+  el0_svc_compat+0x58/0x100
+  el0t_32_sync_handler+0x90/0x140
+  el0t_32_sync+0x190/0x194
+Code: d2800382 9100f3e0 97d9be02 b5fffd60 (b9401a60)
+---[ end trace 0000000000000000 ]---
 
-> 
->> 
->>> 
->>> Then we just need to make sure things are the same after reacquiring the
->>> lock, and if they are different, we release the lock again and do the
->>> callback with the new update. Wash, rinse, repeat, until the state is the
->>> same before and after the callback with locks acquired?  
->> 
->> Personally, I would like to avoid wash-rinse-repeat here.
-> 
-> But it's common to do. Keeps your hair cleaner that way ;-)
-> 
->> 
->>> 
->>> This is a common way to handle callbacks that need to do something that
->>> takes the lock held before doing a callback.
->>> 
->>> The reason I say this, is because the more we can keep the accounting
->>> inside of ftrace the better.
->>> 
->>> Wouldn't this need to be done anyway if BPF was first and live kernel
->>> patching needed the update? An -EAGAIN would not suffice.  
->> 
->> prepare_direct_functions_for_ipmodify handles BPF-first-livepatch-later
->> case. The benefit of prepare_direct_functions_for_ipmodify() is that it 
->> holds direct_mutex before ftrace_lock, and keeps holding it if necessary. 
->> This is enough to make sure we don't need the wash-rinse-repeat. 
->> 
->> OTOH, if we wait until __ftrace_hash_update_ipmodify(), we already hold
->> ftrace_lock, but not direct_mutex. To make changes to bpf trampoline, we
->> have to unlock ftrace_lock and lock direct_mutex to avoid deadlock. 
->> However, this means we will need the wash-rinse-repeat. 
+This happens only on the mentioned board, other my ARM64 test boards 
+boot fine with next-20220715. Reverting this commit, together with 
+2b0b67d55f13 ("fix up for "io_uring: support multishot in recvmsg"") and 
+a8b38c4ce724 ("io_uring: support multishot in recvmsg") due to compile 
+dependencies on top of next-20220715 fixes the issue.
 
-What do you think about the prepare_direct_functions_for_ipmodify() 
-approach? If this is not ideal, maybe we can simplify it so that it only
-holds direct_mutex (when necessary). The benefit is that we are sure
-direct_mutex is already held in __ftrace_hash_update_ipmodify(). However, 
-I think it is not safe to unlock ftrace_lock in __ftrace_hash_update_ipmodify(). 
-We can get parallel do_for_each_ftrace_rec(), which is dangerous, no? 
+Let me know how I can help fixing this issue.
 
->> 
->> 
->> For livepatch-first-BPF-later case, we can probably handle this in 
->> __ftrace_hash_update_ipmodify(), since we hold both direct_mutex and 
->> ftrace_lock. We can unlock ftrace_lock and update the BPF trampoline. 
->> It is safe against changes to direct ops, because we are still holding 
->> direct_mutex. But, is this safe against another IPMODIFY ops? I am not 
->> sure yet... Also, this is pretty weird because, we are updating a 
->> direct trampoline before we finish registering it for the first time. 
->> IOW, we are calling modify_ftrace_direct_multi_nolock for the same 
->> trampoline before register_ftrace_direct_multi() returns.
->> 
->> The approach in v2 propagates the -EAGAIN to BPF side, so these are two
->> independent calls of register_ftrace_direct_multi(). This does require
->> some protocol between ftrace core and its user, but I still think this 
->> is a cleaner approach. 
-> 
-> The issue I have with this approach is it couples BPF and ftrace a bit too
-> much.
-> 
-> But there is a way with my approach you can still do your approach. That
-> is, have ops_func() return zero if everything is fine, and otherwise returns
-> a negative value. Then have the register function fail and return whatever
-> value that gets returned by the ops_func()
-> 
-> Then have the bpf ops_func() check (does this direct caller handle
-> IPMODIFY? if yes, return 0, else return -EAGAIN). Then the registering of
-> ftrace fails with your -EAGAIN, and then you can change the direct
-> trampoline to handle IPMODIFY and try again. This time when ops_func() is
-> called, it sees that the direct trampoline can handle the IPMODIFY and
-> returns 0.
-> 
-> Basically, it's a way to still implement my suggestion, but let BPF decide
-> to use -EAGAIN to try again. And then BPF and ftrace don't need to have
-> these special flags to change the behavior of each other.
+> ---
+>   include/net/compat.h |  5 ++---
+>   io_uring/net.c       | 17 +++++++++--------
+>   net/compat.c         | 39 +++++++++++++++++----------------------
+>   3 files changed, 28 insertions(+), 33 deletions(-)
+>
+> diff --git a/include/net/compat.h b/include/net/compat.h
+> index 595fee069b82..84c163f40f38 100644
+> --- a/include/net/compat.h
+> +++ b/include/net/compat.h
+> @@ -46,9 +46,8 @@ struct compat_rtentry {
+>   	unsigned short  rt_irtt;        /* Initial RTT                  */
+>   };
+>   
+> -int __get_compat_msghdr(struct msghdr *kmsg, struct compat_msghdr __user *umsg,
+> -			struct sockaddr __user **save_addr, compat_uptr_t *ptr,
+> -			compat_size_t *len);
+> +int __get_compat_msghdr(struct msghdr *kmsg, struct compat_msghdr *msg,
+> +			struct sockaddr __user **save_addr);
+>   int get_compat_msghdr(struct msghdr *, struct compat_msghdr __user *,
+>   		      struct sockaddr __user **, struct iovec **);
+>   int put_cmsg_compat(struct msghdr*, int, int, int, void *);
+> diff --git a/io_uring/net.c b/io_uring/net.c
+> index da7667ed3610..5bc3440a8290 100644
+> --- a/io_uring/net.c
+> +++ b/io_uring/net.c
+> @@ -369,24 +369,25 @@ static int __io_compat_recvmsg_copy_hdr(struct io_kiocb *req,
+>   					struct io_async_msghdr *iomsg)
+>   {
+>   	struct io_sr_msg *sr = io_kiocb_to_cmd(req);
+> +	struct compat_msghdr msg;
+>   	struct compat_iovec __user *uiov;
+> -	compat_uptr_t ptr;
+> -	compat_size_t len;
+>   	int ret;
+>   
+> -	ret = __get_compat_msghdr(&iomsg->msg, sr->umsg_compat, &iomsg->uaddr,
+> -				  &ptr, &len);
+> +	if (copy_from_user(&msg, sr->umsg_compat, sizeof(msg)))
+> +		return -EFAULT;
+> +
+> +	ret = __get_compat_msghdr(&iomsg->msg, sr->umsg_compat, &iomsg->uaddr);
+>   	if (ret)
+>   		return ret;
+>   
+> -	uiov = compat_ptr(ptr);
+> +	uiov = compat_ptr(msg.msg_iov);
+>   	if (req->flags & REQ_F_BUFFER_SELECT) {
+>   		compat_ssize_t clen;
+>   
+> -		if (len == 0) {
+> +		if (msg.msg_iovlen == 0) {
+>   			sr->len = 0;
+>   			iomsg->free_iov = NULL;
+> -		} else if (len > 1) {
+> +		} else if (msg.msg_iovlen > 1) {
+>   			return -EINVAL;
+>   		} else {
+>   			if (!access_ok(uiov, sizeof(*uiov)))
+> @@ -400,7 +401,7 @@ static int __io_compat_recvmsg_copy_hdr(struct io_kiocb *req,
+>   		}
+>   	} else {
+>   		iomsg->free_iov = iomsg->fast_iov;
+> -		ret = __import_iovec(READ, (struct iovec __user *)uiov, len,
+> +		ret = __import_iovec(READ, (struct iovec __user *)uiov, msg.msg_iovlen,
+>   				   UIO_FASTIOV, &iomsg->free_iov,
+>   				   &iomsg->msg.msg_iter, true);
+>   		if (ret < 0)
+> diff --git a/net/compat.c b/net/compat.c
+> index 210fc3b4d0d8..513aa9a3fc64 100644
+> --- a/net/compat.c
+> +++ b/net/compat.c
+> @@ -34,20 +34,15 @@
+>   #include <net/compat.h>
+>   
+>   int __get_compat_msghdr(struct msghdr *kmsg,
+> -			struct compat_msghdr __user *umsg,
+> -			struct sockaddr __user **save_addr,
+> -			compat_uptr_t *ptr, compat_size_t *len)
+> +			struct compat_msghdr *msg,
+> +			struct sockaddr __user **save_addr)
+>   {
+> -	struct compat_msghdr msg;
+>   	ssize_t err;
+>   
+> -	if (copy_from_user(&msg, umsg, sizeof(*umsg)))
+> -		return -EFAULT;
+> -
+> -	kmsg->msg_flags = msg.msg_flags;
+> -	kmsg->msg_namelen = msg.msg_namelen;
+> +	kmsg->msg_flags = msg->msg_flags;
+> +	kmsg->msg_namelen = msg->msg_namelen;
+>   
+> -	if (!msg.msg_name)
+> +	if (!msg->msg_name)
+>   		kmsg->msg_namelen = 0;
+>   
+>   	if (kmsg->msg_namelen < 0)
+> @@ -57,15 +52,15 @@ int __get_compat_msghdr(struct msghdr *kmsg,
+>   		kmsg->msg_namelen = sizeof(struct sockaddr_storage);
+>   
+>   	kmsg->msg_control_is_user = true;
+> -	kmsg->msg_control_user = compat_ptr(msg.msg_control);
+> -	kmsg->msg_controllen = msg.msg_controllen;
+> +	kmsg->msg_control_user = compat_ptr(msg->msg_control);
+> +	kmsg->msg_controllen = msg->msg_controllen;
+>   
+>   	if (save_addr)
+> -		*save_addr = compat_ptr(msg.msg_name);
+> +		*save_addr = compat_ptr(msg->msg_name);
+>   
+> -	if (msg.msg_name && kmsg->msg_namelen) {
+> +	if (msg->msg_name && kmsg->msg_namelen) {
+>   		if (!save_addr) {
+> -			err = move_addr_to_kernel(compat_ptr(msg.msg_name),
+> +			err = move_addr_to_kernel(compat_ptr(msg->msg_name),
+>   						  kmsg->msg_namelen,
+>   						  kmsg->msg_name);
+>   			if (err < 0)
+> @@ -76,12 +71,10 @@ int __get_compat_msghdr(struct msghdr *kmsg,
+>   		kmsg->msg_namelen = 0;
+>   	}
+>   
+> -	if (msg.msg_iovlen > UIO_MAXIOV)
+> +	if (msg->msg_iovlen > UIO_MAXIOV)
+>   		return -EMSGSIZE;
+>   
+>   	kmsg->msg_iocb = NULL;
+> -	*ptr = msg.msg_iov;
+> -	*len = msg.msg_iovlen;
+>   	return 0;
+>   }
+>   
+> @@ -90,15 +83,17 @@ int get_compat_msghdr(struct msghdr *kmsg,
+>   		      struct sockaddr __user **save_addr,
+>   		      struct iovec **iov)
+>   {
+> -	compat_uptr_t ptr;
+> -	compat_size_t len;
+> +	struct compat_msghdr msg;
+>   	ssize_t err;
+>   
+> -	err = __get_compat_msghdr(kmsg, umsg, save_addr, &ptr, &len);
+> +	if (copy_from_user(&msg, umsg, sizeof(*umsg)))
+> +		return -EFAULT;
+> +
+> +	err = __get_compat_msghdr(kmsg, umsg, save_addr);
+>   	if (err)
+>   		return err;
+>   
+> -	err = import_iovec(save_addr ? READ : WRITE, compat_ptr(ptr), len,
+> +	err = import_iovec(save_addr ? READ : WRITE, compat_ptr(msg.msg_iov), msg.msg_iovlen,
+>   			   UIO_FASTIOV, iov, &kmsg->msg_iter);
+>   	return err < 0 ? err : 0;
+>   }
 
-I like this one. So there is no protocol about the return value here. 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Thanks,
-Song
