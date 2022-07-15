@@ -2,107 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5997F576734
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 21:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C26B576799
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 21:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbiGOTMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 15:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
+        id S230112AbiGOTj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 15:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiGOTMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 15:12:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECC040BF7;
-        Fri, 15 Jul 2022 12:12:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E7EBB82E16;
-        Fri, 15 Jul 2022 19:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30CBCC34115;
-        Fri, 15 Jul 2022 19:12:19 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 15:12:17 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <20220715151217.141dc98f@gandalf.local.home>
-In-Reply-To: <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-4-song@kernel.org>
-        <20220713203343.4997eb71@rorschach.local.home>
-        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
-        <20220714204817.2889e280@rorschach.local.home>
-        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
-        <20220714224646.62d49e36@rorschach.local.home>
-        <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
-        <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229448AbiGOTj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 15:39:56 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC0B6F7E3;
+        Fri, 15 Jul 2022 12:39:54 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id mf4so10711449ejc.3;
+        Fri, 15 Jul 2022 12:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XEKfpFw02gqf7NoXFh68+SxWr6u5EljMHt08x8BZg0o=;
+        b=ZsIi3huAGfDp3Exh9GR+u5CC9waovw/IDhbPSEf+KU8vE/TIVnbCC8Atk7lV7lV/NV
+         YxGfOh5faYadDFFQ4jwmanc15Jgt4CCeErWtkcmqQTgjSjvZhI+hRUuDqJgxJYWSie6h
+         zLa3pJyh076AYypxrNpWF6hQ6guw8Kb+PSVAjIGkcjxPssq0KgV77AlxDwjXFZ9HrsWl
+         fxrEPxE9NlheiJ9/xVSdZJdVwogn1UnABnZJx696IexvSKplUVof0fObReDfrjdXulHy
+         0o7Lt/hoM0p6z0azvBQKBRP/1RatDiOnkuFgLcbkUBmLRGlXxGjfOUqqJR5rqhqj890N
+         3cUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XEKfpFw02gqf7NoXFh68+SxWr6u5EljMHt08x8BZg0o=;
+        b=4/9cPk+YI8Is52RlnaIw8v4mTtUDy17m/+ElO5sWTfUOajFjx3bYcRv4GPq8smWq3c
+         uolm2V5MvRC3TVvqUHtfgMGGyU26x3dP+Q7V2FRzbthXuF3bLEBKtY1zEx8w5IC4EArZ
+         T6xPY0+bDmDpvZPnk2WVBDi7m5yQhNIwEjWr0aXSQx0C8+9a5q1sjdFfVtGRPfRSSgXP
+         r5le17XjwQzdtvNw0ETl4Spj70kERPwiQzROrWf5qyYdLj+1AxIgyNOJRuGPRbmjnqnR
+         C+66fB3apuuefONUYgw+lbZqvmN6QFiV8HYLRh/PaUURMBACHK9gBc0KyzVk5Kav2Tx6
+         tlgw==
+X-Gm-Message-State: AJIora+Vf+ai9YUkFdWYnNfliRrJQ4hzwm5MNSNeJp08ExeFhMNi8n+r
+        rUGYl+rbuMnS2RlptjkQwkM=
+X-Google-Smtp-Source: AGRyM1uv7pIljfKIzkcmPHgcUK0HUNToL1Vrm6lC05TLtSu2p0JomsVFKl1lE1vSw8YDQZ5UstWRdA==
+X-Received: by 2002:a17:906:c10:b0:6f4:6c70:b00f with SMTP id s16-20020a1709060c1000b006f46c70b00fmr15133333ejf.660.1657913993070;
+        Fri, 15 Jul 2022 12:39:53 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906318a00b0072aac739089sm2367472ejy.98.2022.07.15.12.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 12:39:52 -0700 (PDT)
+Message-ID: <62d1c288.1c69fb81.45988.55fe@mx.google.com>
+X-Google-Original-Message-ID: <YtG9Hp5nqZY2REGy@Ansuel-xps.>
+Date:   Fri, 15 Jul 2022 21:16:46 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH] net: dsa: qca8k: move driver to qca dir
+References: <20220713205350.18357-1-ansuelsmth@gmail.com>
+ <20220714220354.795c8992@kernel.org>
+ <62d12418.1c69fb81.90737.3a8e@mx.google.com>
+ <20220715123743.419537e7@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715123743.419537e7@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jul 2022 17:42:55 +0000
-Song Liu <songliubraving@fb.com> wrote:
-
-
-> A quick update and ask for feedback/clarification.
+On Fri, Jul 15, 2022 at 12:37:43PM -0700, Jakub Kicinski wrote:
+> On Fri, 15 Jul 2022 03:57:46 +0200 Christian Marangi wrote:
+> > > Does the split mean that this code will move again?
+> > > If so perhaps better to put this patch in the series 
+> > > that does the split? We're ~2 weeks away from the merge 
+> > > window so we don't want to end up moving the same code
+> > > twice in two consecutive releases.  
+> > 
+> > What to you mean with "will move again"?
+> >  
+> > The code will be split to qca8k-common.c and qca8k-8xxx.c
+> > And later qca8k-ipq4019.c will be proposed. 
+> > 
+> > So the files will all stay in qca/ dir.
+> > 
+> > Or should I just propose the move and the code split in one series?
 > 
-> Based on my understanding, you recommended calling ops_func() from 
-> __ftrace_hash_update_ipmodify() and in ops_func() the direct trampoline
-> may make changes to the trampoline. Did I get this right?
-> 
-> 
-> I am going towards this direction, but hit some issue. Specifically, in 
-> __ftrace_hash_update_ipmodify(), ftrace_lock is already locked, so the 
-> direct trampoline cannot easily make changes with 
-> modify_ftrace_direct_multi(), which locks both direct_mutex and 
-> ftrace_mutex. 
-> 
-> One solution would be have no-lock version of all the functions called
-> by modify_ftrace_direct_multi(), but that's a lot of functions and the
-> code will be pretty ugly. The alternative would be the logic in v2: 
-> __ftrace_hash_update_ipmodify() returns -EAGAIN, and we make changes to 
-> the direct trampoline in other places: 
-> 
-> 1) if DIRECT ops attached first, the trampoline is updated in 
->    prepare_direct_functions_for_ipmodify(), see 3/5 of v2;
-> 
-> 2) if IPMODIFY ops attached first, the trampoline is updated in
->    bpf_trampoline_update(), see "goto again" path in 5/5 of v2. 
-> 
-> Overall, I think this way is still cleaner. What do you think about this?
+> Yup that's what I prefer.
+>
 
-What about if we release the lock when doing the callback?
+Ok no problem, if the current merged commit is a problem, np for me with
+a revert! (it was really to prevent sending a bigger series, sorry for
+the mess)
 
-Then we just need to make sure things are the same after reacquiring the
-lock, and if they are different, we release the lock again and do the
-callback with the new update. Wash, rinse, repeat, until the state is the
-same before and after the callback with locks acquired?
+> > Tell me what do you prefer.
 
-This is a common way to handle callbacks that need to do something that
-takes the lock held before doing a callback.
-
-The reason I say this, is because the more we can keep the accounting
-inside of ftrace the better.
-
-Wouldn't this need to be done anyway if BPF was first and live kernel
-patching needed the update? An -EAGAIN would not suffice.
-
--- Steve
+-- 
+	Ansuel
