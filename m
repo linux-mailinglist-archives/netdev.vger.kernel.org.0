@@ -2,170 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3FEC5768D7
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:25:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE95C5768E4
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 23:29:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbiGOVZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 17:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
+        id S231470AbiGOV30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 17:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbiGOVZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:25:42 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70BC7390C
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 14:25:38 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so7276356pjl.4
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 14:25:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gkMC58CI5blc0RsSllBKJaaDv6tZbiX3CK0EYe08iok=;
-        b=eJZMVjmS6+Jd6dwRHPiup6/aLZyYWxGgsvJJ0bhabSiyirujXadau/34K8ZB432bKK
-         RidSWYbxcMbOGu6+8ZEvygyL3Hu+dbw+0HoDbh67b2ErFP3PycLdmKO5UpO9tZ3ZtjdA
-         h2gFvBxe+QCJTcXza2wJgPpnpeWGNkxHBgoa7VoCMgqOsJgINtLHEw+cywrRS8OV1u5A
-         b1QUY51xc0ExXmVA36ta9l1iwO9kurfllF7vuvyH8nZDyUY1rWyawKR+k5nf4pq28iE5
-         62yh6mJXLeStfjEd442QnH9r9FZHuh/hIUegfRCV65dQPwe37yfWmq1U8mhn6/AyN8pV
-         AVng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gkMC58CI5blc0RsSllBKJaaDv6tZbiX3CK0EYe08iok=;
-        b=Ir9XDnpylZOCPyFwv+07Sb2hSppkusxBuOxe8AkclLPhy+K+GlPeakOputLR8gtx1J
-         g9XUDnZw0axT6QJQzcwT9QylHXXwYhn9NOamzaYsiacbtfTUrwdW/2X1WaAmHyFrQRQY
-         I+MkZWw1W9zpkAAcJ+FVRm2B3qtSHxdh6rsq7IZ0Tr3/ZXfLp88by9uo68lnT1p90C7R
-         nbe2dvQLDfdB/hmYTeuv37tQxqbHPMvgsVMKE2xTL/bxXSzh3Mztms/Xo+gXJav7ALw4
-         rDr/ao600ugQMaZik/lQECC5si6kh2LHtsfTLYsQhjlnV7kzfYi98POwQG6gUScfbffR
-         aPWw==
-X-Gm-Message-State: AJIora/kkck8j8kei0Sdj/GwtnVAKbgL0yMSNfohjuRwrn5GCO1W3X6t
-        tguIxjFlJZdDC9ORpeiI/9O1fg==
-X-Google-Smtp-Source: AGRyM1vtI5yHsPWNohHA0IyOcjkudf/0alXWyajjzAFctLTigcGBk9Oejo6twqtOi8yVoqO+5TgaOA==
-X-Received: by 2002:a17:902:b115:b0:16c:9837:32dd with SMTP id q21-20020a170902b11500b0016c983732ddmr12950429plr.82.1657920338081;
-        Fri, 15 Jul 2022 14:25:38 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id 7-20020a17090a1a4700b001f0fce69b40sm2555672pjl.17.2022.07.15.14.25.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 14:25:37 -0700 (PDT)
-Message-ID: <d8a4e959-f3ee-252c-5d1c-42407a8e29e8@kernel.dk>
-Date:   Fri, 15 Jul 2022 15:25:36 -0600
+        with ESMTP id S231422AbiGOV3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 17:29:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95ED474786;
+        Fri, 15 Jul 2022 14:29:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 329A861874;
+        Fri, 15 Jul 2022 21:29:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CF20C341C6;
+        Fri, 15 Jul 2022 21:29:21 +0000 (UTC)
+Date:   Fri, 15 Jul 2022 17:29:19 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <20220715172919.76d60b47@gandalf.local.home>
+In-Reply-To: <6271DEDF-F585-4A3B-90BF-BA2EB76DDC01@fb.com>
+References: <20220602193706.2607681-1-song@kernel.org>
+        <20220602193706.2607681-4-song@kernel.org>
+        <20220713203343.4997eb71@rorschach.local.home>
+        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
+        <20220714204817.2889e280@rorschach.local.home>
+        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
+        <20220714224646.62d49e36@rorschach.local.home>
+        <170BE89A-101C-4B25-A664-5E47A902DB83@fb.com>
+        <0CE9BF90-B8CE-40F6-A431-459936157B78@fb.com>
+        <20220715151217.141dc98f@gandalf.local.home>
+        <0EB34157-8BCA-47FC-B78F-AA8FE45A1707@fb.com>
+        <20220715155953.4fb692e2@gandalf.local.home>
+        <6271DEDF-F585-4A3B-90BF-BA2EB76DDC01@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 for-next 2/3] net: copy from user before calling
- __get_compat_msghdr
-Content-Language: en-US
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Dylan Yudaken <dylany@fb.com>,
-        Pavel Begunkov <asml.silence@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        io-uring@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Kernel-team@fb.com
-References: <20220714110258.1336200-1-dylany@fb.com>
- <20220714110258.1336200-3-dylany@fb.com>
- <CGME20220715202859eucas1p1a336fd34a883adb96bde608ba2ca3a12@eucas1p1.samsung.com>
- <46439555-644d-08a1-7d66-16f8f9a320f0@samsung.com>
- <b2e36f7b-2f99-d686-3726-c18b32289ed8@kernel.dk>
- <b9e1e22a-47ba-fdd8-ca12-e9bdd57afd41@samsung.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <b9e1e22a-47ba-fdd8-ca12-e9bdd57afd41@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/15/22 2:58 PM, Marek Szyprowski wrote:
-> Hi,
+On Fri, 15 Jul 2022 20:21:49 +0000
+Song Liu <songliubraving@fb.com> wrote:
+
+> >>> Wouldn't this need to be done anyway if BPF was first and live kernel
+> >>> patching needed the update? An -EAGAIN would not suffice.    
+> >> 
+> >> prepare_direct_functions_for_ipmodify handles BPF-first-livepatch-later
+> >> case. The benefit of prepare_direct_functions_for_ipmodify() is that it 
+> >> holds direct_mutex before ftrace_lock, and keeps holding it if necessary. 
+> >> This is enough to make sure we don't need the wash-rinse-repeat. 
+> >> 
+> >> OTOH, if we wait until __ftrace_hash_update_ipmodify(), we already hold
+> >> ftrace_lock, but not direct_mutex. To make changes to bpf trampoline, we
+> >> have to unlock ftrace_lock and lock direct_mutex to avoid deadlock. 
+> >> However, this means we will need the wash-rinse-repeat.   
 > 
-> On 15.07.2022 22:37, Jens Axboe wrote:
->> On 7/15/22 2:28 PM, Marek Szyprowski wrote:
->>> On 14.07.2022 13:02, Dylan Yudaken wrote:
->>>> this is in preparation for multishot receive from io_uring, where it needs
->>>> to have access to the original struct user_msghdr.
->>>>
->>>> functionally this should be a no-op.
->>>>
->>>> Acked-by: Paolo Abeni <pabeni@redhat.com>
->>>> Signed-off-by: Dylan Yudaken <dylany@fb.com>
->>> This patch landed in linux next-20220715 as commit 1a3e4e94a1b9 ("net:
->>> copy from user before calling __get_compat_msghdr"). Unfortunately it
->>> causes a serious regression on the ARM64 based Khadas VIM3l board:
->>>
->>> Unable to handle kernel access to user memory outside uaccess routines
->>> at virtual address 00000000ffc4a5c8
->>> Mem abort info:
->>>     ESR = 0x000000009600000f
->>>     EC = 0x25: DABT (current EL), IL = 32 bits
->>>     SET = 0, FnV = 0
->>>     EA = 0, S1PTW = 0
->>>     FSC = 0x0f: level 3 permission fault
->>> Data abort info:
->>>     ISV = 0, ISS = 0x0000000f
->>>     CM = 0, WnR = 0
->>> user pgtable: 4k pages, 48-bit VAs, pgdp=0000000001909000
->>> [00000000ffc4a5c8] pgd=0800000001a7b003, p4d=0800000001a7b003,
->>> pud=0800000001a0e003, pmd=0800000001913003, pte=00e800000b9baf43
->>> Internal error: Oops: 9600000f [#1] PREEMPT SMP
->>> Modules linked in:
->>> CPU: 0 PID: 247 Comm: systemd-udevd Not tainted 5.19.0-rc6+ #12437
->>> Hardware name: Khadas VIM3L (DT)
->>> pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>> pc : get_compat_msghdr+0xd0/0x1b0
->>> lr : get_compat_msghdr+0xcc/0x1b0
->>> ...
->>> Call trace:
->>>    get_compat_msghdr+0xd0/0x1b0
->>>    ___sys_sendmsg+0xd0/0xe0
->>>    __sys_sendmsg+0x68/0xc4
->>>    __arm64_compat_sys_sendmsg+0x28/0x3c
->>>    invoke_syscall+0x48/0x114
->>>    el0_svc_common.constprop.0+0x60/0x11c
->>>    do_el0_svc_compat+0x1c/0x50
->>>    el0_svc_compat+0x58/0x100
->>>    el0t_32_sync_handler+0x90/0x140
->>>    el0t_32_sync+0x190/0x194
->>> Code: d2800382 9100f3e0 97d9be02 b5fffd60 (b9401a60)
->>> ---[ end trace 0000000000000000 ]---
->>>
->>> This happens only on the mentioned board, other my ARM64 test boards
->>> boot fine with next-20220715. Reverting this commit, together with
->>> 2b0b67d55f13 ("fix up for "io_uring: support multishot in recvmsg"") and
->>> a8b38c4ce724 ("io_uring: support multishot in recvmsg") due to compile
->>> dependencies on top of next-20220715 fixes the issue.
->>>
->>> Let me know how I can help fixing this issue.
->> How are you reproducing this?
-> 
-> This happens always during system boot on the mentioned board, when udev 
-> starts discovering devices. The complete boot log is here:
-> 
-> https://pastebin.com/i8WzFzcx
+> What do you think about the prepare_direct_functions_for_ipmodify() 
+> approach? If this is not ideal, maybe we can simplify it so that it only
+> holds direct_mutex (when necessary). The benefit is that we are sure
+> direct_mutex is already held in __ftrace_hash_update_ipmodify(). However, 
+> I think it is not safe to unlock ftrace_lock in __ftrace_hash_update_ipmodify(). 
+> We can get parallel do_for_each_ftrace_rec(), which is dangerous, no? 
 
-Does this help?
+I'm fine with it. But one nit on the logic:
 
+>  int register_ftrace_function(struct ftrace_ops *ops)
+> +	__releases(&direct_mutex)
+>  {
+> +	bool direct_mutex_locked;
+>  	int ret;
+>  
+>  	ftrace_ops_init(ops);
+>  
+> +	ret = prepare_direct_functions_for_ipmodify(ops);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	direct_mutex_locked = ret == 1;
+> +
 
-diff --git a/net/compat.c b/net/compat.c
-index 513aa9a3fc64..ed880729d159 100644
---- a/net/compat.c
-+++ b/net/compat.c
-@@ -89,7 +89,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
- 	if (copy_from_user(&msg, umsg, sizeof(*umsg)))
- 		return -EFAULT;
- 
--	err = __get_compat_msghdr(kmsg, umsg, save_addr);
-+	err = __get_compat_msghdr(kmsg, &msg, save_addr);
- 	if (err)
- 		return err;
- 
+Please make the above:
 
--- 
-Jens Axboe
+	if (ret < 0)
+		return ret;
+	else if (ret == 1)
+		direct_mutex_locked = true;
 
+It's much easier to read that way.
+
+-- Steve
+
+>  	mutex_lock(&ftrace_lock);
+>  
+>  	ret = ftrace_startup(ops, 0);
+>  
+>  	mutex_unlock(&ftrace_lock);
+>  
+> +	if (direct_mutex_locked)
+> +		mutex_unlock(&direct_mutex);
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(register_ftrace_function);
+> -- 
