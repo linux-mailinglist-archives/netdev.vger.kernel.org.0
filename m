@@ -2,170 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BDCC575DAD
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 10:43:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255A5575DD3
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 10:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbiGOImw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 04:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34640 "EHLO
+        id S232299AbiGOIrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 04:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGOImv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 04:42:51 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE058814A2;
-        Fri, 15 Jul 2022 01:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/PMhtnjGHpxVks/D0IckRnUPFsjzXDkP0oWJ4YCBhjU=; b=u0DEprWn4REKDNOgrrfUHbBAlT
-        QbKMmsx1lYnPU/7uko/8HJ+NtIpxVSjLg8fMnk0Jy6V8EdA4krtmECqOSUEBSWfycxi1MDyLt6Kc/
-        WwWwvA9Zy2kksqx1xidrEyHtEFElEfyhGbZBQyieONclVL2eFK0LpY7O5ehaT87Jd+31P8evOFQXS
-        oo3dk0CLCO+yVcnTl5vmH0IC3KCALkRapK71u8I/BzACTHOwng6yD/mSeabP6seMDohCwg8L4JHpK
-        IhPixAYh945XOwXWaqoBa7QW1W+qykNAf9zNtYil8ryRbMRpZ8n77aO80GsFN4gohy1jqcb1mt8g+
-        dhptguRg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33352)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oCGu3-0006nZ-CC; Fri, 15 Jul 2022 09:42:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oCGtw-0007QG-6S; Fri, 15 Jul 2022 09:42:20 +0100
-Date:   Fri, 15 Jul 2022 09:42:20 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH RFC net-next v2 2/6] software node: allow named software
- node to be created
-Message-ID: <YtEobF3wRaOKwPZT@shell.armlinux.org.uk>
-References: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
- <E1oBd1n-006UCq-JK@rmk-PC.armlinux.org.uk>
+        with ESMTP id S231902AbiGOIrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 04:47:09 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E7F814B4;
+        Fri, 15 Jul 2022 01:47:07 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oCGyA-000nqB-Ie; Fri, 15 Jul 2022 18:46:44 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:46:42 +0800
+Date:   Fri, 15 Jul 2022 16:46:42 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     linux-crypto@vger.kernel.org, davem@davemloft.net,
+        borisp@nvidia.com, john.fastabend@gmail.com, daniel@iogearbox.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] crypto: Introduce ARIA symmetric cipher algorithm
+Message-ID: <YtEpcsFsXD6xuDQS@gondor.apana.org.au>
+References: <20220704094250.4265-1-ap420073@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1oBd1n-006UCq-JK@rmk-PC.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220704094250.4265-1-ap420073@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andy,
+On Mon, Jul 04, 2022 at 09:42:47AM +0000, Taehee Yoo wrote:
+> This patchset adds a new ARIA(RFC 5794) symmetric cipher algorithm.
+> 
+> Like SEED, the ARIA is a standard cipher algorithm in South Korea.
+> Especially Government and Banking industry have been using this algorithm.
+> So the implementation of ARIA will be useful for them and network vendors.
+> 
+> Usecases of this algorithm are TLS[1], and IPSec.
+> 
+> It is tested in x86 and MIPS with the tcrypt module.
+> 
+> The first patch is an implementation of ARIA algorithm.
+> The second patch adds tests for ARIA.
+> The third patch adds ARIA-kTLS feature.
+> 
+> ARIA128-kTLS Benchmark results:
+> openssl-3.0-dev and iperf-ssl are used.
+>   TLS
+> [  3]  0.0- 1.0 sec   185 MBytes  1.55 Gbits/sec
+> [  3]  1.0- 2.0 sec   186 MBytes  1.56 Gbits/sec
+> [  3]  2.0- 3.0 sec   186 MBytes  1.56 Gbits/sec
+> [  3]  3.0- 4.0 sec   186 MBytes  1.56 Gbits/sec
+> [  3]  4.0- 5.0 sec   186 MBytes  1.56 Gbits/sec
+> [  3]  0.0- 5.0 sec   927 MBytes  1.56 Gbits/sec
+>   kTLS
+> [  3]  0.0- 1.0 sec   198 MBytes  1.66 Gbits/sec
+> [  3]  1.0- 2.0 sec   194 MBytes  1.62 Gbits/sec
+> [  3]  2.0- 3.0 sec   194 MBytes  1.63 Gbits/sec
+> [  3]  3.0- 4.0 sec   194 MBytes  1.63 Gbits/sec
+> [  3]  4.0- 5.0 sec   194 MBytes  1.62 Gbits/sec
+> [  3]  0.0- 5.0 sec   974 MBytes  1.63 Gbits/sec
+> 
+> The previous patch version[2].
+> 
+> [1] https://datatracker.ietf.org/doc/html/rfc6209
+> [2] https://www.spinics.net/lists/linux-crypto/msg64704.html
+> 
+> v2:
+>  - Add ARIA-kTLS feature.
+> 
+> Taehee Yoo (3):
+>   crypto: Implement ARIA symmetric cipher algorithm
+>   crypto: add ARIA testmgr tests
+>   net: tls: Add ARIA-GCM algorithm
+> 
+>  crypto/Kconfig           |   15 +
+>  crypto/Makefile          |    1 +
+>  crypto/aria.c            |  288 ++++
+>  crypto/tcrypt.c          |   38 +-
+>  crypto/testmgr.c         |   31 +
+>  crypto/testmgr.h         | 2860 ++++++++++++++++++++++++++++++++++++++
+>  include/crypto/aria.h    |  461 ++++++
+>  include/uapi/linux/tls.h |   30 +
+>  net/tls/tls_main.c       |   62 +
+>  net/tls/tls_sw.c         |   34 +
+>  10 files changed, 3819 insertions(+), 1 deletion(-)
+>  create mode 100644 crypto/aria.c
+>  create mode 100644 include/crypto/aria.h
 
-Please can you let me know whether you happy with this patch? I would
-like to send this series to net-next today.
+Patches 1-2 applied.  Thanks.
 
-Thanks.
+Note that I adjusted the tcrypt test numbers to accommodate for other
+additions.
 
-On Wed, Jul 13, 2022 at 03:07:47PM +0100, Russell King wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Allow a named software node to be created, which is needed for software
-> nodes for a fixed-link specification for DSA.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/base/swnode.c    | 14 ++++++++++++--
->  include/linux/property.h |  4 ++++
->  2 files changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/base/swnode.c b/drivers/base/swnode.c
-> index 0a482212c7e8..b2ea08f0e898 100644
-> --- a/drivers/base/swnode.c
-> +++ b/drivers/base/swnode.c
-> @@ -972,8 +972,9 @@ void software_node_unregister(const struct software_node *node)
->  EXPORT_SYMBOL_GPL(software_node_unregister);
->  
->  struct fwnode_handle *
-> -fwnode_create_software_node(const struct property_entry *properties,
-> -			    const struct fwnode_handle *parent)
-> +fwnode_create_named_software_node(const struct property_entry *properties,
-> +				  const struct fwnode_handle *parent,
-> +				  const char *name)
->  {
->  	struct fwnode_handle *fwnode;
->  	struct software_node *node;
-> @@ -991,6 +992,7 @@ fwnode_create_software_node(const struct property_entry *properties,
->  		return ERR_CAST(node);
->  
->  	node->parent = p ? p->node : NULL;
-> +	node->name = name;
->  
->  	fwnode = swnode_register(node, p, 1);
->  	if (IS_ERR(fwnode))
-> @@ -998,6 +1000,14 @@ fwnode_create_software_node(const struct property_entry *properties,
->  
->  	return fwnode;
->  }
-> +EXPORT_SYMBOL_GPL(fwnode_create_named_software_node);
-> +
-> +struct fwnode_handle *
-> +fwnode_create_software_node(const struct property_entry *properties,
-> +			    const struct fwnode_handle *parent)
-> +{
-> +	return fwnode_create_named_software_node(properties, parent, NULL);
-> +}
->  EXPORT_SYMBOL_GPL(fwnode_create_software_node);
->  
->  void fwnode_remove_software_node(struct fwnode_handle *fwnode)
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index a5b429d623f6..23330ae2b1fa 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -492,6 +492,10 @@ void software_node_unregister(const struct software_node *node);
->  struct fwnode_handle *
->  fwnode_create_software_node(const struct property_entry *properties,
->  			    const struct fwnode_handle *parent);
-> +struct fwnode_handle *
-> +fwnode_create_named_software_node(const struct property_entry *properties,
-> +				  const struct fwnode_handle *parent,
-> +				  const char *name);
->  void fwnode_remove_software_node(struct fwnode_handle *fwnode);
->  
->  int device_add_software_node(struct device *dev, const struct software_node *node);
-> -- 
-> 2.30.2
-> 
-> 
-
+Cheers,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
