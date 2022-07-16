@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C870576D68
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 13:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A163576D66
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 13:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiGPLC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 07:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        id S229979AbiGPLC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 07:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiGPLCv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 07:02:51 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D5626556
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:02:50 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id e15so9235146edj.2
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:02:50 -0700 (PDT)
+        with ESMTP id S230004AbiGPLCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 07:02:54 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0BE27B2E
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:02:52 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id mf4so13035898ejc.3
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:02:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IlTGGVC1jwvH6FoYEcEYhALo7Lfe/EgAoeB6mJAIaPc=;
-        b=QjjYB1Z8sJiJaZFLfn0hzKVss+/LozWiOFJFJ4zcVKFTtAIFEKl5pgMOm/mmOCj/pP
-         DJfjAqpqQ3Ka4IueEgeh2kOdRBUNSk9+w5xDjjnBLIe256QmlitIgoKhtsxadBQYFqHO
-         lxPwUUWs5hyOJsg4laCpfkPbgMV+oD2OUAK3jC7f3rpwLEJWnTyspMFhR55IZstvF3P1
-         jOTq247JLD+6vMh+lnwzFLuz+TEt1QjmnvUjNGVW3KnvmyX+vyVEdbcgvOim2cel3csW
-         RCrbMjPn/AeVptAhfheMPEHdXjJKcsN+SuX6O/C+aOTbycOhjCdXa2+h/SzttJNYGcPn
-         g8zQ==
+        bh=8uVD57S1SdiB8uSmTU3BT3oak0rYxr+EQzizPmHsZCg=;
+        b=PMaBBE5ZGuIWm7Iil5iiggQP5Gaz834+rYWU030tL8le+P26qxPqXsAsMGkyaKe1Oy
+         Ap07JA1B+98uT60sH0PGQOW6HEILjgDcyiTd6vEQmJu7e2a8/e+Wygw+Y7E7jqEHsaUk
+         WVGlSiUOkbFuZS7412NIRX7tV3P7on+7lsn1luwCWG7N5XQb6mwhNEsvSZd3oDmSfimW
+         hbSu/QHG6VHGmFBeiu8NE7dVutFJsQKpoDsRCAQDI9B9vUBmmCkbkRLEuw2cdoUHiuec
+         idjPHPVOJ0o8M7+FV1/bmRZGpxkTOhSKUW3Yd/OJzs8kHfMysIyMLe5IYSQzXo2GeRC/
+         6lbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IlTGGVC1jwvH6FoYEcEYhALo7Lfe/EgAoeB6mJAIaPc=;
-        b=yNPjrkFDlu/6JWAi023WEVswXNQuFDsPmgVCoa++ZgnHR4R102rQc5NnOjaJBpGhsW
-         p8ruub6gbZGrc6mtM9MIsdGjdK/cS6kzR993LDD0/HmCTlRO7T/HMr6h3pwhQ1x91xQs
-         jSJ2W7BLmarQ2N4V14BAvK0ZAuDqWNAYNWowzJ9w9C4FeVsTffEcUVlRPlOx8SivB2XT
-         8v8kBjL5Au1SMbueKrJjMo4y+utpu2IBDT9bBtNyuRjizPtt/jTCV02DcGGS0Dwz6qBR
-         WZYWNZl5/dOx1Vi4HfN4zcrq/R/ACvWCfJCupmiHMVzejx8G7IZu6RiqIpbwGHsjQa1w
-         tSeA==
-X-Gm-Message-State: AJIora/44huhL30p6SuLeQQWy4L4EoSgmDPeQOfb2/TlC8x+XvQZdDUN
-        HCmqan5Ge1G3dy3xtzMOyP1wE880Gkl4Onsm
-X-Google-Smtp-Source: AGRyM1upjjiUWCG8tDAPw/zXhv6QDRIFLwqoPn8fiC6N8gB4HR0VXUbDtHV+fz24y/IoAwra85O4Gw==
-X-Received: by 2002:a05:6402:2b8b:b0:43a:5475:f1ae with SMTP id fj11-20020a0564022b8b00b0043a5475f1aemr24769221edb.363.1657969368555;
-        Sat, 16 Jul 2022 04:02:48 -0700 (PDT)
+        bh=8uVD57S1SdiB8uSmTU3BT3oak0rYxr+EQzizPmHsZCg=;
+        b=AzQczpakAnVpl82DG4HstuhXG7QMkEqd0M88oNah+b8DhmdEJNvz+WdTbjR+jVmqZp
+         GHRJ3wcYME6F4TYgbKb/eLGUGYhLj8ELS8VqRjsSVy0p0qOygvw5WcOvrhdm3LLBO7Cn
+         rd/ANwkIT1jpJjMWQSATekhPS17eybUxjVe8OoUBmFPX8R6tvohB6cXW0DiPKAixlMRn
+         2KHOjMvjPaybMhwQ0F8CGwLPALf2Q0uE0iRplF4igULFTAElfVgB/8ZVrWx+MxZRUeSo
+         dFy9Ud3r4DSvV8nzCRTmEh4iFMVWHGvQlmatFk2Y85c9tMgC75wfwqpLDQgVdzc8PcrY
+         WlJg==
+X-Gm-Message-State: AJIora+B/uvFy7QVgpisWYr5OaDlx0GVRYV5IvVJgI1ZtLJ9BQA7vhfa
+        Ny/eVXNnpY1nvngNa0GXbLZsAvmuBmduLgOD
+X-Google-Smtp-Source: AGRyM1tfd8JKDFhKCzVaW1NWFjQwkRuiQFFpvNIYLYoWxaSZrscluZ/TN1L+xANVfPXUreO8RpsZPw==
+X-Received: by 2002:a17:907:7f09:b0:726:2ba7:21c2 with SMTP id qf9-20020a1709077f0900b007262ba721c2mr17681433ejc.744.1657969370593;
+        Sat, 16 Jul 2022 04:02:50 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id fs4-20020a170907600400b0072af3deb944sm3089908ejc.223.2022.07.16.04.02.47
+        by smtp.gmail.com with ESMTPSA id i23-20020a056402055700b0043a2338ca10sm4435802edx.92.2022.07.16.04.02.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jul 2022 04:02:47 -0700 (PDT)
+        Sat, 16 Jul 2022 04:02:49 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, idosch@nvidia.com,
         saeedm@nvidia.com, moshe@nvidia.com, tariqt@nvidia.com
-Subject: [patch net-next 3/9] net: devlink: add unlocked variants of devlink_resource*() functions
-Date:   Sat, 16 Jul 2022 13:02:35 +0200
-Message-Id: <20220716110241.3390528-4-jiri@resnulli.us>
+Subject: [patch net-next 4/9] net: devlink: add unlocked variants of devlink_sb*() functions
+Date:   Sat, 16 Jul 2022 13:02:36 +0200
+Message-Id: <20220716110241.3390528-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220716110241.3390528-1-jiri@resnulli.us>
 References: <20220716110241.3390528-1-jiri@resnulli.us>
@@ -71,389 +71,125 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Add unlocked variants of devlink_resource*() functions to be used
+Add unlocked variants of devlink_sb*() functions to be used
 in drivers called-in with devlink->lock held.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h |  17 ++++
- net/core/devlink.c    | 217 ++++++++++++++++++++++++++++++------------
- 2 files changed, 173 insertions(+), 61 deletions(-)
+ include/net/devlink.h |  5 ++++
+ net/core/devlink.c    | 54 ++++++++++++++++++++++++++++---------------
+ 2 files changed, 41 insertions(+), 18 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index fb1e17d998b6..d341753753ce 100644
+index d341753753ce..0057809a13b0 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1608,23 +1608,40 @@ extern struct devlink_dpipe_header devlink_dpipe_header_ethernet;
- extern struct devlink_dpipe_header devlink_dpipe_header_ipv4;
- extern struct devlink_dpipe_header devlink_dpipe_header_ipv6;
- 
-+int devl_resource_register(struct devlink *devlink,
-+			   const char *resource_name,
-+			   u64 resource_size,
-+			   u64 resource_id,
-+			   u64 parent_resource_id,
-+			   const struct devlink_resource_size_params *size_params);
- int devlink_resource_register(struct devlink *devlink,
- 			      const char *resource_name,
- 			      u64 resource_size,
- 			      u64 resource_id,
- 			      u64 parent_resource_id,
- 			      const struct devlink_resource_size_params *size_params);
-+void devl_resources_unregister(struct devlink *devlink);
- void devlink_resources_unregister(struct devlink *devlink);
-+int devl_resource_size_get(struct devlink *devlink,
-+			   u64 resource_id,
-+			   u64 *p_resource_size);
- int devlink_resource_size_get(struct devlink *devlink,
- 			      u64 resource_id,
- 			      u64 *p_resource_size);
- int devlink_dpipe_table_resource_set(struct devlink *devlink,
- 				     const char *table_name, u64 resource_id,
- 				     u64 resource_units);
-+void devl_resource_occ_get_register(struct devlink *devlink,
-+				    u64 resource_id,
-+				    devlink_resource_occ_get_t *occ_get,
-+				    void *occ_get_priv);
- void devlink_resource_occ_get_register(struct devlink *devlink,
- 				       u64 resource_id,
- 				       devlink_resource_occ_get_t *occ_get,
- 				       void *occ_get_priv);
-+void devl_resource_occ_get_unregister(struct devlink *devlink,
-+				      u64 resource_id);
-+
- void devlink_resource_occ_get_unregister(struct devlink *devlink,
- 					 u64 resource_id);
- int devlink_params_register(struct devlink *devlink,
+@@ -1579,10 +1579,15 @@ void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
+ void devlink_linecard_provision_fail(struct devlink_linecard *linecard);
+ void devlink_linecard_activate(struct devlink_linecard *linecard);
+ void devlink_linecard_deactivate(struct devlink_linecard *linecard);
++int devl_sb_register(struct devlink *devlink, unsigned int sb_index,
++		     u32 size, u16 ingress_pools_count,
++		     u16 egress_pools_count, u16 ingress_tc_count,
++		     u16 egress_tc_count);
+ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u32 size, u16 ingress_pools_count,
+ 			u16 egress_pools_count, u16 ingress_tc_count,
+ 			u16 egress_tc_count);
++void devl_sb_unregister(struct devlink *devlink, unsigned int sb_index);
+ void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index);
+ int devlink_dpipe_table_register(struct devlink *devlink,
+ 				 const char *table_name,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b0f6e8388880..1688271ef7b2 100644
+index 1688271ef7b2..64dab4024d11 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -10555,45 +10555,41 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
- EXPORT_SYMBOL_GPL(devlink_dpipe_table_unregister);
+@@ -10375,25 +10375,21 @@ void devlink_linecard_deactivate(struct devlink_linecard *linecard)
+ }
+ EXPORT_SYMBOL_GPL(devlink_linecard_deactivate);
  
- /**
-- *	devlink_resource_register - devlink resource register
-+ * devl_resource_register - devlink resource register
-  *
-- *	@devlink: devlink
-- *	@resource_name: resource's name
-- *	@resource_size: resource's size
-- *	@resource_id: resource's id
-- *	@parent_resource_id: resource's parent id
-- *	@size_params: size parameters
-+ * @devlink: devlink
-+ * @resource_name: resource's name
-+ * @resource_size: resource's size
-+ * @resource_id: resource's id
-+ * @parent_resource_id: resource's parent id
-+ * @size_params: size parameters
-  *
-- *	Generic resources should reuse the same names across drivers.
-- *	Please see the generic resources list at:
-- *	Documentation/networking/devlink/devlink-resource.rst
-+ * Generic resources should reuse the same names across drivers.
-+ * Please see the generic resources list at:
-+ * Documentation/networking/devlink/devlink-resource.rst
-  */
--int devlink_resource_register(struct devlink *devlink,
--			      const char *resource_name,
--			      u64 resource_size,
--			      u64 resource_id,
--			      u64 parent_resource_id,
--			      const struct devlink_resource_size_params *size_params)
-+int devl_resource_register(struct devlink *devlink,
-+			   const char *resource_name,
-+			   u64 resource_size,
-+			   u64 resource_id,
-+			   u64 parent_resource_id,
-+			   const struct devlink_resource_size_params *size_params)
+-int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+-			u32 size, u16 ingress_pools_count,
+-			u16 egress_pools_count, u16 ingress_tc_count,
+-			u16 egress_tc_count)
++int devl_sb_register(struct devlink *devlink, unsigned int sb_index,
++		     u32 size, u16 ingress_pools_count,
++		     u16 egress_pools_count, u16 ingress_tc_count,
++		     u16 egress_tc_count)
  {
- 	struct devlink_resource *resource;
- 	struct list_head *resource_list;
- 	bool top_hierarchy;
+ 	struct devlink_sb *devlink_sb;
 -	int err = 0;
-+
-+	lockdep_assert_held(&devlink->lock);
- 
- 	top_hierarchy = parent_resource_id == DEVLINK_RESOURCE_ID_PARENT_TOP;
  
 -	devl_lock(devlink);
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
--	if (resource) {
--		err = -EINVAL;
--		goto out;
+-	if (devlink_sb_index_exists(devlink, sb_index)) {
+-		err = -EEXIST;
+-		goto unlock;
 -	}
-+	if (resource)
-+		return -EINVAL;
++	lockdep_assert_held(&devlink->lock);
++
++	if (devlink_sb_index_exists(devlink, sb_index))
++		return -EEXIST;
  
- 	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
--	if (!resource) {
+ 	devlink_sb = kzalloc(sizeof(*devlink_sb), GFP_KERNEL);
+-	if (!devlink_sb) {
 -		err = -ENOMEM;
--		goto out;
+-		goto unlock;
 -	}
-+	if (!resource)
++	if (!devlink_sb)
 +		return -ENOMEM;
- 
- 	if (top_hierarchy) {
- 		resource_list = &devlink->resource_list;
-@@ -10607,8 +10603,7 @@ int devlink_resource_register(struct devlink *devlink,
- 			resource->parent = parent_resource;
- 		} else {
- 			kfree(resource);
--			err = -EINVAL;
--			goto out;
-+			return -EINVAL;
- 		}
- 	}
- 
-@@ -10621,7 +10616,39 @@ int devlink_resource_register(struct devlink *devlink,
- 	       sizeof(resource->size_params));
- 	INIT_LIST_HEAD(&resource->resource_list);
- 	list_add_tail(&resource->list, resource_list);
--out:
-+
+ 	devlink_sb->index = sb_index;
+ 	devlink_sb->size = size;
+ 	devlink_sb->ingress_pools_count = ingress_pools_count;
+@@ -10401,23 +10397,45 @@ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 	devlink_sb->ingress_tc_count = ingress_tc_count;
+ 	devlink_sb->egress_tc_count = egress_tc_count;
+ 	list_add_tail(&devlink_sb->list, &devlink->sb_list);
+-unlock:
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(devl_resource_register);
++EXPORT_SYMBOL_GPL(devl_sb_register);
 +
-+/**
-+ *	devlink_resource_register - devlink resource register
-+ *
-+ *	@devlink: devlink
-+ *	@resource_name: resource's name
-+ *	@resource_size: resource's size
-+ *	@resource_id: resource's id
-+ *	@parent_resource_id: resource's parent id
-+ *	@size_params: size parameters
-+ *
-+ *	Generic resources should reuse the same names across drivers.
-+ *	Please see the generic resources list at:
-+ *	Documentation/networking/devlink/devlink-resource.rst
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-+ */
-+int devlink_resource_register(struct devlink *devlink,
-+			      const char *resource_name,
-+			      u64 resource_size,
-+			      u64 resource_id,
-+			      u64 parent_resource_id,
-+			      const struct devlink_resource_size_params *size_params)
++int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
++			u32 size, u16 ingress_pools_count,
++			u16 egress_pools_count, u16 ingress_tc_count,
++			u16 egress_tc_count)
 +{
 +	int err;
 +
 +	devl_lock(devlink);
-+	err = devl_resource_register(devlink, resource_name, resource_size,
-+				     resource_id, parent_resource_id, size_params);
++	err = devl_sb_register(devlink, sb_index, size, ingress_pools_count,
++			       egress_pools_count, ingress_tc_count,
++			       egress_tc_count);
  	devl_unlock(devlink);
  	return err;
  }
-@@ -10641,15 +10668,15 @@ static void devlink_resource_unregister(struct devlink *devlink,
- }
+ EXPORT_SYMBOL_GPL(devlink_sb_register);
  
- /**
-- *	devlink_resources_unregister - free all resources
-+ * devl_resources_unregister - free all resources
-  *
-- *	@devlink: devlink
-+ * @devlink: devlink
-  */
--void devlink_resources_unregister(struct devlink *devlink)
-+void devl_resources_unregister(struct devlink *devlink)
+-void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index)
++void devl_sb_unregister(struct devlink *devlink, unsigned int sb_index)
  {
- 	struct devlink_resource *tmp, *child_resource;
- 
--	devl_lock(devlink);
-+	lockdep_assert_held(&devlink->lock);
- 
- 	list_for_each_entry_safe(child_resource, tmp, &devlink->resource_list,
- 				 list) {
-@@ -10657,34 +10684,65 @@ void devlink_resources_unregister(struct devlink *devlink)
- 		list_del(&child_resource->list);
- 		kfree(child_resource);
- 	}
-+}
-+EXPORT_SYMBOL_GPL(devl_resources_unregister);
- 
-+/**
-+ *	devlink_resources_unregister - free all resources
-+ *
-+ *	@devlink: devlink
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-+ */
-+void devlink_resources_unregister(struct devlink *devlink)
-+{
-+	devl_lock(devlink);
-+	devl_resources_unregister(devlink);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_resources_unregister);
- 
-+/**
-+ * devl_resource_size_get - get and update size
-+ *
-+ * @devlink: devlink
-+ * @resource_id: the requested resource id
-+ * @p_resource_size: ptr to update
-+ */
-+int devl_resource_size_get(struct devlink *devlink,
-+			   u64 resource_id,
-+			   u64 *p_resource_size)
-+{
-+	struct devlink_resource *resource;
-+
-+	lockdep_assert_held(&devlink->lock);
-+
-+	resource = devlink_resource_find(devlink, NULL, resource_id);
-+	if (!resource)
-+		return -EINVAL;
-+	*p_resource_size = resource->size_new;
-+	resource->size = resource->size_new;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(devl_resource_size_get);
-+
- /**
-  *	devlink_resource_size_get - get and update size
-  *
-  *	@devlink: devlink
-  *	@resource_id: the requested resource id
-  *	@p_resource_size: ptr to update
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-  */
- int devlink_resource_size_get(struct devlink *devlink,
- 			      u64 resource_id,
- 			      u64 *p_resource_size)
- {
--	struct devlink_resource *resource;
--	int err = 0;
-+	int err;
- 
- 	devl_lock(devlink);
--	resource = devlink_resource_find(devlink, NULL, resource_id);
--	if (!resource) {
--		err = -EINVAL;
--		goto out;
--	}
--	*p_resource_size = resource->size_new;
--	resource->size = resource->size_new;
--out:
-+	err = devl_resource_size_get(devlink, resource_id, p_resource_size);
- 	devl_unlock(devlink);
- 	return err;
- }
-@@ -10721,6 +10779,33 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
- }
- EXPORT_SYMBOL_GPL(devlink_dpipe_table_resource_set);
- 
-+/**
-+ * devl_resource_occ_get_register - register occupancy getter
-+ *
-+ * @devlink: devlink
-+ * @resource_id: resource id
-+ * @occ_get: occupancy getter callback
-+ * @occ_get_priv: occupancy getter callback priv
-+ */
-+void devl_resource_occ_get_register(struct devlink *devlink,
-+				    u64 resource_id,
-+				    devlink_resource_occ_get_t *occ_get,
-+				    void *occ_get_priv)
-+{
-+	struct devlink_resource *resource;
-+
-+	lockdep_assert_held(&devlink->lock);
-+
-+	resource = devlink_resource_find(devlink, NULL, resource_id);
-+	if (WARN_ON(!resource))
-+		return;
-+	WARN_ON(resource->occ_get);
-+
-+	resource->occ_get = occ_get;
-+	resource->occ_get_priv = occ_get_priv;
-+}
-+EXPORT_SYMBOL_GPL(devl_resource_occ_get_register);
-+
- /**
-  *	devlink_resource_occ_get_register - register occupancy getter
-  *
-@@ -10728,47 +10813,57 @@ EXPORT_SYMBOL_GPL(devlink_dpipe_table_resource_set);
-  *	@resource_id: resource id
-  *	@occ_get: occupancy getter callback
-  *	@occ_get_priv: occupancy getter callback priv
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-  */
- void devlink_resource_occ_get_register(struct devlink *devlink,
- 				       u64 resource_id,
- 				       devlink_resource_occ_get_t *occ_get,
- 				       void *occ_get_priv)
- {
--	struct devlink_resource *resource;
--
- 	devl_lock(devlink);
--	resource = devlink_resource_find(devlink, NULL, resource_id);
--	if (WARN_ON(!resource))
--		goto out;
--	WARN_ON(resource->occ_get);
--
--	resource->occ_get = occ_get;
--	resource->occ_get_priv = occ_get_priv;
--out:
-+	devl_resource_occ_get_register(devlink, resource_id,
-+				       occ_get, occ_get_priv);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_resource_occ_get_register);
- 
- /**
-- *	devlink_resource_occ_get_unregister - unregister occupancy getter
-+ * devl_resource_occ_get_unregister - unregister occupancy getter
-  *
-- *	@devlink: devlink
-- *	@resource_id: resource id
-+ * @devlink: devlink
-+ * @resource_id: resource id
-  */
--void devlink_resource_occ_get_unregister(struct devlink *devlink,
--					 u64 resource_id)
-+void devl_resource_occ_get_unregister(struct devlink *devlink,
-+				      u64 resource_id)
- {
- 	struct devlink_resource *resource;
+ 	struct devlink_sb *devlink_sb;
  
 -	devl_lock(devlink);
 +	lockdep_assert_held(&devlink->lock);
 +
- 	resource = devlink_resource_find(devlink, NULL, resource_id);
- 	if (WARN_ON(!resource))
--		goto out;
-+		return;
- 	WARN_ON(!resource->occ_get);
- 
- 	resource->occ_get = NULL;
- 	resource->occ_get_priv = NULL;
--out:
-+}
-+EXPORT_SYMBOL_GPL(devl_resource_occ_get_unregister);
+ 	devlink_sb = devlink_sb_get_by_index(devlink, sb_index);
+ 	WARN_ON(!devlink_sb);
+ 	list_del(&devlink_sb->list);
+-	devl_unlock(devlink);
+ 	kfree(devlink_sb);
+ }
++EXPORT_SYMBOL_GPL(devl_sb_unregister);
 +
-+/**
-+ *	devlink_resource_occ_get_unregister - unregister occupancy getter
-+ *
-+ *	@devlink: devlink
-+ *	@resource_id: resource id
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-+ */
-+void devlink_resource_occ_get_unregister(struct devlink *devlink,
-+					 u64 resource_id)
++void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index)
 +{
 +	devl_lock(devlink);
-+	devl_resource_occ_get_unregister(devlink, resource_id);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_resource_occ_get_unregister);
++	devl_sb_unregister(devlink, sb_index);
++	devl_unlock(devlink);
++}
+ EXPORT_SYMBOL_GPL(devlink_sb_unregister);
+ 
+ /**
 -- 
 2.35.3
 
