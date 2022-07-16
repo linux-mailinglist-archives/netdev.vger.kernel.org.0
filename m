@@ -2,132 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 932275771AD
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 23:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E965B5771B8
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 00:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiGPVzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 17:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S230518AbiGPWGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 18:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbiGPVzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 17:55:50 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10085.outbound.protection.outlook.com [40.107.1.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C501186E5;
-        Sat, 16 Jul 2022 14:55:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZIfoq5xBqCfOAw12U6gx0m3RmKQ+9daEkfug43uFNoctBNcjdHHfNikD9eL1vWcWkrtyaTmE4N10o5FY8H0UaMe4tQ3Qxuy6wpP9i4SSp7SqI2XnIImymQvoQmn69/Gex2kKQNF3mzLcUZl6uMdA03IvN+WkXErTg/I+tYAovTQQeJChCdHgpcuY2OPxSK/dnZ05A829ZyYbNW4Le9VPEtsVhVRc/34gXmU1YIzWxShJIaY+cf0+uq9nIRyKUffzP6GXtuC2CQu5mM0sFH0ptPryrZ3x3vJtxkchJpRkBQTqANEvwx8oY9x8E+N1jprBpwwSBC70JcDMw4pk0r7iCw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gf9sTiBBl03tmjYXQ9kZYFliPpw1KIhk8z7LgJVWGx8=;
- b=ArbBNHd1tD7vfp+GWq0O8QnFCeTbazo40R0V/t4P4CSk/SUQpCEyZY05dXX9PHR9QDoqfiwLlCStXwATnefed27dmnBKcNc3U4LEZtZkutWBba0IDYNj+IFu1CQkHEFk42fwnXF+3qwuRY5ItT1yqHK85IMZZVMtXNd3ZzEKai6c8BlgG17jbHt4mo9/hk8PgZ7igqC+FwPU1MtNkfb8vPPGVppW8YGZDBb/xBcHuNQqoceoY3kfP0zQp02+AaGyKOM5ZUkB8Ot8d8wYIWqjYICxdYiLJrvdzJ84aR7k/dZmb6IW7xBgerz5oyrftCw9Eo7uSRaWMh9Rq13/Odcrrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gf9sTiBBl03tmjYXQ9kZYFliPpw1KIhk8z7LgJVWGx8=;
- b=aG4HcRQG41oUgHTYmV8Tp2VRq1x+vGeADe5K3cNQVvF53x427VCQoec76wK0MaPhdlFiJ57xbUgeXQw5j6RKiVjx+0kcsDCCb4zLLQvNsULgKmTrEwosZ3GmvVtiEpqvP+W7lcpl9H0D5gCBZMWpbVRiSycIjtbCc9BKaEQYt54A+dVQCq8HtRGbfpjotv2oJeYx+LVB/e4pzOj+BmVJuXHL4hVDCKgoPbKf5YfMiebMgHRVW16wppkXoTbOrGIPPCYc3mxWoGf/Xl7SP5UK0f3nvvu9W7jru8bohURIsN0VWTo0bO0BOAfpR14+qZzzNxUf49Nqk7ydqv4by6jHbA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
- by AM6PR03MB4904.eurprd03.prod.outlook.com (2603:10a6:20b:8b::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Sat, 16 Jul
- 2022 21:55:45 +0000
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::5c3e:4e46:703b:8558]) by VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::5c3e:4e46:703b:8558%7]) with mapi id 15.20.5438.021; Sat, 16 Jul 2022
- 21:55:44 +0000
-Subject: Re: [PATCH net-next v3 07/47] net: phy: Add support for rate
- adaptation
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-8-sean.anderson@seco.com> <YtMT8V4PNkxJ9lMm@lunn.ch>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <6f8e17cb-3f6b-9e89-51a4-9452d562204b@seco.com>
-Date:   Sat, 16 Jul 2022 17:55:38 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-In-Reply-To: <YtMT8V4PNkxJ9lMm@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0427.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::12) To VI1PR03MB4973.eurprd03.prod.outlook.com
- (2603:10a6:803:c5::12)
+        with ESMTP id S229579AbiGPWGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 18:06:52 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172FE1B784;
+        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10bffc214ffso14614834fac.1;
+        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
+        b=ok0iPES9kQ9HZOaMtVuYihJm71d8eraNHSmuA1jbl+xp4lKn30+ZV+s4G+OZ/EoOMh
+         O/tWWSRV9QCEUMbz0jGkcl/gaSZhHUnr8eYQWc4Ch8SYRo14sgBll2w9dicmHq0HK4BO
+         V4nsANhW2MjbDcihpGAcb44B6quHsLuCWBxC7xG8xEa9/TEmEm3CDE/k63d0mQujve7P
+         S1safR2csWc4PKOoNo+Q2+AupB3mmsIgXMr+F+UCBHSl6nkKqD6M+OyoygZ5Wg6hGtu2
+         kjrgKoibqfIIZNptXldMBEVPqkLPvSLGVs7akdunWXlzEEJ5agdSNGNBM0+27EowBOXT
+         LtJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
+        b=aKF/gC4VQb8cQmSl/OetNTEmPKTzONSmuXB80ER2pAkjEVLlon+esAC69dc1QQ2Yi3
+         c3yqjAhEpe06pd0dGPYcSx7e6fCvGm/IhPRClkwW0eaAObLxwo9gRGM6j5esGUCJj/ZY
+         lLXzofwEwE1KOn1IDWVVEf5bEbBjoMPdxhHAuNgjSg0BnMwzFkc1nbM3maNsIu3UbKFF
+         RKET3ryB4ftWH3SUs5y2iW/Jr/dEOB951/yhWXJsPwTVgJwny3G7RjGwFxpkrgcIPnf9
+         l0pOuJIPPA2sNk9tJLCwqdW8OWOC22i7lA60vmszWa1gnZ9R8UNcNcW+TeA1cNFTBL++
+         D+Rg==
+X-Gm-Message-State: AJIora+OmfzyKj4EXbtSmlu4XzAvCsVqIfQ/lhCVKNAAG2IsJMLXHPNL
+        KHiE9BiBhr/KzuGLTOQCatSBJ9GNhbINKB7QVYM=
+X-Google-Smtp-Source: AGRyM1sogW/U6Kbdivuues1D57lbscRCybveYUagL0BSa4+nUew2O/9Z4Ej6ADDSf5l7q6cHGTtFQWZ2kKxScZEW0Bo=
+X-Received: by 2002:a05:6870:311b:b0:10d:96:733a with SMTP id
+ v27-20020a056870311b00b0010d0096733amr6882683oaa.190.1658009210333; Sat, 16
+ Jul 2022 15:06:50 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4181b89d-67d6-4a99-b6c3-08da6775eed7
-X-MS-TrafficTypeDiagnostic: AM6PR03MB4904:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HQL6H6LXkh6Vpf49HWtVrnPg0HUGO2z2fsjYzxJRO11PAVrE8vL2NwYdK3ij1tJTb52MrJdb2n5r52Pu67vfkcnyMaaMxPmSJe4O69DzElET5WipcDmqJEdqtiGt9h4zHJQCnQfZAKn223ybJR0JKg08coEKgKqLZQuRlJBkzjJlVlbaEmtxM9KV1VIH5RMTZvoEclaqAkonLSbMQWpd2Y8cBfuuBbgjcmyKbiupENIfvFDKBkhPP5ZeYlQieZeq7SgJpmuZaOrqCaQ5MK3mfQk4RUrSsW9B7T9iv+bH6DzfwNW0U8hytISDgLaHmaWRKlGhAdT2Pcxxjs7mL43h7kpCqW6Cd41SgXrdb+Cg07riRdLdFVD2vMCFg8BwqNtG7Uv1Jp1NinsWKz6OfkkHYOInuawa0B7Ko5VpJAKwb427KqnR8a3ZGfuuXn5xfEnylnGbcb6pZSdNx9sM39AhPaDKxiRkV3d4vRrlCgup2SSUDDtnF+0HZ3EH5ndPbutDAp4+JkYhsveXgAB99aETSY4+UIqG5vaPiN/Tnk7dFa9TczUjFKg4VVLdfY75346UZioTdkKyW8hWfypxjTSKyJ9i7DywfDsXFTqUUeGQAZUiAkyHD6WugvRt2zRQr5NNEFkfb0RyqRBX3yAiW1xDp0mXKExwGG8wKCZLigr0+bwxx1+1LpYyXR7b8dfJRyn1MsymlJYFpRy0qbZ/8pnBE6nEgnzHgn1DMN6/7sIBZ2gMxZhZ6vTLJ7EDIjAg3iXtOZvulGSGdNDOzom7TosfHCcPVCi5cfXUMhm+Tr7aZyZe8EAu0AKSx7ubDFwpTSWCovqsD653296UPtsMzL6srf/d1pMpJMAJ3a7X4O4RRYr+Y/EfN/0M4Arn37gOgz/z
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39840400004)(136003)(396003)(366004)(346002)(53546011)(2616005)(8676002)(6506007)(31686004)(66946007)(52116002)(86362001)(66476007)(4326008)(186003)(7416002)(5660300002)(38350700002)(8936002)(316002)(6512007)(38100700002)(36756003)(26005)(66556008)(6666004)(54906003)(41300700001)(478600001)(2906002)(44832011)(83380400001)(31696002)(6916009)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aXZvemNhQ3VxY2xKa21id0VJQjJLWENyQmIzRk1MSFgxUk9PcWQramJhTStv?=
- =?utf-8?B?dXdLRWpGOHNkd1NhR3JOWXZSOExLSWF4UGVaWUhYbkJZSUxWc0RVYWtlOUpM?=
- =?utf-8?B?aTZqTDl2bmJkRlI0NmhkZHFBTWZqUEN0enA4THJ3aDl2blQvMDRacTJrWXFP?=
- =?utf-8?B?T2g5M2pMZ1EyUW81Z0xuRGVSVjdHbGNwc1g3NTAwanpaQ2tPV3VoT1RmR2tE?=
- =?utf-8?B?VUJoOXlVZjVKTURxN3RwZUk3MG1KbXBMc2ZsOG1vQkh0Z01TcXQ5ZjVDNndo?=
- =?utf-8?B?cXRiYmIvZ3lHYWNRcmVnMGM2MkdsQnlUUHp3cmFTaDY4OE5tWTBRcUhqWGFV?=
- =?utf-8?B?MDNxR3RpcmQ5dExwbHpDYTFEcnl3S0NHdFpRQjdicnJZSUJ1a2RLQzNadU51?=
- =?utf-8?B?a2M4RlRRM0w1aGFTd1NjUUxWY3Zkd3NVa2NMYW1HWG1XN1JmQXFIZjJrN29D?=
- =?utf-8?B?dHZCRGdCSzBPelZRZEJCei8xaUJWZDRqeXdlanowdEhCQ0xMQkZ0L3FJV0tV?=
- =?utf-8?B?SnVKdkU2OWYvTjJWSnA2REtaOUo0VzVqZGJDbVVuTEFuNWovMDlQeWFmVmZk?=
- =?utf-8?B?M1Z3VnpuM21Fck5acFBKdXJMa0Y3cVlCbUNVOXdtQmc1VUtsQ254Q3BDQTls?=
- =?utf-8?B?UFIzS25iOXM5R2oyUXd2YnlFeWV6ZkYrSlZwTGdoL25Tc05rNHlKZjNJODVj?=
- =?utf-8?B?UDlZV2plTk9iOFRtNFJUaUIrcDhValNCOUd2YlhKOGFLU2hETC9LMHlVYktT?=
- =?utf-8?B?WVMrZTZKMWEvQWhFSGlsTm1pRUczdWVMczg0aC9IMXZUc0x6MjRqOGxFMFd4?=
- =?utf-8?B?MGlDbk5UaHdHS3hVSmRIRlVLSHZWQ2RQMmRZbWdlTlVNNGt3NTdRWEFGZnpt?=
- =?utf-8?B?YTUrb1g0RHgrNXdVVWN5SnBLMW81VzZlMzNkWk1NNnZsOC9HaUx2MlcyZHdE?=
- =?utf-8?B?ZTIrRjAyaXRRTkd3QlZNdTdjOWNDQnRmUkU0M3R0RXphdEZTYVpiVVdWYmpn?=
- =?utf-8?B?SWlJR1cybnJqN0d6RTAxa1RWZURkN2lEYWxLeHVJNUlTRXZodmk2aUZGZmFP?=
- =?utf-8?B?VU1EWnNSZGRxS1dBMkk2L3ZPWHY0R3Y1dlRreXVKNVZPSGMvbHoxaXFwejNi?=
- =?utf-8?B?ZUtrbFNLQTB3RUdGTHJoQitJTDdDekFvQUNFMnpqY0ZWcnpoZjZmT0NyY0dl?=
- =?utf-8?B?eDYwOVFVUXo2U254b0U1K2JQNGJrTWYrcGl2bFhrLzdhUHRrcFZnQU9HTHpl?=
- =?utf-8?B?cmRuaHg1ekF2Wm9ZREoycUZ3QjlQaDUrWWp1ZTBVUnVXelFyTVpiTjJaWUN6?=
- =?utf-8?B?cDc5Y0R3V0RRNUR5MWVuMkF2ZGlHTUx4NlRFVVNxOVZxZW1XU2V5REphQVhh?=
- =?utf-8?B?VTdjOGNjc2EvbHNtV1c2M2lMOU1mZFRWTnhlbmZyQ2JuRjJvT3JGQ0tDa3RP?=
- =?utf-8?B?QWtsK3B1d2tGVjEra2d5anVXd1VGRDhtS1d5U0x1ckJCREpBTlN6YXlSbFN3?=
- =?utf-8?B?M2pKZ2g1anB4UUorUUNoaXA5ZmNZNWYrUWV0NkE4NEJSSVcwcTluMUEvenF0?=
- =?utf-8?B?WmVXWERZeVlXWnRBTkxBNGFGUWR5eVJoQ3JwUGZ2c0xUa0o5cGdYZFhOQzRT?=
- =?utf-8?B?L2VINS83cjk1cXhpWGtSTFhuaDY4ZHVzbVVzcHJJWHNDTHdpZkR4K3A1Q0RP?=
- =?utf-8?B?OVh0cDVVaXhNWXZMamZNekZ5R3BpRnBnOUxOYjdYSkdNQXdSamNYY1RDTTZE?=
- =?utf-8?B?ZlE2M05uVUU5SW5Nd25DSzRsbnV5MGEzdDhpbzBrbStnR3ZjUEVyNC96WFdw?=
- =?utf-8?B?MkNYZXRlOXNnYm1yRm03TklTa2Z6eHdkWTFPblJyZG9SMVFrdlJ5NStDcVp1?=
- =?utf-8?B?ejRQalI1bDBHcm9ycDduUmI1ZWFhMVZkMHpDM0JTNVBHRVJmWmlBOG5NRHkw?=
- =?utf-8?B?cjgzWlJnMHU5NEJZNWM1d3l6RDk5RXI2QU8yQ0svdXkzQlQ0OW1LVkhTSGZs?=
- =?utf-8?B?QXZweEpIVWZUL1BvY3BYRUlBWkpPbDllQm5MRkV2T3FjVVdxeEtXREE3YXND?=
- =?utf-8?B?eisrRE1aNDVZcGVVVGttMXIwd1dsbjZrdmdiVFYrMmh6Smh1UnU0ckhIZ1lq?=
- =?utf-8?B?WVo3SzEvTFBFZng4Z05OZkZkeis5c3UxQnBqeXVVYjhTaUJhdXE5K0s4T0Zp?=
- =?utf-8?B?RkE9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4181b89d-67d6-4a99-b6c3-08da6775eed7
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2022 21:55:44.6514
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VJ8mhDINu12Hi8ESkWVVZCwPFMidsic/PHY6OZHxYjimwGd5djduqUh5QLsYNdPABkMI+4eXfwJxVCsjOxeKaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB4904
+References: <CAO4mrfcUYjEi69mcSt_vXyb3VGFTAAq3dyNeWueucgw0DGABfg@mail.gmail.com>
+ <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
+In-Reply-To: <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Sat, 16 Jul 2022 18:06:08 -0400
+Message-ID: <CADvbK_dWMO0XdAf950Q14pUv99ahS1MRnOtppvosU2w33sO=kw@mail.gmail.com>
+Subject: Re: BUG: unable to handle kernel NULL pointer dereference in sctp_sched_dequeue_common
+To:     Wei Chen <harperchen1110@gmail.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -135,63 +73,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/22 3:39 PM, Andrew Lunn wrote:
->>   drivers/net/phy/phy.c | 21 +++++++++++++++++++++
->>   include/linux/phy.h   | 38 ++++++++++++++++++++++++++++++++++++++
->>   2 files changed, 59 insertions(+)
->>
->> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
->> index 8d3ee3a6495b..cf4a8b055a42 100644
->> --- a/drivers/net/phy/phy.c
->> +++ b/drivers/net/phy/phy.c
->> @@ -114,6 +114,27 @@ void phy_print_status(struct phy_device *phydev)
->>   }
->>   EXPORT_SYMBOL(phy_print_status);
->>   
->> +/**
->> + * phy_get_rate_adaptation - determine if rate adaptation is supported
->> + * @phydev: The phy device to return rate adaptation for
->> + * @iface: The interface mode to use
->> + *
->> + * This determines the type of rate adaptation (if any) that @phy supports
->> + * using @iface. @iface may be %PHY_INTERFACE_MODE_NA to determine if any
->> + * interface supports rate adaptation.
->> + *
->> + * Return: The type of rate adaptation @phy supports for @iface, or
->> + *         %RATE_ADAPT_NONE.
->> + */
->> +enum rate_adaptation phy_get_rate_adaptation(struct phy_device *phydev,
->> +					     phy_interface_t iface)
->> +{
->> +	if (phydev->drv->get_rate_adaptation)
->> +		return phydev->drv->get_rate_adaptation(phydev, iface);
-> 
-> It is normal that any call into the driver is performed with the
-> phydev->lock held.
+On Tue, Jul 12, 2022 at 2:52 AM Wei Chen <harperchen1110@gmail.com> wrote:
+>
+> Dear Linux Developer,
+>
+> Recently when using our tool to fuzz kernel, the following crash was triggered:
+>
+> HEAD commit:  c5eb0a61238d Linux 5.18-rc6
+> git tree: upstream
+> compiler: clang 12.0.0
+> console output:
+> https://drive.google.com/file/d/1zbd9t-NNorzTXESdQ3bxE-q9uLu-Bm9d/view?usp=sharing
+> Syzlang reproducer:
+> https://drive.google.com/file/d/18wnwTf53Ln4K8e4G9d8hS4-e0URQKHet/view?usp=sharing
+> C reproducer: https://drive.google.com/file/d/1ttiMq0WYi46zFP1II8O9eee_dvDweIb6/view?usp=sharing
+> kernel config: https://drive.google.com/file/d/1fITkvcuglspvuhI0mhXUndx112fJmcOZ/view?usp=sharing
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: Wei Chen <harperchen1110@gmail.com>
+>
+> BUG: kernel NULL pointer dereference, address: 0000000000000000
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 12f83067 P4D 12f83067 PUD 0
+> Oops: 0000 [#1] PREEMPT SMP
+> CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.18.0-rc6 #12
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> RIP: 0010:__list_del_entry_valid+0x26/0x80
+> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
+> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
+> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
+> RSP: 0018:ffff888007313720 EFLAGS: 00010217
+> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
+> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
+> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
+> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
+> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
+> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> PKRU: 55555554
+> Call Trace:
+>  <TASK>
+>  sctp_sched_dequeue_common+0x1c/0x90
+>  sctp_sched_prio_dequeue+0x67/0x80
+>  __sctp_outq_teardown+0x299/0x380
+>  sctp_outq_free+0x15/0x20
+>  sctp_association_free+0xc3/0x440
+>  sctp_do_sm+0x1ca7/0x2210
+>  sctp_assoc_bh_rcv+0x1f6/0x340
+sctp_stream_init() is also called in processing SCTP_CMD_PEER_INIT
+generated in sctp_sf_do_5_1C_ack(). At that time some chunk might be
+already in the outq and stream outq. Failure in sctp_stream_init() will
+cause stream->out to be freed, which still holds some schedule information.
 
-Ah, so like phy_ethtool_get_strings.
+So 2 things should be done when this happens:
+1. call sctp_stream_free() in err path to avoid memleak in
+SCTP_SO(stream, i)->ext in sctp_stream_init().
+2. set asoc->outqueue.sched back to &sctp_sched_fcfs to fix the
+scheduler's dequeue crash.
 
->>   #define PHY_INIT_TIMEOUT	100000
->>   #define PHY_FORCE_TIMEOUT	10
->> @@ -570,6 +588,7 @@ struct macsec_ops;
->>    * @lp_advertising: Current link partner advertised linkmodes
->>    * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
->>    * @autoneg: Flag autoneg being used
->> + * @rate_adaptation: Current rate adaptation mode
->>    * @link: Current link state
->>    * @autoneg_complete: Flag auto negotiation of the link has completed
->>    * @mdix: Current crossover
->> @@ -637,6 +656,8 @@ struct phy_device {
->>   	unsigned irq_suspended:1;
->>   	unsigned irq_rerun:1;
->>   
->> +	enum rate_adaptation rate_adaptation;
-> 
-> It is not clear what the locking is on this member. Is it only safe to
-> access it during the adjust_link callback, when it is guaranteed that
-> the phydev->lock is held, so the value is consistent? Or is the MAC
-> allowed to access this at other times?
+Will prepare a fix.
+Thanks.
 
-The former. My intention is that this has the same access as link/interface/speed/duplex.
-
---Sean
+>  sctp_inq_push+0x98/0xb0
+>  sctp_rcv+0x134e/0x16b0
+>  sctp6_rcv+0x1b/0x30
+>  ip6_protocol_deliver_rcu+0x5b7/0x930
+>  ip6_input+0x80/0x140
+>  ip6_rcv_finish+0x16e/0x1d0
+>  ipv6_rcv+0x72/0x110
+>  __netif_receive_skb+0x66/0x140
+>  process_backlog+0x13d/0x230
+>  __napi_poll+0x4b/0x310
+>  net_rx_action+0x1ae/0x410
+>  __do_softirq+0x16e/0x30f
+>  run_ksoftirqd+0x23/0x30
+>  smpboot_thread_fn+0x210/0x370
+>  kthread+0x124/0x160
+>  ret_from_fork+0x1f/0x30
+>  </TASK>
+> Modules linked in:
+> Dumping ftrace buffer:
+>    (ftrace buffer empty)
+> CR2: 0000000000000000
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:__list_del_entry_valid+0x26/0x80
+> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
+> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
+> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
+> RSP: 0018:ffff888007313720 EFLAGS: 00010217
+> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
+> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
+> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
+> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
+> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
+> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> PKRU: 55555554
+> ----------------
+> Code disassembly (best guess):
+>    0: 00 00                          add    %al,(%rax)
+>    2: 00 00                          add    %al,(%rax)
+>    4: 55                               push   %rbp
+>    5: 48 89 e5                     mov    %rsp,%rbp
+>    8: 48 89 fe                      mov    %rdi,%rsi
+>    b: 48 ba 00 01 00 00 00 movabs $0xdead000000000100,%rdx
+>   12: 00 ad de
+>   15: 48 8b 0f                     mov    (%rdi),%rcx
+>   18: 48 39 d1                    cmp    %rdx,%rcx
+>   1b: 74 22                         je     0x3f
+>   1d: 48 8b 46 08               mov    0x8(%rsi),%rax
+>   21: 48 83 c2 22               add    $0x22,%rdx
+>   25: 48 39 d0                    cmp    %rdx,%rax
+>   28: 74 25                         je     0x4f
+> * 2a: 48 8b 10                   mov    (%rax),%rdx <-- trapping instruction
+>   2d: 48 39 f2                    cmp    %rsi,%rdx
+>   30: 75 2d                        jne    0x5f
+>   32: 48 8b 51 08              mov    0x8(%rcx),%rdx
+>   36: 48 39 f2                    cmp    %rsi,%rdx
+>   39: 75 37                        jne    0x72
+>   3b: b0 01                        mov    $0x1,%al
+>   3d: 5d                             pop    %rbp
+>   3e: c3                             retq
+>   3f: 48                              rex.W
