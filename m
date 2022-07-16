@@ -2,70 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E965B5771B8
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 00:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 509A35771E8
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 00:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbiGPWGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 18:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
+        id S232308AbiGPWaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 18:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGPWGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 18:06:52 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172FE1B784;
-        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10bffc214ffso14614834fac.1;
-        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
-        b=ok0iPES9kQ9HZOaMtVuYihJm71d8eraNHSmuA1jbl+xp4lKn30+ZV+s4G+OZ/EoOMh
-         O/tWWSRV9QCEUMbz0jGkcl/gaSZhHUnr8eYQWc4Ch8SYRo14sgBll2w9dicmHq0HK4BO
-         V4nsANhW2MjbDcihpGAcb44B6quHsLuCWBxC7xG8xEa9/TEmEm3CDE/k63d0mQujve7P
-         S1safR2csWc4PKOoNo+Q2+AupB3mmsIgXMr+F+UCBHSl6nkKqD6M+OyoygZ5Wg6hGtu2
-         kjrgKoibqfIIZNptXldMBEVPqkLPvSLGVs7akdunWXlzEEJ5agdSNGNBM0+27EowBOXT
-         LtJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
-        b=aKF/gC4VQb8cQmSl/OetNTEmPKTzONSmuXB80ER2pAkjEVLlon+esAC69dc1QQ2Yi3
-         c3yqjAhEpe06pd0dGPYcSx7e6fCvGm/IhPRClkwW0eaAObLxwo9gRGM6j5esGUCJj/ZY
-         lLXzofwEwE1KOn1IDWVVEf5bEbBjoMPdxhHAuNgjSg0BnMwzFkc1nbM3maNsIu3UbKFF
-         RKET3ryB4ftWH3SUs5y2iW/Jr/dEOB951/yhWXJsPwTVgJwny3G7RjGwFxpkrgcIPnf9
-         l0pOuJIPPA2sNk9tJLCwqdW8OWOC22i7lA60vmszWa1gnZ9R8UNcNcW+TeA1cNFTBL++
-         D+Rg==
-X-Gm-Message-State: AJIora+OmfzyKj4EXbtSmlu4XzAvCsVqIfQ/lhCVKNAAG2IsJMLXHPNL
-        KHiE9BiBhr/KzuGLTOQCatSBJ9GNhbINKB7QVYM=
-X-Google-Smtp-Source: AGRyM1sogW/U6Kbdivuues1D57lbscRCybveYUagL0BSa4+nUew2O/9Z4Ej6ADDSf5l7q6cHGTtFQWZ2kKxScZEW0Bo=
-X-Received: by 2002:a05:6870:311b:b0:10d:96:733a with SMTP id
- v27-20020a056870311b00b0010d0096733amr6882683oaa.190.1658009210333; Sat, 16
- Jul 2022 15:06:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAO4mrfcUYjEi69mcSt_vXyb3VGFTAAq3dyNeWueucgw0DGABfg@mail.gmail.com>
- <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
-In-Reply-To: <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 16 Jul 2022 18:06:08 -0400
-Message-ID: <CADvbK_dWMO0XdAf950Q14pUv99ahS1MRnOtppvosU2w33sO=kw@mail.gmail.com>
-Subject: Re: BUG: unable to handle kernel NULL pointer dereference in sctp_sched_dequeue_common
-To:     Wei Chen <harperchen1110@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229579AbiGPWaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 18:30:04 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2054.outbound.protection.outlook.com [40.107.22.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6261A071;
+        Sat, 16 Jul 2022 15:30:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Dplyq4NMZOU6dG1T99yvJdhZrZdGL7/roDYF6+kMcTKzUOP06lXO664jEKHgPfYq02xllELoTEmFsy7pYtAsLPmkAQMyuA35Og70wqVbLFFDx9gYgzYA65N+EGxHbCJSupi9Ol91Ep22KFFA6oIv3K6SeLgjwwss1FcusmJpaGT/NdSxlxAN21QlNR6BN6V9VVuv7TdcbMMQmjbm+Jzp+0qWSRnt5QGglsOh/HMw6Vs4SZ2q3yL1NP2csJW3t4dFZHVn2rm3/TFSaSVEIXkRmohM2++YTjXa+jKYHrLfHSJFUk5tL1Qvfu27dCpiJzL/BrGEMCsE+54yDPO2cY4Klg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JELPQGmS6JwoYXFBkIxOete9bKx4iZRba9BCVAxLKCY=;
+ b=m9aukRq/xX7fiz5LYbA2C0leh6/Rr8gqRI2Xl54UNsPCGtY+ePWcwXcHEv362GloyucKVFMlhPzM+misV6CtSOPp4WbCkRKlxRub87b6jjWkrwy4XiJVWQhujhlM5V7/CNOs83qHkB7GMpMP49JHyTV7/JOuq1kO0JHY9UcTD/py39oaylQl2W5LPBSMojcdRlkXpBMfy9AQjodh9n7nElJl6rFoXJ4XE2lcVGDyEPVgEL2m4XZkyGFSLdrMEosxy9Nj4+G/EDVO5SNrA8IZJqSEkoTTWOXA92vE2j7U08yC8qihj0XCffk7RZ4mQZhxE5kDsJZYHTr3PfFpgNMHlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JELPQGmS6JwoYXFBkIxOete9bKx4iZRba9BCVAxLKCY=;
+ b=Jaj0NAcyQfqBljsd8Ik9q0XdKuK7J4RCrQOo3Mc+KtXSwI7kGwloMPJBITulcA6WPsvbY290R1SIMzMhNRCGbyW/UZQ2MepOsqaOqs1ztaTSrzGx4m6VMWVZ2jf4Yx1NkXQYt/ZtyaVU3pw6fW8ooRWYNb008OM+nWqLcjJEm+fuDiS6eNc+ZwZ1odV16gcdC07RzR9NbjtqGfUICmcqCW+FAU3wlaTAHlCvr17euAaXm2qVWxvh9z8KqPRaTEwom7Vuwg+BH59bMXo4b3ZJkXiNFLjI/1a0N7R7hWyZNqiXt8kCrYuNW7uBKS3mcnjXWkZDXLouyEbsLhbyh+yDSA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by PAXPR03MB7684.eurprd03.prod.outlook.com (2603:10a6:102:204::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Sat, 16 Jul
+ 2022 22:29:58 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.022; Sat, 16 Jul 2022
+ 22:29:58 +0000
+Subject: Re: [PATCH net-next v3 08/47] net: phylink: Support differing link
+ speeds and interface speeds
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-9-sean.anderson@seco.com> <YtMaKWZyC/lgAQ0i@lunn.ch>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <984fec49-4c08-9d5a-d62f-c59f106f8fe5@seco.com>
+Date:   Sat, 16 Jul 2022 18:29:54 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+In-Reply-To: <YtMaKWZyC/lgAQ0i@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR03CA0016.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::29) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 147ec962-d967-42c1-6305-08da677ab72c
+X-MS-TrafficTypeDiagnostic: PAXPR03MB7684:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QeDJiGQp37Tifl8oB4hnsPMI8WS8RgiG0KGApGACi3zDOPjDq4I9ySOhHtAKLmjaeFL91XkScRsxuM767X8RmwA0h3lidsR/RSbHtToYhrPvnfr+edrr9wZp8IHhR45wXeQwOGg/36cLrCKHMXbmirP0napZEkw4HIttLsBJWs9Q8Hr18mNiqMSavdYkdooR8vJH6T2mKmVjUhWrynb/GBRF+4Q9WE/aW58wG4OXVm3Da9AWQqwr2ycF6inJWJAhDu6q/SMWAZTJU5FlY42L3NGP+WoiWvjMkDGlGmA8a7EduFEVwudtfyAwwcC/v9pDQNEpXJi141TpjkprefbP+LqtCltkowxebX0POihN3f7ZpczUtGApf8Ds2YOnYvCe9Ak2egg+NZ2XVF1F4fzYplbv0yhDBguTaP9XCPEb1lzynmxhK4VFYZUPKbuU8Kq8ZOZFBF/bcKhAO3fPyZ96gEBzFTrgEw9NG33U0/xH7OFxAGBVzTmgKYLe4SuscHP7xTuFhcjjA8UdmJcBF/2iu3WSbu+kDbHV/2mjdYIJLQDZamxNJ2AbWlawcXeqSWSFWUiHL1F5XTIe/6HcSjN6TcUhKMKg1vsqxSeZnddUwpEaz87urXMqsH6VR1rss/8q82dedJGq36J0AH3ftuPuIWCUBu0S55BhlJMxybuoBSUaSKIGIAm0A48C790ItVFnNzBVVk0+VVt41mWX9VREoJAN4Av+XjlCYDOIlQOY14A5J/U8A0PlOluRnLXqX0JXDKxYbDSX1FLGDJmJskVNJr778ISc31DpAoxdCb9IyFAiHCeVUi5JRU3Yb37Qotk6BYDH8MVwAI3HW+201+otOqu4mrmUUwRKiF+QHlaOi48sly1gnEf/NbZjw2B4EC8Q
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39840400004)(396003)(346002)(376002)(136003)(366004)(6486002)(6916009)(83380400001)(41300700001)(2906002)(7416002)(44832011)(31696002)(478600001)(8936002)(6666004)(54906003)(5660300002)(86362001)(2616005)(53546011)(6506007)(52116002)(38100700002)(38350700002)(36756003)(26005)(6512007)(31686004)(186003)(8676002)(316002)(4326008)(66476007)(66946007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y1FqQ09jZEN1OTRIK3IvQVJ5V1lMVEYvamFpYm9hdUpnVXFwU0tCejZMQ2pO?=
+ =?utf-8?B?dEZUQkg5eVNqdXZxK3puWUk4dGlVdlowY1dJY2NZMUZxNjZzazk2N3gzb1RP?=
+ =?utf-8?B?aGt6Y2dWMlJZK2F4WXVNVU1yVXZxeUIxZlFkYVRYVDBzVXVhU0J6cjk0WTlJ?=
+ =?utf-8?B?K2d1MGduZ2RBdjBWTk5ya29ENE5aTFJMRXZ1NWJOWDdNYU1hM0FBeE4zaVNS?=
+ =?utf-8?B?QjV1cG5rZGpxTW1TZjFDcHBsc3BUYlRiQ3d5aTRhZko5bXVpMFFPWGZZY0pO?=
+ =?utf-8?B?VHdsUklCVkJQclJucURXaFovbG5HL3VjVHRVd2RIY3lNbElFY2FHK05aTzI2?=
+ =?utf-8?B?SUxVSzF3bUw5aDUyRXVSaVFqTCsxTU1POXZvN2dxS1pjMTZkYTA5c2xEUDFD?=
+ =?utf-8?B?MGZrWXFlcFlsOFE1WVVkY3cvY2R2b3gwQW9lcHQxZDNqRHp2YXRBbVFiOVRn?=
+ =?utf-8?B?WmxNMysxRE1VUmIrZElDNWpITFpQd0swQ2lQMW9lazJKbU9lMVZILzRQcU5N?=
+ =?utf-8?B?TWdQTUlMb0h4MkdlQk01TndJemoxUE5mQ0VLUURiN3plQ1JhamlzblIyQ05P?=
+ =?utf-8?B?eEkzQWNjSmNqSGtDc083L3ZvK3ZSNDFQU0dkek1GT3I4YlBDQ2xNSzdiUE9P?=
+ =?utf-8?B?TVprYXdpeFUzK201TGkzbVFseW4wQjVvRUlVMnhqVnJyMk9SZkQrelhjR0Za?=
+ =?utf-8?B?MEFtL1NBckkrQm93NHhpZDcyTnJEbFd1T2xET3oxZTBGYjYrSUo4VnpwUGow?=
+ =?utf-8?B?RzhGQm5PN2xaeHVuSU5ZMGFLdXpNemhqQUp5dkFjdHhTTURwSGlCMXEzZXR4?=
+ =?utf-8?B?UlFwenBkeG01aS9CbWZLMWNpMG1kazBxL29OZ01YU3FZUklDZmFoMGVLbjVh?=
+ =?utf-8?B?em43YmthTjFVSUxPcWFNaE83Z3F4VFVOY2plclkxNmp0VTdvRDJqYS93Vit5?=
+ =?utf-8?B?alBkV0FDcG1HdWFmci9VRUpTZ0paTk94UzBFak5XcUp0RWVlcG5UNGhnZjFL?=
+ =?utf-8?B?RWVscFc2MzJ0RFgzOTBac1d3S2c2WW5ybG1TQ251YzBGcWlwcDhaZUExUWk0?=
+ =?utf-8?B?N2llaWc5cE96SHV1RE93U3FnM21IVVhxVlNqNmI1ZGlTdFl3Z2M4Ti9tckxU?=
+ =?utf-8?B?YzY0RExhVmVsSVNibkg2emhZOVpDREFiUlJOcVNvV3h0K0RMeTV4d0dmTjI1?=
+ =?utf-8?B?ekNrNiszRzJja2NNRlI5b20vamV6ZEJsSEViMzFRRklCSTdPaUVFeCtoYUt2?=
+ =?utf-8?B?THdjaU9jYXh3VkVVRzAvVFBHU0VvOTBoeXNCUkszcm1HZ0lBTDJtSzAvSnBZ?=
+ =?utf-8?B?YXowb1ZBdzU1SFJsczE0cnJRYTJySjgvQ0tPRUxEZmhSWjBLUjZDbCtQRlpz?=
+ =?utf-8?B?b0RvZHcxY3JqK2ZnZ1ZES2U2NTFPcitFR1pTVHdoeFB2alQvcmlqMVFHdEw4?=
+ =?utf-8?B?VkpNVDRsa0xRT25BY1cwcmZwVW4zZ1FIK3hKK04vMmt6dVBHa29RRk9pUk5w?=
+ =?utf-8?B?TTd5eDUzL0xVSHpVeHJpSHVJVzQ0OVN5TlFJczc0cC9abVFYclB5d3VoVi9Z?=
+ =?utf-8?B?Y0tSTmpZUmFyUmkzclArRkN3cFpVNVJTdUJDcTBuMEV0dzYvN2ZpcHNjckVn?=
+ =?utf-8?B?Q1UrWEQvdUtVNS9CSHh5UW9XNEpBQythRnFZMGc5cGl1TU5uT05PMllUMjdx?=
+ =?utf-8?B?QVhSM2wyN2U1SGNiNFJVZVRZRkkrVGk2aUVXRmovNTIzWTNCUDZvTlJZVEVV?=
+ =?utf-8?B?V1NFUmNKa1lrZWxYM0pBcDhWQmo5M2RjbDJOelhvUVN3UTJHSktnQWtrNSsw?=
+ =?utf-8?B?b0doUUE1R3MvSGwxd3dNanJhZDJ1RlNpVWdIY2hEM3RCR1RqWWUyS3BiR0tR?=
+ =?utf-8?B?cjhxQzFRV3RSMzlNZStlSTVHYzE5VjNHM2RJZTZxUkJRSzFjMVZwVTFRWHhI?=
+ =?utf-8?B?c1YzTC9NOWwvTnVydlh4cG1ybENNcHM5VzBHRVdZZUkxSFk4MEVjU254MTFT?=
+ =?utf-8?B?U3ZlYmVUalVZVUJLT1VWQmJkSVF5VkN4d29KY1RPTTZmL3VoY3FhREJHUHRH?=
+ =?utf-8?B?a0EvdkhOcHdwUlVTMnBYM292ZkI5NXRQOFhJR2ZITUpzRytoOEVadjNWRUxw?=
+ =?utf-8?Q?KTgvvlvmTbX3fDFAM01z8bWST?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 147ec962-d967-42c1-6305-08da677ab72c
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2022 22:29:58.4563
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1LnvfE4oRcf2MSzVouF20YjhSAD++eWsmg5f0dpM1X0+hrjdHk4bb8QBnsz5VHtc2Eh/pRRdRJWfP/4k7kgA0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7684
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,133 +134,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 2:52 AM Wei Chen <harperchen1110@gmail.com> wrote:
->
-> Dear Linux Developer,
->
-> Recently when using our tool to fuzz kernel, the following crash was triggered:
->
-> HEAD commit:  c5eb0a61238d Linux 5.18-rc6
-> git tree: upstream
-> compiler: clang 12.0.0
-> console output:
-> https://drive.google.com/file/d/1zbd9t-NNorzTXESdQ3bxE-q9uLu-Bm9d/view?usp=sharing
-> Syzlang reproducer:
-> https://drive.google.com/file/d/18wnwTf53Ln4K8e4G9d8hS4-e0URQKHet/view?usp=sharing
-> C reproducer: https://drive.google.com/file/d/1ttiMq0WYi46zFP1II8O9eee_dvDweIb6/view?usp=sharing
-> kernel config: https://drive.google.com/file/d/1fITkvcuglspvuhI0mhXUndx112fJmcOZ/view?usp=sharing
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: Wei Chen <harperchen1110@gmail.com>
->
-> BUG: kernel NULL pointer dereference, address: 0000000000000000
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 12f83067 P4D 12f83067 PUD 0
-> Oops: 0000 [#1] PREEMPT SMP
-> CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.18.0-rc6 #12
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> 1.13.0-1ubuntu1.1 04/01/2014
-> RIP: 0010:__list_del_entry_valid+0x26/0x80
-> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
-> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
-> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
-> RSP: 0018:ffff888007313720 EFLAGS: 00010217
-> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
-> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
-> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
-> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
-> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
-> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> Call Trace:
->  <TASK>
->  sctp_sched_dequeue_common+0x1c/0x90
->  sctp_sched_prio_dequeue+0x67/0x80
->  __sctp_outq_teardown+0x299/0x380
->  sctp_outq_free+0x15/0x20
->  sctp_association_free+0xc3/0x440
->  sctp_do_sm+0x1ca7/0x2210
->  sctp_assoc_bh_rcv+0x1f6/0x340
-sctp_stream_init() is also called in processing SCTP_CMD_PEER_INIT
-generated in sctp_sf_do_5_1C_ack(). At that time some chunk might be
-already in the outq and stream outq. Failure in sctp_stream_init() will
-cause stream->out to be freed, which still holds some schedule information.
+On 7/16/22 4:06 PM, Andrew Lunn wrote:
+>> +/**
+>> + * phy_interface_speed() - get the speed of a phy interface
+>> + * @interface: phy interface mode defined by &typedef phy_interface_t
+>> + * @link_speed: the speed of the link
+>> + *
+>> + * Some phy interfaces modes adapt to the speed of the underlying link (such as
+>> + * by duplicating data or changing the clock rate). Others, however, are fixed
+>> + * at a particular rate. Determine the speed of a phy interface mode for a
+>> + * particular link speed.
+>> + *
+>> + * Return: The speed of @interface
+>> + */
+>> +static int phy_interface_speed(phy_interface_t interface, int link_speed)
+>> +{
+>> +	switch (interface) {
+>> +	case PHY_INTERFACE_MODE_100BASEX:
+>> +		return SPEED_100;
+>> +
+>> +	case PHY_INTERFACE_MODE_TBI:
+>> +	case PHY_INTERFACE_MODE_MOCA:
+>> +	case PHY_INTERFACE_MODE_RTBI:
+>> +	case PHY_INTERFACE_MODE_1000BASEX:
+>> +	case PHY_INTERFACE_MODE_1000BASEKX:
+>> +	case PHY_INTERFACE_MODE_TRGMII:
+>> +		return SPEED_1000;
+>> +
+>> +	case PHY_INTERFACE_MODE_2500BASEX:
+>> +		return SPEED_2500;
+>> +
+>> +	case PHY_INTERFACE_MODE_5GBASER:
+>> +		return SPEED_5000;
+>> +
+>> +	case PHY_INTERFACE_MODE_XGMII:
+>> +	case PHY_INTERFACE_MODE_RXAUI:
+>> +	case PHY_INTERFACE_MODE_XAUI:
+>> +	case PHY_INTERFACE_MODE_10GBASER:
+>> +	case PHY_INTERFACE_MODE_10GKR:
+>> +		return SPEED_10000;
+>> +
+>> +	case PHY_INTERFACE_MODE_25GBASER:
+>> +		return SPEED_25000;
+>> +
+>> +	case PHY_INTERFACE_MODE_XLGMII:
+>> +		return SPEED_40000;
+>> +
+>> +	case PHY_INTERFACE_MODE_USXGMII:
+>> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+>> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+>> +	case PHY_INTERFACE_MODE_RGMII_ID:
+>> +	case PHY_INTERFACE_MODE_RGMII:
+>> +	case PHY_INTERFACE_MODE_QSGMII:
+>> +	case PHY_INTERFACE_MODE_SGMII:
+>> +	case PHY_INTERFACE_MODE_GMII:
+>> +	case PHY_INTERFACE_MODE_REVRMII:
+>> +	case PHY_INTERFACE_MODE_RMII:
+>> +	case PHY_INTERFACE_MODE_SMII:
+>> +	case PHY_INTERFACE_MODE_REVMII:
+>> +	case PHY_INTERFACE_MODE_MII:
+>> +	case PHY_INTERFACE_MODE_INTERNAL:
+>> +		return link_speed;
+>> +
+>> +	case PHY_INTERFACE_MODE_NA:
+>> +	case PHY_INTERFACE_MODE_MAX:
+>> +		break;
+>> +	}
+>> +
+>> +	return SPEED_UNKNOWN;
+> 
+> This seem error prone when new PHY_INTERFACE_MODES are added. I would
+> prefer a WARN_ON_ONCE() in the default: so we get to know about such
+> problems.
 
-So 2 things should be done when this happens:
-1. call sctp_stream_free() in err path to avoid memleak in
-SCTP_SO(stream, i)->ext in sctp_stream_init().
-2. set asoc->outqueue.sched back to &sctp_sched_fcfs to fix the
-scheduler's dequeue crash.
+Actually, this is the reason I did not add a default: clause to the
+switch (and instead listed everything out). If a new interface mode is
+added, there will be a warning (as I discovered when preparing this
+patch). I can still add a warning here if you'd like; the return there
+should effectively be dead code.
 
-Will prepare a fix.
-Thanks.
+> I'm also wondering if we need a sanity check here. I've seen quite a
+> few boards a Fast Ethernet MAC, but a 1G PHY because they are
+> cheap. In such cases, the MAC is supposed to call phy_set_max_speed()
+> to indicate it can only do 100Mbs. PHY_INTERFACE_MODE_MII but a
+> link_speed of 1G is clearly wrong. Are there other cases where we
+> could have a link speed faster than what the interface mode allows?
 
->  sctp_inq_push+0x98/0xb0
->  sctp_rcv+0x134e/0x16b0
->  sctp6_rcv+0x1b/0x30
->  ip6_protocol_deliver_rcu+0x5b7/0x930
->  ip6_input+0x80/0x140
->  ip6_rcv_finish+0x16e/0x1d0
->  ipv6_rcv+0x72/0x110
->  __netif_receive_skb+0x66/0x140
->  process_backlog+0x13d/0x230
->  __napi_poll+0x4b/0x310
->  net_rx_action+0x1ae/0x410
->  __do_softirq+0x16e/0x30f
->  run_ksoftirqd+0x23/0x30
->  smpboot_thread_fn+0x210/0x370
->  kthread+0x124/0x160
->  ret_from_fork+0x1f/0x30
->  </TASK>
-> Modules linked in:
-> Dumping ftrace buffer:
->    (ftrace buffer empty)
-> CR2: 0000000000000000
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:__list_del_entry_valid+0x26/0x80
-> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
-> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
-> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
-> RSP: 0018:ffff888007313720 EFLAGS: 00010217
-> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
-> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
-> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
-> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
-> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
-> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> ----------------
-> Code disassembly (best guess):
->    0: 00 00                          add    %al,(%rax)
->    2: 00 00                          add    %al,(%rax)
->    4: 55                               push   %rbp
->    5: 48 89 e5                     mov    %rsp,%rbp
->    8: 48 89 fe                      mov    %rdi,%rsi
->    b: 48 ba 00 01 00 00 00 movabs $0xdead000000000100,%rdx
->   12: 00 ad de
->   15: 48 8b 0f                     mov    (%rdi),%rcx
->   18: 48 39 d1                    cmp    %rdx,%rcx
->   1b: 74 22                         je     0x3f
->   1d: 48 8b 46 08               mov    0x8(%rsi),%rax
->   21: 48 83 c2 22               add    $0x22,%rdx
->   25: 48 39 d0                    cmp    %rdx,%rax
->   28: 74 25                         je     0x4f
-> * 2a: 48 8b 10                   mov    (%rax),%rdx <-- trapping instruction
->   2d: 48 39 f2                    cmp    %rsi,%rdx
->   30: 75 2d                        jne    0x5f
->   32: 48 8b 51 08              mov    0x8(%rcx),%rdx
->   36: 48 39 f2                    cmp    %rsi,%rdx
->   39: 75 37                        jne    0x72
->   3b: b0 01                        mov    $0x1,%al
->   3d: 5d                             pop    %rbp
->   3e: c3                             retq
->   3f: 48                              rex.W
+AFAIK the phy must report SPEED_100 here, since many MACs set their
+configuration based on the resolved speed. So if a phy reported
+SPEED_1000 then the MAC would be confused.
+
+> Bike shedding a bit, but would it be better to use host_side_speed and
+> line_side_speed? When you say link_speed, which link are your
+> referring to? Since we are talking about the different sides of the
+> PHY doing different speeds, the naming does need to be clear.
+When I say "link" I mean the thing that the PMD speaks. That is, one of
+the ethtool link mode bits. I am thinking of a topology like
+
+
+MAC (+PCS) <-- phy interface mode (MII) --> phy <-- link mode --> far-end phy
+
+The way it has been done up to now, the phy interface mode and the link
+mode have the same speed. For some MIIs, (such as MII or GMII) this is
+actually the case, since the data clock changes depending on the data
+speed. For others (SGMII/USXGMII) the data is repeated, but the clock
+rate stays the same. In particular, the MAC doesn't care what the actual
+link speed is, just what configuration it has to use (so it selects the
+right clock etc).
+
+The exception to the above is when you have no phy (such as for
+1000BASE-X):
+
+MAC (+PCS) <-- MDI --> PMD <-- link mode --> far-end PMD
+
+All of the phy interface modes which can be used this way are
+"non-adaptive." That is, in the above case they have a fixed speed.
+
+That said, I would like to keep the "phy interface mode speed" named
+"speed" so I don't have to write up a semantic patch to rename it in all
+the drivers.
+
+---
+
+One thing I thought about is that it might be better to set this based
+on the phy adaptation as well. Something like
+
+static void phylink_set_speed(struct phylink_link_state *state)
+{
+	if (state->rate_adaptation == RATE_ADAPT_NONE) {
+		state->speed = state->link_speed;
+		return;
+	}
+
+	switch (state->interface) {
+	case PHY_INTERFACE_MODE_REVRMII:
+	case PHY_INTERFACE_MODE_RMII:
+	case PHY_INTERFACE_MODE_SMII:
+	case PHY_INTERFACE_MODE_REVMII:
+	case PHY_INTERFACE_MODE_MII:
+	case PHY_INTERFACE_MODE_100BASEX:
+		state->speed = SPEED_100;
+		return;
+
+	case PHY_INTERFACE_MODE_RGMII_TXID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_QSGMII:
+	case PHY_INTERFACE_MODE_SGMII:
+	case PHY_INTERFACE_MODE_GMII:
+	case PHY_INTERFACE_MODE_TBI:
+	case PHY_INTERFACE_MODE_MOCA:
+	case PHY_INTERFACE_MODE_RTBI:
+	case PHY_INTERFACE_MODE_1000BASEX:
+	case PHY_INTERFACE_MODE_1000BASEKX:
+	case PHY_INTERFACE_MODE_TRGMII:
+		state->speed = SPEED_1000;
+		return;
+
+	case PHY_INTERFACE_MODE_2500BASEX:
+		state->speed = SPEED_2500;
+		return;
+
+	case PHY_INTERFACE_MODE_5GBASER:
+		state->speed = SPEED_5000;
+		return;
+
+	case PHY_INTERFACE_MODE_USXGMII:
+	case PHY_INTERFACE_MODE_XGMII:
+	case PHY_INTERFACE_MODE_RXAUI:
+	case PHY_INTERFACE_MODE_XAUI:
+	case PHY_INTERFACE_MODE_10GBASER:
+	case PHY_INTERFACE_MODE_10GKR:
+		state->speed = SPEED_10000;
+		return;
+
+	case PHY_INTERFACE_MODE_25GBASER:
+		state->speed = SPEED_25000;
+		return;
+
+	case PHY_INTERFACE_MODE_XLGMII:
+		state->speed = SPEED_40000;
+		return;
+
+	case PHY_INTERFACE_MODE_INTERNAL:
+		state->speed = link_speed;
+		return;
+
+	case PHY_INTERFACE_MODE_NA:
+	case PHY_INTERFACE_MODE_MAX:
+		state->speed = SPEED_UNKNOWN;
+		return;
+	}
+
+	WARN();
+}
+
+The reason being that this would allow for rate adaptation for "rate
+adapting" phy interface modes such as MII. This would be necessary for
+things like RATE_ADAPT_CRS modes like 10PASS-TS which always use 100M
+MII, but have a variable link speed.
+
+--Sean
