@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BB1576B34
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 03:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E864576B37
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 03:40:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbiGPBhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 21:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
+        id S231501AbiGPBko convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 15 Jul 2022 21:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231383AbiGPBhh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 21:37:37 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DA18EED7
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 18:37:36 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id e2-20020a4ab982000000b004354ba9a591so1204350oop.0
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 18:37:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=xRsMeE0Yj2Rv8TilyM94TWwDFZvW9MSpwYsml569wBo=;
-        b=IKf28YiZunQDmR/W17C0ckt8NTIwf+mTaTesWluvZbF5Y07kWK7vOREWEDuyyLm2n0
-         XLiHRbz0492FUyU5ILfztzO9mPDh8zbIL/hSrYov4qvakNBfSprZy4+X46Huyvd4LxS2
-         bUxHj+vBMAllqgsLiz7GcKBRu48Ub7mcMOClvrmbXZOpD/H2N/zsJAR7ksnYBt9pp09m
-         01P6llZ3RufB6iBG5s8kgZeQ2X5UQo0s0FM2kKNc/D7Qcfq2+hkUw75zF73Ka5XMxIGn
-         kf4NJZJXnKUGVUGMY5Cu/NPxAF8Ldcp0fhUbhPgF3wHhAiInzxktZ2iT+aRr6GZHXf9a
-         20Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=xRsMeE0Yj2Rv8TilyM94TWwDFZvW9MSpwYsml569wBo=;
-        b=oA9QHZ3/hGYzk87shviH7PYVeAG8Tec6knfFyAVVVJkzGAG8+1Woe8qYvt+NSHlnzp
-         rpR+0EFgQ7PkU6tabk5r6O/xZHxc7ElS0nzkcIYYn4yTiq+C2WMbPYN4lEqhFNBqCkJA
-         9RgrMtCupKb/t/WHnsUiixHgtL3PC0mB6SqMsDYSDh14l5I5K3icwL8zwQ8OIUBEWYNk
-         y4DSPg+ldJTC1aOW6UU8lxyKQB117w/jsmIV7cY/z3b0wgXSufsdSprozNW5NWoueuSe
-         qTn2h1hZTqohSOPrUHiHWxC2X/A06S0MewtSP7DqTzU2Us3CuiQvwn1xQ/njPkxS2PmQ
-         doVA==
-X-Gm-Message-State: AJIora81loGbhBr4f7dNpRITDMQ+yksTktecoKar+GXAcE7zTh0Pc51J
-        IvP+a0GzGsTKb/bjT87oV/+nmUxsvoPiMeM0rgT6Pj3W6D9Kk1Iq
-X-Google-Smtp-Source: AGRyM1uyzY8xZd8hi49QXYmkqGz3HY+otTFkafFhRCcTWUwWBpIgPPiPwVRP9NPMvU1XxzfZxMtK7pypL8We0uy6kQM=
-X-Received: by 2002:a25:d652:0:b0:66e:c998:53ef with SMTP id
- n79-20020a25d652000000b0066ec99853efmr17473918ybg.335.1657935014847; Fri, 15
- Jul 2022 18:30:14 -0700 (PDT)
+        with ESMTP id S229625AbiGPBkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 21:40:43 -0400
+Received: from relay4.hostedemail.com (smtprelay0016.hostedemail.com [216.40.44.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8264391CC6;
+        Fri, 15 Jul 2022 18:40:42 -0700 (PDT)
+Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay02.hostedemail.com (Postfix) with ESMTP id 46EA234AD8;
+        Sat, 16 Jul 2022 01:40:40 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id EC0D22002F;
+        Sat, 16 Jul 2022 01:40:36 +0000 (UTC)
+Message-ID: <e3b59b09c958e420b74aab9f51d6eca0c63005ca.camel@perches.com>
+Subject: Re: [PATCH] mediatek: mt7601u: fix clang -Wformat warning
+From:   Joe Perches <joe@perches.com>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Date:   Fri, 15 Jul 2022 18:40:36 -0700
+In-Reply-To: <CAFhGd8pJyRYq-3VrKM+6+k0AysfYbVJEJm3FMFt9eAysAKDUpQ@mail.gmail.com>
+References: <20220711212932.1501592-1-justinstitt@google.com>
+         <84e873c27f2426ce003e650004fe856bf72c634b.camel@perches.com>
+         <CAFhGd8pJyRYq-3VrKM+6+k0AysfYbVJEJm3FMFt9eAysAKDUpQ@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Received: by 2002:a0d:e856:0:0:0:0:0 with HTTP; Fri, 15 Jul 2022 18:30:14
- -0700 (PDT)
-From:   nebolise iran <neboliseiran00@gmail.com>
-Date:   Sat, 16 Jul 2022 02:30:14 +0100
-Message-ID: <CAA9js4mSCyZYQBgdvzSzKww7_HD8KAnvjEujnjUE80hpH1trvA@mail.gmail.com>
-Subject: Sir / Ma
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=1.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,UNPARSEABLE_RELAY
         autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Stat-Signature: 9arxp8zrxrtfhr9woubqw46ao9rxwyoi
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: EC0D22002F
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX188ldYAO7JJ3DMtC38rgMW1rKWpcluwGBk=
+X-HE-Tag: 1657935636-65764
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Continental Exchange Solutions Inc
-United Kingdom
-London
-Email : maliksman663@gmail.com
+On Fri, 2022-07-15 at 17:08 -0700, Justin Stitt wrote:
+> On Thu, Jul 14, 2022 at 11:33 PM Joe Perches <joe@perches.com> wrote:
+> > 
+> > On Mon, 2022-07-11 at 14:29 -0700, Justin Stitt wrote:
+> > > When building with Clang we encounter this warning:
+> > > > drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
+> > > > specifies type 'unsigned char' but the argument has type 'int'
+> > > > [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
+[]
+> > I suggest s/%hh/%/ for all the uses here, not just this one.
+> 
+> I also contemplated this change but I think it might be a bit out of
+> scope for https://github.com/ClangBuiltLinux/linux/issues/378  -- What
+> do you think?
 
-Sir / Ma
-My name is Malik Usman of Continental Exchange Solutions London U.K. I
-am an independent external auditor for IFC SERVE and the World Bank
-handling the Foreign Banks Debt Management Office for all transactions
-in the year 2013/2014 and later.
+It would not be out of scope.
 
-I have in front of me an abandoned transfer file containing details to
-an escrow account setup in your name. The file shows that you have
-correctly made application to have your funds released to you. It is
-also clearly noted on the file that the beneficiary could not handle
-the financial commitment required of him. Due to this the funds were
-pegged and abandoned.As an international independent external auditor
-I think it is very absurd to abandon ones funds for this simple
-reason.
+> It could be argued that every single instance of %hh[dux] should be
+> replaced with %[dux].
 
-To tell you the truth I do not believe this to be true and my reason
-is simply because of the irregularities I noticed while compiling the
-audit report for the end of the financial year.I have perfected plans
-to have this funds transferred to you within the shortest possible
-Upon your confirmation I will give you further directives. Please
-kindly reply to maliksman663@gmail.com with your full details.
+All the vsprintf ones, but not the scanf ones.
 
-
-Regards,
-Malik Usman.
