@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C505B576DD5
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 14:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 813A4576DD7
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 14:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231548AbiGPMUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 08:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S231390AbiGPMUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 08:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbiGPMUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 08:20:52 -0400
+        with ESMTP id S229606AbiGPMUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 08:20:51 -0400
 Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C6E1AF38;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183DD1B7A1;
         Sat, 16 Jul 2022 05:20:50 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LlS1D2zrMz19TvR;
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LlS1D3wk8z19TyT;
         Sat, 16 Jul 2022 20:18:08 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
  dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
@@ -38,9 +38,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         KP Singh <kpsingh@kernel.org>,
         "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
         Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next 1/5] bpf: Unify memory address casting operation style
-Date:   Sat, 16 Jul 2022 20:51:04 +0800
-Message-ID: <20220716125108.1011206-2-pulehui@huawei.com>
+Subject: [PATCH bpf-next 2/5] libbpf: Unify memory address casting operation style
+Date:   Sat, 16 Jul 2022 20:51:05 +0800
+Message-ID: <20220716125108.1011206-3-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220716125108.1011206-1-pulehui@huawei.com>
 References: <20220716125108.1011206-1-pulehui@huawei.com>
@@ -65,100 +65,121 @@ and there is no functional change.
 
 Signed-off-by: Pu Lehui <pulehui@huawei.com>
 ---
- kernel/bpf/core.c     | 2 +-
- kernel/bpf/helpers.c  | 6 +++---
- kernel/bpf/syscall.c  | 2 +-
- kernel/bpf/verifier.c | 6 +++---
- 4 files changed, 8 insertions(+), 8 deletions(-)
+ tools/lib/bpf/bpf_prog_linfo.c | 8 ++++----
+ tools/lib/bpf/btf.c            | 7 ++++---
+ tools/lib/bpf/skel_internal.h  | 4 ++--
+ tools/lib/bpf/usdt.c           | 4 ++--
+ 4 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index cfb8a50a9f12..e14b399dd408 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1954,7 +1954,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 		CONT;							\
- 	LDX_PROBE_MEM_##SIZEOP:						\
- 		bpf_probe_read_kernel(&DST, sizeof(SIZE),		\
--				      (const void *)(long) (SRC + insn->off));	\
-+				      (const void *)(unsigned long) (SRC + insn->off));	\
- 		DST = *((SIZE *)&DST);					\
- 		CONT;
+diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
+index 5c503096ef43..5cf41a563ef5 100644
+--- a/tools/lib/bpf/bpf_prog_linfo.c
++++ b/tools/lib/bpf/bpf_prog_linfo.c
+@@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+ 	prog_linfo->raw_linfo = malloc(data_sz);
+ 	if (!prog_linfo->raw_linfo)
+ 		goto err_free;
+-	memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
++	memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
  
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index a1c84d256f83..92c01dd007a6 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -903,7 +903,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
- 					err = snprintf(tmp_buf,
- 						       (tmp_buf_end - tmp_buf),
- 						       "%pB",
--						       (void *)(long)raw_args[num_spec]);
-+						       (void *)(unsigned long)raw_args[num_spec]);
- 					tmp_buf += (err + 1);
- 				}
+ 	nr_jited_func = info->nr_jited_ksyms;
+ 	if (!nr_jited_func ||
+@@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+ 	if (!prog_linfo->raw_jited_linfo)
+ 		goto err_free;
+ 	memcpy(prog_linfo->raw_jited_linfo,
+-	       (void *)(long)info->jited_line_info, data_sz);
++	       (void *)(unsigned long)info->jited_line_info, data_sz);
  
-@@ -929,7 +929,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
- 				goto out;
- 			}
+ 	/* Number of jited_line_info per jited func */
+ 	prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
+@@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+ 		goto err_free;
  
--			unsafe_ptr = (char *)(long)raw_args[num_spec];
-+			unsafe_ptr = (char *)(unsigned long)raw_args[num_spec];
- 			err = copy_from_kernel_nofault(cur_ip, unsafe_ptr,
- 						       sizeof_cur_ip);
- 			if (err < 0)
-@@ -966,7 +966,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
- 				goto out;
- 			}
+ 	if (dissect_jited_func(prog_linfo,
+-			       (__u64 *)(long)info->jited_ksyms,
+-			       (__u32 *)(long)info->jited_func_lens))
++			       (__u64 *)(unsigned long)info->jited_ksyms,
++			       (__u32 *)(unsigned long)info->jited_func_lens))
+ 		goto err_free;
  
--			unsafe_ptr = (char *)(long)raw_args[num_spec];
-+			unsafe_ptr = (char *)(unsigned long)raw_args[num_spec];
- 			err = bpf_trace_copy_string(tmp_buf, unsafe_ptr,
- 						    fmt_ptype,
- 						    tmp_buf_end - tmp_buf);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 83c7136c5788..d1380473e620 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -5108,7 +5108,7 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
- 			bpf_prog_put(prog);
- 			return -EBUSY;
- 		}
--		attr->test.retval = bpf_prog_run(prog, (void *) (long) attr->test.ctx_in);
-+		attr->test.retval = bpf_prog_run(prog, (void *) (unsigned long) attr->test.ctx_in);
- 		__bpf_prog_exit_sleepable(prog, 0 /* bpf_prog_run does runtime stats */, &run_ctx);
- 		bpf_prog_put(prog);
+ 	return prog_linfo;
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 2d14f1a52d7a..61e2ac2b6891 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -1568,7 +1568,7 @@ static int btf_rewrite_str(__u32 *str_off, void *ctx)
  		return 0;
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index c59c3df0fea6..d91f17598833 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4445,7 +4445,7 @@ static int bpf_map_direct_read(struct bpf_map *map, int off, int size, u64 *val)
- 	err = map->ops->map_direct_value_addr(map, &addr, off);
- 	if (err)
- 		return err;
--	ptr = (void *)(long)addr + off;
-+	ptr = (void *)(unsigned long)addr + off;
  
- 	switch (size) {
- 	case sizeof(u8):
-@@ -6113,7 +6113,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 			return err;
- 		}
- 
--		str_ptr = (char *)(long)(map_addr);
-+		str_ptr = (char *)(unsigned long)(map_addr);
- 		if (!strnchr(str_ptr + map_off, map->value_size - map_off, 0)) {
- 			verbose(env, "string is not zero-terminated\n");
- 			return -EINVAL;
-@@ -7099,7 +7099,7 @@ static int check_bpf_snprintf_call(struct bpf_verifier_env *env,
- 		verbose(env, "verifier bug\n");
- 		return -EFAULT;
+ 	if (p->str_off_map &&
+-	    hashmap__find(p->str_off_map, (void *)(long)*str_off, &mapped_off)) {
++	    hashmap__find(p->str_off_map, (void *)(unsigned long)*str_off, &mapped_off)) {
+ 		*str_off = (__u32)(long)mapped_off;
+ 		return 0;
  	}
--	fmt = (char *)(long)fmt_addr + fmt_map_off;
-+	fmt = (char *)(unsigned long)fmt_addr + fmt_map_off;
+@@ -1581,7 +1581,8 @@ static int btf_rewrite_str(__u32 *str_off, void *ctx)
+ 	 * performing expensive string comparisons.
+ 	 */
+ 	if (p->str_off_map) {
+-		err = hashmap__append(p->str_off_map, (void *)(long)*str_off, (void *)(long)off);
++		err = hashmap__append(p->str_off_map, (void *)(unsigned long)*str_off,
++				      (void *)(unsigned long)off);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -3133,7 +3134,7 @@ static long hash_combine(long h, long value)
+ static int btf_dedup_table_add(struct btf_dedup *d, long hash, __u32 type_id)
+ {
+ 	return hashmap__append(d->dedup_table,
+-			       (void *)hash, (void *)(long)type_id);
++			       (void *)hash, (void *)(unsigned long)type_id);
+ }
  
- 	/* We are also guaranteed that fmt+fmt_map_off is NULL terminated, we
- 	 * can focus on validating the format specifiers.
+ static int btf_dedup_hypot_map_add(struct btf_dedup *d,
+diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.h
+index bd6f4505e7b1..e2803e7cd6d9 100644
+--- a/tools/lib/bpf/skel_internal.h
++++ b/tools/lib/bpf/skel_internal.h
+@@ -146,7 +146,7 @@ static inline void *skel_finalize_map_data(__u64 *init_val, size_t mmap_sz, int
+ 	struct bpf_map *map;
+ 	void *addr = NULL;
+ 
+-	kvfree((void *) (long) *init_val);
++	kvfree((void *) (unsigned long) *init_val);
+ 	*init_val = ~0ULL;
+ 
+ 	/* At this point bpf_load_and_run() finished without error and
+@@ -197,7 +197,7 @@ static inline void *skel_finalize_map_data(__u64 *init_val, size_t mmap_sz, int
+ {
+ 	void *addr;
+ 
+-	addr = mmap((void *) (long) *init_val, mmap_sz, flags, MAP_SHARED | MAP_FIXED, fd, 0);
++	addr = mmap((void *) (unsigned long) *init_val, mmap_sz, flags, MAP_SHARED | MAP_FIXED, fd, 0);
+ 	if (addr == (void *) -1)
+ 		return NULL;
+ 	return addr;
+diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
+index d18e37982344..3e54b47f9e1b 100644
+--- a/tools/lib/bpf/usdt.c
++++ b/tools/lib/bpf/usdt.c
+@@ -915,7 +915,7 @@ static int allocate_spec_id(struct usdt_manager *man, struct hashmap *specs_hash
+ 		*spec_id = man->free_spec_ids[man->free_spec_cnt - 1];
+ 
+ 		/* cache spec ID for current spec string for future lookups */
+-		err = hashmap__add(specs_hash, target->spec_str, (void *)(long)*spec_id);
++		err = hashmap__add(specs_hash, target->spec_str, (void *)(unsigned long)*spec_id);
+ 		if (err)
+ 			 return err;
+ 
+@@ -928,7 +928,7 @@ static int allocate_spec_id(struct usdt_manager *man, struct hashmap *specs_hash
+ 		*spec_id = man->next_free_spec_id;
+ 
+ 		/* cache spec ID for current spec string for future lookups */
+-		err = hashmap__add(specs_hash, target->spec_str, (void *)(long)*spec_id);
++		err = hashmap__add(specs_hash, target->spec_str, (void *)(unsigned long)*spec_id);
+ 		if (err)
+ 			 return err;
+ 
 -- 
 2.25.1
 
