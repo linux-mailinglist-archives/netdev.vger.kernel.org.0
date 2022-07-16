@@ -2,131 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B47576B2A
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 03:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35517576B28
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 02:56:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiGPBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 21:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S230345AbiGPAzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 20:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiGPBAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 21:00:13 -0400
-X-Greylist: delayed 1018 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 18:00:12 PDT
-Received: from mail.codeweavers.com (mail.codeweavers.com [50.203.203.244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B443AE71
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 18:00:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=codeweavers.com; s=6377696661; h=Subject:To:From:MIME-Version:Date:
-        Message-ID:Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ynEeOg/i/NYVmJUhQDvbgS/BhPoy9dUbzInKhWYuU2g=; b=aeuzAAVRTs1UK/ocwT0UlpDrb
-        p02btvbI4VY8sEZ993gxB16k4AIeRHtedEjTgC5j/6zAYC5XAHEJ8kOS8D4HHd4EEjGKCbMEgHgOR
-        JNqBZwRoqdCq93+46mL1BQ+yRcb+Wz50vp36oIQ/zcuyvdCwDmCiCCrW5KFUrzhjn2lNQ=;
-Received: from [10.69.139.42]
-        by mail.codeweavers.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <zfigura@codeweavers.com>)
-        id 1oCVtp-0003Qr-GK
-        for netdev@vger.kernel.org; Fri, 15 Jul 2022 19:43:13 -0500
-Content-Type: multipart/mixed; boundary="------------0NTVpZ37c6VtgZo4QOoydsn7"
-Message-ID: <84b443dd-9faa-4aa9-5d7e-4836f5cb47e0@codeweavers.com>
-Date:   Fri, 15 Jul 2022 19:43:12 -0500
+        with ESMTP id S229625AbiGPAzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 20:55:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E820793C16
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 17:55:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1EC03CE325F
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 00:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5858C34115;
+        Sat, 16 Jul 2022 00:55:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657932917;
+        bh=9fj4Mtz6w0+tscGpGEKEp4UkEN9DNsAfh5IGKm18V6g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PYpP6Eie0VYnVt5mXN0eNF4uc7fV4VTsGO1iudHpbu7KlMfTcKSfERFzdQZCMv+QI
+         4EARUhRoMT0rk2/0MRBqpDAeqloFB71QkJOtIQFZGa9objAJR6Z7luhKZFiDgvrQMz
+         ZwmMg5VfEPK8Oy0BT2XHUwU5ghnh/ZobVdEznTZGl8LtXtZ3OirP1fH14egMVgdzMJ
+         AO+kfqDrkgT1sqJJB05tP/0pc5TOiGUQpI5EzuH086J9gxo8oP0btq8Iz/qmWubrZ7
+         qjlXpOKQ7R/E2ENMR0GmpzAeSuSFJdpTJVPvv36fFfVSrp3dVnngmIpAY7v4ZlRNVm
+         vCn5hJCPTCQJQ==
+Date:   Fri, 15 Jul 2022 17:55:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Brian Hutchinson <b.hutchman@gmail.com>
+Subject: Re: [PATCH net] net: dsa: fix bonding with ARP monitoring by
+ updating trans_start manually
+Message-ID: <20220715175516.6770c863@kernel.org>
+In-Reply-To: <20220716002612.rd6ir65njzc2g3cc@skbuf>
+References: <20220715232641.952532-1-vladimir.oltean@nxp.com>
+        <20220715170042.4e6e2a32@kernel.org>
+        <20220716001443.aooyf5kpbpfjzqgn@skbuf>
+        <20220715171959.22e118d7@kernel.org>
+        <20220716002612.rd6ir65njzc2g3cc@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-US
-From:   Zeb Figura <zfigura@codeweavers.com>
-To:     netdev@vger.kernel.org
-Subject: Odd behaviour with SO_OOBINLINE
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------0NTVpZ37c6VtgZo4QOoydsn7
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On Sat, 16 Jul 2022 00:26:13 +0000 Vladimir Oltean wrote:
+> > Make bonding not depend on a field which is only valid for HW devices
+> > which use the Tx watchdog. Let me find the thread...
+> > https://lore.kernel.org/all/20220621213823.51c51326@kernel.org/  
+> 
+> That won't work in the general case with dsa_slave_get_stats64(), which
+> may take the stats from hardware (delayed) or from dev_get_tstats64().
 
-Hello all,
+Ah, that's annoying.
 
-I found what seems like a bug related to SO_OOBINLINE handling with TCP 
-sockets. I couldn't easily find any mention of this on the Internet, so 
-I'm asking about it here.
+> Also, not to mention that ARP monitoring used to work before the commit
+> I blamed, this is a punctual fix for a regression.
 
-The basic problem is best expressed by reading and running the attached 
-.c file. As a summary, setting SO_OOBINLINE on a socket after sending 
-and receiving OOB data seems to cause that data to be received again. 
-This is especially suspicious since making an (unsuccessful) recv() call 
-before setting SO_OOBINLINE [commented out with if(0)] will cause said 
-recv to return normally.
+trans_start is for the watchdog. This is the third patch pointlessly 
+messing with trans_start while the bug is in bonding. It's trying to
+piggy back on semantics which are not universally true.
 
-Is this a bug? Is there anything that should be done about this behaviour?
-
-Thanks,
-Zeb
---------------0NTVpZ37c6VtgZo4QOoydsn7
-Content-Type: text/x-csrc; charset=UTF-8; name="socktest_oob.c"
-Content-Disposition: attachment; filename="socktest_oob.c"
-Content-Transfer-Encoding: base64
-
-I2RlZmluZSBfR05VX1NPVVJDRQojaW5jbHVkZSA8YXJwYS9pbmV0Lmg+CiNpbmNsdWRlIDxl
-cnJuby5oPgojaW5jbHVkZSA8bmV0ZGIuaD4KI2luY2x1ZGUgPG5ldGluZXQvaXAuaD4KI2lu
-Y2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzdGRsaWIuaD4KI2luY2x1ZGUgPHN0cmluZy5o
-PgojaW5jbHVkZSA8c3lzL2Vwb2xsLmg+CiNpbmNsdWRlIDxzeXMvbW1hbi5oPgojaW5jbHVk
-ZSA8c3lzL3NvY2tldC5oPgojaW5jbHVkZSA8cG9sbC5oPgojaW5jbHVkZSA8dW5pc3RkLmg+
-CgppbnQgbWFpbih2b2lkKQp7CiAgICBjb25zdCBzdHJ1Y3Qgc29ja2FkZHJfaW4gY29ubmVj
-dF9hZGRyID0gey5zaW5fZmFtaWx5ID0gQUZfSU5FVCwgLnNpbl9hZGRyID0gaHRvbmwoSU5B
-RERSX0xPT1BCQUNLKSwgLnNpbl9wb3J0ID0gaHRvbnMoOTM3NCl9OwogICAgaW50IGJ1ZmZl
-cl9zaXplID0gMTAyNCAqIDEwMjQ7CiAgICBpbnQgbGlzdGVuZXIsIHNlcnZlciwgY2xpZW50
-LCByZXQsIGVycm9yOwogICAgc3RydWN0IHNvY2thZGRyX2luIGFkZHIgPSB7MH07CiAgICBz
-dHJ1Y3QgbGluZ2VyIGxpbmdlcjsKICAgIHN0cnVjdCBwb2xsZmQgcG9sbGZkOwogICAgdW5z
-aWduZWQgaW50IGk7CiAgICBwdGhyZWFkX3QgdGhyZWFkOwogICAgc29ja2xlbl90IGxlbjsK
-ICAgIGNoYXIgKmJ1ZmZlciA9IG1hbGxvYyhidWZmZXJfc2l6ZSk7CgogICAgbGlzdGVuZXIg
-PSBzb2NrZXQoQUZfSU5FVCwgU09DS19TVFJFQU0sIElQUFJPVE9fVENQKTsKICAgIGNsaWVu
-dCA9IHNvY2tldChBRl9JTkVULCBTT0NLX1NUUkVBTSwgSVBQUk9UT19UQ1ApOwoKICAgIHJl
-dCA9IGdldHNvY2tuYW1lKGxpc3RlbmVyLCAoc3RydWN0IHNvY2thZGRyICopJmFkZHIsICZs
-ZW4pOwogICAgcHJpbnRmKCJnZXRzb2NrbmFtZSAtPiAlZCwgeyV1LCAlI3h9LCAlc1xuIiwg
-cmV0LCBhZGRyLnNpbl9mYW1pbHksIGFkZHIuc2luX2FkZHIuc19hZGRyLCBzdHJlcnJvcihl
-cnJubykpOwogICAgYWRkci5zaW5fZmFtaWx5ID0gQUZfSU5FVDsKICAgIGFkZHIuc2luX2Fk
-ZHIuc19hZGRyID0gaW5ldF9hZGRyKCIxMjcuMC4wLjEiKTsKICAgIHJldCA9IGJpbmQobGlz
-dGVuZXIsIChzdHJ1Y3Qgc29ja2FkZHIgKikmYWRkciwgc2l6ZW9mKGFkZHIpKTsKICAgIGlm
-IChyZXQgPCAwKQogICAgICAgIHByaW50ZigiYmluZCAtPiAlZCwgJXNcbiIsIHJldCwgc3Ry
-ZXJyb3IoZXJybm8pKTsKICAgIGxlbiA9IHNpemVvZihhZGRyKTsKICAgIHJldCA9IGdldHNv
-Y2tuYW1lKGxpc3RlbmVyLCAoc3RydWN0IHNvY2thZGRyICopJmFkZHIsICZsZW4pOwogICAg
-aWYgKHJldCA8IDApCiAgICAgICAgcHJpbnRmKCJnZXRzb2NrbmFtZSAtPiAlZCwgJXNcbiIs
-IHJldCwgc3RyZXJyb3IoZXJybm8pKTsKICAgIHJldCA9IGxpc3RlbihsaXN0ZW5lciwgMSk7
-CiAgICBpZiAocmV0IDwgMCkKICAgICAgICBwcmludGYoImxpc3RlbiAtPiAlZCwgJXNcbiIs
-IHJldCwgc3RyZXJyb3IoZXJybm8pKTsKCiAgICByZXQgPSBjb25uZWN0KGNsaWVudCwgJmFk
-ZHIsIHNpemVvZihhZGRyKSk7CiAgICBpZiAocmV0IDwgMCkKICAgICAgICBwcmludGYoImNv
-bm5lY3QgLT4gJWQsICVzXG4iLCByZXQsIHN0cmVycm9yKGVycm5vKSk7CgogICAgc2VydmVy
-ID0gYWNjZXB0NChsaXN0ZW5lciwgKHN0cnVjdCBzb2NrYWRkciAqKSZhZGRyLCAmbGVuLCBT
-T0NLX05PTkJMT0NLKTsKICAgIGlmIChzZXJ2ZXIgPCAwKQogICAgICAgIHByaW50ZigiYWNj
-ZXB0IC0+ICVkLCAlc1xuIiwgc2VydmVyLCBzdHJlcnJvcihlcnJubykpOwoKICAgIHJldCA9
-IHNlbmQoY2xpZW50LCAiQSIsIDEsIE1TR19PT0IpOwogICAgaWYgKHJldCAhPSAxKQogICAg
-ICAgIHByaW50Zigic2VuZCAtPiAlZCwgJXNcbiIsIHJldCwgc3RyZXJyb3IoZXJybm8pKTsK
-CiAgICByZXQgPSByZWN2KHNlcnZlciwgYnVmZmVyLCBidWZmZXJfc2l6ZSwgTVNHX09PQik7
-CiAgICBpZiAocmV0ICE9IDEpCiAgICAgICAgcHJpbnRmKCJyZWN2IC0+ICVkLCAlc1xuIiwg
-cmV0LCBzdHJlcnJvcihlcnJubykpOwoKICAgIGlmICgwKQogICAgewogICAgcmV0ID0gcmVj
-dihzZXJ2ZXIsIGJ1ZmZlciwgYnVmZmVyX3NpemUsIDApOwogICAgaWYgKHJldCAhPSAxKQog
-ICAgICAgIHByaW50ZigicmVjdiAjMyAtPiAlZCwgJXNcbiIsIHJldCwgc3RyZXJyb3IoZXJy
-bm8pKTsKICAgIH0KCiAgICBwb2xsZmQuZmQgPSBzZXJ2ZXI7CiAgICBwb2xsZmQuZXZlbnRz
-ID0gUE9MTElOIHwgUE9MTFBSSTsKICAgIHJldCA9IHBvbGwoJnBvbGxmZCwgMSwgMCk7CiAg
-ICBwcmludGYoInBvbGwgLT4gJWQsICUjeFxuIiwgcmV0LCBwb2xsZmQucmV2ZW50cyk7Cgog
-ICAgcmV0ID0gMTsKICAgIHJldCA9IHNldHNvY2tvcHQoc2VydmVyLCBTT0xfU09DS0VULCBT
-T19PT0JJTkxJTkUsICZyZXQsIHNpemVvZihyZXQpKTsKICAgIGlmIChyZXQgPCAwKQogICAg
-ICAgIHByaW50Zigic2V0c29ja29wdCAtPiAlZCwgJXNcbiIsIHJldCwgc3RyZXJyb3IoZXJy
-bm8pKTsKCiAgICBwb2xsZmQuZmQgPSBzZXJ2ZXI7CiAgICBwb2xsZmQuZXZlbnRzID0gUE9M
-TElOIHwgUE9MTFBSSTsKICAgIHJldCA9IHBvbGwoJnBvbGxmZCwgMSwgMCk7CiAgICBwcmlu
-dGYoInBvbGwgLT4gJWQsICUjeFxuIiwgcmV0LCBwb2xsZmQucmV2ZW50cyk7CgogICAgcmV0
-ID0gcmVjdihzZXJ2ZXIsIGJ1ZmZlciwgYnVmZmVyX3NpemUsIDApOwogICAgaWYgKHJldCAh
-PSAxKQogICAgICAgIHByaW50ZigicmVjdiAjMyAtPiAlZCwgJXNcbiIsIHJldCwgc3RyZXJy
-b3IoZXJybm8pKTsKCiAgICByZXR1cm4gMDsKfQo=
-
---------------0NTVpZ37c6VtgZo4QOoydsn7--
+Fix bonding please.
