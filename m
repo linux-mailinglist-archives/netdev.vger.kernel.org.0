@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DBC576D73
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 13:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8CD576D74
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 13:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbiGPLXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 07:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
+        id S229903AbiGPLY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 07:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiGPLXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 07:23:10 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F42B1F2E0
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:23:09 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so4502015wmb.5
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:23:09 -0700 (PDT)
+        with ESMTP id S229521AbiGPLY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 07:24:56 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDA81B78F
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:24:54 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y8so9271208eda.3
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 04:24:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tachBHEcObPRxKw40JGgy7nkfkrQgdN1l57Ep4aOUwM=;
-        b=VQQghi8MFOJX2mQHedzXPQySDOT6HolW6guohsX8G0u3kRDJ6Imkq4rkM9sDhZjFF6
-         EK6ng0lNNY6w5Rb2B48An4Rzigg9WTdfIMe6l3rl+zvPBdb5NtH2uAOAznXvTnXv8zGA
-         SYelOCLmlBUYc/NNwijrCOkBpQtnyw1Ue8z+ekXlLuhE3c7mBsSVg+cPeFXyRcVCcdfO
-         7hug9o6z1D2D4oKP6CUqPoYkGHdpPi4EcYvQjSx78Ld8shUiqSgh6CeS+Z2zejxIijYB
-         RgWGBekwAEWH+Mooq+NtbBFVM+kKQUduAr1UJIXM1THUis7gxRTdRo2DT1RivGHg8Gsg
-         U2Xw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CIpVGVpD3ujxxUGHr4fK3obfuz+0w//vqRFy8HXIamo=;
+        b=FeHTUkotzyfzyYVbZOkssajrNpY93rCOzL975ceSkCcKAormxf4fJgq4HgXmkCvYMh
+         xGDz4e/kfOM7B3mUV7lH+YpFtvwGx/4sCTVeHM0hhu8XOMyOutEWfT4qKUglXEBhJk0x
+         WzESBGeHywi5KjyhA0jFKhQa+CCpgJzhZc9BHaRkQrpJVI6+86BuaIx7/0EhXkSeNrQD
+         eOdVL0VV7ZGALhEDFW83yL2ANPX4tVeFH7v+1mh0cAAGJoEjQukXLIDAqyzwbyOhN24L
+         dlmAft1rEXyEXdU3D5rCpJfJsWkMX4Egq8NhovkvVUTSj9kiTXLXrcrMAIzkOqZ4fly2
+         /8zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tachBHEcObPRxKw40JGgy7nkfkrQgdN1l57Ep4aOUwM=;
-        b=pJQkoBxN1dUrQBs9ppJETzBFR8nb6qkHb3K/wo3LhKvMHSerk/l4uGX+1pygiS3Mk/
-         17uAvGBs2Dm4ARXZ1zcGde1OoTUH2ZGcp/mjyu4l8yZHWsrZWkXIwJKR3rHk9VfKMNHa
-         5G4SEhZJe2t51ZvaNmF0/0QJUmN6gmuHdxjEvr2NednVVe0QaeTJA6GqbsuZ4QT+AXm6
-         EgMU54NDmlDqHeKhCb4jjUoz/IgFQZir49jkf2acWZfMQvHFuFICKw3bnZ2u3qmZuKGi
-         Ko77SG5oYImzEMs2eGlAGNbXxVLUfeHS2K/ioJDo++tIbwJbcKkVTR2M3unfbuHwB2jR
-         znrw==
-X-Gm-Message-State: AJIora+v/1wtjz8UZYX31hwk3UgPmjZ2wZ0urXP1EkI3+5FkGT5TL+hI
-        vpe+s5YiUZkoXiU0eZelCMqeCg==
-X-Google-Smtp-Source: AGRyM1vJ9OZG9rJLu1DhMEg8KFUJST7Ll+ZvVvR9yS1weyxdHnN04up9Ondr4RXlKE1T0t1QzfVaIg==
-X-Received: by 2002:a05:600c:1e04:b0:3a3:11ca:5c0c with SMTP id ay4-20020a05600c1e0400b003a311ca5c0cmr2762794wmb.31.1657970588017;
-        Sat, 16 Jul 2022 04:23:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CIpVGVpD3ujxxUGHr4fK3obfuz+0w//vqRFy8HXIamo=;
+        b=4dL2LouIjzoYS5TlUYWIgktL/XrduYZYTauVEuzBOzyqY5OYNuVz/dZYOJ1MFgSI4k
+         yA4GVb/2Bh0SNdr9mQ85kWKO9eKSJmBnfDJ6gTeoX8QL+sF8QgBbShMzGh7ssILiicaS
+         SYTJu4+ePP8eAnMdKWql3BCkfU7jFOwpztQPd/1JQKHzeSAr1DbtN+S3AFYqnaXQ+dPb
+         fzyZl+zy4eJsyRyy66FiqJuaywncN2r+dplt3DyJsuuBsFDQ5EsuXPtKqUd/oaq7GqUR
+         hVjPgcIstpVWWQiclg/fwAfgaXho4SRTx7t1yjAz550JB1fQeEC1ef2fQsY4QEfVb+WG
+         M6Uw==
+X-Gm-Message-State: AJIora8x5F+3i7mX3vXOG1MqHceBeSF0P3x2bbtDMSNCy6+7nr+f0h64
+        8+RPgAaoEKRmCq9ygz2iFXosaGVJ6v5KGMKX
+X-Google-Smtp-Source: AGRyM1uICaGq/C1iuSfR0Z1O7oKI7c5Dx+3CbB5/K+fdJj7lkp4gpeQXHLJX5DOZJMsROH90duvSZQ==
+X-Received: by 2002:a05:6402:3214:b0:43a:b36f:a0b4 with SMTP id g20-20020a056402321400b0043ab36fa0b4mr25330706eda.122.1657970693147;
+        Sat, 16 Jul 2022 04:24:53 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05600c4f9200b003a2ec73887fsm16035688wmq.1.2022.07.16.04.23.06
+        by smtp.gmail.com with ESMTPSA id vp21-20020a17090712d500b006feba31171bsm3144380ejb.11.2022.07.16.04.24.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jul 2022 04:23:07 -0700 (PDT)
-Date:   Sat, 16 Jul 2022 13:23:06 +0200
+        Sat, 16 Jul 2022 04:24:52 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch iproute2/net-next v2] devlink: add support for linecard
- show and type set
-Message-ID: <YtKfmjFx7df2fckB@nanopsycho>
-References: <20220713134749.2988396-1-jiri@resnulli.us>
- <YtAXtakVePIxAdyL@shredder>
+To:     netdev@vger.kernel.org
+Cc:     sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@nvidia.com,
+        idosch@nvidia.com
+Subject: [patch iproute2-next v3] devlink: add support for linecard show and type set
+Date:   Sat, 16 Jul 2022 13:24:51 +0200
+Message-Id: <20220716112451.3392453-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtAXtakVePIxAdyL@shredder>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -70,289 +66,604 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 14, 2022 at 03:18:45PM CEST, idosch@nvidia.com wrote:
->On Wed, Jul 13, 2022 at 03:47:49PM +0200, Jiri Pirko wrote:
->> diff --git a/bash-completion/devlink b/bash-completion/devlink
->> index 361be9feee83..45c7a8121401 100644
->> --- a/bash-completion/devlink
->> +++ b/bash-completion/devlink
->> @@ -43,6 +43,18 @@ _devlink_direct_complete()
->>                      | jq '.port as $ports | $ports | keys[] as $key
->>                      | ($ports[$key].netdev // $key)')
->>              ;;
->> +        lc)
->> +            dev=${words[3]}
->> +            value=$(devlink -j lc show 2>/dev/null \
->> +                    | jq ".lc[\"$dev\"]" \
->> +                    | jq '. as $lcs | $lcs | keys[] as $key |($lcs[$key].lc)')
->> +            ;;
->
->On a system that has a devlink instance without line cards I'm getting
->the following error during completion:
->
->$ devlink lc set pci/0000:06:00.0 lc jq: error (at <stdin>:1): null (null) has no keys
->jq: error (at <stdin>:1): null (null) has no keys
->
->This fixes the issue for me and should still work on a system with line
->cards (test):
+From: Jiri Pirko <jiri@nvidia.com>
 
-Okay. Thanks.
+Introduce a new object "lc" to add devlink support for line cards with
+two commands:
+show - to get the info about the line card state, list of supported
+       types as reported by kernel/driver.
+set - to set/clear the line card type.
 
+Example:
+$ devlink lc
+pci/0000:01:00.0:
+  lc 1 state unprovisioned
+    supported_types:
+       16x100G
+  lc 2 state unprovisioned
+    supported_types:
+       16x100G
+  lc 3 state unprovisioned
+    supported_types:
+       16x100G
+  lc 4 state unprovisioned
+    supported_types:
+       16x100G
+  lc 5 state unprovisioned
+    supported_types:
+       16x100G
+  lc 6 state unprovisioned
+    supported_types:
+       16x100G
+  lc 7 state unprovisioned
+    supported_types:
+       16x100G
+  lc 8 state unprovisioned
+    supported_types:
+       16x100G
 
->
->diff --git a/bash-completion/devlink b/bash-completion/devlink
->index 45c7a8121401..757e03b749ce 100644
->--- a/bash-completion/devlink
->+++ b/bash-completion/devlink
->@@ -47,7 +47,8 @@ _devlink_direct_complete()
->             dev=${words[3]}
->             value=$(devlink -j lc show 2>/dev/null \
->                     | jq ".lc[\"$dev\"]" \
->-                    | jq '. as $lcs | $lcs | keys[] as $key |($lcs[$key].lc)')
->+                    | jq '. as $lcs | $lcs | keys[] as $key |($lcs[$key].lc)' \
->+                    2>/dev/null)
->             ;;
->         lc_type)
->             dev=${words[3]}
->
->> +        lc_type)
->> +            dev=${words[3]}
->> +            lc=${words[5]}
->> +            value=$(devlink lc show $dev lc $lc -j 2>/dev/null \
->> +                    | jq '.[][][]["supported_types"][]')
->> +            ;;
->>          region)
->>              value=$(devlink -j region show 2>/dev/null \
->>                      | jq '.regions' | jq 'keys[]')
->> @@ -395,6 +407,62 @@ _devlink_port()
->>      esac
->>  }
->>  
->> +# Completion for devlink lc set
->> +_devlink_lc_set()
->> +{
->> +    case "$cword" in
->> +        3)
->> +            _devlink_direct_complete "dev"
->> +            return
->> +            ;;
->> +        4)
->> +            COMPREPLY=( $( compgen -W "lc" -- "$cur" ) )
->> +            ;;
->> +        5)
->> +            _devlink_direct_complete "lc"
->> +            ;;
->> +        6)
->> +            COMPREPLY=( $( compgen -W "type notype" -- "$cur" ) )
->> +            return
->> +            ;;
->> +        7)
->> +            if [[ "$prev" == "type" ]]; then
->> +                _devlink_direct_complete "lc_type"
->> +            fi
->> +    esac
->> +}
->> +
->> +# Completion for devlink lc show
->> +_devlink_lc_show()
->> +{
->> +    case $cword in
->> +        3)
->> +            _devlink_direct_complete "dev"
->> +            ;;
->> +        4)
->> +            COMPREPLY=( $( compgen -W "lc" -- "$cur" ) )
->> +            ;;
->> +        5)
->> +            _devlink_direct_complete "lc"
->> +            ;;
->> +    esac
->> +}
->> +
->> +# Completion for devlink lc
->> +_devlink_lc()
->> +{
->> +    case $command in
->> +        set)
->> +            _devlink_lc_set
->> +            return
->> +            ;;
->> +        show)
->> +            _devlink_lc_show
->> +            return
->> +            ;;
->> +    esac
->> +}
->> +
->>  # Completion for devlink dpipe
->>  _devlink_dpipe()
->>  {
->> @@ -988,6 +1056,7 @@ _devlink()
->>      local object=${words[1]}
->>      local command=${words[2]}
->>      local pprev=${words[cword - 2]}
->> +    local prev=${words[cword - 1]}
->>  
->>      if [[ $objects =~ $object ]]; then
->>          if [[ $cword -eq 2 ]]; then
->> diff --git a/devlink/devlink.c b/devlink/devlink.c
->> index ddf430bbb02a..1e2cfc3d4285 100644
->> --- a/devlink/devlink.c
->> +++ b/devlink/devlink.c
->
->Code itself looks consistent with other commands
+To provision the slot #8:
 
-Good.
+$ devlink lc set pci/0000:01:00.0 lc 8 type 16x100G
+$ devlink lc show pci/0000:01:00.0 lc 8
+pci/0000:01:00.0:
+  lc 8 state active type 16x100G
+    supported_types:
+       16x100G
 
+To uprovision the slot #8:
 
->
->[...]
->
->> --- /dev/null
->> +++ b/man/man8/devlink-lc.8
->> @@ -0,0 +1,103 @@
->> +.TH DEVLINK\-LC 8 "20 Apr 2022" "iproute2" "Linux"
->> +.SH NAME
->> +devlink-lc \- devlink line card configuration
->> +.SH SYNOPSIS
->> +.sp
->> +.ad l
->> +.in +8
->> +.ti -8
->> +.B devlink
->> +.RI "[ " OPTIONS " ]"
->> +.B lc
->> +.RI  " { " COMMAND " | "
->> +.BR help " }"
->> +.sp
->> +
->> +.ti -8
->> +.IR OPTIONS " := { "
->> +\fB\-V\fR[\fIersion\fR] }
->> +
->> +.ti -8
->> +.B "devlink lc set"
->> +.IB DEV " lc " LC_INDEX
->> +.RB [ " type " {
->> +.IR LC_TYPE " | "
->> +.BR notype " } ] "
->> +
->> +.ti -8
->> +.B "devlink lc show"
->> +.RI "[ " DEV " [ "
->> +.BI lc " LC_INDEX
->> +.R  " ] ]"
->> +
->> +.ti -8
->> +.B devlink lc help
->> +
->> +.SH "DESCRIPTION"
->> +.SS devlink lc set - change line card attributes
->> +
->> +.PP
->> +.TP
->> +.I "DEV"
->> +Specifies the devlink device to operate on.
->> +
->> +.in +4
->> +Format is:
->> +.in +2
->> +BUS_NAME/BUS_ADDRESS
->> +
->> +.TP
->> +.BI lc " LC_INDEX "
->> +Specifies index of a line card slot to set.
->> +
->> +.TP
->> +.BR type " { "
->> +.IR LC_TYPE " | "
->> +.BR notype " } "
->> +Type of line card to provision. Each driver provides a list of supported line card types which is shown in the output of
->> +.BR "devlink lc show " command.
->> +
->> +.SS devlink lc show - display line card attributes
->> +
->> +.PP
->> +.TP
->> +.I "DEV"
->> +.RB "Specifies the devlink device to operate on. If this and " lc " arguments are omitted all line cards of all devices are listed.
->> +
->> +.TP
->> +.BI lc " LC_INDEX "
->> +Specifies index of a line card slot to show.
->> +
->> +.SH "EXAMPLES"
->> +.PP
->> +devlink ls show
->
->s/ls/lc/
+$ devlink lc set pci/0000:01:00.0 lc 8 notype
 
-Fixed.
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+v2->v3:
+- fixed completion of instance without line cards
+- fixed couple issues in man page
+v1->v2:
+- added missing bash completion bits
+---
+ bash-completion/devlink |  70 ++++++++++++++
+ devlink/devlink.c       | 210 +++++++++++++++++++++++++++++++++++++++-
+ man/man8/devlink-lc.8   | 101 +++++++++++++++++++
+ 3 files changed, 378 insertions(+), 3 deletions(-)
+ create mode 100644 man/man8/devlink-lc.8
 
+diff --git a/bash-completion/devlink b/bash-completion/devlink
+index 361be9feee83..757e03b749ce 100644
+--- a/bash-completion/devlink
++++ b/bash-completion/devlink
+@@ -43,6 +43,19 @@ _devlink_direct_complete()
+                     | jq '.port as $ports | $ports | keys[] as $key
+                     | ($ports[$key].netdev // $key)')
+             ;;
++        lc)
++            dev=${words[3]}
++            value=$(devlink -j lc show 2>/dev/null \
++                    | jq ".lc[\"$dev\"]" \
++                    | jq '. as $lcs | $lcs | keys[] as $key |($lcs[$key].lc)' \
++                    2>/dev/null)
++            ;;
++        lc_type)
++            dev=${words[3]}
++            lc=${words[5]}
++            value=$(devlink lc show $dev lc $lc -j 2>/dev/null \
++                    | jq '.[][][]["supported_types"][]')
++            ;;
+         region)
+             value=$(devlink -j region show 2>/dev/null \
+                     | jq '.regions' | jq 'keys[]')
+@@ -395,6 +408,62 @@ _devlink_port()
+     esac
+ }
+ 
++# Completion for devlink lc set
++_devlink_lc_set()
++{
++    case "$cword" in
++        3)
++            _devlink_direct_complete "dev"
++            return
++            ;;
++        4)
++            COMPREPLY=( $( compgen -W "lc" -- "$cur" ) )
++            ;;
++        5)
++            _devlink_direct_complete "lc"
++            ;;
++        6)
++            COMPREPLY=( $( compgen -W "type notype" -- "$cur" ) )
++            return
++            ;;
++        7)
++            if [[ "$prev" == "type" ]]; then
++                _devlink_direct_complete "lc_type"
++            fi
++    esac
++}
++
++# Completion for devlink lc show
++_devlink_lc_show()
++{
++    case $cword in
++        3)
++            _devlink_direct_complete "dev"
++            ;;
++        4)
++            COMPREPLY=( $( compgen -W "lc" -- "$cur" ) )
++            ;;
++        5)
++            _devlink_direct_complete "lc"
++            ;;
++    esac
++}
++
++# Completion for devlink lc
++_devlink_lc()
++{
++    case $command in
++        set)
++            _devlink_lc_set
++            return
++            ;;
++        show)
++            _devlink_lc_show
++            return
++            ;;
++    esac
++}
++
+ # Completion for devlink dpipe
+ _devlink_dpipe()
+ {
+@@ -988,6 +1057,7 @@ _devlink()
+     local object=${words[1]}
+     local command=${words[2]}
+     local pprev=${words[cword - 2]}
++    local prev=${words[cword - 1]}
+ 
+     if [[ $objects =~ $object ]]; then
+         if [[ $cword -eq 2 ]]; then
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index ddf430bbb02a..1e2cfc3d4285 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -294,6 +294,8 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_PORT_FN_RATE_TX_MAX	BIT(49)
+ #define DL_OPT_PORT_FN_RATE_NODE_NAME	BIT(50)
+ #define DL_OPT_PORT_FN_RATE_PARENT	BIT(51)
++#define DL_OPT_LINECARD		BIT(52)
++#define DL_OPT_LINECARD_TYPE	BIT(53)
+ 
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -354,6 +356,8 @@ struct dl_opts {
+ 	uint64_t rate_tx_max;
+ 	char *rate_node_name;
+ 	const char *rate_parent_node;
++	uint32_t linecard_index;
++	const char *linecard_type;
+ };
+ 
+ struct dl {
+@@ -693,6 +697,10 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
+ 	[DEVLINK_ATTR_TRAP_POLICER_ID] = MNL_TYPE_U32,
+ 	[DEVLINK_ATTR_TRAP_POLICER_RATE] = MNL_TYPE_U64,
+ 	[DEVLINK_ATTR_TRAP_POLICER_BURST] = MNL_TYPE_U64,
++	[DEVLINK_ATTR_LINECARD_INDEX] = MNL_TYPE_U32,
++	[DEVLINK_ATTR_LINECARD_STATE] = MNL_TYPE_U8,
++	[DEVLINK_ATTR_LINECARD_TYPE] = MNL_TYPE_STRING,
++	[DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES] = MNL_TYPE_NESTED,
+ };
+ 
+ static const enum mnl_attr_data_type
+@@ -1490,6 +1498,8 @@ static const struct dl_args_metadata dl_args_required[] = {
+ 	{DL_OPT_PORT_FUNCTION_HW_ADDR, "Port function's hardware address is expected."},
+ 	{DL_OPT_PORT_FLAVOUR,          "Port flavour is expected."},
+ 	{DL_OPT_PORT_PFNUMBER,         "Port PCI PF number is expected."},
++	{DL_OPT_LINECARD,	      "Linecard index expected."},
++	{DL_OPT_LINECARD_TYPE,	      "Linecard type expected."},
+ };
+ 
+ static int dl_args_finding_required_validate(uint64_t o_required,
+@@ -2008,6 +2018,25 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			dl_arg_inc(dl);
+ 			opts->rate_parent_node = "";
+ 			o_found |= DL_OPT_PORT_FN_RATE_PARENT;
++		} else if (dl_argv_match(dl, "lc") &&
++			   (o_all & DL_OPT_LINECARD)) {
++			dl_arg_inc(dl);
++			err = dl_argv_uint32_t(dl, &opts->linecard_index);
++			if (err)
++				return err;
++			o_found |= DL_OPT_LINECARD;
++		} else if (dl_argv_match(dl, "type") &&
++			   (o_all & DL_OPT_LINECARD_TYPE)) {
++			dl_arg_inc(dl);
++			err = dl_argv_str(dl, &opts->linecard_type);
++			if (err)
++				return err;
++			o_found |= DL_OPT_LINECARD_TYPE;
++		} else if (dl_argv_match(dl, "notype") &&
++			   (o_all & DL_OPT_LINECARD_TYPE)) {
++			dl_arg_inc(dl);
++			opts->linecard_type = "";
++			o_found |= DL_OPT_LINECARD_TYPE;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -2221,6 +2250,12 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 	if (opts->present & DL_OPT_PORT_FN_RATE_PARENT)
+ 		mnl_attr_put_strz(nlh, DEVLINK_ATTR_RATE_PARENT_NODE_NAME,
+ 				  opts->rate_parent_node);
++	if (opts->present & DL_OPT_LINECARD)
++		mnl_attr_put_u32(nlh, DEVLINK_ATTR_LINECARD_INDEX,
++				 opts->linecard_index);
++	if (opts->present & DL_OPT_LINECARD_TYPE)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_LINECARD_TYPE,
++				  opts->linecard_type);
+ }
+ 
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -2242,6 +2277,7 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
+ 	struct nlattr *attr_dev_name = tb[DEVLINK_ATTR_DEV_NAME];
+ 	struct nlattr *attr_port_index = tb[DEVLINK_ATTR_PORT_INDEX];
+ 	struct nlattr *attr_sb_index = tb[DEVLINK_ATTR_SB_INDEX];
++	struct nlattr *attr_linecard_index = tb[DEVLINK_ATTR_LINECARD_INDEX];
+ 
+ 	if (opts->present & DL_OPT_HANDLE &&
+ 	    attr_bus_name && attr_dev_name) {
+@@ -2269,6 +2305,12 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
+ 		if (sb_index != opts->sb_index)
+ 			return false;
+ 	}
++	if (opts->present & DL_OPT_LINECARD && attr_linecard_index) {
++		uint32_t linecard_index = mnl_attr_get_u32(attr_linecard_index);
++
++		if (linecard_index != opts->linecard_index)
++			return false;
++	}
+ 	return true;
+ }
+ 
+@@ -4104,6 +4146,9 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
+ 			break;
+ 		}
+ 	}
++	if (tb[DEVLINK_ATTR_LINECARD_INDEX])
++		print_uint(PRINT_ANY, "lc", " lc %u",
++			   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
+ 	if (tb[DEVLINK_ATTR_PORT_NUMBER]) {
+ 		uint32_t port_number;
+ 
+@@ -4848,6 +4893,140 @@ static int cmd_port(struct dl *dl)
+ 	return -ENOENT;
+ }
+ 
++static void cmd_linecard_help(void)
++{
++	pr_err("Usage: devlink lc show [ DEV [ lc LC_INDEX ] ]\n");
++	pr_err("       devlink lc set DEV lc LC_INDEX [ { type LC_TYPE | notype } ]\n");
++}
++
++static const char *linecard_state_name(uint16_t flavour)
++{
++	switch (flavour) {
++	case DEVLINK_LINECARD_STATE_UNPROVISIONED:
++		return "unprovisioned";
++	case DEVLINK_LINECARD_STATE_UNPROVISIONING:
++		return "unprovisioning";
++	case DEVLINK_LINECARD_STATE_PROVISIONING:
++		return "provisioning";
++	case DEVLINK_LINECARD_STATE_PROVISIONING_FAILED:
++		return "provisioning_failed";
++	case DEVLINK_LINECARD_STATE_PROVISIONED:
++		return "provisioned";
++	case DEVLINK_LINECARD_STATE_ACTIVE:
++		return "active";
++	default:
++		return "<unknown state>";
++	}
++}
++
++static void pr_out_linecard_supported_types(struct dl *dl, struct nlattr **tb)
++{
++	struct nlattr *nla_types = tb[DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES];
++	struct nlattr *nla_type;
++
++	if (!nla_types)
++		return;
++
++	pr_out_array_start(dl, "supported_types");
++	check_indent_newline(dl);
++	mnl_attr_for_each_nested(nla_type, nla_types) {
++		print_string(PRINT_ANY, NULL, " %s",
++			     mnl_attr_get_str(nla_type));
++	}
++	pr_out_array_end(dl);
++}
++
++static void pr_out_linecard(struct dl *dl, struct nlattr **tb)
++{
++	uint8_t state;
++
++	pr_out_handle_start_arr(dl, tb);
++	check_indent_newline(dl);
++	print_uint(PRINT_ANY, "lc", "lc %u",
++		   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
++	state = mnl_attr_get_u8(tb[DEVLINK_ATTR_LINECARD_STATE]);
++	print_string(PRINT_ANY, "state", " state %s",
++		     linecard_state_name(state));
++	if (tb[DEVLINK_ATTR_LINECARD_TYPE])
++		print_string(PRINT_ANY, "type", " type %s",
++			     mnl_attr_get_str(tb[DEVLINK_ATTR_LINECARD_TYPE]));
++	pr_out_linecard_supported_types(dl, tb);
++	pr_out_handle_end(dl);
++}
++
++static int cmd_linecard_show_cb(const struct nlmsghdr *nlh, void *data)
++{
++	struct dl *dl = data;
++	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
++	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
++
++	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
++	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
++	    !tb[DEVLINK_ATTR_LINECARD_INDEX] ||
++	    !tb[DEVLINK_ATTR_LINECARD_STATE])
++		return MNL_CB_ERROR;
++	pr_out_linecard(dl, tb);
++	return MNL_CB_OK;
++}
++
++static int cmd_linecard_show(struct dl *dl)
++{
++	struct nlmsghdr *nlh;
++	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
++	int err;
++
++	if (dl_argc(dl) == 0)
++		flags |= NLM_F_DUMP;
++
++	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_LINECARD_GET,
++					  flags);
++
++	if (dl_argc(dl) > 0) {
++		err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE,
++					DL_OPT_LINECARD);
++		if (err)
++			return err;
++	}
++
++	pr_out_section_start(dl, "lc");
++	err = mnlu_gen_socket_sndrcv(&dl->nlg, nlh, cmd_linecard_show_cb, dl);
++	pr_out_section_end(dl);
++	return err;
++}
++
++static int cmd_linecard_set(struct dl *dl)
++{
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_LINECARD_SET,
++					  NLM_F_REQUEST | NLM_F_ACK);
++
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_LINECARD |
++					 DL_OPT_LINECARD_TYPE, 0);
++	if (err)
++		return err;
++
++	return mnlu_gen_socket_sndrcv(&dl->nlg, nlh, NULL, NULL);
++}
++
++static int cmd_linecard(struct dl *dl)
++{
++	if (dl_argv_match(dl, "help")) {
++		cmd_linecard_help();
++		return 0;
++	} else if (dl_argv_match(dl, "show") ||
++		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
++		dl_arg_inc(dl);
++		return cmd_linecard_show(dl);
++	} else if (dl_argv_match(dl, "set")) {
++		dl_arg_inc(dl);
++		return cmd_linecard_set(dl);
++	}
++	pr_err("Command \"%s\" not found\n", dl_argv(dl));
++	return -ENOENT;
++}
++
+ static void cmd_sb_help(void)
+ {
+ 	pr_err("Usage: devlink sb show [ DEV [ sb SB_INDEX ] ]\n");
+@@ -5665,6 +5844,10 @@ static const char *cmd_name(uint8_t cmd)
+ 	case DEVLINK_CMD_TRAP_POLICER_SET: return "set";
+ 	case DEVLINK_CMD_TRAP_POLICER_NEW: return "new";
+ 	case DEVLINK_CMD_TRAP_POLICER_DEL: return "del";
++	case DEVLINK_CMD_LINECARD_GET: return "get";
++	case DEVLINK_CMD_LINECARD_SET: return "set";
++	case DEVLINK_CMD_LINECARD_NEW: return "new";
++	case DEVLINK_CMD_LINECARD_DEL: return "del";
+ 	default: return "<unknown cmd>";
+ 	}
+ }
+@@ -5718,6 +5901,11 @@ static const char *cmd_obj(uint8_t cmd)
+ 	case DEVLINK_CMD_TRAP_POLICER_NEW:
+ 	case DEVLINK_CMD_TRAP_POLICER_DEL:
+ 		return "trap-policer";
++	case DEVLINK_CMD_LINECARD_GET:
++	case DEVLINK_CMD_LINECARD_SET:
++	case DEVLINK_CMD_LINECARD_NEW:
++	case DEVLINK_CMD_LINECARD_DEL:
++		return "lc";
+ 	default: return "<unknown obj>";
+ 	}
+ }
+@@ -5910,6 +6098,18 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
+ 		pr_out_mon_header(genl->cmd);
+ 		pr_out_trap_policer(dl, tb, false);
+ 		break;
++	case DEVLINK_CMD_LINECARD_GET: /* fall through */
++	case DEVLINK_CMD_LINECARD_SET: /* fall through */
++	case DEVLINK_CMD_LINECARD_NEW: /* fall through */
++	case DEVLINK_CMD_LINECARD_DEL:
++		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
++		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
++		    !tb[DEVLINK_ATTR_LINECARD_INDEX])
++			return MNL_CB_ERROR;
++		pr_out_mon_header(genl->cmd);
++		pr_out_linecard(dl, tb);
++		pr_out_mon_footer();
++		break;
+ 	}
+ 	fflush(stdout);
+ 	return MNL_CB_OK;
+@@ -5928,7 +6128,8 @@ static int cmd_mon_show(struct dl *dl)
+ 		    strcmp(cur_obj, "health") != 0 &&
+ 		    strcmp(cur_obj, "trap") != 0 &&
+ 		    strcmp(cur_obj, "trap-group") != 0 &&
+-		    strcmp(cur_obj, "trap-policer") != 0) {
++		    strcmp(cur_obj, "trap-policer") != 0 &&
++		    strcmp(cur_obj, "lc") != 0) {
+ 			pr_err("Unknown object \"%s\"\n", cur_obj);
+ 			return -EINVAL;
+ 		}
+@@ -5949,7 +6150,7 @@ static int cmd_mon_show(struct dl *dl)
+ static void cmd_mon_help(void)
+ {
+ 	pr_err("Usage: devlink monitor [ all | OBJECT-LIST ]\n"
+-	       "where  OBJECT-LIST := { dev | port | health | trap | trap-group | trap-policer }\n");
++	       "where  OBJECT-LIST := { dev | port | lc | health | trap | trap-group | trap-policer }\n");
+ }
+ 
+ static int cmd_mon(struct dl *dl)
+@@ -8941,7 +9142,7 @@ static void help(void)
+ {
+ 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
+-	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
++	       "where  OBJECT := { dev | port | lc | sb | monitor | dpipe | resource | region | health | trap }\n"
+ 	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] -[he]x }\n");
+ }
+ 
+@@ -8980,6 +9181,9 @@ static int dl_cmd(struct dl *dl, int argc, char **argv)
+ 	} else if (dl_argv_match(dl, "trap")) {
+ 		dl_arg_inc(dl);
+ 		return cmd_trap(dl);
++	} else if (dl_argv_match(dl, "lc")) {
++		dl_arg_inc(dl);
++		return cmd_linecard(dl);
+ 	}
+ 	pr_err("Object \"%s\" not found\n", dl_argv(dl));
+ 	return -ENOENT;
+diff --git a/man/man8/devlink-lc.8 b/man/man8/devlink-lc.8
+new file mode 100644
+index 000000000000..1661b9bd6917
+--- /dev/null
++++ b/man/man8/devlink-lc.8
+@@ -0,0 +1,101 @@
++.TH DEVLINK\-LC 8 "20 Apr 2022" "iproute2" "Linux"
++.SH NAME
++devlink-lc \- devlink line card configuration
++.SH SYNOPSIS
++.sp
++.ad l
++.in +8
++.ti -8
++.B devlink
++.RI "[ " OPTIONS " ]"
++.B lc
++.RI  " { " COMMAND " | "
++.BR help " }"
++.sp
++
++.ti -8
++.IR OPTIONS " := { "
++\fB\-V\fR[\fIersion\fR] }
++
++.ti -8
++.B "devlink lc set"
++.IB DEV " lc " LC_INDEX
++.RB [ " type " {
++.IR LC_TYPE " | "
++.BR notype " } ] "
++
++.ti -8
++.B "devlink lc show"
++.RI "[ " DEV " [ "
++.BI lc " LC_INDEX
++.R  " ] ]"
++
++.ti -8
++.B devlink lc help
++
++.SH "DESCRIPTION"
++.SS devlink lc set - change line card attributes
++
++.PP
++.TP
++.I "DEV"
++Specifies the devlink device to operate on.
++
++.in +4
++Format is:
++.in +2
++BUS_NAME/BUS_ADDRESS
++
++.TP
++.BI lc " LC_INDEX "
++Specifies index of a line card slot to set.
++
++.TP
++.BR type " { "
++.IR LC_TYPE " | "
++.BR notype " } "
++Type of line card to provision. Each driver provides a list of supported line card types which is shown in the output of
++.BR "devlink lc show " command.
++
++.SS devlink lc show - display line card attributes
++
++.PP
++.TP
++.I "DEV"
++.RB "Specifies the devlink device to operate on. If this and " lc " arguments are omitted all line cards of all devices are listed.
++
++.TP
++.BI lc " LC_INDEX "
++Specifies index of a line card slot to show.
++
++.SH "EXAMPLES"
++.PP
++devlink lc show
++.RS 4
++Shows the state of all line cards on the system.
++.RE
++.PP
++devlink lc show pci/0000:01:00.0 lc 1
++.RS 4
++Shows the state of line card with index 1.
++.RE
++.PP
++devlink lc set pci/0000:01:00.0 lc 1 type 16x100G
++.RS 4
++.RI "Sets type of specified line card to type " 16x100G "."
++.RE
++.PP
++devlink lc set pci/0000:01:00.0 lc 1 notype
++.RS 4
++Clears provisioning on a line card.
++.RE
++
++.SH SEE ALSO
++.BR devlink (8),
++.BR devlink-dev (8),
++.BR devlink-port (8),
++.BR devlink-monitor (8),
++.br
++
++.SH AUTHOR
++Jiri Pirko <jiri@nvidia.com>
+-- 
+2.35.3
 
->
->> +.RS 4
->> +Shows the state of all line cards on the system.
->> +.RE
->> +.PP
->> +devlink lc show pci/0000:01:00.0 lc 1
->> +.RS 4
->> +Shows the state of line card with index 1.
->> +.RE
->> +.PP
->> +devlink lc set pci/0000:01:00.0 lc 1 type 16x100G
->> +.RS 4
->> +.RI "Set type of specified line card to type " 16x100G "."
->
->s/Set/Sets/
-
-Fixed.
-
-
->
->Or change the first two
->
->> +.RE
->> +.PP
->> +devlink lc set pci/0000:01:00.0 lc 1 notype
->> +.RS 4
->> +Clear provisioning on a line card.
->
->s/Clear/Clears/
-
-Fixed.
-
-
->
->> +.RE
->> +
->> +.SH SEE ALSO
->> +.BR devlink (8),
->> +.BR devlink-dev (8),
->> +.BR devlink-port (8),
->> +.BR devlink-sb (8),
->
->Irrelevant
-
-Fixed.
-
-
->
->> +.BR devlink-monitor (8),
->> +.BR devlink-health (8),
->
->Same
-
-Fixed.
-
-
-Thanks!
-
->
->> +.br
->> +
->> +.SH AUTHOR
->> +Jiri Pirko <jiri@nvidia.com>
->> -- 
->> 2.35.3
->> 
