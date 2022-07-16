@@ -2,130 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CBF577045
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 19:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FA0577049
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 19:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbiGPRAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 13:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S232063AbiGPRBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 13:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbiGPRAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 13:00:36 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CBA20197
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 10:00:20 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id e15so9998948edj.2
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 10:00:20 -0700 (PDT)
+        with ESMTP id S229941AbiGPRBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 13:01:19 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96991F621
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 10:01:18 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id r6so9989165edd.7
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 10:01:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+8/uBRwlHoO2r+QA6MM57OwP4K1pVboHuwKMksUhKgk=;
-        b=iQf244o1h93pAg9m1W4w/6vuu9JJdJA98gcI3UDofl9Bg3jug7Dc2ylxEPWGgGO9jw
-         wH5nuTOlDOYv0tJPKq2LtZcAryJ0BiT0VMcDTmjArkavoYei7R2Iaw88Odgs9SBGmITG
-         lL9vXDXCSd1+/WNnZox7f5ubzIRHPtNxOHRXI=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o5SHoKOlnIy7h2f2yOMygK1Ar0sEJbou+Jr7kQWQWPk=;
+        b=pcZqNzB7ZJ5tm4qEGbBxeyD5nosknoKSBJSrW3BjFwMUsUoJCIwBb48kpHkD0t9a7b
+         fbwmnjsJ++wB1WpDVOjtacgwPae9ogUSWYITD6H6i08N6cJVT0JQbBMfb+LoYR0fU/fC
+         t4/FM+SRVJrG+fw1u4wGKSYoxBVsADZYnzg9w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+8/uBRwlHoO2r+QA6MM57OwP4K1pVboHuwKMksUhKgk=;
-        b=0Z6ELV2S55T/j6R3Fa6oSB29XcrHjx2jF+Cuem2X6NZYePRwuJyxkcQsl13Qp7lwnT
-         CT4TZbSkCwaKUgR3WqjJ7mrLv7NOUJaunBXFaIzOoKyosiYZsE86JRx3q62ZeyjLinKQ
-         xUIt6jLSfilcrG23t7p+F8UUAP6CQe+8yBxJnKjV2iIUvSu1psfYwi5XNMJWgRUtyYR4
-         xm+l1hj7/xtM2AYYDZpM6ZrESvP9GuHG3xQSCocInGg9leP/lfwm3pHDf1uvGXtmnQ8j
-         8ZxvYBMfRByz925WHlvFDheEdkMkgW20xFClg6Y+vOanya0jO5Ov9H4ynHECgxXUGx6y
-         1NPw==
-X-Gm-Message-State: AJIora81/PEOp+YIHKXXKRu1CUEhfX19Bh+Yn4sKckAaiduZfNvwCsCL
-        FhHi3/gMYJWsocta4+J9MWQU5g==
-X-Google-Smtp-Source: AGRyM1t55RN31Ums6GxHVUvFkF2Wqoi7Xm0eT+h6dmVYgHSUCJQ48VY5jWJwhZujDP2KwFLdpu85oQ==
-X-Received: by 2002:a05:6402:e85:b0:434:f9d9:3b18 with SMTP id h5-20020a0564020e8500b00434f9d93b18mr27275747eda.37.1657990819011;
-        Sat, 16 Jul 2022 10:00:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o5SHoKOlnIy7h2f2yOMygK1Ar0sEJbou+Jr7kQWQWPk=;
+        b=jfKtqYNN0Dd3BxFaBKcXXFxbODVXK803qokMETiUyHr9nRZy/ccTQldAX0/yPT5ADV
+         ACySZY0UqLyU913DKpbO3PTH/gzDAWQCmao7iY+UktfIl1AWzp3V8ZWvzETad0zqH1rX
+         +cyh3lvB8hXAzXJKiQTp4RwG5D2zHchETwCcwg1cQKzEz1PE6rvThsZFnPdL9RWfWvJt
+         gdJx3n7knmSLddALx8z4HgxCUTcvVDTpDi7cNb+JDocFKSQkBIo83H1ip3gx/LXgBToe
+         2Il5DtB479cvGiPbZfZ8WHyJ56wY3xWvim2su2/w61X86TSkf8dagyFYBRzTvPv5nqYl
+         sBIQ==
+X-Gm-Message-State: AJIora8b4/I5HSuSjcwA9FgR490BTO3A806eH9nTV+K2Ji/nDkhjFpuC
+        RvBR3HYm6febKngkXbfSQYxaGw==
+X-Google-Smtp-Source: AGRyM1sGWHM02srFYC9mHTuQJ/Y/gQ2JJJVPaV8AMXtdV9bGhz3PDauDqKpxN5d3cU0Gm+q+mbimfQ==
+X-Received: by 2002:aa7:cac7:0:b0:43a:c5ba:24a6 with SMTP id l7-20020aa7cac7000000b0043ac5ba24a6mr26254692edt.84.1657990877524;
+        Sat, 16 Jul 2022 10:01:17 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-182-13-224.pool80182.interbusiness.it. [80.182.13.224])
-        by smtp.gmail.com with ESMTPSA id g3-20020a170906538300b0072b14836087sm3363135ejo.103.2022.07.16.10.00.17
+        by smtp.gmail.com with ESMTPSA id i22-20020aa7c716000000b0043a64eee322sm2953898edq.28.2022.07.16.10.01.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jul 2022 10:00:18 -0700 (PDT)
+        Sat, 16 Jul 2022 10:01:17 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Jeroen Hofstee <jhofstee@victronenergy.com>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
         Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 5/5] can: slcan: send the listen-only command to the adapter
-Date:   Sat, 16 Jul 2022 19:00:07 +0200
-Message-Id: <20220716170007.2020037-6-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH] can: c_can: remove wrong comment
+Date:   Sat, 16 Jul 2022 19:01:12 +0200
+Message-Id: <20220716170112.2020291-1-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
-References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case the bitrate has been set via ip tool, this patch changes the
-driver to send the listen-only ("L\r") command to the adapter.
+The comment referred to a status (warning) other than the one that was
+being managed (active error).
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-
 ---
 
- drivers/net/can/slcan/slcan-core.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ drivers/net/can/c_can/c_can_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 7a1540507ecd..d97dfeccbf9c 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -711,10 +711,21 @@ static int slcan_netdev_open(struct net_device *dev)
- 			}
- 		}
+diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_can/c_can_main.c
+index a7362af0babb..ed4db4cf8716 100644
+--- a/drivers/net/can/c_can/c_can_main.c
++++ b/drivers/net/can/c_can/c_can_main.c
+@@ -952,7 +952,6 @@ static int c_can_handle_state_change(struct net_device *dev,
  
--		err = slcan_transmit_cmd(sl, "O\r");
--		if (err) {
--			netdev_err(dev, "failed to send open command 'O\\r'\n");
--			goto cmd_transmit_failed;
-+		/* listen-only command overrides open command */
-+		if (sl->can.ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-+			err = slcan_transmit_cmd(sl, "L\r");
-+			if (err) {
-+				netdev_err(dev,
-+					   "failed to send listen-only command 'L\\r'\n");
-+				goto cmd_transmit_failed;
-+			}
-+		} else {
-+			err = slcan_transmit_cmd(sl, "O\r");
-+			if (err) {
-+				netdev_err(dev,
-+					   "failed to send open command 'O\\r'\n");
-+				goto cmd_transmit_failed;
-+			}
- 		}
- 	}
- 
-@@ -801,6 +812,7 @@ static int slcan_open(struct tty_struct *tty)
- 	/* Configure CAN metadata */
- 	sl->can.bitrate_const = slcan_bitrate_const;
- 	sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
-+	sl->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY;
- 
- 	/* Configure netdev interface */
- 	sl->dev	= dev;
+ 	switch (error_type) {
+ 	case C_CAN_NO_ERROR:
+-		/* error warning state */
+ 		cf->can_id |= CAN_ERR_CRTL;
+ 		cf->data[1] = CAN_ERR_CRTL_ACTIVE;
+ 		cf->data[6] = bec.txerr;
 -- 
 2.32.0
 
