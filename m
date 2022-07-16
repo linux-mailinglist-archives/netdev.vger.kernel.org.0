@@ -2,75 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A1D5770DD
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 20:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F5A5770E3
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 20:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbiGPSsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 14:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S230448AbiGPSyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 14:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiGPSsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 14:48:03 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCBACE24;
-        Sat, 16 Jul 2022 11:48:02 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id ay11-20020a05600c1e0b00b003a3013da120so5037893wmb.5;
-        Sat, 16 Jul 2022 11:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HbvtEGsMnEuUqxalVZhu5nqYG6ItmLh575xNRmd1EY8=;
-        b=GPeiZoczfDK/M7OA6cgPAdDEQuy7q4oQ4/J0Jx+QD9pT2oclHHBVr8Lz1ShjwExYaF
-         YWjfhslIg1G1XIe1UJLW9PzeAeBFxjz849F6WFNrnRzxOaZmOX/3xgMsO1rXu2YNpw1c
-         m2oPJJPFnjC1cCZ4tJqbCAdFUgCaDippl5q5h9uKkVk/ARzxtQthiIADCrN7KwijKqVx
-         ZLngAKi/21m3hyGJlfhFgRbqh55LttD+4GPrQlM/rWRo1bw9oEtGMWuxbNBB5s2fKbk3
-         korWpZ54MDYm8eZHrd/jE7O/cFgfTdjczol+2/fF/p3NzpevJ/bkyVLeK3VukOqjoV8V
-         X8YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HbvtEGsMnEuUqxalVZhu5nqYG6ItmLh575xNRmd1EY8=;
-        b=YZTcKeood24WvtNmSxWkrv8N1dYlEcnSPdCV2Sq+1Hz4PdOjArkBvO11ydWVJWz1vN
-         4CJeTpV+5lkxcbNaiE7FPJ3+su42ntqWc27SvS9a+cW22L0G68Jk7jk43W8dX5Jici4L
-         sYItg2cJqAiQg22ZX8ddRPgb2PM7413EAdhxGG+dLpYGDnQPr3iXX9mVwipKleojqxv1
-         DpCWnNK400IisPScdCrsy6yp/Vjwzi6JnJr6V2sZGfrg+HN3ItW4vPyczU6e8UxA1v23
-         9C96UX3CGZe9oHFDZN1MCVurujarT92jJT1qGgECVMQlCRZ3GA00rASxXENhqUCtF1I5
-         unwg==
-X-Gm-Message-State: AJIora8wltcz7NPbhyBgPLcZFCHa/X1YarxOYiE4gH0/j476uMms+vaf
-        8+RI6liImnF5jy7wxrB9FaE=
-X-Google-Smtp-Source: AGRyM1vp2hOuXQMemE8ele8pYLWZe5OAq75JOZbJjs6K+cujKRd6tR/8rnpOTd/sTSJ1znaSXShsVQ==
-X-Received: by 2002:a05:600c:34c4:b0:3a2:e259:925b with SMTP id d4-20020a05600c34c400b003a2e259925bmr19241509wmq.99.1657997280501;
-        Sat, 16 Jul 2022 11:48:00 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id u18-20020a05600c19d200b003973c54bd69sm13649961wmq.1.2022.07.16.11.47.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jul 2022 11:48:00 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229473AbiGPSyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 14:54:02 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2081.outbound.protection.outlook.com [40.107.20.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E35CE024
+        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 11:54:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RRZZFKglcxLMiRKj5KUb511FQPPCtkdNlt1Nj6fIPIa2w6VkibD7dJJ9ajoIXjKhrZAJwWnkg3WqjZ/Bcu3tZs92XNH4o3mQHg4CQ05DxiSyvm7KYn26XxDAzYjXyzQ9jkmzL9Km3eOAiY8an/9V77a1fKzxrKk0wMgPKKuaqAft+0ACsTpZo61Qp2JbSATICwxHH6IJPvAucIJE5vwG13VidaOng8bqDja2NVfZ2bERMG+2OBX97eH+W7KJu+WD0U3hIkBPBIGoOmOnmuohDPuuoAQR5AipyvJoDaHYA04tMXLhQjzyKUlt9V2LXWx7bcRq74Hwz/GwVrvLuJASSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Hu6qqIK40xjUjNbw/ffyeHHcBLqiMwxH2vnngzmgD0Q=;
+ b=GR1dxq8ouL0P6BVN2axfNVkiG6HQBIWOcBTcY9oPCMR6nrCh2QAToc7z0QhPPCgCKV41i/x0jH6RFs8nxwvPCColWjRmx/L1nJ01dTkz1Ne4wjl5/xpDDwfn13dPInL3YLVWX0sCIyysiDAq4+oGhHpS/SuPJFhxlslQJBjI42jc53I9emci1p2R+IZ8O18/by+C2t2chceXIw0p3WA0OsfyLo14mfX+zOtOGpAM3dApmkM+d9KNyVMpkiU5xClOsvPhj3fmtgR0C39xTP89RPIwT9TIgSx9KFdppth3BJvBx48nXLEYEOb5+Lw4ygIzSQgNEKmj4gdSR+mOvFCy7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hu6qqIK40xjUjNbw/ffyeHHcBLqiMwxH2vnngzmgD0Q=;
+ b=qGPZm2zRY41XWkpozORvX6jAQ7SEAxAvmXXnFhnzDiI67yTT6hw31lG9qBRz9w8hlSpqiZrWJfHy2KQLPbAfvf7Ev4gtRMx+DUjGH0dwE47EdJxpvG8Hly38onLKoNASeI7w9/jW/Zob6eJGTI6w6zpPiGBYRkcgZc/7UNdmfBo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
+ by VI1PR04MB5261.eurprd04.prod.outlook.com (2603:10a6:803:5a::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Sat, 16 Jul
+ 2022 18:53:56 +0000
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::5c17:601f:ac4f:ebfd]) by AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::5c17:601f:ac4f:ebfd%6]) with mapi id 15.20.5438.020; Sat, 16 Jul 2022
+ 18:53:55 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v2 5/5] net: ethernet: stmicro: stmmac: permit MTU change with interface up
-Date:   Sat, 16 Jul 2022 20:45:33 +0200
-Message-Id: <20220716184533.2962-6-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220716184533.2962-1-ansuelsmth@gmail.com>
-References: <20220716184533.2962-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH net 00/15] Update DSA documentation
+Date:   Sat, 16 Jul 2022 21:53:29 +0300
+Message-Id: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM6P194CA0101.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:209:8f::42) To AM0PR04MB5121.eurprd04.prod.outlook.com
+ (2603:10a6:208:c1::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3a3937cb-d1c2-40fb-1d04-08da675c88a2
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5261:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sjgfRuCZNNGCoLKZ2WJXf+hD3ZPBaYIbcR17BBAK1IOc0aXkO8x2f/qKjEKyM0Q3oIVFTCOdCB2mpTj4vnl2288NxtFWmCgisdNLUT6zJLhs/r2eVrFMu4a1zaeeprVv01A61pvxsp5q/Wqyvq+Qsb+PG4/Wyti6q9PC5eKJ6qvu3MMsPQfgmJ33zb9jH53a6a8Qh0BNK6EjOCjX3y/K6+u9MkRhUeF3RL60+wd2wHgv0kTCg0iig4gmyJJrrmgpR4S0cjV7veNr6EMX5xKWDGr7yIktyX4wYfjZq6LLpTXYc1SWylFVBmg/yNpHW61W0pTquzdXH/33J8om0Ytejtdd37QM6fTJvjnGdDsoDyFKy1eT0JUl5UPD1LX7VwzJrZmqt4GxcmZ2fbLjShicm7BQ6bYe/hLinMNRUIZWVjq6K55A3gLGo8GdSxSiMfZh3Fm48vo2/NZ93jEKu2YRepbBvvs8HKXmlXREuQW0IxFrNZ29M6dBAJf4dMkJHapDtm23F2iU0pOfHRHplJnAz3tCKIFFxQ7hpTux9b+ImTOxPxFfShMdx7T/2F9SITIFsKiDgk23od4688oUvcFsgfynxsvwSm9SKynJWVxVhwSZLNEiGZK2o72iYe5I+XJu0Sxjg6hMXwdL6XzJwlDijmhOVvwMmBj4Z17au2DNi9sk4NZRsrKzkq3ghSwRbz9ZwsDGExnJCmnbK7bnQAUdXIHTCS4zp2s4UQYLQayrJvkEL1LJfTccw3eLWglJX49lphtzCWWytuzBxwXyAPuhJCCq6kabrrh2J3xkOzOur2Dn85AE8jdD4kO5sIK8j2Dr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(83380400001)(2616005)(6506007)(52116002)(6512007)(26005)(86362001)(1076003)(38350700002)(38100700002)(186003)(15650500001)(44832011)(2906002)(8936002)(36756003)(5660300002)(6666004)(6916009)(54906003)(4326008)(8676002)(41300700001)(6486002)(478600001)(66476007)(66946007)(66556008)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sP2ve8acAJOsT1zjqJXg2RujlneQjb12LtYs/FeIL5LRO2K/YqKef1DPw5Bt?=
+ =?us-ascii?Q?ke9bhp1e1ETjGCUE26MXpQZbjgNuCIK9hcwIvbiFQxxQcSlF1e7f19AlV8TR?=
+ =?us-ascii?Q?h9sX3AUqjDnM9k5VZFX4yEnneAWgRSezomiSMECmL8evG+/nfjWg4nKUmJLc?=
+ =?us-ascii?Q?WDQ344g56O1pJ4gVrdoUwLZVrv8ebQefH+sMp89mtY990Ece3jOi2zjBqziP?=
+ =?us-ascii?Q?X7y0e4ZIlDrv9bG78G8jXECVgC1tmAvzAcmkDZN8gLv2g3yfl37DTzg7mDBh?=
+ =?us-ascii?Q?1ug+VGr1BodNlM3OcLvSy/v6dVs47zuw77AvxdAj1D0Kr2viOBfwWjL9uyGu?=
+ =?us-ascii?Q?y8d1dA+mV8iOlkt72HZnVbXEir1LOVPobO1dwCgC+nujAxyaTpMu7CxwWXM3?=
+ =?us-ascii?Q?vbJvvB6gW1qB0+Tv+Rr+7rNyLKlDDHIWyHj4VXGWQZR4twHyiL9hOoLFCX/G?=
+ =?us-ascii?Q?1F5ke7I1CCbT257VAkzq1Jo7Crq6wAp8px2ICDK5WkAtcnLjdkfGr7/EVaDA?=
+ =?us-ascii?Q?gLwRwrkiG+aWiRMrZlijZizxggXrwKlF0CQPyJJZuEVBVZZ6WKiqdlOmzLan?=
+ =?us-ascii?Q?PL6pegKGP1xDGSAee5zsuApGgTmHWtXWDAAp0pMRBvmx8UJMqFCwHpfk1yQa?=
+ =?us-ascii?Q?jPtoWCaoziOIpoStRzyQ8M2pOgQYPA8ldlZMGlwN4HfQvXVFQUNXirXlZMNR?=
+ =?us-ascii?Q?3fjeNyrVq2uUFa39HA+1HQwb9FB5NZYsrRU3VfXTWcH+mB8ybegsEeiDioWq?=
+ =?us-ascii?Q?O3B9b1lirwwrSOMqJybDiNpKzbCS7eN2Snc/ELY4AK0SYA+iP2WcQECKuEXj?=
+ =?us-ascii?Q?t/J0H3D3xDDrwsOv/SYdu0IDwp25d3tTOdU6xru1T2US/lhunbd93Uv2YiON?=
+ =?us-ascii?Q?9ivCC4c6IDmfXxghHlMlR6OPipkh9ZS9eZfdreaQhuZIwphV3gheoMfymsgw?=
+ =?us-ascii?Q?G707bav+3zjNUdWitGNRXtYvtdmX8HeYMTZy05zyi3NHzo8mx7CQHBkyJOOz?=
+ =?us-ascii?Q?Ur/z9qEHmyb6MVCv9at49HMl2vpjO+cxwF2lhjaAikM7GzE/j9qUWQ1vSrRj?=
+ =?us-ascii?Q?EjfHtJQFfwjDcQX1qCTQn9KSDWlIaS8BEHZAVfPyGJmIRP9thnJ3w73XYVlK?=
+ =?us-ascii?Q?kWr4sbkNA2Eyv51OwBVqs2jtUzWP9pzmDVGWgyn/CWvbbVp8cc3cRzlYS+Gm?=
+ =?us-ascii?Q?DeReTsTed3Qy3F8HGQoSeEbpiQPPbLy9x+rI6gOmLABnPckObuZfIQ33Rqgo?=
+ =?us-ascii?Q?Zxi0+lx5ryG18gshtiq0VFATKJGYumrYzUEbYpq5QrSkO8J6JQEc1nz4gxlX?=
+ =?us-ascii?Q?0Wnsst1n1oTaxsXWKn+OHpsKILG+8cZIUZ2v5+NogT9mGMgX4V1KFuxTL/Iu?=
+ =?us-ascii?Q?/D1QJJnP4c3LQuOp8t0ncrPFMyJyUBjFpxKCy5KC7mqkH7sZ1EAvQ+YGdh/7?=
+ =?us-ascii?Q?A9au7cPDP8BoNHYOKO7CMvU8urm+yk2xaSNNtEpHDa0LFnuxoVG2K28QCagf?=
+ =?us-ascii?Q?UKB3DChVCLuITWd3e/g/dC7IalKFx/O6qV9xZJpwihsAaE6uhf94eId284Wz?=
+ =?us-ascii?Q?dEgN3tTNQsS/jA77bUkwHJV1WoIZijyLh9jAUJwqEAhOYZf6ktTGasVLxaNY?=
+ =?us-ascii?Q?5g=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a3937cb-d1c2-40fb-1d04-08da675c88a2
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2022 18:53:55.8011
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Je9PleAQSY8CfCQTectp1VttjTI5q4YrKW3bBPJU7irLnhsjnNL4rPJzuMkS/0cMSTmUlRv4/hQ8Lk89TjyGSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5261
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,72 +115,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the limitation where the interface needs to be down to change
-MTU by releasing and opening the stmmac driver to set the new MTU.
-Also call the set_filter function to correctly init the port.
-This permits to remove the EBUSY error while the ethernet port is
-running permitting a correct MTU change if for example a DSA request
-a MTU change for a switch CPU port.
+These are some updates of dsa.rst, since it hasn't kept up with
+development (in some cases, even since 2017). I've added Fixes: tags as
+I thought was appropriate.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 28 +++++++++++++++----
- 1 file changed, 22 insertions(+), 6 deletions(-)
+Vladimir Oltean (15):
+  docs: net: dsa: update probing documentation
+  docs: net: dsa: document the shutdown behavior
+  docs: net: dsa: rename tag_protocol to get_tag_protocol
+  docs: net: dsa: add more info about the other arguments to
+    get_tag_protocol
+  docs: net: dsa: document change_tag_protocol
+  docs: net: dsa: document the teardown method
+  docs: net: dsa: document port_setup and port_teardown
+  docs: net: dsa: document port_fast_age
+  docs: net: dsa: remove port_bridge_tx_fwd_offload
+  docs: net: dsa: remove port_vlan_dump
+  docs: net: dsa: delete port_mdb_dump
+  docs: net: dsa: add a section for address databases
+  docs: net: dsa: re-explain what port_fdb_dump actually does
+  docs: net: dsa: delete misinformation about -EOPNOTSUPP for
+    FDB/MDB/VLAN
+  docs: net: dsa: mention that VLANs are now refcounted on shared ports
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 53e9dbff30ae..7425941fbb40 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5551,18 +5551,15 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int txfifosz = priv->plat->tx_fifo_size;
-+	struct stmmac_dma_conf *dma_conf;
- 	const int mtu = new_mtu;
-+	int ret;
- 
- 	if (txfifosz == 0)
- 		txfifosz = priv->dma_cap.tx_fifo_size;
- 
- 	txfifosz /= priv->plat->tx_queues_to_use;
- 
--	if (netif_running(dev)) {
--		netdev_err(priv->dev, "must be stopped to change its MTU\n");
--		return -EBUSY;
--	}
--
- 	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
- 		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
- 		return -EINVAL;
-@@ -5574,8 +5571,27 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
- 		return -EINVAL;
- 
--	dev->mtu = mtu;
-+	if (netif_running(dev)) {
-+		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
-+		/* Try to allocate the new DMA conf with the new mtu */
-+		dma_conf = stmmac_setup_dma_desc(priv, mtu);
-+		if (IS_ERR(dma_conf)) {
-+			netdev_err(priv->dev, "failed allocating new dma conf for new MTU %d\n",
-+				   mtu);
-+			return PTR_ERR(dma_conf);
-+		}
- 
-+		stmmac_release(dev);
-+
-+		ret = __stmmac_open(dev, dma_conf);
-+		kfree(dma_conf);
-+		if (ret) {
-+			netdev_err(priv->dev, "failed reopening the interface after MTU change\n");
-+			return ret;
-+		}
-+	}
-+
-+	dev->mtu = mtu;
- 	netdev_update_features(dev);
- 
- 	return 0;
+ Documentation/networking/dsa/dsa.rst | 363 ++++++++++++++++++++++-----
+ 1 file changed, 303 insertions(+), 60 deletions(-)
+
 -- 
-2.36.1
+2.34.1
 
