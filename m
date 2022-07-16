@@ -2,200 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE0E3576D3D
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 12:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F11576D5B
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 12:57:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiGPKDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jul 2022 06:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
+        id S229919AbiGPK5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jul 2022 06:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiGPKDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 06:03:49 -0400
-X-Greylist: delayed 4292 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 16 Jul 2022 03:03:45 PDT
-Received: from a1-bg02.venev.name (a1-bg02.venev.name [IPv6:2001:470:20aa::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A5426D4;
-        Sat, 16 Jul 2022 03:03:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=venev.name;
-        s=default; h=Content-Transfer-Encoding:Message-Id:Date:Subject:To:From:
-        Content-Type:Reply-To:Sender; bh=fPmDHOyG2Rqp5CIpnIIQbmLxoYS8Nalj3lW5lVyk8Ps=
-        ; b=iLqyE3/Ft7mvjmD9vgScixnQsyaDSgyE/ttsEIWIj3cX5stt6ncxfxQtutaqjWEWNbZwo5vyu
-        N5n9FzAnjqT/EvMSBhcIKuCNMDbLokI6f9LzdGdFGtyRc0xGUh+VI0M4eB9XEi9hcH8qh4UZuFjl9
-        Fhhv8YgBJLssXAFOE2KWd9qeJP+UqTXYpFNaqIqD7NGHgT2ZyYPyJmZyKGxGuz3WPFmT6GBSkkTug
-        +Nt8Rv6eCcAkgOeeM1VovHb7y7/AvbMbaxI17reKnujiMzzykVZKIc1eoxI3Gqa7uXmhpnZ0jvzdL
-        sFZLdd2xEiD1Llxbki1ZDsd9baJsQtbd5ugex6VuJ0RO/qklIAWsAJaCZ/nDfHrIO7Sn/KACVrSYL
-        0DBOyeUPygbUtro4HiVhXNShm1AQbQ1vrhc6zfKCW0MEmCugruYn3uOTMR8Ijo1AYiC8UUV8Jy1hq
-        dklP8sV6vlEzkr3L3+DdhW0MQqNO9DbMFT4edV5jeQ4INWsxFUHxFdnE2sbqpwdsv03iqyrSz144i
-        rrZ8ynq3fd5/M7ZjxsBlzMddOuqQevbE59y3BZeUO3Ts+aU92MTZVVDvx+2f5omtURATe7KpRkf+6
-        5HE+aQ/oxSe1r8g2lexZ9yoYdnLWRw2As+MNa1jSUQ5VSYy0tKd3yNkF64cvZtTl436cxno=;
-X-Check-Malware: ok
-Received: from a1-bg02.venev.name ([213.240.239.49] helo=pmx1.venev.name)
-        by a1-bg02.venev.name with esmtps
-        id 1oCdWt-0001az-T6
-        (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-        (envelope-from <hristo@venev.name>);
-        Sat, 16 Jul 2022 08:52:04 +0000
-Received: from venev.name ([213.240.239.49])
-        by pmx1.venev.name with ESMTPSA
-        id jwWRIDJ80mL1FwAAdB6GMg
-        (envelope-from <hristo@venev.name>); Sat, 16 Jul 2022 08:52:03 +0000
-From:   Hristo Venev <hristo@venev.name>
-To:     netdev@vger.kernel.org
-Cc:     Hristo Venev <hristo@venev.name>,
-        Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
+        with ESMTP id S229469AbiGPK5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jul 2022 06:57:18 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB0BCE2A;
+        Sat, 16 Jul 2022 03:57:16 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id eq6so9199650edb.6;
+        Sat, 16 Jul 2022 03:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y2w+/D0qVC/MxuYc8kSX8+b66qSmQVaXiMac4uHSn80=;
+        b=CYfq/a44gFubyWQKFIXHlM7reCKU/S/gz8mxBEBgeJxbgYLT0jDP07ae47dFNpwTyb
+         cCLvh2L+CbnG3bLUr+cqP2HhTIh/1O7/Tpu6RwFD0FZsfuvBIDYkONQLpT6tf45HExbe
+         nUle/gN8RRGAFT9ulovCzcYnBTLCyoGmkqjiUKhVbiU0wLzBtXFd8Wjb2VS8D8k1GxGL
+         0+T9Sffv0kP9cE3g+4+7VZcyEf5U+n5a4W3hETqNNvjRHx4Xo+Lbn4fxkABb6vQUi6sL
+         SSWUIyaPoK4uGFkc4jB9jYAVT5XMNojlZZD9FfwA/o+YP6tLmRrjAEYDB2oQXr2m2cyR
+         YLEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y2w+/D0qVC/MxuYc8kSX8+b66qSmQVaXiMac4uHSn80=;
+        b=tc12JnRjKgupjk4wCiUvD9asW3VPndnBfLFWn2HD4vsKDaWhzkv2uCXbE9mGBBdSTN
+         n0qDrr/V0w8Nx5BcgYJJLf+VRb9uRC0EKnPF6mv0DeYxCRzEQgwAqlXP7NY4fJZzu19j
+         j5jp4WFELrVlw+ArfOqKAiKFMV2IhDfRjQOXk45BMlD2TlY+dLlQ8eLnMaYU61A10R2v
+         Sot4G47krqSbr16/flVTkPF4PdGL3XHedi2AOpiU3v+WyRPGWVjfA5fnfLpgBdJCctMI
+         91nRwAFA/prl/G9R6Vh+0GHoNB79S2lckPCzQRIPzTGhUEyOp7qZTYbscCDHbpy974/u
+         6xRA==
+X-Gm-Message-State: AJIora8W7NZKIsuQUhWIlt3dI6X2JNWN9xbF0v+4iY8uogdyzFgmhkqb
+        K26QRKjFyGPcErB1Oenj0P8=
+X-Google-Smtp-Source: AGRyM1tTQPUNZdfW5CjlZaMUuGmjZY0BtVvaB4lz4j+y8Rw9J+waSuNBuaZcCkhDKqXIhjZCyyB9hA==
+X-Received: by 2002:a05:6402:5001:b0:437:8918:8dbe with SMTP id p1-20020a056402500100b0043789188dbemr24547489eda.70.1657969035042;
+        Sat, 16 Jul 2022 03:57:15 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id e2-20020a50fb82000000b0042bdb6a3602sm4382499edq.69.2022.07.16.03.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 03:57:14 -0700 (PDT)
+Date:   Sat, 16 Jul 2022 13:57:11 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mark Leonard <mark.leonard@emulex.com>,
-        Sathya Perla <sathya.perla@emulex.com>,
-        Suresh Reddy <Suresh.Reddy@emulex.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] be2net: Fix buffer overflow in be_get_module_eeprom
-Date:   Sat, 16 Jul 2022 11:51:34 +0300
-Message-Id: <20220716085134.6095-1-hristo@venev.name>
-X-Mailer: git-send-email 2.37.1
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220716105711.bjsh763smf6bfjy2@skbuf>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <20220715172444.yins4kb2b6b35aql@skbuf>
+ <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
+ <20220715222348.okmeyd55o5u3gkyi@skbuf>
+ <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-be_cmd_read_port_transceiver_data assumes that it is given a buffer that
-is at least PAGE_DATA_LEN long, or twice that if the module supports SFF
-8472. However, this is not always the case.
+On Fri, Jul 15, 2022 at 11:57:20PM +0100, Russell King (Oracle) wrote:
+> > > The problem is this - we call get_caps(), and we have to read registers
+> > > to work out what the port supports. If we have a separate callback, then
+> > > we need to re-read those registers to get the same information to report
+> > > what the default interface should be.
+> > > 
+> > > Since almost all of the Marvell implementations the values for both the
+> > > list of supported interfaces and the default interface both require
+> > > reading a register and translating it to a phy_interface_t, and then
+> > > setting the support mask, it seems logical to combine these two
+> > > functioalities into one function.
+> > 
+> > In essence that doesn't mean much; DSA isn't Marvell only, but I'll give
+> > it to you: if only the Marvell driver (and Broadcom later, I expect) is
+> > going to add support for the context-specific interpretation of CPU port
+> > OF nodes, then we may consider tailoring the implementation to their
+> > hardware register layout details. In any case, my concern can be
+> > addressed even if you insist on keeping the default interface as an
+> > argument of phylink_get_caps. There just needs to be a lot more
+> > documentation explaining who needs to populate that argument and why.
+> 
+> I don't get the point you're making here.
 
-Fix this by passing the desired offset and length to
-be_cmd_read_port_transceiver_data so that we only copy the bytes once.
+The point I'm making is that I dislike where this is going. The addition
+of "default_interface" to phylink_get_caps is confusing because it lacks
+proper qualifiers.
 
-Fixes: e36edd9d26cf ("be2net: add ethtool "-m" option support")
-Signed-off-by: Hristo Venev <hristo@venev.name>
----
- drivers/net/ethernet/emulex/benet/be_cmds.c   | 10 +++---
- drivers/net/ethernet/emulex/benet/be_cmds.h   |  2 +-
- .../net/ethernet/emulex/benet/be_ethtool.c    | 31 ++++++++++++-------
- 3 files changed, 25 insertions(+), 18 deletions(-)
+The concrete reasons why it's confusing are:
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
-index 528eb0f223b1..b4f5e57d0285 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.c
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
-@@ -2287,7 +2287,7 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
- 
- /* Uses sync mcc */
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data)
-+				      u8 page_num, u32 off, u32 len, u8 *data)
- {
- 	struct be_dma_mem cmd;
- 	struct be_mcc_wrb *wrb;
-@@ -2321,10 +2321,10 @@ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
- 	req->port = cpu_to_le32(adapter->hba_port_num);
- 	req->page_num = cpu_to_le32(page_num);
- 	status = be_mcc_notify_wait(adapter);
--	if (!status) {
-+	if (!status && len > 0) {
- 		struct be_cmd_resp_port_type *resp = cmd.va;
- 
--		memcpy(data, resp->page_data, PAGE_DATA_LEN);
-+		memcpy(data, resp->page_data + off, len);
- 	}
- err:
- 	mutex_unlock(&adapter->mcc_lock);
-@@ -2415,7 +2415,7 @@ int be_cmd_query_cable_type(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		switch (adapter->phy.interface_type) {
- 		case PHY_TYPE_QSFP:
-@@ -2440,7 +2440,7 @@ int be_cmd_query_sfp_info(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		strlcpy(adapter->phy.vendor_name, page_data +
- 			SFP_VENDOR_NAME_OFFSET, SFP_VENDOR_NAME_LEN - 1);
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.h b/drivers/net/ethernet/emulex/benet/be_cmds.h
-index db1f3b908582..e2085c68c0ee 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.h
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.h
-@@ -2427,7 +2427,7 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num, u8 beacon,
- int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num,
- 			    u32 *state);
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data);
-+				      u8 page_num, u32 off, u32 len, u8 *data);
- int be_cmd_query_cable_type(struct be_adapter *adapter);
- int be_cmd_query_sfp_info(struct be_adapter *adapter);
- int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
-diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-index dfa784339781..bd0df189d871 100644
---- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
-+++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-@@ -1344,7 +1344,7 @@ static int be_get_module_info(struct net_device *netdev,
- 		return -EOPNOTSUPP;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		if (!page_data[SFP_PLUS_SFF_8472_COMP]) {
- 			modinfo->type = ETH_MODULE_SFF_8079;
-@@ -1362,25 +1362,32 @@ static int be_get_module_eeprom(struct net_device *netdev,
- {
- 	struct be_adapter *adapter = netdev_priv(netdev);
- 	int status;
-+	u32 begin, end;
- 
- 	if (!check_privilege(adapter, MAX_PRIVILEGES))
- 		return -EOPNOTSUPP;
- 
--	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   data);
--	if (status)
--		goto err;
-+	begin = eeprom->offset;
-+	end = eeprom->offset + eeprom->len;
-+
-+	if (begin < PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0, begin,
-+							   min_t(u32, end, PAGE_DATA_LEN) - begin,
-+							   data);
-+		if (status)
-+			goto err;
-+
-+		data += PAGE_DATA_LEN - begin;
-+		begin = PAGE_DATA_LEN;
-+	}
- 
--	if (eeprom->offset + eeprom->len > PAGE_DATA_LEN) {
--		status = be_cmd_read_port_transceiver_data(adapter,
--							   TR_PAGE_A2,
--							   data +
--							   PAGE_DATA_LEN);
-+	if (end > PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A2,
-+							   begin - PAGE_DATA_LEN,
-+							   end - begin, data);
- 		if (status)
- 			goto err;
- 	}
--	if (eeprom->offset)
--		memcpy(data, data + eeprom->offset, eeprom->len);
- err:
- 	return be_cmd_status(status);
- }
--- 
-2.37.1
+(a) there is no comment which specifies on which kinds of ports (DSA and CPU)
+    the default_interface will be used. This might result in useless effort
+    from driver authors to report a default_interface for a port where it
+    will never be asked for.
 
+(b) there is no comment which specifies that only the drivers which have
+    DT blobs with missing phylink bindings on CPU and DSA ports should
+    fill this out. I wouldn't want to see a new driver use this facility,
+    I just don't see a reason for it. I'd rather see a comment that the
+    recommendation for new drivers is to validate their bindings and not
+    rely on context-specific interpretations of empty DT nodes.
+
+(c) especially with the dsa_port_find_max_caps() heuristic in place, I
+    can't say I'm clear at all on who should populate "default_interface"
+    and who could safely rely on the heuristic if they populate
+    supported_interfaces. It's simply put unclear what is the expectation
+    from driver authors.
+
+For (b) I was thinking that making it a separate function would make it
+clearer that it isn't for everyone. Doing just that wouldn't solve everything,
+so I've also said that adding more documentation to this function
+prototype would go a long way.
+
+Some dsa_switch_ops already have inline comments in include/net/dsa.h,
+see get_tag_protocol, change_tag_protocol, port_change_mtu. Also, there
+is the the "PHY devices and link management" chapter in Documentation/networking/dsa/dsa.rst.
+We have places to document what the DSA framework expects drivers to do.
+I was expecting that wherever default_interface gets reported, we could
+see some answers and explanations to the questions above.
+
+> > Also, perhaps more importantly, a real effort needs to be put to prevent
+> > breakage for drivers that work without a phylink instance registered for
+> > the CPU port, and also don't report the default interface. Practically
+> > that just means not deleting the current logic, but making it one of 3
+> > options.
+> > 
+> > fwnode is valid from phylink's perspective?
+> >        /                             \
+> >  yes  /                               \ no
+> >      /                                 \
+> > register with phylink         can we determine the link parameters to create
+> >                                   a fixed-link software node?
+> >                                        /                \                     \
+> >                                  yes  /                  \  no                |
+> >                                      /                    \                   | this is missing
+> >                                     /                      \                  |
+> >              create the software node and       don't put the port down,      |
+> >              register with phylink              don't register with phylink   /
+> 
+> This is exactly what we have today,
+
+Wait a minute, how come this is exactly what we have "today"?
+
+In tree we have this:
+
+fwnode is valid from phylink's perspective?
+       /                             \
+ yes  /                               \  no
+     /                                 \
+register with phylink                   \
+                             don't put the port down,
+                             don't register with phylink
+
+
+In your patch set we have this:
+
+
+fwnode is valid from phylink's perspective?
+       /                             \
+ yes  /                               \ no
+     /                                 \
+register with phylink         can we determine the link parameters to create
+                                  a fixed-link software node?
+                                       /                \
+                                 yes  /                  \  no
+                                     /                    \
+                                    /                      \
+             create the software node and            fail to create the port
+             register with phylink
+
+> and is exactly what I'm trying to get rid of, so we have _consistency_
+> in the implementation, to prevent fuckups like I've created by
+> converting many DSA drivers to use phylink_pcs. Any DSA driver that
+> used a PCS for the DSA or CPu port and has been converted to
+> phylink_pcs support has been broken in the last few kernel cycles. I'm
+> trying to address that breakage before converting the Marvell DSA
+> driver - which is the driver that highlighted the problem.
+
+You are essentially saying that it's of no use to keep in DSA the
+fallback logic of not registering with phylink, because the phylink_pcs
+conversions have broken the defaulting functionality already in all
+other drivers.
+
+I may have missed something, but this is new information to me.
+Specifically, before you've said that it is *this* patch set which would
+risk introducing breakage (by forcing a link down + a phylink creation).
+https://lore.kernel.org/netdev/YsCqFM8qM1h1MKu%2F@shell.armlinux.org.uk/
+What you're saying now directly contradicts that.
+
+Do you have concrete evidence that there is actually any regression of
+this kind introduced by prior phylink_pcs conversions? Because if there
+is, I retract the proposal to keep the fallback logic.
+
+> We need to move away from the current model in DSA where we only use
+> stuff in random situations.
+> 
+> Well, at this point, I'm just going to give up with this kernel cycle.
+> It seems impossible to get this sorted. It seems impossible to move
+> forward with the conversion of Marvell DSA to phylink_pcs. In fact,
+> I might just give up with the idea of further phylink development
+> because it's just too fucking difficult, and getting feedback is just
+> impossible.
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
