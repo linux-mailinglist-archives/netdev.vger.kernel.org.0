@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35517576B28
-	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 02:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15BB1576B34
+	for <lists+netdev@lfdr.de>; Sat, 16 Jul 2022 03:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230345AbiGPAzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jul 2022 20:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
+        id S230072AbiGPBhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jul 2022 21:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiGPAzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 20:55:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E820793C16
-        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 17:55:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1EC03CE325F
-        for <netdev@vger.kernel.org>; Sat, 16 Jul 2022 00:55:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5858C34115;
-        Sat, 16 Jul 2022 00:55:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657932917;
-        bh=9fj4Mtz6w0+tscGpGEKEp4UkEN9DNsAfh5IGKm18V6g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PYpP6Eie0VYnVt5mXN0eNF4uc7fV4VTsGO1iudHpbu7KlMfTcKSfERFzdQZCMv+QI
-         4EARUhRoMT0rk2/0MRBqpDAeqloFB71QkJOtIQFZGa9objAJR6Z7luhKZFiDgvrQMz
-         ZwmMg5VfEPK8Oy0BT2XHUwU5ghnh/ZobVdEznTZGl8LtXtZ3OirP1fH14egMVgdzMJ
-         AO+kfqDrkgT1sqJJB05tP/0pc5TOiGUQpI5EzuH086J9gxo8oP0btq8Iz/qmWubrZ7
-         qjlXpOKQ7R/E2ENMR0GmpzAeSuSFJdpTJVPvv36fFfVSrp3dVnngmIpAY7v4ZlRNVm
-         vCn5hJCPTCQJQ==
-Date:   Fri, 15 Jul 2022 17:55:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Brian Hutchinson <b.hutchman@gmail.com>
-Subject: Re: [PATCH net] net: dsa: fix bonding with ARP monitoring by
- updating trans_start manually
-Message-ID: <20220715175516.6770c863@kernel.org>
-In-Reply-To: <20220716002612.rd6ir65njzc2g3cc@skbuf>
-References: <20220715232641.952532-1-vladimir.oltean@nxp.com>
-        <20220715170042.4e6e2a32@kernel.org>
-        <20220716001443.aooyf5kpbpfjzqgn@skbuf>
-        <20220715171959.22e118d7@kernel.org>
-        <20220716002612.rd6ir65njzc2g3cc@skbuf>
+        with ESMTP id S231383AbiGPBhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jul 2022 21:37:37 -0400
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DA18EED7
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 18:37:36 -0700 (PDT)
+Received: by mail-oo1-xc36.google.com with SMTP id e2-20020a4ab982000000b004354ba9a591so1204350oop.0
+        for <netdev@vger.kernel.org>; Fri, 15 Jul 2022 18:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=xRsMeE0Yj2Rv8TilyM94TWwDFZvW9MSpwYsml569wBo=;
+        b=IKf28YiZunQDmR/W17C0ckt8NTIwf+mTaTesWluvZbF5Y07kWK7vOREWEDuyyLm2n0
+         XLiHRbz0492FUyU5ILfztzO9mPDh8zbIL/hSrYov4qvakNBfSprZy4+X46Huyvd4LxS2
+         bUxHj+vBMAllqgsLiz7GcKBRu48Ub7mcMOClvrmbXZOpD/H2N/zsJAR7ksnYBt9pp09m
+         01P6llZ3RufB6iBG5s8kgZeQ2X5UQo0s0FM2kKNc/D7Qcfq2+hkUw75zF73Ka5XMxIGn
+         kf4NJZJXnKUGVUGMY5Cu/NPxAF8Ldcp0fhUbhPgF3wHhAiInzxktZ2iT+aRr6GZHXf9a
+         20Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=xRsMeE0Yj2Rv8TilyM94TWwDFZvW9MSpwYsml569wBo=;
+        b=oA9QHZ3/hGYzk87shviH7PYVeAG8Tec6knfFyAVVVJkzGAG8+1Woe8qYvt+NSHlnzp
+         rpR+0EFgQ7PkU6tabk5r6O/xZHxc7ElS0nzkcIYYn4yTiq+C2WMbPYN4lEqhFNBqCkJA
+         9RgrMtCupKb/t/WHnsUiixHgtL3PC0mB6SqMsDYSDh14l5I5K3icwL8zwQ8OIUBEWYNk
+         y4DSPg+ldJTC1aOW6UU8lxyKQB117w/jsmIV7cY/z3b0wgXSufsdSprozNW5NWoueuSe
+         qTn2h1hZTqohSOPrUHiHWxC2X/A06S0MewtSP7DqTzU2Us3CuiQvwn1xQ/njPkxS2PmQ
+         doVA==
+X-Gm-Message-State: AJIora81loGbhBr4f7dNpRITDMQ+yksTktecoKar+GXAcE7zTh0Pc51J
+        IvP+a0GzGsTKb/bjT87oV/+nmUxsvoPiMeM0rgT6Pj3W6D9Kk1Iq
+X-Google-Smtp-Source: AGRyM1uyzY8xZd8hi49QXYmkqGz3HY+otTFkafFhRCcTWUwWBpIgPPiPwVRP9NPMvU1XxzfZxMtK7pypL8We0uy6kQM=
+X-Received: by 2002:a25:d652:0:b0:66e:c998:53ef with SMTP id
+ n79-20020a25d652000000b0066ec99853efmr17473918ybg.335.1657935014847; Fri, 15
+ Jul 2022 18:30:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a0d:e856:0:0:0:0:0 with HTTP; Fri, 15 Jul 2022 18:30:14
+ -0700 (PDT)
+From:   nebolise iran <neboliseiran00@gmail.com>
+Date:   Sat, 16 Jul 2022 02:30:14 +0100
+Message-ID: <CAA9js4mSCyZYQBgdvzSzKww7_HD8KAnvjEujnjUE80hpH1trvA@mail.gmail.com>
+Subject: Sir / Ma
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=1.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 16 Jul 2022 00:26:13 +0000 Vladimir Oltean wrote:
-> > Make bonding not depend on a field which is only valid for HW devices
-> > which use the Tx watchdog. Let me find the thread...
-> > https://lore.kernel.org/all/20220621213823.51c51326@kernel.org/  
-> 
-> That won't work in the general case with dsa_slave_get_stats64(), which
-> may take the stats from hardware (delayed) or from dev_get_tstats64().
+Continental Exchange Solutions Inc
+United Kingdom
+London
+Email : maliksman663@gmail.com
 
-Ah, that's annoying.
+Sir / Ma
+My name is Malik Usman of Continental Exchange Solutions London U.K. I
+am an independent external auditor for IFC SERVE and the World Bank
+handling the Foreign Banks Debt Management Office for all transactions
+in the year 2013/2014 and later.
 
-> Also, not to mention that ARP monitoring used to work before the commit
-> I blamed, this is a punctual fix for a regression.
+I have in front of me an abandoned transfer file containing details to
+an escrow account setup in your name. The file shows that you have
+correctly made application to have your funds released to you. It is
+also clearly noted on the file that the beneficiary could not handle
+the financial commitment required of him. Due to this the funds were
+pegged and abandoned.As an international independent external auditor
+I think it is very absurd to abandon ones funds for this simple
+reason.
 
-trans_start is for the watchdog. This is the third patch pointlessly 
-messing with trans_start while the bug is in bonding. It's trying to
-piggy back on semantics which are not universally true.
+To tell you the truth I do not believe this to be true and my reason
+is simply because of the irregularities I noticed while compiling the
+audit report for the end of the financial year.I have perfected plans
+to have this funds transferred to you within the shortest possible
+Upon your confirmation I will give you further directives. Please
+kindly reply to maliksman663@gmail.com with your full details.
 
-Fix bonding please.
+
+Regards,
+Malik Usman.
