@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FF157774D
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 18:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD5157775E
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 18:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232803AbiGQQZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 12:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S231593AbiGQQ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 12:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGQQZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 12:25:04 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C0513CE6;
-        Sun, 17 Jul 2022 09:25:03 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id a5so13756606wrx.12;
-        Sun, 17 Jul 2022 09:25:03 -0700 (PDT)
+        with ESMTP id S229892AbiGQQ4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 12:56:24 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C341813FA6;
+        Sun, 17 Jul 2022 09:56:22 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id o26so7246129qkl.6;
+        Sun, 17 Jul 2022 09:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rwSneiH5xSNmTYynHVLLuzHsfAWoKgKKKN3H7FS7rMk=;
-        b=Aa/n1738ntBuPAWlhWhRZjFLdhg8myxMR8iZ6ftlyCeOiQ/9YT8wiSQDcg0c7UVHIb
-         2Zf+Xsi8VkZXPDEp01hK59xKVY+ZeOj4PS2UxKfYEv4K3yTRf9K2tX6EMzePC9j4jIKH
-         KqE0qziR4v/rSbMbLc6LQsa3oLHRC90c3EkGtQFBzwWt46gIvb/hbxlvPS5EVjBA8Y6A
-         oA+BKnFpc7syZFnPPTRyec4XOuVWoPrd0uyUJ4vobAUIhE09YyViry6TZxnnzAauydiz
-         qsFW/1eGnCix7ZOzsUHc/RXx+Lpk23JF/BP9ido13S6OxIOCNapP3PBFdxuYeYy9NFdW
-         2UuQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wvctxbE7AX0aP5YUM45JP6LkP+57Bz6KK7nOycNQst8=;
+        b=EMK6m15BuwHEJMxE9cRKgVio0vqeTEi8JLhy8/XYyk5mRbqET0cyoIOi5JFxZHh1HC
+         WtrLKsajJwfZSSZtC+GEseBDOewisUn5oKPkx/x+PyZs8MsQOY/dki9h8wA1iOaNjL5p
+         TRr6uC7fUeCCg+y5lcdXKyl6u954MC60WnTxd6Tcx89zBOTiuiWptgOqSK7/vKj8nrFX
+         LqTZnvh+K/z6iwGJkpNzCp4usg5LRzmMtEQ6sSM0VeD1t+UZ42HsIr2aqtkEvGhc246r
+         80HeTcgg/tTN1wM6MEWs+WuoVcRWQ0y6siAjJlLHR0qXK53F7HscrrGaj9qhqjimFRRz
+         1ndg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rwSneiH5xSNmTYynHVLLuzHsfAWoKgKKKN3H7FS7rMk=;
-        b=FdDQGPf5JD/zrbwFO3Kw9nRo7F+Wq0BPW0jaLz9/JIInHr0dJ085tUiO2p7Rj/4I+p
-         dthNc8xGz73jjuQlVKoRC8puI4SRtFLtXyluGbAr3HM2LU3UuCA9D/jQaoepm626Ki+/
-         cQZ3DwErbPJGVM8L0gwkMrZrxa6SbCjXmGjBk4XR/vAx78+63JebxV3ctArvvESet5su
-         iAPlm+gqWX4zNEv65zLJM4QBAPm/rdDNTf/yOhNgvklt7qK3rTK6k0tn6wmTzYey3RS/
-         Cbvx/4Z1F/AfGDIxEtKVnbXncXMJnDf6QaVr+jRjEmG19lZAL0icPtP292TgW4QM2w8Z
-         yqdA==
-X-Gm-Message-State: AJIora/8lpWZLT0Fz8fbB5XEORa/RNp2VWDC+MdEXwJkQP53tQc/6B2v
-        EhWxF7PrFbYDDX6TK+YCPKVKhs+UYR3k8sy2g98=
-X-Google-Smtp-Source: AGRyM1tKKG1DTxpJhgljLKjM1b0ZBI1n3j2cO/EQg0uio6SMOdiW6aawdpL2hUIf0EJQ/Yx0Ma8Z86scLN5oUYig9mY=
-X-Received: by 2002:a5d:6a88:0:b0:21d:6ee4:1fb1 with SMTP id
- s8-20020a5d6a88000000b0021d6ee41fb1mr19575491wru.249.1658075102011; Sun, 17
- Jul 2022 09:25:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wvctxbE7AX0aP5YUM45JP6LkP+57Bz6KK7nOycNQst8=;
+        b=SOhvrXvbCvw6EEdA49D1yqH7qfFnBRDj/GSyHDczP+LY4suqCI0hXNvgGbDM+qbFwz
+         iOxq7k5Sr+7BP7gLICafJGVoZ5vt3aXuGNX/IWh2QoXE6+Np9Zbns8HpdXfXf3Q5/hOO
+         o1HL1Mrf3aja6p3Pw0a6i3mPmpGRD68Wbzx4DEhH1LApZaDBPoitb7DBm+CQVudMAwa0
+         MAORdYrZk69BEQucpml2I8TwMKiH8B9V8tM+AZLCPWzeS3g6eRCajm5EzeSRHFRCv9u0
+         Caggm9WTTmQ8GzkTqVqrz9Sdkdy/vbJzvyoCeA49xIVmHdoHkcoY4Kt7SlkuvoiykQex
+         ijKA==
+X-Gm-Message-State: AJIora/w102O7ryrGttiKltGkoNeI0LYu8fQMto83scxZPhbyF39vmXc
+        Sw+gmrpCshNpLTZGoBG5GcQ=
+X-Google-Smtp-Source: AGRyM1u2r3ihr3dFz0xOY0Faxar3HctKntuptrt5yAuyXFRax9rFgHKbSRZIkGh7CvCoXDpjBTqGQg==
+X-Received: by 2002:a05:620a:408e:b0:6b5:67b4:fbf9 with SMTP id f14-20020a05620a408e00b006b567b4fbf9mr15090890qko.278.1658076981847;
+        Sun, 17 Jul 2022 09:56:21 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:db10:283b:b16c:9691])
+        by smtp.gmail.com with ESMTPSA id t13-20020a37ea0d000000b006af147d4876sm9020690qkj.30.2022.07.17.09.56.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 09:56:21 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 09:56:22 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [Patch bpf-next] tcp: fix sock skb accounting in tcp_read_skb()
+Message-ID: <YtQ/Np8DZBJVFO3l@pop-os.localdomain>
+References: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
+ <CANn89iJSQh-5DAhEL4Fh5ZDrtY47y0Mo9YJbG-rnj17pdXqoXA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220630111634.610320-1-hans@kapio-technology.com>
- <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
- <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
- <20220717134610.k3nw6mam256yxj37@skbuf> <20220717140325.p5ox5mhqedbyyiz4@skbuf>
-In-Reply-To: <20220717140325.p5ox5mhqedbyyiz4@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Sun, 17 Jul 2022 18:22:57 +0200
-Message-ID: <CAKUejP6g3HxS=Scj-2yhsQRJApxnq1e31Nkcc995s7gzfMJOew@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
- traffic cannot unlock a locked port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJSQh-5DAhEL4Fh5ZDrtY47y0Mo9YJbG-rnj17pdXqoXA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -83,26 +73,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 4:03 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Sun, Jul 17, 2022 at 04:46:10PM +0300, Vladimir Oltean wrote:
-> > Here, what happens is that a locked port learns the MAC SA from the
-> > traffic it didn't drop, i.e. link-local. In other words, the bridge
-> > behaves as expected and instructed: +locked +learning will cause just
-> > that. It's the administrator's fault for not disabling learning.
-> > It's also the mv88e6xxx driver's fault for not validating the "locked" +
-> > "learning" brport flag *combination* until it properly supports "+locked
-> > +learning" (the feature you are currently working on).
+On Tue, Jul 12, 2022 at 03:20:37PM +0200, Eric Dumazet wrote:
+> On Sun, Jul 10, 2022 at 12:20 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > >
-> > I'm still confused why we don't just say that "+locked -learning" means
-> > plain 802.1X, "+locked +learning" means MAB where we learn locked FDB entries.
->
-> Or is it the problem that a "+locked +learning" bridge port will learn
-> MAC SA from link-local traffic, but it will create FDB entries without
-> the locked flag while doing so? The mv88e6xxx driver should react to the
-> 'locked' flag from both directions (ADD_TO_DEVICE too, not just ADD_TO_BRIDGE).
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > Before commit 965b57b469a5 ("net: Introduce a new proto_ops
+> > ->read_skb()"), skb was not dequeued from receive queue hence
+> > when we close TCP socket skb can be just flushed synchronously.
+> >
+> > After this commit, we have to uncharge skb immediately after being
+> > dequeued, otherwise it is still charged in the original sock. And we
+> > still need to retain skb->sk, as eBPF programs may extract sock
+> > information from skb->sk. Therefore, we have to call
+> > skb_set_owner_sk_safe() here.
+> >
+> > Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
+> > Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+> > Tested-by: Stanislav Fomichev <sdf@google.com>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > ---
+> >  net/ipv4/tcp.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index 9d2fd3ced21b..c6b1effb2afd 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -1749,6 +1749,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+> >                 int used;
+> >
+> >                 __skb_unlink(skb, &sk->sk_receive_queue);
+> > +               WARN_ON(!skb_set_owner_sk_safe(skb, sk));
+> >                 used = recv_actor(sk, skb);
+> >                 if (used <= 0) {
+> >                         if (!copied)
+> > --
+> > 2.34.1
+> >
+> 
+> I am reading tcp_read_skb(),it seems to have other bugs.
+> I wonder why syzbot has not caught up yet.
 
-Yes, it creates an FDB entry in the bridge without the locked flag
-set, and sends an ADD_TO_DEVICE notice with it.
-And furthermore link-local packets include of course EAPOL packets, so
-that's why +learning is a problem.
+As you mentioned this here I assume you suggest I should fix all bugs in
+one patch? (I am fine either way in this case, only slightly prefer to fix
+one bug in each patch for readability.)
+
+> 
+> It ignores the offset value from tcp_recv_skb(), this looks wrong to me.
+> The reason tcp_read_sock() passes a @len parameter is that is it not
+> skb->len, but (skb->len - offset)
+
+If I understand tcp_recv_skb() correctly it only returns an offset for a
+partial read of an skb. IOW, if we always read an entire skb at a time,
+offset makes no sense here, right?
+
+> 
+> Also if recv_actor(sk, skb) returns 0, we probably still need to
+> advance tp->copied_seq,
+> for instance if skb had a pure FIN (and thus skb->len == 0), since you
+> removed the skb from sk_receive_queue ?
+
+Doesn't the following code handle this case?
+
+        if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
+                consume_skb(skb);
+                ++seq;
+                break;
+        }
+
+which is copied from tcp_read_sock()...
+
+Thanks.
