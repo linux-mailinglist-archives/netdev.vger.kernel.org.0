@@ -2,133 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 479CF5774FB
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 09:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABE8E577513
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 10:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiGQHgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 03:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        id S229772AbiGQI2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 04:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiGQHga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 03:36:30 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F491A3BC
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 00:36:29 -0700 (PDT)
+        with ESMTP id S229476AbiGQI2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 04:28:48 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0264BE10
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 01:28:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pj3XpuIt+UefKfDFPm2YYpAywn2nB+z0aullCytvH3OWZv9KBfDVg5wmRWUURHj+NPzIlTjORcy2y6/Fb6fiZwJL1BHCuiMRowgz9YA3xZg4Hcr5dfFe/jZvpnxuFrAmFE/VRUMyw8M1TEy2R6qiw09vDRnxxpIGVMgHqBdNuAP72dXOVY4pSqa0zHeD93b2l+AvyUZCuehTAyQXY6vGR9oS2sdW8nem9V0tgCVgsVuV/LYAMnDJlU5C1aEvJPFj52ppFcQbkNvsA5l2MvyRBIqS3JD/wuuMHL0cU7/jTw6BV9HDwecZDsUWOFIh1AUc2owdc9JcSUB8fwHkXT1E7w==
+ b=IGhwsIFZGBY5ldWhiXQ8d4hv3qu1d4hUpYvZ603jP6xYW+4/V/3mzC2FQWzXaiH0SEVOe25UpomMBxDPaJf1gXErWfeskqLDw4cXRX3IHkVR7vAg7UKKPIHCC6Kzsr11CY3E+3TTSvoanla45BiXbY99KTTsIRfS55ieFMTtz9dvyi8KWByS928FdeMLQ9KJtuRw53BCch9nOajRtSTNGDoxz+U6tWTE65L8t9QNgC1wSQuADoHRgn+T8fI7nZIOJHuHhI4cL05+ZPC/8CX7BfPiFcxrgDpTqVSKQCp+/AeAF+TSSpdmPEYom2BIYaRxQn+BnaKrbVlKn35MZGFJKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qJ43pkgUNU1I0rn+rfaFeMyNjEXhA4QOdvHrV8tXeoo=;
- b=j5rzNvb1WM+6UG5tC4s+md/zCyMLW8mCS7SczqBTqKSVtHoBK9AFlMbkuEl+Rs4Chm4148cBNB7DY0AT7mdye/Ji/FCik2BvrQKzV5cROjhWE2SQC6z9w5iIEqlU8/sZxbpRxoj3Ka2PYFqWdMcW+hBVfkUuXlMzYntMHsCP3z6Ox+5mpxTdctR2FIGyYnpy0wegd+tSxxYOUhoSlIOUjxpRX5FaFUrVH5QRyzTwAA2ZSuhO09Ljxk43rlNxEpOG4HLkXl1c1CuKXYpBjI31OAGRTaXJLNfFnrIDAqQ+yd3wJoB2WGbTYoZ0S/DjeiX7AdObdis7y1BqlCQrLR2hIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=6ZqVnPkoPXnzwCk9lvTiXv88fItMaVlASMlDa38xhN8=;
+ b=JmxpCFXkXpqec4BzX6kJ/oZMDynBf8DbBRZishisags6rakVl7BYz8yHqYbzQfBE/3NABKBGKxHkHX9xOdcda/6E0pYgPUP5H4K6AHglPklftNEDusYxEpH53Uqme4N0Nq6LYIU4Sv0MJ72MXm1Vw3mYLpO0HGY/6Hb+JQvQUPx5Vj3rSon1a7UsXbLLid0M6cbFfHozQBSGTa03UeX74ip3BqNlh2cjAQCRXUBCah4i/JmJQWxVMrm0VUbboIb/d3+I+r28yM7v1LGHzvAvsWjNOrXiRPQcCuCY/dQioFHye7YyChIfrAkQV9f7dSti8hNjRhT7wqHol8h07iqYaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qJ43pkgUNU1I0rn+rfaFeMyNjEXhA4QOdvHrV8tXeoo=;
- b=YKtZ035BJQPsSmYCROHVqLUNkeamaWdOuc8PMxtVF/w9ZLtU7HhcERM8vK4VeWMu73NnvqcM1qXOlVXYWb93gHiDjK6qvtHhyQyxwYTcBpZbPImlXtj3FZNT6um0a197edQqbhFfDyAL6sxMJOGTwgqOIZxkqrTGpVMCBxLRG1ExILnnJZTqASfSe8LmowymsW36c0gAp17MuNy6YaZmaDrBqxRA1oBwOuoFelnZlPrNeyC2I2MKbCkPPkVMyN472IiEpLZp1ymSu24JP86PF1hfMlP6T6TFRPtxhypn36MZMI0MZ/n9IraCRq1/R7x60FWWXur1DYXm1cbPNCZg6Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by IA1PR12MB6483.namprd12.prod.outlook.com (2603:10b6:208:3a8::14) with
+ bh=6ZqVnPkoPXnzwCk9lvTiXv88fItMaVlASMlDa38xhN8=;
+ b=mDOZYzx9Ci40vxH4Hy1ChSuDX6lQ1EPLNQKSyzrNu2e6DligzaA4c1mJRtPCN2GxxVZ+ZpEmSlI1eKlg2RaZSycGgPW0/WDQKzU3u1nAzhnU9GT+Rvp6c1wWzGdTPuesVsHOOY2tilY64GL9OEhrTsKNcsONklmrEL3Ytze0HmXheHZt7hnIGflD1xfOBZO1PqC9VwlHOt5MArgTWt5YJw7kRtUsAGMngTwjePuD8ODoV4xPLzO1CA3866tr99tLKuO/Qbm+gdhr+2rDzu5mHVeCULeHz3SrqvrAOmfead9NwhCsXS5U4GGou2Zdd+EbRxnPE+BWxhHZIenSspaFxQ==
+Received: from BN8PR15CA0037.namprd15.prod.outlook.com (2603:10b6:408:80::14)
+ by BY5PR12MB4194.namprd12.prod.outlook.com (2603:10b6:a03:210::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Sun, 17 Jul
- 2022 07:36:27 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.022; Sun, 17 Jul 2022
- 07:36:27 +0000
-Date:   Sun, 17 Jul 2022 10:36:20 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, mlxsw@nvidia.com,
-        saeedm@nvidia.com, moshe@nvidia.com, tariqt@nvidia.com
-Subject: Re: [patch net-next 6/9] mlxsw: convert driver to use unlocked
- devlink API during init/fini
-Message-ID: <YtO79H0VleQHfMUC@shredder>
-References: <20220716110241.3390528-1-jiri@resnulli.us>
- <20220716110241.3390528-7-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220716110241.3390528-7-jiri@resnulli.us>
-X-ClientProxiedBy: MRXP264CA0002.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:15::14) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Sun, 17 Jul
+ 2022 08:28:44 +0000
+Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:80:cafe::ef) by BN8PR15CA0037.outlook.office365.com
+ (2603:10b6:408:80::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14 via Frontend
+ Transport; Sun, 17 Jul 2022 08:28:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5438.12 via Frontend Transport; Sun, 17 Jul 2022 08:28:43 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Sun, 17 Jul 2022 08:28:42 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Sun, 17 Jul 2022 01:28:42 -0700
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
+ mail.nvidia.com (10.126.190.180) with Microsoft SMTP Server id 15.2.986.26
+ via Frontend Transport; Sun, 17 Jul 2022 01:28:40 -0700
+From:   Oz Shlomo <ozsh@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: [PATCH net] net/sched: cls_api: Fix flow action initialization
+Date:   Sun, 17 Jul 2022 11:25:32 +0300
+Message-ID: <20220717082532.25802-1-ozsh@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 425aa5a1-231c-4f0a-f3b4-08da67c70edb
-X-MS-TrafficTypeDiagnostic: IA1PR12MB6483:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3e535a10-4f51-4b6c-9d4c-08da67ce5c3d
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4194:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: isS9B307OhHXQdWGjeNKxsI4+mxRBBNKpgNKFGZ17KNr/OfkDo6Hgn3ymBTtGOkTvZdWRhP915i0ccK/IGTV/U1GPTSqxu2v7owtZ7B46DKMSnID0f/YVIVKQWjPgfGMxiJORj4aM0+dsosSHKS/uvcFV1IaNoMIfHYCjRtJePuMXjwoXVaqvugSelvxU136pHzM+l8UkGyx9dBe8brMZ8JZDJbd5ApU/q35Ignck4eKOtdmpsDumSZiSJ+8M/LKGCZebFRCdTtCEkUUsbGf4JPf6yy4XKbhGnOV74AN6oN4QahVQ3/+fPQCKlWdBmw0E3pUfTn2axVt/D2mdcFsg/9aPjGlD4Z+6nw1gDQ1FqXxT6Ts0l8BBpDpIR0r1AT9/r6nGhz1LofzhkB+5s/l0ZYmRLVVGZsCcBtraael1iygmoUfbRKrDuDiafGXZg11BLluOLRgZ8hqyxh03h0elpv2xm8VM1upeBm164fHQuRzBdp+F7AiodPzARgQQoRqCuH+KX2/cYTdBGjj+3H8tbmA/i8ggyez0NNF1qvc6aemvy5g9nvFS4Hu8fy5XsiIMzSOm5YVH+iIqhcRdSiWoP7d/8njoTAcoNM81n2siVvFiie+RcceXrgz6aq2bqH0OArOUm1W21g3LZ+yByN1cbljWTq0NZQSv+C/kHpRVGW1oRLiV1fGYFyzIK48tDixDMUQ+5Wqc5LM119luy9LnwNW3BpmovOWZEkR0U0nzhbvFtwoCH+n0OdMfA9MeB/B
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(346002)(376002)(39860400002)(136003)(366004)(396003)(478600001)(6506007)(26005)(6486002)(41300700001)(8676002)(2906002)(33716001)(86362001)(6916009)(316002)(6666004)(66476007)(66556008)(4326008)(66946007)(186003)(83380400001)(107886003)(38100700002)(5660300002)(6512007)(8936002)(9686003)(4744005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7jLqGgdSz2OLt2TG44JadbMO4F5xZ74n9wd/T6bnhAugX1IpvIIYgxUU83oZ?=
- =?us-ascii?Q?O2XU5aJc5k6XajA6t8lnYdZZoYpNkgs25JTcsurLSSeB7zQfi9H3FIigf88Q?=
- =?us-ascii?Q?3t9y40msuWnCkLcw1A5dRyzYAtHXW3phyvpwjHiMtcedT4fB/iAEwGO4jaTg?=
- =?us-ascii?Q?R636VQAUQF/UK49vQh7yYyKJt6TVhdfaHJqMWr7ygXOnnQXml/3cF2lSAyfW?=
- =?us-ascii?Q?DJ7Tep6wgKZlIl6Mpx0UYNoEyQLyUhh++dUn9jvNRdLmXM+FF3wxHJfY5L2F?=
- =?us-ascii?Q?xWN6Ti1Gao62KA/ziECadvCBMGIXwbvZx+6svHAlGnTnZzSUGvoBt8qFb4DG?=
- =?us-ascii?Q?aGiOybkSvFZiqGbmd8NLa8zuPKeHjsr9o2i5zasxmV/J6dKZDiqm1vIc2+yq?=
- =?us-ascii?Q?IpD6+ExMqPzPUQkPvbW/hFmtWocJNBoGyMAd3QjOpWVVS3tqAlIOmJfCxYea?=
- =?us-ascii?Q?CPSm7oTh3VNpvy4L2OT8IvELGj6HQ2cgc1NVHg3gDJ9oA9y8e3B06SoIMUpw?=
- =?us-ascii?Q?RFhHCrJZROCBglSKFtVNruOUXm4bENKVg6XE6bEqLUN+1n0Wq/a7pDiulQOW?=
- =?us-ascii?Q?mSINOmvVxI5F5OaG+3XAI/9l6T1W9BV1WLNlqUoGxu+D0NuLkfJBdcdx3+9g?=
- =?us-ascii?Q?ilAeR8bsnFJz51uz+JmTozvkEptJiC6f7Fi/mPet0va7IrlNZcROAff5ensi?=
- =?us-ascii?Q?l7jzRvNUeGvPckH5yum8Gt10M4dysl+sH2LdHh5nLx0nmgdV+78InncTCLBh?=
- =?us-ascii?Q?s46BTrRLuHWezdRMAetqCcis69KxwUNk2MKx3MWcA6mbmzMp8c0dso/iOU8g?=
- =?us-ascii?Q?hIAJqoZNM4IEm7DpWdovD9t4GQTXz4E4sP2kwcX8NpP7loiS86FVAK9VMaw2?=
- =?us-ascii?Q?a/TMigeVTvOjIwomutCoSm65As8el+OHJWsgbGhyY0HTwWybzvichK/dKMH8?=
- =?us-ascii?Q?WpXRusJ18wQUBsX10GXlMq8Hswi8clp98oIFfacfMXmByMZwBfiV/pi31X9W?=
- =?us-ascii?Q?EcOp5hSE2gPevbWheCUAkPsEW9lSsblJV0psCA84/F6K8GIQCgI20u67K+SM?=
- =?us-ascii?Q?zKLFtWAcaoyOsgHb3T0YCZImeVBMqjwhUqvMEvUm3/ewLk+2MTGLbK03nrtK?=
- =?us-ascii?Q?hTwRNW0U1NzFkFYR7E+CThffqLEsBQDmrPesV5Sg5MCQRYmsaySy//UrED0P?=
- =?us-ascii?Q?vo55P6ipu6wk9URO7lZGAbwow6I3N6ulpgMuyh7BuO4hP8PD0JaOnFtcXMxU?=
- =?us-ascii?Q?C2TXvn4coo6KI8U1o+iPikDtAkZ+gA4cwmG8bOfB86mys55g/pSYOuVng5jF?=
- =?us-ascii?Q?Y4XFYuxMH8/I0AbsAWlgf0el190shFOfh8LHSi3+frxwMBD/OaCROrDTwIss?=
- =?us-ascii?Q?wU6MxY74D7bdw/mN+bav8U0aS3LCEQtEXCf2U2iul6czs1LxnpKFL3GAZ8Qg?=
- =?us-ascii?Q?uQjTUW1a+s7XWvIV5ItUm3i9IeN7bXj4tCt2B36g7xM3INH8HuZTCsPwaGfI?=
- =?us-ascii?Q?1uLg7v47c0DD8V7e7P0/Gv/OSlnuup+6OkHM6xAzamU5vawZYIjvgL2TaO5t?=
- =?us-ascii?Q?LPLpbqC2UfQ7cShiVfFze3CQJPvo0XVX9NaqrH5r?=
+X-Microsoft-Antispam-Message-Info: M8BMSn5tuNWIxIY75wapIWVK0gRRQ5OaAxKA4VQB79Ln/P39RTEJ9fw5/42bYQUrMFH12Lep5RWJSdcCtGtRkIx5upV/xs3Jb+XMHBCdF6I+5ESPCb08UzCrtPunJcvP0TLo7i6EF1UJ8ftzAC8iIvz6Kn1+59Fn/FnQQ6sspW29bybDDGul8pYu1nS4aSakplVoQB8ganWYJkifofEKKlVtKTG3G1zG2I0zos7OFVJhb5G3JUl87h2h4YYo7Dm7qxrZDwzVX6H7LPZhe0dieptH6EPOIuwHa1bHi+JZMNv7FsJIiCWysaZERYouXNiMTBREROvz89QsfeE1rMh6dllMtQBHQzn33kkeueY0UKGhKmG7l41w7SFtJaQdui1btvVqKBCY8s5cHc/fMC6IVq7l+KYYcOjT1+O9mua+oPgFC7oHYe2Hu0rPkwYkCYD77Y6R5SoiFv6DnzfDcOG46fbGHMxFnT09cMMAMsQO5tULi/YrIIzDlsMP1zl7NBzgKrb7CYFOpkWMEqIf0xsVgH0I4+gpzf2gV0JJUCU4SeRxAARuiCx/kUB9KEDVf6Un6sDgAR3azZCJg1IoGma0eNGRQenwpsDJojqYVm6MB9m5GwZ/EAm8IRgtoi64YVNt1NYmNksMlFhR+ez5JhysbPlfC57/MyzkMAIdsEyhtTxJUmE9TPd840OmssS9Q12030urIW3jjSuAXHCNP1nfxW3g+uOgRMOImrsc2lVFi7ZdhRCoDFXTLqK3vYclbsfhxalD3GkAXJ8FWnwKY6bqDbIKV51F3Zd9KPamfxyRFM84vvubxsrAR6zsHZ7vrWfKM8s3kCqx1QaaO3rkgzhGpb3Lt30vvyv7gMRaSrgwsI8=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(136003)(46966006)(36840700001)(40470700004)(81166007)(336012)(47076005)(426003)(356005)(2906002)(40480700001)(36860700001)(86362001)(82740400003)(82310400005)(83380400001)(70586007)(4326008)(8676002)(70206006)(8936002)(478600001)(6916009)(54906003)(26005)(316002)(107886003)(36756003)(1076003)(2616005)(186003)(40460700003)(5660300002)(41300700001)(6666004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 425aa5a1-231c-4f0a-f3b4-08da67c70edb
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2022 07:36:27.2887
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2022 08:28:43.3093
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e535a10-4f51-4b6c-9d4c-08da67ce5c3d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HrsvLTq7nCm5PVYHBA59Zj1HrOksHoYunhk0L1bW2VhVyJeHLVuR81luEOHwyE2Jj+47g3GLk/rkSufD6A3JvQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6483
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4194
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 01:02:38PM +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Prepare for devlink reload being called with devlink->lock held and
-> convert the mlxsw driver to use unlocked devlink API during init and
-> fini flows. Take devl_lock() in reload_down() and reload_up() ops in the
-> meantime before reload cmd is converted to take the lock itself.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+The cited commit refactored the flow action initialization sequence to
+use an interface method when translating tc action instances to flow
+offload objects. The refactored version skips the initialization of the
+generic flow action attributes for tc actions, such as pedit, that allocate
+more than one offload entry. This can cause potential issues for drivers
+mapping flow action ids.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
+Populate the generic flow action fields for all the flow action entries.
 
-It is getting hard to review changes in mlxsw_core_bus_device_register()
-and mlxsw_core_bus_device_unregister() with all these reload checks.
-Probably best if I convert it to something similar to netdevsim's
-implementation after the devlink overhaul.
+Fixes: c54e1d920f04 ("flow_offload: add ops to tc_action_ops for flow action setup")
+Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+---
+ net/sched/cls_api.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 9bb4d3dcc994..d07c04096560 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3533,7 +3533,7 @@ int tc_setup_action(struct flow_action *flow_action,
+ 		    struct tc_action *actions[],
+ 		    struct netlink_ext_ack *extack)
+ {
+-	int i, j, index, err = 0;
++	int i, j, k, index, err = 0;
+ 	struct tc_action *act;
+ 
+ 	BUILD_BUG_ON(TCA_ACT_HW_STATS_ANY != FLOW_ACTION_HW_STATS_ANY);
+@@ -3557,10 +3557,19 @@ int tc_setup_action(struct flow_action *flow_action,
+ 		entry->hw_index = act->tcfa_index;
+ 		index = 0;
+ 		err = tc_setup_offload_act(act, entry, &index, extack);
+-		if (!err)
+-			j += index;
+-		else
++		if (err)
+ 			goto err_out_locked;
++
++		/* initialize the generic parameters for actions that
++		 * allocate more than one offload entry per tc action
++		 */
++		for (k = 1; k < index ; k++) {
++			entry[k].hw_stats = tc_act_hw_stats(act->hw_stats);
++			entry[k].hw_index = act->tcfa_index;
++		}
++
++		j += index;
++
+ 		spin_unlock_bh(&act->tcfa_lock);
+ 	}
+ 
+-- 
+1.8.3.1
+
