@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA38E5777F0
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:23:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CADA5777ED
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231753AbiGQTXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 15:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        id S230504AbiGQTW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 15:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbiGQTXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:23:04 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F289DEFE;
-        Sun, 17 Jul 2022 12:23:03 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d16so14302239wrv.10;
-        Sun, 17 Jul 2022 12:23:03 -0700 (PDT)
+        with ESMTP id S229437AbiGQTW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:22:28 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AC295A8
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:22:26 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id 5so7331165plk.9
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:22:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qR5n9WUGINQgKnZyU5jQ5QNhAVmTXkoQM4VlFrsXDgk=;
-        b=ROVMbcMOPv+gSbm3EJ0AYvQs8xJipm3EB1VIKbnQn0ywYyjAGUA0Sburuurfmr9fUI
-         rXNM9c07v1017JK3vINOTZx/AP9ykov02Jip4XVZnRtdWqGlyYt0b7KURU1CVr5wzdhp
-         1lvZdqtbFjtmc7jGXNELiIePVrkhIL++Y0v1Aq7AwuWe0ansFrJW49xDHVWY7rdOoYVC
-         7Wsn78PS/3tFE8TP6FafTmxr6V3M3z9c7hZSHZVILX6qzAVgd+KXlezcymqZVSCDuiVV
-         SHKpRhuds0LZqUWv1a1DfGN/NCy+t8089iHEj92aJDiFrtNMqN/wlagxvmDCmnfmd39k
-         fK7A==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=BKEzhL5AZuWctYZnWxySx9DzRR9Z5lmAXfjaNn/Fttg=;
+        b=bwdNkDT+bK+HIvPkViduXeq6X0rb0qa/B4gLaYB8ERoJVOJqjgsoZWu0/o/i8veMkg
+         WQb1918hTN9W3Hqs4ZC1lYn+vjTdrcTkF8QRizN13DIl2b9r87McSu1I3htZqgQw+3y4
+         xevVta6YcsCwwASo6tBc0L0/su8BZQd1Efu5runlSQSO3cB9mmKtfuIZPUdJF5xjxNpT
+         ITPl9fikA35n4hKKWo0ibKNoSlxi6gMfB75Uuxu3ohE4er1oORCMUXXjyCtIfpgn2ogJ
+         Bovq+qIkJowFC5XX5NQJ3UNvEdsKfsmFxIZyML2JJE2vSAY7keWaBckyyg0O9pxJRBg1
+         aWsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qR5n9WUGINQgKnZyU5jQ5QNhAVmTXkoQM4VlFrsXDgk=;
-        b=t/limwnQZrB0uI1QoVZJiFunrZqrv9z6aPMf26GLGpBfiYSIkh9GvyfJDwZ0SXxfcM
-         R6sJreh67n2GMTassuYfpWpKkd0IqSg1j5D1JqXDDluHOeYX6ssvORTGOEcptiPKa0Lh
-         RwbxAs7BnS3HNnTQBzM9rAGAvSmJoh58RHqBnfJ8KEefYExLity676cFKH8KIvjcxZd8
-         UNRdZzL/KqUnPwXJbTgv0h5G+bspyMACSv4hzC4G9R0tZpHoXqcatirOfoI4J3rrAU3Z
-         S+YpEs72jti4UBGMMgRDCQA09kLiOE1wJ19I6j6/vKld2MwK0mbyGGgKOPfehwFl044z
-         pk/g==
-X-Gm-Message-State: AJIora9VPCvZBEdGzXODqqL0XfTU40fwZc/Xi6mPAbCbncruHB7SDUg9
-        tu6v+32OXMMIdCVy2PdDulYltRmPeuc9rWsZGpo=
-X-Google-Smtp-Source: AGRyM1txFQkvnskZOx8Nkr/djQB1K/63SDxcCZP7vECAW1wAAJ2eJEJotJhzOPoLVauSB6Lzds4zlNU6k6ARgwyQb6w=
-X-Received: by 2002:a5d:6e8e:0:b0:21d:ea5:710f with SMTP id
- k14-20020a5d6e8e000000b0021d0ea5710fmr27515wrz.48.1658085782164; Sun, 17 Jul
- 2022 12:23:02 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BKEzhL5AZuWctYZnWxySx9DzRR9Z5lmAXfjaNn/Fttg=;
+        b=MZP73PanttX+9B9g1dBR9Wy6l0dZUoH+RGH6bEY/W3EB9RlcRzdDr+fFPYqTDpwPEz
+         YqMrsdhWfgEYwmyvrSbfahwgfeE517JjgYzcgC51W/J6/VoxHBocoiW+zZ+wzpjxhigC
+         kljpcGLe0iUMvKZ2Cylk4ByKRINJRLrQe9UPT6UBzzB76HW+wBiJZncTRVBFRMj4kFue
+         N6HDZ9u4h3tO3b3gCXbVknBE3ZGzPC/oy8IhS9AIUqx2CpuF3naKdiXIeObJKwJWNjM5
+         8HzGC6UBV/ZTuXLHFvInKi1r62ZAp5mjWWUiqYyqSDc8N3MDtPU3xMwgWOzV3mQ6xQv5
+         tUqA==
+X-Gm-Message-State: AJIora8nWaHcuBF81SlvN1lucw3BFnfA/GkOOkDmD9mUJQpi5FE/uFE4
+        QMRF4YbgT6xrNoNFrW3k49baJI5Ft6E=
+X-Google-Smtp-Source: AGRyM1vrZXkSi6s8CvAO0sqFsNz49CxpJz41Z4cFM1XO+FgnDODT5834QuhuhrmEp8cuw8IbDrCjyA==
+X-Received: by 2002:a17:903:189:b0:16c:39b2:c217 with SMTP id z9-20020a170903018900b0016c39b2c217mr25533644plg.113.1658085745992;
+        Sun, 17 Jul 2022 12:22:25 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5? ([2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5])
+        by smtp.gmail.com with ESMTPSA id h20-20020a17090aa89400b001f04479017fsm7551224pjq.29.2022.07.17.12.22.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Jul 2022 12:22:25 -0700 (PDT)
+Message-ID: <53a6125e-611a-ac17-399b-a5624c0e15a8@gmail.com>
+Date:   Sun, 17 Jul 2022 12:22:24 -0700
 MIME-Version: 1.0
-References: <20220630111634.610320-1-hans@kapio-technology.com>
- <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
- <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
- <20220717134610.k3nw6mam256yxj37@skbuf> <20220717140325.p5ox5mhqedbyyiz4@skbuf>
- <CAKUejP6g3HxS=Scj-2yhsQRJApxnq1e31Nkcc995s7gzfMJOew@mail.gmail.com> <20220717183852.oi6yg4tgc5vonorp@skbuf>
-In-Reply-To: <20220717183852.oi6yg4tgc5vonorp@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Sun, 17 Jul 2022 21:20:57 +0200
-Message-ID: <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
- traffic cannot unlock a locked port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net 10/15] docs: net: dsa: remove port_vlan_dump
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
+ <20220716185344.1212091-11-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220716185344.1212091-11-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -84,29 +77,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 8:38 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Sun, Jul 17, 2022 at 06:22:57PM +0200, Hans S wrote:
-> > On Sun, Jul 17, 2022 at 4:03 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > Yes, it creates an FDB entry in the bridge without the locked flag
-> > set, and sends an ADD_TO_DEVICE notice with it.
-> > And furthermore link-local packets include of course EAPOL packets, so
-> > that's why +learning is a problem.
->
-> So if we fix that, and make the dynamically learned FDB entry be locked
-> because the port is locked (and offload them correctly in mv88e6xxx),
-> what would be the problem, exactly? The +learning is what would allow
-> these locked FDB entries to be created, and would allow the MAB to work.
-> User space may still decide to not authorize this address, and it will
-> remain locked.
 
-The alternative is to have -learning and let the driver only enable
-the PAV to admit the interrupts, which is what this implementation
-does.
-The plus side of this is that having EAPOL packets triggering locked
-entries from the bridge side is not really so nice IMHO. In a
-situation with 802.1X and MAB on the same port, there will then not be
-any triggering of MAB when initiating the 802.1X session, which I
-think is the best option. It then also lessens the confusion between
-hostapd and the daemon that handles MAB sessions.
+
+On 7/16/2022 11:53 AM, Vladimir Oltean wrote:
+> This was deleted in 2017, delete the obsolete documentation.
+> 
+> Fixes: c069fcd82c57 ("net: dsa: Remove support for bypass bridge port attributes/vlan set")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
