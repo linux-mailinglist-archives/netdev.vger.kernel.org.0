@@ -2,393 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69BD957769A
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 16:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8E95776A4
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 16:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233048AbiGQOJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 10:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
+        id S233190AbiGQOTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 10:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiGQOJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 10:09:54 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3AB13D2C
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 07:09:52 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so6065808wmb.3
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 07:09:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ILptddcH3YHjrQFyPRJLcsFq20oUw0jeyBSU/fMdxaM=;
-        b=oq2qDUZsAPgdENTZPVMkBq0wBtbaK2Xzk5BIsgl/v1iJm+EUvp++Ctw9Fgcpzwcj1f
-         pkttil61yWCYdLa9BuepY548353Efm8wtWSm4Ui5/l/HJ7M43wPP68eOERxstGd9c06q
-         M9Ucrab0toPPx6Jx+R0T6PsW75DBLF5Y5Vu4LTTbJJRB8+74NqNWhyycVN3DE5RqdiGE
-         vKMim3da5EZ6DIMZ0i9pUpfJcSAnRRbbRymPusoyD3CM7AzfkMMdy7QyTwQ725FgfvCT
-         o5IIfkEzxrXKdKyxlgLe0pIxg73lti+ANl89pNdD0FKUPpe98rfpXQIczWphLzorXMj1
-         gQBQ==
+        with ESMTP id S229654AbiGQOTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 10:19:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8EB06387
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 07:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658067542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZXN5d9PmR1bWxOtQJJuDS0yvq9ORJNM/o9bv7t0FtfM=;
+        b=Jvp2QVBuF+2Cy7l6YQ0bCdBD4VRcPSZKIvpZI8s+2e+KkemHxpw2FdQSSMV96yBAGrxfaz
+        6eo6cG4bTM17YlSpQ4McJmia3oPz17ycmJQfZfxhA2cnpPA+exuJGOKXUyuRF19NQkJmqW
+        2MGpPDpEs1L/jSC8PpdEJkjNEQ5A4BY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-H0V9sZ6AMKK0eZ2oMILWFg-1; Sun, 17 Jul 2022 10:19:01 -0400
+X-MC-Unique: H0V9sZ6AMKK0eZ2oMILWFg-1
+Received: by mail-wr1-f69.google.com with SMTP id t28-20020adfa2dc000000b0021df4601013so239549wra.14
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 07:19:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ILptddcH3YHjrQFyPRJLcsFq20oUw0jeyBSU/fMdxaM=;
-        b=bzpQvTcHPNynE3YligvJtsWqyCax2rrJGNIa8DpBtoH8/SZPeHkN48Ky6illQekmMO
-         l77skSU09pIfMGRR2VKM3pue3yk4h31aZxfunuo8kFnXsmNBZHy/IUc0/p9yrNNMtNFj
-         BLTv8/udK7YAeYV+o6MtvMBTNuI6JyDcabmAsVET7YPQzPo1ldVeh4Ms0sH15twlAIVb
-         N7e1evB2NhlVp/i+LcwJv0GC0QSTMT7BUDcm0bbj66h7oC5eCPs3xx3vtuVNKHoseWQ2
-         ADEuQDQdKYs/g5uaCjvh1Mr/nvUobehxxFky71/IfzltTfzb7c1HkbtsGoPUvXAv0wjW
-         46qQ==
-X-Gm-Message-State: AJIora+tkUZxUl3nC//j236fCzzNBGlMZl5AF0cRBsK0GCjefLprO6Au
-        6TBoE94q0p35OGHbd/ftibwwZu8cOCdBvjAADyI=
-X-Google-Smtp-Source: AGRyM1v/0PDpPgzWl4vUex/PX2/bnvqvW1aeGNqTzUw1ZaWJl2ZKSwauyerhX/S7w5RUbnQc9I8qHeeI0yhteZheWQ8=
-X-Received: by 2002:a7b:cd84:0:b0:3a2:ddbe:220a with SMTP id
- y4-20020a7bcd84000000b003a2ddbe220amr22507506wmj.128.1658066991281; Sun, 17
- Jul 2022 07:09:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZXN5d9PmR1bWxOtQJJuDS0yvq9ORJNM/o9bv7t0FtfM=;
+        b=e4iVrPiP1xtCNPM/sslcRUa5Sau/Mfjlz/3lPrfaGXGk61k/keDCotD7g7+WsDV+1w
+         t7+DMbMzD47aBOZgcXf3anx43lWD6nmWR14X/tHhHOSjr5cOVvtsFlrO0wPrAYqTCSM8
+         cmxAQaoWLAZ69stIslawmelboB0Gw4tNkZKxM4lUDBE8y5loHXUCJofia3/40wjCsCeA
+         cTFXXZqxfcj8GgpN7bEHD95Oubn4JWx58QXkNC5NYp449pLOlWzRiV94QfpAzznMIkuc
+         jlgzI9C4frTOXVM6gJ+f1GI6T5Lxgp9QvWoJagFmDLH3N1ALN7A7HEgR8/NpAVIgYWYT
+         k0Og==
+X-Gm-Message-State: AJIora8TboZDktGRHx4d1nG+Hk1f1BMXQwHqS2JyKwC7+jf1erbDhHGc
+        GxxK4xHrnM8CNY8cWx+1e10lOHU6KeJHa2KL3Ih9RCbJPEO4s3eTk3LUNiUkGmasG9iW7ZRVZ7g
+        8nst/XT6DTmF16Sew
+X-Received: by 2002:a5d:4b87:0:b0:21d:7019:80c6 with SMTP id b7-20020a5d4b87000000b0021d701980c6mr19219070wrt.234.1658067540015;
+        Sun, 17 Jul 2022 07:19:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sNaEvKbutpZ/BTubwQTUJVx19iGzoNuTHgO/zaFD31SqJMlb5VplfxKgnDPMz9VTFHe9C5rg==
+X-Received: by 2002:a5d:4b87:0:b0:21d:7019:80c6 with SMTP id b7-20020a5d4b87000000b0021d701980c6mr19219051wrt.234.1658067539794;
+        Sun, 17 Jul 2022 07:18:59 -0700 (PDT)
+Received: from localhost.localdomain ([185.233.130.50])
+        by smtp.gmail.com with ESMTPSA id d2-20020a5d5382000000b0021d7122ab80sm8264967wrv.110.2022.07.17.07.18.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 07:18:59 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 16:18:56 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, xiyou.wangcong@gmail.com,
+        jesse.brandeburg@intel.com, gustavoars@kernel.org,
+        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
+        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
+        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
+        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
+        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
+        intel-wired-lan@lists.osuosl.org,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        alexandr.lobakin@intel.com, mostrows@speakeasy.net,
+        paulus@samba.org
+Subject: Re: [RFC PATCH net-next v5 1/4] flow_dissector: Add PPPoE dissectors
+Message-ID: <20220717141856.GB3118@localhost.localdomain>
+References: <20220715130430.160029-1-marcin.szycik@linux.intel.com>
+ <20220715130430.160029-2-marcin.szycik@linux.intel.com>
 MIME-Version: 1.0
-References: <20220714142027.3684622-1-alvaro.karsz@solid-run.com>
-In-Reply-To: <20220714142027.3684622-1-alvaro.karsz@solid-run.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Sun, 17 Jul 2022 07:09:38 -0700
-Message-ID: <CAA93jw6Z2vfh3cAVbmnHTsvbfNoqhdjdfAjrbKDyCeV9wHHv7w@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next v3] net: virtio_net: notifications coalescing support
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715130430.160029-2-marcin.szycik@linux.intel.com>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 7:29 AM Alvaro Karsz <alvaro.karsz@solid-run.com> w=
-rote:
->
-> New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
->
-> Control a Virtio network device notifications coalescing parameters
-> using the control virtqueue.
-
-What are a typical range of settings for these?
-
-
-> A device that supports this fetature can receive
-> VIRTIO_NET_CTRL_NOTF_COAL control commands.
->
-> - VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
->   Ask the network device to change the following parameters:
->   - tx_usecs: Maximum number of usecs to delay a TX notification.
->   - tx_max_packets: Maximum number of packets to send before a
->     TX notification.
->
-> - VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
->   Ask the network device to change the following parameters:
->   - rx_usecs: Maximum number of usecs to delay a RX notification.
->   - rx_max_packets: Maximum number of packets to receive before a
->     RX notification.
-
-Bytes =3D time.  Packets nowadays have a dynamic range of 64-64k bytes,
-and with big TCP even more. would there be any way to use
-bytes rather than packets?
-
-https://lwn.net/Articles/469652/
->
-> VirtIO spec. patch:
-> https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
->
-> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-> ---
-> v2:
->         - Fix type assignments warnings found with sparse.
->         - Fix a few typos.
->
-> v3:
->   - Change the coalescing parameters in a dedicated function.
->   - Return -EBUSY from the set coalescing function when the device's
->     link is up, even if the notifications coalescing feature is negotiate=
-d.
->
-> ---
->  drivers/net/virtio_net.c        | 127 +++++++++++++++++++++++++++-----
->  include/uapi/linux/virtio_net.h |  34 ++++++++-
->  2 files changed, 140 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 356cf8dd416..00905f2e2f2 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -261,6 +261,12 @@ struct virtnet_info {
->         u8 duplex;
->         u32 speed;
->
-> +       /* Interrupt coalescing settings */
-> +       u32 tx_usecs;
-> +       u32 rx_usecs;
-> +       u32 tx_max_packets;
-> +       u32 rx_max_packets;
-> +
->         unsigned long guest_offloads;
->         unsigned long guest_offloads_capable;
->
-> @@ -2587,44 +2593,115 @@ static int virtnet_get_link_ksettings(struct net=
-_device *dev,
->         return 0;
->  }
->
-> -static int virtnet_set_coalesce(struct net_device *dev,
-> -                               struct ethtool_coalesce *ec,
-> -                               struct kernel_ethtool_coalesce *kernel_co=
-al,
-> -                               struct netlink_ext_ack *extack)
-> +static int virtnet_update_napi_weight(struct net_device *dev,
-> +                                     int napi_weight)
->  {
->         struct virtnet_info *vi =3D netdev_priv(dev);
-> -       int i, napi_weight;
-> -
-> -       if (ec->tx_max_coalesced_frames > 1 ||
-> -           ec->rx_max_coalesced_frames !=3D 1)
-> -               return -EINVAL;
-> +       int i;
->
-> -       napi_weight =3D ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : =
-0;
->         if (napi_weight ^ vi->sq[0].napi.weight) {
->                 if (dev->flags & IFF_UP)
->                         return -EBUSY;
->                 for (i =3D 0; i < vi->max_queue_pairs; i++)
->                         vi->sq[i].napi.weight =3D napi_weight;
->         }
-> -
->         return 0;
->  }
->
-> +static int virtnet_set_notf_coal(struct net_device *dev,
-> +                                struct ethtool_coalesce *ec)
+On Fri, Jul 15, 2022 at 03:04:27PM +0200, Marcin Szycik wrote:
+> +/**
+> + * is_ppp_proto_supported - checks if inner PPP protocol should be dissected
+> + * @proto: protocol type (PPP proto field)
+> + */
+> +static bool is_ppp_proto_supported(__be16 proto)
 > +{
-> +       struct virtnet_info *vi =3D netdev_priv(dev);
-> +       struct scatterlist sgs_tx, sgs_rx;
-> +       struct virtio_net_ctrl_coal_tx coal_tx;
-> +       struct virtio_net_ctrl_coal_rx coal_rx;
-> +       int ret, napi_weight;
-> +
-> +       coal_tx.tx_usecs =3D cpu_to_le32(ec->tx_coalesce_usecs);
-> +       coal_tx.tx_max_packets =3D cpu_to_le32(ec->tx_max_coalesced_frame=
-s);
-> +       sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
-> +
-> +       if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-> +                                 VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
-> +                                 &sgs_tx))
-> +               return -EINVAL;
-> +
-> +       /* Save parameters */
-> +       vi->tx_usecs =3D ec->tx_coalesce_usecs;
-> +       vi->tx_max_packets =3D ec->tx_max_coalesced_frames;
-> +
-> +       coal_rx.rx_usecs =3D cpu_to_le32(ec->rx_coalesce_usecs);
-> +       coal_rx.rx_max_packets =3D cpu_to_le32(ec->rx_max_coalesced_frame=
-s);
-> +       sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
-> +
-> +       if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-> +                                 VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
-> +                                 &sgs_rx))
-> +               return -EINVAL;
-> +
-> +       /* Save parameters */
-> +       vi->rx_usecs =3D ec->rx_coalesce_usecs;
-> +       vi->rx_max_packets =3D ec->rx_max_coalesced_frames;
-> +
-> +       napi_weight =3D ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : =
-0;
-> +       ret =3D virtnet_update_napi_weight(dev, napi_weight);
-> +       return ret;
+> +	switch (proto) {
+> +	case htons(PPP_AT):
+> +	case htons(PPP_IPX):
+> +	case htons(PPP_VJC_COMP):
+> +	case htons(PPP_VJC_UNCOMP):
+> +	case htons(PPP_MP):
+> +	case htons(PPP_COMPFRAG):
+> +	case htons(PPP_COMP):
+> +	case htons(PPP_IPCP):
+> +	case htons(PPP_ATCP):
+> +	case htons(PPP_IPXCP):
+> +	case htons(PPP_IPV6CP):
+> +	case htons(PPP_CCPFRAG):
+> +	case htons(PPP_MPLSCP):
+> +	case htons(PPP_LCP):
+> +	case htons(PPP_PAP):
+> +	case htons(PPP_LQR):
+> +	case htons(PPP_CHAP):
+> +	case htons(PPP_CBCP):
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+
+The more I think about it, the more I believe we should make this
+function more generic by following the Protocol field definition found
+in section 2 of RFC 1661:
+https://datatracker.ietf.org/doc/html/rfc1661#section-2
+
+I mean, it's very surprising that is_ppp_proto_supported() returns
+false for protocols like PPP_IP or PPP_IPV6, which certainly are
+supported. Of course, in the context of your patch, PPP_IP and PPP_IPV6
+have been tested first, but that makes the code a bit unclear.
+
+We could define a simpler and more generic helper function (probably in
+a ppp header file). Something like (unstested):
+
+/* Assumes proto isn't compressed. */
+static bool ppp_proto_is_valid(u16 proto) /*
+{
+	/* Protocol must be odd and the least significant bit of the
+	 * most significant octet must be 0 (see RFC 1661, section 2).
+	 */
+	return !!(proto & 0X0101 == 0x0001)
+}
+
+BTW, we don't have to restrict the list of supported protocols to the
+PPP_* numbers defined in the kernel as we have no indication that the PPP
+frame is going to be handled locally.
+
+> +static bool is_pppoe_ses_hdr_valid(struct pppoe_hdr hdr)
+> +{
+> +	return hdr.ver == 1 && hdr.type == 1 && hdr.code == 0;
 > +}
 > +
-> +static int virtnet_set_notf_coal_napi(struct net_device *dev,
-> +                                     struct ethtool_coalesce *ec)
-> +{
-> +       int ret, napi_weight;
+>  /**
+>   * __skb_flow_dissect - extract the flow_keys struct and return it
+>   * @net: associated network namespace, derived from @skb if NULL
+> @@ -1214,26 +1250,61 @@ bool __skb_flow_dissect(const struct net *net,
+>  			struct pppoe_hdr hdr;
+>  			__be16 proto;
+>  		} *hdr, _hdr;
+> +		u16 ppp_proto;
 > +
-> +       /* usecs coalescing is supported only if VIRTIO_NET_F_NOTF_COAL
-> +        * feature is negotiated.
-> +        */
-> +       if (ec->rx_coalesce_usecs || ec->tx_coalesce_usecs)
-> +               return -EOPNOTSUPP;
+>  		hdr = __skb_header_pointer(skb, nhoff, sizeof(_hdr), data, hlen, &_hdr);
+>  		if (!hdr) {
+>  			fdret = FLOW_DISSECT_RET_OUT_BAD;
+>  			break;
+>  		}
+>  
+> -		nhoff += PPPOE_SES_HLEN;
+> -		switch (hdr->proto) {
+> -		case htons(PPP_IP):
+> +		if (!is_pppoe_ses_hdr_valid(hdr->hdr)) {
+> +			fdret = FLOW_DISSECT_RET_OUT_BAD;
+> +			break;
+> +		}
 > +
-> +       if (ec->tx_max_coalesced_frames > 1 ||
-> +           ec->rx_max_coalesced_frames !=3D 1)
-> +               return -EINVAL;
-> +
-> +       napi_weight =3D ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : =
-0;
-> +       ret =3D virtnet_update_napi_weight(dev, napi_weight);
-> +       return ret;
-> +}
-> +
-> +static int virtnet_set_coalesce(struct net_device *dev,
-> +                               struct ethtool_coalesce *ec,
-> +                               struct kernel_ethtool_coalesce *kernel_co=
-al,
-> +                               struct netlink_ext_ack *extack)
-> +{
-> +       struct virtnet_info *vi =3D netdev_priv(dev);
-> +       int ret;
-> +
-> +       if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL))
-> +               ret =3D virtnet_set_notf_coal(dev, ec);
-> +       else
-> +               ret =3D virtnet_set_notf_coal_napi(dev, ec);
-> +
-> +       return ret;
-> +}
-> +
->  static int virtnet_get_coalesce(struct net_device *dev,
->                                 struct ethtool_coalesce *ec,
->                                 struct kernel_ethtool_coalesce *kernel_co=
-al,
->                                 struct netlink_ext_ack *extack)
->  {
-> -       struct ethtool_coalesce ec_default =3D {
-> -               .cmd =3D ETHTOOL_GCOALESCE,
-> -               .rx_max_coalesced_frames =3D 1,
-> -       };
->         struct virtnet_info *vi =3D netdev_priv(dev);
->
-> -       memcpy(ec, &ec_default, sizeof(ec_default));
-> +       if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
-> +               ec->rx_coalesce_usecs =3D vi->rx_usecs;
-> +               ec->tx_coalesce_usecs =3D vi->tx_usecs;
-> +               ec->tx_max_coalesced_frames =3D vi->tx_max_packets;
-> +               ec->rx_max_coalesced_frames =3D vi->rx_max_packets;
-> +       } else {
-> +               ec->rx_max_coalesced_frames =3D 1;
->
-> -       if (vi->sq[0].napi.weight)
-> -               ec->tx_max_coalesced_frames =3D 1;
-> +               if (vi->sq[0].napi.weight)
-> +                       ec->tx_max_coalesced_frames =3D 1;
-> +       }
->
->         return 0;
->  }
-> @@ -2743,7 +2820,8 @@ static int virtnet_set_rxnfc(struct net_device *dev=
-, struct ethtool_rxnfc *info)
->  }
->
->  static const struct ethtool_ops virtnet_ethtool_ops =3D {
-> -       .supported_coalesce_params =3D ETHTOOL_COALESCE_MAX_FRAMES,
-> +       .supported_coalesce_params =3D ETHTOOL_COALESCE_MAX_FRAMES |
-> +               ETHTOOL_COALESCE_USECS,
->         .get_drvinfo =3D virtnet_get_drvinfo,
->         .get_link =3D ethtool_op_get_link,
->         .get_ringparam =3D virtnet_get_ringparam,
-> @@ -3411,6 +3489,8 @@ static bool virtnet_validate_features(struct virtio=
-_device *vdev)
->              VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
->                              "VIRTIO_NET_F_CTRL_VQ") ||
->              VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_HASH_REPORT,
-> +                            "VIRTIO_NET_F_CTRL_VQ") ||
-> +            VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_NOTF_COAL,
->                              "VIRTIO_NET_F_CTRL_VQ"))) {
->                 return false;
->         }
-> @@ -3546,6 +3626,13 @@ static int virtnet_probe(struct virtio_device *vde=
-v)
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
->                 vi->mergeable_rx_bufs =3D true;
->
-> +       if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
-> +               vi->rx_usecs =3D 0;
-> +               vi->tx_usecs =3D 0;
-> +               vi->tx_max_packets =3D 0;
-> +               vi->rx_max_packets =3D 0;
-> +       }
-> +
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT))
->                 vi->has_rss_hash_report =3D true;
->
-> @@ -3780,7 +3867,7 @@ static struct virtio_device_id id_table[] =3D {
->         VIRTIO_NET_F_CTRL_MAC_ADDR, \
->         VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
->         VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
-> -       VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
-> +       VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COA=
-L
->
->  static unsigned int features[] =3D {
->         VIRTNET_FEATURES,
-> diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_=
-net.h
-> index 3f55a4215f1..29ced55514d 100644
-> --- a/include/uapi/linux/virtio_net.h
-> +++ b/include/uapi/linux/virtio_net.h
-> @@ -56,7 +56,7 @@
->  #define VIRTIO_NET_F_MQ        22      /* Device supports Receive Flow
->                                          * Steering */
->  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23  /* Set MAC address */
-> -
-> +#define VIRTIO_NET_F_NOTF_COAL 53      /* Guest can handle notifications=
- coalescing */
->  #define VIRTIO_NET_F_HASH_REPORT  57   /* Supports hash report */
->  #define VIRTIO_NET_F_RSS         60    /* Supports RSS RX steering */
->  #define VIRTIO_NET_F_RSC_EXT     61    /* extended coalescing info */
-> @@ -355,4 +355,36 @@ struct virtio_net_hash_config {
->  #define VIRTIO_NET_CTRL_GUEST_OFFLOADS   5
->  #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET        0
->
-> +/*
-> + * Control notifications coalescing.
-> + *
-> + * Request the device to change the notifications coalescing parameters.
-> + *
-> + * Available with the VIRTIO_NET_F_NOTF_COAL feature bit.
-> + */
-> +#define VIRTIO_NET_CTRL_NOTF_COAL              6
-> +/*
-> + * Set the tx-usecs/tx-max-packets patameters.
-> + * tx-usecs - Maximum number of usecs to delay a TX notification.
-> + * tx-max-packets - Maximum number of packets to send before a TX notifi=
-cation.
-> + */
-> +struct virtio_net_ctrl_coal_tx {
-> +       __le32 tx_max_packets;
-> +       __le32 tx_usecs;
-> +};
-> +
-> +#define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET               0
-> +
-> +/*
-> + * Set the rx-usecs/rx-max-packets patameters.
-> + * rx-usecs - Maximum number of usecs to delay a RX notification.
-> + * rx-max-frames - Maximum number of packets to receive before a RX noti=
-fication.
-> + */
-> +struct virtio_net_ctrl_coal_rx {
-> +       __le32 rx_max_packets;
-> +       __le32 rx_usecs;
-> +};
-> +
-> +#define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET               1
-> +
->  #endif /* _UAPI_LINUX_VIRTIO_NET_H */
-> --
-> 2.32.0
+> +		/* least significant bit of the least significant octet
 
+That's the least significant bit of the _most significant_ octet (the
+one of the least significant octet must always be 1).
 
+> +		 * indicates if protocol field was compressed
+> +		 */
+> +		ppp_proto = ntohs(hdr->proto);
+> +		if (ppp_proto & 256) {
 
---=20
-FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_code=
-l/
-Dave T=C3=A4ht CEO, TekLibre, LLC
+Using hex would improve readability in my opinion (that is,
+s/256/0x0100/).
+
+> +			ppp_proto = htons(ppp_proto >> 8);
+
+I don't get why you convert ppp_proto back to network byte order.
+That contradicts the type annotation (u16).
+
+> +			nhoff += PPPOE_SES_HLEN - 1;
+> +		} else {
+> +			ppp_proto = htons(ppp_proto);
+
+Same here. We could leave ppp_proto untouched in this branch.
+
+> +			nhoff += PPPOE_SES_HLEN;
+> +		}
+> +
+> +		if (ppp_proto == htons(PPP_IP)) {
+
+With ppp_proto kept in host byte order, the htons() call would need to
+go.
+
+>  			proto = htons(ETH_P_IP);
+>  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
+> -			break;
+> -		case htons(PPP_IPV6):
+> +		} else if (ppp_proto == htons(PPP_IPV6)) {
+
+Same here, and in the following 'if' branches.
+
+>  			proto = htons(ETH_P_IPV6);
+>  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
+> -			break;
+> -		default:
+> +		} else if (ppp_proto == htons(PPP_MPLS_UC)) {
+> +			proto = htons(ETH_P_MPLS_UC);
+> +			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
+> +		} else if (ppp_proto == htons(PPP_MPLS_MC)) {
+> +			proto = htons(ETH_P_MPLS_MC);
+> +			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
+> +		} else if (is_ppp_proto_supported(ppp_proto)) {
+> +			fdret = FLOW_DISSECT_RET_OUT_GOOD;
+> +		} else {
+>  			fdret = FLOW_DISSECT_RET_OUT_BAD;
+>  			break;
+>  		}
+> +
+> +		if (dissector_uses_key(flow_dissector,
+> +				       FLOW_DISSECTOR_KEY_PPPOE)) {
+> +			struct flow_dissector_key_pppoe *key_pppoe;
+> +
+> +			key_pppoe = skb_flow_dissector_target(flow_dissector,
+> +							      FLOW_DISSECTOR_KEY_PPPOE,
+> +							      target_container);
+> +			key_pppoe->session_id = hdr->hdr.sid;
+> +			key_pppoe->ppp_proto = ppp_proto;
+
+With ppp_proto being u16, we'd now need to call htons(ppp_proto).
+
+> +			key_pppoe->type = htons(ETH_P_PPP_SES);
+> +		}
+>  		break;
+>  	}
+>  	case htons(ETH_P_TIPC): {
+> -- 
+> 2.35.1
+> 
+
