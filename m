@@ -2,98 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 696B1577860
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 23:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16619577875
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 23:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbiGQVgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 17:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        id S232903AbiGQVjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 17:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbiGQVgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 17:36:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D789511A15
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 14:35:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D944B80EBA
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 21:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05340C3411E;
-        Sun, 17 Jul 2022 21:35:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658093755;
-        bh=DVxesPckPATl7vAXJ4YxeFv3v680FxDJ2zthKZN1Rwk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRic+suq3zi51zjol8ULcD72YCuHJLqW9kwqzH0YHV9Tafvq/jZFPJSpo2hEb+jK7
-         PZq7jUHLfFxXaKJlHs9Gi4A/H/SOI3zQyLXOvN4hfJHWVVI2mWWUEKw3ypnVUol6xy
-         TECxH2gClanO4FGXuYp1Hq+UJM10gHfQMiw9/T+c02JMeU26O62jkGXhD/4eonZrf/
-         8vpyvQiNlzCnS6SP20FMXrJy2dXl267ncHeLC4ZpEUJj/acWcuy6/LIodz/k0gCO5d
-         ch+xjsQIuatspGPR1AEjvpMgA3DYRZ/mhi498nH8isa66q7pE65um+khy11esQqc9M
-         7SbQsog+vq+3g==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230185AbiGQVi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 17:38:58 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89DC7656A;
+        Sun, 17 Jul 2022 14:38:57 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id A8A25FF95E;
+        Sun, 17 Jul 2022 21:38:55 +0000 (UTC)
+Date:   Sun, 17 Jul 2022 23:38:42 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net-next 14/14] net/mlx5: CT: Remove warning of ignore_flow_level support for non PF
-Date:   Sun, 17 Jul 2022 14:33:52 -0700
-Message-Id: <20220717213352.89838-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220717213352.89838-1-saeed@kernel.org>
-References: <20220717213352.89838-1-saeed@kernel.org>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
+Message-ID: <20220717233842.1451e349.max@enpas.org>
+In-Reply-To: <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
+References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+        <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+Hi Dario,
 
-ignore_flow_level isn't supported for SFs, and so it causes
-post_act and ct to warn about it per SF.
-Apply the warning only for PF.
+This looks good, thank you for continuing to look after slcan!
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c       | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+A few comments below.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-index 2093cc2b0d48..33c1411ed8db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-@@ -36,7 +36,7 @@ mlx5e_tc_post_act_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 	int err;
- 
- 	if (!MLX5_CAP_FLOWTABLE_TYPE(priv->mdev, ignore_flow_level, table_type)) {
--		if (priv->mdev->coredev_type != MLX5_COREDEV_VF)
-+		if (priv->mdev->coredev_type == MLX5_COREDEV_PF)
- 			mlx5_core_warn(priv->mdev, "firmware level support is missing\n");
- 		err = -EOPNOTSUPP;
- 		goto err_check;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index a6d84ff3a0e7..864ce0c393e6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -2062,7 +2062,7 @@ mlx5_tc_ct_init_check_support(struct mlx5e_priv *priv,
- 		/* Ignore_flow_level support isn't supported by default for VFs and so post_act
- 		 * won't be supported. Skip showing error msg.
- 		 */
--		if (priv->mdev->coredev_type != MLX5_COREDEV_VF)
-+		if (priv->mdev->coredev_type == MLX5_COREDEV_PF)
- 			err_msg = "post action is missing";
- 		err = -EOPNOTSUPP;
- 		goto out_err;
--- 
-2.36.1
 
+
+On Sat, 16 Jul 2022 19:00:04 +0200
+Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
+
+[...]
+
+
+> @@ -68,7 +62,6 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
+>  				   SLC_STATE_BE_TXCNT_LEN)
+>  struct slcan {
+>  	struct can_priv         can;
+> -	int			magic;
+>  
+>  	/* Various fields. */
+>  	struct tty_struct	*tty;		/* ptr to TTY structure	     */
+> @@ -84,17 +77,14 @@ struct slcan {
+>  	int			xleft;          /* bytes left in XMIT queue  */
+>  
+>  	unsigned long		flags;		/* Flag values/ mode etc     */
+> -#define SLF_INUSE		0		/* Channel in use            */
+> -#define SLF_ERROR		1               /* Parity, etc. error        */
+> -#define SLF_XCMD		2               /* Command transmission      */
+> +#define SLF_ERROR		0               /* Parity, etc. error        */
+> +#define SLF_XCMD		1               /* Command transmission      */
+>  	unsigned long           cmd_flags;      /* Command flags             */
+>  #define CF_ERR_RST		0               /* Reset errors on open      */
+>  	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
+
+I assume xcmd_wait() came in as part of the previous patch series?
+
+
+[...]
+
+
+>  /* Send a can_frame to a TTY queue. */
+> @@ -652,25 +637,21 @@ static int slc_close(struct net_device *dev)
+>  	struct slcan *sl = netdev_priv(dev);
+>  	int err;
+>  
+> -	spin_lock_bh(&sl->lock);
+> -	if (sl->tty) {
+> -		if (sl->can.bittiming.bitrate &&
+> -		    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> -			spin_unlock_bh(&sl->lock);
+> -			err = slcan_transmit_cmd(sl, "C\r");
+> -			spin_lock_bh(&sl->lock);
+> -			if (err)
+> -				netdev_warn(dev,
+> -					    "failed to send close command 'C\\r'\n");
+> -		}
+> -
+> -		/* TTY discipline is running. */
+> -		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> +	if (sl->can.bittiming.bitrate &&
+> +	    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> +		err = slcan_transmit_cmd(sl, "C\r");
+> +		if (err)
+> +			netdev_warn(dev,
+> +				    "failed to send close command 'C\\r'\n");
+>  	}
+> +
+> +	/* TTY discipline is running. */
+> +	clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> +	flush_work(&sl->tx_work);
+> +
+>  	netif_stop_queue(dev);
+>  	sl->rcount   = 0;
+>  	sl->xleft    = 0;
+
+I suggest moving these two assignments to slc_open() - see below.
+
+
+[...]
+
+
+> @@ -883,72 +786,50 @@ static int slcan_open(struct tty_struct *tty)
+>  	if (!tty->ops->write)
+>  		return -EOPNOTSUPP;
+>  
+> -	/* RTnetlink lock is misused here to serialize concurrent
+> -	 * opens of slcan channels. There are better ways, but it is
+> -	 * the simplest one.
+> -	 */
+> -	rtnl_lock();
+> +	dev = alloc_candev(sizeof(*sl), 1);
+> +	if (!dev)
+> +		return -ENFILE;
+>  
+> -	/* Collect hanged up channels. */
+> -	slc_sync();
+> +	sl = netdev_priv(dev);
+>  
+> -	sl = tty->disc_data;
+> +	/* Configure TTY interface */
+> +	tty->receive_room = 65536; /* We don't flow control */
+> +	sl->rcount   = 0;
+> +	sl->xleft    = 0;
+
+I suggest moving the zeroing to slc_open() - i.e. to the netdev open
+function. As a bonus, you can then remove the same two assignments from
+slc_close() (see above). They are only used when netif_running(), with
+appropiate guards already in place as far as I can see.
+
+
+> +	spin_lock_init(&sl->lock);
+> +	INIT_WORK(&sl->tx_work, slcan_transmit);
+> +	init_waitqueue_head(&sl->xcmd_wait);
+>  
+> -	err = -EEXIST;
+> -	/* First make sure we're not already connected. */
+> -	if (sl && sl->magic == SLCAN_MAGIC)
+> -		goto err_exit;
+> +	/* Configure CAN metadata */
+> +	sl->can.bitrate_const = slcan_bitrate_const;
+> +	sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
+>  
+> -	/* OK.  Find a free SLCAN channel to use. */
+> -	err = -ENFILE;
+> -	sl = slc_alloc();
+> -	if (!sl)
+> -		goto err_exit;
+> +	/* Configure netdev interface */
+> +	sl->dev	= dev;
+> +	strscpy(dev->name, "slcan%d", sizeof(dev->name));
+
+The third parameter looks... unintentional :)
+
+What do the maintainers think of dropping the old "slcan" name, and
+just allowing this to be a normal canX device? These patches do bring
+it closer to that, after all. In this case, this name string magic
+could be dropped altogether.
+
+
+[...]
+
+
+
+This looks good to me overall.
+
+Thanks Dario!
+
+
+Max
