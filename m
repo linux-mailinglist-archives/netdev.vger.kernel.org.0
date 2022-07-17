@@ -2,126 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B95A25775E1
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 13:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5080357761D
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 14:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbiGQLPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 07:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57414 "EHLO
+        id S232755AbiGQMVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 08:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGQLPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 07:15:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00EBC13D7A
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 04:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658056535;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c9j88y9s6Hkg8UgciFOzJU9nfQvd1FfPp989+Uo9r2M=;
-        b=f0mHIilQIeJ5wM1tNxftFxwETl9R6iz2rV6EFpcENxoRvEqCQeQPgSSnRlG4RYG6o8QI5T
-        g5Tpbuz8sDxVOHTgUmfaow5hxYVut8tFW7HNQqlry9FSZiMNXrAj7jXki5tpiaoZX2rlTH
-        hGuiZ1lJshbZwTGT7l9nfkMTYDw36B8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-376-c6t_4GqTPoaqOy_fp7Xfaw-1; Sun, 17 Jul 2022 07:15:33 -0400
-X-MC-Unique: c6t_4GqTPoaqOy_fp7Xfaw-1
-Received: by mail-wm1-f72.google.com with SMTP id r82-20020a1c4455000000b003a300020352so3604941wma.5
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 04:15:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=c9j88y9s6Hkg8UgciFOzJU9nfQvd1FfPp989+Uo9r2M=;
-        b=KU/NALGBfvGTZ4/U2vZELN3AMtgqvRZrqM1HDK1zlQ3q+amOrW92L0horh5aF5Bh5d
-         WVqIlNWLg0k/DEXlnkPvjQV3KfCVSXHn30UIO+2zuFWD6zcimtCME5ViM08iGSAm+Uka
-         CUzlUCncoKk+uwsnJlAytPjND05guLr0IGWch+IRHywxAA1PVuTCMz6ttKFevtxr7+rW
-         Fiz+2GykeD2WFKWg8/4dIsK0O8q3VGFFLTBdTRG0SfLp5a+95YiBfkodkPoRJr6tv5gU
-         OuvurenZAzj2apOBze8YmqpiDITAFSpsRBZ+OoV3OFxLBeD2WdgmGwzYjGy2PTSXHpRK
-         NA7Q==
-X-Gm-Message-State: AJIora8/RDDW2OnOkwetx3KhLLgHY2UCJIo4KPSkkSc5h7XfDMdhK9EV
-        zim21DGJsWEUwUJ6w/yDbO0B7Lff58rqu3Lh70FyhyETN7XAQxvSjd7saNAFzp84Ddy336mJbRi
-        4BZeVRNySRC+E2Cbb
-X-Received: by 2002:a05:600c:6012:b0:3a3:1b6c:f308 with SMTP id az18-20020a05600c601200b003a31b6cf308mr299234wmb.91.1658056532556;
-        Sun, 17 Jul 2022 04:15:32 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uGpGXedM2PCLHQ7X12Al7EQkZHSC3hNbJVLlpSEPCwdukFoGVzUkp40agh9RpJKms1cpEWDg==
-X-Received: by 2002:a05:600c:6012:b0:3a3:1b6c:f308 with SMTP id az18-20020a05600c601200b003a31b6cf308mr299227wmb.91.1658056532364;
-        Sun, 17 Jul 2022 04:15:32 -0700 (PDT)
-Received: from localhost.localdomain ([185.233.130.50])
-        by smtp.gmail.com with ESMTPSA id a10-20020adfe5ca000000b0021d77625d90sm8133671wrn.79.2022.07.17.04.15.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 04:15:31 -0700 (PDT)
-Date:   Sun, 17 Jul 2022 13:15:23 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>
-Cc:     Marcin Szycik <marcin.szycik@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "gustavoars@kernel.org" <gustavoars@kernel.org>,
-        "baowen.zheng@corigine.com" <baowen.zheng@corigine.com>,
-        "boris.sukholitko@broadcom.com" <boris.sukholitko@broadcom.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "kurt@linutronix.de" <kurt@linutronix.de>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "paulb@nvidia.com" <paulb@nvidia.com>,
-        "simon.horman@corigine.com" <simon.horman@corigine.com>,
-        "komachi.yoshiki@gmail.com" <komachi.yoshiki@gmail.com>,
-        "zhangkaiheb@126.com" <zhangkaiheb@126.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "mostrows@earthlink.net" <mostrows@earthlink.net>,
-        "paulus@samba.org" <paulus@samba.org>
-Subject: Re: [RFC PATCH net-next v4 1/4] flow_dissector: Add PPPoE dissectors
-Message-ID: <20220717111523.GA3118@localhost.localdomain>
-References: <20220708122421.19309-1-marcin.szycik@linux.intel.com>
- <20220708122421.19309-2-marcin.szycik@linux.intel.com>
- <20220708190528.GB3166@debian.home>
- <MW4PR11MB57767AD317D175D260362539FD879@MW4PR11MB5776.namprd11.prod.outlook.com>
- <20220712172018.GA3794@localhost.localdomain>
- <MW4PR11MB577640BD1BAC97D3BB27A339FD899@MW4PR11MB5776.namprd11.prod.outlook.com>
- <MW4PR11MB57763D9CD8EA3F31DB7E3E19FD899@MW4PR11MB5776.namprd11.prod.outlook.com>
+        with ESMTP id S229681AbiGQMVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 08:21:51 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CECE0CA;
+        Sun, 17 Jul 2022 05:21:49 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 4C92718858D8;
+        Sun, 17 Jul 2022 12:21:47 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 4287225032B7;
+        Sun, 17 Jul 2022 12:21:47 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 3C3E9A1E00AE; Sun, 17 Jul 2022 12:21:47 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW4PR11MB57763D9CD8EA3F31DB7E3E19FD899@MW4PR11MB5776.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Date:   Sun, 17 Jul 2022 14:21:47 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <Ys69DiAwT0Md+6ai@shredder>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+ <20220707152930.1789437-4-netdev@kapio-technology.com>
+ <20220708084904.33otb6x256huddps@skbuf>
+ <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
+ <20220708091550.2qcu3tyqkhgiudjg@skbuf>
+ <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+ <20220708115624.rrjzjtidlhcqczjv@skbuf>
+ <723e2995314b41ff323272536ef27341@kapio-technology.com>
+ <YsqPWK67U0+Iw2Ru@shredder>
+ <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
+ <Ys69DiAwT0Md+6ai@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <648ba6718813bf76e7b973150b73f028@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM28,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 01:54:35PM +0000, Drewek, Wojciech wrote:
-> I think this should work with both LE and BE arch, what do you think Guillaume?
-> We don't want to spam so much with next versions so maybe it is better
-> to ask earlier.
-> 
-> 	u16 ppp_proto;
-> 
-> 	ppp_proto = ntohs(hdr->proto);
-> 	if (ppp_proto & 256) {
-> 		ppp_proto = htons(ppp_proto >> 8);
-> 		nhoff += PPPOE_SES_HLEN - 1;
-> 	} else {
-> 		ppp_proto = htons(ppp_proto);
-> 		nhoff += PPPOE_SES_HLEN;
-> 	}
+On 2022-07-13 14:39, Ido Schimmel wrote:
+> On Wed, Jul 13, 2022 at 09:09:58AM +0200, netdev@kapio-technology.com 
+> wrote:
 
-Sorry for responding late. I was away this week (and will be next week
-too) and have very sporadic (and slow) Internet connection and limitted
-time for review. I saw you've sent a v5 with this code, I'll reply
-there. Thanks for being so patient.
+> 
+> What are "Storm Prevention" and "zero-DPV" FDB entries?
+
+They are both FDB entries that at the HW level drops all packets having 
+a specific SA, thus using minimum resources.
+(thus the name "Storm Prevention" aka, protection against DOS attacks. 
+We must remember that we operate with CPU based learning.)
+
+> 
+> There is no decision that I'm aware of. I'm simply trying to understand
+> how FDB entries that have 'BR_FDB_ENTRY_LOCKED' set are handled in
+> mv88e6xxx and other devices in this class. We have at least three
+> different implementations to consolidate:
+> 
+> 1. The bridge driver, pure software forwarding. The locked entry is
+> dynamically created by the bridge. Packets received via the locked port
+> with a SA corresponding to the locked entry will be dropped, but will
+> refresh the entry. On the other hand, packets with a DA corresponding 
+> to
+> the locked entry will be forwarded as known unicast through the locked
+> port.
+> 
+> 2. Hardware implementations like Spectrum that can be programmed to 
+> trap
+> packets that incurred an FDB miss. Like in the first case, the locked
+> entry is dynamically created by the bridge driver and also aged by it.
+> Unlike in the first case, since this entry is not present in hardware,
+> packets with a DA corresponding to the locked entry will be flooded as
+> unknown unicast.
+> 
+> 3. Hardware implementations like mv88e6xxx that fire an interrupt upon
+> FDB miss. Need your help to understand how the above works there and
+> why. Specifically, how locked entries are represented in hardware (if 
+> at
+> all) and what is the significance of not installing corresponding
+> entries in hardware.
+> 
+
+With the mv88e6xxx, a miss violation with the SA occurs when there is no 
+entry. If you then add a normal entry with the SA, the port is open for 
+that SA of course. The zero-DPV entry is an entry that ensures that 
+there is no more miss violation interrupts from that SA, while dropping 
+all entries with the SA.
 
