@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D54557767E
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 15:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA5257767C
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 15:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbiGQN6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 09:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
+        id S232675AbiGQN6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 09:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232075AbiGQN6w (ORCPT
+        with ESMTP id S231959AbiGQN6w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 09:58:52 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833F85FD8
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 06:58:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F30559F
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 06:58:50 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oD4n6-0007o0-9R; Sun, 17 Jul 2022 15:58:36 +0200
+        id 1oD4n6-0007o1-9R; Sun, 17 Jul 2022 15:58:36 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oD4n3-001WaB-TG; Sun, 17 Jul 2022 15:58:33 +0200
+        id 1oD4n4-001WaF-Fm; Sun, 17 Jul 2022 15:58:34 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oD4n2-00ASW4-UI; Sun, 17 Jul 2022 15:58:32 +0200
+        id 1oD4n3-00ASWD-Sp; Sun, 17 Jul 2022 15:58:33 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -36,10 +36,12 @@ To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net v2 1/2] net: dsa: sja1105: silent spi_device_id warnings
-Date:   Sun, 17 Jul 2022 15:58:30 +0200
-Message-Id: <20220717135831.2492844-1-o.rempel@pengutronix.de>
+Subject: [PATCH net v2 2/2] net: dsa: vitesse-vsc73xx: silent spi_device_id warnings
+Date:   Sun, 17 Jul 2022 15:58:31 +0200
+Message-Id: <20220717135831.2492844-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220717135831.2492844-1-o.rempel@pengutronix.de>
+References: <20220717135831.2492844-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,59 +57,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add spi_device_id entries to silent following warnings:
- SPI driver sja1105 has no spi_device_id for nxp,sja1105e
- SPI driver sja1105 has no spi_device_id for nxp,sja1105t
- SPI driver sja1105 has no spi_device_id for nxp,sja1105p
- SPI driver sja1105 has no spi_device_id for nxp,sja1105q
- SPI driver sja1105 has no spi_device_id for nxp,sja1105r
- SPI driver sja1105 has no spi_device_id for nxp,sja1105s
- SPI driver sja1105 has no spi_device_id for nxp,sja1110a
- SPI driver sja1105 has no spi_device_id for nxp,sja1110b
- SPI driver sja1105 has no spi_device_id for nxp,sja1110c
- SPI driver sja1105 has no spi_device_id for nxp,sja1110d
+Add spi_device_id entries to silent SPI warnings.
 
 Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/net/dsa/vitesse-vsc73xx-spi.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index b253e27bcfb4..b03d0d0c3dbf 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3382,12 +3382,28 @@ static const struct of_device_id sja1105_dt_ids[] = {
+diff --git a/drivers/net/dsa/vitesse-vsc73xx-spi.c b/drivers/net/dsa/vitesse-vsc73xx-spi.c
+index 3110895358d8..97a92e6da60d 100644
+--- a/drivers/net/dsa/vitesse-vsc73xx-spi.c
++++ b/drivers/net/dsa/vitesse-vsc73xx-spi.c
+@@ -205,10 +205,20 @@ static const struct of_device_id vsc73xx_of_match[] = {
  };
- MODULE_DEVICE_TABLE(of, sja1105_dt_ids);
+ MODULE_DEVICE_TABLE(of, vsc73xx_of_match);
  
-+static const struct spi_device_id sja1105_spi_ids[] = {
-+	{ "sja1105e" },
-+	{ "sja1105t" },
-+	{ "sja1105p" },
-+	{ "sja1105q" },
-+	{ "sja1105r" },
-+	{ "sja1105s" },
-+	{ "sja1110a" },
-+	{ "sja1110b" },
-+	{ "sja1110c" },
-+	{ "sja1110d" },
++static const struct spi_device_id vsc73xx_spi_ids[] = {
++	{ "vsc7385" },
++	{ "vsc7388" },
++	{ "vsc7395" },
++	{ "vsc7398" },
 +	{ },
 +};
-+MODULE_DEVICE_TABLE(spi, sja1105_spi_ids);
++MODULE_DEVICE_TABLE(spi, vsc73xx_spi_ids);
 +
- static struct spi_driver sja1105_driver = {
+ static struct spi_driver vsc73xx_spi_driver = {
+ 	.probe = vsc73xx_spi_probe,
+ 	.remove = vsc73xx_spi_remove,
+ 	.shutdown = vsc73xx_spi_shutdown,
++	.id_table = vsc73xx_spi_ids,
  	.driver = {
- 		.name  = "sja1105",
- 		.owner = THIS_MODULE,
- 		.of_match_table = of_match_ptr(sja1105_dt_ids),
- 	},
-+	.id_table = sja1105_spi_ids,
- 	.probe  = sja1105_probe,
- 	.remove = sja1105_remove,
- 	.shutdown = sja1105_shutdown,
+ 		.name = "vsc73xx-spi",
+ 		.of_match_table = vsc73xx_of_match,
 -- 
 2.30.2
 
