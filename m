@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D32577767
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 18:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F1CA577795
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 19:46:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232502AbiGQQ7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 12:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
+        id S229681AbiGQRq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 13:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232136AbiGQQ7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 12:59:36 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87334266E
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 09:59:35 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so10530832pjl.4
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 09:59:35 -0700 (PDT)
+        with ESMTP id S229536AbiGQRqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 13:46:55 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F517DF89;
+        Sun, 17 Jul 2022 10:46:54 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id r12so7369144qvm.3;
+        Sun, 17 Jul 2022 10:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8DoLFfWDTjRtsJLo22CES5o3W+Dnjen7vJRkvvgmLc0=;
-        b=GDOpqh793kX6Iw0aFG0H9s93vKfiZcShoi/oymjBfCYCV0FMCBGJZKKSjQ+voe0XmR
-         BNTTG2R6yzrPsJTWe0EUp9tt+VHcJxeTVGuHzNeFutsTfpmKUHKWN9D8Tyja6qliVIBw
-         Pw+WHClvlttRUxmcYxoY5/hsugMP2dahuOXnf8ZrdbatOri3yiNVfa90yvFx4E6ICucg
-         4hwTjFR0G68+fxCg+SpJc41X9/Px1ugq6DWlNFLHhwnR6ykU/16ytup5CBXyNIolgMJX
-         89VKTTgCpMHMHedAVWqU2ZSLzNPsX3hVWRnBkAyL++UhFChf77dlrfnXx59+zF2N3SXt
-         XdSw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uISDuglJUEP8Tg9eISZfCi43e5GRXXZx7JtPVHWEDuw=;
+        b=Hz00FMLb+3m8GoLx75yn2Bywr9Fy+w2SOR2U1gKks+4nApkWPmlmN0Geq1Wi8+eY8z
+         dM51mu9f2AxGGaj7H4QOHN2D/Zu/l/CfZG3AY3usWfpMqbkuMEoGUB7XGOEhSCU1qw9q
+         Lv9oycpD4D7aqPJQCs417oAMfc9NCAiJDXrwu91RRXPM/WT16VA3BMbiKPXe5DaS2PYw
+         YheDutCdA/mf9Hlj6h+ZmLdUw1P4lSJqYiyE670tTmS0iQs0GipardPmLBfij5+qvrcc
+         7B3uUZIyTFk1nPubSAtAyLk58tTFnG0rK84mfh8IxqwDaVgZU2LdeXEcNAnZF9BP8F7p
+         DQNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8DoLFfWDTjRtsJLo22CES5o3W+Dnjen7vJRkvvgmLc0=;
-        b=43QINISOyLP812B5pdqFYXHhNtks2LJt8USLhTPFH4N9UgR3YSdxkDOeXWUg6pNYh4
-         Byo5TowjV8FUTBYGT+hI0lR+js7A1Kfke98gbeyT0Gb8DU3iOeC9pas/jo6G0ORkALM2
-         IKE9um4KQV/SKz77sW8rW0ZvgJyT2hwOlM47WFJmLEfOuUOlDEOyiQOZvDtj+184O6CD
-         +/GjsERE6aHgrT7Bv65rsNpF1fwdwlIYV6wbP0aWnR+g+efMzJRzK0zhz3MOwNYmU9mP
-         i270I1oCHmpZcrhKkUvfCrZpbZqNc7QAVnzlnB8D+nkuFiPMiTICB72WDU6fYuQ+FCqJ
-         yl0Q==
-X-Gm-Message-State: AJIora+y9Ud/9Yvb4+7dV66ZLqVOHnrc7TsvHO4nWnHQQYB2q39QWjrF
-        RWZh9cnFqGIlIT3+kwj1zWY=
-X-Google-Smtp-Source: AGRyM1vSOpkJhp7eapZq+dZrTAQBgRvph/clZclD/duOWb9Gqt+iWqHx/O5ksa12Om6XzHf7EAlLsA==
-X-Received: by 2002:a17:90a:6c46:b0:1f1:b72f:ce26 with SMTP id x64-20020a17090a6c4600b001f1b72fce26mr4548289pjj.190.1658077175017;
-        Sun, 17 Jul 2022 09:59:35 -0700 (PDT)
-Received: from ?IPV6:2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5? ([2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5])
-        by smtp.gmail.com with ESMTPSA id j10-20020a170902690a00b0016a17da4ad4sm7448401plk.39.2022.07.17.09.59.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Jul 2022 09:59:34 -0700 (PDT)
-Message-ID: <f8d86bdd-b97a-0dbe-c3bf-93c85b05cdde@gmail.com>
-Date:   Sun, 17 Jul 2022 09:59:33 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net 08/15] docs: net: dsa: document port_fast_age
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uISDuglJUEP8Tg9eISZfCi43e5GRXXZx7JtPVHWEDuw=;
+        b=mM6sqxHHI/qm7YtH8Oc0EmE7aRV/MUP3vCgCtN8FdWBZjMHqO4AeM/S3pqqMywDu4u
+         OXb0kXqKEjuXN7GFAkG0OAamu7Q5xsfYliVKcah8cSF7XqkBaXsqljG8MnLPNDvChah/
+         HwPf/6wHIFU76MWKflpteWHl6fAd3qooFcrpcve0u5L1OZrKQyNiuSVCHdyKyIHzRvVV
+         zUub3wWk/wACoZ043SGJyKMA6/BHmI1v5ymF19MEZ4nc2x0+eMh/B71NcIqR177+oT/2
+         oh4jIJSBz2X7Pi9LQZg3mOHz66hO0ZZeNbK+tuMloj7wH0KAkGp5rz0ZEocSqNFAI79Z
+         E7rA==
+X-Gm-Message-State: AJIora/deXH2M+xWfUabJPQyTJ0tbvIXR8rX+WmDEizPb2PuA7bmE2kC
+        Hyok2qCoaajmnZep5tdvikW7P7GQYMzsNQ==
+X-Google-Smtp-Source: AGRyM1tUwqjWB2uToaP44zSNVtg5NkHY3sFVAq+Me0/qjW34Yhslkc1mi15DusAL53QM1J9xSbXTsA==
+X-Received: by 2002:ad4:5949:0:b0:473:75ec:9f6e with SMTP id eo9-20020ad45949000000b0047375ec9f6emr18416557qvb.17.1658080013304;
+        Sun, 17 Jul 2022 10:46:53 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:db10:283b:b16c:9691])
+        by smtp.gmail.com with ESMTPSA id s10-20020a05620a254a00b006a6d74f8fc9sm10792781qko.127.2022.07.17.10.46.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 10:46:52 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 10:46:51 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
- <20220716185344.1212091-9-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220716185344.1212091-9-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>
+Subject: Re: [RFC PATCH 00/17] xdp: Add packet queueing and scheduling
+ capabilities
+Message-ID: <YtRLC5ILXZOre8D7@pop-os.localdomain>
+References: <20220713111430.134810-1-toke@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220713111430.134810-1-toke@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,17 +92,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/16/2022 11:53 AM, Vladimir Oltean wrote:
-> The provided information about FDB flushing is not really up to date.
-> The DSA core automatically calls port_fast_age() when necessary, and
-> drivers should just implement that rather than hooking it to
-> port_bridge_leave, port_stp_state_set and others.
+On Wed, Jul 13, 2022 at 01:14:08PM +0200, Toke Høiland-Jørgensen wrote:
+> Packet forwarding is an important use case for XDP, which offers
+> significant performance improvements compared to forwarding using the
+> regular networking stack. However, XDP currently offers no mechanism to
+> delay, queue or schedule packets, which limits the practical uses for
+> XDP-based forwarding to those where the capacity of input and output links
+> always match each other (i.e., no rate transitions or many-to-one
+> forwarding). It also prevents an XDP-based router from doing any kind of
+> traffic shaping or reordering to enforce policy.
 > 
-> Fixes: 732f794c1baf ("net: dsa: add port fast ageing")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Sorry for forgetting to respond to your email to my patchset.
+
+The most important question from you is actually why I give up on PIFO.
+Actually its limitation is already in its name, its name Push In First
+Out already says clearly that it only allows to dequeue the first one.
+Still confusing?
+
+You can take a look at your pifo_map_pop_elem(), which is the
+implementation for bpf_map_pop_elem(), which is:
+
+       long bpf_map_pop_elem(struct bpf_map *map, void *value)
+
+Clearly, there is no even 'key' in its parameter list. If you just
+compare it to mine:
+
+	BPF_CALL_2(bpf_skb_map_pop, struct bpf_map *, map, u64, key)
+
+Is their difference now 100% clear? :)
+
+The next question is why this is important (actually it is the most
+important)? Because we (I mean for eBPF Qdisc users, not sure about you)
+want the programmability, which I have been emphasizing since V1...
+
+Clearly it is already too late to fix bpf_map_pop_elem(), we don't want
+to repeat that mistake again.
+
+More importantly, the latter can easily implement the former, as shown below:
+
+bpf_stack_for_min; // Just BPF_MAP_TYPE_STACK
+
+push(map, key, value)
+{
+  bpf_stack_for_min.push(min(key, bpf_stack_for_min.top()));
+  // Insert key value pair here
+}
+
+pop_the_first(map, value)
+{
+   val = pop_any(map, bpf_stack_for_min.top());
+   *value = val;
+   bpf_stack_for_min.pop();
+}
+
+
+BTW, what is _your_ use case for skb map and user-space PIFO map? I am
+sure you have uses case for XDP, it is unclear what you have for other
+cases. Please don't piggy back use cases you don't have, we all have to
+justify all use cases. :)
+
+Thanks.
