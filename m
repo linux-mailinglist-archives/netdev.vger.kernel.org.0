@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED3957785F
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 23:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40C0577861
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 23:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbiGQVgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 17:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S232667AbiGQVg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 17:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232763AbiGQVf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 17:35:58 -0400
+        with ESMTP id S231753AbiGQVgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 17:36:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148F110558
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 14:35:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CE711A06
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 14:35:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3193B80EC3
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 21:35:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3C4C341C0;
-        Sun, 17 Jul 2022 21:35:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 879AAB80EC9
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 21:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FC9C341CD;
+        Sun, 17 Jul 2022 21:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658093753;
-        bh=YisMAetjrULpPFps2zJKVNK9o1I6wPo2BTTmyAozXY8=;
+        s=k20201202; t=1658093754;
+        bh=55a7tG78ccvudGetrvNjg3gjjcRPjp/o+R/MD8K1td0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ad8Je6vy1bQreTp3kQyXrVR9c55CBjEHtZYWwKmcUFmXSZvWb/FbWlKnd6GakzeLa
-         flH494UJ29Mq3QGJF0hLk4f6cjhhi8vAyg08Ohfocoo1Ghl7IpyOdMmP79ZlAUOxkD
-         CBRUVJ+jKhPWqc/paNz4SYUMEVddpaOPrh+BU8XBhkQeQ52xYpOVzM47kcwrcUdUuf
-         Dspk0QTzp3XYoltqcrobUo5kdYZHwYwnApqyem6tfArAHPkYulXPQks3q2XwV3O/mg
-         IujE3EyR594zZICynD8BBrvTQWsEZYAqg5HhSKMp9UZ6k3bSOmeqX0xdxaEm5jMKFl
-         +erHxFN6D/ADA==
+        b=ch1gyXgog2MREcVLugxb3J4NDCOdm7Tm5AQdULqky8TMDOzlXpRgBrWDnQwh4vMJ3
+         DFZFFDdAuy37hHHJTyz+6vi8Kd4WpBS7xw5NVP6Z9EoduD7F1Qy9ybee0DLheGbS7v
+         JYvlC8m2VZTAC5d4GV0ogYYIv7Zq0+ukJiRYDm4H35D9wJpj+pmTe51TJeeG3RZiza
+         m4quD46mjfI6zYnSJ8rBTafpB8m0W2nKrE3ivV04pwqg9L3cViE4F3RozPKh7c1au+
+         9TlJdk92QbeBNB7ZR0r67QGvozkr0TnLwP+KkO8426EnYdBUjKpX5hgAxEDYppz4FT
+         u2PjINr6jr5kg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>
-Subject: [net-next 12/14] net/mlx5: Expose ts_cqe_metadata_size2wqe_counter
-Date:   Sun, 17 Jul 2022 14:33:50 -0700
-Message-Id: <20220717213352.89838-13-saeed@kernel.org>
+Subject: [net-next 13/14] net/mlx5e: Add resiliency for PTP TX port timestamp
+Date:   Sun, 17 Jul 2022 14:33:51 -0700
+Message-Id: <20220717213352.89838-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220717213352.89838-1-saeed@kernel.org>
 References: <20220717213352.89838-1-saeed@kernel.org>
@@ -57,35 +57,172 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Add capability field which indicates the mask for wqe_counter which
-connects between loopback CQE and the original WQE. With this connection
-the driver can identify lost of the loopback CQE and reply PTP
-synchronization with timestamp given in the original CQE.
+PTP TX port timestamp relies on receiving 2 CQEs for each outgoing
+packet (WQE). The regular CQE has a less accurate timestamp than the
+wire CQE. On link change, the wire CQE may get lost. Let the driver
+detect and restore the relation between the CQEs, and re-sync after
+timeout.
+
+Add resiliency for this as follows: add id (producer counter)
+into the WQE's metadata. This id will be received in the wire
+CQE (in wqe_counter field). On handling the wire CQE, if there is no
+match, replay the PTP application with the time-stamp from the regular
+CQE and restore the sync between the CQEs and their SKBs. This patch
+adds 2 ptp counters:
+1) ptp_cq0_resync_event: number of times a mismatch was detected between
+   the regular CQE and the wire CQE.
+2) ptp_cq0_resync_cqe: total amount of missing wire CQEs.
 
 Signed-off-by: Aya Levin <ayal@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 37 ++++++++++++++++++-
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.h  |  1 +
+ .../ethernet/mellanox/mlx5/core/en_stats.c    |  2 +
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 10 +++++
+ 5 files changed, 50 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 8e571acc9ed8..5cd835f48bbb 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1835,7 +1835,11 @@ struct mlx5_ifc_cmd_hca_cap_2_bits {
- 	u8	   sw_vhca_id[0xe];
- 	u8	   reserved_at_230[0x10];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index 047f88f09203..78ad96cf4222 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -79,19 +79,49 @@ void mlx5e_skb_cb_hwtstamp_handler(struct sk_buff *skb, int hwtstamp_type,
+ 	memset(skb->cb, 0, sizeof(struct mlx5e_skb_cb_hwtstamp));
+ }
  
--	u8	   reserved_at_240[0x5c0];
-+	u8	   reserved_at_240[0xb];
-+	u8	   ts_cqe_metadata_size2wqe_counter[0x5];
-+	u8	   reserved_at_250[0x10];
++#define PTP_WQE_CTR2IDX(val) ((val) & ptpsq->ts_cqe_ctr_mask)
 +
-+	u8	   reserved_at_260[0x5a0];
++static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb_id)
++{
++	return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
++}
++
++static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb_id)
++{
++	struct skb_shared_hwtstamps hwts = {};
++	struct sk_buff *skb;
++
++	ptpsq->cq_stats->resync_event++;
++
++	while (skb_cc != skb_id) {
++		skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
++		hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
++		skb_tstamp_tx(skb, &hwts);
++		ptpsq->cq_stats->resync_cqe++;
++		skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
++	}
++}
++
+ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+ 				    struct mlx5_cqe64 *cqe,
+ 				    int budget)
+ {
+-	struct sk_buff *skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
++	u16 skb_id = PTP_WQE_CTR2IDX(be16_to_cpu(cqe->wqe_counter));
++	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+ 	struct mlx5e_txqsq *sq = &ptpsq->txqsq;
++	struct sk_buff *skb;
+ 	ktime_t hwtstamp;
+ 
+ 	if (unlikely(MLX5E_RX_ERR_CQE(cqe))) {
++		skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+ 		ptpsq->cq_stats->err_cqe++;
+ 		goto out;
+ 	}
+ 
++	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
++		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id);
++
++	skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+ 	hwtstamp = mlx5e_cqe_ts_to_ns(sq->ptp_cyc2time, sq->clock, get_cqe_ts(cqe));
+ 	mlx5e_skb_cb_hwtstamp_handler(skb, MLX5E_SKB_CB_PORT_HWTSTAMP,
+ 				      hwtstamp, ptpsq->cq_stats);
+@@ -241,6 +271,7 @@ static void mlx5e_ptp_destroy_sq(struct mlx5_core_dev *mdev, u32 sqn)
+ static int mlx5e_ptp_alloc_traffic_db(struct mlx5e_ptpsq *ptpsq, int numa)
+ {
+ 	int wq_sz = mlx5_wq_cyc_get_size(&ptpsq->txqsq.wq);
++	struct mlx5_core_dev *mdev = ptpsq->txqsq.mdev;
+ 
+ 	ptpsq->skb_fifo.fifo = kvzalloc_node(array_size(wq_sz, sizeof(*ptpsq->skb_fifo.fifo)),
+ 					     GFP_KERNEL, numa);
+@@ -250,7 +281,9 @@ static int mlx5e_ptp_alloc_traffic_db(struct mlx5e_ptpsq *ptpsq, int numa)
+ 	ptpsq->skb_fifo.pc   = &ptpsq->skb_fifo_pc;
+ 	ptpsq->skb_fifo.cc   = &ptpsq->skb_fifo_cc;
+ 	ptpsq->skb_fifo.mask = wq_sz - 1;
+-
++	if (MLX5_CAP_GEN_2(mdev, ts_cqe_metadata_size2wqe_counter))
++		ptpsq->ts_cqe_ctr_mask =
++			(1 << MLX5_CAP_GEN_2(mdev, ts_cqe_metadata_size2wqe_counter)) - 1;
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+index a71a32e00ebb..92dbbec472ec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+@@ -17,6 +17,7 @@ struct mlx5e_ptpsq {
+ 	u16                      skb_fifo_pc;
+ 	struct mlx5e_skb_fifo    skb_fifo;
+ 	struct mlx5e_ptp_cq_stats *cq_stats;
++	u16                      ts_cqe_ctr_mask;
  };
  
- enum mlx5_ifc_flow_destination_type {
+ enum {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 631519420dec..cdac9520f716 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -2119,6 +2119,8 @@ static const struct counter_desc ptp_cq_stats_desc[] = {
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, err_cqe) },
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, abort) },
+ 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, abort_abs_diff_ns) },
++	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_cqe) },
++	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_event) },
+ };
+ 
+ static const struct counter_desc ptp_rq_stats_desc[] = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index e48b15b55b6f..ed4fc940e4ef 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -453,6 +453,8 @@ struct mlx5e_ptp_cq_stats {
+ 	u64 err_cqe;
+ 	u64 abort;
+ 	u64 abort_abs_diff_ns;
++	u64 resync_cqe;
++	u64 resync_event;
+ };
+ 
+ struct mlx5e_stats {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index 699d3a9886bd..dc1e01e93d5a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -631,12 +631,22 @@ void mlx5e_tx_mpwqe_ensure_complete(struct mlx5e_txqsq *sq)
+ 		mlx5e_tx_mpwqe_session_complete(sq);
+ }
+ 
++static void mlx5e_cqe_ts_id_eseg(struct mlx5e_ptpsq *ptpsq, struct sk_buff *skb,
++				 struct mlx5_wqe_eth_seg *eseg)
++{
++	if (ptpsq->ts_cqe_ctr_mask && unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
++		eseg->flow_table_metadata = cpu_to_be32(ptpsq->skb_fifo_pc &
++							ptpsq->ts_cqe_ctr_mask);
++}
++
+ static void mlx5e_txwqe_build_eseg(struct mlx5e_priv *priv, struct mlx5e_txqsq *sq,
+ 				   struct sk_buff *skb, struct mlx5e_accel_tx_state *accel,
+ 				   struct mlx5_wqe_eth_seg *eseg, u16 ihs)
+ {
+ 	mlx5e_accel_tx_eseg(priv, skb, eseg, ihs);
+ 	mlx5e_txwqe_build_eseg_csum(sq, skb, accel, eseg);
++	if (unlikely(sq->ptpsq))
++		mlx5e_cqe_ts_id_eseg(sq->ptpsq, skb, eseg);
+ }
+ 
+ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
 -- 
 2.36.1
 
