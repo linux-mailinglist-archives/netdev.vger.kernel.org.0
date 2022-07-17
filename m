@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64AC557771B
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 17:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 099B757771C
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 17:37:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232572AbiGQPgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 11:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
+        id S232841AbiGQPgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 11:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiGQPgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 11:36:10 -0400
+        with ESMTP id S229629AbiGQPgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 11:36:50 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFBC13E88
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 08:36:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25C813F35
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 08:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=rn+tiYKcgcUq9aZGwpK/3OXJwoi1NdWudqR6Z4YMoGE=; b=OTre5gvp9NEvit4nnhlyVNoT6r
-        176VOCLpJMLDLK+oQIZJY+2Zw2jKPN65gq5+dr3zf9dx5zLoIvjWUXynaK0WilWndMU04WvDenXua
-        2fEdvpH3kCg8vCXayaPqKRPM7A/3wD+csa1WfliQB7B9bvaLZSk/PYiN/ll+Ze1Z9DJ8=;
+        bh=NwLK+sFavQ6Os4nY+UM4wTrTpst1mcObXrZtvvdAc4U=; b=LjQzcvEo2JMXMPzDVw5qysZAC/
+        sDagdxHDaT6GD0UkEOsL7r+FXNi9HQs9g5cdRBf7GmKYyh9Bw9NTzAjg/QuCx+1tKGsqv6pBd64jj
+        rC7ztoZLkfOq3/bbA+pl+rqQazybhkf9ONlzzzObDvhV2G7ZL7esxkZY8OeJucOcD4oI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oD6JR-00Ad4C-4Y; Sun, 17 Jul 2022 17:36:05 +0200
-Date:   Sun, 17 Jul 2022 17:36:05 +0200
+        id 1oD6K8-00Ad4v-BO; Sun, 17 Jul 2022 17:36:48 +0200
+Date:   Sun, 17 Jul 2022 17:36:48 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
@@ -34,15 +34,14 @@ Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net 09/15] docs: net: dsa: remove
- port_bridge_tx_fwd_offload
-Message-ID: <YtQsZSNUnZ/tlIdD@lunn.ch>
+Subject: Re: [PATCH net 10/15] docs: net: dsa: remove port_vlan_dump
+Message-ID: <YtQskNu8799fxycF@lunn.ch>
 References: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
- <20220716185344.1212091-10-vladimir.oltean@nxp.com>
+ <20220716185344.1212091-11-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220716185344.1212091-10-vladimir.oltean@nxp.com>
+In-Reply-To: <20220716185344.1212091-11-vladimir.oltean@nxp.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -52,12 +51,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 09:53:38PM +0300, Vladimir Oltean wrote:
-> We've changed the API through which we can offload the bridge TX
-> forwarding process. Update the documentation in light of the removal of
-> 2 DSA switch ops.
+On Sat, Jul 16, 2022 at 09:53:39PM +0300, Vladimir Oltean wrote:
+> This was deleted in 2017, delete the obsolete documentation.
 > 
-> Fixes: b079922ba2ac ("net: dsa: add a "tx_fwd_offload" argument to ->port_bridge_join")
+> Fixes: c069fcd82c57 ("net: dsa: Remove support for bypass bridge port attributes/vlan set")
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
