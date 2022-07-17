@@ -2,155 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4D05777BD
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 20:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D0545777BE
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 20:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232017AbiGQSRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 14:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36416 "EHLO
+        id S229815AbiGQSVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 14:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiGQSRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 14:17:32 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D34E13F74;
-        Sun, 17 Jul 2022 11:17:31 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id m16so3101128qka.12;
-        Sun, 17 Jul 2022 11:17:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=uE4EUaolmFYSr5DdIJbQZyuSH4p9+RzSttNR94oKglY=;
-        b=OT7dPGXdqGYRrdEqWSLsv9AlzMljV9JDkmXxM0Sgve4tue4W88MHHiz73ELtTrY0Ll
-         gFn09nNHKD/cPE5CCcWPyNdvWeY2qTrnbB5i6vLwj07bgtTuAlHSw7riCdeUj7PVeS7J
-         CBnjVT//0wrTaxQZ7akgdKpBrXDgwST8x9VvJtIVI15z/V0OhZyXtdvyvxofl0AXC70D
-         Kx8stdweDYZeZbRTsDbgMReW8aRfywyCO+H6v6eRWEZc9WrdxZFTvBk1k7EdHZWkSeK0
-         +TB4jvWw0WJydmI1zZwNsd4h8IWyAE/yBTnfeEkC+EpG3rA1wr3zVUxhNNYhSg2WZNau
-         8x2w==
+        with ESMTP id S229491AbiGQSVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 14:21:37 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BEC13F11
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 11:21:36 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id a15-20020a921a0f000000b002dce91bcd3bso879800ila.20
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 11:21:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=uE4EUaolmFYSr5DdIJbQZyuSH4p9+RzSttNR94oKglY=;
-        b=5n4UyI+tt/1dTmn2PMs8Rhu/8uUWbT0sDETX0mpc3quiKRXezMn/Bj5IK5d75u9RDj
-         JpbiN1KOwqSlDUIXXWdOUt7TD4acv1NuectzXEd69OzXKy+Kh/GfQR5KKDjSeH8mGiV2
-         rXQnwSiVdNVtYCDHDklBwgwlwfP3qqY8Il9dbDUtVvhACkugg5q3LRCupXqoDMOdVDxF
-         tuQFnP9C1cpdTn9BwDOw03bdTugAZwl8HwKecWCSujUqJB6/HVU9BINpgtHytGjnsuu+
-         /HrCd/yurDIKOl+vvJpuRKDfli3TrlGyAueSuCXKKVra9Sk19DwfMiC2ZKaXlvE6ogN3
-         VLRg==
-X-Gm-Message-State: AJIora+K7LfnjrvzsHI7YiqKtRBqSziL1UeevG2BKcdB0Vd6P1rgISvW
-        0IH2r2DQ47UXzI9vB+y/MVM=
-X-Google-Smtp-Source: AGRyM1uWvp3mciWKlbMIb9AwEOZ9UYguZXJF02XpISgeVw5te0ip7+s3K+LzdiVaORL/8t+frunlxQ==
-X-Received: by 2002:a37:92c7:0:b0:6b4:8116:ccfb with SMTP id u190-20020a3792c7000000b006b48116ccfbmr15450514qkd.781.1658081850669;
-        Sun, 17 Jul 2022 11:17:30 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:db10:283b:b16c:9691])
-        by smtp.gmail.com with ESMTPSA id bb31-20020a05622a1b1f00b0031ef21aec36sm321290qtb.32.2022.07.17.11.17.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 11:17:30 -0700 (PDT)
-Date:   Sun, 17 Jul 2022 11:17:29 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>
-Subject: Re: [RFC PATCH 00/17] xdp: Add packet queueing and scheduling
- capabilities
-Message-ID: <YtRSOaCtujBfzHUS@pop-os.localdomain>
-References: <20220713111430.134810-1-toke@redhat.com>
- <CAKH8qBtdnku7StcQ-SamadvAF==DRuLLZO94yOR1WJ9Bg=uX1w@mail.gmail.com>
- <877d4gpto8.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=9lxHvDLp1NNRIHjnSmqb8mKhlE83vGlSB7ASV9SnxPQ=;
+        b=apZMWqHIMOXCfCIs0sokFQn6rqj4DiWdy+ytPQqrbxkukVCoqWgDp5tMYwTSbU499V
+         fM0Hc2XMJ0k+599ycFYyssmULcaDCTWzV68XU/0WHyxzaofQjCgwCubRP5nzi7bn79qJ
+         Ti8EIZcWJHMX5Nn9q0cUfdCx0es6XRWd2rGymXyQqpmzsot2vO85xxGFU8v9mNiTXc6P
+         FEu6mJL56VvxH4BDuUjlhzla2GwUPrZq3m9aj+lk6TVqMYsxtESPjGFSaOo+0MQet7H7
+         DzJCpEyfPwWyiOqfg83cQkU0WYwbRqq5NdX5GGOK8BaZdmQx4FmeHdO3ENOKjcyk36Dt
+         vsgg==
+X-Gm-Message-State: AJIora9hr7WSGR+RgVtck4TBDNfCgR27eEWSr/2KvIC+obWTxV5Czwrx
+        LyBA3QPJvREWLIv9zHDzKefOp3vEDJm1l9ukpNk2xnW6xQqE
+X-Google-Smtp-Source: AGRyM1vdVhYapUGsZAz1GVQJQ8c+96LBjKEne+s2jtf8dpKMcy6OY5t4/UHfUpIImFfbQJwM1Eo6ePRGRJtYlRjh31O4dRBJbGVY
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <877d4gpto8.fsf@toke.dk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1885:b0:2dc:5ede:8537 with SMTP id
+ o5-20020a056e02188500b002dc5ede8537mr11832936ilu.275.1658082096077; Sun, 17
+ Jul 2022 11:21:36 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 11:21:36 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000058626005e40452e6@google.com>
+Subject: [syzbot] memory leak in ipv6_renew_options
+From:   syzbot <syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:52:07PM +0200, Toke Høiland-Jørgensen wrote:
-> Stanislav Fomichev <sdf@google.com> writes:
-> 
-> > On Wed, Jul 13, 2022 at 4:14 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> >>
-> >> Packet forwarding is an important use case for XDP, which offers
-> >> significant performance improvements compared to forwarding using the
-> >> regular networking stack. However, XDP currently offers no mechanism to
-> >> delay, queue or schedule packets, which limits the practical uses for
-> >> XDP-based forwarding to those where the capacity of input and output links
-> >> always match each other (i.e., no rate transitions or many-to-one
-> >> forwarding). It also prevents an XDP-based router from doing any kind of
-> >> traffic shaping or reordering to enforce policy.
-> >>
-> >> This series represents a first RFC of our attempt to remedy this lack. The
-> >> code in these patches is functional, but needs additional testing and
-> >> polishing before being considered for merging. I'm posting it here as an
-> >> RFC to get some early feedback on the API and overall design of the
-> >> feature.
-> >>
-> >> DESIGN
-> >>
-> >> The design consists of three components: A new map type for storing XDP
-> >> frames, a new 'dequeue' program type that will run in the TX softirq to
-> >> provide the stack with packets to transmit, and a set of helpers to dequeue
-> >> packets from the map, optionally drop them, and to schedule an interface
-> >> for transmission.
-> >>
-> >> The new map type is modelled on the PIFO data structure proposed in the
-> >> literature[0][1]. It represents a priority queue where packets can be
-> >> enqueued in any priority, but is always dequeued from the head. From the
-> >> XDP side, the map is simply used as a target for the bpf_redirect_map()
-> >> helper, where the target index is the desired priority.
-> >
-> > I have the same question I asked on the series from Cong:
-> > Any considerations for existing carousel/edt-like models?
-> 
-> Well, the reason for the addition in patch 5 (continuously increasing
-> priorities) is exactly to be able to implement EDT-like behaviour, where
-> the priority is used as time units to clock out packets.
+Hello,
 
-Are you sure? I seriouly doubt your patch can do this at all...
+syzbot found the following issue on:
 
-Since your patch relies on bpf_map_push_elem(), which has no room for
-'key' hence you reuse 'flags' but you also reserve 4 bits there... How
-could tstamp be packed with 4 reserved bits??
+HEAD commit:    b047602d579b Merge tag 'trace-v5.19-rc5' of git://git.kern..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1129c37c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=689b5fe7168a1260
+dashboard link: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1349421c080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120fcc1c080000
 
-To answer Stanislav's question, this is how my code could handle EDT:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
 
-// BPF_CALL_3(bpf_skb_map_push, struct bpf_map *, map, struct sk_buff *, skb, u64, key)
-skb->tstamp = XXX;
-bpf_skb_map_push(map, skb, skb->tstamp);
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88810b810f00 (size 96):
+  comm "syz-executor113", pid 3606, jiffies 4294944081 (age 12.460s)
+  hex dump (first 32 bytes):
+    01 00 00 00 48 00 00 00 00 00 08 00 00 00 00 00  ....H...........
+    00 00 00 00 00 00 00 00 40 0f 81 0b 81 88 ff ff  ........@.......
+  backtrace:
+    [<ffffffff83855781>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff83855781>] sock_kmalloc net/core/sock.c:2563 [inline]
+    [<ffffffff83855781>] sock_kmalloc+0x61/0x90 net/core/sock.c:2554
+    [<ffffffff83d3fa60>] ipv6_renew_options+0x120/0x440 net/ipv6/exthdrs.c:1318
+    [<ffffffff83d138ad>] ipv6_set_opt_hdr net/ipv6/ipv6_sockglue.c:354 [inline]
+    [<ffffffff83d138ad>] do_ipv6_setsockopt.constprop.0+0x49d/0x24d0 net/ipv6/ipv6_sockglue.c:668
+    [<ffffffff83d1599e>] ipv6_setsockopt+0xbe/0x120 net/ipv6/ipv6_sockglue.c:1021
+    [<ffffffff838517d0>] __sys_setsockopt+0x1b0/0x390 net/socket.c:2254
+    [<ffffffff838519d2>] __do_sys_setsockopt net/socket.c:2265 [inline]
+    [<ffffffff838519d2>] __se_sys_setsockopt net/socket.c:2262 [inline]
+    [<ffffffff838519d2>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2262
+    [<ffffffff845ad915>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845ad915>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-(Please refer another reply from me for how to get the min when poping,
-which is essentially just a popular interview coding problem.)
 
-Actually, if we look into the in-kernel EDT implementation (net/sched/sch_etf.c),
-it is also based on rbtree rather than PIFO. ;-)
 
-Thanks.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
