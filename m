@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 472505777FC
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:28:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E926A5777FF
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231376AbiGQT2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 15:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35934 "EHLO
+        id S232240AbiGQTap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 15:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGQT2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:28:22 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E98812AE7
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:28:22 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o15so9970502pjh.1
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:28:22 -0700 (PDT)
+        with ESMTP id S232124AbiGQTao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:30:44 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F4D10561
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:30:43 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q13-20020a17090a304d00b001f1af9a18a2so2213162pjl.5
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=x2x7sIk8StiBh4ry98pPJBG4g+ZtkoAFEDFs8D/U3UU=;
-        b=IH9H6lbVYUFOH9JJC61JW60BqXHneNY6BBnGGJQ2LfkakA3y8Vgke9pL/BPdTU+uVp
-         zyX5H/sFfVI16qU/eddMzXBOlWbYU4JXpzXWzfsaDt9wmBBGV1KgL8WKh4OarUwU9NjD
-         3UFQuC+8eaAYHCakACaXgZJSQ8PrjWbYng0Mqiqx6OtXDxnvJ0MIWQYnh7TmWvjmxDWy
-         8w9kiMXwX5yl6qX3CDkcK1EzqUlhFajp019aAEZr20R5uNvntIUs4jwO7n6rCnpTzOfA
-         578Yde1Oq0AAMVAvFkIWupVIKVWfl7gHx5qbki6JT38gG3m1gq0lKpGzcz22Gk488yxc
-         /X+g==
+        bh=DQtPzp98XVPnkOc4LIwy5mlS8kzxZaSp/636o/XKzaw=;
+        b=MvYhjQf5TZyNI4GmEthjMsvH8cD5xEtwpW4dH1mEwfWkxPOHPyElkOIQ2PKbJCiTcy
+         HFBMxN4TCW5R494cRRqEZS7Cx0Wn8OIaP0swD+kYFWPZ+1yuhYrcrpLmTITy8uG9unVH
+         8Fzeg5hXmIySMuHWjo0zL8F1BBR+Y+PL/+XATXFYaU1+dd0qd+p481wTmMQA1wA8VuVF
+         jMUIFIwJE+FRmmqdhxlYpXOcA5faNBkvckZwJs1SN3ZbKiv6m4nKIZYEr0NRImtqNUQp
+         2xnRYCAWMFp68fNdtMUSzaag1qq18ncFTJFSzQ7+MDeg8ydyLM5YGi5QSa2G7j/lpB17
+         jWrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=x2x7sIk8StiBh4ry98pPJBG4g+ZtkoAFEDFs8D/U3UU=;
-        b=P4DVlVVf2H+coUVMY+7jNaplcM3FEG227wACnjD52ijGLlaL75m22lQ5LuUYXLvm4C
-         0ibgxAb/O/WSfhDodz1rB3c5n+s6WEmuJvTb6N3JJBjpw8u0zaX0gv3f/etcDn8mElWz
-         9dlbCkxs4yDmuebTrMtyzUq4PkhTs83dXDuuKJe1IXnYU1Nyk6dTh4T+Ga6YUZIVpqFY
-         8BAe4qDQdn1PsO7ME46vD18Nl9SwNLIfHezCVCqw0LK66w2O2VWqpq+sxnOm3fTbE2Vj
-         K/hSQAIrkp1Kr8i7iFPliHLk22rIUdXA6Ud/92JmZxb4x1EZNpH8BkroM0DQTLznlnbt
-         D+Zg==
-X-Gm-Message-State: AJIora9bxJGX6N5S+Fda+82GSpkHeg+eUel3otG9EhRaUkS+AN+ld4xc
-        M6oi3U0TkX0dKhQIPYf5lww=
-X-Google-Smtp-Source: AGRyM1u/fNOhYqXUcWTzi38zBzmui5oV5lROrQI8my7UiBdrS+TkpAcrcCcexhbZpTBiiw9gjMf5nw==
-X-Received: by 2002:a17:90a:6c46:b0:1f1:b72f:ce26 with SMTP id x64-20020a17090a6c4600b001f1b72fce26mr5074829pjj.190.1658086101549;
-        Sun, 17 Jul 2022 12:28:21 -0700 (PDT)
+        bh=DQtPzp98XVPnkOc4LIwy5mlS8kzxZaSp/636o/XKzaw=;
+        b=wHQI9hkF4ynPeaQyMXIgwRUPj2yNuGLTC1a6voOQzZr3GzPu00DGRyGin++Kc5U/m5
+         Z7OYszVmMOeTJj4zctfQXYWFN4Emed2dxwHHYQGxhFCd6RuTd+25VzK0qTtCMnWBss98
+         2GE9OzDbXywWklWbgtjMLh0CYbvT6L65w7+RxA4ZYpGnj3cR1/STZw85gUoLlOnJW/vh
+         e8/kS37AZr56x7IT4lAEv+7gUlnh719hLRAHoIg8iqrofGgwQa4WhuIgogKMD4/AJoiZ
+         yliOqLWNXGwFgAIe17N3KGDjUlWaglMlNG9KTuYRvfIZK5CDzmj3xJpkpYMQeIVW4PfG
+         fPdw==
+X-Gm-Message-State: AJIora+qx5hrnGx+x7Hg9Jq5uWQcpbJWw7YSBCLiWEfjv+xNC1Zy9YID
+        ZK2eC4mgjbJTzJOmv5NZEnN2iid424I=
+X-Google-Smtp-Source: AGRyM1uxY5c0ZKl1xJPouzZ8XR0UakaZy5l3Kaq/RkNnW+kTigJ8qneC3tmiraH8hzyzRD6i/DdABQ==
+X-Received: by 2002:a17:902:eccf:b0:16b:f555:d42e with SMTP id a15-20020a170902eccf00b0016bf555d42emr24362242plh.75.1658086243155;
+        Sun, 17 Jul 2022 12:30:43 -0700 (PDT)
 Received: from ?IPV6:2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5? ([2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5])
-        by smtp.gmail.com with ESMTPSA id q10-20020aa7842a000000b0052516db7123sm7608519pfn.35.2022.07.17.12.28.20
+        by smtp.gmail.com with ESMTPSA id i31-20020a63131f000000b00419fc2c27d8sm2841967pgl.43.2022.07.17.12.30.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Jul 2022 12:28:21 -0700 (PDT)
-Message-ID: <0a8d88e3-b459-cc3f-36f3-e4450aaaad97@gmail.com>
-Date:   Sun, 17 Jul 2022 12:28:20 -0700
+        Sun, 17 Jul 2022 12:30:42 -0700 (PDT)
+Message-ID: <0e432ed4-79a4-1285-68c9-45772eccff31@gmail.com>
+Date:   Sun, 17 Jul 2022 12:30:41 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.0.2
-Subject: Re: [PATCH net 00/15] Update DSA documentation
+Subject: Re: [PATCH net 09/15] docs: net: dsa: remove
+ port_bridge_tx_fwd_offload
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -62,8 +63,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 References: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
+ <20220716185344.1212091-10-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220716185344.1212091-10-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,11 +81,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 7/16/2022 11:53 AM, Vladimir Oltean wrote:
-> These are some updates of dsa.rst, since it hasn't kept up with
-> development (in some cases, even since 2017). I've added Fixes: tags as
-> I thought was appropriate.
+> We've changed the API through which we can offload the bridge TX
+> forwarding process. Update the documentation in light of the removal of
+> 2 DSA switch ops.
+> 
+> Fixes: b079922ba2ac ("net: dsa: add a "tx_fwd_offload" argument to ->port_bridge_join")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Thanks for updating the documentation and going the extra mile wit 
-providing Fixes: tag.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
