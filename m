@@ -2,106 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0545777BE
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 20:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6523C5777C6
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 20:34:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbiGQSVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 14:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
+        id S229719AbiGQSec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 14:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGQSVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 14:21:37 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BEC13F11
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 11:21:36 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id a15-20020a921a0f000000b002dce91bcd3bso879800ila.20
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 11:21:36 -0700 (PDT)
+        with ESMTP id S229437AbiGQSeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 14:34:31 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5755912752;
+        Sun, 17 Jul 2022 11:34:30 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id v185so7762136ioe.11;
+        Sun, 17 Jul 2022 11:34:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7T1elb4VQwrC1sZg3F4EdxUouZCTWEFZq0pNjmM10H4=;
+        b=R+qaOJ/RIl3tbU2jrW/9rmGOvRSHh7KgGM8IOx/eYI3V0sYo9NQmH4FJw4hNkIeZEc
+         L6glhandgJX4/1fNKk9uOpAh1MYb1SmhGdyTTj/tiOqprl10s8pSnGVB8hls1Qro3O/Q
+         hsGU2inzEMgiQ3M+Peh0rABJjo7yZRQ0z3+WP9/nK4/XINkll/MVTwfkAyD/jpduSMc0
+         rBtyGjceHwVaO6EyN8BTRtKRyLxkSJU/V8PcuG4Nz2XUBJSB34BTcREnZNn+zCdok3fx
+         0lv26C9wusy4wO8CpSnZt9qonkLuT2UNIItzdLy8FDRALcJ8ZR0a7DiLQTrdajBmAXsE
+         wISA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=9lxHvDLp1NNRIHjnSmqb8mKhlE83vGlSB7ASV9SnxPQ=;
-        b=apZMWqHIMOXCfCIs0sokFQn6rqj4DiWdy+ytPQqrbxkukVCoqWgDp5tMYwTSbU499V
-         fM0Hc2XMJ0k+599ycFYyssmULcaDCTWzV68XU/0WHyxzaofQjCgwCubRP5nzi7bn79qJ
-         Ti8EIZcWJHMX5Nn9q0cUfdCx0es6XRWd2rGymXyQqpmzsot2vO85xxGFU8v9mNiTXc6P
-         FEu6mJL56VvxH4BDuUjlhzla2GwUPrZq3m9aj+lk6TVqMYsxtESPjGFSaOo+0MQet7H7
-         DzJCpEyfPwWyiOqfg83cQkU0WYwbRqq5NdX5GGOK8BaZdmQx4FmeHdO3ENOKjcyk36Dt
-         vsgg==
-X-Gm-Message-State: AJIora9hr7WSGR+RgVtck4TBDNfCgR27eEWSr/2KvIC+obWTxV5Czwrx
-        LyBA3QPJvREWLIv9zHDzKefOp3vEDJm1l9ukpNk2xnW6xQqE
-X-Google-Smtp-Source: AGRyM1vdVhYapUGsZAz1GVQJQ8c+96LBjKEne+s2jtf8dpKMcy6OY5t4/UHfUpIImFfbQJwM1Eo6ePRGRJtYlRjh31O4dRBJbGVY
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7T1elb4VQwrC1sZg3F4EdxUouZCTWEFZq0pNjmM10H4=;
+        b=v57PEs1jnXfn7Ob4FJV5fHQMoh9HgSRlEkB/mpsJSW5Crqy6d5NttfQbTkEfSC+eB/
+         jZXLc5ViuBpoAHUM172OVeC5DEez3uUtrX8d4jKRn46olxUaBeipazKZ5vP9tuNOW990
+         APqcPulOvIN4zplaZjrzHj8u5Ax4JY37fgAFxDMy3cfIxtVf9LwHKx5hWq8rBeVZbObk
+         qnfb8CDqT9qnjEVbPNUAINOAFn5P+9d3OzazUhze9LmKTSFdEXkVJhlHSQ+UswqM1WbP
+         2FayBJYM3LTJqKXBHIUQZ1bxOowMd1lF6F+ZieUCc8lr5YY3AU/LSpENf7jK22p+nvqW
+         saYQ==
+X-Gm-Message-State: AJIora/GHvcFpqNIs0SQcD+PW5NhJcfz9Grh/C+ybUIQguGZA+JKonXQ
+        LplKp6oUpfkMyWg6Tktrer2VJbtpt16Q8kBC/SIqMIZBUW+UKUHg
+X-Google-Smtp-Source: AGRyM1uwKboyXHtiqj1uHFqFb9BJSoG9rYLgloobGhf3g81UQO0u3jikyOPgFmybtt+5ILMNrsR6hmzz46pfsolzH8c=
+X-Received: by 2002:a05:6638:4883:b0:33f:7948:e685 with SMTP id
+ ct3-20020a056638488300b0033f7948e685mr12872724jab.138.1658082869800; Sun, 17
+ Jul 2022 11:34:29 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1885:b0:2dc:5ede:8537 with SMTP id
- o5-20020a056e02188500b002dc5ede8537mr11832936ilu.275.1658082096077; Sun, 17
- Jul 2022 11:21:36 -0700 (PDT)
-Date:   Sun, 17 Jul 2022 11:21:36 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000058626005e40452e6@google.com>
-Subject: [syzbot] memory leak in ipv6_renew_options
-From:   syzbot <syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+References: <20220717133759.8479-1-khalid.masum.92@gmail.com> <3ea0ea90-48bf-ce19-e014-9443d732e831@gmail.com>
+In-Reply-To: <3ea0ea90-48bf-ce19-e014-9443d732e831@gmail.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+Date:   Mon, 18 Jul 2022 00:34:19 +0600
+Message-ID: <CAABMjtHiet1_SRvLBhoNxeEh865rwtZCkb510JmFPkHFMd5chQ@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_core: Use ERR_PTR instead of NULL
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Jul 17, 2022 at 10:17 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+>
+> Hi Khalid,
+>
+> Khalid Masum <khalid.masum.92@gmail.com> says:
+> > Failure of kzalloc to allocate memory is not reported. Return Error
+> > pointer to ENOMEM if memory allocation fails. This will increase
+> > readability and will make the function easier to use in future.
+> >
+> > Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> > ---
+>
+> [snip]
+>
+> > index a0f99baafd35..ea50767e02bf 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -2419,7 +2419,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
+> >
+> >       hdev = kzalloc(alloc_size, GFP_KERNEL);
+> >       if (!hdev)
+> > -             return NULL;
+> > +             return ERR_PTR(-ENOMEM);
+> >
+>
+> This will break all callers of hci_alloc_dev(). All callers expect NULL
+> in case of an error, so you will leave them with wrong pointer.
 
-syzbot found the following issue on:
+You are right. All callers of hci_alloc_dev() need to be able to handle
+the error pointer. I shall send a V2 with all the callers of hci_alloc_dev
+handling the ERR_PTR.
 
-HEAD commit:    b047602d579b Merge tag 'trace-v5.19-rc5' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1129c37c080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=689b5fe7168a1260
-dashboard link: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1349421c080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120fcc1c080000
+> Also, allocation functionS return an error only in case of ENOMEM, so
+> initial code is fine, IMO
+>
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+I think it makes the memory allocation error handling look to be a bit
+different from what we usually do while allocating memory which is,
+returning an error or an error pointer. Here we are returning a NULL
+without any context, making it a bit unreadable. So I think returning
+an error pointer is better. If I am not mistaken, this also complies with
+the return convention:
+https://www.kernel.org/doc/htmldocs/kernel-hacking/convention-returns.html
 
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88810b810f00 (size 96):
-  comm "syz-executor113", pid 3606, jiffies 4294944081 (age 12.460s)
-  hex dump (first 32 bytes):
-    01 00 00 00 48 00 00 00 00 00 08 00 00 00 00 00  ....H...........
-    00 00 00 00 00 00 00 00 40 0f 81 0b 81 88 ff ff  ........@.......
-  backtrace:
-    [<ffffffff83855781>] kmalloc include/linux/slab.h:605 [inline]
-    [<ffffffff83855781>] sock_kmalloc net/core/sock.c:2563 [inline]
-    [<ffffffff83855781>] sock_kmalloc+0x61/0x90 net/core/sock.c:2554
-    [<ffffffff83d3fa60>] ipv6_renew_options+0x120/0x440 net/ipv6/exthdrs.c:1318
-    [<ffffffff83d138ad>] ipv6_set_opt_hdr net/ipv6/ipv6_sockglue.c:354 [inline]
-    [<ffffffff83d138ad>] do_ipv6_setsockopt.constprop.0+0x49d/0x24d0 net/ipv6/ipv6_sockglue.c:668
-    [<ffffffff83d1599e>] ipv6_setsockopt+0xbe/0x120 net/ipv6/ipv6_sockglue.c:1021
-    [<ffffffff838517d0>] __sys_setsockopt+0x1b0/0x390 net/socket.c:2254
-    [<ffffffff838519d2>] __do_sys_setsockopt net/socket.c:2265 [inline]
-    [<ffffffff838519d2>] __se_sys_setsockopt net/socket.c:2262 [inline]
-    [<ffffffff838519d2>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2262
-    [<ffffffff845ad915>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff845ad915>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> Thanks,
+> --Pavel Skripkin
 
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks,
+  -- Khalid Masum
