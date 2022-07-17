@@ -2,378 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE835777F8
-	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5EEA5777FA
+	for <lists+netdev@lfdr.de>; Sun, 17 Jul 2022 21:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbiGQT11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jul 2022 15:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
+        id S232064AbiGQT13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jul 2022 15:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGQT10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:27:26 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A6612AE3;
-        Sun, 17 Jul 2022 12:27:23 -0700 (PDT)
-Received: from darkstar.fritz.box (dynamic-2a01-0c23-8846-3700-fc24-d4f4-08ae-ec54.c23.pool.telefonica.de [IPv6:2a01:c23:8846:3700:fc24:d4f4:8ae:ec54])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: jluebbe@lasnet.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 5CABDC01B4;
-        Sun, 17 Jul 2022 21:27:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lasnet.de; s=2021;
-        t=1658086037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4DwaCkL4z8/Hc9IhAyBUlQAU/pjJQ1K2r2/Joj+19UE=;
-        b=WuQE6XZPaReMGuntl8R918TKdFdSYBMxmNpvOz9ErNWH3FM+5mxQHhpm8vKP42GUQw/4re
-        rnH3qxlwbWFyVZtEXd1/b+82/m2YDTl6yAFOFL09oep+qhdQEXfuChDknoR8fYHaQpcbXR
-        dw0jItASYfv6oGgUCaJCATfbIIjGTQCX+m4nnlZp3fRBtKAtrQrZz4c2FzWXSsqbwrskxz
-        mxDD7FyM7oDJ+VZt6MWNuxSmfL7PP5cW9bwGbL1o97+s2eQxITarYerlM3EPdyH11l4CW4
-        SfSFavrM7jtNzLO2GOm5hoosYq4NyriBvSwz4XXoTo9FTCQw9a4mNVTFMOVX5Q==
-Message-ID: <c7968dd38360ac4c7d7ed2a45ec1af3176a2ce6a.camel@lasnet.de>
-Subject: Re: [REGRESSION] connection timeout with routes to VRF
-From:   Jan =?ISO-8859-1?Q?L=FCbbe?= <jluebbe@lasnet.de>
-To:     Mike Manning <mvrmanning@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Robert Shearman <robertshearman@gmail.com>,
-        Andy Roulin <aroulin@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        regressions@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Sun, 17 Jul 2022 21:27:16 +0200
-In-Reply-To: <c110dcb5-cfd3-5abd-1533-4f9dc1d45531@gmail.com>
-References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
-         <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
-         <940fa370-08ce-1d39-d5cc-51de8e853b47@gmail.com>
-         <a32428fa0f3811c25912cd313a6fe1fb4f0a4fac.camel@lasnet.de>
-         <c110dcb5-cfd3-5abd-1533-4f9dc1d45531@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (by Flathub.org) 
+        with ESMTP id S231915AbiGQT12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jul 2022 15:27:28 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1537412AE3
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:27:27 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id c139so2669238pfc.2
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 12:27:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=trkZrmYpY+khegOgYDK1guKOl3Aw6WZ4Aeip3o84Kjs=;
+        b=WWfnO1hO/0V0C5iOZQK7atk2J7R2xl5spB5r2/3//RcdGhhV1OCmVDFmWNfXb4gYQ/
+         l2tzuQ0hbNbS7dLHLT8hzsFj+J54OwFl05fvnY4AgN97hPGBwS9uPWDVzQGVt8dlXeIG
+         fd94bQK1sS9kK5kt4WcCpqjUwKsZHsz/bWfBuV+rIxjlGa1LFAkuMyTdxdn9h+zrg0YS
+         TkIdEWhKq6DmNFRmUKa4b1o+/ktlSy8k2oyxQ3nIELCYIxhe6J5XiWfyQ+LXA4cRlGTX
+         T/+B5WnnXc2B49KFgWUeT6f3/LWCS65dD7Tf73XKoz+UWki5aw0SnFyr42zTJsJZoUTV
+         vEQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=trkZrmYpY+khegOgYDK1guKOl3Aw6WZ4Aeip3o84Kjs=;
+        b=22jkAFR4hN05uMMJsuAUlW+v+zCR4PNz/CcSng1/Ush5sACYOSx6aYD9JUi9BQLSjm
+         3Ypn/mzZA1xGN1RbELvgdR6oGlnSSD2K3pGAdSc1ywzG5luyWcDtHxqbrlxF43qPv95R
+         8CiyiVvR5b7dqqFtuFOiAPSRM27KxO3QHhwoU5cbNHTTq49dmmyXRztqVmBazaDsIgGK
+         reevC4+vf2KrxFZcxhheZXPurCuN89FxW63/dVRjD1ISVvOkzlbrTMINY5F8ngWSlH5F
+         ifyWGQB4qChtBPhpDwWCwytd40ZIQ43bqfmxmXR7GcVQPGzg7FdFSFcMTFvsW7qX0dRa
+         Zh5Q==
+X-Gm-Message-State: AJIora8jVzQFppat8S5xTsY4beNGJ+94aECGsBz2RFD3qJokVT7/kAIF
+        amsVEfPyeBtng/tQR4djus8=
+X-Google-Smtp-Source: AGRyM1vuOBvCu+AUAsb77GQyDGbEDCFMBO9xXhmqnCVM196U5qRcZGIpOxEcUaP4DHY50DTUuCwsPg==
+X-Received: by 2002:a63:481a:0:b0:411:7951:cbcd with SMTP id v26-20020a63481a000000b004117951cbcdmr21560222pga.66.1658086046461;
+        Sun, 17 Jul 2022 12:27:26 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5? ([2600:8802:b00:4a48:c1c9:5ca7:2a60:8cc5])
+        by smtp.gmail.com with ESMTPSA id rj1-20020a17090b3e8100b001ecfa85c8f0sm9784878pjb.26.2022.07.17.12.27.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Jul 2022 12:27:26 -0700 (PDT)
+Message-ID: <c8acab95-cbff-93c9-e83d-31f6dc7e7e8d@gmail.com>
+Date:   Sun, 17 Jul 2022 12:27:25 -0700
 MIME-Version: 1.0
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net 14/15] docs: net: dsa: delete misinformation about
+ -EOPNOTSUPP for FDB/MDB/VLAN
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20220716185344.1212091-1-vladimir.oltean@nxp.com>
+ <20220716185344.1212091-15-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220716185344.1212091-15-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-07-17 at 11:31 +0100, Mike Manning wrote:
-> On 06/07/2022 19:49, Jan Luebbe wrote:
-> > On Sun, 2022-06-26 at 21:06 +0100, Mike Manning wrote:
-> > ...
-> > > Andy Roulin suggested the same fix to the same problem a few weeks ba=
-ck.
-> > > Let's do it along with a test case in fcnl-test.sh which covers all o=
-f
-> > > these vrf permutations.
-> > >=20
-> > Reverting 3c82a21f4320 would remove isolation between the default and o=
-ther VRFs
-> > needed when no VRF route leaking has been configured between these: the=
-re may be
-> > unintended leaking of packets arriving on a device enslaved to an l3mde=
-v due to
-> > the potential match on an unbound socket.
-> >=20
-> > Thanks for the explanation.
-> >=20
-> > VRF route leaking requires routes to be present for both ingress and eg=
-ress
-> > VRFs,
-> > the testcase shown only has a route from default to red VRF. The implic=
-it return
-> > path from red to default VRF due to match on unbound socket is no longe=
-r
-> > present.
-> >=20
-> >=20
-> > If there is a better configuration that makes this work in the general =
-case
-> > without a change to the kernel, we'd be happy as well.
-> >=20
-> > In our full setup, the outbound TCP connection (from the default VRF) g=
-ets a
-> > local IP from the interface enslaved to the VRF. Before 3c82a21f4320, t=
-his would
-> > simply work.
-> >=20
-> > How would the return path route from the red VRF to the default VRF loo=
-k in that
-> > case?
->=20
-> I am unaware of your topology, can you add a route in the red VRF table
-> (see 'ip route ls vrf red'), so 'ip route add vrf red <prefix> via
-> <next-hop>'.
-
-With 4.19 (and my workaround), the outbound packets were simply assigned an=
- IP
-from the red VRF if the have to leave the local machine. The IPs in the def=
-ault
-VRF are public IPs, which would not be routed back to the same machine.=20
 
 
-I'm not sure if it helps, but I'll try to explain our topology:
-https://gist.github.com/jluebbe/001c7b9ba531ad04d7e5c0a58f400967
+On 7/16/2022 11:53 AM, Vladimir Oltean wrote:
+> Returning -EOPNOTSUPP does *NOT* mean anything special.
+> 
+> port_vlan_add() is actually called from 2 code paths, one is
+> vlan_vid_add() from 8021q module and the other is
+> br_switchdev_port_vlan_add() from switchdev.
+> 
+> The bridge has a wrapper __vlan_vid_add() which first tries via
+> switchdev, then if that returns -EOPNOTSUPP, tries again via the VLAN RX
+> filters in the 8021q module. But DSA doesn't distinguish between one
+> call path and the other when calling the driver's port_vlan_add(), so if
+> the driver returns -EOPNOTSUPP to switchdev, it also returns -EOPNOTSUPP
+> to the 8021q module. And the latter is a hard error.
+> 
+> port_fdb_add() is called from the deferred dsa_owq only, so obviously
+> its return code isn't propagated anywhere, and cannot be interpreted in
+> any way.
+> 
+> The return code from port_mdb_add() is propagated to the bridge, but
+> again, this doesn't do anything special when -EOPNOTSUPP is returned,
+> but rather, br_switchdev_mdb_notify() returns void.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Were using VRF for the https://freifunk-bs.de/ network. In the diagram abov=
-e, a
-'freifunk' VRF is used to create an overlay network, consisting of Wireguar=
-d
-tunnels with OSPF and BGP between the concentrators and exists.=C2=A0
-
-Each of the these servers has the main VRF with the physical network interf=
-ace
-and externally routeable IPs, which is used to transport the Wireguard pack=
-ets
-and management access.
-
-The 'freifunk' VRF encapsulates the overlay traffic, so that it is only rou=
-ted
-to other interfaces assigned to the VRF. Previously, we used policy routing=
- for
-this, but VRF has made the setup much easier to understand and debug. :)
-
-> The isolation between default and other VRFs necessary for forwarding
-> purposes means that running a local process in the default VRF to access
-> another VRF no longer works since the change made in 2018 that you
-> identified. So in your example, 'ip vrf exec red nc ...' will work, but
-> I assume that this is of no use to you.
-
-I don't actually use forwarding across VRFs via route leaking, but only for
-locally originating connections. A simple example is that a 'ssh <IP access=
-ible
-via VRF>' just worked for non-root users, which also makes ssh's ProxyJump =
-work
-to hosts accessible via the VRF. Both 'ip vrf exec' and binding to the VRF
-interface would require root.
-
-For real services (such as bind), we already used 'ip vrf exec ...' and tha=
-t was
-(and is) working fine.
-
-> > Match on unbound socket in all VRFs and not only in the default VRF sho=
-uld be
-> > possible by setting this option (see
-> > https://www.kernel.org/doc/Documentation/networking/vrf.txt):
-> >=20
-> >=20
-> > Do you mean unbound as in listening socket not bound to an IP with bind=
-()? Or as
-> > in a socket in the default VRF?
->=20
-> Unbound meaning a socket in the default VRF, as opposed to a a socket
-> set into a VRF context by binding it to a VRF master interface using
-> SO_BINDTODEVICE. One must also be able to bind to an appropriate IP
-> address with bind() regardless of whether the socket is in the default
-> or another VRF, but that is not relevant here.
-
-OK.
-
-> > sysctl net.ipv4.tcp_l3mdev_accept=3D1
-> >=20
-> >=20
-> > The sysctl docs sound like this should only apply to listening sockets.=
- In this
-> > case, we have an unconnected outbound socket.
->=20
-> With this option disabled (by default), any stream socket in a VRF is
-> only selected for packets in that VRF, this is done in the input path
-> see e.g. tcp_v4_rcv() for IPv4.
->=20
-
-Yes, we've been using this option for a long time to make sshd accessible f=
-rom
-both the default VRF and the red VRF.
-
-> > However, for this to work a change similar to the following is needed (=
-I have
-> > shown the change to the macro for consistency with above, it is now an =
-inline
-> > fn):
-> >=20
-> >=20
-> > I can also test on master and only used the macro form only because I w=
-asn't
-> > completely sure how to translate it to the inline function form.
-> >=20
-> > ---
-> > =C2=A0include/net/inet_hashtables.h |=C2=A0=C2=A0 10 ++++------
-> > =C2=A01 file changed, 4 insertions(+), 6 deletions(-)
-> >=20
-> > --- a/include/net/inet_hashtables.h
-> > +++ b/include/net/inet_hashtables.h
-> > @@ -300,9 +300,8 @@
-> > =C2=A0#define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __por=
-ts, __dif,
-> > __sdif) \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (((__sk)->sk_portpair =3D=3D=
- (__ports))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((__sk)->sk_addrpair =
-=3D=3D (__cookie))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (((__sk)->sk_bound_dev_if =
-=3D=3D (__dif))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ||=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((__sk)->sk_bound_dev=
-_if =3D=3D (__sdif)))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 net_eq(sock_net(__sk), (__n=
-et)))
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 net_eq(sock_net(__sk), (__n=
-et))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 inet_sk_bound_dev_eq((__net=
-), (__sk)->sk_bound_dev_if, (__dif),
-> > (__sdif)))
-> > =C2=A0#else /* 32-bit arch */
-> > =C2=A0#define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const int __name __deprecate=
-d __attribute__((unused))
-> > @@ -311,9 +310,8 @@
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (((__sk)->sk_portpair =3D=3D=
- (__ports))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 &&=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((__sk)->sk_daddr=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D=3D (__saddr))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((__sk)->sk_rcv_saddr=
-=C2=A0 =3D=3D (__daddr))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 &&=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (((__sk)->sk_bound_dev_if =
-=3D=3D (__dif))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ||=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((__sk)->sk_bound_dev=
-_if =3D=3D (__sdif)))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 net_eq(sock_net(__sk), (__n=
-et)))
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 net_eq(sock_net(__sk), (__n=
-et))=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 &&=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 inet_sk_bound_dev_eq((__net=
-), (__sk)->sk_bound_dev_if, (__dif),
-> > (__sdif)))
-> > =C2=A0#endif /* 64-bit arch */
-> >=20
-> > =C2=A0/* Sockets in TCP_CLOSE state are _always_ taken out of the hash,=
- so we need
-> >=20
-> > I can confirm that this gets my testcase working with=20
-> > net.ipv4.tcp_l3mdev_accept=3D1.
->=20
-> I can submit this change to kernel-net (modified for latest code) if
-> David is ok with this approach. It should not have a significant
-> performance impact (due to the additional kernel parameter check) for
-> most use-cases, as typically sdif =3D 0 for the unbound case. I am not in
-> a position to carry out any performance testing.
-
-I've tried your patch on our production network and notices an additional
-complication I've missed so far: It only fixes v4.
-
-As there is no tcp_l3mdev_accept for v6 as far as I can tell, I've updated =
-my
-workaround (see below) and we've been using it since last week without obvi=
-ous
-issues.
-
-> > This is to get the testcase to pass, I will leave it to others to comme=
-nt on
-> > the testcase validity in terms of testing forwarding using commands on =
-1 device.
-> >=20
-> > So a network-namespace-based testcase would be preferred? We used the s=
-imple
-> > setup because it seemed easier to understand.
-> >=20
-> > The series that 3c82a21f4320 is part of were introduced into the kernel=
- in 2018
-> > by the Vyatta team, who regularly run an extensive test suite for routi=
-ng
-> > protocols for VRF functionality incl. all combinations of route leaking=
- between default
-> > and other VRFs, so there is no known issue in this regard. I will attem=
-pt to reach
-> > out to them so as to advise them of this thread.
-> >=20
-> > Are these testcases public? Perhaps I could use them find a better conf=
-iguration
-> > that handles our use-case.
->=20
-> The test automation to bring up network topologies is not public, but
-> the test cases would not be readily transferable for general use in any
-> case. I have advised the Vyatta team of this thread.
-
-Ah, thanks!
-
-My current workaround on top of 5.18.11 (derived from a 3c82a21f4320 revert=
-):
-
-diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.=
-h
-index 81b965953036..1944f8730b42 100644
---- a/include/net/inet6_hashtables.h
-+++ b/include/net/inet6_hashtables.h
-@@ -110,8 +110,9 @@ int inet6_hash(struct sock *sk);
- 	 ((__sk)->sk_family =3D=3D AF_INET6)			&&	\
- 	 ipv6_addr_equal(&(__sk)->sk_v6_daddr, (__saddr))		&&	\
- 	 ipv6_addr_equal(&(__sk)->sk_v6_rcv_saddr, (__daddr))	&&	\
--	 (((__sk)->sk_bound_dev_if =3D=3D (__dif))	||			\
--	  ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))		&&	\
-+	 (!(__sk)->sk_bound_dev_if	||				\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__dif))	||			\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))		&&	\
- 	 net_eq(sock_net(__sk), (__net)))
-=20
- #endif /* _INET6_HASHTABLES_H */
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 98e1ec1a14f0..41e7f20d7e51 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -310,8 +310,9 @@ static inline struct sock *inet_lookup_listener(struct =
-net *net,
- #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif=
-, __sdif) \
- 	(((__sk)->sk_portpair =3D=3D (__ports))			&&	\
- 	 ((__sk)->sk_addrpair =3D=3D (__cookie))			&&	\
--	 (((__sk)->sk_bound_dev_if =3D=3D (__dif))			||	\
--	  ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))		&&	\
-+	 (!(__sk)->sk_bound_dev_if	||				\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__dif))			||	\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))		&&	\
- 	 net_eq(sock_net(__sk), (__net)))
- #else /* 32-bit arch */
- #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-@@ -321,8 +322,9 @@ static inline struct sock *inet_lookup_listener(struct =
-net *net,
- 	(((__sk)->sk_portpair =3D=3D (__ports))		&&		\
- 	 ((__sk)->sk_daddr	=3D=3D (__saddr))		&&		\
- 	 ((__sk)->sk_rcv_saddr	=3D=3D (__daddr))		&&		\
--	 (((__sk)->sk_bound_dev_if =3D=3D (__dif))		||		\
--	  ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))	&&		\
-+	 (!(__sk)->sk_bound_dev_if	||				\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__dif))		||		\
-+	   ((__sk)->sk_bound_dev_if =3D=3D (__sdif)))	&&		\
- 	 net_eq(sock_net(__sk), (__net)))
- #endif /* 64-bit arch */
-=20
-
-Thanks again,
-Jan
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
