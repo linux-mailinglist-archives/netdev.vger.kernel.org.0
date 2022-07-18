@@ -2,98 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D22575788FE
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3729457890D
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:58:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234449AbiGRR5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 13:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S234662AbiGRR6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 13:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234403AbiGRR5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:57:02 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F242E6AD
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:57:01 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id m10so5434982qvu.4
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wg4COycJyI9sk7+JmYkrdfWGHhPsLDOofYkTEEydFWg=;
-        b=Fqu+GxJuIHKWO2F4h5YvVtEJvYk5vgCyZrfPuO3scKyUjuyIJcUF8jc9rx7ky7BjCs
-         iYeLJ0KVG9Ic+N9gJRmSk/sGVT9VK8e44wRNqgKa06k60AzXZvWG3XWXbVYJO2rEYeea
-         dcryZ8F0+oHotmnthZCISwIAxQHqd7Z5b/ZqXrDStvGhNwylJkrzy8F/NYKmHdOgwKaM
-         Q8xsrqWce/PnAiiE+kVDFmd907rECRDOaEHFX17fioCAoY/RLgbnleyzXpGLQkk6l1l4
-         mOwLCP2hAfm8/oZFdMg3acSd4446AWs8jZhpcmA2PODZe9uWw649BJuLbIZKSG1MYuXF
-         4eJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wg4COycJyI9sk7+JmYkrdfWGHhPsLDOofYkTEEydFWg=;
-        b=R4J9qKYsvafGssg7K/A411eqsU8+Smc27bQV6biFx41o7bDkch+8t/1hXIJEK6kEL2
-         6J5hHa7GpbLdBmBeWvhbbEVshXFgffWmTdPwNHSUzTjvhPbqy154L9kHw+JSJyo3kFa8
-         z8bPyzWvCX6QRAOF35VEUp9QAy6tmj6yXQ7gNLPIuPO5vV628/sY4LvBkZ+wUSFcW2Sy
-         LE+hEtRsTD2vtVAE554ENS8wx9XHfxHXYJpWXqf2SNmxY/5UrksU2hXYQZ3HIjiICyG3
-         PmRgWuMZxlNa/JoOprYDfPsiZ9//x8K0lPCsagxxBwsxImjfEeezjPJ79S2vv8sJ+J2y
-         um8w==
-X-Gm-Message-State: AJIora8zzBwRY0TmPHX06+cQTfYF2xHLqmFP6DXnmsanpJI/2C556exA
-        iF5Kl/VTHP22Irac609L801HzuXsq1gkQQ==
-X-Google-Smtp-Source: AGRyM1uW4Eeu7TjZDwvhP0EoyEbLX6TjO46DFqZwgV7IodURHM5gyRkmohuhaUeYqsg5JQgLLbk5nA==
-X-Received: by 2002:ad4:5dea:0:b0:473:8378:ab8c with SMTP id jn10-20020ad45dea000000b004738378ab8cmr21650782qvb.75.1658167020637;
-        Mon, 18 Jul 2022 10:57:00 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id de32-20020a05620a372000b006b58d8f6181sm11610850qkb.72.2022.07.18.10.57.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 10:57:00 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Hideo Aoki <haoki@redhat.com>
-Subject: [PATCH net] Documentation: fix udp_wmem_min in ip-sysctl.rst
-Date:   Mon, 18 Jul 2022 13:56:59 -0400
-Message-Id: <c880a963d9b1fb5f442ae3c9e4dfa70d45296a16.1658167019.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S234410AbiGRR6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:58:17 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31302E9E0;
+        Mon, 18 Jul 2022 10:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=zpo1xKARAj4YjTqhzcM02aL81PyrB0bMoUtswoGp3Jc=; b=HewTvCxiTT2Zudeh2AGwOJYXIR
+        jXKTHKhV5iS7AH/v3s0hp9W5m1uk35aDZdAYunaAQ8IEV5cxzCv1pAnowQbwBjhWDZkPJT11S6S8y
+        ORp1hBIFKuhjg66s57MaPVrfE2T2EZKsdluovpnKMYfqrTrxm28cR262QJ3ry7ubtcr1m/1o/lDXq
+        /rOCdql/F5JtGFdyq1/fnU/a1wIPscGiSa8N3qWXtNbPrXX+tQFVdVsJ81SsP0Mq3vzL9fv2DWyjr
+        k6IC9HorBbFukMYvisYABFmfGom9sv75LSrrf1TlXuMOFAjhDCRfL4CXdhnHl6o6cY0NiRg7V+jp7
+        wbSlZDog==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33424)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oDV0U-0001wY-7E; Mon, 18 Jul 2022 18:58:10 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oDV0S-00029Z-7h; Mon, 18 Jul 2022 18:58:08 +0100
+Date:   Mon, 18 Jul 2022 18:58:08 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v3 10/47] net: phylink: Adjust link settings
+ based on rate adaptation
+Message-ID: <YtWfMGh39sFPtHJ7@shell.armlinux.org.uk>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-11-sean.anderson@seco.com>
+ <YtWGZ4ZJ6rmLmlWk@shell.armlinux.org.uk>
+ <9a968425-5621-09b9-febe-2086d5492c96@seco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9a968425-5621-09b9-febe-2086d5492c96@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UDP doesn't support tx memory accounting, and sysctl udp_wmem_min
-is not really used anywhere. So we should fix the description in
-ip-sysctl.rst accordingly.
+On Mon, Jul 18, 2022 at 12:45:01PM -0400, Sean Anderson wrote:
+> 
+> 
+> On 7/18/22 12:12 PM, Russell King (Oracle) wrote:
+> > On Fri, Jul 15, 2022 at 05:59:17PM -0400, Sean Anderson wrote:
+> >> If the phy is configured to use pause-based rate adaptation, ensure that
+> >> the link is full duplex with pause frame reception enabled. Note that these
+> >> settings may be overridden by ethtool.
+> >> 
+> >> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> >> ---
+> >> 
+> >> Changes in v3:
+> >> - New
+> >> 
+> >>  drivers/net/phy/phylink.c | 4 ++++
+> >>  1 file changed, 4 insertions(+)
+> >> 
+> >> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> >> index 7fa21941878e..7f65413aa778 100644
+> >> --- a/drivers/net/phy/phylink.c
+> >> +++ b/drivers/net/phy/phylink.c
+> >> @@ -1445,6 +1445,10 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
+> >>  	pl->phy_state.speed = phy_interface_speed(phydev->interface,
+> >>  						  phydev->speed);
+> >>  	pl->phy_state.duplex = phydev->duplex;
+> >> +	if (phydev->rate_adaptation == RATE_ADAPT_PAUSE) {
+> >> +		pl->phy_state.duplex = DUPLEX_FULL;
+> 
+> Just form context, as discussed with Andrew, this should never change
+> anything. That is, it could be replaced with
+> 
+> WARN_ON_ONCE(pl->phy_state.duplex != DUPLEX_FULL);
+> 
+> Since the phy should never report that it is using rate_adaptation
+> unless it is using full duplex.
 
-Fixes: 95766fff6b9a ("[UDP]: Add memory accounting.")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- Documentation/networking/ip-sysctl.rst | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+The "rate adaption" thing tends not to be a result of negotiation with
+the link partner, but more a configuration issue. At least that is the
+case with 88x3310 PHYs. There is no mention of any kind of restriction
+on duplex when operating in rate adaption mode (whether it's the MACSEC
+version that can generate pause frames, or the non-MACSEC that can't.)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index b7db2e5e5cc5..22703560d2e5 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1052,11 +1052,7 @@ udp_rmem_min - INTEGER
- 	Default: 4K
- 
- udp_wmem_min - INTEGER
--	Minimal size of send buffer used by UDP sockets in moderation.
--	Each UDP socket is able to use the size for sending data, even if
--	total pages of UDP sockets exceed udp_mem pressure. The unit is byte.
--
--	Default: 4K
-+	UDP does not have tx memory accounting and this tunable has no effect.
- 
- RAW variables
- =============
+> >> +		rx_pause = true;
+> >> +	}
+> > 
+> > I really don't like this - as I've pointed out in my previous email, the
+> > reporting in the kernel message log for "Link is Up" will be incorrect
+> > if you force the phy_state here like this. If the media side link has
+> > been negotiated to be half duplex, we should state that in the "Link is
+> > Up" message.
+> 
+> So I guess the question here is whether there are phys which do duplex
+> adaptation. There definitely are phys which support a half-duplex
+> interface mode and a full duplex link mode (such as discussed in patch 08/47).
+> If it's important to get this right, I can do the same treatment for duplex
+> as I did for speed.
+
+I guess it's something we don't know.
+
+The sensible thing is not to add a WARN_ON() for the case, but to
+restrict the PHY advertisement so the half-duplex case can't happen if
+the host link is operating in a mode that requires rate adaption to
+gain the other speeds.
+
 -- 
-2.31.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
