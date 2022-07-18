@@ -2,145 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A90705789A8
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A735789B3
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236012AbiGRSkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 14:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41158 "EHLO
+        id S236031AbiGRSnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 14:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiGRSkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:40:23 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319702CDF8;
-        Mon, 18 Jul 2022 11:40:22 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id l23so22931478ejr.5;
-        Mon, 18 Jul 2022 11:40:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YQZ4hkmofUhfG0hpaOlmyoB24uIldHkWpuCcbjQxnPE=;
-        b=mE6wPL2iVcfqpPq/bbW79XZTpuNGGC5aJJETfs1MUf/dxxisb2NozYSEJcSsy0Vu9d
-         acS22sZcx4arjRg/OcIa43PEttTu6VoHz1C1Yr98WS4JETSpuXRy5KCRKg5Vbye88bXm
-         VE43MIQFvXjnkrAtUM/qwCJO+hONECTenCUT0gTZvoAprTC1+89xBIC+vD1uhLi2PN1V
-         JQVliRiWyiLWQik1/9kJFWXLxxooic6bOgOQiBKax1zUaU7Ix1OJDer2AexKdj2M0Sbw
-         z5izHsi1udeI84ig5FPQN+iN8UWY+C5BdgwMktsDEo1Y1bjSt9ZKFXL/uZSuF7I9ebnL
-         vrMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YQZ4hkmofUhfG0hpaOlmyoB24uIldHkWpuCcbjQxnPE=;
-        b=xezzCIIhbAChMzrTn46dJHxKnXgYIRu7LDznKzY5popI022iDYHwYSLNkeUZQItbbf
-         ISooFnYgcsTUkDOwPNcEz+x2hb78Snv4t50Li2n5E0v7a1sCnGT77p1n8A2gOz46Pt/Y
-         swEDrFP1hQECQFXI6BjJxtY7GoLZ9El8Le3rmmPsJVPaSJ4ETQuC4hmsl3QSnkBXVWMb
-         hxnVDfgHVP3Cx6qsamTyVmRhYjd20QyMd0pXxGDChe4el0zZO9MV54RLbvkA1127q1MC
-         Chy3Dw11L4JdKFg0CrJqZMaSe3Bnzxo3EmuYN1JUyKyfwlt3Hj3bAMFepELyYaUia1RT
-         kW8g==
-X-Gm-Message-State: AJIora+bQKyWN1VoSyPqwlP5dU8cWyYSmOn5izS1HZuQ9H1A4eWjCYKV
-        QNELKmJmRzmTEWQ5TRqHIa4=
-X-Google-Smtp-Source: AGRyM1uq0RdKdIa8KzAwQkfOG7kjQ9Ytt8ivRmAQhd/r4F2J//WgAo1812A/mQZpl5pBBnG/ck9ptA==
-X-Received: by 2002:a17:906:cc5a:b0:72b:1459:6faa with SMTP id mm26-20020a170906cc5a00b0072b14596faamr27383948ejb.221.1658169620561;
-        Mon, 18 Jul 2022 11:40:20 -0700 (PDT)
-Received: from skbuf ([188.25.231.190])
-        by smtp.gmail.com with ESMTPSA id ev18-20020a17090729d200b0072abb95eaa4sm5773747ejc.215.2022.07.18.11.40.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:40:19 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 21:40:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S236028AbiGRSny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:43:54 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA67362D3;
+        Mon, 18 Jul 2022 11:43:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658169834; x=1689705834;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KdBF4yjrLuXbz/OvgsIOnMxdr8dPb/kuNCRv0XTho8U=;
+  b=QAH8skE1JqPNmP/hePVKZrVFxvdOfaXt8vNNqU5upJPweT5c3O1QrvT1
+   OQsO6vP9ih1bKFSHpySK94v8Xt7HQaXu82Qgga9ybLoKWexdwvKpuVlQr
+   fIyXIR506pJsiGcMjKsRbbWEL4ZxSPvCsC3dGivNjXeL3EyhPaB65Ihwa
+   boasTUhIR6kKvwqF51eUyJ1OvH9h/5+LvBWhel/abhVYasjoT9cDM04Go
+   MmXsdojkgezMTsUT+jjVxsnjtotnkTMxpDrovx2GOTLBO9cVhrGgbIJli
+   OWdaLjlDc0Hw/0zLq/R+f5bPyVT0HXZ6FmhPOABxJMqZlnJnQ8WhxnGwd
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="347984337"
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="347984337"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:43:54 -0700
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="843374513"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:43:46 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oDViY-001OOO-0R;
+        Mon, 18 Jul 2022 21:43:42 +0300
+Date:   Mon, 18 Jul 2022 21:43:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
- qca8k_read/write/rmw for regmap variant
-Message-ID: <20220718184017.o2ogalgjt6zwwhq3@skbuf>
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-2-ansuelsmth@gmail.com>
- <20220718180452.ysqaxzguqc3urgov@skbuf>
- <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
+ be created
+Message-ID: <YtWp3WkpCtfe559l@smile.fi.intel.com>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
+ <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
+ <20220715201715.foea4rifegmnti46@skbuf>
+ <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
+ <20220715204841.pwhvnue2atrkc2fx@skbuf>
+ <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
+ <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 07:55:26PM +0200, Christian Marangi wrote:
-> Sure.
-> When the regmap conversion was done at times, to limit patch delta it
-> was suggested to keep these function. This was to not get crazy with
-> eventual backports and fixes.
+On Mon, Jul 18, 2022 at 02:27:02PM +0100, Russell King (Oracle) wrote:
+> On Mon, Jul 18, 2022 at 03:29:52PM +0300, Andy Shevchenko wrote:
+> > On Fri, Jul 15, 2022 at 11:48:41PM +0300, Vladimir Oltean wrote:
+> > > So won't kobject_init_and_add() fail on namespace collision? Is it the
+> > > problem that it's going to fail, or that it's not trivial to statically
+> > > determine whether it'll fail?
+> > > 
+> > > Sorry, but I don't see something actionable about this.
+> > 
+> > I'm talking about validation before a runtime. But if you think that is fine,
+> > let's fail it at runtime, okay, and consume more backtraces in the future.
 > 
-> The logic here is:
-> As we are moving these function AND the function will use regmap api
-> anyway, we can finally drop them and user the regmap api directly
-> instead of these additional function.
+> Is there any sane way to do validation of this namespace before
+> runtime?
+
+For statically compiled, I think we can do it (to some extent).
+Currently only three drivers, if I'm not mistaken, define software nodes with
+names. It's easy to check that their node names are unique.
+
+When you allow such an API then we might have tracebacks (from sysfs) bout name
+collisions. Not that is something new to kernel (we have seen many of a kind),
+but I prefer, if possible, to validate this before sysfs issues a traceback.
+
+> The problem in this instance is we need a node named "fixed-link" that
+> is attached to the parent node as that is defined in the binding doc,
+> and we're creating swnodes to provide software generated nodes for
+> this binding.
+
+And how you guarantee that it will be only a single one with unique pathname?
+
+For example, you have two DSA cards (or whatever it's called) in the SMP system,
+it mean that there is non-zero probability of coexisting swnodes for them.
+
+> There could be several such nodes scattered around, but in this
+> instance they are very short-lived before they are destroyed, they
+> don't even need to be published to userspace (and its probably a waste
+> of CPU cycles for them to be published there.)
 > 
-> When the regmap conversion was done, I pointed out that in the future
-> the driver had to be split in specific and common code and it was said
-> that only at that times there was a good reason to make all these
-> changes and drop these special functions.
-> 
-> Now these function are used by both setup function for qca8k and by
-> common function that will be moved to a different file.
-> 
-> 
-> If we really want I can skip the dropping of these function and move
-> them to qca8k common code.
+> So, for this specific case, is this the best approach, or is there
+> some better way to achieve what we need here?
 
-I don't really have a preference, I just want to understand why you want
-to call regmap_read(priv->regmap) directly every time as opposed to
-qca8k_read(priv) which is shorter to type and allows more stuff to fit
-on one line.
+Honestly, I don't know.
 
-I think if you run "make drivers/net/dsa/qca/qca8k.lst" and you look at
-the generated code listing before and after, you'll find it is identical
-(note, I haven't actually done that).
+The "workaround" (but it looks to me rather a hack) is to create unique swnode
+and make fixed-link as a child of it.
 
-> An alternative is to keep them for qca8k specific code and migrate the
-> common function to regmap api.
+Or entire concept of the root swnodes (when name is provided) should be
+reconsidered, so somehow we will have a uniqueness so that the entire
+path(s) behind it will be caller-dependent. But this I also don't like.
 
-No, that's silly and I can't even find a reason to do that.
-It's not like you're trying to create a policy to not call qca8k-common.c
-functions from qca8k-8xxx.c, right? That should work just fine (in this
-case, qca8k_read etc).
+Maybe Heikki, Sakari, Rafael can share their thoughts...
 
-In fact, while typing this I realized that in your code structure,
-you'll have one struct dsa_switch_ops in qca8k-8xxx.c and another one in
-qca8k-ipq4019.c. But the vast majority of dsa_switch_ops are common,
-with the exception of .setup() which is switch-specific, correct?
+Just for my learning, why PHY uses "fixed-link" instead of relying on a
+(firmware) graph? It might be the actual solution to your problem.
 
-Wouldn't you consider, as an alternative, to move the dsa_switch_ops
-structure to the common C file as well, and have a switch-specific
-(*setup) operation in the match_data structure? Or even much better,
-make the switch-specific ops as fine-grained as possible, rather than
-reimplementing the entire qca8k_setup() (note, I don't know how similar
-they are, but there should be as little duplication of logic as possible,
-the common code should dictate what there is to do, and the switch
-specific code just how to do it).
+How graphs are used with swnodes, you may look into IPU3 (Intel Camera)
+glue driver to support devices before MIPI standardisation of the
+respective properties.
 
-> So it's really a choice of drop these additional function or keep using
-> them for the sake of not modifying too much source.
-> 
-> Hope it's clear now the reason of this change.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-If I were to summarize your reason, it would be "because I prefer it
-that way and because now is a good time", right? That's fine with me,
-but I honestly didn't understand that while reading the commit message.
+
