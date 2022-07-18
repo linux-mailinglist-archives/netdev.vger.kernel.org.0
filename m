@@ -2,80 +2,412 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E74577F09
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5FEA577F22
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbiGRJwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 05:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        id S231629AbiGRJ5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 05:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232195AbiGRJwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:52:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F334217E1C
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 02:52:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0725CCE12B0
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918C2C341C0;
-        Mon, 18 Jul 2022 09:52:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658137948;
-        bh=FvJ30zIBe6teYhvvRTO4Y1PlGza4yd1K3IFdjppMF/g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JElPX3qUMrDlcb6A9YI1RPl+F9iekDAlhF0N45C7pFYxei/D/jQWUbYOHUgnCGHYP
-         9MJI8Ec9PVbzCFg2YYGLGp0cl8NeY5GFVBVwe0foaY2kpGeR5PxKjoV9WyVxAaW1Ce
-         CxbBVVi1Y4rND+0Vu8ToulFB67N9nyn4w+BPgRh3HooP1O+exY4pnTEmgpg4KqXxmO
-         2JToIG912eVl0z3vXDxJydwUVA842soi0bkvqJ3cVGvnMjzZdIe7SPxuwxxwUTSrTE
-         dnYyx8He6jQm10rRjcsKhXeJljk43ZMu/Ki5lfvdGEYddmLWV8bct1eBjz2Uv5xco7
-         7Hgy5f9j7LspA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH net] net: ethernet: mtk_ppe: fix possible NULL pointer dereference in mtk_flow_get_wdma_info
-Date:   Mon, 18 Jul 2022 11:51:53 +0200
-Message-Id: <4e1685bc4976e21e364055f6bee86261f8f9ee93.1658137753.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S229535AbiGRJ5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:57:13 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2391919C29;
+        Mon, 18 Jul 2022 02:57:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658138232; x=1689674232;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4kEDKe6/oI1Spqx59vNDxtH2db9KPFEH0tDQORL3Ips=;
+  b=G2O9B9fK7pGJihoeviHd1AG6UQyaRTamTAy5dKqeI6fCNXLi3ImCqgnP
+   waCDqrO+eGl/aQclO+Iy9a2Xx1T91nCXRtsNNixrlHqvirSqdCT73Qv5j
+   fIZa4gAAwk+dCbKnDN2NLNXRMfZhDmvq2tRP9Eh3szoUqJjMEXQr3xL4I
+   m3lMiHlLuK/WY7OFNNqHiJwTfz6IUfRO245SWNcklVUuakWubA5mQ/VSq
+   2D13lCdlDHLaq9EKV064IzCUph542vLLQbCLOw2jPLfeDEBxEsE808Vc5
+   0Ork7FnIsATwfVvh6CEHYRCefhLJHpRooODJpnkTIYy7kpldQdeMwHid1
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="347870050"
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="347870050"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 02:57:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
+   d="scan'208";a="924283357"
+Received: from silpixa00401350.ir.intel.com (HELO silpixav00401350..) ([10.55.128.131])
+  by fmsmga005.fm.intel.com with ESMTP; 18 Jul 2022 02:57:09 -0700
+From:   Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org, maciej.fijalkowski@intel.com,
+        andrii@kernel.org, ciara.loftus@intel.com,
+        Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+Subject: [PATCH bpf-next] selftests: xsk: Update poll test cases
+Date:   Mon, 18 Jul 2022 09:57:12 +0000
+Message-Id: <20220718095712.588513-1-shibin.koikkara.reeny@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-odev pointer can be NULL in mtk_flow_offload_replace routine according
-to the flower action rules. Fix possible NULL pointer dereference in
-mtk_flow_get_wdma_info.
+Poll test case was not testing all the functionality
+of the poll feature in the testsuite. This patch
+update the poll test case with 2 more testcases to
+check the timeout features.
 
-Fixes: a333215e10cb5 ("net: ethernet: mtk_eth_soc: implement flow offloading to WED devices")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Poll test case have 4 sub test cases:
+
+1. TEST_TYPE_RX_POLL:
+Check if POLLIN function work as expect.
+
+2. TEST_TYPE_TX_POLL:
+Check if POLLOUT function work as expect.
+
+3. TEST_TYPE_POLL_RXQ_EMPTY:
+call poll function with parameter POLLIN on empty rx queue
+will cause timeout.If return timeout then test case is pass.
+
+4. TEST_TYPE_POLL_TXQ_FULL:
+When txq is filled and packets are not cleaned by the
+kernel then if we invoke the poll function with POLLOUT
+then it should trigger timeout.If return timeout then
+test case is pass.
+
+Signed-off-by: Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
 ---
- drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/bpf/xskxceiver.c | 173 +++++++++++++++++------
+ tools/testing/selftests/bpf/xskxceiver.h |  10 +-
+ 2 files changed, 139 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index 90e7dfd011c9..5d457bc9acc1 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -93,6 +93,9 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
- 	};
- 	struct net_device_path path = {};
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index 74d56d971baf..8ecab3a47c9e 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -424,6 +424,8 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
  
-+	if (!ctx.dev)
-+		return -ENODEV;
+ 		ifobj->xsk = &ifobj->xsk_arr[0];
+ 		ifobj->use_poll = false;
++		ifobj->skip_rx = false;
++		ifobj->skip_tx = false;
+ 		ifobj->use_fill_ring = true;
+ 		ifobj->release_rx = true;
+ 		ifobj->pkt_stream = test->pkt_stream_default;
+@@ -589,6 +591,19 @@ static struct pkt_stream *pkt_stream_clone(struct xsk_umem_info *umem,
+ 	return pkt_stream_generate(umem, pkt_stream->nb_pkts, pkt_stream->pkts[0].len);
+ }
+ 
++static void pkt_stream_invalid(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
++{
++	struct pkt_stream *pkt_stream;
++	u32 i;
 +
- 	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
++	pkt_stream = pkt_stream_generate(test->ifobj_tx->umem, nb_pkts, pkt_len);
++	for (i = 0; i < nb_pkts; i++)
++		pkt_stream->pkts[i].valid = false;
++
++	test->ifobj_tx->pkt_stream = pkt_stream;
++	test->ifobj_rx->pkt_stream = pkt_stream;
++}
++
+ static void pkt_stream_replace(struct test_spec *test, u32 nb_pkts, u32 pkt_len)
+ {
+ 	struct pkt_stream *pkt_stream;
+@@ -817,9 +832,9 @@ static int complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+ 	return TEST_PASS;
+ }
  
- 	if (!IS_ENABLED(CONFIG_NET_MEDIATEK_SOC_WED))
+-static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
++static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds, bool skip_tx)
+ {
+-	struct timeval tv_end, tv_now, tv_timeout = {RECV_TMOUT, 0};
++	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
+ 	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkts_sent = 0;
+ 	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
+ 	struct xsk_socket_info *xsk = ifobj->xsk;
+@@ -843,17 +858,28 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 		}
+ 
+ 		kick_rx(xsk);
++		if (ifobj->use_poll) {
++			ret = poll(fds, 1, POLL_TMOUT);
++			if (ret < 0)
++				exit_with_error(-ret);
++
++			if (!ret) {
++				if (skip_tx)
++					return TEST_PASS;
++
++				ksft_print_msg("ERROR: [%s] Poll timed out\n", __func__);
++				return TEST_FAILURE;
+ 
+-		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+-		if (!rcvd) {
+-			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
+-				ret = poll(fds, 1, POLL_TMOUT);
+-				if (ret < 0)
+-					exit_with_error(-ret);
+ 			}
+-			continue;
++
++			if (!(fds->revents & POLLIN))
++				continue;
+ 		}
+ 
++		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
++		if (!rcvd)
++			continue;
++
+ 		if (ifobj->use_fill_ring) {
+ 			ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
+ 			while (ret != rcvd) {
+@@ -863,6 +889,7 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 					ret = poll(fds, 1, POLL_TMOUT);
+ 					if (ret < 0)
+ 						exit_with_error(-ret);
++					continue;
+ 				}
+ 				ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
+ 			}
+@@ -900,13 +927,34 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 	return TEST_PASS;
+ }
+ 
+-static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
++static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb, bool use_poll,
++		       struct pollfd *fds, bool timeout)
+ {
+ 	struct xsk_socket_info *xsk = ifobject->xsk;
+-	u32 i, idx, valid_pkts = 0;
++	u32 i, idx, ret, valid_pkts = 0;
++
++	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE) {
++		if (use_poll) {
++			ret = poll(fds, 1, POLL_TMOUT);
++			if (timeout) {
++				if (ret < 0) {
++					ksft_print_msg("DEBUG: [%s] Poll error %d\n",
++						       __func__, ret);
++					return TEST_FAILURE;
++				}
++				if (ret == 0)
++					return TEST_PASS;
++				break;
++			}
++			if (ret <= 0) {
++				ksft_print_msg("DEBUG: [%s] Poll error %d\n",
++					       __func__, ret);
++				return TEST_FAILURE;
++			}
++		}
+ 
+-	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE)
+ 		complete_pkts(xsk, BATCH_SIZE);
++	}
+ 
+ 	for (i = 0; i < BATCH_SIZE; i++) {
+ 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
+@@ -933,11 +981,27 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+ 
+ 	xsk_ring_prod__submit(&xsk->tx, i);
+ 	xsk->outstanding_tx += valid_pkts;
+-	if (complete_pkts(xsk, i))
+-		return TEST_FAILURE;
+ 
+-	usleep(10);
+-	return TEST_PASS;
++	if (use_poll) {
++		ret = poll(fds, 1, POLL_TMOUT);
++		if (ret <= 0) {
++			if (ret == 0 && timeout)
++				return TEST_PASS;
++
++			ksft_print_msg("DEBUG: [%s] Poll error %d\n", __func__, ret);
++			return TEST_FAILURE;
++		}
++	}
++
++	if (!timeout) {
++		if (complete_pkts(xsk, i))
++			return TEST_FAILURE;
++
++		usleep(10);
++		return TEST_PASS;
++	}
++
++	return TEST_CONTINUE;
+ }
+ 
+ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+@@ -948,29 +1012,33 @@ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+ 
+ static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
+ {
++	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
++	bool timeout = test->ifobj_rx->skip_rx;
+ 	struct pollfd fds = { };
+-	u32 pkt_cnt = 0;
++	u32 pkt_cnt = 0, ret;
+ 
+ 	fds.fd = xsk_socket__fd(ifobject->xsk->xsk);
+ 	fds.events = POLLOUT;
+ 
+-	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
+-		int err;
+-
+-		if (ifobject->use_poll) {
+-			int ret;
+-
+-			ret = poll(&fds, 1, POLL_TMOUT);
+-			if (ret <= 0)
+-				continue;
++	ret = gettimeofday(&tv_now, NULL);
++	if (ret)
++		exit_with_error(errno);
++	timeradd(&tv_now, &tv_timeout, &tv_end);
+ 
+-			if (!(fds.revents & POLLOUT))
+-				continue;
++	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
++		ret = gettimeofday(&tv_now, NULL);
++		if (ret)
++			exit_with_error(errno);
++		if (timercmp(&tv_now, &tv_end, >)) {
++			ksft_print_msg("ERROR: [%s] Send loop timed out\n", __func__);
++			return TEST_FAILURE;
+ 		}
+ 
+-		err = __send_pkts(ifobject, &pkt_cnt);
+-		if (err || test->fail)
++		ret = __send_pkts(ifobject, &pkt_cnt, ifobject->use_poll, &fds, timeout);
++		if ((ret || test->fail) && !timeout)
+ 			return TEST_FAILURE;
++		else if (ret == TEST_PASS && timeout)
++			return ret;
+ 	}
+ 
+ 	wait_for_tx_completion(ifobject->xsk);
+@@ -1235,8 +1303,7 @@ static void *worker_testapp_validate_rx(void *arg)
+ 
+ 	pthread_barrier_wait(&barr);
+ 
+-	err = receive_pkts(ifobject, &fds);
+-
++	err = receive_pkts(ifobject, &fds, test->ifobj_tx->skip_tx);
+ 	if (!err && ifobject->validation_func)
+ 		err = ifobject->validation_func(ifobject);
+ 	if (err) {
+@@ -1265,17 +1332,21 @@ static int testapp_validate_traffic(struct test_spec *test)
+ 	pkts_in_flight = 0;
+ 
+ 	/*Spawn RX thread */
+-	pthread_create(&t0, NULL, ifobj_rx->func_ptr, test);
+-
+-	pthread_barrier_wait(&barr);
+-	if (pthread_barrier_destroy(&barr))
+-		exit_with_error(errno);
++	if (!ifobj_rx->skip_rx) {
++		pthread_create(&t0, NULL, ifobj_rx->func_ptr, test);
++		pthread_barrier_wait(&barr);
++		if (pthread_barrier_destroy(&barr))
++			exit_with_error(errno);
++	}
+ 
+ 	/*Spawn TX thread */
+-	pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
++	if (!ifobj_tx->skip_tx) {
++		pthread_create(&t1, NULL, ifobj_tx->func_ptr, test);
++		pthread_join(t1, NULL);
++	}
+ 
+-	pthread_join(t1, NULL);
+-	pthread_join(t0, NULL);
++	if (!ifobj_rx->skip_rx)
++		pthread_join(t0, NULL);
+ 
+ 	return !!test->fail;
+ }
+@@ -1548,10 +1619,28 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+ 
+ 		pkt_stream_restore_default(test);
+ 		break;
+-	case TEST_TYPE_POLL:
++	case TEST_TYPE_RX_POLL:
++		test->ifobj_rx->use_poll = true;
++		test_spec_set_name(test, "POLL_RX");
++		testapp_validate_traffic(test);
++		break;
++	case TEST_TYPE_TX_POLL:
+ 		test->ifobj_tx->use_poll = true;
++		test_spec_set_name(test, "POLL_TX");
++		testapp_validate_traffic(test);
++		break;
++	case TEST_TYPE_POLL_TXQ_TMOUT:
++		test_spec_set_name(test, "POLL_TXQ_FULL");
++		test->ifobj_rx->skip_rx = true;
++		test->ifobj_tx->use_poll = true;
++		pkt_stream_invalid(test, 2 * DEFAULT_PKT_CNT, PKT_SIZE);
++		testapp_validate_traffic(test);
++		pkt_stream_restore_default(test);
++		break;
++	case TEST_TYPE_POLL_RXQ_TMOUT:
++		test_spec_set_name(test, "POLL_RXQ_EMPTY");
++		test->ifobj_tx->skip_tx = true;
+ 		test->ifobj_rx->use_poll = true;
+-		test_spec_set_name(test, "POLL");
+ 		testapp_validate_traffic(test);
+ 		break;
+ 	case TEST_TYPE_ALIGNED_INV_DESC:
+diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+index 3d17053f98e5..0db7e0acccb2 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.h
++++ b/tools/testing/selftests/bpf/xskxceiver.h
+@@ -27,6 +27,7 @@
+ 
+ #define TEST_PASS 0
+ #define TEST_FAILURE -1
++#define TEST_CONTINUE 1
+ #define MAX_INTERFACES 2
+ #define MAX_INTERFACE_NAME_CHARS 7
+ #define MAX_INTERFACES_NAMESPACE_CHARS 10
+@@ -48,7 +49,7 @@
+ #define SOCK_RECONF_CTR 10
+ #define BATCH_SIZE 64
+ #define POLL_TMOUT 1000
+-#define RECV_TMOUT 3
++#define THREAD_TMOUT 3
+ #define DEFAULT_PKT_CNT (4 * 1024)
+ #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+ #define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
+@@ -68,7 +69,10 @@ enum test_type {
+ 	TEST_TYPE_RUN_TO_COMPLETION,
+ 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
+ 	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
+-	TEST_TYPE_POLL,
++	TEST_TYPE_RX_POLL,
++	TEST_TYPE_TX_POLL,
++	TEST_TYPE_POLL_RXQ_TMOUT,
++	TEST_TYPE_POLL_TXQ_TMOUT,
+ 	TEST_TYPE_UNALIGNED,
+ 	TEST_TYPE_ALIGNED_INV_DESC,
+ 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
+@@ -145,6 +149,8 @@ struct ifobject {
+ 	bool tx_on;
+ 	bool rx_on;
+ 	bool use_poll;
++	bool skip_rx;
++	bool skip_tx;
+ 	bool busy_poll;
+ 	bool use_fill_ring;
+ 	bool release_rx;
 -- 
-2.36.1
+2.34.1
 
