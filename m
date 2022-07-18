@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBB63578AC5
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3E4D578ABA
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234713AbiGRT26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
+        id S235976AbiGRT3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235931AbiGRT2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:54 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA983FEB;
-        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id b25so8800394qka.11;
-        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
+        with ESMTP id S229647AbiGRT24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:56 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8449A1AB;
+        Mon, 18 Jul 2022 12:28:54 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id cw12so9538577qvb.12;
+        Mon, 18 Jul 2022 12:28:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=fSIJ7a7j2AX31WFosI1tLZd0prS7r7q6CFeV8/OppVE=;
-        b=VbkCt5PHj4oSczMa9BarPYV2CjxzDRvrtDRRMj4B07hzccBFOAfmYblYUUH9Ajgumv
-         RKM4K28hzaiG92J/7vkuoCFu1rn9w8fhy0lWf6SIorEHqKyHwppnrzuULW+EmT6h7aZb
-         iNnNyCpV5Al9CLDF5s+BHS+cuFK+7eXWgag89LdLI4R4kgeV2hbArCXUwMlgqtF2xWIm
-         qfkeQzp0/+pXaxkZspiEkYN3yN4c8vfsqHzTwgjkQ3p2CVysWoVDuRXKrA2nXL5HlaIv
-         LdBinorxw3H/YgC7eHfwweeumD20to6B5s4SYw9LVJdPLE0pFWEA8sn1G0OBVc/9tacU
-         f7fg==
+        bh=kggq/8QR9J7+hQqC85Z7UvjwISsJybPyVWycNM36A94=;
+        b=dhlOzRWSRCVDeB5G/ojYUTukZ+P2gcdtsU+jMLUstlXFlOrTp2ph3aG0NXBV8ztstI
+         OXMYLzx6YxjDhp2P9YRr9zilu9HXR7fY5pvPhtwR3iRWzZwfVtgG9lVHCT2ZTqpw0+Ml
+         +OgpMDSbWao5AC6+qrMwM3Db0YqXaBy6MaEv7wnj6amC+iUAq4cv2bT0A4L8zdy5Euao
+         VAKc32hcR8GaNzT5A9JfavcEovAoouxP/ve/GxdRAbv82Ya4GcKRYbxbQkMPkB47IqRX
+         kYT71Abd+YiP5O3A8ckxB+XNkCs6wKALUnGT5t/3o7qzxFLs7cpnxkdiCIV74UJKfkcN
+         7sOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fSIJ7a7j2AX31WFosI1tLZd0prS7r7q6CFeV8/OppVE=;
-        b=cD5ZeosHnFTEjr1F4y9szPkWBBod684uIM96g7mjDpMvrk+/K5W2ZQXtUIJfZY2G23
-         4WgWkXp1L7PTE6ZfJbfvTjaeSw40xIiqE6xPZJi5S2SDaDlkwB3hbsOF+rFzSU/S/+53
-         VGca8LhJVTk+1lmDwU712ED4EBIb/0jZNcuM6AgONNw5DusUqCJrZEz8jZBYZaoNybgG
-         V8KmHFl31LjeFUEasX+4iOoEhnG8FRZ4XGx9UE0B8KGMLmWIHXBc3ppKapL6uaLTvsOr
-         GTSV30b1nl2kt9d6g1qJiqd6qECLX/0fl9DPdb93nX+Wv+iL6aYtwTao/krYvPpEvPxg
-         T4Rw==
-X-Gm-Message-State: AJIora+UWv+ZedSAh3kN4lSqQIAlrfbSrzzpWp37/O5tNkyH8x0Edv9K
-        k2NieK7xPmrBbo1nrYTGAX2hRHhyw1SsKw==
-X-Google-Smtp-Source: AGRyM1vV0SLlM81qvktCdvHe8wlRlm35TgOxVMvgml/1hdumCxKzVqNhVheVD3VDTLe5gZR7GC4mqw==
-X-Received: by 2002:ae9:e402:0:b0:6a7:86a3:752e with SMTP id q2-20020ae9e402000000b006a786a3752emr18219422qkc.300.1658172532712;
-        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
+        bh=kggq/8QR9J7+hQqC85Z7UvjwISsJybPyVWycNM36A94=;
+        b=5BW/VUyenp3yQB7XiN74Oc7DdLNRhDtEqS6KBgj8nRDvJ5mk+E8AtO6eSsJs3MzDKq
+         pmT0yinkz2c6d5PqbIxALQuPmTLADje39rMa1AwssWKLf4RqKePJWmKUVtynesXBidj/
+         4jh5W9phBVQioPcVKT5BIh7csacLSvxxNMkm+SU7b3N0nLTSoLXInGballCL8Xa/yOwo
+         Nu0X7m1uiNZTCJ53d096p5M9B2dPeKJD00c/9IWwvjxpZlel7M3x/IcAmiBXB9SpKJeF
+         ISmBQ8WnZTmy9vpYZI/XCE06PEwG7j1QlOK1f9e4/FJSazt4i6ZJ7p0geysA1jGKyTBb
+         fBwA==
+X-Gm-Message-State: AJIora/8Rk2zN6TMWvKdn4/qJj5xtpZAlrS0Kk9zy8eQjLscICYysakW
+        EBNKdArLoiGIDMreheeGB3KEzSca+XfB/g==
+X-Google-Smtp-Source: AGRyM1u3EM0rXTHhAD/Z1aIEbA912gwLNc43tN+zBsepF5isd7Swws3o9Azy4V52O5TNXWBcbJiNlg==
+X-Received: by 2002:a05:6214:246f:b0:473:5145:d906 with SMTP id im15-20020a056214246f00b004735145d906mr22495118qvb.126.1658172533740;
+        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006a6d20386f6sm13557144qkn.42.2022.07.18.12.28.52
+        by smtp.gmail.com with ESMTPSA id i21-20020a05620a405500b006b5f4b7b088sm1783681qko.108.2022.07.18.12.28.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 05/16] lib/test_bitmap: disable compile-time test if DEBUG_BITMAP() is enabled
-Date:   Mon, 18 Jul 2022 12:28:33 -0700
-Message-Id: <20220718192844.1805158-6-yury.norov@gmail.com>
+Subject: [PATCH 06/16] lib/test_bitmap: delete meaningless test for bitmap_cut
+Date:   Mon, 18 Jul 2022 12:28:34 -0700
+Message-Id: <20220718192844.1805158-7-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,35 +108,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CONFIG_DEBUG_BITMAP, when enabled, injects __bitmap_check_params()
-into bitmap functions. It prevents compiler from compile-time
-optimizations, which makes corresponding test fail.
+One of bitmap_cut() tests passed it with:
+	nbits = BITS_PER_LONG;
+	first = BITS_PER_LONG;
+	cut = BITS_PER_LONG;
+
+This test is useless because the range to cut is not inside the
+bitmap. This should normally raise an error, but bitmap_cut() is
+void and returns nothing.
+
+To check if the test is passed, it just tests that the memory is
+not touched by bitmap_cut(), which is probably not correct, because
+if a function is passed with wrong parameters, it's too optimistic 
+to expect a correct, or even sane behavior.
+
+Now that we have bitmap_check_params(), there's a tool to detect such
+things in real code, and we can drop the test.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- lib/test_bitmap.c | 2 ++
- 1 file changed, 2 insertions(+)
+ lib/test_bitmap.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index bc48d992d10d..8bd279a7633f 100644
+index 8bd279a7633f..c1ea449aae2d 100644
 --- a/lib/test_bitmap.c
 +++ b/lib/test_bitmap.c
-@@ -877,6 +877,7 @@ static void __init test_bitmap_print_buf(void)
+@@ -707,10 +707,6 @@ static struct test_bitmap_cut test_cut[] = {
+ 	{ 15, 16, 32, { 0xa5a5a5a5UL, }, { 0x0000a5a5UL, }, },
+ 	{ 16, 15, 32, { 0xa5a5a5a5UL, }, { 0x0001a5a5UL, }, },
  
- static void __init test_bitmap_const_eval(void)
- {
-+#ifndef CONFIG_DEBUG_BITMAP
- 	DECLARE_BITMAP(bitmap, BITS_PER_LONG);
- 	unsigned long initvar = BIT(2);
- 	unsigned long bitopvar = 0;
-@@ -934,6 +935,7 @@ static void __init test_bitmap_const_eval(void)
- 	/* ~BIT(25) */
- 	BUILD_BUG_ON(!__builtin_constant_p(~var));
- 	BUILD_BUG_ON(~var != ~BIT(25));
-+#endif
- }
- 
- static void __init selftest(void)
+-	{ BITS_PER_LONG, BITS_PER_LONG, BITS_PER_LONG,
+-		{ 0xa5a5a5a5UL, 0xa5a5a5a5UL, },
+-		{ 0xa5a5a5a5UL, 0xa5a5a5a5UL, },
+-	},
+ 	{ 1, BITS_PER_LONG - 1, BITS_PER_LONG,
+ 		{ 0xa5a5a5a5UL, 0xa5a5a5a5UL, },
+ 		{ 0x00000001UL, 0x00000001UL, },
 -- 
 2.34.1
 
