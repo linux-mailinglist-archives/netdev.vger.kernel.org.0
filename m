@@ -2,181 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 308885782B0
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 14:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD068578301
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbiGRMsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 08:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
+        id S234954AbiGRNDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 09:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiGRMsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 08:48:53 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13CE274;
-        Mon, 18 Jul 2022 05:48:51 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id bp15so21020462ejb.6;
-        Mon, 18 Jul 2022 05:48:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TeGVCUHeLxV7GRevtfvM+qomfGbRC+tXZ9uiMLV6+TY=;
-        b=njIbtwRABHwo1EuVlDmBZl5/FfMEVieI0PWSxOowMr14u+vgbwUdzACh1FX0Z5QT3I
-         NwlS4Wvt3WPDSo5+c90fkGtVn4fxYFvOoTGGw7mIVewnJvOZndlPGb6yUx/4qwDBmtvc
-         FflvOm+utwIey+OP2PLkl90+gv4M/nievVIhkYfVNQFfwaQyG+ATBsmOxPtfGqshXRe+
-         Ass+P5pjmix/lZf0A7RnNHFyVYPGm+al2LZKZfcAr6BwogORogjpVRjte0NdvjBtWl2G
-         bqcvCu+jgtOnXnl2kj5HFnBiJqhWYE2CvQZFeXqB6JK0b3wy7p8xYDAdR7tWHL6HVKye
-         7/GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TeGVCUHeLxV7GRevtfvM+qomfGbRC+tXZ9uiMLV6+TY=;
-        b=bXZMlvS+5eGxJT2F4qa1YzdJupP/UCfTesTNW9qyHh6MSPmXCsKhLqr1QkY6Q4Lz7r
-         2r72wslnO80P68pCbZWV4zcCePp+eS7mBuKy/sBn7JlPcHlSpzb0YOt1bV8LZE67SwPd
-         aNq2mopT9NxFkdT9CNTelG2OjlqeEC60fweLs5iIMH5yXH0GPATGJObqbPRBnQX/UGVE
-         xQLsLiFqf4UT97Emw9qEONGlK6YzJHrrfZutFGL4w67RfyWHgEkvgkadHnwiXSzBMjM0
-         OaJZsCc7uDbAUDRgq+hOm/GHJRqZZEcOtCXdXYIknCDRYPHbElgw14SQHL7yw4wYr5BD
-         dyug==
-X-Gm-Message-State: AJIora8dtXLQ3/fwdkujGFIlsYqTRpLTWF0zR6H9bx8UlPRT0p5OWwgT
-        W/PtbRESJmK9BFbA0qyrPkc=
-X-Google-Smtp-Source: AGRyM1v5W3XVAP+3An41B0subOY/ynUHBsIavZ/hmJ7cpd6pECSZfwhJE5T7jKBSQ6hbg4w6JUffTg==
-X-Received: by 2002:a17:906:4785:b0:72e:dd6c:1ba1 with SMTP id cw5-20020a170906478500b0072edd6c1ba1mr20369468ejc.712.1658148529973;
-        Mon, 18 Jul 2022 05:48:49 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id t18-20020a1709067c1200b006febce7081bsm5436352ejo.163.2022.07.18.05.48.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 05:48:48 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 18 Jul 2022 14:48:46 +0200
-To:     Martynas Pumputis <m@lambda.lt>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>
-Subject: Re: [PATCH RFC bpf-next 4/4] selftests/bpf: Fix kprobe get_func_ip
- tests for CONFIG_X86_KERNEL_IBT
-Message-ID: <YtVWruugC9LHtah2@krava>
-References: <20220705190308.1063813-1-jolsa@kernel.org>
- <20220705190308.1063813-5-jolsa@kernel.org>
- <CAEf4BzapX_C16O9woDSXOpbzVsxjYudXW36woRCqU3u75uYiFA@mail.gmail.com>
- <YsdbQ4vJheLWOa0a@krava>
- <YtSCbIA+6JtRF/Ch@krava>
- <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
+        with ESMTP id S230394AbiGRNDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:03:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52855959D;
+        Mon, 18 Jul 2022 06:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=XidPYl11smFttKHJvFnl6SJFpfWwT+eJ4zfOs1kVy/I=; b=HNXSITYgKyS2AT0HBOFQpDpc2y
+        fncTocyT8qTf99rm7secmA39Es5zp5dk5bOtD2FpAt6dSNye2wfD9Sx0wWJf8bmI57UYZwQO8hv2x
+        InGWdUhlemAKoFxnkn8d4NkJZgOVHDDidU3ellLxWz+7X7ZdRrCKU7q18WHWVZdddQwZAN8UZSMAd
+        ZBn7mSR9x+FRwd25C3PktQmfDrBwD5RN7PC8PC10+4z3GEWQr6yi6828qJZFZzE95Zt470WspVC2I
+        wGtkFvCACLc9+zDxJR6eP8w6jOoRyj0mftTr5h20HTjRfl2OYhYAjrQU4qJaCrb+eWK8gSHMPTbFa
+        qnBeHBNw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33408)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oDQOV-0001bG-Ds; Mon, 18 Jul 2022 14:02:39 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oDQOP-0001yk-Eq; Mon, 18 Jul 2022 14:02:33 +0100
+Date:   Mon, 18 Jul 2022 14:02:33 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH net-next 0/6] net: dsa: always use phylink
+Message-ID: <YtVZ6VI1yvbgSYDg@shell.armlinux.org.uk>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <20220715171719.niqcrklpk4ittfvl@skbuf>
+ <YtHVLGR0RQ6dWuBS@shell.armlinux.org.uk>
+ <20220715160359.2e9dabfe@kernel.org>
+ <20220716111551.64rjruz4q4g5uzee@skbuf>
+ <YtKkRLD74tqoeBuR@shell.armlinux.org.uk>
+ <20220716131345.b2jas3rucsifli7g@skbuf>
+ <YtUfg+WYIYYi5J+q@shell.armlinux.org.uk>
+ <20220718124512.o3qxiwop7nzfjbfx@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
+In-Reply-To: <20220718124512.o3qxiwop7nzfjbfx@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 02:09:54PM +0300, Martynas Pumputis wrote:
-> 
-> 
-> On 7/18/22 00:43, Jiri Olsa wrote:
-> > On Fri, Jul 08, 2022 at 12:16:35AM +0200, Jiri Olsa wrote:
-> > > On Tue, Jul 05, 2022 at 10:29:17PM -0700, Andrii Nakryiko wrote:
-> > > > On Tue, Jul 5, 2022 at 12:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > > > 
-> > > > > The kprobe can be placed anywhere and user must be aware
-> > > > > of the underlying instructions. Therefore fixing just
-> > > > > the bpf program to 'fix' the address to match the actual
-> > > > > function address when CONFIG_X86_KERNEL_IBT is enabled.
-> > > > > 
-> > > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > > > ---
-> > > > >   tools/testing/selftests/bpf/progs/get_func_ip_test.c | 7 +++++--
-> > > > >   1 file changed, 5 insertions(+), 2 deletions(-)
-> > > > > 
-> > > > > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > index a587aeca5ae0..220d56b7c1dc 100644
-> > > > > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > @@ -2,6 +2,7 @@
-> > > > >   #include <linux/bpf.h>
-> > > > >   #include <bpf/bpf_helpers.h>
-> > > > >   #include <bpf/bpf_tracing.h>
-> > > > > +#include <stdbool.h>
-> > > > > 
-> > > > >   char _license[] SEC("license") = "GPL";
-> > > > > 
-> > > > > @@ -13,6 +14,8 @@ extern const void bpf_modify_return_test __ksym;
-> > > > >   extern const void bpf_fentry_test6 __ksym;
-> > > > >   extern const void bpf_fentry_test7 __ksym;
-> > > > > 
-> > > > > +extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
-> > > > > +
-> > > > >   __u64 test1_result = 0;
-> > > > >   SEC("fentry/bpf_fentry_test1")
-> > > > >   int BPF_PROG(test1, int a)
-> > > > > @@ -37,7 +40,7 @@ __u64 test3_result = 0;
-> > > > >   SEC("kprobe/bpf_fentry_test3")
-> > > > >   int test3(struct pt_regs *ctx)
-> > > > >   {
-> > > > > -       __u64 addr = bpf_get_func_ip(ctx);
-> > > > > +       __u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
+On Mon, Jul 18, 2022 at 03:45:12PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 18, 2022 at 09:53:23AM +0100, Russell King (Oracle) wrote:
+> > On Sat, Jul 16, 2022 at 04:13:45PM +0300, Vladimir Oltean wrote:
+> > > On Sat, Jul 16, 2022 at 12:43:00PM +0100, Russell King (Oracle) wrote:
+> > > > In the first RFC series I sent on the 24 June, I explicitly asked the
+> > > > following questions:
+> > > (...)
+> > > > I even stated: "Please look at the patches and make suggestions on how
+> > > > we can proceed to clean up this quirk of DSA." and made no mention of
+> > > > wanting something explicitly from Andrew.
 > > > > 
-> > > > so for kprobe bpf_get_func_ip() gets an address with 5 byte
-> > > > compensation for `call __fentry__`, but not for endr? Why can't we
-> > > > compensate for endbr inside the kernel code as well? I'd imagine we
-> > > > either do no compensation (and thus we get &bpf_fentry_test3+5 or
-> > > > &bpf_fentry_test3+9, depending on CONFIG_X86_KERNEL_IBT) or full
-> > > > compensation (and thus always get &bpf_fentry_test3), but this
-> > > > in-between solution seems to be the worst of both worlds?...
+> > > > Yet, none of those questions were answered.
+> > > > 
+> > > > So no, Jakub's comments are *not* misdirected at all. Go back and read
+> > > > my June 24th RFC series yourself:
+> > > > 
+> > > > https://lore.kernel.org/all/YrWi5oBFn7vR15BH@shell.armlinux.org.uk/
 > > > 
-> > > hm rigth, I guess we should be able to do that in bpf_get_func_ip,
-> > > I'll check
+> > > I don't believe I need to justify myself any further for why I didn't
+> > > leave a comment on any certain day. I left my comments when I believed
+> > > it was most appropriate for me to intervene (as someone who isn't really
+> > > affected in any way by the changes, except for generally maintaining
+> > > what's in net/dsa/, and wanting to keep a clean framework structure).
+> > > Also, to repeat myself, blaming me for leaving comments, but doing so
+> > > late, is not really fair. I could have not responded at all, and I
+> > > wouldn't be having this unpleasant discussion. It begs the question
+> > > whether you're willing to be held accountable in the same way for the
+> > > dates on which you respond on RFC patches.
+> > > 
+> > > > I've *tried* my best to be kind and collaborative, but I've been
+> > > > ignored. Now I'm hacked off. This could have been avoided by responding
+> > > > to my explicit questions sooner, rather than at the -rc6/-rc7 stage of
+> > > > the show.
+> > > 
+> > > I think you should continue to try your best to be kind and collaborative,
+> > > you weren't provoked or intentionally ignored in any way, and it isn't
+> > > doing these patches any good.
 > > 
-> > sorry for late follow up..
+> > And yet again, I don't have answers to many of those questions... which
+> > just shows how broken this process is, and how utterly pointless it is
+> > 0to ask any questions in this area.
 > > 
-> > so the problem is that you can place kprobe anywhere in the function
-> > (on instruction boundary) but the IBT adjustment of kprobe address is
-> > made only if it's at the function entry and there's endbr instruction
+> > My conclusion: you don't care one bit to even answer questions until
+> > there's a chance that patches that you disagree with might be merged,
+> > and oh my god, you've got to respond to stop that happening because you
+> > might disagree with something. You can't do the collaborative thing and
+> > respond when someone asks explicit questions about how things should be
+> > done.
+> > 
+> > I'm not going to let this go. I'm really pissed off by this and you
+> > are the focus of my frustration.
 > 
-> To add more fun to the issue, not all non-inlined functions get endbr64. For
-> example "skb_release_head_state()" does, while "skb_free_head()" doesn't.
-
-ah great.. thanks for info, will check
-
-jirka
-
+> The hypothesis that you put forward is that I'm sabotaging you by not
+> responding to RFCs, then leaving comments when you submit the patches
+> proper, just so that they're delayed because I don't agree with them;
+> and that the process is broken because it allows me to do just that and
+> get away with it (for fun, I assume?).
 > 
-> > 
-> > and that kprobe address is what we return in helper:
-> > 
-> >    BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
-> >    {
-> >          struct kprobe *kp = kprobe_running();
-> > 
-> >          return kp ? (uintptr_t)kp->addr : 0;
-> >    }
-> > 
-> > so the adjustment would work only for address at function entry, but
-> > would be wrong for address within the function
-> > 
-> > perhaps we could add flag to kprobe to indicate the addr adjustment
-> > was done and use it in helper
-> > 
-> > but that's why I thought I'd keep bpf_get_func_ip_kprobe as it and
-> > leave it up to user
-> > 
-> > kprobe_multi and trampolines are different, because they can be
-> > only at the function entry, so we can adjust the ip properly
-> > 
-> > jirka
+> So first off, you sent the first RFC towards 2 people in To:, and 19
+> people in Cc:. I was one of the people in Cc. You didn't ask *me* any
+> explicit question. In fact, when you did, I responded within 5 hours:
+> https://lore.kernel.org/linux-arm-kernel/20220707154303.236xaeape7isracw@skbuf/
+> 
+> Then, why did I not respond earlier to questions I had an opinion on?
+
+In the second RFC, I stated:
+
+"Some of the questions from the original RFC remain though, so I've
+included that text below. I'm guessing as they remain unanswered that
+no one has any opinions on them?"
+
+Clearly, I was soliciting answers from _everyone_ who received this,
+not just the two people in the To: header.
+
+> Based on prior experience, anything I reply to you has a chance of
+> inflaming you for reasons that are outside of my control, and the
+> discussion derails and eventually ends with you saying that I'm being
+> difficult and you're quitting for the day, week, month, kernel release
+> cycle or what not. I'm not saying that's my fault or your fault in
+> general, it's just a statistical observation based on past interactions,
+> and it looks like this one is no different.
+> 
+> With regard to this topic, there was ample opportunity for the patch set
+> to come to a resolve without my intervention, and I decided that the
+> best way to maximize the chances of this discussion not going sideways
+> is to not say anything at all, especially when I don't need to.
+> Gradually, the opportunity for the patch set to resolve itself without
+> my intervention diminished, and I started offering my feedback to the code.
+> 
+> It's perhaps necessary of me to not let this phrase of yours unaddressed,
+> because it is subtly part of your argument that I'm just trying to delay
+> your patches as part of a sabotage plot:
+> 
+> | The only thing that delayed them was your eventual comments about
+> | re-working how it was being done.
+> 
+> Let's not forget that I did *not* request you to rework the implementation
+> to use software nodes. I simply went with the code you originally proposed,
+> explained why it is unnaturally structured in my view, asked you why you
+> did not consider an alternative structure if you're not willing to make
+> phylink absorb the logic, then you said you'd be happy to rework using
+> software nodes.
+> https://lore.kernel.org/netdev/20220707193753.2j67ni3or3bfkt6k@skbuf/
+
+This is _not_ the issue I'm raising. I am complaining about the
+"default_interface" issue that you've only piped up about, despite
+(a) an explicit question having been asked about that approach, (b) it
+appearing in not just one, not two, not three but four RFC series sent,
+and only finally being raised when a non-RFC series was sent.
+
+This whole debarcle could have been avoided with providing feedback at
+an earlier stage, when I explicitly requested it _several_ times.
+
+I will not be doing any further work on this - this can wait a few
+kernel cycles, because quite honestly, I'm not going to try to submit
+this for next cycle.
+
+And I quite expect a repeat of this shit, with me struggling to get
+comments on patches, being mostly ignored and then for comments to come
+at the last minute when there's no reasonable time left in the cycle to
+action them.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
