@@ -2,87 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3357578155
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F868578161
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234214AbiGRLzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 07:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
+        id S233990AbiGRL5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 07:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiGRLzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:55:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94A710FEE;
-        Mon, 18 Jul 2022 04:55:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C63FB810F4;
-        Mon, 18 Jul 2022 11:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2576C341CB;
-        Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658145299;
-        bh=JrABNSLBquy6UY/twSBJ4EF3aY/YoAKKA7YOdQp+hPI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=eU6hGtxN2gwE8ynRAS+EAHsjFJ0UwHP/GyZ0E3go6jkwxyG0Tup0InjkXZ8B13d3e
-         gp5yHkB2opoi+QEinmXKMPSfE2zVz1qt5xUXfPbsQh5wuI3lpf3s2fDAhORUqB7QH4
-         V+NdDDgRaI2AbkLOxWpwuU1tI1MHc3scPwJ80XfwJkoiCfh1nX8sjVbiD8u4DO4UuA
-         HzDtmebHfE2QLYWbKZDR8js3pxOMmNF7MOJ/wzRjbNDPp/6ggqTeZz01LJq2FbmONM
-         5ZOKs25SmINbrXvuogLcbo9AJD6ddUpdMQN2yjtacoJpZSSJPRTg9IX/cheKnKoUWV
-         thtAg6UXsDpnQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229535AbiGRL5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:57:36 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952BF23177;
+        Mon, 18 Jul 2022 04:57:34 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LmgRM69kXzFq8d;
+        Mon, 18 Jul 2022 19:56:31 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 19:57:32 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 19:57:32 +0800
+Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: Remove the casting about
+ jited_ksyms and jited_linfo
+To:     Yonghong Song <yhs@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220716125108.1011206-1-pulehui@huawei.com>
+ <20220716125108.1011206-6-pulehui@huawei.com>
+ <f0f31c00-c4a2-1df2-01f7-4e74685ee019@fb.com>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <90d2c163-0900-0eb7-6d5c-c6e7ab530fa1@huawei.com>
+Date:   Mon, 18 Jul 2022 19:57:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [v2] wifi: p54: add missing parentheses in p54_flush()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220714134831.106004-1-subkhankulov@ispras.ru>
-References: <20220714134831.106004-1-subkhankulov@ispras.ru>
-To:     Rustam Subkhankulov <subkhankulov@ispras.ru>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165814529503.17539.8245171776508092662.kvalo@kernel.org>
-Date:   Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <f0f31c00-c4a2-1df2-01f7-4e74685ee019@fb.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rustam Subkhankulov <subkhankulov@ispras.ru> wrote:
 
-> The assignment of the value to the variable total in the loop
-> condition must be enclosed in additional parentheses, since otherwise,
-> in accordance with the precedence of the operators, the conjunction
-> will be performed first, and only then the assignment.
+
+On 2022/7/17 9:46, Yonghong Song wrote:
 > 
-> Due to this error, a warning later in the function after the loop may
-> not occur in the situation when it should.
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> On 7/16/22 5:51 AM, Pu Lehui wrote:
+>> We have unified data extension operation of jited_ksyms and jited_linfo
+>> into zero extension, so there's no need to cast u64 memory address to
+>> long data type.
 > 
-> Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-> Fixes: 0d4171e2153b ("p54: implement flush callback")
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+> For subject, we are not 'Remove the casting ...'. What the code did is
+> to change the casting.
+> 
+> Also, I don't understand the above commit message. What does this mean
+> about 'data extension operation of jited_ksyms and jited_linfo into zero 
+> extension'?
+> 
+> In prog_tests/btf.c, we have a few other places to cast 
+> jited_linfo[...]/jited_ksyms[...] to 'long' type. Maybe casting
+> to 'unsigned long' is a better choice. Casting to 'unsigned long long'
+> of course will work, but is it necessary? Or you are talking about
+> 64bit kernel and 32bit user space?
+> 
 
-Patch applied to wireless-next.git, thanks.
+Hi Yonghong,
 
-bcfd9d7f6840 wifi: p54: add missing parentheses in p54_flush()
+Thanks for your review. We introduced riscv jited line info in series 
+[0], and we found that 32-bit systems can not display bpf line info due 
+to the inconsistent data extension between jited_ksyms and jited_linfo. 
+And we finally unify them to zero extension. By the way, we cleanup the 
+related code. jited_ksyms and jited_linfo both are u64 address, no need 
+to casting to long, and we previously remove it. But u64 in some arch is 
+%ld, so to avoid compiler warnings we just cast to unsigned long long.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220714134831.106004-1-subkhankulov@ispras.ru/
+And sorry for not updating the subject and comment. I will corret it.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+[0] 
+https://lore.kernel.org/bpf/CAEf4Bza4RT=KFhr9ev29967dyT0eF_+6ZRqK35beUvnA_NbcqQ@mail.gmail.com/
 
+>>
+>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>> ---
+>>   tools/testing/selftests/bpf/prog_tests/btf.c | 16 +++++++++-------
+>>   1 file changed, 9 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c 
+>> b/tools/testing/selftests/bpf/prog_tests/btf.c
+>> index e852a9df779d..db10fa1745d1 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+>> @@ -6613,8 +6613,9 @@ static int test_get_linfo(const struct 
+>> prog_info_raw_test *test,
+>>       }
+>>       if (CHECK(jited_linfo[0] != jited_ksyms[0],
+>> -          "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
+>> -          (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
+>> +          "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
+>> +          (unsigned long long)(jited_linfo[0]),
+>> +          (unsigned long long)(jited_ksyms[0]))) {
+>>           err = -1;
+>>           goto done;
+>>       }
+>> @@ -6632,16 +6633,17 @@ static int test_get_linfo(const struct 
+>> prog_info_raw_test *test,
+>>           }
+>>           if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
+>> -              "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
+>> -              i, (long)jited_linfo[i],
+>> -              i - 1, (long)(jited_linfo[i - 1]))) {
+>> +              "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
+>> +              i, (unsigned long long)jited_linfo[i],
+>> +              i - 1, (unsigned long long)(jited_linfo[i - 1]))) {
+>>               err = -1;
+>>               goto done;
+>>           }
+>>           if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
+>> -              "jited_linfo[%u]:%lx - %lx > %u",
+>> -              i, (long)jited_linfo[i], (long)cur_func_ksyms,
+>> +              "jited_linfo[%u]:%llx - %llx > %u",
+>> +              i, (unsigned long long)jited_linfo[i],
+>> +              (unsigned long long)cur_func_ksyms,
+>>                 cur_func_len)) {
+>>               err = -1;
+>>               goto done;
+> .
