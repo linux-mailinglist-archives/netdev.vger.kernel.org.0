@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B01D578AE2
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3D3578ADF
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235969AbiGRTak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
+        id S234294AbiGRTag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235832AbiGRT3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:14 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0432D1E3;
-        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id m6so9543539qvq.10;
-        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
+        with ESMTP id S235933AbiGRT3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:15 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4812DA8E;
+        Mon, 18 Jul 2022 12:29:05 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id e5so9537614qts.1;
+        Mon, 18 Jul 2022 12:29:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=/K1YhC0xN+k7O2FGj/yOUKehgh1HnqMHevQj0FQmavI=;
-        b=hncdckdd/8keGq0BbMkUSkVvo58eaSfk46icZhjcfux7VapB1d8lOZsIlqh8gYAlwO
-         nsH6TNRxQKop1KFXKAjUK6jXGpI96ZhzGYzEb1l58Uuid0BejJtLScjUXd1FwD7d6d0I
-         n6nBpJsBMCWPJZOY2isxybjgVNgOUtIwy5syFw6dhjVkH48EFPjJXnsXMjILmWWh6aNt
-         1XjXQ+KmT1tei8OVv0kOBxiaSSBAGf1jRYjjXWTW/jEj/bm8gP4G3KDncFs30f51O1n9
-         KoibE09XlnBMUE30LzuwHeutbdP4Gw0vPBuJAXfM44toJn9n4BYblu9g3pXR4SHa5Cz4
-         j6aw==
+        bh=tA2rl8RctZ6HL9V5x9xFMH8oSgBBwUuElKQvWOHzbeI=;
+        b=hP/RxbCCEkxGibcmzYfoczVfz2LGpVvZkrG5wlu75XNiAI1BfNZJPMtwQd0PYtFa4k
+         9sqDaS6kmGHiRQpzGl3YHVh0l8qAJUfrnfctlEXZsk+yJaCHbydmsJ/FIeyIMRe2QYYS
+         AB02g9p+c9CoMw9OrSZ9omO4Oxfqs9oeUUaFdWEZpJcv2MJ7cdtPYz3Fd8zBnbGvz1Iw
+         o7jHZpB3NBZRj1mxkRUcREMvO38UFX1tl3lIgHvmj+MBAc2h6f3RXJF3Q60pUT+dIr1T
+         Zgt4vkyg0W1HEu5nB4dG2ctBT26OjozQ53zCuCaHayZmI0SZj41p5lheZfaXVwMwGzSd
+         cd+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/K1YhC0xN+k7O2FGj/yOUKehgh1HnqMHevQj0FQmavI=;
-        b=1hsppSoi2ihKjmjPsCy+fDCVQq+lzVFsc/JfIYZ/HJn7JWk82VTaA14TsWON25hg18
-         WVPYJNICoIFtcmTuyxVQ8prv/pwuWkBWckx26KBsjG316GtlXK3jFetOHihXpHIUcZF3
-         nHz6FbE/H29W2E0VlmV2RP1+V2F2wGkHRlunDjHofHTuFb12VoZ4biK+xPH1R02Eu2mo
-         0Km8k6s/OY5sHoAefCSUav2wG7qUd36p7copYVcasv1cuzmLgbBI4g41HMkfHaGcyPYK
-         BFkBRGLmhQw4YjlByy+CldPOuzQASabNxl0FBluyvlMxp04cY0OX0t2QS8QWJ5eL/fmJ
-         7Mpw==
-X-Gm-Message-State: AJIora+zmkzVeUO+3yuEbLkjClwFriNLYb7Jum0UjD3uf9gjsqRGXsOx
-        /s90bE6B4IaeyOHa0bMAGXRcKVLn7thrDw==
-X-Google-Smtp-Source: AGRyM1uDAtG39PkyBUTwcaTq2/uDHYY4DcIItWFReB0uOGieqEEzLgaz94Wt8f3sFC0ByQPjoqZW6g==
-X-Received: by 2002:a05:6214:226d:b0:473:339e:3264 with SMTP id gs13-20020a056214226d00b00473339e3264mr22107594qvb.41.1658172543484;
-        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
+        bh=tA2rl8RctZ6HL9V5x9xFMH8oSgBBwUuElKQvWOHzbeI=;
+        b=qtjOuBinv1cjHReODh9T0bjPhnyu5jC0QelJgxKYx3Arsce7Yigf0yxIcSts23lfb1
+         pAury/y9BIhoIkAzApCV9F8JcplIbrVrqxQ97D7k8HVFm4X8zsSVVnVUkbjOdBj0yAc3
+         9E6VSQROy+f/KIr8zpVMmc4O4oX6Dv8+4TKehi0lA6Amg6uWCqk+qxa7IoE4vpAzwGV/
+         C2NNz1w4gmz0xDH1ZpGl0lnPaaGycQ077ZA38BKll8euwrmSG6eh/Xblm5QoATD914I9
+         Lq699aNuQA7exlALJUyr7hvZaGobg4OvvJUf5/s7+fMsWI00X4J3leqy2UKgY+Jzmjef
+         ffNg==
+X-Gm-Message-State: AJIora+QaTfqUYwF0qSHYlCkEyEoFJFW/ZybbU+sSRvjRdmjbCEffEla
+        4WF1dBbWJ7Bt/jgFgtH7eF14EZ224ObACw==
+X-Google-Smtp-Source: AGRyM1vQmvbkX1kTEORONuNSMwS4ZWos+Eg2Ylq19DBEaI61zIn7vgC2XHqbVwUo3RPShBlZ/+yVwg==
+X-Received: by 2002:ac8:5790:0:b0:31e:f69a:1b9e with SMTP id v16-20020ac85790000000b0031ef69a1b9emr2408133qta.103.1658172544528;
+        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id bb31-20020a05622a1b1f00b0031ef21aec36sm2216383qtb.32.2022.07.18.12.29.03
+        by smtp.gmail.com with ESMTPSA id v17-20020ac85791000000b0031ee2080c73sm6310369qta.54.2022.07.18.12.29.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
+        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 14/16] mm/percpu: optimize pcpu_alloc_area()
-Date:   Mon, 18 Jul 2022 12:28:42 -0700
-Message-Id: <20220718192844.1805158-15-yury.norov@gmail.com>
+Subject: [PATCH 15/16] sched/topology: optimize topology_span_sane()
+Date:   Mon, 18 Jul 2022 12:28:43 -0700
+Message-Id: <20220718192844.1805158-16-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,58 +108,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't call bitmap_clear() to clear 0 bits.
+topology_span_sane() checks if cpu == i before calling
+	cpumask_equal(tl->mask(cpu), tl->mask(i)).
 
-bitmap_clear() can handle 0-length requests properly, but it's not covered
-with static optimizations, and falls to __bitmap_set(). So we are paying a
-function call + prologue work cost just for nothing.
+However, tl->mask(cpu) and tl->mask(i) may point to the same cpumask
+even if i != cpu. Fix the check accordingly.
 
-Caught with CONFIG_DEBUG_BITMAP:
-[   45.571799]  <TASK>
-[   45.571801]  pcpu_alloc_area+0x194/0x340
-[   45.571806]  pcpu_alloc+0x2fb/0x8b0
-[   45.571811]  ? kmem_cache_alloc_trace+0x177/0x2a0
-[   45.571815]  __percpu_counter_init+0x22/0xa0
-[   45.571819]  fprop_local_init_percpu+0x14/0x30
-[   45.571823]  wb_get_create+0x15d/0x5f0
-[   45.571828]  cleanup_offline_cgwb+0x73/0x210
-[   45.571831]  cleanup_offline_cgwbs_workfn+0xcf/0x200
-[   45.571835]  process_one_work+0x1e5/0x3b0
-[   45.571839]  worker_thread+0x50/0x3a0
-[   45.571843]  ? rescuer_thread+0x390/0x390
-[   45.571846]  kthread+0xe8/0x110
-[   45.571849]  ? kthread_complete_and_exit+0x20/0x20
-[   45.571853]  ret_from_fork+0x22/0x30
-[   45.571858]  </TASK>
-[   45.571859] ---[ end trace 0000000000000000 ]---
-[   45.571860] b1:		ffffa8d5002e1000
-[   45.571861] b2:		0
-[   45.571861] b3:		0
-[   45.571862] nbits:	44638
-[   45.571863] start:	44638
-[   45.571864] off:	0
-[   45.571864] percpu: Bitmap: parameters check failed
-[   45.571865] percpu: include/linux/bitmap.h [538]: bitmap_clear
+While here, move tl->mask(cpu) out of the loop, and make the in-loop
+code calculating tl->mask(i) only once.
+
+Catched with CONFIG_DEBUG_BITMAP:
+[    0.867917] Call Trace:
+[    0.868209]  <TASK>
+[    0.868471]  build_sched_domains+0x36f/0x1a40
+[    0.868576]  sched_init_smp+0x44/0xba
+[    0.869012]  ? mtrr_aps_init+0x84/0xa0
+[    0.869465]  kernel_init_freeable+0x12e/0x26e
+[    0.869982]  ? rest_init+0xd0/0xd0
+[    0.870406]  kernel_init+0x16/0x120
+[    0.870821]  ret_from_fork+0x22/0x30
+[    0.871244]  </TASK>
+[    0.871502] ---[ end trace 0000000000000000 ]---
+[    0.872040] b1:              ffffffffb1fd3480
+[    0.872041] b2:              ffffffffb1fd3480
+[    0.872041] b3:              0
+[    0.872042] nbits:   256
+[    0.872042] start:   0
+[    0.872042] off:     0
+[    0.872043] Bitmap: parameters check failed
+[    0.872043] include/linux/bitmap.h [427]: bitmap_equal
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- mm/percpu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/sched/topology.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/mm/percpu.c b/mm/percpu.c
-index 3633eeefaa0d..f720f7c36b91 100644
---- a/mm/percpu.c
-+++ b/mm/percpu.c
-@@ -1239,7 +1239,8 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 05b6c2ad90b9..ad32d0a43424 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -2211,6 +2211,8 @@ static struct sched_domain *build_sched_domain(struct sched_domain_topology_leve
+ static bool topology_span_sane(struct sched_domain_topology_level *tl,
+ 			      const struct cpumask *cpu_map, int cpu)
+ {
++	const struct cpumask *mc = tl->mask(cpu);
++	const struct cpumask *mi;
+ 	int i;
  
- 	/* update boundary map */
- 	set_bit(bit_off, chunk->bound_map);
--	bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
-+	if (alloc_bits > 1)
-+		bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
- 	set_bit(bit_off + alloc_bits, chunk->bound_map);
+ 	/* NUMA levels are allowed to overlap */
+@@ -2226,14 +2228,18 @@ static bool topology_span_sane(struct sched_domain_topology_level *tl,
+ 	for_each_cpu(i, cpu_map) {
+ 		if (i == cpu)
+ 			continue;
++
++		mi = tl->mask(i);
++		if (mi == mc)
++			continue;
++
+ 		/*
+ 		 * We should 'and' all those masks with 'cpu_map' to exactly
+ 		 * match the topology we're about to build, but that can only
+ 		 * remove CPUs, which only lessens our ability to detect
+ 		 * overlaps
+ 		 */
+-		if (!cpumask_equal(tl->mask(cpu), tl->mask(i)) &&
+-		    cpumask_intersects(tl->mask(cpu), tl->mask(i)))
++		if (!cpumask_equal(mc, mi) && cpumask_intersects(mc, mi))
+ 			return false;
+ 	}
  
- 	chunk->free_bytes -= alloc_bits * PCPU_MIN_ALLOC_SIZE;
 -- 
 2.34.1
 
