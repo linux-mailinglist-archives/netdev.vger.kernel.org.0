@@ -2,99 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA6C578366
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0E35783AD
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234520AbiGRNPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 09:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40490 "EHLO
+        id S233338AbiGRN1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 09:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233926AbiGRNPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:15:04 -0400
-Received: from m1373.mail.163.com (m1373.mail.163.com [220.181.13.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BEC16316;
-        Mon, 18 Jul 2022 06:14:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=Q7weu
-        vua13CV5ZC6aiIAss6kpEeQXj4br9mWW0EalhM=; b=NVOMNELKadbjexMKENDyZ
-        +/WYIsZ5NI/YLQOVdWQqTJfq0DaABRPWLckfrxixBvS1jlY/DqIO/iRW92+MRKJo
-        +KGT1pO5GbogFlU39O4hypA2HN8qNkwLF6yBZeKshdDVocfOSX2nTvtFw6k5THz8
-        pKLa4OHsvcvTXe/GImGllo=
-Received: from chen45464546$163.com ( [171.221.148.42] ) by
- ajax-webmail-wmsvr73 (Coremail) ; Mon, 18 Jul 2022 21:14:10 +0800 (CST)
-X-Originating-IP: [171.221.148.42]
-Date:   Mon, 18 Jul 2022 21:14:10 +0800 (CST)
-From:   "Chen Lin" <chen45464546@163.com>
-To:     "Maurizio Lombardi" <mlombard@redhat.com>
-Cc:     alexander.duyck@gmail.com, kuba@kernel.org,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re:[PATCH V3] mm: prevent page_frag_alloc() from corrupting the
- memory
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <20220715125013.247085-1-mlombard@redhat.com>
-References: <20220715125013.247085-1-mlombard@redhat.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S230298AbiGRN1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:27:32 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBA9298;
+        Mon, 18 Jul 2022 06:27:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xnndy+tzJJ9DKS5PKCaEQE+56Udg782oVxUbz2xpr04=; b=jk3zLMKUfv+vWKjX2rijuqfmBh
+        YCfXuxqqdDz3iuvOGXmsr6GMg8lsHX2PPdP915etsIBjWqjQoCTjWUAEWkwgKqJYpDCL3hQnXQ2rd
+        cVroglYBdxInFWLTbiAHhv0RClizxhEhZNSw8TJZFoKDqn1GjCsvc6tJeJ0P5jzExj0K16iFlMBON
+        V2s5ckFa3tuSiqWOtM7FrqRBoQ+Spt782Pk+FlR9q6//kptMkkYc6mhwLnB+X+ohYchMNvsCFUVXd
+        2LUa3dKEb4gXC3BIXfTwLLISi0wsOyXlXTZw+G7+GzCYHfHwo8zUOaxV/Zhm+6dxSecD1qrBeLlCu
+        HserpU4w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33412)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oDQm9-0001d9-GH; Mon, 18 Jul 2022 14:27:05 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oDQm6-0001zu-AM; Mon, 18 Jul 2022 14:27:02 +0100
+Date:   Mon, 18 Jul 2022 14:27:02 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
+ be created
+Message-ID: <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
+ <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
+ <20220715201715.foea4rifegmnti46@skbuf>
+ <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
+ <20220715204841.pwhvnue2atrkc2fx@skbuf>
+ <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
 MIME-Version: 1.0
-Message-ID: <5a469c5a.8b85.1821171d9de.Coremail.chen45464546@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: ScGowABnEwOiXNVi5dtUAA--.1594W
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbB2ApCnmBHLXpjqQAAs0
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QXQgMjAyMi0wNy0xNSAyMDo1MDoxMywgIk1hdXJpemlvIExvbWJhcmRpIiA8bWxvbWJhcmRAcmVk
-aGF0LmNvbT4gd3JvdGU6Cj5BIG51bWJlciBvZiBkcml2ZXJzIGNhbGwgcGFnZV9mcmFnX2FsbG9j
-KCkgd2l0aCBhCj5mcmFnbWVudCdzIHNpemUgPiBQQUdFX1NJWkUuCj5JbiBsb3cgbWVtb3J5IGNv
-bmRpdGlvbnMsIF9fcGFnZV9mcmFnX2NhY2hlX3JlZmlsbCgpIG1heSBmYWlsIHRoZSBvcmRlciAz
-Cj5jYWNoZSBhbGxvY2F0aW9uIGFuZCBmYWxsIGJhY2sgdG8gb3JkZXIgMDsKPkluIHRoaXMgY2Fz
-ZSwgdGhlIGNhY2hlIHdpbGwgYmUgc21hbGxlciB0aGFuIHRoZSBmcmFnbWVudCwgY2F1c2luZwo+
-bWVtb3J5IGNvcnJ1cHRpb25zLgo+Cj5QcmV2ZW50IHRoaXMgZnJvbSBoYXBwZW5pbmcgYnkgY2hl
-Y2tpbmcgaWYgdGhlIG5ld2x5IGFsbG9jYXRlZCBjYWNoZQo+aXMgbGFyZ2UgZW5vdWdoIGZvciB0
-aGUgZnJhZ21lbnQ7IGlmIG5vdCwgdGhlIGFsbG9jYXRpb24gd2lsbCBmYWlsCj5hbmQgcGFnZV9m
-cmFnX2FsbG9jKCkgd2lsbCByZXR1cm4gTlVMTC4KPgo+VjI6IGRvIG5vdCBmcmVlIHRoZSBjYWNo
-ZSBwYWdlIGJlY2F1c2UgdGhpcyBjb3VsZCBtYWtlIG1lbW9yeSBwcmVzc3VyZQo+ZXZlbiB3b3Jz
-ZSwganVzdCByZXR1cm4gTlVMTC4KPgo+VjM6IGFkZCBhIGNvbW1lbnQgdG8gZXhwbGFpbiB3aHkg
-d2UgcmV0dXJuIE5VTEwuCj4KPlNpZ25lZC1vZmYtYnk6IE1hdXJpemlvIExvbWJhcmRpIDxtbG9t
-YmFyZEByZWRoYXQuY29tPgo+LS0tCj4gbW0vcGFnZV9hbGxvYy5jIHwgMTIgKysrKysrKysrKysr
-Cj4gMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKykKPgo+ZGlmZiAtLWdpdCBhL21tL3Bh
-Z2VfYWxsb2MuYyBiL21tL3BhZ2VfYWxsb2MuYwo+aW5kZXggZTAwOGEzZGYwNDg1Li41OWM0ZGRk
-ZjM3OWYgMTAwNjQ0Cj4tLS0gYS9tbS9wYWdlX2FsbG9jLmMKPisrKyBiL21tL3BhZ2VfYWxsb2Mu
-Ywo+QEAgLTU2MTcsNiArNTYxNywxOCBAQCB2b2lkICpwYWdlX2ZyYWdfYWxsb2NfYWxpZ24oc3Ry
-dWN0IHBhZ2VfZnJhZ19jYWNoZSAqbmMsCj4gCQkvKiByZXNldCBwYWdlIGNvdW50IGJpYXMgYW5k
-IG9mZnNldCB0byBzdGFydCBvZiBuZXcgZnJhZyAqLwo+IAkJbmMtPnBhZ2VjbnRfYmlhcyA9IFBB
-R0VfRlJBR19DQUNIRV9NQVhfU0laRSArIDE7Cj4gCQlvZmZzZXQgPSBzaXplIC0gZnJhZ3N6Owo+
-KwkJaWYgKHVubGlrZWx5KG9mZnNldCA8IDApKSB7Cj4rCQkJLyoKPisJCQkgKiBUaGUgY2FsbGVy
-IGlzIHRyeWluZyB0byBhbGxvY2F0ZSBhIGZyYWdtZW50Cj4rCQkJICogd2l0aCBmcmFnc3ogPiBQ
-QUdFX1NJWkUgYnV0IHRoZSBjYWNoZSBpc24ndCBiaWcKPisJCQkgKiBlbm91Z2ggdG8gc2F0aXNm
-eSB0aGUgcmVxdWVzdCwgdGhpcyBtYXkKPisJCQkgKiBoYXBwZW4gaW4gbG93IG1lbW9yeSBjb25k
-aXRpb25zLgo+KwkJCSAqIFdlIGRvbid0IHJlbGVhc2UgdGhlIGNhY2hlIHBhZ2UgYmVjYXVzZQo+
-KwkJCSAqIGl0IGNvdWxkIG1ha2UgbWVtb3J5IHByZXNzdXJlIHdvcnNlCj4rCQkJICogc28gd2Ug
-c2ltcGx5IHJldHVybiBOVUxMIGhlcmUuCj4rCQkJICovCj4rCQkJcmV0dXJuIE5VTEw7Cj4rCQl9
-Cj4gCX0KPiAKPiAJbmMtPnBhZ2VjbnRfYmlhcy0tOwo+LS0gCj4yLjMxLjEKCldpbGwgIHRoaXMg
-bGVhZCB0byBtZW1vcnkgbGVhayB3aGVuIGRldmljZSBkcml2ZXIgbWlzcyB1c2UgdGhpcyBpbnRl
-cmZhY2UgbXV0aS10aW1lc6O/CgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tCklmIHdlIGNhbiBhY2NlcHQgYWRkaW5nIGEgYnJhbmNoIHRvIHRoaXMgcHJvY2Vzcywgd2h5
-IG5vdCBhZGQgaXQgYXQgdGhlIGJlZ2lubmluZyBsaWtlIGJlbG93PwpUaGUgYmVsb3cgY2hhbmdl
-cyBhcmUgYWxzbyBtb3JlIGluIGxpbmUgd2l0aCB0aGUgZGVmaW5pdGlvbiBvZiAicGFnZSBmcmFn
-bWVudCIsIAp3aGljaCBpIG1lYW4gdGhlIGFib3ZlIGNoYW5nZXMgbWF5IG1ha2UgdGhlIGFsbG9j
-YXRpb24gb2YgbW9yZSB0aGFuIG9uZSBwYWdlIHN1Y2Nlc3NmdWwuCgppbmRleCA3YTI4ZjdkLi45
-ZDA5ZWE1IDEwMDY0NAotLS0gYS9tbS9wYWdlX2FsbG9jLmMKKysrIGIvbW0vcGFnZV9hbGxvYy5j
-CkBAIC01NTUxLDYgKzU1NTEsOCBAQCB2b2lkICpwYWdlX2ZyYWdfYWxsb2NfYWxpZ24oc3RydWN0
-IHBhZ2VfZnJhZ19jYWNoZSAqbmMsCgogICAgICAgIG9mZnNldCA9IG5jLT5vZmZzZXQgLSBmcmFn
-c3o7CiAgICAgICAgaWYgKHVubGlrZWx5KG9mZnNldCA8IDApKSB7CisgICAgICAgICAgICAgICBp
-ZiAodW5saWtlbHkoZnJhZ3N6ID4gUEFHRV9TSVpFKSkKKyAgICAgICAgICAgICAgICAgICAgICAg
-cmV0dXJuIE5VTEw7CiAgICAgICAgICAgICAgICBwYWdlID0gdmlydF90b19wYWdlKG5jLT52YSk7
-CgogICAgICAgICAgICAgICAgaWYgKCFwYWdlX3JlZl9zdWJfYW5kX3Rlc3QocGFnZSwgbmMtPnBh
-Z2VjbnRfYmlhcykpCgo=
+On Mon, Jul 18, 2022 at 03:29:52PM +0300, Andy Shevchenko wrote:
+> On Fri, Jul 15, 2022 at 11:48:41PM +0300, Vladimir Oltean wrote:
+> > So won't kobject_init_and_add() fail on namespace collision? Is it the
+> > problem that it's going to fail, or that it's not trivial to statically
+> > determine whether it'll fail?
+> > 
+> > Sorry, but I don't see something actionable about this.
+> 
+> I'm talking about validation before a runtime. But if you think that is fine,
+> let's fail it at runtime, okay, and consume more backtraces in the future.
+
+Is there any sane way to do validation of this namespace before
+runtime?
+
+The problem in this instance is we need a node named "fixed-link" that
+is attached to the parent node as that is defined in the binding doc,
+and we're creating swnodes to provide software generated nodes for
+this binding.
+
+There could be several such nodes scattered around, but in this
+instance they are very short-lived before they are destroyed, they
+don't even need to be published to userspace (and its probably a waste
+of CPU cycles for them to be published there.)
+
+So, for this specific case, is this the best approach, or is there
+some better way to achieve what we need here?
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
