@@ -2,148 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6633578B83
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 22:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DEE578B97
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 22:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiGRUJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 16:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
+        id S234975AbiGRUSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 16:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234500AbiGRUJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 16:09:05 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC42B42;
-        Mon, 18 Jul 2022 13:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658174945; x=1689710945;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZbT+9aB0j/cIG9R+/zgGzINn4AUswURHEqrlVeDgrwA=;
-  b=cBtE/WkXfqmQEoPaT2ipPBrXPosrC7isONzX+W87Gzk6154LcHdQtIfQ
-   VzMuWe+OqeMOYetU/jakiCRQGDFU0yUhWGIg9pHc+dhwT86MAuIUoN2jo
-   iy38E2Yol+yCRatFXA+M/8Kf9JOrlRvENB2BgG9HQuPYJ8T7vcHuJPAA8
-   OzU+LS9yzbMsF+CNJ1z8syHyoh49hcw+0CqoqQ0NRBHTCsp2lCkprp5pL
-   PDeXZodW5o1dlj2Llw5H03la/+tx6yKQ3csqd0N1qCHJy3Trr4oMy0Ien
-   wBCA74B0UK93Egy8KKLxbtWHv3GPAMVNokY/b7/yk/TZHzyKgnTPlL6ZE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="348002150"
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="348002150"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 13:09:04 -0700
-X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="723983942"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 13:08:57 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oDX2y-001OTa-2m;
-        Mon, 18 Jul 2022 23:08:52 +0300
-Date:   Mon, 18 Jul 2022 23:08:52 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 5/6] net: dsa: use swnode fixed-link if using
- default params
-Message-ID: <YtW91F42jhhtPj9p@smile.fi.intel.com>
-References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
- <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
- <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
- <YtHd3f22AtrIzZ1K@shell.armlinux.org.uk>
- <YtWtjYuQ8aLL64Tg@smile.fi.intel.com>
- <YtWwzwO9gZoR+9T/@shell.armlinux.org.uk>
+        with ESMTP id S231248AbiGRUSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 16:18:33 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747782C139
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 13:18:32 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id p9so12763074pjd.3
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 13:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KfhKOXmubx1EKGY3mvILRN1AcjqBpxBYNJ/41G4gW1Y=;
+        b=ua/uURpJyXoJzC/VHGiL1rPLY6gDHuF2SutmgdUJqjeKPc53XnWrMKFeCOJtirDSaj
+         at8qNlxji1ck2004MwidpZcnVJ3WNxAUx7BsG0m728OgOBAR8JHRqmEQUXkPXGz/vWRX
+         pOov3Y+qBsycj69xxKaeMkZ4794/dnEI2LtArRJ7MpIDQ5FMP9vaZpwnyrPCa5yxJI0M
+         tF3XDGCZuHHzIeBGOWoXZMD3ePD55XFojzHOp9Cc2q/2F6nAsSnbWRNiIp028d/HKqZs
+         1kA9tkrzjGfD26LFhtEjxlOMMp72smbj9f0JxzvIghL9XHerV0nsIe+EM/dDRJs0h08/
+         2iwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KfhKOXmubx1EKGY3mvILRN1AcjqBpxBYNJ/41G4gW1Y=;
+        b=2qzLJJVu6RIYN3zoE4iBF/Kgp4NGKUA+yigrrJFgFOyPM2euPThTUPrAYE2gxjCPM0
+         oRM2inaWMqSxp/MUBu7zpNH83VaLCT+u/LMNV9ADFQhOyPkFHhApMG+3UCxrB1iJk3qc
+         iIw5bbxjVkChr7rxDoHxws8bIDH0kAYdXLN8JuDYueN5kT8swj7SnnxXPI4m4HgAISaQ
+         Y+OtBnyjVxryb0THyWsPu42ZTPxKs6LUufrNn7M0uQpoxddtEW9JTuQQiG47JEw/GGAb
+         WRRIb0DGF2vxzZDi5v7WfxolbxWVBx5A8GAtzp8O8G+TpfpD1uOo/YDXKoaxcup/b/55
+         zQ8w==
+X-Gm-Message-State: AJIora8qch/91SbJjvYN3YnJZV/lJ98r1VYBjABB44SXcRp5k7WugQH5
+        025i5shc4KWrj622Wa50XYuhsQ==
+X-Google-Smtp-Source: AGRyM1vdf132yTgKhBucuzaF4/O3fZY3Xr2AffP4k67ujeQGXylwc28AiTOMFn3ejbSrF1q+PbQM+g==
+X-Received: by 2002:a17:90a:5514:b0:1f1:f37f:ecc1 with SMTP id b20-20020a17090a551400b001f1f37fecc1mr685358pji.70.1658175511930;
+        Mon, 18 Jul 2022 13:18:31 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id bc7-20020a170902930700b001635b86a790sm9876833plb.44.2022.07.18.13.18.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 13:18:31 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 13:18:28 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH iproute2] uapi: add vdpa.h
+Message-ID: <20220718131828.65dd561a@hermes.local>
+In-Reply-To: <97faec92-f2d0-ab5e-4fdd-bfd2e2e911e8@gmail.com>
+References: <20220718163112.11023-1-stephen@networkplumber.org>
+        <PH0PR12MB5481AAD7096EA95956ED6801DC8C9@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220718095515.0bdb8586@hermes.local>
+        <97faec92-f2d0-ab5e-4fdd-bfd2e2e911e8@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtWwzwO9gZoR+9T/@shell.armlinux.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 08:13:19PM +0100, Russell King (Oracle) wrote:
-> On Mon, Jul 18, 2022 at 09:59:25PM +0300, Andy Shevchenko wrote:
-> > On Fri, Jul 15, 2022 at 10:36:29PM +0100, Russell King (Oracle) wrote:
-> > > On Fri, Jul 15, 2022 at 11:11:18PM +0300, Andy Shevchenko wrote:
-> > > > On Fri, Jul 15, 2022 at 05:01:48PM +0100, Russell King (Oracle) wrote:
+On Mon, 18 Jul 2022 11:51:09 -0600
+David Ahern <dsahern@gmail.com> wrote:
+
+> On 7/18/22 10:55 AM, Stephen Hemminger wrote:
+> > On Mon, 18 Jul 2022 16:40:30 +0000
+> > Parav Pandit <parav@nvidia.com> wrote:
+> >   
+> >> We kept this in vdpa/include/uapi/linux/vdpa.h after inputs from David.
+> >> This is because vdpa was following rdma style sync with the kernel headers.
+> >> Rdma subsystem kernel header is in rdma/include/uapi/rdma/rdma_netlink.h.
+> >>
+> >> Any reason to take different route for vdpa?
+> >> If so, duplicate file from vdpa/include/uapi/linux/vdpa.h should be removed.
+> >> So that there is only one vdpa.h file.
+> >>
+> >> If so, should we move rdma files also similarly?
+> >>
+> >> Similar discussion came up in the past. (don't have ready reference to the discussion).
+> >> And David's input was to keep the way it is like rdma.  
 > > 
-> > ...
-> > 
-> > > > > Co-developed by Vladimir Oltean and myself.
-> > > > 
-> > > > Why not to use
-> > > > 
-> > > >   Co-developed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > 
-> > > Ah, that's an official thing. Thanks.
-> > 
-> > Yep, it's even documented in Submitting Patches.
-> > 
-> > ...
-> > 
-> > > > > +	phy_node = of_parse_phandle(dn, "phy-handle", 0);
-> > > > 
-> > > > fwnode in the name, why not to use fwnode APIs?
-> > > > 
-> > > > 	fwnode_find_reference();
-> > > 
-> > > Marcin has a series converting DSA to use fwnode things - currently DSA
-> > > does not support ACPI, so converting it to fwnode doesn't make that much
-> > > sese until the proper ACPI patches get merged, which have now been
-> > > rebased on this series by Marcin in the expectation that these patches
-> > > would be merged... so I don't want to tred on Marcin's feet on that.
-> > 
-> > But it's normal development process...
-> > 
-> > Anyway, it seems to me that you are using fwnode out of that (with the
-> > exception of one call). To me it looks that you add a work to him, rather
-> > than making his life easier, since you know ahead that this is going to be
-> > converted.
+> > RDMA is different and contained to one directory.
+> > VDPA is picking up things from linux/.
+> > And the current version is not kept up to date with kernel headers.
+> > Fixing that now.  
 > 
-> No, I didn't know ahead of time until Marcin piped up about it, and
-> then we discussed how to resolve the conflict between the two patch
-> sets.
+> Updates to vdpa.h do not go through net-next so moving it to
+> include/uapi/linux can cause problems when trying to sync headers to
+> net-next commits. That's why it was put under vpda, similar to the rdma
+> model.
 
-But now you know that and since your series is not yet in, back to phase 1,
-i.e. "normal development process (with additional coordination required)".
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Ok, will make sure the update script for current picks it up correctly.
