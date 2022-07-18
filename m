@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C80577C1D
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 09:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E2F577C23
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 09:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233697AbiGRHFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 03:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
+        id S233725AbiGRHFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 03:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233184AbiGRHFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 03:05:13 -0400
+        with ESMTP id S233719AbiGRHFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 03:05:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695ECDFD5
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 00:05:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE97CDFD5
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 00:05:31 -0700 (PDT)
 Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <a.fatoum@pengutronix.de>)
-        id 1oDKoD-0003yH-CX; Mon, 18 Jul 2022 09:04:49 +0200
-Message-ID: <b5f5f87e-c690-2525-4b5f-4d178157a4d3@pengutronix.de>
-Date:   Mon, 18 Jul 2022 09:04:45 +0200
+        id 1oDKog-00044T-6h; Mon, 18 Jul 2022 09:05:18 +0200
+Message-ID: <827f51b1-b280-3c99-241c-20af750277ba@pengutronix.de>
+Date:   Mon, 18 Jul 2022 09:05:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.0
-Subject: Re: [PATCH V3 3/3] arm64: dts: imx8ulp-evk: Add the fec support
+Subject: Re: [PATCH V3 2/3] arm64: dts: imx8ulp: Add the fec support
 Content-Language: en-US
 To:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
@@ -35,9 +35,9 @@ Cc:     aisheng.dong@nxp.com, devicetree@vger.kernel.org, peng.fan@nxp.com,
         kernel@pengutronix.de, sudeep.holla@arm.com, festevam@gmail.com,
         linux-arm-kernel@lists.infradead.org
 References: <20220718142257.556248-1-wei.fang@nxp.com>
- <20220718142257.556248-4-wei.fang@nxp.com>
+ <20220718142257.556248-3-wei.fang@nxp.com>
 From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220718142257.556248-4-wei.fang@nxp.com>
+In-Reply-To: <20220718142257.556248-3-wei.fang@nxp.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
@@ -56,97 +56,50 @@ X-Mailing-List: netdev@vger.kernel.org
 On 18.07.22 16:22, wei.fang@nxp.com wrote:
 > From: Wei Fang <wei.fang@nxp.com>
 > 
-> Enable the fec on i.MX8ULP EVK board.
+> Add the fec support on i.MX8ULP platforms.
 > 
 > Signed-off-by: Wei Fang <wei.fang@nxp.com>
+
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+
 > ---
 > V2 change:
-> Add clock_ext_rmii and clock_ext_ts. They are both related to EVK board.
+> Remove the external clocks which is related to specific board.
 > V3 change:
 > No change.
 > ---
->  arch/arm64/boot/dts/freescale/imx8ulp-evk.dts | 57 +++++++++++++++++++
->  1 file changed, 57 insertions(+)
+>  arch/arm64/boot/dts/freescale/imx8ulp.dtsi | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8ulp-evk.dts b/arch/arm64/boot/dts/freescale/imx8ulp-evk.dts
-> index 33e84c4e9ed8..ebce716b10e6 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8ulp-evk.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8ulp-evk.dts
-> @@ -19,6 +19,21 @@ memory@80000000 {
->  		device_type = "memory";
->  		reg = <0x0 0x80000000 0 0x80000000>;
->  	};
-> +
-> +	clock_ext_rmii: clock-ext-rmii {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <50000000>;
-> +		clock-output-names = "ext_rmii_clk";
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	clock_ext_ts: clock-ext-ts {
-> +		compatible = "fixed-clock";
-> +		/* External ts clock is 50MHZ from PHY on EVK board. */
-> +		clock-frequency = <50000000>;
-> +		clock-output-names = "ext_ts_clk";
-> +		#clock-cells = <0>;
-> +	};
->  };
+> diff --git a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
+> index 60c1b018bf03..3e8a1e4f0fc2 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
+> @@ -16,6 +16,7 @@ / {
+>  	#size-cells = <2>;
 >  
->  &lpuart5 {
-> @@ -38,7 +53,49 @@ &usdhc0 {
->  	status = "okay";
->  };
+>  	aliases {
+> +		ethernet0 = &fec;
+>  		gpio0 = &gpiod;
+>  		gpio1 = &gpioe;
+>  		gpio2 = &gpiof;
+> @@ -365,6 +366,16 @@ usdhc2: mmc@298f0000 {
+>  				bus-width = <4>;
+>  				status = "disabled";
+>  			};
+> +
+> +			fec: ethernet@29950000 {
+> +				compatible = "fsl,imx8ulp-fec", "fsl,imx6ul-fec", "fsl,imx6q-fec";
+> +				reg = <0x29950000 0x10000>;
+> +				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+> +				interrupt-names = "int0";
+> +				fsl,num-tx-queues = <1>;
+> +				fsl,num-rx-queues = <1>;
+> +				status = "disabled";
+> +			};
+>  		};
 >  
-> +&fec {
-> +	pinctrl-names = "default", "sleep";
-> +	pinctrl-0 = <&pinctrl_enet>;
-> +	pinctrl-1 = <&pinctrl_enet>;
-> +	clocks = <&cgc1 IMX8ULP_CLK_XBAR_DIVBUS>,
-> +		 <&pcc4 IMX8ULP_CLK_ENET>,
-> +		 <&cgc1 IMX8ULP_CLK_ENET_TS_SEL>,
-> +		 <&clock_ext_rmii>;
-> +	clock-names = "ipg", "ahb", "ptp", "enet_clk_ref";
-> +	assigned-clocks = <&cgc1 IMX8ULP_CLK_ENET_TS_SEL>;
-> +	assigned-clock-parents = <&clock_ext_ts>;
-> +	phy-mode = "rmii";
-> +	phy-handle = <&ethphy>;
-> +	status = "okay";
-> +
-> +	mdio {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		ethphy: ethernet-phy {
-
-@1
-
-> +			reg = <1>;
-> +			micrel,led-mode = <1>;
-> +		};
-> +	};
-> +};
-> +
->  &iomuxc1 {
-> +	pinctrl_enet: enetgrp {
-> +		fsl,pins = <
-> +			MX8ULP_PAD_PTE15__ENET0_MDC     0x43
-> +			MX8ULP_PAD_PTE14__ENET0_MDIO    0x43
-> +			MX8ULP_PAD_PTE17__ENET0_RXER    0x43
-> +			MX8ULP_PAD_PTE18__ENET0_CRS_DV  0x43
-> +			MX8ULP_PAD_PTF1__ENET0_RXD0     0x43
-> +			MX8ULP_PAD_PTE20__ENET0_RXD1    0x43
-> +			MX8ULP_PAD_PTE16__ENET0_TXEN    0x43
-> +			MX8ULP_PAD_PTE23__ENET0_TXD0    0x43
-> +			MX8ULP_PAD_PTE22__ENET0_TXD1    0x43
-> +			MX8ULP_PAD_PTE19__ENET0_REFCLK  0x43
-> +			MX8ULP_PAD_PTF10__ENET0_1588_CLKIN 0x43
-> +		>;
-> +	};
-> +
->  	pinctrl_lpuart5: lpuart5grp {
->  		fsl,pins = <
->  			MX8ULP_PAD_PTF14__LPUART5_TX	0x3
+>  		gpioe: gpio@2d000080 {
 
 
 -- 
