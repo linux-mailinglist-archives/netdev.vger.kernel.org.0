@@ -2,103 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A650577E85
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5ACB577EBD
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiGRJUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 05:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
+        id S234153AbiGRJdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 05:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233645AbiGRJTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:19:49 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4764D64DE;
-        Mon, 18 Jul 2022 02:19:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=g+aTLzc5WOjLByrM2aIBjE7jce/TtjRUMlCv6WTaasE=; b=FZU13y12dR3Vgw1hfnZzrtwg2F
-        EaTspZRJJMBfg7ahQoT+uqQhdFMzARu3j0eunEwGF39D/BuvTRE0dxk4WFQ3OJn6gfNOOSk9aT3Gb
-        +GknrDjVtkhYnXAA3H5kQotvoSa3cl6s6EmR8HfoK6xIxDa1y/0YXmvGkaNfb1A+VuZNxbpVgbRuh
-        Z0dgfCitFIA2ZW3maldWMZQWXCDKLP6m3IXCH2SvPwLqP2USPg6U65cZrSQsgBtGv6PnUNMpE4kke
-        vLQfR8ldIRKHp06tlrW9iZmqMhnDVzbhoaB99lRNF4UvGCJ1Amx4HGweQptOhCXk7ICuT2JvtMZ9h
-        NRzKxgFw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33402)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oDMuf-0001Lw-6u; Mon, 18 Jul 2022 10:19:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDMuX-0001r0-Ht; Mon, 18 Jul 2022 10:19:29 +0100
-Date:   Mon, 18 Jul 2022 10:19:29 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v3 2/5] net: ethernet: stmicro: stmmac: first
- disable all queues in release
-Message-ID: <YtUloYvDtTxX1MQA@shell.armlinux.org.uk>
-References: <20220716230802.20788-1-ansuelsmth@gmail.com>
- <20220716230802.20788-3-ansuelsmth@gmail.com>
+        with ESMTP id S233190AbiGRJdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:33:16 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DB01A83B;
+        Mon, 18 Jul 2022 02:33:14 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oDN7o-0004Gz-Cy; Mon, 18 Jul 2022 11:33:12 +0200
+Message-ID: <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
+Date:   Mon, 18 Jul 2022 11:33:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220716230802.20788-3-ansuelsmth@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
+ guidelines.
+Content-Language: en-US
+To:     Dave Airlie <airlied@gmail.com>, torvalds@linux-foundation.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        gregkh@linuxfoundation.org, Daniel Vetter <daniel@ffwll.ch>,
+        mcgrof@kernel.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
+        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
+References: <20220718072144.2699487-1-airlied@gmail.com>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+In-Reply-To: <20220718072144.2699487-1-airlied@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1658136794;4a0ff83e;
+X-HE-SMSGID: 1oDN7o-0004Gz-Cy
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 01:07:59AM +0200, Christian Marangi wrote:
-> Disable all queues before tx_disable in stmmac_release to prevent a
-> corner case where packet may be still queued at the same time tx_disable
-> is called resulting in kernel panic if some packet still has to be
-> processed.
+
+On 18.07.22 09:21, Dave Airlie wrote:
+> From: Dave Airlie <airlied@redhat.com>
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+> A recent snafu where Intel ignored upstream feedback on a firmware
+> change, led to a late rc6 fix being required. In order to avoid this
+> in the future we should document some expectations around
+> linux-firmware.
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 5578abb14949..1854dcdd6095 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -3758,6 +3758,11 @@ static int stmmac_release(struct net_device *dev)
->  	struct stmmac_priv *priv = netdev_priv(dev);
->  	u32 chan;
->  
-> +	stmmac_disable_all_queues(priv);
+> I was originally going to write this for drm, but it seems quite generic
+> advice.
+> 
+> I'm cc'ing this quite widely to reach subsystems which use fw a lot.
+
+Thx for this, I kinda put "add a few words about firmware into
+Documentation/process/handling-regressions.rst" on my todo list already,
+but having a separate document is likely better.
+
+Took a quick look, here are a few suggestions for your consideration.
+
+> [...]
+> diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+> new file mode 100644
+> index 000000000000..34d2412e78c6
+> --- /dev/null
+> +++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+> @@ -0,0 +1,34 @@
+> +===================
+> +Firmware Guidelines
+> +===================
 > +
-> +	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-> +		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+> +Drivers that use firmware from linux-firmware should attempt to follow
+> +the rules in this guide.
+
+How about spelling out the main aspect first clearly before going into
+the details about its consequence? Maybe something along these lines:
+
+```
+Users switching to a newer kernel should *not* have to install newer
+firmware files to keep their hardware working. At the same time updated
+firmware files must not cause any regressions for users of older kernel
+releases.
+
+Drivers that use such firmware (like that in linux-firmware) should thus
+follow these rules:
+```
+
+> +* Firmware should be versioned with at least a major/minor version it
+> +  is suggested that the firmware files in linux-firmware be named with
+> +  some device specific name, and just the major version. The
+> +  major/minor/patch versions should be stored in a header in the
+> +  firmware file for the driver to detect any non-ABI fixes/issues. The
+> +  firmware files in linux-firmware should be overwritten with the newest
+> +  compatible major version. Newer major version firmware should remain
+> +  compatible with all kernels that load that major number.
 > +
->  	netif_tx_disable(dev);
+> +* Users should *not* have to install newer firmware to use existing
+> +  hardware when they install a newer kernel. 
 
-Is there a reason not to call phylink_stop() as the very first thing in
-this function? That will bring the link (and therefore carrier) down
-before phylink_stop() returns which should also prevent packets being
-queued into the driver for transmission.
+This will need changes if you pick up the suggestion above.
 
-Thanks.
+> If the hardware isn't
+> +  enabled by default or under development,
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Wondering if it might be better to drop the "or under development", as
+the "enabled by default" is the main part afaics. Maybe something like
+"If support for the hardware is normally inactive (e.g. has to be
+enabled manually by a kernel parameter)" would be better anyway.
+
+> this can be ignored, until
+> +  the first kernel release that enables that hardware.  This means no
+> +  major version bumps without the kernel retaining backwards
+> +  compatibility for the older major versions.  Minor version bumps
+> +  should not introduce new features that newer kernels depend on
+> +  non-optionally.
+> +
+> +* If a security fix needs lockstep firmware and kernel fixes in order to
+> +  be successful, then all supported major versions in the linux-firmware
+> +  repo
+
+This made me wonder: what exactly are "all supported major versions" in
+this context? Do you mean something like "all major versions in the
+linux-firmware required by currently supported stable/longterm kernel
+series"? Then it might be wise to write that.
+
+> should be updated with the security fix, and the kernel patches
+> +  should detect if the firmware is new enough to declare if the security
+> +  issue is fixed.  All communications around security fixes should point
+> +  at both the firmware and kernel fixes. If a security fix requires
+> +  deprecating old major versions, then this should only be done as a
+> +  last option, and be stated clearly in all communications.
+> +
+
+HTH, Ciao, Thorsten
