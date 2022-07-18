@@ -2,110 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40EC7577D46
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 10:13:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44606577D49
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 10:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233690AbiGRIN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 04:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54956 "EHLO
+        id S233707AbiGRIOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 04:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233682AbiGRINw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 04:13:52 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F928B34;
-        Mon, 18 Jul 2022 01:13:49 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 6E82C5FD02;
-        Mon, 18 Jul 2022 11:13:45 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658132025;
-        bh=K9t73VPQn1H7rzF6FDTeEbbZIPpEhYN+YhYt5OLk0eg=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=PFqZ48CnBylj1z/FTKdJ/Jp6iVsagp8hwbl5Gqslqw+Y+sxJ0WYuDkcdjUzz8wRKs
-         5S5oAXp6iF4uUy9kxoAxe38d16BBNL3ZN8Y4a8fpzt0SI253PGI3IBLPCNFqhsRbcg
-         t/bWorEz+to4y/FX38hDXILrYqRcjdSDJbjBYIsin0AN+3vUAxXwobZFboqSQZuQPG
-         2EH2EjzpCWEcPIk81IGrOSgx0QnaspBWxynKFow6xqppcKL62TzfA9ksMUiEc2yseu
-         0Ypn95pLHMwiQ2/58rdfAPeRtDTJPrZVB21B3rOJ+ULYfHsT2nRcTC4WPGq0hi8QY5
-         AG1zPqDzD7vcQ==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 18 Jul 2022 11:13:41 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233668AbiGRIOJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 04:14:09 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847F4767E
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 01:14:07 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id b26so15897830wrc.2
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 01:14:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=2omM97dYIoicKuEdzJAVf4kqUWVFvUq+yqaYGyKWESQ=;
+        b=mVxABh+bQ8W1yMDK8n/QVJ2AE2Qhe3B9nadSu3nKxdWgwKW2mCFsFl76g/OHKKKF+e
+         REldvqDm3TQ9J8LP6G343CMgS2SG+D36VI7PRtdHCWMBpeoz7kyhLI0kNqwowxY9RdBE
+         U8AeYrFc2r4Kq9bVx3dCxzARk/Pfeja9dQY7I1ygMjExPMqz1YVvOZdgNnWoXR+pbZWp
+         6EFNR2eZ3GuHB041BvmEAEik9jG218XXgWFcjbjcNX4cWGvK/OqBhDLTsPiFR6SQs2UF
+         8wFfZyO/Jfsb5/LZEbGMsDdHm2TexBMX9b/giStkjEFaW3XxtaWeFJRIuUp6/93s7LwV
+         DmKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2omM97dYIoicKuEdzJAVf4kqUWVFvUq+yqaYGyKWESQ=;
+        b=2o6+boAj45W5qRHLfEF9hgWsEHywOiuFtAlJ8IE9D9NEBsQPfGqOvy6vQV3hHnvDvY
+         GRF75yWQmKvaLK673y3eO3lGXE+ktCrA0ZruUJAKrrXw7pAuX6D/9JyEIbfi7qOOKZIB
+         vJTsw8R1fdUmDSLi5fP2B99KPN09eV0lZuROQVZ+q8TaETYBemhyhuK40s7cEIEdThIT
+         imM5WG8S/ucVuj0hIteMp9yttFzlGU59ZIqdnsZBv2Z3YFkP2Z6/dXdp6Mae7yPJKX5F
+         XE2TKoLJzQQlMfxkwAJhQITigcG06vTpZzPR0hgNB4ebyc5x/DRLdkcmXkNXB8Hqh5NO
+         kirw==
+X-Gm-Message-State: AJIora8ihO3dLIlO5mIEzSZJ0xoohYOfjeGz8Ti22155cwN8aSDEfHLH
+        FUxeLwUJre+F682MlyNq++YLYw==
+X-Google-Smtp-Source: AGRyM1ukjuTij8T/BXmDxEHv9q604qxIWdB2h6s4eJPjXyAyOWXh05brRbNOYm9vaw+73TuPuP5CGw==
+X-Received: by 2002:a5d:5451:0:b0:21d:2295:6a05 with SMTP id w17-20020a5d5451000000b0021d22956a05mr21528425wrv.302.1658132046025;
+        Mon, 18 Jul 2022 01:14:06 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id p13-20020adff20d000000b0020e6ce4dabdsm10194268wro.103.2022.07.18.01.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 01:14:05 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 09:14:03 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
- POLLIN/POLLRDNORM
-Thread-Topic: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
- POLLIN/POLLRDNORM
-Thread-Index: AQHYmn4tqUccpAClwkSIQKaYrjmRMQ==
-Date:   Mon, 18 Jul 2022 08:12:52 +0000
-Message-ID: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DC7CDBA78EB51146931911015FE707E9@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
+Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over SPI
+Message-ID: <YtUWS8N2p1Ej/PeD@google.com>
+References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
+ <20220708200918.131c0950@kernel.org>
+ <YsvWh8YJGeJNbQFB@google.com>
+ <20220711112116.2f931390@kernel.org>
+ <YszYKLxNyuLdH35Q@COLIN-DESKTOP1.localdomain>
+ <20220712220856.qbfyhll5o7ygloka@skbuf>
+ <YtGcdGj6yi546oWk@euler>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/18 02:31:00 #19923013
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YtGcdGj6yi546oWk@euler>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCmR1cmluZyBteSBleHBlcmltZW50cyB3aXRoIHplcm9jb3B5IHJlY2VpdmUsIGkg
-Zm91bmQsIHRoYXQgaW4gc29tZQ0KY2FzZXMsIHBvbGwoKSBpbXBsZW1lbnRhdGlvbiB2aW9sYXRl
-cyBQT1NJWDogd2hlbiBzb2NrZXQgaGFzIG5vbi0NCmRlZmF1bHQgU09fUkNWTE9XQVQoZS5nLiBu
-b3QgMSksIHBvbGwoKSB3aWxsIGFsd2F5cyBzZXQgUE9MTElOIGFuZA0KUE9MTFJETk9STSBiaXRz
-IGluICdyZXZlbnRzJyBldmVuIG51bWJlciBvZiBieXRlcyBhdmFpbGFibGUgdG8gcmVhZA0Kb24g
-c29ja2V0IGlzIHNtYWxsZXIgdGhhbiBTT19SQ1ZMT1dBVCB2YWx1ZS4gSW4gdGhpcyBjYXNlLHVz
-ZXIgc2Vlcw0KUE9MTElOIGZsYWcgYW5kIHRoZW4gdHJpZXMgdG8gcmVhZCBkYXRhKGZvciBleGFt
-cGxlIHVzaW5nICAncmVhZCgpJw0KY2FsbCksIGJ1dCByZWFkIGNhbGwgd2lsbCBiZSBibG9ja2Vk
-LCBiZWNhdXNlICBTT19SQ1ZMT1dBVCBsb2dpYyBpcw0Kc3VwcG9ydGVkIGluIGRlcXVldWUgbG9v
-cCBpbiBhZl92c29jay5jLiBCdXQgdGhlIHNhbWUgdGltZSwgIFBPU0lYDQpyZXF1aXJlcyB0aGF0
-Og0KDQoiUE9MTElOICAgICBEYXRhIG90aGVyIHRoYW4gaGlnaC1wcmlvcml0eSBkYXRhIG1heSBi
-ZSByZWFkIHdpdGhvdXQNCiAgICAgICAgICAgIGJsb2NraW5nLg0KIFBPTExSRE5PUk0gTm9ybWFs
-IGRhdGEgbWF5IGJlIHJlYWQgd2l0aG91dCBibG9ja2luZy4iDQoNClNlZSBodHRwczovL3d3dy5v
-cGVuLXN0ZC5vcmcvanRjMS9zYzIyL29wZW4vbjQyMTcucGRmLCBwYWdlIDI5My4NCg0KU28sIHdl
-IGhhdmUsIHRoYXQgcG9sbCgpIHN5c2NhbGwgcmV0dXJucyBQT0xMSU4sIGJ1dCByZWFkIGNhbGwg
-d2lsbA0KYmUgYmxvY2tlZC4NCg0KQWxzbyBpbiBtYW4gcGFnZSBzb2NrZXQoNykgaSBmb3VuZCB0
-aGF0Og0KDQoiU2luY2UgTGludXggMi42LjI4LCBzZWxlY3QoMiksIHBvbGwoMiksIGFuZCBlcG9s
-bCg3KSBpbmRpY2F0ZSBhDQpzb2NrZXQgYXMgcmVhZGFibGUgb25seSBpZiBhdCBsZWFzdCBTT19S
-Q1ZMT1dBVCBieXRlcyBhcmUgYXZhaWxhYmxlLiINCg0KSSBjaGVja2VkIFRDUCBjYWxsYmFjayBm
-b3IgcG9sbCgpKG5ldC9pcHY0L3RjcC5jLCB0Y3BfcG9sbCgpKSwgaXQNCnVzZXMgU09fUkNWTE9X
-QVQgdmFsdWUgdG8gc2V0IFBPTExJTiBiaXQsIGFsc28gaSd2ZSB0ZXN0ZWQgVENQIHdpdGgNCnRo
-aXMgY2FzZSBmb3IgVENQIHNvY2tldCwgaXQgd29ya3MgYXMgUE9TSVggcmVxdWlyZWQuDQoNCkkn
-dmUgYWRkZWQgc29tZSBmaXhlcyB0byBhZl92c29jay5jIGFuZCB2aXJ0aW9fdHJhbnNwb3J0X2Nv
-bW1vbi5jLA0KdGVzdCBpcyBhbHNvIGltcGxlbWVudGVkLg0KDQpXaGF0IGRvIFlvdSB0aGluayBn
-dXlzPw0KDQpUaGFuayBZb3UNCg0KQXJzZW5peSBLcmFzbm92KDMpOg0KIHZzb2NrX3Rlc3Q6IFBP
-TExJTiArIFNPX1JDVkxPV0FUIHRlc3QuDQogdmlydGlvL3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4g
-bm90aWZ5X3BvbGxfaW4gY2FsbGJhY2suDQogdnNvY2s6IHVzZSBza19za3Jjdmxvd2F0IHRvIHNl
-dCBQT0xMSU4sUE9MTFJETk9STSBiaXRzLg0KDQogbmV0L3Ztd192c29jay9hZl92c29jay5jICAg
-ICAgICAgICAgICAgIHwgIDIgKy0NCiBuZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29t
-bW9uLmMgfCAgMiArLQ0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jICAgICAgICB8
-IDkwICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KIDMgZmlsZXMgY2hhbmdlZCwg
-OTIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCg0KLS0gDQoyLjI1LjENCg==
+On Fri, 15 Jul 2022, Colin Foster wrote:
+
+> On Tue, Jul 12, 2022 at 10:08:57PM +0000, Vladimir Oltean wrote:
+> > On Mon, Jul 11, 2022 at 07:10:48PM -0700, Colin Foster wrote:
+> > > On Mon, Jul 11, 2022 at 11:21:16AM -0700, Jakub Kicinski wrote:
+> > > > On Mon, 11 Jul 2022 08:51:35 +0100 Lee Jones wrote:
+> > > > > > Can this go into net-next if there are no more complains over the
+> > > > > > weekend? Anyone still planning to review?  
+> > > > > 
+> > > > > As the subsystem with the fewest changes, I'm not sure why it would.
+> > > > 
+> > > > Yeah, just going by the tag in the subject. I have no preference,
+> > > > looks like it applies cleanly to Linus'.
+> > > > 
+> > > > > I'd planed to route this in via MFD and send out a pull-request for
+> > > > > other sub-system maintainers to pull from.
+> > > > > 
+> > > > > If you would like to co-ordinate it instead, you'd be welcome to.
+> > > > > However, I (and probably Linus) would need a succinct immutable branch
+> > > > > to pull from.
+> > > > 
+> > > > Oh, that'd be perfect, sorry, I didn't realize there was already a plan.
+> > > > If you're willing to carry on as intended, please do.
+> > > > 
+> > > > Colin if there is another version please make a note of the above
+> > > > merging plan in the cover letter and drop the net-next tag. 
+> > > > Just in  case my goldfish brain forgets.
+> > > 
+> > > I wasn't sure of the plan, but this makes sense to bring it through MFD.
+> > > Fortunately there's enough work for me on the DSA front that there's no
+> > > way that'll land before this merge window - so I have no objection to it
+> > > going any non-net-next path.
+> > > 
+> > > I'll look to Lee as to whether there should be a v14 with the header
+> > > guard addition per Vladimir's review, or whether that should be in a
+> > > future patch set. I'm happy to go either way.
+> > 
+> > From my side, the changes to this patch set can be incremental, I'd be
+> > happy if Lee would take them as is.
+> 
+> Just making sure this hasn't slipped through the cracks. Should I resend
+> this next week (Monday / Tuesday?) with the Reviewed-by tags and switch
+> it to MFD instead of net-next?
+
+Not yet please.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
