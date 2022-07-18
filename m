@@ -2,100 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B32F578B26
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9076B578B2E
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236292AbiGRTqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S236313AbiGRTsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234128AbiGRTqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:46:24 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0B6B861;
-        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id v185so10147607ioe.11;
-        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LDIcSSdSuEY2G/DAB4xr+Im2NXlqFrVtmyYQ1W3d1kM=;
-        b=aVgiyNtIOxjsNT7RwfLWaVKtf7LRjFlVYv6Q3RsRoCWO5RrBjMOwBqK9UpdkgtasQ3
-         YZ2wGsu5GaWkweV4UjchUKo4ddqAzTXvKXG2jkgNHNuIRnMNwVuPLnL5SxIIUWMVMhmY
-         uApgAePnVf40tYd+Fx7/2OTPreuGxujJmVn0GohOHeBHuFVXzxR+ZM+RNBNLYe1D1qvx
-         kVFE5mYwnJ3K01owvY9ia6ENU6hc7PPa0cfG2BuW9zdG293PD/ewlL8xd0IHoVDSmunJ
-         2dCw9E5scDezOjVpSGBUcSrVXmEXJMFRKAW7Myx/dSZ8CEqP1FAyV0Rj/bTZ+kctvE86
-         SLuw==
-X-Gm-Message-State: AJIora+jGNEMempjq778PE05B90bkWTJ44klZ+N6Vupd5vk0tuBy6SV8
-        GATbV4QJf7ARTMBSqopVKQ==
-X-Google-Smtp-Source: AGRyM1uvcKF6ziPm4Yv3YA+hZ/xOz/ohcyBKZqePnnm+y/DNXmzTvXSQYgWQkrlsY/eT0ZGml84G/Q==
-X-Received: by 2002:a05:6638:1c1a:b0:33f:45c9:effb with SMTP id ca26-20020a0566381c1a00b0033f45c9effbmr15449820jab.305.1658173583176;
-        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id g5-20020a02c545000000b0033f4b1c2151sm5962542jaj.154.2022.07.18.12.46.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:46:22 -0700 (PDT)
-Received: (nullmailer pid 3425548 invoked by uid 1000);
-        Mon, 18 Jul 2022 19:46:20 -0000
-Date:   Mon, 18 Jul 2022 13:46:20 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 2/9] dt-bindings: net: Expand pcs-handle to
- an array
-Message-ID: <20220718194620.GB3377770-robh@kernel.org>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-3-sean.anderson@seco.com>
- <ecaf9d0f-6ddb-5842-790e-3d5ee80e2a77@linaro.org>
- <fdd34075-4e5e-a617-696d-15c5ac6e9bfe@seco.com>
- <d84899e7-06f7-1a20-964f-90b6f0ff96fd@linaro.org>
- <Ys2aeRBGGv6ajMZ5@shell.armlinux.org.uk>
- <f2a29c57-be8c-88c2-1c75-f6e5d1164b8f@linaro.org>
+        with ESMTP id S234128AbiGRTsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:48:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAEB3139D
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 12:48:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E52656173B
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 19:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3413DC341C0;
+        Mon, 18 Jul 2022 19:48:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658173698;
+        bh=KG03ClYU2ESub8drhzGIOem0WyCtJrweVqBV6uXZDCw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=m7J5+omgmV+RxndSQpETsnHGRF1CS9kILSFc7MJBzREIShFSx8HJrzIyEAd8rtk5F
+         wHSClENQpuI3bG3ySZ/WOrlq7xXt9DVivAhCNXFiWcy37bs4xbGLR0JeURHNwusVLk
+         oH5M+60YuEGzKxRE0H5DUJwbH9Y6DFnTsEQ2ni6F1PHW77QNRthakwxp/UAun8jFuF
+         pzACZ69TulZGZz9i9vCt0p5MA8rsGeLCz7MdRusqBlwUwmxJzEawz8lb86pW0kcXyg
+         JA+yNbIUyxwdTyY7BIKGwZTjWn5hnXmEh7I8miRTQgbyTC9zCrv6TA+FC73gQHaN3k
+         7cG8wMEP+0QQw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, vfedorenko@novek.ru,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/7] tls: rx: decrypt from the TCP queue
+Date:   Mon, 18 Jul 2022 12:48:04 -0700
+Message-Id: <20220718194811.1728061-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f2a29c57-be8c-88c2-1c75-f6e5d1164b8f@linaro.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 12:45:54PM +0200, Krzysztof Kozlowski wrote:
-> On 12/07/2022 17:59, Russell King (Oracle) wrote:
-> >> However before implementing this, please wait for more feedback. Maybe
-> >> Rob or net folks will have different opinions.
-> > 
-> > We decided on "pcs-handle" for PCS for several drivers, to be consistent
-> > with the situation for network PHYs (which are "phy-handle", settled on
-> > after we also had "phy" and "phy-device" and decided to deprecate these
-> > two.
-> > 
-> > Surely we should have consistency within the net code - so either "phy"
-> > and "pcs" or "phy-handle" and "pcs-handle" but not a mixture of both?
-> 
-> True. Then the new property should be "pcs-handle-names"?
+This is the final part of my TLS Rx rework. It switches from
+strparser to decrypting data from skbs queued in TCP. We don't
+need the full strparser for TLS, its needs are very basic.
+This set gives us a small but measurable (6%) performance
+improvement (continuous stream).
 
-IMO, just keep "pcs-handle" and then "pcs-handle-names". We never seem 
-to get free of the deprecated versions (-gpio).
+Jakub Kicinski (7):
+  tls: rx: wrap recv_pkt accesses in helpers
+  tls: rx: factor SW handling out of tls_rx_one_record()
+  tls: rx: don't free the output in case of zero-copy
+  tls: rx: device: keep the zero copy status with offload
+  tcp: allow tls to decrypt directly from the tcp rcv queue
+  tls: rx: device: add input CoW helper
+  tls: rx: do not use the standard strparser
 
-While just add/remove 's' would be nice, we have to deal with things 
-like 'mboxes' and I think some other inconsistencies. 
+ include/net/tcp.h    |   2 +
+ include/net/tls.h    |  19 +-
+ net/ipv4/tcp.c       |  44 +++-
+ net/tls/tls.h        |  29 ++-
+ net/tls/tls_device.c |  19 +-
+ net/tls/tls_main.c   |  20 +-
+ net/tls/tls_strp.c   | 488 ++++++++++++++++++++++++++++++++++++++++++-
+ net/tls/tls_sw.c     | 228 +++++++++++---------
+ 8 files changed, 725 insertions(+), 124 deletions(-)
 
-Rob
+-- 
+2.36.1
+
