@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE0BF578149
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:52:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C78C57814D
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234450AbiGRLwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 07:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
+        id S233580AbiGRLxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 07:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbiGRLwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:52:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A8922BCC;
-        Mon, 18 Jul 2022 04:52:04 -0700 (PDT)
+        with ESMTP id S232768AbiGRLxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:53:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D7022BC0;
+        Mon, 18 Jul 2022 04:53:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62FA661384;
-        Mon, 18 Jul 2022 11:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB0AC341C0;
-        Mon, 18 Jul 2022 11:52:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F221B810F4;
+        Mon, 18 Jul 2022 11:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC6EC341C0;
+        Mon, 18 Jul 2022 11:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658145123;
-        bh=2zN3CeIQ12Ao82yCSuGKsDlV+KttZ2k+uZ3zphsG0R8=;
+        s=k20201202; t=1658145193;
+        bh=Phc0x9SWsO+X5B2V1yFiu7oQp3xqcc3kPiUwuV37VD8=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=IrshlyfLz1RaziiSQDxtq3M6B4nRCbcs9KV4NdeRxK25Hzy1WKkXxmOzHl8Ffz9CS
-         LndnwRnqwwABtzyhbWe2tcCHNf5hO/VShVgKD5Ms55S9oQcDKdTS07+d8wqIEpIWgN
-         gs0lHv0phaHk9GZv1uNj+S9kiaKO+zeVMoTJWGCO136ncUB0pKdrmS9eUkyOY1FvYZ
-         A4qRTbS6tsNTXQL2JlUhmMS9V6R8C03Q5ciossxw2PgNoB+6Ljizx/xO2n337qQZ0n
-         c9ghoEGJUF2I8oKcxFDQVX+NysnpUEbg2ehOVJRskiv8vjDyTZVf8X4j2soDPFamXe
-         q0Dv5h7X7zokQ==
+        b=cg61rv7JyfsvKq+pksU/RtmLFEnKmV+HUjSL9k9VcgV9wPu8DQUbXhZkQJU10FWS+
+         DHEkassZJsixQy50n+gfle8U7saVv8HQScsSNr5+vm9k0ZeKGWAl7M9kTC7ohwYzkm
+         bvHvJR7BJqDCBP5XcbCpRvrA6CEREA3o65Bz7qWBuZk9M4pAEXdf9TkTSD2h6/5ny7
+         b3pZFZWIrTBvAjr7+wPNYUxU9Y732kq52a9d6vZBv6mD16sjxRTIjsVNbzzfDOe5Dk
+         LjjkrvngQqErw1skCAsTELnEKBC/La+bXexwO2kR3Q8Ki7aA2U/cfky/YWbq9OcUVP
+         pOdWGOl45aigg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: wifi: p54: Use the bitmap API to allocate bitmaps
+Subject: Re: wifi: mt7601u: eeprom: fix clang -Wformat warning
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <2755b8b7d85a2db0663d39ea6df823f94f3401b3.1656939750.git.christophe.jaillet@wanadoo.fr>
-References: <2755b8b7d85a2db0663d39ea6df823f94f3401b3.1656939750.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+In-Reply-To: <20220709001527.618593-1-justinstitt@google.com>
+References: <20220709001527.618593-1-justinstitt@google.com>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     Jakub Kicinski <kubakici@wp.pl>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Justin Stitt <justinstitt@google.com>
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165814511953.17539.6544213210547391400.kvalo@kernel.org>
-Date:   Mon, 18 Jul 2022 11:52:01 +0000 (UTC)
+Message-ID: <165814518849.17539.4270310820175063607.kvalo@kernel.org>
+Date:   Mon, 18 Jul 2022 11:53:10 +0000 (UTC)
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,21 +62,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+Justin Stitt <justinstitt@google.com> wrote:
 
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+> When building with Clang we encounter the following warning:
+> | drivers/net/wireless/mediatek/mt7601u/eeprom.c:193:5: error: format
+> | specifies type 'char' but the argument has type 'int' [-Werror,-Wformat]
+> | chan_bounds[idx].start + chan_bounds[idx].num - 1);
 > 
-> It is less verbose and it improves the semantic.
+> Variadic functions (printf-like) undergo default argument promotion.
+> Documentation/core-api/printk-formats.rst specifically recommends using
+> the promoted-to-type's format flag.
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+> Moreover, C11 6.3.1.1 states:
+> (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf) `If an int
+> can represent all values of the original type ..., the value is
+> converted to an int; otherwise, it is converted to an unsigned int.
+> These are called the integer promotions.`
+> 
+> With this information in hand, we really should stop using `%hh[dxu]` or
+> `%h[dxu]` as they usually prompt Clang -Wformat warnings as well as go
+> against documented standard recommendations.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Justin Stitt <justinstitt@google.com>
 
 Patch applied to wireless-next.git, thanks.
 
-0c574060060a wifi: p54: Use the bitmap API to allocate bitmaps
+07db88f11e63 wifi: mt7601u: eeprom: fix clang -Wformat warning
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/2755b8b7d85a2db0663d39ea6df823f94f3401b3.1656939750.git.christophe.jaillet@wanadoo.fr/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220709001527.618593-1-justinstitt@google.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
