@@ -2,99 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC66D5783E9
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA3D5783FF
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 15:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234348AbiGRNkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 09:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        id S234702AbiGRNmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 09:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiGRNkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:40:09 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2271A05D
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 06:40:07 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id y11so19369142lfs.6
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 06:40:07 -0700 (PDT)
+        with ESMTP id S234659AbiGRNmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 09:42:08 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072181F615;
+        Mon, 18 Jul 2022 06:42:07 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q5so9035106plr.11;
+        Mon, 18 Jul 2022 06:42:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qP9Fo5KBG1bSRd2Jktw44saL7dv2bZtKwCgW6wpScEo=;
-        b=LydNAbpiOiDlshy5VPw8GM+ohK5mAteiOjn9DViBMZcAdgGLZgOluNcnR2js6hMa2d
-         7hJ1zcRoNeGwk/OLqK/9NnXjVQillG9u7p5R1Wsyw2Rn6BE13YJO9Udn3uLjF1Fo41jf
-         bCcFwqcXI/WAJbdHXX5XBSPeCutlv07HBSTzrjpUCjAWfhO0cNUk05Vv1by2t8j9N/QS
-         Ne2YRcvdW8w42bnprFuMwwlZXMPD+viCFITy89/Toygy+8fWax3argEtwmAxhLksNAoP
-         ur5TUpos4VK+1Z3FJ+o+sfUEVSktZ7JbPQEtvAAi0HcATRTI0nQGEjg2hILU9NMYlHmB
-         EM6Q==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5glw/sVKGgr66L6xdKScVn9xWukMCuFZ8q3nmTVvFE8=;
+        b=cuf5hUNtU0/KD49tulskC6amR8It/LlvQxClHQW7a95ejrXa0AMXXvDIVXFMdgWZGo
+         L4shcCbaKv4vbFfVBNWowQoIRv4WlZQnyOkBi36rsjENKDNwYeDN1K/ng0mBTntQdMWp
+         hZewgxuY8Iens+riIINMlpzMak4zzvQBoP/I7igoqcoEjS5eTYvq3yVXnb5JPAZYLkMi
+         DdCyqq8y1Z2wbWnhdKbbSoQ6F/FBVAlWxdoJxoZDUBLah+IZG9D/kk6RTI3rLn1rOKBm
+         COvpWZEXUaMOUV2J+ZTN9U+makeZYPFrf72PV8JSRQbg7f/ZdLs4gljTKLLUXV847sJO
+         2T1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qP9Fo5KBG1bSRd2Jktw44saL7dv2bZtKwCgW6wpScEo=;
-        b=y5iIIWNdwhetUfyo69km6ivxE2JJ4mR2fCVeQeDqbJl/z5wcLFdZ1liB1+0CBBFAuD
-         Vg/bkydrLVX+OeLwy9Wbx1cLp+oefjI2hcWbg+iIwBisNAGgA3aLz1xEcwVwJplxMRrG
-         TajsrO1PmzOk8Gb389rDx/HNU+anRzjcleMJAsCM3Y2khgqEMMyuAFEl562AvJf5l/4X
-         gwUfbYzUDY/2x62nxsk1PQ6GYcQlGdWaUHZONkYq8wrDahlJ9oSuxM7tr50MImcXmbLQ
-         tqBhBujIk7uuXvTyL7/4WssutoxzbUnu/EmpNeAGGltFFhhvHWUvwMufpnqIx3b5Sd7J
-         LSOw==
-X-Gm-Message-State: AJIora9BAP8JIzzleeW3CZyo4Cnh5uyUoGTkuSlUn8cHJPM9wMzLZT65
-        tyM5hiLAkQuNk6do8dYpt9tnQX2M4ePyMT2M
-X-Google-Smtp-Source: AGRyM1s1qWe+cRpioSO8Ixn5A2yF3sZewgmBHH5fFTqKY8HJ5V1AGYKl/UMTkIk31fZ8gW3ypTjz3g==
-X-Received: by 2002:a05:6512:3b23:b0:48a:4a8c:2a27 with SMTP id f35-20020a0565123b2300b0048a4a8c2a27mr956367lfv.372.1658151605709;
-        Mon, 18 Jul 2022 06:40:05 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05651c048b00b0025d681fbebdsm2050116ljc.100.2022.07.18.06.40.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 06:40:05 -0700 (PDT)
-Message-ID: <0d758fae-efde-eb0c-5fc9-2407826ac163@linaro.org>
-Date:   Mon, 18 Jul 2022 15:40:03 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5glw/sVKGgr66L6xdKScVn9xWukMCuFZ8q3nmTVvFE8=;
+        b=5oZA/H5s0KEXN80lbACVLaImIOo5+fDT4v3CP/I/hZ2T9hj4lmB7uMNlyZTgg1erhX
+         l2/aq8pMuK+1AaYR7DF5QIDx3Q4mkdvbG06xOZjrpL2TdEcY5xfSLHDzT5k3H2KFFz6J
+         V5lR+cAvsGwHR16mT7v6hxWJmfGn+/RjB2y4s9jkATjthGnGD9V3YQGEG6IcP9w5erG/
+         ehelvxTDmy9Gq9Cw3OWDuErwqJap30UouZForLTkTvMPCaKaJaAihEgc0iiL3y7d9gKp
+         nbKz7dlrxF0rGck8jKw1U2F3CytXrN7B7uFXIWt2rAOCJrwzcSvMVWEZGHRLI33xSTVl
+         QhEQ==
+X-Gm-Message-State: AJIora+0LmchGhq8ZEV9JKCB19XduoP3vK0hY6XJUIGk6Ef+JysB+C2s
+        7zBT/m8xoECSHPXqV4rf4rs=
+X-Google-Smtp-Source: AGRyM1vdWDP6toZwzfT59MCLzgbNBvctHq8GcsK2BIiEqY3q/W/oe43RyzEJa94BKciD5Fy66/oMsA==
+X-Received: by 2002:a17:903:31c9:b0:16c:3024:69c4 with SMTP id v9-20020a17090331c900b0016c302469c4mr28613487ple.81.1658151726421;
+        Mon, 18 Jul 2022 06:42:06 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id w29-20020a63491d000000b003fadd680908sm8169824pga.83.2022.07.18.06.42.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 06:42:06 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 06:42:03 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Madhuri.Sripada@microchip.com
+Subject: Re: [PATCH net-next] net: phy: micrel: Fix warn: passing zero to
+ PTR_ERR
+Message-ID: <YtVjKzTOxdP9zm4u@hoboy.vegasvil.org>
+References: <20220718114333.4866-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V3 1/3] dt-bindings: net: fsl,fec: Add i.MX8ULP FEC items
-Content-Language: en-US
-To:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, peng.fan@nxp.com,
-        ping.bai@nxp.com, sudeep.holla@arm.com,
-        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
-References: <20220718142257.556248-1-wei.fang@nxp.com>
- <20220718142257.556248-2-wei.fang@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220718142257.556248-2-wei.fang@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718114333.4866-1-Divya.Koppera@microchip.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/07/2022 16:22, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
+On Mon, Jul 18, 2022 at 05:13:33PM +0530, Divya Koppera wrote:
+> Removing NULL check, as using it here is not valid
+
+NAK.
+
+Please read the code:
+
+ * ptp_clock_register() - register a PTP hardware clock driver
+ *
+ * @info:   Structure describing the new clock.
+ * @parent: Pointer to the parent device of the new clock.
+ *
+ * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+ * support is missing at the configuration level, this function
+ * returns NULL, and drivers are expected to gracefully handle that
+ * case separately.
+
+
+You must handle the NULL pointer case.
+
+Thanks,
+Richard
+
+
 > 
-> Add fsl,imx8ulp-fec for i.MX8ULP platform.
+> Fixes New smatch warnings:
+> drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
 > 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
-
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
-
-If a tag was not added on purpose, please state why and what changed.
-
-
-
-Best regards,
-Krzysztof
+> vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+> ---
+>  drivers/net/phy/micrel.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index e78d0bf69bc3..04146b936786 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -2812,7 +2812,7 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+>  
+>  	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
+>  					       &phydev->mdio.dev);
+> -	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
+> +	if (IS_ERR(shared->ptp_clock)) {
+>  		phydev_err(phydev, "ptp_clock_register failed %lu\n",
+>  			   PTR_ERR(shared->ptp_clock));
+>  		return -EINVAL;
+> -- 
+> 2.17.1
+> 
