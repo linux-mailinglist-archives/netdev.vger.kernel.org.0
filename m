@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A67E1578677
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 17:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E15457867F
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 17:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbiGRPd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 11:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
+        id S235592AbiGRPhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 11:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235376AbiGRPd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 11:33:56 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E985FEE;
-        Mon, 18 Jul 2022 08:33:54 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso5968696wma.2;
-        Mon, 18 Jul 2022 08:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vBxJcVDI+MBiYNM9PJpNBxYIwPjkJMaPy5JiLonNMLo=;
-        b=iYon2gh8luEPcsrVrG8BU368mG1Xk+kpfwLOv21BTASSf/FolHFJHb4XxIYH5umRYa
-         zr0UthJuQaLVhROiBEvlQktyIE7eYmbgro+yEjRd+6CZJSHlknFMCgBjXRmCUWOHBm/P
-         9/DSNmN0/gHbMnAx7ETnBpEfMWD0QCnMSNxBCIty24/q4j0xaFUSh3yftS0/4g1n4h5d
-         VubnTpp714okHPzwVlGSPQOygqV6ygMkaUNkO9GGnB9MeNOHEDk3GOzcCLsmQBZAfl2J
-         X/DTwHmqA8CtjcT8u2HJD0mut8B97uGLsFVeMyhKlDub3iGCmBDp5epVGKipMnotXK/y
-         DqlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vBxJcVDI+MBiYNM9PJpNBxYIwPjkJMaPy5JiLonNMLo=;
-        b=HdxspePG3GAm2gxAkOQ0TwmDGJfOmgvIfFBSHTV25Y7QKrIiTDuhpH1agPQLHJfkfj
-         moh30icJ3m2pC8HPpxG9DdaGqVcCXLk1v1Xu04ObTF1QiD+YH4Wt15zLCAfmcqa/ip8q
-         XWfGEymabk9MGtyceIGwX8YRw0c4QkC3uB1X7o+GZroFKWhU0FHrSOwA5UXZpzCcWHm6
-         GIM6fJjCmv4etQ0c5hQj3zhMcN6VZCjkGV9Nl6YCYRuiKYFM0nQ2ehKT99VpTp9SIx/Z
-         e4/YllupI4DFcLyr3wEfw3gndP5HOoRdpbka4lM5RmSWk5WPI+XWnnI9qQ1YeDAJwkTM
-         Qtgg==
-X-Gm-Message-State: AJIora+fcYBHuU6WxdTJVwRR0DwVCNkI+1aturI5peefx5pQeF3E1jU3
-        nE+G61yt1kRkPuSgTWoDcqlTojBuw42ty3hF2qgtJnVO
-X-Google-Smtp-Source: AGRyM1syWxjt15tB51xzmEK68Mm/SO0RQGXRyezFoFVwKyOltT3WigrGsVUUL7GkjaYGwvm2AhrvEvj95kRwd2wE9E8=
-X-Received: by 2002:a05:600c:1c83:b0:3a3:1f70:25a5 with SMTP id
- k3-20020a05600c1c8300b003a31f7025a5mr2504212wms.54.1658158433376; Mon, 18 Jul
- 2022 08:33:53 -0700 (PDT)
+        with ESMTP id S234134AbiGRPhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 11:37:12 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBADBC81;
+        Mon, 18 Jul 2022 08:37:10 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LmmHt66YzzlW4M;
+        Mon, 18 Jul 2022 23:35:22 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Jul 2022 23:37:02 +0800
+Message-ID: <b0e740c4-9630-c539-e811-a4ad93fcca5c@huawei.com>
+Date:   Mon, 18 Jul 2022 23:37:01 +0800
 MIME-Version: 1.0
-References: <20220715125013.247085-1-mlombard@redhat.com> <5a469c5a.8b85.1821171d9de.Coremail.chen45464546@163.com>
- <CAFL455nnc04q8TohH+Qbv36Bo3=KKxMWr=diK_F5Ds5K-h5etw@mail.gmail.com>
- <22bf39a6.8f5e.18211c0898a.Coremail.chen45464546@163.com> <CAFL455mXFY5AFOoXxhpUY6EkPzc1677cRPQ8UX-RSykhm_52Nw@mail.gmail.com>
-In-Reply-To: <CAFL455mXFY5AFOoXxhpUY6EkPzc1677cRPQ8UX-RSykhm_52Nw@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 18 Jul 2022 08:33:42 -0700
-Message-ID: <CAKgT0Uejy66aFAdD+vMPYFtSu2BWRgTxBG0mO+BLayk3nNuQMw@mail.gmail.com>
-Subject: Re: Re: [PATCH V3] mm: prevent page_frag_alloc() from corrupting the memory
-To:     Maurizio Lombardi <mlombard@redhat.com>
-Cc:     Chen Lin <chen45464546@163.com>, Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v9 3/4] bpf, arm64: Implement
+ bpf_arch_text_poke() for arm64
+Content-Language: en-US
+To:     Jon Hunter <jonathanh@nvidia.com>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>
+CC:     Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+References: <20220711150823.2128542-1-xukuohai@huawei.com>
+ <20220711150823.2128542-4-xukuohai@huawei.com>
+ <8de014c1-aa63-5783-e5fd-53b7fdece805@nvidia.com>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <8de014c1-aa63-5783-e5fd-53b7fdece805@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,33 +76,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 8:25 AM Maurizio Lombardi <mlombard@redhat.com> wro=
-te:
->
-> po 18. 7. 2022 v 16:40 odes=C3=ADlatel Chen Lin <chen45464546@163.com> na=
-psal:
-> >
-> > But the original intention of page frag interface is indeed to allocate=
- memory
-> > less than one page. It's not a good idea to  complicate the definition =
-of
-> > "page fragment".
->
-> I see your point, I just don't think it makes much sense to break
-> drivers here and there
-> when a practically identical 2-lines patch can fix the memory corruption =
-bug
-> without changing a single line of code in the drivers.
->
-> By the way, I will wait for the maintainers to decide on the matter.
->
-> Maurizio
+On 7/18/2022 9:52 PM, Jon Hunter wrote:
 
-I'm good with this smaller approach. If it fails only under memory
-pressure I am good with that. The issue with the stricter checking is
-that it will add additional overhead that doesn't add much value to
-the code.
+[..]
+> 
+> This change appears to be causing the build to fail ...
+> 
+> /tmp/cc52xO0c.s: Assembler messages:
+> /tmp/cc52xO0c.s:8: Error: operand 1 should be an integer register --
+> `mov lr,x9'
+> /tmp/cc52xO0c.s:7: Error: undefined symbol lr used as an immediate value
+> make[2]: *** [scripts/Makefile.build:250: arch/arm64/net/bpf_jit_comp.o]
+> Error 1
+> make[1]: *** [scripts/Makefile.build:525: arch/arm64/net] Error 2
+> 
+> Let me know if you have any thoughts.
+> 
 
-Thanks,
+Sorry for this failure, but I can't reproduce it.
 
-- Alex
+I guess maybe your assembler doesn't recognize "lr". Could you give a
+try to replace "lr" with "x30"?
+
+ #if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
+ "      bti j\n" /* dummy_tramp is called via "br x10" */
+ #endif
+-"      mov x10, lr\n"
+-"      mov lr, x9\n"
++"      mov x10, x30\n"
++"      mov x30, x9\n"
+ "      ret x10\n"
+ "      .size dummy_tramp, .-dummy_tramp\n"
+ "      .popsection\n
+
+Thanks.
+
+> Cheers
+> Jon
+> 
+
