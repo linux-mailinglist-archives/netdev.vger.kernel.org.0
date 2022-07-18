@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 333EC5788CD
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC2A5788CE
 	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbiGRRvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 13:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35970 "EHLO
+        id S233294AbiGRRvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 13:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiGRRvL (ORCPT
+        with ESMTP id S231625AbiGRRvL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:51:11 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0166A2D1C5
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365082B608
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658166670; x=1689702670;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Y+uvJcs720pKJP1k0lQkfVZXojvr8q/btu3XwKllUwI=;
-  b=YogF8ejgK38uEhnL+G95b46iWGVrz4g2+Rby4tM3libAqM7IdKrHxd1y
-   ZecKnt83kktr7SxTmXk3wD5qXgNau75iLdMiIJN2jMACtPAuV4P8E5isj
-   bTqKcjOGkTsMXBqeK1DpxbBBFYeXmI344OyZ5F+uWDiheBwTlwj1YMfU1
-   PHB8I1dr6QrYihRoWJ9dWp3XKVXqVZ0oB0k3wbxIv69k3FENsjAiv1SlA
-   Gwuog5PnW9gi7z1yLl6t6Q6Gm8bHGnmsOeQSZR2dCUuZZ6mdkW5okPF9g
-   6L4vFl//hPh5KoD/yCAOp0/b5iiIGwFQK1epm/Xwoq3e8fe4yK9nZKcom
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="347970941"
+  bh=hX1WxvjWVGEmDGeWQk2is677CT7hksSL5XZv1y641eQ=;
+  b=jKtb0MqrH7VCn4G5wQT1k+WoV8GBMCVxJtvbr7YKeQMRPvMgp2rE0x5H
+   VS+4OSWNHCd447fHLo5N4fi0kM2vc1WdNOjZAy0tpqxoRdzgsRFyBeQAg
+   hR4jLZQ+IRrvgA6nK5EcaRHWIA9XVilQu1zznsp6lnMhDPWNeBkMIaUAG
+   2w+Uw5w3Jf40N2b/87e3smyuP67Nb/jLp1LZZVdGNMcnbPzGAtqDtL9FH
+   T43qA8PDjmgfzJGHIUHf8/2Lb7WOhwcVfnZnPZzIA77k7EWFm88pq6Kky
+   /w8T+8nFE5qjN5GQwKpwWvTDQQo5w0R6l5sMC2hxv9aSjVD7mxZ1Ym/hg
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="347970943"
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="347970941"
+   d="scan'208";a="347970943"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 10:51:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="624825877"
+   d="scan'208";a="624825880"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 18 Jul 2022 10:51:07 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -42,11 +42,11 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 1/4] iavf: Fix VLAN_V2 addition/rejection
-Date:   Mon, 18 Jul 2022 10:48:04 -0700
-Message-Id: <20220718174807.4113582-2-anthony.l.nguyen@intel.com>
+        Jun Zhang <xuejun.zhang@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net v2 2/4] iavf: Disallow changing rx/tx-frames and rx/tx-frames-irq
+Date:   Mon, 18 Jul 2022 10:48:05 -0700
+Message-Id: <20220718174807.4113582-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
 References: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
@@ -63,208 +63,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-Fix VLAN addition, so that PF driver does not reject whole VLAN batch.
-Add VLAN reject handling, so rejected VLANs, won't litter VLAN filter
-list. Fix handling of active_(c/s)vlans, so it will be possible to
-re-add VLAN filters for user.
-Without this patch, after changing trust to off, with VLAN filters
-saturated, no VLAN is added, due to PF rejecting addition.
+Remove from supported_coalesce_params ETHTOOL_COALESCE_MAX_FRAMES
+and ETHTOOL_COALESCE_MAX_FRAMES_IRQ. As tx-frames-irq allowed
+user to change budget for iavf_clean_tx_irq, remove work_limit
+and use define for budget.
 
-Fixes: 92fc50859872 ("iavf: Restrict maximum VLAN filters for VIRTCHNL_VF_OFFLOAD_VLAN_V2")
+Without this patch there would be possibility to change rx/tx-frames
+and rx/tx-frames-irq, which for rx/tx-frames did nothing, while for
+rx/tx-frames-irq it changed rx/tx-frames and only changed budget
+for cleaning NAPI poll.
+
+Fixes: fbb7ddfef253 ("i40evf: core ethtool functionality")
 Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Jun Zhang <xuejun.zhang@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h        |  9 ++-
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 10 ++-
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 65 ++++++++++++++++++-
- 3 files changed, 74 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h         |  1 -
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 10 ----------
+ drivers/net/ethernet/intel/iavf/iavf_main.c    |  1 -
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c    |  2 +-
+ 4 files changed, 1 insertion(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 49aed3e506a6..86bc61c300a7 100644
+index 86bc61c300a7..2a7b3c085aa9 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf.h
 +++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -159,8 +159,12 @@ struct iavf_vlan {
- struct iavf_vlan_filter {
- 	struct list_head list;
- 	struct iavf_vlan vlan;
--	bool remove;		/* filter needs to be removed */
--	bool add;		/* filter needs to be added */
-+	struct {
-+		u8 is_new_vlan:1;	/* filter is new, wait for PF answer */
-+		u8 remove:1;		/* filter needs to be removed */
-+		u8 add:1;		/* filter needs to be added */
-+		u8 padding:5;
-+	};
+@@ -64,7 +64,6 @@ struct iavf_vsi {
+ 	u16 id;
+ 	DECLARE_BITMAP(state, __IAVF_VSI_STATE_SIZE__);
+ 	int base_vector;
+-	u16 work_limit;
+ 	u16 qs_handle;
+ 	void *priv;     /* client driver data reference. */
  };
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+index 3bb56714beb0..e535d4c3da49 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+@@ -692,12 +692,8 @@ static int __iavf_get_coalesce(struct net_device *netdev,
+ 			       struct ethtool_coalesce *ec, int queue)
+ {
+ 	struct iavf_adapter *adapter = netdev_priv(netdev);
+-	struct iavf_vsi *vsi = &adapter->vsi;
+ 	struct iavf_ring *rx_ring, *tx_ring;
  
- #define IAVF_MAX_TRAFFIC_CLASS	4
-@@ -520,6 +524,7 @@ int iavf_get_vf_config(struct iavf_adapter *adapter);
- int iavf_get_vf_vlan_v2_caps(struct iavf_adapter *adapter);
- int iavf_send_vf_offload_vlan_v2_msg(struct iavf_adapter *adapter);
- void iavf_set_queue_vlan_tag_loc(struct iavf_adapter *adapter);
-+u16 iavf_get_num_vlans_added(struct iavf_adapter *adapter);
- void iavf_irq_enable(struct iavf_adapter *adapter, bool flush);
- void iavf_configure_queues(struct iavf_adapter *adapter);
- void iavf_deconfigure_queues(struct iavf_adapter *adapter);
+-	ec->tx_max_coalesced_frames = vsi->work_limit;
+-	ec->rx_max_coalesced_frames = vsi->work_limit;
+-
+ 	/* Rx and Tx usecs per queue value. If user doesn't specify the
+ 	 * queue, return queue 0's value to represent.
+ 	 */
+@@ -825,12 +821,8 @@ static int __iavf_set_coalesce(struct net_device *netdev,
+ 			       struct ethtool_coalesce *ec, int queue)
+ {
+ 	struct iavf_adapter *adapter = netdev_priv(netdev);
+-	struct iavf_vsi *vsi = &adapter->vsi;
+ 	int i;
+ 
+-	if (ec->tx_max_coalesced_frames_irq || ec->rx_max_coalesced_frames_irq)
+-		vsi->work_limit = ec->tx_max_coalesced_frames_irq;
+-
+ 	if (ec->rx_coalesce_usecs == 0) {
+ 		if (ec->use_adaptive_rx_coalesce)
+ 			netif_info(adapter, drv, netdev, "rx-usecs=0, need to disable adaptive-rx for a complete disable\n");
+@@ -1969,8 +1961,6 @@ static int iavf_set_rxfh(struct net_device *netdev, const u32 *indir,
+ 
+ static const struct ethtool_ops iavf_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+-				     ETHTOOL_COALESCE_MAX_FRAMES |
+-				     ETHTOOL_COALESCE_MAX_FRAMES_IRQ |
+ 				     ETHTOOL_COALESCE_USE_ADAPTIVE,
+ 	.get_drvinfo		= iavf_get_drvinfo,
+ 	.get_link		= ethtool_op_get_link,
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index f3ecb3bca33d..2a8643e66331 100644
+index 2a8643e66331..2e2c153ce46a 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -843,7 +843,7 @@ static void iavf_restore_filters(struct iavf_adapter *adapter)
-  * iavf_get_num_vlans_added - get number of VLANs added
-  * @adapter: board private structure
-  */
--static u16 iavf_get_num_vlans_added(struct iavf_adapter *adapter)
-+u16 iavf_get_num_vlans_added(struct iavf_adapter *adapter)
- {
- 	return bitmap_weight(adapter->vsi.active_cvlans, VLAN_N_VID) +
- 		bitmap_weight(adapter->vsi.active_svlans, VLAN_N_VID);
-@@ -906,11 +906,6 @@ static int iavf_vlan_rx_add_vid(struct net_device *netdev,
- 	if (!iavf_add_vlan(adapter, IAVF_VLAN(vid, be16_to_cpu(proto))))
- 		return -ENOMEM;
+@@ -2240,7 +2240,6 @@ int iavf_parse_vf_resource_msg(struct iavf_adapter *adapter)
  
--	if (proto == cpu_to_be16(ETH_P_8021Q))
--		set_bit(vid, adapter->vsi.active_cvlans);
--	else
--		set_bit(vid, adapter->vsi.active_svlans);
--
- 	return 0;
- }
+ 	adapter->vsi.back = adapter;
+ 	adapter->vsi.base_vector = 1;
+-	adapter->vsi.work_limit = IAVF_DEFAULT_IRQ_WORK;
+ 	vsi->netdev = adapter->netdev;
+ 	vsi->qs_handle = adapter->vsi_res->qset_handle;
+ 	if (adapter->vf_res->vf_cap_flags & VIRTCHNL_VF_OFFLOAD_RSS_PF) {
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index 978f651c6b09..7bf8c25dc824 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -194,7 +194,7 @@ static bool iavf_clean_tx_irq(struct iavf_vsi *vsi,
+ 	struct iavf_tx_buffer *tx_buf;
+ 	struct iavf_tx_desc *tx_desc;
+ 	unsigned int total_bytes = 0, total_packets = 0;
+-	unsigned int budget = vsi->work_limit;
++	unsigned int budget = IAVF_DEFAULT_IRQ_WORK;
  
-@@ -2956,6 +2951,9 @@ static void iavf_reset_task(struct work_struct *work)
- 	adapter->aq_required |= IAVF_FLAG_AQ_ADD_CLOUD_FILTER;
- 	iavf_misc_irq_enable(adapter);
- 
-+	bitmap_clear(adapter->vsi.active_cvlans, 0, VLAN_N_VID);
-+	bitmap_clear(adapter->vsi.active_svlans, 0, VLAN_N_VID);
-+
- 	mod_delayed_work(iavf_wq, &adapter->watchdog_task, 2);
- 
- 	/* We were running when the reset started, so we need to restore some
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 782450d5c12f..1603e99bae4a 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -626,6 +626,33 @@ static void iavf_mac_add_reject(struct iavf_adapter *adapter)
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- }
- 
-+/**
-+ * iavf_vlan_add_reject
-+ * @adapter: adapter structure
-+ *
-+ * Remove VLAN filters from list based on PF response.
-+ **/
-+static void iavf_vlan_add_reject(struct iavf_adapter *adapter)
-+{
-+	struct iavf_vlan_filter *f, *ftmp;
-+
-+	spin_lock_bh(&adapter->mac_vlan_list_lock);
-+	list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
-+		if (f->is_new_vlan) {
-+			if (f->vlan.tpid == ETH_P_8021Q)
-+				clear_bit(f->vlan.vid,
-+					  adapter->vsi.active_cvlans);
-+			else
-+				clear_bit(f->vlan.vid,
-+					  adapter->vsi.active_svlans);
-+
-+			list_del(&f->list);
-+			kfree(f);
-+		}
-+	}
-+	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+}
-+
- /**
-  * iavf_add_vlans
-  * @adapter: adapter structure
-@@ -683,6 +710,7 @@ void iavf_add_vlans(struct iavf_adapter *adapter)
- 				vvfl->vlan_id[i] = f->vlan.vid;
- 				i++;
- 				f->add = false;
-+				f->is_new_vlan = true;
- 				if (i == count)
- 					break;
- 			}
-@@ -695,10 +723,18 @@ void iavf_add_vlans(struct iavf_adapter *adapter)
- 		iavf_send_pf_msg(adapter, VIRTCHNL_OP_ADD_VLAN, (u8 *)vvfl, len);
- 		kfree(vvfl);
- 	} else {
-+		u16 max_vlans = adapter->vlan_v2_caps.filtering.max_filters;
-+		u16 current_vlans = iavf_get_num_vlans_added(adapter);
- 		struct virtchnl_vlan_filter_list_v2 *vvfl_v2;
- 
- 		adapter->current_op = VIRTCHNL_OP_ADD_VLAN_V2;
- 
-+		if ((count + current_vlans) > max_vlans &&
-+		    current_vlans < max_vlans) {
-+			count = max_vlans - iavf_get_num_vlans_added(adapter);
-+			more = true;
-+		}
-+
- 		len = sizeof(*vvfl_v2) + ((count - 1) *
- 					  sizeof(struct virtchnl_vlan_filter));
- 		if (len > IAVF_MAX_AQ_BUF_SIZE) {
-@@ -725,6 +761,9 @@ void iavf_add_vlans(struct iavf_adapter *adapter)
- 					&adapter->vlan_v2_caps.filtering.filtering_support;
- 				struct virtchnl_vlan *vlan;
- 
-+				if (i == count)
-+					break;
-+
- 				/* give priority over outer if it's enabled */
- 				if (filtering_support->outer)
- 					vlan = &vvfl_v2->filters[i].outer;
-@@ -736,8 +775,7 @@ void iavf_add_vlans(struct iavf_adapter *adapter)
- 
- 				i++;
- 				f->add = false;
--				if (i == count)
--					break;
-+				f->is_new_vlan = true;
- 			}
- 		}
- 
-@@ -2080,6 +2118,11 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 			 */
- 			iavf_netdev_features_vlan_strip_set(netdev, true);
- 			break;
-+		case VIRTCHNL_OP_ADD_VLAN_V2:
-+			iavf_vlan_add_reject(adapter);
-+			dev_warn(&adapter->pdev->dev, "Failed to add VLAN filter, error %s\n",
-+				 iavf_stat_str(&adapter->hw, v_retval));
-+			break;
- 		default:
- 			dev_err(&adapter->pdev->dev, "PF returned error %d (%s) to our request %d\n",
- 				v_retval, iavf_stat_str(&adapter->hw, v_retval),
-@@ -2332,6 +2375,24 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 		spin_unlock_bh(&adapter->adv_rss_lock);
- 		}
- 		break;
-+	case VIRTCHNL_OP_ADD_VLAN_V2: {
-+		struct iavf_vlan_filter *f;
-+
-+		spin_lock_bh(&adapter->mac_vlan_list_lock);
-+		list_for_each_entry(f, &adapter->vlan_filter_list, list) {
-+			if (f->is_new_vlan) {
-+				f->is_new_vlan = false;
-+				if (f->vlan.tpid == ETH_P_8021Q)
-+					set_bit(f->vlan.vid,
-+						adapter->vsi.active_cvlans);
-+				else
-+					set_bit(f->vlan.vid,
-+						adapter->vsi.active_svlans);
-+			}
-+		}
-+		spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+		}
-+		break;
- 	case VIRTCHNL_OP_ENABLE_VLAN_STRIPPING:
- 		/* PF enabled vlan strip on this VF.
- 		 * Update netdev->features if needed to be in sync with ethtool.
+ 	tx_buf = &tx_ring->tx_bi[i];
+ 	tx_desc = IAVF_TX_DESC(tx_ring, i);
 -- 
 2.35.1
 
