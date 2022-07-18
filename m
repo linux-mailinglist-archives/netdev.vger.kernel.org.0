@@ -2,104 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB704578152
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3357578155
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233646AbiGRLyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 07:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
+        id S234214AbiGRLzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 07:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiGRLyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:54:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D0962C1;
-        Mon, 18 Jul 2022 04:54:34 -0700 (PDT)
+        with ESMTP id S230182AbiGRLzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:55:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94A710FEE;
+        Mon, 18 Jul 2022 04:55:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B91636143D;
-        Mon, 18 Jul 2022 11:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90053C341C0;
-        Mon, 18 Jul 2022 11:54:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C63FB810F4;
+        Mon, 18 Jul 2022 11:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2576C341CB;
+        Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658145272;
-        bh=JO1/+51IzIqWlRVWa3wn637GFpPwLMpOLbdkHlx7z6s=;
+        s=k20201202; t=1658145299;
+        bh=JrABNSLBquy6UY/twSBJ4EF3aY/YoAKKA7YOdQp+hPI=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=LyhqHG+1nHgHhSWyS0qNHxtwg2KvdDfaLkocSe8qQpmPpduziHZ2lrRXhKkLOyq9r
-         DXnLHnYom0JqG0h1Kyx5UjCBFoE6Hil+1Bw4Ihe/CLl8/k3AJqnMdXnoGr14BRnKfa
-         3LGFydaAbvOfagpqm9rZEbVWcsWNEhqpWbzkEFaDvq0BocuJBw00UUajV4zhqENzbL
-         ijtdjZqzrZ/F4hDItOADXSFs6Cp1jtY1godjsymHtLIqRz2DzXCAuqiim95HV0y21w
-         fFslpygl9J3WkEBeU+qwUwk7qoBa1pH62ehtVrpOJvXNEIZJOmIclJ/6RaMNtBG7VX
-         uZAzVyGyQVq7w==
+        b=eU6hGtxN2gwE8ynRAS+EAHsjFJ0UwHP/GyZ0E3go6jkwxyG0Tup0InjkXZ8B13d3e
+         gp5yHkB2opoi+QEinmXKMPSfE2zVz1qt5xUXfPbsQh5wuI3lpf3s2fDAhORUqB7QH4
+         V+NdDDgRaI2AbkLOxWpwuU1tI1MHc3scPwJ80XfwJkoiCfh1nX8sjVbiD8u4DO4UuA
+         HzDtmebHfE2QLYWbKZDR8js3pxOMmNF7MOJ/wzRjbNDPp/6ggqTeZz01LJq2FbmONM
+         5ZOKs25SmINbrXvuogLcbo9AJD6ddUpdMQN2yjtacoJpZSSJPRTg9IX/cheKnKoUWV
+         thtAg6UXsDpnQ==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: wifi: mt7601u: fix clang -Wformat warning
+Subject: Re: [v2] wifi: p54: add missing parentheses in p54_flush()
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220711212932.1501592-1-justinstitt@google.com>
-References: <20220711212932.1501592-1-justinstitt@google.com>
-To:     Justin Stitt <justinstitt@google.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
-        "David S . Miller" <davem@davemloft.net>,
+In-Reply-To: <20220714134831.106004-1-subkhankulov@ispras.ru>
+References: <20220714134831.106004-1-subkhankulov@ispras.ru>
+To:     Rustam Subkhankulov <subkhankulov@ispras.ru>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Justin Stitt <justinstitt@google.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165814526751.17539.17204768341511432544.kvalo@kernel.org>
-Date:   Mon, 18 Jul 2022 11:54:29 +0000 (UTC)
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Message-ID: <165814529503.17539.8245171776508092662.kvalo@kernel.org>
+Date:   Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URI_DOTEDU autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Justin Stitt <justinstitt@google.com> wrote:
+Rustam Subkhankulov <subkhankulov@ispras.ru> wrote:
 
-> When building with Clang we encounter this warning:
-> | drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
-> | specifies type 'unsigned char' but the argument has type 'int'
-> | [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
+> The assignment of the value to the variable total in the loop
+> condition must be enclosed in additional parentheses, since otherwise,
+> in accordance with the precedence of the operators, the conjunction
+> will be performed first, and only then the assignment.
 > 
-> The format specifier used is `%hhu` which describes a u8. Both
-> `dev->ee->reg.start` and `.num` are u8 as well. However, the expression
-> as a whole is promoted to an int as you cannot get smaller-than-int from
-> addition. Therefore, to fix the warning, use the promoted-to-type's
-> format specifier -- in this case `%d`.
+> Due to this error, a warning later in the function after the loop may
+> not occur in the situation when it should.
 > 
-> example:
-> ```
-> uint8_t a = 4, b = 7;
-> int size = sizeof(a + b - 1);
-> printf("%d\n", size);
-> // output: 4
-> ```
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
 > 
-> See more:
-> (https://wiki.sei.cmu.edu/confluence/display/c/INT02-C.+Understand+integer+conversion+rules)
-> "Integer types smaller than int are promoted when an operation is
-> performed on them. If all values of the original type can be represented
-> as an int, the value of the smaller type is converted to an int;
-> otherwise, it is converted to an unsigned int."
-> 
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
-> Acked-by: Jakub Kicinski <kubakici@wp.pl>
+> Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+> Fixes: 0d4171e2153b ("p54: implement flush callback")
+> Acked-by: Christian Lamparter <chunkeey@gmail.com>
 
 Patch applied to wireless-next.git, thanks.
 
-68204a696505 wifi: mt7601u: fix clang -Wformat warning
+bcfd9d7f6840 wifi: p54: add missing parentheses in p54_flush()
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220711212932.1501592-1-justinstitt@google.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220714134831.106004-1-subkhankulov@ispras.ru/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
