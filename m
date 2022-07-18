@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D736A577FE4
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A98577FE5
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbiGRKkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        id S234338AbiGRKkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 06:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233435AbiGRKkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:40:14 -0400
+        with ESMTP id S234343AbiGRKkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:40:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A5A1E3CC
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:40:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D63D1EAF7
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9063B61147
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E9CC1C341CA;
-        Mon, 18 Jul 2022 10:40:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AD4E6113B
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A7F30C341CB;
+        Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658140813;
-        bh=EeKXZ6CcPVkLtdX1V9Ln6BwMwvbGoPwYHlkZCajCNJ8=;
+        s=k20201202; t=1658140816;
+        bh=vx1uimKd1W8vmr5mrvySSBVe2LYM3NKQHIZhdnmZ7EA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TBFQJ44emheuMue5Q3vr5PCUanER4SCc1fAP68JJnCA1IAlGw5iL5TnX+qQuUnjz+
-         4EE/e9D9S/7Jc7a4KXo5Bh+OWawYkXMOBTqF9Cx+nqyfpCE2xHHqVy1FUtvzEx2yHh
-         Jdq9DehfOsRbnBcmBGPGnvuQciyw6CzcxjaNRQo6WbGYy/3QvdVoaPnWMB76Ze0MDR
-         qcB+fuAQQuiXK5I9hI3q4RpQGf3bIoEfpO390bmPtgw/JDqdP5vtjzOg4EG4dDAH1r
-         bOqIkitKHRr97plFwdFNb/HtOpSVB6jo+kfDrwiGqH5q5O/MWEAlp45/2LRqsLlO7X
-         hmAxD6ZKagvng==
+        b=kiIoRzwPf2FhQPKple1eYskmtah+r1KUceCEsPoyueci/eI69dFKL2j0J4kx26VGm
+         +naBDijxm79eN1q9vz71vzK+C3BTS0Xvd6t2fqSmQa0g51zQ6nxvqRTK8T5nX+vTUn
+         WGdGHiC93rpk5jjhcCsXm+1ynoMpPLnzjj/fXcMAlo0XH8sdIA/eBastY1/J7JZYEC
+         aC6faXBW9VpLjCs/hQ2xuo6onMvIoqBqZi7hf1yHPWQzrqP0bD84EdMdWGWolpC0iK
+         zAHbYBBouQ/vFIZuDihQmwhRtRB4meFUnmWV+s7s+hk6gDI/zYnTLgIE0nxsI3A+qE
+         I3obijChFP09Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CBE25E451B0;
-        Mon, 18 Jul 2022 10:40:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 91443E451B0;
+        Mon, 18 Jul 2022 10:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: stmmac: fix dma queue left shift overflow issue
+Subject: Re: [PATCH net-next v2 00/11] tls: rx: avoid skb_cow_data()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165814081283.19605.8778988230924846190.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Jul 2022 10:40:12 +0000
-References: <20220715074701.194776-1-junxiao.chang@intel.com>
-In-Reply-To: <20220715074701.194776-1-junxiao.chang@intel.com>
-To:     Junxiao Chang <junxiao.chang@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, netdev@vger.kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mcoquelin.stm32@gmail.com, Joao.Pinto@synopsys.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, cedric@bytespeed.nl,
-        f.fainelli@gmail.com
+Message-Id: <165814081659.19605.1888713493982195445.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Jul 2022 10:40:16 +0000
+References: <20220715052235.1452170-1-kuba@kernel.org>
+In-Reply-To: <20220715052235.1452170-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, borisp@nvidia.com, john.fastabend@gmail.com,
+        maximmi@nvidia.com, tariqt@nvidia.com, vfedorenko@novek.ru
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,57 +58,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 15 Jul 2022 15:47:01 +0800 you wrote:
-> When queue number is > 4, left shift overflows due to 32 bits
-> integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
-> 
-> If CONFIG_UBSAN is enabled, kernel dumps below warning:
-> [   10.363842] ==================================================================
-> [   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
-> linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
-> [   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
-> [   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
-> [   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
-> [   10.363958] Call Trace:
-> [   10.363960]  <TASK>
-> [   10.363963]  dump_stack_lvl+0x4a/0x5f
-> [   10.363971]  dump_stack+0x10/0x12
-> [   10.363974]  ubsan_epilogue+0x9/0x45
-> [   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
-> [   10.363979]  ? wake_up_klogd+0x4a/0x50
-> [   10.363983]  ? vprintk_emit+0x8f/0x240
-> [   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
-> [   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
-> [   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
-> [   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
-> [   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
-> [   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
-> [   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
-> [   10.364050]  __dev_open+0xf0/0x1a0
-> [   10.364054]  __dev_change_flags+0x188/0x1f0
-> [   10.364057]  dev_change_flags+0x26/0x60
-> [   10.364059]  do_setlink+0x908/0xc40
-> [   10.364062]  ? do_setlink+0xb10/0xc40
-> [   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
-> [   10.364068]  __rtnl_newlink+0x597/0xa10
-> [   10.364072]  ? __nla_reserve+0x41/0x50
-> [   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
-> [   10.364079]  ? pskb_expand_head+0x75/0x310
-> [   10.364082]  ? nla_reserve_64bit+0x21/0x40
-> [   10.364086]  ? skb_free_head+0x65/0x80
-> [   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
-> [   10.364094]  ? __cond_resched+0x19/0x30
-> [   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
-> [   10.364100]  rtnl_newlink+0x49/0x70
+On Thu, 14 Jul 2022 22:22:24 -0700 you wrote:
+> TLS calls skb_cow_data() on the skb it received from strparser
+> whenever it needs to hold onto the skb with the decrypted data.
+> (The alternative being decrypting directly to a user space buffer
+> in whic case the input skb doesn't get modified or used after.)
+> TLS needs the decrypted skb:
+>  - almost always with TLS 1.3 (unless the new NoPad is enabled);
+>  - when user space buffer is too small to fit the record;
+>  - when BPF sockmap is enabled.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: stmmac: fix dma queue left shift overflow issue
-    https://git.kernel.org/netdev/net/c/613b065ca32e
+  - [net-next,v2,01/11] tls: rx: allow only one reader at a time
+    https://git.kernel.org/netdev/net-next/c/4cbc325ed6b4
+  - [net-next,v2,02/11] tls: rx: don't try to keep the skbs always on the list
+    https://git.kernel.org/netdev/net-next/c/008141de8557
+  - [net-next,v2,03/11] tls: rx: don't keep decrypted skbs on ctx->recv_pkt
+    https://git.kernel.org/netdev/net-next/c/abb47dc95dc6
+  - [net-next,v2,04/11] tls: rx: remove the message decrypted tracking
+    https://git.kernel.org/netdev/net-next/c/53d57999fe02
+  - [net-next,v2,05/11] tls: rx: factor out device darg update
+    https://git.kernel.org/netdev/net-next/c/8a958732818b
+  - [net-next,v2,06/11] tls: rx: read the input skb from ctx->recv_pkt
+    https://git.kernel.org/netdev/net-next/c/541cc48be3b1
+  - [net-next,v2,07/11] tls: rx: return the decrypted skb via darg
+    https://git.kernel.org/netdev/net-next/c/6bd116c8c654
+  - [net-next,v2,08/11] tls: rx: async: adjust record geometry immediately
+    https://git.kernel.org/netdev/net-next/c/6ececdc51369
+  - [net-next,v2,09/11] tls: rx: async: hold onto the input skb
+    https://git.kernel.org/netdev/net-next/c/c618db2afe7c
+  - [net-next,v2,10/11] tls: rx: async: don't put async zc on the list
+    https://git.kernel.org/netdev/net-next/c/cbbdee9918a2
+  - [net-next,v2,11/11] tls: rx: decrypt into a fresh skb
+    https://git.kernel.org/netdev/net-next/c/fd31f3996af2
 
 You are awesome, thank you!
 -- 
