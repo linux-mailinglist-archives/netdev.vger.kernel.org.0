@@ -2,224 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42F7578589
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 16:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB43257859B
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 16:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiGROfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 10:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
+        id S234247AbiGROgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 10:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233972AbiGROeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 10:34:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBD911172
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 07:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658154881; x=1689690881;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=KPjm0zOvN8tQfOISvl1qZ33o/RJSD5krV+VGhAf6ksI=;
-  b=vlApYTjysqFneYqEVM8OZzD1xvt6wGaz2DdZAhrdT5CAlXd31nSQypWC
-   xQMznvk7WUxBSFV+Z37JHY90zJUvwDaTm6pebRLlp0yR9KpLk+0gCpM9E
-   V3Tovuh/FePIix8EA0Aye31gxGsZnRWEn5fS1XnMxvwWT/nhUpbSnaYE8
-   Ioiyxx1gkx19qbQt4h1lBEfaKHYS+dCjDqqnXmtpHeQ8C2NhhUTKjpzpB
-   TH3xlOvW9dERiIL7QWHwF2Rrwc76XLm/Qq/dey7BULwnw1L8W0BNWw+io
-   9yFsIGxfWtOKZlnX84FMOZVXxbKcNs6FoBINmCar/wjbFrxctnxEgKmbd
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="104953925"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jul 2022 07:34:39 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 18 Jul 2022 07:34:39 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Mon, 18 Jul 2022 07:34:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IJcirW8y8pTA2DzrKJEmJLhPDOKgOk+/yubsTvFar9Sa4Lp5sAuiQGRfjjF6WAKKEb+Kk5uWrTdlA+x0Kuzr2oS3LitzL+DdYT4v88gCAv4+KLoVxI5yk4RHWUBRjXrPGPtiG5LUmGcVEqOcaDLL9kQPdsHFMYHSE2oiI0YXffNVwYVzowMGDmvvsll64PYWi/1zbHhnZmgfdNayunr/reV0Leki6w9beEOr6bZsZ6FKwzaSa5Zyl51c58goje+lovXYskPGz/tCmfSrux7J6cxz1mjsGYmCWBLsFEWpDTDqTSt42UZ4znTzSnNBYFQboxj/lsGSL+ejuE+d//3VNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KPjm0zOvN8tQfOISvl1qZ33o/RJSD5krV+VGhAf6ksI=;
- b=IOfKjJAm/Y1GhdkwPZmah0OqkdaYiLv0VpHTvQR5WHPA1EVWbk0yeuOhIucfXWIlN0FMOj1/QHIDR46k/aFrM4A/NI3plr+do9uqFjvpRgaiEKcmcc8DwDsSVyzDLrGtGIqT8GKtjaMtUzTmZfj3/0kKc04k01ijWh9Px+CbK0BjNxKpTVtZF5QiDqDjhkDMwyT9OxcLglI54xXO8iComitnoswjbhH2jtx3g4bz3G7htqfqXHAVpySNcc28pK37LnOdFZPpXTDlcseldEQ0i6VactgFY0/2JYrm1UO0QH2teodP/KEbTT3jNdh6KNQsg/WH2AGGWq27fWcF/AiCIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KPjm0zOvN8tQfOISvl1qZ33o/RJSD5krV+VGhAf6ksI=;
- b=tni8wEf+4CGy+I8Lo+MRb63Kj2sZ3RJQnuciqfCGRD9SYHxCTrqZE+7dTEAPorxtsWnRv+jD8/PtRz8JKvQTeXlsfQmamSn2NA9iWzrmarjNOOY2hOjw2TPlEe9uJCBTk7vnGw6ubm8zmq8EdUbanHgETGlRjlyPSrMnxCxyOno=
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
- MWHPR1101MB2303.namprd11.prod.outlook.com (2603:10b6:301:5b::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Mon, 18 Jul
- 2022 14:34:33 +0000
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0]) by DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0%6]) with mapi id 15.20.5438.014; Mon, 18 Jul 2022
- 14:34:33 +0000
-From:   <Arun.Ramadoss@microchip.com>
-To:     <vladimir.oltean@nxp.com>
-CC:     <claudiu.manoil@nxp.com>, <UNGLinuxDriver@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <vivien.didelot@gmail.com>,
-        <andrew@lunn.ch>, <idosch@nvidia.com>, <linux@rempel-privat.de>,
-        <petrm@nvidia.com>, <f.fainelli@gmail.com>, <hauke@hauke-m.de>,
-        <martin.blumenstingl@googlemail.com>, <xiaoliang.yang_1@nxp.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>,
-        <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Topic: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Index: AQHYkJVA+iLppAy/uE2cW1NrBQONVa1xiwcAgAADhICAADWVAIABvUGAgADAlICAACQggIAArH6AgAiqEgCAAEpdAIABMNoAgABliACABKhtgA==
-Date:   Mon, 18 Jul 2022 14:34:33 +0000
-Message-ID: <d7dc941bf816a6af97c84bdbb527bf9c0eb02730.camel@microchip.com>
-References: <CAFBinCC6qzJamGp=kNbvd8VBbMY2aqSj_uCEOLiUTdbnwxouxg@mail.gmail.com>
-         <20220706164552.odxhoyupwbmgvtv3@skbuf>
-         <CAFBinCBnYD59W3C+u_B6Y2GtLY1yS17711HAf049mstMF9_5eg@mail.gmail.com>
-         <20220707223116.xc2ua4sznjhe6yqz@skbuf>
-         <CAFBinCB74dYJOni8-vZ+hNH6Q6E4rmr5EHR_o5KQSGogJzBhFA@mail.gmail.com>
-         <20220708120950.54ga22nvy3ge5lio@skbuf>
-         <CAFBinCCnn-DTBYh-vBGpGBCfnsQ-kSGPM2brwpN3G4RZQKO-Ug@mail.gmail.com>
-         <f19a09b67d503fa149bd5a607a7fc880a980dccb.camel@microchip.com>
-         <20220714151210.himfkljfrho57v6e@skbuf>
-         <3527f7f04f97ff21f6243e14a97b342004600c06.camel@microchip.com>
-         <20220715152640.srkhncx3cqfcn2vc@skbuf>
-In-Reply-To: <20220715152640.srkhncx3cqfcn2vc@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0faeb120-a629-4dd9-876a-08da68caa1af
-x-ms-traffictypediagnostic: MWHPR1101MB2303:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yQ2Xh5DFD56ZZGCyEZMHknHkiJSYuJbJmACblAjM9Qky3IlaCyYlo3sW/BXtCvALsM2luLiwCxWnccMgzVaBnY8FhbCZfNJvuUDC7PMPaVWBv+MWx6Uk23Q6SHvZ4ht5j+2geAAj8KsAeNcUY6M8luqnUKP41V6xCZYze4rFVzY6I8uUQBhgWzw93MAkZwzDkWQpTNk5KxKLA2zmMNPn7faE2T+pPnTuWV1TaI9L5Bq2vPjuvdA5zH5qYZ6w5D7KumscWD/eFeDOyi/NxT+SnbFl3zDNuTfkZXxLsXNIOcx2RdAUjqapeDhGMFTi1/puCBjgv3GM8niB8vnInPA6HZb12pkhyBYsw1Zdyb6PMe/5Nm61YTYjLvY57SCAJvSvdqZmjwWmXi7QZM24pfiImoLVOhd3FK2uz8ITOc5OYs7fBZg6P/Hl+85XOuRipRLGdBzCE/lxDpazF7tg0nw43ZAB4oLgpX0hs9ckC6735RaAIocTYe1eclAwzb/j7ZHPJ8jLQ7W4SK+Upi/o2oGKuPiaCmhUaPnwhgGdXlMhg7vzBSHdElttdBuOgAG20NIznPhhnFx/pXmwpJM140zrVZquMpgEmb3IwFBJ88VIM1QwOGhR/iiZvXPY8oNbEY4ndx8A10/u1XtJPntuccM7/a7glc7x9kFgpuK5WGRpTZ2aQHslvaVFvE3sECHiOQ1q8UtvNT5easXrzXNw8FOM2U4lzK+JeQTxls/MEmt4Te9Lq4na0mlfcAVjvJbYAyu+sGw/3RsDissc5cb5VQE/cfTndAH0721Ae4WlJMV8qYHTFifz2uo0CZVBWz0HdJEfHpx5a2GSJMUczpq4QJTBaQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(366004)(346002)(396003)(376002)(136003)(66946007)(66556008)(76116006)(2616005)(64756008)(66446008)(6512007)(478600001)(66476007)(4326008)(8676002)(186003)(83380400001)(36756003)(6486002)(8936002)(6506007)(41300700001)(316002)(7416002)(38070700005)(71200400001)(122000001)(5660300002)(6916009)(2906002)(38100700002)(91956017)(54906003)(86362001)(99106002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NTBUYlhMS0JVTnJkSC8rbmNiZzluV1d2ejd3bUg5KzBQQWRiQjdNWHdoWlF2?=
- =?utf-8?B?WVl0bkZpWlQ0OTRVUXdkeVVIWnpRSWNpTHhkMWNwT1FMMFZNUFJ0QlJzWDdn?=
- =?utf-8?B?YVlsbVRhYUNsYkZkNDJ0cUpIMEJObWVkYmNpZW0rZkdXdFJ3cy9DaFZGZnFZ?=
- =?utf-8?B?MHNLWGhpVCtqd2h0QXFPbkhhQkN5RTFvU0pGQTNMWEllbE5vVlI4VWgvd0Zj?=
- =?utf-8?B?bGdOek9HbFAyVEtxSUVjM04zaWNXWmNWMlFWTFlUVE9Mc2lUWCsxZ3RvaXdH?=
- =?utf-8?B?QmNSQnE4OVhQdmRhazFoMWttb1JvQ2NUTFhqeERybzRtNGRoYVdxR1RHRVdj?=
- =?utf-8?B?cE52d0JTRlBFQ3pmREhCelBodkw2YVlqUytFbXJ0MUxNcllnOVRtOUVtaytN?=
- =?utf-8?B?dWdSYUFmeHdSVUNHZmtUSGNXRjNLNGdUUXd6ckFXdmtVcUZBVWdKbTZnemkr?=
- =?utf-8?B?MlpBZDJMQnpId1FlTkk4dkZ2WVRscDVabVlSQlpIK28veG9Ud3U3aE9oVzJ2?=
- =?utf-8?B?V3ppb1QvNVNaMlNhK1Y3UDJnMXpBTGoyc2lEQWxXbWpBYXgvd0JKQWxPNkZH?=
- =?utf-8?B?STMyWnp3WlExNXhCNHU3cHR6OFR3NnVncCsxemxpVHJFM2preW1jKzdWZzQv?=
- =?utf-8?B?M1F0c09hMGlQQjVNeCtmTEZzZjFqRDNRSzl4ZnowODRNQXZIS1d3OWtLbWRO?=
- =?utf-8?B?YlZ4V3F6dUMvNUpkSEtoYmM0ellHaWVOd3RzQmVjTU16TzNRTjM4RVV0QTFh?=
- =?utf-8?B?NloyaEdTTVE2SVAwOFNqbnVCeFpJbVNlZU5RenhjRGpZUVNSdWwwZnV1QjNU?=
- =?utf-8?B?MXJrcFhKaEJCMnVBZ2ZuaGM2azFxSEJsWUZucHZhR3Jzd0tHeHlpTVdTRUln?=
- =?utf-8?B?b1dvTHd3bEFoK2FnRmQrdmQrWkd0eEhZMzB6WnZMK2o5WTFQczBHeVpJUVRC?=
- =?utf-8?B?LzAwTGk3MVRDbUl0dVFIQmNDazh6RGMwRFM5QzFidVpVdHQxck55cVBIRWI5?=
- =?utf-8?B?ZTJmK3dtUFJYbnN1VnVLeVZWTk9pS05hTVRTbU8wSGo2MG9YK0lKVG5PRUt1?=
- =?utf-8?B?K3UrbVFkekd0MTRkRGdaSjJQeURkM2VacVJ3akh0YjdMdTl1dXNLOVhLb2hm?=
- =?utf-8?B?cUtEcGUzV1dlaTVXZWFyRHl4blV0MGtxNmNIL1phUFlpb3FMK2hkc3NVV1Vr?=
- =?utf-8?B?dk4zRVlLL0hRS2hxSjBVckVuWG9icEliTGFSSno2dnV3NXA4QWZ6R205WGJC?=
- =?utf-8?B?bFBZWWl5aFpRa1lmb1RyKzNSeXJMZHZjN0VUWC9WYUJuWGs2UnNGVEZ2ZzBi?=
- =?utf-8?B?NUVGMFZtdmZLVnU1bXZFSnlEOVR3UkowY1ZaY3NIUGdaOTZQeUZoM3hIV3hu?=
- =?utf-8?B?NDU3d2tMcENVelp0TXVudXNnV01xN2tMbnp6aFNhaHlrN29aVHltTE5vNXls?=
- =?utf-8?B?YW1xb0NzVGo5bHI3WU1IRzBmUlBEczQ1c014Z05DcDBnR3NZVEhLSWI2bFFG?=
- =?utf-8?B?Z0hxZm5tRTFaL3ErUW9LU1pwaDlqSmZWYUtJUlZXZzcxSk0xUklHZG1xeXlp?=
- =?utf-8?B?ZHRLdk5wSnErYjRlSjI5cnpsTFRpdm1qSmFvTEMyTXZ2TTIvNXRPMGR0SzRT?=
- =?utf-8?B?MUJZUW4zL1NoSEo5RUVnOWRGVjJ6Z3N3dDNjWjFNZnJtc0NEbHdKLy9MampI?=
- =?utf-8?B?cDVmWk5jRm1XMmltbjNRaCt1Y0E0cXZxVDVNMzhYajkveTZ4V1l6dTYzMmI2?=
- =?utf-8?B?STdjaUorOGFMV0YzZXBEOFo1azh4MU83ZFAvZXUxdnoydC9kZHVJSlRDTmJ6?=
- =?utf-8?B?WEI0RTBnQ0lHSmhvMHBsTG9vMDVOclg0TStKdktGNlM1eTBlYlVmUUpFNGJz?=
- =?utf-8?B?T2IvdlpaTm1xREpYczhsZzJaYXNTTzNweWNNdjR0azJUWVVtWTdVMmdWNGZD?=
- =?utf-8?B?ZjdFak5OUDlUbTM3bVE1aDJrblg5bzQxK2xpT3NURFBGSHh4ZG1KTEVqNTVQ?=
- =?utf-8?B?bWFZSi9yaVBpUkFJNHZLT0dtMTBpTFRscG96T3pnWndYTFMwOEVzanI1WURR?=
- =?utf-8?B?SWV1amROYWMxakV2bTVBNnREMXZpSXUzVnBEVmhCUjVjSGp6TU5lYjlQZWE5?=
- =?utf-8?B?RjZLUUJwYnNYL0ZqejQ1dTgzL2pvZkJ3cE5qZHlEZWI1bHVzRFE0VUZ2eGVU?=
- =?utf-8?B?cFFMdzVCNEh1eGNWRFgrZDZRYUhXbXEwNmRWdGwxT3YwMHllNDBoRy9KOVBh?=
- =?utf-8?Q?yEcGjZlpdYzRWC7WNSY1V7HH+1QwSbRApL8m06HqfQ=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <72BFF8F383F6C947AE1D7C419D53FD5A@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S234561AbiGROga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 10:36:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 510B81183F
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 07:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658154988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rFQMscdcwUkaTGb2PKaBiEdNVFGKZ4TJiBENKOnBRwk=;
+        b=aNeRvGo34Pr6uxgRcdw1yr3cFO3FGyIRdpH99AgztO4sNnVFO7HOnMH2wIxpzyxfg5z32y
+        ohzcGNcjApEhur7Nj3Rk0b4TkXIpvYWh8AHoh/uzGZ9Jt4po/gTp39GLnbyDyJ3iw/Zxg6
+        977Gujz8ZknQBBXTwixb9kJdMbNAQlc=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-320-aG1uS1IdOxqSAdv9ir_WUw-1; Mon, 18 Jul 2022 10:36:16 -0400
+X-MC-Unique: aG1uS1IdOxqSAdv9ir_WUw-1
+Received: by mail-pl1-f197.google.com with SMTP id d13-20020a170903230d00b0016c1efef9ecso6818537plh.6
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 07:36:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rFQMscdcwUkaTGb2PKaBiEdNVFGKZ4TJiBENKOnBRwk=;
+        b=jRQ6Wi6EXcfs4vFCGk/AjM7tABxGvXZtXhyFvmB8jBLYxercEdQwJR54Kna4+sMSfo
+         itagGTlt4AmQOKruZQNmo3HuXEfZHuH8Y0Rwc1lgfAVyB4fMbTHwI4Qydh1PnrMHu4bS
+         Y5MCVpU+Er6x8VHxfadMUFDbu2vetMJ97xmIzcMRQ3g7BFp8WNKkXTuxTCnHOWbvsZsY
+         YHr6GBXdc6tj9cwfCb+82hGNnP5RV7hX44zQkVBFE4VNq6DeMPW6wpUcMTNBy4WJN45j
+         aSx80Wvt8cfBjYtMh2F3E1/3y8vUVt8hSP1ZCyVe3BFVnZWf+ugBbC3a+DfvxCLKAnQm
+         XDRw==
+X-Gm-Message-State: AJIora/BLTnX4LGv5NDQxxJbu1YhBqTLGbnmoLV25BOGrzcGvzZn0D/E
+        lYs77ivB75Kgc0vEBhhmYEaciYcncbRAfFBuqSfFskgwXK9Vam9bRZ78jfaQhDryZjaNnUPlxn5
+        y31Tiew9IWRfyIYIe6LHvBQdIc54omxYL
+X-Received: by 2002:a17:90b:4a08:b0:1ef:f36b:18e1 with SMTP id kk8-20020a17090b4a0800b001eff36b18e1mr39392475pjb.246.1658154975485;
+        Mon, 18 Jul 2022 07:36:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uGK9T6cOVFp659SW1DdrZP3gQ+n6vI6T88el9GhA+lj4mOmIFGxU6jOUkfisaABLvRHaU8Fp6cYg+cPkG0fuk=
+X-Received: by 2002:a17:90b:4a08:b0:1ef:f36b:18e1 with SMTP id
+ kk8-20020a17090b4a0800b001eff36b18e1mr39392441pjb.246.1658154975155; Mon, 18
+ Jul 2022 07:36:15 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0faeb120-a629-4dd9-876a-08da68caa1af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2022 14:34:33.1195
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b61U11N5Cfdxi+8W4IszDH4wcHIL7Y0UX7yjjUI2uVENos3FEngeuAEU9rPzMMp8iAOcEuCIHZHHCmSnQQ4hYgF8Yl3tITZRzZdw39vRzFw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2303
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-6-benjamin.tissoires@redhat.com> <7fc49373-55df-c7fd-4a73-c2cf8a62748d@fb.com>
+In-Reply-To: <7fc49373-55df-c7fd-4a73-c2cf8a62748d@fb.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Mon, 18 Jul 2022 16:36:03 +0200
+Message-ID: <CAO-hwJKwX2LW8wuFzQbWm-ttwqocNBc-evgpn2An-D-92osw0Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 05/23] bpf/verifier: allow kfunc to return an
+ allocated mem
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmxhZGltaXIsDQoNCk9uIEZyaSwgMjAyMi0wNy0xNSBhdCAxNToyNiArMDAwMCwgVmxhZGlt
-aXIgT2x0ZWFuIHdyb3RlOg0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9y
-IG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUN
-Cj4gDQo+IE9uIEZyaSwgSnVsIDE1LCAyMDIyIGF0IDA5OjIzOjE5QU0gKzAwMDAsIEFydW4uUmFt
-YWRvc3NAbWljcm9jaGlwLmNvbQ0KPiAgd3JvdGU6DQo+ID4gSGkgVmxhZGltaXIsDQo+ID4gDQo+
-ID4gV2UgdHJpZWQgdGhlIGZvbGxvd2luZyB0ZXN0DQo+ID4gDQo+ID4gaXAgbGluayBzZXQgZGV2
-IGJyMCB0eXBlIGJyaWRnZSB2bGFuX2ZpbHRlcmluZyAwDQo+ID4gDQo+ID4gaXAgbGluayBzZXQg
-bGFuMSBtYXN0ZXIgYnIwDQo+ID4gaXAgbGluayBzZXQgbGFuMiBtYXN0ZXIgYnIwDQo+ID4gDQo+
-ID4gYnJpZGdlIHZsYW4gYWRkIHZpZCAxMCBkZXYgbGFuMSBwdmlkIHVudGFnZ2VkDQo+ID4gDQo+
-ID4gPT0+DQo+ID4gUGFja2V0IHRyYW5zbWl0dGVkIGZyb20gSG9zdDEgd2l0aCB2aWQgNSBpcyBu
-b3QgcmVjZWl2ZWQgYnkgdGhlDQo+ID4gSG9zdDINCj4gPiBQYWNrZXQgdHJhbnNtaXR0ZWQgZnJv
-bSBIb3N0MSB3aXRoIHZpZCAxMCBpcyBub3QgcmVjZWl2ZWQgYnkgdGhlDQo+ID4gSG9zdDINCj4g
-PiA9PT4NCj4gPiANCj4gPiBicmlkZ2UgdmxhbiBhZGQgdmlkIDEwIGRldiBsYW4yIHB2aWQgdW50
-YWdnZWQNCj4gPiANCj4gPiA9PT4NCj4gPiBQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0MSB3
-aXRoIHZpZCA1IGlzIHJlY2VpdmVkIGJ5IHRoZSBIb3N0Mg0KPiA+IFBhDQo+ID4gY2tldCB0cmFu
-c21pdHRlZCBmcm9tIEhvc3QxIHdpdGggdmlkIDEwIGlzIHJlY2VpdmVkIGJ5IHRoZSBIb3N0Mg0K
-PiA+ID09Pg0KPiA+IA0KPiA+IGJyaWRnZSB2bGFuIGRlbCB2aWQgMTAgZGV2IGxhbjINCj4gPiAN
-Cj4gPiA9PT4NCj4gPiBQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0MSB3aXRoIHZpZCA1IGlz
-IG5vdCByZWNlaXZlZCBieSB0aGUNCj4gPiBIb3N0Mg0KPiA+IFBhY2tldCB0cmFuc21pdHRlZCBm
-cm9tIEhvc3QxIHdpdGggdmlkIDEwIGlzIG5vdCByZWNlaXZlZCBieSB0aGUNCj4gPiBIb3N0Mg0K
-PiA+ID09Pg0KPiA+IA0KPiA+IFRyaWVkIHRoaXMgdGVzdCBiZWZvcmUgYW5kIGFmdGVyIGFwcGx5
-aW5nIHRoaXMgcGF0Y2ggc2VyaWVzLiBBbmQNCj4gPiBnb3QNCj4gPiB0aGUgc2FtZSByZXN1bHQu
-DQo+ID4gDQo+ID4gSW4gc3VtbWFyeSwgcGFja2V0cyBhcmUgZHJvcHBlZCB3aGVuIHB2aWQgaXMg
-YWRkZWQgdG8gdmxhbiB1bmF3YXJlDQo+ID4gYnJpZGdlLiBMZXQgbWUga25vdyBpZiBhbnl0aGlu
-ZyBuZWVkIHRvIHBlcmZvcm1lZCBvbiB0aGlzLg0KPiANCj4gSSdtIG5vdCBzdXJwcmlzZWQgdGhh
-dCBmb3J3YXJkaW5nIGlzIGJyb2tlbiBhZnRlciByZW1vdmluZw0KPiAiZHMtPmNvbmZpZ3VyZV92
-bGFuX3doaWxlX25vdF9maWx0ZXJpbmcgPSBmYWxzZSIsIGJ1dCBJJ20gc3VycHJpc2VkDQo+IHRo
-YXQNCj4gaXQncyBicm9rZW4gZXZlbiB3aXRob3V0IHRoZSBjaGFuZ2UuIFRoYXQgc3VnZ2VzdHMg
-dGhhdCBlaXRoZXIgdGhlDQo+IGZsYWcNCj4gd2Fzbid0IGVmZmVjdGl2ZSBpbiB0aGUgZmlyc3Qg
-cGxhY2UsIG9yIHRoYXQgdGhlIGJyZWFrYWdlIGlzIGNhdXNlZA0KPiBieQ0KPiBvdGhlciBjb2Rl
-IHBhdGhzIChub3Qgc3VyZSB3aGljaCkuDQo+IA0KPiBEbyB5b3UgZ2V0IHRoZSAic2tpcHBpbmcg
-Y29uZmlndXJhdGlvbiBvZiBWTEFOIiB3YXJuaW5nIGV4dGFjayB3aGVuDQo+IHlvdQ0KPiBydW4g
-dGhlICJicmlkZ2UgdmxhbiBhZGQiIGNvbW1hbmQgd2l0aG91dCB0aGUgcGF0Y2hlcyBoZXJlPyBE
-b2VzDQo+IGtzel9wb3J0X3ZsYW5fYWRkKCkgZ2V0IGNhbGxlZCBhdCBhbGwgd2l0aCBWSUQgMTA/
-DQoNClRoZXJlIHdhcyBhIG1pc3Rha2UgaW4gb3VyIHRlc3Rpbmcgb24gdGhlIGxhdGVzdCBjb2Rl
-IGJhc2Ugb2YgbmV0LW5leHQuIA0KVG9kYXkgd2UgdHJpZWQgaW4gdGhlIGxhdGVzdCBuZXQtbmV4
-dCBhbmQgZm9sbG93aW5nIGFyZSB0aGUNCm9ic2VydmF0aW9uLg0KDQpTY2VuYXJpbyAxOiBCZWZv
-cmUgYXBwbHlpbmcgdGhlIHBhdGNoDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCmlw
-IGxpbmsgc2V0IGRldiBicjAgdHlwZSBicmlkZ2Ugdmxhbl9maWx0ZXJpbmcgMA0KDQpicmlkZ2Ug
-dmxhbiBhZGQgdmlkIDEwIGRldiBsYW4xIHB2aWQgdW50YWdnZWQNCmJyaWRnZSB2bGFuIGFkZCB2
-aWQgMTAgZGV2IGxhbjIgcHZpZCB1bnRhZ2dlZA0KDQpXZSBnb3Qgd2FybmluZyBza2lwcGluZyBj
-b25maWd1cmF0aW9uIG9mIFZMQU4gYW5kIGtzel9wb3J0X3ZsYW5fYWRkKCkNCmlzIG5vdCBjYWxs
-ZWQuDQoNClBhY2tldCBpcyByZWNlaXZlZCBpbiBIb3N0MiB3aGVuIHRyYW5zbWl0dGVkIGZyb20g
-SG9zdDEuIFNvIHRoZXJlIGlzIG5vDQpicmVha2FnZSBpbiB0aGUgZm9yd2FyZGluZy4NCg0KU2Nl
-bmFyaW8gMjogQWZ0ZXIgYXBwbHlpbmcgdGhlIHBhdGNoDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tDQppcCBsaW5rIHNldCBkZXYgYnIwIHR5cGUgYnJpZGdlIHZsYW5fZmlsdGVyaW5nIDAN
-Cg0KYnJpZGdlIHZsYW4gYWRkIHZpZCAxMCBkZXYgbGFuMSBwdmlkIHVudGFnZ2VkDQoNCi0tPiBQ
-YWNrZXQgaXMgbm90IHJlY2VpdmVkIGluIHRoZSBIb3N0Mg0KDQpicmlkZ2UgdmxhbiBhZGQgdmlk
-IDEwIGRldiBsYW4yIHB2aWQgdW50YWdnZWQNCg0KLS0+IHBhY2tldCBpcyByZWNlaXZlZCBpbiB0
-aGUgSG9zdDINCg0KYnJpZGdlIHZsYW4gZGVsIHZpZCAxMCBkZXYgbGFuMQ0KDQotLT4gcGFja2V0
-IGlzIHJlY2VpdmVkIGluIHRoZSBIb3N0Mg0KDQpicmlkZ2UgdmxhbiBkZWwgdmlkIDEwIGRldiBs
-YW4yDQoNCi0tPiBwYWNrZXQgaXMgcmVjZWl2ZWQgaW4gdGhlIEhvc3QyDQoNCiAqIExldCB1cyBr
-bm93LCBkbyB3ZSBuZWVkIHRvIHRlc3QgYW55dGhpbmcgZnVydGhlciBvbiB0aGlzLg0KDQpUaGFu
-a3MNCkFydW4gDQoNCg0KDQo=
+On Sat, Jul 16, 2022 at 6:29 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 7/12/22 7:58 AM, Benjamin Tissoires wrote:
+> > When a kfunc is not returning a pointer to a struct but to a plain type,
+> > we can consider it is a valid allocated memory assuming that:
+> > - one of the arguments is either called rdonly_buf_size or
+> >    rdwr_buf_size
+> > - and this argument is a const from the caller point of view
+> >
+> > We can then use this parameter as the size of the allocated memory.
+> >
+> > The memory is either read-only or read-write based on the name
+> > of the size parameter.
+>
+> If I understand correctly, this permits a kfunc like
+>     int *kfunc(..., int rdonly_buf_size);
+>     ...
+>     int *p = kfunc(..., 20);
+> so the 'p' points to a memory buffer with size 20.
+
+Yes, exactly.
+
+>
+> This looks like a strange interface although probably there
+> is a valid reason for this as I didn't participated in
+> earlier discussions.
+
+Well, the point is I need to be able to access a memory region that
+was allocated dynamically. For drivers, the incoming data can not
+usually be bound to a static value, and so we can not have the data
+statically defined in the matching struct.
+So this allows defining a kfunc to return any memory properly
+allocated and owned by the device.
+
+>
+> >
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > changes in v6:
+> > - code review from Kartikeya:
+> >    - remove comment change that had no reasons to be
+> >    - remove handling of PTR_TO_MEM with kfunc releases
+> >    - introduce struct bpf_kfunc_arg_meta
+> >    - do rdonly/rdwr_buf_size check in btf_check_kfunc_arg_match
+> >    - reverted most of the changes in verifier.c
+> >    - make sure kfunc acquire is using a struct pointer, not just a plain
+> >      pointer
+> >    - also forward ref_obj_id to PTR_TO_MEM in kfunc to not use after free
+> >      the allocated memory
+> >
+> > changes in v5:
+> > - updated PTR_TO_MEM comment in btf.c to match upstream
+> > - make it read-only or read-write based on the name of size
+> >
+> > new in v4
+> > ---
+> >   include/linux/bpf.h   | 10 ++++++-
+> >   include/linux/btf.h   | 12 ++++++++
+> >   kernel/bpf/btf.c      | 67 ++++++++++++++++++++++++++++++++++++++++---
+> >   kernel/bpf/verifier.c | 49 +++++++++++++++++++++++--------
+> >   4 files changed, 121 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 2b21f2a3452f..5b8eadb6e7bc 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1916,12 +1916,20 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+> >                          const char *func_name,
+> >                          struct btf_func_model *m);
+> >
+> > +struct bpf_kfunc_arg_meta {
+> > +     u64 r0_size;
+> > +     bool r0_rdonly;
+> > +     int ref_obj_id;
+> > +     bool multiple_ref_obj_id;
+> > +};
+> > +
+> >   struct bpf_reg_state;
+> >   int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+> >                               struct bpf_reg_state *regs);
+> >   int btf_check_kfunc_arg_match(struct bpf_verifier_env *env,
+> >                             const struct btf *btf, u32 func_id,
+> > -                           struct bpf_reg_state *regs);
+> > +                           struct bpf_reg_state *regs,
+> > +                           struct bpf_kfunc_arg_meta *meta);
+> >   int btf_prepare_func_args(struct bpf_verifier_env *env, int subprog,
+> >                         struct bpf_reg_state *reg);
+> >   int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
+> > diff --git a/include/linux/btf.h b/include/linux/btf.h
+> > index 1bfed7fa0428..31da4273c2ec 100644
+> > --- a/include/linux/btf.h
+> > +++ b/include/linux/btf.h
+> > @@ -420,4 +420,16 @@ static inline int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dt
+> >   }
+> >   #endif
+> >
+> > +static inline bool btf_type_is_struct_ptr(struct btf *btf, const struct btf_type *t)
+> > +{
+> > +     /* t comes in already as a pointer */
+> > +     t = btf_type_by_id(btf, t->type);
+> > +
+> > +     /* allow const */
+> > +     if (BTF_INFO_KIND(t->info) == BTF_KIND_CONST)
+> > +             t = btf_type_by_id(btf, t->type);
+> > +
+> > +     return btf_type_is_struct(t);
+> > +}
+> > +
+> >   #endif
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 4423045b8ff3..552d7bc05a0c 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -6168,10 +6168,36 @@ static bool is_kfunc_arg_mem_size(const struct btf *btf,
+> >       return true;
+> >   }
+> >
+> > +static bool btf_is_kfunc_arg_mem_size(const struct btf *btf,
+> > +                                   const struct btf_param *arg,
+> > +                                   const struct bpf_reg_state *reg,
+> > +                                   const char *name)
+> > +{
+> > +     int len, target_len = strlen(name);
+> > +     const struct btf_type *t;
+> > +     const char *param_name;
+> > +
+> > +     t = btf_type_skip_modifiers(btf, arg->type, NULL);
+> > +     if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
+> > +             return false;
+> > +
+> > +     param_name = btf_name_by_offset(btf, arg->name_off);
+> > +     if (str_is_empty(param_name))
+> > +             return false;
+> > +     len = strlen(param_name);
+> > +     if (len != target_len)
+> > +             return false;
+> > +     if (strncmp(param_name, name, target_len))
+>
+> strcmp(param_name, name) is enough. len == target_len and both len and
+> target_len is computed from strlen(...).
+
+Ack, fixed locally
+
+>
+> > +             return false;
+> > +
+> > +     return true;
+> > +}
+> > +
+> >   static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+> >                                   const struct btf *btf, u32 func_id,
+> >                                   struct bpf_reg_state *regs,
+> > -                                 bool ptr_to_mem_ok)
+> > +                                 bool ptr_to_mem_ok,
+> > +                                 struct bpf_kfunc_arg_meta *kfunc_meta)
+> >   {
+> >       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+> >       struct bpf_verifier_log *log = &env->log;
+> > @@ -6225,6 +6251,30 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+> >
+> >               t = btf_type_skip_modifiers(btf, args[i].type, NULL);
+> >               if (btf_type_is_scalar(t)) {
+> > +                     if (is_kfunc && kfunc_meta) {
+> > +                             bool is_buf_size = false;
+> > +
+> > +                             /* check for any const scalar parameter of name "rdonly_buf_size"
+> > +                              * or "rdwr_buf_size"
+> > +                              */
+> > +                             if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
+> > +                                                           "rdonly_buf_size")) {
+> > +                                     kfunc_meta->r0_rdonly = true;
+> > +                                     is_buf_size = true;
+> > +                             } else if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
+> > +                                                                  "rdwr_buf_size"))
+> > +                                     is_buf_size = true;
+> > +
+> > +                             if (is_buf_size) {
+> > +                                     if (kfunc_meta->r0_size) {
+> > +                                             bpf_log(log, "2 or more rdonly/rdwr_buf_size parameters for kfunc");
+> > +                                             return -EINVAL;
+> > +                                     }
+> > +
+> > +                                     kfunc_meta->r0_size = reg->var_off.value;
+>
+> Did we check 'reg' is a constant somewhere?
+
+I used to check for it in the previous version, but I think it got
+dropped in this revision. Re-adding this thanks to Kumar's help :)
+
+Cheers,
+Benjamin
+
+>
+> > +                             }
+> > +                     }
+> > +
+> >                       if (reg->type == SCALAR_VALUE)
+> >                               continue;
+> >                       bpf_log(log, "R%d is not a scalar\n", regno);
+> > @@ -6246,6 +6296,14 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+> >               if (ret < 0)
+> >                       return ret;
+> >
+> > +             /* kptr_get is only valid for kfunc */
+> > +             if (kfunc_meta && reg->ref_obj_id) {
+> > +                     /* check for any one ref_obj_id to keep track of memory */
+> > +                     if (kfunc_meta->ref_obj_id)
+> > +                             kfunc_meta->multiple_ref_obj_id = true;
+> > +                     kfunc_meta->ref_obj_id = reg->ref_obj_id;
+> > +             }
+> > +
+> >               /* kptr_get is only true for kfunc */
+> >               if (i == 0 && kptr_get) {
+> >                       struct bpf_map_value_off_desc *off_desc;
+> > @@ -6441,7 +6499,7 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+> >               return -EINVAL;
+> >
+> >       is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
+> > -     err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global);
+> > +     err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, NULL);
+> >
+> >       /* Compiler optimizations can remove arguments from static functions
+> >        * or mismatched type can be passed into a global function.
+> [...]
+>
+
