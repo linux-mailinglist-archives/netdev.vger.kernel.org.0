@@ -2,323 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 029955785C0
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 16:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E865785F5
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 17:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234222AbiGROtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 10:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S234794AbiGRPBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 11:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGROtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 10:49:42 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A715ADF88
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 07:49:41 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id f1so318683ilu.3
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 07:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WKnM3En4X1e6GlNcjgP6llkg24rxYaIi7UNj1me+FNU=;
-        b=PAXD+j3ApkTx4GIpEJfWiHBRR0WKpxowpc8xV1I93FPGyPqltWWVF3o0E7jZaL+bLF
-         TUCA0DSo07zc8DukHtrefvi5bccpxviPl8G7qVsvSFRcWd25zHb5jRrViN/nxGHzmAbp
-         EW2u4F5fW4bJ3YhP+JZuPea+JlcoyGy2g32UZVi0eQm0NkANjmM7uOIxsCLyvGr0x/wu
-         46eetzSH1EECPokijKEajL/iPNnlv4Kyuc86PK8vF77/YaSorWDHrTiXg1TTdXS537/1
-         xmP0wrNgga0BGYjx7BNUxmn7eA1cE6lyXIyn1o61elRHYvCnQiCzCCh6IC7aHLr3bXIW
-         WFgQ==
+        with ESMTP id S234659AbiGRPBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 11:01:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C62A522BF8
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658156479;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BHSes/WjwsThp6weFkYaeDkMyMfx1ODvuk7pSgKJJmg=;
+        b=imZr2qs9I94ilr1c70sZGxZM5tpsejJbvYYZzf41FWMGotFkMqFy0sTa0ky5r1jUnO9HAj
+        TKEPR+D5LiqYPtf6vccnuJxqYNVXdPGAFJ6g6ScpUpQr1eGuKeiCHbHgMgUduEjyJZzQ02
+        XxWW3OH4dk9rIVYfjSQnrp2yD6QgHXA=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-575-RuPCvn3HMM28yVn8WQCmiw-1; Mon, 18 Jul 2022 11:01:18 -0400
+X-MC-Unique: RuPCvn3HMM28yVn8WQCmiw-1
+Received: by mail-qv1-f71.google.com with SMTP id eb3-20020ad44e43000000b00472e7d52ce6so5648304qvb.17
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:01:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WKnM3En4X1e6GlNcjgP6llkg24rxYaIi7UNj1me+FNU=;
-        b=H1UxeZH7zE3GgaGlqGbgHkBCXwmiJxMYW1ZHQJC0NHNFk+nbfDYmXwq1g/vY7UIVq2
-         FfB8lxVLpXc035mN/FfEy/MZms6GXgW3igapmgj07R13uHHFH9dUHR+lZyVe8LPSwZ11
-         y1guiAEASiLrNjxlM7hMH90KDKWXIlZzXxOzFvroDJSAh4r6kAiEkgx6a0mmgY6Qq/Ll
-         6kpv7WdTqnaN7jGamNiG0/GRfKBmPQvPTnc9wOCThCMmScdpuu9cgENLJXGCXPemSej0
-         M7ktpOfzqXhtxZroEiqG5qV6+b4c3QqeyFsTVvlLNZbgiIwmxnXkUH2JT773VQTe84Xw
-         szBw==
-X-Gm-Message-State: AJIora9mBGR+jgx7F5v9N2tiCJjMddW+oYOVELmZJ39Qm01xUKNVRvrg
-        y9Wts9EpUXPklVWg+zJL607wbba2tHY=
-X-Google-Smtp-Source: AGRyM1sfp8OAOS4nalrQ/K23dg4olA5OJp5Ffp7eLhLRBAI/CWl9iu8rbwet9RhagUIjA+DVAKwj5Q==
-X-Received: by 2002:a05:6e02:1be9:b0:2dc:68b5:4c55 with SMTP id y9-20020a056e021be900b002dc68b54c55mr13502503ilv.93.1658155780987;
-        Mon, 18 Jul 2022 07:49:40 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:a884:659b:a795:3b16? ([2601:282:800:dc80:a884:659b:a795:3b16])
-        by smtp.googlemail.com with ESMTPSA id d6-20020a92d5c6000000b002dc0ddef9cfsm4831938ilq.73.2022.07.18.07.49.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 07:49:40 -0700 (PDT)
-Message-ID: <3e9b7274-7741-1b12-bfb1-db1bb8ae2c4e@gmail.com>
-Date:   Mon, 18 Jul 2022 08:49:39 -0600
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=BHSes/WjwsThp6weFkYaeDkMyMfx1ODvuk7pSgKJJmg=;
+        b=avLMoXW6xbfsnEQ4Jstf5hrlEzHfqEtdoCHjP5QzAxc2fnUOTSdR0fekGw5kJG5goz
+         SaiR5XcmWIJo3ieN3IDpAmGd9ff5x2o5CEBd+9sk59MZTx3b+jJHtOTLqstXyLUN5PKe
+         wA+6QUIerjRL/6YT0hPJM3qwLQpQIlgObt7/kl9Cl6k1mnArfgFotf7laTftqMDrD2Mg
+         /G79H5ThjwZq6j7FDJbjznP9LNdsDg4ytxp+0q7qbll+8fPsRfp6wBA1xUvU/sP/y6MP
+         nWe929XDvr+nBR83Ak4zx4OelEeoNwwCVyEn/goowM7YSbOToITp9pyNfgW6vOMi0GQz
+         msjA==
+X-Gm-Message-State: AJIora+z9Mds6F1DnvG1S04h+zFRfsCFuuVkSIMiraU7RxfMOSJ/y2pw
+        moM8iNpLd9Qc+Q2qWDefEf73vh9lfCLjV7r3GoDq1e722adwVFR/tJMLiYDpOOanV8fF7/3KoKL
+        gAEHoFAcz0Xcv0oxw
+X-Received: by 2002:ae9:ddc2:0:b0:6b5:b33f:a2df with SMTP id r185-20020ae9ddc2000000b006b5b33fa2dfmr17296183qkf.746.1658156475901;
+        Mon, 18 Jul 2022 08:01:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1umRLZVDb3ZR7Qr+fEk3G0gl72mYlrC9SQxx4k22xI0jiZYmZ85s99d6wy0jP2FwrCpbTH/Mg==
+X-Received: by 2002:ae9:ddc2:0:b0:6b5:b33f:a2df with SMTP id r185-20020ae9ddc2000000b006b5b33fa2dfmr17296020qkf.746.1658156474064;
+        Mon, 18 Jul 2022 08:01:14 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id bk34-20020a05620a1a2200b006af1f0af045sm11135611qkb.107.2022.07.18.08.01.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 08:01:13 -0700 (PDT)
+Message-ID: <26265e62a3ed1d5fd8f588a043c2da5a09378021.camel@redhat.com>
+Subject: Re: [mptcp]  d24141fe7b:
+ WARNING:at_mm/page_counter.c:#page_counter_cancel
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        netdev@vger.kernel.org, mptcp@lists.linux.dev, lkp@lists.01.org,
+        lkp@intel.com
+Date:   Mon, 18 Jul 2022 17:01:09 +0200
+In-Reply-To: <YtVhyGSsv1CWvPz4@xsang-OptiPlex-9020>
+References: <YtVhyGSsv1CWvPz4@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute2-next 1/2] lib: Introduce ppp protocols
-Content-Language: en-US
-To:     Wojciech Drewek <wojciech.drewek@intel.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <20220714082522.54913-1-wojciech.drewek@intel.com>
- <20220714082522.54913-2-wojciech.drewek@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220714082522.54913-2-wojciech.drewek@intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/22 2:25 AM, Wojciech Drewek wrote:
-> diff --git a/include/rt_names.h b/include/rt_names.h
-> index 1835f3be2bed..6358650db404 100644
-> --- a/include/rt_names.h
-> +++ b/include/rt_names.h
-> @@ -31,6 +31,9 @@ int ll_addr_a2n(char *lladdr, int len, const char *arg);
->  const char * ll_proto_n2a(unsigned short id, char *buf, int len);
->  int ll_proto_a2n(unsigned short *id, const char *buf);
->  
-> +const char *ppp_proto_n2a(unsigned short id, char *buf, int len);
-> +int ppp_proto_a2n(unsigned short *id, const char *buf);
-> +
->  const char *nl_proto_n2a(int id, char *buf, int len);
->  int nl_proto_a2n(__u32 *id, const char *arg);
->  
-> diff --git a/include/uapi/linux/ppp_defs.h b/include/uapi/linux/ppp_defs.h
-> new file mode 100644
-> index 000000000000..0013dc77e3b9
-> --- /dev/null
-> +++ b/include/uapi/linux/ppp_defs.h
-> @@ -0,0 +1,37 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/*
-> + * ppp_defs.h - PPP definitions.
-> + *
-> + * Copyright 1994-2000 Paul Mackerras.
-> + *
-> + *  This program is free software; you can redistribute it and/or
-> + *  modify it under the terms of the GNU General Public License
-> + *  version 2 as published by the Free Software Foundation.
-> + */
-> +
-> +/*
-> + * Protocol field values.
-> + */
-> +#define PPP_IP		0x21	/* Internet Protocol */
-> +#define PPP_AT		0x29	/* AppleTalk Protocol */
-> +#define PPP_IPX		0x2b	/* IPX protocol */
-> +#define	PPP_VJC_COMP	0x2d	/* VJ compressed TCP */
-> +#define	PPP_VJC_UNCOMP	0x2f	/* VJ uncompressed TCP */
-> +#define PPP_MP		0x3d	/* Multilink protocol */
-> +#define PPP_IPV6	0x57	/* Internet Protocol Version 6 */
-> +#define PPP_COMPFRAG	0xfb	/* fragment compressed below bundle */
-> +#define PPP_COMP	0xfd	/* compressed packet */
-> +#define PPP_MPLS_UC	0x0281	/* Multi Protocol Label Switching - Unicast */
-> +#define PPP_MPLS_MC	0x0283	/* Multi Protocol Label Switching - Multicast */
-> +#define PPP_IPCP	0x8021	/* IP Control Protocol */
-> +#define PPP_ATCP	0x8029	/* AppleTalk Control Protocol */
-> +#define PPP_IPXCP	0x802b	/* IPX Control Protocol */
-> +#define PPP_IPV6CP	0x8057	/* IPv6 Control Protocol */
-> +#define PPP_CCPFRAG	0x80fb	/* CCP at link level (below MP bundle) */
-> +#define PPP_CCP		0x80fd	/* Compression Control Protocol */
-> +#define PPP_MPLSCP	0x80fd	/* MPLS Control Protocol */
-> +#define PPP_LCP		0xc021	/* Link Control Protocol */
-> +#define PPP_PAP		0xc023	/* Password Authentication Protocol */
-> +#define PPP_LQR		0xc025	/* Link Quality Report protocol */
-> +#define PPP_CHAP	0xc223	/* Cryptographic Handshake Auth. Protocol */
-> +#define PPP_CBCP	0xc029	/* Callback Control Protocol */
-> diff --git a/include/utils.h b/include/utils.h
-> index 9765fdd231df..0c9022760916 100644
-> --- a/include/utils.h
-> +++ b/include/utils.h
-> @@ -369,4 +369,14 @@ void inc_indent(struct indent_mem *mem);
->  void dec_indent(struct indent_mem *mem);
->  void print_indent(struct indent_mem *mem);
->  
-> +struct proto {
-> +	int id;
-> +	const char *name;
-> +};
-> +
-> +int __proto_a2n(unsigned short *id, const char *buf,
-> +		const struct proto *proto_tb, size_t tb_len);
-> +const char *__proto_n2a(unsigned short id, char *buf, int len,
-> +			const struct proto *proto_tb, size_t tb_len);
-> +
->  #endif /* __UTILS_H__ */
-> diff --git a/lib/Makefile b/lib/Makefile
-> index 6c98f9a61fdb..ddedd37feb32 100644
-> --- a/lib/Makefile
-> +++ b/lib/Makefile
-> @@ -5,7 +5,7 @@ CFLAGS += -fPIC
->  
->  UTILOBJ = utils.o utils_math.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
->  	inet_proto.o namespace.o json_writer.o json_print.o json_print_math.o \
-> -	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o
-> +	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o ppp_proto.o
->  
->  ifeq ($(HAVE_ELF),y)
->  ifeq ($(HAVE_LIBBPF),y)
-> diff --git a/lib/ll_proto.c b/lib/ll_proto.c
-> index 342ea2eefa4c..f067516cde9e 100644
-> --- a/lib/ll_proto.c
-> +++ b/lib/ll_proto.c
-> @@ -28,10 +28,8 @@
->  
->  
->  #define __PF(f,n) { ETH_P_##f, #n },
-> -static const struct {
-> -	int id;
-> -	const char *name;
-> -} llproto_names[] = {
-> +
-> +static const struct proto llproto_names[] = {
->  __PF(LOOP,loop)
->  __PF(PUP,pup)
->  __PF(PUPAT,pupat)
-> @@ -90,31 +88,16 @@ __PF(TEB,teb)
->  };
->  #undef __PF
->  
-> -
-> -const char * ll_proto_n2a(unsigned short id, char *buf, int len)
-> +const char *ll_proto_n2a(unsigned short id, char *buf, int len)
->  {
-> -        int i;
-> +	size_t len_tb = ARRAY_SIZE(llproto_names);
->  
-> -	id = ntohs(id);
-> -
-> -        for (i=0; !numeric && i<sizeof(llproto_names)/sizeof(llproto_names[0]); i++) {
-> -                 if (llproto_names[i].id == id)
-> -			return llproto_names[i].name;
-> -	}
-> -        snprintf(buf, len, "[%d]", id);
-> -        return buf;
-> +	return __proto_n2a(id, buf, len, llproto_names, len_tb);
->  }
->  
->  int ll_proto_a2n(unsigned short *id, const char *buf)
->  {
-> -        int i;
-> -        for (i=0; i < sizeof(llproto_names)/sizeof(llproto_names[0]); i++) {
-> -                 if (strcasecmp(llproto_names[i].name, buf) == 0) {
-> -			 *id = htons(llproto_names[i].id);
-> -			 return 0;
-> -		 }
-> -	}
-> -	if (get_be16(id, buf, 0))
-> -		return -1;
-> -	return 0;
-> +	size_t len_tb = ARRAY_SIZE(llproto_names);
-> +
-> +	return __proto_a2n(id, buf, llproto_names, len_tb);
->  }
-> diff --git a/lib/ppp_proto.c b/lib/ppp_proto.c
-> new file mode 100644
-> index 000000000000..1c035095f375
-> --- /dev/null
-> +++ b/lib/ppp_proto.c
-> @@ -0,0 +1,52 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Utilities for translating PPP protocols from strings
-> + * and vice versa.
-> + *
-> + * Authors:     Wojciech Drewek <wojciech.drewek@intel.com>
-> + */
-> +
-> +#include <linux/ppp_defs.h>
-> +#include <linux/if_ether.h>
-> +#include "utils.h"
-> +#include "rt_names.h"
-> +
-> +static const struct proto ppp_proto_names[] = {
-> +	{PPP_IP, "ip"},
-> +	{PPP_AT, "at"},
-> +	{PPP_IPX, "ipx"},
-> +	{PPP_VJC_COMP, "vjc_comp"},
-> +	{PPP_VJC_UNCOMP, "vjc_uncomp"},
-> +	{PPP_MP, "mp"},
-> +	{PPP_IPV6, "ipv6"},
-> +	{PPP_COMPFRAG, "compfrag"},
-> +	{PPP_COMP, "comp"},
-> +	{PPP_MPLS_UC, "mpls_uc"},
-> +	{PPP_MPLS_MC, "mpls_mc"},
-> +	{PPP_IPCP, "ipcp"},
-> +	{PPP_ATCP, "atcp"},
-> +	{PPP_IPXCP, "ipxcp"},
-> +	{PPP_IPV6CP, "ipv6cp"},
-> +	{PPP_CCPFRAG, "ccpfrag"},
-> +	{PPP_CCP, "ccp"},
-> +	{PPP_MPLSCP, "mplscp"},
-> +	{PPP_LCP, "lcp"},
-> +	{PPP_PAP, "pap"},
-> +	{PPP_LQR, "lqr"},
-> +	{PPP_CHAP, "chap"},
-> +	{PPP_CBCP, "cbcp"},
-> +};
-> +
-> +const char *ppp_proto_n2a(unsigned short id, char *buf, int len)
-> +{
-> +	size_t len_tb = ARRAY_SIZE(ppp_proto_names);
-> +
-> +	return __proto_n2a(id, buf, len, ppp_proto_names, len_tb);
-> +}
-> +
-> +int ppp_proto_a2n(unsigned short *id, const char *buf)
-> +{
-> +	size_t len_tb = ARRAY_SIZE(ppp_proto_names);
-> +
-> +	return __proto_a2n(id, buf, ppp_proto_names, len_tb);
-> +}
-> diff --git a/lib/utils.c b/lib/utils.c
-> index 53d310060284..6b88ba31b335 100644
-> --- a/lib/utils.c
-> +++ b/lib/utils.c
-> @@ -1925,3 +1925,37 @@ void print_indent(struct indent_mem *mem)
->  	if (mem->indent_level)
->  		printf("%s", mem->indent_str);
->  }
-> +
-> +const char *__proto_n2a(unsigned short id, char *buf, int len,
-> +			const struct proto *proto_tb, size_t tb_len)
-> +{
-> +	int i;
-> +
-> +	id = ntohs(id);
-> +
-> +	for (i = 0; !numeric && i < tb_len; i++) {
-> +		if (proto_tb[i].id == id)
-> +			return proto_tb[i].name;
-> +	}
-> +
-> +	snprintf(buf, len, "[%d]", id);
-> +
-> +	return buf;
-> +}
-> +
-> +int __proto_a2n(unsigned short *id, const char *buf,
-> +		const struct proto *proto_tb, size_t tb_len)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < tb_len; i++) {
-> +		if (strcasecmp(proto_tb[i].name, buf) == 0) {
-> +			*id = htons(proto_tb[i].id);
-> +			return 0;
-> +		}
-> +	}
-> +	if (get_be16(id, buf, 0))
-> +		return -1;
-> +
-> +	return 0;
-> +}
+On Mon, 2022-07-18 at 21:36 +0800, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-11):
+> 
+> commit: d24141fe7b48d3572afb673ae350cf0e88caba6c ("mptcp: drop SK_RECLAIM_* macros")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-77b3a84e-1_20220711
+> with following parameters:
+> 
+> 	group: mptcp
+> 	ucode: 0xec
+> 
+> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> 
+> 
+> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 16G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> 
+> 
+> [  240.473094][T14986] ------------[ cut here ]------------
+> [  240.478507][T14986] page_counter underflow: -4294828518 nr_pages=4294967290
+> [  240.485500][T14986] WARNING: CPU: 2 PID: 14986 at mm/page_counter.c:56 page_counter_cancel+0x96/0xc0
+> [  240.494671][T14986] Modules linked in: mptcp_diag inet_diag nft_tproxy nf_tproxy_ipv6 nf_tproxy_ipv4 nft_socket nf_socket_ipv4 nf_socket_ipv6 nf_tabl
+> es nfnetlink openvswitch nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 btrfs blake2b_generic xor raid6_pq zstd_compress libcrc32c sd_mo
+> d t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 i915 sg hp_wmi ipmi_devintf intel_rapl_msr intel_rapl_common ipmi_msghandler x86_pkg_temp_thermal i
+> ntel_powerclamp coretemp crct10dif_pclmul crc32_pclmul intel_gtt sparse_keymap crc32c_intel platform_profile drm_buddy ghash_clmulni_intel mei_wdt rfkil
+> l wmi_bmof drm_display_helper rapl ttm ahci drm_kms_helper libahci intel_cstate syscopyarea intel_uncore mei_me sysfillrect serio_raw libata i2c_i801 me
+> i sysimgblt i2c_smbus fb_sys_fops intel_pch_thermal wmi video intel_pmc_core tpm_infineon acpi_pad fuse ip_tables
+> [  240.570849][T14986] CPU: 2 PID: 14986 Comm: mptcp_connect Tainted: G S                5.19.0-rc4-00739-gd24141fe7b48 #1
+> [  240.581637][T14986] Hardware name: HP HP Z240 SFF Workstation/802E, BIOS N51 Ver. 01.63 10/05/2017
+> [  240.590600][T14986] RIP: 0010:page_counter_cancel+0x96/0xc0
+> [  240.596179][T14986] Code: 00 00 00 45 31 c0 48 89 ef 5d 4c 89 c6 41 5c e9 40 fd ff ff 4c 89 e2 48 c7 c7 20 73 39 84 c6 05 d5 b1 52 04 01 e8 e7 95 f3
+> 01 <0f> 0b eb a9 48 89 ef e8 1e 25 fc ff eb c3 66 66 2e 0f 1f 84 00 00
+> [  240.615639][T14986] RSP: 0018:ffffc9000496f7c8 EFLAGS: 00010082
+> [  240.621569][T14986] RAX: 0000000000000000 RBX: ffff88819c9c0120 RCX: 0000000000000000
+> [  240.629404][T14986] RDX: 0000000000000027 RSI: 0000000000000004 RDI: fffff5200092deeb
+> [  240.637239][T14986] RBP: ffff88819c9c0120 R08: 0000000000000001 R09: ffff888366527a2b
+> [  240.645069][T14986] R10: ffffed106cca4f45 R11: 0000000000000001 R12: 00000000fffffffa
+> [  240.652903][T14986] R13: ffff888366536118 R14: 00000000fffffffa R15: ffff88819c9c0000
+> [  240.660738][T14986] FS:  00007f3786e72540(0000) GS:ffff888366500000(0000) knlGS:0000000000000000
+> [  240.669529][T14986] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  240.675974][T14986] CR2: 00007f966b346000 CR3: 0000000168cea002 CR4: 00000000003706e0
+> [  240.683807][T14986] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [  240.691641][T14986] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [  240.699468][T14986] Call Trace:
+> [  240.702613][T14986]  <TASK>
+> [  240.705413][T14986]  page_counter_uncharge+0x29/0x80
+> [  240.710389][T14986]  drain_stock+0xd0/0x180
+> [  240.714585][T14986]  refill_stock+0x278/0x580
+> [  240.718951][T14986]  __sk_mem_reduce_allocated+0x222/0x5c0
+> [  240.724443][T14986]  ? rwlock_bug+0xc0/0xc0
+> [  240.729248][T14986]  __mptcp_update_rmem+0x235/0x2c0
+> [  240.734228][T14986]  __mptcp_move_skbs+0x194/0x6c0
+> [  240.739030][T14986]  ? mptcp_check_data_fin+0x380/0x380
+> [  240.744869][T14986]  ? skb_release_data+0x482/0x640
+> [  240.749764][T14986]  mptcp_recvmsg+0xdfa/0x1340
+> [  240.754315][T14986]  ? __mptcp_move_skbs+0x6c0/0x6c0
+> [  240.759296][T14986]  ? memset+0x20/0x40
+> [  240.763153][T14986]  inet_recvmsg+0x37f/0x500
+> [  240.767521][T14986]  ? generic_perform_write+0x310/0x4c0
+> [  240.772846][T14986]  ? inet_sendpage+0x140/0x140
+> [  240.777473][T14986]  ? find_held_lock+0x2c/0x140
+> [  240.782109][T14986]  sock_read_iter+0x24a/0x380
+> [  240.786655][T14986]  ? sock_recvmsg+0x140/0x140
+> [  240.791198][T14986]  ? 0xffffffff81000000
+> [  240.795228][T14986]  ? poll_select_set_timeout+0x82/0x100
+> [  240.800633][T14986]  ? __lock_release+0x102/0x540
+> [  240.805353][T14986]  new_sync_read+0x420/0x540
+> [  240.809806][T14986]  ? lock_is_held_type+0x98/0x140
+> [  240.814691][T14986]  ? __ia32_sys_llseek+0x340/0x340
+> [  240.819668][T14986]  ? 0xffffffff81000000
+> [  240.823693][T14986]  ? recalibrate_cpu_khz+0x40/0x40
+> [  240.828667][T14986]  ? ktime_get_ts64+0xbc/0x240
+> [  240.833306][T14986]  ? fsnotify_perm+0x13b/0x4c0
+> [  240.838552][T14986]  vfs_read+0x37f/0x4c0
+> [  240.842582][T14986]  ksys_read+0x170/0x200
+> [  240.846688][T14986]  ? __ia32_sys_pwrite64+0x200/0x200
+> [  240.851836][T14986]  ? lockdep_hardirqs_on_prepare+0x19a/0x380
+> [  240.858284][T14986]  ? syscall_enter_from_user_mode+0x21/0x80
+> [  240.864039][T14986]  do_syscall_64+0x5c/0x80
+> [  240.868314][T14986]  ? do_syscall_64+0x69/0x80
+> [  240.872770][T14986]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> [  240.878526][T14986] RIP: 0033:0x7f3786d9ae8e
+> [  240.882805][T14986] Code: c0 e9 b6 fe ff ff 50 48 8d 3d 6e 18 0a 00 e8 89 e8 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
+> [  240.902259][T14986] RSP: 002b:00007fff7be81e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+> [  240.910533][T14986] RAX: ffffffffffffffda RBX: 0000000000002000 RCX: 00007f3786d9ae8e
+> [  240.918368][T14986] RDX: 0000000000002000 RSI: 00007fff7be87ec0 RDI: 0000000000000005
+> [  240.926206][T14986] RBP: 0000000000000005 R08: 00007f3786e6a230 R09: 00007f3786e6a240
+> [  240.934046][T14986] R10: fffffffffffff288 R11: 0000000000000246 R12: 0000000000002000
+> [  240.941884][T14986] R13: 00007fff7be87ec0 R14: 00007fff7be87ec0 R15: 0000000000002000
+> [  240.949741][T14986]  </TASK>
+> [  240.952632][T14986] irq event stamp: 27367
+> [  240.956735][T14986] hardirqs last  enabled at (27366): [<ffffffff81ba50ea>] mem_cgroup_uncharge_skmem+0x6a/0x80
+> [  240.966848][T14986] hardirqs last disabled at (27367): [<ffffffff81b8fd42>] refill_stock+0x282/0x580
+> [  240.976017][T14986] softirqs last  enabled at (27360): [<ffffffff83a4d8ef>] mptcp_recvmsg+0xaf/0x1340
+> [  240.985273][T14986] softirqs last disabled at (27364): [<ffffffff83a4d30c>] __mptcp_move_skbs+0x18c/0x6c0
+> [  240.994872][T14986] ---[ end trace 0000000000000000 ]---
 
+I think that the root cause is that subflows and main socket end-up in
+different cgroups (likely, the subflows in no cgroup at all). It should
+be quite unrelated from the mentioned commit (older issue).
 
-Remove the __ from these new functions and add this in a refactoring
-patch. Move the PPP additions into a new, standalone patch
+I'll try to have a better look.
+
+Thanks!
+
+Paolo
+
