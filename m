@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65CCB578C46
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 22:58:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4F0578C4E
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 23:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235905AbiGRU62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 16:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        id S235258AbiGRVBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 17:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236196AbiGRU6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 16:58:20 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65EF32B91
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 13:58:18 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id 19so15148908ljz.4
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 13:58:18 -0700 (PDT)
+        with ESMTP id S229799AbiGRVBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 17:01:16 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BDA31DCB;
+        Mon, 18 Jul 2022 14:01:15 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id j22so23598658ejs.2;
+        Mon, 18 Jul 2022 14:01:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MiQ+xQxx8hd0dlOeoQTIZgHydZebknID1GX7TXEZwqY=;
-        b=UXe8Cf2JLOSGbf9v+WHy5ow7tsX4GzUvDFhUAw4qsj86k+3sd8z+PTBhrJqCT64GOB
-         vlJP5xyX+3SnkFvEPX7q2tjxrYwW7oPoKSwe03WAxTwyuxLVNewsJlodCViVgrkVGIrc
-         JojBGrNyo4qc9W7bJODpPBqt7bX1uijY5sD7E4OlMYo5Eru8cRZCO3uUzLA2vZX+cxPh
-         ZSFbBi3GMNWelh4qZ2/ECU2pSwTqhujohHLiYwDwCRsOe7X1nUNXpG1khIP/h/ohwRX8
-         6jNSahP4U8pUBsP26GpgD2lf36mMTjkvdcVz4X0bZW4CArL1q37WzWw4+POFiTs5g+Hc
-         Ou2w==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=9JKC69ZgKxvEAiR9jfUcMboRX5UUbUaTHt8/AYNH2iU=;
+        b=Q5ZX+0Ir7yfQayyrfLWCW5z3mC5EADyfcN6MvQHrLtz6K8IOfWCa0yhWTskhALWXZP
+         F7bM+gPPi/t1FIcIrJZe3jDuXfvDBKSdJUrOSx3SZCh6yVaLlpepVhkH63dJha/npcGv
+         hxprjSIMJqOuhJBANig6mSBhrnFfZl/xjJ9EVnllwpN/rNHAYoBeNmtwTFrkNJq4oed8
+         gzsvsVKunCep6nbY6PYJPHSRfpb/sdhxqDEpOJyKko1BXkTlnw5GcpGZfnl4HWwiykPh
+         JT9Fa3ToYzIDRuOb3NQmJZQAT1CfR43SPvzWXuIvVUmc/778xE10FjW9gF5acOE8KF7o
+         shIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MiQ+xQxx8hd0dlOeoQTIZgHydZebknID1GX7TXEZwqY=;
-        b=kG1PXwVYJ67ex5oC/reYjpKSmPM9mUvbaVT1Wwr+UoMP/70K6nhe6uOwrV8I31zS6E
-         2P7xxSkB+7qp03die4ZqXRPMHMrSP6KnFAfsITWnzqSG88eMgX21cS9KeF2cp5KlDUeO
-         5Qb9hnthnE70GGsae9IPSl63PebVvF9ft+4mAW8xVC3fpq+0tYi1ZlTlIF3jca1WMaM6
-         ffVDHHOoampH0qF3puR12Yh/04B/qMfkkw6gSFyzXYhoWXMiZ/RQh8fwIamYYRFnmIgO
-         AyH2Wwv8PcWJOfpF3sQ3OAok/xMsU3iqVi4WshWwdmnIDv9r00NkzbFkewzEr/jBXeJJ
-         Rasw==
-X-Gm-Message-State: AJIora+bvOFcjjL7gtN06bAJgWGf/RTwebT6m4tlGoJAojrBf0GsMmsJ
-        hHtYPaCIQ5E1FZx4c4T7DAJWVdIRp3t5HYqhWLcipQ==
-X-Google-Smtp-Source: AGRyM1t51RWTLgYvPAUANqa/emkL/JY9rxxZTykAFTNHaWCbZ02W5NqJ5SzgkzMSkS2CC69AQN7HvjqAYJHsNPJ++QA=
-X-Received: by 2002:a2e:a5cb:0:b0:25d:7a70:2891 with SMTP id
- n11-20020a2ea5cb000000b0025d7a702891mr13859068ljp.295.1658177896827; Mon, 18
- Jul 2022 13:58:16 -0700 (PDT)
+         :message-id:subject:to;
+        bh=9JKC69ZgKxvEAiR9jfUcMboRX5UUbUaTHt8/AYNH2iU=;
+        b=hMzQyTJUCz/s9iUSOnY/4a1bgA5SrW9FhaB34aW+j3OQiCxIKyemcRbKzBrUHlt1bE
+         SMNfL5v/+tdIh1LmK82MynZUeJd6TlzUKuQdSioDcMY1nfBKGyFf0MJBlF41oHDQ5x9/
+         9lwnEKhp2HdqsFbPS9hVulyttK9u1Vob6W4Sc4k+dJ+MPENiqKcdIv23Ls9G6iBt8NBZ
+         OQHsPEbRatiLXFMnKCRueA3RO64sEDxocCo+UhnY8OqmOIjYpQoCT02kvDowlVAE3ER0
+         +fRilkqiWQgIKe+dhU8cvrpsgRG62LdSvDU/yjuIDbvoHlLx1P9MM6Am0mGhx779IRiX
+         s67A==
+X-Gm-Message-State: AJIora+3sNAIWJrHDQ1scj7bAGhp1/UCWMMrpCbLC+9CRzLfvyXuPFrj
+        3Yqy2LaAATqxhSjNl/JVvTh6VOSZ7COKdYJ1tsE=
+X-Google-Smtp-Source: AGRyM1s9jd0rj28RTzjMiTDsu+XS7RpA+HYRxtnjZa49iDkWruhQJP4cy0PkxwOAeF6i6B+rqrlCWO5wcq3a3zHUmkQ=
+X-Received: by 2002:a17:907:3f07:b0:72b:54b2:f57f with SMTP id
+ hq7-20020a1709073f0700b0072b54b2f57fmr26915014ejc.502.1658178073581; Mon, 18
+ Jul 2022 14:01:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220711222919.2043613-1-justinstitt@google.com>
-In-Reply-To: <20220711222919.2043613-1-justinstitt@google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 18 Jul 2022 13:58:05 -0700
-Message-ID: <CAKwvOd=P7Wv0Z5YuxkwiqGfXGav9nZsBiC3mxdy0UfyF8D_c8A@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: mvm: fix clang -Wformat warnings
-To:     Justin Stitt <justinstitt@google.com>
-Cc:     Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Avraham Stern <avraham.stern@intel.com>,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20220711083220.2175036-1-asavkov@redhat.com> <20220711083220.2175036-4-asavkov@redhat.com>
+ <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
+ <CAADnVQ+ju04JAqyEbA_7oVj9uBAuL-fUP1FBr_OTygGf915RfQ@mail.gmail.com>
+ <Ys7JL9Ih3546Eynf@wtfbox.lan> <CAADnVQ+6aN5nMwaTjoa9ddnT6rakgwb9oPhtdWSsgyaHP8kZ6Q@mail.gmail.com>
+ <YtFjCSR8YiK8E13J@samus.usersys.redhat.com>
+In-Reply-To: <YtFjCSR8YiK8E13J@samus.usersys.redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 18 Jul 2022 14:01:02 -0700
+Message-ID: <CAADnVQLjJK+9Jf+14WNp4O9q+s88eB-FF8pA_5TRziYVKoJxUQ@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/4] bpf: add bpf_panic() helper
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Song Liu <song@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>, dvacek@redhat.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,65 +73,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 3:29 PM Justin Stitt <justinstitt@google.com> wrote:
+On Fri, Jul 15, 2022 at 5:52 AM Artem Savkov <asavkov@redhat.com> wrote:
 >
-> When building with Clang we encounter these warnings:
-> | drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1108:47: error:
-> | format specifies type 'unsigned char' but the argument has type 's16'
-> | (aka 'short') [-Werror,-Wformat] IWL_DEBUG_INFO(mvm, "\tburst index:
-> | %hhu\n", res->ftm.burst_index);
-> -
-> | drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1111:47: error:
-> | format specifies type 'unsigned char' but the argument has type 's32'
-> | (aka 'int') [-Werror,-Wformat] IWL_DEBUG_INFO(mvm, "\trssi spread:
-> | %hhu\n", res->ftm.rssi_spread);
+> On Wed, Jul 13, 2022 at 03:20:22PM -0700, Alexei Starovoitov wrote:
+> > On Wed, Jul 13, 2022 at 6:31 AM Artem Savkov <asavkov@redhat.com> wrote:
+> > >
+> > > On Tue, Jul 12, 2022 at 11:08:54AM -0700, Alexei Starovoitov wrote:
+> > > > On Tue, Jul 12, 2022 at 10:53 AM Song Liu <song@kernel.org> wrote:
+> > > > >
+> > > > > >
+> > > > > > +BPF_CALL_1(bpf_panic, const char *, msg)
+> > > > > > +{
+> > > > > > +       panic(msg);
+> > > > >
+> > > > > I think we should also check
+> > > > >
+> > > > >    capable(CAP_SYS_BOOT) && destructive_ebpf_enabled()
+> > > > >
+> > > > > here. Or at least, destructive_ebpf_enabled(). Otherwise, we
+> > > > > may trigger panic after the sysctl is disabled.
+> > > > >
+> > > > > In general, I don't think sysctl is a good API, as it is global, and
+> > > > > the user can easily forget to turn it back off. If possible, I would
+> > > > > rather avoid adding new BPF related sysctls.
+> > > >
+> > > > +1. New syscal isn't warranted here.
+> > > > Just CAP_SYS_BOOT would be enough here.
+> > >
+> > > Point taken, I'll remove sysctl knob in any further versions.
+> > >
+> > > > Also full blown panic() seems unnecessary.
+> > > > If the motivation is to get a memory dump then crash_kexec() helper
+> > > > would be more suitable.
+> > > > If the goal is to reboot the system then the wrapper of sys_reboot()
+> > > > is better.
+> > > > Unfortunately the cover letter lacks these details.
+> > >
+> > > The main goal is to get the memory dump, so crash_kexec() should be enough.
+> > > However panic() is a bit more versatile and it's consequences are configurable
+> > > to some extent. Are there any downsides to using it?
+> >
+> > versatile? In what sense? That it does a lot more than kexec?
+> > That's a disadvantage.
+> > We should provide bpf with minimal building blocks and let
+> > bpf program decide what to do.
+> > If dmesg (that is part of panic) is useful it should be its
+> > own kfunc.
+> > If halt is necessary -> separate kfunc as well.
+> > reboot -> another kfunc.
+> >
+> > Also panic() is not guaranteed to do kexec and just
+> > panic is not what you stated is the goal of the helper.
 >
-> The previous format specifier `%hhu` describes a u8 but our arguments
-> are wider than this which means bits are potentially being lost.
+> Alright, if the aim is to provide the smallest building blocks then
+> crash_kexec() is a better choice.
 >
-> Variadic functions (printf-like) undergo default argument promotion.
-> Documentation/core-api/printk-formats.rst specifically recommends using
-> the promoted-to-type's format flag.
+> > >
+> > > > Why this destructive action cannot be delegated to user space?
+> > >
+> > > Going through userspace adds delays and makes it impossible to hit "exactly
+> > > the right moment" thus making it unusable in most cases.
+> >
+> > What would be an example of that?
+> > kexec is not instant either.
 >
-> As per C11 6.3.1.1:
-> (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf) `If an int
-> can represent all values of the original type ..., the value is
-> converted to an int; otherwise, it is converted to an unsigned int.
-> These are called the integer promotions.` Thus it makes sense to change
-> `%hhu` to `%d` for both instances of the warning.
->
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
+> With kexec at least the thread it got called in is in a proper state. I
+> guess it is possible to achieve this by signalling userspace to do
+> kexec/panic and then block the thread somehow but that won't work in a
+> single-cpu case. Or am I missing something?
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
-> ---
->  drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-> index 430044bc4755..e8702184c950 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-> @@ -1105,10 +1105,10 @@ static void iwl_mvm_debug_range_resp(struct iwl_mvm *mvm, u8 index,
->         IWL_DEBUG_INFO(mvm, "\tstatus: %d\n", res->status);
->         IWL_DEBUG_INFO(mvm, "\tBSSID: %pM\n", res->addr);
->         IWL_DEBUG_INFO(mvm, "\thost time: %llu\n", res->host_time);
-> -       IWL_DEBUG_INFO(mvm, "\tburst index: %hhu\n", res->ftm.burst_index);
-> +       IWL_DEBUG_INFO(mvm, "\tburst index: %d\n", res->ftm.burst_index);
->         IWL_DEBUG_INFO(mvm, "\tsuccess num: %u\n", res->ftm.num_ftmr_successes);
->         IWL_DEBUG_INFO(mvm, "\trssi: %d\n", res->ftm.rssi_avg);
-> -       IWL_DEBUG_INFO(mvm, "\trssi spread: %hhu\n", res->ftm.rssi_spread);
-> +       IWL_DEBUG_INFO(mvm, "\trssi spread: %d\n", res->ftm.rssi_spread);
->         IWL_DEBUG_INFO(mvm, "\trtt: %lld\n", res->ftm.rtt_avg);
->         IWL_DEBUG_INFO(mvm, "\trtt var: %llu\n", res->ftm.rtt_variance);
->         IWL_DEBUG_INFO(mvm, "\trtt spread: %llu\n", res->ftm.rtt_spread);
-> --
-> 2.37.0.144.g8ac04bfd2-goog
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+Something like this.
+We can extend bpf_send_signal to send a signal to pid 1
+or another user agent.
+It's still not clear to me why you want that memory dump.
