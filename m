@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFB0578B21
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B32F578B26
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiGRTot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
+        id S236292AbiGRTqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234128AbiGRTor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:44:47 -0400
-Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3870C6445;
-        Mon, 18 Jul 2022 12:44:47 -0700 (PDT)
-Received: by mail-il1-f169.google.com with SMTP id h16so6584218ila.2;
-        Mon, 18 Jul 2022 12:44:47 -0700 (PDT)
+        with ESMTP id S234128AbiGRTqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:46:24 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0B6B861;
+        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id v185so10147607ioe.11;
+        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=v1mTrcXvswvV41WDcTPk/HMuVmCDknQU5gd5C2gfzQ8=;
-        b=QiLipj//hUSOs1SmLU7LT0beMbZ91pJvnhinxymF/Y2omOcv+Y41SFPtbz8L9J6ySd
-         Kt5UyHpPKkn9hQ7MpIEblCMH16DyhXD9r05TblyKmYOg+mm5gNOXUnSEO3vB5s8lKSvE
-         VVVhk+CdNFSAM7Uolrs5XOY3XW/vy7HtdLiL1R4Zpk6ih9dgE9sjK5hi98i/dsVR65iy
-         1a1inAmQGyllMHjGB7iDS8CZ4AChALFUw7AxiwUaO14SZLsoZMjy+erwQrGbHmYUbGTs
-         AGuDuaZ8lNVF0onH6lTjaAMzKTFbFRCl1AabukURMEyi/1iZXSQmalWiXbGAZtnYGZcU
-         jjhg==
-X-Gm-Message-State: AJIora9HO2fWZyffG/D3+ahboOvU30Eexefv7cStWKXEU4VwQ1UaR6gD
-        G897fS4mWhfUrOExDhbxbQudSXWyig==
-X-Google-Smtp-Source: AGRyM1thdOCUCm3a5Arpfp2n9tlXe8iJFisYAFCILX2dspZF1A5XRi7ojWRrgF50rGbfnoIyJr1SPQ==
-X-Received: by 2002:a05:6e02:12c3:b0:2dc:6c36:5cc2 with SMTP id i3-20020a056e0212c300b002dc6c365cc2mr15044171ilm.278.1658173486480;
-        Mon, 18 Jul 2022 12:44:46 -0700 (PDT)
+        bh=LDIcSSdSuEY2G/DAB4xr+Im2NXlqFrVtmyYQ1W3d1kM=;
+        b=aVgiyNtIOxjsNT7RwfLWaVKtf7LRjFlVYv6Q3RsRoCWO5RrBjMOwBqK9UpdkgtasQ3
+         YZ2wGsu5GaWkweV4UjchUKo4ddqAzTXvKXG2jkgNHNuIRnMNwVuPLnL5SxIIUWMVMhmY
+         uApgAePnVf40tYd+Fx7/2OTPreuGxujJmVn0GohOHeBHuFVXzxR+ZM+RNBNLYe1D1qvx
+         kVFE5mYwnJ3K01owvY9ia6ENU6hc7PPa0cfG2BuW9zdG293PD/ewlL8xd0IHoVDSmunJ
+         2dCw9E5scDezOjVpSGBUcSrVXmEXJMFRKAW7Myx/dSZ8CEqP1FAyV0Rj/bTZ+kctvE86
+         SLuw==
+X-Gm-Message-State: AJIora+jGNEMempjq778PE05B90bkWTJ44klZ+N6Vupd5vk0tuBy6SV8
+        GATbV4QJf7ARTMBSqopVKQ==
+X-Google-Smtp-Source: AGRyM1uvcKF6ziPm4Yv3YA+hZ/xOz/ohcyBKZqePnnm+y/DNXmzTvXSQYgWQkrlsY/eT0ZGml84G/Q==
+X-Received: by 2002:a05:6638:1c1a:b0:33f:45c9:effb with SMTP id ca26-20020a0566381c1a00b0033f45c9effbmr15449820jab.305.1658173583176;
+        Mon, 18 Jul 2022 12:46:23 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id m3-20020a92d703000000b002dc0d2f7c7bsm5115783iln.4.2022.07.18.12.44.45
+        by smtp.gmail.com with ESMTPSA id g5-20020a02c545000000b0033f4b1c2151sm5962542jaj.154.2022.07.18.12.46.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:44:46 -0700 (PDT)
-Received: (nullmailer pid 3423082 invoked by uid 1000);
-        Mon, 18 Jul 2022 19:44:44 -0000
-Date:   Mon, 18 Jul 2022 13:44:44 -0600
+        Mon, 18 Jul 2022 12:46:22 -0700 (PDT)
+Received: (nullmailer pid 3425548 invoked by uid 1000);
+        Mon, 18 Jul 2022 19:46:20 -0000
+Date:   Mon, 18 Jul 2022 13:46:20 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [RFC PATCH net-next 9/9] net: pcs: lynx: Remove remaining users
- of lynx_pcs_create
-Message-ID: <20220718194444.GA3377770-robh@kernel.org>
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 2/9] dt-bindings: net: Expand pcs-handle to
+ an array
+Message-ID: <20220718194620.GB3377770-robh@kernel.org>
 References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-10-sean.anderson@seco.com>
+ <20220711160519.741990-3-sean.anderson@seco.com>
+ <ecaf9d0f-6ddb-5842-790e-3d5ee80e2a77@linaro.org>
+ <fdd34075-4e5e-a617-696d-15c5ac6e9bfe@seco.com>
+ <d84899e7-06f7-1a20-964f-90b6f0ff96fd@linaro.org>
+ <Ys2aeRBGGv6ajMZ5@shell.armlinux.org.uk>
+ <f2a29c57-be8c-88c2-1c75-f6e5d1164b8f@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220711160519.741990-10-sean.anderson@seco.com>
+In-Reply-To: <f2a29c57-be8c-88c2-1c75-f6e5d1164b8f@linaro.org>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -69,22 +77,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 12:05:19PM -0400, Sean Anderson wrote:
-> Now that PCS devices have a compatible string, we no longer have to bind
-> the driver manually in lynx_pcs_create. Remove it, and convert the
-> remaining users to pcs_get_by_fwnode.
+On Thu, Jul 14, 2022 at 12:45:54PM +0200, Krzysztof Kozlowski wrote:
+> On 12/07/2022 17:59, Russell King (Oracle) wrote:
+> >> However before implementing this, please wait for more feedback. Maybe
+> >> Rob or net folks will have different opinions.
+> > 
+> > We decided on "pcs-handle" for PCS for several drivers, to be consistent
+> > with the situation for network PHYs (which are "phy-handle", settled on
+> > after we also had "phy" and "phy-device" and decided to deprecate these
+> > two.
+> > 
+> > Surely we should have consistency within the net code - so either "phy"
+> > and "pcs" or "phy-handle" and "pcs-handle" but not a mixture of both?
 > 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> This requires that all PCSs have a compatible string. For a reasonable
-> window of compatibility, this should be applied one major release after
-> all compatible strings are added.
+> True. Then the new property should be "pcs-handle-names"?
 
-These platforms are pretty stable. I don't think a 1 release window is 
-sufficient. Maybe a 1 LTS release.
+IMO, just keep "pcs-handle" and then "pcs-handle-names". We never seem 
+to get free of the deprecated versions (-gpio).
 
-> 
->  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 27 ++-----------------
->  drivers/net/pcs/pcs-lynx.c                    | 19 -------------
->  include/linux/pcs-lynx.h                      |  1 -
->  3 files changed, 2 insertions(+), 45 deletions(-)
+While just add/remove 's' would be nice, we have to deal with things 
+like 'mboxes' and I think some other inconsistencies. 
+
+Rob
