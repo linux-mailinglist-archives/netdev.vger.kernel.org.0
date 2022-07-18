@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ADFE5786C8
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 17:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB67F5786CA
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 17:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235065AbiGRPyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 11:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
+        id S234874AbiGRPyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 11:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235205AbiGRPyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 11:54:09 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0342B1C0
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:54:07 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id a5so17670072wrx.12
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:54:07 -0700 (PDT)
+        with ESMTP id S230174AbiGRPyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 11:54:40 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFE56465
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:54:39 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h17so17760403wrx.0
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 08:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=jNOFWD6EWX/ilMsSDswwTAqMX/p75CHGacwLg212UIA=;
-        b=pKtudd//N5O7taLzY08jZ7HXjO6PCiCDHPliOFecVIv+sDNVX+AyJXAt/6nVGWR3is
-         h+5RS73wR/3i/YG9yUJP4MlWwILmmRLvFGYsbvV1bGEVmLsgG0dFPiTivgqQbrA5J/dj
-         vz9nobADF59If0/0wLD3+bRNzsmUzoHY4tVVK6axeQEeWRnB29unNbiCvT6LRjrg4/XD
-         r2Qmp+8Y3xniLm5gUt15YoYUdCMKzD4Q5Wv6Ypijmx2hfxFKFjfE9QKTGTxlV5II4ISs
-         IGrp3E0Kud1q2XcoPE1EkOvofIn7GSpKJu83K6sxd/w3JMrHHHGGXOw2PChNqqDO1Ysz
-         95tA==
+        bh=Hjg6zXcEQgOffoS5EbAyXFRdrHTBt8cuUBdNpDQuLu8=;
+        b=PZksptx3+NBk5ZyL6GQ+yxZxy9duMMDrFpXIL9zZRaT0/bytPnl7QjqsRsKqHcMlow
+         YSl89MFIZ7mhtufhlAsHmCC9UJOc7r321CaVIC9fZ5UDd3/x0821/aB/R6JjqMKERvrt
+         +tfbYR0mxpuP8yBEBosG49MP4Y0kW93KB//R+lL7etBCE+6Msu2wTxqcmxwLBNp2zF80
+         6urk+WvTrA8MT06hP8DAmRlarb1GgW5M3+Y255VbVXSPsyjiacBtayH5OwzBMLOqTl6+
+         vlOiUFcyK2SH1g0QYElzgKKB0DeQRN+3FaWuCeSBs+lKeryMtr9HPXVNQ5gPBauS3s/k
+         gWVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=jNOFWD6EWX/ilMsSDswwTAqMX/p75CHGacwLg212UIA=;
-        b=lQSPKyYDoHa99B4VOxBuXfoivnQccRMB0UUTzyBdHE9EO7Y2FgzgszSqa2Gqj1xxgB
-         TKnH/WaDjNtV16H0NJOvq4K+VLPxCPrdOQcXI+j8Fn8DcbQ+d67wnctAxKr6XRENW3oi
-         yhyXiBrVQFAl1eJEWm4Qc0a+jUAxCBstQexc+/IYlJxnLjoo0HBXcM/UvHHRBSLdjYe0
-         ZjHBqfeao+Mse9sUwFOuNyn91Pa1GA0WghDBI++dV9jt8STFwLs51LvWQMtFTpSo3juW
-         ZnzUVplGh543tTVjB7SVv2sw+Q2kBiNnx49WGEqnWoroUqDExsFh9/Radz3Vx7RVL/EI
-         VBOw==
-X-Gm-Message-State: AJIora/kbZzQAG419/7xVnakVSJk7AjwP/njOJul63HYfA6FKnpgtDXP
-        BfYMPIVt8aKTXaYknDFfvzT3ZivOPBrtBnk=
-X-Google-Smtp-Source: AGRyM1tuUbXkTHmwSeQpNvkpX+9RV2rNX0WnzUhlbbdeXGqZ5TcgzBxdsITPDnCaw3Rv47uHxqm1Rw==
-X-Received: by 2002:a05:6000:1446:b0:21d:cfe1:67a0 with SMTP id v6-20020a056000144600b0021dcfe167a0mr13565811wrx.91.1658159646328;
-        Mon, 18 Jul 2022 08:54:06 -0700 (PDT)
+        bh=Hjg6zXcEQgOffoS5EbAyXFRdrHTBt8cuUBdNpDQuLu8=;
+        b=7YfTHvmMqohz3ecSJIriDDcEbVJp8ZxjeKc8BTG39X/1s7Js46TA5WznLF2HOEuMOV
+         It2BIsiU555iShgjBf4G70eJUp9WScQDWQkCfmy13uaCh3SdbIqCZt4slINiZinVM5me
+         NwcKBXpx/x6Yh8SSeRNW4Q9EKBivEd+rSN2vJMGcGhgnkKdFWZK9RmuVpxHhHq08TJR9
+         yVUSlhD8cJbJDypWTc+QnboBCKcC8MAB11eY6As7ygR31ofFHvDx+E0JJRGvI/0iuKoC
+         o71T1VMrqvxFirauX5Ejc7RPw4Tj9wSbEohuVBd+Sl/9pln11j09XmGecRo+ejWrNSVS
+         xohg==
+X-Gm-Message-State: AJIora+kANjsKAASCCEo6P7BtUkfxQ4t+1Hlkro/S70qnYOxPPwSSL+t
+        VdoeEkQzP2jrBtHoW4XKcLBa
+X-Google-Smtp-Source: AGRyM1tVUB88glHB+N94rkUZ9NVX49f78EhwHmz1TqKArqTmnqYKPeAiPOHDHkonueXQF3LHjvOxbA==
+X-Received: by 2002:adf:f1d0:0:b0:21d:9c0d:9b5 with SMTP id z16-20020adff1d0000000b0021d9c0d09b5mr22670127wro.689.1658159678091;
+        Mon, 18 Jul 2022 08:54:38 -0700 (PDT)
 Received: from Mem (2a01cb088160fc006422ad4f4c265774.ipv6.abo.wanadoo.fr. [2a01:cb08:8160:fc00:6422:ad4f:4c26:5774])
-        by smtp.gmail.com with ESMTPSA id h7-20020adffd47000000b0021d650e4df4sm11230963wrs.87.2022.07.18.08.54.05
+        by smtp.gmail.com with ESMTPSA id 7-20020a05600c264700b003a31c4f6f74sm3873962wmy.32.2022.07.18.08.54.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 08:54:06 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 17:54:04 +0200
+        Mon, 18 Jul 2022 08:54:37 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 17:54:36 +0200
 From:   Paul Chaignon <paul@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -58,44 +58,89 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Kaixi Fan <fankaixi.li@bytedance.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf v2 1/5] ip_tunnels: Add new flow flags field to
- ip_tunnel_key
-Message-ID: <457f79e53a6b9f0921561bc796a49e917d131635.1658159533.git.paul@isovalent.com>
+Subject: [PATCH bpf v2 2/5] vxlan: Use ip_tunnel_key flow flags in route
+ lookups
+Message-ID: <0e0e26155df4e63def5e863b725d10c95d850995.1658159533.git.paul@isovalent.com>
 References: <cover.1658159533.git.paul@isovalent.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <cover.1658159533.git.paul@isovalent.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit extends the ip_tunnel_key struct with a new field for the
-flow flags, to pass them to the route lookups. This new field will be
-populated and used in subsequent commits.
+Use the new ip_tunnel_key field with the flow flags in the IPv4 route
+lookups for the encapsulated packet. This will be used by the
+bpf_skb_set_tunnel_key helper in a subsequent commit.
 
 Signed-off-by: Paul Chaignon <paul@isovalent.com>
 ---
- include/net/ip_tunnels.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/vxlan/vxlan_core.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index c24fa934221d..20f60d9da741 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -54,6 +54,7 @@ struct ip_tunnel_key {
- 	__be32			label;		/* Flow Label for IPv6 */
- 	__be16			tp_src;
- 	__be16			tp_dst;
-+	__u8			flow_flags;
- };
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index 265d4a0245e7..6991bf7c1cf0 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -2243,7 +2243,7 @@ static struct rtable *vxlan_get_route(struct vxlan_dev *vxlan, struct net_device
+ 				      struct vxlan_sock *sock4,
+ 				      struct sk_buff *skb, int oif, u8 tos,
+ 				      __be32 daddr, __be32 *saddr, __be16 dport, __be16 sport,
+-				      struct dst_cache *dst_cache,
++				      __u8 flow_flags, struct dst_cache *dst_cache,
+ 				      const struct ip_tunnel_info *info)
+ {
+ 	bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+@@ -2270,6 +2270,7 @@ static struct rtable *vxlan_get_route(struct vxlan_dev *vxlan, struct net_device
+ 	fl4.saddr = *saddr;
+ 	fl4.fl4_dport = dport;
+ 	fl4.fl4_sport = sport;
++	fl4.flowi4_flags = flow_flags;
  
- /* Flags for ip_tunnel_info mode. */
+ 	rt = ip_route_output_key(vxlan->net, &fl4);
+ 	if (!IS_ERR(rt)) {
+@@ -2459,7 +2460,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 	unsigned int pkt_len = skb->len;
+ 	__be16 src_port = 0, dst_port;
+ 	struct dst_entry *ndst = NULL;
+-	__u8 tos, ttl;
++	__u8 tos, ttl, flow_flags = 0;
+ 	int ifindex;
+ 	int err;
+ 	u32 flags = vxlan->cfg.flags;
+@@ -2525,6 +2526,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		}
+ 		dst = &remote_ip;
+ 		dst_port = info->key.tp_dst ? : vxlan->cfg.dst_port;
++		flow_flags = info->key.flow_flags;
+ 		vni = tunnel_id_to_key32(info->key.tun_id);
+ 		ifindex = 0;
+ 		dst_cache = &info->dst_cache;
+@@ -2555,7 +2557,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		rt = vxlan_get_route(vxlan, dev, sock4, skb, ifindex, tos,
+ 				     dst->sin.sin_addr.s_addr,
+ 				     &local_ip.sin.sin_addr.s_addr,
+-				     dst_port, src_port,
++				     dst_port, src_port, flow_flags,
+ 				     dst_cache, info);
+ 		if (IS_ERR(rt)) {
+ 			err = PTR_ERR(rt);
+@@ -3061,7 +3063,8 @@ static int vxlan_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 		rt = vxlan_get_route(vxlan, dev, sock4, skb, 0, info->key.tos,
+ 				     info->key.u.ipv4.dst,
+ 				     &info->key.u.ipv4.src, dport, sport,
+-				     &info->dst_cache, info);
++				     info->key.flow_flags, &info->dst_cache,
++				     info);
+ 		if (IS_ERR(rt))
+ 			return PTR_ERR(rt);
+ 		ip_rt_put(rt);
 -- 
 2.25.1
 
