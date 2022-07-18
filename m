@@ -2,89 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B92C578025
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FCA578032
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:51:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbiGRKuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
+        id S234023AbiGRKvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 06:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGRKuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:50:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169EF1EC60
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5B02B81123
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6567BC341CE;
-        Mon, 18 Jul 2022 10:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658141413;
-        bh=d5CGhdAZmG9xZNcJ+jN+xu4JouHOoCaRGoqLMug8DJE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=T4/hm1/jZuBzdXS4fv0Y86xGcc4kjhcbdqKOQi+hmDMXIde5eSrfkgK8z2wEPR4NF
-         ifHg+7nnqC0nChYANYj5bBu5bh/l55dXSwH9na+A91p0cPZjQ7fXdIi4yrz7SfBp5u
-         X0AYRQFO+dsCPcNt1ISAraMGCqVnd3ZnOULFDvJakGUW+TAyGKQim4YisdIRvNi+VU
-         BJIqaVtt0lhcPRmnMs12RZG2IeLQHU3jLOAm9DEz0PB4/yR0aowLhQI6lMz2iR18oG
-         1ptJ/4xjrnN+FkKKUC6etQxBtd12Nz0bLZg80Dp8CWFZGy0tz+kyftL2KdjEQ9FAUs
-         sUhDPpTI1Upow==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4BD88E451AF;
-        Mon, 18 Jul 2022 10:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233271AbiGRKvf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:51:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BAA20182
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:51:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oDOLb-0001mK-73; Mon, 18 Jul 2022 12:51:31 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F11F8B301D;
+        Mon, 18 Jul 2022 10:51:29 +0000 (UTC)
+Date:   Mon, 18 Jul 2022 12:51:28 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Vikram Garhwal <fnu.vikram@xilinx.com>
+Subject: Re: [PATCH] can: xilinx_can: add support for RX timestamps on Zynq
+Message-ID: <20220718105128.s22vp5hx4somy64f@pengutronix.de>
+References: <20220716120408.450405-1-matej.vasilevski@seznam.cz>
+ <20220718083312.4izyuf7iawfbhlnf@pengutronix.de>
+ <202207181220.06765.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/tls: Fix race in TLS device down flow
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165814141330.26482.840632241080820266.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Jul 2022 10:50:13 +0000
-References: <20220715084216.4778-1-tariqt@nvidia.com>
-In-Reply-To: <20220715084216.4778-1-tariqt@nvidia.com>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, saeedm@nvidia.com, gal@nvidia.com,
-        maximmi@nvidia.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="i4qfmohhwbabeeil"
+Content-Disposition: inline
+In-Reply-To: <202207181220.06765.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+--i4qfmohhwbabeeil
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 15 Jul 2022 11:42:16 +0300 you wrote:
-> Socket destruction flow and tls_device_down function sync against each
-> other using tls_device_lock and the context refcount, to guarantee the
-> device resources are freed via tls_dev_del() by the end of
-> tls_device_down.
-> 
-> In the following unfortunate flow, this won't happen:
-> - refcount is decreased to zero in tls_device_sk_destruct.
-> - tls_device_down starts, skips the context as refcount is zero, going
->   all the way until it flushes the gc work, and returns without freeing
->   the device resources.
-> - only then, tls_device_queue_ctx_destruction is called, queues the gc
->   work and frees the context's device resources.
-> 
-> [...]
+On 18.07.2022 12:20:06, Pavel Pisa wrote:
+> Hello Marc,
+>=20
+> On Monday 18 of July 2022 10:33:12 Marc Kleine-Budde wrote:
+> > On 16.07.2022 14:04:09, Matej Vasilevski wrote:
+> > > This patch adds support for hardware RX timestamps from Xilinx Zynq C=
+AN
+> > > controllers. The timestamp is calculated against a timepoint reference
+> > > stored when the first CAN message is received.
+> > >
+> > > When CAN bus traffic does not contain long idle pauses (so that
+> > > the clocks would drift by a multiple of the counter rollover time),
+> > > then the hardware timestamps provide precise relative time between
+> > > received messages. This can be used e.g. for latency testing.
+> >
+> > Please make use of the existing cyclecounter/timecounter framework. Is
+> > there a way to read the current time from a register? If so, please
+> > setup a worker that does that regularly.
+> >
+> > Have a look at the mcp251xfd driver as an example:
+>=20
+> Matej Vasilevski has looked at the example. But there is problem
+> that we know no method how to read actual counter value at least for
+> Xilinx Zynq 7000. May be we overlooked something or there
+> is hidden test register.
 
-Here is the summary with links:
-  - [net] net/tls: Fix race in TLS device down flow
-    https://git.kernel.org/netdev/net/c/f08d8c1bb97c
+I haven't found a documented register in the TRM. I've added Michal
+Simek into the loop, maybe Michal has some connection to the HW
+designers.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--i4qfmohhwbabeeil
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLVOy0ACgkQrX5LkNig
+011bzQf+M+TZm39JcDKTeDMjAFYuuJwFOOd8PfCqsuOWaGzohZMqKfDcWOZkrc+c
+J0WEHXYGeUe1DybHt2iHR+jf/fE3HSlzzPn4rFxWbdbIjwW8QUMBZ8XhPQSEiN0r
+UXcOw6L04U7HjEyBH+ceVMvP44ny4yHlaozpEkE9sJ04lVojTasxa1H0rGX2lEyZ
+/EOp5SXZJHhfa/IXQ2pro0BirwgHiPkJDDpC/R/aQFy+bdD23gnGPI5AKN8nmrk/
+GN3MblYE3TZVErafYsfGFC5ZGzdkDu8PAZxUoBMi2nOis4BZvINtB+/KLRSun1F5
+PIqsr37/zd5tUEGK0BlxFHSHp/A10g==
+=vJup
+-----END PGP SIGNATURE-----
+
+--i4qfmohhwbabeeil--
