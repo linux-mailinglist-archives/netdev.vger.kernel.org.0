@@ -2,144 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00421577FA9
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 464EC577F86
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbiGRKap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S233995AbiGRKUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 06:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234139AbiGRKao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:30:44 -0400
-X-Greylist: delayed 629 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 03:30:43 PDT
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1511C93E
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:30:43 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 7D47230B294D;
-        Mon, 18 Jul 2022 12:20:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=8G2Wg
-        NH3o1qs58CmHGVus2NDDqZZPoXKTvvlVcc9B34=; b=eUqGtdyUSn2/2BoEKd+5J
-        fhaQwkXGjAZ0yOw+e2ejH8qjo6OfrpdRRfXie5E7gdZqmI6Nb2lsLPuL5foJrQRS
-        kkf+2syNojymXh0LMtDjG8xJg/d8lJNEV1wwn6q7o/5CwYLdcgFVwSLXc+F2bZg8
-        OOjq3fcMgiwNDdTlMo2K3Pfwt1xmtYqchAD1cLSwMeE5tOdc17WIC2wqmL/Zj5vL
-        GLToGhqrBdMDOa55YxCkazwGaCuKwvl+eRHrHpW5b4kWid/QeTuEno0fqEcUgdBB
-        K1iZ34vN8kHdU4Ivzdql6qQq9FRXl0V7RKbgDo0HZxzHIm2Usi9QZTdzLdcyqlEd
-        g==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 8D49D30AE002;
-        Mon, 18 Jul 2022 12:20:12 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 26IAKCaG029044;
-        Mon, 18 Jul 2022 12:20:12 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 26IAKCvg029043;
-        Mon, 18 Jul 2022 12:20:12 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     "Marc Kleine-Budde" <mkl@pengutronix.de>
-Subject: Re: [PATCH] can: xilinx_can: add support for RX timestamps on Zynq
-Date:   Mon, 18 Jul 2022 12:20:06 +0200
-User-Agent: KMail/1.9.10
-Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Vikram Garhwal <fnu.vikram@xilinx.com>
-References: <20220716120408.450405-1-matej.vasilevski@seznam.cz> <20220718083312.4izyuf7iawfbhlnf@pengutronix.de>
-In-Reply-To: <20220718083312.4izyuf7iawfbhlnf@pengutronix.de>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S233940AbiGRKUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:20:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B3E1CB0E;
+        Mon, 18 Jul 2022 03:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A767B8109E;
+        Mon, 18 Jul 2022 10:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CD87C341CE;
+        Mon, 18 Jul 2022 10:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658139613;
+        bh=E6qUE/0FVI0925eqyIBrCUBMqK+zwWphena0m6VhbnE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OXZHYC+qEMDbyEcHGefefVFx5QQEh19SO3NL1NUvgctLhdghYRDVb9FY035wu/N+O
+         6u6vYyd+HGT+B4XfoPk0KftlyAiu7yvGfNYsGoaFFVUJoi0UujqsNPMXSgy8cv1l63
+         8uxlKTvqrjlgx5v5I4amneLgPlkvK2rrxgqG/cUulwCxCDZVjfYTx5FevIm7bprTs4
+         w4LjLt3jiGqRXAjK1pwEfSQcC/gjsiqFNtHl2bIAIK3avwbb7PnS0TMyX6f2oIKXEX
+         dpT2g+hYqJAD6zl+WgvR/xX42fSQGIstkL2sNApHO04H1X9iO36z2WzNTqiQHk7rYL
+         +yvHBh5D2/5Bw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 01866E451AD;
+        Mon, 18 Jul 2022 10:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202207181220.06765.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] net: stmmac: switch to use interrupt for hw
+ crosstimestamping
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165813961300.9736.8038169452034701746.git-patchwork-notify@kernel.org>
+Date:   Mon, 18 Jul 2022 10:20:13 +0000
+References: <20220714075428.1060984-1-vee.khee.wong@linux.intel.com>
+In-Reply-To: <20220714075428.1060984-1-vee.khee.wong@linux.intel.com>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     davem@davemloft.net, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        richardcochran@gmail.com
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc,
+Hello:
 
-On Monday 18 of July 2022 10:33:12 Marc Kleine-Budde wrote:
-> On 16.07.2022 14:04:09, Matej Vasilevski wrote:
-> > This patch adds support for hardware RX timestamps from Xilinx Zynq CAN
-> > controllers. The timestamp is calculated against a timepoint reference
-> > stored when the first CAN message is received.
-> >
-> > When CAN bus traffic does not contain long idle pauses (so that
-> > the clocks would drift by a multiple of the counter rollover time),
-> > then the hardware timestamps provide precise relative time between
-> > received messages. This can be used e.g. for latency testing.
->
-> Please make use of the existing cyclecounter/timecounter framework. Is
-> there a way to read the current time from a register? If so, please
-> setup a worker that does that regularly.
->
-> Have a look at the mcp251xfd driver as an example:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Matej Vasilevski has looked at the example. But there is problem
-that we know no method how to read actual counter value at least for
-Xilinx Zynq 7000. May be we overlooked something or there
-is hidden test register.
+On Thu, 14 Jul 2022 15:54:27 +0800 you wrote:
+> Using current implementation of polling mode, there is high chances we
+> will hit into timeout error when running phc2sys. Hence, update the
+> implementation of hardware crosstimestamping to use the MAC interrupt
+> service routine instead of polling for TSIS bit in the MAC Timestamp
+> Interrupt Status register to be set.
+> 
+> Cc: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+> 
+> [...]
 
-So actual support is the best approach we have found so far.
-It is usable and valuable for precise relative time measurement
-when bus is not idle for longer time. With expected clock
-precision there should be no skip when at least one message
-for each second or more is received.
+Here is the summary with links:
+  - [1/1] net: stmmac: switch to use interrupt for hw crosstimestamping
+    https://git.kernel.org/netdev/net/c/76c16d3e1944
 
-The precision degrades to software software timer with
-one half of timestamp counter period jitter for really
-long gaps between messages. 
-
-I understand that you do not like the situation,
-if you think that it is not acceptable for mainline
-even with config option under experimental then
-never mind. We want to document this work on Linux
-CAN mailing list. It worked for us in far past
-when we used XCAN for CAN latency testing.
-
-We have CTU CAN FD now which has in the default config
-64 bits timestamps. It is readable and synchronized
-(single counter) over all channels in our can latency
-tester design for Zynq. 100 MHz timestamps base is
-shared even over all CTU CAN FD cores when they
-are integrated to PCIe card.
-
-It could be intersting if XCAN or followups
-on later Xilinx systems has additional registers
-to read time base.
-
-But I pose no UltraScale or later board at the
-moment. I have organized the purchase of more
-ones in 2016, but they stay in group which
-break cooperation on the projects long time ago.
-
-Best wishes,
-
-                Pavel
+You are awesome, thank you!
 -- 
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    RISC-V education: https://comparch.edu.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
