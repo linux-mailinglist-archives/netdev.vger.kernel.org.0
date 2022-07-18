@@ -2,81 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6BBF578913
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7624557891F
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233912AbiGRR7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 13:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S235133AbiGRSB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 14:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230208AbiGRR7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:59:02 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E2AB7DE;
-        Mon, 18 Jul 2022 10:59:00 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id os14so22742558ejb.4;
-        Mon, 18 Jul 2022 10:59:00 -0700 (PDT)
+        with ESMTP id S235200AbiGRSB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:01:26 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1C42E699
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 11:01:25 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id 70so11335625pfx.1
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 11:01:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PTUE6dPKJYpB0lIem9CgvnQjj1kWO1P/fBbaOZRFCNc=;
-        b=jke5/KTGYgxoYaV2XbRW9fG/eoflgbdPwuxy2l62jzuBVJecMjRjtFrZ1b+3iQQJA8
-         7G9O4SB5v8F5DLPmnRjCHlY01ncBcswucuhop0jWpAPzYDt/9eH58W26TApv8tz8QMiE
-         08x+hBDd3ywzpfY93rGph0diYu8cjZgnr/OH89Mxd+IZAYA/yFov7P1uwNZIzSFDS9DL
-         HVrOCo6IMbGRF3Jrn3APEZgB0YllBYc+RnpRGEyNufsXCu4bWbltXqSuXCovvXZItPbO
-         2Xl29APnWx7l+1FaKhNPk7BJgjRXb2xjnRgh0mlvKVI+8WYiKlmja0sCLnw/D0Q5Iz3c
-         xUjQ==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EPr93hzqtmEu+IYJ2GHYmVIyCRv80KC3J1ZooZISigc=;
+        b=Enf7pYJE7MOIDwmMyEDeJQhGGNOoINnRxBUwsJTGSt44Rhhl0ecf26nJv+N79aFdl6
+         Hu7SkjKRFkcQBnM9SKtgSrBIcqLvPX6hggj5Yzo4Ebu/RkGtEBqiV2OyiDibbHFBsin4
+         32CkcrIZtMembTG68i1geFl5wvhP575dHakOI7NNRrSay2gPfQl/Xh8Bc/WklPdf7A3y
+         0bOY7MSZIO/pMwp+cfd0oGN4mN8ccXcKkechpc3P2qamKMg3ww5jVrpgs4gQwZGrDn9l
+         80qoARbbdAIocEKI00DiSW5FFxCrDbUEDQiHq/yWGaRABLcRc7KQuR9iy+f0UUDp5a5g
+         zIzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PTUE6dPKJYpB0lIem9CgvnQjj1kWO1P/fBbaOZRFCNc=;
-        b=Oc9qQsPz178sJ98MGGqEQjQ7JwV1dgHnv91wgpkbBecvfKWPTXuFc5iUvNrKVb+he+
-         Qn13GuDxuptcRy07T+xY9Ls3DQkV1uTRyjDXZAJ2SPn6ZF4f/aIv4ukeptTbeG5Ag9PP
-         Gb1iGvCxXgwg5BPWeeKmNziTroHdOPCIe7qnlBCbYtmbq4JnBFWDNriXbNgdZExdajbN
-         TAP+hpFNWH4a1BJhhweRG1Iox4W0ori576NdDrmt+iiWsNmztaaBvYyDnW8yWNpsFewg
-         VhKr7kK5wPcrOlaHv6LJLiEJ7p8YvtfzqGNd6u9GGD0q6aQ3WrHYdj0Q/8+streRAj0n
-         VlvQ==
-X-Gm-Message-State: AJIora/ArRkm2unEozHTGZic6mTpVUITCb5nFQrvWHJE8DyIJaiQGn6W
-        kfgv5TfNvbbzWMt6PRmJelBe7Pnjw7M=
-X-Google-Smtp-Source: AGRyM1u+XG7N7wELcFCz/sw/hovktBv1DP9JENehO+JEM0uCyedbdQcbX/HUcz6o7P1ZpmgRnY8D+Q==
-X-Received: by 2002:a17:907:6d2a:b0:72f:228b:c972 with SMTP id sa42-20020a1709076d2a00b0072f228bc972mr8257595ejc.638.1658167139493;
-        Mon, 18 Jul 2022 10:58:59 -0700 (PDT)
-Received: from skbuf ([188.25.231.190])
-        by smtp.gmail.com with ESMTPSA id b10-20020a1709063caa00b0072ee79bb8ebsm5161327ejh.126.2022.07.18.10.58.58
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EPr93hzqtmEu+IYJ2GHYmVIyCRv80KC3J1ZooZISigc=;
+        b=1kh4IeaXjI7d88RbjfRFPub8fHaosoSFs1UNc5L3X43FHW1hwIMcDRJrBPFtQiUmlr
+         JxVDMFUQ/uxFSRHnxelCjnPSJHbJ788w0D0LppyZphhvd17eQ/ONcJyz6G4LEDAVK4s7
+         5YGal5bNZNl+TGlxuaEXnRLuHv0xrQR/owvCVWE1+tTNghu7JopcFTzROjkO0INB2jdC
+         U7jlEV2xnpMrIOEoccmGT3HQA+qacqboB7QiK1uz4Iv0wREEStvJYJN4rP24GmChThUS
+         NNoxAUpoBpr5TDt7pmVY1yXqKXynsgWttK7FMkaNNOSsixGAtkLhYCG3kvumInB+bb06
+         j3tQ==
+X-Gm-Message-State: AJIora/UtNSinib1EPDtGiOWvao9MAxIPWfmnHtmUZDzKJC4ZzFsiCM1
+        nHPBId9/aOUkteBCs+FH4Xl6Wg8qYcedTg==
+X-Google-Smtp-Source: AGRyM1vpeglwJ4DUAi/qfuN5ULWTHSY8zDhRICHTSc9dtyx9+vLnBM6UlSa4ACl9/XqFXjQc2imqjQ==
+X-Received: by 2002:a63:1c6:0:b0:412:a989:34f4 with SMTP id 189-20020a6301c6000000b00412a98934f4mr26191227pgb.72.1658167284482;
+        Mon, 18 Jul 2022 11:01:24 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id w128-20020a626286000000b005254535a2cfsm9582413pfb.136.2022.07.18.11.01.21
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 10:58:58 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 20:58:56 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 3/4] net: dsa: qca8k: rework mib autocast
- handling
-Message-ID: <20220718175856.24jllmtsviypu4dg@skbuf>
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-1-ansuelsmth@gmail.com>
- <20220716174958.22542-4-ansuelsmth@gmail.com>
- <20220716174958.22542-4-ansuelsmth@gmail.com>
- <20220718172712.xlrcnel6njflmhli@skbuf>
- <62d59a4a.1c69fb81.c7f5e.b841@mx.google.com>
+        Mon, 18 Jul 2022 11:01:22 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 11:01:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 216259] New: Setting SO_OOBINLINE after receiving OOB data
+ over TCP can cause that data to be received again
+Message-ID: <20220718110119.17365d11@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d59a4a.1c69fb81.c7f5e.b841@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,61 +66,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 07:20:07PM +0200, Christian Marangi wrote:
-> On Mon, Jul 18, 2022 at 08:27:12PM +0300, Vladimir Oltean wrote:
-> > On Sat, Jul 16, 2022 at 07:49:57PM +0200, Christian Marangi wrote:
-> > > In preparation for code split, move the autocast mib function used to
-> > > receive mib data from eth packet in priv struct and use that in
-> > > get_ethtool_stats instead of referencing the function directly. This is
-> > > needed as the get_ethtool_stats function will be moved to a common file.
-> > > 
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > 
-> > Can this change be deferred until there actually appears a second
-> > implementation of (*autocast_mib)?
-> >
-> 
-> Mhhh it would be problematic since I would like to move the ethtools
-> stats function to common code and keep the autocast_mib handler in the
-> qca8k specific code.
-> 
-> An alternative would be to keep the entire ethtool stats function in
-> qca8k specific code but it needs to be moved anyway.
-> 
-> This change is required as probably ipq4019 mmio will be faster to
-> access mib data than using the autocast way.
-> 
-> Tell me how to proceed. Think to skip this we have to leave ethtool
-> stats function in qca8k specific code and move it later?
 
-Sorry, I think I initially misread the patch. So ipq4019 is not going to
-have an implementation of (*autocast_mib) at all? In that case I don't
-have an objection to make it a function pointer now, but you need to
-state exactly that in the commit message: make MIB autocast optional in
-qca8k_get_ethtool_stats(), because we'll need to support an MMIO-based
-switch in the future where we won't need to implement this function.
 
-> > > diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-> > > index 22ece14e06dc..a306638a7100 100644
-> > > --- a/drivers/net/dsa/qca/qca8k.h
-> > > +++ b/drivers/net/dsa/qca/qca8k.h
-> > > @@ -403,6 +403,7 @@ struct qca8k_priv {
-> > >  	struct qca8k_mdio_cache mdio_cache;
-> > >  	struct qca8k_pcs pcs_port_0;
-> > >  	struct qca8k_pcs pcs_port_6;
-> > > +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
-> > 
-> > Typically we hold function pointers in separate read-only structures rather
-> > than in the stateful private structure of the driver, see struct sja1105_info,
-> > struct felix_info, struct mv88e6xxx_info and mv88e6xxx_ops, struct b53_io_ops,
-> > etc etc.
-> > 
-> 
-> Oh ok it's just match data. We should already have something like that
-> in qca8k but I wasn't aware of the _info suffix. If we decide to keep
-> this, can i allign the match struct we use in qca8k to the new pattern
-> and add the function pointer there?
+Begin forwarded message:
 
-I think struct qca8k_match_data could serve that purpose, and have a
-sub-structure called qca8k_ops for function pointers, yes.
+Date: Mon, 18 Jul 2022 17:34:38 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 216259] New: Setting SO_OOBINLINE after receiving OOB data ov=
+er TCP can cause that data to be received again
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=3D216259
+
+            Bug ID: 216259
+           Summary: Setting SO_OOBINLINE after receiving OOB data over TCP
+                    can cause that data to be received again
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.17.0
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: zfigura@codeweavers.com
+        Regression: No
+
+Created attachment 301451
+  --> https://bugzilla.kernel.org/attachment.cgi?id=3D301451&action=3Dedit =
+=20
+test program demonstrating the bug
+
+I'm not sure if this is a bug=E2=80=94I haven't fully read specs and perhap=
+s it's
+within spec for OOBINLINE or TCP or something=E2=80=94but it certainly look=
+s like one.
+
+The attached test program demonstrates the bug, and probably more clearly t=
+han
+any verbal description. It sends and receives a byte of OOB data over a
+(loopback) socket pair, sets the receiving socket to SO_OOBINLINE, and then
+calls recv() again (without MSG_OOB). This results in the same byte being
+received again.
+
+If on the other hand a recv() call is made before setting SO_OOBINLINE [gua=
+rded
+out with if(0)], the offending call does not succeed, which heightens my
+suspicion that this is a bug.
+
+--=20
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
