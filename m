@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 474E55787CB
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5555787E1
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233921AbiGRQuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 12:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
+        id S233686AbiGRQzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 12:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233842AbiGRQui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:50:38 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC7E2B263
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:50:33 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id r186so11108110pgr.2
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:50:33 -0700 (PDT)
+        with ESMTP id S234186AbiGRQzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:55:21 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4662B1A4
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:55:21 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id h132so11095847pgc.10
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:55:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4n6js8E2WeYhhPyAy0LXnhMR+2Lyu81yrdUw4lukj/Q=;
-        b=XxCP3hMIhptKiTODsRhVC/+5CpuleB1RT8z6dM9SwBQyhsYuKoraTiFhDWEyCROE39
-         AU/KUzr41XW2L1SnUbM9KicLrTG7/Bn5fhLW7RojBtoNQCDAuEH4HdppFa6nABV9CtAb
-         ZIRPg5zPF7RXGq/RASwRa5BSwM5OM/4wjhtf0mPfYvVK6YusQw7FZRYSTeY/QHnkOYJL
-         4aTCVsCHHOY2VMJWE5P9K4fmKrRJnxL/Ibcmc2MeUEQdfrprvZYgSrQUyDS0wqY4nBzN
-         jGlcBoZ1n7uyLvrI7Je+zhhPUM3PKckrQHUp83vliMRrA+i3Ybk8vBT0mfZnRfKzCD2O
-         FalQ==
+        bh=aPS75O8b4pbZpDbG2bChmtA0Qj8YJUSytXojD7AFtS8=;
+        b=x87cRKMuprEUTbNLQiIP+cIGJDWLTbdCvj/3U0jH5rpFdIFqPMZPxXuKypdD2KA232
+         2gNdZ2RRhhxDNeEz35XFpBStzlfV5Cv0TmPlyMnUXALZLfEDnpgFEH8Sr+dv1M/F9Yd6
+         bryduAQgSZxy3xhx/nFYdex3GHebh339ZtCg3IOE6NEXgHamO2pkR25QlO388sVky3Ev
+         3JW+zGBLn6kHEkQDzoVtMhI4SQnmOnYp/FF7OzPIUmVXOANV2KMqfbdOtZRESYgjyedk
+         niXNMlPqTgmOtLuf2AtSyYeX/YNiS8AfjNO4G1ulk68TDMX2Bh0Wge5QtFhX4SaBjZQ6
+         ro0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4n6js8E2WeYhhPyAy0LXnhMR+2Lyu81yrdUw4lukj/Q=;
-        b=vLHhLRpcg3Re++NwfsD686r2jn4VpkEKWFHBwr+8vzOrLE4aoEHVCCU/dQ6N31V844
-         5eORj409MA8dsH4ZYpB40m2P7H1TWR6vxAWAQlTgkHmMU83Knlz5F6ThgIRopkzSCi3p
-         ySInyCFazhrMGXKsuQdD9hUq6IJ+UsWgHMwJqjmx0sinMJCQmJJvwx0OvG/81JEhcSsu
-         hxBDif86UTiMUKmP02i7kNSAMbFMqwU5jq1TDzl5jMKdqGiVIvMcua2vceiqwygX++5R
-         h+1JA28OzBG7MVd0rwVbF294YSYVNkZJaQy1kX10lToWnOiTzUlD2Dpl4PPWCDEMX1HX
-         7lsg==
-X-Gm-Message-State: AJIora/nLKHmrgmp2zTLZaAwaPaNt/tYsOKt5uzxU/pmrqnVUh1ybdP3
-        OGjTnOkEC8/5cM47dG7K8uEwOw==
-X-Google-Smtp-Source: AGRyM1ssZ0LIrtHiVnK2+cQdSaOAlu5O/cSFpspTmseRXD4RBZKApkyXeQTHpGhihrZtSK9v7byjTA==
-X-Received: by 2002:a05:6a00:1590:b0:52a:eb00:71dc with SMTP id u16-20020a056a00159000b0052aeb0071dcmr29636017pfk.64.1658163033417;
-        Mon, 18 Jul 2022 09:50:33 -0700 (PDT)
+        bh=aPS75O8b4pbZpDbG2bChmtA0Qj8YJUSytXojD7AFtS8=;
+        b=0ceboB59me/pnvFZSkqgeJuKtJX88MepvoWY9X1exBg7OJvHI1rLPR5Rv4t4MYkZGB
+         iRlFdjA32QSvPzySLQaNetAPOFR3PND50ELDSvxu74DWKyu14Z0/1JqH7OwmMysUSv8F
+         EbUXYFZXKadbIuBxpUA0/Tl/VAe9cP50Sg73uc8QZSSS6oVZQV2J5rbLzEdI/jgim9mr
+         vLf/3kjc+x5QJDXQOsR2CKglRqve5S1jRCfz5BWnGfSJ2kMUBIOQDLXd5FnRHrMEgH4z
+         KspnA10KzK626h9b+wiB0fa6R21aMvWTJ8adnAfUUn2reVvpY5ARL+v6M8fE8GNZ6g1B
+         bP/g==
+X-Gm-Message-State: AJIora/KtfGr+clCmSJlnxEtgE68AuroNVmmTLhv5t9GmNy41Ojd8r16
+        r1QfHD/MJqw6gs1+0seY1wIkUVPKIjV0fg==
+X-Google-Smtp-Source: AGRyM1s4+yRM3MLycKK1nWj8mNQzaYfEhRMXzKvtRLKmBy4+VhF8f74NtM60SraqMRWx2g6WcBfwbA==
+X-Received: by 2002:a63:141a:0:b0:411:a3b7:bb19 with SMTP id u26-20020a63141a000000b00411a3b7bb19mr25500763pgl.518.1658163320743;
+        Mon, 18 Jul 2022 09:55:20 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id o24-20020a63fb18000000b00419cde333eesm7298954pgh.64.2022.07.18.09.50.30
+        by smtp.gmail.com with ESMTPSA id ne19-20020a17090b375300b001f1eb2e3c00sm83957pjb.34.2022.07.18.09.55.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 09:50:31 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 09:50:27 -0700
+        Mon, 18 Jul 2022 09:55:19 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 09:55:15 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Parav Pandit <parav@nvidia.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         David Ahern <dsahern@gmail.com>
 Subject: Re: [PATCH iproute2] uapi: add vdpa.h
-Message-ID: <20220718095027.1ea6bbbc@hermes.local>
+Message-ID: <20220718095515.0bdb8586@hermes.local>
 In-Reply-To: <PH0PR12MB5481AAD7096EA95956ED6801DC8C9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220718163112.11023-1-stephen@networkplumber.org>
         <PH0PR12MB5481AAD7096EA95956ED6801DC8C9@PH0PR12MB5481.namprd12.prod.outlook.com>
@@ -72,30 +72,6 @@ X-Mailing-List: netdev@vger.kernel.org
 On Mon, 18 Jul 2022 16:40:30 +0000
 Parav Pandit <parav@nvidia.com> wrote:
 
-> + David
-> 
-> Hi Stephen,
-> 
-> > From: Stephen Hemminger <stephen@networkplumber.org>
-> > Sent: Monday, July 18, 2022 12:31 PM
-> > 
-> > Iproute2 depends on kernel headers and all necessary kernel headers should
-> > be in iproute tree. When vdpa was added the kernel header file was not.
-> > 
-> > Fixes: c2ecc82b9d4c ("vdpa: Add vdpa tool")
-> > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>  
-> 
-> > ---
-> >  include/uapi/linux/vdpa.h | 59
-> > +++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 59 insertions(+)
-> >  create mode 100644 include/uapi/linux/vdpa.h
-> > 
-> > diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h new file
-> > mode 100644 index 000000000000..94e4dad1d86c
-> > --- /dev/null
-> > +++ b/include/uapi/linux/vdpa.h  
-> 
 > We kept this in vdpa/include/uapi/linux/vdpa.h after inputs from David.
 > This is because vdpa was following rdma style sync with the kernel headers.
 > Rdma subsystem kernel header is in rdma/include/uapi/rdma/rdma_netlink.h.
@@ -103,5 +79,13 @@ Parav Pandit <parav@nvidia.com> wrote:
 > Any reason to take different route for vdpa?
 > If so, duplicate file from vdpa/include/uapi/linux/vdpa.h should be removed.
 > So that there is only one vdpa.h file.
+> 
+> If so, should we move rdma files also similarly?
+> 
+> Similar discussion came up in the past. (don't have ready reference to the discussion).
+> And David's input was to keep the way it is like rdma.
 
-Ok, sorry the semi-automated scan script didn't find the other one.
+RDMA is different and contained to one directory.
+VDPA is picking up things from linux/.
+And the current version is not kept up to date with kernel headers.
+Fixing that now.
