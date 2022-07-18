@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E517D578E05
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 01:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5077D578E1C
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 01:12:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236428AbiGRXEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 19:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        id S235947AbiGRXMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 19:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbiGRXEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 19:04:06 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56442EE2F;
-        Mon, 18 Jul 2022 16:04:05 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id z22so8283613lfu.7;
-        Mon, 18 Jul 2022 16:04:05 -0700 (PDT)
+        with ESMTP id S230165AbiGRXMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 19:12:54 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AF333368;
+        Mon, 18 Jul 2022 16:12:53 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id bp17so21967115lfb.3;
+        Mon, 18 Jul 2022 16:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TZUTBE8JOO+dBwswBQU/UW48YDxWzcOqBKIIatUeRxg=;
-        b=eu+8mAmsNBdDm3xB9tJ7qWbNXhdC6joRhpKHQAJ4NU3Mky13rD9L25sbhWt9DuIotI
-         gUojvdBW5A0Yn/MC4O+GhB63tm4n97gegK8HpEZRkzwH2RBhJ3qbgnumGnjVrlCvsJR7
-         2tNXRis6jsm9duhk3z7u+9TVJuxAzDeFkQhctki+wu7c0eWrDms/Ckpf9yes50sGz5ZS
-         iqzCE8Mh9LilppMXKYD8OidSUpoV8K4oY90b0RKIZ/yMBMgmavyjBG0D5sM+o8aKrngS
-         gmmNcREgRh2MPSjA60ICVGr0N2G66g230+VXfqZ4m8y7QeVjVf+NB5gcvz50Ti9awr+y
-         lg8Q==
+        bh=tdCumMkGDtxwvFkZJRFbFv4L/guo6vY9nBfv53e1qHk=;
+        b=MNb/r7HdgU2ylim64tzSUsoIlfAL0CGlCiXdIER51EOlv6vZH4GRJUpKxmmlSR2Fs+
+         wf12WcjpU3KyyeETxz+SkWM6281RSoWRgl3/IsQyVQPEfrxw5HL3Regb2CvOP8wG5Kia
+         KCidYinJq2cxB2kqyWcs8bJ3ahPsNrbtrBqguxNuyyCoC3M/u+xKy9IekY2tQC9hTWYG
+         9f510gstrcizEFqkjLuvGu5GSAk0+I3gWuwA6+OGDIofmyLO7E/uPBXCOc6ZoyX0Y117
+         bhkPnnE2Gloh5/NAfZL8yxfcKPevhQiDx6Vj7yVnewVzAo9Wva49XQXhKad1jhWZ0AID
+         qxhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TZUTBE8JOO+dBwswBQU/UW48YDxWzcOqBKIIatUeRxg=;
-        b=rtpI9Unm45IrX6GHJ32A73KgZUTHBXuByJTKBO3+A2GvT6xLpx/vDxNkkHn2VZ+RSo
-         T6009zsOqom79UFdfVY9lC/9GSyFCCEB7Jvc7/9QQf/aLKf8iEekOjI+2cn/w3Md6MwV
-         L2FyNHJAd/OUu8sQkG6rUM4RafOFbH/prvOHFVdWFAV+TZYO2qNQFAfj9GSacUub35Jm
-         kR+CK+76LsW0BMcQ++Mf2VyktVpkMTrT4zE2z79zrQGSnVwD/0XAdOqoeUY+MNKOpiql
-         lc+Riy8yc1sTQ0hQamw/yDviN+8E1qH6Ho5jYY+hyzWKPgzHhrAyRQqiinVkJI9ymV6U
-         duNA==
-X-Gm-Message-State: AJIora95pibKA1l3Z+2MrEWIAlDa3oCFEekfIoOFQO6PDUHxf8DnjbLF
-        1yBkN4cEfKDJTrRS97aVR5uxmcrtPWapTgb8fLAeYpS81FPgjg==
-X-Google-Smtp-Source: AGRyM1u0wBbNmMakHQBA/ZO0hGJZKUbnq/dnkUov8nPUnJv4Mrzha3OP1ESzVnpMYzPJIoYstMUH0d87QXPunDiWZNY=
-X-Received: by 2002:a05:6512:3409:b0:489:c549:4693 with SMTP id
- i9-20020a056512340900b00489c5494693mr15228484lfr.26.1658185443502; Mon, 18
- Jul 2022 16:04:03 -0700 (PDT)
+        bh=tdCumMkGDtxwvFkZJRFbFv4L/guo6vY9nBfv53e1qHk=;
+        b=rLDQsZDoEgqqkpN3ZThrPipCGqdTngttrxhmM37qpSL1CmrTvlPUbKo4tLXGzILtZ5
+         4bTKl5/e61u8IIveNR6STe2PVBAz7pV8a/3qFaVBHtkHQ2HXgbGWygl8oZClMIwBv3WR
+         +6ygr0WvDGCbRwCYydL4bdYXFgxCpITrC9Eplze+u2/WMxCf3cuEznY1KUrShUMdKYMR
+         4rpS+t5VWmqQK3ewzTKeSfmyPvOuUeYcphb5MN2IvthRFQ0yt/0Fsr2O3r1zOe0OXiz1
+         YSRVIlSXHRosddodLUTo20/EuAezM4OS3u6ikevn3diDszw7qTEm0hwXg8VBuWc+RvTq
+         OPog==
+X-Gm-Message-State: AJIora8cqsbD431PKKk9eBKzjW24TX5hgNzKDEwBR5E1uXxgdIcXtCbQ
+        ixHN3I2FvVv2cWNmdZeL5yTomFI7YWNhiX7NS2gDu311R+MUqw==
+X-Google-Smtp-Source: AGRyM1u/UX/2/zEXz6/lD8zuEp0We7LzyP9lhw5gFziM+I+EVpupn0uSaExp9ad9Jm+RiNlqrZrWSE08W6orK5vu2AI=
+X-Received: by 2002:a05:6512:2621:b0:47f:d228:bdeb with SMTP id
+ bt33-20020a056512262100b0047fd228bdebmr14931135lfb.121.1658185971888; Mon, 18
+ Jul 2022 16:12:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220717133759.8479-1-khalid.masum.92@gmail.com>
- <3ea0ea90-48bf-ce19-e014-9443d732e831@gmail.com> <CAABMjtHiet1_SRvLBhoNxeEh865rwtZCkb510JmFPkHFMd5chQ@mail.gmail.com>
-In-Reply-To: <CAABMjtHiet1_SRvLBhoNxeEh865rwtZCkb510JmFPkHFMd5chQ@mail.gmail.com>
+References: <1657871102-26907-1-git-send-email-quic_zijuhu@quicinc.com>
+In-Reply-To: <1657871102-26907-1-git-send-email-quic_zijuhu@quicinc.com>
 From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 18 Jul 2022 16:03:52 -0700
-Message-ID: <CABBYNZJVv=pJv60P6fYZh65JU+BV5agGfXEh4VenxELEXqtDsA@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_core: Use ERR_PTR instead of NULL
-To:     Khalid Masum <khalid.masum.92@gmail.com>
-Cc:     Pavel Skripkin <paskripkin@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Date:   Mon, 18 Jul 2022 16:12:40 -0700
+Message-ID: <CABBYNZ+YcrGn09hxB9t7rn1ccY4xtv1WCLQrOLvyUXdQNA_usw@mail.gmail.com>
+Subject: Re: [PATCH v4] Bluetooth: hci_sync: Remove redundant func definition
+To:     Zijun Hu <quic_zijuhu@quicinc.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Luiz Augusto Von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -76,67 +74,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Khalid,
+Hi Zijun,
 
-On Sun, Jul 17, 2022 at 11:34 AM Khalid Masum <khalid.masum.92@gmail.com> wrote:
+On Fri, Jul 15, 2022 at 12:45 AM Zijun Hu <quic_zijuhu@quicinc.com> wrote:
 >
-> On Sun, Jul 17, 2022 at 10:17 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
-> >
-> > Hi Khalid,
-> >
-> > Khalid Masum <khalid.masum.92@gmail.com> says:
-> > > Failure of kzalloc to allocate memory is not reported. Return Error
-> > > pointer to ENOMEM if memory allocation fails. This will increase
-> > > readability and will make the function easier to use in future.
-> > >
-> > > Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
-> > > ---
-> >
-> > [snip]
-> >
-> > > index a0f99baafd35..ea50767e02bf 100644
-> > > --- a/net/bluetooth/hci_core.c
-> > > +++ b/net/bluetooth/hci_core.c
-> > > @@ -2419,7 +2419,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
-> > >
-> > >       hdev = kzalloc(alloc_size, GFP_KERNEL);
-> > >       if (!hdev)
-> > > -             return NULL;
-> > > +             return ERR_PTR(-ENOMEM);
-> > >
-> >
-> > This will break all callers of hci_alloc_dev(). All callers expect NULL
-> > in case of an error, so you will leave them with wrong pointer.
+> both hci_request.c and hci_sync.c have the same definition for
+> disconnected_accept_list_entries(), so remove a redundant copy.
 >
-> You are right. All callers of hci_alloc_dev() need to be able to handle
-> the error pointer. I shall send a V2 with all the callers of hci_alloc_dev
-> handling the ERR_PTR.
+> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> ---
+> v3->v4
+>  -use 75 characters per line for Linux commit message bodies
+> v2->v3
+>  -remove table char to solve gitlint checking failure
+> v1->v2
+>  -remove the func copy within hci_request.c instead of hci_sync.c
+>  net/bluetooth/hci_request.c | 18 ------------------
+>  net/bluetooth/hci_request.h |  2 ++
+>  net/bluetooth/hci_sync.c    |  2 +-
+>  3 files changed, 3 insertions(+), 19 deletions(-)
 >
-> > Also, allocation functionS return an error only in case of ENOMEM, so
-> > initial code is fine, IMO
-> >
-
-If there just a single error like ENOMEM then Id say this is fine,
-just as it is fine for kzalloc.
-
-> I think it makes the memory allocation error handling look to be a bit
-> different from what we usually do while allocating memory which is,
-> returning an error or an error pointer. Here we are returning a NULL
-> without any context, making it a bit unreadable. So I think returning
-> an error pointer is better. If I am not mistaken, this also complies with
-> the return convention:
-> https://www.kernel.org/doc/htmldocs/kernel-hacking/convention-returns.html
-
-Not sure if that would apply to code that is basically a wrapper of kzalloc.
-
-> >
-> > Thanks,
-> > --Pavel Skripkin
+> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+> index 635cc5fb451e..edec0447aaa7 100644
+> --- a/net/bluetooth/hci_request.c
+> +++ b/net/bluetooth/hci_request.c
+> @@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>         return 0;
+>  }
 >
+> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+> -{
+> -       struct bdaddr_list *b;
+> -
+> -       list_for_each_entry(b, &hdev->accept_list, list) {
+> -               struct hci_conn *conn;
+> -
+> -               conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
+> -               if (!conn)
+> -                       return true;
+> -
+> -               if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
+> -                       return true;
+> -       }
+> -
+> -       return false;
+> -}
+> -
+>  void __hci_req_update_scan(struct hci_request *req)
+>  {
+>         struct hci_dev *hdev = req->hdev;
+> diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+> index 7f8df258e295..e80b500878d9 100644
+> --- a/net/bluetooth/hci_request.h
+> +++ b/net/bluetooth/hci_request.h
+> @@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
+>  int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>                               bool use_rpa, u8 *own_addr_type);
 >
-> Thanks,
->   -- Khalid Masum
+> +bool disconnected_accept_list_entries(struct hci_dev *hdev);
 
+I rather not add anything to hci_request.h since we want to deprecate
+its functions, in fact we might as well try to start removing the code
+paths that attempt to access things like
+disconnected_accept_list_entries since I think most of the code is
+already in place in hci_sync.c things like __hci_req_update_scan if it
+is no longer used anywhere else.
+
+>  int hci_abort_conn(struct hci_conn *conn, u8 reason);
+>  void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
+>                       u8 reason);
+> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> index 212b0cdb25f5..48a262f0ae49 100644
+> --- a/net/bluetooth/hci_sync.c
+> +++ b/net/bluetooth/hci_sync.c
+> @@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
+>         return err;
+>  }
+>
+> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+> +bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>  {
+>         struct bdaddr_list *b;
+>
+> --
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+>
 
 
 -- 
