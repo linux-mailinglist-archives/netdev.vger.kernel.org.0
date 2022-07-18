@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18126578AD0
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2A0578AC1
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235991AbiGRT3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        id S235971AbiGRT3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235947AbiGRT2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:52 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5081D2BFE;
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id bz13so3157863qtb.7;
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
+        with ESMTP id S235933AbiGRT2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:54 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D69ED5A;
+        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id o26so9561767qkl.6;
+        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=h/b9Gor8OmaVbqlus0N8Yerswqy364XPSWWiuokjuPU=;
-        b=fqFJufaEGeNpfSwDeHLXACT8OnWWXz+SS1j38SVvv2XI3V7V8WDZtxIfdvIaKQ8y9v
-         0B0WY2lTYT/i7+LGAA/Ip2Q7u/fJdoSJt/07tIAob70ImqR7TtZlTUPoT1LuMgFcuWY4
-         7HFka6L2jlYH/h5SMQBpAZF9w4mMJC5VPkP+4naKoLuGj5PEwF6S3Vgsnqe9/5kDZX5n
-         E1qaAdoAy7EOEd3ji4eGl8J7TIvZC5UE2R5Le3yIwidlKTaWO/goPl8ml+dCO0JT7Ivy
-         7rMLL+xDqIc/xTUV4ajY3ZNx4vpyBfXc91TeNvsl4Lz9YhlMBkra7r0yzMzayL5h8PUk
-         nvoQ==
+        bh=WuubJCN67Jl+OjN8nViAm+NVBqJ2ywJqSxExI1yjjeo=;
+        b=Tj6uBzad4HGB6EL0M1yus7P2xl8seTebl3KEY60QiHYHkiZzGlnZJc4zmMQ715lBQb
+         V+6rCjlFtE36SY7lmQBsjFybnyNA/OpYbPg+Hxm3taVetxQSzz05FbXjQEqoSn3tr68N
+         fufksI4iYgEDgfiqAfDBwg7RDixJD5/BbGOR3iYboPjgzPCnwUY3I9q81BKlZDy93R5+
+         TYLpPb/vjZhMTWj53wGRv+e2qfs4M6ZZ3ek9UJ68NbZRFgDae6SXyqs1nFFZVE0b4GJf
+         TuETrm14lrx8VLkbDZWKHiMSYX1+sOP0ozMNOUt4xFlsRcKHdAtHqy1wiM2QBsaIJik6
+         D9HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h/b9Gor8OmaVbqlus0N8Yerswqy364XPSWWiuokjuPU=;
-        b=H1IGxrZocn1L1esbYq2CGQZz58XNJecCBmV2ErVkRaobHnabTvabDSKGDxpXRAyOZ0
-         +VcCtN9JmReKwliaFj5JUdqpfoaB9Y1IIr2fQu+d8xw0OovdYwATLJSFJlwkN6RJnt0n
-         oV7WBh3YpQ30WtSP/bSfY8su9IpHLtwUtS/OAOkAhzjwaZKte4onZG1Ui27ko1B/j4pP
-         OMAy2yM6PxlrEwmpoghmDqXZdvGszUpEGoXQ5lHz5fi8uclZFHTId2ZOLq42efOQfKXr
-         lOCjNjqnOOSkiKfXyhcVS0iULhEarcedj95aTAPY+QoFN/dQ5g8ilhbhbSBRVmBncyse
-         KmnQ==
-X-Gm-Message-State: AJIora94bnyIKu0vOi4OaLrgFIxMwJ47ZcSk11ZFA6jV+HMA1TDajSSF
-        yiRqIltMQFVCIEpNpnO1Qdx7cJH7psfVOA==
-X-Google-Smtp-Source: AGRyM1uaGs+CAqWH8avpKeUoD3vmIQkUBNKvCB+RRyAV1xF9WVdeoxP71d/HveDQuxFH6mXJfEXYcA==
-X-Received: by 2002:a05:622a:198b:b0:31e:ec25:8ead with SMTP id u11-20020a05622a198b00b0031eec258eadmr5759733qtc.423.1658172530262;
-        Mon, 18 Jul 2022 12:28:50 -0700 (PDT)
+        bh=WuubJCN67Jl+OjN8nViAm+NVBqJ2ywJqSxExI1yjjeo=;
+        b=nArK0v2r1yode3l+iFyhdtsEdLmfZrSn8XAyJ9sCYe/FMI7ffT7RwcCycf8CWgMvW+
+         Cccl9/e6vz2d1L5RWzv/0bSgkTf0Usg4WNyV0xwDjQE8Z2xUsBn+n8rS1xhHAzjxC3Ep
+         UykOc9GPSR4nK12nX7hRclPMA1xhjaAk6G7ifkkiDpHbcI5kYR+VctcyPMBk/vVNbCmF
+         RQXhxXTN3YEf6MD40e0+7wkeD7VfkpnTHUheGe00FqwBQmyyjMO1Xaf/UxySBpeish/D
+         8zhEVvoasi8EYF56cFyl/n5EX3fWEdePoXRlFNOJSk22TCPiKigmOoX9TRNySbTnjh8i
+         hTjw==
+X-Gm-Message-State: AJIora8CRPc4VGUOPscqLbrYugdFTVnlML7PKI4zrO37yMZ9ptLTb4of
+        bZk3mxBeHERn/Y+QD72Hl2/T6M7dWh+yoQ==
+X-Google-Smtp-Source: AGRyM1utJxde5Ak8ZdjBXmB+6RTWRe3dLKOIt69li9dLPfU8C1nB6Z6dKZAjbNpuMZO2dr2cItKKhg==
+X-Received: by 2002:a37:b346:0:b0:6b2:8e4c:690c with SMTP id c67-20020a37b346000000b006b28e4c690cmr18431369qkf.654.1658172531539;
+        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id x27-20020a05620a0b5b00b006b5e43466ebsm4634117qkg.59.2022.07.18.12.28.49
+        by smtp.gmail.com with ESMTPSA id r2-20020ac87ee2000000b0031ed590433bsm8607338qtc.78.2022.07.18.12.28.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:49 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 03/16] lib/test_bitmap: don't test bitmap_set if nbits == 0
-Date:   Mon, 18 Jul 2022 12:28:31 -0700
-Message-Id: <20220718192844.1805158-4-yury.norov@gmail.com>
+Subject: [PATCH 04/16] lib/test_bitmap: test test_bitmap_arr{32,64} starting from nbits == 1
+Date:   Mon, 18 Jul 2022 12:28:32 -0700
+Message-Id: <20220718192844.1805158-5-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,27 +108,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't test bitmap_set(bitmap, start, 0) as it's useless, most probably
-a sign of error in real code, and makes CONFIG_DEBUG_BITMAP barking.
+nbits == 0 is useless. In a real code it's most probably a sign of
+error, and it makes CONFIG_DEBUG_BITMAP barking.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- lib/test_bitmap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/test_bitmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index 98754ff9fe68..2a70393ac011 100644
+index 2a70393ac011..bc48d992d10d 100644
 --- a/lib/test_bitmap.c
 +++ b/lib/test_bitmap.c
-@@ -622,7 +622,7 @@ static void noinline __init test_mem_optimisations(void)
- 	unsigned int start, nbits;
+@@ -567,7 +567,7 @@ static void __init test_bitmap_arr32(void)
  
- 	for (start = 0; start < 1024; start += 8) {
--		for (nbits = 0; nbits < 1024 - start; nbits += 8) {
-+		for (nbits = 1; nbits < 1024 - start; nbits += 8) {
- 			memset(bmap1, 0x5a, sizeof(bmap1));
- 			memset(bmap2, 0x5a, sizeof(bmap2));
+ 	memset(arr, 0xa5, sizeof(arr));
  
+-	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
++	for (nbits = 1; nbits < EXP1_IN_BITS; ++nbits) {
+ 		bitmap_to_arr32(arr, exp1, nbits);
+ 		bitmap_from_arr32(bmap2, arr, nbits);
+ 		expect_eq_bitmap(bmap2, exp1, nbits);
+@@ -593,7 +593,7 @@ static void __init test_bitmap_arr64(void)
+ 
+ 	memset(arr, 0xa5, sizeof(arr));
+ 
+-	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
++	for (nbits = 1; nbits < EXP1_IN_BITS; ++nbits) {
+ 		memset(bmap2, 0xff, sizeof(arr));
+ 		bitmap_to_arr64(arr, exp1, nbits);
+ 		bitmap_from_arr64(bmap2, arr, nbits);
 -- 
 2.34.1
 
