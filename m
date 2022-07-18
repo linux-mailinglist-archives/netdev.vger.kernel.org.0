@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5ACB577EBD
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E74577F09
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbiGRJdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 05:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        id S234034AbiGRJwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 05:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233190AbiGRJdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:33:16 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DB01A83B;
-        Mon, 18 Jul 2022 02:33:14 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oDN7o-0004Gz-Cy; Mon, 18 Jul 2022 11:33:12 +0200
-Message-ID: <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
-Date:   Mon, 18 Jul 2022 11:33:11 +0200
+        with ESMTP id S232195AbiGRJwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:52:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F334217E1C
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 02:52:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0725CCE12B0
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:52:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918C2C341C0;
+        Mon, 18 Jul 2022 09:52:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658137948;
+        bh=FvJ30zIBe6teYhvvRTO4Y1PlGza4yd1K3IFdjppMF/g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JElPX3qUMrDlcb6A9YI1RPl+F9iekDAlhF0N45C7pFYxei/D/jQWUbYOHUgnCGHYP
+         9MJI8Ec9PVbzCFg2YYGLGp0cl8NeY5GFVBVwe0foaY2kpGeR5PxKjoV9WyVxAaW1Ce
+         CxbBVVi1Y4rND+0Vu8ToulFB67N9nyn4w+BPgRh3HooP1O+exY4pnTEmgpg4KqXxmO
+         2JToIG912eVl0z3vXDxJydwUVA842soi0bkvqJ3cVGvnMjzZdIe7SPxuwxxwUTSrTE
+         dnYyx8He6jQm10rRjcsKhXeJljk43ZMu/Ki5lfvdGEYddmLWV8bct1eBjz2Uv5xco7
+         7Hgy5f9j7LspA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
+Subject: [PATCH net] net: ethernet: mtk_ppe: fix possible NULL pointer dereference in mtk_flow_get_wdma_info
+Date:   Mon, 18 Jul 2022 11:51:53 +0200
+Message-Id: <4e1685bc4976e21e364055f6bee86261f8f9ee93.1658137753.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
- guidelines.
-Content-Language: en-US
-To:     Dave Airlie <airlied@gmail.com>, torvalds@linux-foundation.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        gregkh@linuxfoundation.org, Daniel Vetter <daniel@ffwll.ch>,
-        mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
-References: <20220718072144.2699487-1-airlied@gmail.com>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-In-Reply-To: <20220718072144.2699487-1-airlied@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1658136794;4a0ff83e;
-X-HE-SMSGID: 1oDN7o-0004Gz-Cy
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,97 +52,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+odev pointer can be NULL in mtk_flow_offload_replace routine according
+to the flower action rules. Fix possible NULL pointer dereference in
+mtk_flow_get_wdma_info.
 
-On 18.07.22 09:21, Dave Airlie wrote:
-> From: Dave Airlie <airlied@redhat.com>
-> 
-> A recent snafu where Intel ignored upstream feedback on a firmware
-> change, led to a late rc6 fix being required. In order to avoid this
-> in the future we should document some expectations around
-> linux-firmware.
-> 
-> I was originally going to write this for drm, but it seems quite generic
-> advice.
-> 
-> I'm cc'ing this quite widely to reach subsystems which use fw a lot.
+Fixes: a333215e10cb5 ("net: ethernet: mtk_eth_soc: implement flow offloading to WED devices")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thx for this, I kinda put "add a few words about firmware into
-Documentation/process/handling-regressions.rst" on my todo list already,
-but having a separate document is likely better.
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 90e7dfd011c9..5d457bc9acc1 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -93,6 +93,9 @@ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_i
+ 	};
+ 	struct net_device_path path = {};
+ 
++	if (!ctx.dev)
++		return -ENODEV;
++
+ 	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
+ 
+ 	if (!IS_ENABLED(CONFIG_NET_MEDIATEK_SOC_WED))
+-- 
+2.36.1
 
-Took a quick look, here are a few suggestions for your consideration.
-
-> [...]
-> diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-> new file mode 100644
-> index 000000000000..34d2412e78c6
-> --- /dev/null
-> +++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-> @@ -0,0 +1,34 @@
-> +===================
-> +Firmware Guidelines
-> +===================
-> +
-> +Drivers that use firmware from linux-firmware should attempt to follow
-> +the rules in this guide.
-
-How about spelling out the main aspect first clearly before going into
-the details about its consequence? Maybe something along these lines:
-
-```
-Users switching to a newer kernel should *not* have to install newer
-firmware files to keep their hardware working. At the same time updated
-firmware files must not cause any regressions for users of older kernel
-releases.
-
-Drivers that use such firmware (like that in linux-firmware) should thus
-follow these rules:
-```
-
-> +* Firmware should be versioned with at least a major/minor version it
-> +  is suggested that the firmware files in linux-firmware be named with
-> +  some device specific name, and just the major version. The
-> +  major/minor/patch versions should be stored in a header in the
-> +  firmware file for the driver to detect any non-ABI fixes/issues. The
-> +  firmware files in linux-firmware should be overwritten with the newest
-> +  compatible major version. Newer major version firmware should remain
-> +  compatible with all kernels that load that major number.
-> +
-> +* Users should *not* have to install newer firmware to use existing
-> +  hardware when they install a newer kernel. 
-
-This will need changes if you pick up the suggestion above.
-
-> If the hardware isn't
-> +  enabled by default or under development,
-
-Wondering if it might be better to drop the "or under development", as
-the "enabled by default" is the main part afaics. Maybe something like
-"If support for the hardware is normally inactive (e.g. has to be
-enabled manually by a kernel parameter)" would be better anyway.
-
-> this can be ignored, until
-> +  the first kernel release that enables that hardware.  This means no
-> +  major version bumps without the kernel retaining backwards
-> +  compatibility for the older major versions.  Minor version bumps
-> +  should not introduce new features that newer kernels depend on
-> +  non-optionally.
-> +
-> +* If a security fix needs lockstep firmware and kernel fixes in order to
-> +  be successful, then all supported major versions in the linux-firmware
-> +  repo
-
-This made me wonder: what exactly are "all supported major versions" in
-this context? Do you mean something like "all major versions in the
-linux-firmware required by currently supported stable/longterm kernel
-series"? Then it might be wise to write that.
-
-> should be updated with the security fix, and the kernel patches
-> +  should detect if the firmware is new enough to declare if the security
-> +  issue is fixed.  All communications around security fixes should point
-> +  at both the firmware and kernel fixes. If a security fix requires
-> +  deprecating old major versions, then this should only be done as a
-> +  last option, and be stated clearly in all communications.
-> +
-
-HTH, Ciao, Thorsten
