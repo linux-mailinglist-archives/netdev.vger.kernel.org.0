@@ -2,34 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2243577F8B
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23FF0577F90
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbiGRKW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        id S233747AbiGRKXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 06:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233799AbiGRKWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:22:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111201CB0E
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:22:21 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oDNt8-0005wx-Nk; Mon, 18 Jul 2022 12:22:06 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 393DBB2FA4;
-        Mon, 18 Jul 2022 10:22:04 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 12:22:03 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
+        with ESMTP id S229815AbiGRKXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:23:36 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F5F1C901;
+        Mon, 18 Jul 2022 03:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1658139792;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=VA8GwCW4QpEMKYWhRM1u4BGCLhp6kJzO4cxOgeUtw4g=;
+    b=TL9bjhXIDSnjP6E0R1Z7fTFzgKDwPFOsnsZG8I/wDEzNUI/J88N4A21SABCXOgFXk4
+    PGIKC1yOgXwG7kuQNzoTEBpIA2gmhlNdv3yYIhoRsdLFNyACkhvDn+ioJRZ4/pOqfdtT
+    5onX4kuhM8vRPXp7f2NqgfYiCFKxudtOzpiVNr7uO4G0Kf+7EncgjSbxV06FVlJrkc1t
+    JTxb+uAoYIh4b2E9Oq15F1D1vTwNVnGRMdUdweBK561cZ0r/MGFfPXW3O7V2Ncte1iwR
+    noGN1bwOrn6SyMiyw9Ye+xraItzOhRc2YtnJHGC/cNygcGzahck8jvRPn9BSwyDNh2i1
+    C90Q==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytJSqijYPVurqCog2kT72ilCcUDL4c4Q=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfd:d100:b185:70d0:e6b4:7289]
+    by smtp.strato.de (RZmta 47.47.0 AUTH)
+    with ESMTPSA id t870d5y6IANBDAA
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 18 Jul 2022 12:23:11 +0200 (CEST)
+Message-ID: <1dbd95e8-e6d7-a611-32d0-ea974787ff5a@hartkopp.net>
+Date:   Mon, 18 Jul 2022 12:23:05 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Max Staudt <max@enpas.org>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
         Jeroen Hofstee <jhofstee@victronenergy.com>,
         michael@amarulasolutions.com,
         Amarula patchwork <linux-amarula@amarulasolutions.com>,
@@ -42,23 +58,18 @@ Cc:     linux-kernel@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 5/5] can: slcan: send the listen-only command to the
- adapter
-Message-ID: <20220718102203.66y6glwwphptl2tu@pengutronix.de>
 References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
- <20220716170007.2020037-6-dario.binacchi@amarulasolutions.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4nsvjzfaopo7e7xv"
-Content-Disposition: inline
-In-Reply-To: <20220716170007.2020037-6-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+ <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
+ <20220717233842.1451e349.max@enpas.org>
+ <6faf29c7-3e9d-bc21-9eac-710f901085d8@hartkopp.net>
+ <20220718101507.eioy2bdcmjkgtacz@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220718101507.eioy2bdcmjkgtacz@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -66,98 +77,38 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---4nsvjzfaopo7e7xv
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-The subject can be enhanced, as the listen-only command ist not send
-unconditionally. What about: "add support for listen-only mode"?
+On 7/18/22 12:15, Marc Kleine-Budde wrote:
+> On 18.07.2022 08:57:21, Oliver Hartkopp wrote:
+>>> What do the maintainers think of dropping the old "slcan" name, and
+>>> just allowing this to be a normal canX device? These patches do bring
+>>> it closer to that, after all. In this case, this name string magic
+>>> could be dropped altogether.
+>>>
+>>
+>> I'm fine with it in general. But we have to take into account that there
+>> might be existing setups that still might use the slcan_attach or slcand
+>> mechanic which will likely break after the kernel update.
+>>
+>> But in the end the slcan0 shows up everywhere - even in log files, etc.
+>>
+>> So we really should name it canX. When people really get in trouble with it,
+>> they can rename the network interface name with the 'ip' tool ...
+> 
+> Don't break user space! If you don't like slcanX use udev to give it a
+> proper name.
 
-On 16.07.2022 19:00:07, Dario Binacchi wrote:
-> In case the bitrate has been set via ip tool, this patch changes the
-> driver to send the listen-only ("L\r") command to the adapter.
+Ok. Fine with me too.
 
-=2E..but only of CAN_CTRLMODE_LISTENONLY is requested.
+IMO it does not break user space when slcan gets the common naming 
+schema for CAN interface names.
 
-What about:
+We had the same thing with 'eth0' which is now named enblablabla or 
+'wlan0' now named wlp2s0.
 
-For non-legacy, i.e. ip based configuration, add support for listen-only
-mode. If listen-only is requested send a listen-only ("L\r") command
-instead of an open ("O\r") command to the adapter..
+But I have no strong opinion on that naming ...
 
->=20
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->=20
-> ---
->=20
->  drivers/net/can/slcan/slcan-core.c | 20 ++++++++++++++++----
->  1 file changed, 16 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/s=
-lcan-core.c
-> index 7a1540507ecd..d97dfeccbf9c 100644
-> --- a/drivers/net/can/slcan/slcan-core.c
-> +++ b/drivers/net/can/slcan/slcan-core.c
-> @@ -711,10 +711,21 @@ static int slcan_netdev_open(struct net_device *dev)
->  			}
->  		}
-> =20
-> -		err =3D slcan_transmit_cmd(sl, "O\r");
-> -		if (err) {
-> -			netdev_err(dev, "failed to send open command 'O\\r'\n");
-> -			goto cmd_transmit_failed;
-> +		/* listen-only command overrides open command */
+Best regards,
+Oliver
 
-I think this comment can be removed.
 
-> +		if (sl->can.ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-> +			err =3D slcan_transmit_cmd(sl, "L\r");
-> +			if (err) {
-> +				netdev_err(dev,
-> +					   "failed to send listen-only command 'L\\r'\n");
-> +				goto cmd_transmit_failed;
-> +			}
-> +		} else {
-> +			err =3D slcan_transmit_cmd(sl, "O\r");
-> +			if (err) {
-> +				netdev_err(dev,
-> +					   "failed to send open command 'O\\r'\n");
-> +				goto cmd_transmit_failed;
-> +			}
->  		}
->  	}
-> =20
-> @@ -801,6 +812,7 @@ static int slcan_open(struct tty_struct *tty)
->  	/* Configure CAN metadata */
->  	sl->can.bitrate_const =3D slcan_bitrate_const;
->  	sl->can.bitrate_const_cnt =3D ARRAY_SIZE(slcan_bitrate_const);
-> +	sl->can.ctrlmode_supported =3D CAN_CTRLMODE_LISTENONLY;
-> =20
->  	/* Configure netdev interface */
->  	sl->dev	=3D dev;
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---4nsvjzfaopo7e7xv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLVNEkACgkQrX5LkNig
-012yiAf/dGen9psExLJTBHVKRd8PVYM/EWn+11BslLLEHxOLS9C1m3B4aNBF1HsP
-9B6YEnuijYPU+Kze6CgDdEI36vLBP/Pn61fVx307mI5kqkTbnS9+uDZjeDRe8t6+
-cBlzqSzT/1qsWTIwIaZ5dtxq/alB+OQIws5WvOXWdMYBTniAdp8M/INTjuL5qkmf
-5+JD4he5R1lDC749qIHFsvHGlLirj+PtaIZXBTnzUjnwpWilemo291BOt3auI7ZF
-XX/yZqrxTNfbUAfxxuuDu+Jg7NHn2rywVGzbIsfPtKqY1d/9+soymY0IpYoWIR1O
-T4ioad3fmnIALPn0BzUm3yeQBgm03w==
-=f4B2
------END PGP SIGNATURE-----
-
---4nsvjzfaopo7e7xv--
