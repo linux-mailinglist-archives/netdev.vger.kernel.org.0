@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2A0578AC1
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB63578AC5
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235971AbiGRT3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
+        id S234713AbiGRT26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235933AbiGRT2y (ORCPT
+        with ESMTP id S235931AbiGRT2y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:54 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D69ED5A;
-        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id o26so9561767qkl.6;
-        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA983FEB;
+        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id b25so8800394qka.11;
+        Mon, 18 Jul 2022 12:28:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=WuubJCN67Jl+OjN8nViAm+NVBqJ2ywJqSxExI1yjjeo=;
-        b=Tj6uBzad4HGB6EL0M1yus7P2xl8seTebl3KEY60QiHYHkiZzGlnZJc4zmMQ715lBQb
-         V+6rCjlFtE36SY7lmQBsjFybnyNA/OpYbPg+Hxm3taVetxQSzz05FbXjQEqoSn3tr68N
-         fufksI4iYgEDgfiqAfDBwg7RDixJD5/BbGOR3iYboPjgzPCnwUY3I9q81BKlZDy93R5+
-         TYLpPb/vjZhMTWj53wGRv+e2qfs4M6ZZ3ek9UJ68NbZRFgDae6SXyqs1nFFZVE0b4GJf
-         TuETrm14lrx8VLkbDZWKHiMSYX1+sOP0ozMNOUt4xFlsRcKHdAtHqy1wiM2QBsaIJik6
-         D9HA==
+        bh=fSIJ7a7j2AX31WFosI1tLZd0prS7r7q6CFeV8/OppVE=;
+        b=VbkCt5PHj4oSczMa9BarPYV2CjxzDRvrtDRRMj4B07hzccBFOAfmYblYUUH9Ajgumv
+         RKM4K28hzaiG92J/7vkuoCFu1rn9w8fhy0lWf6SIorEHqKyHwppnrzuULW+EmT6h7aZb
+         iNnNyCpV5Al9CLDF5s+BHS+cuFK+7eXWgag89LdLI4R4kgeV2hbArCXUwMlgqtF2xWIm
+         qfkeQzp0/+pXaxkZspiEkYN3yN4c8vfsqHzTwgjkQ3p2CVysWoVDuRXKrA2nXL5HlaIv
+         LdBinorxw3H/YgC7eHfwweeumD20to6B5s4SYw9LVJdPLE0pFWEA8sn1G0OBVc/9tacU
+         f7fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WuubJCN67Jl+OjN8nViAm+NVBqJ2ywJqSxExI1yjjeo=;
-        b=nArK0v2r1yode3l+iFyhdtsEdLmfZrSn8XAyJ9sCYe/FMI7ffT7RwcCycf8CWgMvW+
-         Cccl9/e6vz2d1L5RWzv/0bSgkTf0Usg4WNyV0xwDjQE8Z2xUsBn+n8rS1xhHAzjxC3Ep
-         UykOc9GPSR4nK12nX7hRclPMA1xhjaAk6G7ifkkiDpHbcI5kYR+VctcyPMBk/vVNbCmF
-         RQXhxXTN3YEf6MD40e0+7wkeD7VfkpnTHUheGe00FqwBQmyyjMO1Xaf/UxySBpeish/D
-         8zhEVvoasi8EYF56cFyl/n5EX3fWEdePoXRlFNOJSk22TCPiKigmOoX9TRNySbTnjh8i
-         hTjw==
-X-Gm-Message-State: AJIora8CRPc4VGUOPscqLbrYugdFTVnlML7PKI4zrO37yMZ9ptLTb4of
-        bZk3mxBeHERn/Y+QD72Hl2/T6M7dWh+yoQ==
-X-Google-Smtp-Source: AGRyM1utJxde5Ak8ZdjBXmB+6RTWRe3dLKOIt69li9dLPfU8C1nB6Z6dKZAjbNpuMZO2dr2cItKKhg==
-X-Received: by 2002:a37:b346:0:b0:6b2:8e4c:690c with SMTP id c67-20020a37b346000000b006b28e4c690cmr18431369qkf.654.1658172531539;
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
+        bh=fSIJ7a7j2AX31WFosI1tLZd0prS7r7q6CFeV8/OppVE=;
+        b=cD5ZeosHnFTEjr1F4y9szPkWBBod684uIM96g7mjDpMvrk+/K5W2ZQXtUIJfZY2G23
+         4WgWkXp1L7PTE6ZfJbfvTjaeSw40xIiqE6xPZJi5S2SDaDlkwB3hbsOF+rFzSU/S/+53
+         VGca8LhJVTk+1lmDwU712ED4EBIb/0jZNcuM6AgONNw5DusUqCJrZEz8jZBYZaoNybgG
+         V8KmHFl31LjeFUEasX+4iOoEhnG8FRZ4XGx9UE0B8KGMLmWIHXBc3ppKapL6uaLTvsOr
+         GTSV30b1nl2kt9d6g1qJiqd6qECLX/0fl9DPdb93nX+Wv+iL6aYtwTao/krYvPpEvPxg
+         T4Rw==
+X-Gm-Message-State: AJIora+UWv+ZedSAh3kN4lSqQIAlrfbSrzzpWp37/O5tNkyH8x0Edv9K
+        k2NieK7xPmrBbo1nrYTGAX2hRHhyw1SsKw==
+X-Google-Smtp-Source: AGRyM1vV0SLlM81qvktCdvHe8wlRlm35TgOxVMvgml/1hdumCxKzVqNhVheVD3VDTLe5gZR7GC4mqw==
+X-Received: by 2002:ae9:e402:0:b0:6a7:86a3:752e with SMTP id q2-20020ae9e402000000b006a786a3752emr18219422qkc.300.1658172532712;
+        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id r2-20020ac87ee2000000b0031ed590433bsm8607338qtc.78.2022.07.18.12.28.50
+        by smtp.gmail.com with ESMTPSA id d19-20020a05620a241300b006a6d20386f6sm13557144qkn.42.2022.07.18.12.28.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:51 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:52 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 04/16] lib/test_bitmap: test test_bitmap_arr{32,64} starting from nbits == 1
-Date:   Mon, 18 Jul 2022 12:28:32 -0700
-Message-Id: <20220718192844.1805158-5-yury.norov@gmail.com>
+Subject: [PATCH 05/16] lib/test_bitmap: disable compile-time test if DEBUG_BITMAP() is enabled
+Date:   Mon, 18 Jul 2022 12:28:33 -0700
+Message-Id: <20220718192844.1805158-6-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,36 +108,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nbits == 0 is useless. In a real code it's most probably a sign of
-error, and it makes CONFIG_DEBUG_BITMAP barking.
+CONFIG_DEBUG_BITMAP, when enabled, injects __bitmap_check_params()
+into bitmap functions. It prevents compiler from compile-time
+optimizations, which makes corresponding test fail.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- lib/test_bitmap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ lib/test_bitmap.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index 2a70393ac011..bc48d992d10d 100644
+index bc48d992d10d..8bd279a7633f 100644
 --- a/lib/test_bitmap.c
 +++ b/lib/test_bitmap.c
-@@ -567,7 +567,7 @@ static void __init test_bitmap_arr32(void)
+@@ -877,6 +877,7 @@ static void __init test_bitmap_print_buf(void)
  
- 	memset(arr, 0xa5, sizeof(arr));
+ static void __init test_bitmap_const_eval(void)
+ {
++#ifndef CONFIG_DEBUG_BITMAP
+ 	DECLARE_BITMAP(bitmap, BITS_PER_LONG);
+ 	unsigned long initvar = BIT(2);
+ 	unsigned long bitopvar = 0;
+@@ -934,6 +935,7 @@ static void __init test_bitmap_const_eval(void)
+ 	/* ~BIT(25) */
+ 	BUILD_BUG_ON(!__builtin_constant_p(~var));
+ 	BUILD_BUG_ON(~var != ~BIT(25));
++#endif
+ }
  
--	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
-+	for (nbits = 1; nbits < EXP1_IN_BITS; ++nbits) {
- 		bitmap_to_arr32(arr, exp1, nbits);
- 		bitmap_from_arr32(bmap2, arr, nbits);
- 		expect_eq_bitmap(bmap2, exp1, nbits);
-@@ -593,7 +593,7 @@ static void __init test_bitmap_arr64(void)
- 
- 	memset(arr, 0xa5, sizeof(arr));
- 
--	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
-+	for (nbits = 1; nbits < EXP1_IN_BITS; ++nbits) {
- 		memset(bmap2, 0xff, sizeof(arr));
- 		bitmap_to_arr64(arr, exp1, nbits);
- 		bitmap_from_arr64(bmap2, arr, nbits);
+ static void __init selftest(void)
 -- 
 2.34.1
 
