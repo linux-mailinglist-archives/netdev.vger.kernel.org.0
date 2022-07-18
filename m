@@ -2,57 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FCA578032
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5814F57806E
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234023AbiGRKvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S234367AbiGRLKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 07:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233271AbiGRKvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:51:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BAA20182
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:51:34 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oDOLb-0001mK-73; Mon, 18 Jul 2022 12:51:31 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id F11F8B301D;
-        Mon, 18 Jul 2022 10:51:29 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 12:51:28 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Vikram Garhwal <fnu.vikram@xilinx.com>
-Subject: Re: [PATCH] can: xilinx_can: add support for RX timestamps on Zynq
-Message-ID: <20220718105128.s22vp5hx4somy64f@pengutronix.de>
-References: <20220716120408.450405-1-matej.vasilevski@seznam.cz>
- <20220718083312.4izyuf7iawfbhlnf@pengutronix.de>
- <202207181220.06765.pisa@cmp.felk.cvut.cz>
+        with ESMTP id S234408AbiGRLKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:10:12 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7541F62C;
+        Mon, 18 Jul 2022 04:10:05 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 1D271320091B;
+        Mon, 18 Jul 2022 07:10:01 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 18 Jul 2022 07:10:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1658142600; x=
+        1658229000; bh=sHwq/Li6q7x+PDGIFv+evLt4wSOyZViEQf7oifqa30k=; b=x
+        OyHFr2Wi6d6DuA/bwQYlXLNiSBUtND0UAReYSPkz6o3yrV1rnFnW3z4NdrweA+8S
+        YfoZe9VDZfuR6iFwGOyyQA42i+PbeNh5pvR6+ZhJ+TJ9+d9X0jFEbaHQMkYKRbU2
+        CEOwQHIIQ8zS8/U9Cu3kEFN+NsAXk2d+pzU0fNYWjOLETBW7p7vD/XEO7fVjbP35
+        RHMtwb64Rz1HkMl3c4oW0kAwZPzfS1ZGE94N9dqqpT6fIEA2ra242NgEBMR1ZwAS
+        24Tv5LKVCELybZjN9o3W0zhAWqSqMWTExXkrQR5qA3Zh6O0NWY+OEel6KD6+9HUP
+        SGcSOotIMw/xpWrTzJZLQ==
+X-ME-Sender: <xms:hz_VYrVdxlVu7KuYkzm5BLuwy7mLuk0owlGqMuFmlfe7_t0CtpFAuA>
+    <xme:hz_VYjmgeF4BdsAKA1AtpePKUfbiDxyVIRLmweDVOk1UXKOGomGJHNe1kcwonFCLb
+    YNhqSDZYMwvqocrKg8>
+X-ME-Received: <xmr:hz_VYnbGO7OGn29Q_llT1jjafW0QGmdtnr1UWTn1FDzAHUOLK6AzGR8wgy0IIRjIqPVzgqVUG0dFNUXstL9i5Ou6lADV-fo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudekkedgfeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpeforghr
+    thihnhgrshcurfhumhhpuhhtihhsuceomheslhgrmhgsuggrrdhltheqnecuggftrfgrth
+    htvghrnhepfeekgeeufeeuiedtteffjeetvdfhleelteekheehueethfevudehhedvveek
+    udevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    eslhgrmhgsuggrrdhlth
+X-ME-Proxy: <xmx:iD_VYmXwbJKMXSg0soayuS1cTsPuZh1a7wGdOIZ3c7RkbnoSSpvzOw>
+    <xmx:iD_VYlndvKf7IM1y2PQHqirE6ij9Ztj8IRGACGWP9cao0VBnBIQJjw>
+    <xmx:iD_VYjfROtd6o_vUFcARqPyxZtvYutK7bR-X0R51OWR-7N-8uk2Uww>
+    <xmx:iD_VYrefE8eEcX7eGZEvWoga2AvCsILNlr8WF-9Xm1fn89qOoL58sA>
+Feedback-ID: i215944fb:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 18 Jul 2022 07:09:57 -0400 (EDT)
+Message-ID: <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
+Date:   Mon, 18 Jul 2022 14:09:54 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="i4qfmohhwbabeeil"
-Content-Disposition: inline
-In-Reply-To: <202207181220.06765.pisa@cmp.felk.cvut.cz>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH RFC bpf-next 4/4] selftests/bpf: Fix kprobe get_func_ip
+ tests for CONFIG_X86_KERNEL_IBT
+Content-Language: en-US
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>
+References: <20220705190308.1063813-1-jolsa@kernel.org>
+ <20220705190308.1063813-5-jolsa@kernel.org>
+ <CAEf4BzapX_C16O9woDSXOpbzVsxjYudXW36woRCqU3u75uYiFA@mail.gmail.com>
+ <YsdbQ4vJheLWOa0a@krava> <YtSCbIA+6JtRF/Ch@krava>
+From:   Martynas Pumputis <m@lambda.lt>
+In-Reply-To: <YtSCbIA+6JtRF/Ch@krava>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -60,62 +89,91 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---i4qfmohhwbabeeil
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 18.07.2022 12:20:06, Pavel Pisa wrote:
-> Hello Marc,
->=20
-> On Monday 18 of July 2022 10:33:12 Marc Kleine-Budde wrote:
-> > On 16.07.2022 14:04:09, Matej Vasilevski wrote:
-> > > This patch adds support for hardware RX timestamps from Xilinx Zynq C=
-AN
-> > > controllers. The timestamp is calculated against a timepoint reference
-> > > stored when the first CAN message is received.
-> > >
-> > > When CAN bus traffic does not contain long idle pauses (so that
-> > > the clocks would drift by a multiple of the counter rollover time),
-> > > then the hardware timestamps provide precise relative time between
-> > > received messages. This can be used e.g. for latency testing.
-> >
-> > Please make use of the existing cyclecounter/timecounter framework. Is
-> > there a way to read the current time from a register? If so, please
-> > setup a worker that does that regularly.
-> >
-> > Have a look at the mcp251xfd driver as an example:
->=20
-> Matej Vasilevski has looked at the example. But there is problem
-> that we know no method how to read actual counter value at least for
-> Xilinx Zynq 7000. May be we overlooked something or there
-> is hidden test register.
+On 7/18/22 00:43, Jiri Olsa wrote:
+> On Fri, Jul 08, 2022 at 12:16:35AM +0200, Jiri Olsa wrote:
+>> On Tue, Jul 05, 2022 at 10:29:17PM -0700, Andrii Nakryiko wrote:
+>>> On Tue, Jul 5, 2022 at 12:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>>>>
+>>>> The kprobe can be placed anywhere and user must be aware
+>>>> of the underlying instructions. Therefore fixing just
+>>>> the bpf program to 'fix' the address to match the actual
+>>>> function address when CONFIG_X86_KERNEL_IBT is enabled.
+>>>>
+>>>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>>>> ---
+>>>>   tools/testing/selftests/bpf/progs/get_func_ip_test.c | 7 +++++--
+>>>>   1 file changed, 5 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+>>>> index a587aeca5ae0..220d56b7c1dc 100644
+>>>> --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+>>>> +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+>>>> @@ -2,6 +2,7 @@
+>>>>   #include <linux/bpf.h>
+>>>>   #include <bpf/bpf_helpers.h>
+>>>>   #include <bpf/bpf_tracing.h>
+>>>> +#include <stdbool.h>
+>>>>
+>>>>   char _license[] SEC("license") = "GPL";
+>>>>
+>>>> @@ -13,6 +14,8 @@ extern const void bpf_modify_return_test __ksym;
+>>>>   extern const void bpf_fentry_test6 __ksym;
+>>>>   extern const void bpf_fentry_test7 __ksym;
+>>>>
+>>>> +extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
+>>>> +
+>>>>   __u64 test1_result = 0;
+>>>>   SEC("fentry/bpf_fentry_test1")
+>>>>   int BPF_PROG(test1, int a)
+>>>> @@ -37,7 +40,7 @@ __u64 test3_result = 0;
+>>>>   SEC("kprobe/bpf_fentry_test3")
+>>>>   int test3(struct pt_regs *ctx)
+>>>>   {
+>>>> -       __u64 addr = bpf_get_func_ip(ctx);
+>>>> +       __u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
+>>>
+>>> so for kprobe bpf_get_func_ip() gets an address with 5 byte
+>>> compensation for `call __fentry__`, but not for endr? Why can't we
+>>> compensate for endbr inside the kernel code as well? I'd imagine we
+>>> either do no compensation (and thus we get &bpf_fentry_test3+5 or
+>>> &bpf_fentry_test3+9, depending on CONFIG_X86_KERNEL_IBT) or full
+>>> compensation (and thus always get &bpf_fentry_test3), but this
+>>> in-between solution seems to be the worst of both worlds?...
+>>
+>> hm rigth, I guess we should be able to do that in bpf_get_func_ip,
+>> I'll check
+> 
+> sorry for late follow up..
+> 
+> so the problem is that you can place kprobe anywhere in the function
+> (on instruction boundary) but the IBT adjustment of kprobe address is
+> made only if it's at the function entry and there's endbr instruction
 
-I haven't found a documented register in the TRM. I've added Michal
-Simek into the loop, maybe Michal has some connection to the HW
-designers.
+To add more fun to the issue, not all non-inlined functions get endbr64. 
+For example "skb_release_head_state()" does, while "skb_free_head()" 
+doesn't.
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---i4qfmohhwbabeeil
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLVOy0ACgkQrX5LkNig
-011bzQf+M+TZm39JcDKTeDMjAFYuuJwFOOd8PfCqsuOWaGzohZMqKfDcWOZkrc+c
-J0WEHXYGeUe1DybHt2iHR+jf/fE3HSlzzPn4rFxWbdbIjwW8QUMBZ8XhPQSEiN0r
-UXcOw6L04U7HjEyBH+ceVMvP44ny4yHlaozpEkE9sJ04lVojTasxa1H0rGX2lEyZ
-/EOp5SXZJHhfa/IXQ2pro0BirwgHiPkJDDpC/R/aQFy+bdD23gnGPI5AKN8nmrk/
-GN3MblYE3TZVErafYsfGFC5ZGzdkDu8PAZxUoBMi2nOis4BZvINtB+/KLRSun1F5
-PIqsr37/zd5tUEGK0BlxFHSHp/A10g==
-=vJup
------END PGP SIGNATURE-----
-
---i4qfmohhwbabeeil--
+> 
+> and that kprobe address is what we return in helper:
+> 
+>    BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+>    {
+>          struct kprobe *kp = kprobe_running();
+> 
+>          return kp ? (uintptr_t)kp->addr : 0;
+>    }
+> 
+> so the adjustment would work only for address at function entry, but
+> would be wrong for address within the function
+> 
+> perhaps we could add flag to kprobe to indicate the addr adjustment
+> was done and use it in helper
+> 
+> but that's why I thought I'd keep bpf_get_func_ip_kprobe as it and
+> leave it up to user
+> 
+> kprobe_multi and trampolines are different, because they can be
+> only at the function entry, so we can adjust the ip properly
+> 
+> jirka
