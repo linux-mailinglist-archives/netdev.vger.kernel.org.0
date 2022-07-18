@@ -2,348 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA3DF577E60
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52EE8577E71
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 11:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233609AbiGRJLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 05:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
+        id S234096AbiGRJOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 05:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiGRJLX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:11:23 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAA75F58
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 02:11:21 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id v16so16048172wrd.13
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 02:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=caGlpw2sNanHVQGlmDjpmdErq2pFOGXDFd6tgk/YghA=;
-        b=DIsV+8xQ0w+KNw0XYtlYwXZKxAhMKQGSdQirdtBGtD1wBpQX9Vhsk1GogKzZK6KOs0
-         Opyzq7cFxsTN05ilXIE4bsRjDqgTaz5rhiI0QoV9YDyFeeIiK9L9ViaoXsqz//0WttBD
-         XYvT0lOIExTA6pnRLvN5TfpMGHdvPzE39GbhxBHGxLEN3g7VCNC+/41lnYwQwg8cVirN
-         IjjaTTpLTFTsYBVyl6rEyNYWAc/tkreAKBw6zRZMNM6dH38b/fx9KHSX+JXSW1O02mck
-         JObREIqh0nHts2Rgt7paJeqd5xUrCiskqSJ/T4FTp1T51kzhP1I3fPPOK+RwfEDKPjAK
-         cVng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=caGlpw2sNanHVQGlmDjpmdErq2pFOGXDFd6tgk/YghA=;
-        b=0x0xzBC5djMuvA9DIGAjDir5EmKeUQl1zdCYX3/L0Bb0DbSuO0GJF9ZLNQxXPV8HkX
-         ZOkFJSYYKLP+u9b0J94QAGpWnhN8Fdqd+1L9Ql7K1EU2GKiSxWC+yMWcu9nAX+aMX/RH
-         Ck+hQLXNjEYPuW9XcGE4YZ/9aMaa+CPRNOWhhtonPtNY87gDnLzVqbucSXM+/vFVAUxK
-         1EioTOzRX2U3zbsqBYqQpwogQ2qMoiJ9eJktqiV4z7hOgLRhFIO+Fbf5M/ZXd+3t8ojw
-         HaZ5l/qZOgZcd4TWCNnhH7eLDTAW/2EAc5B0aIPAVs5VWRjpU/+EKX61MihJdg6XcuAE
-         tqUA==
-X-Gm-Message-State: AJIora8DI8kYVLnP3aYcFx/CMzB2mpaMsl3C8vuTRL27a6xBcF4MaCWz
-        fs2gJAgR3GMswdnl5jebWjs7izk+c70MksL4by8=
-X-Google-Smtp-Source: AGRyM1sN/OFgWah/TIiaJ/FPfEw77hVctYBXf0lpBUgPR5e8kgoXChsgvNXFex3oDccL9NP5lI3Vjg==
-X-Received: by 2002:adf:f746:0:b0:21d:6afd:b7d3 with SMTP id z6-20020adff746000000b0021d6afdb7d3mr21826112wrp.501.1658135480029;
-        Mon, 18 Jul 2022 02:11:20 -0700 (PDT)
-Received: from alvaro-dell.. (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id z5-20020a5d6405000000b0021b966abc19sm10215570wru.19.2022.07.18.02.11.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 02:11:19 -0700 (PDT)
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-To:     netdev@vger.kernel.org
-Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
+        with ESMTP id S233353AbiGRJOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 05:14:37 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B92F5B9;
+        Mon, 18 Jul 2022 02:14:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VJhAxgV_1658135667;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJhAxgV_1658135667)
+          by smtp.aliyun-inc.com;
+          Mon, 18 Jul 2022 17:14:29 +0800
+Message-ID: <1658135504.1522465-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v11 39/40] virtio_net: support tx queue resize
+Date:   Mon, 18 Jul 2022 17:11:44 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next v4] net: virtio_net: notifications coalescing support
-Date:   Mon, 18 Jul 2022 12:11:02 +0300
-Message-Id: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm <kvm@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        kangjie.xu@linux.alibaba.com,
+        virtualization <virtualization@lists.linux-foundation.org>
+References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
+ <20220629065656.54420-40-xuanzhuo@linux.alibaba.com>
+ <102d3b83-1ae9-a59a-16ce-251c22b7afb0@redhat.com>
+ <1656986432.1164997-2-xuanzhuo@linux.alibaba.com>
+ <CACGkMEt8MSS=tcn=Hd6WF9+btT0ccocxEd1ighRgK-V1uiWmCQ@mail.gmail.com>
+ <1657873703.9301925-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEvgjX+67NxwrUym7CnbNFU2-=CbAXPN_UmtvDOTS1LrHA@mail.gmail.com>
+In-Reply-To: <CACGkMEvgjX+67NxwrUym7CnbNFU2-=CbAXPN_UmtvDOTS1LrHA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
+On Mon, 18 Jul 2022 16:57:53 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Fri, Jul 15, 2022 at 4:32 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
+ote:
+> >
+> > On Fri, 8 Jul 2022 14:23:57 +0800, Jason Wang <jasowang@redhat.com> wro=
+te:
+> > > On Tue, Jul 5, 2022 at 10:01 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com=
+> wrote:
+> > > >
+> > > > On Mon, 4 Jul 2022 11:45:52 +0800, Jason Wang <jasowang@redhat.com>=
+ wrote:
+> > > > >
+> > > > > =E5=9C=A8 2022/6/29 14:56, Xuan Zhuo =E5=86=99=E9=81=93:
+> > > > > > This patch implements the resize function of the tx queues.
+> > > > > > Based on this function, it is possible to modify the ring num o=
+f the
+> > > > > > queue.
+> > > > > >
+> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > ---
+> > > > > >   drivers/net/virtio_net.c | 48 +++++++++++++++++++++++++++++++=
++++++++++
+> > > > > >   1 file changed, 48 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > > index 6ab16fd193e5..fd358462f802 100644
+> > > > > > --- a/drivers/net/virtio_net.c
+> > > > > > +++ b/drivers/net/virtio_net.c
+> > > > > > @@ -135,6 +135,9 @@ struct send_queue {
+> > > > > >     struct virtnet_sq_stats stats;
+> > > > > >
+> > > > > >     struct napi_struct napi;
+> > > > > > +
+> > > > > > +   /* Record whether sq is in reset state. */
+> > > > > > +   bool reset;
+> > > > > >   };
+> > > > > >
+> > > > > >   /* Internal representation of a receive virtqueue */
+> > > > > > @@ -279,6 +282,7 @@ struct padded_vnet_hdr {
+> > > > > >   };
+> > > > > >
+> > > > > >   static void virtnet_rq_free_unused_buf(struct virtqueue *vq, =
+void *buf);
+> > > > > > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, v=
+oid *buf);
+> > > > > >
+> > > > > >   static bool is_xdp_frame(void *ptr)
+> > > > > >   {
+> > > > > > @@ -1603,6 +1607,11 @@ static void virtnet_poll_cleantx(struct =
+receive_queue *rq)
+> > > > > >             return;
+> > > > > >
+> > > > > >     if (__netif_tx_trylock(txq)) {
+> > > > > > +           if (READ_ONCE(sq->reset)) {
+> > > > > > +                   __netif_tx_unlock(txq);
+> > > > > > +                   return;
+> > > > > > +           }
+> > > > > > +
+> > > > > >             do {
+> > > > > >                     virtqueue_disable_cb(sq->vq);
+> > > > > >                     free_old_xmit_skbs(sq, true);
+> > > > > > @@ -1868,6 +1877,45 @@ static int virtnet_rx_resize(struct virt=
+net_info *vi,
+> > > > > >     return err;
+> > > > > >   }
+> > > > > >
+> > > > > > +static int virtnet_tx_resize(struct virtnet_info *vi,
+> > > > > > +                        struct send_queue *sq, u32 ring_num)
+> > > > > > +{
+> > > > > > +   struct netdev_queue *txq;
+> > > > > > +   int err, qindex;
+> > > > > > +
+> > > > > > +   qindex =3D sq - vi->sq;
+> > > > > > +
+> > > > > > +   virtnet_napi_tx_disable(&sq->napi);
+> > > > > > +
+> > > > > > +   txq =3D netdev_get_tx_queue(vi->dev, qindex);
+> > > > > > +
+> > > > > > +   /* 1. wait all ximt complete
+> > > > > > +    * 2. fix the race of netif_stop_subqueue() vs netif_start_=
+subqueue()
+> > > > > > +    */
+> > > > > > +   __netif_tx_lock_bh(txq);
+> > > > > > +
+> > > > > > +   /* Prevent rx poll from accessing sq. */
+> > > > > > +   WRITE_ONCE(sq->reset, true);
+> > > > >
+> > > > >
+> > > > > Can we simply disable RX NAPI here?
+> > > >
+> > > > Disable rx napi is indeed a simple solution. But I hope that when d=
+ealing with
+> > > > tx, it will not affect rx.
+> > >
+> > > Ok, but I think we've already synchronized with tx lock here, isn't i=
+t?
+> >
+> > Yes, do you have any questions about WRITE_ONCE()? There is a set false=
+ operation
+> > later, I did not use lock there, so I used WRITE/READ_ONCE
+> > uniformly.
+>
+> I mean, since we've already used tx locks somewhere, we'd better use
+> them here as well at least as a start.
 
-Control a Virtio network device notifications coalescing parameters
-using the control virtqueue.
 
-A device that supports this fetature can receive
-VIRTIO_NET_CTRL_NOTF_COAL control commands.
+OK. next version will fix.
 
-- VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
-  Ask the network device to change the following parameters:
-  - tx_usecs: Maximum number of usecs to delay a TX notification.
-  - tx_max_packets: Maximum number of packets to send before a
-    TX notification.
+Thanks.
 
-- VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
-  Ask the network device to change the following parameters:
-  - rx_usecs: Maximum number of usecs to delay a RX notification.
-  - rx_max_packets: Maximum number of packets to receive before a
-    RX notification.
-
-VirtIO spec. patch:
-https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
-
-Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
----
-v2:
-	- Fix type assignments warnings found with sparse.
-	- Fix a few typos.
-
-v3:
-  - Change the coalescing parameters in a dedicated function.
-  - Return -EBUSY from the set coalescing function when the device's
-    link is up, even if the notifications coalescing feature is negotiated.
-
-v4:
-  - If link is up and we need to update NAPI weight, return -EBUSY before
-    sending the coalescing commands to the device
----
- drivers/net/virtio_net.c        | 111 +++++++++++++++++++++++++++-----
- include/uapi/linux/virtio_net.h |  34 +++++++++-
- 2 files changed, 129 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 356cf8dd416..4fde66bd511 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -261,6 +261,12 @@ struct virtnet_info {
- 	u8 duplex;
- 	u32 speed;
-
-+	/* Interrupt coalescing settings */
-+	u32 tx_usecs;
-+	u32 rx_usecs;
-+	u32 tx_max_packets;
-+	u32 rx_max_packets;
-+
- 	unsigned long guest_offloads;
- 	unsigned long guest_offloads_capable;
-
-@@ -2587,27 +2593,89 @@ static int virtnet_get_link_ksettings(struct net_device *dev,
- 	return 0;
- }
-
-+static int virtnet_send_notf_coal_cmds(struct virtnet_info *vi,
-+				       struct ethtool_coalesce *ec)
++static int virtnet_tx_resize(struct virtnet_info *vi,
++			     struct send_queue *sq, u32 ring_num)
 +{
-+	struct scatterlist sgs_tx, sgs_rx;
-+	struct virtio_net_ctrl_coal_tx coal_tx;
-+	struct virtio_net_ctrl_coal_rx coal_rx;
++	struct netdev_queue *txq;
++	int err, qindex;
 +
-+	coal_tx.tx_usecs = cpu_to_le32(ec->tx_coalesce_usecs);
-+	coal_tx.tx_max_packets = cpu_to_le32(ec->tx_max_coalesced_frames);
-+	sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
++	qindex =3D sq - vi->sq;
 +
-+	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+				  VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
-+				  &sgs_tx))
-+		return -EINVAL;
++	virtnet_napi_tx_disable(&sq->napi);
 +
-+	/* Save parameters */
-+	vi->tx_usecs = ec->tx_coalesce_usecs;
-+	vi->tx_max_packets = ec->tx_max_coalesced_frames;
++	txq =3D netdev_get_tx_queue(vi->dev, qindex);
 +
-+	coal_rx.rx_usecs = cpu_to_le32(ec->rx_coalesce_usecs);
-+	coal_rx.rx_max_packets = cpu_to_le32(ec->rx_max_coalesced_frames);
-+	sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
-+
-+	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+				  VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
-+				  &sgs_rx))
-+		return -EINVAL;
-+
-+	/* Save parameters */
-+	vi->rx_usecs = ec->rx_coalesce_usecs;
-+	vi->rx_max_packets = ec->rx_max_coalesced_frames;
-+
-+	return 0;
-+}
-+
-+static int virtnet_coal_params_supported(struct ethtool_coalesce *ec)
-+{
-+	/* usecs coalescing is supported only if VIRTIO_NET_F_NOTF_COAL
-+	 * feature is negotiated.
++	/* 1. wait all ximt complete
++	 * 2. fix the race of netif_stop_subqueue() vs netif_start_subqueue()
 +	 */
-+	if (ec->rx_coalesce_usecs || ec->tx_coalesce_usecs)
-+		return -EOPNOTSUPP;
++	__netif_tx_lock_bh(txq);
 +
-+	if (ec->tx_max_coalesced_frames > 1 ||
-+	    ec->rx_max_coalesced_frames != 1)
-+		return -EINVAL;
++	sq->reset =3D true;
 +
-+	return 0;
++	/* Prevent the upper layer from trying to send packets. */
++	netif_stop_subqueue(vi->dev, qindex);
++
++	__netif_tx_unlock_bh(txq);
++
++	err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf);
++	if (err)
++		netdev_err(vi->dev, "resize tx fail: tx queue index: %d err: %d\n", qind=
+ex, err);
++
++	__netif_tx_lock_bh(txq);
++	sq->reset =3D false;
++	netif_tx_wake_queue(txq);
++	__netif_tx_unlock_bh(txq);
++
++	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
++	return err;
 +}
-+
- static int virtnet_set_coalesce(struct net_device *dev,
- 				struct ethtool_coalesce *ec,
- 				struct kernel_ethtool_coalesce *kernel_coal,
- 				struct netlink_ext_ack *extack)
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
--	int i, napi_weight;
--
--	if (ec->tx_max_coalesced_frames > 1 ||
--	    ec->rx_max_coalesced_frames != 1)
--		return -EINVAL;
-+	int ret, i, napi_weight;
-+	bool update_napi = false;
 
-+	/* Can't change NAPI weight if the link is up */
- 	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
- 	if (napi_weight ^ vi->sq[0].napi.weight) {
- 		if (dev->flags & IFF_UP)
- 			return -EBUSY;
-+		else
-+			update_napi = true;
-+	}
-+
-+	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL))
-+		ret = virtnet_send_notf_coal_cmds(vi, ec);
-+	else
-+		ret = virtnet_coal_params_supported(ec);
-+
-+	if (ret)
-+		return ret;
-+
-+	if (update_napi) {
- 		for (i = 0; i < vi->max_queue_pairs; i++)
- 			vi->sq[i].napi.weight = napi_weight;
- 	}
 
--	return 0;
-+	return ret;
- }
-
- static int virtnet_get_coalesce(struct net_device *dev,
-@@ -2615,16 +2683,19 @@ static int virtnet_get_coalesce(struct net_device *dev,
- 				struct kernel_ethtool_coalesce *kernel_coal,
- 				struct netlink_ext_ack *extack)
- {
--	struct ethtool_coalesce ec_default = {
--		.cmd = ETHTOOL_GCOALESCE,
--		.rx_max_coalesced_frames = 1,
--	};
- 	struct virtnet_info *vi = netdev_priv(dev);
-
--	memcpy(ec, &ec_default, sizeof(ec_default));
-+	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
-+		ec->rx_coalesce_usecs = vi->rx_usecs;
-+		ec->tx_coalesce_usecs = vi->tx_usecs;
-+		ec->tx_max_coalesced_frames = vi->tx_max_packets;
-+		ec->rx_max_coalesced_frames = vi->rx_max_packets;
-+	} else {
-+		ec->rx_max_coalesced_frames = 1;
-
--	if (vi->sq[0].napi.weight)
--		ec->tx_max_coalesced_frames = 1;
-+		if (vi->sq[0].napi.weight)
-+			ec->tx_max_coalesced_frames = 1;
-+	}
-
- 	return 0;
- }
-@@ -2743,7 +2814,8 @@ static int virtnet_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
- }
-
- static const struct ethtool_ops virtnet_ethtool_ops = {
--	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES,
-+	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES |
-+		ETHTOOL_COALESCE_USECS,
- 	.get_drvinfo = virtnet_get_drvinfo,
- 	.get_link = ethtool_op_get_link,
- 	.get_ringparam = virtnet_get_ringparam,
-@@ -3411,6 +3483,8 @@ static bool virtnet_validate_features(struct virtio_device *vdev)
- 	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
- 			     "VIRTIO_NET_F_CTRL_VQ") ||
- 	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_HASH_REPORT,
-+			     "VIRTIO_NET_F_CTRL_VQ") ||
-+	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_NOTF_COAL,
- 			     "VIRTIO_NET_F_CTRL_VQ"))) {
- 		return false;
- 	}
-@@ -3546,6 +3620,13 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
- 		vi->mergeable_rx_bufs = true;
-
-+	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
-+		vi->rx_usecs = 0;
-+		vi->tx_usecs = 0;
-+		vi->tx_max_packets = 0;
-+		vi->rx_max_packets = 0;
-+	}
-+
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT))
- 		vi->has_rss_hash_report = true;
-
-@@ -3780,7 +3861,7 @@ static struct virtio_device_id id_table[] = {
- 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
- 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
- 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
--	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
-+	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
-
- static unsigned int features[] = {
- 	VIRTNET_FEATURES,
-diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-index 3f55a4215f1..29ced55514d 100644
---- a/include/uapi/linux/virtio_net.h
-+++ b/include/uapi/linux/virtio_net.h
-@@ -56,7 +56,7 @@
- #define VIRTIO_NET_F_MQ	22	/* Device supports Receive Flow
- 					 * Steering */
- #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
--
-+#define VIRTIO_NET_F_NOTF_COAL	53	/* Guest can handle notifications coalescing */
- #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
- #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
- #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
-@@ -355,4 +355,36 @@ struct virtio_net_hash_config {
- #define VIRTIO_NET_CTRL_GUEST_OFFLOADS   5
- #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET        0
-
-+/*
-+ * Control notifications coalescing.
-+ *
-+ * Request the device to change the notifications coalescing parameters.
-+ *
-+ * Available with the VIRTIO_NET_F_NOTF_COAL feature bit.
-+ */
-+#define VIRTIO_NET_CTRL_NOTF_COAL		6
-+/*
-+ * Set the tx-usecs/tx-max-packets patameters.
-+ * tx-usecs - Maximum number of usecs to delay a TX notification.
-+ * tx-max-packets - Maximum number of packets to send before a TX notification.
-+ */
-+struct virtio_net_ctrl_coal_tx {
-+	__le32 tx_max_packets;
-+	__le32 tx_usecs;
-+};
-+
-+#define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET		0
-+
-+/*
-+ * Set the rx-usecs/rx-max-packets patameters.
-+ * rx-usecs - Maximum number of usecs to delay a RX notification.
-+ * rx-max-frames - Maximum number of packets to receive before a RX notification.
-+ */
-+struct virtio_net_ctrl_coal_rx {
-+	__le32 rx_max_packets;
-+	__le32 rx_usecs;
-+};
-+
-+#define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET		1
-+
- #endif /* _UAPI_LINUX_VIRTIO_NET_H */
---
-2.32.0
+>
+> Thanks
+>
+> >
+> > Thanks.
+> >
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > Thanks.
+> > > >
+> > > >
+> > > > >
+> > > > > Thanks
+> > > > >
+> > > > >
+> > > > > > +
+> > > > > > +   /* Prevent the upper layer from trying to send packets. */
+> > > > > > +   netif_stop_subqueue(vi->dev, qindex);
+> > > > > > +
+> > > > > > +   __netif_tx_unlock_bh(txq);
+> > > > > > +
+> > > > > > +   err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_=
+unused_buf);
+> > > > > > +   if (err)
+> > > > > > +           netdev_err(vi->dev, "resize tx fail: tx queue index=
+: %d err: %d\n", qindex, err);
+> > > > > > +
+> > > > > > +   /* Memory barrier before set reset and start subqueue. */
+> > > > > > +   smp_mb();
+> > > > > > +
+> > > > > > +   WRITE_ONCE(sq->reset, false);
+> > > > > > +   netif_tx_wake_queue(txq);
+> > > > > > +
+> > > > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> > > > > > +   return err;
+> > > > > > +}
+> > > > > > +
+> > > > > >   /*
+> > > > > >    * Send command via the control virtqueue and check status.  =
+Commands
+> > > > > >    * supported by the hypervisor, as indicated by feature bits,=
+ should
+> > > > >
+> > > >
+> > >
+> >
+>
