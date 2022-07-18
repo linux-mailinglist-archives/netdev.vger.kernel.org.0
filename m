@@ -2,165 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EB5578A70
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF0D578A95
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234906AbiGRTPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
+        id S235613AbiGRTVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234131AbiGRTPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:15:12 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AB62CCB6;
-        Mon, 18 Jul 2022 12:15:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=G1YSdmImKh2l18ecQ7FfzX2zqvO0awAs2ffUiZkZuSw=; b=uTS4R1PCUCCnZ83svGKLX53ve1
-        C/11IYua0pNPYugrPmbYoaikCsT12yW4BX/nS2o/OIcmkTQ7YLxqjvT6DLGa7hcqDYn1CIa+6TM6V
-        7AsENwcdlfZnZ4c1RnhUoU2FfYom1Hqbu1cr4JDB+3UAx7XXI0FS/tX8+wBd5t2wHGqW3jfEgRVgI
-        7nSahUr1d3h85yXh39YKLE5eLCPi9vcmNFpG5bw805uyFH/yx+Xl1BMFHNl6AQGMiOhzgZ9kDxlhJ
-        oZP0mArmGJuCwOsFPAa+F8EMGsEd/RKGb3+2bvQLeMiMg1HmhDsdOzsdhQok/+fEzmkU/ZBRvIYWF
-        2kEnXPCA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33434)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oDWCq-000232-Ra; Mon, 18 Jul 2022 20:15:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDWCo-0002DB-Tm; Mon, 18 Jul 2022 20:14:58 +0100
-Date:   Mon, 18 Jul 2022 20:14:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
- be created
-Message-ID: <YtWxMrz3LcVQa43I@shell.armlinux.org.uk>
-References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
- <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
- <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
- <20220715201715.foea4rifegmnti46@skbuf>
- <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
- <20220715204841.pwhvnue2atrkc2fx@skbuf>
- <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
- <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
- <YtWp3WkpCtfe559l@smile.fi.intel.com>
- <YtWsM1nr2GZWDiEN@smile.fi.intel.com>
+        with ESMTP id S231199AbiGRTVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:21:52 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6572F01E
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 12:21:51 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id l190so11446802vsc.0
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 12:21:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=h0ZslgqQ94UM3iGDYCZGEx8ZwvbYHY5ZrQARiO/Kpbc=;
+        b=OGqMy3HvNvTKO+luoSzwV1yxmXaC6bU3xFi4O7cPdlkAx/EkmVRO49TXGOCgvcmE3R
+         E7KtA9GlnnoHcpymbMnci1WW1rx2kWIjjWedNOiPeZfvBh1L50m672F853ryr7OwSedg
+         Q/NVZphPZM71MtJPO8fu5B9U3VnCdQV0/cmUC+6kTNdBv3X347yFnn3VwyWdSKLMKVfq
+         Qcgs05ylyW2tuX/lfRcYfmHwGVBls7+2+7d64l+zd6M0yhB0GvxxV5jNfJBZzgYCnYS1
+         G51kAfB1zaQqjK03kZCo6h5ofgROQcdNWTbFqbMdWnZoKZz9bUiZIXpb6y4E0WrCi3C7
+         xQkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=h0ZslgqQ94UM3iGDYCZGEx8ZwvbYHY5ZrQARiO/Kpbc=;
+        b=iJtYJWZLQCnsF8i+HNjgbA9wXRAT+gjTHFqtocgMsEQBqAxpvLd1HI56OYseUSmlbh
+         uusTJR7Jq5QX9jkKjAYIHP04rDwMPMsqvUs9I4ML+/j+JxL0VXlocG7YPPPF/l5oxdcV
+         2/Bh63TRreWWH2gYFSlNzJsWHwL5rXL8MB5nlnmXnTSNCy5V81c3kPD6buh2o4ke50tM
+         1PLodWqpLknqabY/D8a8BWrH/apywyUO5zCmF+gDMySddxdWSjl/2qvuBMhT5a/dzn7e
+         H1X4kxPFAgE2WK3TbFbfq7v+9B/GFn+DxfFUezBC+1YKr2ss2nX7jkyoslPhM7+JUKo1
+         Exug==
+X-Gm-Message-State: AJIora9DX1h8+q39TKkZh8549yB9gBXRtSglIiTEboE+6kobNwKAOwsN
+        mu84II12WGnmViBAlwNmhr5ylRg1q7SM7ZQVPbg=
+X-Google-Smtp-Source: AGRyM1vt+60EWabhB79LlcBX9N3fQecyYGAPAFhAToEGYuaaAalF/arJ+vmS1EJ8boNQBQivY9/rspoNWUz3sHRng0Y=
+X-Received: by 2002:a05:6102:667:b0:357:6577:a994 with SMTP id
+ z7-20020a056102066700b003576577a994mr9869005vsf.77.1658172110053; Mon, 18 Jul
+ 2022 12:21:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtWsM1nr2GZWDiEN@smile.fi.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a59:b12a:0:b0:2d3:5030:bb10 with HTTP; Mon, 18 Jul 2022
+ 12:21:49 -0700 (PDT)
+Reply-To: lilywilliam989@gmail.com
+From:   Lily William <blessingiyore3@gmail.com>
+Date:   Mon, 18 Jul 2022 11:21:49 -0800
+Message-ID: <CAKQJGJYzfW+sOx077B4qEsYGsu7kpg0V5BmSrQ+OiJoYWXWQqg@mail.gmail.com>
+Subject: Hi Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:e31 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [lilywilliam989[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [blessingiyore3[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [blessingiyore3[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:53:39PM +0300, Andy Shevchenko wrote:
-> On Mon, Jul 18, 2022 at 09:43:42PM +0300, Andy Shevchenko wrote:
-> > On Mon, Jul 18, 2022 at 02:27:02PM +0100, Russell King (Oracle) wrote:
-> > > On Mon, Jul 18, 2022 at 03:29:52PM +0300, Andy Shevchenko wrote:
-> > > > On Fri, Jul 15, 2022 at 11:48:41PM +0300, Vladimir Oltean wrote:
-> > > > > So won't kobject_init_and_add() fail on namespace collision? Is it the
-> > > > > problem that it's going to fail, or that it's not trivial to statically
-> > > > > determine whether it'll fail?
-> > > > > 
-> > > > > Sorry, but I don't see something actionable about this.
-> > > > 
-> > > > I'm talking about validation before a runtime. But if you think that is fine,
-> > > > let's fail it at runtime, okay, and consume more backtraces in the future.
-> > > 
-> > > Is there any sane way to do validation of this namespace before
-> > > runtime?
-> > 
-> > For statically compiled, I think we can do it (to some extent).
-> > Currently only three drivers, if I'm not mistaken, define software nodes with
-> > names. It's easy to check that their node names are unique.
-> > 
-> > When you allow such an API then we might have tracebacks (from sysfs) bout name
-> > collisions. Not that is something new to kernel (we have seen many of a kind),
-> > but I prefer, if possible, to validate this before sysfs issues a traceback.
-> > 
-> > > The problem in this instance is we need a node named "fixed-link" that
-> > > is attached to the parent node as that is defined in the binding doc,
-> > > and we're creating swnodes to provide software generated nodes for
-> > > this binding.
-> > 
-> > And how you guarantee that it will be only a single one with unique pathname?
-> > 
-> > For example, you have two DSA cards (or whatever it's called) in the SMP system,
-> > it mean that there is non-zero probability of coexisting swnodes for them.
-> > 
-> > > There could be several such nodes scattered around, but in this
-> > > instance they are very short-lived before they are destroyed, they
-> > > don't even need to be published to userspace (and its probably a waste
-> > > of CPU cycles for them to be published there.)
-> > > 
-> > > So, for this specific case, is this the best approach, or is there
-> > > some better way to achieve what we need here?
-> > 
-> > Honestly, I don't know.
-> > 
-> > The "workaround" (but it looks to me rather a hack) is to create unique swnode
-> > and make fixed-link as a child of it.
-> > 
-> > Or entire concept of the root swnodes (when name is provided) should be
-> > reconsidered, so somehow we will have a uniqueness so that the entire
-> > path(s) behind it will be caller-dependent. But this I also don't like.
-> > 
-> > Maybe Heikki, Sakari, Rafael can share their thoughts...
-> > 
-> > Just for my learning, why PHY uses "fixed-link" instead of relying on a
-> > (firmware) graph? It might be the actual solution to your problem.
-> > 
-> > How graphs are used with swnodes, you may look into IPU3 (Intel Camera)
-> > glue driver to support devices before MIPI standardisation of the
-> > respective properties.
-> 
-> Forgot to say (yes, it maybe obvious) that this API will be exported,
-> anyone can use it and trap into the similar issue, because, for example,
-> of testing in environment with a single instance of the caller.
+Hi Dear,
 
-I think we're coming to the conclusion that using swnodes is not the
-correct approach for this problem, correct?
+My name is Dr Lily William from the United States.I am a French and
+American nationality (dual) living in the U.S and sometimes in France
+for Work Purpose.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I hope you consider my friend request. I will share some of my pics
+and more details about myself when I get your response.
+
+Thanks
+
+With love
+Lily
