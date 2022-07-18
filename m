@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C685578AD6
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B01D578AE2
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbiGRTaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        id S235969AbiGRTak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236099AbiGRT3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:13 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D74A44A;
-        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id l14so7164036qtv.4;
-        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
+        with ESMTP id S235832AbiGRT3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:14 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0432D1E3;
+        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id m6so9543539qvq.10;
+        Mon, 18 Jul 2022 12:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=nMdR+AEtByh2Sj3uhRet9r/mYlLTue7hiNXqJ4zPF7A=;
-        b=ThZjcWWpivQL4LIMCYMLUyqh5o5kXMqBz+8OT2okIYTlrj/edxwBb2dbQa9UPOmtF6
-         4kSD+ZK2zlONe0lcAJjESBk9Nh+IMF2AWtzKWASNF/7e6AOQFfgrht6kvwCXXaBw+ZJ/
-         TuekgFubFOIx/+8XhYbzZTP0R9y2FHpWi0c1TNSBFoZBSAURAUsk02B8TI4+roOQrfEb
-         rqvV8Zlz0kLm2wnKF7Eb5xNF8jQ/LSP7mPfSKTCz8rO9Som4BkQVoJkslp7Xj+XOaxbI
-         /IAz4pqpN4giyGSLVmRa+JZ33lWzIiVJrwXSuZTIP487wCG2DZbEQ+zSsLJzYmv+Cs+/
-         XhuA==
+        bh=/K1YhC0xN+k7O2FGj/yOUKehgh1HnqMHevQj0FQmavI=;
+        b=hncdckdd/8keGq0BbMkUSkVvo58eaSfk46icZhjcfux7VapB1d8lOZsIlqh8gYAlwO
+         nsH6TNRxQKop1KFXKAjUK6jXGpI96ZhzGYzEb1l58Uuid0BejJtLScjUXd1FwD7d6d0I
+         n6nBpJsBMCWPJZOY2isxybjgVNgOUtIwy5syFw6dhjVkH48EFPjJXnsXMjILmWWh6aNt
+         1XjXQ+KmT1tei8OVv0kOBxiaSSBAGf1jRYjjXWTW/jEj/bm8gP4G3KDncFs30f51O1n9
+         KoibE09XlnBMUE30LzuwHeutbdP4Gw0vPBuJAXfM44toJn9n4BYblu9g3pXR4SHa5Cz4
+         j6aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nMdR+AEtByh2Sj3uhRet9r/mYlLTue7hiNXqJ4zPF7A=;
-        b=qLIGhyV2409m4CxitSPQKxY9DA+HrMefJE9hJcR0YL9nXimwMT+/yC9S8rFm0jyXTI
-         cqE1A37T4LeI0Hlnqzak0YXGFTysI9GPy23KR3DRuUeJFFVtc2LtYSg2e5Hy0kwKTBly
-         Na4QKhuGB4H/vTeMJMKynqt2/m3n3rZWXNlo45RzihQEgF3lNlCb5+ScuufZLyt/cdPQ
-         2jFiwqWLQzoX+SASXBM2NieCTL/4YT1LqKodzyJy7ZyNivFYsC3oquo741CarDlhCH8q
-         TSenN/RPrWNnaaA/8Fr1DnWNQyWS5jpaC7hpRl75lNYV1VCSOvcXsj7dRenG4Mzzwlsa
-         GAPA==
-X-Gm-Message-State: AJIora+diTQeF2YOz/Bz+t5JYP55yN4z66jwxlmMPaYipdQp9JkXlDtb
-        ILUnKVMNIEJxQ5aybK7CGAY6KIef0Tm29w==
-X-Google-Smtp-Source: AGRyM1vJb89RwvBBeMzFkakUtULOUGREDepYG3L9kNDYRN+9fj+cWruAf8vfYMA3CaqjYR907kc98w==
-X-Received: by 2002:a05:622a:213:b0:31e:c569:220e with SMTP id b19-20020a05622a021300b0031ec569220emr22576563qtx.436.1658172542486;
-        Mon, 18 Jul 2022 12:29:02 -0700 (PDT)
+        bh=/K1YhC0xN+k7O2FGj/yOUKehgh1HnqMHevQj0FQmavI=;
+        b=1hsppSoi2ihKjmjPsCy+fDCVQq+lzVFsc/JfIYZ/HJn7JWk82VTaA14TsWON25hg18
+         WVPYJNICoIFtcmTuyxVQ8prv/pwuWkBWckx26KBsjG316GtlXK3jFetOHihXpHIUcZF3
+         nHz6FbE/H29W2E0VlmV2RP1+V2F2wGkHRlunDjHofHTuFb12VoZ4biK+xPH1R02Eu2mo
+         0Km8k6s/OY5sHoAefCSUav2wG7qUd36p7copYVcasv1cuzmLgbBI4g41HMkfHaGcyPYK
+         BFkBRGLmhQw4YjlByy+CldPOuzQASabNxl0FBluyvlMxp04cY0OX0t2QS8QWJ5eL/fmJ
+         7Mpw==
+X-Gm-Message-State: AJIora+zmkzVeUO+3yuEbLkjClwFriNLYb7Jum0UjD3uf9gjsqRGXsOx
+        /s90bE6B4IaeyOHa0bMAGXRcKVLn7thrDw==
+X-Google-Smtp-Source: AGRyM1uDAtG39PkyBUTwcaTq2/uDHYY4DcIItWFReB0uOGieqEEzLgaz94Wt8f3sFC0ByQPjoqZW6g==
+X-Received: by 2002:a05:6214:226d:b0:473:339e:3264 with SMTP id gs13-20020a056214226d00b00473339e3264mr22107594qvb.41.1658172543484;
+        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05620a295200b006b5e45ff82csm5125690qkp.93.2022.07.18.12.29.01
+        by smtp.gmail.com with ESMTPSA id bb31-20020a05622a1b1f00b0031ef21aec36sm2216383qtb.32.2022.07.18.12.29.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:29:02 -0700 (PDT)
+        Mon, 18 Jul 2022 12:29:03 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 13/16] time: optimize tick_setup_device()
-Date:   Mon, 18 Jul 2022 12:28:41 -0700
-Message-Id: <20220718192844.1805158-14-yury.norov@gmail.com>
+Subject: [PATCH 14/16] mm/percpu: optimize pcpu_alloc_area()
+Date:   Mon, 18 Jul 2022 12:28:42 -0700
+Message-Id: <20220718192844.1805158-15-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,50 +108,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tick_setup_device() calls cpumask_equal(newdev->cpumask, cpumask)
-even if newdev->cpumask == cpumask. Fix it.
+Don't call bitmap_clear() to clear 0 bits.
+
+bitmap_clear() can handle 0-length requests properly, but it's not covered
+with static optimizations, and falls to __bitmap_set(). So we are paying a
+function call + prologue work cost just for nothing.
 
 Caught with CONFIG_DEBUG_BITMAP:
-[    0.070960] Call trace:
-[    0.070974]  __bitmap_check_params+0x144/0x250
-[    0.071008]  tick_setup_device+0x70/0x1a0
-[    0.071040]  tick_check_new_device+0xc0/0x110
-[    0.071066]  clockevents_register_device+0x74/0x1c0
-[    0.071090]  clockevents_config_and_register+0x2c/0x3c
-[    0.071114]  arch_timer_starting_cpu+0x170/0x470
-[    0.071147]  cpuhp_invoke_callback+0x104/0x20c
-[    0.071180]  cpuhp_invoke_callback_range+0x70/0xf0
-[    0.071205]  notify_cpu_starting+0xac/0xcc
-[    0.071229]  secondary_start_kernel+0xe4/0x154
-[    0.071259]  __secondary_switched+0xa0/0xa4
-[    0.071297] ---[ end trace 0000000000000000 ]---
-[    0.071328] b1:	ffffa1f27323b890
-[    0.071339] b2:	ffffa1f27323b890
-[    0.071348] b3:	0
-[    0.071356] nbits:	256
-[    0.071366] start:	0
-[    0.071374] off:	0
-[    0.071383] Bitmap: parameters check failed
-[    0.071390] include/linux/bitmap.h [419]: bitmap_equal
+[   45.571799]  <TASK>
+[   45.571801]  pcpu_alloc_area+0x194/0x340
+[   45.571806]  pcpu_alloc+0x2fb/0x8b0
+[   45.571811]  ? kmem_cache_alloc_trace+0x177/0x2a0
+[   45.571815]  __percpu_counter_init+0x22/0xa0
+[   45.571819]  fprop_local_init_percpu+0x14/0x30
+[   45.571823]  wb_get_create+0x15d/0x5f0
+[   45.571828]  cleanup_offline_cgwb+0x73/0x210
+[   45.571831]  cleanup_offline_cgwbs_workfn+0xcf/0x200
+[   45.571835]  process_one_work+0x1e5/0x3b0
+[   45.571839]  worker_thread+0x50/0x3a0
+[   45.571843]  ? rescuer_thread+0x390/0x390
+[   45.571846]  kthread+0xe8/0x110
+[   45.571849]  ? kthread_complete_and_exit+0x20/0x20
+[   45.571853]  ret_from_fork+0x22/0x30
+[   45.571858]  </TASK>
+[   45.571859] ---[ end trace 0000000000000000 ]---
+[   45.571860] b1:		ffffa8d5002e1000
+[   45.571861] b2:		0
+[   45.571861] b3:		0
+[   45.571862] nbits:	44638
+[   45.571863] start:	44638
+[   45.571864] off:	0
+[   45.571864] percpu: Bitmap: parameters check failed
+[   45.571865] percpu: include/linux/bitmap.h [538]: bitmap_clear
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- kernel/time/tick-common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/percpu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
-index 7205f76f8d10..7b2da8ef09ef 100644
---- a/kernel/time/tick-common.c
-+++ b/kernel/time/tick-common.c
-@@ -255,7 +255,7 @@ static void tick_setup_device(struct tick_device *td,
- 	 * When the device is not per cpu, pin the interrupt to the
- 	 * current cpu:
- 	 */
--	if (!cpumask_equal(newdev->cpumask, cpumask))
-+	if (newdev->cpumask != cpumask && !cpumask_equal(newdev->cpumask, cpumask))
- 		irq_set_affinity(newdev->irq, cpumask);
+diff --git a/mm/percpu.c b/mm/percpu.c
+index 3633eeefaa0d..f720f7c36b91 100644
+--- a/mm/percpu.c
++++ b/mm/percpu.c
+@@ -1239,7 +1239,8 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
  
- 	/*
+ 	/* update boundary map */
+ 	set_bit(bit_off, chunk->bound_map);
+-	bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
++	if (alloc_bits > 1)
++		bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
+ 	set_bit(bit_off + alloc_bits, chunk->bound_map);
+ 
+ 	chunk->free_bytes -= alloc_bits * PCPU_MIN_ALLOC_SIZE;
 -- 
 2.34.1
 
