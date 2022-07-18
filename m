@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDA3578AE7
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2387D578ACD
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235413AbiGRTbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        id S235147AbiGRT3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236070AbiGRT3M (ORCPT
+        with ESMTP id S236066AbiGRT3M (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:12 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6D9DF16;
-        Mon, 18 Jul 2022 12:28:58 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id c24so4029697qkm.4;
-        Mon, 18 Jul 2022 12:28:58 -0700 (PDT)
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536D09FFF;
+        Mon, 18 Jul 2022 12:28:59 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id l14so7163873qtv.4;
+        Mon, 18 Jul 2022 12:28:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=RIK4clDwX1oEMjN7pszaNKOSN2c//m8ehQ85KvlfQJc=;
-        b=lNlO9SN3GGquIrZKMvt9zNOWmROiQ7UKGluxoJ/6490SfH4l3ZFvvrQ5XQ1qO64f2W
-         p+I82uCQ8ZvuMZH+fAnQobCtCoq0Pxx28ZFgroRR13TygKFuozWxlJ/fBsXMsFi7JF8j
-         LslOfWo/Dy/F6Ir4B6EskXMCoRMKBE9TwZvII3lNY3HkD0b5xpWqgQo6jfTqyMEE9GjF
-         krBbndqao3O5qYyeZ+ps1kb1QUfD4EBcW10RtUjMZnVw3PPOlBGTUXkNXWRiSQp+594Y
-         nQRk9aoZ3fTiFdlQFLY2WCbpyvmZnPd+Gmd7tWwjC5cucyR0Eq7BkmeA3NQwpHGdiKoM
-         400g==
+        bh=3XYQv40S3S5GPzbQg2pMTtfGv4eD74y+tQ/YBLA8hPI=;
+        b=TByPl+Xwiw2xqd6sHhrukw9bBi6aYZ9/z4hJI5n//rUO3S0J3LYVyW846tuoecx0/P
+         +mwSlwBGZWSeexadVQp08LKtTu3yhD9GwqRpcIaZI+JTvwBTqsldLUYP7cMYJCj0qmee
+         qzWvSzxAj6hHk8lfZ/znqRQjr8YYK6LhI35e/XjH607M4tjQzo2HZoBMdEmvG4Au2nUw
+         7VRp/BbOQlyMaiQHsMqpMueyXN70vJlljWT7heZMwoRcxsr+t7a84MhXDH0oqg1RW59u
+         ELUqUPatBeLpVq9tLx/9dMB7Lb9eBn1unJzFEZ12o7YFpej8nHIclhzYzEdXcPOn0e7U
+         PU/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RIK4clDwX1oEMjN7pszaNKOSN2c//m8ehQ85KvlfQJc=;
-        b=579E0dGF+dgD8naDl20afHk9yX8ej94OmBI4vpL8x7NCxfeuZik/2uZkKQTuciIjU5
-         42BhHANdJh12Tglpee6m2egVaYmhUcePEzwR7s+fIaZTMjlwAsOpy3yrsswe5z79lPE+
-         yigYQvsgdKFwEGV79gNcATPAvc6qK7TOHwhWSa3dUFCHbS5RBqrUhosVI1qrsBNXrmu7
-         HMtzpNmT1vJoy6ehgJMTT6xhx9vhY96wPXSITJhFSxBnN3lqnBa7wNbkHFwpWad2Km5l
-         YQRC6Hh46qv3EtT1Nn+ioDJL0sD4uNJ90YnaybSzHtIbBNtEKE9n+ZCodo/Guu3EUEJr
-         uAMg==
-X-Gm-Message-State: AJIora9dNT99rOS5ito2Msf370F5brNuiGhC+p3cqiBUdBxX0xYZ2x5Y
-        +ESh4ypzvlOpqVi8vV+RKSMaszXpBa82nw==
-X-Google-Smtp-Source: AGRyM1tudjg+bwULkYNm5Rqfm5wd3D6Bva3YUzb4kaoYEWEhL+2Z1rueeD9ZkF0QCclQf/uBzBI+zw==
-X-Received: by 2002:a05:620a:4725:b0:6b5:f6a9:950e with SMTP id bs37-20020a05620a472500b006b5f6a9950emr2013188qkb.464.1658172536990;
-        Mon, 18 Jul 2022 12:28:56 -0700 (PDT)
+        bh=3XYQv40S3S5GPzbQg2pMTtfGv4eD74y+tQ/YBLA8hPI=;
+        b=1yUGvr2KBbqt5mRt3sIUdBoE7U9UOY1OOtJdKm7DB3fRXRnzF4GUHPeWf5rF/wis59
+         RgX746WJf7x+5ec+hvNPHEr7fxGIzR5wwk74H962dXLqvvYDIb5u/vIfdzUNVwAMLwBI
+         knubeXMJkCJAtNPNkAizd+iYqLNKS8E5hbIkfgRCRgpFwd8VK/3kwIhPmSCodzre0HC5
+         Plj3JGItNcTFI3mjnXkoWwwsqPwTVeUfBgawFXy1MF5l+bCvFdgtijLS+YR8dtr7linD
+         tyVPlNcXTcM1Td6WgGq9royTv3TlHF9gVCGKRQSbIfoNX1M23XnETn64waKqiTFBfrv8
+         r8Vw==
+X-Gm-Message-State: AJIora/RS7m8GyI6AgiG0CwcUGy31uSqwfbWkDDRX98yJMJ0iRDP52kf
+        rUZszc0DqVYRQh47lqtanuxSIBj8Jwe0CQ==
+X-Google-Smtp-Source: AGRyM1sbR5MtKZUL9t8F0KGlqcEkHR0jVinkErRs9JvmFXVZhVXEvlih/lkWGgZ5SUq5r6VMJWzeKg==
+X-Received: by 2002:ac8:5cca:0:b0:31e:f51f:dd97 with SMTP id s10-20020ac85cca000000b0031ef51fdd97mr3070736qta.47.1658172538023;
+        Mon, 18 Jul 2022 12:28:58 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id dm53-20020a05620a1d7500b006b4880b08a9sm12668183qkb.88.2022.07.18.12.28.56
+        by smtp.gmail.com with ESMTPSA id m13-20020ac8688d000000b0031bf484079esm8937407qtq.18.2022.07.18.12.28.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:56 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:57 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 09/16] irq: don't copy cpu affinity mask if source is equal to destination
-Date:   Mon, 18 Jul 2022 12:28:37 -0700
-Message-Id: <20220718192844.1805158-10-yury.norov@gmail.com>
+Subject: [PATCH 10/16] sched: optimize __set_cpus_allowed_ptr_locked()
+Date:   Mon, 18 Jul 2022 12:28:38 -0700
+Message-Id: <20220718192844.1805158-11-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -108,64 +108,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-irq_do_set_affinity() may be called with
-	mask == irq_data_to_desc()->irq_common_data.affinity
-
-Copying in that case is useless.
+Don't call cpumask_subset(new_mask, cpu_allowed_mask) if new_mask
+is cpu_allowed_mask.
 
 Caught with CONFIG_DEBUG_BITMAP:
-[    1.089177]  __bitmap_check_params+0x144/0x250
-[    1.089238]  irq_do_set_affinity+0x120/0x470
-[    1.089298]  irq_startup+0x140/0x16c
-[    1.089350]  __setup_irq+0x668/0x760
-[    1.089402]  request_threaded_irq+0xe8/0x1b0
-[    1.089474]  vp_find_vqs_msix+0x270/0x410
-[    1.089532]  vp_find_vqs+0x48/0x1b4
-[    1.089584]  vp_modern_find_vqs+0x1c/0x70
-[    1.089641]  init_vq+0x2dc/0x34c
-[    1.089690]  virtblk_probe+0xdc/0x710
-[    1.089745]  virtio_dev_probe+0x19c/0x270
-[    1.089802]  really_probe.part.0+0x9c/0x2ac
-[    1.089863]  __driver_probe_device+0x98/0x144
-[    1.089923]  driver_probe_device+0xac/0x140
-[    1.089985]  __driver_attach+0xf8/0x1a0
-[    1.090047]  bus_for_each_dev+0x70/0xd0
-[    1.090101]  driver_attach+0x24/0x30
-[    1.090153]  bus_add_driver+0x150/0x200
-[    1.090208]  driver_register+0x78/0x130
-[    1.090266]  register_virtio_driver+0x28/0x40
-[    1.090329]  virtio_blk_init+0x68/0xa4
-[    1.090400]  do_one_initcall+0x50/0x1c0
-[    1.090471]  kernel_init_freeable+0x208/0x28c
-[    1.090538]  kernel_init+0x28/0x13c
-[    1.090590]  ret_from_fork+0x10/0x20
-[    1.090642] ---[ end trace 0000000000000000 ]---
-[    1.090705] b1:	ffff2ec742b85e18
-[    1.090710] b2:	ffff2ec742b85e18
-[    1.090715] b3:	0
-[    1.090719] nbits:	256
-[    1.090723] start:	0
-[    1.090727] off:	0
+[    0.132174] Call trace:
+[    0.132189]  __bitmap_check_params+0x144/0x250
+[    0.132216]  __set_cpus_allowed_ptr_locked+0x8c/0x2c0
+[    0.132241]  sched_init_smp+0x80/0xd8
+[    0.132273]  kernel_init_freeable+0x12c/0x28c
+[    0.132299]  kernel_init+0x28/0x13c
+[    0.132325]  ret_from_fork+0x10/0x20
+[    0.132354] ---[ end trace 0000000000000000 ]---
+[    0.132378] b1:	ffffcd0c07819a58
+[    0.132388] b2:	ffffcd0c07819a58
+[    0.132397] b3:	0
+[    0.132405] nbits:	256
+[    0.132414] start:	0
+[    0.132422] off:	0
+[    0.132444] Bitmap: parameters check failed
+[    0.132467] include/linux/bitmap.h [468]: bitmap_subset
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- kernel/irq/manage.c | 3 ++-
+ kernel/sched/core.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 8c396319d5ac..f9c1b21584ec 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -284,7 +284,8 @@ int irq_do_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 	switch (ret) {
- 	case IRQ_SET_MASK_OK:
- 	case IRQ_SET_MASK_OK_DONE:
--		cpumask_copy(desc->irq_common_data.affinity, mask);
-+		if (desc->irq_common_data.affinity != mask)
-+			cpumask_copy(desc->irq_common_data.affinity, mask);
- 		fallthrough;
- 	case IRQ_SET_MASK_OK_NOCOPY:
- 		irq_validate_effective_affinity(data);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index da0bf6fe9ecd..d6424336ef2d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2874,7 +2874,8 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
+ 		cpu_valid_mask = cpu_online_mask;
+ 	}
+ 
+-	if (!kthread && !cpumask_subset(new_mask, cpu_allowed_mask)) {
++	if (!kthread && new_mask != cpu_allowed_mask &&
++			!cpumask_subset(new_mask, cpu_allowed_mask)) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
 -- 
 2.34.1
 
