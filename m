@@ -2,58 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C83B65788CF
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3C45788C2
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 19:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbiGRRvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 13:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S235929AbiGRRtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 13:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiGRRvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:51:11 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0364B2D1E4
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 10:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658166671; x=1689702671;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MfiTeKa/pGmKDOflO1ZK3YC0kMXbQRAw2LUpsn/hkcI=;
-  b=gdVZIGNN837G4kFK9oMDRi4CikLShTuX+fbTeQxtMcSXm66wNvWLD28z
-   aJ264mgGv8RhI7eGy+WXZsvQ1uo0QBlMN/SZyod5X3cJFgvfi/utGCA2u
-   KVNE9//vFjnvPtwBxizQ7rK1UbgGIyxp+AgQBe4bnosukdjb0QX8Ck+0l
-   9Qf3puZkM8M97hmsnb3pzNnftH32t6tyFa4eImGJ5NpRWShqVkIQoVY1h
-   PnpXbJyuUNJH8cMS4QOOzTtVZXpcWF5nwH7JqPkevWtXGlcNsweJOD8Qy
-   v7RCVxpuUsZK9JZsxIpy2d8vGPD9IodfOlWHgYF62qmq9JHwxh0oYg7ag
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="347970946"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="347970946"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 10:51:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="624825887"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jul 2022 10:51:07 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Jun Zhang <xuejun.zhang@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 4/4] iavf: Fix missing state logs
-Date:   Mon, 18 Jul 2022 10:48:07 -0700
-Message-Id: <20220718174807.4113582-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
-References: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S235895AbiGRRtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 13:49:15 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F8C2B608;
+        Mon, 18 Jul 2022 10:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=SAGZqlv/8Ekeq7cG9+dcrh2VR2Q3Mh2/2a+2GmOEZ38=; b=led+XNtZy4DOs8zGSGMdVKgQCV
+        o+5rhsSbXAm1WD2ABinuR6B/vzR+DxKu1xY2yskOvMGlItwad7UQlrx8JsMSDoEIk0HxBoQ50tOP1
+        qKfDzBoyZw5BC6ybQrsPm1RR0XHex0ddNvhvIBgG22T0t0DPNqbA2iXyXe/2+/4mkFQMoSC2NRiQH
+        qzD527277g92Y+GLhDfAo/KrQb/iLwAeA4WcyHmLwvlOGN2RNpAGcd4dwWlre2/SiBpdv+VtsdndC
+        3wp1IUoMOezYiZ4u/0YrTtQBu1YMP8fIumHHg1fxZqpN7Te6S8beExSl/LfCjnNKR8a3QGdxy1Dfn
+        GaCkBJaQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDUrl-00HKCn-4Q; Mon, 18 Jul 2022 17:49:09 +0000
+Message-ID: <e90e0d6e-b4e5-b708-a431-cec27379bf51@infradead.org>
+Date:   Mon, 18 Jul 2022 10:49:07 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/2] crypto: make the sha1 library optional
+Content-Language: en-US
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jason@zx2c4.com
+References: <YtEqWH2JzolCfLRA@gondor.apana.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <YtEqWH2JzolCfLRA@gondor.apana.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,42 +52,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-Fix debug prints, by adding missing state prints.
 
-Extend iavf_state_str by strings for __IAVF_INIT_EXTENDED_CAPS and
-__IAVF_INIT_CONFIG_ADAPTER.
+On 7/15/22 01:50, Herbert Xu wrote:
+> Eric Biggers <ebiggers@kernel.org> wrote:
+>> This series makes it possible to build the kernel without SHA-1 support,
+>> although for now this is only possible in minimal configurations, due to
+>> the uses of SHA-1 in the networking subsystem.
+>>
+>> Eric Biggers (2):
+>>  crypto: move lib/sha1.c into lib/crypto/
+>>  crypto: make the sha1 library optional
+>>
+>> crypto/Kconfig          | 1 +
+>> init/Kconfig            | 1 +
+>> lib/Makefile            | 2 +-
+>> lib/crypto/Kconfig      | 3 +++
+>> lib/crypto/Makefile     | 3 +++
+>> lib/{ => crypto}/sha1.c | 0
+>> net/ipv6/Kconfig        | 1 +
+>> 7 files changed, 10 insertions(+), 1 deletion(-)
+>> rename lib/{ => crypto}/sha1.c (100%)
+>>
+>>
+>> base-commit: 79e6e2f3f3ff345947075341781e900e4f70db81
+> 
+> All applied.  Thanks.
 
-Without this patch, when enabling debug prints for iavf.h, user will
-see:
-iavf 0000:06:0e.0: state transition from:__IAVF_INIT_GET_RESOURCES to:__IAVF_UNKNOWN_STATE
-iavf 0000:06:0e.0: state transition from:__IAVF_UNKNOWN_STATE to:__IAVF_UNKNOWN_STATE
+Eric,
+linux-next-20220718 has a build error:
 
-Fixes: 605ca7c5c670 ("iavf: Fix kernel BUG in free_msi_irqs")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jun Zhang <xuejun.zhang@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ERROR: modpost: missing MODULE_LICENSE() in lib/crypto/libsha1.o
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 2a7b3c085aa9..0ea0361cd86b 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -464,6 +464,10 @@ static inline const char *iavf_state_str(enum iavf_state_t state)
- 		return "__IAVF_INIT_VERSION_CHECK";
- 	case __IAVF_INIT_GET_RESOURCES:
- 		return "__IAVF_INIT_GET_RESOURCES";
-+	case __IAVF_INIT_EXTENDED_CAPS:
-+		return "__IAVF_INIT_EXTENDED_CAPS";
-+	case __IAVF_INIT_CONFIG_ADAPTER:
-+		return "__IAVF_INIT_CONFIG_ADAPTER";
- 	case __IAVF_INIT_SW:
- 		return "__IAVF_INIT_SW";
- 	case __IAVF_INIT_FAILED:
 -- 
-2.35.1
-
+~Randy
