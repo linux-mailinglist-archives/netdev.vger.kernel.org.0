@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8C85786F0
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:06:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C87D57870C
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiGRQGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 12:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S235514AbiGRQMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 12:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234822AbiGRQGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:06:33 -0400
+        with ESMTP id S234321AbiGRQM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:12:29 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E7019C2B;
-        Mon, 18 Jul 2022 09:06:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDF52A712;
+        Mon, 18 Jul 2022 09:12:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=W/h2DA8cfEG16WKUgNpJElu4U35pORu6Lpisgp/aztg=; b=QLN6WX2qBSYbabOQyYw4ip+w6g
-        7r+HEHPGop9B4DUJzTW8luJJgMAeQpgv4CYSDE8/MUr03o3lppKVSnGpqO5y7NTAEYI/cm25r4NVg
-        3nH3lnbQ+Ptnz/KkOoQw+y6U47QXpESbK34xTHJwOigwLN6/2WK2UATYKkd8b2w38UmmWzhu03NY0
-        QLq9TscLbgSVFuEh71JUputnS/98gE1EXF4Uw+eBjIvBXHVv0UvKJZfAffXfOUnQOB0ZVErrkxJC7
-        3ZTO32hTTUEPvKWgfhjNA7GwY2Syn6ROYIFeboIDs9p6AXvCBtb/EpbLESPC7Uo6y0dwHC54d9Q5l
-        kH0jMfBw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33416)
+        bh=XY4k5D+BI4A4Rp2rDBAAFXYg7CTuWKRmrEv98B2USq0=; b=CnZwObVGeHuGa6upd8+YoqEV7m
+        f1SKsYVOZ9yeOQIpkZfhP7LonTY7RcJKgcQS8xU28jrolJzlTu8gFD6K+QPCAUapBEy28Fz2AojZC
+        gqoQ/Rm8hliqIReYgaxPOHzveaBdFcppHOQqr97fdryd7OZvQfZdssq5HFeX5tHu9VLlxCHsZCJ6A
+        8mLpaN/0x0F2gwEB2T4HUS3HM9akXgDAPk6OcbrxfBD6goCdKqbWly+S9ss+2DX4QaCMeQqRnHATq
+        X93TPelFSCl7Lq62bF5Fi5XBgb2yZOQJUYz8bXUiH1G1CjyBFaV3SMhAxgb+m1AyIij9gTmqX3+PW
+        0Y6PMaqQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33418)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1oDTGN-0001nK-7M; Mon, 18 Jul 2022 17:06:27 +0100
+        id 1oDTM8-0001oE-QX; Mon, 18 Jul 2022 17:12:24 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oDTGL-000253-Bw; Mon, 18 Jul 2022 17:06:25 +0100
-Date:   Mon, 18 Jul 2022 17:06:25 +0100
+        id 1oDTM7-00025z-Fu; Mon, 18 Jul 2022 17:12:23 +0100
+Date:   Mon, 18 Jul 2022 17:12:23 +0100
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 08/47] net: phylink: Support differing link
- speeds and interface speeds
-Message-ID: <YtWFAfu1nSE6vCfx@shell.armlinux.org.uk>
+Subject: Re: [PATCH net-next v3 10/47] net: phylink: Adjust link settings
+ based on rate adaptation
+Message-ID: <YtWGZ4ZJ6rmLmlWk@shell.armlinux.org.uk>
 References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-9-sean.anderson@seco.com>
- <YtMaKWZyC/lgAQ0i@lunn.ch>
+ <20220715215954.1449214-11-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YtMaKWZyC/lgAQ0i@lunn.ch>
+In-Reply-To: <20220715215954.1449214-11-sean.anderson@seco.com>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
@@ -67,36 +66,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 10:06:01PM +0200, Andrew Lunn wrote:
-> This seem error prone when new PHY_INTERFACE_MODES are added. I would
-> prefer a WARN_ON_ONCE() in the default: so we get to know about such
-> problems.
+On Fri, Jul 15, 2022 at 05:59:17PM -0400, Sean Anderson wrote:
+> If the phy is configured to use pause-based rate adaptation, ensure that
+> the link is full duplex with pause frame reception enabled. Note that these
+> settings may be overridden by ethtool.
 > 
-> I'm also wondering if we need a sanity check here. I've seen quite a
-> few boards a Fast Ethernet MAC, but a 1G PHY because they are
-> cheap. In such cases, the MAC is supposed to call phy_set_max_speed()
-> to indicate it can only do 100Mbs. PHY_INTERFACE_MODE_MII but a
-> link_speed of 1G is clearly wrong. Are there other cases where we
-> could have a link speed faster than what the interface mode allows?
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> 
+> Changes in v3:
+> - New
+> 
+>  drivers/net/phy/phylink.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 7fa21941878e..7f65413aa778 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -1445,6 +1445,10 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
+>  	pl->phy_state.speed = phy_interface_speed(phydev->interface,
+>  						  phydev->speed);
+>  	pl->phy_state.duplex = phydev->duplex;
+> +	if (phydev->rate_adaptation == RATE_ADAPT_PAUSE) {
+> +		pl->phy_state.duplex = DUPLEX_FULL;
+> +		rx_pause = true;
+> +	}
 
-Currently, phylink will deal with that situation - the MAC will report
-that it only supports 10/100, and when the PHY is brought up, the
-supported/advertisement masks will be restricted to those speeds.
+I really don't like this - as I've pointed out in my previous email, the
+reporting in the kernel message log for "Link is Up" will be incorrect
+if you force the phy_state here like this. If the media side link has
+been negotiated to be half duplex, we should state that in the "Link is
+Up" message.
 
-> Bike shedding a bit, but would it be better to use host_side_speed and
-> line_side_speed? When you say link_speed, which link are your
-> referring to? Since we are talking about the different sides of the
-> PHY doing different speeds, the naming does need to be clear.
+It's only the PCS and MAC that care about this, so this should be dealt
+with when calling into the PCS and MAC's link_up() method.
 
-Yes, we definitely need that clarification.
-
-I am rather worried that we have drivers using ->speed today in their
-mac_config and we're redefining what that means in this patch. Also,
-the value that we pass to the *_link_up() calls appears to be the
-phy <-> (pcs|mac) speed not the media speed. It's also ->speed and
-->duplex that we report to the user in the "Link is Up" message,
-which will be confusing if it always says 10G despite the media link
-being e.g. 100M.
+The problem we have are the legacy drivers (of which mv88e6xxx and
+mtk_eth_soc are the only two I'm aware of) that make use of the
+state->speed and state->duplex when configuring stuff. We could've been
+down to just mv88e6xxx had the DSA and mv88e6xxx patches been sorted
+out, but sadly that's now going to be some time off due to reviewer
+failure.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
