@@ -2,383 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE2E578D8F
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 00:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECEB1578DB2
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 00:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235151AbiGRWae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 18:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
+        id S235789AbiGRWqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 18:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235145AbiGRWad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 18:30:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0FD02C665
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 15:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658183428;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p8Vxu+b5s/s3tU4vedn2DVYFIE/kRvk2G8tl0G6Dmow=;
-        b=ecaeXY2JK87CGOifT5aZfWH9ULAZksVYS6rCGt2cj1OurxSkgZF9+WkCN1sK3pCZ8BDk+J
-        J/jYd49g2lwBCXAmkfsBkfIAQZNv2bpCTlcj9qQttITFbxahqmJc4X4Edn+r4NsdMsq0iC
-        RP3NTRGWTb6KmR4NixLAIeYBHsanjao=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-319-DPwwXdYuPnGB-0KuqXfPzw-1; Mon, 18 Jul 2022 18:30:27 -0400
-X-MC-Unique: DPwwXdYuPnGB-0KuqXfPzw-1
-Received: by mail-il1-f200.google.com with SMTP id g8-20020a92cda8000000b002dcbd57f808so6894018ild.4
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 15:30:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=p8Vxu+b5s/s3tU4vedn2DVYFIE/kRvk2G8tl0G6Dmow=;
-        b=aYo2j0BAoxPN9HG091MyN3p8JgCe1xGCQfdRltwVADZlv+2KzH05CIB0phbBRvLtkR
-         htk73hTFpnuGe7K9XHOazrqAbrHY5deXvZ88/RSzb+zSg9b2qAZtkQHgndjBvNHP9O9J
-         17K1naT1t6iG/lX5OKhuByi5H8Fba2jx1MgKo74x71LnTNDASwS8HIB9YZ9FeKHI9JjD
-         GdsBpqMCp8aGzXZvOro0D4wVt/dob3x/6BlA87zXMhUV5tqJK+m0j1LKlBWVXgiels0m
-         nFr/8GB8ksgxjS+fRqGtrAXUNQ6rRkxuMvQZCVdvAZtYa5E7gbcBKS4tzrYK9B4PnEpp
-         OL4A==
-X-Gm-Message-State: AJIora9FnZVzM9f+8CMGC3XaqQ0xQpYh6+fJzkkPdypiXrkuujj/KWH4
-        11zC4oNZaGdiqps8LQHRKH9/+ndXiffoyBwLwwPIBDDgrdFE9a3+TOJ3+Fnb7xneh6GVybbBj9v
-        HIjv6yxpguDtu3YP3
-X-Received: by 2002:a02:8504:0:b0:33f:1342:719d with SMTP id g4-20020a028504000000b0033f1342719dmr15459655jai.64.1658183427057;
-        Mon, 18 Jul 2022 15:30:27 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vtGH01kAdeHTIJRzYxRZU9aOii0gxerLom+B+Z4RlZ1NtODkxPk1VPw7L2jDHskLuCOb+itw==
-X-Received: by 2002:a02:8504:0:b0:33f:1342:719d with SMTP id g4-20020a028504000000b0033f1342719dmr15459644jai.64.1658183426789;
-        Mon, 18 Jul 2022 15:30:26 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id e44-20020a02212c000000b0033f25da5228sm5999880jaa.93.2022.07.18.15.30.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 15:30:26 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 16:30:24 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>
-Cc:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>,
-        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
-        <leonro@nvidia.com>, <maorg@nvidia.com>, <cohuck@redhat.com>
-Subject: Re: [PATCH V2 vfio 06/11] vfio: Introduce the DMA logging feature
- support
-Message-ID: <20220718163024.143ec05a.alex.williamson@redhat.com>
-In-Reply-To: <20220714081251.240584-7-yishaih@nvidia.com>
+        with ESMTP id S232002AbiGRWql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 18:46:41 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA7A2494B;
+        Mon, 18 Jul 2022 15:46:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cc+IDQ8m8ErS+rDrTgjcJMHdDMqKQTC+VbXShvPQHcgtdj1JvlOy0o1GYp/7xagRllPs38xw/5OyRC7c074ES8ShCXhnWmuaQVvdEKz+yOBqEuVtnCY/3Jlzdj+MIIvy/OPfBJX3NWTzchesjYlQ6MapRXunLx1uxGhzdlU2q+szSbZ1nDZBwmpQbvPSDWt0JJD+nMoPrr9g0hKblX8J71zGBUmV6SjvRFIZgmFTi0xVmg175BNGR2bbiBNsS2YAX7Bm/6Hi2T8lxogTFPjZb+33jvvJyG24G8x48IdoR0dI447gsjQNDW2qI0rb3BCacU8jS9xnuzHbIYwj+y+N7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HK4VVtGPcZLDA8LIHCct5IhGMEJJlO1BAYatCYJ9Tbg=;
+ b=c6SwdyoPVhzner0Bbo8nE1b68eLW5DzYXDlBJrfB4yqdS+3yFjf0dsdhnI+bJyFSfadRS/1278l4is781xFvo81iq+CmimuYYXNs2AJHWollc19d1LbYKi+WQMGXY0OR7/bZwAqo4BUFOv8ryrhmpwcCVf+BtkCn8lsSP7lMGu0eCuR3EmU9ZK6Z1bm1Z9hWH9gppnz3iupRL8/O5MLv6od3Grw0kq1cLZwEO+oeWfUmXRH4Zyqvn5HIKU/1VEk/09aXJyIrJuV9i//C2yq0aFJemkThC3/DbkTR60EtgUP9VdC4ZeZgHpONygC4VI01mzLzA9SSmNzgDIj6qFyHXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HK4VVtGPcZLDA8LIHCct5IhGMEJJlO1BAYatCYJ9Tbg=;
+ b=B2epAXtbE/RGTKCEmvmbdxV/YOkH0wM69hQcYqDK0ExhNIp5Pc+unf9cSKY/x0AOpCl3LZlUik3OrxV8+NRRdxX/VaXriUVz8WLI5/B5tFqfnok5TbvrGSuzGBWWdzyioKuFtuZNBxxJaVt4H6TCP9o2C1T8tVdm8yrLhzFRyWVxJA/kcbMpwg5Xm3lxsRqoTOLYifarTrTLBUHwlEnwJXlkwfoJKRD4X8AmV7uLdGgP7bPAmUTNv66mjovJg4ovj/zS35+ovsidJyGsF/Vxo/GWoIQER7aWXtYR/aawQA0ISkdzgGZu67pKZLHyUaFGJmiIuKRvT3E0PSJqru962Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by PH7PR12MB6665.namprd12.prod.outlook.com (2603:10b6:510:1a7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Mon, 18 Jul
+ 2022 22:46:37 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
+ 22:46:37 +0000
+Date:   Mon, 18 Jul 2022 19:46:35 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, saeedm@nvidia.com,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        kevin.tian@intel.com, joao.m.martins@oracle.com, leonro@nvidia.com,
+        maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V2 vfio 05/11] vfio: Add an IOVA bitmap support
+Message-ID: <20220718224635.GF4609@nvidia.com>
 References: <20220714081251.240584-1-yishaih@nvidia.com>
-        <20220714081251.240584-7-yishaih@nvidia.com>
-Organization: Red Hat
+ <20220714081251.240584-6-yishaih@nvidia.com>
+ <20220718163010.01e11c20.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718163010.01e11c20.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL0PR1501CA0009.namprd15.prod.outlook.com
+ (2603:10b6:207:17::22) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b1b8afca-5857-45a1-3e1b-08da690f5f36
+X-MS-TrafficTypeDiagnostic: PH7PR12MB6665:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ek8TnX/hbzhaMjJ9wEEb9Anww3oDtH9B4cMPpQ0FEACDluFwXmHzhvqDKluZclxZDNccpqTVPQkDc3JilyVbxJFbO3k8hcBoSeZLrZrY1VCSXOqMqZuhaPSPoM9ADhOah8NmMqR57HBu52CwkQqxySau0NvkCVlmyjvBY67o2uH43yF1kHXVfF8hJru2S/SQPSHsCkEXn6d/jB1kOX+jqtJz3ihQfZl/Et/z2yRe3q6hUYwJ0x30sEjv/f7UjdffIOx52ZSCrriE1JSzWPp1CEEV1aFI7ydq+HNNLdMx/h6/MEpK0cNJca/iu25DWXU3b47JRrO9eQIipdYOVV78/Q5G63p0V9hFE5jqg3Rt097GiCeKzOgful7fABJ066kza1nGGUxwCRVvqszzHvcCr6lDeX4UXWYmWbOpZBt1c4QKcRY/SL7IFDkrFuNtrAx7whJzc1HBrxrzP0MEbKWgKSO9TIabhBk4G2Q4mdfgEtxjiQMcPqvBnU6qmS7i3FXrodwTf85dJkdx5iW3gn058NzmK13MsslP5yvK06UZ4yFBhqlWUJeAU+pP+6ZGLAr97HpYe6dGTyliM+EHuyYvOjY/v4CUxkWmqAbIU1V4Dz0llw30czWKCKFTU0os98rkpjbpCIaTItBX6Q0J2Z8gL4Q5PgPbx2I766dNfWl+bz/lEQqpn0xMlmj3/wSDEtqlxBOzUVT5a4gh1tt8JNddYNAXkdY6ahpd9ITT95msZHa3XK7PEs9t7l550C/LVFv0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(376002)(366004)(136003)(8936002)(66476007)(4744005)(5660300002)(4326008)(8676002)(66556008)(66946007)(38100700002)(36756003)(33656002)(2906002)(86362001)(6486002)(41300700001)(478600001)(6512007)(6916009)(26005)(316002)(2616005)(1076003)(186003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9kCc3dpxffXLg5TXXSe9S5W395pukeaWv3mSj1uF0LNXHsto3WafPoghG9m1?=
+ =?us-ascii?Q?OAXZ9WZvap2X5oMOGToqLRqM/rTQ8syJYROXC6X7GW13+kVvy45KJ6t0fPYV?=
+ =?us-ascii?Q?DwzRM6JRudF64+WVzQ6beCxAayqi44JfVStd4PkhydvQTM6U/lFpUlk42SDJ?=
+ =?us-ascii?Q?IF6ttCkQgEHa332YpRh5q6relOBsDLP+sGRhOnQWhZ3Tlxr4FyikWpOEXLPN?=
+ =?us-ascii?Q?ns2rssRLYs8Tl3x07D+bO1cjUNlPcYSvW5StrKG76aCuLgIRlUcHqqAtYoqU?=
+ =?us-ascii?Q?7+OcKJoHB96t5rTI/gyZ25kElL/Wfo7CYMBkY9KutzPDodaGYyRbn/s7e7U2?=
+ =?us-ascii?Q?UbYSDS7LgaY5Q5Ko69Ei3Burw4LC4JaylJWGxrQoA43oAyaVBerZ9BABAeI2?=
+ =?us-ascii?Q?Q6ZnOsS141zIXJWIvEYE1r7Yvmx0aKHs/cJoQKViIRtF5JldVleqNziTktm9?=
+ =?us-ascii?Q?5iW4lMJsI2U99/7m9u+C/J/wlGqpc9At2kFbSOK4VisZjdXxnFp1fuYhmQux?=
+ =?us-ascii?Q?j0KFnQqj/NSjbPlySNmAWWIhBCLXJwRkGsnqKpiGtRVa4TJYrDt8SyEpr15j?=
+ =?us-ascii?Q?v6fdXijcse0EBT3Ubz7IX64R1YSbPFuPuBW6ysmQuVMSSePrqxuLzLSm/iP0?=
+ =?us-ascii?Q?WJ5yKO0uxLENWCrSTgIunYIorPcRvkDTuuoI44zxURXvsWmvi4JByn5RcTAq?=
+ =?us-ascii?Q?f3OA+mCoZIVawbe9zNnQINDyUd5wMDdfJgErZgoM20R/klIG8EbSmJ9x1QYF?=
+ =?us-ascii?Q?KQwTKie2bFUTN+Z14Vj8md0XqZN0c7fXcNCW7Bs540tFDh2p+6JOgcMf/vER?=
+ =?us-ascii?Q?Lr5FPRIe0/KGWGXXQKumsVKPKqTbGOqh3PStFS/ecYkdpMJ4lwK9whUk0DEG?=
+ =?us-ascii?Q?K/f3jfxcnAEXVEAFEC+Br4CfGlTsD0UuP41XuQPWgjw7i+rLKVzeHld3pox4?=
+ =?us-ascii?Q?G1/rlQSG2pvdArHfdhsihCh0Zy2UGRIr+iY5VflgrpMmtIYsyQAbwlG9R3j+?=
+ =?us-ascii?Q?PvsrD70JS87CG91iLgGa0lGtR9k/8TIChgEvQXWEH8hEyP3SycP3C/4Ep8wY?=
+ =?us-ascii?Q?QZzgsnjqgBYHcjkxxn/eNrmN0SuRYIh5ssaRP2SGdMXny86l5ZpmVPfYW84P?=
+ =?us-ascii?Q?yaKoH5VKvJFDrhkcdEcVG+CfeFBwOhfZAenvi6v1SNRHI1Tjswz2gnD/v6zS?=
+ =?us-ascii?Q?W6XuEzdKmdEHNfAYL5hQW/jfPyRgdUVRYUcpHCtOfctWswQ3kFzYMxlzrDPp?=
+ =?us-ascii?Q?bTj4fcG4GPDcXilGLytF2tXtfRmk79Oy/8TAAS8Sz2Waz8nxBt92ceptGRdI?=
+ =?us-ascii?Q?w7nu2w0JwzuFedYodqu8f5MNbaTUhHpkHhIREQMKI2iC2aYWXmfpOjBxhMBX?=
+ =?us-ascii?Q?lfKmZThldi4vnh5noDRwRa5+ryP/Sh79OkSAexra7xonyLoJ0vzRkEBQvIAc?=
+ =?us-ascii?Q?0BaeMvL4dPeIkiuNC2pjcUK6j3IiOX9KfG1jWdZkMYClp8jmAh/M3x/thrQR?=
+ =?us-ascii?Q?+NgLTGjZAi4Qg9/4Trajkt5RpYtv3/QEZ5pvcKgMcfa8a2XXUS9MGwudrQ/9?=
+ =?us-ascii?Q?pRARt7+dULuGVXkgOYSfTY1IBNwO0mPqgiXa+DqU?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1b8afca-5857-45a1-3e1b-08da690f5f36
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 22:46:37.0568
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q5RprBf1lf2UXJQehOHlLfYJmyg6DqeuEiC2Q4Z73SFEF9OWbzik/vveoo4S3xJk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6665
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jul 2022 11:12:46 +0300
-Yishai Hadas <yishaih@nvidia.com> wrote:
+On Mon, Jul 18, 2022 at 04:30:10PM -0600, Alex Williamson wrote:
 
-> Introduce the DMA logging feature support in the vfio core layer.
+> > Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> > ---
+> >  drivers/vfio/Makefile       |   6 +-
+> >  drivers/vfio/iova_bitmap.c  | 164 ++++++++++++++++++++++++++++++++++++
+> >  include/linux/iova_bitmap.h |  46 ++++++++++
 > 
-> It includes the processing of the device start/stop/report DMA logging
-> UAPIs and calling the relevant driver 'op' to do the work.
-> 
-> Specifically,
-> Upon start, the core translates the given input ranges into an interval
-> tree, checks for unexpected overlapping, non aligned ranges and then
-> pass the translated input to the driver for start tracking the given
-> ranges.
-> 
-> Upon report, the core translates the given input user space bitmap and
-> page size into an IOVA kernel bitmap iterator. Then it iterates it and
-> call the driver to set the corresponding bits for the dirtied pages in a
-> specific IOVA range.
-> 
-> Upon stop, the driver is called to stop the previous started tracking.
-> 
-> The next patches from the series will introduce the mlx5 driver
-> implementation for the logging ops.
-> 
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> ---
->  drivers/vfio/Kconfig             |   1 +
->  drivers/vfio/pci/vfio_pci_core.c |   5 +
->  drivers/vfio/vfio_main.c         | 161 +++++++++++++++++++++++++++++++
->  include/linux/vfio.h             |  21 +++-
->  4 files changed, 186 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-> index 6130d00252ed..86c381ceb9a1 100644
-> --- a/drivers/vfio/Kconfig
-> +++ b/drivers/vfio/Kconfig
-> @@ -3,6 +3,7 @@ menuconfig VFIO
->  	tristate "VFIO Non-Privileged userspace driver framework"
->  	select IOMMU_API
->  	select VFIO_IOMMU_TYPE1 if MMU && (X86 || S390 || ARM || ARM64)
-> +	select INTERVAL_TREE
->  	help
->  	  VFIO provides a framework for secure userspace device drivers.
->  	  See Documentation/driver-api/vfio.rst for more details.
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index 2efa06b1fafa..b6dabf398251 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -1862,6 +1862,11 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
->  			return -EINVAL;
->  	}
->  
-> +	if (vdev->vdev.log_ops && !(vdev->vdev.log_ops->log_start &&
-> +	    vdev->vdev.log_ops->log_stop &&
-> +	    vdev->vdev.log_ops->log_read_and_clear))
-> +		return -EINVAL;
-> +
->  	/*
->  	 * Prevent binding to PFs with VFs enabled, the VFs might be in use
->  	 * by the host or other users.  We cannot capture the VFs if they
-> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-> index bd84ca7c5e35..2414d827e3c8 100644
-> --- a/drivers/vfio/vfio_main.c
-> +++ b/drivers/vfio/vfio_main.c
-> @@ -32,6 +32,8 @@
->  #include <linux/vfio.h>
->  #include <linux/wait.h>
->  #include <linux/sched/signal.h>
-> +#include <linux/interval_tree.h>
-> +#include <linux/iova_bitmap.h>
->  #include "vfio.h"
->  
->  #define DRIVER_VERSION	"0.3"
-> @@ -1603,6 +1605,153 @@ static int vfio_ioctl_device_feature_migration(struct vfio_device *device,
->  	return 0;
->  }
->  
-> +#define LOG_MAX_RANGES 1024
-> +
-> +static int
-> +vfio_ioctl_device_feature_logging_start(struct vfio_device *device,
-> +					u32 flags, void __user *arg,
-> +					size_t argsz)
-> +{
-> +	size_t minsz =
-> +		offsetofend(struct vfio_device_feature_dma_logging_control,
-> +			    ranges);
-> +	struct vfio_device_feature_dma_logging_range __user *ranges;
-> +	struct vfio_device_feature_dma_logging_control control;
-> +	struct vfio_device_feature_dma_logging_range range;
-> +	struct rb_root_cached root = RB_ROOT_CACHED;
-> +	struct interval_tree_node *nodes;
-> +	u32 nnodes;
-> +	int i, ret;
-> +
-> +	if (!device->log_ops)
-> +		return -ENOTTY;
-> +
-> +	ret = vfio_check_feature(flags, argsz,
-> +				 VFIO_DEVICE_FEATURE_SET,
-> +				 sizeof(control));
-> +	if (ret != 1)
-> +		return ret;
-> +
-> +	if (copy_from_user(&control, arg, minsz))
-> +		return -EFAULT;
-> +
-> +	nnodes = control.num_ranges;
-> +	if (!nnodes || nnodes > LOG_MAX_RANGES)
-> +		return -EINVAL;
+> I'm still working my way through the guts of this, but why is it being
+> proposed within the vfio driver when this is not at all vfio specific,
+> proposes it's own separate header, and doesn't conform with any of the
+> namespace conventions of being a sub-component of vfio?  Is this
+> ultimately meant for lib/ or perhaps an extension of iova.c within the
+> iommu subsystem?  Thanks,
 
-The latter looks more like an -E2BIG errno.  This is a hard coded
-limit, but what are the heuristics?  Can a user introspect the limit?
-Thanks,
+I am expecting when iommufd dirty tracking comes we will move this
+file into drivers/iommu/iommufd/ and it will provide it. So it was
+written to make that a simple rename vs changing everything.
 
-Alex
+Until we have that, this seems like the best place for it
 
-> +
-> +	ranges = u64_to_user_ptr(control.ranges);
-> +	nodes = kmalloc_array(nnodes, sizeof(struct interval_tree_node),
-> +			      GFP_KERNEL);
-> +	if (!nodes)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < nnodes; i++) {
-> +		if (copy_from_user(&range, &ranges[i], sizeof(range))) {
-> +			ret = -EFAULT;
-> +			goto end;
-> +		}
-> +		if (!IS_ALIGNED(range.iova, control.page_size) ||
-> +		    !IS_ALIGNED(range.length, control.page_size)) {
-> +			ret = -EINVAL;
-> +			goto end;
-> +		}
-> +		nodes[i].start = range.iova;
-> +		nodes[i].last = range.iova + range.length - 1;
-> +		if (interval_tree_iter_first(&root, nodes[i].start,
-> +					     nodes[i].last)) {
-> +			/* Range overlapping */
-> +			ret = -EINVAL;
-> +			goto end;
-> +		}
-> +		interval_tree_insert(nodes + i, &root);
-> +	}
-> +
-> +	ret = device->log_ops->log_start(device, &root, nnodes,
-> +					 &control.page_size);
-> +	if (ret)
-> +		goto end;
-> +
-> +	if (copy_to_user(arg, &control, sizeof(control))) {
-> +		ret = -EFAULT;
-> +		device->log_ops->log_stop(device);
-> +	}
-> +
-> +end:
-> +	kfree(nodes);
-> +	return ret;
-> +}
-> +
-> +static int
-> +vfio_ioctl_device_feature_logging_stop(struct vfio_device *device,
-> +				       u32 flags, void __user *arg,
-> +				       size_t argsz)
-> +{
-> +	int ret;
-> +
-> +	if (!device->log_ops)
-> +		return -ENOTTY;
-> +
-> +	ret = vfio_check_feature(flags, argsz,
-> +				 VFIO_DEVICE_FEATURE_SET, 0);
-> +	if (ret != 1)
-> +		return ret;
-> +
-> +	return device->log_ops->log_stop(device);
-> +}
-> +
-> +static int
-> +vfio_ioctl_device_feature_logging_report(struct vfio_device *device,
-> +					 u32 flags, void __user *arg,
-> +					 size_t argsz)
-> +{
-> +	size_t minsz =
-> +		offsetofend(struct vfio_device_feature_dma_logging_report,
-> +			    bitmap);
-> +	struct vfio_device_feature_dma_logging_report report;
-> +	struct iova_bitmap_iter iter;
-> +	int ret;
-> +
-> +	if (!device->log_ops)
-> +		return -ENOTTY;
-> +
-> +	ret = vfio_check_feature(flags, argsz,
-> +				 VFIO_DEVICE_FEATURE_GET,
-> +				 sizeof(report));
-> +	if (ret != 1)
-> +		return ret;
-> +
-> +	if (copy_from_user(&report, arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (report.page_size < PAGE_SIZE)
-> +		return -EINVAL;
-> +
-> +	iova_bitmap_init(&iter.dirty, report.iova, ilog2(report.page_size));
-> +	ret = iova_bitmap_iter_init(&iter, report.iova, report.length,
-> +				    u64_to_user_ptr(report.bitmap));
-> +	if (ret)
-> +		return ret;
-> +
-> +	for (; !iova_bitmap_iter_done(&iter);
-> +	     iova_bitmap_iter_advance(&iter)) {
-> +		ret = iova_bitmap_iter_get(&iter);
-> +		if (ret)
-> +			break;
-> +
-> +		ret = device->log_ops->log_read_and_clear(device,
-> +			iova_bitmap_iova(&iter),
-> +			iova_bitmap_length(&iter), &iter.dirty);
-> +
-> +		iova_bitmap_iter_put(&iter);
-> +
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	iova_bitmap_iter_free(&iter);
-> +	return ret;
-> +}
-> +
->  static int vfio_ioctl_device_feature(struct vfio_device *device,
->  				     struct vfio_device_feature __user *arg)
->  {
-> @@ -1636,6 +1785,18 @@ static int vfio_ioctl_device_feature(struct vfio_device *device,
->  		return vfio_ioctl_device_feature_mig_device_state(
->  			device, feature.flags, arg->data,
->  			feature.argsz - minsz);
-> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_START:
-> +		return vfio_ioctl_device_feature_logging_start(
-> +			device, feature.flags, arg->data,
-> +			feature.argsz - minsz);
-> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP:
-> +		return vfio_ioctl_device_feature_logging_stop(
-> +			device, feature.flags, arg->data,
-> +			feature.argsz - minsz);
-> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT:
-> +		return vfio_ioctl_device_feature_logging_report(
-> +			device, feature.flags, arg->data,
-> +			feature.argsz - minsz);
->  	default:
->  		if (unlikely(!device->ops->device_feature))
->  			return -EINVAL;
-> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> index 4d26e149db81..feed84d686ec 100644
-> --- a/include/linux/vfio.h
-> +++ b/include/linux/vfio.h
-> @@ -14,6 +14,7 @@
->  #include <linux/workqueue.h>
->  #include <linux/poll.h>
->  #include <uapi/linux/vfio.h>
-> +#include <linux/iova_bitmap.h>
->  
->  struct kvm;
->  
-> @@ -33,10 +34,11 @@ struct vfio_device {
->  	struct device *dev;
->  	const struct vfio_device_ops *ops;
->  	/*
-> -	 * mig_ops is a static property of the vfio_device which must be set
-> -	 * prior to registering the vfio_device.
-> +	 * mig_ops/log_ops is a static property of the vfio_device which must
-> +	 * be set prior to registering the vfio_device.
->  	 */
->  	const struct vfio_migration_ops *mig_ops;
-> +	const struct vfio_log_ops *log_ops;
->  	struct vfio_group *group;
->  	struct vfio_device_set *dev_set;
->  	struct list_head dev_set_list;
-> @@ -104,6 +106,21 @@ struct vfio_migration_ops {
->  				   enum vfio_device_mig_state *curr_state);
->  };
->  
-> +/**
-> + * @log_start: Optional callback to ask the device start DMA logging.
-> + * @log_stop: Optional callback to ask the device stop DMA logging.
-> + * @log_read_and_clear: Optional callback to ask the device read
-> + *         and clear the dirty DMAs in some given range.
-> + */
-> +struct vfio_log_ops {
-> +	int (*log_start)(struct vfio_device *device,
-> +		struct rb_root_cached *ranges, u32 nnodes, u64 *page_size);
-> +	int (*log_stop)(struct vfio_device *device);
-> +	int (*log_read_and_clear)(struct vfio_device *device,
-> +		unsigned long iova, unsigned long length,
-> +		struct iova_bitmap *dirty);
-> +};
-> +
->  /**
->   * vfio_check_feature - Validate user input for the VFIO_DEVICE_FEATURE ioctl
->   * @flags: Arg from the device_feature op
-
+Jason
