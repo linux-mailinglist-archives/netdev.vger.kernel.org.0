@@ -2,138 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD46F578750
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5262B578766
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 18:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiGRQZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 12:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        id S234537AbiGRQ3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 12:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233838AbiGRQYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:24:39 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70082.outbound.protection.outlook.com [40.107.7.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C40828710
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 09:24:38 -0700 (PDT)
+        with ESMTP id S235845AbiGRQ32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 12:29:28 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50077.outbound.protection.outlook.com [40.107.5.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A8B6157;
+        Mon, 18 Jul 2022 09:29:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R7X9vAy55Urr2e06nF9GFK8zUm++My3/H6y9MAIX16FgFfvHrKyGs3zZCLindv0V/PatGPs1+gIAnjDKa2xa7m6C5ficzrwleGBuNbSP3LCbli0TYAoDnu2zEhQ+tqifFZgJBcgnkTU3v6BqMMRHcFiHz3uYy3g5I5S6LbDcVnZgW/DUgf2XUeH6n9b3/jPBTBEjRx28ayVdnn2TX3s2oaAMaUPPUTcUS5e4WjtWCVBdESdzh/neQ/YKF2f86QyigUGn0YYb5ec9pH8xVH8veAMl4PUGV7SRwn3ftB4efnPXpdzUYXBo7ZaH58M/DMikVZGQTBkDyoVnonV5ofbsvw==
+ b=Jy2XadaJ/xmJ7kDzicK1+o50bR64pmBAPlXuzGYq1XSavJWlFo+p1031zGKZajhVNGVq7OHQ9JTbiH+EtVXV86LfAfB6kWeQVgsCNHPaIjFbOfPdkqwK9VsG5Aln+4LXEDaIR4iLmD5Kf7+UnK9URAFDM9A7XdGVxZW+IPWS6W2Kw75Z3Ze/i74z5h6imA9RXzr0lRXEKiD+mh1YvPSt6/gLZ6Jg3DNIyPe0CEDQJfI4SSpLMtpbfF4uQBa/ui4XLWD2/rL2cJ3uSsAa48kkKkuZaF/pYAo0JYLfcJsvIY4LAaj1Xa75vHFvD9+TolgM1M2LmAqUiNo2Bc4NKZLetA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I0F5vrU0rTbIfc8VW4HOt5QdSd+g07oakPwhiTy6YuQ=;
- b=G9ySd4/sSfrHlfGcSo6mStKRmgiEEBz+w1B7ZjOzkSGfgSo4Ec03BgWzsQjL2ZFx125L1Kc6Z8a+WuyDtQq0unTrGLMse1Ds5btdNqUADFe2ieqaE+nowSgsJRDyRY/7nSLCEI/RXLOKkrjidncnar1yhTcjYXmxEUnfnjjg/9F+LieUoWaqwiBX80UxxNduYiokaTjTKO3YAqyuMgod5z358FLSxml89+ePCNvoWWBBWCkB1y0h/BFIaegA5RgJf6gnFNBm0eYNTJzC0aDnlto2/nkVz8A2oFMC8wHjxNzLhHXiYkqOOCHvu2sa9ZAVE/DCC3of7fyC7DeWu1peKw==
+ bh=kb2TnuTpSSsFQteP202aipCYbsd4q1tJ/B8T6Im07eA=;
+ b=nMhUi6Bk9ZDeD6WMJdRswy/Qz8CGCbOKtI4aZtYQcUo7EVr4bp/tvJgBr2iJ6Qn+kbZ7tbW9KqHKjvSOczVqY+gxTblAhNxLOx/kLOy9KsQvSlCTxotE5L162wStwngtALDNDWuGaIQbMQUnwcpSkvEQyCIBrHkGbPRKkzBeAGgQEregQztaoKatqcKd7+3khAdBWkz8R/UADWho6rbcBpz3jHXJhD7uFrnz3ZgHiCZ8RAiVFo0aBdsXs63Ydoi8HBYaaugFiegDdI+hGbqVtE96fdZQzg9aI0fQ06ZGe/e7K4FL1vyiAOw61yLqqc+fw/c6GZ3yRPPeGPsBN3kCxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I0F5vrU0rTbIfc8VW4HOt5QdSd+g07oakPwhiTy6YuQ=;
- b=cRZSnn+s7Yh6rRJpU593eR/KzgrFTWNog+ksNubhjLHAcjnmgoHasZOKsEG4gp+VWDHTgnH4ZNCge7I+lsE8Pj03iPlR1coflXS9fTsHIJLcHimoAqvxaNAiLDiqGLK+punHTb6s8yEu6emrdaO+ifPFxrDPcFc/fqT1xogV70Q=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PA4PR04MB7679.eurprd04.prod.outlook.com (2603:10a6:102:e0::20) with
+ bh=kb2TnuTpSSsFQteP202aipCYbsd4q1tJ/B8T6Im07eA=;
+ b=12lOjKck01auQfDoeTabJzxi4XPtnN+zuQjMdE7esbh5PVEobWxSyQHQ3e6R56fXiZGIF4sLfft5Mox1XlNBhz0EAAHdZvZdwoN9Y3m1h6Gow3+2amrvo2ATTHhIsgZPFOwZG4rmEaokuanavcDig6NZWmClBkqYEQabzQzVMv/OHF/GhYQysJZ6YDdgHl8AwOg3nu1WYdxsY9CREpTKPTKL/AeOW7zd6bietK9gA1A1w5ds60Ncq75/h305tM4JihUEDzSCDuWzgJ56qFtCYvvo1PG7ktF92YZgrk2quJeNX8jUAk23dtV6dz5KvI/DIzP2PqojafaL7oNY/SfcnQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DB7PR03MB5097.eurprd03.prod.outlook.com (2603:10a6:10:33::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Mon, 18 Jul
- 2022 16:24:35 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
- 16:24:35 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Arun.Ramadoss@microchip.com" <Arun.Ramadoss@microchip.com>
-CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "idosch@nvidia.com" <idosch@nvidia.com>,
-        "linux@rempel-privat.de" <linux@rempel-privat.de>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hauke@hauke-m.de" <hauke@hauke-m.de>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woojung.Huh@microchip.com" <Woojung.Huh@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Topic: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Index: AQHYkJUlP4ikIJ+Lb0SIV36lnP8Hwa1xiwcAgAADgwCAADWXAIABvT8AgADAlYCAACQfAIAArH+AgAiqFACAAEpcAIABMN2AgABlhQCABKhugIAAHr0A
-Date:   Mon, 18 Jul 2022 16:24:35 +0000
-Message-ID: <20220718162434.72fqamkv4v274tny@skbuf>
-References: <CAFBinCBnYD59W3C+u_B6Y2GtLY1yS17711HAf049mstMF9_5eg@mail.gmail.com>
- <20220707223116.xc2ua4sznjhe6yqz@skbuf>
- <CAFBinCB74dYJOni8-vZ+hNH6Q6E4rmr5EHR_o5KQSGogJzBhFA@mail.gmail.com>
- <20220708120950.54ga22nvy3ge5lio@skbuf>
- <CAFBinCCnn-DTBYh-vBGpGBCfnsQ-kSGPM2brwpN3G4RZQKO-Ug@mail.gmail.com>
- <f19a09b67d503fa149bd5a607a7fc880a980dccb.camel@microchip.com>
- <20220714151210.himfkljfrho57v6e@skbuf>
- <3527f7f04f97ff21f6243e14a97b342004600c06.camel@microchip.com>
- <20220715152640.srkhncx3cqfcn2vc@skbuf>
- <d7dc941bf816a6af97c84bdbb527bf9c0eb02730.camel@microchip.com>
-In-Reply-To: <d7dc941bf816a6af97c84bdbb527bf9c0eb02730.camel@microchip.com>
-Accept-Language: en-US
+ 2022 16:29:23 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Mon, 18 Jul 2022
+ 16:29:23 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH net-next v3 10/47] net: phylink: Adjust link settings
+ based on rate adaptation
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-11-sean.anderson@seco.com> <YtMc2qYWKRn2PxRY@lunn.ch>
+ <4172fd87-8e51-e67d-bf86-fdc6829fa9b3@seco.com> <YtNoW8bJdWPzX3Cq@lunn.ch>
+Message-ID: <41d87b16-e0ea-5b29-6ecc-8e90f906d366@seco.com>
+Date:   Mon, 18 Jul 2022 12:29:17 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YtNoW8bJdWPzX3Cq@lunn.ch>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3ca786c4-fec4-4441-5080-08da68da00c1
-x-ms-traffictypediagnostic: PA4PR04MB7679:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7andHS9dI023Xsu8KYuW0HcqKkIzmBIDCSJVgXw5BGCj3obs61X1HPdy7ZaOnDbbxihXZO7QjAWEnNdLskYBFOkoOihJ6Cl6U7GGdlyH0zP6OasbEI/9Y9VLJoh3TBsHrR6E7YT128zgBf3W9/zG4bfp8YO1f5dsET2aQZh2IQ7rq/0tTkaj+kX+rMt+TsF52PGWZ8/MLyw2zetDlxrsz2m4z7gXutZJpDdPxedvunqupO9R+8PdWW6mNXx6Up5AU7OcR1z5SLH+rjsGRQ0wojSf7aQR5ZbqHFZYjtl2rSaqmmznnEWKK9IFF+Kpc+fA/kmOBoalxYKtXdkTcOXiqNgPuftvN/NJZYrSU0lOpAbhMl9POgkX4qWM4YpgF/7WaJJaezAcKKEGvV/Z8B3rrh0oxHFaRIqbpFk9eTAlKvov6gJpRlBBu0dgRwz3AMilpWMcimsVnonmOFGN9b4EapC5ixkauyx1offnvgHmjsXe43NlxbrlFnZwyxA+uv2RzA0ciTkj3OK9B6AZkWPexu254Yl81a8FzKG+ARgEwrpQG6LKYiupksTxujljIBkZOxRQhb6f3c1TwCOi4ouPEFaDXt2tLLLP2XYQRq+Db84Ka+5pNgNv07E2VzroiiAb60KQlNISzSF/7aqNhePsvPWTxP7aVQkzNrJQvju4uw3Cr77ZkwjPzcOkgYyaIOQJsUwiOp/gJqMd0VM/roHIShQaDVKbghr662PSwGgvoPPyZfkE+ZDzEbNqb+2BFBN8F+FhT1yQTyAvsgFQgE4RQMIND0KMy3pIH2IAb6V4fysVF/krIA5OvjYlZZFiISJcxFGl8TKRPb8GLZhWo+NNMA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(376002)(396003)(136003)(366004)(39860400002)(346002)(478600001)(6486002)(966005)(41300700001)(6506007)(122000001)(6916009)(316002)(86362001)(38070700005)(9686003)(6512007)(26005)(83380400001)(71200400001)(54906003)(186003)(1076003)(66446008)(4326008)(33716001)(76116006)(64756008)(44832011)(5660300002)(8936002)(91956017)(66946007)(7416002)(8676002)(66476007)(66556008)(38100700002)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?VJC1KynUD8iL00lgrTOJX0sP8TM2PCTxwvwMhw1MzK7AggF3uPlh7wYR7wBi?=
- =?us-ascii?Q?QHvM2UZuWVlgXHEHBF0ucqdL6cB0gG4UOGLUuY0nBGWDtEIr7ki2qTg4/I7O?=
- =?us-ascii?Q?Tj5qWG3MCEy6lMCm1JaHantQl0Ew3ithjBGRGB7GwdtI3HWgIn9Q0EqvvdIZ?=
- =?us-ascii?Q?6+KCU2E4Wotc7inwp/IIfsz3plpnbJF0BmokzMgMx6XjDEfCvAznbpy2cWDk?=
- =?us-ascii?Q?Cl3kF3j1sRa5nn5BR/h73lRDot30VrqGnOAcBv5osfp+WpW2cV0XhM+W3tok?=
- =?us-ascii?Q?j9DfNy1efTPfV8bdYK/JsS8R+ZiZxKQdtX3WQKrj1nQ+4CkJJiDRv3ll8BSu?=
- =?us-ascii?Q?O2OqlatjeIbbMINckKAAY1FSsyojP8Ea3zTUgM9jSpsNZXpLV1+imdT5/1ru?=
- =?us-ascii?Q?0gCOVaktjHpDiVZ0TCVmvtZMytjGMkEzzLPK4BkqI/tEW+NCmszewQBbKHXw?=
- =?us-ascii?Q?kjrwOlzaA6m2O1YKDvKVOU6bmtSMn0HjF7tlSP0IiG8aaI6BUlzcDd3/jWRQ?=
- =?us-ascii?Q?iIWmDFk5IiK66e5v1uTXZ0bIflwp4WU5xZHzBNMa8bRg+oNhTBLuRkACSQgW?=
- =?us-ascii?Q?OWeaNSlFOheLTvPwZpq5Yf6/CgXM/QRpT6KNoK+ALWbGRf+WiG+CxGnGC2Ob?=
- =?us-ascii?Q?w0765IRfIxE/OtOza13zbQmBvrq1bjmaX3MROSsvFu9iRXC9oFdwG+crA0wJ?=
- =?us-ascii?Q?kS1xU6UlEcXOMloqbSAyXuwbAPiMC/jWplUObIMAhQbixalaXU7giNukrzVT?=
- =?us-ascii?Q?/oMquVaSH/me6gJK8FbB/8B3mehhtk8gToGaEXWE00f2efqq2M1XFIr0kjPi?=
- =?us-ascii?Q?WCgTEOPAl4hv3cTn27IlLOy/sOY4KwsFWEz+uxqjpk5OExRbldt2HE697MKR?=
- =?us-ascii?Q?OZ/keJKQb+78hUDXRirh7nK/r/wGegxfgDXlZ1kyOE9aPfKbswjfaZJxFs+z?=
- =?us-ascii?Q?n0pA48sdM6ILGyw1Sda7cBNAJyQKpJ9HdzTfwLgtyj8LAvPUbm3mZjeFGaoM?=
- =?us-ascii?Q?E3wgdyZMe8zGLn8qdK6c3hPyVSM7elI9waGgoVqtlP6V48cySHepz1nfMycU?=
- =?us-ascii?Q?qMV3m6tN4ONbqpJ4Th7UWJFU+3LohQsYcOnjUGdQsNLUqyK+4bYFlXp5ueus?=
- =?us-ascii?Q?tdeyhH+xMscLLg2XFWcnFCKIikdInBc1GT9h2rm9gsz1C2BGvoC0Pd5+OVqV?=
- =?us-ascii?Q?1Yt5UuZ1B90N77sJeqUkX92yzowL14AUM1clVm4WzQsFKasPf+oSKW0wW8tQ?=
- =?us-ascii?Q?ZD+OwxNEJ6CD3ByyjpvJZmhdY++uqBypIw8uWZObf85m4PO3MIk9luSVbogm?=
- =?us-ascii?Q?PUIpJDDoi3FAVcBFL90pbdpz2zsf2aHlZxRi8ARdqJatNWKVwq8L+JfoJdCr?=
- =?us-ascii?Q?3y+B/3OcO0+Ahs2vL7yfi9Nqc/hcwcfyNL3xpKj2nwmn28RWCIjHVAR8VQqm?=
- =?us-ascii?Q?4hXMfDnWk3FOPqNVqb9pCecdhe3ZOBmVJI9hLCskKEdIqcTfBMD2aGmNNxCs?=
- =?us-ascii?Q?SJ1zJK+vGpntSPGugny4ZQN2kIyv33z3oD79/55RmFD4uYIX4440HGTvI5xQ?=
- =?us-ascii?Q?5VepqTA1Rvtr/h3IFqDvqz9kgIJabdNhsN6IJh1wCwRcVbMXGp9jAVJvdQ36?=
- =?us-ascii?Q?Jg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9E4AEEAA4B4C1044A0BED419B8B16A93@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR04CA0052.namprd04.prod.outlook.com
+ (2603:10b6:610:77::27) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8de6ed8c-e9ce-4d02-452a-08da68daac38
+X-MS-TrafficTypeDiagnostic: DB7PR03MB5097:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4iJxobPy3rvA1NwdzMu/P0tFYIuiiqoq51cSQLED1zUp4dRAI3ew8AT5Li1JwYQ/O8+17fgmCwTRU5aLFyb+ci7OiwJAXXiuTLeuGzpz6VpHB5NyqP3zu/Zpk8zCwqSIhUFN+IpW9hHGOUrT0n6SR5Nvb0BOa/WIns5a3FjPJtSkb1UWJr9XZV8qXklaqI2g/9UrkkmRqCrBMLs3v4zTXw6lVlaVavUoUZf5FGp1EIkNUFvf5rAsis2AcSQ794FCo6GApNc6ywt5T/DX1vFJzCWY4EwpMrtHn1yN3C8Ly4p2WvsjY+aW29VSMt0TyeUBzXa89teDQFVTybpDp7SzhMiAwcT5Rwk0vDAb8pFZJgveCtvNF7QgCAhVgmGjHF13svEBbLp9SY8DnLi0LOMu/yXJvG2khZVGCkNtzopIX8TUx+u2XFJ75SDQichtVRRe9ZyS2MqIYvGVIKoUeIjE1pj7AlAbLmLiTy2wn0fmBX6bBKRpfPF9a83KubVHmMsEV91lUAXD643Ddk8h0QN0SAeryD7LDKdmDsVVVonUz1a0yXJj/1TE+iE5IcmRtvemdeHCY2xoA2CLa4GFzDZ+oBiB0hhuSIjwZj2BUzO9CbFiqSB+3y+Ds3nnxjwEfuy4Sk7UTxwZHBrnpZgoJzVBFyvhfHDznBMqQOG/yevlbWYZ9nB62j+S2eQ4JYSi/jXUZgLHdy8ETaksC3isuy9CacxWWN0yLrdPcEwEjvzvOhtLofkmyRNDujOtVg0sKqn1ltEyvU9bFUgKO3DE0i3hlawnP2b79EE+CgBFv2EsNYfeSAx76/palKx7623ZDXvG8gFWji2TPQNo0OHW/VMNrpqTeb+jTkxQL1eTy6vSfmHOpeaXCvyC7FmMQKwCutRr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(396003)(39850400004)(346002)(366004)(4326008)(66476007)(66556008)(66946007)(8676002)(8936002)(6916009)(86362001)(316002)(54906003)(31696002)(7416002)(2906002)(31686004)(38100700002)(38350700002)(36756003)(83380400001)(478600001)(26005)(53546011)(41300700001)(6666004)(52116002)(6506007)(6486002)(6512007)(44832011)(2616005)(5660300002)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SjM5aGgwck1CY1R1a1BFSFNKWFJuWXp3RHUzQTRwa015bUpQVzlFNnNjSElQ?=
+ =?utf-8?B?MUxoV3BLaVNRQXFGbXdveEJIUU1rYmhYRkQrQmY0Y0hFUW02TXNDZ0lFWTZw?=
+ =?utf-8?B?RmF4WDNsQVN2UVhqS0pLK3o0aXVkaUhZUzRONGJrZXpyTHRCMHdjOHAxeG1J?=
+ =?utf-8?B?R041OXFTWHF6ekZuNUwyUnYyYkhEc28xLy9WT2pjMU9FYWl4SytmZk9zOGt4?=
+ =?utf-8?B?YU9ZcDRiWDFGMEN5dXN6bXp0T3gwOWgweUlwT1FPbGNobWlLc3FTY1FYb29a?=
+ =?utf-8?B?WjhSNk4vQzNJS0tTUE1uNWNxUEZXOXMrYWZoSWRBV0wyWkl5d0ZpYmpmS0NE?=
+ =?utf-8?B?ODlJY3U1Rml4Rkk4M3pzSExrdDFIdnpSejBKWkVpQVFkUW5UWndlUDZnRnFV?=
+ =?utf-8?B?SlhKWGRKdXpmT1prL2lZL2NBRy8wUENsaTlGanRpVjZJQ05kOVplWDdUZllQ?=
+ =?utf-8?B?TkpQcWxocnBGaG9PRW9Fd1JqYWt4QnF0anVPcGNuOTFaSzdDeFluVThYckdF?=
+ =?utf-8?B?WUo0eTFNVUF3cSt5NUZoSVlXU0RYb0RRU25Oa1F2bFd5WEZYUEpoNVBCV2ts?=
+ =?utf-8?B?emgyQVhoUXArQ0JucEp1REVqcWc5TzMzdzVUT2UrNjJ0VnIvWDBrL3p3OWhr?=
+ =?utf-8?B?Q0pod2VoNmFOTjR5YVNBYXgrbFBOZTh0cGJWMjhOaXZrQlRheDhJNHVZWERm?=
+ =?utf-8?B?L05od2ZmN0lqWVltSm9EQ1I5a0w0ckxEQkZiTHRpWFp3Nm1Jb2tYdVJiWjlK?=
+ =?utf-8?B?ZnkzN1FWb09tNHpaVmdweTkzK2JTeVI3ajRydnkycXRsekxYcFh5ME04RWgv?=
+ =?utf-8?B?MkZ2OWJxZWdOWHB1MVZYazZPVmpZVjBXc3kxb1VtMkpWNmQ5RTBQYjhFRFJM?=
+ =?utf-8?B?aEc5QTlBbmtMc0QyM1JXaUJVYVZEUmdZalRPTHFFc05QWmk4RjE5YmZsUTVE?=
+ =?utf-8?B?Q2YxazRxdWEwZ05GdWRQZUxNSVNEL0NZNC8vUjEzZEJvMGh5RUlkakFJcEUz?=
+ =?utf-8?B?a29Hd0tHNXVROGRrTWpuSjhPWWRsWWZ6cVhZdW9WVTJkd3IyL3JuTkJYaExv?=
+ =?utf-8?B?Ri9iNVY2VC95TmpvQ3FpeGM5ZTBkT3ErdW5WUU1GWGg3U1llVTE0enN6NzYr?=
+ =?utf-8?B?VFVIYStZM3NrbmlSUUxuS1pTeThyV3p5M0wyTmNLc21pWlB4ZWhPWkRSN0lH?=
+ =?utf-8?B?Zk55U0VLRG5ZVUo0T2lVQkNGWFd3UWszLzFVYzBnMFo4ZDlaNXdBL3g4cThz?=
+ =?utf-8?B?L1ZuUjJPRVN5N2laSDBIdHVVcXNrS0NBU1RWUVFVT1R4dGFJTGFZaVhucFhP?=
+ =?utf-8?B?enBST3YrVjZ2R3hxampsZHFTUHBKL2pyczRtc2xMcHhwd1BNbUZHd1ZpNDhB?=
+ =?utf-8?B?enhHMGN0VGY2T0Ryd1ArKzA5UGVrUHI4SXIwbUY4N1JId2ZqdjZNeFpKSHBN?=
+ =?utf-8?B?dEREZG1CNXMzUkxtdjNlSGhvUXhvS2pNVjA1OW96RWdoMmltSDAxSVdlTGNR?=
+ =?utf-8?B?MXRrNzhPaEpPejZMSzhSMkRFYk9TU3BCVWV2ZlYzTGtwOTM3RW5KWjlSeitX?=
+ =?utf-8?B?VXBhUTlwd3VjOXlLUE91Z01tb0pxZ3lRT0cyRUYzQWJwWGo2NWsxcER3QVgz?=
+ =?utf-8?B?czAzSEVqcjVVa1JUQlQyL3RYc2NXRTBVd3p3bi9EYW9QRHN1RVhGMlVFQ0tZ?=
+ =?utf-8?B?Mm8vK0dOMmNOa2toMG5vTFN6SnF4UUwwL3F3MzVMU2tBQjc2R0RQYVFwTUFn?=
+ =?utf-8?B?QzVlZ1NOWlU3ZXJIYktuaUtmZlhKVnBlVFh0NG40MXhpTDJzUFJkbzJyTGt3?=
+ =?utf-8?B?MFNoT21yTlRtVGhDeXp3Y0hCNFoxOVJadGxGM2d3UXlyREE3K2hJN3FONkdt?=
+ =?utf-8?B?OVNZbkxDQ1EwbWhGUXUxT2p3U1FmVmJkYXN2MmIrZmg3LzErU3hCblRNNXBX?=
+ =?utf-8?B?RDErMHR4a2JzN3UrM28zNjlDYWx5U3VJa1VEZkoxRkI3a0Y3MXJkR2tNWEVR?=
+ =?utf-8?B?M21sVmsxZWVVaGwxUEtBclU5cnc4Mys0cVBaWmdvOVpBQjlDL2ZabWhDMWNW?=
+ =?utf-8?B?NUtncXBCeGVFZko2cDRaTFY1UCt0S2VoQndrYU1QM3RjUUxabS8wVzh2ck5s?=
+ =?utf-8?B?ZWxRblNYT0lUWFY1aExOQ0VLRWJGU0FVTS8wYWxYbmVlM3gwQ1lycGg1MG1q?=
+ =?utf-8?B?R0E9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8de6ed8c-e9ce-4d02-452a-08da68daac38
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ca786c4-fec4-4441-5080-08da68da00c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jul 2022 16:24:35.0862
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2022 16:29:23.0218
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qrqeBvvgBu97df8tzRkT1bX107XJviVv4sZjEo1sSlmAsp6pVlMt1C1Kbe/jLLNIYrAA+Vtb/wO8pudO+IGOeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7679
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j4CWhPj+7SLelQi03mj2U918v5GbPQsz/Q5+dxIxYos2W4nNHIv3lMeL3FevfoYCM7ifFORwYqfM7YZHmdlYEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB5097
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -142,108 +136,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arun,
 
-On Mon, Jul 18, 2022 at 02:34:33PM +0000, Arun.Ramadoss@microchip.com wrote=
-:
-> Hi Vladimir,
-> There was a mistake in our testing on the latest code base of net-next.
-> Today we tried in the latest net-next and following are the
-> observation.
->
-> Scenario 1: Before applying the patch
-> ------------------------------
-> ip link set dev br0 type bridge vlan_filtering 0
->
-> bridge vlan add vid 10 dev lan1 pvid untagged
-> bridge vlan add vid 10 dev lan2 pvid untagged
 
-"bridge vlan add" on lan2 was never part of the test instructions.
+On 7/16/22 9:39 PM, Andrew Lunn wrote:
+>> > I would not do this. If the requirements for rate adaptation are not
+>> > fulfilled, you should turn off rate adaptation.
+>> > 
+>> > A MAC which knows rate adaptation is going on can help out, by not
+>> > advertising 10Half, 100Half etc. Autoneg will then fail for modes
+>> > where rate adaptation does not work.
+>> 
+>> OK, so maybe it is better to phylink_warn here. Something along the
+>> lines of "phy using pause-based rate adaptation, but duplex is %s".
+> 
+> You say 1/2 duplex simply does not work with rate adaptation.
 
->
-> We got warning skipping configuration of VLAN and ksz_port_vlan_add()
-> is not called.
->
-> Packet is received in Host2 when transmitted from Host1. So there is no
-> breakage in the forwarding.
+It doesn't work with pause-based rate adaptation. This is because we can't
+enable pause frames in half duplex (see phy_get_pause). I don't know if this
+is a technical limitation (or something else), but presumably there exists a
+MAC out there which can't enable pause frames unless it's in full-duplex mode.
 
-Nonetheless it's good to know that the control scenario behaves as
-expected, i.e. the VLANs are skipped while VLAN-unaware (and therefore,
-the port hardware PVID remains what it was).
+> So i
+> would actually return -EINVAL at the point the MAC indicates what
+> modes it supports if there is a 1/2 duplex mode in the list.
 
-> Scenario 2: After applying the patch
-> ----------------------------
-> ip link set dev br0 type bridge vlan_filtering 0
->
-> bridge vlan add vid 10 dev lan1 pvid untagged
->
-> --> Packet is not received in the Host2
+Well, half duplex is still valid if we are at the full line rate. This is more
+of a sanity check on what we get back from the phy. That is, we should never
+get anything but full duplex if the phy indicates that pause-based rate
+adaptation is being performed. So maybe this should live in phy_read_status?
 
-The problem is exactly here. The driver should pass packets at this stage.
-This is because the bridge is still VLAN-unaware, despite its VLAN-aware
-pvid VLAN having been changed from 1 (vlan_default_pvid) to 10.
+And of course, CRS-based adaptation requires half-duplex (or a MAC which
+respects CRS in full-duplex mode).
 
-> bridge vlan add vid 10 dev lan2 pvid untagged
->
-> --> packet is received in the Host2
+>> 
+>> > The MAC should also be declaring what sort of pause it supports, so
+>> > disable rate adaptation if it does not have async pause.
+>> 
+>> That's what we do in the previous patch.
+>> 
+>> The problem is that rx_pause and tx_pause are resolved based on our
+>> advertisement and the link partner's advertisement. However, the link
+>> partner may not support pause frames at all. In that case, we will get
+>> rx_pause and tx_pause as false. However, we still want to enable rx_pause,
+>> because we know that the phy will be emitting pause frames. And of course
+>> the user can always force disable pause frames anyway through ethtool.
+> 
+> Right, so we need a table somewhere in the documentation listing the
+> different combinations and what should happen.
 
-This only goes to prove that the VLAN in which the switch processes
-traffic while VLAN-unaware is the PVID of the port. So when the PVID on
-the ingress and egress ports matches, forwarding is naturally restored.
+OK, so first here's table 28B-3 (e.g. linkmode_resolve_pause):
 
-> bridge vlan del vid 10 dev lan1
->
-> --> packet is received in the Host2
->
-> bridge vlan del vid 10 dev lan2
->
-> --> packet is received in the Host2
->
->  * Let us know, do we need to test anything further on this.
+Local device  Link partner  Local resolution Partner resolution
+============= ============= ================ ==================
+PAUSE ASM_DIR PAUSE ASM_DIR Transmit Receive Transmit   Receive
+===== ======= ===== ======= ======== ======= ========   =======
+    0       0     X       X        N       N        N         N
+    0       1     0       X        N       N        N         N
+    0       1     1       0        N       N        N         N
+    0       1     1       1        Y       N        N         Y
+    1       0     0       X        N       N        N         N
+    1       X     1       X        Y       Y        Y         Y
+    1       1     0       0        N       N        N         N
+    1       1     0       1        N       Y        Y         N
 
-Yes, now you need to go fix the driver :) Please read the comments from
-this patch and the series in general (including cover letter), they
-point to similar issues in other drivers and to commits which have
-solved them. I need the ksz driver to work properly before I can delete
-the configure_vlan_while_not_filtering workaround. Generally speaking,
-the PVID needs to be committed to hardware based on a smarter logic, see
-this for example (and all the places from which it is called):
+And now here's the same table, but assuming that we have a local phy
+performing rate adaptation
 
-static int mv88e6xxx_port_commit_pvid(struct mv88e6xxx_chip *chip, int port=
-)
-{
-	struct dsa_port *dp =3D dsa_to_port(chip->ds, port);
-	struct net_device *br =3D dsa_port_bridge_dev_get(dp);
-	struct mv88e6xxx_port *p =3D &chip->ports[port];
-	u16 pvid =3D MV88E6XXX_VID_STANDALONE; // Dedicated PVID for standalone mo=
-de
-	bool drop_untagged =3D false;
-	int err;
+Local device  Link partner  Local resolution Partner resolution
+============= ============= ================ ==================
+PAUSE ASM_DIR PAUSE ASM_DIR Transmit Receive Transmit   Receive
+===== ======= ===== ======= ======== ======= ========   =======
+    0       0     X       X        N       N        N         N # Broken
+    0       1     0       X        N       N        N         N # Broken
+    0       1     1       0        N       N        N         N # Broken
+    0       1     1       1        Y       N        N         Y # Broken
+    1       0     0       X        ?       ?        N         N # Semi-broken
+    1       X     1       X        Y       Y        Y         Y
+    1       1     0       0        N       Y        N         N
+    1       1     0       1        N       Y        Y         N
 
-	if (br) {
-		if (br_vlan_enabled(br)) {
-			pvid =3D p->bridge_pvid.vid; // PVID is inherited from bridge only if th=
-e bridge is *currently* VLAN-aware
-			drop_untagged =3D !p->bridge_pvid.valid;
-		} else {
-			pvid =3D MV88E6XXX_VID_BRIDGED; // Dedicated PVID for VLAN-unaware bridg=
-ing
-		}
-	}
+The rows marked as "Broken" don't have local receive pause enabled.
+These should never occur, since we can detect that the local MAC doesn't
+support pause reception and disable advertisement of pause-based
+rate-adapted modes.
 
-	err =3D mv88e6xxx_port_set_pvid(chip, port, pvid);
-	if (err)
-		return err;
+On the row marked as "Semi-broken", the local MAC supports only
+symmetric pause, and the link partner doesn't support pause. We're not
+supposed to send pause frames, so we disable pause, but this breaks rate
+adaptation. In this case, we could renegotiate with rate-adapted modes
+disabled. Alternatively, we could just decline to advertise rate-adapted
+modes for symmetric-pause MACs. This avoids the semi-broken line above,
+but also prevents the line below from using rate adaptation.
 
-	return mv88e6xxx_port_drop_untagged(chip, port, drop_untagged);
-}
+> If the MAC does not support rx_pause, rate adaptation is turned off.
+>> If the negotiation results in no rx_pause, force it on anyway with
+> Pause based adaptation. If ethtool turns pause off, turn off rate
+> adaptation.
+> 
+> Does 802.3 say anything about this?
 
-Additionally, DaveM has just merged some DSA documentation updates which
-I think are very relevant to this discussion. See the new "Address database=
-s"
-chapter for a review of how things are supposed to actually work when
-done carefully:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/Documen=
-tation/networking/dsa/dsa.rst#n730
+Only IPG-based and CRS-based rate adaptation are defined in 802.3.
 
-Thanks!=
+> We might also want to add an additional state to the ethtool get for
+> pause, to indicate rx_pause is enabled because of rate adaptation, not
+> because of autoneg.
+
+Probably a good idea.
+
+--Sean
