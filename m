@@ -2,54 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B35CB578D2E
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 00:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B378578D57
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 00:11:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236387AbiGRWAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 18:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
+        id S234736AbiGRWLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 18:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233981AbiGRWAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 18:00:16 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A3F30567;
-        Mon, 18 Jul 2022 15:00:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Smy+K5SsBoKu7R2Ez6Wknyaqr3gfX9BPVA5fVt2P8T0=; b=leyACy2j4DACa1kT6Gpoba8VOm
-        VOcEfZL3PkIZgiPs8NmLAJaBh8ucD+6kAoUEzxAXkRiJhdoKUCC9eS2BxTrWrSU3Gqy8FGHCl0+Yf
-        cnoOA2e2G7FTo7OqIQ+Jms+460wxBba1ZdXNg9IsZJuJ86ignpBqHcbMW+ipI2+RdNLMHKQbtEnSK
-        yUQZmHoK4wSnrk6TsdqloQ/tkKm0+6MDqgVLg+haVl7nQ2yUnqoiirjvDUaegs24clTHejTLG5Nhf
-        GrMHfUZ3Mq47NEGdmLxe/Y3iaYND/IDLOH/w41NkO0UbGqm0/y7Hu229QF2xyeGt/BSMoNktdIPyL
-        BQ+qyY7Q==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDYmh-001q88-OL; Mon, 18 Jul 2022 22:00:11 +0000
-Date:   Mon, 18 Jul 2022 15:00:11 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.sf.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-media@vger.kernel.org, linux-block@vger.kernel.org,
-        Dave Airlie <airlied@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
- guidelines.
-Message-ID: <YtXX604B2X8vdH9b@bombadil.infradead.org>
-References: <20220718072144.2699487-1-airlied@gmail.com>
+        with ESMTP id S230263AbiGRWLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 18:11:54 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC0931376;
+        Mon, 18 Jul 2022 15:11:53 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z12so19026209wrq.7;
+        Mon, 18 Jul 2022 15:11:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KhoNbI1/wIdu6SVDPbjXasWJrkQ2kVGR6Zwa7oq3DcM=;
+        b=jmxNWExbZtsN3rwoEB7zPuWlh7iDucNSlKl1aDegRkFhtqZRi3UCSKDWRDMsdHcdgx
+         +fxwC7bjJdtQ+//2NYCCQUnQ0upbUuGYPFKaQYsrK/2tQXWMLucTxynuK0BS3vJzEEJW
+         EKr/cRsuwoLrKuQobulznLwAQnNRjf2dGRBZm1S9p2wW09DvoGS0jS7UwKLMoP2qzY8Z
+         yw3G21uqjAshW8iYw1GQfBgbS65gRwzNLwjtFCRUaGZp04FTqG1y+Dn6UA4Sws4iY3bg
+         t0LMWyBh63M1oDTdWiNPtVo5Dog+yAo9O+iRc4ImKbnLWrV4bhIFr7TAwQbONPtBqFQj
+         LpIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KhoNbI1/wIdu6SVDPbjXasWJrkQ2kVGR6Zwa7oq3DcM=;
+        b=00KV8pXXqFWKUJhJ1MiSlCwWSpQfzBLbMOL0JaO4c/Qx8tqac7mCvrE/flwS+l7t76
+         PM4VT4H57ml9RxVTEVj+GL8esK3sJHU9DFjaNrmkobLXAAblyO6TrKvqIwGExsQWw8IT
+         ERFLSqdruAnTEFRjJpE0Cjdxd/cDw8wJeGkmFbs3J2sNzXlHEPkurl16seFEpH8qSQ4w
+         +lfZq+lK6xMwwGnEIuZNjCxjkcx6IxSFZUcuwEQMOtdXM9JVr6z/ddrR7Xv0UpdxXVZi
+         3whLqv7BeFRkIiUZCqOkHI+CsGipohGTWIBek6PHKl3jO8l1aNFJ9j6nEOiU6cDWeU54
+         Q8UA==
+X-Gm-Message-State: AJIora/vrLr+WIZvG0v4fPV/N2Ym0L/mu2/Y1A+aEdiMc4KFZHHPNjYL
+        nGaV+mYr0SP5ME3vqwipN5k=
+X-Google-Smtp-Source: AGRyM1vVMQXtN6e6Ok1nHQQ/eKlHncOU5kuHKla6+h5eGht2sb6fJOL9sWPJV3atsxWoRYFaVQ1R3g==
+X-Received: by 2002:a05:6000:15c9:b0:21d:ad06:f4c with SMTP id y9-20020a05600015c900b0021dad060f4cmr23648446wry.427.1658182311785;
+        Mon, 18 Jul 2022 15:11:51 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id ba5-20020a0560001c0500b0021d6c7a9f50sm11576127wrb.41.2022.07.18.15.11.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 15:11:51 -0700 (PDT)
+Message-ID: <62d5daa7.1c69fb81.111b1.97f2@mx.google.com>
+X-Google-Original-Message-ID: <YtXWpJGxOT0W0a2c@Ansuel-xps.>
+Date:   Mon, 18 Jul 2022 23:54:44 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+References: <20220716174958.22542-1-ansuelsmth@gmail.com>
+ <20220716174958.22542-2-ansuelsmth@gmail.com>
+ <20220718180452.ysqaxzguqc3urgov@skbuf>
+ <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
+ <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+ <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
+ <20220718193521.ap3fc7mzkpstw727@skbuf>
+ <62d5b8f5.1c69fb81.ae62f.1177@mx.google.com>
+ <20220718203042.j3ahonkf3jhw7rg3@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718072144.2699487-1-airlied@gmail.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20220718203042.j3ahonkf3jhw7rg3@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,54 +88,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 05:21:44PM +1000, Dave Airlie wrote:
-> From: Dave Airlie <airlied@redhat.com>
+On Mon, Jul 18, 2022 at 11:30:42PM +0300, Vladimir Oltean wrote:
+> On Mon, Jul 18, 2022 at 09:30:58PM +0200, Christian Marangi wrote:
+> > Tell me if I got this wrong.
+> > 
+> > The suggestion was to move the struct dsa_switch_ops to qca8k.h and add
+> > in the specific code probe the needed ops to add to the generic
+> > struct...
 > 
-> A recent snafu where Intel ignored upstream feedback on a firmware
-> change, led to a late rc6 fix being required. In order to avoid this
-> in the future we should document some expectations around
-> linux-firmware.
-> 
-> I was originally going to write this for drm, but it seems quite generic
-> advice.
-> 
-> I'm cc'ing this quite widely to reach subsystems which use fw a lot.
-> 
-> Signed-off-by: Dave Airlie <airlied@redhat.com>
+> The declaration yes; the definition to qca8k-common.c. See for example
+> where felix_switch_ops is, relative to felix_vsc9959.c, seville_vsc9953.c
+> (users), felix.h (declaration), and felix.c (definition). Or how
+> mv88e6xxx_switch_ops does things and still supports a gazillion of switches.
 
-Document well deserved to be written, thanks for making this happen.
-Modulo all the silly spelling / bike-shedding issues folks might find,
-in case you care to re-spin for a v2:
+Mhh I checked the example and they doesn't seems to be useful from my
+problem. But I think it's better to discuss this to the patch directly
+so you can better understand whay I intended with having dsa_switch_ops
+set to const.
 
-Acked-by: Luis Chamberlain <mcgrof@kernel.org>
-
-Now let's think about the impact of two corner cases which *do*
-happen and so this poses security implications on enablement:
-
-1) Devices which end up with a security issue which a vendor considers
-   obsolete, and the only way to fix something is firmware. We're
-   security-out-of-luck. For this I've previously sucessfully have put
-   effort into organizations to open source the firmware. We were
-   successful more than once:
-
-     * https://github.com/qca/open-ath9k-htc-firmware
-     * https://github.com/qca/ath6kl-firmware
-
-   When these efforts fall short we have a slew of reverse engineering
-   efforts which fortunately also have been sucessfull.
-
-2) Vendor goes belly up
-
-Both implicate the need to help persuade early on a strategy for open
-source firmware, and I don't want to hear anyone tell me it is not
-possible.
-
-When that fails we can either reverse engineer and worst case, I am not
-sure if we have a process for annotations or should. Perhaps a kconfig
-symbol which drivers with buggy firmware can depend on, and only if you
-enable that kconfig symbol would these drivers be available to be
-enabled?
-
-Are we aware of such device drivers? They must exist...
-
-  Luis
+-- 
+	Ansuel
