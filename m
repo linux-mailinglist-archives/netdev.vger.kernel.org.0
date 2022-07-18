@@ -2,35 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF665578CD5
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 23:36:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2448C578CD8
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 23:36:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234116AbiGRVga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 17:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56788 "EHLO
+        id S235686AbiGRVgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 17:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbiGRVgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 17:36:12 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848422A42C;
-        Mon, 18 Jul 2022 14:36:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=b2+fqHm2d7st+up4McCVrJnq2E33gaO/uKbxkL5xitM=; b=FnaaKsRtymCNI9bTlQJE4Yfs7A
-        6MmBBm2cnAvkBlHNWOOWv8sIFw018fF0xtnLmlOsf3VqMp3CQduwqgJwrKo1Y0A8R49pg8KR07Biy
-        k7PBcOMcA1z6OS+yFTggRDgfQSc4V+k7Yp32yayvWFO18x2hCRJQIct/qBP0XDcyGgmnNqp6/xi3B
-        rRpmB8OJJbiQ9o/tQXCQIFDSijX4oUEGwqn51hjy5bY2Mt2HxIVs0JJGPWQUQwuDt6+LmeFgCdoVU
-        +2QPjphKTGv/mqSCkKRH7uGC8cN9NBEKcvGD1m9v2GVCznS2lFMFvG+oHCmB5gW+DV8G5a/4lTalj
-        rjQ8tanA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oDYOy-00D3GZ-3i; Mon, 18 Jul 2022 21:35:40 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B85DF9802A7; Mon, 18 Jul 2022 23:35:39 +0200 (CEST)
-Date:   Mon, 18 Jul 2022 23:35:39 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
+        with ESMTP id S232009AbiGRVge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 17:36:34 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E03245B;
+        Mon, 18 Jul 2022 14:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658180193; x=1689716193;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mNR9fZW5L/31bvz/gFxJvxCNXCRVmXZ4lg+FbtpuMEs=;
+  b=HMNBf9Xf716PcEy00NePo/c/6d45CmzWz9qd/HdOmFyOcAJ8xCCfQuLk
+   EKW0VMz3WtyF+PRuLKFavrzeZS0dmzroPQZBoem06mn3RvqTQH3TYuDMo
+   +Epk0tuQCxnTLO8Q+zOKC6ntLCa9FFdqJwqWAoSfphKOPkAki5KbvqbAR
+   WlRnL61w6/0zX2Y6bO86rhdv/j5kD8AItBtA4JrxIPHfmLFqg1wqmwBZQ
+   MeO6B6FCfifeTCXGs0TZNIkUDbVzGSaOU0OgKy4yXlCXUdBFPZDhRq/tx
+   kT/MvTi+2VyJnYaJzXqZO8wO3pWMTfpQMmQXhA+SoMkUY71gBhtLEsRwI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287068744"
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="287068744"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:36:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="597406476"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 14:36:23 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oDYPa-001OZo-1y;
+        Tue, 19 Jul 2022 00:36:18 +0300
+Date:   Tue, 19 Jul 2022 00:36:18 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Yury Norov <yury.norov@gmail.com>
 Cc:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -38,7 +49,6 @@ Cc:     linux-kernel@vger.kernel.org,
         Alexey Klimov <aklimov@redhat.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Ben Segall <bsegall@google.com>,
         Christoph Lameter <cl@linux.com>,
         Dan Williams <dan.j.williams@intel.com>,
@@ -61,6 +71,7 @@ Cc:     linux-kernel@vger.kernel.org,
         Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
         Nathan Chancellor <nathan@kernel.org>,
         "Paul E . McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
@@ -72,37 +83,93 @@ Cc:     linux-kernel@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 13/16] time: optimize tick_setup_device()
-Message-ID: <YtXSK7qt+TuTRIbV@worktop.programming.kicks-ass.net>
+Subject: Re: [PATCH 07/16] smp: optimize smp_call_function_many_cond()
+Message-ID: <YtXSUuGgjRkjhamA@smile.fi.intel.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-14-yury.norov@gmail.com>
+ <20220718192844.1805158-8-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718192844.1805158-14-yury.norov@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220718192844.1805158-8-yury.norov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:28:41PM -0700, Yury Norov wrote:
->  kernel/time/tick-common.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Jul 18, 2022 at 12:28:35PM -0700, Yury Norov wrote:
+> smp_call_function_many_cond() is often passed with cpu_online_mask.
+> If this is the case, we can use num_online_cpus(), which is O(1)
+> instead of cpumask_{first,next}(), which is O(N).
 > 
-> diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
-> index 7205f76f8d10..7b2da8ef09ef 100644
-> --- a/kernel/time/tick-common.c
-> +++ b/kernel/time/tick-common.c
-> @@ -255,7 +255,7 @@ static void tick_setup_device(struct tick_device *td,
->  	 * When the device is not per cpu, pin the interrupt to the
->  	 * current cpu:
->  	 */
-> -	if (!cpumask_equal(newdev->cpumask, cpumask))
-> +	if (newdev->cpumask != cpumask && !cpumask_equal(newdev->cpumask, cpumask))
->  		irq_set_affinity(newdev->irq, cpumask);
+> It can be optimized further: if cpu_online_mask has 0 or single bit
+> set (depending on cpu_online(this_cpu), we can return result without
+> AND'ing with user's mask.
 
-This is again making a slow path harder to read for now benefit.
+> Caught with CONFIG_DEBUG_BITMAP:
+> [    7.830337] Call trace:
+> [    7.830397]  __bitmap_check_params+0x1d8/0x260
+> [    7.830499]  smp_call_function_many_cond+0x1e8/0x45c
+> [    7.830607]  kick_all_cpus_sync+0x44/0x80
+> [    7.830698]  bpf_int_jit_compile+0x34c/0x5cc
+> [    7.830796]  bpf_prog_select_runtime+0x118/0x190
+> [    7.830900]  bpf_prepare_filter+0x3dc/0x51c
+> [    7.830995]  __get_filter+0xd4/0x170
+> [    7.831145]  sk_attach_filter+0x18/0xb0
+> [    7.831236]  sock_setsockopt+0x5b0/0x1214
+> [    7.831330]  __sys_setsockopt+0x144/0x170
+> [    7.831431]  __arm64_sys_setsockopt+0x2c/0x40
+> [    7.831541]  invoke_syscall+0x48/0x114
+> [    7.831634]  el0_svc_common.constprop.0+0x44/0xfc
+> [    7.831745]  do_el0_svc+0x30/0xc0
+> [    7.831825]  el0_svc+0x2c/0x84
+> [    7.831899]  el0t_64_sync_handler+0xbc/0x140
+> [    7.831999]  el0t_64_sync+0x18c/0x190
+> [    7.832086] ---[ end trace 0000000000000000 ]---
+> [    7.832375] b1:		ffff24d1ffd98a48
+> [    7.832385] b2:		ffffa65533a29a38
+> [    7.832393] b3:		ffffa65533a29a38
+> [    7.832400] nbits:	256
+> [    7.832407] start:	0
+> [    7.832412] off:	0
+> [    7.832418] smp: Bitmap: parameters check failed
+> [    7.832432] smp: include/linux/bitmap.h [363]: bitmap_and
+
+Documentation specifically says:
+
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-mesages
+
+...
+
+> +	default:
+> +		if (mask == cpu_online_mask)
+> +			return true;
+
+Instead, put (missed) break; here and do "default" case together below.
+
+> +	cpu = cpumask_first_and(mask, cpu_online_mask);
+> +	if (cpu == this_cpu)
+> +		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
+> +
+> +	return cpu < nr_cpu_ids;
+
+...
+
+> +	run_remote = __need_remote_exec(mask, this_cpu);
+
+>  
+
+Now you may remove this blank line.
+
+>  	if (run_remote) {
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
