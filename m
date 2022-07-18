@@ -2,138 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7A85782AA
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 14:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 308885782B0
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 14:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235154AbiGRMph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 08:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        id S233933AbiGRMsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 08:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbiGRMpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 08:45:35 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C45AB9C;
-        Mon, 18 Jul 2022 05:45:33 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VJlyRhm_1658148329;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VJlyRhm_1658148329)
-          by smtp.aliyun-inc.com;
-          Mon, 18 Jul 2022 20:45:30 +0800
-Date:   Mon, 18 Jul 2022 20:45:28 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Wenjia Zhang <wenjia@linux.ibm.com>
-Cc:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/6] net/smc: Introduce virtually contiguous
- buffers for SMC-R
-Message-ID: <YtVV6IWF0cKxJaWe@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
- <345053d6-5ecb-066d-8eeb-7637da1d7370@linux.ibm.com>
+        with ESMTP id S230193AbiGRMsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 08:48:53 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13CE274;
+        Mon, 18 Jul 2022 05:48:51 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bp15so21020462ejb.6;
+        Mon, 18 Jul 2022 05:48:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TeGVCUHeLxV7GRevtfvM+qomfGbRC+tXZ9uiMLV6+TY=;
+        b=njIbtwRABHwo1EuVlDmBZl5/FfMEVieI0PWSxOowMr14u+vgbwUdzACh1FX0Z5QT3I
+         NwlS4Wvt3WPDSo5+c90fkGtVn4fxYFvOoTGGw7mIVewnJvOZndlPGb6yUx/4qwDBmtvc
+         FflvOm+utwIey+OP2PLkl90+gv4M/nievVIhkYfVNQFfwaQyG+ATBsmOxPtfGqshXRe+
+         Ass+P5pjmix/lZf0A7RnNHFyVYPGm+al2LZKZfcAr6BwogORogjpVRjte0NdvjBtWl2G
+         bqcvCu+jgtOnXnl2kj5HFnBiJqhWYE2CvQZFeXqB6JK0b3wy7p8xYDAdR7tWHL6HVKye
+         7/GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TeGVCUHeLxV7GRevtfvM+qomfGbRC+tXZ9uiMLV6+TY=;
+        b=bXZMlvS+5eGxJT2F4qa1YzdJupP/UCfTesTNW9qyHh6MSPmXCsKhLqr1QkY6Q4Lz7r
+         2r72wslnO80P68pCbZWV4zcCePp+eS7mBuKy/sBn7JlPcHlSpzb0YOt1bV8LZE67SwPd
+         aNq2mopT9NxFkdT9CNTelG2OjlqeEC60fweLs5iIMH5yXH0GPATGJObqbPRBnQX/UGVE
+         xQLsLiFqf4UT97Emw9qEONGlK6YzJHrrfZutFGL4w67RfyWHgEkvgkadHnwiXSzBMjM0
+         OaJZsCc7uDbAUDRgq+hOm/GHJRqZZEcOtCXdXYIknCDRYPHbElgw14SQHL7yw4wYr5BD
+         dyug==
+X-Gm-Message-State: AJIora8dtXLQ3/fwdkujGFIlsYqTRpLTWF0zR6H9bx8UlPRT0p5OWwgT
+        W/PtbRESJmK9BFbA0qyrPkc=
+X-Google-Smtp-Source: AGRyM1v5W3XVAP+3An41B0subOY/ynUHBsIavZ/hmJ7cpd6pECSZfwhJE5T7jKBSQ6hbg4w6JUffTg==
+X-Received: by 2002:a17:906:4785:b0:72e:dd6c:1ba1 with SMTP id cw5-20020a170906478500b0072edd6c1ba1mr20369468ejc.712.1658148529973;
+        Mon, 18 Jul 2022 05:48:49 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id t18-20020a1709067c1200b006febce7081bsm5436352ejo.163.2022.07.18.05.48.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 05:48:48 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Mon, 18 Jul 2022 14:48:46 +0200
+To:     Martynas Pumputis <m@lambda.lt>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>
+Subject: Re: [PATCH RFC bpf-next 4/4] selftests/bpf: Fix kprobe get_func_ip
+ tests for CONFIG_X86_KERNEL_IBT
+Message-ID: <YtVWruugC9LHtah2@krava>
+References: <20220705190308.1063813-1-jolsa@kernel.org>
+ <20220705190308.1063813-5-jolsa@kernel.org>
+ <CAEf4BzapX_C16O9woDSXOpbzVsxjYudXW36woRCqU3u75uYiFA@mail.gmail.com>
+ <YsdbQ4vJheLWOa0a@krava>
+ <YtSCbIA+6JtRF/Ch@krava>
+ <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <345053d6-5ecb-066d-8eeb-7637da1d7370@linux.ibm.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 05:16:47PM +0200, Wenjia Zhang wrote:
+On Mon, Jul 18, 2022 at 02:09:54PM +0300, Martynas Pumputis wrote:
 > 
 > 
-> On 14.07.22 11:43, Wen Gu wrote:
-> > On long-running enterprise production servers, high-order contiguous
-> > memory pages are usually very rare and in most cases we can only get
-> > fragmented pages.
+> On 7/18/22 00:43, Jiri Olsa wrote:
+> > On Fri, Jul 08, 2022 at 12:16:35AM +0200, Jiri Olsa wrote:
+> > > On Tue, Jul 05, 2022 at 10:29:17PM -0700, Andrii Nakryiko wrote:
+> > > > On Tue, Jul 5, 2022 at 12:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > > > 
+> > > > > The kprobe can be placed anywhere and user must be aware
+> > > > > of the underlying instructions. Therefore fixing just
+> > > > > the bpf program to 'fix' the address to match the actual
+> > > > > function address when CONFIG_X86_KERNEL_IBT is enabled.
+> > > > > 
+> > > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > > ---
+> > > > >   tools/testing/selftests/bpf/progs/get_func_ip_test.c | 7 +++++--
+> > > > >   1 file changed, 5 insertions(+), 2 deletions(-)
+> > > > > 
+> > > > > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > > index a587aeca5ae0..220d56b7c1dc 100644
+> > > > > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > > @@ -2,6 +2,7 @@
+> > > > >   #include <linux/bpf.h>
+> > > > >   #include <bpf/bpf_helpers.h>
+> > > > >   #include <bpf/bpf_tracing.h>
+> > > > > +#include <stdbool.h>
+> > > > > 
+> > > > >   char _license[] SEC("license") = "GPL";
+> > > > > 
+> > > > > @@ -13,6 +14,8 @@ extern const void bpf_modify_return_test __ksym;
+> > > > >   extern const void bpf_fentry_test6 __ksym;
+> > > > >   extern const void bpf_fentry_test7 __ksym;
+> > > > > 
+> > > > > +extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
+> > > > > +
+> > > > >   __u64 test1_result = 0;
+> > > > >   SEC("fentry/bpf_fentry_test1")
+> > > > >   int BPF_PROG(test1, int a)
+> > > > > @@ -37,7 +40,7 @@ __u64 test3_result = 0;
+> > > > >   SEC("kprobe/bpf_fentry_test3")
+> > > > >   int test3(struct pt_regs *ctx)
+> > > > >   {
+> > > > > -       __u64 addr = bpf_get_func_ip(ctx);
+> > > > > +       __u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
+> > > > 
+> > > > so for kprobe bpf_get_func_ip() gets an address with 5 byte
+> > > > compensation for `call __fentry__`, but not for endr? Why can't we
+> > > > compensate for endbr inside the kernel code as well? I'd imagine we
+> > > > either do no compensation (and thus we get &bpf_fentry_test3+5 or
+> > > > &bpf_fentry_test3+9, depending on CONFIG_X86_KERNEL_IBT) or full
+> > > > compensation (and thus always get &bpf_fentry_test3), but this
+> > > > in-between solution seems to be the worst of both worlds?...
+> > > 
+> > > hm rigth, I guess we should be able to do that in bpf_get_func_ip,
+> > > I'll check
 > > 
-> > When replacing TCP with SMC-R in such production scenarios, attempting
-> > to allocate high-order physically contiguous sndbufs and RMBs may result
-> > in frequent memory compaction, which will cause unexpected hung issue
-> > and further stability risks.
+> > sorry for late follow up..
 > > 
-> > So this patch set is aimed to allow SMC-R link group to use virtually
-> > contiguous sndbufs and RMBs to avoid potential issues mentioned above.
-> > Whether to use physically or virtually contiguous buffers can be set
-> > by sysctl smcr_buf_type.
-> > 
-> > Note that using virtually contiguous buffers will bring an acceptable
-> > performance regression, which can be mainly divided into two parts:
-> > 
-> > 1) regression in data path, which is brought by additional address
-> >     translation of sndbuf by RNIC in Tx. But in general, translating
-> >     address through MTT is fast. According to qperf test, this part
-> >     regression is basically less than 10% in latency and bandwidth.
-> >     (see patch 5/6 for details)
-> > 
-> > 2) regression in buffer initialization and destruction path, which is
-> >     brought by additional MR operations of sndbufs. But thanks to link
-> >     group buffer reuse mechanism, the impact of this kind of regression
-> >     decreases as times of buffer reuse increases.
-> > 
-> > Patch set overview:
-> > - Patch 1/6 and 2/6 mainly about simplifying and optimizing DMA sync
-> >    operation, which will reduce overhead on the data path, especially
-> >    when using virtually contiguous buffers;
-> > - Patch 3/6 and 4/6 introduce a sysctl smcr_buf_type to set the type
-> >    of buffers in new created link group;
-> > - Patch 5/6 allows SMC-R to use virtually contiguous sndbufs and RMBs,
-> >    including buffer creation, destruction, MR operation and access;
-> > - patch 6/6 extends netlink attribute for buffer type of SMC-R link group;
-> > 
-> > v1->v2:
-> > - Patch 5/6 fixes build issue on 32bit;
-> > - Patch 3/6 adds description of new sysctl in smc-sysctl.rst;
-> > 
-> > Guangguan Wang (2):
-> >    net/smc: remove redundant dma sync ops
-> >    net/smc: optimize for smc_sndbuf_sync_sg_for_device and
-> >      smc_rmb_sync_sg_for_cpu
-> > 
-> > Wen Gu (4):
-> >    net/smc: Introduce a sysctl for setting SMC-R buffer type
-> >    net/smc: Use sysctl-specified types of buffers in new link group
-> >    net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
-> >    net/smc: Extend SMC-R link group netlink attribute
-> > 
-> >   Documentation/networking/smc-sysctl.rst |  13 ++
-> >   include/net/netns/smc.h                 |   1 +
-> >   include/uapi/linux/smc.h                |   1 +
-> >   net/smc/af_smc.c                        |  68 +++++++--
-> >   net/smc/smc_clc.c                       |   8 +-
-> >   net/smc/smc_clc.h                       |   2 +-
-> >   net/smc/smc_core.c                      | 246 +++++++++++++++++++++-----------
-> >   net/smc/smc_core.h                      |  20 ++-
-> >   net/smc/smc_ib.c                        |  44 +++++-
-> >   net/smc/smc_ib.h                        |   2 +
-> >   net/smc/smc_llc.c                       |  33 +++--
-> >   net/smc/smc_rx.c                        |  92 +++++++++---
-> >   net/smc/smc_sysctl.c                    |  11 ++
-> >   net/smc/smc_tx.c                        |  10 +-
-> >   14 files changed, 404 insertions(+), 147 deletions(-)
-> > 
-> This idea is very cool! Thank you for your effort! But we still need to
-> verify if this solution can run well on our system. I'll come to you soon.
+> > so the problem is that you can place kprobe anywhere in the function
+> > (on instruction boundary) but the IBT adjustment of kprobe address is
+> > made only if it's at the function entry and there's endbr instruction
+> 
+> To add more fun to the issue, not all non-inlined functions get endbr64. For
+> example "skb_release_head_state()" does, while "skb_free_head()" doesn't.
 
-Hi Wenjia,
+ah great.. thanks for info, will check
 
-We have noticed that SMC community is becoming more active recently.
-More and more companies have shown their interests in SMC.
-Correspondingly, patches are also increasing. We (Alibaba) are trying to
-apply SMC into cloud production environment, extending its abilities and
-enhancing the performance. We also contributed some work to community in
-the past period of time. So we are more than happy to help review SMC
-patches together. If you need, we are very glad to be reviewers to share
-the review work.
+jirka
 
-Hope to hear from you, thank you.
-
-Best wishes,
-Tony Lu
+> 
+> > 
+> > and that kprobe address is what we return in helper:
+> > 
+> >    BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+> >    {
+> >          struct kprobe *kp = kprobe_running();
+> > 
+> >          return kp ? (uintptr_t)kp->addr : 0;
+> >    }
+> > 
+> > so the adjustment would work only for address at function entry, but
+> > would be wrong for address within the function
+> > 
+> > perhaps we could add flag to kprobe to indicate the addr adjustment
+> > was done and use it in helper
+> > 
+> > but that's why I thought I'd keep bpf_get_func_ip_kprobe as it and
+> > leave it up to user
+> > 
+> > kprobe_multi and trampolines are different, because they can be
+> > only at the function entry, so we can adjust the ip properly
+> > 
+> > jirka
