@@ -2,143 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28B91577C51
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 09:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A6B2577C66
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 09:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbiGRHSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 03:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
+        id S233818AbiGRHXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 03:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233207AbiGRHSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 03:18:51 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051D7F73
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 00:18:50 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id u19so9018243lfs.0
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 00:18:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PyRXBleb1QpB4fKxelY4Fyd23fs+FV7dQ0emB1l5pSs=;
-        b=nJNtLHqOy2pMkzxMYFZ7yPppaJCLu+2xQxX810kBBcLldCzjw5A5bgcXpyd2E/Vso+
-         r58HSISLXELZ+9EhWEWCDeNc72YPVP6ccifkY/FRlERB4HumoWMg0GmAEWMMT+hEpuVQ
-         daVWOsv7mBT1o5sbym3CZ5nOWJD3Og5WNyI5s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PyRXBleb1QpB4fKxelY4Fyd23fs+FV7dQ0emB1l5pSs=;
-        b=l85EtYX601hI6DPSMZKQM4QRYoblzV2mbDpwmOnx3jbXYte29WhzA9BeiFXj1z11MV
-         /oJqU4vDr2Hr7KMw3kFwWW8cImpum4egDOEvZB7Hhtc15eYqmFWLeWXrmZ56Byd2t+qf
-         biqrscLok46acYXyv0zsqn6JkNqF+BdbGOKw6UoDrwQP65zSewszqQ22HidRbpk5/2tj
-         B1v2PCs0KUas7F6UFgD48uBmx+B5RBbvB6Q583fytpCDF7E9MB5lKDtmk/BDRswTDJUf
-         2Y/rdBM4Fssxu5KUmfjJ+zIWhskwZQ/aTR9ImRN+5x6oJwXV8Ng3beTn2+fw6JLBRSlH
-         DsFQ==
-X-Gm-Message-State: AJIora8z+bW5CRlAQ/fYArlK74Kagu3DrJUuESXFH50GNyoxZrUBISfN
-        +ou49LpgRIQIiMBu0Ytf4UyYPvVMaeo/Elz+2OFhvA==
-X-Google-Smtp-Source: AGRyM1uU27azdskip3dlgvLt74wyrnMbqEFBJQA/5XIeGmOG0T7mNyvF4bufdGwtDc+pgO4qXKoMvYE+/rSUQDev4eU=
-X-Received: by 2002:a05:6512:2610:b0:47f:74dc:3205 with SMTP id
- bt16-20020a056512261000b0047f74dc3205mr13322511lfb.429.1658128728309; Mon, 18
- Jul 2022 00:18:48 -0700 (PDT)
+        with ESMTP id S233288AbiGRHXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 03:23:09 -0400
+X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Jul 2022 00:23:08 PDT
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CC12639C
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 00:23:08 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-277-AgST6BwiNTG9NjgWcQgQBg-1; Mon, 18 Jul 2022 03:21:54 -0400
+X-MC-Unique: AgST6BwiNTG9NjgWcQgQBg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9F8D7811E80;
+        Mon, 18 Jul 2022 07:21:53 +0000 (UTC)
+Received: from dreadlord.bne.redhat.com (fdacunha.bne.redhat.com [10.64.0.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 69304141511A;
+        Mon, 18 Jul 2022 07:21:49 +0000 (UTC)
+From:   Dave Airlie <airlied@gmail.com>
+To:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
+        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
+        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
+Subject: [PATCH] docs: driver-api: firmware: add driver firmware guidelines.
+Date:   Mon, 18 Jul 2022 17:21:44 +1000
+Message-Id: <20220718072144.2699487-1-airlied@gmail.com>
 MIME-Version: 1.0
-References: <20220716170201.2020510-1-dario.binacchi@amarulasolutions.com> <20220717235000.247bfa42.max@enpas.org>
-In-Reply-To: <20220717235000.247bfa42.max@enpas.org>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Mon, 18 Jul 2022 09:18:37 +0200
-Message-ID: <CABGWkvpK25WGjp76_=Jfd9sMk5Dvj84VnVuc3iuroKR0tJEv+Q@mail.gmail.com>
-Subject: Re: [RFC PATCH] can: can327: remove useless header inclusions
-To:     Max Staudt <max@enpas.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Max,
+From: Dave Airlie <airlied@redhat.com>
 
-On Sun, Jul 17, 2022 at 11:50 PM Max Staudt <max@enpas.org> wrote:
->
-> On Sat, 16 Jul 2022 19:02:01 +0200
-> Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
->
-> > -#include <linux/init.h>
-> >  #include <linux/module.h>
-> > -
-> > -#include <linux/bitops.h>
-> > -#include <linux/ctype.h>
-> > -#include <linux/errno.h>
-> > -#include <linux/kernel.h>
-> > -#include <linux/list.h>
-> > -#include <linux/lockdep.h>
-> > -#include <linux/netdevice.h>
-> > -#include <linux/skbuff.h>
-> > -#include <linux/spinlock.h>
-> > -#include <linux/string.h>
-> >  #include <linux/tty.h>
-> > -#include <linux/tty_ldisc.h>
-> > -#include <linux/workqueue.h>
-> > -
-> > -#include <uapi/linux/tty.h>
-> > -
-> > -#include <linux/can.h>
-> >  #include <linux/can/dev.h>
-> > -#include <linux/can/error.h>
-> >  #include <linux/can/rx-offload.h>
->
-> AFAIK, the coding style is to not rely on headers including other
-> headers. Instead, the appropriate header for every symbol used should
-> be included.
+A recent snafu where Intel ignored upstream feedback on a firmware
+change, led to a late rc6 fix being required. In order to avoid this
+in the future we should document some expectations around
+linux-firmware.
 
-Thanks for the explanation.
+I was originally going to write this for drm, but it seems quite generic
+advice.
 
->
-> This is also valid for the similar patch you submitted for slcan.
+I'm cc'ing this quite widely to reach subsystems which use fw a lot.
 
-Probably something can be removed (if_arp.h, if_ether.h, ...).
-I will take can327.c as a reference.
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+---
+ Documentation/driver-api/firmware/core.rst    |  1 +
+ .../firmware/firmware-usage-guidelines.rst    | 34 +++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+ create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
 
-Thanks and regards,
-Dario
-
->
->
-> Unless something has changed, this is a NAK from me, sorry.
->
->
-> Max
-
-
-
+diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
+index 1d1688cbc078..803cd574bbd7 100644
+--- a/Documentation/driver-api/firmware/core.rst
++++ b/Documentation/driver-api/firmware/core.rst
+@@ -13,4 +13,5 @@ documents these features.
+    direct-fs-lookup
+    fallback-mechanisms
+    lookup-order
++   firmware-usage-guidelines
+ 
+diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+new file mode 100644
+index 000000000000..34d2412e78c6
+--- /dev/null
++++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+@@ -0,0 +1,34 @@
++===================
++Firmware Guidelines
++===================
++
++Drivers that use firmware from linux-firmware should attempt to follow
++the rules in this guide.
++
++* Firmware should be versioned with at least a major/minor version. It
++  is suggested that the firmware files in linux-firmware be named with
++  some device specific name, and just the major version. The
++  major/minor/patch versions should be stored in a header in the
++  firmware file for the driver to detect any non-ABI fixes/issues. The
++  firmware files in linux-firmware should be overwritten with the newest
++  compatible major version. Newer major version firmware should remain
++  compatible with all kernels that load that major number.
++
++* Users should *not* have to install newer firmware to use existing
++  hardware when they install a newer kernel.  If the hardware isn't
++  enabled by default or under development, this can be ignored, until
++  the first kernel release that enables that hardware.  This means no
++  major version bumps without the kernel retaining backwards
++  compatibility for the older major versions.  Minor version bumps
++  should not introduce new features that newer kernels depend on
++  non-optionally.
++
++* If a security fix needs lockstep firmware and kernel fixes in order to
++  be successful, then all supported major versions in the linux-firmware
++  repo should be updated with the security fix, and the kernel patches
++  should detect if the firmware is new enough to declare if the security
++  issue is fixed.  All communications around security fixes should point
++  at both the firmware and kernel fixes. If a security fix requires
++  deprecating old major versions, then this should only be done as a
++  last option, and be stated clearly in all communications.
++
 -- 
+2.36.1
 
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
