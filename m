@@ -2,61 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E92F9578B14
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFB0578B21
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:44:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236264AbiGRTie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
+        id S236217AbiGRTot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236271AbiGRTiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:38:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011AF31393;
-        Mon, 18 Jul 2022 12:38:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC478B81705;
-        Mon, 18 Jul 2022 19:38:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4242C341C0;
-        Mon, 18 Jul 2022 19:38:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658173095;
-        bh=vpqAL0CO/3a8visbxpQjy5FG9dzSYgZJjhqVkMHPZ9M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uJwT0BIEYiy2IydNB5664j5+dSwoB1bzgZCPvsxIEy+6GAl6EsyKLpNq3e7u0lEu2
-         qD+Gl+Le97pLChGOVBt7IP8fdfIj8bXoB0R0fGImT/O51gn3IJ10B4TmSKI5nNFwhT
-         Ca5OXWip3qIhshOufJ2u5z/hDTjvW48Frl9viIwaNS9X6XUAmd4o+WH5Ere/eJXC7r
-         d+f9U8axJLckNX6l4SIuz7Debc0m64ckc84iDn3ZoM6WMNH6+HohWC7417ubUXQCxj
-         zD7CLVkyX7mNjRPZ4hxrMd37yGljypLrSyYEicoAucTKOVCWn7ZYtGDPnwmPnUrWn2
-         kFGEwZAyyIquw==
-Date:   Mon, 18 Jul 2022 12:38:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     edumazet@google.com, aelior@marvell.com, skalluru@marvell.com,
-        manishc@marvell.com, davem@davemloft.net, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bnx2x: Fix comment typo
-Message-ID: <20220718123810.220fae3f@kernel.org>
-In-Reply-To: <20220715045630.22682-1-wangborong@cdjrlc.com>
-References: <20220715045630.22682-1-wangborong@cdjrlc.com>
+        with ESMTP id S234128AbiGRTor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:44:47 -0400
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com [209.85.166.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3870C6445;
+        Mon, 18 Jul 2022 12:44:47 -0700 (PDT)
+Received: by mail-il1-f169.google.com with SMTP id h16so6584218ila.2;
+        Mon, 18 Jul 2022 12:44:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v1mTrcXvswvV41WDcTPk/HMuVmCDknQU5gd5C2gfzQ8=;
+        b=QiLipj//hUSOs1SmLU7LT0beMbZ91pJvnhinxymF/Y2omOcv+Y41SFPtbz8L9J6ySd
+         Kt5UyHpPKkn9hQ7MpIEblCMH16DyhXD9r05TblyKmYOg+mm5gNOXUnSEO3vB5s8lKSvE
+         VVVhk+CdNFSAM7Uolrs5XOY3XW/vy7HtdLiL1R4Zpk6ih9dgE9sjK5hi98i/dsVR65iy
+         1a1inAmQGyllMHjGB7iDS8CZ4AChALFUw7AxiwUaO14SZLsoZMjy+erwQrGbHmYUbGTs
+         AGuDuaZ8lNVF0onH6lTjaAMzKTFbFRCl1AabukURMEyi/1iZXSQmalWiXbGAZtnYGZcU
+         jjhg==
+X-Gm-Message-State: AJIora9HO2fWZyffG/D3+ahboOvU30Eexefv7cStWKXEU4VwQ1UaR6gD
+        G897fS4mWhfUrOExDhbxbQudSXWyig==
+X-Google-Smtp-Source: AGRyM1thdOCUCm3a5Arpfp2n9tlXe8iJFisYAFCILX2dspZF1A5XRi7ojWRrgF50rGbfnoIyJr1SPQ==
+X-Received: by 2002:a05:6e02:12c3:b0:2dc:6c36:5cc2 with SMTP id i3-20020a056e0212c300b002dc6c365cc2mr15044171ilm.278.1658173486480;
+        Mon, 18 Jul 2022 12:44:46 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m3-20020a92d703000000b002dc0d2f7c7bsm5115783iln.4.2022.07.18.12.44.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 12:44:46 -0700 (PDT)
+Received: (nullmailer pid 3423082 invoked by uid 1000);
+        Mon, 18 Jul 2022 19:44:44 -0000
+Date:   Mon, 18 Jul 2022 13:44:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [RFC PATCH net-next 9/9] net: pcs: lynx: Remove remaining users
+ of lynx_pcs_create
+Message-ID: <20220718194444.GA3377770-robh@kernel.org>
+References: <20220711160519.741990-1-sean.anderson@seco.com>
+ <20220711160519.741990-10-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711160519.741990-10-sean.anderson@seco.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jul 2022 12:56:30 +0800 Jason Wang wrote:
-> Subject: [PATCH] bnx2x: Fix comment typo
-> Date: Fri, 15 Jul 2022 12:56:30 +0800
+On Mon, Jul 11, 2022 at 12:05:19PM -0400, Sean Anderson wrote:
+> Now that PCS devices have a compatible string, we no longer have to bind
+> the driver manually in lynx_pcs_create. Remove it, and convert the
+> remaining users to pcs_get_by_fwnode.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> This requires that all PCSs have a compatible string. For a reasonable
+> window of compatibility, this should be applied one major release after
+> all compatible strings are added.
 
-The date on your submissions is broken, please fix and repost.
-I got those patches on Monday my time and they are supposedly 
-sent on Thursday my time :(
+These platforms are pretty stable. I don't think a 1 release window is 
+sufficient. Maybe a 1 LTS release.
+
+> 
+>  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 27 ++-----------------
+>  drivers/net/pcs/pcs-lynx.c                    | 19 -------------
+>  include/linux/pcs-lynx.h                      |  1 -
+>  3 files changed, 2 insertions(+), 45 deletions(-)
