@@ -2,140 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD1857811F
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06994578121
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 13:43:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiGRLnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 07:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        id S233176AbiGRLno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 07:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234192AbiGRLnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:43:00 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42956B86A;
-        Mon, 18 Jul 2022 04:42:59 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id mf4so20700469ejc.3;
-        Mon, 18 Jul 2022 04:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=16jnFsvBrAgbEt4xpQGg6hQiZZIMKLW+cCiQ1OqTMC8=;
-        b=LLTUoRzUUFKiAu3tR2Vs0NiaFln/YwydRZaSlRdCAhAUv0G1ngreNmz0brJaLV7CzY
-         TQU0okdCRNjR9mdfxVKsCu9B/UTsYMkaDQbB9q1Fo0Fy4Kg3/Z82ZQr5Aubb053fhWyd
-         iG+0Zw2jqWk8fd5R3JToFHhg1MLmAViu4cbwHNn4gpeljl2VBa6nGpQ0ygjOuPZ5FRav
-         X9rSQ++PaIIAP1p4GrNUyhA0I9KKnh1fH7fZRG5nzHpp9Xl0mz0zVXS/tACg4rGK2czG
-         eqjUMURqZbYEG3oJCT0/RzNEXd5srhddhELFEmJHJ6rRIE4NMf+s65zrnHi2TH2xCkG4
-         rAZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=16jnFsvBrAgbEt4xpQGg6hQiZZIMKLW+cCiQ1OqTMC8=;
-        b=gZsa7y/qV4wbasF3xnENUL/ETVkx9kjeLMupZ3ERRIXQ3MnaBcDYdk/8K8yj92RLjF
-         9LVr6Y7xR0zP5WN/RQga5CewlkHygLk91Db3kSJa9Xdyef3jsPKL0jWt9BkuaDiohZLm
-         f8ULFI7+nVNvATrGo0xU6dE+2WJ5Kib6ztuz/FjpMbx8X2SNciH4VrDLlv67GKzbnBtA
-         9xXs/N5FZzL2gE0Ie6IIRrVfOFCg39jVUg2FcGzkw/KsAKQcRkML3/veEz7meNJgoqoo
-         ZEGUomrWaKo83/2OC7W0q/defX0FF6BF09kzZbgWMSmUa1G8J6quNgAGNw7O8wZqmERN
-         iH/Q==
-X-Gm-Message-State: AJIora/155z+vXMoXL6/CuknV9vRPGaR/WDrLlSjViU2Iu9QrNl0o+7q
-        TOXF98JFTmDTS8Nk9r5gMQ4=
-X-Google-Smtp-Source: AGRyM1sEW677SbP17IE3+fkQqGLUtcTguoPwApk3lL8xM5+6N/Zvm4MaZA+Ag8xYApRYkyVNbDh2qQ==
-X-Received: by 2002:a17:906:5305:b0:712:388c:2bf5 with SMTP id h5-20020a170906530500b00712388c2bf5mr24946074ejo.559.1658144577795;
-        Mon, 18 Jul 2022 04:42:57 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id ek9-20020a056402370900b0042de3d661d2sm8361944edb.1.2022.07.18.04.42.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 04:42:55 -0700 (PDT)
-Message-ID: <72170546-fad0-0b96-e075-b755c3a48bec@gmail.com>
-Date:   Mon, 18 Jul 2022 14:42:52 +0300
+        with ESMTP id S230263AbiGRLnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 07:43:43 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8822FB7E8;
+        Mon, 18 Jul 2022 04:43:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658144622; x=1689680622;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=wMjtHKQDvulOhDTyol3KLlhM58iCXiOSY8YldyJM3P4=;
+  b=Zi2DDPnb7aZAeOd6vlt9RKeAR/JftC2o7FaU4GkN2YDu061wyl3qvJLO
+   ZG8o2KUPAaCtNubjgZec9ltR/poL9ML0Z848gzda6gvGNBPlJshjHIN6J
+   XZ73gF36+xrkAJpHBf66btoHoi4hThpxmJj8iR1KEpYvTRwhVQDz93ohg
+   9pb2AgIPUP2SLnIJjNM4NJlcCwgtBVFgGEdnoZsXeVzjQtugHp9PAs+FH
+   jQjjtn6yQKZV9B1kJEmWfG2d8xqaO5R9UihGm11blsArge3ieV1AhyWD+
+   2WLUFRJmsV+kKvl1gBkAJ8oag7w5bgNu5ofcQUI4qgZjtvAmDQq3aaHV7
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
+   d="scan'208";a="104921901"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jul 2022 04:43:41 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 18 Jul 2022 04:43:40 -0700
+Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 18 Jul 2022 04:43:36 -0700
+From:   Divya Koppera <Divya.Koppera@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
+CC:     <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
+Subject: [PATCH net-next] net: phy: micrel: Fix warn: passing zero to PTR_ERR
+Date:   Mon, 18 Jul 2022 17:13:33 +0530
+Message-ID: <20220718114333.4866-1-Divya.Koppera@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 1/2] sched/topology: Expose
- sched_numa_find_closest
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220717052301.19067-1-tariqt@nvidia.com>
- <20220717052301.19067-2-tariqt@nvidia.com>
- <YtUzu4d9F+V621tw@worktop.programming.kicks-ass.net>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <YtUzu4d9F+V621tw@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Removing NULL check, as using it here is not valid
 
+Fixes New smatch warnings:
+drivers/net/phy/micrel.c:2613 lan8814_ptp_probe_once() warn: passing zero to 'PTR_ERR'
 
-On 7/18/2022 1:19 PM, Peter Zijlstra wrote:
-> On Sun, Jul 17, 2022 at 08:23:00AM +0300, Tariq Toukan wrote:
->> This logic can help device drivers prefer some remote cpus
->> over others, according to the NUMA distance metrics.
->>
->> Reviewed-by: Gal Pressman <gal@nvidia.com>
->> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
->> ---
->>   include/linux/sched/topology.h | 2 ++
->>   kernel/sched/topology.c        | 1 +
->>   2 files changed, 3 insertions(+)
->>
->> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
->> index 56cffe42abbc..d467c30bdbb9 100644
->> --- a/include/linux/sched/topology.h
->> +++ b/include/linux/sched/topology.h
->> @@ -61,6 +61,8 @@ static inline int cpu_numa_flags(void)
->>   {
->>   	return SD_NUMA;
->>   }
->> +
->> +int sched_numa_find_closest(const struct cpumask *cpus, int cpu);
->>   #endif
->>   
->>   extern int arch_asym_cpu_priority(int cpu);
->> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
->> index 05b6c2ad90b9..688334ac4980 100644
->> --- a/kernel/sched/topology.c
->> +++ b/kernel/sched/topology.c
->> @@ -2066,6 +2066,7 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
->>   
->>   	return found;
->>   }
->> +EXPORT_SYMBOL(sched_numa_find_closest);
-> 
-> EXPORT_SYMBOL_GPL() if anything.
+vim +/PTR_ERR +2613 drivers/net/phy/micrel.c
 
-I'll fix.
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+---
+ drivers/net/phy/micrel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> Also, this thing will be subject to sched_domains, that means that if
-> someone uses cpusets or other means to partition the machine, that
-> effects the result.
-> 
-> Is that what you want?
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index e78d0bf69bc3..04146b936786 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2812,7 +2812,7 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+ 
+ 	shared->ptp_clock = ptp_clock_register(&shared->ptp_clock_info,
+ 					       &phydev->mdio.dev);
+-	if (IS_ERR_OR_NULL(shared->ptp_clock)) {
++	if (IS_ERR(shared->ptp_clock)) {
+ 		phydev_err(phydev, "ptp_clock_register failed %lu\n",
+ 			   PTR_ERR(shared->ptp_clock));
+ 		return -EINVAL;
+-- 
+2.17.1
 
-Yes, it's good enough, at least as a first phase and basic functionality.
-Later we might introduce whatever enhancements we find necessary.
-
-
-Thanks,
-Tariq
