@@ -2,65 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C28577AD7
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 08:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC0A577AE7
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 08:23:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbiGRGVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 02:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        id S233276AbiGRGXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 02:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233296AbiGRGVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 02:21:15 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1023A14029
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 23:21:14 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id q5so8157711plr.11
-        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 23:21:14 -0700 (PDT)
+        with ESMTP id S233518AbiGRGWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 02:22:43 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6F2140C4
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 23:22:39 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id b9so9765524pfp.10
+        for <netdev@vger.kernel.org>; Sun, 17 Jul 2022 23:22:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Suv7fvxByBEsdarSgRRAoorOw4J0pYwBOnqp2FQkPHc=;
-        b=b+OIzHMNgZcIYD24Dw+As3dBkKL8uZZHF0ForcynZ3qgIu4kaPoRjPtn3GPBoJ4MUA
-         TcA7AYT1s+wLQ1+9rvf5UiKXqFj0guQLfJMQiB8LIM2JvrnLfVqjdspvp7llpUQVhEJQ
-         TljDVWFTJMAa/lbdq4YXePItgbOGblEfn0BpE=
+        bh=DsVzl3CHUF9pxcxGYkFBU8RUDuISyD/yipNpV2Wa0VE=;
+        b=XnpauscQv51N0BXkwGQrIg00F5t1NxMAYw2O66D27jhXBsYZ+2yMAp7yQbbbdslq2t
+         WS7M2sYYZJ2otCq4dnuu951/WV8lCcI6eJ7CZpdxZeUGQ2jGOrl5M8lhZFuSeNcSdAwf
+         tHO+7UvTjL/sV6MiAOW2y30WdoIBC4u6QNsVI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Suv7fvxByBEsdarSgRRAoorOw4J0pYwBOnqp2FQkPHc=;
-        b=1B0QhZc2EHSxsRdw1UI2LIZNLNLQPPzaWFAjeyq7ywfG31yEkTnmkh+GnvggC2B/qi
-         cqAJuC3PGxSfDVkOKE6f4C+rVQzDklfbeO2AfTLqSQ6VqfpQOPwLkAfy6lT0rp1L+mgF
-         QbAfcLwzf6+hln/x4i5sUjkhxuin1eirr23NR8UsOSBfupaO8xk1Z/dFr2CqFbMCllHX
-         xDlFGJSDFo3Fp4Lfb/u9DtFBX88LpShyJienIldoyjMcPpuWFD8hIma4bLirCfThc1Hf
-         wflL8fHYhq1/p2OVWe6RphfPmS53QKXGlnASGLuyftCYGiuq3jW3sz+nM1W89YQiQadL
-         95iQ==
-X-Gm-Message-State: AJIora8DsYMb548VQ8zCKWq3Tiijh+Xlg+PzqPUXU8aDJZ2+kg5yf0lH
-        Lwplx639r42jvQD3i++9X4bfCA==
-X-Google-Smtp-Source: AGRyM1tFH8gRwx2TENSO+/lHYipZeB/ObN8QCw5ZygwkTjP8pO52wmkBDoJVMpfOC6oJS/hXw4nrgw==
-X-Received: by 2002:a17:903:2483:b0:16c:dfcf:38e8 with SMTP id p3-20020a170903248300b0016cdfcf38e8mr9767888plw.43.1658125273214;
-        Sun, 17 Jul 2022 23:21:13 -0700 (PDT)
+        bh=DsVzl3CHUF9pxcxGYkFBU8RUDuISyD/yipNpV2Wa0VE=;
+        b=T+lEhWDu5jdk+Fu+7nplJ7itY7gMwd4hgGdfzThfKxTRFKpKddXs0pd2FBrBZFPeQT
+         UCECjG3xb+9RbHFNI8l6taa1ctWdk8KVgecZmE284gyHcUXHiWh5TWYxJNfCWmpW64vN
+         312rUrxJOYiazo66x03+HgNWEEXVd5XFpmhR6L6GP9TJuLBoaUHM7DMutO3Q+EdIvKcc
+         qjVEvD7YVZiOB3Uv/nAtYOwSz6TgHTMVJgDRwB6Z1UN7E89O0xzdHmOXrtEp/2sW7p79
+         lbfUQnPs+vQopj3UswDV0DZdEzJvFz1V0yUtuMscPdBIvw/jYWMJXwMpka8NgdidU0Og
+         XeNg==
+X-Gm-Message-State: AJIora95PxzOZ+/yO0rlCEdZ6UJxqzrfBJzXCs4iVhli/nF0aqWiq2/L
+        qWNfIQAY7mK3S0RdREre96Xk3g==
+X-Google-Smtp-Source: AGRyM1ucSrMhWoJE6nOgOVC3/AqksXsxdsA95TlksIUGDOepb+3eH+OpVmJ6WB1wXAZ6FMdVgWCY8w==
+X-Received: by 2002:a05:6a00:2906:b0:52a:bc7f:f801 with SMTP id cg6-20020a056a00290600b0052abc7ff801mr27366974pfb.49.1658125358938;
+        Sun, 17 Jul 2022 23:22:38 -0700 (PDT)
 Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id h22-20020a170902f7d600b0016c4fe627eesm8360164plw.241.2022.07.17.23.21.08
+        by smtp.gmail.com with ESMTPSA id i8-20020a17090a058800b001f1a192476csm3844307pji.15.2022.07.17.23.22.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 23:21:12 -0700 (PDT)
+        Sun, 17 Jul 2022 23:22:38 -0700 (PDT)
 From:   Vikas Gupta <vikas.gupta@broadcom.com>
-To:     jiri@nvidia.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com,
+To:     jiri@nvidia.com, dsahern@kernel.org, stephen@networkplumber.org
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
+        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
         Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net-next v3 3/3] bnxt_en: implement callbacks for devlink selftests
-Date:   Mon, 18 Jul 2022 11:50:32 +0530
-Message-Id: <20220718062032.22426-4-vikas.gupta@broadcom.com>
+Subject: [PATCH iproute2-next v3 0/3] devlink: add support to run selftest
+Date:   Mon, 18 Jul 2022 11:52:26 +0530
+Message-Id: <20220718062229.22531-1-vikas.gupta@broadcom.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220718062032.22426-1-vikas.gupta@broadcom.com>
-References: <0220707182950.29348-1-vikas.gupta@broadcom.com>
- <20220718062032.22426-1-vikas.gupta@broadcom.com>
+In-Reply-To: <20220707183116.29422-1-vikas.gupta@broadcom.com>
+References: <20220707183116.29422-1-vikas.gupta@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f03a5f05e40e5fe8"
+        boundary="00000000000008ff0305e40e65a1"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -71,110 +66,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f03a5f05e40e5fe8
+--00000000000008ff0305e40e65a1
 
-Add callbacks
-=============
-.selftest_check: returns true for flash selftest.
-.selftest_run: runs a flash selftest.
+Hi,
+  This patchset adds support in devlink to run selftests.
+  A related patchset for kernel has been pushed for review.
+  Below are the few examples for the commands.
+  
+Examples:
+$ devlink dev selftests run pci/0000:03:00.0 test flash
+pci/0000:03:00.0
+      flash failed
 
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
----
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
+$ devlink dev selftests show pci/0000:03:00.0
+pci/0000:03:00.0
+      flash
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 6b3d4f4c2a75..927cf368d856 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -20,6 +20,8 @@
- #include "bnxt_ulp.h"
- #include "bnxt_ptp.h"
- #include "bnxt_coredump.h"
-+#include "bnxt_nvm_defs.h"
-+#include "bnxt_ethtool.h"
- 
- static void __bnxt_fw_recover(struct bnxt *bp)
- {
-@@ -610,6 +612,62 @@ static int bnxt_dl_reload_up(struct devlink *dl, enum devlink_reload_action acti
- 	return rc;
- }
- 
-+static bool bnxt_nvm_test(struct bnxt *bp, struct netlink_ext_ack *extack)
-+{
-+	u32 datalen;
-+	u16 index;
-+	u8 *buf;
-+
-+	if (bnxt_find_nvram_item(bp->dev, BNX_DIR_TYPE_VPD,
-+				 BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
-+				 &index, NULL, &datalen) || !datalen) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd entry error");
-+		return false;
-+	}
-+
-+	buf = kzalloc(datalen, GFP_KERNEL);
-+	if (!buf) {
-+		NL_SET_ERR_MSG_MOD(extack, "insufficient memory for nvm test");
-+		return false;
-+	}
-+
-+	if (bnxt_get_nvram_item(bp->dev, index, 0, datalen, buf)) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd read error");
-+		goto err;
-+	}
-+
-+	if (bnxt_flash_nvram(bp->dev, BNX_DIR_TYPE_VPD, BNX_DIR_ORDINAL_FIRST,
-+			     BNX_DIR_EXT_NONE, 0, 0, buf, datalen)) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd write error");
-+		goto err;
-+	}
-+
-+	return true;
-+
-+err:
-+	kfree(buf);
-+	return false;
-+}
-+
-+static bool bnxt_dl_selftest_check(struct devlink *dl, int test_id,
-+				   struct netlink_ext_ack *extack)
-+{
-+	return (test_id == DEVLINK_SELFTEST_ATTR_FLASH);
-+}
-+
-+static u8 bnxt_dl_selftest_run(struct devlink *dl, int test_id,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
-+
-+	if (test_id == DEVLINK_SELFTEST_ATTR_FLASH) {
-+		return (bnxt_nvm_test(bp, extack) ? DEVLINK_SELFTEST_PASS :
-+						    DEVLINK_SELFTEST_FAIL);
-+	}
-+
-+	return DEVLINK_SELFTEST_SKIP;
-+}
-+
- static const struct devlink_ops bnxt_dl_ops = {
- #ifdef CONFIG_BNXT_SRIOV
- 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
-@@ -622,6 +680,8 @@ static const struct devlink_ops bnxt_dl_ops = {
- 	.reload_limits	  = BIT(DEVLINK_RELOAD_LIMIT_NO_RESET),
- 	.reload_down	  = bnxt_dl_reload_down,
- 	.reload_up	  = bnxt_dl_reload_up,
-+	.selftest_check	  = bnxt_dl_selftest_check,
-+	.selftest_run	  = bnxt_dl_selftest_run,
- };
- 
- static const struct devlink_ops bnxt_vf_dl_ops;
+changes from:
+v2->v3
+    a) Update the implementation of commands according to 
+       the latest patch set of kernel devlink patch.
+    b) Added bash-completion.
+
+v1->v2
+    a) Changes required to implement command due to changes
+       in kernel patch (under review).
+    b) Added commands descriptions in devlink-dev man page.
+
+Thanks,
+Vikas   
+
+
+Vikas Gupta (3):
+  devlink: update the devlink.h
+  devlink: add support for running selftests
+  devlink : update man page and bash-completion for new commands
+
+ bash-completion/devlink      |  21 ++-
+ devlink/devlink.c            | 292 +++++++++++++++++++++++++++++++++++
+ include/uapi/linux/devlink.h |  29 ++++
+ man/man8/devlink-dev.8       |  47 ++++++
+ 4 files changed, 388 insertions(+), 1 deletion(-)
+
 -- 
 2.31.1
 
 
---000000000000f03a5f05e40e5fe8
+--00000000000008ff0305e40e65a1
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -245,13 +183,13 @@ QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
 PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILnF94BrX4QbDy6JoUKYQyT1p/qvWlu0d27U
-I5aBpvTbMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcxODA2
-MjExM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILjBNoUG1kghNs0xt3pMf2Xk0CtKVryYCX2h
+X8f0E/w7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcxODA2
+MjIzOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQBD043xUqB+3lFhSbnprB4Bk5PIxCZFmyx+hzdNb7iVFtuTeIzk857A
-HJ88LFfQSEuA1kPF0vHmSLiIJHW5ntaOAM/b44QZMT77x0WgXc7jSC0oRDZURH/bvao/peI1CK3H
-Nr11OhotZDqVx6TTIWtXkRWC4pB6RhuOZLVwSyEOPXQrJ2vGcjYAJOqLIm7laDciHZqHSDj9Fuey
-SkkkZ1VIreApvnc3lnUPD+hxD7AHWLwSxBuDrk2yihXQvwg70fx2gaHkevORJE9qpM0rX5VjnkeY
-VFv7O2277Iy+/4FbjJTK4zlMpOGiKDgv6RhC5O8TEz9TqfDxD2WJDmEsVHtD
---000000000000f03a5f05e40e5fe8--
+BgkqhkiG9w0BAQEFAASCAQBhFRJGWPNGc97ZIUj7O8+TYIzPLmZd20miQWfAhHTxZ81MtpARNV8j
+zcOv4JdktZf0W/HX/+4G9ebttsUwD/l603BrTeSCXgqq8hKh7N4H9gHrZSimlhfSDRf2iX9QEs+q
+5sCkbYo+8pRTUAxC144TKCMGiUAO2Y8rMRkDdrvb5Aa8NRouO5HU3lBmndzaS3q17Adn1M/VytV9
+igE6UefyXSzy93RR7R/c0ITy45sk8uYvWJhKdD3VnZXVcXMVIry/YaNHhuYogjHqxoSgg8fv9GTK
+WlkK/5xXDVsxPPm/LWRAgZg11IO8wtbr1gQMpER79Xoead2T1lJuJ5alQCja
+--00000000000008ff0305e40e65a1--
