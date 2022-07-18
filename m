@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77331578E8A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 01:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2264A578E92
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 01:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236124AbiGRX6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 19:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
+        id S235948AbiGRX7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 19:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235843AbiGRX6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 19:58:37 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C3933A0F;
-        Mon, 18 Jul 2022 16:58:34 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so19793497pjn.0;
-        Mon, 18 Jul 2022 16:58:34 -0700 (PDT)
+        with ESMTP id S236256AbiGRX6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 19:58:44 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDFF33E2B;
+        Mon, 18 Jul 2022 16:58:37 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id u7-20020a17090a3fc700b001f1efc76be2so977889pjm.1;
+        Mon, 18 Jul 2022 16:58:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/pC+NXVrv1Rl0FFXYuHEZKAvudR99y67YQVF032RJmE=;
-        b=TOxy2qVY7aLuiK8wYDzU8CfNpylGUJ3N9bKs/fCkt5weQ7GkIAlfnUh47QhBwEYgMf
-         xZn7bWLLTYZgroVMs6A4U9LFjbMdfTAVGGFkeyxsHgOolzr6E1PDAMB3bauWxgBq8aiK
-         JbAYJrsBiyK9kdz03UA3MIQu90xPHuFv02e7F/YMk25B8I4wFWWkHgjStnQAZ6+vkykK
-         norF+jvoyzyVR1LWV9ZMGq98wYBvTeOmTzVB9n7ujpySJ4v2UycgodcJy+/ymYkgAVk4
-         /9vdc/gfLcpXDPDC7hgm6GfBxyrkPLebsk+oRb15n/LQ0+T2RiIW6e34NWMBRyxDYwv8
-         dktg==
+        bh=kEb4hoOhi8CD/XwbMaUD4a9U4Omjx9rjALTJdXy2eYk=;
+        b=T5W7pqEHmAyucMxobeaee1znTp86VUbOMIWRgD3+x5jIjgppq/RlguxsrqF5uxSRYT
+         VpPjM5hBxcY4wY0D/EeghBLfW1K9svmx/jZAyqtD+AmLPn2Y5TwgdltU+lQ9v1Zio+BL
+         xgTIj7SxZcub+VXqtLHFWGU2hXe0TX+5KCVbi0gqNng4CY6prFj83aWEzO+gGTk365No
+         tiWYAMftoA0MPP9bQqemXQKBl2T9rXcTDoyPbFWc9+e+b2rNJe27iz19BXnBWuZWIwtj
+         jxR52oXRL9e0Fb57yvPOKvDnunU0yS2UeXb/VsR6gX/tOUDqYgJjrn7cEDN9jELjuSyP
+         ARFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/pC+NXVrv1Rl0FFXYuHEZKAvudR99y67YQVF032RJmE=;
-        b=z2OICKTsXmOlGiby+NDxeee+sLhTJf9HKvtIgeP7SobgNfKfhFV0ddYQ8fj3a8CFdz
-         lmfO1brDvmqu4W9AL/m7215a+7XUVfHUbkkNjkzjfs+fgcHLSJPO6y0S9h2Dqq1ViKcS
-         qE5wsgAiMtQlF9KX7ncT8/OmXVipfxDb+F2Og2VdsvDtYbrdooIROHSDsfy4wgNIh2+E
-         Geus3DJtVJLEe+Igg3e/1ZaB9f8ILdnElEX0TxZ/mh4XWhRyW+bTPHAQPfp+lGPZebCw
-         OS/HC5ola0uOsge9U2yXF+itUCcX9V3BPefJL3UaugbEzTfC7+9K94Ipzelnz7w0r+ed
-         oXig==
-X-Gm-Message-State: AJIora8TzsH0FL2wZcgAMTfy9zkReA5xF7NX7KG5TNAvfdjdwCg88/uO
-        gUltCfCexy+J+eSn5SD1J+9JtwKST2M=
-X-Google-Smtp-Source: AGRyM1vdZnQUarWLdr0E7axzh1ZwxrEJHg8EOB2GSqpKiDWX1aEeggLVMzGMp42zUJCmjYgFM6fUAw==
-X-Received: by 2002:a17:902:ba91:b0:16c:6b8e:cd06 with SMTP id k17-20020a170902ba9100b0016c6b8ecd06mr30056876pls.33.1658188713399;
-        Mon, 18 Jul 2022 16:58:33 -0700 (PDT)
+        bh=kEb4hoOhi8CD/XwbMaUD4a9U4Omjx9rjALTJdXy2eYk=;
+        b=wMD3pDR8+hPcACC5IfpMSn0sWBmklSKyYnFQSkl5M0p7K9hJnrbWXci5Qwhz4sWIa7
+         X5rHfTngXKJOLS3bMDMKo4Awvztr4wNlaAEcHf9AlzlbWikQPy71yHIgK4QwVXs1EF+o
+         IAAlV2VoLn3kAC6uh4e6nlFvi/wpZe6429HDBqM6fx14vgnCO77ra7Xiar/M6Gk2I74y
+         eMjO/RQlFV2YE4oTFAhTIyDab2wmxtXJ9+NSQfGhcqv3pDhjhQa8j1aLYiQ69AgMtOY8
+         p6rwoptrc3zEO7oMArH7AO4hq5leazXFD2hDEoii9HoSSK1UQ5jA8Ui4/NZWHyDvBgCh
+         cUBA==
+X-Gm-Message-State: AJIora/PGyzhyoglRULCuwRFehYDGE661WPd7Fzy5c7v/HSD40zMk759
+        gg+nq5kXnVISOs50d2+ukNqiKQhIaUk=
+X-Google-Smtp-Source: AGRyM1t21sRhvd9eziBz44wABhsJy/t2Ze2/Aos/o9F+2g3bhjFZ+hN2v2iPqyTPzN/7Hs4me5/UTw==
+X-Received: by 2002:a17:902:d54b:b0:16b:f246:e32e with SMTP id z11-20020a170902d54b00b0016bf246e32emr30177743plf.4.1658188716191;
+        Mon, 18 Jul 2022 16:58:36 -0700 (PDT)
 Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j20-20020a170902759400b00161ccdc172dsm10027067pll.300.2022.07.18.16.58.31
+        by smtp.gmail.com with ESMTPSA id j20-20020a170902759400b00161ccdc172dsm10027067pll.300.2022.07.18.16.58.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Jul 2022 16:58:32 -0700 (PDT)
+        Mon, 18 Jul 2022 16:58:35 -0700 (PDT)
 From:   justinpopo6@gmail.com
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-usb@vger.kernel.org, jannh@google.com, jackychou@asix.com.tw,
@@ -53,9 +53,9 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         justinpopo6@gmail.com, pabeni@redhat.com, kuba@kernel.org,
         edumazet@google.com, davem@davemloft.net, f.fainelli@gmail.com
 Cc:     justin.chen@broadcom.com
-Subject: [PATCH 4/5] net: usb: ax88179_178a: move priv to driver_priv
-Date:   Mon, 18 Jul 2022 16:58:08 -0700
-Message-Id: <1658188689-30846-5-git-send-email-justinpopo6@gmail.com>
+Subject: [PATCH 5/5] net: usb: ax88179_178a: wol optimizations
+Date:   Mon, 18 Jul 2022 16:58:09 -0700
+Message-Id: <1658188689-30846-6-git-send-email-justinpopo6@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1658188689-30846-1-git-send-email-justinpopo6@gmail.com>
 References: <1658188689-30846-1-git-send-email-justinpopo6@gmail.com>
@@ -71,145 +71,118 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Justin Chen <justinpopo6@gmail.com>
 
-We need more space to save WoL context. So lets allocate memory
-for ax88179_data instead of using struct usbnet data field which
-only supports 5 words. We continue to use the struct usbnet data
-field for multicast filters. However since we no longer have the
-private data stored there, we can shift it to the beginning.
+- Check if wol is supported on reset instead of everytime get_wol
+is called.
+- Save wolopts in private data instead of relying on the HW to save it.
+- Defer enabling WoL until suspend instead of enabling it everytime
+set_wol is called.
 
 Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 ---
- drivers/net/usb/ax88179_178a.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ drivers/net/usb/ax88179_178a.c | 52 +++++++++++++++++++++++-------------------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 60742bb..cb7b89f 100644
+index cb7b89f..757c1d9b 100644
 --- a/drivers/net/usb/ax88179_178a.c
 +++ b/drivers/net/usb/ax88179_178a.c
-@@ -170,7 +170,6 @@ struct ax88179_data {
- 	u8  eee_enabled;
+@@ -171,6 +171,8 @@ struct ax88179_data {
  	u8  eee_active;
  	u16 rxctl;
--	u16 reserved;
  	u8 in_pm;
++	u32 wol_supported;
++	u32 wolopts;
  };
  
-@@ -190,14 +189,14 @@ static const struct {
- 
- static void ax88179_set_pm_mode(struct usbnet *dev, bool pm_mode)
+ struct ax88179_int_data {
+@@ -400,6 +402,7 @@ ax88179_phy_write_mmd_indirect(struct usbnet *dev, u16 prtad, u16 devad,
+ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
  {
--	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *ax179_data = dev->driver_priv;
- 
- 	ax179_data->in_pm = pm_mode;
- }
- 
- static int ax88179_in_pm(struct usbnet *dev)
- {
--	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *ax179_data = dev->driver_priv;
- 
- 	return ax179_data->in_pm;
- }
-@@ -693,7 +692,7 @@ ax88179_ethtool_set_eee(struct usbnet *dev, struct ethtool_eee *data)
- static int ax88179_chk_eee(struct usbnet *dev)
- {
- 	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
--	struct ax88179_data *priv = (struct ax88179_data *)dev->data;
+ 	struct usbnet *dev = usb_get_intfdata(intf);
 +	struct ax88179_data *priv = dev->driver_priv;
- 
- 	mii_ethtool_gset(&dev->mii, &ecmd);
- 
-@@ -796,7 +795,7 @@ static void ax88179_enable_eee(struct usbnet *dev)
- static int ax88179_get_eee(struct net_device *net, struct ethtool_eee *edata)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct ax88179_data *priv = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *priv = dev->driver_priv;
- 
- 	edata->eee_enabled = priv->eee_enabled;
- 	edata->eee_active = priv->eee_active;
-@@ -807,7 +806,7 @@ static int ax88179_get_eee(struct net_device *net, struct ethtool_eee *edata)
- static int ax88179_set_eee(struct net_device *net, struct ethtool_eee *edata)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct ax88179_data *priv = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *priv = dev->driver_priv;
- 	int ret;
- 
- 	priv->eee_enabled = edata->eee_enabled;
-@@ -858,8 +857,8 @@ static const struct ethtool_ops ax88179_ethtool_ops = {
- static void ax88179_set_multicast(struct net_device *net)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct ax88179_data *data = (struct ax88179_data *)dev->data;
--	u8 *m_filter = ((u8 *)dev->data) + 12;
-+	struct ax88179_data *data = dev->driver_priv;
-+	u8 *m_filter = ((u8 *)dev->data);
- 
- 	data->rxctl = (AX_RX_CTL_START | AX_RX_CTL_AB | AX_RX_CTL_IPE);
- 
-@@ -871,7 +870,7 @@ static void ax88179_set_multicast(struct net_device *net)
- 	} else if (netdev_mc_empty(net)) {
- 		/* just broadcast and directed */
- 	} else {
--		/* We use the 20 byte dev->data for our 8 byte filter buffer
-+		/* We use dev->data for our 8 byte filter buffer
- 		 * to avoid allocating memory that is tricky to free later
- 		 */
- 		u32 crc_bits;
-@@ -1273,10 +1272,15 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
- 	u8 buf[5];
- 	u16 *tmp16;
- 	u8 *tmp;
--	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *ax179_data;
- 
- 	usbnet_get_endpoints(dev, intf);
- 
-+	ax179_data = kzalloc(sizeof(*ax179_data), GFP_KERNEL);
-+	if (!ax179_data)
-+		return -ENOMEM;
-+
-+	dev->driver_priv = ax179_data;
- 	tmp16 = (u16 *)buf;
- 	tmp = (u8 *)buf;
- 
-@@ -1310,6 +1314,7 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
- 
- static void ax88179_unbind(struct usbnet *dev, struct usb_interface *intf)
- {
-+	struct ax88179_data *ax179_data = dev->driver_priv;
  	u16 tmp16;
+ 	u8 tmp8;
  
- 	/* Configure RX control register => stop operation */
-@@ -1322,6 +1327,8 @@ static void ax88179_unbind(struct usbnet *dev, struct usb_interface *intf)
- 	/* Power down ethernet PHY */
- 	tmp16 = 0;
- 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
+@@ -407,6 +410,19 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
+ 
+ 	usbnet_suspend(intf, message);
+ 
++	/* Enable WoL */
++	if (priv->wolopts) {
++		ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
++				 1, 1, &tmp8);
++		if (priv->wolopts & WAKE_PHY)
++			tmp8 |= AX_MONITOR_MODE_RWLC;
++		if (priv->wolopts & WAKE_MAGIC)
++			tmp8 |= AX_MONITOR_MODE_RWMP;
 +
-+	kfree(ax179_data);
++		ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
++				  1, 1, &tmp8);
++	}
++
+ 	/* Disable RX path */
+ 	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
+ 			 2, 2, &tmp16);
+@@ -480,40 +496,22 @@ static void
+ ax88179_get_wol(struct net_device *net, struct ethtool_wolinfo *wolinfo)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	u8 opt;
+-
+-	if (ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
+-			     1, 1, &opt) < 0) {
+-		wolinfo->supported = 0;
+-		wolinfo->wolopts = 0;
+-		return;
+-	}
++	struct ax88179_data *priv = dev->driver_priv;
+ 
+-	wolinfo->supported = WAKE_PHY | WAKE_MAGIC;
+-	wolinfo->wolopts = 0;
+-	if (opt & AX_MONITOR_MODE_RWLC)
+-		wolinfo->wolopts |= WAKE_PHY;
+-	if (opt & AX_MONITOR_MODE_RWMP)
+-		wolinfo->wolopts |= WAKE_MAGIC;
++	wolinfo->supported = priv->wol_supported;
++	wolinfo->wolopts = priv->wolopts;
  }
  
- static void
-@@ -1498,7 +1505,7 @@ ax88179_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- 
- static int ax88179_link_reset(struct usbnet *dev)
+ static int
+ ax88179_set_wol(struct net_device *net, struct ethtool_wolinfo *wolinfo)
  {
--	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *ax179_data = dev->driver_priv;
- 	u8 tmp[5], link_sts;
- 	u16 mode, tmp16, delay = HZ / 10;
- 	u32 tmp32 = 0x40000000;
-@@ -1573,7 +1580,7 @@ static int ax88179_reset(struct usbnet *dev)
- 	u8 buf[5];
- 	u16 *tmp16;
- 	u8 *tmp;
--	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
-+	struct ax88179_data *ax179_data = dev->driver_priv;
- 	struct ethtool_eee eee_data;
+ 	struct usbnet *dev = netdev_priv(net);
+-	u8 opt = 0;
++	struct ax88179_data *priv = dev->driver_priv;
  
- 	tmp16 = (u16 *)buf;
+-	if (wolinfo->wolopts & ~(WAKE_PHY | WAKE_MAGIC))
++	if (wolinfo->wolopts & ~(priv->wol_supported))
+ 		return -EINVAL;
+ 
+-	if (wolinfo->wolopts & WAKE_PHY)
+-		opt |= AX_MONITOR_MODE_RWLC;
+-	if (wolinfo->wolopts & WAKE_MAGIC)
+-		opt |= AX_MONITOR_MODE_RWMP;
+-
+-	if (ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
+-			      1, 1, &opt) < 0)
+-		return -EINVAL;
++	priv->wolopts = wolinfo->wolopts;
+ 
+ 	return 0;
+ }
+@@ -1643,6 +1641,12 @@ static int ax88179_reset(struct usbnet *dev)
+ 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
+ 			  2, 2, tmp16);
+ 
++	/* Check if WoL is supported */
++	ax179_data->wol_supported = 0;
++	if (ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
++			     1, 1, &tmp) > 0)
++		ax179_data->wol_supported = WAKE_MAGIC | WAKE_PHY;
++
+ 	ax88179_led_setting(dev);
+ 
+ 	ax179_data->eee_enabled = 0;
 -- 
 2.7.4
 
