@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E740578961
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79925789A0
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235695AbiGRSQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 14:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55900 "EHLO
+        id S234862AbiGRSgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 14:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiGRSQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:16:05 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F672CDD1;
-        Mon, 18 Jul 2022 11:16:04 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id l23so22814010ejr.5;
-        Mon, 18 Jul 2022 11:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7UDF6r+GMUXDZ8LsxT+YDZqzkLbdjQrKJwZqxdgZ6QA=;
-        b=bwE7ePkNhjlgzgFJcf8R80Cpe4O4RxVzT+v4Go9vlS1Ru0ut08zdll78zjfqd4ZQVg
-         0E9iNszQGa5+3o/D45yi0O3je7YNipQcbXwX4ZfgsBSfYUOktMF76yZ4wnH6ORjM+dSG
-         wNYTqSn3uTfOU6ybPHXg7IGLV95MK9YFk4AH5hluKGoaV92QeZ1baMRyhtQIzMz+R3mP
-         GyFjNbC/0HBVPlJ8y+YYd3STk0rgwkRK6P19aVzpD7q6mAevXGjbOWLlnAXrLZNykyO/
-         Mp/OLSRvLIszCiCfxCnRezDRqYC4O3DxhANzaaAjqQCDMKkAiJrruz7Cck1yMZ2hcz/F
-         5hlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7UDF6r+GMUXDZ8LsxT+YDZqzkLbdjQrKJwZqxdgZ6QA=;
-        b=e5LMgfvb7CS/RrlTLtf9UeaNAU8bGiZWGYdNQ2irEJWWjRB0i0b958tTNC0m3430fz
-         p+2UUJXJ93NnVqaNYY6bZn0bO/MVyWNoq7DOx9JJ3KSE1zouo3yVvb4uGCNRabwUPYm9
-         noGvrnkVPn0W019f9il73WXQhgMTVO8kgCrZTd5QGuHLr/sOMglT1qKkg8JdK7qcBZB1
-         xX1gft7enVGceYTF8o7c4he0vju/mlCnC1qb0UcV85aDfM7aZwiW7KzvvyaqiA9l2QML
-         9BBm7TBamdbb4VSHYWuGAeLzNcvnws04lNZFvpq/mjfwaPHRGtRBIzRIA+TsOJ7Q4Xe0
-         BxbA==
-X-Gm-Message-State: AJIora9B7mn1A8RCRpu2lZQEeR4E7WbhMMy2sm82g289Ge+Qc++uKDLS
-        aQrw8mE+w3QIjR11dgr5/Qw=
-X-Google-Smtp-Source: AGRyM1uDElJDptc1QLTVFcqYz1rmwXnCcaQQnLR5QHnwWrTkGr0Sbec+dTtC7wfL2O1OO4IGPFwbMA==
-X-Received: by 2002:a17:907:3d90:b0:72f:2994:74a1 with SMTP id he16-20020a1709073d9000b0072f299474a1mr7027324ejc.261.1658168163062;
-        Mon, 18 Jul 2022 11:16:03 -0700 (PDT)
-Received: from skbuf ([188.25.231.190])
-        by smtp.gmail.com with ESMTPSA id lc13-20020a170906dfed00b00703671ebe65sm5661284ejc.198.2022.07.18.11.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:16:02 -0700 (PDT)
-Date:   Mon, 18 Jul 2022 21:15:59 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
-Message-ID: <20220718181559.lzzrrutmr2b7mpsn@skbuf>
-References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
- <20220718173504.jliiboqbw6bjr2l4@skbuf>
- <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
+        with ESMTP id S230451AbiGRSgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:36:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B6E25E9D
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 11:36:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D1A7B816E9
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 18:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FAD7C341C0;
+        Mon, 18 Jul 2022 18:36:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658169407;
+        bh=pbLxD1a6FhlDvxC0DWqCHHgNPbqWwkoxz5mjbtCWIro=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sgwGW9zaXFlOIYPF/qTzr9cVcUTrxt6wk2jdzahKvyqkEMHKfyop0RuKrqTyWJJy7
+         dfEkH9ZF3FNRqzd8AH6wOLyNXs2RtjCTiYi+eicaoaUJ/vWbquvAx2JylKeUxo2FbS
+         1Jf1bIOyKWJ4VZmJ0SXs5IlupPzvcSZ/6jBdO9XpQtNrfUu+5updHHTVw4y9nDUjmC
+         5lsC9g7/MmrNIPjYZr4LC75Zs4VSxVkgUcUuMfFyLKXaObCphI8TC3fB0vvkIUOAcQ
+         6U3dyDUELbzrNbS87sl/nWwa0xueHrAubMgKUgx2NMhpPrjEzZl8O7QiAajIkDnXhl
+         qcwlib9CU9PSQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, pablo@netfilter.org,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
+        lorenzo.bianconi@redhat.com, Ryder.Lee@mediatek.com,
+        Evelyn.Tsai@mediatek.com
+Subject: [PATCH net-next] net: ethernet: mtk-ppe: fix traffic offload with bridged wlan
+Date:   Mon, 18 Jul 2022 20:36:39 +0200
+Message-Id: <7fa3ce7e77fb579515e0a7c5a7dee60fc5999e2b.1658168627.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 07:23:35PM +0200, Christian Marangi wrote:
-> Ok, so I have to keep the qca8k special function. Is it a problem if I
-> keep the function and than later make the conversion when we have the
-> regmap dependency merged?
+A typical flow offload scenario for OpenWrt users is routed traffic
+received by the wan interface that is redirected to a wlan device
+belonging to the lan bridge. Current implementation fails to
+fill wdma offload info in mtk_flow_get_wdma_info() since odev device is
+the local bridge. Fix the issue running dev_fill_forward_path routine in
+mtk_flow_get_wdma_info in order to identify the wlan device.
 
-You mean to ask whether there's any problem if the common qca8k_fdb_read()
-calls the specific qca8k_bulk_read as opposed to regmap_bulk_read()?
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   | 29 +++++++++----------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-Well, no, considering that you don't yet support the switch with the
-MMIO regmap, the common code is still "common" for the single switch
-that the driver supports. You should be able to continue making progress
-with qca8k_bulk_read() being called from common code (as long as you
-leave a TODO comment or something, that it doesn't really belong there).
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 90e7dfd011c9..25dc3c3aa31d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -88,29 +88,28 @@ mtk_flow_offload_mangle_eth(const struct flow_action_entry *act, void *eth)
+ static int
+ mtk_flow_get_wdma_info(struct net_device *dev, const u8 *addr, struct mtk_wdma_info *info)
+ {
+-	struct net_device_path_ctx ctx = {
+-		.dev = dev,
+-	};
+-	struct net_device_path path = {};
++	struct net_device_path_stack stack;
++	struct net_device_path *path;
++	int err;
+ 
+-	memcpy(ctx.daddr, addr, sizeof(ctx.daddr));
++	if (!dev)
++		return -ENODEV;
+ 
+ 	if (!IS_ENABLED(CONFIG_NET_MEDIATEK_SOC_WED))
+ 		return -1;
+ 
+-	if (!dev->netdev_ops->ndo_fill_forward_path)
+-		return -1;
+-
+-	if (dev->netdev_ops->ndo_fill_forward_path(&ctx, &path))
+-		return -1;
++	err = dev_fill_forward_path(dev, addr, &stack);
++	if (err)
++		return err;
+ 
+-	if (path.type != DEV_PATH_MTK_WDMA)
++	path = &stack.path[stack.num_paths - 1];
++	if (path->type != DEV_PATH_MTK_WDMA)
+ 		return -1;
+ 
+-	info->wdma_idx = path.mtk_wdma.wdma_idx;
+-	info->queue = path.mtk_wdma.queue;
+-	info->bss = path.mtk_wdma.bss;
+-	info->wcid = path.mtk_wdma.wcid;
++	info->wdma_idx = path->mtk_wdma.wdma_idx;
++	info->queue = path->mtk_wdma.queue;
++	info->bss = path->mtk_wdma.bss;
++	info->wcid = path->mtk_wdma.wcid;
+ 
+ 	return 0;
+ }
+-- 
+2.36.1
+
