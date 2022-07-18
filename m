@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE874578ACF
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B76578AC2
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 21:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbiGRT3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 15:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
+        id S236021AbiGRT3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 15:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235860AbiGRT25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:28:57 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B91B26F5;
-        Mon, 18 Jul 2022 12:28:55 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id o1so9549566qkg.9;
-        Mon, 18 Jul 2022 12:28:55 -0700 (PDT)
+        with ESMTP id S236001AbiGRT3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 15:29:03 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DB4B841;
+        Mon, 18 Jul 2022 12:28:57 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id r2so9570577qta.0;
+        Mon, 18 Jul 2022 12:28:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=m9V57xphOJe8FxCe80bZ1J3RuFelVtvXoENVWMfISb4=;
-        b=B0XuB+yAeTJmK6B+vnHnd3BO8yIPsZ8lCES1PpoVp7Ti9ESY8L/5LseEzml+iCgDqI
-         1YlvnrUUgNx4DD7RQwT4vms4g+VmvWZpGoAnJNKJ0UYr9HyWBXYZufeEWv7Vuwxy/4nI
-         qIrQ27tmeRvKsD0HQGA4yMLWkqHFveDpBWb4zZNi9MJuv/+VtQRCqaE5PFi0tfV7R98a
-         9bkurHLXilYTf8+/4Z6M5WqsGBng481jqtXDo5QizTdcTOcHRejuVHRFGd14+vBFF67B
-         NUB7Epima9nbyqEkq0yYEeKIgt/HN7ct0hLat+eWTlW+qrZnqyzPXV06pMIjXg2GHmsY
-         vUnQ==
+        bh=RIuxtr8d+TB6goTZIrQnEqj0NYsoVNuGdOrD+16hKvE=;
+        b=K6FLy4kdLZiOyB3bLUhszl5Zd1puGwKh81hdQ6rMAxhulKYqedp7eUmoIZR0afJcpb
+         nkiXT9uXP0O9WHgoCSQ2IR/sDvIeb+YkvalAFfr8I5dYLsp+gO1RFi5HdpTv9xwEjdQ2
+         auToBt5qQGIID9AHzaDc+sYfyIwWA0/KGjjZxYfmJ39gMRAk2oUkonyTSXkmCxoD4Fux
+         yUPBSSyh4zYo4dxNsy901oFcH5LCqM2CA0xbWm/ZpSmbLWp+HfPmCnB1q1t1r0vv+BNU
+         aNYNiAkMVnc3um9vm7dDymoR9WWvElT0wUSR1fdH1muLCWOWVQ3EyjMKXAO1Br2kBR00
+         Vx+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=m9V57xphOJe8FxCe80bZ1J3RuFelVtvXoENVWMfISb4=;
-        b=x2W7Yce8qD7GAnd11x8NoHIrMk5s0ETIBCgK/MKrwAaTqwnjMN5gvLv3sWOQ7zwmfs
-         V3zPrRgb2ayJ95ctGN2m2w2cQKCKu7toIN2lGU0+SA7AqBL9aSVNPSEcK9xsBq3bA/t1
-         exa2Sw22nksud25LoouCuhj++9DC5lxutwbM/WgLn/F1mecuhWcFZ2fiHWJuZiAMm5mH
-         OPl9FzyPClpwbCq2KxhAiSdlltG7tAQFXp1FIIG9CUewmqeoCWRg5lsVr73AIei1hBKr
-         iWP3VOPgS8HjVCEN5LjHChIJcSh9JxYcykPhsWmHybwtyoXgknkhx4KmU/V4OQS8Bb5C
-         aWJg==
-X-Gm-Message-State: AJIora8MDHGoaHeRScbu8fbfB9W1NrBoVPI4Bcwv+3uL97NgiDZjOuIO
-        0Eh20ChSsEW/tes+grOp2kpfqF82KyFafg==
-X-Google-Smtp-Source: AGRyM1vQdCay2nDpE1RIgzYmRYjdYqMGFdzO6hLEN38y55+zWOu2X7pBEMBNCfY35RCjup6wtifAoA==
-X-Received: by 2002:a05:620a:468e:b0:6b5:af5b:6e5f with SMTP id bq14-20020a05620a468e00b006b5af5b6e5fmr18034173qkb.288.1658172534753;
-        Mon, 18 Jul 2022 12:28:54 -0700 (PDT)
+        bh=RIuxtr8d+TB6goTZIrQnEqj0NYsoVNuGdOrD+16hKvE=;
+        b=gFWudZYVFqtuqMOmd4NJn95F2VqDGSm/mEU00IG7Tpmca2mgfOQP+1zvT1teLn7IkI
+         /8Nk4GljTzgGPvvNArlWptwhruF9LwJxgzYRRexoR7v1jmjRZ0ogd3qx9u0IuFuCjSQi
+         XB3+qwwaa2tF+VoDPzKOmezyC6deOvOhNOaVS/8O+h3ewkdwwkna1JUe9dR1F03edH9/
+         rk0C3IkeybFG1vGjO4uz/3zG8xG3yNrGitbjA82ew92Q0HzIn84ZOxkxcop892TpceIE
+         frsOpSoY7zGma+ELq0xRcaFO18efr55C3aXgDNjec5WTYBn0LTLXpGFpYcZBmdBhgRGD
+         Bvlw==
+X-Gm-Message-State: AJIora/DWbkpU1xWxTqBtLbwy4G0aCM34cNnZehS6wTrqhlovXJ7WAaj
+        jFF6xLXN3O/AbF14imNAV6HtbGd4whNqaQ==
+X-Google-Smtp-Source: AGRyM1t1sw1jCN1ieW37kpkYQIAyMtVdPUyvBuYOD3/FMPrCUNrO4liqD1XLniGG0iHGpMVX+tZbUg==
+X-Received: by 2002:ac8:7e89:0:b0:31e:e0dd:9084 with SMTP id w9-20020ac87e89000000b0031ee0dd9084mr10850238qtj.37.1658172535998;
+        Mon, 18 Jul 2022 12:28:55 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:1230:ab01:d009:465a:5ab1])
-        by smtp.gmail.com with ESMTPSA id x6-20020a05620a258600b006a65c58db99sm12736880qko.64.2022.07.18.12.28.54
+        by smtp.gmail.com with ESMTPSA id bi14-20020a05620a318e00b006b5f85f8fa8sm1114706qkb.125.2022.07.18.12.28.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 12:28:54 -0700 (PDT)
+        Mon, 18 Jul 2022 12:28:55 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -90,9 +90,9 @@ To:     linux-kernel@vger.kernel.org,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 07/16] smp: optimize smp_call_function_many_cond()
-Date:   Mon, 18 Jul 2022 12:28:35 -0700
-Message-Id: <20220718192844.1805158-8-yury.norov@gmail.com>
+Subject: [PATCH 08/16] smp: optimize smp_call_function_many_cond() for more
+Date:   Mon, 18 Jul 2022 12:28:36 -0700
+Message-Id: <20220718192844.1805158-9-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220718192844.1805158-1-yury.norov@gmail.com>
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
@@ -109,12 +109,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 smp_call_function_many_cond() is often passed with cpu_online_mask.
-If this is the case, we can use num_online_cpus(), which is O(1)
-instead of cpumask_{first,next}(), which is O(N).
-
-It can be optimized further: if cpu_online_mask has 0 or single bit
-set (depending on cpu_online(this_cpu), we can return result without
-AND'ing with user's mask.
+If it's the case, we can use cpumask_copy instead of cpumask_and, which
+is faster.
 
 Caught with CONFIG_DEBUG_BITMAP:
 [    7.830337] Call trace:
@@ -147,56 +143,26 @@ Caught with CONFIG_DEBUG_BITMAP:
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- kernel/smp.c | 29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
+ kernel/smp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/smp.c b/kernel/smp.c
-index dd215f439426..7ed2b9b12f74 100644
+index 7ed2b9b12f74..f96fdf944b4a 100644
 --- a/kernel/smp.c
 +++ b/kernel/smp.c
-@@ -880,6 +880,28 @@ EXPORT_SYMBOL_GPL(smp_call_function_any);
- #define SCF_WAIT	(1U << 0)
- #define SCF_RUN_LOCAL	(1U << 1)
- 
-+/* Check if we need remote execution, i.e., any CPU excluding this one. */
-+static inline bool __need_remote_exec(const struct cpumask *mask, unsigned int this_cpu)
-+{
-+	unsigned int cpu;
-+
-+	switch (num_online_cpus()) {
-+	case 0:
-+		return false;
-+	case 1:
-+		return cpu_online(this_cpu) ? false : true;
-+	default:
-+		if (mask == cpu_online_mask)
-+			return true;
-+	}
-+
-+	cpu = cpumask_first_and(mask, cpu_online_mask);
-+	if (cpu == this_cpu)
-+		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
-+
-+	return cpu < nr_cpu_ids;
-+}
-+
- static void smp_call_function_many_cond(const struct cpumask *mask,
- 					smp_call_func_t func, void *info,
- 					unsigned int scf_flags,
-@@ -916,12 +938,7 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- 	if ((scf_flags & SCF_RUN_LOCAL) && cpumask_test_cpu(this_cpu, mask))
- 		run_local = true;
- 
--	/* Check if we need remote execution, i.e., any CPU excluding this one. */
--	cpu = cpumask_first_and(mask, cpu_online_mask);
--	if (cpu == this_cpu)
--		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
--	if (cpu < nr_cpu_ids)
--		run_remote = true;
-+	run_remote = __need_remote_exec(mask, this_cpu);
+@@ -942,7 +942,11 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
  
  	if (run_remote) {
  		cfd = this_cpu_ptr(&cfd_data);
+-		cpumask_and(cfd->cpumask, mask, cpu_online_mask);
++		if (mask == cpu_online_mask)
++			cpumask_copy(cfd->cpumask, cpu_online_mask);
++		else
++			cpumask_and(cfd->cpumask, mask, cpu_online_mask);
++
+ 		__cpumask_clear_cpu(this_cpu, cfd->cpumask);
+ 
+ 		cpumask_clear(cfd->cpumask_ipi);
 -- 
 2.34.1
 
