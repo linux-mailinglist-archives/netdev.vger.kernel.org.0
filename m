@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB752578972
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA37C57892F
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235699AbiGRSUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 14:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        id S235352AbiGRSFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 14:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234906AbiGRSUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:20:07 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6AD222B5;
-        Mon, 18 Jul 2022 11:20:07 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id r14so18312396wrg.1;
-        Mon, 18 Jul 2022 11:20:06 -0700 (PDT)
+        with ESMTP id S234984AbiGRSE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:04:58 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4E52CE2C;
+        Mon, 18 Jul 2022 11:04:57 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z22so3437074edd.6;
+        Mon, 18 Jul 2022 11:04:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
-        b=T+GgfIrU+tM6mOLTHam4nv8elI5DxleBQKSNO8vamr2McenozEH3hviJyW91qU0wf5
-         Qk/S+xnlrCbMM7+r/cwXfscLMzMhFI8zMSJuDhLjLQIAkR/xkPegMn+B4yc7/NvpdJSf
-         tLTowpooK4IKjYNwVty4RV9LTE0inzIosza2KeJJDx8Z/MfKsebYvN3Rnho4Vw17MqVp
-         gpI0oDtg/fOZZRiBhZkjLowL0w/pP3U0e+bUR4F++g1n9RHszJkBDK+sXIo46/ezjDuB
-         XvRJlD3pKWQk5OeRgUYxJ2b/K+RMtrLtGsSLtrYw1U2iw97u36uy4PeR6ML98c2hNsz3
-         ytjQ==
+        bh=DZc2nBDB1diw7QcFhj4RHe3OuM0eATNMLdDmVz3JMQU=;
+        b=GYi+nKFkW0uMBeR8Yv6Fajs/o7zIw8AeferKqAuSdBYt1k1BDfj4espJIjyvFiJVXx
+         voN1YwlyYADMW5oukQPFvj7B/0BbaMAtKFBhRc3fX/81Nvt1Ym3fDtnmD819W1PqW5vF
+         RDMzd5y04O6NemU3YdDfv8e0GYYDgfxTnGEBRZY3jgnYQBWLI5NDQsQSPO869WI32Cre
+         DfuoEHpjrlbNhW4UVTgH9U60uM17IiqMEBdmNKokuISSb7Wro3BaZUVTsduWaE7PISMI
+         ZQV3EcWsXY1wYvHgoqbSiXMzg0sJWnnaDIQW/SxHHBSXobjgn2g756lY0MGg5UYfMbQ1
+         IIUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=omHvb86AMNYWSW2+ejzLgy/Ar5LcfEo6pWlg+HYKk6c=;
-        b=XYdf7a1x2oQf/MzngdpVV7hEyvISHI2Cq5/pLzDrUuuB2N0CugadINyeArpopLJ8jM
-         mHsxL4KcxErXFz7lyl8qGcw3P6Y+I02QijSoSqTxnxRzOKCj4e9INNt7//yfSlESxVig
-         gECgxFU8scQJmarGzVMcpzMbhebJGjsRsEbTEjYLZvEbhsO6Sz4S+V1pnqUrwGQWrIac
-         RIZZ54Ds2K9pOdVRfRP9AFlxVJcjex1ZsYSqw8++0xKHYmWwgzSvTPVlt4fMh5bRc6in
-         I9v+c1jPCaP8v63lSFdvlOeXjOALaA6zddpcwei/t3CJNoOb+0A/S1hu7bL6HC+O1kcH
-         t2nw==
-X-Gm-Message-State: AJIora+on3fSp2dRK4vcWS+EdJyHX0dLxYnP2eQ7aV/Cpc++1n+8sAdY
-        uoqEI6zhK+WEco8LzU8hxEA=
-X-Google-Smtp-Source: AGRyM1sHY7q6tOWxMsRJP6qgrOaKSsa02LyOxNBQu4s91PiKFshkIFNRzUnt1l+RJis4tJNufm+thQ==
-X-Received: by 2002:adf:f20f:0:b0:21d:6de6:6f47 with SMTP id p15-20020adff20f000000b0021d6de66f47mr24498861wro.532.1658168405472;
-        Mon, 18 Jul 2022 11:20:05 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id o42-20020a05600c512a00b0039c457cea21sm16314663wms.34.2022.07.18.11.20.04
+        bh=DZc2nBDB1diw7QcFhj4RHe3OuM0eATNMLdDmVz3JMQU=;
+        b=dSN42bXxVsWTvd47p6j0QbdZKkLY7S2Uf+p7ulR18+N8PHRkiPOFrzPT2bFapUEw1V
+         k9SQh83CwsNc+axwbXSYSHpW3S5BFIROJSmXjJqlvtc3vPud4S4m3OrVuV/M49g9yFhg
+         MpYr3FGfg0xxDmp6mzsEsvIpjD5giwlTlANftbuyzCIYl/EQXvI02hG5Cv0TelgaWaFM
+         rB/upFDJHjmkNt3AeKOwTHZgLIaXafG5MFU+sdneAJPgAT2legUSwDM5SNYBKKHJ7QXU
+         A0Xs5fjvHEe4/DW7I0GweN3KegRwNEfO6tHply92B4uxPOlZDq+oj1VhGT7Up2Dp8xIj
+         BE+w==
+X-Gm-Message-State: AJIora8O+D+4TsWPCk7j3PYI0Xo5ljKmjdVbVCoPBVhusJlmcatDAg+q
+        qUALONf36J1L7tJMvxCB1e8=
+X-Google-Smtp-Source: AGRyM1t/BDQCQ+jkc6/c7r6J1EJXN0X+9IzBS/xxOZQKSlHWavbP2vKNr/DSQMZaI7jZbc3/4Y5Avw==
+X-Received: by 2002:aa7:d142:0:b0:43a:2738:d648 with SMTP id r2-20020aa7d142000000b0043a2738d648mr39359760edo.138.1658167495690;
+        Mon, 18 Jul 2022 11:04:55 -0700 (PDT)
+Received: from skbuf ([188.25.231.190])
+        by smtp.gmail.com with ESMTPSA id zk8-20020a17090733c800b00705cd37fd5asm5711194ejb.72.2022.07.18.11.04.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:20:04 -0700 (PDT)
-Message-ID: <62d5a454.1c69fb81.18bd7.3d97@mx.google.com>
-X-Google-Original-Message-ID: <YtWgUTXVqgbTXEB9@Ansuel-xps.>
-Date:   Mon, 18 Jul 2022 20:02:57 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
+        Mon, 18 Jul 2022 11:04:54 -0700 (PDT)
+Date:   Mon, 18 Jul 2022 21:04:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -63,16 +61,15 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/4] net: dsa: qca8k: code split for qca8k
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+Message-ID: <20220718180452.ysqaxzguqc3urgov@skbuf>
 References: <20220716174958.22542-1-ansuelsmth@gmail.com>
- <62d57362.1c69fb81.33c2d.59a9@mx.google.com>
- <20220718173504.jliiboqbw6bjr2l4@skbuf>
- <62d59b1a.1c69fb81.a5458.8e4e@mx.google.com>
- <20220718181559.lzzrrutmr2b7mpsn@skbuf>
+ <20220716174958.22542-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220718181559.lzzrrutmr2b7mpsn@skbuf>
+In-Reply-To: <20220716174958.22542-2-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -83,24 +80,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:15:59PM +0300, Vladimir Oltean wrote:
-> On Mon, Jul 18, 2022 at 07:23:35PM +0200, Christian Marangi wrote:
-> > Ok, so I have to keep the qca8k special function. Is it a problem if I
-> > keep the function and than later make the conversion when we have the
-> > regmap dependency merged?
+On Sat, Jul 16, 2022 at 07:49:55PM +0200, Christian Marangi wrote:
+> In preparation for code split, drop the remaining qca8k_read/write/rmw
+> and use regmap helper directly.
 > 
-> You mean to ask whether there's any problem if the common qca8k_fdb_read()
-> calls the specific qca8k_bulk_read as opposed to regmap_bulk_read()?
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k.c | 206 +++++++++++++++++-------------------
+>  1 file changed, 95 insertions(+), 111 deletions(-)
 > 
-> Well, no, considering that you don't yet support the switch with the
-> MMIO regmap, the common code is still "common" for the single switch
-> that the driver supports. You should be able to continue making progress
-> with qca8k_bulk_read() being called from common code (as long as you
-> leave a TODO comment or something, that it doesn't really belong there).
+> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> index 1cbb05b0323f..2d34e15c2e6f 100644
+> --- a/drivers/net/dsa/qca/qca8k.c
+> +++ b/drivers/net/dsa/qca/qca8k.c
+> @@ -184,24 +184,6 @@ qca8k_set_page(struct qca8k_priv *priv, u16 page)
+>  	return 0;
+>  }
+>  
+> -static int
+> -qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val)
+> -{
+> -	return regmap_read(priv->regmap, reg, val);
+> -}
+> -
+> -static int
+> -qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
+> -{
+> -	return regmap_write(priv->regmap, reg, val);
+> -}
+> -
+> -static int
+> -qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
+> -{
+> -	return regmap_update_bits(priv->regmap, reg, mask, write_val);
+> -}
+> -
 
-Ok I will leave a TODO comment and switch to the new implemenation when
-the regmap implementation will be available. Thanks for the
-clarification on how to proceed.
-
--- 
-	Ansuel
+Could you please explain slowly to me why this change is needed? I don't get it.
+Can't qca8k_read(), qca8k_write() and qca8k_rmw() be part of qca8k-common.c?
