@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DA05789D6
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B63C5789F3
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 20:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbiGRSyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 14:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49196 "EHLO
+        id S233992AbiGRS7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 14:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235916AbiGRSxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:53:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32ABC112F;
-        Mon, 18 Jul 2022 11:53:51 -0700 (PDT)
+        with ESMTP id S232986AbiGRS7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 14:59:38 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A632B267;
+        Mon, 18 Jul 2022 11:59:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658170432; x=1689706432;
+  t=1658170777; x=1689706777;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=uTLGXZcNL+L1yAPxsxYvJrrXWc9UE0EXaIFLw+I10gc=;
-  b=JWegjbxQoKE3n6yGf8RWnZSgl8NI/nBKknRJEI1fkq2AKR3BV+f3v3C3
-   Q1P0999bEEO8hpnb3ARxCQP9tTg7xIC/feOvcSad1HYA8mzEcwiRHHFD+
-   D7gRMbvW6v6jxbSZTyQr5wP8yscjYFYhYNCZNJT/rPAuDlPTizghg2bYc
-   y2RXSnjlK0IeHgJC9EbC8iQdstBr2YBKBj1V+XCLGph+kGtmfVlRZtJaR
-   B3LkSRHJZCiynfTyGsvgt8ka7g1OUjupTA1YLuoSm7o9s/1Zzys+eyV/S
-   XFop+32VH9Z/FjBU+zJHcBZC8YNkJxHLWejfOiOwuXa3i/p+OS43R0cei
+  bh=TIEQ4MTYN/3mHVFEK8QSYRaebmDVBch4wfEANQ4Z+F4=;
+  b=OdAZMs5/FV9r4rM3kel/TrlnhkFPe49hMTYeGBKjIwHkeEq2hVoxu6sN
+   ov8KI5oZYP1m13BZEAG3UYBOKybImL2Cuq0HFUSoxKVUG+FVIv8ayDBsz
+   O6SOLBfyAnpdqAt8GufkKSiEgD3EpZjhK+OPzfhIWw3trXG/aHK49AVSi
+   Z/rzcf50beDz08rRbgxgRj/bls8kGC4NVBPp4WKAQXTczSwnwdByKE1eC
+   Uy95zE1/pvG5L1eV8pUQBjXNRCWBNU5SD4WBqOcTJC0OZsjdcnwyDOfnz
+   xhmbThAShT0LJ58bh0dHBmFEittdEeGBsb7+CmG4T5JuSmRA81dXbJorZ
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="273125585"
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="287446628"
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="273125585"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:53:51 -0700
+   d="scan'208";a="287446628"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:59:37 -0700
 X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="723961155"
+   d="scan'208";a="700140775"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:53:43 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 11:59:30 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oDVsB-001OOr-1i;
-        Mon, 18 Jul 2022 21:53:39 +0300
-Date:   Mon, 18 Jul 2022 21:53:39 +0300
+        id 1oDVxl-001OP6-31;
+        Mon, 18 Jul 2022 21:59:25 +0300
+Date:   Mon, 18 Jul 2022 21:59:25 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Alvin __ipraga <alsi@bang-olufsen.dk>,
@@ -70,98 +70,66 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Sean Wang <sean.wang@mediatek.com>,
         UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
         Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
- be created
-Message-ID: <YtWsM1nr2GZWDiEN@smile.fi.intel.com>
+Subject: Re: [PATCH net-next 5/6] net: dsa: use swnode fixed-link if using
+ default params
+Message-ID: <YtWtjYuQ8aLL64Tg@smile.fi.intel.com>
 References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
- <E1oCNky-006e3g-KA@rmk-PC.armlinux.org.uk>
- <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
- <20220715201715.foea4rifegmnti46@skbuf>
- <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
- <20220715204841.pwhvnue2atrkc2fx@skbuf>
- <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
- <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
- <YtWp3WkpCtfe559l@smile.fi.intel.com>
+ <E1oCNlE-006e3z-3T@rmk-PC.armlinux.org.uk>
+ <YtHJ5rfxZ+icXrkC@smile.fi.intel.com>
+ <YtHd3f22AtrIzZ1K@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YtWp3WkpCtfe559l@smile.fi.intel.com>
+In-Reply-To: <YtHd3f22AtrIzZ1K@shell.armlinux.org.uk>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 09:43:42PM +0300, Andy Shevchenko wrote:
-> On Mon, Jul 18, 2022 at 02:27:02PM +0100, Russell King (Oracle) wrote:
-> > On Mon, Jul 18, 2022 at 03:29:52PM +0300, Andy Shevchenko wrote:
-> > > On Fri, Jul 15, 2022 at 11:48:41PM +0300, Vladimir Oltean wrote:
-> > > > So won't kobject_init_and_add() fail on namespace collision? Is it the
-> > > > problem that it's going to fail, or that it's not trivial to statically
-> > > > determine whether it'll fail?
-> > > > 
-> > > > Sorry, but I don't see something actionable about this.
-> > > 
-> > > I'm talking about validation before a runtime. But if you think that is fine,
-> > > let's fail it at runtime, okay, and consume more backtraces in the future.
-> > 
-> > Is there any sane way to do validation of this namespace before
-> > runtime?
-> 
-> For statically compiled, I think we can do it (to some extent).
-> Currently only three drivers, if I'm not mistaken, define software nodes with
-> names. It's easy to check that their node names are unique.
-> 
-> When you allow such an API then we might have tracebacks (from sysfs) bout name
-> collisions. Not that is something new to kernel (we have seen many of a kind),
-> but I prefer, if possible, to validate this before sysfs issues a traceback.
-> 
-> > The problem in this instance is we need a node named "fixed-link" that
-> > is attached to the parent node as that is defined in the binding doc,
-> > and we're creating swnodes to provide software generated nodes for
-> > this binding.
-> 
-> And how you guarantee that it will be only a single one with unique pathname?
-> 
-> For example, you have two DSA cards (or whatever it's called) in the SMP system,
-> it mean that there is non-zero probability of coexisting swnodes for them.
-> 
-> > There could be several such nodes scattered around, but in this
-> > instance they are very short-lived before they are destroyed, they
-> > don't even need to be published to userspace (and its probably a waste
-> > of CPU cycles for them to be published there.)
-> > 
-> > So, for this specific case, is this the best approach, or is there
-> > some better way to achieve what we need here?
-> 
-> Honestly, I don't know.
-> 
-> The "workaround" (but it looks to me rather a hack) is to create unique swnode
-> and make fixed-link as a child of it.
-> 
-> Or entire concept of the root swnodes (when name is provided) should be
-> reconsidered, so somehow we will have a uniqueness so that the entire
-> path(s) behind it will be caller-dependent. But this I also don't like.
-> 
-> Maybe Heikki, Sakari, Rafael can share their thoughts...
-> 
-> Just for my learning, why PHY uses "fixed-link" instead of relying on a
-> (firmware) graph? It might be the actual solution to your problem.
-> 
-> How graphs are used with swnodes, you may look into IPU3 (Intel Camera)
-> glue driver to support devices before MIPI standardisation of the
-> respective properties.
+On Fri, Jul 15, 2022 at 10:36:29PM +0100, Russell King (Oracle) wrote:
+> On Fri, Jul 15, 2022 at 11:11:18PM +0300, Andy Shevchenko wrote:
+> > On Fri, Jul 15, 2022 at 05:01:48PM +0100, Russell King (Oracle) wrote:
 
-Forgot to say (yes, it maybe obvious) that this API will be exported,
-anyone can use it and trap into the similar issue, because, for example,
-of testing in environment with a single instance of the caller.
+...
+
+> > > Co-developed by Vladimir Oltean and myself.
+> > 
+> > Why not to use
+> > 
+> >   Co-developed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Ah, that's an official thing. Thanks.
+
+Yep, it's even documented in Submitting Patches.
+
+...
+
+> > > +	phy_node = of_parse_phandle(dn, "phy-handle", 0);
+> > 
+> > fwnode in the name, why not to use fwnode APIs?
+> > 
+> > 	fwnode_find_reference();
+> 
+> Marcin has a series converting DSA to use fwnode things - currently DSA
+> does not support ACPI, so converting it to fwnode doesn't make that much
+> sese until the proper ACPI patches get merged, which have now been
+> rebased on this series by Marcin in the expectation that these patches
+> would be merged... so I don't want to tred on Marcin's feet on that.
+
+But it's normal development process...
+
+Anyway, it seems to me that you are using fwnode out of that (with the
+exception of one call). To me it looks that you add a work to him, rather
+than making his life easier, since you know ahead that this is going to be
+converted.
 
 -- 
 With Best Regards,
