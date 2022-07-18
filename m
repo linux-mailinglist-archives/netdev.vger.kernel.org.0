@@ -2,120 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B846577F68
-	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E5B577F7F
+	for <lists+netdev@lfdr.de>; Mon, 18 Jul 2022 12:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbiGRKP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 06:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S233561AbiGRKTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 06:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233947AbiGRKP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:15:26 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A816611441
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 03:15:25 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oDNmS-00052z-6f; Mon, 18 Jul 2022 12:15:12 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 770CFB2F94;
-        Mon, 18 Jul 2022 10:15:08 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 12:15:07 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Max Staudt <max@enpas.org>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S230054AbiGRKTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 06:19:51 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A411C901;
+        Mon, 18 Jul 2022 03:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Ijs/RSv7qHQbvm9v+Fy+Qzb4VPBB1zdP6a7q0FZ2hyY=; b=mMUTuFO2xqKNFtna0kmQNGmRa+
+        WQr6Gj2zDbk2LspuJH11pLa6ym0tcz0Ptv/eQ5EbMRdIqykF6+pi5NX/WeqNHzIW5QlUaAVHRMKkn
+        MrfgUjKSDUZ2WFBi8cOnM/rxYytl7+sk6K6zWdO+n78+VU/wBimLTaZyUBJ22l5P7zmiN7TyYXsMH
+        gOtvcXXNpFNDbeTpzoB3jfJIgeeUHAerDtDX1FpOfaFHaEqzFWja7M5rmLlTeACcYrdsDFL/ScYiJ
+        Qqj7OWkWp42t++1844ZuMsPoXFb5tPRpaTo0lmPJtB2Aout9jPZRjJvXyAc3evas6rGs7IuOQIx8i
+        WZXQuiRA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oDNql-00CbGs-Kd; Mon, 18 Jul 2022 10:19:39 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 390EA980226; Mon, 18 Jul 2022 12:19:39 +0200 (CEST)
+Date:   Mon, 18 Jul 2022 12:19:39 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
-Message-ID: <20220718101507.eioy2bdcmjkgtacz@pengutronix.de>
-References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
- <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
- <20220717233842.1451e349.max@enpas.org>
- <6faf29c7-3e9d-bc21-9eac-710f901085d8@hartkopp.net>
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] sched/topology: Expose
+ sched_numa_find_closest
+Message-ID: <YtUzu4d9F+V621tw@worktop.programming.kicks-ass.net>
+References: <20220717052301.19067-1-tariqt@nvidia.com>
+ <20220717052301.19067-2-tariqt@nvidia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gbbsrwdp7reehx4n"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6faf29c7-3e9d-bc21-9eac-710f901085d8@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220717052301.19067-2-tariqt@nvidia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Jul 17, 2022 at 08:23:00AM +0300, Tariq Toukan wrote:
+> This logic can help device drivers prefer some remote cpus
+> over others, according to the NUMA distance metrics.
+> 
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>  include/linux/sched/topology.h | 2 ++
+>  kernel/sched/topology.c        | 1 +
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
+> index 56cffe42abbc..d467c30bdbb9 100644
+> --- a/include/linux/sched/topology.h
+> +++ b/include/linux/sched/topology.h
+> @@ -61,6 +61,8 @@ static inline int cpu_numa_flags(void)
+>  {
+>  	return SD_NUMA;
+>  }
+> +
+> +int sched_numa_find_closest(const struct cpumask *cpus, int cpu);
+>  #endif
+>  
+>  extern int arch_asym_cpu_priority(int cpu);
+> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+> index 05b6c2ad90b9..688334ac4980 100644
+> --- a/kernel/sched/topology.c
+> +++ b/kernel/sched/topology.c
+> @@ -2066,6 +2066,7 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
+>  
+>  	return found;
+>  }
+> +EXPORT_SYMBOL(sched_numa_find_closest);
 
---gbbsrwdp7reehx4n
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+EXPORT_SYMBOL_GPL() if anything.
 
-On 18.07.2022 08:57:21, Oliver Hartkopp wrote:
-> > What do the maintainers think of dropping the old "slcan" name, and
-> > just allowing this to be a normal canX device? These patches do bring
-> > it closer to that, after all. In this case, this name string magic
-> > could be dropped altogether.
-> >=20
->=20
-> I'm fine with it in general. But we have to take into account that there
-> might be existing setups that still might use the slcan_attach or slcand
-> mechanic which will likely break after the kernel update.
->=20
-> But in the end the slcan0 shows up everywhere - even in log files, etc.
->=20
-> So we really should name it canX. When people really get in trouble with =
-it,
-> they can rename the network interface name with the 'ip' tool ...
+Also, this thing will be subject to sched_domains, that means that if
+someone uses cpusets or other means to partition the machine, that
+effects the result.
 
-Don't break user space! If you don't like slcanX use udev to give it a
-proper name.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---gbbsrwdp7reehx4n
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLVMqkACgkQrX5LkNig
-011fVggAhIqvpyjYuqNRGmzUXsKCFCmmzPv58yhfyNhblDiwov4AeO0dmDEgDA9R
-DbWo9aqPKF/KydxOEe+qYVutKrCBkXmZiZepKrVwTFMswcqMxngMytzh/n9eO126
-dNx5xSuPVTP6bEC4U9Y9XXxVguv5UBVTf6UHsIQGErkltdqiITq1QKhYK3hogzkk
-vMfNmWeMrXtFzCCLA6ShHL/7HmCsSvKsD5RD9Tm6I5IVcc5a1iaJPZ6xaYY5FsBc
-tJDGfBZdxEIEi2d4qQix88fLYWtFoBI4pscyWqIvudmuio0ZUJbcE1tNVarP4hya
-XSjg8Lxv6XeKQjymjbBUOjYDPmQgAg==
-=y6Hg
------END PGP SIGNATURE-----
-
---gbbsrwdp7reehx4n--
+Is that what you want?
