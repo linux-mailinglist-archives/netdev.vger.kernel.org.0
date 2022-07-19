@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7C057A749
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:35:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA1357A759
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:41:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237498AbiGSTfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 15:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
+        id S239183AbiGSTlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 15:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235565AbiGSTe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:34:58 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130045.outbound.protection.outlook.com [40.107.13.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6EC564C7;
-        Tue, 19 Jul 2022 12:34:55 -0700 (PDT)
+        with ESMTP id S229379AbiGSTlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:41:13 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130041.outbound.protection.outlook.com [40.107.13.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D481A04B;
+        Tue, 19 Jul 2022 12:41:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F+Azxr6OZKWhAr/ECazV1oQOUiStIiHSa1URupPK0fF+MdZqFCB6PLJzUNypNuUytYizDh7l46nUlb9yGy7ExArZ/vW3NQe3Dv29oL5ow53v8eY4kuvMO2eVthiYQA4lh9/kb7qaMRcnB0RoGYDhbSNw7/oBA0TFHP1CHzdYKaF1k+D005xJR5MA1UFA+lQurPX/DXaC/AMq3ZYq/8h6nfdg56UrjMG38ENZihDdvX3voGCa4SL5KAicOnE1MMkuqkPRPXk/IB59Eez4EHuGBnIIIcpa2p0Eti7T/60xzyiQlI57swixWzrDRN58ZJA1T5kb5aldATh/jV6GxMI/9g==
+ b=Ez9y51jlXdVC+4b25TuuUbebBoAOOaWuoKDYXG9z62QANAUm3ecg4NyV4wHdbqYQ4X2NFrMVswK/gcp7h19mRw1BcX8/OpwoOU++izHf+dMA482HDXajHLrKJS3KWJvin3lOoilVTIvLeD963wb/ynvkZKy4fwVBPfK6SYBab+BymVD6qCd9Bv0ay5aZLLP09M7nLjHJQceQfVdmAb+8NFc6K5nhI3zewLF+0wyuk7gs1PmATcXW4hLpSWY7Yz03TlwekuSUZgdVG2k/UkrA1k2Qguswx7HVIHVbg/jTXXZ38hwzqhejOPYIsEs6Rz+EfVYbU4q6YdF7n/89MCzGZw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=41uLQjxB7W7WUrs9yR4TDE9pwHiSGEtbHX0FQTN4Ti8=;
- b=ntS6oesvTrv1gJBfPYmMQmVtBC93c8+3Q9CxqslLjCnshCwLrsd56oPCpeSc4Prptcfe5Q9kRjrWVn+rPnF8BEeFNK9JdYSLWo8SHBNjOb+ixZCWlfJy/4uqLPIDG8+BYPK9plM9L2PcibYlG2jEnDJaoC6uHD4AtEPuQ/4XQKizpcXQX4yjQEome2WFp9oL8PUGQA11xFjYH0RwXQo0Zt84kYtYdsW40DB1khoKawDLexQ5E16LyUp5B+C+PhMt3FNml6f4TDh/RYTnMccafSorH/er5TjpzOQr+CfP9EKYiyyu0NaPGqfW9tkUfsKyFHiBE7SoLrbz8XTzffosVg==
+ bh=i1tkZDg7i48L7YL/vUAuiMsrlbgFrgcQN+UOstHZzhk=;
+ b=cztzi/UI4Jf+1dqF3Hwig3175PguVka6yqLfG7tvKJ3pf2MfrWmR59H7tFmec910lCRQ8csgMWJ3lIblCeyYL8r6jWiypsS60u/qvJWXhcm6pghcyeIPLertqCOQO5TyH6r/UBieGUPLi/eRNPRcT7zVPg06uesmPKgbZcjIq+l3a2WVbLZ9QUGPUQmp0+cB/bt7c+1Gd/nHic2UPu7tf1OWTvNurKECC6gCnIakJlyjKw6hiEYkj8+9W4m4VoKGtneJ99l99E1SHVE0S0kZW+4tAfzK9LoOUs0eHDpeul9v/FPK83toYevx3RoCOsvEUPZ+aF4Ygb9rFLGbpqWTxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=41uLQjxB7W7WUrs9yR4TDE9pwHiSGEtbHX0FQTN4Ti8=;
- b=WLYoWo5XY9zV9cNdgqoKN6CXo7dq52OIyQ0vAqcPlfQt2iAIhsVKOrMbif33r1E/1GgMZOWP95kaoCpcKZNDhVZjQqWpZzRwiKc8lIuoKdbgK04c72utHE3LvvF+h4brePdPovLhjhV6jyZiS+8h1yvRMG8419fWkqgPAxtMnW0iKrRYyUrhHY8U9dMek/out3It6Bh3ji75oPHhvbW8wTSLXKmZq5e+6Aw7siRHrc9iOongSfa7tZ5fO6j+j2TH0fz4i3CmVbzsVbbEUWOXcvpBL60Q09qXNT9suhfTvJ3NzHyljoJa8S9AwpgSxuKQYeKcne1GAM7yA7S1hpSs/w==
+ bh=i1tkZDg7i48L7YL/vUAuiMsrlbgFrgcQN+UOstHZzhk=;
+ b=rdSr7Yw+vyLzRLy7jMrjo7rA5ixDaJwT8EZzch74oM8Hpvw7ESN1naKdPmv3ZpCXTUo0BO74HPGbXBzmc/4bIKlX7mHlTd/rx7xn22M3NuMIzXI+qHv/wd5FVyNZcpAFsXN5JDVWwsh9d52R/fTbrKCHL6rJLVfZ8l4NJ+flfifsJF7e4txTxWPvl3ZLoy8WZBmCmPFp1HNJ2wVN4B4divqKAo1tC1Ii7ogIbbrdELnhasyzwRCYakWeoUZErkPhwQDl+ZGl071DRQBRYRrwb0V9uyWJCMmJjiJdcY8PHBxQFbU/xaTRY6zpwE8Vdl8MKgloScHG2eHkhYCLUPTvTQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB7PR03MB3916.eurprd03.prod.outlook.com (2603:10a6:5:3a::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
- 2022 19:34:51 +0000
+ 2022 19:41:08 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
- 19:34:51 +0000
-Subject: Re: [RFC PATCH net-next 0/9] net: pcs: Add support for devices probed
- in the "usual" manner
+ 19:41:08 +0000
+Subject: Re: [RFC PATCH net-next 5/9] net: pcs: lynx: Use pcs_get_by_provider
+ to get PCS
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
@@ -52,96 +52,83 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org
+        Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220719152539.i43kdp7nolbp2vnp@skbuf>
- <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
- <20220719153811.izue2q7qff7fjyru@skbuf>
- <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
- <20220719181113.q5jf7mpr7ygeioqw@skbuf>
+ <20220711160519.741990-6-sean.anderson@seco.com>
+ <20220719172628.vkkrarx5zkiyumze@skbuf>
 From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <c0a11900-5a31-ca90-220f-74e3380cef8c@seco.com>
-Date:   Tue, 19 Jul 2022 15:34:45 -0400
+Message-ID: <7ff1cb04-fc3b-853e-ea8f-0c0b62bbd8c9@seco.com>
+Date:   Tue, 19 Jul 2022 15:41:03 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-In-Reply-To: <20220719181113.q5jf7mpr7ygeioqw@skbuf>
+In-Reply-To: <20220719172628.vkkrarx5zkiyumze@skbuf>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BLAPR03CA0119.namprd03.prod.outlook.com
- (2603:10b6:208:32a::34) To DB7PR03MB4972.eurprd03.prod.outlook.com
+X-ClientProxiedBy: MN2PR12CA0021.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::34) To DB7PR03MB4972.eurprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ffa2d4d-75c7-448f-bf9d-08da69bdbfa6
+X-MS-Office365-Filtering-Correlation-Id: e2432b2d-2af1-42bf-0d7d-08da69bea03c
 X-MS-TrafficTypeDiagnostic: DB7PR03MB3916:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NrE7xZ5SSHtW04kRoeAbEzrRur6RuzdD5o5io2pOSDWLiyC6bPAT4jjPT5LpL70Zrd9ojAoeqXSnzuJHejKtJgBAZfVC3okQ0OfOsf8N5HA7qUeyZwhG+vBDtuuCs+oe93UkXyzasEeB3yIMOispYfAFrBKvvnkq0ws6UfIjMMKHeZG+gvO+PmACm3a2UrmKKBrO4JKt1V9q+oN9/nkfTopz04py8Gn7/J1816ijFfTB/uLifz2MwmGWvRtllDNdG/o7TzakCJ3qY54iPfMRX46ZfAcinfuHmCFL0BsLAgosjvBM4NPhBw8wb1vJ8OWT8xXPEU3bmspntv5VXvBj/q0U83rrdk/mUu25p9TKzty33vj7HS7PWug/VZuQqCTjQnFMNVH8Ywm0eHkLq8rOi0Qwg6yq2CfzWkCV/SFgAFm8eB+7O42rBWbrfnixnfRawDYd+vdHy2BMSKluFzBX1t3yrckNTB/ljFrvaLVTvsylg56hoJrhiJlspuof18oM6Ue9omzxAiL1RbHVtvqtSp7g+VW4KBCabHKOzpI45VQcLqFBqZVqrXWR4zagtbzZYlCWwHV5wbrBKDDHd5yTcaYZmTLhYFtitk0MvVA04LCZET4eG/P0Z3ipSoL7e3d8i2jW3lMxCQxjPEPvef+ydVHCWvA7Xlc7AB/ymC99Q1QJcsx1AlodSO5yxGRDuB9oK2LCoD10ISYPnQ/QJunC4Xart06/q4sSZVBwsO+2m6gBVA1mont64+Nc1OGwV2iRlXfKbKQfDzP7jSdFkVuJWA8y0krN55NdqEkjVkNUM4Q4K1pqncIvfQuIED7252+0+Yg8R0ATRxDz22kj+3t9FjQSK3OzMhd7u/YvTI3nKAc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(376002)(39850400004)(396003)(136003)(38350700002)(31696002)(38100700002)(36756003)(86362001)(31686004)(2616005)(186003)(52116002)(26005)(6666004)(478600001)(6486002)(53546011)(6512007)(41300700001)(2906002)(316002)(66556008)(8936002)(6916009)(4326008)(5660300002)(66476007)(6506007)(7406005)(7416002)(54906003)(83380400001)(66946007)(30864003)(44832011)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: iHX8+yCAqy6rgodMCZNgqHtrBbkHgeWDHqTmnUrRqY1BKfNk02bS3UhiUr099pxf3Xei5hercSbf5Y2zB9NS/o69sD8zI+S5tGyRN6SsFlyNjNgaj6zl+3YuFxdOSHSf6oVe4THe40eE1Yla/rSSov8WZ9I9KN70sDPCsqQ/DhKq5Ge0XrUPCJTOHIMEVAStaShsY5q0L/xNKaKN81j7mtcGnBqONM1zM3eK+5MtzQelP487NQDjCbk/8YM+yIDy0FWq+BUN5DC2kOZDS6KDckLjM8AxIV+T2MO41RWPuv3n93riZrCC7yKJrIvDFQq+bjCcpTjneYqVI4iKs/Rnyuvsp/TSqZBJnnkbrKB6ZgPQzTQOc9RURLPcmEWzw8YT3b23b0ACA9ag+3vDAeDZIkbfR+nlqop9TlFCGL3pfwwusrjZtRtmau3LcBx2yyadwBFRBB3uIAEz0bu8vX5gTEArHBlEVJxpIrSh5+LkWqfTyFtm+LsDdQuwEXqw/UepqdTbSxGmab2RGApqGYqekB9OYaSqrjXVBd5bywazFjChUrC+F38gIYxiWU+xSxVY7K2uGv5Z2I3isLyZVajZoL5ovkLwsStJlhdcT3TRLV6+U28s3kFGwaNyjuL8MecbyPOQLmQVKMsxdhC0CWkBftqjUFtgNSKABz+KiZ4z0yqwDx2ZUNB6sNwBJNRyphow6h3s+6yJX/NEj2spi9oPddu5FEiM+WVfikrX1RpfenJIVCShmpavIF3XJ3c7wFR1jK5qJUNBmB8OH74j3XpOqaPxVVIPvEukvgkLDg5AXE8SHYL3l6FKVmiAcxroyeSOM+16TASvIqT0fgVcQDqv3NHWw/uiUipF854yozjuFtnMFP++FtIT4CVWgXWjU+45
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(376002)(366004)(346002)(39850400004)(6506007)(4326008)(6916009)(5660300002)(66476007)(7416002)(54906003)(8936002)(316002)(66556008)(44832011)(66946007)(8676002)(83380400001)(2906002)(86362001)(31686004)(38350700002)(31696002)(38100700002)(36756003)(6666004)(52116002)(26005)(41300700001)(6512007)(53546011)(6486002)(478600001)(2616005)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RFQxdVdpWDhITGRBVEdzY3A1Njk0a1F4UUpJOVlzUWhWeW9GUzdtaDdjSmRu?=
- =?utf-8?B?dFpWY0c0aWJOdUJQU3oxSDRHL25EeitnTXJHWG9iU3NFeXpaS0ZBRUxhSnN1?=
- =?utf-8?B?bFdKTmVJUGUvMjZsd2ZQRDZOQVg3T1dwRDdJSjFoTzV0RlBvWlp1MHh1Ykhs?=
- =?utf-8?B?Y1U3eldEL3dqZ0lHOUNaakhRREMwMGlWcHRQZUJ2b2hJUHRaMlZzN1VOalQ2?=
- =?utf-8?B?aTh5MEZZOW4vUGFpcGNDTHpWOWZFL2c2ZWFNcVJVUnh6KzJyc3pzbFR2dUhH?=
- =?utf-8?B?M2d5OFV5ZVFyWVVVanpzWTFncWRaSFZKZE5QVk8yZW1IVGlpdEU0ZWlEazZR?=
- =?utf-8?B?NGZ3K0R5NDdFYWJJa1FxVit6aFFWelRoUHNzR3VJbC9SeEpCeFBYdFlaVVJD?=
- =?utf-8?B?Mkg2K1hpMnE0bTA3NHJDd01aUC9YektmN2dHbnBWQ3AvRnlLc0dqYUozNlRF?=
- =?utf-8?B?cFNRc2w1SFlSVXdtM3RvWWdhV0c5eVZUK1JyNkd1emlNYm43ejFVV2F2QUxT?=
- =?utf-8?B?SjJLMWRDaVRTMUQ3VmR3OGxSdnpXYzAyN24vVC9ubDVlL3hjamcrczNDSndi?=
- =?utf-8?B?NkdVdityWU15RVZRc3U5bmtyZkpHWXZWcFRQWlJsUnZLNVE2T1k2aS9tSndM?=
- =?utf-8?B?ZGtuNnp1b1duc0h1aHFLakh6bHlCT0hMRGt4bE1qQ0JzTmtOVjI2K1hBd2JB?=
- =?utf-8?B?cnRSUnVmaEtoUHEvV3dUSDZJSkM3TGJPTkFyd0RHYlhPZTJNUmRMeWpTMklj?=
- =?utf-8?B?Qm91Y3lGb3R3UVAyQXB4V3VQMWwvZkNFMDJyUVIrb3VQQ05Od1JXOWpkQVps?=
- =?utf-8?B?c1lEU1phc29ySjE1U1hJbUlTTU9ZNXJtTzdMbDFTWUJYTFNPUEV1Vk5peUtx?=
- =?utf-8?B?L1ZNaFo1bStycE9wK09QMmtRZWl1Vnl3ZGpVK0x3bXF5eE91RkNFN2hOZWtj?=
- =?utf-8?B?dFZ5Y2hRWDRDYklUamRyUHUxMVMxc1MxSEZNNEt1ZkJ5ZTdoSzRmNHdLMlFB?=
- =?utf-8?B?NlN0ZTU3L0dGbUg4SEg5MFVLUytqRmNDTXZ2ZllxR0VnMXI1Vjh0aktBZXlC?=
- =?utf-8?B?MlY1NVZnTHRXblJENlA3SkNZWXlhY2dKbm1NVklUdys0VlZhdWN4UXFEcU5n?=
- =?utf-8?B?dExTNWdLSkQ1QWFDVTU5eko0ZURLOHZQay93V1dsSWNuVW1oVjREUFF3a0pj?=
- =?utf-8?B?NmpXRFp4SVJicm84aHBORDlFcjF1TVB6dVlYY2ljRHpaZURmY3VxSitCeE9w?=
- =?utf-8?B?MWhUa2NQYi9QdEhQcXV4bG5FRnFEM2l2cHhoNm9GVUtGUmNpZmYzY3NTVWpO?=
- =?utf-8?B?RnVVcU5uT0EzTmE0bWhNbnpCdkJDQ1VrRVFWVkE2SHNadFc3N2IrN1FNQVRQ?=
- =?utf-8?B?T1Z4MS83WGlFUmpoUnd6cnFQMGt3OG5zOXdVMTR5LythK1JrUG8xdno5UUxo?=
- =?utf-8?B?MmkydkFoSWdtb2NRZ1NmcGloekNrcGtHa3puaWVhcWprUnBhclY0ZmIyTmRr?=
- =?utf-8?B?azBYYkpBTWdoUmhwMVo0VXBrc0F0SzVjb0FxNS8xYjdURTg3blVqeEJlTVhq?=
- =?utf-8?B?VFJuRWZjWUZwbGdoYm1oYlZRMWFiQzRxQWZ2dDYzV3cxVHlRamdHbkpHdmZ3?=
- =?utf-8?B?NnhZWGhUZlhSNHlrdTZCRE1SaUZrZmNTdHhGLytQckNraFRaZWpFWWlGQ1hz?=
- =?utf-8?B?UTNDaHVBNDY2V2JuT2RjUEdWZGJkWXVIbXAvcGlOd0lQQjkvTUxLd1FsV1A0?=
- =?utf-8?B?WXZzNWtEUUV3WWhNdHo2OUE2dTF4YWI3akE4S1BJeG9pejhtanlGZGwxYy9D?=
- =?utf-8?B?ZEpMODM4cmhSWi9tQlFmUUtKeXlHSTYwalVXMi85Y0tpSkN1MWFPTWN5L0xT?=
- =?utf-8?B?ZEY1aUFQVEMrRi9OaEswL1RrUFlWd2NNQytCTXlxSnVEMWVnbGlGRkNFM1A1?=
- =?utf-8?B?MzN1aFZDZGVkOUswU3E3T2ZzOHY4QTFRclM3aFlMS2lrK3dYN1JGa2FUT0lT?=
- =?utf-8?B?NDVwMWZDQWxodEVWY3hpVi8rcDkrZzhQWmFVMVhXTnlqV0w5NVVIcGVsRHox?=
- =?utf-8?B?VE4wdzhuUFpwb0s0c0lIemNyWVdJZGc4US9tRFBYUWE5U2p6Zis4UkU5K3JK?=
- =?utf-8?B?TmFuckRSSWRxUU5GZ0g2L1RQYVlaT1YyS2E3cE5UblM3UTRWQllDeVMxN1hh?=
- =?utf-8?B?U2c9PQ==?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aHNtVFA5RzJqN3FxVTE4ZHd6MFRIak4zV3E1R0F2WG1yQkUyUHg3djZ2aHVa?=
+ =?utf-8?B?VUgzcngxa2l1OTE3UVMxWE1CWDdIVTZiY3Jsc3pYckJqMk4vY1dkSkRHNHRX?=
+ =?utf-8?B?T1Z0cmIvVit4emZGNzhXSHZ1ZEpmUlFwSk5PcEhsN0RxK1R1SXlXai9xNlN0?=
+ =?utf-8?B?cGtZekJUMHJ5ekEwZnBQdjRBQWdWMEZQVHF1dHBIRXpKVy9jZmUzK3BhdHhY?=
+ =?utf-8?B?Sm1JRlY3cWROaW1pRkdjdFlQcVVyNTJhUitRUXhGcHdsUXpTbTJETXNBT2Vu?=
+ =?utf-8?B?aktESlNxZHlOT2F3REdWTWNIaWpNcWZvZEZ1M2ZyTkdmY0lNckNaWWJBUXBs?=
+ =?utf-8?B?NzZjb01RTDMxamRuaDFsQnZNNHR1Qkg2UjBTZW9GVDRhdGsyYVRXdUJPQUlG?=
+ =?utf-8?B?RVZTeVJlWFdZcFdmUkN4K09tUmJvMDhjZnJnSWlwakNTbWVkQlhQZmFCUlFD?=
+ =?utf-8?B?N2tBUDk0VENGU1BiZVh3UVRXYUx3dkRxQ3FtekppdmkrSVhpME5heFp4NGFM?=
+ =?utf-8?B?N1RJaDBHaFdFV205MjNYYVhydkM2MVovVzlxZEt3dUtoRVZKaDJwaThOakMv?=
+ =?utf-8?B?UHFDdVRydzZiaDg5OElWK0IyaVh6RS9kSnlJODVNYWwwVUdUbHZpbWxDbHFu?=
+ =?utf-8?B?MTFHc3RMa0lmb3g2OWo5dUVsalJMd3hBL2VocHhyVC9HUktpNkI3RWxFUXNz?=
+ =?utf-8?B?THMyUmxSU29lbkFiL0MzdFJNNHpDdE9IRml5OXowQUxpSHdFMnB4dmtFam8x?=
+ =?utf-8?B?MDFFRDExaDdrem9sbWsyVCtaQjcxelRJT0NWdTZlZGxtb0R1ZnVkY2llTnJV?=
+ =?utf-8?B?T1F6M0ttdVUxdjYyUFJ0WW85dEZBcWJFb0REdVNpS0lPUmdlVTJiVEFWa3pG?=
+ =?utf-8?B?ZmhtY3YzOHZ2Q0VDMzZqN04vRDlnbURLbUFmbFM3NnpqR3lJOWZrcXAxYWVC?=
+ =?utf-8?B?NCs5SUNNRnZNNkN0c04xMjhTUWhyaXY0T0owb0xNeFc3djdjbHZaMU9hMnpR?=
+ =?utf-8?B?ckFjZFhEbkJ1OWJ3Wlk1K3hncGVWSU53ZDN3SFluaEhKa3h6UTUyQWdZSkNX?=
+ =?utf-8?B?UDJYKzA4ckN2UGYraHlrMG12L280NDJXM2VRT0RDUEVkSjY1Mm5rY0FwaWhq?=
+ =?utf-8?B?TDlrUXl3TGdBL3pvczhxZXYvNTc2NU5lcVBqN3JZdUwwZlk0aTdhT2h3WFQw?=
+ =?utf-8?B?a0xtMjF3WUpobGdMbmtyWkhEbElnNm9VRUFZRGx2bEtKMUp6WWRlRmltSTVs?=
+ =?utf-8?B?bWJWS1p2bUNhc2xYUGdyZXFyOEhTNVhxVUJzTXd1K3lnVk9sKzhXL0QyWVBx?=
+ =?utf-8?B?MjdOSkNjcU1nb0Y5LzRtY29yNVJ3cVF6REdIUEV2eTVYSUxwUWFWQW9PeENL?=
+ =?utf-8?B?cW5ENWRTNEFONmlXNnJvSGszRTQ3QVhzMG5QUlBpM2tHSU9HR0lSbnFtb1FI?=
+ =?utf-8?B?VzdmRGppaStvNWpKNEg0UUlvWkludEwyQjg1QTJTQTQxL0pxL3VOR3hDV1Bo?=
+ =?utf-8?B?QysrTWpKUHRVNnJyaHdkSzg2RDJ2RXpldmtBdDFrQUZsOFMrQ2U2dVkxV2Rj?=
+ =?utf-8?B?SkEvRys4bi9naVJ0dUVUOERlZWt5WXp0Wm5SZWh3RS9DWUx3eFZYN3ZldnJF?=
+ =?utf-8?B?VWhwYk1veTU0Q1dEeExIT1ZzaktJeU5wZmpDM0RuYllHSit6MXl5QWtnREg3?=
+ =?utf-8?B?ZWI4UzlhZTQzamZkU2cxUVc1NmRYYVBIYlM5TkZPbGsvdnJTOTJad2VHMjBk?=
+ =?utf-8?B?WkVwLzNETzdRZkNGdnhLUW40YUNjK0dXTXZrdFh2Uk01THlLZXRGc1c1K2Q2?=
+ =?utf-8?B?K3F2OGFsL3EyWURkYTk4aHI5dlJqRlV6MXhaTDFCV2pzNTNFd0FjNTlEMVVR?=
+ =?utf-8?B?ZjBzdGhsVEJncitoVU1OcmdPbVpZUGhCc1FVMEhWZ2JVNldTQmJJQTgwRUJJ?=
+ =?utf-8?B?NnZWb1lnSktlRHVKVkd1S3VLUlMyOTh5MjRkWXluMUdpNnhDTUtRemFUdFZl?=
+ =?utf-8?B?MEtqbWVFMjJaTmZPekc3QXphWkJLamtCbkJvL1FaRkI4bFNqVUNsSTM1enRL?=
+ =?utf-8?B?a0VNSWdkSzBvZkNtMjZ4RzRrcXNsQ0F5L3BCN3k4NlgyS1MzU09YRGVSR1g5?=
+ =?utf-8?B?S09sdFQvVjVwQlhBTEo2VlpzYlF1eE15SkhwK0pqUGhaajN0V0FCamlIVkJC?=
+ =?utf-8?B?MVE9PQ==?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ffa2d4d-75c7-448f-bf9d-08da69bdbfa6
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2432b2d-2af1-42bf-0d7d-08da69bea03c
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 19:34:51.3489
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 19:41:08.2307
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fnbzer3TktpsNBmwEw5WF2djkN44t6QFkwr3IWPkV//9XIvGioyv8DxscRt9eJJiEBQe04z1ywN6a5HJAKnERg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ae5HRXCJs7q0/NI77bADSeDkBO2cFeZolk4vE0yIxkN9WmEuBouAGYTHkhmPXTWf/Ww7ZUpcZfDQA5yueLYr8g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3916
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
@@ -155,373 +142,245 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/19/22 2:11 PM, Vladimir Oltean wrote:
-> On Tue, Jul 19, 2022 at 11:46:23AM -0400, Sean Anderson wrote:
->> I'm saying that patches 4 and 5 [1] provide "...a working migration
->> path to [my] PCS driver model." Since enetc/ocelot do not use
->> devicetree for the PCS, patch 9 should have no effect.
+On 7/19/22 1:26 PM, Vladimir Oltean wrote:
+> On Mon, Jul 11, 2022 at 12:05:15PM -0400, Sean Anderson wrote:
+>> There is a common flow in several drivers where a lynx PCS is created
+>> without a corresponding firmware node. Consolidate these into one helper
+>> function. Because we control when the mdiodev is registered, we can add
+>> a custom match function which will automatically bind our driver
+>> (instead of using device_driver_attach).
 >> 
->> That said, if you've tested this on actual hardware, I'm interested
->> in your results. I do not have access to enetc/ocelot hardware, so
->> I was unable to test whether my proposed migration would work.
+>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>> ---
 >> 
->> --Sean
+>>  drivers/net/dsa/ocelot/felix_vsc9959.c        | 25 ++++---------------
+>>  drivers/net/dsa/ocelot/seville_vsc9953.c      | 25 ++++---------------
+>>  .../net/ethernet/freescale/enetc/enetc_pf.c   | 21 +++-------------
+>>  drivers/net/pcs/pcs-lynx.c                    | 24 ++++++++++++++++++
+>>  include/linux/pcs-lynx.h                      |  1 +
+>>  5 files changed, 39 insertions(+), 57 deletions(-)
 >> 
->> [1] I listed 6 but it seems like it just has some small hunks which should have been in 5 instead
+>> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> index 57634e2296c0..0a756c25d5e8 100644
+>> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+>> @@ -11,6 +11,7 @@
+>>  #include <net/tc_act/tc_gate.h>
+>>  #include <soc/mscc/ocelot.h>
+>>  #include <linux/dsa/ocelot.h>
+>> +#include <linux/pcs.h>
+>>  #include <linux/pcs-lynx.h>
+>>  #include <net/pkt_sched.h>
+>>  #include <linux/iopoll.h>
+>> @@ -1089,16 +1090,9 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+>>  		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
+>>  			continue;
+>>  
+>> -		mdio_device = mdio_device_create(felix->imdio, port);
+>> -		if (IS_ERR(mdio_device))
+>> +		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, port);
+>> +		if (IS_ERR(phylink_pcs))
+>>  			continue;
+>> -
+>> -		phylink_pcs = lynx_pcs_create(mdio_device);
+>> -		if (IS_ERR(phylink_pcs)) {
+>> -			mdio_device_free(mdio_device);
+>> -			continue;
+>> -		}
+>> -
+>>  		felix->pcs[port] = phylink_pcs;
+>>  
+>>  		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
+>> @@ -1112,17 +1106,8 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
+>>  	struct felix *felix = ocelot_to_felix(ocelot);
+>>  	int port;
+>>  
+>> -	for (port = 0; port < ocelot->num_phys_ports; port++) {
+>> -		struct phylink_pcs *phylink_pcs = felix->pcs[port];
+>> -		struct mdio_device *mdio_device;
+>> -
+>> -		if (!phylink_pcs)
+>> -			continue;
+>> -
+>> -		mdio_device = lynx_get_mdio_device(phylink_pcs);
+>> -		mdio_device_free(mdio_device);
+>> -		lynx_pcs_destroy(phylink_pcs);
+>> -	}
+>> +	for (port = 0; port < ocelot->num_phys_ports; port++)
+>> +		pcs_put(felix->pcs[port]);
+>>  	mdiobus_unregister(felix->imdio);
+>>  	mdiobus_free(felix->imdio);
+>>  }
+>> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+>> index 8c52de5d0b02..9006dec85ef0 100644
+>> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
+>> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+>> @@ -9,6 +9,7 @@
+>>  #include <linux/mdio/mdio-mscc-miim.h>
+>>  #include <linux/of_mdio.h>
+>>  #include <linux/of_platform.h>
+>> +#include <linux/pcs.h>
+>>  #include <linux/pcs-lynx.h>
+>>  #include <linux/dsa/ocelot.h>
+>>  #include <linux/iopoll.h>
+>> @@ -1044,16 +1045,9 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+>>  		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
+>>  			continue;
+>>  
+>> -		mdio_device = mdio_device_create(felix->imdio, addr);
+>> -		if (IS_ERR(mdio_device))
+>> +		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, addr);
+>> +		if (IS_ERR(phylink_pcs))
+>>  			continue;
+>> -
+>> -		phylink_pcs = lynx_pcs_create(mdio_device);
+>> -		if (IS_ERR(phylink_pcs)) {
+>> -			mdio_device_free(mdio_device);
+>> -			continue;
+>> -		}
+>> -
+>>  		felix->pcs[port] = phylink_pcs;
+>>  
+>>  		dev_info(dev, "Found PCS at internal MDIO address %d\n", addr);
+>> @@ -1067,17 +1061,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
+>>  	struct felix *felix = ocelot_to_felix(ocelot);
+>>  	int port;
+>>  
+>> -	for (port = 0; port < ocelot->num_phys_ports; port++) {
+>> -		struct phylink_pcs *phylink_pcs = felix->pcs[port];
+>> -		struct mdio_device *mdio_device;
+>> -
+>> -		if (!phylink_pcs)
+>> -			continue;
+>> -
+>> -		mdio_device = lynx_get_mdio_device(phylink_pcs);
+>> -		mdio_device_free(mdio_device);
+>> -		lynx_pcs_destroy(phylink_pcs);
+>> -	}
+>> +	for (port = 0; port < ocelot->num_phys_ports; port++)
+>> +		pcs_put(felix->pcs[port]);
+>>  
+>>  	/* mdiobus_unregister and mdiobus_free handled by devres */
+>>  }
+>> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> index 8c923a93da88..8da7c8644e44 100644
+>> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+>> @@ -8,6 +8,7 @@
+>>  #include <linux/of_platform.h>
+>>  #include <linux/of_mdio.h>
+>>  #include <linux/of_net.h>
+>> +#include <linux/pcs.h>
+>>  #include <linux/pcs-lynx.h>
+>>  #include "enetc_ierb.h"
+>>  #include "enetc_pf.h"
+>> @@ -827,7 +828,6 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+>>  	struct device *dev = &pf->si->pdev->dev;
+>>  	struct enetc_mdio_priv *mdio_priv;
+>>  	struct phylink_pcs *phylink_pcs;
+>> -	struct mdio_device *mdio_device;
+>>  	struct mii_bus *bus;
+>>  	int err;
+>>  
+>> @@ -851,16 +851,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+>>  		goto free_mdio_bus;
+>>  	}
+>>  
+>> -	mdio_device = mdio_device_create(bus, 0);
+>> -	if (IS_ERR(mdio_device)) {
+>> -		err = PTR_ERR(mdio_device);
+>> -		dev_err(dev, "cannot create mdio device (%d)\n", err);
+>> -		goto unregister_mdiobus;
+>> -	}
+>> -
+>> -	phylink_pcs = lynx_pcs_create(mdio_device);
+>> +	phylink_pcs = lynx_pcs_create_on_bus(bus, 0);
+>>  	if (IS_ERR(phylink_pcs)) {
+>> -		mdio_device_free(mdio_device);
+>>  		err = PTR_ERR(phylink_pcs);
+>>  		dev_err(dev, "cannot create lynx pcs (%d)\n", err);
+>>  		goto unregister_mdiobus;
+>> @@ -880,13 +872,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
+>>  
+>>  static void enetc_imdio_remove(struct enetc_pf *pf)
+>>  {
+>> -	struct mdio_device *mdio_device;
+>> -
+>> -	if (pf->pcs) {
+>> -		mdio_device = lynx_get_mdio_device(pf->pcs);
+>> -		mdio_device_free(mdio_device);
+>> -		lynx_pcs_destroy(pf->pcs);
+>> -	}
+>> +	if (pf->pcs)
+>> +		pcs_put(pf->pcs);
+>>  	if (pf->imdio) {
+>>  		mdiobus_unregister(pf->imdio);
+>>  		mdiobus_free(pf->imdio);
+>> diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+>> index 8272072698e4..adb9fd5ce72e 100644
+>> --- a/drivers/net/pcs/pcs-lynx.c
+>> +++ b/drivers/net/pcs/pcs-lynx.c
+>> @@ -403,6 +403,30 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
+>>  }
+>>  EXPORT_SYMBOL(lynx_pcs_create);
+>>  
+>> +struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr)
+>> +{
+>> +	struct mdio_device *mdio;
+>> +	struct phylink_pcs *pcs;
+>> +	int err;
+>> +
+>> +	mdio = mdio_device_create(bus, addr);
+>> +	if (IS_ERR(mdio))
+>> +		return ERR_CAST(mdio);
+>> +
+>> +	mdio->bus_match = mdio_device_bus_match;
+>> +	strncpy(mdio->modalias, "lynx-pcs", sizeof(mdio->modalias));
+>> +	err = mdio_device_register(mdio);
 > 
-> Got it, thanks. So things actually work up until the end, after fixing
-> the compilation errors and warnings and applying my phy_mask patch first.
-> However, as mentioned by Russell King, this patch set now gives us the
-> possibility of doing this, which happily kills the system:
+> Yeah, so the reason why mdio_device_register() fails with -EBUSY for the
+> PCS devices created by felix_vsc9959.c is this:
 > 
-> echo "0000:00:00.5-imdio:03" > /sys/bus/mdio_bus/drivers/lynx-pcs/unbind
+> int mdiobus_register_device(struct mdio_device *mdiodev)
+> {
+> 	int err;
 > 
-> For your information, pcs-rzn1-miic.c already has a device_link_add()
-> call to its consumer, and it does avoid the unbinding problem. It is a
-> bit of a heavy hammer as Russell points out (a DSA switch is a single
-> struct device, but has multiple net_devices and phylink instances, and
-> the switch device would be unregistered in its entirety), but on the
-> other hand, this is one of the simpler things we can do, until we have
-> something more fine-grained. I, for one, am perfectly happy with a
-> device link. The alternative would be reworking phylink to react on PCS
-> devices coming and going. I don't even know what the implications are
-> upon mac_select_pcs() and such...
+> 	if (mdiodev->bus->mdio_map[mdiodev->addr])
+> 		return -EBUSY;
+> 
+> In other words, we already have an existing mdiodev on the bus at
+> address mdiodev->addr. Funnily enough, that device is actually us.
+> It was created at MDIO bus creation time, a dummy phydev that no one
+> connects to, found by mdiobus_scan(). I knew this was taking place,
+> but forgot/didn't realize the connection with this patch set, and that
+> dummy phy_device was completely harmless until now.
+> 
+> I can suppress its creation like this:
+> 
+> From b1d1cd1625a27a62fd02598c7015b8ff0afdd28a Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date: Tue, 19 Jul 2022 20:15:52 +0300
+> Subject: [PATCH] net: dsa: ocelot: suppress PHY device scanning on the
+>  internal MDIO bus
+> 
+> This bus contains Lynx PCS devices, and if the lynx-pcs driver ever
+> decided to call mdio_device_register(), it would fail due to
+> mdiobus_scan() having created a dummy phydev for the same address
+> (the PCS responds to standard clause 22 PHY ID registers and can
+> therefore by autodetected by phylib which thinks it's a PHY).
+> 
+> On the Seville driver, things are a bit more complicated, since bus
+> creation is handled by mscc_miim_setup() and that is shared with the
+> dedicated mscc-miim driver. Suppress PHY scanning only for the Seville
+> internal MDIO bus rather than for the whole mscc-miim driver, since we
+> know that on NXP T1040, this bus only contains Lynx PCS devices.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/dsa/ocelot/felix_vsc9959.c   | 4 ++++
+>  drivers/net/dsa/ocelot/seville_vsc9953.c | 6 +++++-
+>  2 files changed, 9 insertions(+), 1 deletion(-)
 
-We could do it, but it'd be a pretty big hack. Something like the
-following. Phylink would need to be modified to grab the lock before
-every op and check if the PCS is dead or not. This is of course still
-not optimal, since there's no way to re-attach a PCS once it goes away.
+Thanks! I'll pick this up for v2.
 
-IMO a better solution is to use devlink and submit a patch to add
-notifications which the MAC driver can register for. That way it can
-find out when the PCS goes away and potentially do something about it
-(or just let itself get removed).
-
----
- drivers/net/pcs/core.c     | 115 +++++++++++++++++++++++++++----------
- drivers/net/pcs/pcs-lynx.c |  20 +++----
- include/linux/pcs.h        |  23 +++++++-
- include/linux/phylink.h    |  19 +-----
- 4 files changed, 117 insertions(+), 60 deletions(-)
-
-diff --git a/drivers/net/pcs/core.c b/drivers/net/pcs/core.c
-index 782a4cdd19b2..46e4168802db 100644
---- a/drivers/net/pcs/core.c
-+++ b/drivers/net/pcs/core.c
-@@ -10,42 +10,83 @@
- #include <linux/phylink.h>
- #include <linux/property.h>
- 
-+struct phylink_pcs {
-+	struct mutex lock;
-+	struct list_head list;
-+	struct device *dev;
-+	void *priv;
-+	const struct phylink_pcs_ops *ops;
-+	int refs;
-+	bool dead;
-+	bool poll;
-+};
-+
- static LIST_HEAD(pcs_devices);
- static DEFINE_MUTEX(pcs_mutex);
- 
- /**
-  * pcs_register() - register a new PCS
-- * @pcs: the PCS to register
-+ * @init: Initialization data for a new PCS
-  *
-  * Registers a new PCS which can be automatically attached to a phylink.
-  *
-- * Return: 0 on success, or -errno on error
-+ * Return: A new PCS, or an error pointer
-  */
--int pcs_register(struct phylink_pcs *pcs)
-+struct phylink_pcs *pcs_register(struct device *dev,
-+				 struct pcs_init *init)
- {
--	if (!pcs->dev || !pcs->ops)
--		return -EINVAL;
--	if (!pcs->ops->pcs_an_restart || !pcs->ops->pcs_config ||
--	    !pcs->ops->pcs_get_state)
--		return -EINVAL;
-+	struct phylink_pcs *pcs;
- 
-+	if (!init->ops)
-+		return ERR_PTR(-EINVAL);
-+	if (!init->ops->pcs_an_restart || !init->ops->pcs_config ||
-+	    !init->ops->pcs_get_state)
-+		return ERR_PTR(-EINVAL);
-+
-+	pcs = kzalloc(sizeof(*pcs), GFP_KERNEL);
-+	if (!pcs)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pcs->dev = dev;
-+	pcs->priv = init->priv;
-+	pcs->ops = init->ops;
-+	pcs->poll = init->poll;
-+	pcs->refs = 1;
-+	mutex_init(&pcs->lock);
- 	INIT_LIST_HEAD(&pcs->list);
-+
- 	mutex_lock(&pcs_mutex);
- 	list_add(&pcs->list, &pcs_devices);
- 	mutex_unlock(&pcs_mutex);
--	return 0;
-+	return pcs;
- }
- EXPORT_SYMBOL_GPL(pcs_register);
- 
-+static void pcs_free(struct phylink_pcs *pcs)
-+{
-+	int refs;
-+
-+	refs = --pcs->refs;
-+	mutex_unlock(&pcs->lock);
-+	if (refs)
-+		return;
-+
-+	WARN_ON(!pcs->dead);
-+	mutex_lock(&pcs_mutex);
-+	list_del(&pcs->list);
-+	mutex_unlock(&pcs_mutex);
-+	kfree(pcs);
-+}
-+
- /**
-  * pcs_unregister() - unregister a PCS
-  * @pcs: a PCS previously registered with pcs_register()
-  */
- void pcs_unregister(struct phylink_pcs *pcs)
- {
--	mutex_lock(&pcs_mutex);
--	list_del(&pcs->list);
--	mutex_unlock(&pcs_mutex);
-+	mutex_lock(&pcs->lock);
-+	pcs->dead = true;
-+	pcs_free(pcs);
- }
- EXPORT_SYMBOL_GPL(pcs_unregister);
- 
-@@ -65,26 +106,25 @@ static void devm_pcs_release(struct device *dev, void *res)
-  *
-  * Return: 0 on success, or -errno on failure
-  */
--int devm_pcs_register(struct device *dev, struct phylink_pcs *pcs)
-+struct phylink_pcs *devm_pcs_register(struct device *dev,
-+				      struct pcs_init *init)
- {
- 	struct phylink_pcs **pcsp;
--	int ret;
-+	struct phylink_pcs *pcs;
- 
- 	pcsp = devres_alloc(devm_pcs_release, sizeof(*pcsp),
- 			    GFP_KERNEL);
- 	if (!pcsp)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
--	ret = pcs_register(pcs);
--	if (ret) {
-+	pcs = pcs_register(dev, init);
-+	if (IS_ERR(pcs)) {
- 		devres_free(pcsp);
--		return ret;
-+	} else {
-+		*pcsp = pcs;
-+		devres_add(dev, pcsp);
- 	}
--
--	*pcsp = pcs;
--	devres_add(dev, pcsp);
--
--	return ret;
-+	return pcs;
- }
- EXPORT_SYMBOL_GPL(devm_pcs_register);
- 
-@@ -106,16 +146,20 @@ static struct phylink_pcs *pcs_find(const struct fwnode_handle *fwnode,
- 
- 	mutex_lock(&pcs_mutex);
- 	list_for_each_entry(pcs, &pcs_devices, list) {
--		if (dev && pcs->dev == dev)
--			goto out;
--		if (fwnode && pcs->dev->fwnode == fwnode)
--			goto out;
-+		mutex_lock(&pcs->lock);
-+		if (!pcs->dead) {
-+			if (dev && pcs->dev == dev)
-+				goto out;
-+			if (fwnode && pcs->dev->fwnode == fwnode)
-+				goto out;
-+		}
-+		mutex_unlock(&pcs->lock);
- 	}
- 	pcs = NULL;
- 
- out:
- 	mutex_unlock(&pcs_mutex);
--	pr_devel("%s: looking for %pfwf or %s %s...%s found\n", __func__,
-+	pr_debug("%s: looking for %pfwf or %s %s...%s found\n", __func__,
- 		 fwnode, dev ? dev_driver_string(dev) : "(null)",
- 		 dev ? dev_name(dev) : "(null)", pcs ? " not" : "");
- 	return pcs;
-@@ -132,10 +176,15 @@ static struct phylink_pcs *pcs_find(const struct fwnode_handle *fwnode,
-  */
- static struct phylink_pcs *pcs_get_tail(struct phylink_pcs *pcs)
- {
-+	bool got_module;
-+
- 	if (!pcs)
- 		return ERR_PTR(-EPROBE_DEFER);
- 
--	if (!try_module_get(pcs->ops->owner))
-+	got_module = try_module_get(pcs->ops->owner);
-+	pcs->refs += got_module;
-+	mutex_unlock(&pcs->lock);
-+	if (!got_module)
- 		return ERR_PTR(-ENODEV);
- 	get_device(pcs->dev);
- 
-@@ -222,5 +271,13 @@ void pcs_put(struct phylink_pcs *pcs)
- 
- 	put_device(pcs->dev);
- 	module_put(pcs->ops->owner);
-+	mutex_lock(&pcs->lock);
-+	pcs_free(pcs);
- }
- EXPORT_SYMBOL_GPL(pcs_put);
-+
-+void *pcs_get_priv(struct phylink_pcs *pcs)
-+{
-+	return pcs->priv;
-+}
-+EXPORT_SYMBOL_GPL(pcs_get_priv);
-diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-index c3e2c4a6fab6..f792f2a7cdf2 100644
---- a/drivers/net/pcs/pcs-lynx.c
-+++ b/drivers/net/pcs/pcs-lynx.c
-@@ -26,7 +26,6 @@
- #define IF_MODE_HALF_DUPLEX		BIT(4)
- 
- struct lynx_pcs {
--	struct phylink_pcs pcs;
- 	struct mdio_device *mdio;
- };
- 
-@@ -37,8 +36,7 @@ enum sgmii_speed {
- 	SGMII_SPEED_2500	= 2,
- };
- 
--#define phylink_pcs_to_lynx(pl_pcs) container_of((pl_pcs), struct lynx_pcs, pcs)
--#define lynx_to_phylink_pcs(lynx) (&(lynx)->pcs)
-+#define phylink_pcs_to_lynx(pl_pcs) pcs_get_priv(pl_pcs)
- 
- static void lynx_pcs_get_state_usxgmii(struct mdio_device *pcs,
- 				       struct phylink_link_state *state)
-@@ -318,21 +316,23 @@ static const struct phylink_pcs_ops lynx_pcs_phylink_ops = {
- static int lynx_pcs_probe(struct mdio_device *mdio)
- {
- 	struct device *dev = &mdio->dev;
-+	struct phylink_pcs *pcs;
- 	struct lynx_pcs *lynx;
--	int ret;
-+	struct pcs_init init;
- 
- 	lynx = devm_kzalloc(dev, sizeof(*lynx), GFP_KERNEL);
- 	if (!lynx)
- 		return -ENOMEM;
- 
- 	lynx->mdio = mdio;
--	lynx->pcs.dev = dev;
--	lynx->pcs.ops = &lynx_pcs_phylink_ops;
--	lynx->pcs.poll = true;
-+	init.priv = lynx;
-+	init.ops = &lynx_pcs_phylink_ops;
-+	init.poll = true;
- 
--	ret = devm_pcs_register(dev, &lynx->pcs);
--	if (ret)
--		return dev_err_probe(dev, ret, "could not register PCS\n");
-+	pcs = devm_pcs_register(dev, &init);
-+	if (IS_ERR(pcs))
-+		return dev_err_probe(dev, PTR_ERR(pcs),
-+				     "could not register PCS\n");
- 	dev_info(dev, "probed\n");
- 	return 0;
- }
-diff --git a/include/linux/pcs.h b/include/linux/pcs.h
-index 00e76594e03c..2605603149ec 100644
---- a/include/linux/pcs.h
-+++ b/include/linux/pcs.h
-@@ -6,12 +6,27 @@
- #ifndef _PCS_H
- #define _PCS_H
- 
--struct phylink_pcs;
- struct fwnode;
-+struct phylink_pcs;
-+struct phylink_pcs_ops;
- 
--int pcs_register(struct phylink_pcs *pcs);
-+/**
-+ * struct pcs_init - PCS initialization data
-+ * @priv: the device's private data
-+ * @ops: a pointer to the &struct phylink_pcs_ops structure
-+ * @poll: poll the PCS for link changes
-+ */
-+struct pcs_init {
-+	void *priv;
-+	const struct phylink_pcs_ops *ops;
-+	bool poll;
-+};
-+
-+struct phylink_pcs *pcs_register(struct device *dev,
-+				 struct pcs_init *init);
- void pcs_unregister(struct phylink_pcs *pcs);
--int devm_pcs_register(struct device *dev, struct phylink_pcs *pcs);
-+struct phylink_pcs *devm_pcs_register(struct device *dev,
-+				      struct pcs_init *init);
- struct phylink_pcs *_pcs_get_by_fwnode(const struct fwnode_handle *fwnode,
- 				       const char *id, bool optional);
- struct phylink_pcs *pcs_get_by_provider(const struct device *dev);
-@@ -30,4 +45,6 @@ static inline struct phylink_pcs
- 	return _pcs_get_by_fwnode(fwnode, id, true);
- }
- 
-+void *pcs_get_priv(struct phylink_pcs *pcs);
-+
- #endif /* PCS_H */
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index a713e70108a1..864536d1b293 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -392,24 +392,7 @@ void mac_link_up(struct phylink_config *config, struct phy_device *phy,
- 		 int speed, int duplex, bool tx_pause, bool rx_pause);
- #endif
- 
--struct phylink_pcs_ops;
--
--/**
-- * struct phylink_pcs - PHYLINK PCS instance
-- * @dev: the device associated with this PCS
-- * @ops: a pointer to the &struct phylink_pcs_ops structure
-- * @list: internal list of PCS devices
-- * @poll: poll the PCS for link changes
-- *
-- * This structure is designed to be embedded within the PCS private data,
-- * and will be passed between phylink and the PCS.
-- */
--struct phylink_pcs {
--	struct device *dev;
--	const struct phylink_pcs_ops *ops;
--	struct list_head list;
--	bool poll;
--};
-+struct phylink_pcs;
- 
- /**
-  * struct phylink_pcs_ops - MAC PCS operations structure.
--- 
-2.35.1.1320.gc452695387.dirty
+--Sean
