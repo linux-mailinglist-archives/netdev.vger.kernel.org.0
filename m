@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E688B57936B
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAEC57936A
 	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236271AbiGSGtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 02:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        id S231635AbiGSGtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 02:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236982AbiGSGtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:49:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D5B2A403
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:00 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id va17so25439227ejb.0
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:00 -0700 (PDT)
+        with ESMTP id S235768AbiGSGtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:49:03 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B4A26122
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:01 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id mf4so25380336ejc.3
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=QbAUtySQT8gbI2UbvTAQbxVI+gD8nKYyKm+QLNLaDME=;
-        b=QHG+R23Z1Q1pXQ89YjrB/rGMHN9yoGznDCB45fFvvdwun/eQ8g0iWvRiFVdNssys9s
-         zCZr8UehHXOkGSFA9PfMvX6vWwU8t1Otv9CDITatjAmJdRyhmCNjmZhAucszd8WDzrwD
-         wv0OJTZCcumRdFQ9EzsWYwCpk/MTk4HsSn9toL/bc1w2rDGEtfm0RTVl5aqCUU02aMk3
-         G7IIRQKZgJfqDpx0KIF7yayTeZi4uSEUIudhe9G64YmaMGBZgiBKsNo5Qx5WXMVjsaPx
-         JsMSGyODzCUfZN2/k2LlOcTCYVS/gghlaODvFocCgFgwajQoNGFXHquZlFuVpkXvaGUM
-         tdDA==
+        bh=Y0d6xIdSAlipEBv8dkiXH/59al98EBuG1h6b/37KGT4=;
+        b=8OC5G6CJn2pVNJG3a5LykZ7ehiXX8ZOZtoE/GZSSrKD7tpqaA+FO/HeEixvzY0ilZz
+         wctKWiHlD13LN76c+ivfhlo5tgp/Dik+vVOUNB6AJVa3GKLg3U+hzuvYlEoVvCyMvIqk
+         /nlrxm310OYbca+hxqQ+8jaJ7THHOxs6lqYmfYnVG9VRBr4XZtIQP8KqFUUuFRcuQzmX
+         Ehm6IwQuU7aWwkwmAp4ilrdnDsfuV+rJOpUjzIG1AvDdl49gHSMo1fxS6DwnZff5fcIQ
+         vhuXFNCaUMSv8j7VNLHgYGSoGZsSGm9W2jsgG/PO8FbDQV0vjtGwpH6lB3VHQxni8lGY
+         eOoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QbAUtySQT8gbI2UbvTAQbxVI+gD8nKYyKm+QLNLaDME=;
-        b=Zsf7b7lOj9TnsZCxqGmZn2gZ+SEKgntPl+ZUnhqaWjO6q8XAqVkxGkXIKLfQuMRORN
-         qVfIEjOKUq6zTXBnYRByiVO6/tKQbi/UUCRw9Jbgixn5neRZbK+X8vHcQn4n+XwScb+f
-         JKvtx4X0qVKFpbE6cNAnccdmXmKP4Tm9BIDcVcwpyqpD5uxyiFnlqR+apGPtAYDnI83G
-         qbu1cRJbbeHrlnGLpvvvdH03FHp1QE6FkADq9yschsyRSa5uMu1A0KZQFRLnE03a2RjL
-         vz4dqCJqgY/5iGMxsHXwPVxIT9Y+YJBhTYEOwrKWF9C8QgeQnOl/LRVY4CA20ifm13C2
-         FmUw==
-X-Gm-Message-State: AJIora9/jbud8CuELeY7HDzSBazvH95zBXS29XUYrXydEoLouPPL453Q
-        zwQugvGUssMXftA0ra4iKB+7F1GWaXP5cE/sRLw=
-X-Google-Smtp-Source: AGRyM1sbYxTfq9Xpjdp7v2aXlO4POaZoSE1PQn3deDPc33M2KSFliMvW20X9ZsroWw7S5UOgK7p/ig==
-X-Received: by 2002:a17:907:948e:b0:72d:3fd2:5da0 with SMTP id dm14-20020a170907948e00b0072d3fd25da0mr27499405ejc.225.1658213338976;
-        Mon, 18 Jul 2022 23:48:58 -0700 (PDT)
+        bh=Y0d6xIdSAlipEBv8dkiXH/59al98EBuG1h6b/37KGT4=;
+        b=YN3iIUUNeGYa3BocX1kkYsN4IUajGQuMhTMl71yUO5xMK/JLseAUBrg4wxAQ2wZgHx
+         vpNKqMjDL9IOy4x9WK93zfSr3LIhrS9HtQn3euRJlDP1b0KZBW6z/OhnzhFIADMAOxS1
+         0RCb5EeUKBbtkzfndNJ2EIXw8c5qTNDZ9g1aGs7ExmjjmLErvKKzqgAlZmY4OMqosTXS
+         8k8TuukWm6pWsZybjf7krH/3yAfrIKITA0mqhLGb2iZ2EFJ9BDqjHMXV6MhYIIHFXrU9
+         Lam0G3tXYWl7qvHVyI13fFz0DKLuLUtb8SnOnHNdxHDxygDPLP2BneUA45QwZyqjLrQ3
+         lLpg==
+X-Gm-Message-State: AJIora/e6d0Tzt9/Awun4B5zokFxy8Jdqh8hATtDkCrDXWQrjnGOOzWE
+        QVFwHEb4S0hZNiRYdk9BTaFlCsGkzmZrgDid2vs=
+X-Google-Smtp-Source: AGRyM1uUl7cE3I2OTTH587DdPBziuxJf41uQeAfoN0t9cxIUcdpEeFZDCKaGu6NEqbDIElVT2tQfuQ==
+X-Received: by 2002:a17:907:980d:b0:72f:2cf2:9aff with SMTP id ji13-20020a170907980d00b0072f2cf29affmr8735303ejc.165.1658213340492;
+        Mon, 18 Jul 2022 23:49:00 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id co28-20020a0564020c1c00b0043a84dfbf06sm10064505edb.15.2022.07.18.23.48.58
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090636c400b0072aa014e852sm6314471ejc.87.2022.07.18.23.48.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 23:48:58 -0700 (PDT)
+        Mon, 18 Jul 2022 23:49:00 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: [patch net-next v2 07/12] mlxsw: core_linecards: Probe provisioned line cards for devices and expose FW version
-Date:   Tue, 19 Jul 2022 08:48:42 +0200
-Message-Id: <20220719064847.3688226-8-jiri@resnulli.us>
+Subject: [patch net-next v2 08/12] mlxsw: reg: Add Management DownStream Device Tunneling Register
+Date:   Tue, 19 Jul 2022 08:48:43 +0200
+Message-Id: <20220719064847.3688226-9-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220719064847.3688226-1-jiri@resnulli.us>
 References: <20220719064847.3688226-1-jiri@resnulli.us>
@@ -71,150 +71,123 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-In case the line card is provisioned, go over all possible existing
-devices (gearboxes) on it and expose FW version of the flashable one.
-
-Example:
-
-$ devlink dev info auxiliary/mlxsw_core.lc.0
-auxiliary/mlxsw_core.lc.0:
-  versions:
-      fixed:
-        hw.revision 0
-      running:
-        ini.version 4
-        fw 19.2010.1312
+The MDDT register allows to deliver query and request messages (PRM
+registers, commands) to a DownStream device.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/devlink/mlxsw.rst    |  3 +
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  9 +++
- .../ethernet/mellanox/mlxsw/core_linecards.c  | 57 +++++++++++++++++++
- 3 files changed, 69 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 90 +++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
 
-diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
-index aededcf68df4..65ceed98f94d 100644
---- a/Documentation/networking/devlink/mlxsw.rst
-+++ b/Documentation/networking/devlink/mlxsw.rst
-@@ -75,6 +75,9 @@ The ``mlxsw`` driver reports the following versions for line card auxiliary devi
-    * - ``ini.version``
-      - running
-      - Version of line card INI loaded
-+   * - ``fw.version``
-+     - running
-+     - Three digit firmware version of line card device
- 
- Driver-specific Traps
- =====================
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 87c58b512536..e19860c05e75 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -564,6 +564,12 @@ enum mlxsw_linecard_status_event_type {
- 
- struct mlxsw_linecard_bdev;
- 
-+struct mlxsw_linecard_device_info {
-+	u16 fw_major;
-+	u16 fw_minor;
-+	u16 fw_sub_minor;
-+};
-+
- struct mlxsw_linecard {
- 	u8 slot_index;
- 	struct mlxsw_linecards *linecards;
-@@ -579,6 +585,9 @@ struct mlxsw_linecard {
- 	u16 hw_revision;
- 	u16 ini_version;
- 	struct mlxsw_linecard_bdev *bdev;
-+	struct {
-+		struct mlxsw_linecard_device_info info;
-+	} device;
- };
- 
- struct mlxsw_linecard_types_info;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-index c427e07b25dd..bd8f43e21212 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-@@ -87,6 +87,47 @@ static const char *mlxsw_linecard_type_name(struct mlxsw_linecard *linecard)
- 	return linecard->name;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 76caf06b17d6..e45df09df757 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -11276,6 +11276,95 @@ mlxsw_reg_mbct_unpack(const char *payload, u8 *p_slot_index,
+ 		*p_fsm_state = mlxsw_reg_mbct_fsm_state_get(payload);
  }
  
-+static int mlxsw_linecard_device_info_update(struct mlxsw_linecard *linecard)
++/* MDDT - Management DownStream Device Tunneling Register
++ * ------------------------------------------------------
++ * This register allows to deliver query and request messages (PRM registers,
++ * commands) to a DownStream device.
++ */
++#define MLXSW_REG_MDDT_ID 0x9160
++#define MLXSW_REG_MDDT_LEN 0x110
++
++MLXSW_REG_DEFINE(mddt, MLXSW_REG_MDDT_ID, MLXSW_REG_MDDT_LEN);
++
++/* reg_mddt_slot_index
++ * Slot index.
++ * Access: Index
++ */
++MLXSW_ITEM32(reg, mddt, slot_index, 0x00, 8, 4);
++
++/* reg_mddt_device_index
++ * Device index.
++ * Access: Index
++ */
++MLXSW_ITEM32(reg, mddt, device_index, 0x00, 0, 8);
++
++/* reg_mddt_read_size
++ * Read size in D-Words.
++ * Access: OP
++ */
++MLXSW_ITEM32(reg, mddt, read_size, 0x04, 24, 8);
++
++/* reg_mddt_write_size
++ * Write size in D-Words.
++ * Access: OP
++ */
++MLXSW_ITEM32(reg, mddt, write_size, 0x04, 16, 8);
++
++enum mlxsw_reg_mddt_status {
++	MLXSW_REG_MDDT_STATUS_OK,
++};
++
++/* reg_mddt_status
++ * Return code of the Downstream Device to the register that was sent.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddt, status, 0x0C, 24, 8);
++
++enum mlxsw_reg_mddt_method {
++	MLXSW_REG_MDDT_METHOD_QUERY,
++	MLXSW_REG_MDDT_METHOD_WRITE,
++};
++
++/* reg_mddt_method
++ * Access: OP
++ */
++MLXSW_ITEM32(reg, mddt, method, 0x0C, 22, 2);
++
++/* reg_mddt_register_id
++ * Access: Index
++ */
++MLXSW_ITEM32(reg, mddt, register_id, 0x0C, 0, 16);
++
++#define MLXSW_REG_MDDT_PAYLOAD_OFFSET 0x0C
++#define MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN 4
++
++static inline char *mlxsw_reg_mddt_inner_payload(char *payload)
 +{
-+	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
-+	bool flashable_found = false;
-+	u8 msg_seq = 0;
-+
-+	do {
-+		struct mlxsw_linecard_device_info info;
-+		char mddq_pl[MLXSW_REG_MDDQ_LEN];
-+		bool flash_owner;
-+		bool data_valid;
-+		u8 device_index;
-+		int err;
-+
-+		mlxsw_reg_mddq_device_info_pack(mddq_pl, linecard->slot_index,
-+						msg_seq);
-+		err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mddq), mddq_pl);
-+		if (err)
-+			return err;
-+		mlxsw_reg_mddq_device_info_unpack(mddq_pl, &msg_seq,
-+						  &data_valid, &flash_owner,
-+						  &device_index,
-+						  &info.fw_major,
-+						  &info.fw_minor,
-+						  &info.fw_sub_minor);
-+		if (!data_valid)
-+			break;
-+		if (!flash_owner) /* We care only about flashable ones. */
-+			continue;
-+		if (flashable_found) {
-+			dev_warn_once(linecard->linecards->bus_info->dev, "linecard %u: More flashable devices present, exposing only the first one\n",
-+				      linecard->slot_index);
-+			return 0;
-+		}
-+		linecard->device.info = info;
-+		flashable_found = true;
-+	} while (msg_seq);
-+
-+	return 0;
++	return payload + MLXSW_REG_MDDT_PAYLOAD_OFFSET +
++	       MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN;
 +}
 +
- static void mlxsw_linecard_provision_fail(struct mlxsw_linecard *linecard)
- {
- 	linecard->provisioned = false;
-@@ -249,6 +290,18 @@ int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
- 	if (err)
- 		goto unlock;
- 
-+	if (linecard->ready) {
-+		struct mlxsw_linecard_device_info *info = &linecard->device.info;
++static inline void mlxsw_reg_mddt_pack(char *payload, u8 slot_index,
++				       u8 device_index,
++				       enum mlxsw_reg_mddt_method method,
++				       const struct mlxsw_reg_info *reg,
++				       char **inner_payload)
++{
++	int len = reg->len + MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN;
 +
-+		sprintf(buf, "%u.%u.%u", info->fw_major, info->fw_minor,
-+			info->fw_sub_minor);
-+		err = devlink_info_version_running_put(req,
-+						       DEVLINK_INFO_VERSION_GENERIC_FW,
-+						       buf);
-+		if (err)
-+			goto unlock;
-+	}
++	if (WARN_ON(len + MLXSW_REG_MDDT_PAYLOAD_OFFSET > MLXSW_REG_MDDT_LEN))
++		len = MLXSW_REG_MDDT_LEN - MLXSW_REG_MDDT_PAYLOAD_OFFSET;
 +
- unlock:
- 	mutex_unlock(&linecard->lock);
- 	return err;
-@@ -308,6 +361,10 @@ static int mlxsw_linecard_ready_set(struct mlxsw_linecard *linecard)
- 	char mddc_pl[MLXSW_REG_MDDC_LEN];
- 	int err;
- 
-+	err = mlxsw_linecard_device_info_update(linecard);
-+	if (err)
-+		return err;
++	MLXSW_REG_ZERO(mddt, payload);
++	mlxsw_reg_mddt_slot_index_set(payload, slot_index);
++	mlxsw_reg_mddt_device_index_set(payload, device_index);
++	mlxsw_reg_mddt_method_set(payload, method);
++	mlxsw_reg_mddt_register_id_set(payload, reg->id);
++	mlxsw_reg_mddt_read_size_set(payload, len / 4);
++	mlxsw_reg_mddt_write_size_set(payload, len / 4);
++	*inner_payload = mlxsw_reg_mddt_inner_payload(payload);
++}
 +
- 	mlxsw_reg_mddc_pack(mddc_pl, linecard->slot_index, false, true);
- 	err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(mddc), mddc_pl);
- 	if (err)
+ /* MDDQ - Management DownStream Device Query Register
+  * --------------------------------------------------
+  * This register allows to query the DownStream device properties. The desired
+@@ -12854,6 +12943,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(mfgd),
+ 	MLXSW_REG(mgpir),
+ 	MLXSW_REG(mbct),
++	MLXSW_REG(mddt),
+ 	MLXSW_REG(mddq),
+ 	MLXSW_REG(mddc),
+ 	MLXSW_REG(mfde),
 -- 
 2.35.3
 
