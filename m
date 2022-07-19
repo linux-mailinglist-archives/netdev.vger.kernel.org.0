@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC8E857A0DA
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB3D57A0E8
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238809AbiGSOL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        id S237961AbiGSOMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238707AbiGSOLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:11:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9D6980508
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658237546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s4t4lP9F+gFhkuqe3lAyPfoePFSA2zpeRXhDf6Qf1WE=;
-        b=U18EY7NIqeauOk96fQOKF0Fd9lYJfFbXghXSmUDXE+ZltLSp9eUEhYX5HewtilmLBOJZdK
-        7UvIhjdrzivz3SeoqFhikE/K8hRAR0ZeRbLyG4TxUKskXyxvpyGIoGZOx/vxD6fjDPJ3mf
-        +zQkuJ1mwNxToVBjPoc6LNzc0bgKQbA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-34-qN68vMJEPYKMiAyPwuuLuw-1; Tue, 19 Jul 2022 09:32:25 -0400
-X-MC-Unique: qN68vMJEPYKMiAyPwuuLuw-1
-Received: by mail-qt1-f198.google.com with SMTP id ay25-20020a05622a229900b0031ef5fdf8f8so2770272qtb.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:32:25 -0700 (PDT)
+        with ESMTP id S239031AbiGSOMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:12:06 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D2145991;
+        Tue, 19 Jul 2022 06:34:34 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id sz17so27187845ejc.9;
+        Tue, 19 Jul 2022 06:34:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z6xDSfAHK+BBQJZyK140qnQ9OO2D3PdlxD4xhuvsKj4=;
+        b=KEn4wOj0CcTFN+w68/vqdQUgXcJevK8GV52zDvtSu7OanGPud8r1CB0HPQqNpqLdLR
+         SVL6gt1GTmiLVPMuMWxbcKrkTGLV50U1cM1Df5+tpXnEIO1N5tu3rinaVf9jVtmvuf/E
+         h4+j/flwd1TuzCW8z+FvMQ1d0xwn+sJ6Dvk37KIU4iM3hHk6SalKeNEtFTmzNeDsY7uD
+         ZSHsn3amPpI4ghzyNJS01PtIzdhxIEb9zxE1dLbDNk0XmWng0PGJaNKbKojmqnYzIyED
+         mwuSDYyM/ctAMWDuUdNOkM+JncMo+7wFEr2o77rrjsd7mmBO/xBZj9/UF99Xl9h+8y0s
+         JheA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=s4t4lP9F+gFhkuqe3lAyPfoePFSA2zpeRXhDf6Qf1WE=;
-        b=C9DNH5Q1GwGJZSKQxfXLsz01KuXUFMs8xe4DT10lIHB2eoU9QxudBOO9BtVzcj8OfS
-         GteDjHm3tLEVsmXFJsce4Tmmo95PwVRpnPxxXvsmqj6mXwg+FZlMqv1kAXW76cLeP+j0
-         P1z72Tqh6CAHbKUD2U9U7WMU6nj/7rZJHj5odSpkYiHdwqSTFqy/IiYjp7iCKpzZtlWF
-         xd4ejAGJnXGeyUFPKgAW0NvfmDHtuEI7s7N3vKHyOWp1UK2ReGG6j9bE+1h+juw+qvwt
-         HB28IdCK1qCs8p5NtdeGE2U9vMSs04Hktr5fMWlbKaUwb+l83OhV7NyInCBtaq4mh+iJ
-         PUSw==
-X-Gm-Message-State: AJIora+/rr+TGT9ZK3qUMz4Qmwgpgxbk425IhH2c/NODfRj15HF8Xo/m
-        n7ZDR4H39jl22uCZkce8EJUnkBzv7lRV5gLnwU7w8eTf7m+KfZagTjRrmWzgz2ieVC9oU/jnK5D
-        Er3ehaOTTPf6Tqqca
-X-Received: by 2002:a05:620a:24d1:b0:6b5:9210:163f with SMTP id m17-20020a05620a24d100b006b59210163fmr9567217qkn.136.1658237544245;
-        Tue, 19 Jul 2022 06:32:24 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ufMCMrjjF/F600a7OAC0QiTQXCelGDm+1vqsdpi+1ystBuEeGrP3159Njzg/8bt1GdfBwdOQ==
-X-Received: by 2002:a05:620a:24d1:b0:6b5:9210:163f with SMTP id m17-20020a05620a24d100b006b59210163fmr9567191qkn.136.1658237543983;
-        Tue, 19 Jul 2022 06:32:23 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id k13-20020a05620a414d00b006a981a2c483sm14228363qko.39.2022.07.19.06.32.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z6xDSfAHK+BBQJZyK140qnQ9OO2D3PdlxD4xhuvsKj4=;
+        b=MZUzPtN+2ZzVknLd1mYkL2hUM+3o2p7PIL1ciXfgELsRqxDPNv3lCQDqnPXQN/K+5k
+         nUzN1FzDDpyLFTTOHeRUQ6v+BawPxgnZ4W1heUepPQIEt9Ce5AjkWZdUbHocJ2Ri7qjd
+         A3hlrYESE6Z9/nmDY7XMqRIYuKRJtdGYFUdN6YMenrHovuyuWdeC8oYmtDs3lAve32Iv
+         Ysgp7w6lsikl5VXAFSyPBXVPPQrLZddowQlvBbTQU1dU/p9BB7ZjFHeeAgyLbZce5YME
+         aJm7X/41U9XVmXJhpl6ttCz1ivMbzLUp7d0E/7TvBj6eZlkiN7bYIMfnn/M4lcxSqUDX
+         ZwpA==
+X-Gm-Message-State: AJIora9PKzVbQXQK0l7WhiBAnCgx0CGHiWn3q8HQfbp1YMojrCGVk3h8
+        R2qvOWjfMpRhcxzfCu7VRNq2EhDd/1Bhuw==
+X-Google-Smtp-Source: AGRyM1vYlG9DRVyycefPGSd4rQth0b9k4pq9UAUJDsuPPsY5ODFj8zD4DDbavJVNIdsGJ4ZY0mY+Sw==
+X-Received: by 2002:a17:907:72ce:b0:72f:7b3:b9c8 with SMTP id du14-20020a17090772ce00b0072f07b3b9c8mr17643941ejc.248.1658237672545;
+        Tue, 19 Jul 2022 06:34:32 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id r17-20020aa7d591000000b0043b9d4f7678sm801879edq.96.2022.07.19.06.34.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:32:23 -0700 (PDT)
-Message-ID: <8da535a285499af67b7d4ca5e67f71d66ce89743.camel@redhat.com>
-Subject: Re: [net-next 03/14] net/mlx5e: Expose rx_oversize_pkts_buffer
- counter
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Gal Pressman <gal@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        Tue, 19 Jul 2022 06:34:31 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:34:29 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Date:   Tue, 19 Jul 2022 15:32:20 +0200
-In-Reply-To: <24bd2c21-87c2-0ca9-8f57-10dc2ae4774c@nvidia.com>
-References: <20220717213352.89838-1-saeed@kernel.org>
-         <20220717213352.89838-4-saeed@kernel.org>
-         <20220718202504.3d189f57@kernel.org>
-         <24bd2c21-87c2-0ca9-8f57-10dc2ae4774c@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 03/15] net: dsa: qca8k: move
+ qca8kread/write/rmw and reg table to common code
+Message-ID: <20220719133429.mhd5t4ekjlz7k6yw@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-5-ansuelsmth@gmail.com>
+ <62d60620.1c69fb81.42957.a752@mx.google.com>
+ <20220718183006.15e16e46@kernel.org>
+ <62d609d8.1c69fb81.d2fea.5a4b@mx.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62d609d8.1c69fb81.d2fea.5a4b@mx.google.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Tue, 2022-07-19 at 14:13 +0300, Gal Pressman wrote:
-> On 19/07/2022 06:25, Jakub Kicinski wrote:
-> > On Sun, 17 Jul 2022 14:33:41 -0700 Saeed Mahameed wrote:
-> > > From: Gal Pressman <gal@nvidia.com>
+On Tue, Jul 19, 2022 at 03:16:05AM +0200, Christian Marangi wrote:
+> On Mon, Jul 18, 2022 at 06:30:06PM -0700, Jakub Kicinski wrote:
+> > On Tue, 19 Jul 2022 03:00:13 +0200 Christian Marangi wrote:
+> > > This slipped and was sent by mistake (and was just a typo fixed in the
+> > > title)
 > > > 
-> > > Add the rx_oversize_pkts_buffer counter to ethtool statistics.
-> > > This counter exposes the number of dropped received packets due to
-> > > length which arrived to RQ and exceed software buffer size allocated by
-> > > the device for incoming traffic. It might imply that the device MTU is
-> > > larger than the software buffers size.
-> > Is it counted towards any of the existing stats as well? It needs 
-> > to end up in struct rtnl_link_stats64::rx_length_errors somehow.
+> > > Please ignore. Sorry.
+> > 
+> > Please make sure you wait 24h before reposting, as per
 > 
-> Probably makes sense to count it in rx_over_errors:
->  *   The recommended interpretation for high speed interfaces is -
->  *   number of packets dropped because they did not fit into buffers
->  *   provided by the host, e.g. packets larger than MTU or next buffer
->  *   in the ring was not available for a scatter transfer.
-> 
-> It doesn't fit the rx_length_errors (802.3) as these packets are not
-> dropped on the MAC.
-> Will change.
+> Oh sorry... you are right, had a long discussion with Vladimir on the
+> changes to do and I thought it was a good idea (since v1 was really not
+> reviewable)
 
-I read the above as you are going to send a new revision of this PR, so
-I'm setting this to 'Changes Requested' in PW.
-
-Please correct me otherwise.
-
-Paolo
-
+I think Jakub said "please wait at least 24h until reposing v3". Your RFC v1
+was posted 3 days ago, I believe we all agree that's more than 24 hours ago,
+and therefore not what Jakub was talking about.
