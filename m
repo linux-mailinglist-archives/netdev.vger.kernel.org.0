@@ -2,100 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C94BE57A62F
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC16257A637
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239900AbiGSSK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 14:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
+        id S230163AbiGSSMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 14:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239924AbiGSSKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:10:48 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8829A54656
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 11:10:31 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id h14so885158ilq.12
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 11:10:31 -0700 (PDT)
+        with ESMTP id S239935AbiGSSLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:11:45 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E445E308;
+        Tue, 19 Jul 2022 11:11:19 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id mf4so28737690ejc.3;
+        Tue, 19 Jul 2022 11:11:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KhaRQXijU7X7QmaQEbJg0rB5xqhYmbZCHiU1aLyghl0=;
-        b=cT/qMGKV+2myXeCJjPngGGYo3SfWAsIwPQiV98pzR666eLHS2DZ1mIOf/LqGePwL9u
-         f0Jw/BuoJ6IHMNucTxjuXvy/hK4RiHqRBZsLDyijKnahK+zA+/drlkyy3YHg+jhP6Z0N
-         Jzx9xWY/AIfpjGmqaDRosNihj5xylH1VulSciNlJ03QpLd0DonYFFKbnsgDnJmW79Dm7
-         0iol8fJxSaqIzTx/lk4iXcCm1kF4Iy4FPud87c60LEyl6k91fHVLUrHla4KPAc3cPLvh
-         Pd1PWLcDYONQDLvdRnAPEhYTZBi/NYZ45BGETu3MQrpwcvavFL9xno15lPJycmJCjSty
-         JEpg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oFQ5ZoRQ7xPvEwHpT6dAI/Y5WSqaXBBPZHaMSxK+Pcw=;
+        b=k7cidDMqq4R9oKOShik+Ajeb6Eb7qxkxuepRuZ3cwNVjjVnas8OG5VYKHSMBO2/X7t
+         WLT0xAL5Zn+l/+bmIEXnyt5y9VYk+91PrjKoEGQ0OZCLg1y6O1/ZLTsFQoePt84MUqze
+         smT6BeYNwVU8u60qtdZjuljctDReYPEaQgmabWuSW2ucNepkYMPo5xO3duqRnkIgh7lc
+         kj/UmBovaggwwiIZOvlqXyQ4ZbU3G0C8kEbV8LtdIeDh5Xc/Si923Nw4hLvD8mFoQC8B
+         8uysVk+KVZTYFAT3NxHpLUGluI0NgqGdo/0tcuaVuMy1NfTxzs9pjcXPBEFtTinhPcH4
+         jg5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KhaRQXijU7X7QmaQEbJg0rB5xqhYmbZCHiU1aLyghl0=;
-        b=UEoeLq+P+27Tlw4tZF9kZgu/15L2EtLIfKw9dZmJ1WGCR+MTZYbcJjiWC+gVj/5Psm
-         bzGHHBI3hBGJAUm/GupbN8M0RYiHC9WVaNS4eU8Wlj8wKljY1rqg3BADWdQ/CUdqLQOe
-         c5NeivrB4Q9+n5G2sbj6kS83VB3gqz9yKA8Lt010/sWR5qnCu15Edpt0ajCAO31my15h
-         NbXzIcYCS/ektG14h5AUEx7r+K5IGahtPdUi+SqyC0JnG/mHJX6lgI+G2MQhM5LTDcnv
-         h8AeN+A+S4hatEM/ScNBUdBHscy3EHEOVAX4PmK5mL4k+MoHwfiuoIUbX/WyoDjLiHQ2
-         Sc0g==
-X-Gm-Message-State: AJIora9iOu30Yn4LkZP+zkllN6DI20UL65bxp+O1erYoE4u+08GRn+1u
-        uNGnOCCsRPZ+cdpMsTY7juVNKA==
-X-Google-Smtp-Source: AGRyM1vYRI0fYrM4kBMueIGB2JLVtJZhd6JKwFFAqUc9U/AgZgLvNp8rhQeoRIsu6T+MJGc9oI7i5Q==
-X-Received: by 2002:a05:6e02:c86:b0:2dc:e139:444a with SMTP id b6-20020a056e020c8600b002dce139444amr6984067ile.96.1658254231231;
-        Tue, 19 Jul 2022 11:10:31 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id f6-20020a056e020b4600b002dae42fa5f2sm6089552ilu.56.2022.07.19.11.10.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oFQ5ZoRQ7xPvEwHpT6dAI/Y5WSqaXBBPZHaMSxK+Pcw=;
+        b=RR4m8bFRQG9KvKXpVSHO/kfXLmKKniC2csvUkOoSR5QK8yW85jA/XEgayXh4sU/aNw
+         +uoLZGpyfMRF5n0KlcnsJ3m9rS6zWXkkdNUuzoiG6RC0c85I1YEhRlFN4+PUD0gKJ7PG
+         q8FEmSoDg5CU8o+w45HY1+zskxZxdiYeMLKgZC+WN96w83aP5kRL1H1KQOIoSWtMiQ35
+         MYVHmWAxdwK3BTDNFJwipytUIhmBP1STUq8pNDZU9HIFD4Yjxed1Lty60DW1ESmZJTM6
+         ZrLBqbnqMdK66PCnIC3PWO+hyGEhNY07/1cnhOG6Y0fzTskQw2PYWjlzBuF6VdENN2j4
+         rsJA==
+X-Gm-Message-State: AJIora+Hyzf41sOGQ2MW7PTSpd54TKsdUGW+ZP38hH3eV+hmqY52+60u
+        GgXLo8rW1ergUn1U6fDrQ7c=
+X-Google-Smtp-Source: AGRyM1vrzPMh3dqrjGlhh3PwAnXW4KQokX/IMs0HL8VvNPn0GxhvoxzZ3J4dVwz2x5GzvwSBHdZVLA==
+X-Received: by 2002:a17:907:7b92:b0:72b:67fb:8985 with SMTP id ne18-20020a1709077b9200b0072b67fb8985mr30618389ejc.569.1658254277894;
+        Tue, 19 Jul 2022 11:11:17 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id n17-20020a170906089100b006fe0abb00f0sm6911930eje.209.2022.07.19.11.11.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 11:10:30 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 5/5] net: ipa: fix an outdated comment
-Date:   Tue, 19 Jul 2022 13:10:20 -0500
-Message-Id: <20220719181020.372697-6-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220719181020.372697-1-elder@linaro.org>
-References: <20220719181020.372697-1-elder@linaro.org>
+        Tue, 19 Jul 2022 11:11:17 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 21:11:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [RFC PATCH net-next 0/9] net: pcs: Add support for devices
+ probed in the "usual" manner
+Message-ID: <20220719181113.q5jf7mpr7ygeioqw@skbuf>
+References: <20220711160519.741990-1-sean.anderson@seco.com>
+ <20220719152539.i43kdp7nolbp2vnp@skbuf>
+ <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
+ <20220719153811.izue2q7qff7fjyru@skbuf>
+ <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 8797972afff3d ("net: ipa: remove command info pool"),
-we don't allocate "command info" entries for command channel
-transactions.  Fix a comment that seems to suggest we still do.
-(Even before that commit, the comment was out of place.)
+On Tue, Jul 19, 2022 at 11:46:23AM -0400, Sean Anderson wrote:
+> I'm saying that patches 4 and 5 [1] provide "...a working migration
+> path to [my] PCS driver model." Since enetc/ocelot do not use
+> devicetree for the PCS, patch 9 should have no effect.
+> 
+> That said, if you've tested this on actual hardware, I'm interested
+> in your results. I do not have access to enetc/ocelot hardware, so
+> I was unable to test whether my proposed migration would work.
+> 
+> --Sean
+> 
+> [1] I listed 6 but it seems like it just has some small hunks which should have been in 5 instead
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi_trans.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Got it, thanks. So things actually work up until the end, after fixing
+the compilation errors and warnings and applying my phy_mask patch first.
+However, as mentioned by Russell King, this patch set now gives us the
+possibility of doing this, which happily kills the system:
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index 55987e35af2dd..18e7e8c405bea 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -362,7 +362,7 @@ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
- 	trans->rsvd_count = tre_count;
- 	init_completion(&trans->completion);
- 
--	/* Allocate the scatterlist and (if requested) info entries. */
-+	/* Allocate the scatterlist */
- 	trans->sgl = gsi_trans_pool_alloc(&trans_info->sg_pool, tre_count);
- 	sg_init_marker(trans->sgl, tre_count);
- 
--- 
-2.34.1
+echo "0000:00:00.5-imdio:03" > /sys/bus/mdio_bus/drivers/lynx-pcs/unbind
 
+For your information, pcs-rzn1-miic.c already has a device_link_add()
+call to its consumer, and it does avoid the unbinding problem. It is a
+bit of a heavy hammer as Russell points out (a DSA switch is a single
+struct device, but has multiple net_devices and phylink instances, and
+the switch device would be unregistered in its entirety), but on the
+other hand, this is one of the simpler things we can do, until we have
+something more fine-grained. I, for one, am perfectly happy with a
+device link. The alternative would be reworking phylink to react on PCS
+devices coming and going. I don't even know what the implications are
+upon mac_select_pcs() and such...
