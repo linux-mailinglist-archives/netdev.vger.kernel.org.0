@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4584557A0F1
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B5657A0F9
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238521AbiGSONY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
+        id S236853AbiGSOPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238908AbiGSOMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:12:54 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B9D57249;
-        Tue, 19 Jul 2022 06:36:12 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id m16so19588268edb.11;
-        Tue, 19 Jul 2022 06:36:11 -0700 (PDT)
+        with ESMTP id S238325AbiGSON4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:13:56 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FE84D831
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:39:33 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id v5so240899wmj.0
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:39:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TwO0xXJN/4nZY9nXpVGlesXW1praZaXOe1MBOwVVyog=;
-        b=HBKwO1N6WxcRulIdJfRAH5wqZgWViZBkfpypStXJ3JaR+1fdQvB29mZU4TpXX3kRwP
-         74FJAZur3fS2J+fHUkh57s4wnPW5f+iwjQJ1j3MBa/xe270TQknINnmehXsMqw9Idy0x
-         L6rrei63X3nYRXNDVfiXiQSLTSht48Y5JS+SCu6F+Qzh+vYygMIxUFYYgbUXuZNiUFQx
-         5+3EBrw3/K7PIYhOcr1tw45edLkmNUr6fjkJ2dDGk1zwkjEshymGYzwjQJF7+YdanIFJ
-         sktWYJn6laJ9fSm1hgRyfpgUtB7UiHLMSaJHW0jk4ZufV1XL09qLR6mOnI7+pfxz2+io
-         Nz5Q==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KONa5hhvN+GEcaKOh6NGQ1A1+67pCrrMmeNhx6n3Awc=;
+        b=L6bdzKh4BCXFgcN2hmfTS05h7DDQzFbqye8n8wviCQ1qAC91KYU+wpXZ91mpV35LX/
+         WZrjyghZRaQzQkwh5jUJ9tVisHzBtu6O18ESJe86fGSVpz4ezEsh+iWC8Spwr2vIPzdx
+         XHjBkVoEZ4NVYa7FKED7BrU4C7xvtMt7yxw1c32oCRRJfxjca4ggjtqhhBu/juwgY78Q
+         5scDQz1wIzywOgX6QAWikP704nOZupx2bdu0N9+8eCMfIo9li8IR25so4pTCCYKqGGCd
+         oFFQOi1+taSFpsdi8inEiz3s89n4juBA4I/jKzxOyWHKslxsBeKeP4jRMSWh7oReBOr8
+         VYoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TwO0xXJN/4nZY9nXpVGlesXW1praZaXOe1MBOwVVyog=;
-        b=ewkML495+hXB1n7cga8n0hKmwXP+LpfA2ioDMtspfeEvk9omC2yLGq5UPiBzsofd7t
-         uqInlTqBNHYwkS67RgT5m2sxPfB/7ZzVMP1YTbM1/8w3/+kXLQ0PI7kxY1/YxFgEH8Yz
-         6u3iebE6V0SqjA4Bc+32TeqkezEEFfFakorrgK5KFHwqhBF+mjxnPgQAg/n2/q3B1Qf/
-         WU1Mt2AbcEp1FcNKygy10PgVqQlS6n68BaqSL41Ib9j6g08wqxaXBGRkRNQcfrPS2dXe
-         OxlkKgmodIsPZ/TlH+Va8PO74nxGP+SpOMe19nU1zhdVS6PKMSlsRDgSsOUDmmi3D7VX
-         sFCQ==
-X-Gm-Message-State: AJIora8Y3TRVyfn7Fe90bg60ejsUpaeNELYlXO5T6n1gWq8f1GDUbZxL
-        gpYTP9P6nVSMBb7sgr835Hw=
-X-Google-Smtp-Source: AGRyM1uE12P+tPguqunm9z6AP7su6PtjmW+QimCtwVP9cjKHg0mo3+09PLxwLYXDvaK8PVmihDVaYQ==
-X-Received: by 2002:a05:6402:847:b0:437:62bd:bbc0 with SMTP id b7-20020a056402084700b0043762bdbbc0mr43523247edz.285.1658237769365;
-        Tue, 19 Jul 2022 06:36:09 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0070abf371274sm6691788ejb.136.2022.07.19.06.36.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:36:08 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:36:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v2 01/15] net: dsa: qca8k: make mib autocast
- feature optional
-Message-ID: <20220719133606.kesv2uz3k3v3vvld@skbuf>
-References: <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-2-ansuelsmth@gmail.com>
- <20220719005726.8739-2-ansuelsmth@gmail.com>
- <20220719122636.rsfkejgampb5kcp2@skbuf>
- <62d6a3ad.1c69fb81.8f261.32f5@mx.google.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KONa5hhvN+GEcaKOh6NGQ1A1+67pCrrMmeNhx6n3Awc=;
+        b=UIjggB1rGSQO6BFkjmKQH7espwBXig4J74uW2YWV3M9l0a4VMWPjqJEy1iGrYfHQl5
+         StQGtKwKEfC1IaxTlGUzSirSkmVrnT0Y2AqDOCPVDKpbsSx7xvpoqi6ThXQCnwKzDA/h
+         jYuVGfi0Tb4lz3iU2PYw+3Zs46PIKN8gewvfjw3hZcYKDMoChtMo9J8dpf2H0qAOzjQI
+         hi5NS1DeghhwyMUOfyn4OXrfjuvaZKVLu4FDPU8+T6SldSIjpIqQDbxlf+gEhXlLHTYB
+         Q2M6VnVAHP8B/NbUwa8Dafrct1dxwvqcn4nPw1bhqcBN2HNnbXfbkBfdvzVVvKYZoJKZ
+         JsOQ==
+X-Gm-Message-State: AJIora/bEzukLp0QFOxRmgRD224wHNdJH82BSSKXnp5HOPPRqQUEELkA
+        jythci36xKfQa3UQty+gpywhYw==
+X-Google-Smtp-Source: AGRyM1tdgUzR+4E5x+hP9vrrMXDkfYFgyHt78xLXzr2wJynVMOUq+N3uDGE1R+5+9sCcV6t5AZOnPA==
+X-Received: by 2002:a05:600c:4f48:b0:3a0:45dd:8bd5 with SMTP id m8-20020a05600c4f4800b003a045dd8bd5mr37810429wmq.80.1658237972187;
+        Tue, 19 Jul 2022 06:39:32 -0700 (PDT)
+Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
+        by smtp.gmail.com with ESMTPSA id a15-20020adffb8f000000b0021dbac444a7sm13546186wrr.59.2022.07.19.06.39.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 06:39:31 -0700 (PDT)
+Message-ID: <6a20c273-d6f3-4e69-3de6-9d6b44a1b29d@linaro.org>
+Date:   Tue, 19 Jul 2022 14:39:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62d6a3ad.1c69fb81.8f261.32f5@mx.google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 0/4] wcn36xx: Add in debugfs export of firmware feature
+ bits
+Content-Language: en-US
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20220719121600.1847440-1-bryan.odonoghue@linaro.org>
+ <CAMZdPi-TUafosjJ_pwQ4F-N3WnnM5_0P7snB1qmgmzBeqkZu3A@mail.gmail.com>
+From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+In-Reply-To: <CAMZdPi-TUafosjJ_pwQ4F-N3WnnM5_0P7snB1qmgmzBeqkZu3A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 02:29:30PM +0200, Christian Marangi wrote:
-> Ok makes sense. Can I make a patch drop the use of
-> of_device_get_match_data and then apply this on top?
+On 19/07/2022 14:06, Loic Poulain wrote:
+> Nice, but why prepending with 'FW Cap = ' string, we already know it's
+> a list of firmware features.
 
-Yes, that would be the idea, thanks.
+I literally just copied the debug printout which also prefixes with FW Cap..
+
+I can drop
