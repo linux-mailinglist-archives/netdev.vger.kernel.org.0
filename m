@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE2E57A1D5
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DC4857A1E0
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239304AbiGSOi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S239508AbiGSOkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237732AbiGSOiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:38:07 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C162A701
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:33:10 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so9297406wmj.1
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:33:10 -0700 (PDT)
+        with ESMTP id S239323AbiGSOj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:39:57 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C375E3C14E
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:57 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id x64so3573833iof.1
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1A3RZDz93CJsUVu1ZGCAc3vc85qUDp5cTEvniEHIFDU=;
-        b=jQ8wwS67AZC0aPGPY8PtQuc2BqAASJQpUhW/K6fech4c+AVZwp66x+6Z44uIf9LULB
-         nhfdbRw0X0rnv0dVxDNAEXkdUJLvTE+R/lXP+m4Bc3PW3RAzubD4k9tsrHVgC2lshbhX
-         Y2T/A5tIayW+O9MNMT/W9LENM2/XkociCwxoGiangLxgdCn/CFQX9fGPvDB/nB1gLIH+
-         D+HCLD6E9Omu4ypFYTC1+ci5QZYmNEV5rUQJ6GwkHcxLlgdb3KLy9zwQJGV8UNLVxvHA
-         ceeTu4o4rUKYhrYTpEDt1QJZ8os47jAM7U+lZK6BU4w2KbL3RiXePBk4jVWWLmJhwnwJ
-         OdkQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0BjWGlK630QXayY7IJgfAR9lOEt/Zu0JUnJ3PIy+Dok=;
+        b=WF/dbHsOdzJ1VTngL102ErO61fUWa0iCm76xtFZijwQCoZc9fWP6CbuAEq2wYqyuWA
+         sHg+et+tbk4UjBTy7aJVlMCkSdUDQbrcDatNEJqX0IcSWsE0+aM8emv9waHZNruTEeG3
+         WV7ctcsHv1yhExgWPo2j32CzPjJOOCBBM6hnqYsGlpFtOhPzV2TIezbgTOQvWU+/hwR2
+         Ghas3GoExiJ6uKXsnEoMZJMszKTatZy8O20xqpHLi2pHza9BFqhXlGMgYAgA0DqHeLXS
+         iaIUBfvmaIWh1sEBdt/sg5vc/8bZyxSCZ0n5UnHovgcdXJWeNBIQYZ8Mv3c3V+sUfQ3g
+         3MdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1A3RZDz93CJsUVu1ZGCAc3vc85qUDp5cTEvniEHIFDU=;
-        b=6SRP7QT3AfUc5N1wNYeUtKscnk+5/uXYaBT2+TVl5ou9Cx/PwoLgAmhGG7xUGBl50K
-         XQnkjb48KOFKNlU+1Wbd3+dxYFm63u8lGNdL5JCmrpYK9jH0aNzM/ja+qzuFm+7CPxxV
-         +nrEvJeCs7AhBLAmmu4Q/rV1UySIN73I/vCZwlfWVkLFUYax/Fn7tRKgcL6JqW2JZ13m
-         4yA/wC8QvBlrSTSOckFE/l2urZ3quiXKAy36YTwwUgh6j+a1ABx7PVxvAySyi8zPl362
-         dlp9v0xf9tI9ChRCXXmG2XogNpLOStvQ1ony47rfXqky77xAQc0tZ2zcHo4Cle4T4mLO
-         c+Lg==
-X-Gm-Message-State: AJIora8i/2q5NIQAzjUzn9TycLwFOguR00Wkeyzu8o02zudILJP4LKGH
-        rMbRlgxJ4X2NxK+rUsL0k1yb3ggYuSGPww==
-X-Google-Smtp-Source: AGRyM1vWu67gzk72zMk4h+O6x4e3mmM0paqu8OTlTC4v8U6LhUBXFI0Oir0UzV1Kc79+RienOUfk0g==
-X-Received: by 2002:a05:600c:34c6:b0:3a3:2549:1905 with SMTP id d6-20020a05600c34c600b003a325491905mr2295740wmq.204.1658241189152;
-        Tue, 19 Jul 2022 07:33:09 -0700 (PDT)
-Received: from sagittarius-a.chello.ie (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id d15-20020adffbcf000000b0020fff0ea0a3sm13634378wrs.116.2022.07.19.07.33.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0BjWGlK630QXayY7IJgfAR9lOEt/Zu0JUnJ3PIy+Dok=;
+        b=eLiKXsgCZYobhNQAUsyAWV/4OAONHDoclN2l+xOJ1CSAHUaRmdF3nK/PwEa3M86/lD
+         DL0hMLNxnjghrW7iWXZfsYAKdX57Kpyzz9/664oyUZsJhFgAUDwdjyqMuIDEbxIQHhSl
+         VCII+6L+sA1utY5Hu3m0EYIZoIdK9WQfwr3KaX6PmiYSxtt3L/buEO0SehyJ0T9wjkYp
+         Kj61kE8/iySzYCb2Y6NgCuXEnqSME331mx9ZDEkFBenYlEJybwC0TeeMOsCA46D0lfCH
+         vCFqcdEf7BUfdRJVlPvCmrGD2LAPjIzhkd7RZ+O5KcSqIyV44qEnRFKBKW+PNGUU5NvE
+         YMZw==
+X-Gm-Message-State: AJIora+PU78mk68p9YyBPVlbg1+H8M1IOmW6o5q+gdfU7mkeClTbgadY
+        sG+ynUGqKWYUgmJXVBA5X/825Q==
+X-Google-Smtp-Source: AGRyM1sr1oAIhANTJzfCV4iqPvLmtDzqH7kfijam2HMWSxAXMQaxSqWzgC4JjZ3eYhP+jQe6LXTOEQ==
+X-Received: by 2002:a05:6602:1681:b0:678:9e4e:cd76 with SMTP id s1-20020a056602168100b006789e4ecd76mr15009127iow.80.1658241357200;
+        Tue, 19 Jul 2022 07:35:57 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.35.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:33:08 -0700 (PDT)
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-To:     kvalo@kernel.org, loic.poulain@linaro.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        bryan.odonoghue@linaro.org
-Subject: [PATCH v2 4/4] wcn36xx: Add debugfs entry to read firmware feature strings
-Date:   Tue, 19 Jul 2022 15:33:02 +0100
-Message-Id: <20220719143302.2071223-5-bryan.odonoghue@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220719143302.2071223-1-bryan.odonoghue@linaro.org>
-References: <20220719143302.2071223-1-bryan.odonoghue@linaro.org>
+        Tue, 19 Jul 2022 07:35:56 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: ipa: small transaction updates
+Date:   Tue, 19 Jul 2022 09:35:48 -0500
+Message-Id: <20220719143553.280908-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,132 +70,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add in the ability to easily find the firmware feature bits reported in the
-get feature exchange without having to compile-in debug prints.
+This series includes three changes to the transaction code.  The
+first adds a new transaction list that represents a distinct state
+that has not been maintained.  The second moves a field in the
+transaction information structure, and reorders its initialization
+a bit.  The third skips a function call when it is known not to be
+necessary.
 
-root@linaro-alip:~# cat /sys/kernel/debug/ieee80211/phy0/wcn36xx/firmware_feat_caps
-MCC
-P2P
-DOT11AC
-SLM_SESSIONIZATION
-DOT11AC_OPMODE
-SAP32STA
-TDLS
-P2P_GO_NOA_DECOUPLE_INIT_SCAN
-WLANACTIVE_OFFLOAD
-BEACON_OFFLOAD
-SCAN_OFFLOAD
-BCN_MISS_OFFLOAD
-STA_POWERSAVE
-STA_ADVANCED_PWRSAVE
-BCN_FILTER
-RTT
-RATECTRL
-WOW
-WLAN_ROAM_SCAN_OFFLOAD
-SPECULATIVE_PS_POLL
-IBSS_HEARTBEAT_OFFLOAD
-WLAN_SCAN_OFFLOAD
-WLAN_PERIODIC_TX_PTRN
-ADVANCE_TDLS
-BATCH_SCAN
-FW_IN_TX_PATH
-EXTENDED_NSOFFLOAD_SLOT
-CH_SWITCH_V1
-HT40_OBSS_SCAN
-UPDATE_CHANNEL_LIST
-WLAN_MCADDR_FLT
-WLAN_CH144
-TDLS_SCAN_COEXISTENCE
-LINK_LAYER_STATS_MEAS
-MU_MIMO
-EXTENDED_SCAN
-DYNAMIC_WMM_PS
-MAC_SPOOFED_SCAN
-FW_STATS
-WPS_PRBRSP_TMPL
-BCN_IE_FLT_DELTA
+The last two are very small "leftover" patches.
 
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
----
- drivers/net/wireless/ath/wcn36xx/debug.c | 37 ++++++++++++++++++++++++
- drivers/net/wireless/ath/wcn36xx/debug.h |  1 +
- 2 files changed, 38 insertions(+)
+					-Alex
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/debug.c b/drivers/net/wireless/ath/wcn36xx/debug.c
-index 6af306ae41ad..220f338045bd 100644
---- a/drivers/net/wireless/ath/wcn36xx/debug.c
-+++ b/drivers/net/wireless/ath/wcn36xx/debug.c
-@@ -21,6 +21,7 @@
- #include "wcn36xx.h"
- #include "debug.h"
- #include "pmc.h"
-+#include "firmware.h"
- 
- #ifdef CONFIG_WCN36XX_DEBUGFS
- 
-@@ -136,6 +137,40 @@ static const struct file_operations fops_wcn36xx_dump = {
- 	.write =       write_file_dump,
- };
- 
-+static ssize_t read_file_firmware_feature_caps(struct file *file,
-+					       char __user *user_buf,
-+					       size_t count, loff_t *ppos)
-+{
-+	struct wcn36xx *wcn = file->private_data;
-+	unsigned long page = get_zeroed_page(GFP_KERNEL);
-+	char *p = (char *)page;
-+	int i;
-+	int ret;
-+
-+	if (!p)
-+		return -ENOMEM;
-+
-+	mutex_lock(&wcn->hal_mutex);
-+	for (i = 0; i < MAX_FEATURE_SUPPORTED; i++) {
-+		if (wcn36xx_firmware_get_feat_caps(wcn->fw_feat_caps, i)) {
-+			p += sprintf(p, "%s\n",
-+				     wcn36xx_firmware_get_cap_name(i));
-+		}
-+	}
-+	mutex_unlock(&wcn->hal_mutex);
-+
-+	ret = simple_read_from_buffer(user_buf, count, ppos, (char *)page,
-+				      (unsigned long)p - page);
-+
-+	free_page(page);
-+	return ret;
-+}
-+
-+static const struct file_operations fops_wcn36xx_firmware_feat_caps = {
-+	.open = simple_open,
-+	.read = read_file_firmware_feature_caps,
-+};
-+
- #define ADD_FILE(name, mode, fop, priv_data)		\
- 	do {							\
- 		struct dentry *d;				\
-@@ -163,6 +198,8 @@ void wcn36xx_debugfs_init(struct wcn36xx *wcn)
- 
- 	ADD_FILE(bmps_switcher, 0600, &fops_wcn36xx_bmps, wcn);
- 	ADD_FILE(dump, 0200, &fops_wcn36xx_dump, wcn);
-+	ADD_FILE(firmware_feat_caps, 0200,
-+		 &fops_wcn36xx_firmware_feat_caps, wcn);
- }
- 
- void wcn36xx_debugfs_exit(struct wcn36xx *wcn)
-diff --git a/drivers/net/wireless/ath/wcn36xx/debug.h b/drivers/net/wireless/ath/wcn36xx/debug.h
-index 46307aa562d3..7116d96e0543 100644
---- a/drivers/net/wireless/ath/wcn36xx/debug.h
-+++ b/drivers/net/wireless/ath/wcn36xx/debug.h
-@@ -31,6 +31,7 @@ struct wcn36xx_dfs_entry {
- 	struct dentry *rootdir;
- 	struct wcn36xx_dfs_file file_bmps_switcher;
- 	struct wcn36xx_dfs_file file_dump;
-+	struct wcn36xx_dfs_file file_firmware_feat_caps;
- };
- 
- void wcn36xx_debugfs_init(struct wcn36xx *wcn);
+Alex Elder (5):
+  net: ipa: add a transaction committed list
+  net: ipa: rearrange transaction initialization
+  net: ipa: skip some cleanup for unused transactions
+  net: ipa: report when the driver has been removed
+  net: ipa: fix an outdated comment
+
+ drivers/net/ipa/gsi.c       |  5 ++-
+ drivers/net/ipa/gsi.h       |  6 ++-
+ drivers/net/ipa/gsi_trans.c | 89 +++++++++++++++++++++++--------------
+ drivers/net/ipa/ipa_main.c  |  2 +
+ 4 files changed, 65 insertions(+), 37 deletions(-)
+
 -- 
-2.36.1
+2.34.1
 
