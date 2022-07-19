@@ -2,96 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C37E8579E4E
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:01:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CA7579EE7
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:07:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242535AbiGSNBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 09:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        id S238836AbiGSNHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 09:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242708AbiGSM72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 08:59:28 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4324F4F681
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:24:39 -0700 (PDT)
+        with ESMTP id S243079AbiGSNHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:07:11 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C78CB9A33;
+        Tue, 19 Jul 2022 05:27:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MUWstZ2eTOzIVaphspauXNxUCnDyRMqyhpxnpFY8XjRVuct3Sni+N8FU7CR5xWGuyCtgz/QfYrMF3V01yoYYegHD3OYCVo7eGHOkf+tOcB7/pd2MqwAvAoEcUSd5LrGh01dKplMd8zaqWjSpVfKElvoA62TUCgxbV1X+m7E/78Z8rk4kwWSG9XG0YZj2SsDFx8xdxDqKzV+mKlprp+UFRtMrOB2O8tFRSbXrnykDsS/v5nvVsADJk7wDhQcL7jAb4nuDRbVErXcJGQ1RAAH3tdoYeQgcZWNssNjVieISujFIMU7g5NLL2h9WruWbNCfJwIKKFNQGTmLdSHP8v42VdA==
+ b=OOgi3eobJ7KTKR6vws8f9cb7aOusTBkZLEjgKpLa/ZVWRlxwqb6kQwwPrWi9kAbFknvJRq6I2sZDDkaRc1HMb0XXZBHPQ3LZBujnVhAxEuvCV+e0anMU4eMFDVtZFgiQkhm0tY2t5gDx3GmMlLPbCRo+mlYIN0GQl/SrJQASqoLPmkf78c7wqlA9axWALLlW1oHq3CsqjTmD6kICYUuVV3O/CMC5fFJLlYeDg78mEgtS5ZMYEmohGP0AB15ZgY9cf5+l5FPrJr5Oj/U2D6VEQChHPyAbhDS4qJ40leMv+y++zwkznIjD1P0evixKoofJNSfJdbqUCzZYGhrkqcN/vQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PUYvMvtGu6plptuG/I14jGegxUKZZU8tBZnrB5X7/cw=;
- b=bbWV4uddccuv4arA+8qlK2U/baWedtHqhRlCJa1oC65HO0UXn0ruLRU93BvmarZhwoe/9OXcY1k6KFEHCyFbJuczMlWIzXmn4fomoXBTopJHrUV0u8VDQPRULv8BgCx8V/aEmfk3HF8lRfhGi3EgfEdWPkB9D1mklcMdEQ2SDHHc93GNmRj2RGowgSKOKtzdjHIns9dofX5uRCP7CTlhNZWZxJGbY4taBPyMIkr3rzy8xjSd+s4YcXFNO8tKaM95lPvuzisHOmZ7q61xXwF3BVgVZYpgoawKRmWtSq4VjOfTCsramgYoEX/c0MFnrqPCeQue+5DxxpQ6LfvPBZRtjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=corigine.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=bccH/MgNfYcLdd4nb1fYRS/2bFGRRF6+BuJPfySHlUs=;
+ b=SVyKGQOyYJhMQRMOIwMGJ2rVDzWffNkVNiHu6WRm08me1mwMW31Ya2tT0NM5s2+HvBbYQyBV1o1i4SOYk4/He8cWuGAvZkc5/+PhBZPRlJO90jXX5aBlIHnWEfncYwTEws2OcN8cqHpFdXjboauZ7kcolCrNyhp/XzOuaMtkDaEOOqTUwVp+tDKDPLqc8S2cFI3AmQLg5zRTyFSs8qkAQsd9ZIKsVDeid8x154Un9WrsY0pQ1Pe3AJt3zIVWPQbTURhjXtSS7nmGVraOcA4imSVLgL3ohs9T9eXot5scN8SD/U/yoZbBfTvZYYulCq857h2fdQ2AGJc/2ctvlSKJGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PUYvMvtGu6plptuG/I14jGegxUKZZU8tBZnrB5X7/cw=;
- b=SEYUzOpHTXdSXLK80GukRP3bTOfFKz+BHxBGpaJLIuuaUGKnprOACVZl1SydWZU/8Nri1/lN9g3wxQIrUb8w1Vbvc4UBuc8G2YkcfmvoMbAkvk5y95NXcoTmXSUCsSkA9ALE0+5aFrxgSXfZ+kdnZrhhBYiKQCd84Wt4S9FCOeoVyUyIRagEU8mdF37vHwtV1Dsb5iec4Q1gcyY/d0QY32tytmT4YWdrBqSqKrYbudtElmnPWtcrjyHTCEPWjlogdX5BPwwPssDHIKb54QMWT7MC4MZ/NgWGsqbC2ACdz7NCXmRxTcbcoO/7b3rhNmlIhjnexm/HXnOWbG/9aoG7GQ==
-Received: from MW4PR04CA0158.namprd04.prod.outlook.com (2603:10b6:303:85::13)
- by SJ0PR12MB6712.namprd12.prod.outlook.com (2603:10b6:a03:44e::12) with
+ bh=bccH/MgNfYcLdd4nb1fYRS/2bFGRRF6+BuJPfySHlUs=;
+ b=QcSTxHHUpVNETUhAX7ymoaAEW9A7oMna80yMxa7JCi32CNDuhnlhAJ1mED2dWFd5iESgL+y1U2I4FFWhlSJMQRRbemIwKYm7ZeEK2neL4k2M4Kdahq4Aae5GNlOyxN7/KCssSJLjRzkwlMe7wmhtCCKNNOXeDZbvKPjpAcJ7joSGvdN/QVHvTmU5Z3C5cEaJusVtnIaPfh5RHz4MCA5l3gR5xPFg+g6UNyQiIhUiZFDrE9AFRxmkg8ePY1YaJDySzIn1RRBkdGbVO2hNIZB5caYsvjaga3SpLViiWsoaAUAS4Bv9RwuxkZY64styUxkpJrk8dH33j3MdRF70tBRkbg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by DM6PR12MB4911.namprd12.prod.outlook.com (2603:10b6:5:20e::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Tue, 19 Jul
- 2022 12:24:37 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:85:cafe::ea) by MW4PR04CA0158.outlook.office365.com
- (2603:10b6:303:85::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21 via Frontend
- Transport; Tue, 19 Jul 2022 12:24:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5438.12 via Frontend Transport; Tue, 19 Jul 2022 12:24:36 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 19 Jul
- 2022 12:24:36 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 19 Jul
- 2022 05:24:35 -0700
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
- mail.nvidia.com (10.129.68.8) with Microsoft SMTP Server id 15.2.986.26 via
- Frontend Transport; Tue, 19 Jul 2022 05:24:32 -0700
-From:   Oz Shlomo <ozsh@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Baowen Zheng <baowen.zheng@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Oz Shlomo" <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [PATCH net v2] net/sched: cls_api: Fix flow action initialization
-Date:   Tue, 19 Jul 2022 15:24:09 +0300
-Message-ID: <20220719122409.18703-1-ozsh@nvidia.com>
-X-Mailer: git-send-email 2.30.1
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Tue, 19 Jul
+ 2022 12:26:53 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Tue, 19 Jul 2022
+ 12:26:53 +0000
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
+        nicolas.dichtel@6wind.com, dsahern@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>, stable@vger.kernel.org
+Subject: [PATCH net] mlxsw: spectrum_router: Fix IPv4 nexthop gateway indication
+Date:   Tue, 19 Jul 2022 15:26:26 +0300
+Message-Id: <20220719122626.2276880-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.36.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: VI1PR10CA0100.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:28::29) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36abe4ac-9da4-493e-5e0c-08da6981a51d
-X-MS-TrafficTypeDiagnostic: SJ0PR12MB6712:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4925460f-0018-41e2-9e3a-08da6981f6a0
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4911:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 59L6VvREffHSRjpa0fsF+AiMFcNWtwtR7sHcvp/W2yMOQlHH+KAVCIrTKc6WfF4yTirMXcVnI+OrCsy6rLW1+H6kf1xR8yMLp3g+cYnlYua2Tu0FpAPnVQoOrTuAWJrtd5JP7ch5nUKJavLUxZR+pReX3ZG9UVnghqf2gw0edN2cKjUnBLo7FvDPL8FxFUmg7BCp9oWIb4bp+hpDsTFxDAXFXXBlaKsf01vgSsR5rIY86oYZfzWsuhTWxojRhTcXKAzVgEVs7PuYJdTheZkXOTQRx5zala2kYXoGRNwkNhDLW8PEg+TwxBkrgg8tyV4cGjm5avD8iImCzmijnij6jl/cVnxkuir1XfDDRBjQpw9z1sT2O9DEqqPrrCzsHNreRe5IWQhph/2HzaXEwIYQ0vUafin2YogrQ65dU2ek0JmFWzP0NvjKBp496bIZfh5GzmV7cpYZHhpuKXsUamUPPrnk1cfE6rXi2OqjCqNWaas9Dg61bezAisVyOe5MH1HzWmkwnIWcOSW1H5IhXS3QRzbUTv/UHntHw68oYt8YAV1YD8cOjOzoMLBdNQWuRSuYf4w+bzyC1DQV4Xp94wtIDcTc7o1hZxhyERqi2P3mrJAaebOyPSuY17/fxTbA8KupVO8DN3oeekiSb7J0SHtI+dXV5pNaWUoJPOH8U+LqCsauzC6Ku9EbrMZ/AysNV+zvXccbXwVq3SN9oSSMnBOdtV4TdNTazpu1gNvEPM+svxdHVIkHO28JAqsBVdMtC4y9sstRuBtPmWtFGYOmqQZ8fXPtKuoMpGXOv08bICqYbt+Tq6e8TrDXAdFni+pl1EmwBn2dXjDvTbKL1XsJAS+a/g==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(376002)(39860400002)(36840700001)(40470700004)(46966006)(6666004)(41300700001)(47076005)(107886003)(478600001)(86362001)(2616005)(426003)(36860700001)(83380400001)(336012)(1076003)(186003)(26005)(82740400003)(40480700001)(82310400005)(36756003)(2906002)(70206006)(70586007)(81166007)(8936002)(4326008)(40460700003)(6916009)(54906003)(8676002)(316002)(5660300002)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 84XYg0WuvkJ7GdWkFYbBo05Uqc8ZP94ah6UNIXx1YKeGxnGBtkBjsbcRXve9+1xlGDHVVRCHJ2kpal+5OCr6cn1/N+b2ribngxLvZ535E1vTF6qBv2kEfhWmEdQNEY1iC/+rf7I3vKii92QtwsUA3M7Qrn/7AIlSdu4jC1JmBXMYfuIC+v5bBVgNNj7QScTsmjcXuZVleWflsgbxuT9ICY5N2gzcyVpERi9ZVtPABtaOmb3hGq2tpZOyWjA8pgU3nrRr2JtHs2SdBzS8odtKHxHngpmBF83nqW1sQUf/o3pJF1vrwuXuN3x3tLF9pqltao7+vafnwpDSkafVgjy5vnHm+JYkaGII8pNExoXYUat6LKxvFwnByIaFyuyowMslYZoJZt1y+iQlBeyueQzWblOJtQYTydcMR/TvwVL/CdwwxDoVhwq0nfsC4/rhLslq3758XMToQMW6xwRcF7fAwXLBhwpKIjRtuk5tGIu/3XiMfNbdxiIKMKijpN5gBFjWZOs5r3Ns3BG+5iamigkMwfhBLMrMf4ygd905dvtI+wY8lMmbV1rEUGjm9uEY9ANHnVQkAnkCocAMA8PvaL51O1dGnFATOjGKER8Q1gxylp9oVJXzs6cYLdBx04hZ+1fjFyT3G6Y74TIYUjSglcGrT9jY7Wm3odY+NPq+eYRxpG7dHag2CNRkMN8GzaomU0hPewMrGOYVv4zJGhasZdOi4FQcMtXETaa3dSw5c3RSQ0KCRqz9OfkM2KznHuYjQYsk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(83380400001)(478600001)(66476007)(6512007)(2906002)(6666004)(66574015)(41300700001)(26005)(86362001)(6506007)(1076003)(186003)(8936002)(5660300002)(2616005)(6486002)(6916009)(316002)(38100700002)(36756003)(8676002)(66556008)(66946007)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rx8jKPSVj/z7AbSZhvxpdQgB/BoWOKBG5lNuIRhpgEce8MiPpszRLaVXhzoB?=
+ =?us-ascii?Q?msXyQ5d7zm9M0ST99I9LmRTPUUaj7iMu97wLwxHTDbC8qbnVZxh63BI2E7JQ?=
+ =?us-ascii?Q?Ooyh+bzbDDjwZlaQqRVeLXae+zA7ONK7UqO3HYJoLBxxuR4ME9s39o1uDwro?=
+ =?us-ascii?Q?G8Yiw44IdBmprFMjJCGW0UngpjckcmtDKD0VfJfvfRG9xpAcr2q+v/7m0AhL?=
+ =?us-ascii?Q?hbxP5SpC1zzqurjdYl++94tdgS1dtHFcM7CDGYSMu5T3+ZjTiFzcLHDG6JDL?=
+ =?us-ascii?Q?2XaZhXIa0K3GYKNZTFlqPNWusQzBNMCy2uEBEJPmqCw+RLq73nLVijCETKG1?=
+ =?us-ascii?Q?OdLfnot6oReGiOjK0W1QO1k0otZM+3SO9LADb2AxH02WrQWObwJekm71lVnw?=
+ =?us-ascii?Q?2WThgxwCyH8ztYSWmh8Xvr7vG5qW+RU07c4D9LZ2iBdmb8S/YskVOUHTfuMP?=
+ =?us-ascii?Q?ZZXuaBE5w7OEoze92Rt3bE62BQJN+zQ7kS7AuNy8SKKUARrEAyhLK2SMEpLh?=
+ =?us-ascii?Q?yvCXlQJcMr6hUoQicR/Skk6SXit6UMowNIlPYqyrmjkOTqMGRaZG+gDC+uGw?=
+ =?us-ascii?Q?TVjp2aNDIdOqAdbHG1T1aXMx5Gw+ewwqymx2v4j9Z90BCaUQLSQo6HBdEgNS?=
+ =?us-ascii?Q?EwljJSA7hPCRYPIs9vYgvDHlSNoweSyorQizlXK2WEWHGx9oegZcN8p/aBOZ?=
+ =?us-ascii?Q?J2eL0M1mc/UBUwic+SzrZG5SXDvroQCY5/F1o7P/vx3um2jim45IOJuqk87S?=
+ =?us-ascii?Q?y0pYabXTKP5+fRgI3AERvISfeeBJ1bfBH2h45ZM0bFd4Gxc/QwceLB13Vp7a?=
+ =?us-ascii?Q?0wdGKpkDMY/3Iree9st3TrT5MT9riRm/JJ9gXNzlWUvTwtVpW8sBoREY+29U?=
+ =?us-ascii?Q?9ccLeIil1lZWNkMcnICfh7AYlYZdUXon/0aAs288SlKfj61ivxntUtSuU+Rw?=
+ =?us-ascii?Q?MHRTR0R7Xq81kMqeW/omb9naptOwMGoifbXyk/cjVknURo3YyYXXyUWwqBLK?=
+ =?us-ascii?Q?XTyQntg/w7SRIRFuqOY8AWJ22Bcim1zTaBWPpf6anBA/q/3hUtK5C5uMbNZL?=
+ =?us-ascii?Q?8Wr+yWDSR2T7Y8STxsBviQPdUsvwSq4zN2JOSwq7c6ag/gzjpZ5CPvcv2l11?=
+ =?us-ascii?Q?RocvSHlfFdbJVUMWys4CNaeMKSU2QaiWerI9XbM7FcETtJffu+SG/u/PJP39?=
+ =?us-ascii?Q?DNKvKUArLWnqMoHTDub0koCrzK0E/LFjTY8UALT6SebOjuyzPwgTUms5cSpk?=
+ =?us-ascii?Q?bFvnc6AXoaFweKwKFpyzve7nXkwNyTnt8pPDpXLreHrVOyXLuMYg+CAEdyWL?=
+ =?us-ascii?Q?HkUjJaPeqavZDVZLfAW/pJ+4F3sVpD6p9GTBHhiYqCzOBs4WFXVhtZVxaCuy?=
+ =?us-ascii?Q?5STfDqXL2gGmqNZ4dXeKFEbt+ILm+Z4IDov+Md/U8Ki5JI/oJSPBzkEY1x/x?=
+ =?us-ascii?Q?nW5NvZjWcTgc0l0qw1GaEXea75qVMZDF4NiHq5XXHvyXIujP8ELxDiZ655Zo?=
+ =?us-ascii?Q?Y0CK7y074d7FTopnClOhSfbBNp9kBvC1a/pmrkg2CuKSXxFLLnGwDroyzRvn?=
+ =?us-ascii?Q?X/ciVrCy0i4hTm+uPv5PzAh/1SaObIoWNQ0gWbjy?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 12:24:36.7115
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4925460f-0018-41e2-9e3a-08da6981f6a0
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 12:26:53.6702
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36abe4ac-9da4-493e-5e0c-08da6981a51d
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6712
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Lfe7+oVv0HgljQmt3tLHXTDG8TjIREgiAJ+NMMWR+9CBZu8X0Nlxo0ai2ovS7V7kyyLWcvG/dst65hyLVlRcbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4911
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -102,63 +113,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cited commit refactored the flow action initialization sequence to
-use an interface method when translating tc action instances to flow
-offload objects. The refactored version skips the initialization of the
-generic flow action attributes for tc actions, such as pedit, that allocate
-more than one offload entry. This can cause potential issues for drivers
-mapping flow action ids.
+mlxsw needs to distinguish nexthops with a gateway from connected
+nexthops in order to write the former to the adjacency table of the
+device. The check used to rely on the fact that nexthops with a gateway
+have a 'link' scope whereas connected nexthops have a 'host' scope. This
+is no longer correct after commit 747c14307214 ("ip: fix dflt addr
+selection for connected nexthop").
 
-Populate the generic flow action fields for all the flow action entries.
+Fix that by instead checking the address family of the gateway IP. This
+is a more direct way and also consistent with the IPv6 counterpart in
+mlxsw_sp_rt6_is_gateway().
 
-Fixes: c54e1d920f04 ("flow_offload: add ops to tc_action_ops for flow action setup")
-Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-
-----
-v1 -> v2:
- - coalese the generic flow action fields initialization to a single loop
+Cc: stable@vger.kernel.org
+Fixes: 747c14307214 ("ip: fix dflt addr selection for connected nexthop")
+Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
 ---
- net/sched/cls_api.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Copied stable since Nicolas' patch has stable copied and I don't want
+stable trees to have his patch, but not mine. To make it clear how far
+this patch needs to be backported, I have included the same Fixes tag as
+him.
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index c7a240232b8d..790d6809be81 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3534,7 +3534,7 @@ int tc_setup_action(struct flow_action *flow_action,
- 		    struct tc_action *actions[],
- 		    struct netlink_ext_ack *extack)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 23d526f13f1c..abc0096a20a9 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -5292,7 +5292,7 @@ static bool mlxsw_sp_fi_is_gateway(const struct mlxsw_sp *mlxsw_sp,
  {
--	int i, j, index, err = 0;
-+	int i, j, k, index, err = 0;
- 	struct tc_action *act;
+ 	const struct fib_nh *nh = fib_info_nh(fi, 0);
  
- 	BUILD_BUG_ON(TCA_ACT_HW_STATS_ANY != FLOW_ACTION_HW_STATS_ANY);
-@@ -3554,14 +3554,18 @@ int tc_setup_action(struct flow_action *flow_action,
- 		if (err)
- 			goto err_out_locked;
- 
--		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
--		entry->hw_index = act->tcfa_index;
- 		index = 0;
- 		err = tc_setup_offload_act(act, entry, &index, extack);
--		if (!err)
--			j += index;
--		else
-+		if (err)
- 			goto err_out_locked;
-+
-+		for (k = 0; k < index ; k++) {
-+			entry[k].hw_stats = tc_act_hw_stats(act->hw_stats);
-+			entry[k].hw_index = act->tcfa_index;
-+		}
-+
-+		j += index;
-+
- 		spin_unlock_bh(&act->tcfa_lock);
- 	}
+-	return nh->fib_nh_scope == RT_SCOPE_LINK ||
++	return nh->fib_nh_gw_family ||
+ 	       mlxsw_sp_nexthop4_ipip_type(mlxsw_sp, nh, NULL);
+ }
  
 -- 
-1.8.3.1
+2.36.1
 
