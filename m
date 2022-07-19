@@ -2,64 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C438E57A36C
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE3F757A370
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238496AbiGSPq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 11:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
+        id S238561AbiGSPqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 11:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238470AbiGSPqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:46:25 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9BA54670
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:46:24 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id b10so4217978pjq.5
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:46:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rLGineCxzdUhqZ0totHv9/HyxhWkFQEif+a4cEJSDL8=;
-        b=DW0EnfRwpOw1uNv4VAVwjEIGLJYOoNSuCcD40y6h3lKcLGS+MBuBuVX/UegUgNbGel
-         +ty0PUe3Zb5MGym/CRL0C7cxczOoUDRB2VP8Z7dfuTUi4o4EzqlWCDqwMCwNw0ZqySm8
-         dGT45EkwtMUdEu1hOA4Fq6e2jBTS1CT/czPuB5AIWXV/0cy0/bwFrjwF74jEBzBgiLhA
-         zFXzOZPXeQbAVHysr3nHY0jIK04lSl1vTt7r6/RsCR+Sq7IF/S/yNCcDX1b/aF1DMQfz
-         SBLxG1AP0/K0cftPJ8Yez80ecG/GS7X5fD7ZYwk/Nzq9o9RNTDtp/ZjTBQQnUpbL3rxI
-         Ndtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rLGineCxzdUhqZ0totHv9/HyxhWkFQEif+a4cEJSDL8=;
-        b=Hh3+ktlPGBnYsC3EuMAMMQ6OdloDY6br59CCEzVwaNp2JOab2NOV1JdtDVZboLV/tg
-         FTfxqC2RYorsZEAsZBkkwYo3To7JmtRtDcZtBbniog0H98DOd+6yvhzcGb1IIj/5GlKb
-         OVFvvVSBiJTR2p/aNVUg2TIBHqWAB6qyukAUMgLeq2ObW1v6i3RyOzzKKMXKP5PgKaQI
-         Sevr+X//X/qa3mKU+PbTmOjvykJ2hr5JQKhxHLEfd47zxAOwSuYUJVSnHjba/p+tja65
-         mBeFR4ivvjpdg04ocHwoX2ckTFqA9XnoE0lkA1OLLELOAqpa8AxoOXi06gLEq7PmsXJM
-         u/kw==
-X-Gm-Message-State: AJIora81lzuBThs/TJ2PB2Y7croQKWHiBIYqX/hHAlPH9QDi6hiHI62Y
-        EMabR+1tUMoUNP7adDgDOPS40cCT2b8WvyoSBrAAng==
-X-Google-Smtp-Source: AGRyM1vtvaCffnh2l4f56YAsiMoaolRPJSDOCqynhJ372P0N1qzCRKtatEZUvXr8ozYvnmieW+RNiA+CsPVXAjtJMZE=
-X-Received: by 2002:a17:902:db11:b0:16c:3e90:12e5 with SMTP id
- m17-20020a170902db1100b0016c3e9012e5mr33546576plx.73.1658245583818; Tue, 19
- Jul 2022 08:46:23 -0700 (PDT)
+        with ESMTP id S238540AbiGSPqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:46:33 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10049.outbound.protection.outlook.com [40.107.1.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4B454675;
+        Tue, 19 Jul 2022 08:46:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U3m34DLwqLdzuXoHdTAuN/mh3sDG3sxHpSSazDUNPdsFx69PnLWyIP1xFbrOeceLz3K91TInNBPQJrF36dnKY0gAd37BHTL7Y++LQYhZ9egqDbr8GFpoo040OMjA2rgo4yiF7+nCVbWnFbnkaMdyTENijc/RYArUmkfEkWG0jWh0/A2VNVn8ZRq1eTeIW1bQSJ8OOXN34SAe4f2FiXCA9xmqrwmAtje1+eOx3zq1J6WmYao0OA5ZosmDI3OO3f2O4esIZ134iXCjcGQgnsPW8PhGuqDAiEJzOifKWQY8S1g/DOpfgcww+4ISpX/ztzTvtatduIgKbdvmZxtgUrRp9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a8APrUKZwYMl1rqcw/yb33scMyHBQI1nhZMpWU68Npc=;
+ b=jOcg+mBiKfoqxIETXOMPgjJvACa3bzvl34brllzGzTTti3kfZswnxTUwscCecrWj2AyucqgiZYHVOOqvdYRn8j6wMgNOdg0Y5BEEOFk4pEBsrPEkFDpInwPOiJzYWUM1J3Sc+MdfaWMGsARpHVid9bH3kbe3nmTiNxzofVXrjfTLLuwhTP+W0ngcqBSKrOByHrBVLuphAaBVN+uJYpk2v88P7liIbrNMWM9jPT88YcTw5XVSYScqc0rRogtWS5dm8ixYspruiGVnZVVqBnCxWbfgPZ8LRCpcZYdEWBrZhPhJ8gaA95La7WCvvhaP1OVQIBrCmt2xf4qAAAzm4EHNOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a8APrUKZwYMl1rqcw/yb33scMyHBQI1nhZMpWU68Npc=;
+ b=YXQ4XI6M5Or2oMW3oOqTAUCnDxhDtpTZPLcxdWfWU4OyOZayDRFOgdo7VJ3Rdlrpag2fd1j1W3nH5LWKTz0UGInPjz0kMtqO3pcABowwhUOw3rCmbXiPbURQ1RU6v32f1cUNLqEjVyp9TO6WM6Nyn2WTukWBjjRdrhv7IjnI75vnUFAvUMqGrPgJskyFL7q0ArteomdzCZAvU6hZo/pJtv+5X3jVDvazi1X9lKocVn6GyXVXRfkggmwTb2BW9VQ9kiRnhMy7gIbr0hjP/1ct6TgWoTF1rpDorHVRRAalwB9mq2wkszRxkN3mnCLWbZq8j7H8tZdwgYQUCcTk6x/JFQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DB7PR03MB3579.eurprd03.prod.outlook.com (2603:10a6:5:4::26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5438.23; Tue, 19 Jul 2022 15:46:28 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 15:46:28 +0000
+Subject: Re: [RFC PATCH net-next 0/9] net: pcs: Add support for devices probed
+ in the "usual" manner
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org
+References: <20220711160519.741990-1-sean.anderson@seco.com>
+ <20220719152539.i43kdp7nolbp2vnp@skbuf>
+ <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
+ <20220719153811.izue2q7qff7fjyru@skbuf>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
+Date:   Tue, 19 Jul 2022 11:46:23 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20220719153811.izue2q7qff7fjyru@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR12CA0017.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::30) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-References: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
-In-Reply-To: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 19 Jul 2022 08:46:12 -0700
-Message-ID: <CAKH8qBuwm75KirLSrTh1jeYqDAn78Ki5sgiAY8y2G2OCsDJP5w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: fix bpf compile error caused by CONFIG_CGROUP_BPF
-To:     Xu Jia <xujia39@huawei.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 26525f3b-cda5-4247-d3c5-08da699dd846
+X-MS-TrafficTypeDiagnostic: DB7PR03MB3579:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: I3ufqhIaIK9jN/kM6xFWp9k5nL+DK+7be75h45frbr5Dhfc/TJaxdI03nMi/UdA01+cmAtMVjUhX4Inm9n/I/JGHbTLd1XpVoLZJl9U/PdNzrg87ldkJ5NtgKsqf/7taigCTSF7Tcw29SBTICmPeS15dHmKeq7z1abGhnIaRwaXDEaJpkb/5Xpk77W8qmNnZ0bgVEROWUg3eK0G8mowIs9cS06Z5SY3LpsLYtjBt0bzGOwSwua3RSpLBkZt7AWlD5TlQCKeDhBsYqJhhT/kv6Mb6mgCPSLVO4YMdVuHT+TCH+j7QQ9Yn5CXnMjWW9/JB2lPZJLvfDZWAx55Syf6nAlLCn7tqO8YtOkZBK1v8CSQd1UjFqoQWugQIBpSXQ6pcxGkHq/I4HMKz8YzrBfUa801t93WD0xtDKDYhBDniowa8VMOsQXiK23t03aizLD61LLC8vlyVoe0KddFYei2xhfTfxoLwziV1uqKWz8/jgW709gyNdsGN4MnyniY1nu9/guQCjSt3+rOQCV8QHppbCtwrv312oOFypxqwg5WMI1FBNfAEUsNBueAeI+hOj/jZwdeDrM9V96GvJBJcrb1GTXTnTP1cnSRdn9R9jub0gFqH8Ux8xaawxOt/wHfvg4lyjBqavVrXen7cjxpymqv489tb9a1JhSXudZTY2J68+0zPuIaX46XjXMpHhpJG+5YbZ9Bz6uZtfUTq4rbZqkZqngBfbVTKLd/TH2jWioiRAxTFFvaiWJi14zhpDrcWXogP8CvJIJJm4ttqOrXS+iaF8P9Dj5XzB/Pcowz5OxrrNrdnh0fH3TA1k1AMWD01BRC0m318eqZR7O6wn16BlwdUZnLohS8BXZTNKdL6YtI85U57ZOnuaYEjUNsJO4QMV0wYlXZUZ04/SO0SzgJZRiUKXw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(39850400004)(346002)(366004)(396003)(376002)(6916009)(6666004)(41300700001)(31686004)(186003)(2616005)(44832011)(83380400001)(5660300002)(7406005)(6512007)(26005)(2906002)(6486002)(7416002)(31696002)(66556008)(8676002)(316002)(66946007)(4326008)(8936002)(38350700002)(38100700002)(86362001)(53546011)(66476007)(478600001)(52116002)(54906003)(36756003)(6506007)(486264002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VFFZMGQ1RmllSFhHSGNPdktBOHd4U2U2VGdyZFZhUVo2akFFeGpRanRDVTBU?=
+ =?utf-8?B?V2xaZE1qeFAwOVJ5NklRakloeGJkcVFMMlV3YUljM1lNaU1wSm5OWnllcjRl?=
+ =?utf-8?B?MmgwbU55MmE4RWpSL2t4cGdacWltajdKVjE1RVUyM01ZdXVBeE1yUENLdVBE?=
+ =?utf-8?B?R013U2pCSmpDNzFwVlRZb3dFWkFNT0cwS2xLUCtjMzFQTE5DUGd2M1BoWk15?=
+ =?utf-8?B?R1RJelA1U0lrWVd4czBwdmZUbFd2ZzA4K2FVV2o0UGVzbkkrbitLM1JlRDll?=
+ =?utf-8?B?cDFPdGdJb0l3SmkxeDNZWWlxN054eCtVbktGdEhqVUFDWndKOTlIUTRROTc1?=
+ =?utf-8?B?ZmIyTVh6cHJ1R3hwa0F3a0E4UFJXdVBCWlBnMEozdU9hZ3drSEpNUXN3RDNQ?=
+ =?utf-8?B?WUFFbDc1QjJoNksza3BGUFlqdWdPZzlaZlFPcDIrc21URFhvR0NBYWFVM0RF?=
+ =?utf-8?B?d3dQeHVVSGNDRk8xTHV2NERzWTlXNkdXK0gxYmtGOXRscDJVMEpJbGlqVzM0?=
+ =?utf-8?B?QWpFMUNkc01EUG5KK0pCUjlXTUJyMWh5ZFpuemYvU003bzNNTWRPbERxTmFJ?=
+ =?utf-8?B?N3V3OU5EUng3TUdPT2plcEJNdVVyUTl6YUNiYzFIYWdkRHQvL0RwdjlQdFVJ?=
+ =?utf-8?B?YlIxS3RjcjdPNHUyd1VHNVRvVmNZeWs2WEpRMm8wdVloT0FZOVFmVXFmMXRz?=
+ =?utf-8?B?MnFXZWdtYXpmRHVxVlZJYW5uanhpTDlML1FvR240Qk9nSzErY0hLRU5nWVZn?=
+ =?utf-8?B?di9ScXRsZkoyTHlGNlF3NFRuVnRCbTMvOUIwNmVkLy9BZCtQaE5meER2WFpm?=
+ =?utf-8?B?MkllL0IxbEI3ZlhUVC9kcnJSditjbW1NYjA0ckpsbjAxRU81NzBOSzZMaVJB?=
+ =?utf-8?B?TS9DZlU4T3dIU0pKRmVUMkQ5elIyL2pOTVMzYW56WDBQNDUvVGJZM05iZzFS?=
+ =?utf-8?B?M0VQWkpNSHlkajcvaGxCU3B1Z0trUHZiWFc4bGJiVGFLcUx4eDBna3lPYUk5?=
+ =?utf-8?B?ZFlnQVMyVE5xRDlTOU1WUUlvTWo1ZmZZU0xMZk1oOHdLSmFyem5PYzN5Z256?=
+ =?utf-8?B?WUg5eUhjODlwVWRYVlY0K3RzWHluT0N0SWU0WHdaUlpOUU1ZeHZ4b1NydUQz?=
+ =?utf-8?B?SWdKM1N6OE9UOFdLd01VQyswcVZYMXpUNHNZTXIzdEQwVFM5MFZLUEhXcFM3?=
+ =?utf-8?B?UndPc29MNmNoNXRXbFNyK1hoYzAvcU5PZVZoMTZKZlV6VHdua1pDQkhrM2hy?=
+ =?utf-8?B?R1VoR1VWN0lOdDNPTk8zQWU2NVBjNVpvMEFha2ZBdmRmdVpWZkM0K2RnVkFJ?=
+ =?utf-8?B?ZWZkL2VyY2FZYkVmaEw0TmtOZGFQNFQ3ckVLcTBRNVU1V0RFaXZtc3ZXdTZw?=
+ =?utf-8?B?Sm1YUHJKaC9sYklkTU1zU0dtdEs2VW5pYzlqTytYRlZEY0EwcEdzV1h2ZlJu?=
+ =?utf-8?B?S2Y5cVlJanVkalNLYm13NGovUTVYd3IwdGsyYXV2ZEZPTHdxS0FLLytRdHJz?=
+ =?utf-8?B?WDBnQ1hKcHlWQ1hJYnI5M1pxL2hxdVZoQ0phTkFxczFNei9tQ3BQSVhSWk4y?=
+ =?utf-8?B?TUwxRndJWEt2MEthK1hnVXh3S2RPTVZzeVJuMHFMY21taVhIbS9mNnNKbU11?=
+ =?utf-8?B?eENCZ2hwYnkzelJ1cjF5cGpmckswRmJwcjc0cFk3Mm5TbmRaVFhGZmZlQWxW?=
+ =?utf-8?B?eFBmSDZ3ZEd3ckJQN0JKYklid0g0dkpQSG1tNnZhNE8rdzYzdnd1OHJDdG9O?=
+ =?utf-8?B?MklhcGdIWWtnckNESVhPV2I3WDJMeHNhUVROOURnR2lXSHV1QkpwRFNyVjFa?=
+ =?utf-8?B?TytMU0RnWnFxb1NpU3NjS0kweVhzc3drV1N2MitRT1pub2dHN2JoVDVVenFp?=
+ =?utf-8?B?b0NLUkt3bVA5WmZmM3k2Z0lSaE9ISmlPWDdLZ1FXZWdPWHpZSXdyeFBVYXl3?=
+ =?utf-8?B?UjdqcFNDck1GRzZzR3FCUXJVWGJRaGlSTkFGOW9pWDRrVU1HeGpPTUVmWkVt?=
+ =?utf-8?B?Y2pIU2dxeHAyS21UNmQ5UUFUL0ZMaDgwNEhZNEJjTFhTdjZHNjRkOU1nMzRN?=
+ =?utf-8?B?T0M5TUxLRC8ySzQrcDBOZlRHdHlkV004RXNJR0JRaFhVUTU1TnYwYVB2cjdj?=
+ =?utf-8?B?K2JTQnJmeUkxWm9XTlB4SFFUVGhBSG40aG0vWEJnYlk3Z2paenpKaXhmbVo4?=
+ =?utf-8?B?cnc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26525f3b-cda5-4247-d3c5-08da699dd846
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 15:46:28.6898
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HROxokb8xnf4L5ihRhkeSWnShAURQUpkidNQNE5UfLBYJ0eH4LclGYyoQEIYFwqCP1UUfRVLR7wLTcVkT8awfA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3579
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,134 +150,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 1:49 AM Xu Jia <xujia39@huawei.com> wrote:
->
-> We failed to compile when CONFIG_BPF_LSM is enabled but CONFIG_CGROUP_BPF
-> is not set. The failings are shown as below:
->
-> kernel/bpf/trampoline.o: in function `bpf_trampoline_link_cgroup_shim'
-> trampoline.c: undefined reference to `bpf_cgroup_atype_get'
-> kernel/bpf/bpf_lsm.o: In function `bpf_lsm_find_cgroup_shim':
-> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_current'
-> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_sock'
-> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_socket'
->
-> Fix them by protecting these functions with CONFIG_CGROUP_BPF.
 
-Should be fixed by the following?
 
-https://lore.kernel.org/bpf/20220714185404.3647772-1-sdf@google.com/
+On 7/19/22 11:38 AM, Vladimir Oltean wrote:
+> On Tue, Jul 19, 2022 at 11:28:42AM -0400, Sean Anderson wrote:
+>> Hi Vladimir,
+>> 
+>> On 7/19/22 11:25 AM, Vladimir Oltean wrote:
+>> > Hi Sean,
+>> > 
+>> > On Mon, Jul 11, 2022 at 12:05:10PM -0400, Sean Anderson wrote:
+>> >> For a long time, PCSs have been tightly coupled with their MACs. For
+>> >> this reason, the MAC creates the "phy" or mdio device, and then passes
+>> >> it to the PCS to initialize. This has a few disadvantages:
+>> >> 
+>> >> - Each MAC must re-implement the same steps to look up/create a PCS
+>> >> - The PCS cannot use functions tied to device lifetime, such as devm_*.
+>> >> - Generally, the PCS does not have easy access to its device tree node
+>> >> 
+>> >> I'm not sure if these are terribly large disadvantages. In fact, I'm not
+>> >> sure if this series provides any benefit which could not be achieved
+>> >> with judicious use of helper functions. In any case, here it is.
+>> >> 
+>> >> NB: Several (later) patches in this series should not be applied. See
+>> >> the notes in each commit for details on when they can be applied.
+>> > 
+>> > Sorry to burst your bubble, but the networking drivers on NXP LS1028A
+>> > (device tree at arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi, drivers
+>> > at drivers/net/ethernet/freescale/enetc/ and drivers/net/dsa/ocelot/)
+>> > do not use the Lynx PCS through a pcs-handle, because the Lynx PCS in
+>> > fact has no backing OF node there, nor do the internal MDIO buses of the
+>> > ENETC and of the switch.
+>> > 
+>> > It seems that I need to point this out explicitly: you need to provide
+>> > at least a working migration path to your PCS driver model. Currently
+>> > there isn't one, and as a result, networking is broken on the LS1028A
+>> > with this patch set.
+>> > 
+>> 
+>> Please refer to patches 4, 5, and 6.
+> 
+> I don't understand, could you be more clear? Are you saying that I
+> shouldn't have applied patch 9 while testing? When would be a good
+> moment to apply patch 9?
 
-> Fixes: 69fd337a975c ("bpf: per-cgroup lsm flavor")
-> Signed-off-by: Xu Jia <xujia39@huawei.com>
-> ---
->  include/linux/bpf.h     | 12 +++++++++---
->  include/linux/bpf_lsm.h | 10 ++++++----
->  kernel/bpf/bpf_lsm.c    |  2 ++
->  kernel/bpf/trampoline.c |  2 ++
->  4 files changed, 19 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 2b21f2a3452f..add8895c02cc 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1255,9 +1255,7 @@ struct bpf_dummy_ops {
->  int bpf_struct_ops_test_run(struct bpf_prog *prog, const union bpf_attr *kattr,
->                             union bpf_attr __user *uattr);
->  #endif
-> -int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
-> -                                   int cgroup_atype);
-> -void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
-> +
->  #else
->  static inline const struct bpf_struct_ops *bpf_struct_ops_find(u32 type_id)
->  {
-> @@ -1281,6 +1279,14 @@ static inline int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map,
->  {
->         return -EINVAL;
->  }
-> +#endif
-> +
-> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL) && \
-> +    defined(CONFIG_CGROUP_BPF)
-> +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
-> +                                   int cgroup_atype);
-> +void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
-> +#else
->  static inline int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
->                                                   int cgroup_atype)
->  {
-> diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-> index 4bcf76a9bb06..bed45a0c8a9c 100644
-> --- a/include/linux/bpf_lsm.h
-> +++ b/include/linux/bpf_lsm.h
-> @@ -42,8 +42,6 @@ extern const struct bpf_func_proto bpf_inode_storage_get_proto;
->  extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
->  void bpf_inode_storage_free(struct inode *inode);
->
-> -void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-> -
->  #else /* !CONFIG_BPF_LSM */
->
->  static inline bool bpf_lsm_is_sleepable_hook(u32 btf_id)
-> @@ -67,11 +65,15 @@ static inline void bpf_inode_storage_free(struct inode *inode)
->  {
->  }
->
-> +#endif /* CONFIG_BPF_LSM */
-> +
-> +#if defined(CONFIG_BPF_LSM) && defined(CONFIG_BPF_CGROUP)
-> +void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-> +#else
->  static inline void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
->                                            bpf_func_t *bpf_func)
->  {
->  }
-> -
-> -#endif /* CONFIG_BPF_LSM */
-> +#endif
->
->  #endif /* _LINUX_BPF_LSM_H */
-> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> index d469b7f3deef..29527828b38b 100644
-> --- a/kernel/bpf/bpf_lsm.c
-> +++ b/kernel/bpf/bpf_lsm.c
-> @@ -63,6 +63,7 @@ BTF_ID(func, bpf_lsm_socket_post_create)
->  BTF_ID(func, bpf_lsm_socket_socketpair)
->  BTF_SET_END(bpf_lsm_unlocked_sockopt_hooks)
->
-> +#ifdef CONFIG_BPF_CGROUP
->  void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
->                              bpf_func_t *bpf_func)
->  {
-> @@ -86,6 +87,7 @@ void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
->  #endif
->                 *bpf_func = __cgroup_bpf_run_lsm_current;
->  }
-> +#endif /* CONFIG_BPF_CGROUP */
->
->  int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
->                         const struct bpf_prog *prog)
-> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-> index 6cd226584c33..127924711935 100644
-> --- a/kernel/bpf/trampoline.c
-> +++ b/kernel/bpf/trampoline.c
-> @@ -525,6 +525,7 @@ static const struct bpf_link_ops bpf_shim_tramp_link_lops = {
->         .dealloc = bpf_shim_tramp_link_dealloc,
->  };
->
-> +#ifdef CONFIG_CGROUP_BPF
->  static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
->                                                      bpf_func_t bpf_func,
->                                                      int cgroup_atype)
-> @@ -668,6 +669,7 @@ void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog)
->
->         bpf_trampoline_put(tr); /* bpf_trampoline_lookup above */
->  }
-> +#endif /* CONFIG_CGROUP_BPF */
->  #endif
->
->  struct bpf_trampoline *bpf_trampoline_get(u64 key,
-> --
-> 2.25.1
->
+I'm saying that patches 4 and 5 [1] provide "...a working migration
+path to [my] PCS driver model." Since enetc/ocelot do not use
+devicetree for the PCS, patch 9 should have no effect.
+
+That said, if you've tested this on actual hardware, I'm interested
+in your results. I do not have access to enetc/ocelot hardware, so
+I was unable to test whether my proposed migration would work.
+
+--Sean
+
+[1] I listed 6 but it seems like it just has some small hunks which should have been in 5 instead
