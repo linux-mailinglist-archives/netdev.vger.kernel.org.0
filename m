@@ -2,107 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C0E57A65E
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39FF057A69C
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240056AbiGSSVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 14:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51548 "EHLO
+        id S229379AbiGSShw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 14:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234946AbiGSSU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:20:59 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1882528A;
-        Tue, 19 Jul 2022 11:20:58 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JHlmxg029443;
-        Tue, 19 Jul 2022 18:20:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=s1JPuA/YLMDabKTF1a2XheDVwFqVMwe5u3bKX+eeqpM=;
- b=sfF5wnj/5BXN2gbMTLi5cKEQJ2kykt81eX4Huwv4lJIgRxNxTo4zc15XqXStGs0PiQhu
- F7Eimnqu3KbP3crDvsmEOgXlkB3vUFNb04xf7OA7aclYh9+bHaw1ruITfePcTTkjJnb4
- N2QFZJ/Uy0zsfPWxeS/dcRj+bNBZ2Z+xi+V8zI5ajrb2guNvz+hP6hPkx1RSiX5/QnQQ
- pv01yekVfCAIRjVH8K56kHwIfG0Aod7RGCigI30XUb9xbZq3ZFS3ap2AQbWQBdi15efQ
- BY99WdOTk92UsxjdlEfUF8R76uZDowlrgjg5HacR864A3K+2PoeBKqvISafeX+DStOeZ vg== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3he1auhf3k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 18:20:53 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26JIKp7v003747;
-        Tue, 19 Jul 2022 18:20:51 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma02fra.de.ibm.com with ESMTP id 3hbmy8vksu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jul 2022 18:20:51 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26JIKmJJ8913240
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Jul 2022 18:20:48 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 27B33A4060;
-        Tue, 19 Jul 2022 18:20:48 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9068EA4054;
-        Tue, 19 Jul 2022 18:20:47 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.22.197])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 19 Jul 2022 18:20:47 +0000 (GMT)
-Date:   Tue, 19 Jul 2022 20:20:46 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     svens@linux.ibm.com, wintera@linux.ibm.com, wenjia@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390/net: Fix comment typo
-Message-ID: <Ytb1/uU+jlcI4jXw@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220716042700.39915-1-wangborong@cdjrlc.com>
+        with ESMTP id S235311AbiGSShu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:37:50 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CBF4D832;
+        Tue, 19 Jul 2022 11:37:49 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id c3so13465063pfb.13;
+        Tue, 19 Jul 2022 11:37:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wJ5Ojd6kShb79O9mahIFggm0V7bnmYUCaYihQuOlx0s=;
+        b=FpMZ70NauUPMpfgQmItV9B90OGWaHQsY2HLseqWTlLaWajPpT6v4f+kMTdMhbAHEca
+         GPm11Zq/deIN5Peuvwr9o47o0zRCnHVMwI+AZjEsg35DaeLIu+Rhq0O8O4Qvs3hjGieT
+         qeTAwEU4PNmQn+5vCyVBMFgZf92Xy98/lXd6gjC8/fSl9idr4tvJcSDIrjBCs01LkW3i
+         y75FU/AwVspg9K54QrdDDV7TpgtUALZWGplZwK2b3RLwKo+gj+BQ1Ktc5y5N/SE+Sw6w
+         w8Em0XzSHJzMBnzfQaD69z7Ux4VpxBKXm/Vbb9Yng1lk1N55SnBzi1Q6sFMsG6sxmO6g
+         Vyag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wJ5Ojd6kShb79O9mahIFggm0V7bnmYUCaYihQuOlx0s=;
+        b=5cCSKmGwggeYaay27o7DYQMnjGk10hQrG/0I5eqPNFrqNvcBwgLx9gPHcSj8ErZT9I
+         jjejemMEPH2O09Pz6QYrXwNm/T66ANoFxWLLp3ZKDRzGil249JuZd4Jv/L+ZU12tLA/J
+         elF+EtLxbNs0LWl6Ob7MDmfVoiIgqCaWwxB+etbW+UsRpW14DUQMlMO7gIFpLVYI26Rm
+         g5k+Ml3GNcCMpbWYAr0fEdcEpQIGNNnJLmJ/3KrKL98TxKHTZroxwERMW6GoqYprLyf6
+         WdxGC5t+U01VToGmX8OV6EtbfkHkptljDxEqmkRuqM/9VQ7dWyRO3oiHwb8HGH0NpFIZ
+         Jr1g==
+X-Gm-Message-State: AJIora9Ixr2r1CS/Q6KNE/PhFbtRPO2NTdGDTjorLKc7Tic/npCvkmk5
+        BT8J3QA4bpTeEDEhkqSD52jwkGHo3lQ=
+X-Google-Smtp-Source: AGRyM1uqPxX4R64vBZ0PZOQRY4f/yJyDgiD+Gxu5WENAvfeZJN2S9JvQNz64HK+j1ZtDzgGy2GcdMg==
+X-Received: by 2002:a63:1a4c:0:b0:416:1821:733d with SMTP id a12-20020a631a4c000000b004161821733dmr30128624pgm.444.1658255868680;
+        Tue, 19 Jul 2022 11:37:48 -0700 (PDT)
+Received: from MacBook-Pro-3.local ([2620:10d:c090:500::1:8aa3])
+        by smtp.gmail.com with ESMTPSA id x89-20020a17090a6c6200b001e2f892b352sm13979540pjj.45.2022.07.19.11.37.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 11:37:48 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 11:37:45 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v6 01/13] bpf: Introduce BTF ID flags and 8-byte
+ BTF set
+Message-ID: <20220719183745.4ojhwpuo7ookjvvk@MacBook-Pro-3.local>
+References: <20220719132430.19993-1-memxor@gmail.com>
+ <20220719132430.19993-2-memxor@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220716042700.39915-1-wangborong@cdjrlc.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HQ7BCeZRGyF4N8Cfb9uMYtvJvHRQHzRN
-X-Proofpoint-ORIG-GUID: HQ7BCeZRGyF4N8Cfb9uMYtvJvHRQHzRN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-19_06,2022-07-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 mlxscore=0 adultscore=0 suspectscore=0 bulkscore=0
- phishscore=0 spamscore=0 clxscore=1011 impostorscore=0 lowpriorityscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207190076
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220719132430.19993-2-memxor@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 12:27:00PM +0800, Jason Wang wrote:
-> The double `the' is duplicated in the comment, remove one.
-> 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-> ---
->  drivers/s390/net/qeth_core_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-> index 9e54fe76a9b2..35d4b398c197 100644
-> --- a/drivers/s390/net/qeth_core_main.c
-> +++ b/drivers/s390/net/qeth_core_main.c
-> @@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
->  			if (!atomic_read(&queue->set_pci_flags_count)) {
->  				/*
->  				 * there's no outstanding PCI any more, so we
-> -				 * have to request a PCI to be sure the the PCI
-> +				 * have to request a PCI to be sure the PCI
->  				 * will wake at some time in the future then we
->  				 * can flush packed buffers that might still be
->  				 * hanging around, which can happen if no
+On Tue, Jul 19, 2022 at 03:24:18PM +0200, Kumar Kartikeya Dwivedi wrote:
+>  
+> +#define ____BTF_ID_FLAGS_LIST(_0, _1, _2, _3, _4, _5, N, ...) _1##_##_2##_##_3##_##_4##_##_5##__
+> +#define __BTF_ID_FLAGS_LIST(...) ____BTF_ID_FLAGS_LIST(0x0, ##__VA_ARGS__, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+> +
+> +#define __FLAGS(prefix, ...) \
+> +	__PASTE(prefix, __BTF_ID_FLAGS_LIST(__VA_ARGS__))
+> +
+> +#define BTF_ID_FLAGS(prefix, name, ...) \
+> +	BTF_ID(prefix, name)		\
+> +	__BTF_ID(__ID(__FLAGS(__BTF_ID__flags__, ##__VA_ARGS__)))
+> +
+>  /*
+>   * The BTF_ID_LIST macro defines pure (unsorted) list
+>   * of BTF IDs, with following layout:
+> @@ -145,10 +164,53 @@ asm(							\
+>  ".popsection;                                 \n");	\
+>  extern struct btf_id_set name;
+>  
+> +/*
+> + * The BTF_SET8_START/END macros pair defines sorted list of
+> + * BTF IDs and their flags plus its members count, with the
+> + * following layout:
+> + *
+> + * BTF_SET8_START(list)
+> + * BTF_ID_FLAGS(type1, name1, flags...)
+> + * BTF_ID_FLAGS(type2, name2, flags...)
+> + * BTF_SET8_END(list)
+> + *
+> + * __BTF_ID__set8__list:
+> + * .zero 8
+> + * list:
+> + * __BTF_ID__type1__name1__3:
+> + * .zero 4
+> + * __BTF_ID__flags__0x0_0x0_0x0_0x0_0x0__4:
+> + * .zero 4
 
-Applied, thanks!
+Overall looks great,
+but why encode flags into a name?
+Why reuse ____BTF_ID for flags and complicate resolve_btfid?
+Instead of .zero 4 insert the actual flags as .word ?
+
+The usage will be slightly different.
+Instead of:
+BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE, KF_RET_NULL)
+it will be
+BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE | KF_RET_NULL)
