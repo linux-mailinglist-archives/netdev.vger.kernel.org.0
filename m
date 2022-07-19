@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBFCC57A0AB
+	by mail.lfdr.de (Postfix) with ESMTP id 90D3557A0AA
 	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238736AbiGSOIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S238734AbiGSOIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbiGSOIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:08:06 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A94545DC;
+        with ESMTP id S238475AbiGSOIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:08:02 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2490A545DB;
         Tue, 19 Jul 2022 06:24:44 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id z23so27153366eju.8;
+Received: by mail-ej1-x643.google.com with SMTP id va17so27230214ejb.0;
         Tue, 19 Jul 2022 06:24:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zRfpMv1HKDT/oo8oqXnhx+r8KcTgD+wCKHWhLlEb4rU=;
-        b=iktN3DZvWK/vd2WnLrhvt+I0fQSFBY1mzhJ08Fw69hn3Z8aHqRxvqKAckEQM2zvUIP
-         zpjxVH8Y2vF3+F/wAhKEXiXMURSrOnX2nV2rt+1bwXr9hlo0h0AptypEoRAn86Cf7xTj
-         Nbgtp1En4xlaxpsjHdunXWIAw4TGb6B7RVngJN9lntsKNnJmuPBYiw/4GFwOvRpZCEaB
-         P066hP7AWTTKdObf2/rjIK82HL40CuLHAjimiUjq9qV3LJCRfy/1Zty0MuWeEkP7R6bW
-         4wsztxNpzaXYXpuS6uS4g8NGO7I2H8zjibK2OpI9stbf9+qrAHS9HFaS5ujtUvy/79pe
-         VPZA==
+        bh=MY+4hNAYYI9zx5FeEQL4Nr+h4m9U/8AqUDe6AbROXpw=;
+        b=d1XNV0pmhTpqqToTUdPVPgF05pd8Av2jrZ7js6+DXRPm30e6E55ifiZ7mHTgzKfXSf
+         ecOgKAyD5CHKGCpxqFkeHx2povX91eiHrB9d6lcZiXgK7HSrgS75rtgcJFzZcgJesRE7
+         ZpA5ztndvFxoy6QRJRg8tJNEq6lgeV1J2ljsXEv7Ui1/95qZ+8eB4lpVUZom2cqZOd63
+         KY9O/ARQ+sVvPeJAYBcG7ZrFRfHubzdzLXM/5dXx6H+etijDuRAP15Z8HgUavxmTjQy8
+         oRoMVIHnQnDew+WQibmP5KHiJNB6ZqHd2mxZaqgW8AGV5UzvFGb95tJvZ8M7n6mI4bBL
+         BxRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zRfpMv1HKDT/oo8oqXnhx+r8KcTgD+wCKHWhLlEb4rU=;
-        b=byMmuc3Fe4RD5DHxynG5ibRD4D7lKjM1WlG+Va9L9lK41AgPRworOcSlfV11IYSKO4
-         htvMNvLGoaj0hNqTy6XbsdIHqHkrIPmVvD/RMFhZyGYnphfjh9OroorFfcs30p2k8zBc
-         ZwvMFs4NA0HyqRwc1th7amhlDksnNQm5ldxsmMsnSKRaNAxjU5R1uu7Afbi7+c1p+cVj
-         I8qDuY7NYZG5ztUOjgw5DZLJ9bHfSiiwoEwOz6eZP7LP35v087UZOnrdgOxiGebn3IX4
-         4f71MKqFhov9m3tHAwvctEMppXlPsAT2yx4f1VNRV8DDdCuMyxeyjXpzevrY45x88Tkt
-         zhug==
-X-Gm-Message-State: AJIora+Ja520yW6PasoPomkj8YTfI0xmqSquShAkK6OFLV98ZVLyv94x
-        UGLq+A1W3hlgEV7TXzDtSsS9urBndBlnrA==
-X-Google-Smtp-Source: AGRyM1sYNgu4agkDt09fZfnolvX14fevpag01tW9eD8CiLaigogbitJBqCaZb7epYHukw6q/qeKjTw==
-X-Received: by 2002:a17:907:a075:b0:72b:33e7:d63a with SMTP id ia21-20020a170907a07500b0072b33e7d63amr29632870ejc.533.1658237082378;
-        Tue, 19 Jul 2022 06:24:42 -0700 (PDT)
+        bh=MY+4hNAYYI9zx5FeEQL4Nr+h4m9U/8AqUDe6AbROXpw=;
+        b=mX1Zuwsu3xAG2qQzoTRawNsXeDhki7a10QK/uJ8uuoa5qOGwtMNFIY81Bun4OT16JK
+         jG5llkVBcRTuZIMb5iexGdqLBGH3setvdwrra0CtTPLoZ87zLtFSYbEKNiDMc8NJFtGb
+         9x0c+PIIh5zEfgfeymL0JdS3Sy2mzNjqAIcm/8x20OzPkQag68DV2dKlnP6477edVwZ4
+         P6AsVanOvKcbInvhgZ+1vGX4trUEgwgmcKeMo3N+Rd1Nt2CiYyINClVOBYb+WuSFkvR3
+         sgPa14dVF4mqsr4bS6Zlg0UWxE6gcWmv/HmUVa8GI59VbYsEiCYGf8UBQ4G5AO55MAwu
+         4rmw==
+X-Gm-Message-State: AJIora9axDgm0qZ7kU/oWr3S7b29R9eqHJTnwM1U7BI0ScbzBNiC8TTW
+        u0UbiisV8E0K7HdV5kFpmWU4bTy63ZxdOw==
+X-Google-Smtp-Source: AGRyM1vWmQmx1UADrgJxZGWs8EwWVsuGCD47jzBL2swyWKxtBGkSi0tdLphAEKEnDm2Bd332+Zp+/A==
+X-Received: by 2002:a17:907:86a5:b0:72e:fd2e:beb7 with SMTP id qa37-20020a17090786a500b0072efd2ebeb7mr20122526ejc.2.1658237083492;
+        Tue, 19 Jul 2022 06:24:43 -0700 (PDT)
 Received: from localhost (icdhcp-1-189.epfl.ch. [128.178.116.189])
-        by smtp.gmail.com with ESMTPSA id f23-20020a50fe17000000b0043a734c7393sm10481550edt.31.2022.07.19.06.24.41
+        by smtp.gmail.com with ESMTPSA id k22-20020a1709063e1600b0072aadbd48c7sm6655956eji.84.2022.07.19.06.24.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:24:42 -0700 (PDT)
+        Tue, 19 Jul 2022 06:24:43 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
@@ -58,14 +58,14 @@ Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v6 07/13] net: netfilter: Add kfuncs to allocate and insert CT
-Date:   Tue, 19 Jul 2022 15:24:24 +0200
-Message-Id: <20220719132430.19993-8-memxor@gmail.com>
+Subject: [PATCH bpf-next v6 08/13] net: netfilter: Add kfuncs to set and change CT timeout
+Date:   Tue, 19 Jul 2022 15:24:25 +0200
+Message-Id: <20220719132430.19993-9-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220719132430.19993-1-memxor@gmail.com>
 References: <20220719132430.19993-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11577; i=memxor@gmail.com; h=from:subject; bh=lLspzCVrhd4Jvc73ASnMdPHnQmldx+MOLcFCT+M8Zdo=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi1rBlRCbddqJSuRe6L0NthtorA1dFj2T+mEFM//qx YIcTEGuJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtawZQAKCRBM4MiGSL8RyvkOD/ 944LFFQXVOZencHgNs9aimp5N8aI6Ijaf9pZRURf1zK7d3MNA474wIpHjwLR6KGd1isxF9yWpBc8mv pShJfZdDCqvJIsEIcQaEsml6Z0KhTguaQe6Ufs7N4fGwPBmcmIOXPaqUaCcXhF82dmcPm0VzhObiLe gQATtyZB+RFawsG2qBvCj0YVlvU764Ng8BlQv4rlWavTsCKp7AOwStrnTDLqw0rGSpmvEOKpd6XGJJ PJNVrIsVGBGpOqHu63Pmk0Gph/TdNpu2sDP5SNrn7ahlcMbGiwdlaRCa1/WZ8ZVH1Eq7h88j7WCPlt l5JNo/qoPZ3UBLiJ+IFhd3JCLw99h69YRdruEH0Vhca0Q+v+H/DI7Ei1RGgUm3ocnBBCS7NkZSHjM5 gel+p1bcgFhGwWwW3xDjsf8XDUUlv4Oyh2c8p0sBF7WpHTcbCcqtlG5HORAzaSk3WGkeXi4bAwDwMc rWTNUygVgF8tUBQYOcaNr58QT1lxXt2JsgFnvuuNsUUITZgazhq+Gxg6IH0ggPhgxjtCx07WbaoRQA 0ZA9KLTcBg6GOoI34YmHQNacum87z08lKEewvdyJfcaAVx/aYLCDJjW3E6A+pWklPALu/33zPjAPrW Q8XhVQdB0RJfbfDnNlsOJID3vWO2M2CZUg56PrQBDomy/SpkvciWKBEAP2gw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6451; i=memxor@gmail.com; h=from:subject; bh=6948voh0g35fM0kop8GGCsovi8iNkofA8T1dMQUsBFU=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi1rBlIpz6xoc8qQU+HzS8aLqJB1KGXRODxPPx7p3o JSMNJkKJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtawZQAKCRBM4MiGSL8Rylz5D/ 9cJDsIO6wYz1baG1lYH01rllkp/Yor1TL76YaRmZvIGI1dFF/QTJA/2X2MQ4RBHDgmf86X+0UQiK69 8telYDB5Q/BB8wsUqNNTsrF7QNDifGVPjZvnaMFxiDZiUuebBqOdlUGNOIDF+f5LOWpGudbFVOoWte VAscIGv+hajAQCgZ/X1qobi3SiGhi1C0iUeUYvnybGPcGzHSdhjVvntWhRvNmWou86g4D6/XkcwAZk 5uv47kLRTux3t5cqOdsOC6oF3Nzd0dDeBcn5Jv0yNs+XLMaqSff3xcUSk85yTysAhjR71smz49FOCM wkyT/sSVC7FfC9UQH6hr4+vVV8dsk0Z9Bjqqr+LEAquXT6OI+gxZbGHS4R2RWK+/pwqypo9gpnqx2j xtz/fEOIYvnkzSNPeqKWzzuR6QH+QEDhNuw/NC/jO9afDgVtXFFtxV0CJInpFlAPa2yJ4mW8WO/857 pud9KIQ/gUJHBqXvqB0egNG9RtCP4K2s42kKr3Lc2qq6qDQE+QH5zOmBALuFyzEh1OdqUJ1Y4DdqRE I2XytR8+wdULtXukzi3LbYqYM4F8UZYJmFKNvleg0qg16hraAMx43h0Ek9UurBW9C/zKxeB5ljqDPi dKbEK1bq0iUB+FVtUHVxkHRjbucpF7uX8B5KLFMiuil6FPFIv5RA09SPW+Hw==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,346 +78,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+Introduce bpf_ct_set_timeout and bpf_ct_change_timeout kfunc helpers in
+order to change nf_conn timeout. This is same as ctnetlink_change_timeout,
+hence code is shared between both by extracting it out to
+__nf_ct_change_timeout. It is also updated to return an error when it
+sees IPS_FIXED_TIMEOUT_BIT bit in ct->status, as that check was missing.
 
-Introduce bpf_xdp_ct_alloc, bpf_skb_ct_alloc and bpf_ct_insert_entry
-kfuncs in order to insert a new entry from XDP and TC programs.
-Introduce bpf_nf_ct_tuple_parse utility routine to consolidate common
-code.
+It is required to introduce two kfuncs taking nf_conn___init and nf_conn
+instead of sharing one because KF_TRUSTED_ARGS flag causes strict type
+checking. This would disallow passing nf_conn___init to kfunc taking
+nf_conn, and vice versa. We cannot remove the KF_TRUSTED_ARGS flag as we
+only want to accept refcounted pointers and not e.g. ct->master.
 
-We extract out a helper __nf_ct_set_timeout, used by the ctnetlink and
-nf_conntrack_bpf code, extract it out to nf_conntrack_core, so that
-nf_conntrack_bpf doesn't need a dependency on CONFIG_NF_CT_NETLINK.
-Later this helper will be reused as a helper to set timeout of allocated
-but not yet inserted CT entry.
+Apart from this, bpf_ct_set_timeout is only called for newly allocated
+CT so it doesn't need to inspect the status field just yet. Sharing the
+helpers even if it was possible would make timeout setting helper
+sensitive to order of setting status and timeout after allocation.
 
-The allocation functions return struct nf_conn___init instead of
-nf_conn, to distinguish allocated CT from an already inserted or looked
-up CT. This is later used to enforce restrictions on what kfuncs
-allocated CT can be used with.
+Hence, bpf_ct_set_* kfuncs are meant to be used on allocated CT, and
+bpf_ct_change_* kfuncs are meant to be used on inserted or looked up
+CT entry.
 
+Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/net/netfilter/nf_conntrack_core.h |  15 ++
- net/netfilter/nf_conntrack_bpf.c          | 208 +++++++++++++++++++---
- net/netfilter/nf_conntrack_netlink.c      |   8 +-
- 3 files changed, 204 insertions(+), 27 deletions(-)
+ include/net/netfilter/nf_conntrack_core.h |  2 ++
+ net/netfilter/nf_conntrack_bpf.c          | 38 +++++++++++++++++++++--
+ net/netfilter/nf_conntrack_core.c         | 22 +++++++++++++
+ net/netfilter/nf_conntrack_netlink.c      |  9 +-----
+ 4 files changed, 60 insertions(+), 11 deletions(-)
 
 diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 37866c8386e2..83a60c684e6c 100644
+index 83a60c684e6c..3b0f7d0eebae 100644
 --- a/include/net/netfilter/nf_conntrack_core.h
 +++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -84,4 +84,19 @@ void nf_conntrack_lock(spinlock_t *lock);
+@@ -97,6 +97,8 @@ static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
+ 	WRITE_ONCE(ct->timeout, nfct_time_stamp + (u32)timeout);
+ }
  
- extern spinlock_t nf_conntrack_expect_lock;
++int __nf_ct_change_timeout(struct nf_conn *ct, u64 cta_timeout);
++
+ #endif
  
-+/* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
+ #endif /* _NF_CONNTRACK_CORE_H */
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index 6c43160ff036..7d7e59441325 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -331,12 +331,12 @@ bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
+  *
+  * This must be invoked for referenced PTR_TO_BTF_ID.
+  *
+- * @nfct__ref	 - Pointer to referenced nf_conn___init object, obtained
++ * @nfct	 - Pointer to referenced nf_conn___init object, obtained
+  *		   using bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
+  */
+-struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
++struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct_i)
+ {
+-	struct nf_conn *nfct = (struct nf_conn *)nfct__ref;
++	struct nf_conn *nfct = (struct nf_conn *)nfct_i;
+ 	int err;
+ 
+ 	err = nf_conntrack_hash_check_insert(nfct);
+@@ -364,6 +364,36 @@ void bpf_ct_release(struct nf_conn *nfct)
+ 	nf_ct_put(nfct);
+ }
+ 
++/* bpf_ct_set_timeout - Set timeout of allocated nf_conn
++ *
++ * Sets the default timeout of newly allocated nf_conn before insertion.
++ * This helper must be invoked for refcounted pointer to nf_conn___init.
++ *
++ * Parameters:
++ * @nfct	 - Pointer to referenced nf_conn object, obtained using
++ *                 bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
++ * @timeout      - Timeout in msecs.
++ */
++void bpf_ct_set_timeout(struct nf_conn___init *nfct, u32 timeout)
++{
++	__nf_ct_set_timeout((struct nf_conn *)nfct, msecs_to_jiffies(timeout));
++}
++
++/* bpf_ct_change_timeout - Change timeout of inserted nf_conn
++ *
++ * Change timeout associated of the inserted or looked up nf_conn.
++ * This helper must be invoked for refcounted pointer to nf_conn.
++ *
++ * Parameters:
++ * @nfct	 - Pointer to referenced nf_conn object, obtained using
++ *		   bpf_ct_insert_entry, bpf_xdp_ct_lookup, or bpf_skb_ct_lookup.
++ * @timeout      - New timeout in msecs.
++ */
++int bpf_ct_change_timeout(struct nf_conn *nfct, u32 timeout)
++{
++	return __nf_ct_change_timeout(nfct, msecs_to_jiffies(timeout));
++}
++
+ __diag_pop()
+ 
+ BTF_SET8_START(nf_ct_kfunc_set)
+@@ -373,6 +403,8 @@ BTF_ID_FLAGS(func, bpf_skb_ct_alloc, KF_ACQUIRE, KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_skb_ct_lookup, KF_ACQUIRE, KF_RET_NULL)
+ BTF_ID_FLAGS(func, bpf_ct_insert_entry, KF_ACQUIRE, KF_RET_NULL, KF_RELEASE)
+ BTF_ID_FLAGS(func, bpf_ct_release, KF_RELEASE)
++BTF_ID_FLAGS(func, bpf_ct_set_timeout, KF_TRUSTED_ARGS)
++BTF_ID_FLAGS(func, bpf_ct_change_timeout, KF_TRUSTED_ARGS)
+ BTF_SET8_END(nf_ct_kfunc_set)
+ 
+ static const struct btf_kfunc_id_set nf_conntrack_kfunc_set = {
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 082a2fd8d85b..572f59a5e936 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -2786,3 +2786,25 @@ int nf_conntrack_init_net(struct net *net)
+ 	free_percpu(net->ct.stat);
+ 	return ret;
+ }
 +
 +#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
 +    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES) || \
 +    IS_ENABLED(CONFIG_NF_CT_NETLINK))
 +
-+static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
++/* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
++
++int __nf_ct_change_timeout(struct nf_conn *ct, u64 timeout)
 +{
-+	if (timeout > INT_MAX)
-+		timeout = INT_MAX;
-+	WRITE_ONCE(ct->timeout, nfct_time_stamp + (u32)timeout);
-+}
++	if (test_bit(IPS_FIXED_TIMEOUT_BIT, &ct->status))
++		return -EPERM;
 +
-+#endif
++	__nf_ct_set_timeout(ct, timeout);
 +
- #endif /* _NF_CONNTRACK_CORE_H */
-diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-index 0ba3cbde72ec..6c43160ff036 100644
---- a/net/netfilter/nf_conntrack_bpf.c
-+++ b/net/netfilter/nf_conntrack_bpf.c
-@@ -55,6 +55,94 @@ enum {
- 	NF_BPF_CT_OPTS_SZ = 12,
- };
- 
-+static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
-+				 u32 tuple_len, u8 protonum, u8 dir,
-+				 struct nf_conntrack_tuple *tuple)
-+{
-+	union nf_inet_addr *src = dir ? &tuple->dst.u3 : &tuple->src.u3;
-+	union nf_inet_addr *dst = dir ? &tuple->src.u3 : &tuple->dst.u3;
-+	union nf_conntrack_man_proto *sport = dir ? (void *)&tuple->dst.u
-+						  : &tuple->src.u;
-+	union nf_conntrack_man_proto *dport = dir ? &tuple->src.u
-+						  : (void *)&tuple->dst.u;
-+
-+	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
-+		return -EPROTO;
-+
-+	memset(tuple, 0, sizeof(*tuple));
-+
-+	switch (tuple_len) {
-+	case sizeof(bpf_tuple->ipv4):
-+		tuple->src.l3num = AF_INET;
-+		src->ip = bpf_tuple->ipv4.saddr;
-+		sport->tcp.port = bpf_tuple->ipv4.sport;
-+		dst->ip = bpf_tuple->ipv4.daddr;
-+		dport->tcp.port = bpf_tuple->ipv4.dport;
-+		break;
-+	case sizeof(bpf_tuple->ipv6):
-+		tuple->src.l3num = AF_INET6;
-+		memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
-+		sport->tcp.port = bpf_tuple->ipv6.sport;
-+		memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
-+		dport->tcp.port = bpf_tuple->ipv6.dport;
-+		break;
-+	default:
-+		return -EAFNOSUPPORT;
-+	}
-+	tuple->dst.protonum = protonum;
-+	tuple->dst.dir = dir;
++	if (test_bit(IPS_DYING_BIT, &ct->status))
++		return -ETIME;
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_GPL(__nf_ct_change_timeout);
 +
-+static struct nf_conn *
-+__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
-+			u32 tuple_len, struct bpf_ct_opts *opts, u32 opts_len,
-+			u32 timeout)
-+{
-+	struct nf_conntrack_tuple otuple, rtuple;
-+	struct nf_conn *ct;
-+	int err;
-+
-+	if (!opts || !bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
-+	    opts_len != NF_BPF_CT_OPTS_SZ)
-+		return ERR_PTR(-EINVAL);
-+
-+	if (unlikely(opts->netns_id < BPF_F_CURRENT_NETNS))
-+		return ERR_PTR(-EINVAL);
-+
-+	err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, opts->l4proto,
-+				    IP_CT_DIR_ORIGINAL, &otuple);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+
-+	err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, opts->l4proto,
-+				    IP_CT_DIR_REPLY, &rtuple);
-+	if (err < 0)
-+		return ERR_PTR(err);
-+
-+	if (opts->netns_id >= 0) {
-+		net = get_net_ns_by_id(net, opts->netns_id);
-+		if (unlikely(!net))
-+			return ERR_PTR(-ENONET);
-+	}
-+
-+	ct = nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
-+				GFP_ATOMIC);
-+	if (IS_ERR(ct))
-+		goto out;
-+
-+	memset(&ct->proto, 0, sizeof(ct->proto));
-+	__nf_ct_set_timeout(ct, timeout * HZ);
-+	ct->status |= IPS_CONFIRMED;
-+
-+out:
-+	if (opts->netns_id >= 0)
-+		put_net(net);
-+
-+	return ct;
-+}
-+
- static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
- 					  struct bpf_sock_tuple *bpf_tuple,
- 					  u32 tuple_len, struct bpf_ct_opts *opts,
-@@ -63,6 +151,7 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
- 	struct nf_conntrack_tuple_hash *hash;
- 	struct nf_conntrack_tuple tuple;
- 	struct nf_conn *ct;
-+	int err;
- 
- 	if (!opts || !bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
- 	    opts_len != NF_BPF_CT_OPTS_SZ)
-@@ -72,27 +161,10 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
- 	if (unlikely(opts->netns_id < BPF_F_CURRENT_NETNS))
- 		return ERR_PTR(-EINVAL);
- 
--	memset(&tuple, 0, sizeof(tuple));
--	switch (tuple_len) {
--	case sizeof(bpf_tuple->ipv4):
--		tuple.src.l3num = AF_INET;
--		tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
--		tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
--		tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
--		tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
--		break;
--	case sizeof(bpf_tuple->ipv6):
--		tuple.src.l3num = AF_INET6;
--		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
--		tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
--		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
--		tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
--		break;
--	default:
--		return ERR_PTR(-EAFNOSUPPORT);
--	}
--
--	tuple.dst.protonum = opts->l4proto;
-+	err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, opts->l4proto,
-+				    IP_CT_DIR_ORIGINAL, &tuple);
-+	if (err < 0)
-+		return ERR_PTR(err);
- 
- 	if (opts->netns_id >= 0) {
- 		net = get_net_ns_by_id(net, opts->netns_id);
-@@ -116,6 +188,43 @@ __diag_push();
- __diag_ignore_all("-Wmissing-prototypes",
- 		  "Global functions as their definitions will be in nf_conntrack BTF");
- 
-+struct nf_conn___init {
-+	struct nf_conn ct;
-+};
-+
-+/* bpf_xdp_ct_alloc - Allocate a new CT entry
-+ *
-+ * Parameters:
-+ * @xdp_ctx	- Pointer to ctx (xdp_md) in XDP program
-+ *		    Cannot be NULL
-+ * @bpf_tuple	- Pointer to memory representing the tuple to look up
-+ *		    Cannot be NULL
-+ * @tuple__sz	- Length of the tuple structure
-+ *		    Must be one of sizeof(bpf_tuple->ipv4) or
-+ *		    sizeof(bpf_tuple->ipv6)
-+ * @opts	- Additional options for allocation (documented above)
-+ *		    Cannot be NULL
-+ * @opts__sz	- Length of the bpf_ct_opts structure
-+ *		    Must be NF_BPF_CT_OPTS_SZ (12)
-+ */
-+struct nf_conn___init *
-+bpf_xdp_ct_alloc(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
-+		 u32 tuple__sz, struct bpf_ct_opts *opts, u32 opts__sz)
-+{
-+	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
-+	struct nf_conn *nfct;
-+
-+	nfct = __bpf_nf_ct_alloc_entry(dev_net(ctx->rxq->dev), bpf_tuple, tuple__sz,
-+				       opts, opts__sz, 10);
-+	if (IS_ERR(nfct)) {
-+		if (opts)
-+			opts->error = PTR_ERR(nfct);
-+		return NULL;
-+	}
-+
-+	return (struct nf_conn___init *)nfct;
-+}
-+
- /* bpf_xdp_ct_lookup - Lookup CT entry for the given tuple, and acquire a
-  *		       reference to it
-  *
-@@ -150,6 +259,40 @@ bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
- 	return nfct;
- }
- 
-+/* bpf_skb_ct_alloc - Allocate a new CT entry
-+ *
-+ * Parameters:
-+ * @skb_ctx	- Pointer to ctx (__sk_buff) in TC program
-+ *		    Cannot be NULL
-+ * @bpf_tuple	- Pointer to memory representing the tuple to look up
-+ *		    Cannot be NULL
-+ * @tuple__sz	- Length of the tuple structure
-+ *		    Must be one of sizeof(bpf_tuple->ipv4) or
-+ *		    sizeof(bpf_tuple->ipv6)
-+ * @opts	- Additional options for allocation (documented above)
-+ *		    Cannot be NULL
-+ * @opts__sz	- Length of the bpf_ct_opts structure
-+ *		    Must be NF_BPF_CT_OPTS_SZ (12)
-+ */
-+struct nf_conn___init *
-+bpf_skb_ct_alloc(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
-+		 u32 tuple__sz, struct bpf_ct_opts *opts, u32 opts__sz)
-+{
-+	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
-+	struct nf_conn *nfct;
-+	struct net *net;
-+
-+	net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
-+	nfct = __bpf_nf_ct_alloc_entry(net, bpf_tuple, tuple__sz, opts, opts__sz, 10);
-+	if (IS_ERR(nfct)) {
-+		if (opts)
-+			opts->error = PTR_ERR(nfct);
-+		return NULL;
-+	}
-+
-+	return (struct nf_conn___init *)nfct;
-+}
-+
- /* bpf_skb_ct_lookup - Lookup CT entry for the given tuple, and acquire a
-  *		       reference to it
-  *
-@@ -184,6 +327,26 @@ bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
- 	return nfct;
- }
- 
-+/* bpf_ct_insert_entry - Add the provided entry into a CT map
-+ *
-+ * This must be invoked for referenced PTR_TO_BTF_ID.
-+ *
-+ * @nfct__ref	 - Pointer to referenced nf_conn___init object, obtained
-+ *		   using bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
-+ */
-+struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
-+{
-+	struct nf_conn *nfct = (struct nf_conn *)nfct__ref;
-+	int err;
-+
-+	err = nf_conntrack_hash_check_insert(nfct);
-+	if (err < 0) {
-+		nf_conntrack_free(nfct);
-+		return NULL;
-+	}
-+	return nfct;
-+}
-+
- /* bpf_ct_release - Release acquired nf_conn object
-  *
-  * This must be invoked for referenced PTR_TO_BTF_ID, and the verifier rejects
-@@ -204,8 +367,11 @@ void bpf_ct_release(struct nf_conn *nfct)
- __diag_pop()
- 
- BTF_SET8_START(nf_ct_kfunc_set)
-+BTF_ID_FLAGS(func, bpf_xdp_ct_alloc, KF_ACQUIRE, KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_xdp_ct_lookup, KF_ACQUIRE, KF_RET_NULL)
-+BTF_ID_FLAGS(func, bpf_skb_ct_alloc, KF_ACQUIRE, KF_RET_NULL)
- BTF_ID_FLAGS(func, bpf_skb_ct_lookup, KF_ACQUIRE, KF_RET_NULL)
-+BTF_ID_FLAGS(func, bpf_ct_insert_entry, KF_ACQUIRE, KF_RET_NULL, KF_RELEASE)
- BTF_ID_FLAGS(func, bpf_ct_release, KF_RELEASE)
- BTF_SET8_END(nf_ct_kfunc_set)
- 
++#endif
 diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 722af5e309ba..0729b2f0d44f 100644
+index 0729b2f0d44f..b1de07c73845 100644
 --- a/net/netfilter/nf_conntrack_netlink.c
 +++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -2025,9 +2025,7 @@ static int ctnetlink_change_timeout(struct nf_conn *ct,
+@@ -2023,14 +2023,7 @@ static int ctnetlink_change_helper(struct nf_conn *ct,
+ static int ctnetlink_change_timeout(struct nf_conn *ct,
+ 				    const struct nlattr * const cda[])
  {
- 	u64 timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
+-	u64 timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
+-
+-	__nf_ct_set_timeout(ct, timeout);
+-
+-	if (test_bit(IPS_DYING_BIT, &ct->status))
+-		return -ETIME;
+-
+-	return 0;
++	return __nf_ct_change_timeout(ct, (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ);
+ }
  
--	if (timeout > INT_MAX)
--		timeout = INT_MAX;
--	WRITE_ONCE(ct->timeout, nfct_time_stamp + (u32)timeout);
-+	__nf_ct_set_timeout(ct, timeout);
- 
- 	if (test_bit(IPS_DYING_BIT, &ct->status))
- 		return -ETIME;
-@@ -2292,9 +2290,7 @@ ctnetlink_create_conntrack(struct net *net,
- 		goto err1;
- 
- 	timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
--	if (timeout > INT_MAX)
--		timeout = INT_MAX;
--	ct->timeout = (u32)timeout + nfct_time_stamp;
-+	__nf_ct_set_timeout(ct, timeout);
- 
- 	rcu_read_lock();
-  	if (cda[CTA_HELP]) {
+ #if defined(CONFIG_NF_CONNTRACK_MARK)
 -- 
 2.34.1
 
