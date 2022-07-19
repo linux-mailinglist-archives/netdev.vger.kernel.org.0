@@ -2,221 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0418579581
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED89257958D
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbiGSIsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 04:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
+        id S237109AbiGSIus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 04:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237135AbiGSIso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:48:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6613C8FC;
-        Tue, 19 Jul 2022 01:48:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5B2161790;
-        Tue, 19 Jul 2022 08:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD50C341C6;
-        Tue, 19 Jul 2022 08:48:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658220521;
-        bh=Y80I/9h5gwXwAl7BrWnNgRboomD0Q/i4fsdukksbxuA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ftz2opaB3z+yb8RtydfLoLtaxsjl9hbVDuSH7gqPczmybG3jqnAUX/sMgYFai0B3B
-         D/GVCtngIJW3ALxtzJdXN9F9GYV3fLFB6cJSSD+sVPPUikiEIjT0M8UPFkwT0aa5xL
-         S6gbKGCyNjELTnqJzmWgE2WySNetGPq/TuPWVf762sbXBQXxv4Ch7L0hoP4OKxhBeF
-         wempCKHPca39pk1WqmSOjqnkIctwswq4BX7jZBwaQ4uWPl0JWkCWzcYye7zvAQIS3v
-         mXo4NI3t11uKJPh3r7gX87oIZdPIvGwwnzMg2urBDZulfeOAMM5Uk/DRfnKWweGNcg
-         ixWwiuFbfaCqw==
-Date:   Tue, 19 Jul 2022 09:48:35 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
-        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
- guidelines. (v2)
-Message-ID: <20220719094835.52197852@sal.lan>
-In-Reply-To: <20220719065357.2705918-1-airlied@gmail.com>
-References: <20220719065357.2705918-1-airlied@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S237092AbiGSIui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:50:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F46FD20;
+        Tue, 19 Jul 2022 01:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658220637; x=1689756637;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2JAJzcpzppdk8+5vwNAE1GhAxpYQx+69osAyMGcV9+w=;
+  b=LznMufkKV6tn+AsL8Pcp6zDsJmcxF1WbpzngdeuHIFYVyCRVq+nxXMkT
+   CAurvrK5QZIVmkJIVHoZ6ACy+TlsF5NiembV77ZLSTq2+U8dAiZaoF7XS
+   kwFCOVjd9F9YEsWa8xuQMqLoHc7vb5abwOCw7F9VyOy4R+hb3YSkf7ko1
+   2j/Dpdp5fqOlUcCbm0xpXWrrAYeNvDWSsIOQNLeKAa7Z20P0Mz8sU2QRf
+   2WO2SKlyxebHwaJBhyLJwvsi8Vd1AgGbYBB+J3CXIvPJLGu8JuODicL6Y
+   jfq+brmZ4GKFdpAqXoKQ/aYhr03BCkivhpwp0bPA63cymBSrLB8IsaVHr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="283999834"
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="283999834"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 01:50:37 -0700
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="700361257"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 01:50:29 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 9E6EB202EA;
+        Tue, 19 Jul 2022 11:50:27 +0300 (EEST)
+Date:   Tue, 19 Jul 2022 08:50:27 +0000
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
+ be created
+Message-ID: <YtZwU9BKAO/WSRmK@paasikivi.fi.intel.com>
+References: <YtHGwz4v7VWKhIXG@smile.fi.intel.com>
+ <20220715201715.foea4rifegmnti46@skbuf>
+ <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
+ <20220715204841.pwhvnue2atrkc2fx@skbuf>
+ <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
+ <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
+ <YtWp3WkpCtfe559l@smile.fi.intel.com>
+ <YtWwbMucEyO+W8/Y@shell.armlinux.org.uk>
+ <YtW9goFpOLGvIDog@smile.fi.intel.com>
+ <YtXE0idsKe6FZ+n4@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtXE0idsKe6FZ+n4@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, 19 Jul 2022 16:53:57 +1000
-Dave Airlie <airlied@gmail.com> escreveu:
+Hi Russell, Andy,
 
-> From: Dave Airlie <airlied@redhat.com>
+On Mon, Jul 18, 2022 at 09:38:42PM +0100, Russell King (Oracle) wrote:
+> On Mon, Jul 18, 2022 at 11:07:30PM +0300, Andy Shevchenko wrote:
+> > On Mon, Jul 18, 2022 at 08:11:40PM +0100, Russell King (Oracle) wrote:
+> > > Good point - I guess we at least need to attach the swnode parent to the
+> > > device so its path is unique, because right now that isn't the case. I'm
+> > > guessing that:
+> > > 
+> > >         new_port_fwnode = fwnode_create_software_node(port_props, NULL);
+> > > 
+> > > will create something at the root of the swnode tree, and then:
+> > > 
+> > >         fixed_link_fwnode = fwnode_create_named_software_node(fixed_link_props,
+> > >                                                               new_port_fwnode,
+> > >                                                               "fixed-link");
+> > > 
+> > > will create a node with a fixed name. I guess it in part depends what
+> > > pathname the first node gets (which we don't specify.) I'm not familiar
+> > > with the swnode code to know what happens with the naming for the first
+> > > node.
+> > 
+> > First node's name will be unique which is guaranteed by IDA framework. If we
+> > have already 2B nodes, then yes, it would be problematic (but 2^31 ought to be
+> > enough :-).
+> > 
+> > > However, it seems sensible to me to attach the first node to the device
+> > > node, thus giving it a unique fwnode path. Does that solve the problem
+> > > in swnode land?
+> > 
+> > Yes, but in the driver you will have that as child of the device, analogue in DT
+> > 
+> >   my_root_node { // equal the level of device node you attach it to
+> > 	  fixed-link {
+> > 	  }
+> >   }
+> > 
+> > (Sorry, I don't know the DT syntax by heart, but I hope you got the idea.)
 > 
-> A recent snafu where Intel ignored upstream feedback on a firmware
-> change, led to a late rc6 fix being required. In order to avoid this
-> in the future we should document some expectations around
-> linux-firmware.
+> Yes, that looks about right.
 > 
-> I was originally going to write this for drm, but it seems quite generic
-> advice.
-
-Indeed it makes sense to document firmware API compatibility in a generic way.
-
-Some suggestions below.
-
-> v2: rewritten with suggestions from Thorsten Leemhuis.
->
-> Acked-by: Luis Chamberlain <mcgrof@kernel.org>
-> Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> Signed-off-by: Dave Airlie <airlied@redhat.com>
-> ---
->  Documentation/driver-api/firmware/core.rst    |  1 +
->  .../firmware/firmware-usage-guidelines.rst    | 34 +++++++++++++++++++
->  2 files changed, 35 insertions(+)
->  create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+> What we're attempting to do here is create the swnode equivalent of this
+> DT description:
 > 
-> diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
-> index 1d1688cbc078..803cd574bbd7 100644
-> --- a/Documentation/driver-api/firmware/core.rst
-> +++ b/Documentation/driver-api/firmware/core.rst
-> @@ -13,4 +13,5 @@ documents these features.
->     direct-fs-lookup
->     fallback-mechanisms
->     lookup-order
-> +   firmware-usage-guidelines
->  
-> diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-> new file mode 100644
-> index 000000000000..34d2412e78c6
-> --- /dev/null
-> +++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-> @@ -0,0 +1,34 @@
-> +===================
-> +Firmware Guidelines
-> +===================
-> +
-> +Drivers that use firmware from linux-firmware should attempt to follow
-> +the rules in this guide.
-> +
-> +* Firmware should be versioned with at least a major/minor version.
+> 	some_node {
+> 		phy-mode = "foo";
+> 
+> 		fixed-link {
+> 			speed = X;
+> 			full-duplex;
+> 		};
+> 	};
+> 
+> and the some_node fwnode handle gets passed into phylink for it to
+> parse - we never attach it to the firmware tree itself. Once phylink
+> has parsed it, we destroy the swnode tree since it's no longer useful.
+> 
+> This would get used in this situation as an example:
+> 
+> 	switch@4 {
+> 		compatible = "marvell,mv88e6085";
+> 
+> 		ports {
+> 			port@0 {
+> 				reg = <0>;
+> 				phy-mode = "internal";
+> 				phy-handle = <&sw_phy_0>;
+> 			};
+> 			...
+> 			port@5 {
+> 				reg = <5>;
+> 				label = "cpu";
+> 				ethernet = <&eth1>;
+> 			};
+> 		};
+> 	};
+> 
+> The DSA driver knows the capabilities of the chip, so it knows what the
+> fastest "phy-mode" and speed would be, and whether full or half duplex
+> are supported.
+> 
+> We need to get this information into phylink some how, and my initial
+> approach was to add a new function to phylink to achieve that.
+> 
+> We would normally have passed the "port@5" node to phylink, just as we
+> pass the "port@0" node. However, because the "port@5" operates as a
+> fixed-link as determined by the hardware/driver, we need some way to
+> get that into phylink.
+> 
+> So, Vladimir's approach is to create a swnode tree that reflects the
+> DT layout, and rather than passing the "port@5" as a fwnode to phylink,
+> we instead pass that "some_node" swnode instead. Phylink then uses
+> normal fwnode APIs to parse the swnode tree it's been given, resulting
+> in it picking up the fixed-link specification as if it had been in the
+> original DT.
+> 
+> We don't augment the existing firmware tree for "port@5", we are
+> effectively creating a small sub-tree and using it as a subsitute
+> description.
+> 
+> I hope that clarifies what is going on here and why.
 
-It is hard to enforce how vendors will version their firmware. On media,
-we have some drivers whose major means different hardware versions. For
-instance, on xc3028, v3.x means low voltage chips, while v2.x means
-"normal" voltage. We end changing the file name on Linux to avoid the risk
-of damaging the hardware, as using v27 firmware on low power chips damage
-them. So, we have:
+Basically what your patch is doing is adding a helper function that creates
+an fwnode with a given name. This functionality was there previously through
+software_node_register_nodes(), with node allocation responsibility residing
+on the caller. It's used e.g. here:
+drivers/media/pci/intel/ipu3/cio2-bridge.c .
 
-	drivers/media/tuners/xc2028.h:#define XC2028_DEFAULT_FIRMWARE "xc3028-v27.fw"
-	drivers/media/tuners/xc2028.h:#define XC3028L_DEFAULT_FIRMWARE "xc3028L-v36.fw"
+The larger question is perhaps when can you safely remove software nodes.
+And which of these two APIs would be preferred. I haven't checked how many
+users each has. There's no refcounting nor locking for software nodes, so
+once made visible to the rest of the kernel, they're always expected to be
+there, unchanged, or at least it needs to be known when they can be removed.
 
-As their main market is not Linux - nor PC - as their main sales are on 
-TV sets, and them don't officially support Linux, there's nothing we can
-do to enforce it.
+-- 
+Kind regards,
 
-IMO we need a more generic text here to indicate that Linux firmware
-files should be defined in a way that it should be possible to detect
-when there are incompatibilities with past versions. 
-So, I would say, instead:
-
-	Firmware files shall be designed in a way that it allows
-	checking for firmware ABI version changes. It is recommended
-	that firmware files to be versioned with at least major/minor
-	version.
-
-> It
-> +  is suggested that the firmware files in linux-firmware be named with
-> +  some device specific name, and just the major version. 
-
-> The
-> +  major/minor/patch versions should be stored in a header in the
-> +  firmware file for the driver to detect any non-ABI fixes/issues. 
-
-I would also make this more generic. On media, we ended adding the firmware
-version indicated at the file name. For instance, xc4000 driver checks for
-two firmware files:
-
-drivers/media/tuners/xc4000.c:#define XC4000_DEFAULT_FIRMWARE "dvb-fe-xc4000-1.4.fw"
-drivers/media/tuners/xc4000.c:#define XC4000_DEFAULT_FIRMWARE_NEW "dvb-fe-xc4000-1.4.1.fw"
-
-On such cases, the driver can take decisions based on the firmware name.
-
-I would change the text to be more generic covering both cases:
-
-	The firmware version shall either be stored at the firmware
-	header or as part of the firmware file name, in order to let the
-	driver to detect any non-ABI fixes/changes.
-
-> The
-> +  firmware files in linux-firmware should be overwritten with the newest
-> +  compatible major version.
-
-For me "shall" is mandatory, while "should" is optional.
-
-In this specific case, I'm not so sure if overriding it is the best thing 
-to do on all subsystems. I mean, even with the same ABI, older firmware 
-usually means that some bugs and/or limitations will be present there.
-
-That's specially true on codecs: even having the same ABI, older versions
-won't support decoding newer protocols. We have one case with some
-digital TV decoders that only support some Cable-TV protocols with
-newer firmware versions. We have also one case were remote controller
-decoding is buggy with older firmwares. On both situations, the ABI
-didn't change.
-
-> Newer major version firmware should remain
-> +  compatible with all kernels that load that major number.
-
-	should -> shall
-
-> +
-> +* Users should *not* have to install newer firmware to use existing
-> +  hardware when they install a newer kernel. 
-
-> If the hardware isn't
-> +  enabled by default or under development,
-
-Hmm.. someone might understand that not having a "default Y" at Kconfig
-would mean that this is not enabled by default ;-)
-
-IMO you can just tell, instead:
-
-	"This can be ignored until the first kernel release that enables support
-	 for such hardware."
-
-> this can be ignored, until
-> +  the first kernel release that enables that hardware. 
-
-> This means no
-> +  major version bumps without the kernel retaining backwards
-> +  compatibility for the older major versions.  Minor version bumps
-> +  should not introduce new features that newer kernels depend on
-> +  non-optionally.
-> +
-> +* If a security fix needs lockstep firmware and kernel fixes in order to
-> +  be successful, then all supported major versions in the linux-firmware
-> +  repo should be updated with the security fix, and the kernel patches
-> +  should detect if the firmware is new enough to declare if the security
-> +  issue is fixed.  All communications around security fixes should point
-> +  at both the firmware and kernel fixes. If a security fix requires
-> +  deprecating old major versions, then this should only be done as a
-> +  last option, and be stated clearly in all communications.
-> +
-
-Perfect!
-
-Regards,
-Mauro
+Sakari Ailus
