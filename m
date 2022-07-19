@@ -2,166 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9B757A42B
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF20C57A43B
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238791AbiGSQYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 12:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
+        id S230101AbiGSQgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 12:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238843AbiGSQYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:24:10 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2087.outbound.protection.outlook.com [40.107.95.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C97550BA;
-        Tue, 19 Jul 2022 09:24:04 -0700 (PDT)
+        with ESMTP id S238492AbiGSQg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:36:26 -0400
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30098.outbound.protection.outlook.com [40.107.3.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797C21BE8D
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 09:36:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lG+saKlcgrq6fYRdmytuf8cyS++JC9g1NaBeIv7dA+LEFQAi2F3MlzJgTSlFH5jUcjCR6a34J+f0kVF8E0spM7YtSbVEyUDhg0yICy10FHamr3alztn3OwvgeaNVWLjNWqij7UzBzEunwq31DVFYN1kmQXMEunK2GLRF6hkcifeNh5ld/l0gWIGn5AorZWG8aWUUVvkq8nOEEItms6IHhhbtLR4hBM2avXFCY1Va3y4Qb5N6jeXi6YxmbS+TfXWl5fscI1ik2u5oa+H4OOW4bGsQXK3ZE0xKXNCPeAlXyNTIVTVj2xYcZK7T6eMPOab9bEe+FTf9iSbjYWOgp/a/Dg==
+ b=O7Vfz38du1F4btft0s1ghYeAWBTCXVrZvqSmf1lF02VvTMmhRjtWB9LT+Ny8A5mXvkdwp+GQuu2Ue98P0MX9uKmy2+Xg0wPvdTG9GMC4lddPt9mHI93UwvXh5eJXW+usGtSEtdscVjXv8vHTd3CJB/cOqFrlB6T+91RS5sk1IM1M6SWj/wRGxw+SJXeMmE/o5YdeoqjWJ/ESH4ce3TpNko6EPSJxr8X4OKM5glsXcdfcHxihaQwNJF1oGYDYvID41/0IsuqozlVbfTdtabdXsqhiRNDPC6kf4vPIWhGhDkBSR/DlOWKfxKhSclig4E0xHsylC9ykc2gbWihiQR1dNg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/cLQU7+nU5eOwT7QayClX4EbG5c4mI67Su2od66AifM=;
- b=MTJru607GO85kcxmPIL6tTLqUx1HAFLkeTCnQERwS0uSUcO5snHFcwjttbKAoukpWCa1VGAQw/StyEDcN3XBUnIn+pRJf+lp9WS+FapnR8ZxqMHzb3HeCKX/xfThck27sbg3F/L/4MxMNvpgaaj3o9Zt98dbHXhwY/Jp0fh2PbDfnD6XGkWeaE24aj3Zh0FCxbIb9d9rHENxt5UD28OVaQ3ciuiVokXRGpBVCD7K0FYczvgx8RsYKecc/y2xIaymkdKAwrl6eDDykkh68Ynjv6FmiEsv8Gn30zfQ8pXwmYMKA8mYc0/k21Q2M/escndzmquu0dbmRJk10GYa80BV9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=UpoyXrOIiK8XU9IwOKuSuWSqljI+Fm5lUQxMO4gf0O4=;
+ b=XVbCsYrQ1WrmSuKa7s1/7gNUsnnZXX4gRvzqL2aHEi53Cpe45P7JwXjbomW3+ctdP9X4CL0mdkj8bYWpkF/ZIGIKz0jwgJix4lMFgj/EqsDOyZwsQqTDkqnrs3PdNp0sK50dPrnpKci9RyWAD4e7Q0yxH5I8l6KJijqPpx9D2A5EMN4RJRQxREuF/ddq1pGZSVz0YziLZoIXWY2KiBwZPkMHKVMDUBSJPhbghbiFH2q1pSfvwQ0fAZMad+zqS+BuXVgUkcxjfyNFlXurUF+9x4ANjRkiryX000Gu6vCk+frFpt/0dmXPPd7Vck1+Pfm14BNKLjieWVrtY52QMKB1gA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kontron.com; dmarc=pass action=none header.from=kontron.com;
+ dkim=pass header.d=kontron.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
+ s=selector2-mysnt-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/cLQU7+nU5eOwT7QayClX4EbG5c4mI67Su2od66AifM=;
- b=NBX98jgzgdNdqHST4QHIQn4ZHjGqdNFLbHOhRtRaL1EhOGgm2uRlPamjD5kbU+92o+RKmCit7H3R2IYuuIWcJI/3/xvb8eEzQMjCpK+dMPnevXIuCD6aRbXip8SEyD9h8IZTb08O8UkQTg+k3S4k2NB4iINVZmjQxaGP15kiRq8wG+I177WnkPEnWqY0WUD5+CTdPXFFn5zb06hJz3pVgygLcbXnZBbdrv+0/YWRjF6tTNE/3FztfP4SVZgeDEz+b0otvvEyIornZy0rT5TguwbUmfGTg2snReBc67NIj0jW1sfbRhsMD/ypOPMm7gA2jRsI51CyUkx1ZRif4dMhvQ==
-Received: from BN9PR03CA0977.namprd03.prod.outlook.com (2603:10b6:408:109::22)
- by DM6PR12MB4636.namprd12.prod.outlook.com (2603:10b6:5:161::32) with
+ bh=UpoyXrOIiK8XU9IwOKuSuWSqljI+Fm5lUQxMO4gf0O4=;
+ b=bcmPTMRh95Em+UwvpVuHdm3j8Je7f63PH6AeDDsJEFxmDMNvcL5MphZ3bh5fYNMCClXinRsCxso7WGdeEswyVPKNTxFA3J1f23Od0eI4bL9+d5IClF69CTnoYW+1RtxneECoL1v/bb2D+IyAb7AuMN5UFHGsPt97U0+lLXwYjdM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kontron.com;
+Received: from DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3ef::11)
+ by PA4PR10MB4398.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:101::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Tue, 19 Jul
- 2022 16:24:02 +0000
-Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:109:cafe::6e) by BN9PR03CA0977.outlook.office365.com
- (2603:10b6:408:109::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20 via Frontend
- Transport; Tue, 19 Jul 2022 16:24:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5438.12 via Frontend Transport; Tue, 19 Jul 2022 16:24:02 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Tue, 19 Jul 2022 16:24:01 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Tue, 19 Jul 2022 09:24:01 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Tue, 19 Jul 2022 09:23:57 -0700
-From:   Tariq Toukan <tariqt@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        <linux-kernel@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        "Govindarajulu Varadarajan" <_govind@gmx.com>
-Subject: [PATCH net-next V3 3/3] enic: Use NUMA distances logic when setting affinity hints
-Date:   Tue, 19 Jul 2022 19:23:39 +0300
-Message-ID: <20220719162339.23865-4-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220719162339.23865-1-tariqt@nvidia.com>
-References: <20220719162339.23865-1-tariqt@nvidia.com>
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.15; Tue, 19 Jul
+ 2022 16:36:22 +0000
+Received: from DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::112:efcf:6621:792c]) by DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::112:efcf:6621:792c%4]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 16:36:22 +0000
+From:   Gilles BULOZ <gilles.buloz@kontron.com>
+Subject: Marvell 88E1512 PHY LED2 mode mismatch with Elkhartlake pin mode
+Organization: Kontron Modular Computers SA
+To:     netdev@vger.kernel.org
+Message-ID: <3f6a37ab-c346-b53c-426c-133aa1ce76d7@kontron.com>
+Date:   Tue, 19 Jul 2022 18:36:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
+Content-Language: en-US
+X-ClientProxiedBy: PR3P189CA0007.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:102:52::12) To DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:10:3ef::11)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ced6d237-9f4c-4da4-562a-08da69a317e3
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4636:EE_
+X-MS-Office365-Filtering-Correlation-Id: c7eb3326-4263-4760-56e8-08da69a4d097
+X-MS-TrafficTypeDiagnostic: PA4PR10MB4398:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4IbbyILciQ1e08Q49Hvuqy23lrRTDJA8aPG/97KIkdFkywCfs5cP+24SyNl1hdAQytSKr8uoDIElxDg5uX3z0lG4g6dBrHRxYfLss5h1F1qEN/121PlNHdoOa0dEsbY8mluEoz8pkJPy2JYjlhI917UHbZl+mygcRsiincuEcSIQ7Wzd1HTwEiXef4b5W8Rnpu7fQ+qLpqXWFP/vMqvgjtSHiITQQaH8wxIcWmdIjmEwNUHT+KCjMLaiyaStJjnEyOWH9qBMfPjh/aaWLMnLm97nbUY/bHArm0N/j7AGxmoxg/1mywOxYQtArwVTK6rAl1IBvGGLihVRGQ4FIx3vOB+mYUeTvvyjbZg2NH0fzaW+PY0hHmByuEy8WYiJ2P++/yt/caDY/9HmRp6YUFDjg8MOUKuequ1/ZsazqOdE+IXnNSSxv7zunwgoeLgG3/rXs+luMF6oJy7j65tftzDMiLVtpGtEkeb1HxIc3OxT4Pe/j3IiSR66QqtmnAvOhgf+f/xInnSkZ1cmfAj6pSeH4/IbHnyzXHkAF7e6TpL57w7tfimf1TRzRc7XOvgbb0F5/tFPX92bqPezP2chU+V7RYODeVysXD0PSASflEZbA2NXHu/0iFoFUPXts3sQM51z0KwTjNvwXJt2yKlUn+7PnvyDOJMNfIbxioKFsEHeleUk9zhGr1Hm0X1npdAeCR84mMcSrfN19OLaCbxHObNvwRxNsGdTNyfAez2tu7HE4npmwUXrNQWkw4p/a+utnxGn7UtgR9I+ZRjbRzMjVwcPlxjzaG0J9P2vsPEMGVaadg6XAHoNuzcSHQTyZxZC7a/XW8pLHxkkxB6iBdS8ktlEvB1wVKe2vE9bVFCRwyzlH80=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(39860400002)(396003)(46966006)(36840700001)(40470700004)(54906003)(478600001)(110136005)(41300700001)(6666004)(7696005)(26005)(2906002)(40480700001)(8936002)(316002)(8676002)(82310400005)(5660300002)(2616005)(4326008)(7416002)(70586007)(83380400001)(36860700001)(356005)(36756003)(82740400003)(40460700003)(70206006)(47076005)(336012)(426003)(1076003)(81166007)(86362001)(186003)(518174003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:24:02.5832
+X-Microsoft-Antispam-Message-Info: HlmRIjlSd4QE5WDX+2aWknSGjLkv9lHM+B3S616hlnRJxP4GUk9UyDwCwaDknBejI75gxF+d73rhiyqMimKegOyARzFYUqkaArSYvc6w/vTzhCJosAeuz65CvLvwO2rdMMO7uAK85hgScftzqPtL7C/OsUUO9ydZoU3Nl/bNXWy2+mm2sUt06rnEPkDsdZViOhOposqWHIEnJmhhUy8xz4Knv2UNxqNL8PAimLaM2NNkfJHCd9AySb4RMcRKxWrHQFdLKhAbtiR7FYPD/TyQf9L2GuLic7qbxxHj5D97+vP8+cPZUZo34/E1Q3j2tGm632AG5etqYCio92HCD/0r2G0GtnyDIJCDh4gJo5nzKqXsXq0w/UzD2ZACsCw4ANuQjWyCtdgsQTrNLsBrIc/nHHwoWY4bpKauDIHop5cihfKLZF+CrlLD7I/r8gLLV6JJYRdd+eiecueW0o85pqdcufNMSS7QpMTSVw5tjT8tPdPnQsjPivAoeTPpXiQIx99DuuxWSgOPoxR85WkohEyPA3zZagy5l4+slABPRIrkRGuB0g5FEsWMdVJZa6LOuecx2YrtRmmoNV0Dd2GCirO2wlcrbS6SiynGKEPk/2ekuoM07CWNH9XGSJ5t0bYxtyo22C40UOILJS1WEOGSIyC3tGsNPGkDRztAq7dJmRg/oMazGhjOSw3Jy/XcP/eLLaFKBNdumpm8wNAa1UC2Nrq2EAnvM5qwo4frVHu6ZXS7LrurctR72fOihRoZSC5rCAGqGK2IY8gdeRxW2FGkghh/PUdvd8SKwsP2VQJh5ygCZRngGpZtBTuaW1D+4dQW+73NDlju78v+FpXjcYqQ1QkEZg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(396003)(39860400002)(366004)(41300700001)(6486002)(8676002)(83380400001)(66946007)(66476007)(66556008)(478600001)(31696002)(36756003)(31686004)(86362001)(6916009)(316002)(26005)(186003)(6512007)(36916002)(6506007)(2906002)(2616005)(8936002)(38100700002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWV5akN0UE1iQ3NNUHpDVldxSk52ZzJXWnYrblJKNEVYZkhXV1k0TFFiZVFM?=
+ =?utf-8?B?LzI0cjJXb2I2WlZucXF3U3JjK0d3WklDREdZZ2hNT3hKZmtuTEhlSWVKRWR5?=
+ =?utf-8?B?Z0VMaDRGSUhnMEhxWnpFZVhMNzMyWkRXN20weFVIVkxkbGdWV0FlakkyZWhu?=
+ =?utf-8?B?TXpPd0lrWE5xc2t4L3dhQjRkY2srYW9IU3hlaGh2dWJXNTFhcFcyUUV5amhj?=
+ =?utf-8?B?OHY4dzRtUmdRbW9UeW5BcUZqcUN4aGhRakhkT25BQWJuNFAvbFdiVTNjV3Zy?=
+ =?utf-8?B?WnZSTFNINEVLOVFLTEp1eXhhbVh6c2tEM3BYSFIrVDROUWNhQjZrdEh2TFRI?=
+ =?utf-8?B?cXREUHQwUkl1YUM4WEYwUm1oZGlXQ0xCTzNEc2YxemRRUlVSS2R3eDFCVnJD?=
+ =?utf-8?B?UFpNNjlhSnpuMFRVdFhzTDU2ZlZjU3NDTHRVMlMrTmxsc0RIMzlITmVZTnZ5?=
+ =?utf-8?B?cWJQYXZVOG9ablowNERuaWg0dmxUc3ExK1U0QkhPUUlqVDAxdlFic0ZxK0Vy?=
+ =?utf-8?B?RG1DVTBnbUVnQ2RWd3R1YnhaVjVmT3NCcXUwemIzM2FlMFM5cGVEZzdieTNB?=
+ =?utf-8?B?ZHdndkdHTjI3c0xJMzhqNjY5dEhHV28zQk9nZTRBZnAvZTZsV201c0FwTGlF?=
+ =?utf-8?B?T3dkZzNlZWh6dlZ2eWpkUkpWYVR6NTkxZ09LdHhqTHp0cWhNNHhyZ1JzOGRW?=
+ =?utf-8?B?cXhBcXVrRnhwVVNOa21qbGJaem1sSEszcUIyelduQzJ1bjRSL0F0YnNHeG1J?=
+ =?utf-8?B?TFFhUUtMQmk1M3lIZ25UeVZKV1p0dWJwaGxvaHZ6bU1ZTUc0aWdpczIvdlpn?=
+ =?utf-8?B?S3p1UVU5OWpFajRyZDFWVUdIQ05FOFR2UnQrK2ptcUNudE5WSDRjb294cEJ1?=
+ =?utf-8?B?c0c4VTFyUHJZSi93WG1hU1BGRnN4TWZtdHBmNWpNN3UyNi9IenEwY05jbVlv?=
+ =?utf-8?B?OFE1ZGpyWVVCZUJTbVhzbDZrRDNUOTZsMlY1SWx1RnY5VVZuZEJ3TWZWczUy?=
+ =?utf-8?B?cjJDQk1tZnhtTURXOHJhamhxNktCcmxzRi9hbFE5S0IrQ0IwNUVPbHM0UVZN?=
+ =?utf-8?B?dS9KSHdSYWttRlJIcENGb1NyOWExelF3THZIR1MrU1EyUXJtdUFHa2xsVW5q?=
+ =?utf-8?B?WVJhSk1MZUhOTHZLbTdEemljU2NoRm95RW5GRHFoZDhPVkFBN3NjczhwWmF5?=
+ =?utf-8?B?d0NpS2pETzVMek5rQ1NNN2dCMCtXRGo4TUNNTDBtSXVkWnZRL2hoWUNNUEh4?=
+ =?utf-8?B?R0hHSllwd0JIcGxyNDVHMjkycHBMclJqMG91ckR0WUNkTjNHaVFNT0ZqbTFE?=
+ =?utf-8?B?bGdlZCtjam1sbDJ0Yy96LzhkNE9iaTBQMjE3bE9DWGZ1NkNyRlo1MGpYSUtY?=
+ =?utf-8?B?Smx3U0lJZmtJWHVZQTdaWnZ3T1Nydk4rZmRvUzJNSWpOWElRY2RCRytZYzFh?=
+ =?utf-8?B?MkpQa2Q5TFpnNGVRUFI3eGk3RnhIRjFXZE9jTEUyRG5uR1FtZEdSU2NHMDNP?=
+ =?utf-8?B?RkQ5emNBRFBleEE5eXFQdU5CWUZGZjlzZTJZaTRLNjJORTRqN1ZCWjgrVEFu?=
+ =?utf-8?B?TFVhZTFqWW16RDJLa05EWm92WWUvczRVd3hXTkREN3NqTjlPekFiOHgvclhz?=
+ =?utf-8?B?aVBXSTdwVTNZdmlDaklodmU3aXJ5QUFjQlZEQkc4OVc0RlJGdFdncjZTZUl2?=
+ =?utf-8?B?cjFVR3pXRVBJU0dTK2dYemJRMTI3NS9YbExjdHg2ODN2M0g3YUZlNnViOVpX?=
+ =?utf-8?B?Z1lkVEdqWTc5QVlyTjRmY2xQMWNlVlREakpRU2NEREpCUHNNV0tQSS9LTWdU?=
+ =?utf-8?B?S3M1MllCV2E4UUZ3QUVRM1A3b3p4Z2VHUGJtb0VOa21valdVa3o0WGhNcXQx?=
+ =?utf-8?B?SDZtZTFEZC9Oek1FeitDREFIY1hLbXBoTDFqelcvRW1iK0FUelhtSldXd0VI?=
+ =?utf-8?B?ekw0RjlEZHBQK2ppWERtOUJDbEE3K0I5b09UMW13Z3ZwbjN5L1JXbUR0QURB?=
+ =?utf-8?B?WWplVy9lQTJWQmFvL3RBK3dEbW9wQ0ZKaGtrd1g4bCt5a29qTHROOVZCakpC?=
+ =?utf-8?B?b29IcG9CMmVwTVkzQVRueDhLOVBQUm5wK25CdWpGRm11T2JwaHJPbDU1Rzls?=
+ =?utf-8?B?cWFhV3dhaFJHSVFOd1ZLdU92NWhxZkphdFRGcnRTOHV3c2RqVTBkbXlFY2FV?=
+ =?utf-8?B?RXc9PQ==?=
+X-OriginatorOrg: kontron.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7eb3326-4263-4760-56e8-08da69a4d097
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:36:22.3343
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ced6d237-9f4c-4da4-562a-08da69a317e3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4636
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fe0DV8P7q+zI1UHZVuGCgCoEvZVPg48UgKzKK/wmlLCU7Ah5sO+D9Di3SZL9n5aGgSRH2dE5t3pXfYD8mAP5MwAmeKRztB3NBoUe6As/AMA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB4398
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new CPU spread API to sort cpus preference of remote NUMA nodes
-according to their distance.
+Dear developers,
 
-Cc: Christian Benvenuti <benve@cisco.com>
-Cc: Govindarajulu Varadarajan <_govind@gmx.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
----
- drivers/net/ethernet/cisco/enic/enic_main.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+On a custom Elkhartlake board based on the Intel CRB, it turns out I have the 88E1512 PHY configured in polled mode ("intel-eth-pci 
+0000:00:1e.4 eno1: PHY [stmmac-1:01] driver [Marvell 88E1510] (irq=POLL)" in dmesg) and the LED2/INT# pin is configured in LED2 mode 
+by marvell_config_led() in drivers/net/phy/marvell.c (MII_88E1510_PHY_LED_DEF written to MII_PHY_LED_CTRL). This pin is connected as 
+on the CRB to an Elkhartlake pin for a PHY interrupt but for some reason the interrupt is enabled on the Elkhartlake.
+So when I shutdown the system (S5), any activity on link makes LED2/INT# toggle and power the system back on.
 
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
-index 372fb7b3a282..9de3c3ffa1e3 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -44,6 +44,7 @@
- #include <linux/cpu_rmap.h>
- #endif
- #include <linux/crash_dump.h>
-+#include <linux/sched/topology.h>
- #include <net/busy_poll.h>
- #include <net/vxlan.h>
- 
-@@ -114,8 +115,14 @@ static struct enic_intr_mod_range mod_range[ENIC_MAX_LINK_SPEEDS] = {
- static void enic_init_affinity_hint(struct enic *enic)
- {
- 	int numa_node = dev_to_node(&enic->pdev->dev);
-+	u16 *cpus;
- 	int i;
- 
-+	cpus = kcalloc(enic->intr_count, sizeof(*cpus), GFP_KERNEL);
-+	if (!cpus)
-+		return;
-+
-+	sched_cpus_set_spread(numa_node, cpus, enic->intr_count);
- 	for (i = 0; i < enic->intr_count; i++) {
- 		if (enic_is_err_intr(enic, i) || enic_is_notify_intr(enic, i) ||
- 		    (cpumask_available(enic->msix[i].affinity_mask) &&
-@@ -123,9 +130,10 @@ static void enic_init_affinity_hint(struct enic *enic)
- 			continue;
- 		if (zalloc_cpumask_var(&enic->msix[i].affinity_mask,
- 				       GFP_KERNEL))
--			cpumask_set_cpu(cpumask_local_spread(i, numa_node),
-+			cpumask_set_cpu(cpus[i],
- 					enic->msix[i].affinity_mask);
- 	}
-+	kfree(cpus);
- }
- 
- static void enic_free_affinity_hint(struct enic *enic)
--- 
-2.21.0
+I tried to force  phydev->dev_flag to use MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE instead of MII_88E1510_PHY_LED_DEF but I've been 
+unable to find how to force this flag. And I discovered that the value of MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE = 0x1040 is not OK 
+for me because LED2 is set to "link status" so if I use this value the system is back "on" on link change (better than on activity 
+but still not OK).
 
+As a final workaround I've patched drivers/net/phy/marvell.c at marvell_config_led() to have "LED0=link LED1=activity LED2=off" by 
+writing 0x1840 to MII_PHY_LED_CTRL, but I know this is a ugly workaround.
+
+So I'm wondering if PHY "irq=POLL" is the expected operating mode ?
+In this case what should disable the interrupt on the Elkhartlake pin ?
+Is wake on Lan supported if PHY is set to "irq=POLL" ?
+
+Thanks for tips.
