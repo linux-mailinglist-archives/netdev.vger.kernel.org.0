@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1C1578FAD
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0072F578FB2
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236779AbiGSBQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 21:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60784 "EHLO
+        id S236786AbiGSBQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 21:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236757AbiGSBP3 (ORCPT
+        with ESMTP id S236762AbiGSBP3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:15:29 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC23E039;
-        Mon, 18 Jul 2022 18:15:22 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id p4so8119086wms.0;
-        Mon, 18 Jul 2022 18:15:22 -0700 (PDT)
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0634EDEF6;
+        Mon, 18 Jul 2022 18:15:24 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id v16so3627693wrr.6;
+        Mon, 18 Jul 2022 18:15:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=M1jrJPDQYBd3weJPN35rpfjPwJ3d7cMx2myYJBnTZ/w=;
-        b=gjN/k9wbMqiMsFmopLw6nNZsgav/q3/mpXbBAcJiO/qfSVygffSvG8hDbOv8CB/ntX
-         NnY1p1ztjwqAzhMH2Yw57ehEyLXp6cNGUcUVLCGPugF1/XVcliYpnvmHsGHWgdZjEG4m
-         UFr9NxExVT4vJMPDD08xqh5eo6FTjsFnL22r60XDgqXHVsUwV89K2QG8/OX29CdjQUtf
-         QU7FDwYt/vxSZY4WHh2jDgpUlE926pJUelf0deed7NydlWPsK5Gi+gOXkW1lPQx0CK+4
-         pw8DwicJzrC1h/ylOM7WD5HS4YjKahIQtWsZHtRctgkZG6B6KdoD1oPakvNglx008o7A
-         hChw==
+        bh=kh48UIVPdJubSbMr+jO4y2hNOnd4zR7rS7cK6Xd47eM=;
+        b=qbrth6W1466Hvoj4ifoE0o0PxzmYoeaRt3mheJ30GUuEdj8D6I9J/IkGiSV1id3v8U
+         qUcl4yTXkUrcCeS1Z7TaM4jAr2c4blmcK2YRd+Kqtn05BulDPc40VOOXGxw+6MbyNTxI
+         NuU6dTQC5VweOTjKwM8CxB6UvPCQAq3CpJZPaJwoyH/ANxrCXnA89/5jl7lVA4xce3Hr
+         ZwUFABu6LbYJRKrEZOpY2dOG5VQHk45q5zWN0yqFZEzJn6uWqddP4xGdvpE/A9w9lQbI
+         jpxEIddcs1uffQZS6zsd7EmF/mcMhF/iJWEouR6b8JqautI7MSgM7S5m8kt0CIT30iN8
+         bgDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=M1jrJPDQYBd3weJPN35rpfjPwJ3d7cMx2myYJBnTZ/w=;
-        b=h2CUvz7axgZbwp7AuiQjm9h9lnAxCLiO3nDIV/OfT+gC46kYPlxxgLRFEXDoHdZrVw
-         nMWUEJJEYHyROCSM4Q2KbrKgRlga/i8B+3Q4xWW0NEsf3eN3BLa/ubsKm3GgQKjH+kF7
-         YjhVp6i1Unp0JxKD3sLtKmmuAMG1+Nh1ypXSpKUQzWI87YNHeEAxf7Gigo6+jHZ9RRHT
-         IH8JhrkNyL/MlDsc+xc/Qs/2GBM058hWIO1K2lWTlQa1N4loHvIMI95r6jeFsFubCSL9
-         9yrYFUHuZIj3sqe1AUTNIWkPSw7yQpSSex/BrjIBMJG03HIjfVp9kPWV0iHGLyaa9p3M
-         jGjQ==
-X-Gm-Message-State: AJIora8S4klvVkmhQH61TbR5lhASUe2/T8OIkHc1ILPXF50y12ZIa6xU
-        ehY0akDYkZ58YAgfcWnTF5I=
-X-Google-Smtp-Source: AGRyM1suEgInJmB8watYdmfva/l4pSVCN6wZ4GR+JaSPhmC02CiVR+3ddYQqbP1reHAV43wB7xia4A==
-X-Received: by 2002:a1c:4444:0:b0:3a2:fe56:e8ca with SMTP id r65-20020a1c4444000000b003a2fe56e8camr24818970wma.21.1658193321235;
-        Mon, 18 Jul 2022 18:15:21 -0700 (PDT)
+        bh=kh48UIVPdJubSbMr+jO4y2hNOnd4zR7rS7cK6Xd47eM=;
+        b=VK0b1fXgrYHxC8iQkn3BAKyyukdR/bgg13OOqtJI/V4W395mo/95aqpHVXJcw9WpF8
+         kD6GEBD0gkDc//GAa0C6oNv/GarWyqVWmk4p4VXL3Tz0xtu3GZ6WzzKsJaE5FvYOfAO4
+         xEC2T24F0IIOu40G3MVeF150g7/kG2ZYwILBMvembMn0Ss62G7/J+wXZCRxX2BzJTRpA
+         QlxICM7d28jjy/wnVQQMp8G3mUP+s1i4aK/zAdCsLczZo8RBeCl4+lF109khIfgaVqTy
+         EQKQdESTTKdrmtiAXc1jik0x0Nr346ZiAZAk4aWrhJ8kcxXGmC9T9sUMnT0E201nU5DP
+         FJrg==
+X-Gm-Message-State: AJIora9AKjJGgsg0/JYS4Jahz6SPGTXjwf6Ri9H+MSHoSv6eXHT0F/Bs
+        iOYqgKXTSALL0f6EeYX7Ods=
+X-Google-Smtp-Source: AGRyM1tdiOD4YIcyaGoykn/z8HtkFKFr85d48mAcgt7P9HAdTdiBiQBG/bahXFS5oYBbq2nXEf1o4w==
+X-Received: by 2002:a05:6000:1847:b0:21d:c149:263 with SMTP id c7-20020a056000184700b0021dc1490263mr20092801wri.449.1658193322423;
+        Mon, 18 Jul 2022 18:15:22 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.20
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:15:20 -0700 (PDT)
+        Mon, 18 Jul 2022 18:15:22 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,9 +60,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v2 11/15] net: dsa: qca8k: move port mirror functions to common code
-Date:   Tue, 19 Jul 2022 02:57:22 +0200
-Message-Id: <20220719005726.8739-13-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 12/15] net: dsa: qca8k: move port VLAN functions to common code
+Date:   Tue, 19 Jul 2022 02:57:23 +0200
+Message-Id: <20220719005726.8739-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719005726.8739-1-ansuelsmth@gmail.com>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
@@ -78,236 +78,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same port mirror functions are used by drivers based on qca8k family
+The same port VLAN functions are used by drivers based on qca8k family
 switch. Move them to common code to make them accessible also by other
 drivers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c   | 93 ------------------------------
- drivers/net/dsa/qca/qca8k-common.c | 93 ++++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  7 +++
- 3 files changed, 100 insertions(+), 93 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 65 ------------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 65 ++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        |  9 +++++
+ 3 files changed, 74 insertions(+), 65 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 776c53aef5c4..d12ba61841b9 100644
+index d12ba61841b9..d6223ee79389 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1575,99 +1575,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
+@@ -1575,71 +1575,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
  	return ret;
  }
  
 -static int
--qca8k_port_mirror_add(struct dsa_switch *ds, int port,
--		      struct dsa_mall_mirror_tc_entry *mirror,
--		      bool ingress, struct netlink_ext_ack *extack)
+-qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+-			  struct netlink_ext_ack *extack)
 -{
 -	struct qca8k_priv *priv = ds->priv;
--	int monitor_port, ret;
--	u32 reg, val;
--
--	/* Check for existent entry */
--	if ((ingress ? priv->mirror_rx : priv->mirror_tx) & BIT(port))
--		return -EEXIST;
--
--	ret = regmap_read(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0, &val);
--	if (ret)
--		return ret;
--
--	/* QCA83xx can have only one port set to mirror mode.
--	 * Check that the correct port is requested and return error otherwise.
--	 * When no mirror port is set, the values is set to 0xF
--	 */
--	monitor_port = FIELD_GET(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
--	if (monitor_port != 0xF && monitor_port != mirror->to_local_port)
--		return -EEXIST;
--
--	/* Set the monitor port */
--	val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM,
--			 mirror->to_local_port);
--	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
--				 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
--	if (ret)
--		return ret;
--
--	if (ingress) {
--		reg = QCA8K_PORT_LOOKUP_CTRL(port);
--		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
--	} else {
--		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
--		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
--	}
--
--	ret = regmap_update_bits(priv->regmap, reg, val, val);
--	if (ret)
--		return ret;
--
--	/* Track mirror port for tx and rx to decide when the
--	 * mirror port has to be disabled.
--	 */
--	if (ingress)
--		priv->mirror_rx |= BIT(port);
--	else
--		priv->mirror_tx |= BIT(port);
--
--	return 0;
--}
--
--static void
--qca8k_port_mirror_del(struct dsa_switch *ds, int port,
--		      struct dsa_mall_mirror_tc_entry *mirror)
--{
--	struct qca8k_priv *priv = ds->priv;
--	u32 reg, val;
 -	int ret;
 -
--	if (mirror->ingress) {
--		reg = QCA8K_PORT_LOOKUP_CTRL(port);
--		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
+-	if (vlan_filtering) {
+-		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+-				QCA8K_PORT_LOOKUP_VLAN_MODE_MASK,
+-				QCA8K_PORT_LOOKUP_VLAN_MODE_SECURE);
 -	} else {
--		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
--		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
+-		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+-				QCA8K_PORT_LOOKUP_VLAN_MODE_MASK,
+-				QCA8K_PORT_LOOKUP_VLAN_MODE_NONE);
 -	}
 -
--	ret = regmap_clear_bits(priv->regmap, reg, val);
--	if (ret)
--		goto err;
--
--	if (mirror->ingress)
--		priv->mirror_rx &= ~BIT(port);
--	else
--		priv->mirror_tx &= ~BIT(port);
--
--	/* No port set to send packet to mirror port. Disable mirror port */
--	if (!priv->mirror_rx && !priv->mirror_tx) {
--		val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, 0xF);
--		ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
--					 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
--		if (ret)
--			goto err;
--	}
--err:
--	dev_err(priv->dev, "Failed to del mirror port from %d", port);
+-	return ret;
 -}
 -
- static int
- qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			  struct netlink_ext_ack *extack)
+-static int
+-qca8k_port_vlan_add(struct dsa_switch *ds, int port,
+-		    const struct switchdev_obj_port_vlan *vlan,
+-		    struct netlink_ext_ack *extack)
+-{
+-	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+-	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+-	struct qca8k_priv *priv = ds->priv;
+-	int ret;
+-
+-	ret = qca8k_vlan_add(priv, port, vlan->vid, untagged);
+-	if (ret) {
+-		dev_err(priv->dev, "Failed to add VLAN to port %d (%d)", port, ret);
+-		return ret;
+-	}
+-
+-	if (pvid) {
+-		ret = qca8k_rmw(priv, QCA8K_EGRESS_VLAN(port),
+-				QCA8K_EGREES_VLAN_PORT_MASK(port),
+-				QCA8K_EGREES_VLAN_PORT(port, vlan->vid));
+-		if (ret)
+-			return ret;
+-
+-		ret = qca8k_write(priv, QCA8K_REG_PORT_VLAN_CTRL0(port),
+-				  QCA8K_PORT_VLAN_CVID(vlan->vid) |
+-				  QCA8K_PORT_VLAN_SVID(vlan->vid));
+-	}
+-
+-	return ret;
+-}
+-
+-static int
+-qca8k_port_vlan_del(struct dsa_switch *ds, int port,
+-		    const struct switchdev_obj_port_vlan *vlan)
+-{
+-	struct qca8k_priv *priv = ds->priv;
+-	int ret;
+-
+-	ret = qca8k_vlan_del(priv, port, vlan->vid);
+-	if (ret)
+-		dev_err(priv->dev, "Failed to delete VLAN from port %d (%d)", port, ret);
+-
+-	return ret;
+-}
+-
+ static u32 qca8k_get_phy_flags(struct dsa_switch *ds, int port)
+ {
+ 	struct qca8k_priv *priv = ds->priv;
 diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 796293738b35..2f3a1343b13c 100644
+index 2f3a1343b13c..11af3b09ae81 100644
 --- a/drivers/net/dsa/qca/qca8k-common.c
 +++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -898,3 +898,96 @@ qca8k_port_mdb_del(struct dsa_switch *ds, int port,
- 
- 	return qca8k_fdb_search_and_del(priv, BIT(port), addr, vid);
+@@ -991,3 +991,68 @@ qca8k_port_mirror_del(struct dsa_switch *ds, int port,
+ err:
+ 	dev_err(priv->dev, "Failed to del mirror port from %d", port);
  }
 +
 +int
-+qca8k_port_mirror_add(struct dsa_switch *ds, int port,
-+		      struct dsa_mall_mirror_tc_entry *mirror,
-+		      bool ingress, struct netlink_ext_ack *extack)
++qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
++			  struct netlink_ext_ack *extack)
 +{
 +	struct qca8k_priv *priv = ds->priv;
-+	int monitor_port, ret;
-+	u32 reg, val;
-+
-+	/* Check for existent entry */
-+	if ((ingress ? priv->mirror_rx : priv->mirror_tx) & BIT(port))
-+		return -EEXIST;
-+
-+	ret = regmap_read(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0, &val);
-+	if (ret)
-+		return ret;
-+
-+	/* QCA83xx can have only one port set to mirror mode.
-+	 * Check that the correct port is requested and return error otherwise.
-+	 * When no mirror port is set, the values is set to 0xF
-+	 */
-+	monitor_port = FIELD_GET(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
-+	if (monitor_port != 0xF && monitor_port != mirror->to_local_port)
-+		return -EEXIST;
-+
-+	/* Set the monitor port */
-+	val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM,
-+			 mirror->to_local_port);
-+	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
-+				 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
-+	if (ret)
-+		return ret;
-+
-+	if (ingress) {
-+		reg = QCA8K_PORT_LOOKUP_CTRL(port);
-+		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
-+	} else {
-+		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
-+		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
-+	}
-+
-+	ret = regmap_update_bits(priv->regmap, reg, val, val);
-+	if (ret)
-+		return ret;
-+
-+	/* Track mirror port for tx and rx to decide when the
-+	 * mirror port has to be disabled.
-+	 */
-+	if (ingress)
-+		priv->mirror_rx |= BIT(port);
-+	else
-+		priv->mirror_tx |= BIT(port);
-+
-+	return 0;
-+}
-+
-+void
-+qca8k_port_mirror_del(struct dsa_switch *ds, int port,
-+		      struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	u32 reg, val;
 +	int ret;
 +
-+	if (mirror->ingress) {
-+		reg = QCA8K_PORT_LOOKUP_CTRL(port);
-+		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
++	if (vlan_filtering) {
++		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
++				QCA8K_PORT_LOOKUP_VLAN_MODE_MASK,
++				QCA8K_PORT_LOOKUP_VLAN_MODE_SECURE);
 +	} else {
-+		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
-+		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
++		ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
++				QCA8K_PORT_LOOKUP_VLAN_MODE_MASK,
++				QCA8K_PORT_LOOKUP_VLAN_MODE_NONE);
 +	}
 +
-+	ret = regmap_clear_bits(priv->regmap, reg, val);
-+	if (ret)
-+		goto err;
++	return ret;
++}
 +
-+	if (mirror->ingress)
-+		priv->mirror_rx &= ~BIT(port);
-+	else
-+		priv->mirror_tx &= ~BIT(port);
++int
++qca8k_port_vlan_add(struct dsa_switch *ds, int port,
++		    const struct switchdev_obj_port_vlan *vlan,
++		    struct netlink_ext_ack *extack)
++{
++	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	struct qca8k_priv *priv = ds->priv;
++	int ret;
 +
-+	/* No port set to send packet to mirror port. Disable mirror port */
-+	if (!priv->mirror_rx && !priv->mirror_tx) {
-+		val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, 0xF);
-+		ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
-+					 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
++	ret = qca8k_vlan_add(priv, port, vlan->vid, untagged);
++	if (ret) {
++		dev_err(priv->dev, "Failed to add VLAN to port %d (%d)", port, ret);
++		return ret;
++	}
++
++	if (pvid) {
++		ret = qca8k_rmw(priv, QCA8K_EGRESS_VLAN(port),
++				QCA8K_EGREES_VLAN_PORT_MASK(port),
++				QCA8K_EGREES_VLAN_PORT(port, vlan->vid));
 +		if (ret)
-+			goto err;
++			return ret;
++
++		ret = qca8k_write(priv, QCA8K_REG_PORT_VLAN_CTRL0(port),
++				  QCA8K_PORT_VLAN_CVID(vlan->vid) |
++				  QCA8K_PORT_VLAN_SVID(vlan->vid));
 +	}
-+err:
-+	dev_err(priv->dev, "Failed to del mirror port from %d", port);
++
++	return ret;
++}
++
++int
++qca8k_port_vlan_del(struct dsa_switch *ds, int port,
++		    const struct switchdev_obj_port_vlan *vlan)
++{
++	struct qca8k_priv *priv = ds->priv;
++	int ret;
++
++	ret = qca8k_vlan_del(priv, port, vlan->vid);
++	if (ret)
++		dev_err(priv->dev, "Failed to delete VLAN from port %d (%d)", port, ret);
++
++	return ret;
 +}
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index 31f6f98960d6..c9c8ec7abdc2 100644
+index c9c8ec7abdc2..aa4fe02a2155 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -502,4 +502,11 @@ int qca8k_port_mdb_del(struct dsa_switch *ds, int port,
- 		       const struct switchdev_obj_port_mdb *mdb,
- 		       struct dsa_db db);
+@@ -509,4 +509,13 @@ int qca8k_port_mirror_add(struct dsa_switch *ds, int port,
+ void qca8k_port_mirror_del(struct dsa_switch *ds, int port,
+ 			   struct dsa_mall_mirror_tc_entry *mirror);
  
-+/* Common port mirror function */
-+int qca8k_port_mirror_add(struct dsa_switch *ds, int port,
-+			  struct dsa_mall_mirror_tc_entry *mirror,
-+			  bool ingress, struct netlink_ext_ack *extack);
-+void qca8k_port_mirror_del(struct dsa_switch *ds, int port,
-+			   struct dsa_mall_mirror_tc_entry *mirror);
++/* Common port VLAN function */
++int qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
++			      struct netlink_ext_ack *extack);
++int qca8k_port_vlan_add(struct dsa_switch *ds, int port,
++			const struct switchdev_obj_port_vlan *vlan,
++			struct netlink_ext_ack *extack);
++int qca8k_port_vlan_del(struct dsa_switch *ds, int port,
++			const struct switchdev_obj_port_vlan *vlan);
 +
  #endif /* __QCA8K_H */
 -- 
