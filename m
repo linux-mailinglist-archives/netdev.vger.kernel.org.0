@@ -2,172 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F463579835
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 13:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8901C579887
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 13:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235915AbiGSLNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 07:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
+        id S235942AbiGSLbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 07:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbiGSLNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 07:13:50 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FDE2FFC8
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 04:13:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ko41RnKE1So6KeBt8exK+2dwtgJ7MJPmVgJ+ZBWWPiCaDvKwyUhXvq58ZeysM/T+4dNcNNexrYEqnO7ksrednadbIGkcupEzyT7sLeI43E9GAkQTctXeWcB7tYUGbJQSvkEFunq0cIS9aIBy6bKAPKMyyIFU2ZWijD7JhDnc1apfo4QbXuAIIwt+kKxU57WGcBB7vWNMufNnOvL1vzJnDeNN2qqn6e0r6Kqr9ArJW8hEt32IB3kPO4JOAppdeABb2jNHBxAIh4OKaRPESeEYRkA6AotngVKvls+QgLe+WeYs6CHO6eDJos0PvslWrzgOxs5TY0x16iUtXAXJ6MS+NQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EVNP+jNseQZBSeUe33/tx66c1Hi5IozJp3a3cNpW170=;
- b=n3M/n5HHop50B9xTG3uoX8S/oCgHX7+GNCSHhUD9nAIX8YXXbjjD6vRm29GWI7EAANUq05V+JZMyn2494KZhs7U8HkG/c52cMLGSQaqT6pr6mL59ihyPsCB3Ie2cPaTyQaKHwWguOK22lZVhPdqGLTcOB+KBetNztPT09uJzdgjbzyAYYSA483DDPe9rY9Tid5WwANOcRcOvmX8fSDc7VCktpam8Pjq9+asDsD+7CELO3Wuy0QYK3zxnZSPjVYEjMln9mcclNF4jYq1Q/1U2qNFRXaudosRAgFkdbPIoMhPVwVaBUspn85DFFjvScOLv1g3NLSDygg+Q9Ay/MOGENA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EVNP+jNseQZBSeUe33/tx66c1Hi5IozJp3a3cNpW170=;
- b=TgzQu2ZGBcVlizLoGcPvvsG6FVvbtHV2jOwIJcfuMS3muzP5dwwclZwTwuQaWk4qGFJ6qaN1FI+Lq1tMy1g0BlzQ6hVZ9nNcNNIWc26bSgnDXLuWPeWn2qUZGY3JUPUq4x2vdpFrExNa+fNUwWJFNYpcILGdaIqIYTAhPgPpi5YLa5s8x387ZsBGhqQqu5NFYnCsyhu36EuZA9hF0TtqGnzLXLO1Yow5CkIP5toQuTX871j1G+XY8rgqAyCxo5f1eHG3cF2A6LcOZufCzJlDfzxpfJuQo8olCDD+FikAvXkHy6Nw41p2toFUMgGzaHRD/yT8sgunIPXJD3U0gUcgEQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- MN2PR12MB3965.namprd12.prod.outlook.com (2603:10b6:208:168::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Tue, 19 Jul
- 2022 11:13:47 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::548c:fcf:1288:6d3]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::548c:fcf:1288:6d3%9]) with mapi id 15.20.5438.024; Tue, 19 Jul 2022
- 11:13:47 +0000
-Message-ID: <24bd2c21-87c2-0ca9-8f57-10dc2ae4774c@nvidia.com>
-Date:   Tue, 19 Jul 2022 14:13:39 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [net-next 03/14] net/mlx5e: Expose rx_oversize_pkts_buffer
- counter
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20220717213352.89838-1-saeed@kernel.org>
- <20220717213352.89838-4-saeed@kernel.org>
- <20220718202504.3d189f57@kernel.org>
-From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <20220718202504.3d189f57@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0356.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18d::19) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S231491AbiGSLbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 07:31:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39109B85D
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 04:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658230276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XUgxAc6MyBwAS6okxFCp4jN43h6Y+TkbUfp7P1jzs2g=;
+        b=EWXjiZXv8gBouF1PJXeFBxjF42dIkYfUaeDOGLFDGbq0dg5oHx92YaR3LOs8SGfZ4HFJhI
+        ptyOYYydczfLMh8Zzc9BR+Lu1zgZUv2H3AKo59PpXfLDAQZqRxn1z3htwuafTQmK7sUagj
+        +6gqeLFR0oiuExlfDQM7bQyiS2yXI1I=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-bWwooLfNP4OCYSacuvrCgg-1; Tue, 19 Jul 2022 07:31:15 -0400
+X-MC-Unique: bWwooLfNP4OCYSacuvrCgg-1
+Received: by mail-wm1-f71.google.com with SMTP id ay19-20020a05600c1e1300b003a315c2c1c0so4719871wmb.7
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 04:31:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=XUgxAc6MyBwAS6okxFCp4jN43h6Y+TkbUfp7P1jzs2g=;
+        b=1fPjWSXMYChftGgzjRc+llvQjXrkbXEnA0xWDxdbSPZLb7b+qYfg1ipH5UFkI8RX78
+         pkrZitxkXzF6ZHMYQLFI02DWBKDewuwuVabu8C0orj1JW4C0CG2M/fGVGkYILZqcJK7A
+         Ls2zKjbV2PoKGElXl8V7M1z+AjsDfvHc9eDRIp0UfCMghIVUJGE2a4/b8X6vE6ZnC4yL
+         WcJ60igK4na0FYwroYsSDgPwfZLMmq/iV/WNFzhv1VojgWF8dIqIWGs21CW9Kvk9uVZa
+         uz7EDQpGofJCAuMn4RcaXXxD4+zymyKDpoLcK6BzWfeGWyIXJdS/LVBZ0Rh5wFBgtiUc
+         1Y1A==
+X-Gm-Message-State: AJIora8V23JFdm19jfR+g4OO4vh+MyPDBMG3VdJS9+N6pAzuQnR5LlIB
+        qDmpMuvQCq8ZAzbbbS0wbU3HMwKz38OYCbIPO0NxbUwu3zqubksoULGPYhNuBRQ2Ns/Xwi/To41
+        eCmtOrCm4CcTUuFK/
+X-Received: by 2002:a05:600c:3d14:b0:3a3:21ee:ad99 with SMTP id bh20-20020a05600c3d1400b003a321eead99mr3258815wmb.51.1658230273749;
+        Tue, 19 Jul 2022 04:31:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sB9l5eRHXxtIpg6R9gvqvNXnhCq30+HWVu6KETFTKOl9+3wsyG9wKT+zEJJbRxzl1xHDoXIA==
+X-Received: by 2002:a05:600c:3d14:b0:3a3:21ee:ad99 with SMTP id bh20-20020a05600c3d1400b003a321eead99mr3258785wmb.51.1658230273492;
+        Tue, 19 Jul 2022 04:31:13 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
+        by smtp.gmail.com with ESMTPSA id h8-20020adff4c8000000b0021d887f9468sm12991548wrp.25.2022.07.19.04.31.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 04:31:13 -0700 (PDT)
+Message-ID: <8e083ce2c7d2d5a616808889e0d04a488b84fc9f.camel@redhat.com>
+Subject: Re: [PATCH net 2/2] net: lantiq_xrx200: fix return value in ENOMEM
+ case
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>, hauke@hauke-m.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 19 Jul 2022 13:31:11 +0200
+In-Reply-To: <20220717194824.1017750-2-olek2@wp.pl>
+References: <20220717194824.1017750-1-olek2@wp.pl>
+         <20220717194824.1017750-2-olek2@wp.pl>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0da1d534-35cf-4e7b-03db-08da6977c009
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3965:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LEU1Mw2ORJBtQWJskK4cMCopvqvCirjBSqDhKM1fdjHoRXErRc7x85ZgdUkBvM5i1CdBvvSPe4AInaLdFeztT+BhkSXlSBptAVG3Plz9yETLpk336Y/xPT1jkr97MIsgv28GmWS4pQ/db26o19l44JO4d8X7VtsiJs202cs6LLmJxGFcPl+h8Fw7AvNeORv3ZusogNiwHBUoBIhqhpITduy0DsHNx3j8P/nvr1ThLAmZ31oAzyjtPeYcuVxLK12/Ed3WBU54XLmBfQ32SMSyMIwz8nzrTCTr2/X7MkHV98QSlBNnBxhMBF3SQ8lAM+/27Ly0Kl/U6YuCZrRhGKso+vzqx9sGK5+lz2zVlJJGZAIyfIjwJLWtbXq7jkfABI4D77y+wmB6mpWf66/QCkM6d57encTdqLF1AqZbA0NfBCzjrN7mjV8xvhPxCgP9yYevRQ3dPjan+yXHDscCmA99y7ZiH0fOfZ2npWYCpId8y/CB8h3irMNNRXvPfCsS/WDcs2Yc2lDvub0K5Zz/2G3J68kM9WyVPC/YMEGM+2ffxhNs4+N0hxXmVr6J6xx9RpPqSrfSQqLuu3X4N4xtLAHJ9XvFtT3wjG/PWlkfBZcMItXIG9gFkdk4BufwKspFrkgoGBRm6TN8GJBB1zRVAePcEuMJpDLGFiEcoSEXlVzsKOMix5Rx8acOHD4VbtQOYRXjWHvDSSHJSGIssBPmYsqPMciVPdcn8X209SkZ8ClHdLffm9evu9hJqQ+uzJkDsaNFa34DfyiEkU6MwPTqy+3JTAivOHpeCOVEQuaQryVLi3MHdvrXBg7NGWIWWqXPC9+YPh/cngJ0LGPeXsxBnXwkpA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(8936002)(86362001)(31696002)(66476007)(4326008)(66946007)(8676002)(66556008)(6506007)(38100700002)(110136005)(36756003)(54906003)(316002)(53546011)(31686004)(26005)(41300700001)(6666004)(107886003)(2616005)(186003)(83380400001)(478600001)(6486002)(5660300002)(6512007)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bFlpbTlXSUkwTXlwWGhYWC9nV1Q3bkgzN3U1WTNPZTVsbE15bDBaTU9Cd3hH?=
- =?utf-8?B?TlhldDhxS3FiOTRFc2lMd3BDRnhBRU8ya3FiWXVxR2kzMjlhc3NpelJYNmU3?=
- =?utf-8?B?SEl3cnduYVF1bXcxa0MxVmVoNzhjM283VWczUlJrVjYrbHp6REJlTTBJSVI1?=
- =?utf-8?B?RTd2VHZSdzh3dk80VFVGRHVmREZ3TGpjUHJpcDJBUnhrOHFGYmRyUUZWMWNj?=
- =?utf-8?B?c3FGWXRXQit4QXpKVDhlYlJHd0o0bjVjZUZ5UWtLTFB1Y2pDU2FwL29tQlZG?=
- =?utf-8?B?Vm9sSlJRRSswWXU0UU9HL3M2K1FlNU1Wcm92WkNQS0RRaUNDTVo3TmRkalZx?=
- =?utf-8?B?azVKaG5mOGlaQU1VN1VZRDZKbVQyUm1YWUFRTkxDaXVjVkc5VkNNVUI1TjBh?=
- =?utf-8?B?WFVXMmlrK2tpTHZ6NERRUEE3enVObnNURVIvVGM1MVhDLzFxMnh6RVVseHE1?=
- =?utf-8?B?RlFBcGM0bWdRUXFGS0FuaXV2M1U3eml4TjEreUx6cVY4L1NyYkxhU1gxWVZK?=
- =?utf-8?B?T0NlR1RUTWxSUWtuQWRpSHdHbHZpTDg4T0RwU0UzcVJGbkRlajZYaUZUMFNp?=
- =?utf-8?B?V3FOMUttSEpTOEZ6Qm5aNXk5WG5SRnpQSU9PNHRLdVFORW1PVWhyUWlVc2hz?=
- =?utf-8?B?MlIyVVY4cmJyODJnRkxGbnprMUp0VjNFMHFBZElyQkRBZmNwNWRpNnk0QVJp?=
- =?utf-8?B?U1JpS3BMYjVqcC8xN0VmOWMrZ3M3ZFJLWkdXQm1hRUFLWXArN1BOQmFQNmZk?=
- =?utf-8?B?cENIMFl1Y1ZqbTVYUlRLN0M0ZFlZb2ZwS01PZVBtWVUzaEZwSzFGM09vS25S?=
- =?utf-8?B?SnZqa2Uwd0xmaWhEMWRsNXlHOE1oTjQ1YlpjMnVZODJpdEhwdi83enA2Y3Fr?=
- =?utf-8?B?am12dTJBWkU2U0xBalRhOE11Y3M3K21Zc0YrZm5MRDJpdHV3MENCakF4d2ZK?=
- =?utf-8?B?RHRVeHIwOUk2eUw1ckY2ZThuUWFqYngzbDh5eGdZMVEyL3Jza0EwT0NBVTU5?=
- =?utf-8?B?TS9WRkVLYURMZjB5RlBkeVpuM2JkREQyL3VCTWhTOTZYYVdvNGE1UnNJOVRV?=
- =?utf-8?B?RTNGbk50TlhIek91MVJTalJLaDlVMHpYZ0lsOTA3eG83V0RUTVZiNEc5WXY1?=
- =?utf-8?B?Q21mN3RvbGRnV0FuQWw3UEN4Y2dobzZjYTlJOStvUmsvdjVnREJrOVI4MTZm?=
- =?utf-8?B?NXhTcTJjYTRZYU1KZUtzUVR0VlhFNHVGQmF1Qk1ISTNZUmV3eVAzclFjYkg2?=
- =?utf-8?B?dHNYMWkxVFIxL09VZGhkTS9TT0Jvck1Ka0h4TDJCUFhUVjdQQlA4a1lBUGQ3?=
- =?utf-8?B?eFdrQ1ZucUhmOVFLemdmREFVQ252NTBiY2wwNXhKT0wvRGtGdzNFd0FqVFNl?=
- =?utf-8?B?dWJDSytaV3E3K2VCTmVWTWp1VXEzZXN6YzdlOEZ1enhoanl3S2NVaWFGMEV0?=
- =?utf-8?B?RkdobXJxdDUvbFpaSDdQV0c0TXhBWXpsVzhCcmZDM09OZFNUdlJ6Lzc4NkRV?=
- =?utf-8?B?K2oxbUIxaFdVYWRPZDNrYnFMZzkyWEtIZDF6MUZwcDJtYm9TWFU2YjdDYVdj?=
- =?utf-8?B?SkJ3cmNva3lDaS9YMThYNSt4ZjBuOHdWUm1sSURZeHdUY2FrZUx0KzRRem5j?=
- =?utf-8?B?T0RmTDhhckhKVVBCRzhLeVZQK3VaaTU3UFBnSVlKVmpjNkU4bnFDWXVBSkVN?=
- =?utf-8?B?aTE1NVlkTEYzdUNzaHdvZDMxOWRjTW1LOFJNWGlUY1JQUzZKZnZXMmhJTzh4?=
- =?utf-8?B?U1REYWN0WDBUMGJCeE5EbkpaZks4MUZnQllHTzVmMXZnN3dodHpFempuVHRS?=
- =?utf-8?B?S3htQ0s4cFNtTVVZL1ZQcXB6OXZrK1JxZk8xYmxrYmpoUmVhVTRNMGpzTEhF?=
- =?utf-8?B?QlpjSFV6bkhFVkU3RjN4SWZCSEVYU0pHeUljZDNEL2w1V2R2Y2Z3aFhMMjBN?=
- =?utf-8?B?QVAvVXJXS2JSSWVTb2MveUpqTlNPeXVOeXJoSUpud1I0OFRnUDVBUmg3c3Ix?=
- =?utf-8?B?VUhCOVdWaFhyV25WeElINURkRUNPQnBUeVlsdlE4WWdvNFE2d3FkWTd5UUxK?=
- =?utf-8?B?ZDJEVFRIbXpjN2EzeEVZMUo2ZFFuUVJZWm5udmZKdSs0SmZsQWtDY0dFS1ps?=
- =?utf-8?Q?c6UrTKz7GqXlIhnIj5FSKN5ZN?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0da1d534-35cf-4e7b-03db-08da6977c009
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 11:13:47.2375
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zKZ2lh6dZ/k1P0lhlr8lTe4mYpzTriIkQhYL2zwbqCcVczBdDnRZF6FgGFQN6HlO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3965
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/07/2022 06:25, Jakub Kicinski wrote:
-> On Sun, 17 Jul 2022 14:33:41 -0700 Saeed Mahameed wrote:
->> From: Gal Pressman <gal@nvidia.com>
->>
->> Add the rx_oversize_pkts_buffer counter to ethtool statistics.
->> This counter exposes the number of dropped received packets due to
->> length which arrived to RQ and exceed software buffer size allocated by
->> the device for incoming traffic. It might imply that the device MTU is
->> larger than the software buffers size.
-> Is it counted towards any of the existing stats as well? It needs 
-> to end up in struct rtnl_link_stats64::rx_length_errors somehow.
+On Sun, 2022-07-17 at 21:48 +0200, Aleksander Jan Bajkowski wrote:
+> The xrx200_hw_receive() function can return:
+> * XRX200_DMA_PACKET_IN_PROGRESS (the next descriptor contains the
+> further part of the packet),
+> * XRX200_DMA_PACKET_COMPLETE (a complete packet has been received),
+> * -ENOMEM (a memory allocation error occurred).
+> 
+> Currently, the third of these cases is incorrectly handled. The NAPI
+> poll function returns then a negative value (-ENOMEM). Correctly in
+> such a situation, the driver should try to receive next packet in
+> the hope that this time the memory allocation for the next descriptor
+> will succeed.
 
-Probably makes sense to count it in rx_over_errors:
- *   The recommended interpretation for high speed interfaces is -
- *   number of packets dropped because they did not fit into buffers
- *   provided by the host, e.g. packets larger than MTU or next buffer
- *   in the ring was not available for a scatter transfer.
+> This patch replaces the XRX200_DMA_PACKET_IN_PROGRESS definition with
+> -EINPROGRESS to simplify the driver.
+> 
+> Fixes: c3e6b2c35b34 ("net: lantiq_xrx200: add ingress SG DMA support")
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> ---
+>  drivers/net/ethernet/lantiq_xrx200.c | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+> index 6a83a6c19484..2865d07f3fc8 100644
+> --- a/drivers/net/ethernet/lantiq_xrx200.c
+> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+> @@ -27,9 +27,6 @@
+>  #define XRX200_DMA_TX		1
+>  #define XRX200_DMA_BURST_LEN	8
+>  
+> -#define XRX200_DMA_PACKET_COMPLETE	0
+> -#define XRX200_DMA_PACKET_IN_PROGRESS	1
+> -
+>  /* cpu port mac */
+>  #define PMAC_RX_IPG		0x0024
+>  #define PMAC_RX_IPG_MASK	0xf
+> @@ -272,9 +269,8 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>  		netif_receive_skb(ch->skb_head);
+>  		ch->skb_head = NULL;
+>  		ch->skb_tail = NULL;
+> -		ret = XRX200_DMA_PACKET_COMPLETE;
+>  	} else {
+> -		ret = XRX200_DMA_PACKET_IN_PROGRESS;
+> +		ret = -EINPROGRESS;
+>  	}
+>  
+>  	return ret;
+> @@ -292,10 +288,8 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
+>  
+>  		if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) == LTQ_DMA_C) {
+>  			ret = xrx200_hw_receive(ch);
+> -			if (ret == XRX200_DMA_PACKET_IN_PROGRESS)
+> +			if (ret)
+>  				continue;
+> -			if (ret != XRX200_DMA_PACKET_COMPLETE)
+> -				return ret;
 
-It doesn't fit the rx_length_errors (802.3) as these packets are not
-dropped on the MAC.
-Will change.
+Note that in case of persistent pressure and with the device under
+flood, 'rx' is not incremented, and this loop can run for an unbound
+number of iteration.
 
-> On ethtool side - are you not counting this towards FrameTooLongErrors
-> because it's not dropped in the MAC? Can we count it as RMON's
-> oversize_pkts?
+If you keep running, you do need to increment 'rx' at every iteration,
+even in case of error.
 
- etherStatsOversizePkts OBJECT-TYPE
-     SYNTAX     Counter32
-     UNITS      "Packets"
-     MAX-ACCESS read-only
-     STATUS     current
-     DESCRIPTION
-         "The total number of packets received that were
-         longer than 1518 octets (excluding framing bits,
-         but including FCS octets) and were otherwise
-         well formed."
-     ::= { etherStatsEntry 10 }
+Note that 'rx' is more an estimate of the work done than a 'received
+packet counter'.
 
-This counter isn't necessarily tied to 1518 bytes.
+Paolo
 
-Thanks for the review, Jakub.
