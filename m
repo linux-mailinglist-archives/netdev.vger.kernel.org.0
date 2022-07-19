@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A6657A063
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DB457A089
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235697AbiGSOFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
+        id S237861AbiGSOHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237987AbiGSOEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:04:54 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DBC5F52;
-        Tue, 19 Jul 2022 06:18:24 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id fy29so25977982ejc.12;
-        Tue, 19 Jul 2022 06:18:24 -0700 (PDT)
+        with ESMTP id S237926AbiGSOHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:07:21 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D37D481CE;
+        Tue, 19 Jul 2022 06:22:44 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id fy29so26001325ejc.12;
+        Tue, 19 Jul 2022 06:22:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Yc+h+ul4h9s6uUBRLUaqssxlPjgr6BM8cJCIGFPzipY=;
-        b=J9eUykm76fIdNj3kRL1+JyFpVIW499oT+DRmOXXFEDM7q+PEyc5jM94oOtz3Qz4wVX
-         bF84Pkt3xnsHhC4JEf4msMEOq+7Iy0SMQI2PPCGnJuVCqQ67FQNMHxK4SOndT/MvYfnK
-         d7bTsIeNPc9K/piu4RUryH0XTvKEDO+SeQKxNQWKdasT1ViiLcXdtf1CVEEPjdz0PYca
-         iTajalmvPI+9+JLxtQKf7IbzfgbbNh8PquCA4mN+C7xVbgmXOR1HbpzOyRXs1KtB7GrG
-         Y+6HLARwLGrVt2gPH/MhTC0Zwx+KmMZ2jDmrYSCDJU3XHmYobLzbi6dy+50GkdhDVdgX
-         PWEQ==
+        bh=YPNUgY1kE9wIacZb8+r7xMlbVf/7ZrOa4yRC3+Sdfro=;
+        b=GIG0NyyaoN7JpTYLJMOdx6iKXzqtWi1+pXwj//PG98HsWTl3BTTe4ZWgLSsypzaNkv
+         mA++RCz8dxJy6dSPDNwB/JUEW3RiAt4VlL0VihN/up9rELiqW/dX0+ZE6Eln9ZuYRfqe
+         Q71TLqKGMkdpcS7RizA/hY94r4SyiOeD+Ictkj5SzBnZ5L0bPSP9dir20shJ442HKTzy
+         4I8Ise1IRwhgI3vzQw/7mm8zajiO/AdnBwqrqmpRW87ZEZs+vdPCk0nVxIwfW4eDd8fJ
+         NrN3LLxlmP5PUDizeuOglqW0ZrU3ENk+xCS4zuxL3nJzsWSOP87x9xLmGOdpJq9C2szU
+         J4tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Yc+h+ul4h9s6uUBRLUaqssxlPjgr6BM8cJCIGFPzipY=;
-        b=zWSj9iHz36IfRHOAoqgQ9TZXqdzFLBnhkuWYqR12w2VhjvTewXOvx8XDFvkxIHP+EP
-         x/ejw/kAD/4Q14FKfrMT+lv98BFefG5ggJ6QZwvk+KZNdXL0/DCU8Kv0GGAE3R7KRN4k
-         FNE4LRqEK/KlWdoRWk6jQoMDsmB5uEWJR3KEb+RI6rN1Y0gH3hSZx7d+ZBKqnYboRXHv
-         mxEoQXURF7FvhXNqPTwPMFgHz0grXMP/tmOsz2RzfTAQ7aywovJkjXc5fM22t3r72VvR
-         EQnGMhZxTlH2SJ8moB8KygnP8z1wN68MstjDvp9FdzHmdfL9Me+VrFBfiqWuWQGVC+yV
-         QUjg==
-X-Gm-Message-State: AJIora/OksKE7jHBaF9vqbngjNNK4EjF98ORjbGB6y1uHdOlGauNI5d2
-        trZS44Tt8KGTXd+kwwbQhSQ=
-X-Google-Smtp-Source: AGRyM1vc3d5ELKetSkvOgAd0hKsuPKWP4OeyXYnilUZDc2oB8n+LsY9tZjW49kh9c6fQjZYjNdGDaA==
-X-Received: by 2002:a17:906:cc45:b0:72b:313b:f3ee with SMTP id mm5-20020a170906cc4500b0072b313bf3eemr29551339ejb.362.1658236703117;
-        Tue, 19 Jul 2022 06:18:23 -0700 (PDT)
+        bh=YPNUgY1kE9wIacZb8+r7xMlbVf/7ZrOa4yRC3+Sdfro=;
+        b=iyyfmd+rO3+a3dTMWLpq229r0Sfzfy5b73qoQesbfunt9g3tVGdxzK+6t4EebTIBHq
+         RoQkcd2HzyUv+A6Pxx4m4VvDHNtGVJJnJtvEoDWEPqSTXWZQhtrIC0ofj//PHtZ6nF8Z
+         gRswLUE5fKyW5Jqq/YekwZ+tXzE8RrJ+Yvq0WdIJpNV9d+ojdjoqOr7jzrXnVCZCEYjh
+         CEWvd6TRHbxxud9pScOtrJXRtn2Gh5OgnUL8bgqlts2PbjRGcvI43tsMgBeXhwApJ90G
+         GudC6gRScwwTAMi83cG5TIcjtT1wcEt+xNkTigjdz2M9NapDiY9jl/v8Yt8mJwoJFZsK
+         IK6Q==
+X-Gm-Message-State: AJIora/4Q0kneB/gUqJ/IfKzwWnGToumgzMn9MFOhA+XnsAkMvtx1K8R
+        sDQEC+U2/10q7JsOKjo0FEM=
+X-Google-Smtp-Source: AGRyM1skG4/CmEon3bwbiAkvCmKJqaNm/f7wq9KYVvgjS8K+uUgzEVuZULcbYZaZ54ctd77O0txlBA==
+X-Received: by 2002:a17:907:7631:b0:72b:3a31:6cb8 with SMTP id jy17-20020a170907763100b0072b3a316cb8mr29687301ejc.372.1658236962742;
+        Tue, 19 Jul 2022 06:22:42 -0700 (PDT)
 Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id c9-20020a170906528900b007262a1c8d20sm6715846ejm.19.2022.07.19.06.18.21
+        by smtp.gmail.com with ESMTPSA id kb3-20020a1709070f8300b00727c6da69besm6677313ejc.38.2022.07.19.06.22.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:18:22 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:18:20 +0300
+        Tue, 19 Jul 2022 06:22:42 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:22:39 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -60,19 +60,18 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v2 06/15] net: dsa: qca8k: move port set
- status/eee/ethtool stats function to common code
-Message-ID: <20220719131820.7qs3w635sa6skaca@skbuf>
+Subject: Re: [net-next PATCH v2 08/15] net: dsa: qca8k: move fast
+ age/MTU/port enable/disable functions to common code
+Message-ID: <20220719132239.ubxzxvkzlbfi7xli@skbuf>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
  <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-8-ansuelsmth@gmail.com>
- <20220719005726.8739-8-ansuelsmth@gmail.com>
- <20220719131451.5o2sh3bf55knq3ly@skbuf>
- <62d6aeab.1c69fb81.5d5ce.23b8@mx.google.com>
+ <20220719005726.8739-10-ansuelsmth@gmail.com>
+ <20220719005726.8739-10-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62d6aeab.1c69fb81.5d5ce.23b8@mx.google.com>
+In-Reply-To: <20220719005726.8739-10-ansuelsmth@gmail.com>
+ <20220719005726.8739-10-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -83,21 +82,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:16:24PM +0200, Christian Marangi wrote:
-> On Tue, Jul 19, 2022 at 04:14:51PM +0300, Vladimir Oltean wrote:
-> > On Tue, Jul 19, 2022 at 02:57:17AM +0200, Christian Marangi wrote:
-> > > The same logic to disable/enable port, set eee and get ethtool stats is
-> > > used by drivers based on qca8k family switch.
-> > > Move it to common code to make it accessible also by other drivers.
-> > > 
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > 
-> > Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+On Tue, Jul 19, 2022 at 02:57:19AM +0200, Christian Marangi wrote:
+> The same fast age, MTU and port enable/disable function are used by
+> driver based on qca8k family switch.
+> Move them to common code to make them accessible also by other drivers.
 > 
-> (considering the ethtool function will change, is it OK to keep the
-> review tag on the next revision?)
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+> +int
+> +qca8k_port_enable(struct dsa_switch *ds, int port,
+> +		  struct phy_device *phy)
+> +{
+> +	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
 
-As long as the removed code is identical to the added one, yes.
-If there are problems with the changes on the ethtool_stats function,
-I'll leave my comments there.
+I think you can make slight tweaks to the code being moved (and document
+them in the commit message). For example, in C, there is no type casting
+necessary for void pointers (as evidenced by all other places which seem
+to do just fine with "priv = ds->priv").
+
+> +
+> +	qca8k_port_set_status(priv, port, 1);
+> +	priv->port_enabled_map |= BIT(port);
+> +
+> +	if (dsa_is_user_port(ds, port))
+> +		phy_support_asym_pause(phy);
+> +
+> +	return 0;
+> +}
+> +
+> +void
+> +qca8k_port_disable(struct dsa_switch *ds, int port)
+> +{
+> +	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+> +
+> +	qca8k_port_set_status(priv, port, 0);
+> +	priv->port_enabled_map &= ~BIT(port);
+> +}
+> +
+> +int
+> +qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+> +	int ret;
+> +
+> +	/* We have only have a general MTU setting.
+> +	 * DSA always set the CPU port's MTU to the largest MTU of the slave
+> +	 * ports.
+> +	 * Setting MTU just for the CPU port is sufficient to correctly set a
+> +	 * value for every port.
+> +	 */
+> +	if (!dsa_is_cpu_port(ds, port))
+> +		return 0;
+> +
+> +	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
+> +	 * the switch panics.
+> +	 * Turn off both cpu ports before applying the new value to prevent
+> +	 * this.
+> +	 */
+> +	if (priv->port_enabled_map & BIT(0))
+> +		qca8k_port_set_status(priv, 0, 0);
+> +
+> +	if (priv->port_enabled_map & BIT(6))
+> +		qca8k_port_set_status(priv, 6, 0);
+> +
+> +	/* Include L2 header / FCS length */
+> +	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu + ETH_HLEN + ETH_FCS_LEN);
+> +
+> +	if (priv->port_enabled_map & BIT(0))
+> +		qca8k_port_set_status(priv, 0, 1);
+> +
+> +	if (priv->port_enabled_map & BIT(6))
+> +		qca8k_port_set_status(priv, 6, 1);
+> +
+> +	return ret;
+> +}
+> +
+> +int
+> +qca8k_port_max_mtu(struct dsa_switch *ds, int port)
+> +{
+> +	return QCA8K_MAX_MTU;
+> +}
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index dd3072e2f23c..bc9078ae2b70 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -469,4 +469,17 @@ int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
+>  void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
+>  			     struct dsa_bridge bridge);
+>  
+> +/* Common fast age function */
+> +void qca8k_port_fast_age(struct dsa_switch *ds, int port);
+> +int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs);
+> +
+> +/* Common port enable/disable function */
+> +int qca8k_port_enable(struct dsa_switch *ds, int port,
+> +		      struct phy_device *phy);
+> +void qca8k_port_disable(struct dsa_switch *ds, int port);
+> +
+> +/* Common MTU function */
+> +int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu);
+> +int qca8k_port_max_mtu(struct dsa_switch *ds, int port);
+> +
+>  #endif /* __QCA8K_H */
+> -- 
+> 2.36.1
+> 
+
