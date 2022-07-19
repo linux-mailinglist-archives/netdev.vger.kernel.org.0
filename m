@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 248DB57A7BE
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:57:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 368E857A7C2
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239998AbiGST5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 15:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        id S238086AbiGST6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 15:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239873AbiGST5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:57:09 -0400
+        with ESMTP id S239733AbiGST5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:57:41 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218415E33F;
-        Tue, 19 Jul 2022 12:57:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02985F131;
+        Tue, 19 Jul 2022 12:57:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=G/r0iuXd0nlX286PGQstcOmzqdsizrciXg6SQCj+hrI=; b=RhwLi+Y/TVllg5RvRTvJG+xird
-        h7Zn4/C51lw/FCc3+EweBxYFpawiiKUBDePiNsdb3Is4X2If+LfubcJv/or+mkbRd+DXDJMYXzcOc
-        o+UzOf1szX5Gn3Z5brW0RQk4mkvxUtw/Ws/rYMDUvfvL85OtHy0/O4GZWH+sfPEKA3GsiyymScwh4
-        40kyB/OE7DWejlgw2JGA6mO41KvaElDT9fKoSbNTP1ZgQz0+9mbbbwf73Bn2sXGllG7Pke7n4K4Os
-        0BSaV1h0OvA5JuTbGQQ7eYDvYBqjF0A/rfJSQ5FWJNIpPmvbwRSEXw0p7aTaHHFw8lDfYQ6EfzrhH
-        Ugj9r4xQ==;
+        bh=sxerzEC6ULnrCK4xFVFRwsVny05lEai+m5Q0OhAgHvc=; b=LydLkzqrM6AQgyUZb/eK78EaTe
+        voCyZOYInunbfsTQJhUj6qGYkEcwQqAZoeE5g9fyKdb2pV3SYR9F2oFs7yNM3qsGwT21rp2aZLD+6
+        DRVvuKL2t8RP2KNGIJEg0K51V8ryEYddAmBtZ52mC+bH8R+QBJpSRJaHwfoS5PcBpccLkHwPVXH1p
+        iZCPDlenLJA0ElBqc9ii7N0UWdszArx91MaroFoXGCYEDCyXx3ZlFTtOCFetlVaWTUnEJssIASGqW
+        C9ijI9jv+NNIUzBR7rfC1MtzW0qf9n5kWS+hQY2dFbmdPPKkRpI01y7E60JasW9nNQUJB+6R9Ol6l
+        duNmoiYw==;
 Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oDtKr-006fZI-Di; Tue, 19 Jul 2022 21:56:50 +0200
+        id 1oDtL7-006fav-1R; Tue, 19 Jul 2022 21:57:05 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -47,10 +47,14 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Subject: [PATCH v2 08/13] tracing: Improve panic/die notifiers
-Date:   Tue, 19 Jul 2022 16:53:21 -0300
-Message-Id: <20220719195325.402745-9-gpiccoli@igalia.com>
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Xiaoming Ni <nixiaoming@huawei.com>
+Subject: [PATCH v2 09/13] notifier: Show function names on notifier routines if DEBUG_NOTIFIERS is set
+Date:   Tue, 19 Jul 2022 16:53:22 -0300
+Message-Id: <20220719195325.402745-10-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
 References: <20220719195325.402745-1-gpiccoli@igalia.com>
@@ -65,113 +69,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the tracing dump_on_oops feature is implemented
-through separate notifiers, one for die/oops and the other
-for panic - given they have the same functionality, let's
-unify them.
+Currently we have a debug infrastructure in the notifiers file, but
+it's very simple/limited. Extend it by:
 
-Also improve the function comment and change the priority of
-the notifier to make it execute earlier, avoiding showing useless
-trace data (like the callback names for the other notifiers);
-finally, we also removed an unnecessary header inclusion.
+(a) Showing all registered/unregistered notifiers' callback names;
 
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+(b) Adding a dynamic debug tuning to allow showing called notifiers'
+function names. Notice that this should be guarded as a tunable since
+it can flood the kernel log buffer.
+
+Cc: Arjan van de Ven <arjan@linux.intel.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Cc: Xiaoming Ni <nixiaoming@huawei.com>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V2:
-- Different approach; instead of using IDs to distinguish die and
-panic events, rely on address comparison like other notifiers do
-and as per Petr's suggestion;
+- Major improvement thanks to the great idea from Xiaoming - changed
+all the ksym wheel reinvention to printk %ps modifier;
 
-- Removed ACK from Steven since the code changed.
+- Instead of ifdefs, using IS_ENABLED() - thanks Steven.
 
- kernel/trace/trace.c | 55 ++++++++++++++++++++++----------------------
- 1 file changed, 27 insertions(+), 28 deletions(-)
+- Removed an unlikely() hint on debug path.
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index b8dd54627075..2a436b645c70 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -19,7 +19,6 @@
- #include <linux/kallsyms.h>
- #include <linux/security.h>
- #include <linux/seq_file.h>
--#include <linux/notifier.h>
- #include <linux/irqflags.h>
- #include <linux/debugfs.h>
- #include <linux/tracefs.h>
-@@ -9777,40 +9776,40 @@ static __init int tracer_init_tracefs(void)
- 
- fs_initcall(tracer_init_tracefs);
- 
--static int trace_panic_handler(struct notifier_block *this,
--			       unsigned long event, void *unused)
--{
--	if (ftrace_dump_on_oops)
--		ftrace_dump(ftrace_dump_on_oops);
--	return NOTIFY_OK;
--}
-+static int trace_die_panic_handler(struct notifier_block *self,
-+				unsigned long ev, void *unused);
- 
- static struct notifier_block trace_panic_notifier = {
--	.notifier_call  = trace_panic_handler,
--	.next           = NULL,
--	.priority       = 150   /* priority: INT_MAX >= x >= 0 */
-+	.notifier_call = trace_die_panic_handler,
-+	.priority = INT_MAX - 1,
- };
- 
--static int trace_die_handler(struct notifier_block *self,
--			     unsigned long val,
--			     void *data)
--{
--	switch (val) {
--	case DIE_OOPS:
--		if (ftrace_dump_on_oops)
--			ftrace_dump(ftrace_dump_on_oops);
--		break;
--	default:
--		break;
--	}
--	return NOTIFY_OK;
--}
--
- static struct notifier_block trace_die_notifier = {
--	.notifier_call = trace_die_handler,
--	.priority = 200
-+	.notifier_call = trace_die_panic_handler,
-+	.priority = INT_MAX - 1,
- };
- 
-+/*
-+ * The idea is to execute the following die/panic callback early, in order
-+ * to avoid showing irrelevant information in the trace (like other panic
-+ * notifier functions); we are the 2nd to run, after hung_task/rcu_stall
-+ * warnings get disabled (to prevent potential log flooding).
-+ */
-+static int trace_die_panic_handler(struct notifier_block *self,
-+				unsigned long ev, void *unused)
-+{
-+	if (!ftrace_dump_on_oops)
-+		goto out;
+ kernel/notifier.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/notifier.c b/kernel/notifier.c
+index 0d5bd62c480e..350761b34f8a 100644
+--- a/kernel/notifier.c
++++ b/kernel/notifier.c
+@@ -37,6 +37,10 @@ static int notifier_chain_register(struct notifier_block **nl,
+ 	}
+ 	n->next = *nl;
+ 	rcu_assign_pointer(*nl, n);
 +
-+	if (self == &trace_die_notifier && ev != DIE_OOPS)
-+		goto out;
++	if (IS_ENABLED(CONFIG_DEBUG_NOTIFIERS))
++		pr_info("notifiers: registered %ps\n", n->notifier_call);
 +
-+	ftrace_dump(ftrace_dump_on_oops);
+ 	return 0;
+ }
+ 
+@@ -46,6 +50,11 @@ static int notifier_chain_unregister(struct notifier_block **nl,
+ 	while ((*nl) != NULL) {
+ 		if ((*nl) == n) {
+ 			rcu_assign_pointer(*nl, n->next);
 +
-+out:
-+	return NOTIFY_DONE;
-+}
++			if (IS_ENABLED(CONFIG_DEBUG_NOTIFIERS))
++				pr_info("notifiers: unregistered %ps\n",
++					n->notifier_call);
 +
- /*
-  * printk is set to max of 1024, we really don't need it that big.
-  * Nothing should be printing 1000 characters anyway.
+ 			return 0;
+ 		}
+ 		nl = &((*nl)->next);
+@@ -77,13 +86,14 @@ static int notifier_call_chain(struct notifier_block **nl,
+ 	while (nb && nr_to_call) {
+ 		next_nb = rcu_dereference_raw(nb->next);
+ 
+-#ifdef CONFIG_DEBUG_NOTIFIERS
+-		if (unlikely(!func_ptr_is_kernel_text(nb->notifier_call))) {
+-			WARN(1, "Invalid notifier called!");
+-			nb = next_nb;
+-			continue;
++		if (IS_ENABLED(CONFIG_DEBUG_NOTIFIERS)) {
++			if (!func_ptr_is_kernel_text(nb->notifier_call)) {
++				WARN(1, "Invalid notifier called!");
++				nb = next_nb;
++				continue;
++			}
++			pr_debug("notifiers: calling %ps\n", nb->notifier_call);
+ 		}
+-#endif
+ 		ret = nb->notifier_call(nb, val, v);
+ 
+ 		if (nr_calls)
 -- 
 2.37.1
 
