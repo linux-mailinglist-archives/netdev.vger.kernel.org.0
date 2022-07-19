@@ -2,138 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69F1957A406
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9D057A416
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236160AbiGSQQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 12:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        id S236186AbiGSQSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 12:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234779AbiGSQQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:16:28 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2068.outbound.protection.outlook.com [40.107.104.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAC34F1B9;
-        Tue, 19 Jul 2022 09:16:26 -0700 (PDT)
+        with ESMTP id S234286AbiGSQSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:18:15 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761865245B;
+        Tue, 19 Jul 2022 09:18:14 -0700 (PDT)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JDR8vC031230;
+        Tue, 19 Jul 2022 09:17:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=yi+Tsyy1Q94v4lg7rzQXwSCA5dLF998Ti/DlLPbUjp4=;
+ b=o/tgisskvdt3Eo+W9Qh4HNqdFOf3FudK3U718zBTkMXukwjNQWxSBOEXaLT1IJuQ70il
+ RNVmYWc/wKs+Y4poZJ0+TaxeWt4Te/FYfn9VliUpY2hgtuJf43RElszOOI+McwqkT73A
+ wD/oUOo43xix6E5vmbyXgXnu7b7G0AsO2o0= 
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2106.outbound.protection.outlook.com [104.47.70.106])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hdvdrsqhv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Jul 2022 09:17:45 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KY0B3ylJIpH7bU8Oi3YhnHenqiggvGcE741Tv/q+1tJID+UOP31NOXl0Nvl2RD9TXliPpQfTDqM3BypETXngpXYzoCNlLqWgAQwZs1BoWgpeBwMZ5Rxbe3oHHiN5GH0jFWVGwQ6PHrL2B0VgfcxmBCm4jQ8Q5EHAvTkyG3QEH67l63c1ZublH1LzBMLvVj4ETr3gjjYI9B8boAw/W3gIa1VreLNg3VOjNhEJ3V3aowoeg81mJ6ASbtAxNpAYFfR3C8vgZWhVEWfjMner+e/P1WDNpgyJ9DYhk+aF11yTg5rsVQh0lRa6m+wD5CGyMhu4Cs9uM/zVdvEG7DKltJHbIw==
+ b=KEiPGONkYWmwDeJDiQOBX8mYGS+LsURkPUJHpg5VaXMUA+Xkk0tn1UxbCwFqblguCvMv7QmLD3/gSkDn0Xww0jF6W5bFloRWDNkRtWCn2k9D9yhOmQO4nWJCyImgLBh/AfK8CBL0d6cvzF9wXNd7GwB8zTA+lRoiyTKVQ2uMwJpEurW3N3SWC+7nc3Dv4FliQ+adWgKVHTdF5L5dJWSFBPqrkc8S0OMWHVj/eI+M5wrmOVPui6iVtGf/74wdNI/U3h3/+rle39jFUMypG7G7pYOhqOd1m0eU2dYe98nOIZRRu/+l0uf//kodmkRhl2oG4/XkK2OwXgP+TMWBngQDbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+j9Ky+rP7rapo2PrnZVB3F9f/nkTtlWqd8uCTeJL+IM=;
- b=V92RP9bESRKUPlw0EQ7sAcutx2MZhXHgWD/zTsK17ZwUQYL8lOwRmogIZ7F1zm9fchVzaASUAIkpcF0s/z4/cytDx9rhob40Dsr8hPgjmEwWlU/pzkE32WZyr1wqPSXQ+rDorH0AZxxj6tIg4ITcQwju57qbOE2NWTpIFN9AkB9AKF3RuCP9jttnb/CyKKoJmR7fZUlXCIgZu5maZDhL8xnvki0uZXI5nje6Mw4jh2yJwf2ZIMExdhh2aMfyQb5eBOjw31VMuF3jvQCMUPn2d4NsHZuuE8kuY+ebQ31gw2JTBpRAVRAs8f5dV3zG2XpxakagkzQPCmo7RUuOVSqKcw==
+ bh=yi+Tsyy1Q94v4lg7rzQXwSCA5dLF998Ti/DlLPbUjp4=;
+ b=ViSWOOV7xbRA0cO2raTueHHVajfBJ3OfwpZkFrIXVNseb9+zwDpWo+AHxZcjbYoNxEgIfavea8oAt90Dt3xqjiC7VYLW9ifKQ2xqM6MQS9VJAIPqYiCk51Wx+8c/GAYdeEuLWMM3mHjBzAuQWExWQZRorZtmLZcv5QI62uB8lVgD4AOmMNIJxctPECMM0Z/IXOTx0oI13VCOUZn8L9tAog7HHMd9VfMcqt9tmdZQDSPX/InVTx/KuAII4hlG9/raxvH6Y5vk53BvZsQbe4t2CNLoxEpo+RXQRDW9Mp6nxoayu2LZtKPqRX+ZxCgkgySEUtxJZRSC7fmhLu4seNp+Dw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+j9Ky+rP7rapo2PrnZVB3F9f/nkTtlWqd8uCTeJL+IM=;
- b=k17k11Rpuigpy1zMCCkQtAgh2nmZ0cOywVV+mF6qJfa5IqcWSyC3aqLfceqW6qImS6kzmI61ADJPMUJGoxk23LUJbB8trHMxk7WltSu3t29SZcafhmTmAfJZw3/CiPf81Artw6mKh3rso0l4Ts3Zs1ZVh1oTsA5+tXBvzUYiZ6wJ/Gr9mwaZZkUPh/aUp83hrdAwuXoqe1iAbGbWOyMRtuQP477TrqbUpfC0EZ9L+wwDFx1bENTdflUghcGHkoHkIJsKoEqJE9htOe1sqUdQgOjc15MortJZFTgVHKvE9SK+UiBfeUt69D02b0vJ/8xMaBnc7FEd/LeQ5PNV/bjV3g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by HE1PR0301MB2522.eurprd03.prod.outlook.com (2603:10a6:3:69::20) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by BN8PR15MB3156.namprd15.prod.outlook.com (2603:10b6:408:a6::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
- 2022 16:16:22 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
- 16:16:21 +0000
-Subject: Re: [RFC PATCH net-next 4/9] net: pcs: lynx: Convert to an mdio
- driver
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-5-sean.anderson@seco.com>
- <20220719160117.7pftbeytuqkjagsm@skbuf>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <201ba777-f814-0e3f-6e1e-0327934a7122@seco.com>
-Date:   Tue, 19 Jul 2022 12:16:17 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20220719160117.7pftbeytuqkjagsm@skbuf>
-Content-Type: text/plain; charset=utf-8
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.24; Tue, 19 Jul
+ 2022 16:17:43 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 16:17:43 +0000
+Message-ID: <670999ab-69c8-9692-4d73-da4f96c63e64@fb.com>
+Date:   Tue, 19 Jul 2022 09:17:37 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH bpf-next v3 8/8] bpf: add a selftest for cgroup
+ hierarchical stats collection
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BLAPR03CA0108.namprd03.prod.outlook.com
- (2603:10b6:208:32a::23) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
-MIME-Version: 1.0
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+References: <20220709000439.243271-1-yosryahmed@google.com>
+ <20220709000439.243271-9-yosryahmed@google.com>
+ <b4936952-2fe7-656c-2d0d-69044265392a@fb.com>
+ <9c6a0ba3-2730-eb56-0f96-e5d236e46660@fb.com>
+ <CAJD7tkZUfNqD8z6Cv7vi1TxpwKTXhDn_yweDHnRr++9iJs+=ew@mail.gmail.com>
+ <CAJD7tkb8-scb1sstre0LRhY3dgfUJhGvSR=DgEqfwcVtBwb+5w@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+In-Reply-To: <CAJD7tkb8-scb1sstre0LRhY3dgfUJhGvSR=DgEqfwcVtBwb+5w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-ClientProxiedBy: MN2PR10CA0010.namprd10.prod.outlook.com
+ (2603:10b6:208:120::23) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2795d4f5-0c62-4d91-032e-08da69a2050f
-X-MS-TrafficTypeDiagnostic: HE1PR0301MB2522:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7006f29b-7a7b-4c2f-33d7-08da69a2356c
+X-MS-TrafficTypeDiagnostic: BN8PR15MB3156:EE_
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mu729P2q1+8S6o+75oTSLKTgrYrY7jgY0RiYvuLLJQVoKST/PiHxR3A2hIldLxm/Tffr7KIx6gdwQcef4+cuRyhIs/yyFXL2hITWhJXnvFAd53rPFVsKn4v3eBF+SS61ZJLVTX5F93mWSgUtJeXeJuYJRc0A3v7ekvPhRuFmk5Hk8RDxzXuT4gw1iaeP23PJ5xy3hhmNS6z8gjkCwL51cAiI5u7tbDJr3h2ay3dVe7HZ2psV9YmavyUz030zQ3g4BNzxqgQdx0+88TqH+BMDXy9MahEqOPjFhaQmpruVvp4EODBDzKonRUDBfoL3DO9qzRPH/HE0EW5c4CSb1CgketVsrGF2Zciyg7nopA4to8Cb5VTAcbT/z43+HS70WgFRQdR7h1cP4dAw5lnXp4Q7VQOp4J3YBDzrixgEtxOzoLDpQtH+qMJ9kFkUFYFRvzkxPjwtRbx3elgdNoBJO5t9Inc63NivMBf5nWRheBVR4xxtKXWopu4iawHuIDH1onlHCP86PNWkFn+JQTFSlf/NqLB1J9m3irScTKt2NGtqdJLBODBU0VY3RVBG9y295d8iP7BXFQ6wRwP8ev8Q6PWtn/v9x+2V2n0Ar4sRmoVARC8j1VJFNv0b1Qm3VZEMhsaDWlv9n1x5d/EGhorB7wvCG8UrjJUsjFVsZKDcJt0kFmylxvYdrUAa13y3Rb+is2PFW8pmtxF5J8O3QVn2DiaWdKDTnPOYzjsptbv8cXA69n5D7peMzCM6ZM7GjZOdk/EaWXBp9TKKXyJJ3uGH1LAe3Oc+A3SMuPhumX4W+ouH6dKDiZGiqS4s2UE7x8fuqbmoss8phukntAo4eX1GCqOKq3Bazv72QYsEx24iuY2oji0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(396003)(39850400004)(136003)(376002)(5660300002)(8936002)(31686004)(2906002)(7416002)(44832011)(316002)(45080400002)(31696002)(66556008)(86362001)(36756003)(6916009)(8676002)(38350700002)(6486002)(41300700001)(66476007)(52116002)(26005)(6666004)(478600001)(2616005)(186003)(54906003)(66946007)(4326008)(38100700002)(83380400001)(53546011)(6506007)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: AXDPZFoZIDhW0UD3ZHri3FTVe/s+1uVmPuostbWKtGjx/uj71eWwdzzLTECpt6wZOIu7K6MQkFXNxxS/jRpoWYjYoCzc+QxqBG86tGBXxkTGwn0gqmWDJSriAkkVWI8jmH71+ewwMHEj1qL7IRVMCvWzsKzteqW1U/0z+cEISWuARXBP7FEWtfJ+ObV6EBEoUo53JQEtxtZBYydtuUZocErZog2lx6ASmHP0S53X5WyXASLnulyBVfVQIAmeqtepm+2j4MqovXKrEjsC1C6JxEVtFshbS9bMJizXp113AIVPKN9TkaAVPGXxvU+e8k1HhQ3011WB2AUZVs8K9iC40ifEKX+SqGDCfJiH6qr/zUj84quJp9hUELB4b18UT+9QuKkQMLQh3RIUaffR81WcGoxHmaZvG0HVNP5jw9mXVk8Vh+icDNG0hze+Q8lmaF1YZPjY6gTG1+OawXfmzChMVgz2iq/P7yP83axXSFLWrU5V0mgZNxLuh/TWBsaWfeEv3lGcI4ou3R/8ZRZ3XiBahxXk/2lQxFz3g/Z0awTJKQZAADznA1pzQs18JyxLOsCQ2CBActdlA2bBTAdyrT2kKMrHpHgIup/3OiiYrlhmeEcoYzVZ1q5SN+fudfuscKuTIbOxOdtgg+1oNJZ44QZMA3xofTdq4vGP8Y8Y1li5rajin3C1dYZiJB4hlKnyESqkqnko8jRj/YnQQD7svUIcLwg72G/50YFU+3mZKCldrBRIFw1laVeAUV2uBISdWXaNL9mp4mSXRTpJIsdRi4SHwlwE425tC6YqcYZj2gycblG43K0MEMO/4Nqtktxdc+4dJD0pHRI7bJfMd0XkpwwSl49WNuGD+n9lZKLZL1FpzsvppEYk8ayMDIuHr33kLGpM+X09dV8yylfkRh4xaVjojA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(8676002)(5660300002)(66556008)(4326008)(31696002)(66946007)(7416002)(8936002)(38100700002)(66476007)(2906002)(36756003)(966005)(6486002)(2616005)(41300700001)(478600001)(6666004)(316002)(86362001)(54906003)(186003)(83380400001)(53546011)(6506007)(6512007)(31686004)(6916009)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VUI0R1NPMzFpeS9hT0E2M0MyVXF5RjlRTGpQdE1oWnJZTFZycmVOdHVJV2N6?=
- =?utf-8?B?RkhRcTFGK1U4bHg4elBkRnFzM1E1T2ZQRGhWekxLS0JDUVBKMGpnMkxpTHBF?=
- =?utf-8?B?L3FZWGZaMzZ6S3lLWmNkZWFJTGhpcCtVL0tKRko3eEFaRnJ6RFhTMjVGWEtr?=
- =?utf-8?B?SkZoQzdpTDFKdHAwTll0SGRTNnZTOGRFK3p6L1BwUXp4a3BlSUFBR2xWaXNr?=
- =?utf-8?B?V294L1pkQS9nQWM0TXhnL1J0MjdlTFEzRnV4QXpFRTNaTURYbGMzK0JqRHk1?=
- =?utf-8?B?WXhwY3JNS3R1c3FpdjJJcVRhZk9vTFdEVllJc3JadVhhS0s2ZEF2OE1oU0NH?=
- =?utf-8?B?cnd0c1VzYnlhRHRrUHIvcGlOTEJKakw0dENYd3ZnODdld2s3K05obnQ5eEtR?=
- =?utf-8?B?a3hrb2lMS3pOc1AwU3IrMWFDT1JFd25ES1ZISnd0ZkU3S0orRERCSUJGWmpP?=
- =?utf-8?B?Qkpwd3ZIaHh3VlpWNWFBeG5XZ281cG5BNlJnWUcwRTlvTlBLT2gzS3BKckhw?=
- =?utf-8?B?Z25mbXAveWlQNTlGTjVYSm1vSTVQL0wvKzNHSmdFSlJ3cVZCMEw1QXVucktF?=
- =?utf-8?B?T2taa3NOajk0eC9uZzhsTEhlSU9JVUhuRGJTUHJGZ3ZPNjlaRW5wUE8zd3RG?=
- =?utf-8?B?LzVZWWxqMmhCV2hCL1MwVHM0cmJsUWdTS2w5OFA3K3JCZlAzbDAvaEpyYlA4?=
- =?utf-8?B?QUFCdFhSSHRCbTNyM0VRZElFWEZSZ3BIQTBxVlpENDJsSk55TWgzWWtsMjV3?=
- =?utf-8?B?ZEE3YkdSTlNsbG5JSXZTMEVnQjZobytwcHF5ZGpIS3ZjR3o5dE1ZdDBtU1lU?=
- =?utf-8?B?ZHpuSUp2dEtFWXd3Yjl1Vmh1LzEwSHJ3UzhXem53cWZydnNPV2lncTJDMUxQ?=
- =?utf-8?B?SnlUYitjZmp0M1daMEpQNlh6bTNMN2NFT1A2T1dFenR0QnVwbVlsK2NEbWx5?=
- =?utf-8?B?cWZOb09JaVI1bVk1WlBBWkZ3SjgvMk1xTmptZjhsTnhoMGxnSzZTOU5JYklm?=
- =?utf-8?B?Y0ZIS0c2Sm5EdnpnVEZubmkyVnBVOU1PYW1DR2VHaS9XMkhKenE2QW1jQWl4?=
- =?utf-8?B?b0JwK0ZCVXFEazRlWXBmTHhHZHZQVXhKQWxkSTNwdThYcjQ3UWhtRnRYakU5?=
- =?utf-8?B?U0JGQkEwK0Z3dzlrSWtDQTlIUmNqQUhQNjZCL2RrK2x6cTlmdEFuNU5LK0RW?=
- =?utf-8?B?RUdqaXVvRURSNlNsNU45N1psRWs1NWl0T0loM3k3dCtYdnhOcmRpUytQWE5H?=
- =?utf-8?B?ZlY0aEJrQ3BDWXpRVXlyTHR3VVBaS1VuWkVYZVU2a1IvbHpVQ1BtWFVoZldX?=
- =?utf-8?B?bTdyZkdDSDNLWjdWT0duM29ibm5oVW4vMlVMKzBpS045WENZUk1OSGpGK0tY?=
- =?utf-8?B?SWgzTUdnL092VHFRUkRVQytFeEJ0ZUc5bG54dW9rZzBRYmNwU1FBNmJKdWdw?=
- =?utf-8?B?cVpUWWU4TmxjK3VTeUhpNzNPelhkQldMSDBEeWZkZ3FXUnFnT1VXNFc3R0Jv?=
- =?utf-8?B?UzZPV0VuQTJaZnZGVWFUdFB5UXdiQ01lT3ErN3orbXZaWm5BS0greFhqTk9w?=
- =?utf-8?B?U1AyNTRyNzUyakhNZTZSTlBpWDdUUHRyZnNjeExRb09UWkhUVmRqbkRqaW8x?=
- =?utf-8?B?T1E2Y2JtODdhdWx2alF2eGw2TTFhUEtSeTAzRlg4dm5PdHJsYVE4UXFEdXE5?=
- =?utf-8?B?a1VxZWN3NmNpN04yVlpwZ01kdWkvNHF2MzZEUjZzbEVkTHBFZzFlelc1YnV1?=
- =?utf-8?B?M3VYdXhjd2pPVC9QRGVoNEJBbytwMXNJemJ6ZWR2bGVFb0VTVHJUa1lKOEpN?=
- =?utf-8?B?YjY3YkhjUzUzSHQ5M3Rya1ZFRGtyWThzOUpBUTA4Z1NoQWNHVXJJT0JGUU9i?=
- =?utf-8?B?SjFLZnlvQThnYWxlbGtzYkJXMVJmR2tZZ1p5M3VOdzdjQkN6aCs1cUNGNkhq?=
- =?utf-8?B?WW1tYXRKUSs4OHpmZlgydlg0NVdUM2Q3dlZsaTlVcnBCZU1RbUFwaUJSRDA4?=
- =?utf-8?B?NkRvOFAzTzJ6TWNBbS94YU82YjM2VkRtMklubXdrT0IvNUQ3bWRyTkdhM1J4?=
- =?utf-8?B?M0V1U1d5UWJnc3IzdEk0Y0tuNHpHZDQ1Q0J4bzF1azdtR3UwbFNuYWFWNzlw?=
- =?utf-8?B?ZU4rUzY2ZUUrc1ZIZXMwMTVOS2w2WTRCbTU1Vi9naUNkbm1uSlhseUlrQUtR?=
- =?utf-8?B?NWc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2795d4f5-0c62-4d91-032e-08da69a2050f
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SE1CUWswRG9CMnlHbGJoWnNWMjVRT3FOeTAyN1FCRHg1b2NYd0dLRndESlJ5?=
+ =?utf-8?B?RTMzU1VhYmp6b0ZBUDlKRTlGZXcwdVBHM2FubElsSEZhYTNJNnc5L2k3MTJ6?=
+ =?utf-8?B?WUgxbXFpTVlOd2MwRWtueEdZbmVNdTIySld6dXY1OVNkKzdvWGFsMGgwS3gv?=
+ =?utf-8?B?UTJjZTJwNHdURFVCWVZSd21WRmd6aDlmWnFGVSs0aEtRbmpITW91VWNWaXpG?=
+ =?utf-8?B?NUFOMDM0QzJldUUwaUFqcE5rNFlnZ2ZyekZXWTE4RTNYQ3lRMHMyek5UQXds?=
+ =?utf-8?B?eVV6RThOV24xYU03U1lyYmRlY2ZjSlhtYklJMmhzMWtvdThpdzBkZW9XQnVJ?=
+ =?utf-8?B?MUdQZnd6YXVEOVpjRVVVMU5GcGptMllJZmNMWVh0bVJDRXRndk9DNWNrTU5T?=
+ =?utf-8?B?RWhDampmdUNNT0dPS0NiWElsRUdzTzU2NVJyUFdLZk4ySm1BMG5YcDV4UzB0?=
+ =?utf-8?B?QnZaTk9VNXhsYVREdk1OK2UwK1BWek5xTlFyemt1dnZMME9aejA1aVM3WVhQ?=
+ =?utf-8?B?KytXUWJaZS9VM0VXejdLTkdBY3JnOER6dUV1U1pWV1IwUHhudUk1aXhqdnBJ?=
+ =?utf-8?B?ZzA5MGJKc05VWk5mWnV3QWN5aTlxZmF4a2hLbWFIY3RheXZZWmVjNGczUVdV?=
+ =?utf-8?B?OVZ2K0YvMEFxZy9FN1B0SW5Na1ZHZDdHbUVxT0RmRWwxQy9IRnNGcTgwdFl3?=
+ =?utf-8?B?SlJEK0plQmMrTlppWVNQZlRNdDhhWEdiYk9malVLKzN2UDBEbVVxMW56RzBL?=
+ =?utf-8?B?YnNjTGRIeHFkQ3g3K2w0NmgvOXJoaWNrSnViVjJHQXBDSlY0dTQ1bG5JSllm?=
+ =?utf-8?B?c3E3VnRyODIxbkF1ZjJGUG9qSUlDK2FiM0lUY0dGK2tYR2hIUHJqS0MydEpD?=
+ =?utf-8?B?dGFSdytOY1RVSzZBYUNvNEx3WktqOUR0enVRTVU5T1hDY1ZneFA3cDJaQTlv?=
+ =?utf-8?B?MGJWaE50eUhDbWNuTHlkMU9ucDVKMi9oQllyLzEvTlpLejlsUWcxRWloOUhS?=
+ =?utf-8?B?S2lXcTRDZk90Q2gwdDJBRTZHYXpNRWhtcjJYM0hWaHJDRGpkc3R2NmtxVy9X?=
+ =?utf-8?B?c2IrRXdYTDlqYUw4TWp5REo2UkROVUU1aWtuY1FwcGZKbFdGNUlac1Y0VXRB?=
+ =?utf-8?B?MWFGd3ZjWGczR081clg2a3VRZ1pUTjk2MGJ5cXV3Zkd4dW1JbElGOVprMnVt?=
+ =?utf-8?B?Y0lsS0ltenhaUFJibWlWVXk5OEVBZHQ1bzVyamdVWXpMcXI5OTR0T2ZuM1RX?=
+ =?utf-8?B?STdxZ2grR0FYVHJWK2lzOE51NEtNWWt2ZVBkZ0FnQ0w0UWRHM0hkRE91U2RI?=
+ =?utf-8?B?dDBFRER4ZjVCVm9DWWg1VUgyVklKMXJNZUJuM05Leno1aVhtcis3cElYR3Nt?=
+ =?utf-8?B?NGhadXdodlFiWDV3blpxT0ZOT2Y0RVpxYlpTUWVZYkNlY2VqSmZCbFRTQzJu?=
+ =?utf-8?B?TDhYRGxMdEh6QUhlOGtJdEU4a2kxTjVMTmh1RkJtaURTRkJEK2ZLN3QyWUtv?=
+ =?utf-8?B?amNHTlBQd1g5c3JkeVFKN3dlUUt6b3RJM3FCRlNyM3hNcS9VYTBxRm9jVGN6?=
+ =?utf-8?B?Y2prbklYbmJUV3JLMlE0VExYb0VhTk1VbzI4STA2clp5bzczY3h0VnpGaUl4?=
+ =?utf-8?B?SjZOL0NIZFdMa3FDWEF4U3ZFTmNEcWlWMm5HdC9Fa2x2RDZZWlpERUQ4RWJV?=
+ =?utf-8?B?NlpNdFZPc3Y3OFRDMzNJWDZDYnVoQ3lYT09PNGxISmw2Qk8rMkhENjhpYldh?=
+ =?utf-8?B?MlVhcVZ2ditYcnE0OGw1TmlIWXZEZ0R4RW5jQ042bmk5WndrOVlCNWFMWEJC?=
+ =?utf-8?B?ekoyd3pHdFRyU1NoUm55Rkx3Y0NoaThZNk5sM1hFdys4L0dnb3hnR1BwZGdQ?=
+ =?utf-8?B?RnJtOHZweE92K0pJTWM2dWhsQW1sUTdTU1QrL2c0R011QU4zZ1VRWGxGdDQr?=
+ =?utf-8?B?bzlqTks0cG5nNHV1TE55enE0MSt0K3JzU1NwVFhkR2NOWU81SC9za1AzVDRl?=
+ =?utf-8?B?Q3gvcG9BeEpRMTJnZUlCaW1YMEpDa0xZMHM1TmZnQ1hoWTZ0SHZHd3ViSXUr?=
+ =?utf-8?B?ZGRjVGhBcXhYeGZ0REZ1WWdnT0R0SDAybllDNmlSbWZpc0NEQ0EzM2dDc2Q2?=
+ =?utf-8?B?ZWhsbE9NVmhpSmlUR29oblV4dkJiWklKK3pST2tDN3d2cEgzM3dIS3BnQTR2?=
+ =?utf-8?B?dmc9PQ==?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7006f29b-7a7b-4c2f-33d7-08da69a2356c
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:16:21.9022
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:17:43.1685
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rzj9gOHKrnrqAechITgISzojRpe2/yh83227GVju/455kxb8XwgRIgArQmXK2ouXJHWyLPnS2v6VInF2itOAyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0301MB2522
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: M8Y+wib+U3XTOC23DEs0CbT/Pb5ioWXugZY6NSTVs9oKvjnqWu4zd5vXaLnk25RQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB3156
+X-Proofpoint-GUID: lXGFH_8JvF2aAjiMM-871-bj9adhnJn8
+X-Proofpoint-ORIG-GUID: lXGFH_8JvF2aAjiMM-871-bj9adhnJn8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-19_04,2022-07-19_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -142,85 +166,238 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/19/22 12:01 PM, Vladimir Oltean wrote:
-> On Mon, Jul 11, 2022 at 12:05:14PM -0400, Sean Anderson wrote:
->> This converts the lynx PCS driver to a proper MDIO driver. This allows
->> using a more conventional driver lifecycle (e.g. with a probe and
->> remove). For compatibility with existing device trees lacking a
->> compatible property, we bind the driver in lynx_pcs_create. This is
->> intended only as a transitional method. After compatible properties are
->> added to all existing device trees (and a reasonable amount of time has
->> passed), then lynx_pcs_create can be removed, and users can be converted
->> to pcs_get_fwnode.
->> 
->> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
->> ---
+On 7/18/22 12:34 PM, Yosry Ahmed wrote:
+> On Mon, Jul 11, 2022 at 8:55 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>>
+>> On Sun, Jul 10, 2022 at 5:51 PM Yonghong Song <yhs@fb.com> wrote:
+>>>
+>>>
+>>>
+>>> On 7/10/22 5:26 PM, Yonghong Song wrote:
+>>>>
+>>>>
+>>>> On 7/8/22 5:04 PM, Yosry Ahmed wrote:
+>>>>> Add a selftest that tests the whole workflow for collecting,
+>>>>> aggregating (flushing), and displaying cgroup hierarchical stats.
+>>>>>
+>>>>> TL;DR:
+>>>>> - Userspace program creates a cgroup hierarchy and induces memcg reclaim
+>>>>>     in parts of it.
+>>>>> - Whenever reclaim happens, vmscan_start and vmscan_end update
+>>>>>     per-cgroup percpu readings, and tell rstat which (cgroup, cpu) pairs
+>>>>>     have updates.
+>>>>> - When userspace tries to read the stats, vmscan_dump calls rstat to
+>>>>> flush
+>>>>>     the stats, and outputs the stats in text format to userspace (similar
+>>>>>     to cgroupfs stats).
+>>>>> - rstat calls vmscan_flush once for every (cgroup, cpu) pair that has
+>>>>>     updates, vmscan_flush aggregates cpu readings and propagates updates
+>>>>>     to parents.
+>>>>> - Userspace program makes sure the stats are aggregated and read
+>>>>>     correctly.
+>>>>>
+>>>>> Detailed explanation:
+>>>>> - The test loads tracing bpf programs, vmscan_start and vmscan_end, to
+>>>>>     measure the latency of cgroup reclaim. Per-cgroup readings are
+>>>>> stored in
+>>>>>     percpu maps for efficiency. When a cgroup reading is updated on a cpu,
+>>>>>     cgroup_rstat_updated(cgroup, cpu) is called to add the cgroup to the
+>>>>>     rstat updated tree on that cpu.
+>>>>>
+>>>>> - A cgroup_iter program, vmscan_dump, is loaded and pinned to a file, for
+>>>>>     each cgroup. Reading this file invokes the program, which calls
+>>>>>     cgroup_rstat_flush(cgroup) to ask rstat to propagate the updates
+>>>>> for all
+>>>>>     cpus and cgroups that have updates in this cgroup's subtree.
+>>>>> Afterwards,
+>>>>>     the stats are exposed to the user. vmscan_dump returns 1 to terminate
+>>>>>     iteration early, so that we only expose stats for one cgroup per read.
+>>>>>
+>>>>> - An ftrace program, vmscan_flush, is also loaded and attached to
+>>>>>     bpf_rstat_flush. When rstat flushing is ongoing, vmscan_flush is
+>>>>> invoked
+>>>>>     once for each (cgroup, cpu) pair that has updates. cgroups are popped
+>>>>>     from the rstat tree in a bottom-up fashion, so calls will always be
+>>>>>     made for cgroups that have updates before their parents. The program
+>>>>>     aggregates percpu readings to a total per-cgroup reading, and also
+>>>>>     propagates them to the parent cgroup. After rstat flushing is over,
+>>>>> all
+>>>>>     cgroups will have correct updated hierarchical readings (including all
+>>>>>     cpus and all their descendants).
+>>>>>
+>>>>> - Finally, the test creates a cgroup hierarchy and induces memcg reclaim
+>>>>>     in parts of it, and makes sure that the stats collection, aggregation,
+>>>>>     and reading workflow works as expected.
+>>>>>
+>>>>> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+>>>>> ---
+>>>>>    .../prog_tests/cgroup_hierarchical_stats.c    | 362 ++++++++++++++++++
+>>>>>    .../bpf/progs/cgroup_hierarchical_stats.c     | 235 ++++++++++++
+>>>>>    2 files changed, 597 insertions(+)
+>>>>>    create mode 100644
+>>>>> tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+>>>>>    create mode 100644
+>>>>> tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
+>>>>>
+>>>> [...]
+>>>>> +
+>>>>> +static unsigned long long get_cgroup_vmscan_delay(unsigned long long
+>>>>> cgroup_id,
+>>>>> +                          const char *file_name)
+>>>>> +{
+>>>>> +    char buf[128], path[128];
+>>>>> +    unsigned long long vmscan = 0, id = 0;
+>>>>> +    int err;
+>>>>> +
+>>>>> +    /* For every cgroup, read the file generated by cgroup_iter */
+>>>>> +    snprintf(path, 128, "%s%s", BPFFS_VMSCAN, file_name);
+>>>>> +    err = read_from_file(path, buf, 128);
+>>>>> +    if (!ASSERT_OK(err, "read cgroup_iter"))
+>>>>> +        return 0;
+>>>>> +
+>>>>> +    /* Check the output file formatting */
+>>>>> +    ASSERT_EQ(sscanf(buf, "cg_id: %llu, total_vmscan_delay: %llu\n",
+>>>>> +             &id, &vmscan), 2, "output format");
+>>>>> +
+>>>>> +    /* Check that the cgroup_id is displayed correctly */
+>>>>> +    ASSERT_EQ(id, cgroup_id, "cgroup_id");
+>>>>> +    /* Check that the vmscan reading is non-zero */
+>>>>> +    ASSERT_GT(vmscan, 0, "vmscan_reading");
+>>>>> +    return vmscan;
+>>>>> +}
+>>>>> +
+>>>>> +static void check_vmscan_stats(void)
+>>>>> +{
+>>>>> +    int i;
+>>>>> +    unsigned long long vmscan_readings[N_CGROUPS], vmscan_root;
+>>>>> +
+>>>>> +    for (i = 0; i < N_CGROUPS; i++)
+>>>>> +        vmscan_readings[i] = get_cgroup_vmscan_delay(cgroups[i].id,
+>>>>> +                                 cgroups[i].name);
+>>>>> +
+>>>>> +    /* Read stats for root too */
+>>>>> +    vmscan_root = get_cgroup_vmscan_delay(CG_ROOT_ID, CG_ROOT_NAME);
+>>>>> +
+>>>>> +    /* Check that child1 == child1_1 + child1_2 */
+>>>>> +    ASSERT_EQ(vmscan_readings[1], vmscan_readings[3] +
+>>>>> vmscan_readings[4],
+>>>>> +          "child1_vmscan");
+>>>>> +    /* Check that child2 == child2_1 + child2_2 */
+>>>>> +    ASSERT_EQ(vmscan_readings[2], vmscan_readings[5] +
+>>>>> vmscan_readings[6],
+>>>>> +          "child2_vmscan");
+>>>>> +    /* Check that test == child1 + child2 */
+>>>>> +    ASSERT_EQ(vmscan_readings[0], vmscan_readings[1] +
+>>>>> vmscan_readings[2],
+>>>>> +          "test_vmscan");
+>>>>> +    /* Check that root >= test */
+>>>>> +    ASSERT_GE(vmscan_root, vmscan_readings[1], "root_vmscan");
+>>>>
+>>>> I still get a test failure with
+>>>>
+>>>> get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
+>>>> get_cgroup_vmscan_delay:FAIL:vmscan_reading unexpected vmscan_reading:
+>>>> actual 0 <= expected 0
+>>>> check_vmscan_stats:FAIL:child1_vmscan unexpected child1_vmscan: actual 0
+>>>> != expected -2
+>>>> check_vmscan_stats:FAIL:child2_vmscan unexpected child2_vmscan: actual 0
+>>>> != expected -2
+>>>> check_vmscan_stats:PASS:test_vmscan 0 nsec
+>>>> check_vmscan_stats:PASS:root_vmscan 0 nsec
+>>>>
+>>>> I added 'dump_stack()' in function try_to_free_mem_cgroup_pages()
+>>>> and run this test (#33) and didn't get any stacktrace.
+>>>> But I do get stacktraces due to other operations like
+>>>>           try_to_free_mem_cgroup_pages+0x1fd [kernel]
+>>>>           try_to_free_mem_cgroup_pages+0x1fd [kernel]
+>>>>           memory_reclaim_write+0x88 [kernel]
+>>>>           cgroup_file_write+0x88 [kernel]
+>>>>           kernfs_fop_write_iter+0xd0 [kernel]
+>>>>           vfs_write+0x2c4 [kernel]
+>>>>           __x64_sys_write+0x60 [kernel]
+>>>>           do_syscall_64+0x2d [kernel]
+>>>>           entry_SYSCALL_64_after_hwframe+0x44 [kernel]
+>>>>
+>>>> If you can show me the stacktrace about how
+>>>> try_to_free_mem_cgroup_pages() is triggered in your setup, I can
+>>>> help debug this problem in my environment.
+>>>
+>>> BTW, CI also reported the test failure.
+>>> https://github.com/kernel-patches/bpf/pull/3284
+>>>
+>>> For example, with gcc built kernel,
+>>> https://github.com/kernel-patches/bpf/runs/7272407890?check_suite_focus=true
+>>>
+>>> The error:
+>>>
+>>>     get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
+>>>     get_cgroup_vmscan_delay:PASS:vmscan_reading 0 nsec
+>>>     check_vmscan_stats:FAIL:child1_vmscan unexpected child1_vmscan:
+>>> actual 28390910 != expected 28390909
+>>>     check_vmscan_stats:FAIL:child2_vmscan unexpected child2_vmscan:
+>>> actual 0 != expected -2
+>>>     check_vmscan_stats:PASS:test_vmscan 0 nsec
+>>>     check_vmscan_stats:PASS:root_vmscan 0 nsec
+>>>
+>>
+>> Hey Yonghong,
+>>
+>> Thanks for helping us debug this failure. I can reproduce the CI
+>> failure in my enviornment, but this failure is actually different from
+>> the failure in your environment. In your environment it looks like no
+>> stats are gathered for all cgroups (either no reclaim happening or bpf
+>> progs not being run). In the CI and in my environment, only one cgroup
+>> observes this behavior.
+>>
+>> The thing is, I was able to reproduce the problem only when I ran all
+>> test_progs. When I run the selftest alone (test_progs -t
+>> cgroup_hierarchical_stats), it consistently passes, which is
+>> interesting.
 > 
-> I'm compiling and testing patch by patch now. Here's how things go on
-> LS1028A at this stage:
+> I think I figured this one out (the CI failure). I set max_entries for
+> the maps in the test to 10, because I have 1 entry per-cgroup, and I
+> have less than 10 cgroups. When I run the test with other tests I
+> *think* there are other cgroups that are being created, so the number
+> exceeds 10, and some of the entries for the test cgroups cannot be
+> created. I saw a lot of "failed to create entry for cgroup.." message
+> in the bpf trace produced by my test, and the error turned out to be
+> -E2BIG. I increased max_entries to 100 and it seems to be consistently
+> passing when run with all the other tests, using both test_progs and
+> test_progs-no_alu32.
 > 
-> [    6.317357] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000110
-> [    6.326219] Mem abort info:
-> [    6.329027]   ESR = 0x0000000096000004
-> [    6.332815]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [    6.338182]   SET = 0, FnV = 0
-> [    6.341252]   EA = 0, S1PTW = 0
-> [    6.344436]   FSC = 0x04: level 0 translation fault
-> [    6.349378] Data abort info:
-> [    6.352273]   ISV = 0, ISS = 0x00000004
-> [    6.356154]   CM = 0, WnR = 0
-> [    6.359164] [0000000000000110] user address but active_mm is swapper
-> [    6.365629] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [    6.371221] Modules linked in:
-> [    6.374284] CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.19.0-rc6-07010-ga9b9500ffaac-dirty #3317
-> [    6.383364] Hardware name: LS1028A RDB Board (DT)
-> [    6.388081] Workqueue: events_unbound deferred_probe_work_func
-> [    6.393939] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [    6.400926] pc : __driver_probe_device+0x1c/0x150
-> [    6.405646] lr : device_driver_attach+0x58/0xc0
-> [    6.410190] sp : ffff8000085639c0
-> [    6.413510] x29: ffff8000085639c0 x28: ffffb1a2587dae50 x27: ffff2b6943304bc0
-> [    6.420676] x26: ffff2b694330c000 x25: ffff2b69433010a0 x24: ffff2b69bf719898
-> [    6.427840] x23: ffff2b6941074000 x22: ffff2b6943304000 x21: ffff2b6943301880
-> [    6.435004] x20: ffff2b6943301800 x19: ffffb1a259faf3d0 x18: ffffffffffffffff
-> [    6.442168] x17: 000000002b64f81b x16: 000000006d50a0b2 x15: ffff2b6943307196
-> [    6.449332] x14: 0000000000000002 x13: ffff2b6943307194 x12: 0000000000000003
-> [    6.456497] x11: ffff2b69433018f0 x10: 0000000000000003 x9 : ffffb1a2578b1e08
-> [    6.463662] x8 : ffff2b6940b36200 x7 : ffffb1a25a0da000 x6 : 000000003225858e
-> [    6.470826] x5 : 0000000000000000 x4 : ffff79c76227a000 x3 : 0000000000000000
-> [    6.477989] x2 : 0000000000000000 x1 : ffff2b6943301800 x0 : ffffb1a259faf3d0
-> [    6.485153] Call trace:
-> [    6.487601]  __driver_probe_device+0x1c/0x150
-> [    6.491971]  device_driver_attach+0x58/0xc0
-> [    6.496167]  lynx_pcs_create+0x30/0x7c
-> [    6.499927]  enetc_pf_probe+0x984/0xeb0
-> [    6.503775]  local_pci_probe+0x4c/0xc0
-> [    6.507536]  pci_device_probe+0xb8/0x210
-> [    6.511470]  really_probe.part.0+0xa4/0x2b0
-> [    6.515665]  __driver_probe_device+0xa0/0x150
-> [    6.520033]  driver_probe_device+0xb4/0x150
-> [    6.524228]  __device_attach_driver+0xc4/0x130
-> [    6.528684]  bus_for_each_drv+0x84/0xe0
-> [    6.532529]  __device_attach+0xb0/0x1d0
-> [    6.536375]  device_initial_probe+0x20/0x2c
-> [    6.540569]  bus_probe_device+0xac/0xb4
-> [    6.544414]  deferred_probe_work_func+0x98/0xd4
-> [    6.548956]  process_one_work+0x294/0x6d0
-> [    6.552979]  worker_thread+0x80/0x460
-> [    6.556651]  kthread+0x124/0x130
-> [    6.559887]  ret_from_fork+0x10/0x20
-> [    6.563475] Code: a9bd7bfd 910003fd a90153f3 f9402422 (39444042)
+> Please find a diff attached fixing this problem and a few other nits:
+> - Return meaningful exit codes from the reclaimer() child process and
+> check them in induce_vmscan().
+> - Make buf and path variables static in get_cgroup_vmscan_delay()
+> - Print error code in bpf trace when we fail to create a bpf map entry.
+> - Print 0 instead of -1 when we can't find a map entry, to avoid
+> underflowing the unsigned counters in the test.
 > 
-> Disassembly of drivers/base/dd.c shows that dev->p is a NULL pointer,
-> and dev->p->dead goes right through it. How did we even get here...
-> device_private_init() should be called by device_add().
-> 
-> Curiously enough, mdio_device_create() only calls device_initialize().
-> It's mdio_device_register() that calls device_add(). So after this
-> patch, we cannot call lynx_pcs_create() without calling
-> mdio_device_register().
+> Let me know if this diff works or not, and if I need to send a new
+> version with the diff or not. Also let me know if this fixes the
+> failures that you have been seeing locally (which looked different
+> from the CI failures).
 
-OK, so presumably we need to call mdio_device_register after mdio_device_create.
-I suppose I should have caught this because patch 5 does exactly this.
+I tried this patch and the test passed in my local environment
+so the diff sounds good to me.
 
---Sean
+> 
+> Thanks!
+> 
+>>
+>> Anyway, one failure at a time :) I am working on debugging the CI
+>> failure (that occurs only when all tests are run), then we'll see if
+>> fixing that fixes the problem in our environment as well.
+>>
+>> If you have any pointers about why a test would consistently pass
+>> alone and consistently fail with others that would be good. Otherwise,
+>> I will keep you updated with any findings I reach.
+>>
+>> Thanks again!
+>>
+>>>>
+>>>>> +}
+>>>>> +
+>>>>> +static int setup_cgroup_iter(struct cgroup_hierarchical_stats *obj,
+>>>>> int cgroup_fd,
+>>>> [...]
