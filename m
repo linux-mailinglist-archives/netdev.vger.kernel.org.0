@@ -2,172 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C7E57952B
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:24:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3589D579532
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236378AbiGSIYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 04:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36574 "EHLO
+        id S236795AbiGSIZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 04:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiGSIYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:24:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158DD2AC72;
-        Tue, 19 Jul 2022 01:24:18 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ez10so25702634ejc.13;
-        Tue, 19 Jul 2022 01:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/SIPwmw47aoCFUJf+ZzbIX6Q4nMBEnXalKToeS/fWng=;
-        b=UPv0gKuMZO+Gc/PXu991fHK9k2kxWWNht/jZ5ygGsGY73ITUi2+nN+o9mACUMtTACu
-         UbX0dQSnd5G8qLAuGNx9A9BLqvWQGdGnl5Qv4mtFODOi09MnJFA142MIVChzyC+NumJX
-         qhjmz0jLDJLyqhnIxkA6XJqn0ulin2oXQo0S8WnKRilMMFRpAEREQuJScvn6foFRh8WJ
-         ZXJa/GElPhpE+YGTQVD9LgMt1IRutsuZonh+kdwM8DNJIG+nyVNcX5tUSqpEtINfCU5j
-         xFAZxZrZEh5pY9dVCpK4nA8M2xVJWMhb2r0HrgplO2oHxYUhIsiJFmzWKMX5OOjUXeiY
-         PtxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/SIPwmw47aoCFUJf+ZzbIX6Q4nMBEnXalKToeS/fWng=;
-        b=BHzn0AHLkfapP1+cb+49nuFjvU5bIZ54xR0yy5NylKF6J0y/vnfwsjOQ5Dee1CYcKt
-         fLEDKwfJeTlHtN5a4L1mAYVlPCWiyFTMspcYq6kyUzI16/oio99XSOvHAEXBNikyelvs
-         NQZSWP1TGKzGb3Pwj4jwUDvA4UMtssGWpY+EhM9eyDX8eNSiwv6ufBQNa2uxDYPC2aWc
-         flINWIA+EpKP6mHgVjoDEKBAAlXZW/j1OxURZidDknifdxzFZoVh7HnYuVtIf91010iV
-         1rPXlPL+rItA3buaevLYznqEfCq5MrDzcaz8PXxA8+9XspXN0tw+dBINd6xNpDf5Lg3O
-         pBeg==
-X-Gm-Message-State: AJIora89u3o0UPC+DHqREgl8uMBxUXz+ZkwBJSQaEl5tmZTBeOG3VxJT
-        VSCrUSAljX8Z7dmYCzYyt+4=
-X-Google-Smtp-Source: AGRyM1vhnau/Abv5mHDURRwuOnzF3g/SXIcnCCtgO2pBc//7jZW25ou2vaLo5quzRXcgrSPmONnJUg==
-X-Received: by 2002:a17:906:cc45:b0:72b:313b:f3ee with SMTP id mm5-20020a170906cc4500b0072b313bf3eemr28477978ejb.362.1658219056611;
-        Tue, 19 Jul 2022 01:24:16 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id r18-20020a17090609d200b006feed200464sm6351476eje.131.2022.07.19.01.24.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 01:24:15 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Tue, 19 Jul 2022 10:24:12 +0200
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Martynas Pumputis <m@lambda.lt>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH RFC bpf-next 4/4] selftests/bpf: Fix kprobe get_func_ip
- tests for CONFIG_X86_KERNEL_IBT
-Message-ID: <YtZqLDeUAjPHtJ+e@krava>
-References: <20220705190308.1063813-1-jolsa@kernel.org>
- <20220705190308.1063813-5-jolsa@kernel.org>
- <CAEf4BzapX_C16O9woDSXOpbzVsxjYudXW36woRCqU3u75uYiFA@mail.gmail.com>
- <YsdbQ4vJheLWOa0a@krava>
- <YtSCbIA+6JtRF/Ch@krava>
- <f6b5dc36-3dbb-433d-01d2-aad8959d0546@lambda.lt>
- <YtVWruugC9LHtah2@krava>
+        with ESMTP id S231645AbiGSIZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:25:54 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A86865A2;
+        Tue, 19 Jul 2022 01:25:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658219153; x=1689755153;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CAAeOGWYGAB27VN2UmCW2WgUwGTXzndU5ncbrTlDjyU=;
+  b=P390k6f2/Jctxs+/YX9s4OIBHd7zhPSt53DKL5AKfXdmQDqFFGsGE2FZ
+   txq6AQHeczVVKmhC3u5eb1LajVR45XGBpr67IrpSknSiAWyYHnu/3F6yt
+   oeOp+zRMoT1YlgRzGeW2nz21tzIqg5248/oieSbaiXCXR12e+AgVAiEKf
+   lBNCJ0sZqr8TfLjnBuMF8I+uG4BktZa4jHw9Rit5lyrcT1XUJ4uuGCqQX
+   OolbDAHyQjjqTsiJHDChRf+UMOMjH3DfURkN382W0fteflfKDDeGwhPgs
+   1bgsGqJ/rpM7dvuwRV/rJuujp+ZrQH3/xmnfVwXlKmV1w29TeVts5l3ej
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="348122972"
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="348122972"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 01:25:53 -0700
+X-IronPort-AV: E=Sophos;i="5.92,283,1650956400"; 
+   d="scan'208";a="924685104"
+Received: from zhenzhu-mobl1.ccr.corp.intel.com (HELO jiezho4x-mobl1.ccr.corp.intel.com) ([10.255.31.69])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2022 01:25:47 -0700
+From:   Jie2x Zhou <jie2x.zhou@intel.com>
+To:     jie2x.zhou@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        shuah@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philip Li <philip.li@intel.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] tools/testing/selftests/bpf/test_xdp_veth.sh: fix Couldn't retrieve pinned program
+Date:   Tue, 19 Jul 2022 16:24:30 +0800
+Message-Id: <20220719082430.9916-1-jie2x.zhou@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtVWruugC9LHtah2@krava>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 02:48:46PM +0200, Jiri Olsa wrote:
-> On Mon, Jul 18, 2022 at 02:09:54PM +0300, Martynas Pumputis wrote:
-> > 
-> > 
-> > On 7/18/22 00:43, Jiri Olsa wrote:
-> > > On Fri, Jul 08, 2022 at 12:16:35AM +0200, Jiri Olsa wrote:
-> > > > On Tue, Jul 05, 2022 at 10:29:17PM -0700, Andrii Nakryiko wrote:
-> > > > > On Tue, Jul 5, 2022 at 12:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > > > > 
-> > > > > > The kprobe can be placed anywhere and user must be aware
-> > > > > > of the underlying instructions. Therefore fixing just
-> > > > > > the bpf program to 'fix' the address to match the actual
-> > > > > > function address when CONFIG_X86_KERNEL_IBT is enabled.
-> > > > > > 
-> > > > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > > > > ---
-> > > > > >   tools/testing/selftests/bpf/progs/get_func_ip_test.c | 7 +++++--
-> > > > > >   1 file changed, 5 insertions(+), 2 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > > index a587aeca5ae0..220d56b7c1dc 100644
-> > > > > > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > > > > > @@ -2,6 +2,7 @@
-> > > > > >   #include <linux/bpf.h>
-> > > > > >   #include <bpf/bpf_helpers.h>
-> > > > > >   #include <bpf/bpf_tracing.h>
-> > > > > > +#include <stdbool.h>
-> > > > > > 
-> > > > > >   char _license[] SEC("license") = "GPL";
-> > > > > > 
-> > > > > > @@ -13,6 +14,8 @@ extern const void bpf_modify_return_test __ksym;
-> > > > > >   extern const void bpf_fentry_test6 __ksym;
-> > > > > >   extern const void bpf_fentry_test7 __ksym;
-> > > > > > 
-> > > > > > +extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
-> > > > > > +
-> > > > > >   __u64 test1_result = 0;
-> > > > > >   SEC("fentry/bpf_fentry_test1")
-> > > > > >   int BPF_PROG(test1, int a)
-> > > > > > @@ -37,7 +40,7 @@ __u64 test3_result = 0;
-> > > > > >   SEC("kprobe/bpf_fentry_test3")
-> > > > > >   int test3(struct pt_regs *ctx)
-> > > > > >   {
-> > > > > > -       __u64 addr = bpf_get_func_ip(ctx);
-> > > > > > +       __u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
-> > > > > 
-> > > > > so for kprobe bpf_get_func_ip() gets an address with 5 byte
-> > > > > compensation for `call __fentry__`, but not for endr? Why can't we
-> > > > > compensate for endbr inside the kernel code as well? I'd imagine we
-> > > > > either do no compensation (and thus we get &bpf_fentry_test3+5 or
-> > > > > &bpf_fentry_test3+9, depending on CONFIG_X86_KERNEL_IBT) or full
-> > > > > compensation (and thus always get &bpf_fentry_test3), but this
-> > > > > in-between solution seems to be the worst of both worlds?...
-> > > > 
-> > > > hm rigth, I guess we should be able to do that in bpf_get_func_ip,
-> > > > I'll check
-> > > 
-> > > sorry for late follow up..
-> > > 
-> > > so the problem is that you can place kprobe anywhere in the function
-> > > (on instruction boundary) but the IBT adjustment of kprobe address is
-> > > made only if it's at the function entry and there's endbr instruction
-> > 
-> > To add more fun to the issue, not all non-inlined functions get endbr64. For
-> > example "skb_release_head_state()" does, while "skb_free_head()" doesn't.
-> 
-> ah great.. thanks for info, will check
+Before change:
+ selftests: bpf: test_xdp_veth.sh
+ Couldn't retrieve pinned program '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+ selftests: xdp_veth [SKIP]
+ok 20 selftests: bpf: test_xdp_veth.sh # SKIP
 
-I checked with Peter and yes the endbr does not need to be there
+After change:
+PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
+64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.320 ms--- 10.1.1.33 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.320/0.320/0.320/0.000 ms
+selftests: xdp_veth [PASS]
 
-<peterz> IBT is 'Indirect Branch Tracking' ENDBR needs to be at the target for "JMP *%reg" and "CALL *%reg"
-<peterz> direct call/jmp don't need anything specal
+In test:
+ls /sys/fs/bpf/test_xdp_veth/progs/redirect_map_0
+ls: cannot access '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+ls /sys/fs/bpf/test_xdp_veth/progs/
+xdp_redirect_map_0  xdp_redirect_map_1  xdp_redirect_map_2
 
-so we will need to hold the +4 info somewhere for each address
-and use that in get_func_ip helper or perhaps we could read
-previous instruction and check if the previous instruction is
-endbr with check like:
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+---
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-	if (is_endbr(*(u32 *)(addr - 4)))
-		addr -= 4
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index 392d28cc4e58..49936c4c8567 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -106,9 +106,9 @@ bpftool prog loadall \
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
+-ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
+-ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+-ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
++ip link set dev veth1 xdp pinned $BPF_DIR/progs/xdp_redirect_map_0
++ip link set dev veth2 xdp pinned $BPF_DIR/progs/xdp_redirect_map_1
++ip link set dev veth3 xdp pinned $BPF_DIR/progs/xdp_redirect_map_2
+ 
+ ip -n ${NS1} link set dev veth11 xdp obj xdp_dummy.o sec xdp
+ ip -n ${NS2} link set dev veth22 xdp obj xdp_tx.o sec xdp
+-- 
+2.36.1
 
-jirka
