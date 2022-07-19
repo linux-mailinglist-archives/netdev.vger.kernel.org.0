@@ -2,300 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBE457A3A9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B7C57A3BD
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239375AbiGSPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 11:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51620 "EHLO
+        id S239527AbiGSPzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 11:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239358AbiGSPuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:50:17 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BBA1CFE6
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:50:11 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id n138so10891055iod.4
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:50:11 -0700 (PDT)
+        with ESMTP id S239504AbiGSPy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:54:58 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3525A44A;
+        Tue, 19 Jul 2022 08:54:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658246096; x=1689782096;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=6eLyP9I/0GoSvXoz6qqCUDwdv/tpUo3w5AIXRPYlzyE=;
+  b=K2ln4lCVw1GqdKhrY0UmV0iTu5VuBOeVBkqcjTnm9VkU0Ec73an4vkZm
+   AGEkM20MQz2wJA5beODi6W1PxuKWLhgKum5raIe8e+e48/iCTZRkjCAdv
+   ppVgxPs187vB5/RqpXVYGYiDPTlfqlVBgXqEjeIEvhYkuGUWOtKTGT92A
+   FOhjT1poHvzSeLq3MHffGKHQcDN0iXUY6FVASaZXw9yEXX0182nM7Rd1u
+   IXHRsZ4ZdCLd8//nyZ6UukNg3PeSRkfaEOc1fb22dT9MMMrmXWqzp/t0P
+   8VhmWJq9UkPmW5YinYx57URyXM83yoqqVRl8OLNfY8EgnGCAVAWI9hiYd
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,284,1650956400"; 
+   d="scan'208";a="182843353"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jul 2022 08:54:54 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 19 Jul 2022 08:54:49 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Tue, 19 Jul 2022 08:54:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X/qAOecSF0qpDUW14HDnz0NWTqWZzD67vV0dS77GIEg6uKotVmukB5xz9LGpJoFEiKU2PUd/9ZDeZu+Ii8MtzlxiGQikWd8ZP3h/QrfpG+e3nxtBnXGC9S/XLB+6TD2736xpoY0lG/w6nhSlfFTuGjhwnkxV3l/y0DsR+NQwKeqY9oYuk/7hakhL/j9gRP/+j6dGDqKij9Q9jhJK97lmECnENu4/sNfW60Ca8uwWo2HFK7JuDuPpEc/795BZeSrQY9xqp9rr+pV9lbYqdKGc34ljaVIivshOPrSR3Eq4QFTWjKIGR4H+4tBz+usIVB/sCfIT+MKL98CmYT3AJ7A0qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6eLyP9I/0GoSvXoz6qqCUDwdv/tpUo3w5AIXRPYlzyE=;
+ b=H2jcVU65ckUxogDWK6byTZaGRxjTUwPkfjk+Joeb2f8CuOc0GaE0QZHx1WtTQ625HVTrbzVlpzg/UVMxcNR1kyaAdZYxnZExl1emBbLyuiD1E8jA//aWeMI7Egy8ZW6CkmlzXZ2m9nV3DxYAJMLn1Dw1NGPHK/KYhik4hVoHTps7vLm8Paqr+zMiLjaDPH1k9vcJhJY++JYJgW0iJ4R1VoYGiW/mP6U7qNhKpKsRJCtDLN1c+QOGd1kiGz7mRdaEVQlnYlxbgTQllpnAkvFGvICzW1GCTatJEBZndACHMB5h8wW29o1/AR4IS8cqAPIJflOzgJ7Z0OH3pITlK3g8Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a5wNjIEcOp/KS8l2AXD7eBUaUvKBjHJrJEs+OiuGU30=;
-        b=JbMwpb3+lkpF1+cK06G+at7EwuWPbFViWV5LKH7trDd24T9LaKUsIde10KrwWcdZXE
-         uSAQslRUfSEQ0J/dixVjAiXVMP1UDG9uGw0xAX9014xTp02j44Fp/LA5vCA+ytA2nL63
-         GZ3ApV/W28WUMgW0R2eCPoNqhyfkcEz/7UtfdNnb9wWACymgGX4NDXXXfIFcVtvww6K6
-         2MMOrlHjQkvM0dIiwnMc6k2QLFPNSMnHqfFbcAerHXaThIQE487o4dTV1zBJbtZvdjSF
-         dV/DPHNmOX31jlkYTJjIyAd901m75QgTi7By5tLV1cDUEkuTY/aV4Cs9QO/YSJA/WwqW
-         sl0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a5wNjIEcOp/KS8l2AXD7eBUaUvKBjHJrJEs+OiuGU30=;
-        b=eIBuXWcgJ7RkW23AmeScO76Kyg6uvA3GUq5SDahDSLLnShbgc92/HZV3chfTyOJVN7
-         wHyNa98zz2i/q37RwzJLxS8UdRHhA+Fa6U718JqFrhzlPK0EmWJipQWCwLcIAMUQG05d
-         Rqed1Jdr2J77AU9otRH1e9HoYBvaLwvC+Kp5S3SnZWc+vq6KMIcFWhh1RhhMRLwcU2b+
-         yb0vUg6AbQjCDqeDuBWbv1kTaE8MX5yDQXajYCCLw/HT/yu2d+BpIcaX6gtkRCbSFe9x
-         kPQTywhy2qyL7NQzXD3EvsadJ0xv51IqsX3XMwXU22Syl8Elq6bs7ZEAKmtxHZXqASsH
-         lDog==
-X-Gm-Message-State: AJIora+9f1qSB1/94s4TQMuCaq3nmUo6PT4IFmIKTyHjTa2u96uH9J7o
-        Q+VzXXTAox/v/22tjz6XsDDpCA==
-X-Google-Smtp-Source: AGRyM1u4pnCt7wOuImhBZ742yWWQv5dMDCVZZSAf1RDs/pn0Ee8dlehRipudG33RXXgwFNksskcQwg==
-X-Received: by 2002:a02:9711:0:b0:341:4359:2576 with SMTP id x17-20020a029711000000b0034143592576mr13465790jai.112.1658245810491;
-        Tue, 19 Jul 2022 08:50:10 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id o4-20020a02a1c4000000b0033f2f249a69sm6802751jah.129.2022.07.19.08.50.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 08:50:10 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] net: ipa: add an endpoint device attribute group
-Date:   Tue, 19 Jul 2022 10:50:06 -0500
-Message-Id: <20220719155006.312381-1-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6eLyP9I/0GoSvXoz6qqCUDwdv/tpUo3w5AIXRPYlzyE=;
+ b=AvAKsIhN7AgGSKj3t3xmD2rztNSoLVnjJ8x90FqkX8mMlqaLUKQEeyyjnU1rgn4YRprh59JA9aOHKuLOVXnrCQbmk971TJ0VkttNWwqV1s3fhYbwg/V0W8i8etRV15v4xYBHIzYh9q8kch38cav64Gu77m2LSpALIMtBliXxgcg=
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
+ CY4PR1101MB2229.namprd11.prod.outlook.com (2603:10b6:910:19::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Tue, 19 Jul
+ 2022 15:54:45 +0000
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::a4d9:eecb:f93e:7df0]) by DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::a4d9:eecb:f93e:7df0%6]) with mapi id 15.20.5438.014; Tue, 19 Jul 2022
+ 15:54:44 +0000
+From:   <Arun.Ramadoss@microchip.com>
+To:     <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <vivien.didelot@gmail.com>,
+        <linux@armlinux.org.uk>, <f.fainelli@gmail.com>, <kuba@kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>,
+        <davem@davemloft.net>
+Subject: Re: [RFC Patch net-next 04/10] net: dsa: microchip: add common duplex
+ and flow control function
+Thread-Topic: [RFC Patch net-next 04/10] net: dsa: microchip: add common
+ duplex and flow control function
+Thread-Index: AQHYlgkT+dmXYxEBNkuGIbGEgD9ph62Fj38GgABUJgA=
+Date:   Tue, 19 Jul 2022 15:54:44 +0000
+Message-ID: <c7b276dd299e66fac8b4dff7315296741335d4af.camel@microchip.com>
+References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
+         <20220712160308.13253-1-arun.ramadoss@microchip.com>
+         <20220712160308.13253-5-arun.ramadoss@microchip.com>
+         <20220712160308.13253-5-arun.ramadoss@microchip.com>
+         <20220719105259.h2pbg4jdjhblbkv5@skbuf>
+In-Reply-To: <20220719105259.h2pbg4jdjhblbkv5@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: be6660ec-190c-4f31-4484-08da699f0023
+x-ms-traffictypediagnostic: CY4PR1101MB2229:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FsGQZVeXhfRxpYMSIlrGgVNdwhX/CfwmOof7ksEwlbaRYuTzJBinHf4v32nuF3Kox4tF1S8KFCmLEOR5/wBKJtNkFs0IhJ9I/LkCU3sHrcrguS6AGTfNEHa+ENgUglfAh8ZnkqdA2sNHDiMCuQSyDMEKBlJaDJZhvLZaVldjVgB9aCLPJ2P+klEnSDVnwuwLtNmjK1Rz6zHvPyuEcfx/Jj5jVgeU5wQdpqfPPf61l+BE5WqhI9RKdIDM0l7kF58L/WNxcLV2yhQAcwPwDHn99fGHSw8UQ5dnqxTL1CB0Wy6dvzYFSEPAwvNi5w+k+b1W1maCYTgUlMDvqtZxHgRce6e2pxePYxppPCzwnnKcycfjQnYCEUz6338PHeGnkNyUmWPiXZAkWyZG+Rg9PsfqcxR5nBBrJCBlVcmmUgyC3rwg12UibZygnRLtD3uTaURe9+9wITQggjT5qZqI9JAuOqGYSUmREijw1/OJuGstQ0ZaFxs2bud08ecmi/B2nXiWxFg8IC1agsoZ2vy8bT1jdVZB+HUaFNyOJJNDh9rLqpaXgF5/gN9l8G3AdISTFwAzKbBHi6j59XAZ83ietIie944QuljCifzLQgxdID20BkmZsc/wZueerO8ScRmyz/OWkxFeNNXsw++TyUvYqOkvvKh7tDGhtg6oToe4scwRQ9snzxJTR/coDGhgDHtyWiolBZOWaJz0QEWBNpyoeKZhROaNWC2DcwXGxepHvllpuWyXABKBo0hu0kxG4eABE9jpBuVJ4bzZXHj7NsZTRa4M0QxfFAT2RPKdJ5pw4BxnCaR+BqqFzMLP22YT34eS6Lq7CcVbwziATJfovuPbRWm+0w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(346002)(376002)(366004)(136003)(396003)(6512007)(38100700002)(86362001)(38070700005)(36756003)(71200400001)(478600001)(2616005)(186003)(6486002)(6506007)(41300700001)(66556008)(6916009)(64756008)(316002)(5660300002)(2906002)(8936002)(66476007)(4326008)(76116006)(66946007)(54906003)(122000001)(7416002)(66446008)(83380400001)(8676002)(91956017)(99106002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WmFobUhES2h2RGRhVGdyN2lZczIwQXdSSGttdFljSnQ5RmFUb2FpcjdVbWZ5?=
+ =?utf-8?B?Y3lyV0M5MTFzaHAvQ1ZrMWJna0NzRDU0bWdLbXBhcHlleFJMTDJucnNmR2pH?=
+ =?utf-8?B?OWtPMWxxeWFUZDBUUmlYdzdIeHJvSkRTU2g4R2VEa0YwWlR1MEYxeDZlSkxX?=
+ =?utf-8?B?bHFTaVIzaEZtK3ZIVjBWQ0hvN05Qazg0b3BmeHNBYjR1L3hBOWR3T3pPbXNt?=
+ =?utf-8?B?SDBGMEZmOWo0cmFBR2dFN2ZZM2hDN0pZaWhJMUwxZTNiWEE5RmM3NU0vbVNX?=
+ =?utf-8?B?ZFZ5LytRcmRvNkFMa1AvNWl1NUJ2c0xiV2VZc2hyQ0Y5blFXK3Yvd3BXVDM5?=
+ =?utf-8?B?dU5NMnJ6akhPdCtXVWFuTDFEWkU4ak9Bcno0aUFZNTZBTmlGK0ZtK2NoRFV0?=
+ =?utf-8?B?bkJxWUlhWXQ1RXRPeTU5MHBsYU4rdlQ1bnlFdFpkb2dOcFF6azdORHdOUUY4?=
+ =?utf-8?B?eHNZRHlJdXFJQ0hyZlNIVVhZNmhQZjVtTmpSUUdGTWo3U0pSVk1SREpWRGVo?=
+ =?utf-8?B?RWtrMEI2aDI5U2VMSzdaUXB6VmhlQnVGYlQrSndZRzFNS0toSmRvcWlzT1VS?=
+ =?utf-8?B?QjFkN1plTURZL3VQK0gxdXFWR1VUV000UzVJNFJ4blVaNTk0M2lsTFRycEYv?=
+ =?utf-8?B?NFhBcHJ6eWRlYTltbnR5VkVhYmd3QTdINVN4MGExemh5RlBVVnpiTnJkZlVM?=
+ =?utf-8?B?UmlJZ0pRdStMSFJPd1ljQVUwZmVvemJ5TDJiOWRja1Rna0lIZTRVcURlazVG?=
+ =?utf-8?B?WVJYcktvb21YZk42MFJWZGNPb2dSWlpLZ01pdEFPVTJFa0trSEgrR3Ruc0xJ?=
+ =?utf-8?B?ZEZPbHZ3TjJpajhVUlQ5WExCS015QlZUNEU2L2Q2S0p0NTdHRkxXL0dQbDFC?=
+ =?utf-8?B?MGl0N0JoQkIyN3M4R0JYWnN5SHVSaXZCUk9FQ3dVeU5Wd1VGTWZyNG1UUXFY?=
+ =?utf-8?B?cGFVNERxbThJTC82VDRDVFMvaVZCbmVNTTNlMFlvSVI4Q2VLYm5jc1pDZVNy?=
+ =?utf-8?B?RVZWNkJGZ0tNZDJwME1xdStiTzBqQXI4b1NCN2pqaldzQXgrTlpyeE1PTE9Q?=
+ =?utf-8?B?enk4QjJkSmdLMWExamNFcXJrRjFPMlJVZW9aWGVMSFVOa2NMQ2JDNVZwYXY2?=
+ =?utf-8?B?d2E1WmF2QjZMZ2xlbWRqdWJOVnFuMVp0c1FmSmNBa2xUYzBicSttTlRBNm9w?=
+ =?utf-8?B?b25QRlhObkZmNDZUTkxyUXRiQkx1UXVud01kaGtBL1FBVGF6ZEhxcC9kYjlJ?=
+ =?utf-8?B?TWZjSndXZkh4b0duLzdISXo4K2pzUmpzanJxalgxQ1lxV0xUZkRTeWxLUmg1?=
+ =?utf-8?B?UEp6bDdOYUl0SmpjVkx0ZnJmZDg3dVhkWnJJbjhGaGdTWllhMDlKQnlKTVVC?=
+ =?utf-8?B?ckJPc3BuVE82aExnUk9EbDlrbTZ1U1dHWlpNZHl5YjRvY1I3TzRJVjd1THlC?=
+ =?utf-8?B?SW9LMTZPVEwrRnlha09sZjc3VXJRWW1QdUhpaUtpQTdHRVNxYWRReTVPR01l?=
+ =?utf-8?B?ZCtQdEZ1UlREMzlJK05lelF5NENYUzRWbEpiMWpSSE0rYklEaGdJRHlLT2Np?=
+ =?utf-8?B?NSt6Zk1PMmg3aXR4TUx4R21oZjljRUYzU3FKYUF5dEU3RGRJd1JCWm1GTU0w?=
+ =?utf-8?B?R1ZreDZwVTZFODltMzErUjRDbXdkU0xlT1dHdFZhY2FrblBpNnovd3ZLYnNU?=
+ =?utf-8?B?cGhLcGxScmd1eW1kSWdMeENHaXpHNzFQdjVranZmQTYrOGk1OEg2YmpGd0ls?=
+ =?utf-8?B?MTJzMG0yOTgzZUlBcldrNVRid01YaVBFck1sVW5UNThNQlZiei9ydUN6dFVn?=
+ =?utf-8?B?aEdrUTdDUGRONmI4eURMY0VCZnpzS1o3bnFJajEvZHZ1aDl4bC9JMCtZOEZs?=
+ =?utf-8?B?TG9DSzFJNTlnaGQxNGRrZklINVcyd05DL3haSW1xUkY3QklwQm44b0Joc3Mv?=
+ =?utf-8?B?YnVTTzg0aXJmdTdSbStXV0JURlRXcTczTWVEbG1pb1l2WTREL0kxaGFjdVgv?=
+ =?utf-8?B?dmdHc0J4Y0Qzd1o4MUF0UkpOR09kMHlacXZyRnVLQmQwRWlBUzJFdDBuNjNE?=
+ =?utf-8?B?OXZaVVFwZHNHV1NVL1JEL1VqbHNRdHlrMVN6WVh4djIrZm1qRmhqRXNjSHdy?=
+ =?utf-8?B?eEYwY0pQZ1F5UVZJd0dnRCtFVVpnREdqQ2ZlWUprbldzZzg4Vk1sL2RMeTFS?=
+ =?utf-8?B?VEcvRWdheUtrYVZuMkNUeUcrdEt1dGJJandRVmwwTUxGSGJlZnFOR3BOQTMy?=
+ =?utf-8?Q?y0DvHCju1iRvqCST8aAQQEUCyYXyb4syajphIzgOBQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <568C6380C065EF47881CA40163AA2A3E@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: be6660ec-190c-4f31-4484-08da699f0023
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2022 15:54:44.8749
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jTtpAPtSf92TO1FX5/g46M7Eg8I2c6dOTRhRRhGQ7Chd8j0KQZ7ZAJqseLwALCnh4vzJTCHf5LSguhogvU8WXJZnRelThtHlTrWSdkekm38=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2229
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a new attribute group meant to provide a single place that
-defines endpoint IDs that might be needed by user space.  Not all
-defined endpoints are presented, and only those that are defined
-will be made visible.
-
-The new attributes use "extended" device attributes to hold endpoint
-IDs, which is a little more compact and efficient.  Reimplement the
-existing modem endpoint ID attribute files using common code.
-
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-v2: Use uintptr_t to try to avoid a "cast to smaller integer type"
-    warning produced by "clang". 
-
- .../testing/sysfs-devices-platform-soc-ipa    | 62 +++++++++++++----
- drivers/net/ipa/ipa_main.c                    |  1 +
- drivers/net/ipa/ipa_sysfs.c                   | 69 ++++++++++++++-----
- drivers/net/ipa/ipa_sysfs.h                   |  1 +
- 4 files changed, 102 insertions(+), 31 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-index c56dcf15bf29d..364b1ba412427 100644
---- a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-+++ b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-@@ -46,33 +46,69 @@ Description:
- 		that is supported by the hardware.  The possible values
- 		are "MAPv4" or "MAPv5".
- 
-+What:		.../XXXXXXX.ipa/endpoint_id/
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/ directory contains
-+		attributes that define IDs associated with IPA
-+		endpoints.  The "rx" or "tx" in an endpoint name is
-+		from the perspective of the AP.  An endpoint ID is a
-+		small unsigned integer.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/modem_rx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/modem_rx file contains
-+		the ID of the AP endpoint on which packets originating
-+		from the embedded modem are received.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/modem_tx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/modem_tx file contains
-+		the ID of the AP endpoint on which packets destined
-+		for the embedded modem are sent.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/monitor_rx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/monitor_rx file contains
-+		the ID of the AP endpoint on which IPA "monitor" data is
-+		received.  The monitor endpoint supplies replicas of
-+		packets that enter the IPA hardware for processing.
-+		Each replicated packet is preceded by a fixed-size "ODL"
-+		header (see .../XXXXXXX.ipa/feature/monitor, above).
-+		Large packets are truncated, to reduce the bandwidth
-+		required to provide the monitor function.
-+
- What:		.../XXXXXXX.ipa/modem/
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/modem/ directory contains a set of
--		attributes describing properties of the modem execution
--		environment reachable by the IPA hardware.
-+		The .../XXXXXXX.ipa/modem/ directory contains attributes
-+		describing properties of the modem embedded in the SoC.
- 
- What:		.../XXXXXXX.ipa/modem/rx_endpoint_id
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/feature/rx_endpoint_id file contains
--		the AP endpoint ID that receives packets originating from
--		the modem execution environment.  The "rx" is from the
--		perspective of the AP; this endpoint is considered an "IPA
--		producer".  An endpoint ID is a small unsigned integer.
-+		The .../XXXXXXX.ipa/modem/rx_endpoint_id file duplicates
-+		the value found in .../XXXXXXX.ipa/endpoint_id/modem_rx.
- 
- What:		.../XXXXXXX.ipa/modem/tx_endpoint_id
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/feature/tx_endpoint_id file contains
--		the AP endpoint ID used to transmit packets destined for
--		the modem execution environment.  The "tx" is from the
--		perspective of the AP; this endpoint is considered an "IPA
--		consumer".  An endpoint ID is a small unsigned integer.
-+		The .../XXXXXXX.ipa/modem/tx_endpoint_id file duplicates
-+		the value found in .../XXXXXXX.ipa/endpoint_id/modem_tx.
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 3757ce3de2c59..b989259b02047 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -851,6 +851,7 @@ static void ipa_shutdown(struct platform_device *pdev)
- static const struct attribute_group *ipa_attribute_groups[] = {
- 	&ipa_attribute_group,
- 	&ipa_feature_attribute_group,
-+	&ipa_endpoint_id_attribute_group,
- 	&ipa_modem_attribute_group,
- 	NULL,
- };
-diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
-index ff61dbdd70d8c..74df4709361c2 100644
---- a/drivers/net/ipa/ipa_sysfs.c
-+++ b/drivers/net/ipa/ipa_sysfs.c
-@@ -96,38 +96,71 @@ const struct attribute_group ipa_feature_attribute_group = {
- 	.attrs		= ipa_feature_attrs,
- };
- 
--static ssize_t
--ipa_endpoint_id_show(struct ipa *ipa, char *buf, enum ipa_endpoint_name name)
-+static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
-+					  struct attribute *attr, int n)
- {
--	u32 endpoint_id = ipa->name_map[name]->endpoint_id;
-+	struct ipa *ipa = dev_get_drvdata(kobj_to_dev(kobj));
-+	struct device_attribute *dev_attr;
-+	struct dev_ext_attribute *ea;
-+	bool visible;
- 
--	return scnprintf(buf, PAGE_SIZE, "%u\n", endpoint_id);
-+	/* An endpoint id attribute is only visible if it's defined */
-+	dev_attr = container_of(attr, struct device_attribute, attr);
-+	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
-+
-+	visible = !!ipa->name_map[(enum ipa_endpoint_name)(uintptr_t)ea->var];
-+
-+	return visible ? attr->mode : 0;
- }
- 
--static ssize_t rx_endpoint_id_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
-+static ssize_t endpoint_id_attr_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
- {
- 	struct ipa *ipa = dev_get_drvdata(dev);
-+	struct ipa_endpoint *endpoint;
-+	struct dev_ext_attribute *ea;
- 
--	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_RX);
-+	ea = container_of(attr, struct dev_ext_attribute, attr);
-+	endpoint = ipa->name_map[(enum ipa_endpoint_name)ea->var];
-+
-+	return sysfs_emit(buf, "%u\n", endpoint->endpoint_id);
- }
- 
--static DEVICE_ATTR_RO(rx_endpoint_id);
-+#define ENDPOINT_ID_ATTR(_n, _endpoint_name)				    \
-+	static struct dev_ext_attribute dev_attr_endpoint_id_ ## _n = {	    \
-+		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
-+		.var	= (void *)(_endpoint_name),			    \
-+	}
- 
--static ssize_t tx_endpoint_id_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct ipa *ipa = dev_get_drvdata(dev);
-+ENDPOINT_ID_ATTR(modem_rx, IPA_ENDPOINT_AP_MODEM_RX);
-+ENDPOINT_ID_ATTR(modem_tx, IPA_ENDPOINT_AP_MODEM_TX);
- 
--	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_TX);
--}
-+static struct attribute *ipa_endpoint_id_attrs[] = {
-+	&dev_attr_endpoint_id_modem_rx.attr.attr,
-+	&dev_attr_endpoint_id_modem_tx.attr.attr,
-+	NULL
-+};
-+
-+const struct attribute_group ipa_endpoint_id_attribute_group = {
-+	.name		= "endpoint_id",
-+	.is_visible	= ipa_endpoint_id_is_visible,
-+	.attrs		= ipa_endpoint_id_attrs,
-+};
-+
-+/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
-+#define MODEM_ATTR(_n, _endpoint_name)					    \
-+	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
-+		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
-+		.var	= (void *)(_endpoint_name),			    \
-+	}
- 
--static DEVICE_ATTR_RO(tx_endpoint_id);
-+MODEM_ATTR(rx_endpoint_id, IPA_ENDPOINT_AP_MODEM_RX);
-+MODEM_ATTR(tx_endpoint_id, IPA_ENDPOINT_AP_MODEM_TX);
- 
- static struct attribute *ipa_modem_attrs[] = {
--	&dev_attr_rx_endpoint_id.attr,
--	&dev_attr_tx_endpoint_id.attr,
--	NULL
-+	&dev_attr_modem_rx_endpoint_id.attr.attr,
-+	&dev_attr_modem_tx_endpoint_id.attr.attr,
-+	NULL,
- };
- 
- const struct attribute_group ipa_modem_attribute_group = {
-diff --git a/drivers/net/ipa/ipa_sysfs.h b/drivers/net/ipa/ipa_sysfs.h
-index b34e5650bf8cd..4a3ffd1e4e3fb 100644
---- a/drivers/net/ipa/ipa_sysfs.h
-+++ b/drivers/net/ipa/ipa_sysfs.h
-@@ -10,6 +10,7 @@ struct attribute_group;
- 
- extern const struct attribute_group ipa_attribute_group;
- extern const struct attribute_group ipa_feature_attribute_group;
-+extern const struct attribute_group ipa_endpoint_id_attribute_group;
- extern const struct attribute_group ipa_modem_attribute_group;
- 
- #endif /* _IPA_SYSFS_H_ */
--- 
-2.34.1
-
+T24gVHVlLCAyMDIyLTA3LTE5IGF0IDEzOjUyICswMzAwLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6
+DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50
+cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gT24gVHVlLCBK
+dWwgMTIsIDIwMjIgYXQgMDk6MzM6MDJQTSArMDUzMCwgQXJ1biBSYW1hZG9zcyB3cm90ZToNCj4g
+PiBUaGlzIHBhdGNoIGFkZCBjb21tb24gZnVuY3Rpb24gZm9yIGNvbmZpZ3VyaW5nIHRoZSBGdWxs
+L0hhbGYgZHVwbGV4DQo+ID4gYW5kDQo+ID4gdHJhbnNtaXQvcmVjZWl2ZSBmbG93IGNvbnRyb2wu
+IEtTWjg3OTUgdXNlcyB0aGUgR2xvYmFsIGNvbnRyb2wNCj4gPiByZWdpc3Rlcg0KPiA+IDQgZm9y
+IGNvbmZpZ3VyaW5nIHRoZSBkdXBsZXggYW5kIGZsb3cgY29udHJvbCwgd2hlcmVhcyBhbGwgb3Ro
+ZXINCj4gPiBLU1o5NDc3DQo+ID4gYmFzZWQgc3dpdGNoIHVzZXMgdGhlIHhNSUkgQ29udHJvbCAw
+IHJlZ2lzdGVyLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEFydW4gUmFtYWRvc3MgPGFydW4u
+cmFtYWRvc3NAbWljcm9jaGlwLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQvZHNhL21p
+Y3JvY2hpcC9rc3o5NDc3X3JlZy5oICB8ICAxIC0NCj4gPiAgZHJpdmVycy9uZXQvZHNhL21pY3Jv
+Y2hpcC9rc3pfY29tbW9uLmMgICB8IDY0DQo+ID4gKysrKysrKysrKysrKysrKysrKysrKysrDQo+
+ID4gIGRyaXZlcnMvbmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5oICAgfCAgOCArKysNCj4g
+PiAgZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9sYW45Mzd4X21haW4uYyB8IDI0ICsrKy0tLS0t
+LQ0KPiA+ICBkcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2xhbjkzN3hfcmVnLmggIHwgIDMgLS0N
+Cj4gPiAgNSBmaWxlcyBjaGFuZ2VkLCA4MCBpbnNlcnRpb25zKCspLCAyMCBkZWxldGlvbnMoLSkN
+Cj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3o5NDc3
+X3JlZy5oDQo+ID4gYi9kcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzejk0NzdfcmVnLmgNCj4g
+PiBpbmRleCAyNjQ5ZmRmMGJhZTEuLjZjYTg1OTM0NTkzMiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2
+ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzejk0NzdfcmVnLmgNCj4gPiArKysgYi9kcml2ZXJzL25l
+dC9kc2EvbWljcm9jaGlwL2tzejk0NzdfcmVnLmgNCj4gPiBAQCAtMTE3OCw3ICsxMTc4LDYgQEAN
+Cj4gPiAgI2RlZmluZSBSRUdfUE9SVF9YTUlJX0NUUkxfMCAgICAgICAgIDB4MDMwMA0KPiA+IA0K
+PiA+ICAjZGVmaW5lIFBPUlRfU0dNSUlfU0VMICAgICAgICAgICAgICAgICAgICAgICBCSVQoNykN
+Cj4gPiAtI2RlZmluZSBQT1JUX01JSV9GVUxMX0RVUExFWCAgICAgICAgIEJJVCg2KQ0KPiA+ICAj
+ZGVmaW5lIFBPUlRfR1JYQ19FTkFCTEUgICAgICAgICAgICAgQklUKDApDQo+ID4gDQo+ID4gICNk
+ZWZpbmUgUkVHX1BPUlRfWE1JSV9DVFJMXzEgICAgICAgICAweDAzMDENCj4gPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMNCj4gPiBiL2RyaXZlcnMv
+bmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jDQo+ID4gaW5kZXggZjQxY2QyODAxMjEwLi40
+ZWYwZWU5YTI0NWQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9r
+c3pfY29tbW9uLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzel9jb21t
+b24uYw0KPiA+IEBAIC0yODAsNiArMjgwLDggQEAgc3RhdGljIGNvbnN0IHUzMiBrc3o4Nzk1X21h
+c2tzW10gPSB7DQo+ID4gICAgICAgW0RZTkFNSUNfTUFDX1RBQkxFX0ZJRF0gICAgICAgICA9IEdF
+Tk1BU0soMjYsIDIwKSwNCj4gPiAgICAgICBbRFlOQU1JQ19NQUNfVEFCTEVfU1JDX1BPUlRdICAg
+ID0gR0VOTUFTSygyNiwgMjQpLA0KPiA+ICAgICAgIFtEWU5BTUlDX01BQ19UQUJMRV9USU1FU1RB
+TVBdICAgPSBHRU5NQVNLKDI4LCAyNyksDQo+ID4gKyAgICAgW1BfTUlJX1RYX0ZMT1dfQ1RSTF0g
+ICAgICAgICAgICA9IEJJVCg1KSwNCj4gPiArICAgICBbUF9NSUlfUlhfRkxPV19DVFJMXSAgICAg
+ICAgICAgID0gQklUKDUpLA0KPiANCj4gVGhlIG1hc2tzIGFyZSB0aGUgc2FtZSBmb3IgVFggYW5k
+IFJYIGZsb3cgY29udHJvbCBhbmQgdGhlIHdyaXRlcyBhcmUNCj4gdG8NCj4gdGhlIHNhbWUgcmVn
+aXN0ZXIgKHJlZ3NbUF9YTUlJX0NUUkxfMF0pLCBpcyB0aGlzIGFuIGVycm9yPw0KDQpJIGhhdmUg
+Z29uZSB0aHJvdWdoIGtzejg3OTUgZGF0YXNoZWV0LCBJIGNvdWxkIG5vdCBmaW5kIHNlcGFyYXRl
+IGJpdA0KZm9yIFR4IGFuZCBSeCBmbG93IGNvbnRyb2wgYml0LiBCaXQgNSBtZW50aW9uZWQgYXMg
+RmxvdyBjb250cm9sIG9uIHRoZQ0Kc3dpdGNoIE1JSS9STUlJIGludGVyZmFjZS4gU28gSSBoYWQg
+Y29uZmlndXJlZCBzYW1lIGJpdCBmb3IgVHggYW5kIFJ4Lg0KDQo+IA0KPiA+ICB9Ow0KPiA+IA0K
+PiA+ICBzdGF0aWMgY29uc3QgdTgga3N6ODc5NV92YWx1ZXNbXSA9IHsNCj4gPiBAQCAtMjg3LDYg
+KzI4OSw4IEBAIHN0YXRpYyBjb25zdCB1OCBrc3o4Nzk1X3ZhbHVlc1tdID0gew0KPiA+ICAgICAg
+IFtQX01JSV9OT1RfMUdCSVRdICAgICAgICAgICAgICAgPSAwLA0KPiA+ICAgICAgIFtQX01JSV8x
+MDBNQklUXSAgICAgICAgICAgICAgICAgPSAwLA0KPiA+ICAgICAgIFtQX01JSV8xME1CSVRdICAg
+ICAgICAgICAgICAgICAgPSAxLA0KPiA+ICsgICAgIFtQX01JSV9GVUxMX0RVUExFWF0gICAgICAg
+ICAgICAgPSAwLA0KPiA+ICsgICAgIFtQX01JSV9IQUxGX0RVUExFWF0gICAgICAgICAgICAgPSAx
+LA0KPiA+ICB9Ow0KPiA+IA0KPiA+ICBzdGF0aWMgY29uc3QgdTgga3N6ODc5NV9zaGlmdHNbXSA9
+IHsNCj4gPiBAQCAtMzY2LDYgKzM3MCw4IEBAIHN0YXRpYyBjb25zdCB1MTYga3N6OTQ3N19yZWdz
+W10gPSB7DQo+ID4gIHN0YXRpYyBjb25zdCB1MzIga3N6OTQ3N19tYXNrc1tdID0gew0KPiA+ICAg
+ICAgIFtBTFVfU1RBVF9XUklURV0gICAgICAgICAgICAgICAgPSAwLA0KPiA+ICAgICAgIFtBTFVf
+U1RBVF9SRUFEXSAgICAgICAgICAgICAgICAgPSAxLA0KPiA+ICsgICAgIFtQX01JSV9UWF9GTE9X
+X0NUUkxdICAgICAgICAgICAgPSBCSVQoNSksDQo+ID4gKyAgICAgW1BfTUlJX1JYX0ZMT1dfQ1RS
+TF0gICAgICAgICAgICA9IEJJVCgzKSwNCj4gPiAgfTsNCj4gPiANCj4gPiAtLQ0KPiA+IDIuMzYu
+MQ0KPiA+IA0KPiANCj4gDQo=
