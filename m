@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8BC57A0A6
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B57FC57A0A2
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238726AbiGSOIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
+        id S231358AbiGSOIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237728AbiGSOIB (ORCPT
+        with ESMTP id S238315AbiGSOIB (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:08:01 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C8353D24;
-        Tue, 19 Jul 2022 06:24:42 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id t3so19613180edd.0;
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ED853D2A;
+        Tue, 19 Jul 2022 06:24:43 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id j22so27179960ejs.2;
         Tue, 19 Jul 2022 06:24:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=G22xpv+7ScEDhIYUw4SP7yseZ38Q6eJDEsWNGUmx+GA=;
-        b=BKhC5x7NE08GQnVKJtbrLPEWaRJCntJV2VoDonj1O8upS29joRfSqU+QaQno4qj+M3
-         Lgg559VwCni47VncsRFPuQpSUDjJ3Y0eED1Dyd/EroTRKw3QiLfpCbIUPHakVSAZWBX0
-         YnERVKQaUOHsTzFIkLlLw4AsLAF9lww+R0zynAT4KvhuzB7ugoVe7LBUmBrzheAqNhyX
-         BTI4X0l4LF2fTVHfy4W6lNfiq02Oepzn6RrsNXsmuG6TRhiJQaGbSjtI2/NH9KaaBUld
-         G3XwwTtZHpfywUEMAww0ZFrTrwLJlZQfda74/KzHmIv1nHpl5U4nk2rDwa5qcgoBzMPp
-         bM3A==
+        bh=lE4c6sszvZbkuJN9C07UY0PUQWB5cLJYZTKLAPRZnko=;
+        b=nYlPYDXWQ7Me0sTGD61jEhbHp1OLSjmApZg65gpyOsbyS/0ToS7RkU6GysWjBI3f1G
+         xyfvQ4dZiqklmHRLhVJ1RwfPLbG+SlyrikYwS2SIK7sgkTjh4Oa4xUs54B8LUqBTlmnI
+         Ohlux2uv7GFuzfKfwNzvkcaltldPuwguqUnJhtBZALI6k/oP6dTrzPAke/AKElBDQe7y
+         LuHhVJiJ5LNJlexVeEE6tR8sB6wsLJwiEcfa8vUzZbzzki++1C7R1dWftXVdJGXoOtPh
+         FJ5Q1R106coowuP0o/d3uEpLIaJt8/M2uVT5rPh7qKR1HJcDdK0DYQddzeda60CWdmTN
+         TF6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=G22xpv+7ScEDhIYUw4SP7yseZ38Q6eJDEsWNGUmx+GA=;
-        b=snM1GsDKFPfiTBPSbu64rvv3mv82XiX3sJvyHCs/8KwMXDdpL53hdXZE5tNp3NWDdf
-         fEFySsijzIRzrpjW3zG4Vyg+sBN8yzFIzKiMUq0pwqvLMz5IOHYThtUaFupKxWTDiDWt
-         cYEDN9wDk24A6Hh0q/L4l5QMX9DpMHQOKOLkK6X+0IMZ/V7cPDLFliwG/jTtRpeSoU/x
-         faZmB/65G9k2Zhoud9gt17Tc6cPfMT+r8jrvM8tElqrnfXjQsydyQwW7nDJQmUvo8vJO
-         f3hYmNB+X7eOCXiWqpepejKLTAglNmMMSJwSCC1BK+gqktLTIc2Uw6VBh0pXXSX9BSNN
-         4eVw==
-X-Gm-Message-State: AJIora8Uk7f+d2Xbe8zc7wIyPz9vlCkRpmpGyB78bGM0n2O6bwP/jeEC
-        KfH+bXBNxnXZlMtXYUq12DPLhpdrBwAWyg==
-X-Google-Smtp-Source: AGRyM1unZTFpqZwM2x8aZ/4SG0FU4oyJXQ/9kWa2BdrzNO4cUzmDAZK+JUSt1OKm9M5ebLt953nDug==
-X-Received: by 2002:a05:6402:2689:b0:43a:dc35:11bb with SMTP id w9-20020a056402268900b0043adc3511bbmr45452922edd.262.1658237080258;
-        Tue, 19 Jul 2022 06:24:40 -0700 (PDT)
+        bh=lE4c6sszvZbkuJN9C07UY0PUQWB5cLJYZTKLAPRZnko=;
+        b=oxEl24ElMQIjXcoOuwFMO105WaQfBdM+qB4ZFY1w8ciaLdBgFBs+uztkV+vo0oJMgE
+         ShEvlS/jVu+jOyXlESP2He/BzEkspJFUCk2B3jclbPLY4y2s/FTmMmX7yu2BgO3P7U2s
+         1vSZ3U62X35jvsqgOG39mckNufd7s2+4BbijzWyeVWhw7CFhA9+EHfI85mlrErJvfTwQ
+         e/XM4UlrjZ0oUCGAzB3Izj3OQ0aZnFeNe3iBCoazzS7idEtMV7MVgXMFWP5RF547foEW
+         RUzgUzXhp+yePZb2TaZ+YigD2hzykdfcCgmoeZsLbSMMo2C+35uhzVE/vLZklzchjA1L
+         hW/Q==
+X-Gm-Message-State: AJIora92W2mmeK5FCej3SVlSnrWs50NamZQRQkz/ujsGS7cNDv/FLz4V
+        r66fpkZciwjY6RqInMOL5YGFkNw01gkcxw==
+X-Google-Smtp-Source: AGRyM1vkvEz/ZGBR7vpdehj4D1M0QcOUw4X7MNMChvEw60hKclT8saaDFGkS9GAGr1geKkO981msdw==
+X-Received: by 2002:a17:906:844f:b0:72b:549e:a654 with SMTP id e15-20020a170906844f00b0072b549ea654mr29319274ejy.535.1658237081321;
+        Tue, 19 Jul 2022 06:24:41 -0700 (PDT)
 Received: from localhost (icdhcp-1-189.epfl.ch. [128.178.116.189])
-        by smtp.gmail.com with ESMTPSA id w6-20020a50fa86000000b0043ba0cf5dbasm722537edr.2.2022.07.19.06.24.39
+        by smtp.gmail.com with ESMTPSA id t8-20020a17090616c800b00715a02874acsm6655065ejd.35.2022.07.19.06.24.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:24:39 -0700 (PDT)
+        Tue, 19 Jul 2022 06:24:41 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
-Cc:     KP Singh <kpsingh@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -59,14 +58,14 @@ Cc:     KP Singh <kpsingh@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
         netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v6 05/13] bpf: Add documentation for kfuncs
-Date:   Tue, 19 Jul 2022 15:24:22 +0200
-Message-Id: <20220719132430.19993-6-memxor@gmail.com>
+Subject: [PATCH bpf-next v6 06/13] net: netfilter: Deduplicate code in bpf_{xdp,skb}_ct_lookup
+Date:   Tue, 19 Jul 2022 15:24:23 +0200
+Message-Id: <20220719132430.19993-7-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220719132430.19993-1-memxor@gmail.com>
 References: <20220719132430.19993-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8492; i=memxor@gmail.com; h=from:subject; bh=sYJ45Q+Q8+3BI/qToQ39EWKrf40MpcxF1MZ4RoM2D10=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi1rBlHGsWeQg5Y8yO30RIYASAeTG/lgRiDlAphKZ9 Ib9oez+JAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtawZQAKCRBM4MiGSL8RypuEEA CsJaLP9BK77DuoHXUl5LrB6TVzu1jBqesuJOU8hpo8N1PTSYUkyg7Xa0x9ns908OdfLOGP9iLv6z17 k65XoUdu+u8UOmbBBwiUu7aht5XcOX4/u9dKUnHh+X0tHC7T4OHXihlwS4M/1kE3lTSV+dETkXz+6h PdCrplTUEIFUIeLx3L68w4YNKmQIWklw1qDhjH6pLfrjNssVJJ34fipW09i8NZhYnXqB9TUFyz5zGn 3KCvF0EzTKR9oDXuTzSRQixehNosJrT/V0bbWa6PRSOTaLAiqZuquKpKoWNCp/GA+All2IOtPVTYpC gaH+tCph3Mvarb8euP5vcCkyxdL0+EJBZ8SSeNT684trFmGVlP9tncSgLc7FcsnvAE54Fe8mGSkBfB mbvp/Cmia1VOHiWvvqxb+PV6jrr8qxRWDNgr969hJzIu42tp3IaX42j5yuO/c848Q9VfG6dDxbHjOF mu5+cy8qVFtDdALU94jL3IRpgITC4r27VPrTFD1TlhTsyghKhCgen1Iv2zUAG+HMHvGEeSvwZudG5C YdHK5rRTKBB3JPqpelcUGvwaF39gcNeAXPtBIOcREkR4xmP0BcPKu15cMOvOFWudTY9TEqKTeVR+EN MymNXdBLcDnut9HHu7HW4IvXwaWtOzKvqDB644T2LvcAdKepbKwQ/vxwdvLw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3777; i=memxor@gmail.com; h=from:subject; bh=SUqdFpeA+7gJZkfhIAoext8wzNqYLWZ/6oT/iWwgjcY=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi1rBlvMDEOxo4w0uhBueM5sy0jqlWJ/66E7l8GD1b plfesfyJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtawZQAKCRBM4MiGSL8RytuBD/ 9JJvJeOrSDYwj6by09Dr87K9w3zd/q3YO9ZOpaFhGfo1HDwj0K3KcpSirJE8oQCmZkq/kMiBk8lVcq v0zaeqGqP2qcDYp6EFLIwp9VW2rnU1VZNVfQTiD1+pSx6l9I+HU9r8DgrHncbxMmEU60hjRKjcDewx I6x6z1u+8c3VJzczinby01V5tiVBnAomH8P+wRt0BniH0i3qxL+KFH3MfTQH2tc6CnVARkbepKquSJ n+nQdzUnLylOublK0W3Rmtnw/TYj1GKwenAMXMMuEIAGPSZOYKPub41k4OO4Mnr6EtZnGQzB9qjRP/ WLKT+PISSRsdzhqgIXG4u1z2xpo/leoO2baecswTEv5qXpp36OPr1WgvqnSpGEIVJr4ckybrzr/b2b QrQ0fvEQggRZuKkAZZrLqXUkgsAU1g0gLePUj1yFxIYLLjQLiHmVqqcOtDE7gy6CZaRwI5x5ZUBFNg k6n8VVL870PmEQbE4H52H/W5KV49m66tKq8mareEWjoylkydqGOnvKLrHOxgR2s9ykkU/bGwsSm1yj 75VoppdgZbqpGNZ91mVdrvKzFOmYfhejgP69TowwPxR8iFBnQZLdHVRTncZSXtXhRPOkwIhWvgOg2S ZwMJm4wqQQXgiZ4ZmyfzbLUTToRKIEP4XdRbb4J8PXLpQ6wy2MCtFaVqD+aw==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,211 +78,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the usage of kfuncs grows, we are starting to form consensus on the
-kinds of attributes and annotations that kfuncs can have. To better help
-developers make sense of the various options available at their disposal
-to present an unstable API to the BPF users, document the various kfunc
-flags and annotations, their expected usage, and explain the process of
-defining and registering a kfunc set.
+Move common checks inside the common function, and maintain the only
+difference the two being how to obtain the struct net * from ctx.
+No functional change intended.
 
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- Documentation/bpf/index.rst  |   1 +
- Documentation/bpf/kfuncs.rst | 171 +++++++++++++++++++++++++++++++++++
- 2 files changed, 172 insertions(+)
- create mode 100644 Documentation/bpf/kfuncs.rst
+ net/netfilter/nf_conntrack_bpf.c | 52 +++++++++++---------------------
+ 1 file changed, 18 insertions(+), 34 deletions(-)
 
-diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
-index 96056a7447c7..1bc2c5c58bdb 100644
---- a/Documentation/bpf/index.rst
-+++ b/Documentation/bpf/index.rst
-@@ -19,6 +19,7 @@ that goes into great technical depth about the BPF Architecture.
-    faq
-    syscall_api
-    helpers
-+   kfuncs
-    programs
-    maps
-    bpf_prog_run
-diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
-new file mode 100644
-index 000000000000..cc6390b1e9d7
---- /dev/null
-+++ b/Documentation/bpf/kfuncs.rst
-@@ -0,0 +1,171 @@
-+=============================
-+BPF Kernel Functions (kfuncs)
-+=============================
-+
-+1. Introduction
-+===============
-+
-+BPF Kernel Functions or more commonly known as kfuncs are functions in the Linux
-+kernel which are exposed for use by BPF programs. Unlike normal BPF helpers,
-+kfuncs do not have a stable interface and can change from one kernel release to
-+another. Hence, BPF programs need to be updated in response to changes in the
-+kernel.
-+
-+2. Defining a kfunc
-+===================
-+
-+There are two ways to expose a kernel function to BPF programs, either make an
-+existing function in the kernel visible, or add a new wrapper for BPF. In both
-+cases, care must be taken that BPF program can only call such function in a
-+valid context. To enforce this, visibility of a kfunc can be per program type.
-+
-+If you are not creating a BPF wrapper for existing kernel function, skip ahead
-+to :ref:`BPF_kfunc_nodef`.
-+
-+2.1 Creating a wrapper kfunc
-+----------------------------
-+
-+When defining a wrapper kfunc, the wrapper function should have extern linkage.
-+This prevents the compiler from optimizing away dead code, as this wrapper kfunc
-+is not invoked anywhere in the kernel itself. It is not necessary to provide a
-+prototype in a header for the wrapper kfunc.
-+
-+An example is given below::
-+
-+        /* Disables missing prototype warnings */
-+        __diag_push();
-+        __diag_ignore_all("-Wmissing-prototypes",
-+                          "Global kfuncs as their definitions will be in BTF");
-+
-+        struct task_struct *bpf_find_get_task_by_vpid(pid_t nr)
-+        {
-+                return find_get_task_by_vpid(nr);
-+        }
-+
-+        __diag_pop();
-+
-+A wrapper kfunc is often needed when we need to annotate parameters of the
-+kfunc. Otherwise one may directly make the kfunc visible to the BPF program by
-+registering it with the BPF subsystem. See :ref:`BPF_kfunc_nodef`.
-+
-+2.2 Annotating kfunc parameters
-+-------------------------------
-+
-+Similar to BPF helpers, there is sometime need for additional context required
-+by the verifier to make the usage of kernel functions safer and more useful.
-+Hence, we can annotate a parameter by suffixing the name of the argument of the
-+kfunc with a __tag, where tag may be one of the supported annotations.
-+
-+2.2.1 __sz Annotation
-+---------------------
-+
-+This annotation is used to indicate a memory and size pair in the argument list.
-+An example is given below::
-+
-+        void bpf_memzero(void *mem, int mem__sz)
-+        {
-+        ...
-+        }
-+
-+Here, the verifier will treat first argument as a PTR_TO_MEM, and second
-+argument as its size. By default, without __sz annotation, the size of the type
-+of the pointer is used. Without __sz annotation, a kfunc cannot accept a void
-+pointer.
-+
-+.. _BPF_kfunc_nodef:
-+
-+2.3 Using an existing kernel function
-+-------------------------------------
-+
-+When an existing function in the kernel is fit for consumption by BPF programs,
-+it can be directly registered with the BPF subsystem. However, care must still
-+be taken to review the context in which it will be invoked by the BPF program
-+and whether it is safe to do so.
-+
-+2.4 Annotating kfuncs
-+---------------------
-+
-+In addition to kfuncs' arguments, verifier may need more information about the
-+type of kfunc(s) being registered with the BPF subsystem. To do so, we define
-+flags on a set of kfuncs as follows::
-+
-+        BTF_SET8_START(bpf_task_set)
-+        BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE, KF_RET_NULL)
-+        BTF_ID_FLAGS(func, bpf_put_pid, KF_RELEASE)
-+        BTF_SET8_END(bpf_task_set)
-+
-+This set encodes the BTF ID of each kfunc listed above, and encodes the flags
-+along with it. Ofcourse, it is also allowed to specify no flags. The flags are
-+passed as a list of arguments to BTF_ID_FLAGS macro.
-+
-+2.4.1 KF_ACQUIRE flag
-+---------------------
-+
-+The KF_ACQUIRE flag is used to indicate that the kfunc returns a pointer to a
-+refcounted object. The verifier will then ensure that the pointer to the object
-+is eventually released using a release kfunc, or transferred to a map using a
-+referenced kptr (by invoking bpf_kptr_xchg). If not, the verifier fails the
-+loading of the BPF program until no lingering references remain in all possible
-+explored states of the program.
-+
-+2.4.2 KF_RET_NULL flag
-+----------------------
-+
-+The KF_RET_NULL flag is used to indicate that the pointer returned by the kfunc
-+may be NULL. Hence, it forces the user to do a NULL check on the pointer
-+returned from the kfunc before making use of it (dereferencing or passing to
-+another helper). This flag is often used in pairing with KF_ACQUIRE flag, but
-+both are mutually exclusive.
-+
-+2.4.3 KF_RELEASE flag
-+---------------------
-+
-+The KF_RELEASE flag is used to indicate that the kfunc releases the pointer
-+passed in to it. There can be only one referenced pointer that can be passed in.
-+All copies of the pointer being released are invalidated as a result of invoking
-+kfunc with this flag.
-+
-+2.4.4 KF_KPTR_GET flag
-+----------------------
-+
-+The KF_KPTR_GET flag is used to indicate that the kfunc takes the first argument
-+as a pointer to kptr, safely increments the refcount of the object it points to,
-+and returns a reference to the user. The rest of the arguments may be normal
-+arguments of a kfunc. The KF_KPTR_GET flag should be used in conjunction with
-+KF_ACQUIRE and KF_RET_NULL flags.
-+
-+2.4.5 KF_TRUSTED_ARGS flag
-+--------------------------
-+
-+The KF_TRUSTED_ARGS flag is used for kfuncs taking pointer arguments. It
-+indicates that the all pointer arguments will always be refcounted, and have
-+their offset set to 0. It can be used to enforce that a pointer to a refcounted
-+object acquired from a kfunc or BPF helper is passed as an argument to this
-+kfunc without any modifications (e.g. pointer arithmetic) such that it is
-+trusted and points to the original object. This flag is often used for kfuncs
-+that operate (change some property, perform some operation) on an object that
-+was obtained using an acquire kfunc. Such kfuncs need an unchanged pointer to
-+ensure the integrity of the operation being performed on the expected object.
-+
-+2.5 Registering the kfuncs
-+--------------------------
-+
-+Once the kfunc is prepared for use, the final step to making it visible is
-+registering it with the BPF subsystem. Registration is done per BPF program
-+type. An example is shown below::
-+
-+        BTF_SET8_START(bpf_task_set)
-+        BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE, KF_RET_NULL)
-+        BTF_ID_FLAGS(func, bpf_put_pid, KF_RELEASE)
-+        BTF_SET8_END(bpf_task_set)
-+
-+        static const struct btf_kfunc_id_set bpf_task_kfunc_set = {
-+                .owner = THIS_MODULE,
-+                .set   = &bpf_task_set,
-+        };
-+
-+        static int init_subsystem(void)
-+        {
-+                return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_task_kfunc_set);
-+        }
-+        late_initcall(init_subsystem);
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index 5b20d0ca9b01..0ba3cbde72ec 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -57,16 +57,19 @@ enum {
+ 
+ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+ 					  struct bpf_sock_tuple *bpf_tuple,
+-					  u32 tuple_len, u8 protonum,
+-					  s32 netns_id, u8 *dir)
++					  u32 tuple_len, struct bpf_ct_opts *opts,
++					  u32 opts_len)
+ {
+ 	struct nf_conntrack_tuple_hash *hash;
+ 	struct nf_conntrack_tuple tuple;
+ 	struct nf_conn *ct;
+ 
+-	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
++	if (!opts || !bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
++	    opts_len != NF_BPF_CT_OPTS_SZ)
++		return ERR_PTR(-EINVAL);
++	if (unlikely(opts->l4proto != IPPROTO_TCP && opts->l4proto != IPPROTO_UDP))
+ 		return ERR_PTR(-EPROTO);
+-	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
++	if (unlikely(opts->netns_id < BPF_F_CURRENT_NETNS))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	memset(&tuple, 0, sizeof(tuple));
+@@ -89,23 +92,22 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+ 		return ERR_PTR(-EAFNOSUPPORT);
+ 	}
+ 
+-	tuple.dst.protonum = protonum;
++	tuple.dst.protonum = opts->l4proto;
+ 
+-	if (netns_id >= 0) {
+-		net = get_net_ns_by_id(net, netns_id);
++	if (opts->netns_id >= 0) {
++		net = get_net_ns_by_id(net, opts->netns_id);
+ 		if (unlikely(!net))
+ 			return ERR_PTR(-ENONET);
+ 	}
+ 
+ 	hash = nf_conntrack_find_get(net, &nf_ct_zone_dflt, &tuple);
+-	if (netns_id >= 0)
++	if (opts->netns_id >= 0)
+ 		put_net(net);
+ 	if (!hash)
+ 		return ERR_PTR(-ENOENT);
+ 
+ 	ct = nf_ct_tuplehash_to_ctrack(hash);
+-	if (dir)
+-		*dir = NF_CT_DIRECTION(hash);
++	opts->dir = NF_CT_DIRECTION(hash);
+ 
+ 	return ct;
+ }
+@@ -138,20 +140,11 @@ bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 	struct net *caller_net;
+ 	struct nf_conn *nfct;
+ 
+-	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
+-
+-	if (!opts)
+-		return NULL;
+-	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
+-	    opts__sz != NF_BPF_CT_OPTS_SZ) {
+-		opts->error = -EINVAL;
+-		return NULL;
+-	}
+ 	caller_net = dev_net(ctx->rxq->dev);
+-	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts->l4proto,
+-				  opts->netns_id, &opts->dir);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts, opts__sz);
+ 	if (IS_ERR(nfct)) {
+-		opts->error = PTR_ERR(nfct);
++		if (opts)
++			opts->error = PTR_ERR(nfct);
+ 		return NULL;
+ 	}
+ 	return nfct;
+@@ -181,20 +174,11 @@ bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
+ 	struct net *caller_net;
+ 	struct nf_conn *nfct;
+ 
+-	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
+-
+-	if (!opts)
+-		return NULL;
+-	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
+-	    opts__sz != NF_BPF_CT_OPTS_SZ) {
+-		opts->error = -EINVAL;
+-		return NULL;
+-	}
+ 	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
+-	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts->l4proto,
+-				  opts->netns_id, &opts->dir);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts, opts__sz);
+ 	if (IS_ERR(nfct)) {
+-		opts->error = PTR_ERR(nfct);
++		if (opts)
++			opts->error = PTR_ERR(nfct);
+ 		return NULL;
+ 	}
+ 	return nfct;
 -- 
 2.34.1
 
