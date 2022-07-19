@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1068A57A79F
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16ED357A7BA
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238464AbiGST43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 15:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
+        id S239972AbiGST5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 15:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234379AbiGST42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:56:28 -0400
+        with ESMTP id S239733AbiGST4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:56:51 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654A357241;
-        Tue, 19 Jul 2022 12:56:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9A75D5BB;
+        Tue, 19 Jul 2022 12:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=VooOSpuhRyn6QflGyabZjelG9o3ODRjuOAJFHCszOAo=; b=NGNXASKnxv4yJBij9LHKUxmh0P
-        mwUA56SGZAoonZApA09SVGiF/y/f8zc3XppA1Fp2bFTHKWP7BojRi7He0VhM9lr5UrUtcK1wYipJs
-        aSaN8QP6C4eF4zXoOgJGgT6ZuDMmMuYimiD0ROcWumz8NrrcUpCBXpaiIRgNLZ0Gd9RvebkcoATjI
-        wxPOASIbcw2oLKL150S0/dLxRnPitLqw31PH+C5crVY35WVMRw2dcMlYaH5NHxwbwVQBDA93nflNa
-        LrYtGCVdrzz5N6lm5MLI8E/TOExnU4EwH/AieooFsOIdDFrfpimBB+7U6TycUcHDjacZjyJLpIsj7
-        WSnitLeQ==;
+        bh=mqfih26lBSsDQZv1H6eACJYrHLpfO1zloM0q474LjNQ=; b=Ss8JPhG0TkQqkvGQCOEtsMEnUA
+        YpnR1i8ZfodnQTKjFlcR1dTNNVGBCvVD2u4A1NvZcBP9BHuiMnoKBJrBPSKV6UgWAus/bdgpkW2UB
+        /0iOrU0VPrMksBn+tdQ7tXIlTlCF3AcM6cPf0cdTBBWwu+V831EBynm7AYfpAF1p4hHXKB0uFE3c9
+        Jy8HTxYta1NWUhHWfe38TSjh1sNcI5ekD/9EgeZ9z4VIdZMDERqRlX0ZNjbcLKzG/HS85nGayvpBy
+        bOs0rwIoBW/D7zsS4r6nG5xfSc7p3UyzFko99SvlUniGlM5HHvtQVgnVD3g0kWhvwmKdcVMqdKNRC
+        qIzDdipw==;
 Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oDtKM-006fWu-FY; Tue, 19 Jul 2022 21:56:19 +0200
+        id 1oDtKc-006fYB-Ri; Tue, 19 Jul 2022 21:56:35 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -47,13 +47,12 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        linux-um@lists.infradead.org,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH v2 06/13] um: Improve panic notifiers consistency and ordering
-Date:   Tue, 19 Jul 2022 16:53:19 -0300
-Message-Id: <20220719195325.402745-7-gpiccoli@igalia.com>
+        linux-parisc@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH v2 07/13] parisc: Replace regular spinlock with spin_trylock on panic path
+Date:   Tue, 19 Jul 2022 16:53:20 -0300
+Message-Id: <20220719195325.402745-8-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
 References: <20220719195325.402745-1-gpiccoli@igalia.com>
@@ -68,76 +67,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the panic notifiers from user mode linux don't follow
-the convention for most of the other notifiers present in the
-kernel (indentation, priority setting, numeric return).
-More important, the priorities could be improved, since it's a
-special case (userspace), hence we could run the notifiers earlier;
-user mode linux shouldn't care much with other panic notifiers but
-the ordering among the mconsole and arch notifier is important,
-given that the arch one effectively triggers a core dump.
+The panic notifiers' callbacks execute in an atomic context, with
+interrupts/preemption disabled, and all CPUs not running the panic
+function are off, so it's very dangerous to wait on a regular
+spinlock, there's a risk of deadlock.
 
-Fix that by running the mconsole notifier as the first panic
-notifier, followed by the architecture one (that coredumps).
+Refactor the panic notifier of parisc/power driver to make use
+of spin_trylock - for that, we've added a second version of the
+soft-power function. Also, some comments were reorganized and
+trailing white spaces, useless header inclusion and blank lines
+were removed.
 
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: Richard Weinberger <richard@nod.at>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Acked-by: Helge Deller <deller@gmx.de> # parisc
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V2:
-- Kept the notifier header to avoid implicit usage - thanks
-Johannes for the suggestion!
+- Added Helge's ACK - thanks!
 
- arch/um/drivers/mconsole_kern.c | 7 +++----
- arch/um/kernel/um_arch.c        | 8 ++++----
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ arch/parisc/include/asm/pdc.h |  1 +
+ arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
+ drivers/parisc/power.c        | 17 ++++++++++-------
+ 3 files changed, 34 insertions(+), 11 deletions(-)
 
-diff --git a/arch/um/drivers/mconsole_kern.c b/arch/um/drivers/mconsole_kern.c
-index 8ca67a692683..69af3ce8407a 100644
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -846,13 +846,12 @@ static int notify_panic(struct notifier_block *self, unsigned long unused1,
- 
- 	mconsole_notify(notify_socket, MCONSOLE_PANIC, message,
- 			strlen(message) + 1);
--	return 0;
-+	return NOTIFY_DONE;
+diff --git a/arch/parisc/include/asm/pdc.h b/arch/parisc/include/asm/pdc.h
+index b643092d4b98..7a106008e258 100644
+--- a/arch/parisc/include/asm/pdc.h
++++ b/arch/parisc/include/asm/pdc.h
+@@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
+ int pdc_do_reset(void);
+ int pdc_soft_power_info(unsigned long *power_reg);
+ int pdc_soft_power_button(int sw_control);
++int pdc_soft_power_button_panic(int sw_control);
+ void pdc_io_reset(void);
+ void pdc_io_reset_devices(void);
+ int pdc_iodc_getc(void);
+diff --git a/arch/parisc/kernel/firmware.c b/arch/parisc/kernel/firmware.c
+index 6a7e315bcc2e..0e2f70b592f4 100644
+--- a/arch/parisc/kernel/firmware.c
++++ b/arch/parisc/kernel/firmware.c
+@@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long *power_reg)
  }
  
- static struct notifier_block panic_exit_notifier = {
--	.notifier_call 		= notify_panic,
--	.next 			= NULL,
--	.priority 		= 1
-+	.notifier_call	= notify_panic,
-+	.priority	= INT_MAX, /* run as soon as possible */
- };
+ /*
+- * pdc_soft_power_button - Control the soft power button behaviour
+- * @sw_control: 0 for hardware control, 1 for software control 
++ * pdc_soft_power_button{_panic} - Control the soft power button behaviour
++ * @sw_control: 0 for hardware control, 1 for software control
+  *
+  *
+  * This PDC function places the soft power button under software or
+  * hardware control.
+- * Under software control the OS may control to when to allow to shut 
+- * down the system. Under hardware control pressing the power button 
++ * Under software control the OS may control to when to allow to shut
++ * down the system. Under hardware control pressing the power button
+  * powers off the system immediately.
++ *
++ * The _panic version relies in spin_trylock to prevent deadlock
++ * on panic path.
+  */
+ int pdc_soft_power_button(int sw_control)
+ {
+@@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
+ 	return retval;
+ }
  
- static int add_notifier(void)
-diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
-index 9838967d0b2f..970fdccc2f94 100644
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -246,13 +246,13 @@ static int panic_exit(struct notifier_block *self, unsigned long unused1,
- 	bust_spinlocks(0);
- 	uml_exitcode = 1;
- 	os_dump_core();
--	return 0;
++int pdc_soft_power_button_panic(int sw_control)
++{
++	int retval;
++	unsigned long flags;
 +
-+	return NOTIFY_DONE;
++	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
++		pr_emerg("Couldn't enable soft power button\n");
++		return -EBUSY; /* ignored by the panic notifier */
++	}
++
++	retval = mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE, __pa(pdc_result), sw_control);
++	spin_unlock_irqrestore(&pdc_lock, flags);
++
++	return retval;
++}
++
+ /*
+  * pdc_io_reset - Hack to avoid overlapping range registers of Bridges devices.
+  * Primarily a problem on T600 (which parisc-linux doesn't support) but
+diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+index 456776bd8ee6..8512884de2cf 100644
+--- a/drivers/parisc/power.c
++++ b/drivers/parisc/power.c
+@@ -37,7 +37,6 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+-#include <linux/notifier.h>
+ #include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/sched/signal.h>
+@@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void *x)
+ 
+ 
+ 
+-/* parisc_panic_event() is called by the panic handler.
+- * As soon as a panic occurs, our tasklets above will not be
+- * executed any longer. This function then re-enables the 
+- * soft-power switch and allows the user to switch off the system
++/*
++ * parisc_panic_event() is called by the panic handler.
++ *
++ * As soon as a panic occurs, our tasklets above will not
++ * be executed any longer. This function then re-enables
++ * the soft-power switch and allows the user to switch off
++ * the system. We rely in pdc_soft_power_button_panic()
++ * since this version spin_trylocks (instead of regular
++ * spinlock), preventing deadlocks on panic path.
+  */
+ static int parisc_panic_event(struct notifier_block *this,
+ 		unsigned long event, void *ptr)
+ {
+ 	/* re-enable the soft-power switch */
+-	pdc_soft_power_button(0);
++	pdc_soft_power_button_panic(0);
+ 	return NOTIFY_DONE;
  }
  
- static struct notifier_block panic_exit_notifier = {
--	.notifier_call 		= panic_exit,
--	.next 			= NULL,
--	.priority 		= 0
-+	.notifier_call	= panic_exit,
-+	.priority	= INT_MAX - 1, /* run as 2nd notifier, won't return */
+@@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block = {
+ 	.priority	= INT_MAX,
  };
  
- void uml_finishsetup(void)
+-
+ static int __init power_init(void)
+ {
+ 	unsigned long ret;
 -- 
 2.37.1
 
