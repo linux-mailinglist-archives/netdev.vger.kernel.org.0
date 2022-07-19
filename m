@@ -2,155 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44CA7579EE7
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FAAD579EB5
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238836AbiGSNHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 09:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        id S242697AbiGSNFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 09:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243079AbiGSNHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:07:11 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C78CB9A33;
-        Tue, 19 Jul 2022 05:27:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OOgi3eobJ7KTKR6vws8f9cb7aOusTBkZLEjgKpLa/ZVWRlxwqb6kQwwPrWi9kAbFknvJRq6I2sZDDkaRc1HMb0XXZBHPQ3LZBujnVhAxEuvCV+e0anMU4eMFDVtZFgiQkhm0tY2t5gDx3GmMlLPbCRo+mlYIN0GQl/SrJQASqoLPmkf78c7wqlA9axWALLlW1oHq3CsqjTmD6kICYUuVV3O/CMC5fFJLlYeDg78mEgtS5ZMYEmohGP0AB15ZgY9cf5+l5FPrJr5Oj/U2D6VEQChHPyAbhDS4qJ40leMv+y++zwkznIjD1P0evixKoofJNSfJdbqUCzZYGhrkqcN/vQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bccH/MgNfYcLdd4nb1fYRS/2bFGRRF6+BuJPfySHlUs=;
- b=SVyKGQOyYJhMQRMOIwMGJ2rVDzWffNkVNiHu6WRm08me1mwMW31Ya2tT0NM5s2+HvBbYQyBV1o1i4SOYk4/He8cWuGAvZkc5/+PhBZPRlJO90jXX5aBlIHnWEfncYwTEws2OcN8cqHpFdXjboauZ7kcolCrNyhp/XzOuaMtkDaEOOqTUwVp+tDKDPLqc8S2cFI3AmQLg5zRTyFSs8qkAQsd9ZIKsVDeid8x154Un9WrsY0pQ1Pe3AJt3zIVWPQbTURhjXtSS7nmGVraOcA4imSVLgL3ohs9T9eXot5scN8SD/U/yoZbBfTvZYYulCq857h2fdQ2AGJc/2ctvlSKJGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bccH/MgNfYcLdd4nb1fYRS/2bFGRRF6+BuJPfySHlUs=;
- b=QcSTxHHUpVNETUhAX7ymoaAEW9A7oMna80yMxa7JCi32CNDuhnlhAJ1mED2dWFd5iESgL+y1U2I4FFWhlSJMQRRbemIwKYm7ZeEK2neL4k2M4Kdahq4Aae5GNlOyxN7/KCssSJLjRzkwlMe7wmhtCCKNNOXeDZbvKPjpAcJ7joSGvdN/QVHvTmU5Z3C5cEaJusVtnIaPfh5RHz4MCA5l3gR5xPFg+g6UNyQiIhUiZFDrE9AFRxmkg8ePY1YaJDySzIn1RRBkdGbVO2hNIZB5caYsvjaga3SpLViiWsoaAUAS4Bv9RwuxkZY64styUxkpJrk8dH33j3MdRF70tBRkbg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by DM6PR12MB4911.namprd12.prod.outlook.com (2603:10b6:5:20e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Tue, 19 Jul
- 2022 12:26:53 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Tue, 19 Jul 2022
- 12:26:53 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
-        nicolas.dichtel@6wind.com, dsahern@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>, stable@vger.kernel.org
-Subject: [PATCH net] mlxsw: spectrum_router: Fix IPv4 nexthop gateway indication
-Date:   Tue, 19 Jul 2022 15:26:26 +0300
-Message-Id: <20220719122626.2276880-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.36.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR10CA0100.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:803:28::29) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S243178AbiGSNEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:04:49 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C6C9E453;
+        Tue, 19 Jul 2022 05:26:41 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b11so26819927eju.10;
+        Tue, 19 Jul 2022 05:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RSZdkbs7G5hpiwtEWakB2gPa7jiA92IHYDoa8/9e8k4=;
+        b=Br7VhjTprCTlBd54jgegp22vK1wZcz92cjq5uvwAbO8jfJwmwH87LR8WMK+POisPrg
+         w1msUFPvl54GLQ3ROFy/yaVLWe72v0jzwx+rjvbGf+SMYaL3gq1Wjq6y8g6Qb0hDojbA
+         6z3NUj0xFOK/J3/SFL+AUbpyqXitHvGRZtNAf+W4HVt61VYBpVgz2b8XX8K5HkF6aPoC
+         f3CBoImm9z+8s0Kjgaf/0gVsxt6A6iqH8EzjwE3/v+XCh3F6nzPL2se82Wi/rLTbadHs
+         GyczTlswct9rygp3/JYntJa6UdiFDiIVl7KsIVEGzQoJHoQO+H8JdzzeSRFyRAJJEZX9
+         FnBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RSZdkbs7G5hpiwtEWakB2gPa7jiA92IHYDoa8/9e8k4=;
+        b=R9dl9XZJ5kT1JFN8rm9XPRIb0EM6OZpFTcP06JXNv4jHxAe1rE54ogtD6C0I5/wk6c
+         qgadD9K3qF0ivQDSdMXH2Iv9bjVQjgHfqBdoTYdktnUl9vEtEb734wRS+Iv2PmruBUUM
+         J8DWl1vyctNMd0Ai388KFC+G3y/wgmt0sGP3ksR0//AumQkPiavIJVlMbmU7y3k+l1LG
+         UrCfW/LNx86KDGmfLLqVvuAXI7s0Zi4UnY1XuUp3VEfwvCHEj05w+ejcu6BpcLmXp3Lh
+         8OfyKDgBpYyl7PdK4ij7ocjpBxlDdCkgFUTOzgxobLPfcIP363BERmFxCECQJrjuY2ck
+         2Svw==
+X-Gm-Message-State: AJIora+3JB4Y3xtI4AFARBQYuDTghYWux9in4NbFtlv0yjvFiA9iiT+a
+        z0fEIjfJv24Fqd4X6ckkv34=
+X-Google-Smtp-Source: AGRyM1tURG3fThixiG3XqEDGKnIhCymWFz4fxyXTcpaisc9YP/lagOO4waqgRh+b0WOC4y9v8Ye0Ew==
+X-Received: by 2002:a17:907:2e0d:b0:72b:8cd4:ca52 with SMTP id ig13-20020a1709072e0d00b0072b8cd4ca52mr29446627ejc.541.1658233599652;
+        Tue, 19 Jul 2022 05:26:39 -0700 (PDT)
+Received: from skbuf ([188.27.185.104])
+        by smtp.gmail.com with ESMTPSA id n23-20020aa7c697000000b0043a71c376a2sm10493515edq.33.2022.07.19.05.26.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:26:38 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 15:26:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v2 01/15] net: dsa: qca8k: make mib autocast
+ feature optional
+Message-ID: <20220719122636.rsfkejgampb5kcp2@skbuf>
+References: <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-1-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4925460f-0018-41e2-9e3a-08da6981f6a0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4911:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 84XYg0WuvkJ7GdWkFYbBo05Uqc8ZP94ah6UNIXx1YKeGxnGBtkBjsbcRXve9+1xlGDHVVRCHJ2kpal+5OCr6cn1/N+b2ribngxLvZ535E1vTF6qBv2kEfhWmEdQNEY1iC/+rf7I3vKii92QtwsUA3M7Qrn/7AIlSdu4jC1JmBXMYfuIC+v5bBVgNNj7QScTsmjcXuZVleWflsgbxuT9ICY5N2gzcyVpERi9ZVtPABtaOmb3hGq2tpZOyWjA8pgU3nrRr2JtHs2SdBzS8odtKHxHngpmBF83nqW1sQUf/o3pJF1vrwuXuN3x3tLF9pqltao7+vafnwpDSkafVgjy5vnHm+JYkaGII8pNExoXYUat6LKxvFwnByIaFyuyowMslYZoJZt1y+iQlBeyueQzWblOJtQYTydcMR/TvwVL/CdwwxDoVhwq0nfsC4/rhLslq3758XMToQMW6xwRcF7fAwXLBhwpKIjRtuk5tGIu/3XiMfNbdxiIKMKijpN5gBFjWZOs5r3Ns3BG+5iamigkMwfhBLMrMf4ygd905dvtI+wY8lMmbV1rEUGjm9uEY9ANHnVQkAnkCocAMA8PvaL51O1dGnFATOjGKER8Q1gxylp9oVJXzs6cYLdBx04hZ+1fjFyT3G6Y74TIYUjSglcGrT9jY7Wm3odY+NPq+eYRxpG7dHag2CNRkMN8GzaomU0hPewMrGOYVv4zJGhasZdOi4FQcMtXETaa3dSw5c3RSQ0KCRqz9OfkM2KznHuYjQYsk
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(83380400001)(478600001)(66476007)(6512007)(2906002)(6666004)(66574015)(41300700001)(26005)(86362001)(6506007)(1076003)(186003)(8936002)(5660300002)(2616005)(6486002)(6916009)(316002)(38100700002)(36756003)(8676002)(66556008)(66946007)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rx8jKPSVj/z7AbSZhvxpdQgB/BoWOKBG5lNuIRhpgEce8MiPpszRLaVXhzoB?=
- =?us-ascii?Q?msXyQ5d7zm9M0ST99I9LmRTPUUaj7iMu97wLwxHTDbC8qbnVZxh63BI2E7JQ?=
- =?us-ascii?Q?Ooyh+bzbDDjwZlaQqRVeLXae+zA7ONK7UqO3HYJoLBxxuR4ME9s39o1uDwro?=
- =?us-ascii?Q?G8Yiw44IdBmprFMjJCGW0UngpjckcmtDKD0VfJfvfRG9xpAcr2q+v/7m0AhL?=
- =?us-ascii?Q?hbxP5SpC1zzqurjdYl++94tdgS1dtHFcM7CDGYSMu5T3+ZjTiFzcLHDG6JDL?=
- =?us-ascii?Q?2XaZhXIa0K3GYKNZTFlqPNWusQzBNMCy2uEBEJPmqCw+RLq73nLVijCETKG1?=
- =?us-ascii?Q?OdLfnot6oReGiOjK0W1QO1k0otZM+3SO9LADb2AxH02WrQWObwJekm71lVnw?=
- =?us-ascii?Q?2WThgxwCyH8ztYSWmh8Xvr7vG5qW+RU07c4D9LZ2iBdmb8S/YskVOUHTfuMP?=
- =?us-ascii?Q?ZZXuaBE5w7OEoze92Rt3bE62BQJN+zQ7kS7AuNy8SKKUARrEAyhLK2SMEpLh?=
- =?us-ascii?Q?yvCXlQJcMr6hUoQicR/Skk6SXit6UMowNIlPYqyrmjkOTqMGRaZG+gDC+uGw?=
- =?us-ascii?Q?TVjp2aNDIdOqAdbHG1T1aXMx5Gw+ewwqymx2v4j9Z90BCaUQLSQo6HBdEgNS?=
- =?us-ascii?Q?EwljJSA7hPCRYPIs9vYgvDHlSNoweSyorQizlXK2WEWHGx9oegZcN8p/aBOZ?=
- =?us-ascii?Q?J2eL0M1mc/UBUwic+SzrZG5SXDvroQCY5/F1o7P/vx3um2jim45IOJuqk87S?=
- =?us-ascii?Q?y0pYabXTKP5+fRgI3AERvISfeeBJ1bfBH2h45ZM0bFd4Gxc/QwceLB13Vp7a?=
- =?us-ascii?Q?0wdGKpkDMY/3Iree9st3TrT5MT9riRm/JJ9gXNzlWUvTwtVpW8sBoREY+29U?=
- =?us-ascii?Q?9ccLeIil1lZWNkMcnICfh7AYlYZdUXon/0aAs288SlKfj61ivxntUtSuU+Rw?=
- =?us-ascii?Q?MHRTR0R7Xq81kMqeW/omb9naptOwMGoifbXyk/cjVknURo3YyYXXyUWwqBLK?=
- =?us-ascii?Q?XTyQntg/w7SRIRFuqOY8AWJ22Bcim1zTaBWPpf6anBA/q/3hUtK5C5uMbNZL?=
- =?us-ascii?Q?8Wr+yWDSR2T7Y8STxsBviQPdUsvwSq4zN2JOSwq7c6ag/gzjpZ5CPvcv2l11?=
- =?us-ascii?Q?RocvSHlfFdbJVUMWys4CNaeMKSU2QaiWerI9XbM7FcETtJffu+SG/u/PJP39?=
- =?us-ascii?Q?DNKvKUArLWnqMoHTDub0koCrzK0E/LFjTY8UALT6SebOjuyzPwgTUms5cSpk?=
- =?us-ascii?Q?bFvnc6AXoaFweKwKFpyzve7nXkwNyTnt8pPDpXLreHrVOyXLuMYg+CAEdyWL?=
- =?us-ascii?Q?HkUjJaPeqavZDVZLfAW/pJ+4F3sVpD6p9GTBHhiYqCzOBs4WFXVhtZVxaCuy?=
- =?us-ascii?Q?5STfDqXL2gGmqNZ4dXeKFEbt+ILm+Z4IDov+Md/U8Ki5JI/oJSPBzkEY1x/x?=
- =?us-ascii?Q?nW5NvZjWcTgc0l0qw1GaEXea75qVMZDF4NiHq5XXHvyXIujP8ELxDiZ655Zo?=
- =?us-ascii?Q?Y0CK7y074d7FTopnClOhSfbBNp9kBvC1a/pmrkg2CuKSXxFLLnGwDroyzRvn?=
- =?us-ascii?Q?X/ciVrCy0i4hTm+uPv5PzAh/1SaObIoWNQ0gWbjy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4925460f-0018-41e2-9e3a-08da6981f6a0
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 12:26:53.6702
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Lfe7+oVv0HgljQmt3tLHXTDG8TjIREgiAJ+NMMWR+9CBZu8X0Nlxo0ai2ovS7V7kyyLWcvG/dst65hyLVlRcbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4911
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719005726.8739-2-ansuelsmth@gmail.com>
+ <20220719005726.8739-2-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mlxsw needs to distinguish nexthops with a gateway from connected
-nexthops in order to write the former to the adjacency table of the
-device. The check used to rely on the fact that nexthops with a gateway
-have a 'link' scope whereas connected nexthops have a 'host' scope. This
-is no longer correct after commit 747c14307214 ("ip: fix dflt addr
-selection for connected nexthop").
+On Tue, Jul 19, 2022 at 02:57:11AM +0200, Christian Marangi wrote:
+> Some switch may not support mib autocast feature and require the legacy
+> way of reading the regs directly.
+> Make the mib autocast feature optional and permit to declare support for
+> it using match_data struct.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k.c | 11 +++++++----
+>  drivers/net/dsa/qca/qca8k.h |  1 +
+>  2 files changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> index 1cbb05b0323f..a57c53ce2f0c 100644
+> --- a/drivers/net/dsa/qca/qca8k.c
+> +++ b/drivers/net/dsa/qca/qca8k.c
+> @@ -2112,12 +2112,12 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+>  	u32 hi = 0;
+>  	int ret;
+>  
+> -	if (priv->mgmt_master &&
+> -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
+> -		return;
+> -
+>  	match_data = of_device_get_match_data(priv->dev);
 
-Fix that by instead checking the address family of the gateway IP. This
-is a more direct way and also consistent with the IPv6 counterpart in
-mlxsw_sp_rt6_is_gateway().
+I didn't notice at the time that you already call of_device_get_match_data()
+at driver runtime, but please be aware that it is a relatively expensive
+operation (takes raw spinlocks, iterates etc), or at least much more
+expensive than it needs to be. What other drivers do is cache the result
+of this function once in priv->info and just use priv->info, since it
+won't change during the lifetime of the driver.
 
-Cc: stable@vger.kernel.org
-Fixes: 747c14307214 ("ip: fix dflt addr selection for connected nexthop")
-Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
----
-Copied stable since Nicolas' patch has stable copied and I don't want
-stable trees to have his patch, but not mine. To make it clear how far
-this patch needs to be backported, I have included the same Fixes tag as
-him.
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  
+> +	if (priv->mgmt_master && match_data->autocast_mib &&
+> +	    match_data->autocast_mib(ds, port, data) > 0)
+> +		return;
+> +
+>  	for (i = 0; i < match_data->mib_count; i++) {
+>  		mib = &ar8327_mib[i];
+>  		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
+> @@ -3260,16 +3260,19 @@ static const struct qca8k_match_data qca8327 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.reduced_package = true,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 23d526f13f1c..abc0096a20a9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5292,7 +5292,7 @@ static bool mlxsw_sp_fi_is_gateway(const struct mlxsw_sp *mlxsw_sp,
- {
- 	const struct fib_nh *nh = fib_info_nh(fi, 0);
- 
--	return nh->fib_nh_scope == RT_SCOPE_LINK ||
-+	return nh->fib_nh_gw_family ||
- 	       mlxsw_sp_nexthop4_ipip_type(mlxsw_sp, nh, NULL);
- }
- 
--- 
-2.36.1
+I thought you were going to create a dedicated sub-structure for
+function pointers?
+
+>  };
+>  
+>  static const struct qca8k_match_data qca8328 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+>  };
+>  
+>  static const struct qca8k_match_data qca833x = {
+>  	.id = QCA8K_ID_QCA8337,
+>  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+>  };
+>  
+>  static const struct of_device_id qca8k_of_match[] = {
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index ec58d0e80a70..c3df0a56cda4 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -328,6 +328,7 @@ struct qca8k_match_data {
+>  	u8 id;
+>  	bool reduced_package;
+>  	u8 mib_count;
+> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
+>  };
+>  
+>  enum {
+> -- 
+> 2.36.1
+> 
 
