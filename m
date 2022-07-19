@@ -2,1022 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D412E57AA4B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 01:12:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEE957AA99
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 01:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240691AbiGSXMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 19:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
+        id S235114AbiGSXua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 19:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240594AbiGSXLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 19:11:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373BE5D0D3
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 16:11:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5BAB81DB8
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 23:11:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D232EC341CF;
-        Tue, 19 Jul 2022 23:11:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658272301;
-        bh=xvpRUUqRHZ66PFLKggRKJtmTrviubfQT6Q6IQ/bAHaQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j+ieQO1VJKed2Un/3NQ5Kk0MT0xgv8QxlPGBcdgl3IZYc3whUnvN5Jspv6bHuHTSm
-         5Vbs5Tx4aupO4mP5d3oX4gz+l+lzMx7XhH1KiWKCnWHUH+/YXhT8AxBjrz3DhN66LE
-         czCzGYaG8iulFUncgufNEy6jBa6sdcZ51ZZ/AAK9XXCkDE0ZPMaDqI+i2JF9K2kpCA
-         xeLNrhCcl/HXggK8CJGA9kD7KRChJOcuK7USCE3XdrQ0k0s/mVNhQ/O/wc0MhBHeho
-         2sggbKYrsxXkw/y3wERzW2/PS2CoNkNIWdCrTHvaLZ/nM4RXNy6Kn4ZsTdGrmypnC7
-         y806CriStBLuw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
-        tariqt@nvidia.com, vfedorenko@novek.ru,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 7/7] tls: rx: do not use the standard strparser
-Date:   Tue, 19 Jul 2022 16:11:29 -0700
-Message-Id: <20220719231129.1870776-8-kuba@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220719231129.1870776-1-kuba@kernel.org>
-References: <20220719231129.1870776-1-kuba@kernel.org>
-MIME-Version: 1.0
+        with ESMTP id S232818AbiGSXu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 19:50:28 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2078.outbound.protection.outlook.com [40.107.20.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8473D45981;
+        Tue, 19 Jul 2022 16:50:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XW6LuT/gS92rx9toYcpmwAfy71NvEmQtuETLrlC6V8qSDy6+3rOgRF96X3JB+kD9lI39Q7a3tQ2UQ4AJ0Ybdql4joi4ZzYjFkcCELdXXjgSbALBZ6A66t46V04tahEYJTlG9pa3VeM28dymqOoqh2/T+H58B6Sh2mAwz/+NMIlIFfz5G+MCE0fAMlsSl3ZsW5Y0GqDr4iRAGn16NEiYRNa83p4Pvwub9efF06PTv0WzChB39uMQxmxnLVy59hFBt2vnz5GzUpWxeHi+SBWoDMII7S8+R2NBF+EAwhhlhjpiGZInOQ9qY2HkW3LZhvTQP94cdWWHxpT94ywjQuR3J8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fg7FcY8f9NgNKCZJVAYR1TR0Tcabg5CNBnbS0U2aw6o=;
+ b=OkPRI069MCBoWBYh4evgdQNHvI3vOtyjT7u3qQaZCuqK+M2PieSQ1L/azwdxW+jX6Xyg3yXPQmI2xHTXGmMSoIwkDjhF6d/8I8pK/6DCQOPKBzNmuDyroQ6e7Mlc9Ye7Vcfu2ujhA8L9x2ueimVMxZQ26fro0UOj43XRhshRzyR0CkSVYVuU1zjR2g76leOeN3n0yd81pqCjM7agn9SzMh6kS6k9C8e1dQPZRHXUNjv9rdAn8n6aD3FBIzqJFBGnU8huXP8v2JknjVLYhkgHs64nrEfbkMyOLv0vnofbV9SDDMvTLBrGRXE0bN3rEW8wjLUyBM28QENWicCLRg2qOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fg7FcY8f9NgNKCZJVAYR1TR0Tcabg5CNBnbS0U2aw6o=;
+ b=adm33wrSd0cdyOHuj59aI4s4luoBONTUBNEPnlb1ZGWBaBR4S9kwlRETNk9Bkwh1azqL9X/7hHlAPq9845my288wAOY6VgGaXZUQqtiKnrLxNCwJbqgf2jqrCD5mvA9NMxWsySCbg2E2vuH57AQFjTXmltC/yXxWfq+2/b8S4+tJaWjHpuiXe5aZmErekZUX5HRyqQAEntc2UxKrF+INJMPXlewM2pU06mmIFuhLiLlPJCDy9A2PTp7Avl9ss4b6Y8UCTO71McP5TyVQcBH7UobSYdE/xYBtiqvVWC3Mcm5VTkGQaiwjB965Mn8hDIc1qKY+7J3K9dnwkmVtIHYq+w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DB7PR03MB4811.eurprd03.prod.outlook.com (2603:10a6:10:30::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
+ 2022 23:50:24 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 23:50:24 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Bhadram Varka <vbhadram@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v2 00/11] net: phy: Add support for rate adaptation
+Date:   Tue, 19 Jul 2022 19:49:50 -0400
+Message-Id: <20220719235002.1944800-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: BL1PR13CA0227.namprd13.prod.outlook.com
+ (2603:10b6:208:2bf::22) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8e233c17-c0b1-49fb-f991-08da69e172a4
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4811:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gaDngFpu9xVSWYztqWxF2wcoUOGr+HFm3vGH8WY1lbY8zx6dJic/wZ6sWqkrp7ETMkGCRelnGWcogdMWZ8D8ZFMpG8l8aS4EwB6idnHBAwzU1u4b5hWuRgNhHJzACInmQ2t/ldlG0tBhjMxJ+JAOeCc+12JSzhu8uhPiEAQrqh/X4FDp7ORNjV7UYkDClMgIk309xIk5IAsFF+ZeMALOhG1FB61tYPLxN4iz1yMug/oMSkQZ1v1ue4xwZRvVSLUu3Z/z/HbFl8pRaNEmAkjOyoakg7Y1KfDicYV+hTio7qfD6tTYAH18dcvhen6RxFBRz5qvr1QZHRVKIvS24HlNnAn+bwEwy5jNkOQ1pWAt5b6CdGoxDTvt0RthoshiYznCdfs03qlZNT1BmazLtKAyisZS/9a5q5XCth/KJdI1KPaK30Ia1e1vokRpZomuR5pTa+yU0rBQCZ7AdXjce+xQirBhh4PA5NDPg0a5j2tx2rmEpTb7HvNu4ausS7xlRNhHe0jzzqlWRYSb6K87R/hvMovpHm2czIMONjAaPdjGg3YzueGGcFfiZAAInwbWx0h0yPN82NcvipYDaCnwSiML0Zw2z10uzH11UbATWI++OViVbWNLLQ2zbXQaO2s97/6Uv5Tt0+XsSa25+0YvCvvByqAguiM2hW0T1ZtLhNbONfYHO52OjrypepBEJdEHmkM+nbf8t1nAgFrM9uB7+LYUFR6wE8SXCxqzswHLLQRLD/T/4Ry5WliQaJmN+neb62WYxYe/XpWWwEdZEo0KgTN7puN7KiVkRlW+MqrxbzaQMgXTbIHmGsO0NLoibhozlBYNiSDWLkFlzdJg/PYyuA82Zw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(136003)(39850400004)(396003)(376002)(346002)(54906003)(2906002)(1076003)(83380400001)(186003)(66476007)(66946007)(966005)(8676002)(6666004)(4326008)(110136005)(36756003)(66556008)(52116002)(26005)(6512007)(6506007)(2616005)(38350700002)(478600001)(86362001)(41300700001)(44832011)(5660300002)(316002)(7416002)(8936002)(38100700002)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NfNwkst3JPu/wcaYThYoFo8oU4tvq41Q7VdLoOaOpWcpoB5uPuerfvdYJuye?=
+ =?us-ascii?Q?xs2C85HPz6yo4voHqtnEGQ+GnTtc2otXeE7TZIN4tU+yhuAiseSu204MnqDu?=
+ =?us-ascii?Q?ySitsReGvC+3GzK+Jt+2JQ5lVTfuViSCFRSycF4Uc8YpiOQlmPPUxdKS+95M?=
+ =?us-ascii?Q?Acy6Acbz/cmaUzxLbhLU8ZyTNfiBZFHEeop39UNzn0Rq62u5L0kZx8BcYx2m?=
+ =?us-ascii?Q?lUC/hrOFr7vg5FqaTnIXOegq14hTgY3K+fvE155xhgIT1xzAhJs6bzzSB91B?=
+ =?us-ascii?Q?mYHriF+THZDPcvtcexrvKpqbcDLeidt8de5S+rBUWRYPNsb0DMNjVAqTaxRH?=
+ =?us-ascii?Q?tXDCXVnWcTOFGiCb/Alls2Gqna62TrPXOlBf2Dnd6XK7mYk5OapUP8zejGN8?=
+ =?us-ascii?Q?ft99K97sRIAhT4oKZsYmoLlZsrZfnj1Vyhc/nzZIboFUlz0CtkHk3+4F3KJy?=
+ =?us-ascii?Q?R2eJF6M6OCFPVgkJbgHRwa7PaCQqq4CkzHH/tDp812hStucXAyrKrmJ3eKfH?=
+ =?us-ascii?Q?HFnWceOla4j7tEUGrgzZVOGdD2mEjWD/868w7ZGkpGaq8r2FamSZM3/gG/Av?=
+ =?us-ascii?Q?E67pU0xfU1be44Z8y3CdarYnS2do3fRT26owu1I69/IMSyKAsNIqFkhDfZAX?=
+ =?us-ascii?Q?bCN7pocz4vEHapGkTXMw+ETQf5HmfzMYKocCgHDpFJy2fVIcccByXoRnAI66?=
+ =?us-ascii?Q?0gxAD3i/gYOJNOhtLaIoMOQMsW2W7aYLz3uVSnwEwPKwE96yVYk7ZgyDTeBD?=
+ =?us-ascii?Q?Zf0BmJ1GFKVMliGPwDiYMs10EWYvrcQRcLz6BTB4Ey6Ar7LYUVf8GX8iS88/?=
+ =?us-ascii?Q?LMkLmfWcLWKn+UvylERNZoasPQWuKcYIFnrZS58xi9r8zOdVFnTYLHQ1J2Xg?=
+ =?us-ascii?Q?Zui/1W8uggpZWzwYZU9k+ZZ2gZXa895Tu+jQ9KrUCnuVrjVuuY05SyHQxmMk?=
+ =?us-ascii?Q?K3wDZURJTDjl4/A8quyV8LBagvw1tbJFz0xaV6gsRWxteDGdz4THZRrSgspJ?=
+ =?us-ascii?Q?60WRKHPo6GeB5jiARApzYrj1xfmBPJzuPww/AqznguOmA8UvDCYhQLgw6OC3?=
+ =?us-ascii?Q?Fk4tNieEz1hkcqz0gmX+K+le2XxdSVGUrc9xNX7347fboDm8TF+aPPnZKAYC?=
+ =?us-ascii?Q?kuXSwuBxSM/HpA/M+/so8v2F+iNFr7g47ORWWcO+5iXFjJN1BRdk3b6Wc596?=
+ =?us-ascii?Q?JdQIoh6g1qy5vs6IC2syxENbwrmyfh/sutXxB8iy5SXlCZ6WYldvoEr+wIRl?=
+ =?us-ascii?Q?uwogrrdgGcLHIzjSrGb12H5FknocnOtMRgqWolw6GjzZ4U5/e/dK1k6ub9+k?=
+ =?us-ascii?Q?4WZbPe2K4iwGFEMDLd0oYTy2Hyi1Ad2tZqO+98uFml97ddQqebMQV7UHfywL?=
+ =?us-ascii?Q?+S5W71rEm+kMksHicWG/edChsTMKwIfuuUQlPqECGWWMHD6cLFMrK0JSKGdl?=
+ =?us-ascii?Q?GdSd72XGT+9cgoK2qEb3DrpALIuh+hs75XQZ2e7k4JcQs3j/hk6A+HaT0Jis?=
+ =?us-ascii?Q?EoMspkqk8NqCganowO/fup2czdNxIzjf+1M1OhG6JHsY3fQnKerXOBqbE/fO?=
+ =?us-ascii?Q?kzlUelIK60kO+pi2VBl0edYWsfWQrqe+gbUDWazR9mzrEgM9jB7WdKeSCdyI?=
+ =?us-ascii?Q?TA=3D=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e233c17-c0b1-49fb-f991-08da69e172a4
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 23:50:24.0193
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qA5Dno1HBqxVgupKi9ceVkK1vAlSbhiCBY7uUgzfZp/jqRkejKb7UJUzi1ychNexeDG0Ygsq3kNRc0Xgy16/kA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4811
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS is a relatively poor fit for strparser. We pause the input
-every time a message is received, wait for a read which will
-decrypt the message, start the parser, repeat. strparser is
-built to delineate the messages, wrap them in individual skbs
-and let them float off into the stack or a different socket.
-TLS wants the data pages and nothing else. There's no need
-for TLS to keep cloning (and occasionally skb_unclone()'ing)
-the TCP rx queue.
+This adds support for phy rate adaptation: when a phy adapts between
+differing phy interface and link speeds. It was originally submitted as
+part of [1], which is considered "v1" of this series.
 
-This patch uses a pre-allocated skb and attaches the skbs
-from the TCP rx queue to it as frags. TLS is careful never
-to modify the input skb without CoW'ing / detaching it first.
+We need support for rate adaptation for two reasons. First, the phy
+consumer needs to know if the phy will perform rate adaptation in order to
+program the correct advertising. An unaware consumer will only program
+support for link modes at the phy interface mode's native speed. This will
+cause autonegotiation to fail if the link partner only advertises support
+for lower speed link modes.
 
-Since we call TCP rx queue cleanup directly we also get back
-the benefit of skb deferred free.
+Second, to reduce packet loss it may be desirable to throttle packet
+throughput. In past discussions [2-4], this behavior has been
+controversial. It is the opinion of several developers that it is the
+responsibility of the system integrator or end user to set the link
+settings appropriately for rate adaptation. In particular, it was argued
+that it is difficult to determine whether a particular phy has rate
+adaptation enabled, and it is simpler to keep such determinations out of
+the kernel. Another criticism is that packet loss may happen anyway, such
+as if a faster link is used with a switch or repeater that does not support
+pause frames.
 
-Overall this results in a 6% gain in my benchmarks.
+I believe that our current approach is limiting, especially when
+considering that rate adaptation (in two forms) has made it into IEEE
+standards. In general, When we have appropriate information we should set
+sensible defaults. To consider use a contrasting example, we enable pause
+frames by default for switches which autonegotiate for them. When it's the
+phy itself generating these frames, we don't even have to autonegotiate to
+know that we should enable pause frames.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: borisp@nvidia.com
-CC: john.fastabend@gmail.com
----
- include/net/tls.h  |  19 +-
- net/tls/tls.h      |  24 ++-
- net/tls/tls_main.c |  20 +-
- net/tls/tls_strp.c | 484 +++++++++++++++++++++++++++++++++++++++++++--
- net/tls/tls_sw.c   |  80 ++++----
- 5 files changed, 558 insertions(+), 69 deletions(-)
+Our current approach also encourages workarounds, such as commit
+73a21fa817f0 ("dpaa_eth: support all modes with rate adapting PHYs").
+These workarounds are fine for phylib drivers, but phylink drivers cannot
+use this approach (since there is no direct access to the phy). Note that
+even when we determine (e.g.) the pause settings based on whether rate
+adaptation is enabled, they can still be overridden by userspace (using
+ethtool). It might be prudent to allow disabling of rate adaptation
+generally in ethtool as well.
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 181c496b01b8..abb050b0df83 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -108,18 +108,33 @@ struct tls_sw_context_tx {
- 	unsigned long tx_bitmask;
- };
- 
-+struct tls_strparser {
-+	struct sock *sk;
-+
-+	u32 mark : 8;
-+	u32 stopped : 1;
-+	u32 copy_mode : 1;
-+	u32 msg_ready : 1;
-+
-+	struct strp_msg stm;
-+
-+	struct sk_buff *anchor;
-+	struct work_struct work;
-+};
-+
- struct tls_sw_context_rx {
- 	struct crypto_aead *aead_recv;
- 	struct crypto_wait async_wait;
--	struct strparser strp;
- 	struct sk_buff_head rx_list;	/* list of decrypted 'data' records */
- 	void (*saved_data_ready)(struct sock *sk);
- 
--	struct sk_buff *recv_pkt;
- 	u8 reader_present;
- 	u8 async_capable:1;
- 	u8 zc_capable:1;
- 	u8 reader_contended:1;
-+
-+	struct tls_strparser strp;
-+
- 	atomic_t decrypt_pending;
- 	/* protect crypto_wait with decrypt_pending*/
- 	spinlock_t decrypt_compl_lock;
-diff --git a/net/tls/tls.h b/net/tls/tls.h
-index 154a3773e785..0e840a0c3437 100644
---- a/net/tls/tls.h
-+++ b/net/tls/tls.h
-@@ -1,4 +1,5 @@
- /*
-+ * Copyright (c) 2016 Tom Herbert <tom@herbertland.com>
-  * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
-  * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
-  *
-@@ -127,10 +128,24 @@ int tls_sw_fallback_init(struct sock *sk,
- 			 struct tls_offload_context_tx *offload_ctx,
- 			 struct tls_crypto_info *crypto_info);
- 
-+int tls_strp_dev_init(void);
-+void tls_strp_dev_exit(void);
-+
-+void tls_strp_done(struct tls_strparser *strp);
-+void tls_strp_stop(struct tls_strparser *strp);
-+int tls_strp_init(struct tls_strparser *strp, struct sock *sk);
-+void tls_strp_data_ready(struct tls_strparser *strp);
-+
-+void tls_strp_check_rcv(struct tls_strparser *strp);
-+void tls_strp_msg_done(struct tls_strparser *strp);
-+
-+int tls_rx_msg_size(struct tls_strparser *strp, struct sk_buff *skb);
-+void tls_rx_msg_ready(struct tls_strparser *strp);
-+
-+void tls_strp_msg_load(struct tls_strparser *strp, bool force_refresh);
- int tls_strp_msg_cow(struct tls_sw_context_rx *ctx);
- struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx);
--int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
--		      struct sk_buff_head *dst);
-+int tls_strp_msg_hold(struct tls_strparser *strp, struct sk_buff_head *dst);
- 
- static inline struct tls_msg *tls_msg(struct sk_buff *skb)
- {
-@@ -141,12 +156,13 @@ static inline struct tls_msg *tls_msg(struct sk_buff *skb)
- 
- static inline struct sk_buff *tls_strp_msg(struct tls_sw_context_rx *ctx)
- {
--	return ctx->recv_pkt;
-+	DEBUG_NET_WARN_ON_ONCE(!ctx->strp.msg_ready || !ctx->strp.anchor->len);
-+	return ctx->strp.anchor;
- }
- 
- static inline bool tls_strp_msg_ready(struct tls_sw_context_rx *ctx)
- {
--	return ctx->recv_pkt;
-+	return ctx->strp.msg_ready;
- }
- 
- #ifdef CONFIG_TLS_DEVICE
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 9703636cfc60..08ddf9d837ae 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -725,6 +725,10 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
- 	if (tx) {
- 		ctx->sk_write_space = sk->sk_write_space;
- 		sk->sk_write_space = tls_write_space;
-+	} else {
-+		struct tls_sw_context_rx *rx_ctx = tls_sw_ctx_rx(ctx);
-+
-+		tls_strp_check_rcv(&rx_ctx->strp);
- 	}
- 	return 0;
- 
-@@ -1141,20 +1145,28 @@ static int __init tls_register(void)
- 	if (err)
- 		return err;
- 
-+	err = tls_strp_dev_init();
-+	if (err)
-+		goto err_pernet;
-+
- 	err = tls_device_init();
--	if (err) {
--		unregister_pernet_subsys(&tls_proc_ops);
--		return err;
--	}
-+	if (err)
-+		goto err_strp;
- 
- 	tcp_register_ulp(&tcp_tls_ulp_ops);
- 
- 	return 0;
-+err_strp:
-+	tls_strp_dev_exit();
-+err_pernet:
-+	unregister_pernet_subsys(&tls_proc_ops);
-+	return err;
- }
- 
- static void __exit tls_unregister(void)
- {
- 	tcp_unregister_ulp(&tcp_tls_ulp_ops);
-+	tls_strp_dev_exit();
- 	tls_device_cleanup();
- 	unregister_pernet_subsys(&tls_proc_ops);
- }
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index d9bb4f23f01a..b945288c312e 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -1,37 +1,493 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2016 Tom Herbert <tom@herbertland.com> */
- 
- #include <linux/skbuff.h>
-+#include <linux/workqueue.h>
-+#include <net/strparser.h>
-+#include <net/tcp.h>
-+#include <net/sock.h>
-+#include <net/tls.h>
- 
- #include "tls.h"
- 
--struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx)
-+static struct workqueue_struct *tls_strp_wq;
-+
-+static void tls_strp_abort_strp(struct tls_strparser *strp, int err)
-+{
-+	if (strp->stopped)
-+		return;
-+
-+	strp->stopped = 1;
-+
-+	/* Report an error on the lower socket */
-+	strp->sk->sk_err = -err;
-+	sk_error_report(strp->sk);
-+}
-+
-+static void tls_strp_anchor_free(struct tls_strparser *strp)
- {
-+	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
-+
-+	DEBUG_NET_WARN_ON_ONCE(atomic_read(&shinfo->dataref) != 1);
-+	shinfo->frag_list = NULL;
-+	consume_skb(strp->anchor);
-+	strp->anchor = NULL;
-+}
-+
-+/* Create a new skb with the contents of input copied to its page frags */
-+static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
-+{
-+	struct strp_msg *rxm;
- 	struct sk_buff *skb;
-+	int i, err, offset;
-+
-+	skb = alloc_skb_with_frags(0, strp->anchor->len, TLS_PAGE_ORDER,
-+				   &err, strp->sk->sk_allocation);
-+	if (!skb)
-+		return NULL;
-+
-+	offset = strp->stm.offset;
-+	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-+		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
- 
--	skb = ctx->recv_pkt;
--	ctx->recv_pkt = NULL;
-+		WARN_ON_ONCE(skb_copy_bits(strp->anchor, offset,
-+					   skb_frag_address(frag),
-+					   skb_frag_size(frag)));
-+		offset += skb_frag_size(frag);
-+	}
-+
-+	skb_copy_header(skb, strp->anchor);
-+	rxm = strp_msg(skb);
-+	rxm->offset = 0;
- 	return skb;
- }
- 
-+/* Steal the input skb, input msg is invalid after calling this function */
-+struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx)
-+{
-+	struct tls_strparser *strp = &ctx->strp;
-+
-+#ifdef CONFIG_TLS_DEVICE
-+	DEBUG_NET_WARN_ON_ONCE(!strp->anchor->decrypted);
-+#else
-+	/* This function turns an input into an output,
-+	 * that can only happen if we have offload.
-+	 */
-+	WARN_ON(1);
-+#endif
-+
-+	if (strp->copy_mode) {
-+		struct sk_buff *skb;
-+
-+		/* Replace anchor with an empty skb, this is a little
-+		 * dangerous but __tls_cur_msg() warns on empty skbs
-+		 * so hopefully we'll catch abuses.
-+		 */
-+		skb = alloc_skb(0, strp->sk->sk_allocation);
-+		if (!skb)
-+			return NULL;
-+
-+		swap(strp->anchor, skb);
-+		return skb;
-+	}
-+
-+	return tls_strp_msg_make_copy(strp);
-+}
-+
-+/* Force the input skb to be in copy mode. The data ownership remains
-+ * with the input skb itself (meaning unpause will wipe it) but it can
-+ * be modified.
-+ */
- int tls_strp_msg_cow(struct tls_sw_context_rx *ctx)
- {
--	struct sk_buff *unused;
--	int nsg;
-+	struct tls_strparser *strp = &ctx->strp;
-+	struct sk_buff *skb;
-+
-+	if (strp->copy_mode)
-+		return 0;
-+
-+	skb = tls_strp_msg_make_copy(strp);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	tls_strp_anchor_free(strp);
-+	strp->anchor = skb;
-+
-+	tcp_read_done(strp->sk, strp->stm.full_len);
-+	strp->copy_mode = 1;
-+
-+	return 0;
-+}
-+
-+/* Make a clone (in the skb sense) of the input msg to keep a reference
-+ * to the underlying data. The reference-holding skbs get placed on
-+ * @dst.
-+ */
-+int tls_strp_msg_hold(struct tls_strparser *strp, struct sk_buff_head *dst)
-+{
-+	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
-+
-+	if (strp->copy_mode) {
-+		struct sk_buff *skb;
-+
-+		WARN_ON_ONCE(!shinfo->nr_frags);
-+
-+		/* We can't skb_clone() the anchor, it gets wiped by unpause */
-+		skb = alloc_skb(0, strp->sk->sk_allocation);
-+		if (!skb)
-+			return -ENOMEM;
-+
-+		__skb_queue_tail(dst, strp->anchor);
-+		strp->anchor = skb;
-+	} else {
-+		struct sk_buff *iter, *clone;
-+		int chunk, len, offset;
-+
-+		offset = strp->stm.offset;
-+		len = strp->stm.full_len;
-+		iter = shinfo->frag_list;
-+
-+		while (len > 0) {
-+			if (iter->len <= offset) {
-+				offset -= iter->len;
-+				goto next;
-+			}
-+
-+			chunk = iter->len - offset;
-+			offset = 0;
-+
-+			clone = skb_clone(iter, strp->sk->sk_allocation);
-+			if (!clone)
-+				return -ENOMEM;
-+			__skb_queue_tail(dst, clone);
-+
-+			len -= chunk;
-+next:
-+			iter = iter->next;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void tls_strp_flush_anchor_copy(struct tls_strparser *strp)
-+{
-+	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
-+	int i;
-+
-+	DEBUG_NET_WARN_ON_ONCE(atomic_read(&shinfo->dataref) != 1);
-+
-+	for (i = 0; i < shinfo->nr_frags; i++)
-+		__skb_frag_unref(&shinfo->frags[i], false);
-+	shinfo->nr_frags = 0;
-+	strp->copy_mode = 0;
-+}
-+
-+static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
-+			   unsigned int offset, size_t in_len)
-+{
-+	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
-+	size_t sz, len, chunk;
-+	struct sk_buff *skb;
-+	skb_frag_t *frag;
-+
-+	if (strp->msg_ready)
-+		return 0;
-+
-+	skb = strp->anchor;
-+	frag = &skb_shinfo(skb)->frags[skb->len / PAGE_SIZE];
-+
-+	len = in_len;
-+	/* First make sure we got the header */
-+	if (!strp->stm.full_len) {
-+		/* Assume one page is more than enough for headers */
-+		chunk =	min_t(size_t, len, PAGE_SIZE - skb_frag_size(frag));
-+		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
-+					   skb_frag_address(frag) +
-+					   skb_frag_size(frag),
-+					   chunk));
-+
-+		sz = tls_rx_msg_size(strp, strp->anchor);
-+		if (sz < 0) {
-+			desc->error = sz;
-+			return 0;
-+		}
-+
-+		/* We may have over-read, sz == 0 is guaranteed under-read */
-+		if (sz > 0)
-+			chunk =	min_t(size_t, chunk, sz - skb->len);
-+
-+		skb->len += chunk;
-+		skb->data_len += chunk;
-+		skb_frag_size_add(frag, chunk);
-+		frag++;
-+		len -= chunk;
-+		offset += chunk;
-+
-+		strp->stm.full_len = sz;
-+		if (!strp->stm.full_len)
-+			goto read_done;
-+	}
-+
-+	/* Load up more data */
-+	while (len && strp->stm.full_len > skb->len) {
-+		chunk =	min_t(size_t, len, strp->stm.full_len - skb->len);
-+		chunk = min_t(size_t, chunk, PAGE_SIZE - skb_frag_size(frag));
-+		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
-+					   skb_frag_address(frag) +
-+					   skb_frag_size(frag),
-+					   chunk));
-+
-+		skb->len += chunk;
-+		skb->data_len += chunk;
-+		skb_frag_size_add(frag, chunk);
-+		frag++;
-+		len -= chunk;
-+		offset += chunk;
-+	}
-+
-+	if (strp->stm.full_len == skb->len) {
-+		desc->count = 0;
-+
-+		strp->msg_ready = 1;
-+		tls_rx_msg_ready(strp);
-+	}
-+
-+read_done:
-+	return in_len - len;
-+}
-+
-+static int tls_strp_read_copyin(struct tls_strparser *strp)
-+{
-+	struct socket *sock = strp->sk->sk_socket;
-+	read_descriptor_t desc;
-+
-+	desc.arg.data = strp;
-+	desc.error = 0;
-+	desc.count = 1; /* give more than one skb per call */
-+
-+	/* sk should be locked here, so okay to do read_sock */
-+	sock->ops->read_sock(strp->sk, &desc, tls_strp_copyin);
-+
-+	return desc.error;
-+}
-+
-+static int tls_strp_read_short(struct tls_strparser *strp)
-+{
-+	struct skb_shared_info *shinfo;
-+	struct page *page;
-+	int need_spc, len;
-+
-+	/* If the rbuf is small or rcv window has collapsed to 0 we need
-+	 * to read the data out. Otherwise the connection will stall.
-+	 * Without pressure threshold of INT_MAX will never be ready.
-+	 */
-+	if (likely(!tcp_epollin_ready(strp->sk, INT_MAX)))
-+		return 0;
-+
-+	shinfo = skb_shinfo(strp->anchor);
-+	shinfo->frag_list = NULL;
-+
-+	/* If we don't know the length go max plus page for cipher overhead */
-+	need_spc = strp->stm.full_len ?: TLS_MAX_PAYLOAD_SIZE + PAGE_SIZE;
-+
-+	for (len = need_spc; len > 0; len -= PAGE_SIZE) {
-+		page = alloc_page(strp->sk->sk_allocation);
-+		if (!page) {
-+			tls_strp_flush_anchor_copy(strp);
-+			return -ENOMEM;
-+		}
-+
-+		skb_fill_page_desc(strp->anchor, shinfo->nr_frags++,
-+				   page, 0, 0);
-+	}
-+
-+	strp->copy_mode = 1;
-+	strp->stm.offset = 0;
-+
-+	strp->anchor->len = 0;
-+	strp->anchor->data_len = 0;
-+	strp->anchor->truesize = round_up(need_spc, PAGE_SIZE);
-+
-+	tls_strp_read_copyin(strp);
-+
-+	return 0;
-+}
-+
-+static void tls_strp_load_anchor_with_queue(struct tls_strparser *strp, int len)
-+{
-+	struct tcp_sock *tp = tcp_sk(strp->sk);
-+	struct sk_buff *first;
-+	u32 offset;
-+
-+	first = tcp_recv_skb(strp->sk, tp->copied_seq, &offset);
-+	if (WARN_ON_ONCE(!first))
-+		return;
-+
-+	/* Bestow the state onto the anchor */
-+	strp->anchor->len = offset + len;
-+	strp->anchor->data_len = offset + len;
-+	strp->anchor->truesize = offset + len;
-+
-+	skb_shinfo(strp->anchor)->frag_list = first;
-+
-+	skb_copy_header(strp->anchor, first);
-+	strp->anchor->destructor = NULL;
-+
-+	strp->stm.offset = offset;
-+}
-+
-+void tls_strp_msg_load(struct tls_strparser *strp, bool force_refresh)
-+{
-+	struct strp_msg *rxm;
-+	struct tls_msg *tlm;
-+
-+	DEBUG_NET_WARN_ON_ONCE(!strp->msg_ready);
-+	DEBUG_NET_WARN_ON_ONCE(!strp->stm.full_len);
-+
-+	if (!strp->copy_mode && force_refresh) {
-+		if (WARN_ON(tcp_inq(strp->sk) < strp->stm.full_len))
-+			return;
-+
-+		tls_strp_load_anchor_with_queue(strp, strp->stm.full_len);
-+	}
-+
-+	rxm = strp_msg(strp->anchor);
-+	rxm->full_len	= strp->stm.full_len;
-+	rxm->offset	= strp->stm.offset;
-+	tlm = tls_msg(strp->anchor);
-+	tlm->control	= strp->mark;
-+}
-+
-+/* Called with lock held on lower socket */
-+static int tls_strp_read_sock(struct tls_strparser *strp)
-+{
-+	int sz, inq;
-+
-+	inq = tcp_inq(strp->sk);
-+	if (inq < 1)
-+		return 0;
-+
-+	if (unlikely(strp->copy_mode))
-+		return tls_strp_read_copyin(strp);
-+
-+	if (inq < strp->stm.full_len)
-+		return tls_strp_read_short(strp);
-+
-+	if (!strp->stm.full_len) {
-+		tls_strp_load_anchor_with_queue(strp, inq);
-+
-+		sz = tls_rx_msg_size(strp, strp->anchor);
-+		if (sz < 0) {
-+			tls_strp_abort_strp(strp, sz);
-+			return sz;
-+		}
-+
-+		strp->stm.full_len = sz;
-+
-+		if (!strp->stm.full_len || inq < strp->stm.full_len)
-+			return tls_strp_read_short(strp);
-+	}
-+
-+	strp->msg_ready = 1;
-+	tls_rx_msg_ready(strp);
-+
-+	return 0;
-+}
-+
-+void tls_strp_check_rcv(struct tls_strparser *strp)
-+{
-+	if (unlikely(strp->stopped) || strp->msg_ready)
-+		return;
-+
-+	if (tls_strp_read_sock(strp) == -ENOMEM)
-+		queue_work(tls_strp_wq, &strp->work);
-+}
-+
-+/* Lower sock lock held */
-+void tls_strp_data_ready(struct tls_strparser *strp)
-+{
-+	/* This check is needed to synchronize with do_tls_strp_work.
-+	 * do_tls_strp_work acquires a process lock (lock_sock) whereas
-+	 * the lock held here is bh_lock_sock. The two locks can be
-+	 * held by different threads at the same time, but bh_lock_sock
-+	 * allows a thread in BH context to safely check if the process
-+	 * lock is held. In this case, if the lock is held, queue work.
-+	 */
-+	if (sock_owned_by_user_nocheck(strp->sk)) {
-+		queue_work(tls_strp_wq, &strp->work);
-+		return;
-+	}
-+
-+	tls_strp_check_rcv(strp);
-+}
-+
-+static void tls_strp_work(struct work_struct *w)
-+{
-+	struct tls_strparser *strp =
-+		container_of(w, struct tls_strparser, work);
-+
-+	lock_sock(strp->sk);
-+	tls_strp_check_rcv(strp);
-+	release_sock(strp->sk);
-+}
-+
-+void tls_strp_msg_done(struct tls_strparser *strp)
-+{
-+	WARN_ON(!strp->stm.full_len);
-+
-+	if (likely(!strp->copy_mode))
-+		tcp_read_done(strp->sk, strp->stm.full_len);
-+	else
-+		tls_strp_flush_anchor_copy(strp);
-+
-+	strp->msg_ready = 0;
-+	memset(&strp->stm, 0, sizeof(strp->stm));
-+
-+	tls_strp_check_rcv(strp);
-+}
-+
-+void tls_strp_stop(struct tls_strparser *strp)
-+{
-+	strp->stopped = 1;
-+}
-+
-+int tls_strp_init(struct tls_strparser *strp, struct sock *sk)
-+{
-+	memset(strp, 0, sizeof(*strp));
-+
-+	strp->sk = sk;
-+
-+	strp->anchor = alloc_skb(0, GFP_KERNEL);
-+	if (!strp->anchor)
-+		return -ENOMEM;
-+
-+	INIT_WORK(&strp->work, tls_strp_work);
- 
--	nsg = skb_cow_data(ctx->recv_pkt, 0, &unused);
--	if (nsg < 0)
--		return nsg;
- 	return 0;
- }
- 
--int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
--		      struct sk_buff_head *dst)
-+/* strp must already be stopped so that tls_strp_recv will no longer be called.
-+ * Note that tls_strp_done is not called with the lower socket held.
-+ */
-+void tls_strp_done(struct tls_strparser *strp)
- {
--	struct sk_buff *clone;
-+	WARN_ON(!strp->stopped);
- 
--	clone = skb_clone(skb, sk->sk_allocation);
--	if (!clone)
-+	cancel_work_sync(&strp->work);
-+	tls_strp_anchor_free(strp);
-+}
-+
-+int __init tls_strp_dev_init(void)
-+{
-+	tls_strp_wq = create_singlethread_workqueue("kstrp");
-+	if (unlikely(!tls_strp_wq))
- 		return -ENOMEM;
--	__skb_queue_tail(dst, clone);
-+
- 	return 0;
- }
-+
-+void tls_strp_dev_exit(void)
-+{
-+	destroy_workqueue(tls_strp_wq);
-+}
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 02894a2d1f31..518401997539 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1283,7 +1283,7 @@ int tls_sw_sendpage(struct sock *sk, struct page *page,
- 
- static int
- tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
--		long timeo)
-+		bool released, long timeo)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
-@@ -1297,7 +1297,7 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
- 			return sock_error(sk);
- 
- 		if (!skb_queue_empty(&sk->sk_receive_queue)) {
--			__strp_unpause(&ctx->strp);
-+			tls_strp_check_rcv(&ctx->strp);
- 			if (tls_strp_msg_ready(ctx))
- 				break;
- 		}
-@@ -1311,6 +1311,7 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
- 		if (nonblock || !timeo)
- 			return -EAGAIN;
- 
-+		released = true;
- 		add_wait_queue(sk_sleep(sk), &wait);
- 		sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
- 		sk_wait_event(sk, &timeo,
-@@ -1325,6 +1326,8 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
- 			return sock_intr_errno(timeo);
- 	}
- 
-+	tls_strp_msg_load(&ctx->strp, released);
-+
- 	return 1;
- }
- 
-@@ -1570,7 +1573,7 @@ static int tls_decrypt_sg(struct sock *sk, struct iov_iter *out_iov,
- 	clear_skb = NULL;
- 
- 	if (unlikely(darg->async)) {
--		err = tls_strp_msg_hold(sk, skb, &ctx->async_hold);
-+		err = tls_strp_msg_hold(&ctx->strp, &ctx->async_hold);
- 		if (err)
- 			__skb_queue_tail(&ctx->async_hold, darg->skb);
- 		return err;
-@@ -1734,9 +1737,7 @@ static int tls_record_content_type(struct msghdr *msg, struct tls_msg *tlm,
- 
- static void tls_rx_rec_done(struct tls_sw_context_rx *ctx)
- {
--	consume_skb(ctx->recv_pkt);
--	ctx->recv_pkt = NULL;
--	__strp_unpause(&ctx->strp);
-+	tls_strp_msg_done(&ctx->strp);
- }
- 
- /* This function traverses the rx_list in tls receive context to copies the
-@@ -1823,7 +1824,7 @@ static int process_rx_list(struct tls_sw_context_rx *ctx,
- 	return copied ? : err;
- }
- 
--static void
-+static bool
- tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
- 		       size_t len_left, size_t decrypted, ssize_t done,
- 		       size_t *flushed_at)
-@@ -1831,14 +1832,14 @@ tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
- 	size_t max_rec;
- 
- 	if (len_left <= decrypted)
--		return;
-+		return false;
- 
- 	max_rec = prot->overhead_size - prot->tail_size + TLS_MAX_PAYLOAD_SIZE;
- 	if (done - *flushed_at < SZ_128K && tcp_inq(sk) > max_rec)
--		return;
-+		return false;
- 
- 	*flushed_at = done;
--	sk_flush_backlog(sk);
-+	return sk_flush_backlog(sk);
- }
- 
- static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
-@@ -1907,6 +1908,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 	long timeo;
- 	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
- 	bool is_peek = flags & MSG_PEEK;
-+	bool released = true;
- 	bool bpf_strp_enabled;
- 	bool zc_capable;
- 
-@@ -1943,7 +1945,8 @@ int tls_sw_recvmsg(struct sock *sk,
- 		struct tls_decrypt_arg darg;
- 		int to_decrypt, chunk;
- 
--		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, timeo);
-+		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, released,
-+				      timeo);
- 		if (err <= 0) {
- 			if (psock) {
- 				chunk = sk_msg_recvmsg(sk, psock, msg, len,
-@@ -1959,8 +1962,8 @@ int tls_sw_recvmsg(struct sock *sk,
- 
- 		memset(&darg.inargs, 0, sizeof(darg.inargs));
- 
--		rxm = strp_msg(ctx->recv_pkt);
--		tlm = tls_msg(ctx->recv_pkt);
-+		rxm = strp_msg(tls_strp_msg(ctx));
-+		tlm = tls_msg(tls_strp_msg(ctx));
- 
- 		to_decrypt = rxm->full_len - prot->overhead_size;
- 
-@@ -1999,8 +2002,9 @@ int tls_sw_recvmsg(struct sock *sk,
- 		}
- 
- 		/* periodically flush backlog, and feed strparser */
--		tls_read_flush_backlog(sk, prot, len, to_decrypt,
--				       decrypted + copied, &flushed_at);
-+		released = tls_read_flush_backlog(sk, prot, len, to_decrypt,
-+						  decrypted + copied,
-+						  &flushed_at);
- 
- 		/* TLS 1.3 may have updated the length by more than overhead */
- 		rxm = strp_msg(darg.skb);
-@@ -2011,7 +2015,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 			bool partially_consumed = chunk > len;
- 			struct sk_buff *skb = darg.skb;
- 
--			DEBUG_NET_WARN_ON_ONCE(darg.skb == ctx->recv_pkt);
-+			DEBUG_NET_WARN_ON_ONCE(darg.skb == tls_strp_msg(ctx));
- 
- 			if (async) {
- 				/* TLS 1.2-only, to_decrypt must be text len */
-@@ -2025,6 +2029,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 			}
- 
- 			if (bpf_strp_enabled) {
-+				released = true;
- 				err = sk_psock_tls_strp_read(psock, skb);
- 				if (err != __SK_PASS) {
- 					rxm->offset = rxm->offset + rxm->full_len;
-@@ -2131,7 +2136,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
- 		struct tls_decrypt_arg darg;
- 
- 		err = tls_rx_rec_wait(sk, NULL, flags & SPLICE_F_NONBLOCK,
--				      timeo);
-+				      true, timeo);
- 		if (err <= 0)
- 			goto splice_read_end;
- 
-@@ -2195,19 +2200,17 @@ bool tls_sw_sock_is_readable(struct sock *sk)
- 		!skb_queue_empty(&ctx->rx_list);
- }
- 
--static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
-+int tls_rx_msg_size(struct tls_strparser *strp, struct sk_buff *skb)
- {
- 	struct tls_context *tls_ctx = tls_get_ctx(strp->sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
- 	char header[TLS_HEADER_SIZE + MAX_IV_SIZE];
--	struct strp_msg *rxm = strp_msg(skb);
--	struct tls_msg *tlm = tls_msg(skb);
- 	size_t cipher_overhead;
- 	size_t data_len = 0;
- 	int ret;
- 
- 	/* Verify that we have a full TLS header, or wait for more data */
--	if (rxm->offset + prot->prepend_size > skb->len)
-+	if (strp->stm.offset + prot->prepend_size > skb->len)
- 		return 0;
- 
- 	/* Sanity-check size of on-stack buffer. */
-@@ -2217,11 +2220,11 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
- 	}
- 
- 	/* Linearize header to local buffer */
--	ret = skb_copy_bits(skb, rxm->offset, header, prot->prepend_size);
-+	ret = skb_copy_bits(skb, strp->stm.offset, header, prot->prepend_size);
- 	if (ret < 0)
- 		goto read_failure;
- 
--	tlm->control = header[0];
-+	strp->mark = header[0];
- 
- 	data_len = ((header[4] & 0xFF) | (header[3] << 8));
- 
-@@ -2248,7 +2251,7 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
- 	}
- 
- 	tls_device_rx_resync_new_rec(strp->sk, data_len + TLS_HEADER_SIZE,
--				     TCP_SKB_CB(skb)->seq + rxm->offset);
-+				     TCP_SKB_CB(skb)->seq + strp->stm.offset);
- 	return data_len + TLS_HEADER_SIZE;
- 
- read_failure:
-@@ -2257,14 +2260,11 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
- 	return ret;
- }
- 
--static void tls_queue(struct strparser *strp, struct sk_buff *skb)
-+void tls_rx_msg_ready(struct tls_strparser *strp)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(strp->sk);
--	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
--
--	ctx->recv_pkt = skb;
--	strp_pause(strp);
-+	struct tls_sw_context_rx *ctx;
- 
-+	ctx = container_of(strp, struct tls_sw_context_rx, strp);
- 	ctx->saved_data_ready(strp->sk);
- }
- 
-@@ -2274,7 +2274,7 @@ static void tls_data_ready(struct sock *sk)
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 	struct sk_psock *psock;
- 
--	strp_data_ready(&ctx->strp);
-+	tls_strp_data_ready(&ctx->strp);
- 
- 	psock = sk_psock_get(sk);
- 	if (psock) {
-@@ -2350,13 +2350,11 @@ void tls_sw_release_resources_rx(struct sock *sk)
- 	kfree(tls_ctx->rx.iv);
- 
- 	if (ctx->aead_recv) {
--		kfree_skb(ctx->recv_pkt);
--		ctx->recv_pkt = NULL;
- 		__skb_queue_purge(&ctx->rx_list);
- 		crypto_free_aead(ctx->aead_recv);
--		strp_stop(&ctx->strp);
-+		tls_strp_stop(&ctx->strp);
- 		/* If tls_sw_strparser_arm() was not called (cleanup paths)
--		 * we still want to strp_stop(), but sk->sk_data_ready was
-+		 * we still want to tls_strp_stop(), but sk->sk_data_ready was
- 		 * never swapped.
- 		 */
- 		if (ctx->saved_data_ready) {
-@@ -2371,7 +2369,7 @@ void tls_sw_strparser_done(struct tls_context *tls_ctx)
- {
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 
--	strp_done(&ctx->strp);
-+	tls_strp_done(&ctx->strp);
- }
- 
- void tls_sw_free_ctx_rx(struct tls_context *tls_ctx)
-@@ -2444,8 +2442,6 @@ void tls_sw_strparser_arm(struct sock *sk, struct tls_context *tls_ctx)
- 	rx_ctx->saved_data_ready = sk->sk_data_ready;
- 	sk->sk_data_ready = tls_data_ready;
- 	write_unlock_bh(&sk->sk_callback_lock);
--
--	strp_check_rcv(&rx_ctx->strp);
- }
- 
- void tls_update_rx_zc_capable(struct tls_context *tls_ctx)
-@@ -2465,7 +2461,6 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 	struct tls_sw_context_rx *sw_ctx_rx = NULL;
- 	struct cipher_context *cctx;
- 	struct crypto_aead **aead;
--	struct strp_callbacks cb;
- 	u16 nonce_size, tag_size, iv_size, rec_seq_size, salt_size;
- 	struct crypto_tfm *tfm;
- 	char *iv, *rec_seq, *key, *salt, *cipher_name;
-@@ -2699,12 +2694,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 			crypto_info->version != TLS_1_3_VERSION &&
- 			!!(tfm->__crt_alg->cra_flags & CRYPTO_ALG_ASYNC);
- 
--		/* Set up strparser */
--		memset(&cb, 0, sizeof(cb));
--		cb.rcv_msg = tls_queue;
--		cb.parse_msg = tls_read_size;
--
--		strp_init(&sw_ctx_rx->strp, sk, &cb);
-+		tls_strp_init(&sw_ctx_rx->strp, sk);
- 	}
- 
- 	goto out;
+[1] https://lore.kernel.org/netdev/20220715215954.1449214-1-sean.anderson@seco.com/T/#t
+[2] https://lore.kernel.org/netdev/1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com/
+[3] https://lore.kernel.org/netdev/1580137671-22081-1-git-send-email-madalin.bucur@oss.nxp.com/
+[4] https://lore.kernel.org/netdev/20200116181933.32765-1-olteanv@gmail.com/
+
+Changes in v2:
+- Use int/defines instead of enum to allow for use in ioctls/netlink
+- Add locking to phy_get_rate_adaptation
+- Add (read-only) ethtool support for rate adaptation
+- Move part of commit message to cover letter, as it gives a good
+  overview of the whole series, and allows this patch to focus more on
+  the specifics.
+- Support keeping track of link duplex
+- Rewrite commit message for clarity
+- Expand documentation of (link_)?(speed|duplex)
+- Fix handling of speed/duplex gotten from MAC drivers
+- Use the phy's rate adaptation setting to determine whether to use its
+  link speed/duplex or the MAC's speed/duplex with MLO_AN_INBAND.
+- Always use the rate adaptation setting to determine the interface
+  speed/duplex (instead of sometimes using the interface mode).
+- Determine the interface speed and max mac speed directly instead of
+  guessing based on the caps.
+- Add comments clarifying the register defines
+- Reorder variables in aqr107_read_rate
+
+Sean Anderson (11):
+  net: dpaa: Fix <1G ethernet on LS1046ARDB
+  net: phy: Add 1000BASE-KX interface mode
+  net: phylink: Export phylink_caps_to_linkmodes
+  net: phylink: Generate caps and convert to linkmodes separately
+  net: phy: Add support for rate adaptation
+  net: phylink: Support differing link/interface speed/duplex
+  net: phylink: Adjust link settings based on rate adaptation
+  net: phylink: Adjust advertisement based on rate adaptation
+  [RFC] net: phylink: Add support for CRS-based rate adaptation
+  net: phy: aquantia: Add some additional phy interfaces
+  net: phy: aquantia: Add support for rate adaptation
+
+ Documentation/networking/ethtool-netlink.rst  |   2 +
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   6 +-
+ drivers/net/phy/aquantia_main.c               |  68 +++-
+ drivers/net/phy/phy-core.c                    |  15 +
+ drivers/net/phy/phy.c                         |  28 ++
+ drivers/net/phy/phylink.c                     | 340 +++++++++++++++---
+ include/linux/phy.h                           |  26 +-
+ include/linux/phylink.h                       |  23 +-
+ include/uapi/linux/ethtool.h                  |  18 +-
+ include/uapi/linux/ethtool_netlink.h          |   1 +
+ net/ethtool/ioctl.c                           |   1 +
+ net/ethtool/linkmodes.c                       |   5 +
+ 12 files changed, 470 insertions(+), 63 deletions(-)
+
 -- 
-2.36.1
+2.35.1.1320.gc452695387.dirty
 
