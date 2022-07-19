@@ -2,304 +2,422 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B66057A70D
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B297B57A733
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:25:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239361AbiGSTQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 15:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
+        id S238511AbiGSTZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 15:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239302AbiGSTQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:16:47 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CFD545FC
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:16:45 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id h16so8190724ila.2
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RWDkfGVRx+wQM0pBjcpjxk1NXofDxfBOWbBaZKQQ3Bw=;
-        b=rc25gT0hqLHAsoJ90/h35TVtpKkn0P+zKeyZBXWC+h9soMiNLp6BH8OHV8Tvm1VjX9
-         grAFACvXigtURXa9ykURx/Mfz7lT2Q9TqNJydjIhgmat8WPOvau3kiS/6+oA9ADkp2N7
-         uN8Ih68aY3F0EsuJXx1VoVZbJ6gsWzf39Y08wYUfYLoAS5MBt9//0X0xuovElTtCyOSe
-         71DfgBJfn2WyucmLnFQL+nzpdHoS/vAJlZhHhe305A36WZ+Z6dPtPg9olngjR/xNEBpL
-         TxXMY+C1pnY53zyvYFxp/0O7c5Xlr1xUuVkbidWOe9zKp/h5Lbkyx8tFl/BiExc0IvKc
-         kFPA==
+        with ESMTP id S238260AbiGSTZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:25:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F4EC1116E
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658258719;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=01nIMAqu9kXKBUZerezX8Ft5zuAeFvv5UsalBlZ7zoI=;
+        b=hL0mNNVoGhCVo3Th32A1du12WRgDIdXahL14IbDdY1PkSfjPkCfISfOJuoIEvEtEBU3Ako
+        rMXZJy1EaXJPnde2vb5gHFOB1tULPpdW5uDX26IhymU3nZcJk9L6fLy6DcyM5FAYau/2RI
+        lwQjSihicoJAYWQL4IaeCjwpdE4KQ8o=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-434-_b872QoaML6tZM9fZpn2fQ-1; Tue, 19 Jul 2022 15:25:17 -0400
+X-MC-Unique: _b872QoaML6tZM9fZpn2fQ-1
+Received: by mail-il1-f199.google.com with SMTP id i8-20020a056e020d8800b002d931252904so10015519ilj.23
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:25:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RWDkfGVRx+wQM0pBjcpjxk1NXofDxfBOWbBaZKQQ3Bw=;
-        b=sFqv37f/9g7bTvxsgsLdiGOQvpgNSSRbfZfF1FCVN4PE6fNMsW5XF49T/Ncz66iT95
-         ZWaLQcDOnE0031hD3TR2rwThwWLulBfxlFR24dOwLhGPwRQcxfeBo3b4HDO0CO3AfjnO
-         +FygQjHsJRQWdPRW7HvW7sd2CQHAU33nKB/QcGKpJbsu7HgwKoDMhAKXBY8qCnNIcyI3
-         lEoFYKAFL9kFmV8mQ9vHWIRNj0GHf1H5/erQOvoFkXTgH/QadsSWSqWKfmdNBR+E1SF7
-         bhRTJaBgrPaqAv4wh+uW0iH3lJgJAoeltvc/KqODtIRC9ce6JZcr5W9bmIsB9ikoyd5+
-         d66Q==
-X-Gm-Message-State: AJIora//P+DZH7axPSDJokWbTOEp8evU8UI4Ah7IOVYQUJbyA062OxCA
-        MiII0KTDWmr0EjG8o7YTcI/XVg==
-X-Google-Smtp-Source: AGRyM1uyjGECdZVidczMAGXR7PmaLcmRyXPAcqHx8EGXPw5l/fraFnsLVQ2VySfRtipJxgXqSSrdnA==
-X-Received: by 2002:a05:6e02:1a0a:b0:2dc:7a5e:5869 with SMTP id s10-20020a056e021a0a00b002dc7a5e5869mr17168484ild.90.1658258204439;
-        Tue, 19 Jul 2022 12:16:44 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id n1-20020a056638110100b0033ed97119ccsm6977090jal.1.2022.07.19.12.16.42
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=01nIMAqu9kXKBUZerezX8Ft5zuAeFvv5UsalBlZ7zoI=;
+        b=IQ5Vc1n40/am4WkrKuP1MPnNjJdQBY9B9PVrsnDRfdbiQXh2J1uC27Bs+JfCURzx+U
+         yRfFZ6zjOtkNXE6bztsVbIibCvfTQb39SaWqX/ZVJe1ymEYLio+jp5I2tBRQKlj4lLnN
+         6jbbYZUGr5tS3DLDq77illwEihrsh44K01lZEz/OV4++AXVNJykwZDJEnho7U7nPbhGV
+         awHP+Nxsi3XLkRer+BOg4nECa0nPNNQokLNb0L2UzO+XXSNoYb3onBZfMUVw9o5Pd8AK
+         Ee5TqiGGo2yOv0H4Sj+yK6byaqgdl7HvSCYoxeitRXa7VrOIFkWmDZnIzSodMlRPddKT
+         vKlQ==
+X-Gm-Message-State: AJIora+ifTNBI2y+Ga7z14xUOQmriK8ixIC1s0UKzczJgNDahvc1l8Yn
+        duIbDDHGi6PsNRYVz9yGhd+tYj4eDywfoBDFnU+6B4Mv4MaDAHkK00jF1llyFbfTIb0KxxyiAY3
+        zgq/z8X35pBEjcgaR
+X-Received: by 2002:a05:6e02:1c88:b0:2dc:d092:9721 with SMTP id w8-20020a056e021c8800b002dcd0929721mr9150725ill.118.1658258716777;
+        Tue, 19 Jul 2022 12:25:16 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tZOG+3tB+aCvTVCSR7lYMcpDeYWLonIVl6Pt4opkh9VdDb7o0N1f6aAdQJVuSsAqXhIfjkZw==
+X-Received: by 2002:a05:6e02:1c88:b0:2dc:d092:9721 with SMTP id w8-20020a056e021c8800b002dcd0929721mr9150708ill.118.1658258716470;
+        Tue, 19 Jul 2022 12:25:16 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id k21-20020a02a715000000b00333fa7a642asm6997536jam.63.2022.07.19.12.25.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 12:16:43 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
-        mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH net-next v4] net: ipa: add an endpoint device attribute group
-Date:   Tue, 19 Jul 2022 14:16:39 -0500
-Message-Id: <20220719191639.373249-1-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 19 Jul 2022 12:25:16 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 13:25:14 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <leonro@nvidia.com>, <maorg@nvidia.com>, <cohuck@redhat.com>
+Subject: Re: [PATCH V2 vfio 06/11] vfio: Introduce the DMA logging feature
+ support
+Message-ID: <20220719132514.7d21dfaf.alex.williamson@redhat.com>
+In-Reply-To: <8242cd07-0b65-e2b8-3797-3fe5623ec65d@nvidia.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
+        <20220714081251.240584-7-yishaih@nvidia.com>
+        <20220718163024.143ec05a.alex.williamson@redhat.com>
+        <8242cd07-0b65-e2b8-3797-3fe5623ec65d@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a new attribute group meant to provide a single place that
-defines endpoint IDs that might be needed by user space.  Not all
-defined endpoints are presented, and only those that are defined
-will be made visible.
+On Tue, 19 Jul 2022 12:19:25 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-The new attributes use "extended" device attributes to hold endpoint
-IDs, which is a little more compact and efficient.  Reimplement the
-existing modem endpoint ID attribute files using common code.
+> On 19/07/2022 1:30, Alex Williamson wrote:
+> > On Thu, 14 Jul 2022 11:12:46 +0300
+> > Yishai Hadas <yishaih@nvidia.com> wrote:
+> >  
+> >> Introduce the DMA logging feature support in the vfio core layer.
+> >>
+> >> It includes the processing of the device start/stop/report DMA logging
+> >> UAPIs and calling the relevant driver 'op' to do the work.
+> >>
+> >> Specifically,
+> >> Upon start, the core translates the given input ranges into an interval
+> >> tree, checks for unexpected overlapping, non aligned ranges and then
+> >> pass the translated input to the driver for start tracking the given
+> >> ranges.
+> >>
+> >> Upon report, the core translates the given input user space bitmap and
+> >> page size into an IOVA kernel bitmap iterator. Then it iterates it and
+> >> call the driver to set the corresponding bits for the dirtied pages in a
+> >> specific IOVA range.
+> >>
+> >> Upon stop, the driver is called to stop the previous started tracking.
+> >>
+> >> The next patches from the series will introduce the mlx5 driver
+> >> implementation for the logging ops.
+> >>
+> >> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> >> ---
+> >>   drivers/vfio/Kconfig             |   1 +
+> >>   drivers/vfio/pci/vfio_pci_core.c |   5 +
+> >>   drivers/vfio/vfio_main.c         | 161 +++++++++++++++++++++++++++++++
+> >>   include/linux/vfio.h             |  21 +++-
+> >>   4 files changed, 186 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> >> index 6130d00252ed..86c381ceb9a1 100644
+> >> --- a/drivers/vfio/Kconfig
+> >> +++ b/drivers/vfio/Kconfig
+> >> @@ -3,6 +3,7 @@ menuconfig VFIO
+> >>   	tristate "VFIO Non-Privileged userspace driver framework"
+> >>   	select IOMMU_API
+> >>   	select VFIO_IOMMU_TYPE1 if MMU && (X86 || S390 || ARM || ARM64)
+> >> +	select INTERVAL_TREE
+> >>   	help
+> >>   	  VFIO provides a framework for secure userspace device drivers.
+> >>   	  See Documentation/driver-api/vfio.rst for more details.
+> >> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> >> index 2efa06b1fafa..b6dabf398251 100644
+> >> --- a/drivers/vfio/pci/vfio_pci_core.c
+> >> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> >> @@ -1862,6 +1862,11 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
+> >>   			return -EINVAL;
+> >>   	}
+> >>   
+> >> +	if (vdev->vdev.log_ops && !(vdev->vdev.log_ops->log_start &&
+> >> +	    vdev->vdev.log_ops->log_stop &&
+> >> +	    vdev->vdev.log_ops->log_read_and_clear))
+> >> +		return -EINVAL;
+> >> +
+> >>   	/*
+> >>   	 * Prevent binding to PFs with VFs enabled, the VFs might be in use
+> >>   	 * by the host or other users.  We cannot capture the VFs if they
+> >> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> >> index bd84ca7c5e35..2414d827e3c8 100644
+> >> --- a/drivers/vfio/vfio_main.c
+> >> +++ b/drivers/vfio/vfio_main.c
+> >> @@ -32,6 +32,8 @@
+> >>   #include <linux/vfio.h>
+> >>   #include <linux/wait.h>
+> >>   #include <linux/sched/signal.h>
+> >> +#include <linux/interval_tree.h>
+> >> +#include <linux/iova_bitmap.h>
+> >>   #include "vfio.h"
+> >>   
+> >>   #define DRIVER_VERSION	"0.3"
+> >> @@ -1603,6 +1605,153 @@ static int vfio_ioctl_device_feature_migration(struct vfio_device *device,
+> >>   	return 0;
+> >>   }
+> >>   
+> >> +#define LOG_MAX_RANGES 1024
+> >> +
+> >> +static int
+> >> +vfio_ioctl_device_feature_logging_start(struct vfio_device *device,
+> >> +					u32 flags, void __user *arg,
+> >> +					size_t argsz)
+> >> +{
+> >> +	size_t minsz =
+> >> +		offsetofend(struct vfio_device_feature_dma_logging_control,
+> >> +			    ranges);
+> >> +	struct vfio_device_feature_dma_logging_range __user *ranges;
+> >> +	struct vfio_device_feature_dma_logging_control control;
+> >> +	struct vfio_device_feature_dma_logging_range range;
+> >> +	struct rb_root_cached root = RB_ROOT_CACHED;
+> >> +	struct interval_tree_node *nodes;
+> >> +	u32 nnodes;
+> >> +	int i, ret;
+> >> +
+> >> +	if (!device->log_ops)
+> >> +		return -ENOTTY;
+> >> +
+> >> +	ret = vfio_check_feature(flags, argsz,
+> >> +				 VFIO_DEVICE_FEATURE_SET,
+> >> +				 sizeof(control));
+> >> +	if (ret != 1)
+> >> +		return ret;
+> >> +
+> >> +	if (copy_from_user(&control, arg, minsz))
+> >> +		return -EFAULT;
+> >> +
+> >> +	nnodes = control.num_ranges;
+> >> +	if (!nnodes || nnodes > LOG_MAX_RANGES)
+> >> +		return -EINVAL;  
+> > The latter looks more like an -E2BIG errno.  
+> 
+> OK
+> 
+> > This is a hard coded
+> > limit, but what are the heuristics?  Can a user introspect the limit?
+> > Thanks,
+> >
+> > Alex  
+> 
+> This hard coded value just comes to prevent user space from exploding 
+> kernel memory allocation.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-v4: Identical to v3; added missing addresses on Cc: list.
-v3: Use uintptr_t in a second spot, missed the first time...
-v2: Use uintptr_t to try to avoid a "cast to smaller integer type"
-    warning produced by "clang".
+Of course.
 
- .../testing/sysfs-devices-platform-soc-ipa    | 62 +++++++++++++----
- drivers/net/ipa/ipa_main.c                    |  1 +
- drivers/net/ipa/ipa_sysfs.c                   | 69 ++++++++++++++-----
- drivers/net/ipa/ipa_sysfs.h                   |  1 +
- 4 files changed, 102 insertions(+), 31 deletions(-)
+> We don't really expect user space to hit this limit, the RAM in QEMU is 
+> divided today to around ~12 ranges as we saw so far in our evaluation.
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-index c56dcf15bf29d..364b1ba412427 100644
---- a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-+++ b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
-@@ -46,33 +46,69 @@ Description:
- 		that is supported by the hardware.  The possible values
- 		are "MAPv4" or "MAPv5".
+There can be far more for vIOMMU use cases or non-QEMU drivers.
+
+> We may also expect user space to combine contiguous ranges to a single 
+> range or in the worst case even to combine non contiguous ranges to a 
+> single range.
+
+Why do we expect that from users?
  
-+What:		.../XXXXXXX.ipa/endpoint_id/
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/ directory contains
-+		attributes that define IDs associated with IPA
-+		endpoints.  The "rx" or "tx" in an endpoint name is
-+		from the perspective of the AP.  An endpoint ID is a
-+		small unsigned integer.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/modem_rx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/modem_rx file contains
-+		the ID of the AP endpoint on which packets originating
-+		from the embedded modem are received.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/modem_tx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/modem_tx file contains
-+		the ID of the AP endpoint on which packets destined
-+		for the embedded modem are sent.
-+
-+What:		.../XXXXXXX.ipa/endpoint_id/monitor_rx
-+Date:		July 2022
-+KernelVersion:	v5.19
-+Contact:	Alex Elder <elder@kernel.org>
-+Description:
-+		The .../XXXXXXX.ipa/endpoint_id/monitor_rx file contains
-+		the ID of the AP endpoint on which IPA "monitor" data is
-+		received.  The monitor endpoint supplies replicas of
-+		packets that enter the IPA hardware for processing.
-+		Each replicated packet is preceded by a fixed-size "ODL"
-+		header (see .../XXXXXXX.ipa/feature/monitor, above).
-+		Large packets are truncated, to reduce the bandwidth
-+		required to provide the monitor function.
-+
- What:		.../XXXXXXX.ipa/modem/
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/modem/ directory contains a set of
--		attributes describing properties of the modem execution
--		environment reachable by the IPA hardware.
-+		The .../XXXXXXX.ipa/modem/ directory contains attributes
-+		describing properties of the modem embedded in the SoC.
- 
- What:		.../XXXXXXX.ipa/modem/rx_endpoint_id
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/feature/rx_endpoint_id file contains
--		the AP endpoint ID that receives packets originating from
--		the modem execution environment.  The "rx" is from the
--		perspective of the AP; this endpoint is considered an "IPA
--		producer".  An endpoint ID is a small unsigned integer.
-+		The .../XXXXXXX.ipa/modem/rx_endpoint_id file duplicates
-+		the value found in .../XXXXXXX.ipa/endpoint_id/modem_rx.
- 
- What:		.../XXXXXXX.ipa/modem/tx_endpoint_id
- Date:		June 2021
- KernelVersion:	v5.14
- Contact:	Alex Elder <elder@kernel.org>
- Description:
--		The .../XXXXXXX.ipa/feature/tx_endpoint_id file contains
--		the AP endpoint ID used to transmit packets destined for
--		the modem execution environment.  The "tx" is from the
--		perspective of the AP; this endpoint is considered an "IPA
--		consumer".  An endpoint ID is a small unsigned integer.
-+		The .../XXXXXXX.ipa/modem/tx_endpoint_id file duplicates
-+		the value found in .../XXXXXXX.ipa/endpoint_id/modem_tx.
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 3757ce3de2c59..b989259b02047 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -851,6 +851,7 @@ static void ipa_shutdown(struct platform_device *pdev)
- static const struct attribute_group *ipa_attribute_groups[] = {
- 	&ipa_attribute_group,
- 	&ipa_feature_attribute_group,
-+	&ipa_endpoint_id_attribute_group,
- 	&ipa_modem_attribute_group,
- 	NULL,
- };
-diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
-index ff61dbdd70d8c..c0c8641cdd14a 100644
---- a/drivers/net/ipa/ipa_sysfs.c
-+++ b/drivers/net/ipa/ipa_sysfs.c
-@@ -96,38 +96,71 @@ const struct attribute_group ipa_feature_attribute_group = {
- 	.attrs		= ipa_feature_attrs,
- };
- 
--static ssize_t
--ipa_endpoint_id_show(struct ipa *ipa, char *buf, enum ipa_endpoint_name name)
-+static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
-+					  struct attribute *attr, int n)
- {
--	u32 endpoint_id = ipa->name_map[name]->endpoint_id;
-+	struct ipa *ipa = dev_get_drvdata(kobj_to_dev(kobj));
-+	struct device_attribute *dev_attr;
-+	struct dev_ext_attribute *ea;
-+	bool visible;
- 
--	return scnprintf(buf, PAGE_SIZE, "%u\n", endpoint_id);
-+	/* An endpoint id attribute is only visible if it's defined */
-+	dev_attr = container_of(attr, struct device_attribute, attr);
-+	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
-+
-+	visible = !!ipa->name_map[(enum ipa_endpoint_name)(uintptr_t)ea->var];
-+
-+	return visible ? attr->mode : 0;
- }
- 
--static ssize_t rx_endpoint_id_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
-+static ssize_t endpoint_id_attr_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
- {
- 	struct ipa *ipa = dev_get_drvdata(dev);
-+	struct ipa_endpoint *endpoint;
-+	struct dev_ext_attribute *ea;
- 
--	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_RX);
-+	ea = container_of(attr, struct dev_ext_attribute, attr);
-+	endpoint = ipa->name_map[(enum ipa_endpoint_name)(uintptr_t)ea->var];
-+
-+	return sysfs_emit(buf, "%u\n", endpoint->endpoint_id);
- }
- 
--static DEVICE_ATTR_RO(rx_endpoint_id);
-+#define ENDPOINT_ID_ATTR(_n, _endpoint_name)				    \
-+	static struct dev_ext_attribute dev_attr_endpoint_id_ ## _n = {	    \
-+		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
-+		.var	= (void *)(_endpoint_name),			    \
-+	}
- 
--static ssize_t tx_endpoint_id_show(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct ipa *ipa = dev_get_drvdata(dev);
-+ENDPOINT_ID_ATTR(modem_rx, IPA_ENDPOINT_AP_MODEM_RX);
-+ENDPOINT_ID_ATTR(modem_tx, IPA_ENDPOINT_AP_MODEM_TX);
- 
--	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_TX);
--}
-+static struct attribute *ipa_endpoint_id_attrs[] = {
-+	&dev_attr_endpoint_id_modem_rx.attr.attr,
-+	&dev_attr_endpoint_id_modem_tx.attr.attr,
-+	NULL
-+};
-+
-+const struct attribute_group ipa_endpoint_id_attribute_group = {
-+	.name		= "endpoint_id",
-+	.is_visible	= ipa_endpoint_id_is_visible,
-+	.attrs		= ipa_endpoint_id_attrs,
-+};
-+
-+/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
-+#define MODEM_ATTR(_n, _endpoint_name)					    \
-+	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
-+		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
-+		.var	= (void *)(_endpoint_name),			    \
-+	}
- 
--static DEVICE_ATTR_RO(tx_endpoint_id);
-+MODEM_ATTR(rx_endpoint_id, IPA_ENDPOINT_AP_MODEM_RX);
-+MODEM_ATTR(tx_endpoint_id, IPA_ENDPOINT_AP_MODEM_TX);
- 
- static struct attribute *ipa_modem_attrs[] = {
--	&dev_attr_rx_endpoint_id.attr,
--	&dev_attr_tx_endpoint_id.attr,
--	NULL
-+	&dev_attr_modem_rx_endpoint_id.attr.attr,
-+	&dev_attr_modem_tx_endpoint_id.attr.attr,
-+	NULL,
- };
- 
- const struct attribute_group ipa_modem_attribute_group = {
-diff --git a/drivers/net/ipa/ipa_sysfs.h b/drivers/net/ipa/ipa_sysfs.h
-index b34e5650bf8cd..4a3ffd1e4e3fb 100644
---- a/drivers/net/ipa/ipa_sysfs.h
-+++ b/drivers/net/ipa/ipa_sysfs.h
-@@ -10,6 +10,7 @@ struct attribute_group;
- 
- extern const struct attribute_group ipa_attribute_group;
- extern const struct attribute_group ipa_feature_attribute_group;
-+extern const struct attribute_group ipa_endpoint_id_attribute_group;
- extern const struct attribute_group ipa_modem_attribute_group;
- 
- #endif /* _IPA_SYSFS_H_ */
--- 
-2.34.1
+> We can consider moving this hard-coded value to be part of the UAPI 
+> header, although, not sure that this is really a must.
+> 
+> What do you think ?
+
+We're looking at a very narrow use case with implicit assumptions about
+the behavior of the user driver.  Some of those assumptions need to be
+exposed via the uAPI so that userspace can make reasonable choices.
+Thanks,
+
+Alex
+
+> >> +
+> >> +	ranges = u64_to_user_ptr(control.ranges);
+> >> +	nodes = kmalloc_array(nnodes, sizeof(struct interval_tree_node),
+> >> +			      GFP_KERNEL);
+> >> +	if (!nodes)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	for (i = 0; i < nnodes; i++) {
+> >> +		if (copy_from_user(&range, &ranges[i], sizeof(range))) {
+> >> +			ret = -EFAULT;
+> >> +			goto end;
+> >> +		}
+> >> +		if (!IS_ALIGNED(range.iova, control.page_size) ||
+> >> +		    !IS_ALIGNED(range.length, control.page_size)) {
+> >> +			ret = -EINVAL;
+> >> +			goto end;
+> >> +		}
+> >> +		nodes[i].start = range.iova;
+> >> +		nodes[i].last = range.iova + range.length - 1;
+> >> +		if (interval_tree_iter_first(&root, nodes[i].start,
+> >> +					     nodes[i].last)) {
+> >> +			/* Range overlapping */
+> >> +			ret = -EINVAL;
+> >> +			goto end;
+> >> +		}
+> >> +		interval_tree_insert(nodes + i, &root);
+> >> +	}
+> >> +
+> >> +	ret = device->log_ops->log_start(device, &root, nnodes,
+> >> +					 &control.page_size);
+> >> +	if (ret)
+> >> +		goto end;
+> >> +
+> >> +	if (copy_to_user(arg, &control, sizeof(control))) {
+> >> +		ret = -EFAULT;
+> >> +		device->log_ops->log_stop(device);
+> >> +	}
+> >> +
+> >> +end:
+> >> +	kfree(nodes);
+> >> +	return ret;
+> >> +}
+> >> +
+> >> +static int
+> >> +vfio_ioctl_device_feature_logging_stop(struct vfio_device *device,
+> >> +				       u32 flags, void __user *arg,
+> >> +				       size_t argsz)
+> >> +{
+> >> +	int ret;
+> >> +
+> >> +	if (!device->log_ops)
+> >> +		return -ENOTTY;
+> >> +
+> >> +	ret = vfio_check_feature(flags, argsz,
+> >> +				 VFIO_DEVICE_FEATURE_SET, 0);
+> >> +	if (ret != 1)
+> >> +		return ret;
+> >> +
+> >> +	return device->log_ops->log_stop(device);
+> >> +}
+> >> +
+> >> +static int
+> >> +vfio_ioctl_device_feature_logging_report(struct vfio_device *device,
+> >> +					 u32 flags, void __user *arg,
+> >> +					 size_t argsz)
+> >> +{
+> >> +	size_t minsz =
+> >> +		offsetofend(struct vfio_device_feature_dma_logging_report,
+> >> +			    bitmap);
+> >> +	struct vfio_device_feature_dma_logging_report report;
+> >> +	struct iova_bitmap_iter iter;
+> >> +	int ret;
+> >> +
+> >> +	if (!device->log_ops)
+> >> +		return -ENOTTY;
+> >> +
+> >> +	ret = vfio_check_feature(flags, argsz,
+> >> +				 VFIO_DEVICE_FEATURE_GET,
+> >> +				 sizeof(report));
+> >> +	if (ret != 1)
+> >> +		return ret;
+> >> +
+> >> +	if (copy_from_user(&report, arg, minsz))
+> >> +		return -EFAULT;
+> >> +
+> >> +	if (report.page_size < PAGE_SIZE)
+> >> +		return -EINVAL;
+> >> +
+> >> +	iova_bitmap_init(&iter.dirty, report.iova, ilog2(report.page_size));
+> >> +	ret = iova_bitmap_iter_init(&iter, report.iova, report.length,
+> >> +				    u64_to_user_ptr(report.bitmap));
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	for (; !iova_bitmap_iter_done(&iter);
+> >> +	     iova_bitmap_iter_advance(&iter)) {
+> >> +		ret = iova_bitmap_iter_get(&iter);
+> >> +		if (ret)
+> >> +			break;
+> >> +
+> >> +		ret = device->log_ops->log_read_and_clear(device,
+> >> +			iova_bitmap_iova(&iter),
+> >> +			iova_bitmap_length(&iter), &iter.dirty);
+> >> +
+> >> +		iova_bitmap_iter_put(&iter);
+> >> +
+> >> +		if (ret)
+> >> +			break;
+> >> +	}
+> >> +
+> >> +	iova_bitmap_iter_free(&iter);
+> >> +	return ret;
+> >> +}
+> >> +
+> >>   static int vfio_ioctl_device_feature(struct vfio_device *device,
+> >>   				     struct vfio_device_feature __user *arg)
+> >>   {
+> >> @@ -1636,6 +1785,18 @@ static int vfio_ioctl_device_feature(struct vfio_device *device,
+> >>   		return vfio_ioctl_device_feature_mig_device_state(
+> >>   			device, feature.flags, arg->data,
+> >>   			feature.argsz - minsz);
+> >> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_START:
+> >> +		return vfio_ioctl_device_feature_logging_start(
+> >> +			device, feature.flags, arg->data,
+> >> +			feature.argsz - minsz);
+> >> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP:
+> >> +		return vfio_ioctl_device_feature_logging_stop(
+> >> +			device, feature.flags, arg->data,
+> >> +			feature.argsz - minsz);
+> >> +	case VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT:
+> >> +		return vfio_ioctl_device_feature_logging_report(
+> >> +			device, feature.flags, arg->data,
+> >> +			feature.argsz - minsz);
+> >>   	default:
+> >>   		if (unlikely(!device->ops->device_feature))
+> >>   			return -EINVAL;
+> >> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+> >> index 4d26e149db81..feed84d686ec 100644
+> >> --- a/include/linux/vfio.h
+> >> +++ b/include/linux/vfio.h
+> >> @@ -14,6 +14,7 @@
+> >>   #include <linux/workqueue.h>
+> >>   #include <linux/poll.h>
+> >>   #include <uapi/linux/vfio.h>
+> >> +#include <linux/iova_bitmap.h>
+> >>   
+> >>   struct kvm;
+> >>   
+> >> @@ -33,10 +34,11 @@ struct vfio_device {
+> >>   	struct device *dev;
+> >>   	const struct vfio_device_ops *ops;
+> >>   	/*
+> >> -	 * mig_ops is a static property of the vfio_device which must be set
+> >> -	 * prior to registering the vfio_device.
+> >> +	 * mig_ops/log_ops is a static property of the vfio_device which must
+> >> +	 * be set prior to registering the vfio_device.
+> >>   	 */
+> >>   	const struct vfio_migration_ops *mig_ops;
+> >> +	const struct vfio_log_ops *log_ops;
+> >>   	struct vfio_group *group;
+> >>   	struct vfio_device_set *dev_set;
+> >>   	struct list_head dev_set_list;
+> >> @@ -104,6 +106,21 @@ struct vfio_migration_ops {
+> >>   				   enum vfio_device_mig_state *curr_state);
+> >>   };
+> >>   
+> >> +/**
+> >> + * @log_start: Optional callback to ask the device start DMA logging.
+> >> + * @log_stop: Optional callback to ask the device stop DMA logging.
+> >> + * @log_read_and_clear: Optional callback to ask the device read
+> >> + *         and clear the dirty DMAs in some given range.
+> >> + */
+> >> +struct vfio_log_ops {
+> >> +	int (*log_start)(struct vfio_device *device,
+> >> +		struct rb_root_cached *ranges, u32 nnodes, u64 *page_size);
+> >> +	int (*log_stop)(struct vfio_device *device);
+> >> +	int (*log_read_and_clear)(struct vfio_device *device,
+> >> +		unsigned long iova, unsigned long length,
+> >> +		struct iova_bitmap *dirty);
+> >> +};
+> >> +
+> >>   /**
+> >>    * vfio_check_feature - Validate user input for the VFIO_DEVICE_FEATURE ioctl
+> >>    * @flags: Arg from the device_feature op  
+> 
+> 
 
