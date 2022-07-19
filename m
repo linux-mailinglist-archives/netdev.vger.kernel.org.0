@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10142579FE9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:45:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCCC579FEE
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237760AbiGSNpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 09:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S237744AbiGSNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 09:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233749AbiGSNo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:44:58 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33AC76469
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:58:17 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id b6so8380949wmq.5
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:58:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=JXHp6pIxPy+wgaPGh3LoqXThJCcrgYdrqg/OfPyajuc=;
-        b=KYKy2ar+XFWKf2wUx6cxp33A5RoGceHdBo9Z0GeyhAABxmQKwlRRyW/kGV4ojDvbHm
-         64WznLyCb5/6ZnGGe1fMv0lOQZ1wbcTnDqOz8LeEUfbckMkE7Mgh5RftuOWKv3tzILxf
-         wxepqtf0CD+RdbiJsM2Yl4pPhTU0ZV81UYnVOIRmubUJRLsXv0zPiuUUpkT6jxlXCvp0
-         8MwDtNiYwIWOkUISKT7MCNAYvj5x3vTpkajGnoGmY0UZyYp5PiQ8SB1cUgTR/sd/hSgH
-         xCe5EP6yyGocVF8r91DzGOJjknmXU5GCsjVJrJxW1gTC9z0GZRH36Z7rs5e9rOYaehpM
-         lBpA==
+        with ESMTP id S236012AbiGSNqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:46:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 532C2106AC0
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658235547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GpFb8vkFvojqhTGDZMr57afoE9WFfoScp9OlFzV0WwU=;
+        b=hec0C2Iz2alWvQfu8C+LRxs9zsGkUilc+xlrN7TSYmZmsFyTtAj7B/jkByf4iq70v8DdBK
+        FLz368fzZhGmLN5mwPkDCSekKSXQ3G7Y4d6q9PYEw+cPhv7MV4XYTp0LQshOVPeWx26FDS
+        T1jCPlZiotp6oByNX/MjF7t+NcxHuS8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-398-YJ1Yc8tWNzGLskZGere3HA-1; Tue, 19 Jul 2022 08:59:06 -0400
+X-MC-Unique: YJ1Yc8tWNzGLskZGere3HA-1
+Received: by mail-qk1-f197.google.com with SMTP id m8-20020a05620a24c800b006b5d8eb23efso7879405qkn.10
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:59:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=JXHp6pIxPy+wgaPGh3LoqXThJCcrgYdrqg/OfPyajuc=;
-        b=caewEMfMHcUx6euDiuKPOPQMfR6UUs1666SLkIAlT46E2fH0CNcrTjdJsh0ve+vVny
-         ylnHcFQG2LsQ9TiPec5EAqJxm7ovpz7/dpP0xbZZbzK8qbS4/zqmuukW11XJLIn5PiWW
-         vhZs48Db0vblYUe9Koxxb5JC4qVQdqDnJ0WZv9d/Fy8uphC/cc0oLDmoR7gQF1AHMk3U
-         f3lLDs11sIgfHoTl7dKrznGbxgoMEr6X99yoSM6V+7hvmK3jqMTHw7WDZBCaALYt2AQs
-         d5H2GKPINm75YCnSfDTomZ1bMRRmBl9L1tZgnXMSGK+gxeuLmaF5Igx0Ksf8dgIvHiVD
-         7g1A==
-X-Gm-Message-State: AJIora+zw/XW1fUhhnhD7N/Wfzb+epQbLVVp3QMsIcuwMOp27vgbjlAR
-        cqViA9PH7yQsi572vgOfoHqX0A==
-X-Google-Smtp-Source: AGRyM1sdAqGK51Ry5I3l8ch92vW/ixq+C3UcBLqFGHPLJAnOBHb38/UtsSCt8tlWkv0IKj2/fWSJRg==
-X-Received: by 2002:a05:600c:1e04:b0:3a3:11ca:5c0c with SMTP id ay4-20020a05600c1e0400b003a311ca5c0cmr15400294wmb.31.1658235494686;
-        Tue, 19 Jul 2022 05:58:14 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:fc72:8c85:fca1:4e18? ([2a01:e0a:b41:c160:fc72:8c85:fca1:4e18])
-        by smtp.gmail.com with ESMTPSA id m185-20020a1c26c2000000b003a302fb9df7sm18615177wmm.21.2022.07.19.05.58.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 05:58:14 -0700 (PDT)
-Message-ID: <390e3dc0-9a10-621b-f8e8-1cf15fa32bf1@6wind.com>
-Date:   Tue, 19 Jul 2022 14:58:13 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GpFb8vkFvojqhTGDZMr57afoE9WFfoScp9OlFzV0WwU=;
+        b=MkDfkEm3clCzRMVXNmmhaYECriBe2D7Ksl6i7PTUKd6//oKL6Vt8CsXE9wnl2x1lSY
+         8w+JnWQlG9jNgq5PwH9lrPhX+Vugh3hQdutMMnUKJyRPSnKdUzygl29Nkr4F2E0k0GrU
+         KXffK3KiA7ZiwahXe3PH8EyWUJcWZkCYVRZIvqg0CnJcrMMvLz2AdQQ2TMd8n8esZfft
+         HemF2j4cfXcOwGzIqFeUj0n2iJBw7DBheXw+MWvU7yCCnAP5Uj4Fkr0LS9F2Nb+d/u/C
+         HLmOmtRbXKjDWPbtjxXRCxOtiCm99Zy4K5YgyKShGXR2Z5CwAE+l47lYUlnd4f1DpM97
+         qpjA==
+X-Gm-Message-State: AJIora9bzUzM5OCijNcd/jELFwEQQYpjJwIPktqCRe2/AcKx11uA5u6v
+        f3urBlD1zzhX5fIQmNHqlBQPD+fLYQZ7g9KHvaAIEYslaCb18T5JfSpurxQGTVMdsma9GOMI5gn
+        oWuA56chJ0krgwpgM
+X-Received: by 2002:a37:bb06:0:b0:6af:1396:733a with SMTP id l6-20020a37bb06000000b006af1396733amr20076306qkf.19.1658235545578;
+        Tue, 19 Jul 2022 05:59:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v3rTh6rpiRFqOJRQK0ZLJtgg3flVdhc61hiFQaT3lCYarTqS5U4ciXv6GiDuKhdb9qoBSiNg==
+X-Received: by 2002:a37:bb06:0:b0:6af:1396:733a with SMTP id l6-20020a37bb06000000b006af1396733amr20076290qkf.19.1658235545356;
+        Tue, 19 Jul 2022 05:59:05 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id bk8-20020a05620a1a0800b006b5fe4c333fsm1422065qkb.85.2022.07.19.05.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 05:59:04 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 14:58:56 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
+ POLLIN/POLLRDNORM
+Message-ID: <20220719125856.a6bfwrvy66gxxzqe@sgarzare-redhat>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net] mlxsw: spectrum_router: Fix IPv4 nexthop gateway
- indication
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
-        dsahern@gmail.com, mlxsw@nvidia.com, stable@vger.kernel.org
-References: <20220719122626.2276880-1-idosch@nvidia.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220719122626.2276880-1-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 18, 2022 at 08:12:52AM +0000, Arseniy Krasnov wrote:
+>Hello,
+>
+>during my experiments with zerocopy receive, i found, that in some
+>cases, poll() implementation violates POSIX: when socket has non-
+>default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
+>POLLRDNORM bits in 'revents' even number of bytes available to read
+>on socket is smaller than SO_RCVLOWAT value. In this case,user sees
+>POLLIN flag and then tries to read data(for example using  'read()'
+>call), but read call will be blocked, because  SO_RCVLOWAT logic is
+>supported in dequeue loop in af_vsock.c. But the same time,  POSIX
+>requires that:
+>
+>"POLLIN     Data other than high-priority data may be read without
+>            blocking.
+> POLLRDNORM Normal data may be read without blocking."
+>
+>See https://www.open-std.org/jtc1/sc22/open/n4217.pdf, page 293.
+>
+>So, we have, that poll() syscall returns POLLIN, but read call will
+>be blocked.
+>
+>Also in man page socket(7) i found that:
+>
+>"Since Linux 2.6.28, select(2), poll(2), and epoll(7) indicate a
+>socket as readable only if at least SO_RCVLOWAT bytes are available."
+>
+>I checked TCP callback for poll()(net/ipv4/tcp.c, tcp_poll()), it
+>uses SO_RCVLOWAT value to set POLLIN bit, also i've tested TCP with
+>this case for TCP socket, it works as POSIX required.
 
-Le 19/07/2022 à 14:26, Ido Schimmel a écrit :
-> mlxsw needs to distinguish nexthops with a gateway from connected
-> nexthops in order to write the former to the adjacency table of the
-> device. The check used to rely on the fact that nexthops with a gateway
-> have a 'link' scope whereas connected nexthops have a 'host' scope. This
-> is no longer correct after commit 747c14307214 ("ip: fix dflt addr
-> selection for connected nexthop").
-> 
-> Fix that by instead checking the address family of the gateway IP. This
-> is a more direct way and also consistent with the IPv6 counterpart in
-> mlxsw_sp_rt6_is_gateway().
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 747c14307214 ("ip: fix dflt addr selection for connected nexthop")
-> Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+I tried to look at the code and it seems that only TCP complies with it 
+or am I wrong?
+
+>
+>I've added some fixes to af_vsock.c and virtio_transport_common.c,
+>test is also implemented.
+>
+>What do You think guys?
+
+Nice, thanks for fixing this and for the test!
+
+I left some comments, but I think the series is fine if we will support 
+it in all transports.
+
+I'd just like to understand if it's just TCP complying with it or I'm 
+missing some check included in the socket layer that we could reuse.
+
+@David, @Jakub, @Paolo, any advice?
+
+Thanks,
+Stefano
+
