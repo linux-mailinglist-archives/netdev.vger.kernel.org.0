@@ -2,292 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A37925797DF
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 12:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4A85797E3
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 12:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237053AbiGSKs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 06:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
+        id S237200AbiGSKuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 06:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236980AbiGSKs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 06:48:56 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2839402C5;
-        Tue, 19 Jul 2022 03:48:53 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ss3so26360438ejc.11;
-        Tue, 19 Jul 2022 03:48:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/n66qJBu+Ju2yJb4zfXK4jrNHmEkqlKKp1R/SkPg820=;
-        b=jpvjsiO10fwp6VJsKFRNeHF2bt6s+F1Y7vB7fbTizulu+T+/lYv6NSpDge+kihY4tO
-         l6uvc2QG4b38vObAbPo+3ZxBgZnffgyzPFJAYev6AVyKcbJ+sNm3B2lc+oZ9HYfD6qXr
-         EeKaL1ADjRYDfcViOYk8oCNmcI4/0jQ3LrDqivlvh8JBgjzOlA1ie8wXL14rt/qPsuvu
-         cPQkTdkYAYVP50F6volYQgABZ3i34OQi+sF05sr5otpfGE9Zgmk8Jq/M2kFAOAPa0RvZ
-         HGzJRTbPGN44v6A/QA5RPxk5R5b9SsAPXkl+YLRm9eOJSNXBQY03mfuRmYXD2elkWf1x
-         4mPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/n66qJBu+Ju2yJb4zfXK4jrNHmEkqlKKp1R/SkPg820=;
-        b=i95L1JqwiUrQZuD5je+Fgs48kXphV6/kET1rYPX1W+8REBTh4LhVUsja3/OZoWjFvd
-         /jIQBYSKeW9Ru5IxAB+3Utqt93rAy2YNKd+FLXaezV1UCrq/z+MzenLqf7YIAgjoylJ9
-         j3hZUuv9FfT77+MI+8W6c3l2R/gTwGdT7VQQBbH5sizm4yco6HNp594ZFx9C2XR2KAFY
-         BRIzy1AY1bMxIgL3fEfaXON7D23GHmkpd7vO5RDyPPEiAfZukBGqWYLch2kf4zm0ukCv
-         +61XT/WDyDgyzY2m4IDpg2Y1cKxn+XFeAai9gjfdRro3aMhJltWgKH22HHtrPdz7E1Cs
-         Atjg==
-X-Gm-Message-State: AJIora+5hpsHNbs6uaUiwqvwL9kyNy5LIpwl1aVpPhDhbZaoXl3wrqIr
-        1lHWoG7B+neoZfvFVuvXpSg=
-X-Google-Smtp-Source: AGRyM1vuMRYpejzmtWfzPX/SOmzdrBlFMr8YRDnI4VxGC2GCSE+I/GCGjI7IM/iAW8bXroW2A7AFWw==
-X-Received: by 2002:a17:907:7617:b0:72b:49fe:fdf7 with SMTP id jx23-20020a170907761700b0072b49fefdf7mr31342921ejc.25.1658227732193;
-        Tue, 19 Jul 2022 03:48:52 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id kz20-20020a17090777d400b00704fa2748ffsm6636829ejc.99.2022.07.19.03.48.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 03:48:51 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 13:48:49 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next 03/10] net: dsa: microchip: add common
- 100/10Mbps selection function
-Message-ID: <20220719104849.r2ko2oi6wyfb6d5i@skbuf>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-4-arun.ramadoss@microchip.com>
+        with ESMTP id S237187AbiGSKuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 06:50:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA80657C
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 03:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0835761419
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 10:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 35D6EC341CA;
+        Tue, 19 Jul 2022 10:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658227815;
+        bh=4EP2U9oXpAdahWrsC0inkMczDr9XMvopiucP8dgTBwQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eejw2I/Cyoki8ktXo8V6rRCyuPlVTQVANSK70k84lgKpOByU5tPD0owUMvPgLELEr
+         UcKJec6Y5Hhcx2mRuT3MGGFbr6YAbd98QlnMYeGNMy0Jm9H/ftnuDn59IHLYn28t4V
+         12n1YrG9SPD1rNu0j7VW8BxSz3yFJQmgLZUlWgveST0mEJt61BZ//hlPpl0QWIziFK
+         BpBXSuxMCV/SYyKudhdIX5rImMUloeiGV4JDzG9iQYJuVWSJdNjJgfZdLphnxm8Rlq
+         WXXLVwCw81AlV+Qe/PM5JiqyZyC1umnW4JTHzt9UMMBgqTvYu5jTS99l+ByjuymTGb
+         0yl/cYf9gl3QA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 11DEDE451B0;
+        Tue, 19 Jul 2022 10:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712160308.13253-4-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/8] amt: fix validation and synchronization bugs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165822781506.1764.166272738384218919.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jul 2022 10:50:15 +0000
+References: <20220717160910.19156-1-ap420073@gmail.com>
+In-Reply-To: <20220717160910.19156-1-ap420073@gmail.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:33:01PM +0530, Arun Ramadoss wrote:
-> This patch adds the function for configuring the 100/10Mbps speed
-> selection for the ksz switches. KSZ8795 switch uses Global control 4
-> register 0x06 bit 4 for choosing 100/10Mpbs. Other switches uses xMII
-> control 1 0xN300 for it.
-> For KSZ8795, if the bit is set then 10Mbps is chosen and if bit is
-> clear then 100Mbps chosen. For all other switches it is other way
-> around, if the bit is set then 100Mbps is chosen.
-> So, this patch add the generic function for ksz switch to select the
-> 100/10Mbps speed selection. While configuring, first it disables the
-> gigabit functionality and then configure the respective speed.
+Hello:
+
+This series was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun, 17 Jul 2022 16:09:02 +0000 you wrote:
+> There are some synchronization issues in the amt module.
+> Especially, an amt gateway doesn't well synchronize its own variables
+> and status(amt->status).
+> It tries to use a workqueue for handles in a single thread.
+> A global lock is also good, but it would occur complex locking complex.
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/dsa/microchip/ksz9477_reg.h  |  1 -
->  drivers/net/dsa/microchip/ksz_common.c   | 29 ++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_common.h   |  6 +++++
->  drivers/net/dsa/microchip/lan937x_main.c | 14 ++++--------
->  drivers/net/dsa/microchip/lan937x_reg.h  |  1 -
->  5 files changed, 40 insertions(+), 11 deletions(-)
+> In this patchset, only the gateway uses workqueue.
+> The reason why only gateway interface uses workqueue is that gateway
+> should manage its own states and variables a little bit statefully.
+> But relay doesn't need to manage tunnels statefully, stateless is okay.
+> So, relay side message handlers are okay to be called concurrently.
+> But it doesn't mean that no lock is needed.
 > 
-> diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-> index f23ed4809e47..2649fdf0bae1 100644
-> --- a/drivers/net/dsa/microchip/ksz9477_reg.h
-> +++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-> @@ -1179,7 +1179,6 @@
->  
->  #define PORT_SGMII_SEL			BIT(7)
->  #define PORT_MII_FULL_DUPLEX		BIT(6)
-> -#define PORT_MII_100MBIT		BIT(4)
->  #define PORT_GRXC_ENABLE		BIT(0)
->  
->  #define REG_PORT_XMII_CTRL_1		0x0301
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 5ebcd87fc531..f41cd2801210 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -256,6 +256,7 @@ static const u16 ksz8795_regs[] = {
->  	[S_START_CTRL]			= 0x01,
->  	[S_BROADCAST_CTRL]		= 0x06,
->  	[S_MULTICAST_CTRL]		= 0x04,
-> +	[P_XMII_CTRL_0]			= 0x06,
->  	[P_XMII_CTRL_1]			= 0x56,
->  };
->  
-> @@ -284,6 +285,8 @@ static const u32 ksz8795_masks[] = {
->  static const u8 ksz8795_values[] = {
->  	[P_MII_1GBIT]			= 1,
->  	[P_MII_NOT_1GBIT]		= 0,
-> +	[P_MII_100MBIT]			= 0,
-> +	[P_MII_10MBIT]			= 1,
+> [...]
 
-Can you namespace P_GMII_1GBIT/P_GMII_NOT_1GBIT separately from
-P_MII_100MBIT/P_MII_10MBIT? Otherwise it's not obvious that the first
-set writes to regs[P_XMII_CTRL_1] and the other to regs[P_XMII_CTRL_0].
+Here is the summary with links:
+  - [net,v2,1/8] amt: use workqueue for gateway side message handling
+    https://git.kernel.org/netdev/net/c/30e22a6ebca0
+  - [net,v2,2/8] amt: remove unnecessary locks
+    https://git.kernel.org/netdev/net/c/9c343ea6185f
+  - [net,v2,3/8] amt: use READ_ONCE() in amt module
+    https://git.kernel.org/netdev/net/c/928f353cb867
+  - [net,v2,4/8] amt: add missing regeneration nonce logic in request logic
+    https://git.kernel.org/netdev/net/c/627f16931bf3
+  - [net,v2,5/8] amt: drop unexpected advertisement message
+    https://git.kernel.org/netdev/net/c/40185f359fba
+  - [net,v2,6/8] amt: drop unexpected query message
+    https://git.kernel.org/netdev/net/c/239d886601e3
+  - [net,v2,7/8] amt: drop unexpected multicast data
+    https://git.kernel.org/netdev/net/c/e882827d5b89
+  - [net,v2,8/8] amt: do not use amt->nr_tunnels outside of lock
+    https://git.kernel.org/netdev/net/c/989918482bbc
 
->  };
->  
->  static const u8 ksz8795_shifts[] = {
-> @@ -356,6 +359,7 @@ static const u16 ksz9477_regs[] = {
->  	[S_START_CTRL]			= 0x0300,
->  	[S_BROADCAST_CTRL]		= 0x0332,
->  	[S_MULTICAST_CTRL]		= 0x0331,
-> +	[P_XMII_CTRL_0]			= 0x0300,
->  	[P_XMII_CTRL_1]			= 0x0301,
->  };
->  
-> @@ -371,11 +375,15 @@ static const u8 ksz9477_shifts[] = {
->  static const u8 ksz9477_values[] = {
->  	[P_MII_1GBIT]			= 0,
->  	[P_MII_NOT_1GBIT]		= 1,
-> +	[P_MII_100MBIT]			= 1,
-> +	[P_MII_10MBIT]			= 0,
->  };
->  
->  static const u8 ksz9893_values[] = {
->  	[P_MII_1GBIT]			= 1,
->  	[P_MII_NOT_1GBIT]		= 0,
-> +	[P_MII_100MBIT]			= 1,
-> +	[P_MII_10MBIT]			= 0,
->  };
->  
->  static const u32 lan937x_masks[] = {
-> @@ -1418,6 +1426,27 @@ void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
->  	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
->  }
->  
-> +void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed)
-> +{
-> +	const u8 *bitval = dev->info->bitval;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	data8 &= ~P_MII_100MBIT_M;
-> +
-> +	ksz_set_gbit(dev, port, false);
-> +
-> +	if (speed == SPEED_100)
-> +		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_100MBIT]);
-> +	else
-> +		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_10MBIT]);
-> +
-> +	/* Write the updated value */
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
->  static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
->  				    unsigned int mode,
->  				    phy_interface_t interface,
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index a76dfef6309c..f1fa6feca559 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -172,6 +172,7 @@ enum ksz_regs {
->  	S_START_CTRL,
->  	S_BROADCAST_CTRL,
->  	S_MULTICAST_CTRL,
-> +	P_XMII_CTRL_0,
->  	P_XMII_CTRL_1,
->  };
->  
-> @@ -215,6 +216,8 @@ enum ksz_shifts {
->  enum ksz_values {
->  	P_MII_1GBIT,
->  	P_MII_NOT_1GBIT,
-> +	P_MII_100MBIT,
-> +	P_MII_10MBIT,
->  };
->  
->  struct alu_struct {
-> @@ -304,6 +307,7 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
->  void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
->  bool ksz_get_gbit(struct ksz_device *dev, int port);
->  void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
-> +void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed);
->  extern const struct ksz_chip_data ksz_switch_chips[];
->  
->  /* Common register access functions */
-> @@ -468,6 +472,8 @@ static inline int is_lan937x(struct ksz_device *dev)
->  #define SW_START			0x01
->  
->  /* xMII configuration */
-> +#define P_MII_100MBIT_M			BIT(4)
-> +
->  #define P_MII_1GBIT_M			BIT(6)
->  
->  /* Regmap tables generation */
-> diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-> index efca96b02e15..37f63110e5bb 100644
-> --- a/drivers/net/dsa/microchip/lan937x_main.c
-> +++ b/drivers/net/dsa/microchip/lan937x_main.c
-> @@ -346,21 +346,18 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
->  				     int speed, int duplex,
->  				     bool tx_pause, bool rx_pause)
->  {
-> -	u8 xmii_ctrl0, xmii_ctrl1;
-> +	u8 xmii_ctrl0;
->  
->  	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
-> -	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
->  
-> -	xmii_ctrl0 &= ~(PORT_MII_100MBIT | PORT_MII_FULL_DUPLEX |
-> -			PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL);
-> +	xmii_ctrl0 &= ~(PORT_MII_FULL_DUPLEX | PORT_MII_TX_FLOW_CTRL |
-> +			PORT_MII_RX_FLOW_CTRL);
->  
->  	if (speed == SPEED_1000)
->  		ksz_set_gbit(dev, port, true);
-> -	else
-> -		ksz_set_gbit(dev, port, false);
->  
-> -	if (speed == SPEED_100)
-> -		xmii_ctrl0 |= PORT_MII_100MBIT;
-> +	if (speed == SPEED_100 || speed == SPEED_10)
-> +		ksz_set_100_10mbit(dev, port, speed);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Why don't you create a single ksz_port_set_xmii_speed() entry point, and
-this decides whether to call ksz_set_gbit() with true or false depending
-on whether the speed was 1000, and ksz_set_100_10mbit() as appropriate?
 
->  
->  	if (duplex)
->  		xmii_ctrl0 |= PORT_MII_FULL_DUPLEX;
-> @@ -372,7 +369,6 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
->  		xmii_ctrl0 |= PORT_MII_RX_FLOW_CTRL;
->  
->  	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
-> -	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
-
-Will these remaining ksz_pwrite8 calls to REG_PORT_XMII_CTRL_0 not
-overwrite what ksz_set_gbit() is doing?
-
->  }
->  
->  void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
-> diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-> index 747295d34411..b9364f6a4f8f 100644
-> --- a/drivers/net/dsa/microchip/lan937x_reg.h
-> +++ b/drivers/net/dsa/microchip/lan937x_reg.h
-> @@ -135,7 +135,6 @@
->  #define PORT_SGMII_SEL			BIT(7)
->  #define PORT_MII_FULL_DUPLEX		BIT(6)
->  #define PORT_MII_TX_FLOW_CTRL		BIT(5)
-> -#define PORT_MII_100MBIT		BIT(4)
->  #define PORT_MII_RX_FLOW_CTRL		BIT(3)
->  #define PORT_GRXC_ENABLE		BIT(0)
->  
-> -- 
-> 2.36.1
-> 
