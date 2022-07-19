@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0318D579FBD
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:35:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F46E579FCC
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 15:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiGSNfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 09:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S238968AbiGSNiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 09:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237743AbiGSNel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:34:41 -0400
+        with ESMTP id S238274AbiGSNiB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 09:38:01 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A83B8EEF2
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:49:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 872E5F2859
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:52:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658234948;
+        s=mimecast20190719; t=1658235159;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=SQ7i8DMmDNLQBzOxesas/9REVBIK8tkfXNsEsnI0ryg=;
-        b=Rq/ifcv1AdJVs/VpkGcVe41ohxb3Kbj8iReyWfnJSZyXk68CNlk6LQY42wQ3cYdYWewDaK
-        r2V7PzCSg3nUevyy5XJ5e/at/wSys11hGMcwMJiIVrIb9Ia79KTLZrZJG6B2yk9+0XNX90
-        vejHKAFqaeVATduPEcXFPQi0Jj/f9iU=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=TYVq4WjdOQMHhc5px4YCUTqr6DUNRdDOEbVtXRDK/f8=;
+        b=KdPQSz+zgnt+ng130VvTcFmbdrxgShtQj8fijy2ZAvzjQkR18U8ZdYGwv/osLK7Igc/ZZf
+        +pKYzKTud74ErJlfesedw1q0dCVUEVJZBwSofI7yVTUkra9JgAC9khVs3AhPiYxENz/DIj
+        js7Z5BUjOelpDUqEue/WgSvAR2eVAmE=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-XwMMYqcGP6OsuKC0QdXzsQ-1; Tue, 19 Jul 2022 08:49:07 -0400
-X-MC-Unique: XwMMYqcGP6OsuKC0QdXzsQ-1
-Received: by mail-qk1-f200.google.com with SMTP id n15-20020a05620a294f00b006b5768a0ed0so11587514qkp.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:49:07 -0700 (PDT)
+ us-mta-73-HvTZOUG1OQ-HotBujGPjag-1; Tue, 19 Jul 2022 08:52:38 -0400
+X-MC-Unique: HvTZOUG1OQ-HotBujGPjag-1
+Received: by mail-qk1-f197.google.com with SMTP id f20-20020a05620a409400b006b5fc740485so1707985qko.12
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 05:52:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=SQ7i8DMmDNLQBzOxesas/9REVBIK8tkfXNsEsnI0ryg=;
-        b=7x1y73NXX2GiMfiVdd2ZqCYBRR61SRpGbsiIf5mg1dU5EWSc6lMWuf0kvRIl7XxJA7
-         mf2Jqd9sFEK9WnyKvNSKYZ8VE0HDtPa2Vwk3cFDoyYOgCEsunXFFkJyZoaIYVCL6ZNUC
-         J2nSknC9TTezQhuc2V7cE9v42AYN69+Nz49iATlVnnIjq0U4e7okXfNvz+PvBpGOSm/i
-         MrJ1i4c4u7iOMkldzLRHzICUMeRVrqqHD8TwlRgZJCG/j29LRK/NoP7/4EEdU4EO+Cnt
-         e72QUNggB6D9t8Xeh9SDdOuT4WPD2oG5nfkMDU2563uiWzS6VdY7xRLKLupgNL+tDrmd
-         eKzQ==
-X-Gm-Message-State: AJIora9Dx9kCjmoUJT3u4afbOYLSl1/bewHm0bZJ6qof0GcnmTO927sY
-        OJ9eZFe1bGDKE1XF/0y8avfrcIFZx6xuaANDHba9+mX3P2OT521NfWrbsjPtguPIHU43wPeTTyY
-        fqJn6BSymiQ1qZI67
-X-Received: by 2002:a05:6214:5285:b0:472:ed70:23a0 with SMTP id kj5-20020a056214528500b00472ed7023a0mr24653533qvb.121.1658234946741;
-        Tue, 19 Jul 2022 05:49:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uZuaMPjQgfS6W9/DnlaK0uE0XgUkrEb2ofE1GV4HHuSsM3Xbj6XHQUCZkbhYbWbuoG/U//nQ==
-X-Received: by 2002:a05:6214:5285:b0:472:ed70:23a0 with SMTP id kj5-20020a056214528500b00472ed7023a0mr24653509qvb.121.1658234946505;
-        Tue, 19 Jul 2022 05:49:06 -0700 (PDT)
+        bh=TYVq4WjdOQMHhc5px4YCUTqr6DUNRdDOEbVtXRDK/f8=;
+        b=imB32ZhJzkdm72U8FP/hmWf2SgYPQEk/UK1cgqvcGg6nk+OJynCQHZB/fzdJQsTuBv
+         D1IXu2bnbbMt0y53Rm6ATPp86z8jzTjrGOAcwtPys7aEpY+ZWDlOxJePIqpwqqotXf9k
+         H6XIzkQ5bcsi5bcgkV3Gv9d6xKyOKXtZC+mWa8aznIman+m2uJw0tRyXstZ13PyVhux5
+         HgEjMhu90AFpCZhE7YNXscTDRJoK8CK5pxGqS2oukVYSX+oxP/12SdaGbK3xzRc3cNEN
+         tnwxW3VGYxXFCWQhwIPuJ13YErAnKSa0drAtGYd4TfEYo3D2f7qJYU8ClcDv7CzNHa/5
+         vYPw==
+X-Gm-Message-State: AJIora9ny9PeNpBIAbFLgm5ncFWFLGPET8xEhDUu2zhmUTJzYop+3iGZ
+        hGz1JESDA3LxQIksTqBDPMUzotx5rdtHACDr03c7ZoIE7NwHDyZ+VQPCAyv5yCjrqWqPNtbSUnq
+        1McA2yX71om2qarKn
+X-Received: by 2002:a37:614:0:b0:6b5:cda7:694b with SMTP id 20-20020a370614000000b006b5cda7694bmr13081910qkg.532.1658235157517;
+        Tue, 19 Jul 2022 05:52:37 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u9pkG+DbLrrLN376mRVwAbaPHBtJQ48OByRq4neWnlpWQY9teeIXv+aG4MfOrc28E2dEFUWw==
+X-Received: by 2002:a37:614:0:b0:6b5:cda7:694b with SMTP id 20-20020a370614000000b006b5cda7694bmr13081889qkg.532.1658235157281;
+        Tue, 19 Jul 2022 05:52:37 -0700 (PDT)
 Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id dm53-20020a05620a1d7500b006b4880b08a9sm14522441qkb.88.2022.07.19.05.49.03
+        by smtp.gmail.com with ESMTPSA id c26-20020a05620a269a00b006b5ba7b9a6fsm13373178qkp.35.2022.07.19.05.52.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 05:49:05 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 14:48:57 +0200
+        Tue, 19 Jul 2022 05:52:36 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 14:52:27 +0200
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -69,57 +69,67 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 2/3] virtio/vsock: use 'target' in notify_poll_in,
- callback.
-Message-ID: <20220719124857.akv25sgp6np3pdaw@sgarzare-redhat>
+Subject: Re: [RFC PATCH v1 3/3] vsock_test: POLLIN + SO_RCVLOWAT test.
+Message-ID: <20220719125227.bktosg3yboeaeoo5@sgarzare-redhat>
 References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
- <358f8d52-fd88-ad2e-87e2-c64bfa516a58@sberdevices.ru>
+ <df70a274-4e69-ca1f-acba-126eb517e532@sberdevices.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <358f8d52-fd88-ad2e-87e2-c64bfa516a58@sberdevices.ru>
+In-Reply-To: <df70a274-4e69-ca1f-acba-126eb517e532@sberdevices.ru>
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 08:17:31AM +0000, Arseniy Krasnov wrote:
->This callback controls setting of POLLIN,POLLRDNORM output bits
->of poll() syscall,but in some cases,it is incorrectly to set it,
->when socket has at least 1 bytes of available data. Use 'target'
->which is already exists and equal to sk_rcvlowat in this case.
+On Mon, Jul 18, 2022 at 08:19:06AM +0000, Arseniy Krasnov wrote:
+>This adds test to check, that when poll() returns POLLIN and
+>POLLRDNORM bits, next read call won't block.
 >
 >Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 >---
-> net/vmw_vsock/virtio_transport_common.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+> tools/testing/vsock/vsock_test.c | 90 ++++++++++++++++++++++++++++++++
+> 1 file changed, 90 insertions(+)
 >
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index ec2c2afbf0d0..591908740992 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -634,7 +634,7 @@ virtio_transport_notify_poll_in(struct vsock_sock *vsk,
-> 				size_t target,
-> 				bool *data_ready_now)
-> {
->-	if (vsock_stream_has_data(vsk))
->+	if (vsock_stream_has_data(vsk) >= target)
-> 		*data_ready_now = true;
-> 	else
-> 		*data_ready_now = false;
+>diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>index dc577461afc2..8e394443eaf6 100644
+>--- a/tools/testing/vsock/vsock_test.c
+>+++ b/tools/testing/vsock/vsock_test.c
+>@@ -18,6 +18,7 @@
+> #include <sys/socket.h>
+> #include <time.h>
+> #include <sys/mman.h>
+>+#include <poll.h>
+>
+> #include "timeout.h"
+> #include "control.h"
+>@@ -596,6 +597,90 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
+> 	close(fd);
+> }
+>
+>+static void test_stream_poll_rcvlowat_server(const struct test_opts *opts)
+>+{
+>+#define RCVLOWAT_BUF_SIZE 128
+>+	int fd;
+>+	int i;
+>+
+>+	fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
+>+	if (fd < 0) {
+>+		perror("accept");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	/* Send 1 byte. */
+>+	send_byte(fd, 1, 0);
+>+
+>+	control_writeln("SRVSENT");
+>+
+>+	/* Just empirically delay value. */
+>+	sleep(4);
 
-Perhaps we can take the opportunity to clean up the code in this way:
-
-	*data_ready_now = vsock_stream_has_data(vsk) >= target;
-
-Anyway, I think we also need to fix the other transports (vmci and 
-hyperv), what do you think?
-
-Thanks,
-Stefano
+Why we need this sleep()?
 
