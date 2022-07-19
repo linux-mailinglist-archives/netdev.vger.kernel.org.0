@@ -2,128 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05408579388
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:54:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EEB5793A5
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:58:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233360AbiGSGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 02:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
+        id S232167AbiGSG6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 02:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbiGSGyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:54:18 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 958CD28E29
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:54:17 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-h5d0l6MvOry9tQjiREc1Yw-1; Tue, 19 Jul 2022 02:54:06 -0400
-X-MC-Unique: h5d0l6MvOry9tQjiREc1Yw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A57641857F06;
-        Tue, 19 Jul 2022 06:54:05 +0000 (UTC)
-Received: from dreadlord.bne.redhat.com (fdacunha.bne.redhat.com [10.64.0.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 45023141511F;
-        Tue, 19 Jul 2022 06:54:01 +0000 (UTC)
-From:   Dave Airlie <airlied@gmail.com>
-To:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
-        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Subject: [PATCH] docs: driver-api: firmware: add driver firmware guidelines. (v2)
-Date:   Tue, 19 Jul 2022 16:53:57 +1000
-Message-Id: <20220719065357.2705918-1-airlied@gmail.com>
+        with ESMTP id S229914AbiGSG6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:58:09 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1646E2A411
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:58:08 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bp15so25419914ejb.6
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:58:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pgMrFU+qEImV5jvhZKnhdxLHcWLuqCE+OAyoxG4pme8=;
+        b=YbZYcppP9dA+6qz+j3MJQDbvZEOZiAHmbp42CjpwSYXGU0EoCZK1EKmmjObzd4dSjM
+         3oWn2wIO7QVDAh4ROsod6+UfAHnX/VoIOBSYqqHZTf5BuQAxPUFvugznLVe8G/Z6Qija
+         0Xmz/nKzdYJrwiHV3zLQmEAH/FUXIIeJaUoldEWbpK4/E4FG57WSEBTW2/7OQA3ITao3
+         iOyVh3Zn9Ei8YAKMbb2tE/+4NdLJNdUhjUXdWBbVnTsT9FbDPhMmRG04UQFVFDIdQAu7
+         dUiMlwp873B5xUCNZQOMoEgYkaUqgK6OJI5TSOwB9X00HdEwNVxPTTAJ9BEbZJ5Qz9VB
+         l1/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pgMrFU+qEImV5jvhZKnhdxLHcWLuqCE+OAyoxG4pme8=;
+        b=7D8DmwSi/3ofcjeptN3JPOQcZ2oiR8H+YJA7B3XVRhJTv28S8V9TSK8oMhqZX6H4MI
+         jqXFXKG/xKNKbf/XtksJzGoRt9AHqy6C9AlZ47bcANP24BaQCnuqDh8TwR/w5MjBQNlB
+         mDbxy7OZKVmJHp1e56CyVAPM4aYv4rhjRDE6qjR89mVpG9sm5qu/Ud+Ef7p/MQBkJHtK
+         CTCf8yRKX61anDYlYbtdaffDIWMh22Y5oiXVG1O/YTc9qH83+z85ZPN9w1iB64nFnNyA
+         YJcqC8nQZ6LbfDmnaQsBVQBZ23XyMiRixdJtYpcAr4S+nmSCn43Yqo05WgW5JrLgURWL
+         E48Q==
+X-Gm-Message-State: AJIora8s0nbBVWDA6qZit1S2wwnLm11F70TK5FvMQVJSP1BlRhHTRvUw
+        Kw66zcMZ6KGUhU2y5NFuld35Cw==
+X-Google-Smtp-Source: AGRyM1sNzzERn6owpOTMShEzVYzNg/n5kCxLDXLcQTwEu1yNAn2Ba1efmwHv6gwPSuECam1564pBsw==
+X-Received: by 2002:a17:907:a061:b0:72f:1dde:fac0 with SMTP id ia1-20020a170907a06100b0072f1ddefac0mr11956591ejc.310.1658213886393;
+        Mon, 18 Jul 2022 23:58:06 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id 2-20020a170906218200b0072f441a04a6sm1348851eju.5.2022.07.18.23.58.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jul 2022 23:58:05 -0700 (PDT)
+Message-ID: <75d3ee98-a73c-16c5-2bb3-f61180115b29@blackwall.org>
+Date:   Tue, 19 Jul 2022 09:58:04 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH bpf v2 0/5] bpf: Allow any source IP in
+ bpf_skb_set_tunnel_key
+Content-Language: en-US
+To:     Paul Chaignon <paul@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Kaixi Fan <fankaixi.li@bytedance.com>,
+        Yonghong Song <yhs@fb.com>
+References: <cover.1658159533.git.paul@isovalent.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <cover.1658159533.git.paul@isovalent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+On 18/07/2022 18:53, Paul Chaignon wrote:
+> Commit 26101f5ab6bd ("bpf: Add source ip in "struct bpf_tunnel_key"")
+> added support for getting and setting the outer source IP of encapsulated
+> packets via the bpf_skb_{get,set}_tunnel_key BPF helper. This change
+> allows BPF programs to set any IP address as the source, including for
+> example the IP address of a container running on the same host.
+> 
+> In that last case, however, the encapsulated packets are dropped when
+> looking up the route because the source IP address isn't assigned to any
+> interface on the host. To avoid this, we need to set the
+> FLOWI_FLAG_ANYSRC flag.
+> 
+> Changes in v2:
+>   - Removed changes to IPv6 code paths as they are unnecessary.
+> 
+> Paul Chaignon (5):
+>   ip_tunnels: Add new flow flags field to ip_tunnel_key
+>   vxlan: Use ip_tunnel_key flow flags in route lookups
+>   geneve: Use ip_tunnel_key flow flags in route lookups
+>   bpf: Set flow flag to allow any source IP in bpf_tunnel_key
+>   selftests/bpf: Don't assign outer source IP to host
+> 
+>  drivers/net/geneve.c                                 |  1 +
+>  drivers/net/vxlan/vxlan_core.c                       | 11 +++++++----
+>  include/net/ip_tunnels.h                             |  1 +
+>  net/core/filter.c                                    |  1 +
+>  tools/testing/selftests/bpf/prog_tests/test_tunnel.c |  1 -
+>  5 files changed, 10 insertions(+), 5 deletions(-)
+> 
 
-A recent snafu where Intel ignored upstream feedback on a firmware
-change, led to a late rc6 fix being required. In order to avoid this
-in the future we should document some expectations around
-linux-firmware.
-
-I was originally going to write this for drm, but it seems quite generic
-advice.
-
-v2: rewritten with suggestions from Thorsten Leemhuis.
-
-Acked-by: Luis Chamberlain <mcgrof@kernel.org>
-Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
----
- Documentation/driver-api/firmware/core.rst    |  1 +
- .../firmware/firmware-usage-guidelines.rst    | 34 +++++++++++++++++++
- 2 files changed, 35 insertions(+)
- create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-
-diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
-index 1d1688cbc078..803cd574bbd7 100644
---- a/Documentation/driver-api/firmware/core.rst
-+++ b/Documentation/driver-api/firmware/core.rst
-@@ -13,4 +13,5 @@ documents these features.
-    direct-fs-lookup
-    fallback-mechanisms
-    lookup-order
-+   firmware-usage-guidelines
- 
-diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-new file mode 100644
-index 000000000000..34d2412e78c6
---- /dev/null
-+++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-@@ -0,0 +1,34 @@
-+===================
-+Firmware Guidelines
-+===================
-+
-+Drivers that use firmware from linux-firmware should attempt to follow
-+the rules in this guide.
-+
-+* Firmware should be versioned with at least a major/minor version. It
-+  is suggested that the firmware files in linux-firmware be named with
-+  some device specific name, and just the major version. The
-+  major/minor/patch versions should be stored in a header in the
-+  firmware file for the driver to detect any non-ABI fixes/issues. The
-+  firmware files in linux-firmware should be overwritten with the newest
-+  compatible major version. Newer major version firmware should remain
-+  compatible with all kernels that load that major number.
-+
-+* Users should *not* have to install newer firmware to use existing
-+  hardware when they install a newer kernel.  If the hardware isn't
-+  enabled by default or under development, this can be ignored, until
-+  the first kernel release that enables that hardware.  This means no
-+  major version bumps without the kernel retaining backwards
-+  compatibility for the older major versions.  Minor version bumps
-+  should not introduce new features that newer kernels depend on
-+  non-optionally.
-+
-+* If a security fix needs lockstep firmware and kernel fixes in order to
-+  be successful, then all supported major versions in the linux-firmware
-+  repo should be updated with the security fix, and the kernel patches
-+  should detect if the firmware is new enough to declare if the security
-+  issue is fixed.  All communications around security fixes should point
-+  at both the firmware and kernel fixes. If a security fix requires
-+  deprecating old major versions, then this should only be done as a
-+  last option, and be stated clearly in all communications.
-+
--- 
-2.36.1
-
+Looks good, for the set:
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
