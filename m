@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA86257901F
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702745790F7
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 04:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234315AbiGSByT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 21:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
+        id S235368AbiGSClK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 22:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGSByS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:54:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DACBBF;
-        Mon, 18 Jul 2022 18:54:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A338B816F8;
-        Tue, 19 Jul 2022 01:54:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EC8C341C0;
-        Tue, 19 Jul 2022 01:54:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658195654;
-        bh=VH1DJCOtG1ThKB2ErFVdW1lYff4nEUEBBrcKbOBgThY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lFysAK4aT/3fpJnKtGvM5QvheEAlgj7BC3uuGZJHw8f57GQPn1p0k6KAAQYi67gnd
-         u4DqFmGX36mTQfRDh1g0SyWfw1StV+34MlBuh24wnc95yoNdtI287egvKzMglCv0IK
-         0/dJ9wvTAh0NQz7+vee6QfgMxvrMAQKiCE3Ku2oR2rHtWYI1DdGts72ZeGTERbUKLl
-         lp/GKOD1tPHeLOJ8zjUTtduXKlRUnchuUrg6zodT6EkV0Uo+u6RAuBno5Sr3UXu9WE
-         j8tcmky/HiqNiIrTj99ncQnEv6XLYMIrXonsNlRmRu7rqFfa+b676WcV2WKm3UBXEw
-         NIAWths5wTGcg==
-Date:   Mon, 18 Jul 2022 18:54:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
-        kernel-team@fb.com
-Subject: Re: [PATCH net-next v5 01/27] ipv4: avoid partial copy for zc
-Message-ID: <20220718185413.0f393c91@kernel.org>
-In-Reply-To: <0eb1cb5746e9ac938a7ba7848b33ccf680d30030.1657643355.git.asml.silence@gmail.com>
-References: <cover.1657643355.git.asml.silence@gmail.com>
-        <0eb1cb5746e9ac938a7ba7848b33ccf680d30030.1657643355.git.asml.silence@gmail.com>
+        with ESMTP id S235272AbiGSClD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 22:41:03 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FE33122B
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 19:41:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658198460; x=1689734460;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SIaxaEU3at+JT4W+mXAeOrHexIvSF97bvBGT0TTAJxM=;
+  b=hf3ED6/vJRon0UCGeS/Af7eiANBUes+P9cXN+2OvCDa9xHIgNBuBprul
+   hxqGZM+5qJCeKOVbigepZQ3dEcbPvGx4K4/GAfqXW1J3GLWStkQFPYyC5
+   R4Dx/rMQO/dQQODGo26fHMyfy5MuWxafm584yjO8E8eWH0rdDd974xO9m
+   XrP0V58nUNe2LGkPuX7gX4Hu87PcBC6NQcGogzb6QmP5EFNsfjBG0aEx6
+   2KCHXS16GtKkfRtpe044fYOUZ5C103oOerqmcTMX5+upffdEmY8KlrajQ
+   ldvUhRNT9wx2sZsykyIE+G1WnS4VxjZM9LBcE+JX3lkd/kssZ3NJxnroC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="269393300"
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="269393300"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 19:41:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
+   d="scan'208";a="686951375"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 18 Jul 2022 19:40:56 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oDdAN-0005By-LM;
+        Tue, 19 Jul 2022 02:40:55 +0000
+Date:   Tue, 19 Jul 2022 10:40:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, borisp@nvidia.com,
+        john.fastabend@gmail.com, maximmi@nvidia.com, tariqt@nvidia.com,
+        vfedorenko@novek.ru, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 7/7] tls: rx: do not use the standard strparser
+Message-ID: <202207191049.lGxYs81r-lkp@intel.com>
+References: <20220718194811.1728061-8-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718194811.1728061-8-kuba@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 21:52:25 +0100 Pavel Begunkov wrote:
-> Even when zerocopy transmission is requested and possible,
-> __ip_append_data() will still copy a small chunk of data just because it
-> allocated some extra linear space (e.g. 148 bytes). It wastes CPU cycles
-> on copy and iter manipulations and also misalignes potentially aligned
-> data. Avoid such coies. And as a bonus we can allocate smaller skb.
+Hi Jakub,
 
-s/coies/copies/ can fix when applying
+I love your patch! Perhaps something to improve:
 
-> 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
->  net/ipv4/ip_output.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index 00b4bf26fd93..581d1e233260 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -969,7 +969,6 @@ static int __ip_append_data(struct sock *sk,
->  	struct inet_sock *inet = inet_sk(sk);
->  	struct ubuf_info *uarg = NULL;
->  	struct sk_buff *skb;
-> -
->  	struct ip_options *opt = cork->opt;
->  	int hh_len;
->  	int exthdrlen;
-> @@ -977,6 +976,7 @@ static int __ip_append_data(struct sock *sk,
->  	int copy;
->  	int err;
->  	int offset = 0;
-> +	bool zc = false;
->  	unsigned int maxfraglen, fragheaderlen, maxnonfragsize;
->  	int csummode = CHECKSUM_NONE;
->  	struct rtable *rt = (struct rtable *)cork->dst;
-> @@ -1025,6 +1025,7 @@ static int __ip_append_data(struct sock *sk,
->  		if (rt->dst.dev->features & NETIF_F_SG &&
->  		    csummode == CHECKSUM_PARTIAL) {
->  			paged = true;
-> +			zc = true;
->  		} else {
->  			uarg->zerocopy = 0;
->  			skb_zcopy_set(skb, uarg, &extra_uref);
-> @@ -1091,9 +1092,12 @@ static int __ip_append_data(struct sock *sk,
->  				 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
->  				  !(rt->dst.dev->features & NETIF_F_SG)))
->  				alloclen = fraglen;
-> -			else {
-> +			else if (!zc) {
->  				alloclen = min_t(int, fraglen, MAX_HEADER);
+[auto build test WARNING on net-next/master]
 
-Willem, I think this came in with your GSO work, is there a reason we
-use MAX_HEADER here? I thought MAX_HEADER is for headers (i.e. more or
-less to be reserved) not for the min amount of data to be included.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Kicinski/tls-rx-decrypt-from-the-TCP-queue/20220719-035116
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 6e693a104207fbf5a22795c987e8964c0a1ffe2d
+config: x86_64-rhel-8.3-syz (https://download.01.org/0day-ci/archive/20220719/202207191049.lGxYs81r-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/2a6e8eea293987aa4507bf82c5952f49752c9be3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jakub-Kicinski/tls-rx-decrypt-from-the-TCP-queue/20220719-035116
+        git checkout 2a6e8eea293987aa4507bf82c5952f49752c9be3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-I wanna make sure we're not missing something about GSO here.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Otherwise I don't think we need the extra branch but that can 
-be a follow up.
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
->  				pagedlen = fraglen - alloclen;
-> +			} else {
-> +				alloclen = fragheaderlen + transhdrlen;
-> +				pagedlen = datalen - transhdrlen;
->  			}
->  
->  			alloclen += alloc_extra;
+>> WARNING: modpost: net/tls/tls.o(.init.text+0x65): Section mismatch in reference from the function init_module() to the function .exit.text:tls_device_cleanup()
+The function __init init_module() references
+a function __exit tls_device_cleanup().
+This is often seen when error handling in the init function
+uses functionality in the exit path.
+The fix is often to remove the __exit annotation of
+tls_device_cleanup() so it may be used outside an exit section.
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
