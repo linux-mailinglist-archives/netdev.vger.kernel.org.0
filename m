@@ -2,78 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68910578EB5
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D84578F54
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:35:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234471AbiGSAIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 20:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        id S235375AbiGSAeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 20:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbiGSAIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:08:06 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578EC32470;
-        Mon, 18 Jul 2022 17:08:05 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id s206so12063205pgs.3;
-        Mon, 18 Jul 2022 17:08:05 -0700 (PDT)
+        with ESMTP id S229888AbiGSAef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:34:35 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AB220BE3;
+        Mon, 18 Jul 2022 17:34:34 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id v16so19329212wrd.13;
+        Mon, 18 Jul 2022 17:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LwIsnm/+Me2/DxvmPehaf4zs3e/ctRtUpPnAE3AHXDI=;
-        b=IMinIYRXGi+bDsypwABgV4qLgYiI+bqzQItKC8xyCt91QuWV1bJ2U2c7YA+SPV7cU9
-         d+ImCkt/UOMsPMT8YoaQPDwbWjfRdXEwqqlDPFsSCavDldhm87C+REoBCMr2y/R6akQW
-         iXy7caPzKsoBeubNcew+COhhTeTzrTiHcYlWL44FccuvTeLATewGRN0ucnXuC8S3ToqS
-         h8vK0Fws8LermjH+ShtQLQj1fBOYEKD0z9ejmUy1ces+fGgCTQPzS1kUG3dq6+01wEUU
-         HGQrTdObp+KdB9CI2AINyP/RHHe9I26INIfj6nnCNNyzbE0vk3NY6Rndt4dHBFOJoprV
-         T+7w==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gbsinNdr0BQFsd/T3zsH5QkmdpN5FSgV4d92E62lsYE=;
+        b=PMLa7FCPacOopeM4wwqeeDm9keDMKML+ZEg992OuTfxmxZaQJkjQK1nrLMrOzqIcGt
+         6/2IHogsD5kiIGMDBDatGydsYEtz2ysHv16iffR+xbiu9gxKq3zgCZMOW/usnK1Eqsu8
+         LLLx5/F5i9Dz2UI/YOjWQux4Q7V0mWrz2hwGM7z00FSPK92VSbXMBS4TMlv+hvXwbnmU
+         57tLrLbve5xNZEIz2Ug+xsUzhUGaJT+m82/j6gtIk2c1SdCP6pnZRdOjqvfa2rBctbKM
+         AXTrIEqIQGOXrpWMDSOPTD2zrgE+8iNfpiA2XJPwWFqkZVQ375x66KGGdWeSkvvghUmz
+         9Biw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LwIsnm/+Me2/DxvmPehaf4zs3e/ctRtUpPnAE3AHXDI=;
-        b=oMObmRq/uJaGI87Cnd8cHNiq8bZJacbxXzqmZJvHqmfLFyMrtGpAGHXKQzLZkfOO+m
-         6EHEJ1EFUVOPoighCsABED3f9S/pX3DsVDwvt1cr7qV+eLRrmst7Dv42zfMQC0ADlBhO
-         MLZJdrFbS/D+yJM0wSzz/HAeuLiTo3tkv2pXFjX69IQPc6On8ZOtFawXUt2hQCE8jxsR
-         SwpQppX6nzK3isUjaGcxZ5J1drMKKBaPlvS7nZRG3jtp/BlThRHhRatlRN6s+ClkOqeu
-         vrYi8kOqnio5QJ5qEA+60YLLn/vam2PRtiuduPKQYuDy68mJo8byLTA4Gcz8fJ6r4kpc
-         SJMA==
-X-Gm-Message-State: AJIora+HQi9Q08CvDCKSEXjwdpRgb8Hcb24XefarB/vREwI8BC0vOOwB
-        KKnf6pMTgb563RjJAZavfWg=
-X-Google-Smtp-Source: AGRyM1uYUYJUzNJAeBzrAEXt8oNrLG1qqftqzkKoeaKRDUAcStwl2o1ljbtBRddmBCHHNlHO9LT9+A==
-X-Received: by 2002:a63:1047:0:b0:40d:7553:d897 with SMTP id 7-20020a631047000000b0040d7553d897mr26034484pgq.485.1658189284703;
-        Mon, 18 Jul 2022 17:08:04 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s187-20020a625ec4000000b0051e7b6e8b12sm10210922pfb.11.2022.07.18.17.08.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 17:08:04 -0700 (PDT)
-Message-ID: <e7ba27b8-47af-fa91-8b66-9406f3018d76@gmail.com>
-Date:   Mon, 18 Jul 2022 17:08:02 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net-next] net: dsa: microchip: fix the missing
- ksz8_r_mib_cnt
-Content-Language: en-US
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gbsinNdr0BQFsd/T3zsH5QkmdpN5FSgV4d92E62lsYE=;
+        b=3qKTPPR1H56NyZsS7M0pB3gJ2P2qRkF5f5wQ+CN0Xv0KeoR+8KMoMqw3LYk8MZpJ66
+         68VI893AD7iTGbDthRLmDojRrTOO9P5L/M7fSTSFJCyFQaWibpPNiWNPlYnefzgw4IZZ
+         1nL1CDnCK4LFG6fNOpBW7DVdOB5Rczhy9s9QxAdP6vr3HfNoi7pK/ON2nJC9r4BEeEL/
+         yPnuWSz63MDYhFybaVqv2oYfB6ziKu6L2363LXhz5Mg+OWHR4mrB5dYcJgp+Mq2Eapu1
+         qoiWuE2AFG/nD7YL+nk1OLpLp4pUVb0WDrRNMtxxYaB1aoWMe+PU5Y2useXYuwsx6wdH
+         5r8w==
+X-Gm-Message-State: AJIora9WurSLeOTyFPHIE/yhj4TTmDUOsztKvI5Fs2cgUyYqYQ5OrN5o
+        Ri3fT81Tv4+fOPiC9waQ76U=
+X-Google-Smtp-Source: AGRyM1tuP6Dw75bTlbSyjXLWOqEdydFBH0Jw6r09udoZH39svq7cJGmfSweftFFPoi/Yx8NbLdoNIg==
+X-Received: by 2002:a05:6000:1567:b0:21d:abc4:29f9 with SMTP id 7-20020a056000156700b0021dabc429f9mr24365844wrz.181.1658190872604;
+        Mon, 18 Jul 2022 17:34:32 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id i15-20020a5d438f000000b0021d4d6355efsm11921090wrq.109.2022.07.18.17.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 17:34:32 -0700 (PDT)
+Message-ID: <62d5fc18.1c69fb81.28c9a.a5c2@mx.google.com>
+X-Google-Original-Message-ID: <YtX4EN8amBXzvtCz@Ansuel-xps.>
+Date:   Tue, 19 Jul 2022 02:17:20 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-References: <20220718061803.4939-1-arun.ramadoss@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220718061803.4939-1-arun.ramadoss@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+References: <62d5a291.1c69fb81.e8ebe.287f@mx.google.com>
+ <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+ <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
+ <20220718193521.ap3fc7mzkpstw727@skbuf>
+ <62d5b8f5.1c69fb81.ae62f.1177@mx.google.com>
+ <20220718203042.j3ahonkf3jhw7rg3@skbuf>
+ <62d5daa7.1c69fb81.111b1.97f2@mx.google.com>
+ <20220718234358.27zv5ogeuvgmaud4@skbuf>
+ <62d5f18e.1c69fb81.35e7.46fe@mx.google.com>
+ <20220719001811.ty6brvavbrts6rk4@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719001811.ty6brvavbrts6rk4@skbuf>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,16 +89,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/17/2022 11:18 PM, Arun Ramadoss wrote:
-> During the refactoring for the ksz8_dev_ops from ksz8795.c to
-> ksz_common.c, the ksz8_r_mib_cnt has been missed. So this patch adds the
-> missing one.
+On Tue, Jul 19, 2022 at 03:18:11AM +0300, Vladimir Oltean wrote:
+> On Tue, Jul 19, 2022 at 01:32:26AM +0200, Christian Marangi wrote:
+> > If the ops is not supported should I return -ENOSUPP?
+> > Example some ops won't be supported like the get_phy_flags or
+> > connect_tag_protocol for example.
 > 
-> Fixes: 6ec23aaaac43 ("net: dsa: microchip: move ksz_dev_ops to ksz_common.c")
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> That's a slight disadvantage of this approach, that DSA sometimes checks
+> for the presence of a certain function pointer as an indication of
+> whether a feature is supported or not. However that doesn't work in all
+> cases, and then, it is actually necessary to call and see if it returns
+> -EOPNOTSUPP or not. For example, commit 1054457006d4 ("net: phy:
+> phylink: fix DSA mac_select_pcs() introduction") had to do just that
+> in phylink because of DSA.
+> 
+> However, you need to check how each specific DSA operation is handled.
+> For example, the no-op implementation of get_phy_flags is to return 0
+> (meaning "no special flags, thank you"). The no-op implementation for
+> connect_tag_protocol is to return success (0) for the tagging protocol
+> you support, and -EOPNOTSUPP for everything else. Here -EOPNOTSUPP isn't
+> a special code, it is an actual hard error that denies a certain tag
+> protocol from attaching.
+> 
+> The advantage is that your driver-private ops don't have to map 1:1 with
+> the dsa_switch_ops, so there is more potential for code reuse than if
+> you had to reimplement an entire (*setup) function for example. You can
+> have ops for small things like regmap creation, things like that.
+> 
+> > Anyway the series is ready, I was just pushing it... At the end it's 23
+> > patch big... (I know you will hate me but at least it's reviewable)
+> 
+> Please optimize the patches for a reviewer with average intelligence and
+> the attention span of a fish. 23 patches sounds like the series would
+> fail on the attention span count.
+> 
+> > My solution currently was this...
+> > 
+> > 	ops = devm_kzalloc(&mdiodev->dev, sizeof(*ops), GFP_KERNEL);
+> > 	if (!ops)
+> > 		return -ENOMEM;
+> > 
+> > 	/* Copy common ops */
+> > 	memcpy(ops, &qca8k_switch_ops, sizeof(*ops));
+> > 
+> > 	/* Setup specific ops */
+> > 	ops->get_tag_protocol = qca8k_get_tag_protocol;
+> 
+> Answered above.
+> 
+> > 	ops->setup = qca8k_setup;
+> 
+> Separate sub-operation, although this is a sub-optimal short-term
+> solution that kind of undermines the approach with a single
+> dsa_switch_ops in the long run.
+> 
+> > 	ops->phylink_get_caps = qca8k_phylink_get_caps;
+> 
+> Not sure what's going to be common and what's going to be different, but
+> you can take other drivers as an example, some parts will be common and
+> some hidden behind priv->info->mac_port_get_caps().
+> 
+> static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
+> 				    struct phylink_config *config)
+> {
+> 	struct mt7530_priv *priv = ds->priv;
+> 
+> 	/* This switch only supports full-duplex at 1Gbps */
+> 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+> 				   MAC_10 | MAC_100 | MAC_1000FD;
+> 
+> 	/* This driver does not make use of the speed, duplex, pause or the
+> 	 * advertisement in its mac_config, so it is safe to mark this driver
+> 	 * as non-legacy.
+> 	 */
+> 	config->legacy_pre_march2020 = false;
+> 
+> 	priv->info->mac_port_get_caps(ds, port, config);
+> }
+> 
+> > 	ops->phylink_mac_select_pcs = qca8k_phylink_mac_select_pcs;
+> > 	ops->phylink_mac_config = qca8k_phylink_mac_config;
+> > 	ops->phylink_mac_link_down = qca8k_phylink_mac_link_down;
+> > 	ops->phylink_mac_link_up = qca8k_phylink_mac_link_up;
+> 
+> Hard to comment for these phylink ops how to organize the switch
+> differences in the best way, since I don't actually know what those
+> differences are. Again, other drivers may be useful.
+> 
+> > 	ops->get_phy_flags = qca8k_get_phy_flags;
+> > 	ops->master_state_change = qca8k_master_change;
+> > 	ops->connect_tag_protocol = qca8k_connect_tag_protocol;
+> > 
+> > 	/* Assign the final ops */
+> > 	priv->ds->ops = ops;
+> > 
+> > Will wait your response on how to hanle ops that are not supported.
+> > (I assume dsa checks if an ops is declared and not if it does return
+> > ENOSUPP, so this is my concern your example)
+> 
+> Maybe it's best to think this conversion through and not rush a patch set.
+> I don't want you to blindly follow my advice to have a single dsa_switch_ops,
+> then half-ass it. This kind of thing needs to be done with care and
+> forethought.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Wonder if a good idea would be leave things as is for now and work of a
+single dsa_switch_ops on another series.
+
+With "leave things as is" I mean that function will get migrated to
+qca8k-common.c and exposed with the header file.
+
+And the dsa_switch_ops is defined in qca8k specific code.
+
+The warn about the 23 patch was scary so considering this series is
+already a bit big and I can squash only a few patch, putting extra logic
+to correctly handle each would make this even bigger.
+
+Think the right thing to do is handling the changes for single
+dsa_switch_ops to a separate series and at the same time also get some
+info on ipq4019 and what can be generalized.
+
+What do you think?
+
 -- 
-Florian
+	Ansuel
