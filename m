@@ -2,98 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B1157A41D
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE4357A428
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:24:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238271AbiGSQUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 12:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S238589AbiGSQYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 12:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiGSQUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:20:47 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8EB4E611;
-        Tue, 19 Jul 2022 09:20:46 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ez10so28100705ejc.13;
-        Tue, 19 Jul 2022 09:20:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LZRw9Jbxai2aWRRK093mCGgxgti+hlVssSiQk+LLoSw=;
-        b=I9928u0qfeMVkZFesiq24zxJAM49+C2Oy0YABt4O4zbb7GB0Rpqi37Ra7+AoHvxDTK
-         1v1YDexY2/U6g1Ny0IluzE7KSediqaEJfV+7E7NTA4z1DI1nqGqfuBEfkUMwYw+jpCm8
-         bdlDoASbmlasuYAefNZ+eDuBiqH9AqlE32BAel+7PvUWNZ06cavFCglF031uWW9nYc+O
-         kbvnYw0zWDXf2hmprc+UYr2ywryQqAheAU69k96jFv09zw8DMwcmsd8JTapbYxDsxnhM
-         ip7o8oTorUO+pkaBdfZ1sXvJcMULn8RiXw6o8EuzU2g+tZlxlJJtJpJUqYlb9zzJ3uRb
-         5SHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LZRw9Jbxai2aWRRK093mCGgxgti+hlVssSiQk+LLoSw=;
-        b=bZKiL+9/BmfmGNjPi91Vi5sCMB3Pn2DnbiRjfYR21bz67Erqo5UkFVkMeuQ/CgpLv5
-         iJyZ2hN74ttuLo9dyFzJDdGvNukX9VRBxDQDPwUFEyZ53laZpv3G85fmk5l/D2hHSWyp
-         NcHN4Bl85bTJBTF/3LDbO8QQCOqkvFUGT8RMZfY3tUyMkr2yC1GLkm4k46zHNtF6DZAB
-         qiJO4wQxqHDAb52CXyYbLXTZ7jkbSORBe1MwbCjeDaC4MysGBy6q800cVM/uqDEBmf23
-         oOi8hJfKYZewqtzj1F+t9zYRE0qr7ZN9LLRksnPgYLLnlaZ4zU6qlTihHbjKheIwMUJG
-         vltw==
-X-Gm-Message-State: AJIora+eFXcxrayIvT2OAiAODiucaaNHWYqb5x/nsNftLT6PALoYOFYg
-        gqVDcCYG95BW8OHUZMrhQrQ=
-X-Google-Smtp-Source: AGRyM1uygjE5zWKt0bMkcTfCXqLOrtAbC4VkqyMHi+NtgKazzzS7X0jJFxQ25R13Sg+IFo9/XoTAFA==
-X-Received: by 2002:a17:907:72ca:b0:72f:1a9b:361b with SMTP id du10-20020a17090772ca00b0072f1a9b361bmr15226261ejc.274.1658247644909;
-        Tue, 19 Jul 2022 09:20:44 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id fp34-20020a1709069e2200b00722e8c47cc9sm6733157ejc.181.2022.07.19.09.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 09:20:44 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 19:20:41 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        with ESMTP id S238701AbiGSQX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:23:57 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2060.outbound.protection.outlook.com [40.107.95.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D58D550EB;
+        Tue, 19 Jul 2022 09:23:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=leYOac2qwsuA4ZUnENvnGbGDqY68aoUJ+Wzw/2PpqnoPo41kZuQsxtOUFzQZSehpZoGfQu4b6XtUH9YndfwY95MNb+Ywl6Nr2GIgpGBOot4rEYJ9IR8BABx1CKUpygO1Eszz3+aGBvq9ueowLJW06LmaLgdYMD4pRMgTbTc/tiFgFOYVe6VE613VW2hSWUvRYNqGE4Byodi4nXjwXwF4ztR97AKaX/0Ju4gI6m1hs74GJdCwXWZzOyrFEzBvBot2vKeMoaL4gGZg/hG+zueToc288MiX3Ae8ca7KtNhrGKm76Q8HAlHiJg0UpdXuH099m7Ez7IHAki64hPAYJzqGdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p1FRfHiwzewnh4GN4zcVkhs/ZPDkDd6gYZBmVNX5VVI=;
+ b=KRSvKqIvTjGW9lHRbTtV/zdVdFqDLVa1D4g4uvGYabA2i7hmFNul+Uu/a4GrX8HiAj2XrIjFNwimoJ0jcajBoaptRFERGg6BUr7tu9rlCpUvX+OnhJdiiXAKUEwevmG9nII6wuA2EAxA+xdJSKq51zi2jtHy1YcB3AzJEp0C0rw28nZSbgJ5nf2PAhVZUeNUe9Vt2c+ZINvtQjsfoZ4QrCSD4CisGc2DwEImqDDLpBH3AgAXFGNxfIeR7BMvFZ54evxL7phRvOHUixHlMpXQcWuHajkwFP0JPzY3D+RYB0VyHHR1oYk7Uh/M5yKOF9u9suSX/JVhNqC88h8wZPHlNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p1FRfHiwzewnh4GN4zcVkhs/ZPDkDd6gYZBmVNX5VVI=;
+ b=ME1Pb5Sfn7nv+/yd+vRSYBBubpOlGWCQNFlmKU/szIy1ouotELEdIqBsKqtF37OzETVQGwFyA09yig/p+d2emPuJ3M9rSmhm2Ss8MpmRAAxqazbTC+Ti+NOfXpOW62Ih3mqirVUPrS4T6hZ89sJCVmXDYxQXDPq87xteNYDL2w8P3qhtwU2p6oI/2Bm0g+vmR66fyTD3ZDYbSqfvG84qK4pQe6rSMewLXwpDVI61MWEO7kP8IlKgC4u4o4T8f7wpxJdX42bZRPgzF6g2uRgz6dO6w4GMv3A3pWsal+EgMqtaJoxHJBnlzqMOMubmc8ELNi+c6soO1EWDOjtVYswvdw==
+Received: from BN0PR07CA0014.namprd07.prod.outlook.com (2603:10b6:408:141::7)
+ by MN0PR12MB5740.namprd12.prod.outlook.com (2603:10b6:208:373::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
+ 2022 16:23:55 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:141:cafe::1a) by BN0PR07CA0014.outlook.office365.com
+ (2603:10b6:408:141::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20 via Frontend
+ Transport; Tue, 19 Jul 2022 16:23:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5438.12 via Frontend Transport; Tue, 19 Jul 2022 16:23:55 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Tue, 19 Jul 2022 16:23:50 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Tue, 19 Jul 2022 09:23:49 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Tue, 19 Jul 2022 09:23:46 -0700
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 4/9] net: pcs: lynx: Convert to an mdio
- driver
-Message-ID: <20220719162041.y7vf3le5hitfsbkm@skbuf>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-5-sean.anderson@seco.com>
- <20220719160117.7pftbeytuqkjagsm@skbuf>
- <201ba777-f814-0e3f-6e1e-0327934a7122@seco.com>
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        <linux-kernel@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next V3 0/3] Introduce and use NUMA distance metrics
+Date:   Tue, 19 Jul 2022 19:23:36 +0300
+Message-ID: <20220719162339.23865-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201ba777-f814-0e3f-6e1e-0327934a7122@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: add543d2-097d-423d-f2a8-08da69a31388
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5740:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NrnuFt2SpFFNcez+vpPdZh6ZEfrHnSQFl5Klz0cckBCXeX1yIaQsQ+CNCwIPsxjW83BGVojtWRYCrGLmHt74z7pxJRwb1vUE9+onedaklIy0RObqC8aRy4T5v7oKmAPG89iXspv5AcWPmV9l+yNpDxC9dPJvGgWrUCL5uXAJtlzyJ6LZ0seQinRbKiI0yO1hsMsCnBNgIUOI9qUzogtitx9+IFBeCYXQrbVxenE4dOOfmUkNcVE6DSw3CmGYv+A8i/RtK8EsgA2Sg9C0fDjqwLRWKh1QFhWU3hbZKW9lWEFBvyFnc6IP8oOi60fIs0hxHdPpWeLoOBM2ISj0ZhuFK+wYaItOAfA2F1gUMq4psBHggp/y60UTInTC+OE7LGVf27mlKNK/qYH+i+ppgBdX635Y+Y1pznzK0Fm03hPS8TTRGGp5RdfJxahome50uAdapFfkBuriNDM89ZJVlTdcND9YDNclCPyg+PS/ygv/mqAT0AMzaUguVrOsqo762jqYrXHQYxcn9W/p8HB8XAbPKZc2ad8MzOD+I9Xz4dBvL8bF12c0Ik2SroWayXvWFERavLxKR3mQPvU7q/XSnkJ0SRqRotBvaFbmLr20q8VRZbGLSfylGk5Qxt/1eQ6OyvYkd+yDuskcEtT02ta5DQcrVqwjlzCfZGvLP7iCahVGb6Z6nUarBVgyEBFekeCRC1knbkwrddPdqyN8uEibwkT7hDRBxjVcwaaE3dm/Rlp/gi1FQBlHwnpogPhJ/K7cHJmODNiq+XQGdJ99q1EnXSNLYddVLT60efgtcvxVzFB9y7ywPrVv3Jxbo792/qbE4/QfIWDbo432J92ydo8/7E7LTA==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(39860400002)(376002)(36840700001)(46966006)(40470700004)(5660300002)(2616005)(86362001)(107886003)(2906002)(1076003)(83380400001)(8936002)(7696005)(7416002)(26005)(41300700001)(82310400005)(478600001)(82740400003)(4326008)(6666004)(40460700003)(336012)(186003)(47076005)(36860700001)(40480700001)(426003)(36756003)(110136005)(356005)(316002)(8676002)(70206006)(70586007)(54906003)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:23:55.2799
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: add543d2-097d-423d-f2a8-08da69a31388
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5740
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 12:16:17PM -0400, Sean Anderson wrote:
-> > Curiously enough, mdio_device_create() only calls device_initialize().
-> > It's mdio_device_register() that calls device_add(). So after this
-> > patch, we cannot call lynx_pcs_create() without calling
-> > mdio_device_register().
-> 
-> OK, so presumably we need to call mdio_device_register after mdio_device_create.
-> I suppose I should have caught this because patch 5 does exactly this.
+Hi,
 
-And that's only to not crash during boot, mind you. Networking is broken
-at this stage. I'll proceed to patch 5 to see what happens next.
+Implement and expose CPU spread API based on the scheduler's
+sched_numa_find_closest().  Use it in mlx5 and enic device drivers.  This
+replaces the binary NUMA preference (local / remote) with an improved one
+that minds the actual distances, so that remote NUMAs with short distance
+are preferred over farther ones.
+
+This has significant performance implications when using NUMA-aware
+memory allocations, improving the throughput and CPU utilization.
+
+Regards,
+Tariq
+
+v3:
+- Introduce the logic as a common API instead of being mlx5 specific.
+- Add implementation to enic device driver.
+- Use non-atomic version of __cpumask_clear_cpu.
+
+v2:
+- Replace EXPORT_SYMBOL with EXPORT_SYMBOL_GPL, per Peter's comment.
+- Separate the set_cpu operation into two functions, per Saeed's suggestion.
+- Add Saeed's Acked-by signature.
+
+
+Tariq Toukan (3):
+  sched/topology: Add NUMA-based CPUs spread API
+  net/mlx5e: Improve remote NUMA preferences used for the IRQ affinity
+    hints
+  enic: Use NUMA distances logic when setting affinity hints
+
+ drivers/net/ethernet/cisco/enic/enic_main.c  | 10 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c |  5 +-
+ include/linux/sched/topology.h               |  4 ++
+ kernel/sched/topology.c                      | 49 ++++++++++++++++++++
+ 4 files changed, 64 insertions(+), 4 deletions(-)
+
+-- 
+2.21.0
+
