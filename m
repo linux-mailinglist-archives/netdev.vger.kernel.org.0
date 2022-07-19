@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4009357A851
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E887C57A850
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:36:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239709AbiGSUgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 16:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        id S239576AbiGSUfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 16:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239760AbiGSUft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:35:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066E845074
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 13:35:44 -0700 (PDT)
+        with ESMTP id S239709AbiGSUfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:35:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B5D474DF
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 13:35:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F40D4B81D1C
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 20:35:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5B2C341CB;
-        Tue, 19 Jul 2022 20:35:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 619E461961
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 20:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA21C341C6;
+        Tue, 19 Jul 2022 20:35:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658262941;
-        bh=qmGumXTxc8BsLijBOEOow1fI2OSpW0FSoKi2iAVejLM=;
+        s=k20201202; t=1658262942;
+        bh=J9aYQkmJJ676dSw1uj/xcGfkf86rwR3sGXM/zx4Z+78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnHG/DN5OGCURQN8AL+NeeBYEFF/jq3vrqYnGL5ZVhaC8XhvWdJrubfd47s7bXoQo
-         4Kd4z77+tNe9AM4eEz3rpCchBErGox30HedaSoBUEJVOKxpattJDBDzy7tIHzY2xEI
-         r1sPjhwUlVkMyDk4HWHNU2Uet9WG3QFuka0nTOP/Oj324IjVF+1nBLTZl4kmC33AKI
-         C0ZukgIS3BloMeI0PQMR2M7wWNE3J1sZ5eAtA1IWdLyMzjFWA+6uqjv9BVyl4zW6yD
-         ZGMIRptb+GFPzVlfQrpf0HYN++DuHq17pWCYJrByxvOm3DzPZoFKpO1GWk0XCPx+1J
-         GsvuznEFMZ7Tw==
+        b=AS3lWoF2Jp1Tea07Lkrsm+MlSrG0RwWWQmlEDFayt3WsFY0N+pQXVknClRRxwvejY
+         5O1NkrB6IonEyQ+nL2n8zFXoj9qLQ1yQkY8T9vTcVKd0pp0aEtDEVhfTvuGOwzAx0v
+         RSf3k0W60mRjfpCHBNlx536v0mMVqiMeqcfd3ccm4gMMNMVvUEiUzZqXWSHWVE6A5c
+         Tzkui7Up6O7HtslYGjK2PDOG4s4mofw3ijcJl2HwgSZtBx2GZLYdO0BlQX0fYE0FIN
+         1mKzFfYsRy7y7OF/PhOkyZBSLKnT9UP6PqMCf8uVJ7dRK2d4hC99dMUC75itG67e7d
+         f3GML2Q7MMfJA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Moshe Tal <moshet@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [net-next V2 08/13] net/mlx5e: HTB, remove priv from htb function calls
-Date:   Tue, 19 Jul 2022 13:35:24 -0700
-Message-Id: <20220719203529.51151-9-saeed@kernel.org>
+Subject: [net-next V2 09/13] net/mlx5e: HTB, change functions name to follow convention
+Date:   Tue, 19 Jul 2022 13:35:25 -0700
+Message-Id: <20220719203529.51151-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719203529.51151-1-saeed@kernel.org>
 References: <20220719203529.51151-1-saeed@kernel.org>
@@ -59,915 +59,345 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Moshe Tal <moshet@nvidia.com>
 
-As a step to make htb self-contained replace the passing of priv as a
-parameter to htb function calls with members in the htb struct.
-
-Full decoupling the htb from priv will require more work, so for now
-leave the priv as one of the members in the htb struct, to be replaced
-by channels in a future commit.
+Following the change of the functions to be object like, change also
+the names.
 
 Signed-off-by: Moshe Tal <moshet@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 302 ++++++++++--------
- .../net/ethernet/mellanox/mlx5/core/en/qos.h  |   5 +-
- .../net/ethernet/mellanox/mlx5/core/en/selq.c |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  13 +-
- 4 files changed, 172 insertions(+), 150 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 64 +++++++++----------
+ .../net/ethernet/mellanox/mlx5/core/en/qos.h  |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/selq.c |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  2 +-
+ 4 files changed, 36 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-index 3848f06ac516..3eb4a741d75b 100644
+index 3eb4a741d75b..4428bbad3381 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-@@ -12,6 +12,10 @@
- struct mlx5e_htb {
- 	DECLARE_HASHTABLE(qos_tc2node, order_base_2(MLX5E_QOS_MAX_LEAF_NODES));
- 	DECLARE_BITMAP(qos_used_qids, MLX5E_QOS_MAX_LEAF_NODES);
-+	struct mlx5_core_dev *mdev;
-+	struct net_device *netdev;
-+	struct mlx5e_priv *priv;
-+	struct mlx5e_selq *selq;
- };
- 
- int mlx5e_qos_bytes_rate_check(struct mlx5_core_dev *mdev, u64 nbytes)
-@@ -34,23 +38,24 @@ int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev)
+@@ -38,7 +38,7 @@ int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev)
  	return min(MLX5E_QOS_MAX_LEAF_NODES, mlx5_qos_max_leaf_nodes(mdev));
  }
  
--int mlx5e_qos_cur_leaf_nodes(struct mlx5e_priv *priv)
-+int mlx5e_qos_cur_leaf_nodes(struct mlx5e_htb *htb)
+-int mlx5e_qos_cur_leaf_nodes(struct mlx5e_htb *htb)
++int mlx5e_htb_cur_leaf_nodes(struct mlx5e_htb *htb)
  {
  	int last;
  
--	last = find_last_bit(priv->htb->qos_used_qids, mlx5e_qos_max_leaf_nodes(priv->mdev));
--	return last == mlx5e_qos_max_leaf_nodes(priv->mdev) ? 0 : last + 1;
-+	last = find_last_bit(htb->qos_used_qids, mlx5e_qos_max_leaf_nodes(htb->mdev));
-+	return last == mlx5e_qos_max_leaf_nodes(htb->mdev) ? 0 : last + 1;
- }
- 
- /* Software representation of the QoS tree (internal to this file) */
- 
--static int mlx5e_find_unused_qos_qid(struct mlx5e_priv *priv)
-+static int mlx5e_find_unused_qos_qid(struct mlx5e_htb *htb)
- {
--	int size = mlx5e_qos_max_leaf_nodes(priv->mdev);
-+	int size = mlx5e_qos_max_leaf_nodes(htb->mdev);
-+	struct mlx5e_priv *priv = htb->priv;
- 	int res;
- 
- 	WARN_ONCE(!mutex_is_locked(&priv->state_lock), "%s: state_lock is not held\n", __func__);
--	res = find_first_zero_bit(priv->htb->qos_used_qids, size);
-+	res = find_first_zero_bit(htb->qos_used_qids, size);
- 
- 	return res == size ? -ENOSPC : res;
- }
-@@ -70,7 +75,7 @@ struct mlx5e_qos_node {
+@@ -75,8 +75,8 @@ struct mlx5e_qos_node {
  #define MLX5E_HTB_CLASSID_ROOT 0xffffffff
  
  static struct mlx5e_qos_node *
--mlx5e_sw_node_create_leaf(struct mlx5e_priv *priv, u16 classid, u16 qid,
-+mlx5e_sw_node_create_leaf(struct mlx5e_htb *htb, u16 classid, u16 qid,
- 			  struct mlx5e_qos_node *parent)
- {
- 	struct mlx5e_qos_node *node;
-@@ -82,17 +87,17 @@ mlx5e_sw_node_create_leaf(struct mlx5e_priv *priv, u16 classid, u16 qid,
- 	node->parent = parent;
- 
- 	node->qid = qid;
--	__set_bit(qid, priv->htb->qos_used_qids);
-+	__set_bit(qid, htb->qos_used_qids);
- 
- 	node->classid = classid;
--	hash_add_rcu(priv->htb->qos_tc2node, &node->hnode, classid);
-+	hash_add_rcu(htb->qos_tc2node, &node->hnode, classid);
- 
--	mlx5e_update_tx_netdev_queues(priv);
-+	mlx5e_update_tx_netdev_queues(htb->priv);
- 
- 	return node;
- }
- 
--static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_priv *priv)
-+static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_htb *htb)
+-mlx5e_sw_node_create_leaf(struct mlx5e_htb *htb, u16 classid, u16 qid,
+-			  struct mlx5e_qos_node *parent)
++mlx5e_htb_node_create_leaf(struct mlx5e_htb *htb, u16 classid, u16 qid,
++			   struct mlx5e_qos_node *parent)
  {
  	struct mlx5e_qos_node *node;
  
-@@ -102,16 +107,16 @@ static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_priv *priv)
- 
- 	node->qid = MLX5E_QOS_QID_INNER;
- 	node->classid = MLX5E_HTB_CLASSID_ROOT;
--	hash_add_rcu(priv->htb->qos_tc2node, &node->hnode, node->classid);
-+	hash_add_rcu(htb->qos_tc2node, &node->hnode, node->classid);
- 
+@@ -97,7 +97,7 @@ mlx5e_sw_node_create_leaf(struct mlx5e_htb *htb, u16 classid, u16 qid,
  	return node;
  }
  
--static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_priv *priv, u32 classid)
-+static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_htb *htb, u32 classid)
+-static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_htb *htb)
++static struct mlx5e_qos_node *mlx5e_htb_node_create_root(struct mlx5e_htb *htb)
+ {
+ 	struct mlx5e_qos_node *node;
+ 
+@@ -112,7 +112,7 @@ static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_htb *htb)
+ 	return node;
+ }
+ 
+-static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_htb *htb, u32 classid)
++static struct mlx5e_qos_node *mlx5e_htb_node_find(struct mlx5e_htb *htb, u32 classid)
  {
  	struct mlx5e_qos_node *node = NULL;
  
--	hash_for_each_possible(priv->htb->qos_tc2node, node, hnode, classid) {
-+	hash_for_each_possible(htb->qos_tc2node, node, hnode, classid) {
- 		if (node->classid == classid)
- 			break;
- 	}
-@@ -119,11 +124,11 @@ static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_priv *priv, u32 cl
+@@ -124,7 +124,7 @@ static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_htb *htb, u32 clas
  	return node;
  }
  
--static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_priv *priv, u32 classid)
-+static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_htb *htb, u32 classid)
+-static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_htb *htb, u32 classid)
++static struct mlx5e_qos_node *mlx5e_htb_node_find_rcu(struct mlx5e_htb *htb, u32 classid)
  {
  	struct mlx5e_qos_node *node = NULL;
  
--	hash_for_each_possible_rcu(priv->htb->qos_tc2node, node, hnode, classid) {
-+	hash_for_each_possible_rcu(htb->qos_tc2node, node, hnode, classid) {
- 		if (node->classid == classid)
- 			break;
- 	}
-@@ -131,12 +136,12 @@ static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_priv *priv, u3
+@@ -136,7 +136,7 @@ static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_htb *htb, u32
  	return node;
  }
  
--static void mlx5e_sw_node_delete(struct mlx5e_priv *priv, struct mlx5e_qos_node *node)
-+static void mlx5e_sw_node_delete(struct mlx5e_htb *htb, struct mlx5e_qos_node *node)
+-static void mlx5e_sw_node_delete(struct mlx5e_htb *htb, struct mlx5e_qos_node *node)
++static void mlx5e_htb_node_delete(struct mlx5e_htb *htb, struct mlx5e_qos_node *node)
  {
  	hash_del_rcu(&node->hnode);
  	if (node->qid != MLX5E_QOS_QID_INNER) {
--		__clear_bit(node->qid, priv->htb->qos_used_qids);
--		mlx5e_update_tx_netdev_queues(priv);
-+		__clear_bit(node->qid, htb->qos_used_qids);
-+		mlx5e_update_tx_netdev_queues(htb->priv);
- 	}
- 	/* Make sure this qid is no longer selected by mlx5e_select_queue, so
- 	 * that mlx5e_reactivate_qos_sq can safely restart the netdev TX queue.
-@@ -161,7 +166,7 @@ static u16 mlx5e_qid_from_qos(struct mlx5e_channels *chs, u16 qid)
+@@ -166,7 +166,7 @@ static u16 mlx5e_qid_from_qos(struct mlx5e_channels *chs, u16 qid)
  	return (chs->params.num_channels + is_ptp) * mlx5e_get_dcb_num_tc(&chs->params) + qid;
  }
  
--int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid)
-+int mlx5e_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid)
+-int mlx5e_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid)
++int mlx5e_htb_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid)
  {
  	struct mlx5e_qos_node *node;
  	u16 qid;
-@@ -169,7 +174,7 @@ int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid)
+@@ -174,7 +174,7 @@ int mlx5e_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid)
  
  	rcu_read_lock();
  
--	node = mlx5e_sw_node_find_rcu(priv, classid);
-+	node = mlx5e_sw_node_find_rcu(htb, classid);
+-	node = mlx5e_sw_node_find_rcu(htb, classid);
++	node = mlx5e_htb_node_find_rcu(htb, classid);
  	if (!node) {
  		res = -ENOENT;
  		goto out;
-@@ -179,7 +184,7 @@ int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid)
- 		res = -EINVAL;
- 		goto out;
- 	}
--	res = mlx5e_qid_from_qos(&priv->channels, qid);
-+	res = mlx5e_qid_from_qos(&htb->priv->channels, qid);
- 
- out:
- 	rcu_read_unlock();
-@@ -423,9 +428,6 @@ int mlx5e_qos_open_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs)
- 	struct mlx5e_qos_node *node = NULL;
- 	int bkt, err;
- 
--	if (!mlx5e_selq_is_htb_enabled(&priv->selq))
--		return 0;
--
- 	err = mlx5e_qos_alloc_queues(priv, chs);
- 	if (err)
- 		return err;
-@@ -492,16 +494,17 @@ static void mlx5e_qos_deactivate_all_queues(struct mlx5e_channels *chs)
- /* HTB TC handlers */
- 
- static int
--mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
-+mlx5e_htb_root_add(struct mlx5e_htb *htb, u16 htb_maj_id, u16 htb_defcls,
- 		   struct netlink_ext_ack *extack)
- {
-+	struct mlx5e_priv *priv = htb->priv;
- 	struct mlx5e_qos_node *root;
- 	bool opened;
- 	int err;
- 
--	qos_dbg(priv->mdev, "TC_HTB_CREATE handle %04x:, default :%04x\n", htb_maj_id, htb_defcls);
-+	qos_dbg(htb->mdev, "TC_HTB_CREATE handle %04x:, default :%04x\n", htb_maj_id, htb_defcls);
- 
--	mlx5e_selq_prepare_htb(&priv->selq, htb_maj_id, htb_defcls);
-+	mlx5e_selq_prepare_htb(htb->selq, htb_maj_id, htb_defcls);
- 
- 	opened = test_bit(MLX5E_STATE_OPENED, &priv->state);
- 	if (opened) {
-@@ -510,58 +513,59 @@ mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
+@@ -513,7 +513,7 @@ mlx5e_htb_root_add(struct mlx5e_htb *htb, u16 htb_maj_id, u16 htb_defcls,
  			goto err_cancel_selq;
  	}
  
--	root = mlx5e_sw_node_create_root(priv);
-+	root = mlx5e_sw_node_create_root(htb);
+-	root = mlx5e_sw_node_create_root(htb);
++	root = mlx5e_htb_node_create_root(htb);
  	if (IS_ERR(root)) {
  		err = PTR_ERR(root);
  		goto err_free_queues;
- 	}
- 
--	err = mlx5_qos_create_root_node(priv->mdev, &root->hw_id);
-+	err = mlx5_qos_create_root_node(htb->mdev, &root->hw_id);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Firmware error. Try upgrading firmware.");
- 		goto err_sw_node_delete;
- 	}
- 
--	mlx5e_selq_apply(&priv->selq);
-+	mlx5e_selq_apply(htb->selq);
- 
+@@ -530,7 +530,7 @@ mlx5e_htb_root_add(struct mlx5e_htb *htb, u16 htb_maj_id, u16 htb_defcls,
  	return 0;
  
  err_sw_node_delete:
--	mlx5e_sw_node_delete(priv, root);
-+	mlx5e_sw_node_delete(htb, root);
+-	mlx5e_sw_node_delete(htb, root);
++	mlx5e_htb_node_delete(htb, root);
  
  err_free_queues:
  	if (opened)
- 		mlx5e_qos_close_all_queues(&priv->channels);
- err_cancel_selq:
--	mlx5e_selq_cancel(&priv->selq);
-+	mlx5e_selq_cancel(htb->selq);
- 	return err;
- }
+@@ -556,7 +556,7 @@ static int mlx5e_htb_root_del(struct mlx5e_htb *htb)
+ 	mlx5e_selq_prepare_htb(htb->selq, 0, 0);
+ 	mlx5e_selq_apply(htb->selq);
  
--static int mlx5e_htb_root_del(struct mlx5e_priv *priv)
-+static int mlx5e_htb_root_del(struct mlx5e_htb *htb)
- {
-+	struct mlx5e_priv *priv = htb->priv;
- 	struct mlx5e_qos_node *root;
- 	int err;
- 
--	qos_dbg(priv->mdev, "TC_HTB_DESTROY\n");
-+	qos_dbg(htb->mdev, "TC_HTB_DESTROY\n");
- 
- 	/* Wait until real_num_tx_queues is updated for mlx5e_select_queue,
- 	 * so that we can safely switch to its non-HTB non-PTP fastpath.
- 	 */
- 	synchronize_net();
- 
--	mlx5e_selq_prepare_htb(&priv->selq, 0, 0);
--	mlx5e_selq_apply(&priv->selq);
-+	mlx5e_selq_prepare_htb(htb->selq, 0, 0);
-+	mlx5e_selq_apply(htb->selq);
- 
--	root = mlx5e_sw_node_find(priv, MLX5E_HTB_CLASSID_ROOT);
-+	root = mlx5e_sw_node_find(htb, MLX5E_HTB_CLASSID_ROOT);
+-	root = mlx5e_sw_node_find(htb, MLX5E_HTB_CLASSID_ROOT);
++	root = mlx5e_htb_node_find(htb, MLX5E_HTB_CLASSID_ROOT);
  	if (!root) {
--		qos_err(priv->mdev, "Failed to find the root node in the QoS tree\n");
-+		qos_err(htb->mdev, "Failed to find the root node in the QoS tree\n");
+ 		qos_err(htb->mdev, "Failed to find the root node in the QoS tree\n");
  		return -ENOENT;
- 	}
--	err = mlx5_qos_destroy_node(priv->mdev, root->hw_id);
-+	err = mlx5_qos_destroy_node(htb->mdev, root->hw_id);
+@@ -565,7 +565,7 @@ static int mlx5e_htb_root_del(struct mlx5e_htb *htb)
  	if (err)
--		qos_err(priv->mdev, "Failed to destroy root node %u, err = %d\n",
-+		qos_err(htb->mdev, "Failed to destroy root node %u, err = %d\n",
+ 		qos_err(htb->mdev, "Failed to destroy root node %u, err = %d\n",
  			root->hw_id, err);
--	mlx5e_sw_node_delete(priv, root);
-+	mlx5e_sw_node_delete(htb, root);
+-	mlx5e_sw_node_delete(htb, root);
++	mlx5e_htb_node_delete(htb, root);
  
  	mlx5e_qos_deactivate_all_queues(&priv->channels);
  	mlx5e_qos_close_all_queues(&priv->channels);
-@@ -569,7 +573,7 @@ static int mlx5e_htb_root_del(struct mlx5e_priv *priv)
- 	return err;
- }
- 
--static int mlx5e_htb_convert_rate(struct mlx5e_priv *priv, u64 rate,
-+static int mlx5e_htb_convert_rate(struct mlx5e_htb *htb, u64 rate,
- 				  struct mlx5e_qos_node *parent, u32 *bw_share)
- {
- 	u64 share = 0;
-@@ -585,59 +589,60 @@ static int mlx5e_htb_convert_rate(struct mlx5e_priv *priv, u64 rate,
- 
- 	*bw_share = share == 0 ? 1 : share > 100 ? 0 : share;
- 
--	qos_dbg(priv->mdev, "Convert: rate %llu, parent ceil %llu -> bw_share %u\n",
-+	qos_dbg(htb->mdev, "Convert: rate %llu, parent ceil %llu -> bw_share %u\n",
- 		rate, (u64)parent->max_average_bw * BYTES_IN_MBIT, *bw_share);
- 
- 	return 0;
- }
- 
--static void mlx5e_htb_convert_ceil(struct mlx5e_priv *priv, u64 ceil, u32 *max_average_bw)
-+static void mlx5e_htb_convert_ceil(struct mlx5e_htb *htb, u64 ceil, u32 *max_average_bw)
- {
- 	/* Hardware treats 0 as "unlimited", set at least 1. */
- 	*max_average_bw = max_t(u32, div_u64(ceil, BYTES_IN_MBIT), 1);
- 
--	qos_dbg(priv->mdev, "Convert: ceil %llu -> max_average_bw %u\n",
-+	qos_dbg(htb->mdev, "Convert: ceil %llu -> max_average_bw %u\n",
- 		ceil, *max_average_bw);
- }
- 
- static int
--mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
-+mlx5e_htb_leaf_alloc_queue(struct mlx5e_htb *htb, u16 classid,
- 			   u32 parent_classid, u64 rate, u64 ceil,
- 			   struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_qos_node *node, *parent;
-+	struct mlx5e_priv *priv = htb->priv;
- 	int qid;
- 	int err;
- 
--	qos_dbg(priv->mdev, "TC_HTB_LEAF_ALLOC_QUEUE classid %04x, parent %04x, rate %llu, ceil %llu\n",
-+	qos_dbg(htb->mdev, "TC_HTB_LEAF_ALLOC_QUEUE classid %04x, parent %04x, rate %llu, ceil %llu\n",
- 		classid, parent_classid, rate, ceil);
- 
--	qid = mlx5e_find_unused_qos_qid(priv);
-+	qid = mlx5e_find_unused_qos_qid(htb);
- 	if (qid < 0) {
- 		NL_SET_ERR_MSG_MOD(extack, "Maximum amount of leaf classes is reached.");
+@@ -623,11 +623,11 @@ mlx5e_htb_leaf_alloc_queue(struct mlx5e_htb *htb, u16 classid,
  		return qid;
  	}
  
--	parent = mlx5e_sw_node_find(priv, parent_classid);
-+	parent = mlx5e_sw_node_find(htb, parent_classid);
+-	parent = mlx5e_sw_node_find(htb, parent_classid);
++	parent = mlx5e_htb_node_find(htb, parent_classid);
  	if (!parent)
  		return -EINVAL;
  
--	node = mlx5e_sw_node_create_leaf(priv, classid, qid, parent);
-+	node = mlx5e_sw_node_create_leaf(htb, classid, qid, parent);
+-	node = mlx5e_sw_node_create_leaf(htb, classid, qid, parent);
++	node = mlx5e_htb_node_create_leaf(htb, classid, qid, parent);
  	if (IS_ERR(node))
  		return PTR_ERR(node);
  
- 	node->rate = rate;
--	mlx5e_htb_convert_rate(priv, rate, node->parent, &node->bw_share);
--	mlx5e_htb_convert_ceil(priv, ceil, &node->max_average_bw);
-+	mlx5e_htb_convert_rate(htb, rate, node->parent, &node->bw_share);
-+	mlx5e_htb_convert_ceil(htb, ceil, &node->max_average_bw);
- 
--	err = mlx5_qos_create_leaf_node(priv->mdev, node->parent->hw_id,
-+	err = mlx5_qos_create_leaf_node(htb->mdev, node->parent->hw_id,
- 					node->bw_share, node->max_average_bw,
- 					&node->hw_id);
- 	if (err) {
+@@ -642,7 +642,7 @@ mlx5e_htb_leaf_alloc_queue(struct mlx5e_htb *htb, u16 classid,
  		NL_SET_ERR_MSG_MOD(extack, "Firmware error when creating a leaf node.");
--		qos_err(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+		qos_err(htb->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
+ 		qos_err(htb->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
  			classid, err);
--		mlx5e_sw_node_delete(priv, node);
-+		mlx5e_sw_node_delete(htb, node);
+-		mlx5e_sw_node_delete(htb, node);
++		mlx5e_htb_node_delete(htb, node);
  		return err;
  	}
  
-@@ -645,7 +650,7 @@ mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
- 		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
- 		if (err) {
- 			NL_SET_ERR_MSG_MOD(extack, "Error creating an SQ.");
--			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+			qos_warn(htb->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
- 				 classid, err);
- 		} else {
- 			mlx5e_activate_qos_sq(priv, node);
-@@ -656,47 +661,48 @@ mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
- }
- 
- static int
--mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
-+mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
- 			u64 rate, u64 ceil, struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_qos_node *node, *child;
-+	struct mlx5e_priv *priv = htb->priv;
- 	int err, tmp_err;
- 	u32 new_hw_id;
- 	u16 qid;
- 
--	qos_dbg(priv->mdev, "TC_HTB_LEAF_TO_INNER classid %04x, upcoming child %04x, rate %llu, ceil %llu\n",
-+	qos_dbg(htb->mdev, "TC_HTB_LEAF_TO_INNER classid %04x, upcoming child %04x, rate %llu, ceil %llu\n",
+@@ -673,7 +673,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
+ 	qos_dbg(htb->mdev, "TC_HTB_LEAF_TO_INNER classid %04x, upcoming child %04x, rate %llu, ceil %llu\n",
  		classid, child_classid, rate, ceil);
  
--	node = mlx5e_sw_node_find(priv, classid);
-+	node = mlx5e_sw_node_find(htb, classid);
+-	node = mlx5e_sw_node_find(htb, classid);
++	node = mlx5e_htb_node_find(htb, classid);
  	if (!node)
  		return -ENOENT;
  
--	err = mlx5_qos_create_inner_node(priv->mdev, node->parent->hw_id,
-+	err = mlx5_qos_create_inner_node(htb->mdev, node->parent->hw_id,
- 					 node->bw_share, node->max_average_bw,
- 					 &new_hw_id);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Firmware error when creating an inner node.");
--		qos_err(priv->mdev, "Failed to create an inner node (class %04x), err = %d\n",
-+		qos_err(htb->mdev, "Failed to create an inner node (class %04x), err = %d\n",
- 			classid, err);
- 		return err;
+@@ -688,7 +688,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
  	}
  
  	/* Intentionally reuse the qid for the upcoming first child. */
--	child = mlx5e_sw_node_create_leaf(priv, child_classid, node->qid, node);
-+	child = mlx5e_sw_node_create_leaf(htb, child_classid, node->qid, node);
+-	child = mlx5e_sw_node_create_leaf(htb, child_classid, node->qid, node);
++	child = mlx5e_htb_node_create_leaf(htb, child_classid, node->qid, node);
  	if (IS_ERR(child)) {
  		err = PTR_ERR(child);
  		goto err_destroy_hw_node;
- 	}
+@@ -710,7 +710,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
+ 	/* No fail point. */
  
- 	child->rate = rate;
--	mlx5e_htb_convert_rate(priv, rate, node, &child->bw_share);
--	mlx5e_htb_convert_ceil(priv, ceil, &child->max_average_bw);
-+	mlx5e_htb_convert_rate(htb, rate, node, &child->bw_share);
-+	mlx5e_htb_convert_ceil(htb, ceil, &child->max_average_bw);
+ 	qid = node->qid;
+-	/* Pairs with mlx5e_get_txq_by_classid. */
++	/* Pairs with mlx5e_htb_get_txq_by_classid. */
+ 	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
  
--	err = mlx5_qos_create_leaf_node(priv->mdev, new_hw_id, child->bw_share,
-+	err = mlx5_qos_create_leaf_node(htb->mdev, new_hw_id, child->bw_share,
- 					child->max_average_bw, &child->hw_id);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Firmware error when creating a leaf node.");
--		qos_err(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+		qos_err(htb->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
- 			classid, err);
- 		goto err_delete_sw_node;
- 	}
-@@ -712,9 +718,9 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
- 		mlx5e_close_qos_sq(priv, qid);
- 	}
- 
--	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
- 	if (err) /* Not fatal. */
--		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
- 			 node->hw_id, classid, err);
- 
- 	node->hw_id = new_hw_id;
-@@ -723,7 +729,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
- 		err = mlx5e_open_qos_sq(priv, &priv->channels, child);
- 		if (err) {
- 			NL_SET_ERR_MSG_MOD(extack, "Error creating an SQ.");
--			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+			qos_warn(htb->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
- 				 classid, err);
- 		} else {
- 			mlx5e_activate_qos_sq(priv, child);
-@@ -734,22 +740,22 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
+ 	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
+@@ -740,7 +740,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
  
  err_delete_sw_node:
  	child->qid = MLX5E_QOS_QID_INNER;
--	mlx5e_sw_node_delete(priv, child);
-+	mlx5e_sw_node_delete(htb, child);
+-	mlx5e_sw_node_delete(htb, child);
++	mlx5e_htb_node_delete(htb, child);
  
  err_destroy_hw_node:
--	tmp_err = mlx5_qos_destroy_node(priv->mdev, new_hw_id);
-+	tmp_err = mlx5_qos_destroy_node(htb->mdev, new_hw_id);
- 	if (tmp_err) /* Not fatal. */
--		qos_warn(priv->mdev, "Failed to roll back creation of an inner node %u (class %04x), err = %d\n",
-+		qos_warn(htb->mdev, "Failed to roll back creation of an inner node %u (class %04x), err = %d\n",
- 			 new_hw_id, classid, tmp_err);
+ 	tmp_err = mlx5_qos_destroy_node(htb->mdev, new_hw_id);
+@@ -750,7 +750,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
  	return err;
  }
  
--static struct mlx5e_qos_node *mlx5e_sw_node_find_by_qid(struct mlx5e_priv *priv, u16 qid)
-+static struct mlx5e_qos_node *mlx5e_sw_node_find_by_qid(struct mlx5e_htb *htb, u16 qid)
+-static struct mlx5e_qos_node *mlx5e_sw_node_find_by_qid(struct mlx5e_htb *htb, u16 qid)
++static struct mlx5e_qos_node *mlx5e_htb_node_find_by_qid(struct mlx5e_htb *htb, u16 qid)
  {
  	struct mlx5e_qos_node *node = NULL;
  	int bkt;
+@@ -794,7 +794,7 @@ static int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
  
--	hash_for_each(priv->htb->qos_tc2node, bkt, node, hnode)
-+	hash_for_each(htb->qos_tc2node, bkt, node, hnode)
- 		if (node->qid == qid)
- 			break;
+ 	qos_dbg(htb->mdev, "TC_HTB_LEAF_DEL classid %04x\n", *classid);
  
-@@ -776,18 +782,19 @@ static void mlx5e_reset_qdisc(struct net_device *dev, u16 qid)
- 	spin_unlock_bh(qdisc_lock(qdisc));
- }
- 
--static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
-+static int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
- 			      struct netlink_ext_ack *extack)
- {
-+	struct mlx5e_priv *priv = htb->priv;
- 	struct mlx5e_qos_node *node;
- 	struct netdev_queue *txq;
- 	u16 qid, moved_qid;
- 	bool opened;
- 	int err;
- 
--	qos_dbg(priv->mdev, "TC_HTB_LEAF_DEL classid %04x\n", *classid);
-+	qos_dbg(htb->mdev, "TC_HTB_LEAF_DEL classid %04x\n", *classid);
- 
--	node = mlx5e_sw_node_find(priv, *classid);
-+	node = mlx5e_sw_node_find(htb, *classid);
+-	node = mlx5e_sw_node_find(htb, *classid);
++	node = mlx5e_htb_node_find(htb, *classid);
  	if (!node)
  		return -ENOENT;
  
-@@ -796,20 +803,20 @@ static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
- 
- 	opened = test_bit(MLX5E_STATE_OPENED, &priv->state);
- 	if (opened) {
--		txq = netdev_get_tx_queue(priv->netdev,
-+		txq = netdev_get_tx_queue(htb->netdev,
- 					  mlx5e_qid_from_qos(&priv->channels, qid));
- 		mlx5e_deactivate_qos_sq(priv, qid);
- 		mlx5e_close_qos_sq(priv, qid);
- 	}
- 
--	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
- 	if (err) /* Not fatal. */
--		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
+@@ -814,9 +814,9 @@ static int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
+ 		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
  			 node->hw_id, *classid, err);
  
--	mlx5e_sw_node_delete(priv, node);
-+	mlx5e_sw_node_delete(htb, node);
+-	mlx5e_sw_node_delete(htb, node);
++	mlx5e_htb_node_delete(htb, node);
  
--	moved_qid = mlx5e_qos_cur_leaf_nodes(priv);
-+	moved_qid = mlx5e_qos_cur_leaf_nodes(htb);
+-	moved_qid = mlx5e_qos_cur_leaf_nodes(htb);
++	moved_qid = mlx5e_htb_cur_leaf_nodes(htb);
  
  	if (moved_qid == 0) {
  		/* The last QoS SQ was just destroyed. */
-@@ -829,9 +836,9 @@ static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
- 	}
- 
+@@ -838,7 +838,7 @@ static int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
  	WARN(moved_qid == qid, "Can't move node with qid %u to itself", qid);
--	qos_dbg(priv->mdev, "Moving QoS SQ %u to %u\n", moved_qid, qid);
-+	qos_dbg(htb->mdev, "Moving QoS SQ %u to %u\n", moved_qid, qid);
+ 	qos_dbg(htb->mdev, "Moving QoS SQ %u to %u\n", moved_qid, qid);
  
--	node = mlx5e_sw_node_find_by_qid(priv, moved_qid);
-+	node = mlx5e_sw_node_find_by_qid(htb, moved_qid);
+-	node = mlx5e_sw_node_find_by_qid(htb, moved_qid);
++	node = mlx5e_htb_node_find_by_qid(htb, moved_qid);
  	WARN(!node, "Could not find a node with qid %u to move to queue %u",
  	     moved_qid, qid);
  
-@@ -840,23 +847,23 @@ static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
- 	__clear_bit(moved_qid, priv->htb->qos_used_qids);
- 
- 	if (opened) {
--		txq = netdev_get_tx_queue(priv->netdev,
-+		txq = netdev_get_tx_queue(htb->netdev,
- 					  mlx5e_qid_from_qos(&priv->channels, moved_qid));
- 		mlx5e_deactivate_qos_sq(priv, moved_qid);
- 		mlx5e_close_qos_sq(priv, moved_qid);
- 	}
- 
- 	/* Prevent packets from the old class from getting into the new one. */
--	mlx5e_reset_qdisc(priv->netdev, moved_qid);
-+	mlx5e_reset_qdisc(htb->netdev, moved_qid);
- 
--	__set_bit(qid, priv->htb->qos_used_qids);
-+	__set_bit(qid, htb->qos_used_qids);
- 	WRITE_ONCE(node->qid, qid);
- 
- 	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
- 		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
- 		if (err) {
- 			NL_SET_ERR_MSG_MOD(extack, "Error creating an SQ.");
--			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x) while moving qid %u to %u, err = %d\n",
-+			qos_warn(htb->mdev, "Failed to create a QoS SQ (class %04x) while moving qid %u to %u, err = %d\n",
- 				 node->classid, moved_qid, qid, err);
- 		} else {
- 			mlx5e_activate_qos_sq(priv, node);
-@@ -872,28 +879,29 @@ static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
- }
- 
- static int
--mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
-+mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
- 			struct netlink_ext_ack *extack)
- {
- 	struct mlx5e_qos_node *node, *parent;
-+	struct mlx5e_priv *priv = htb->priv;
- 	u32 old_hw_id, new_hw_id;
- 	int err, saved_err = 0;
- 	u16 qid;
- 
--	qos_dbg(priv->mdev, "TC_HTB_LEAF_DEL_LAST%s classid %04x\n",
-+	qos_dbg(htb->mdev, "TC_HTB_LEAF_DEL_LAST%s classid %04x\n",
+@@ -891,7 +891,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
+ 	qos_dbg(htb->mdev, "TC_HTB_LEAF_DEL_LAST%s classid %04x\n",
  		force ? "_FORCE" : "", classid);
  
--	node = mlx5e_sw_node_find(priv, classid);
-+	node = mlx5e_sw_node_find(htb, classid);
+-	node = mlx5e_sw_node_find(htb, classid);
++	node = mlx5e_htb_node_find(htb, classid);
  	if (!node)
  		return -ENOENT;
  
--	err = mlx5_qos_create_leaf_node(priv->mdev, node->parent->parent->hw_id,
-+	err = mlx5_qos_create_leaf_node(htb->mdev, node->parent->parent->hw_id,
- 					node->parent->bw_share,
- 					node->parent->max_average_bw,
- 					&new_hw_id);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Firmware error when creating a leaf node.");
--		qos_err(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+		qos_err(htb->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
- 			classid, err);
- 		if (!force)
- 			return err;
-@@ -911,15 +919,15 @@ mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
- 	}
+@@ -910,7 +910,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
  
- 	/* Prevent packets from the old class from getting into the new one. */
--	mlx5e_reset_qdisc(priv->netdev, qid);
-+	mlx5e_reset_qdisc(htb->netdev, qid);
+ 	/* Store qid for reuse and prevent clearing the bit. */
+ 	qid = node->qid;
+-	/* Pairs with mlx5e_get_txq_by_classid. */
++	/* Pairs with mlx5e_htb_get_txq_by_classid. */
+ 	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
  
--	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
- 	if (err) /* Not fatal. */
--		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
+ 	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
+@@ -927,7 +927,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
  			 node->hw_id, classid, err);
  
  	parent = node->parent;
--	mlx5e_sw_node_delete(priv, node);
-+	mlx5e_sw_node_delete(htb, node);
+-	mlx5e_sw_node_delete(htb, node);
++	mlx5e_htb_node_delete(htb, node);
  
  	node = parent;
  	WRITE_ONCE(node->qid, qid);
-@@ -937,47 +945,47 @@ mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
- 		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
- 		if (err) {
- 			NL_SET_ERR_MSG_MOD(extack, "Error creating an SQ.");
--			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+			qos_warn(htb->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
- 				 classid, err);
- 		} else {
- 			mlx5e_activate_qos_sq(priv, node);
- 		}
- 	}
- 
--	err = mlx5_qos_destroy_node(priv->mdev, old_hw_id);
-+	err = mlx5_qos_destroy_node(htb->mdev, old_hw_id);
- 	if (err) /* Not fatal. */
--		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
- 			 node->hw_id, classid, err);
- 
- 	return 0;
+@@ -961,7 +961,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
  }
  
  static int
--mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_node *node,
-+mlx5e_qos_update_children(struct mlx5e_htb *htb, struct mlx5e_qos_node *node,
+-mlx5e_qos_update_children(struct mlx5e_htb *htb, struct mlx5e_qos_node *node,
++mlx5e_htb_update_children(struct mlx5e_htb *htb, struct mlx5e_qos_node *node,
  			  struct netlink_ext_ack *extack)
  {
  	struct mlx5e_qos_node *child;
- 	int err = 0;
- 	int bkt;
- 
--	hash_for_each(priv->htb->qos_tc2node, bkt, child, hnode) {
-+	hash_for_each(htb->qos_tc2node, bkt, child, hnode) {
- 		u32 old_bw_share = child->bw_share;
- 		int err_one;
- 
- 		if (child->parent != node)
- 			continue;
- 
--		mlx5e_htb_convert_rate(priv, child->rate, node, &child->bw_share);
-+		mlx5e_htb_convert_rate(htb, child->rate, node, &child->bw_share);
- 		if (child->bw_share == old_bw_share)
- 			continue;
- 
--		err_one = mlx5_qos_update_node(priv->mdev, child->hw_id, child->bw_share,
-+		err_one = mlx5_qos_update_node(htb->mdev, child->hw_id, child->bw_share,
- 					       child->max_average_bw, child->hw_id);
- 		if (!err && err_one) {
- 			err = err_one;
- 
- 			NL_SET_ERR_MSG_MOD(extack, "Firmware error when modifying a child node.");
--			qos_err(priv->mdev, "Failed to modify a child node (class %04x), err = %d\n",
-+			qos_err(htb->mdev, "Failed to modify a child node (class %04x), err = %d\n",
- 				node->classid, err);
- 		}
- 	}
-@@ -986,7 +994,7 @@ mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_node *node,
- }
- 
- static int
--mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
-+mlx5e_htb_node_modify(struct mlx5e_htb *htb, u16 classid, u64 rate, u64 ceil,
- 		      struct netlink_ext_ack *extack)
- {
- 	u32 bw_share, max_average_bw;
-@@ -994,22 +1002,22 @@ mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
- 	bool ceil_changed = false;
- 	int err;
- 
--	qos_dbg(priv->mdev, "TC_HTB_LEAF_MODIFY classid %04x, rate %llu, ceil %llu\n",
-+	qos_dbg(htb->mdev, "TC_HTB_LEAF_MODIFY classid %04x, rate %llu, ceil %llu\n",
+@@ -1005,7 +1005,7 @@ mlx5e_htb_node_modify(struct mlx5e_htb *htb, u16 classid, u64 rate, u64 ceil,
+ 	qos_dbg(htb->mdev, "TC_HTB_LEAF_MODIFY classid %04x, rate %llu, ceil %llu\n",
  		classid, rate, ceil);
  
--	node = mlx5e_sw_node_find(priv, classid);
-+	node = mlx5e_sw_node_find(htb, classid);
+-	node = mlx5e_sw_node_find(htb, classid);
++	node = mlx5e_htb_node_find(htb, classid);
  	if (!node)
  		return -ENOENT;
  
- 	node->rate = rate;
--	mlx5e_htb_convert_rate(priv, rate, node->parent, &bw_share);
--	mlx5e_htb_convert_ceil(priv, ceil, &max_average_bw);
-+	mlx5e_htb_convert_rate(htb, rate, node->parent, &bw_share);
-+	mlx5e_htb_convert_ceil(htb, ceil, &max_average_bw);
- 
--	err = mlx5_qos_update_node(priv->mdev, node->parent->hw_id, bw_share,
-+	err = mlx5_qos_update_node(htb->mdev, node->parent->hw_id, bw_share,
- 				   max_average_bw, node->hw_id);
- 	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Firmware error when modifying a node.");
--		qos_err(priv->mdev, "Failed to modify a node (class %04x), err = %d\n",
-+		qos_err(htb->mdev, "Failed to modify a node (class %04x), err = %d\n",
- 			classid, err);
- 		return err;
- 	}
-@@ -1021,7 +1029,7 @@ mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
+@@ -1029,7 +1029,7 @@ mlx5e_htb_node_modify(struct mlx5e_htb *htb, u16 classid, u64 rate, u64 ceil,
  	node->max_average_bw = max_average_bw;
  
  	if (ceil_changed)
--		err = mlx5e_qos_update_children(priv, node, extack);
-+		err = mlx5e_qos_update_children(htb, node, extack);
+-		err = mlx5e_qos_update_children(htb, node, extack);
++		err = mlx5e_htb_update_children(htb, node, extack);
  
  	return err;
  }
-@@ -1038,71 +1046,81 @@ static void mlx5e_htb_free(struct mlx5e_htb *htb)
- 	kvfree(htb);
- }
- 
--static int mlx5e_htb_init(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb)
--{
--	hash_init(priv->htb->qos_tc2node);
-+/* HTB API */
- 
--	return mlx5e_htb_root_add(priv, htb->parent_classid, htb->classid, htb->extack);
-+static int mlx5e_htb_init(struct mlx5e_htb *htb, struct tc_htb_qopt_offload *htb_qopt,
-+			  struct net_device *netdev, struct mlx5_core_dev *mdev,
-+			  struct mlx5e_selq *selq, struct mlx5e_priv *priv)
-+{
-+	htb->mdev = mdev;
-+	htb->netdev = netdev;
-+	htb->selq = selq;
-+	htb->priv = priv;
-+	hash_init(htb->qos_tc2node);
-+	return mlx5e_htb_root_add(htb, htb_qopt->parent_classid, htb_qopt->classid,
-+				  htb_qopt->extack);
- }
- 
--static void mlx5e_htb_cleanup(struct mlx5e_priv *priv)
-+static void mlx5e_htb_cleanup(struct mlx5e_htb *htb)
- {
--	mlx5e_htb_root_del(priv);
-+	mlx5e_htb_root_del(htb);
- }
- 
--int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb)
-+int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb_qopt)
- {
-+	struct mlx5e_htb *htb = priv->htb;
- 	int res;
- 
--	if (!priv->htb && htb->command != TC_HTB_CREATE)
-+	if (!htb && htb_qopt->command != TC_HTB_CREATE)
- 		return -EINVAL;
- 
--	switch (htb->command) {
-+	switch (htb_qopt->command) {
- 	case TC_HTB_CREATE:
- 		if (!mlx5_qos_is_supported(priv->mdev)) {
--			NL_SET_ERR_MSG_MOD(htb->extack,
-+			NL_SET_ERR_MSG_MOD(htb_qopt->extack,
- 					   "Missing QoS capabilities. Try disabling SRIOV or use a supported device.");
- 			return -EOPNOTSUPP;
- 		}
- 		priv->htb = mlx5e_htb_alloc();
--		if (!priv->htb)
-+		htb = priv->htb;
-+		if (!htb)
- 			return -ENOMEM;
--		res = mlx5e_htb_init(priv, htb);
-+		res = mlx5e_htb_init(htb, htb_qopt, priv->netdev, priv->mdev, &priv->selq, priv);
- 		if (res) {
--			mlx5e_htb_free(priv->htb);
-+			mlx5e_htb_free(htb);
- 			priv->htb = NULL;
- 		}
- 		return res;
- 	case TC_HTB_DESTROY:
--		mlx5e_htb_cleanup(priv);
--		mlx5e_htb_free(priv->htb);
-+		mlx5e_htb_cleanup(htb);
-+		mlx5e_htb_free(htb);
- 		priv->htb = NULL;
- 		return 0;
- 	case TC_HTB_LEAF_ALLOC_QUEUE:
--		res = mlx5e_htb_leaf_alloc_queue(priv, htb->classid, htb->parent_classid,
--						 htb->rate, htb->ceil, htb->extack);
-+		res = mlx5e_htb_leaf_alloc_queue(htb, htb_qopt->classid, htb_qopt->parent_classid,
-+						 htb_qopt->rate, htb_qopt->ceil, htb_qopt->extack);
- 		if (res < 0)
- 			return res;
--		htb->qid = res;
-+		htb_qopt->qid = res;
- 		return 0;
- 	case TC_HTB_LEAF_TO_INNER:
--		return mlx5e_htb_leaf_to_inner(priv, htb->parent_classid, htb->classid,
--					       htb->rate, htb->ceil, htb->extack);
-+		return mlx5e_htb_leaf_to_inner(htb, htb_qopt->parent_classid, htb_qopt->classid,
-+					       htb_qopt->rate, htb_qopt->ceil, htb_qopt->extack);
- 	case TC_HTB_LEAF_DEL:
--		return mlx5e_htb_leaf_del(priv, &htb->classid, htb->extack);
-+		return mlx5e_htb_leaf_del(htb, &htb_qopt->classid, htb_qopt->extack);
- 	case TC_HTB_LEAF_DEL_LAST:
- 	case TC_HTB_LEAF_DEL_LAST_FORCE:
--		return mlx5e_htb_leaf_del_last(priv, htb->classid,
--					       htb->command == TC_HTB_LEAF_DEL_LAST_FORCE,
--					       htb->extack);
-+		return mlx5e_htb_leaf_del_last(htb, htb_qopt->classid,
-+					       htb_qopt->command == TC_HTB_LEAF_DEL_LAST_FORCE,
-+					       htb_qopt->extack);
- 	case TC_HTB_NODE_MODIFY:
--		return mlx5e_htb_node_modify(priv, htb->classid, htb->rate, htb->ceil,
--					     htb->extack);
-+		return mlx5e_htb_node_modify(htb, htb_qopt->classid, htb_qopt->rate, htb_qopt->ceil,
-+					     htb_qopt->extack);
+@@ -1117,7 +1117,7 @@ int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb_
+ 		return mlx5e_htb_node_modify(htb, htb_qopt->classid, htb_qopt->rate, htb_qopt->ceil,
+ 					     htb_qopt->extack);
  	case TC_HTB_LEAF_QUERY_QUEUE:
--		res = mlx5e_get_txq_by_classid(priv, htb->classid);
-+		res = mlx5e_get_txq_by_classid(htb, htb_qopt->classid);
+-		res = mlx5e_get_txq_by_classid(htb, htb_qopt->classid);
++		res = mlx5e_htb_get_txq_by_classid(htb, htb_qopt->classid);
  		if (res < 0)
  			return res;
--		htb->qid = res;
-+		htb_qopt->qid = res;
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
+ 		htb_qopt->qid = res;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
-index 6fbddd586736..f2c043dfaedd 100644
+index f2c043dfaedd..c54eb6c50332 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
-@@ -9,16 +9,17 @@
- #define MLX5E_QOS_MAX_LEAF_NODES 256
- 
- struct mlx5e_priv;
-+struct mlx5e_htb;
- struct mlx5e_channels;
- struct mlx5e_channel;
- struct tc_htb_qopt_offload;
+@@ -16,10 +16,9 @@ struct tc_htb_qopt_offload;
  
  int mlx5e_qos_bytes_rate_check(struct mlx5_core_dev *mdev, u64 nbytes);
  int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev);
--int mlx5e_qos_cur_leaf_nodes(struct mlx5e_priv *priv);
-+int mlx5e_qos_cur_leaf_nodes(struct mlx5e_htb *htb);
+-int mlx5e_qos_cur_leaf_nodes(struct mlx5e_htb *htb);
  
  /* TX datapath API */
--int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid);
-+int mlx5e_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid);
+-int mlx5e_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid);
++int mlx5e_htb_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid);
  
  /* SQ lifecycle */
  int mlx5e_qos_open_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs);
+@@ -28,6 +27,7 @@ void mlx5e_qos_deactivate_queues(struct mlx5e_channel *c);
+ void mlx5e_qos_close_queues(struct mlx5e_channel *c);
+ 
+ /* HTB API */
++int mlx5e_htb_cur_leaf_nodes(struct mlx5e_htb *htb);
+ int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb);
+ 
+ /* MQPRIO TX rate limit */
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/selq.c b/drivers/net/ethernet/mellanox/mlx5/core/en/selq.c
-index 0e1d84ef82b6..b8e6236c7678 100644
+index b8e6236c7678..e721f59fd79b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/selq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/selq.c
 @@ -184,7 +184,7 @@ static int mlx5e_select_htb_queue(struct mlx5e_priv *priv, struct sk_buff *skb,
  	if (!classid)
  		return 0;
  
--	return mlx5e_get_txq_by_classid(priv, classid);
-+	return mlx5e_get_txq_by_classid(priv->htb, classid);
+-	return mlx5e_get_txq_by_classid(priv->htb, classid);
++	return mlx5e_htb_get_txq_by_classid(priv->htb, classid);
  }
  
  u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 127aaa1c1d19..baa71fbae973 100644
+index baa71fbae973..992672fa53c0 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2388,9 +2388,11 @@ int mlx5e_open_channels(struct mlx5e_priv *priv,
- 			goto err_close_channels;
- 	}
- 
--	err = mlx5e_qos_open_queues(priv, chs);
--	if (err)
--		goto err_close_ptp;
-+	if (priv->htb) {
-+		err = mlx5e_qos_open_queues(priv, chs);
-+		if (err)
-+			goto err_close_ptp;
-+	}
- 
- 	mlx5e_health_channels_update(priv);
- 	kvfree(cparam);
-@@ -2576,7 +2578,7 @@ int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv)
+@@ -2578,7 +2578,7 @@ int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv)
  	int qos_queues = 0;
  
  	if (priv->htb)
--		qos_queues = mlx5e_qos_cur_leaf_nodes(priv);
-+		qos_queues = mlx5e_qos_cur_leaf_nodes(priv->htb);
+-		qos_queues = mlx5e_qos_cur_leaf_nodes(priv->htb);
++		qos_queues = mlx5e_htb_cur_leaf_nodes(priv->htb);
  
  	nch = priv->channels.params.num_channels;
  	ntc = mlx5e_get_dcb_num_tc(&priv->channels.params);
-@@ -2724,7 +2726,8 @@ void mlx5e_activate_priv_channels(struct mlx5e_priv *priv)
- {
- 	mlx5e_build_txq_maps(priv);
- 	mlx5e_activate_channels(&priv->channels);
--	mlx5e_qos_activate_queues(priv);
-+	if (priv->htb)
-+		mlx5e_qos_activate_queues(priv);
- 	mlx5e_xdp_tx_enable(priv);
- 
- 	/* dev_watchdog() wants all TX queues to be started when the carrier is
 -- 
 2.36.1
 
