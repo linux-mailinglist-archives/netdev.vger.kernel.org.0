@@ -2,308 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4F6579820
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 13:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F463579835
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 13:13:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234459AbiGSLFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 07:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S235915AbiGSLNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 07:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237279AbiGSLFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 07:05:05 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1844F32EF4;
-        Tue, 19 Jul 2022 04:05:00 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id m8so5625135edd.9;
-        Tue, 19 Jul 2022 04:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iY5EFL/LB8BqPbq7IzWutC0SJkMC2UBma+lM38+7BCU=;
-        b=Z6k6J/j6GUxh7rXvPvpyYLJ49PuJArRBOg8Llpd3xlEDU5qOkieMaYvyGTG33t6JYe
-         uaBIfoQqUPqBrdmksntegM3U0LgJH1msiBpl3B3B+cMzTREvi9o5X1rB0Vs8YD0UF0cp
-         IUcreq7FkzqY8MhgbljXJUZ7R85m2z2ujHVmBGnQ6Cy6535aR7o5nxlgBMVYjMXKaNp5
-         fwPyb33dGHP3xuD6BlTvmpmZaLrPg4K5I+Hz2sVXUw1MlVLjzYNOH2efuVJTnGU5pjuZ
-         UPlwuH/kODizoKW1ht6Nas6lXbHUnVd5OoPpFQq4QIKU8JqXackdHU9vbLibziEPGIbI
-         1mwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iY5EFL/LB8BqPbq7IzWutC0SJkMC2UBma+lM38+7BCU=;
-        b=i8IERE4HRC6AYmot6LU4QyA/OWjXdtuzTSvYaf8h7YV6x8AAg/ybX50DjvqE3OwMmY
-         OrjmImGKFZscCEXMWKXtPF9rQ0IOFJS6LXt3E7gCgpuhox+AHnzz801YnotGEEsjnAUL
-         m01i22bU1ZvPMJq5Kzon6K9QXFeagwGGsGvXBWCaHs5F/VVMAyHKwhfYjRfLaWTFi+T0
-         ELZm3cjLPENYME91uVZN53AvyHHPq0MwD1ptV1Vm2gHRwNqq62bh9ylSYFKV/RkzVll/
-         4B3QRW1E9NFQfUtAOLPr1hUZGQgOVJdF9EWED3eOMxBUqZ4Hi2IJA5JUcWJ8QODyIuJi
-         3YYw==
-X-Gm-Message-State: AJIora/Su4gHihPFHS143M8rjeLYCP/NGqim/FdMAzrjTVtWbItCIXJa
-        1bqNF2CekLSD7IGEkr1MkAI=
-X-Google-Smtp-Source: AGRyM1vyTcwNaTGtBaXaqGys1szWny91TFClhJPIDk4GkTHD4/ZlrnPIfxwMq5Xnshzpvmss1+QDcA==
-X-Received: by 2002:a05:6402:510e:b0:43a:c671:7cd0 with SMTP id m14-20020a056402510e00b0043ac6717cd0mr43292579edd.103.1658228698575;
-        Tue, 19 Jul 2022 04:04:58 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id n8-20020a170906378800b00705976bcd01sm6549407ejc.206.2022.07.19.04.04.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 04:04:57 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 14:04:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S234338AbiGSLNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 07:13:50 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FDE2FFC8
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 04:13:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ko41RnKE1So6KeBt8exK+2dwtgJ7MJPmVgJ+ZBWWPiCaDvKwyUhXvq58ZeysM/T+4dNcNNexrYEqnO7ksrednadbIGkcupEzyT7sLeI43E9GAkQTctXeWcB7tYUGbJQSvkEFunq0cIS9aIBy6bKAPKMyyIFU2ZWijD7JhDnc1apfo4QbXuAIIwt+kKxU57WGcBB7vWNMufNnOvL1vzJnDeNN2qqn6e0r6Kqr9ArJW8hEt32IB3kPO4JOAppdeABb2jNHBxAIh4OKaRPESeEYRkA6AotngVKvls+QgLe+WeYs6CHO6eDJos0PvslWrzgOxs5TY0x16iUtXAXJ6MS+NQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EVNP+jNseQZBSeUe33/tx66c1Hi5IozJp3a3cNpW170=;
+ b=n3M/n5HHop50B9xTG3uoX8S/oCgHX7+GNCSHhUD9nAIX8YXXbjjD6vRm29GWI7EAANUq05V+JZMyn2494KZhs7U8HkG/c52cMLGSQaqT6pr6mL59ihyPsCB3Ie2cPaTyQaKHwWguOK22lZVhPdqGLTcOB+KBetNztPT09uJzdgjbzyAYYSA483DDPe9rY9Tid5WwANOcRcOvmX8fSDc7VCktpam8Pjq9+asDsD+7CELO3Wuy0QYK3zxnZSPjVYEjMln9mcclNF4jYq1Q/1U2qNFRXaudosRAgFkdbPIoMhPVwVaBUspn85DFFjvScOLv1g3NLSDygg+Q9Ay/MOGENA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EVNP+jNseQZBSeUe33/tx66c1Hi5IozJp3a3cNpW170=;
+ b=TgzQu2ZGBcVlizLoGcPvvsG6FVvbtHV2jOwIJcfuMS3muzP5dwwclZwTwuQaWk4qGFJ6qaN1FI+Lq1tMy1g0BlzQ6hVZ9nNcNNIWc26bSgnDXLuWPeWn2qUZGY3JUPUq4x2vdpFrExNa+fNUwWJFNYpcILGdaIqIYTAhPgPpi5YLa5s8x387ZsBGhqQqu5NFYnCsyhu36EuZA9hF0TtqGnzLXLO1Yow5CkIP5toQuTX871j1G+XY8rgqAyCxo5f1eHG3cF2A6LcOZufCzJlDfzxpfJuQo8olCDD+FikAvXkHy6Nw41p2toFUMgGzaHRD/yT8sgunIPXJD3U0gUcgEQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ MN2PR12MB3965.namprd12.prod.outlook.com (2603:10b6:208:168::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Tue, 19 Jul
+ 2022 11:13:47 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::548c:fcf:1288:6d3]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::548c:fcf:1288:6d3%9]) with mapi id 15.20.5438.024; Tue, 19 Jul 2022
+ 11:13:47 +0000
+Message-ID: <24bd2c21-87c2-0ca9-8f57-10dc2ae4774c@nvidia.com>
+Date:   Tue, 19 Jul 2022 14:13:39 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [net-next 03/14] net/mlx5e: Expose rx_oversize_pkts_buffer
+ counter
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next 06/10] net: dsa: microchip: lan937x: add
- support for configuing xMII register
-Message-ID: <20220719110455.6aoldb6tokljdjia@skbuf>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-7-arun.ramadoss@microchip.com>
- <20220712160308.13253-7-arun.ramadoss@microchip.com>
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20220717213352.89838-1-saeed@kernel.org>
+ <20220717213352.89838-4-saeed@kernel.org>
+ <20220718202504.3d189f57@kernel.org>
+From:   Gal Pressman <gal@nvidia.com>
+In-Reply-To: <20220718202504.3d189f57@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO4P123CA0356.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18d::19) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712160308.13253-7-arun.ramadoss@microchip.com>
- <20220712160308.13253-7-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0da1d534-35cf-4e7b-03db-08da6977c009
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3965:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LEU1Mw2ORJBtQWJskK4cMCopvqvCirjBSqDhKM1fdjHoRXErRc7x85ZgdUkBvM5i1CdBvvSPe4AInaLdFeztT+BhkSXlSBptAVG3Plz9yETLpk336Y/xPT1jkr97MIsgv28GmWS4pQ/db26o19l44JO4d8X7VtsiJs202cs6LLmJxGFcPl+h8Fw7AvNeORv3ZusogNiwHBUoBIhqhpITduy0DsHNx3j8P/nvr1ThLAmZ31oAzyjtPeYcuVxLK12/Ed3WBU54XLmBfQ32SMSyMIwz8nzrTCTr2/X7MkHV98QSlBNnBxhMBF3SQ8lAM+/27Ly0Kl/U6YuCZrRhGKso+vzqx9sGK5+lz2zVlJJGZAIyfIjwJLWtbXq7jkfABI4D77y+wmB6mpWf66/QCkM6d57encTdqLF1AqZbA0NfBCzjrN7mjV8xvhPxCgP9yYevRQ3dPjan+yXHDscCmA99y7ZiH0fOfZ2npWYCpId8y/CB8h3irMNNRXvPfCsS/WDcs2Yc2lDvub0K5Zz/2G3J68kM9WyVPC/YMEGM+2ffxhNs4+N0hxXmVr6J6xx9RpPqSrfSQqLuu3X4N4xtLAHJ9XvFtT3wjG/PWlkfBZcMItXIG9gFkdk4BufwKspFrkgoGBRm6TN8GJBB1zRVAePcEuMJpDLGFiEcoSEXlVzsKOMix5Rx8acOHD4VbtQOYRXjWHvDSSHJSGIssBPmYsqPMciVPdcn8X209SkZ8ClHdLffm9evu9hJqQ+uzJkDsaNFa34DfyiEkU6MwPTqy+3JTAivOHpeCOVEQuaQryVLi3MHdvrXBg7NGWIWWqXPC9+YPh/cngJ0LGPeXsxBnXwkpA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(8936002)(86362001)(31696002)(66476007)(4326008)(66946007)(8676002)(66556008)(6506007)(38100700002)(110136005)(36756003)(54906003)(316002)(53546011)(31686004)(26005)(41300700001)(6666004)(107886003)(2616005)(186003)(83380400001)(478600001)(6486002)(5660300002)(6512007)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bFlpbTlXSUkwTXlwWGhYWC9nV1Q3bkgzN3U1WTNPZTVsbE15bDBaTU9Cd3hH?=
+ =?utf-8?B?TlhldDhxS3FiOTRFc2lMd3BDRnhBRU8ya3FiWXVxR2kzMjlhc3NpelJYNmU3?=
+ =?utf-8?B?SEl3cnduYVF1bXcxa0MxVmVoNzhjM283VWczUlJrVjYrbHp6REJlTTBJSVI1?=
+ =?utf-8?B?RTd2VHZSdzh3dk80VFVGRHVmREZ3TGpjUHJpcDJBUnhrOHFGYmRyUUZWMWNj?=
+ =?utf-8?B?c3FGWXRXQit4QXpKVDhlYlJHd0o0bjVjZUZ5UWtLTFB1Y2pDU2FwL29tQlZG?=
+ =?utf-8?B?Vm9sSlJRRSswWXU0UU9HL3M2K1FlNU1Wcm92WkNQS0RRaUNDTVo3TmRkalZx?=
+ =?utf-8?B?azVKaG5mOGlaQU1VN1VZRDZKbVQyUm1YWUFRTkxDaXVjVkc5VkNNVUI1TjBh?=
+ =?utf-8?B?WFVXMmlrK2tpTHZ6NERRUEE3enVObnNURVIvVGM1MVhDLzFxMnh6RVVseHE1?=
+ =?utf-8?B?RlFBcGM0bWdRUXFGS0FuaXV2M1U3eml4TjEreUx6cVY4L1NyYkxhU1gxWVZK?=
+ =?utf-8?B?T0NlR1RUTWxSUWtuQWRpSHdHbHZpTDg4T0RwU0UzcVJGbkRlajZYaUZUMFNp?=
+ =?utf-8?B?V3FOMUttSEpTOEZ6Qm5aNXk5WG5SRnpQSU9PNHRLdVFORW1PVWhyUWlVc2hz?=
+ =?utf-8?B?MlIyVVY4cmJyODJnRkxGbnprMUp0VjNFMHFBZElyQkRBZmNwNWRpNnk0QVJp?=
+ =?utf-8?B?U1JpS3BMYjVqcC8xN0VmOWMrZ3M3ZFJLWkdXQm1hRUFLWXArN1BOQmFQNmZk?=
+ =?utf-8?B?cENIMFl1Y1ZqbTVYUlRLN0M0ZFlZb2ZwS01PZVBtWVUzaEZwSzFGM09vS25S?=
+ =?utf-8?B?SnZqa2Uwd0xmaWhEMWRsNXlHOE1oTjQ1YlpjMnVZODJpdEhwdi83enA2Y3Fr?=
+ =?utf-8?B?am12dTJBWkU2U0xBalRhOE11Y3M3K21Zc0YrZm5MRDJpdHV3MENCakF4d2ZK?=
+ =?utf-8?B?RHRVeHIwOUk2eUw1ckY2ZThuUWFqYngzbDh5eGdZMVEyL3Jza0EwT0NBVTU5?=
+ =?utf-8?B?TS9WRkVLYURMZjB5RlBkeVpuM2JkREQyL3VCTWhTOTZYYVdvNGE1UnNJOVRV?=
+ =?utf-8?B?RTNGbk50TlhIek91MVJTalJLaDlVMHpYZ0lsOTA3eG83V0RUTVZiNEc5WXY1?=
+ =?utf-8?B?Q21mN3RvbGRnV0FuQWw3UEN4Y2dobzZjYTlJOStvUmsvdjVnREJrOVI4MTZm?=
+ =?utf-8?B?NXhTcTJjYTRZYU1KZUtzUVR0VlhFNHVGQmF1Qk1ISTNZUmV3eVAzclFjYkg2?=
+ =?utf-8?B?dHNYMWkxVFIxL09VZGhkTS9TT0Jvck1Ka0h4TDJCUFhUVjdQQlA4a1lBUGQ3?=
+ =?utf-8?B?eFdrQ1ZucUhmOVFLemdmREFVQ252NTBiY2wwNXhKT0wvRGtGdzNFd0FqVFNl?=
+ =?utf-8?B?dWJDSytaV3E3K2VCTmVWTWp1VXEzZXN6YzdlOEZ1enhoanl3S2NVaWFGMEV0?=
+ =?utf-8?B?RkdobXJxdDUvbFpaSDdQV0c0TXhBWXpsVzhCcmZDM09OZFNUdlJ6Lzc4NkRV?=
+ =?utf-8?B?K2oxbUIxaFdVYWRPZDNrYnFMZzkyWEtIZDF6MUZwcDJtYm9TWFU2YjdDYVdj?=
+ =?utf-8?B?SkJ3cmNva3lDaS9YMThYNSt4ZjBuOHdWUm1sSURZeHdUY2FrZUx0KzRRem5j?=
+ =?utf-8?B?T0RmTDhhckhKVVBCRzhLeVZQK3VaaTU3UFBnSVlKVmpjNkU4bnFDWXVBSkVN?=
+ =?utf-8?B?aTE1NVlkTEYzdUNzaHdvZDMxOWRjTW1LOFJNWGlUY1JQUzZKZnZXMmhJTzh4?=
+ =?utf-8?B?U1REYWN0WDBUMGJCeE5EbkpaZks4MUZnQllHTzVmMXZnN3dodHpFempuVHRS?=
+ =?utf-8?B?S3htQ0s4cFNtTVVZL1ZQcXB6OXZrK1JxZk8xYmxrYmpoUmVhVTRNMGpzTEhF?=
+ =?utf-8?B?QlpjSFV6bkhFVkU3RjN4SWZCSEVYU0pHeUljZDNEL2w1V2R2Y2Z3aFhMMjBN?=
+ =?utf-8?B?QVAvVXJXS2JSSWVTb2MveUpqTlNPeXVOeXJoSUpud1I0OFRnUDVBUmg3c3Ix?=
+ =?utf-8?B?VUhCOVdWaFhyV25WeElINURkRUNPQnBUeVlsdlE4WWdvNFE2d3FkWTd5UUxK?=
+ =?utf-8?B?ZDJEVFRIbXpjN2EzeEVZMUo2ZFFuUVJZWm5udmZKdSs0SmZsQWtDY0dFS1ps?=
+ =?utf-8?Q?c6UrTKz7GqXlIhnIj5FSKN5ZN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0da1d534-35cf-4e7b-03db-08da6977c009
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 11:13:47.2375
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zKZ2lh6dZ/k1P0lhlr8lTe4mYpzTriIkQhYL2zwbqCcVczBdDnRZF6FgGFQN6HlO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3965
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:33:04PM +0530, Arun Ramadoss wrote:
-> This patch add the common ksz_set_xmii function for ksz series switch
-> and update the lan937x code phylink mac config. The register address for
-> the ksz8795 is Port 5 Interface control 6 and for all other switch is
-> xMII Control 1.
-> The bit value for selecting the interface is same for
-> KSZ8795 and KSZ9893 are same. The bit values for KSZ9477 and lan973x are
-> same. So, this patch add the bit value for each switches in
-> ksz_chip_data and configure the registers based on the chip id.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/dsa/microchip/ksz_common.c   | 57 ++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_common.h   |  8 ++++
->  drivers/net/dsa/microchip/lan937x_main.c | 32 +------------
->  drivers/net/dsa/microchip/lan937x_reg.h  |  9 ----
->  4 files changed, 66 insertions(+), 40 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 0cb711fcf046..649da4c361c1 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -284,6 +284,10 @@ static const u32 ksz8795_masks[] = {
->  };
->  
->  static const u8 ksz8795_values[] = {
-> +	[P_RGMII_SEL]			= 3,
-> +	[P_GMII_SEL]			= 2,
-> +	[P_RMII_SEL]			= 1,
-> +	[P_MII_SEL]			= 0,
->  	[P_MII_1GBIT]			= 1,
->  	[P_MII_NOT_1GBIT]		= 0,
->  	[P_MII_100MBIT]			= 0,
-> @@ -378,6 +382,10 @@ static const u8 ksz9477_shifts[] = {
->  };
->  
->  static const u8 ksz9477_values[] = {
-> +	[P_RGMII_SEL]			= 0,
-> +	[P_RMII_SEL]			= 1,
-> +	[P_GMII_SEL]			= 2,
-> +	[P_MII_SEL]			= 3,
->  	[P_MII_1GBIT]			= 0,
->  	[P_MII_NOT_1GBIT]		= 1,
->  	[P_MII_100MBIT]			= 1,
-> @@ -387,6 +395,10 @@ static const u8 ksz9477_values[] = {
->  };
->  
->  static const u8 ksz9893_values[] = {
-> +	[P_RGMII_SEL]			= 3,
-> +	[P_GMII_SEL]			= 2,
-> +	[P_RMII_SEL]			= 1,
-> +	[P_MII_SEL]			= 0,
->  	[P_MII_1GBIT]			= 1,
->  	[P_MII_NOT_1GBIT]		= 0,
->  	[P_MII_100MBIT]			= 1,
-> @@ -1390,6 +1402,51 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
->  	return dev->dev_ops->max_mtu(dev, port);
->  }
->  
-> +void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface)
-> +{
-> +	const u8 *bitval = dev->info->bitval;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-> +
-> +	data8 &= ~(P_MII_SEL_M | P_RGMII_ID_IG_ENABLE |
-> +		   P_RGMII_ID_EG_ENABLE);
-> +
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_MII:
-> +		data8 |= bitval[P_MII_SEL];
-> +		break;
-> +	case PHY_INTERFACE_MODE_RMII:
-> +		data8 |= bitval[P_RMII_SEL];
-> +		break;
-> +	case PHY_INTERFACE_MODE_GMII:
-> +		data8 |= bitval[P_GMII_SEL];
-> +		break;
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		data8 |= bitval[P_RGMII_SEL];
-> +		break;
-> +	default:
-> +		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-> +			phy_modes(interface), port);
-> +		return;
-> +	}
-> +
-> +	if (interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    interface == PHY_INTERFACE_MODE_RGMII_RXID)
-> +		data8 |= P_RGMII_ID_IG_ENABLE;
-> +
-> +	if (interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    interface == PHY_INTERFACE_MODE_RGMII_TXID)
-> +		data8 |= P_RGMII_ID_EG_ENABLE;
+On 19/07/2022 06:25, Jakub Kicinski wrote:
+> On Sun, 17 Jul 2022 14:33:41 -0700 Saeed Mahameed wrote:
+>> From: Gal Pressman <gal@nvidia.com>
+>>
+>> Add the rx_oversize_pkts_buffer counter to ethtool statistics.
+>> This counter exposes the number of dropped received packets due to
+>> length which arrived to RQ and exceed software buffer size allocated by
+>> the device for incoming traffic. It might imply that the device MTU is
+>> larger than the software buffers size.
+> Is it counted towards any of the existing stats as well? It needs 
+> to end up in struct rtnl_link_stats64::rx_length_errors somehow.
 
-I'm confused to see RGMII delay handling both in ksz_set_xmii() and in
-lan937x_phylink_mac_config(), called immediately afterwards via
-dev->dev_ops->phylink_mac_config(). Can you explain the differences
-between P_RGMII_ID_IG_ENABLE in regs[P_XMII_CTRL_1] and RGMII_1_RX_DELAY_2NS
-in REG_PORT_XMII_CTRL_4?
+Probably makes sense to count it in rx_over_errors:
+ *   The recommended interpretation for high speed interfaces is -
+ *   number of packets dropped because they did not fit into buffers
+ *   provided by the host, e.g. packets larger than MTU or next buffer
+ *   in the ring was not available for a scatter transfer.
 
-> +
-> +	/* Write the updated value */
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
-> +}
-> +
->  static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
->  				   unsigned int mode,
->  				   const struct phylink_link_state *state)
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index db836b376341..90f3ec9ddaec 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -216,6 +216,10 @@ enum ksz_shifts {
->  };
->  
->  enum ksz_values {
-> +	P_RGMII_SEL,
-> +	P_RMII_SEL,
-> +	P_GMII_SEL,
-> +	P_MII_SEL,
->  	P_MII_1GBIT,
->  	P_MII_NOT_1GBIT,
->  	P_MII_100MBIT,
-> @@ -311,6 +315,7 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
->  void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
->  bool ksz_get_gbit(struct ksz_device *dev, int port);
->  void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
-> +void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface);
->  extern const struct ksz_chip_data ksz_switch_chips[];
->  
->  /* Common register access functions */
-> @@ -479,6 +484,9 @@ static inline int is_lan937x(struct ksz_device *dev)
->  #define P_MII_100MBIT_M			BIT(4)
->  
->  #define P_MII_1GBIT_M			BIT(6)
-> +#define P_RGMII_ID_IG_ENABLE		BIT(4)
-> +#define P_RGMII_ID_EG_ENABLE		BIT(3)
-> +#define P_MII_SEL_M			0x3
->  
->  /* Regmap tables generation */
->  #define KSZ_SPI_OP_RD		3
-> diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-> index a2e648eacd19..d86ffdf976b0 100644
-> --- a/drivers/net/dsa/microchip/lan937x_main.c
-> +++ b/drivers/net/dsa/microchip/lan937x_main.c
-> @@ -315,36 +315,6 @@ int lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu)
->  	return 0;
->  }
->  
-> -static void lan937x_mac_config(struct ksz_device *dev, int port,
-> -			       phy_interface_t interface)
-> -{
-> -	u8 data8;
-> -
-> -	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-> -
-> -	/* clear MII selection & set it based on interface later */
-> -	data8 &= ~PORT_MII_SEL_M;
-> -
-> -	/* configure MAC based on interface */
-> -	switch (interface) {
-> -	case PHY_INTERFACE_MODE_MII:
-> -		ksz_set_gbit(dev, port, false);
-> -		data8 |= PORT_MII_SEL;
-> -		break;
-> -	case PHY_INTERFACE_MODE_RMII:
-> -		ksz_set_gbit(dev, port, false);
-> -		data8 |= PORT_RMII_SEL;
-> -		break;
-> -	default:
-> -		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-> -			phy_modes(interface), port);
-> -		return;
-> -	}
-> -
-> -	/* Write the updated value */
-> -	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
-> -}
-> -
->  void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
->  			      struct phylink_config *config)
->  {
-> @@ -370,7 +340,7 @@ void lan937x_phylink_mac_config(struct ksz_device *dev, int port,
->  		return;
->  	}
->  
-> -	lan937x_mac_config(dev, port, state->interface);
-> +	ksz_set_xmii(dev, port, state->interface);
->  }
->  
->  int lan937x_setup(struct dsa_switch *ds)
-> diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-> index d5eb6dc3a739..a6cb3ca22dc3 100644
-> --- a/drivers/net/dsa/microchip/lan937x_reg.h
-> +++ b/drivers/net/dsa/microchip/lan937x_reg.h
-> @@ -131,19 +131,10 @@
->  #define REG_PORT_T1_PHY_CTRL_BASE	0x0100
->  
->  /* 3 - xMII */
-> -#define REG_PORT_XMII_CTRL_0		0x0300
->  #define PORT_SGMII_SEL			BIT(7)
->  #define PORT_GRXC_ENABLE		BIT(0)
->  
-> -#define REG_PORT_XMII_CTRL_1		0x0301
->  #define PORT_MII_SEL_EDGE		BIT(5)
-> -#define PORT_RGMII_ID_IG_ENABLE		BIT(4)
-> -#define PORT_RGMII_ID_EG_ENABLE		BIT(3)
-> -#define PORT_MII_MAC_MODE		BIT(2)
-> -#define PORT_MII_SEL_M			0x3
-> -#define PORT_RGMII_SEL			0x0
-> -#define PORT_RMII_SEL			0x1
-> -#define PORT_MII_SEL			0x2
->  
->  /* 4 - MAC */
->  #define REG_PORT_MAC_CTRL_0		0x0400
-> -- 
-> 2.36.1
-> 
+It doesn't fit the rx_length_errors (802.3) as these packets are not
+dropped on the MAC.
+Will change.
 
+> On ethtool side - are you not counting this towards FrameTooLongErrors
+> because it's not dropped in the MAC? Can we count it as RMON's
+> oversize_pkts?
+
+ etherStatsOversizePkts OBJECT-TYPE
+     SYNTAX     Counter32
+     UNITS      "Packets"
+     MAX-ACCESS read-only
+     STATUS     current
+     DESCRIPTION
+         "The total number of packets received that were
+         longer than 1518 octets (excluding framing bits,
+         but including FCS octets) and were otherwise
+         well formed."
+     ::= { etherStatsEntry 10 }
+
+This counter isn't necessarily tied to 1518 bytes.
+
+Thanks for the review, Jakub.
