@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C48B6578F44
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF1F578F51
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235683AbiGSAaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 20:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
+        id S235997AbiGSAeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 20:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiGSAaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:30:12 -0400
+        with ESMTP id S230104AbiGSAd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:33:59 -0400
 Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8759B6551;
-        Mon, 18 Jul 2022 17:30:09 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id l23so24326303ejr.5;
-        Mon, 18 Jul 2022 17:30:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9B820BE3;
+        Mon, 18 Jul 2022 17:33:58 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id tk8so12968667ejc.7;
+        Mon, 18 Jul 2022 17:33:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tHECUp5Nu2/GZmp47KHS0DA3aZn/HqPLp4AXTv+D1so=;
-        b=cmjJp4Wc70UFyJOU6m9PHDv6cgBcSxACjV8XCYXocWtr/FcDcZs/QFmdPSXbhLyk3R
-         FCPJlVcDF3a/bfbY1OWEBMjl7TtYtUqMl4/A/cUcxiW5hsr+PAuT1lF+4Ixp22UZhHaL
-         sJIUDawrTaLiqBcojVG2hn0PPXAFrYn7zche+uxAV4J2eoaR53m7JLz9lb0PPCkXovqr
-         TCkGxZqKxLlK4CUnskdjqrd6D8nX5LutfIhmOojrYGQhrbAL0nFeOJB3HSXXDc75ja4Q
-         Ur9wiz3Bf1hLJs4caVo1AfyVNX5xpE4+6LBYPFFX8y4zfXhOa+ndM9cAVlVQj/YWQdYx
-         EP1w==
+        bh=IvxZ+pT9eeB1oLC9gFmEKd/KuQtpynmxv5JFp2p4LmA=;
+        b=gIwUl/XuJhRTTGvtNQ0aWFNNZ72RlbJkwCpGM7wO/sSbDoqxUvqlBJWjDWb4nUVxkr
+         wA4kzWGIsYd+oyTYPVOyC2ZEirNy56kC6YvoOg+Fu9JlIyx/BhzBlvQ+GB0MbVTk2jEb
+         eyBlXAwQJroWvaq2gnY/J8A7Jy+02RK/TtexgA7MBUZK9FnxBH7HPm/OPbZR2kp6FIOG
+         BYDIh26pR+njlg0wqOtuaPaePG5L+WBmSIyBqxyMD5dCULrXaEhs9vg/GnJqlYLpsG/y
+         w38dp1uD5s55WeggWwrAh2xQxeFiYqJgAS/5mGamYHgRw4gT0je1cudllgWrZEayUSK0
+         E39A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tHECUp5Nu2/GZmp47KHS0DA3aZn/HqPLp4AXTv+D1so=;
-        b=dBZzEOhtjIyFkgbp1UeKf8XczD+xW+qQXcBLUyb0RhTbkjpWyIwJwqxSn0Apaw1oLs
-         aDrSqvrJFUf1nzQoApe8exwuu7WnWDXzjAuE6kHon1F/9LqsULM9SHbct09WHVkZNw1s
-         S4CI6nvqadzFDsQy75jZw63W/oSP3zx6yeZ4o8Osjtr6Qyaj1m7S3Y45MpqZU6g/KbrY
-         +yh00FxpVoCey9AitLjsxvlfJfpk1Z4GR0zFhwpqBMmTbXm6oZR9Ut6MCABvp5gaFxbs
-         gKyCaJ99aA79gieEJAZfX+JXjRqArymTr72AAOaPUXIKymwVqAjZFwOtszY1UdQ8aNwz
-         QGjA==
-X-Gm-Message-State: AJIora9oQiiTjoCW//GkIDfsWmzq3SL8KZFkXJ85WUdCHbMiOhJIDdij
-        Z0jHvWViDmS2fW/C3L4vHYbDWIIezGeNSt88+Ek=
-X-Google-Smtp-Source: AGRyM1svWNwoYq60pp37EFhGkxbFoEzaD37OWwpIsvtcVPSeTlz8BczIXRa0zpFaHGe5N9WvcJ4GnRQwW7CTE2lGvM0=
-X-Received: by 2002:a17:907:96ac:b0:72f:1dea:5b66 with SMTP id
- hd44-20020a17090796ac00b0072f1dea5b66mr10887738ejc.266.1658190608048; Mon, 18
- Jul 2022 17:30:08 -0700 (PDT)
+        bh=IvxZ+pT9eeB1oLC9gFmEKd/KuQtpynmxv5JFp2p4LmA=;
+        b=3pozF0Sp0Y31M6XUXg5S/pg5PQ13T7OSXUI/u2d+ngzgnenZaMrKdO629nBNmeWgaV
+         Z3v5bRHB17DWBN5oYUBjDNFHhCNu0vZiPPOwfymIjFbjWChr7WSzs+R6V34YH+U19Uzt
+         6rJanp842pyNVovP9mzCtmEt1nNpJxy47uzLplu14L6nH4JjqcSd25fu5Bxcu1dj5lFy
+         A4oWGSWmK/oPkvYllMLtce9K6fy9UMOhCW38s7vGzS+/svDbiubNe9GF6KTHKmoLTnnJ
+         5H3dmqQOwXwYadKi/VLKJ8rOG+AxNsi5OoQFVSylk9202nm9Lhq7QfAGK06YuwwUy0AW
+         X7UQ==
+X-Gm-Message-State: AJIora+rHTGTED0YfyLnHtBoK9I+cU5fbEc/G345v467NOlVM8Y0IQRV
+        CGEj0Esz4xHEXBrRkwPytQSkZjfs3QgMF4WVmNc=
+X-Google-Smtp-Source: AGRyM1sRm67nRsWZfFSFhouVBqucc4bOtFjiV6na1gILOaBHlxhxwORoLOL7DxP/wH7oPhk7TCfa/L42Gn4aM8oO2I8=
+X-Received: by 2002:a17:906:149:b0:712:502:bc62 with SMTP id
+ 9-20020a170906014900b007120502bc62mr28280283ejh.720.1658190836834; Mon, 18
+ Jul 2022 17:33:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220718072144.2699487-1-airlied@gmail.com> <YtWeUOJewho7p/vM@intel.com>
-In-Reply-To: <YtWeUOJewho7p/vM@intel.com>
+References: <20220718072144.2699487-1-airlied@gmail.com> <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
+ <20220718150414.1767bbd8@kernel.org>
+In-Reply-To: <20220718150414.1767bbd8@kernel.org>
 From:   Dave Airlie <airlied@gmail.com>
-Date:   Tue, 19 Jul 2022 10:29:56 +1000
-Message-ID: <CAPM=9tyhOfOz1tn7uNsg_0EzvrBHcSoY+8bignNb2zfgZr6iRw@mail.gmail.com>
+Date:   Tue, 19 Jul 2022 10:33:45 +1000
+Message-ID: <CAPM=9tw6iP3Ti1idrBLTLVX57uYgf79rG2-0ad-fS48z+pXzeA@mail.gmail.com>
 Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware guidelines.
-To:     Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Thorsten Leemhuis <linux@leemhuis.info>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Jonathan Corbet <corbet@lwn.net>,
         "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniel Vetter <daniel@ffwll.ch>,
         "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        alsa-devel@alsa-project.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.sf.net" <dri-devel@lists.sf.net>,
         Network Development <netdev@vger.kernel.org>,
         Linux Wireless List <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org,
-        "dri-devel@lists.sf.net" <dri-devel@lists.sf.net>,
-        Dave Airlie <airlied@redhat.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>
+        alsa-devel@alsa-project.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -76,26 +78,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +* Firmware should be versioned with at least a major/minor version. It
-> > +  is suggested that the firmware files in linux-firmware be named with
-> > +  some device specific name, and just the major version. The
-> > +  major/minor/patch versions should be stored in a header in the
-> > +  firmware file for the driver to detect any non-ABI fixes/issues. The
-> > +  firmware files in linux-firmware should be overwritten with the newest
-> > +  compatible major version. Newer major version firmware should remain
-> > +  compatible with all kernels that load that major number.
+On Tue, 19 Jul 2022 at 08:04, Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> would symbolic links be acceptable in the linux-firmware.git where
-> the <fmw>_<major>.bin is a sym link to <fwm>_<major>.<minor>.bin
+> On Mon, 18 Jul 2022 11:33:11 +0200 Thorsten Leemhuis wrote:
+> > > If the hardware isn't
+> > > +  enabled by default or under development,
+> >
+> > Wondering if it might be better to drop the "or under development", as
+> > the "enabled by default" is the main part afaics. Maybe something like
+> > "If support for the hardware is normally inactive (e.g. has to be
+> > enabled manually by a kernel parameter)" would be better anyway.
 >
-> or having the <fwm>_<major>.bin really to be the overwritten every minor
-> update?
+> It's a tricky one, I'd say something like you can break the FW ABI
+> "until HW becomes available for public consumption" or such.
+> I'm guessing what we're after is letting people break the compatibility
+> in early stages of the product development cycles. Pre-silicon and
+> bring up, but not after there are products on the market?
 
-I don't think providing multiple minor versions of fw in
-linux-firmware is that interesting.
-Like if the major is the same, surely you always want the newer ones.
-As long as the
-ABI doesn't break. Otherwise we are just wasting disk space with fws
-nobody will be using.
+I'll stick with enabled by default I think, "public consumption"
+invites efforts to describe corners of the cloud or other places where
+hw has shipped but is not technically "public",
 
 Dave.
