@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F110657A1E4
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4F457A1EB
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239071AbiGSOk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        id S237105AbiGSOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239021AbiGSOkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:40:01 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0984454ADD
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id c16so6479849ils.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
+        with ESMTP id S239406AbiGSOkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:40:04 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A6C54AEA
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:03 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id y2so11927826ior.12
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=g+HjSH1OT4ZSTM+eXDsDJSu3gPtVsd7iXr5tehMDAHk=;
-        b=UVl5ZgQLGmxFULFa7NUHhaeZ2fz4c8pq9g4BFufL+0iUBbmDyK9e3n6HQWUumFARad
-         5ZltrdcLyVRosi7dx1A1pI6FIklKe0PkVClF53+JouXSsUQR0FKnCWKS5Q4YVp489Cow
-         FXt7Z/GrVqyUwWVLuTS6jb+k88Z/BtYCtvuc5kz3ASHUOV4S1B4HGBjCVac5ieHhrKQG
-         Cc3xpeH42FvQOpFYnKn5bqXCCv7ozEsRqNOHmxkjAhqKzoEsKXK9h9Xny3FFOENcjrB6
-         x31ANOLdamX9/DaJ0RfZ1D3lUcqhzbDML0y0r09Vmyt0liAzinGoU0evtmXS6Ik5Bryf
-         moDg==
+        bh=wk2czZHfKCNnzO8KQpU2wlKEqgQnnAKT3z+bj9HU5pA=;
+        b=NcQSvw7Gb7qySkIMjDLseOccJuRspSwEBfpM8Wp2nKjABwffQqHD7FWib+EWERoRv3
+         Lcx4qq3k5nXxBqjeiIfEFNQsVd1k4Db1Q0nl8LkiGZHEb7L+AFAQTP4ruD2wMYWXg+lT
+         KvG48Eeu1l/QQY2ubIns1KycpBaH72PmaViZxfK7YH4QffoYuOrZP8M8e+alTli04FnT
+         8lpmNgWGihFwumW4pgATYsvW9thPOG8MkDiyuRWjcfeGJ6zUQy5s7kKKhoNooZYSgqu1
+         WnX+/f/dbNWTHDk2rGOkEYgbqDN/5leGEtE2BapEBETLY7C4gZG7EvXqmwZRaTM7l3lV
+         tylQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=g+HjSH1OT4ZSTM+eXDsDJSu3gPtVsd7iXr5tehMDAHk=;
-        b=sJV2xubBv0HQkL15fzpllh7G+9p47xiC1mreRQcw3rMx1FSLnmshnz2A8EtrILcjoq
-         bLuB3C/kX4pHTGW0rQ2ONmLSVEQ6PQx8tCg8a1VHvwSlxy22VL1bgmYSWkvIJNeN2uOj
-         pztD/LfdzKovOeUuchI9UPAXbDswcnJbmEb2c0e1Lf5iiumQAWb9LTnAfeb6M+3AHGns
-         VhKYasNoAIFeZbe8A5r8F8hn9PUjHjL2dobHQ7KypyP0ITQ16rsTNc3kp10qbqm9DzLz
-         ZjtTSQIik9Oj4IihlM6PxCNYu5kJo67V+qtYkUfMjcd/4ScKbjDFAdIQVlLeHODg7PHL
-         q0yA==
-X-Gm-Message-State: AJIora+AlbdlO2bWxfAdFKy/qLGh22d9jHMCRMLKlcU8UzHBWg5rtQkq
-        hoRfYd2coixXAdF7nb5bWg/aKQ==
-X-Google-Smtp-Source: AGRyM1sj0ex0FAXdt3pBqnlnyH9HM6+drp7gvBcpR7wLH5QwVYV6EWHcF0uQEucv+yluBk4Sc4VnAw==
-X-Received: by 2002:a92:6603:0:b0:2da:82b6:34a3 with SMTP id a3-20020a926603000000b002da82b634a3mr16275124ilc.250.1658241361376;
-        Tue, 19 Jul 2022 07:36:01 -0700 (PDT)
+        bh=wk2czZHfKCNnzO8KQpU2wlKEqgQnnAKT3z+bj9HU5pA=;
+        b=c/muXB6IkJ0msMqUI1wEEOLjItSyw0vhg0iYMYfQBqrehf7381z8te5tFE+j6rtENj
+         aZ2yvYoJ11ikd6xgpovjf5H6nXStblHdLPFi1abCJtwQr5CI2owFdUKB/2npQzdQakOg
+         geYQdWQ0ibBaaKxKGV25Z4Gk0+oL854qpcP7QRPwMhx7MhlG6Q/n3JvB55OWXsoVIIig
+         HQlLYn7w1vpNpeLXSc4f01b2FyFJrGE2QmO+S9YCJQuwH5HOnHV4OU9mRVroYwVsQ9ez
+         Xeve9zbEI+vYI5qS52hsgJhdBIysx1BgnpO8kxaxMVzdxzxUEmXRQSmLVz5ORa+JAWK6
+         FnWA==
+X-Gm-Message-State: AJIora8noj5odLXFccaYt/4CSZ0aZO5Axmarm1ledDPfTr7eq4HBgt9m
+        asGd+S9MBa1x/DqfDbE9+ktvoA==
+X-Google-Smtp-Source: AGRyM1umkGAm0Fy8Nvn7mJsnFAGVW42OOmvuy4PoGRqz0pD7C9alR/0i4ymidJaA2pOYCgvnVhpWWA==
+X-Received: by 2002:a05:6638:3043:b0:335:ce04:2053 with SMTP id u3-20020a056638304300b00335ce042053mr17986644jak.294.1658241362460;
+        Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.36.00
+        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.36.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:36:01 -0700 (PDT)
+        Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -55,9 +55,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/5] net: ipa: report when the driver has been removed
-Date:   Tue, 19 Jul 2022 09:35:52 -0500
-Message-Id: <20220719143553.280908-5-elder@linaro.org>
+Subject: [PATCH net-next 5/5] net: ipa: fix an outdated comment
+Date:   Tue, 19 Jul 2022 09:35:53 -0500
+Message-Id: <20220719143553.280908-6-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220719143553.280908-1-elder@linaro.org>
 References: <20220719143553.280908-1-elder@linaro.org>
@@ -65,35 +65,35 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the IPA driver has completed its initialization and setup
-stages, it emits a brief message to the log.  Add a small message
-that reports when it has been removed.
+Since commit 8797972afff3d ("net: ipa: remove command info pool"),
+we don't allocate "command info" entries for command channel
+transactions.  Fix a comment that seems to suggest we still do.
+(Even before that commit, the comment was out of place.)
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ipa/gsi_trans.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 3757ce3de2c59..96c649d889a7c 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -836,6 +836,8 @@ static int ipa_remove(struct platform_device *pdev)
- 	kfree(ipa);
- 	ipa_power_exit(power);
+diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
+index b298ca7968907..76c440cee2e60 100644
+--- a/drivers/net/ipa/gsi_trans.c
++++ b/drivers/net/ipa/gsi_trans.c
+@@ -362,7 +362,7 @@ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
+ 	trans->rsvd_count = tre_count;
+ 	init_completion(&trans->completion);
  
-+	dev_info(dev, "IPA driver removed");
-+
- 	return 0;
- }
+-	/* Allocate the scatterlist and (if requested) info entries. */
++	/* Allocate the scatterlist */
+ 	trans->sgl = gsi_trans_pool_alloc(&trans_info->sg_pool, tre_count);
+ 	sg_init_marker(trans->sgl, tre_count);
  
 -- 
 2.34.1
