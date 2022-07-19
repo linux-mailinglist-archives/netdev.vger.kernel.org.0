@@ -2,69 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DE9C57A10A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D59D557A10F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiGSOQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
+        id S238953AbiGSORP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238742AbiGSOQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:16:42 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1006654AFD
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:47:34 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id r191so6784255oie.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 06:47:34 -0700 (PDT)
+        with ESMTP id S238838AbiGSOQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:16:59 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABA361D78;
+        Tue, 19 Jul 2022 06:48:25 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id m8so6220328edd.9;
+        Tue, 19 Jul 2022 06:48:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=JjmTxe3l9f5dy0FDhlsFClyIwHrz7OLCznA+4gbsJXI=;
-        b=cMbzztC6SRewxLfMcM82GIrVOsv4oTacHce/PjKYEE5+dn6P/LVFH5nUJ4WSX98fGd
-         hLlUYUGHiMrdwJTxGeOquuAkZWD9tsW3muiWCCLs1IAPW/wquSK9BxbDo0IMwScpjYGE
-         a46JXnYNbQ8D7JDBjYvyW3slcPCbgI07Fo9eCDkWlDdLX47GQ9CkrTZQBEFoBI/hv0eR
-         I2rWY9FVp0C/XkhW9HjDB6BPy2kHLP6hWjmLZlsg69dk6nZ2OitzrXV573I8UrNolwdT
-         uj68mrMG65xR6KeVuFX/Ol/Kowj+tZ3uJUNFkpcV0wRpmaEQgpPqUc4NYaMv8lxPpJLK
-         hX6w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=H/QcNljsBbmdjrwrwjwtjEvq2HQmGFprhuK7NiBbLCY=;
+        b=hLYimp8Okd9vJhnWXpRDdSRvTL1boG2q8EvYEEyc85GQ9lkfLa6YdBtEzDouHm6rJ+
+         LPWjEXaeqGh/rVPplyIzvJDel4t8LcmKGAtG78Kuhv4Q+NQlFoZTJ1//dzvsgrJNS/Hf
+         n4eBPbw0WinGSHbJowo1VrRODCGSGvxZIVj3wEaRAcZQNTlqJwmbluqSTM5dOxavCC+0
+         UY5BXyZlLW3sXUstjgaWm+0C59Hsp/4YszXJIeygPrAGWUqvjqJSX4hvZlehk2arTjkM
+         TA4htYczsZU7t+q0wWIfTUsaNlsy0LPo5WSARGMWS88sJXfMMalRLLXhUogpc+5amebS
+         jnRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=JjmTxe3l9f5dy0FDhlsFClyIwHrz7OLCznA+4gbsJXI=;
-        b=Cz7LilJtbpG5evFTQYC6IqWx3G4U7pQF68hsVxdP0K4oQzeGDfzHCFVvruT/mGoDUf
-         Db0Tj+7sSYyM7lterDhN9xbtEq8tWW1Kh6d0QZS4h7XxBQpCCNzuYElZy/8qalTdgYrd
-         YAsaSE+RyHVvmACy6dtVp2TnFJwEOUHIpMNf5QzJ5r9EVFT6wQSYw4W/YdP8sOoPnQAE
-         pN1epbM+TTdMft8EfZmR+q+OeozqMEViz2I8CTTSeC3LvHhoswL+/T1AaNfSsSTYKK6J
-         nRkSDu/ksJFQe4K4vv1+MPU7tK9z9wbFnEP9izNiCkLfzg2egXoTrJdMxkQzQho0ONlZ
-         Um5A==
-X-Gm-Message-State: AJIora+JlwF/cgroy9gjtXv0Mh6kaLrTE9I41pb4+Bm/hogddVO2Chu5
-        g7ymOGR1LprLO9o86zcFleah5W7f4cjNZZw+bgw=
-X-Google-Smtp-Source: AGRyM1v2FmEs2nE36BLeHDVNvQNBxT9DR1rg774v2yKNF+j4YZzsXAOecNj8tZ9Ibyx76JwL3Kp98GkkWIPib2i2MxY=
-X-Received: by 2002:a05:6808:f92:b0:33a:441e:979b with SMTP id
- o18-20020a0568080f9200b0033a441e979bmr11971682oiw.220.1658238453483; Tue, 19
- Jul 2022 06:47:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=H/QcNljsBbmdjrwrwjwtjEvq2HQmGFprhuK7NiBbLCY=;
+        b=P3clVFcq1w0gaf6k0Gy/TJcGRJJyRTFrpspP18inO5NGOpv8qdW7LbttN5Ci2cijly
+         g9xrWFyaegAaqHqtG8Z8EvL/KY5wY9QfrDh0ZR9D62/p381tjUU8ldMGMNLO7Ng9aTId
+         DViCQvqjIrgZdv/Rl3CER6KJi8jZEuh/K/BhqVABJLmpldQ3a13YCcqzq9xqp9hYjfg5
+         1PvJ7SYW6zIDRGwUBrtAH9tFruK5x3HO7XkO9Heq3Hf3+eIJDn1TgzsAQp01ljKUgNVD
+         DAmB+azZgC1rTwVf6zu/yy0heEahQmIk5mHrniCedM6F4gh12CUQXyTYSBZQ1mR+WnSv
+         rU8Q==
+X-Gm-Message-State: AJIora+7ETgv3FNMFD6A/Hi+ozSZvkwtC1aeZPwhRNYHACGKkcYySSlQ
+        HglekL9CqwBwKbAyRAnqWnu+R7ZRXXM=
+X-Google-Smtp-Source: AGRyM1vfB8m0S9L87u7x8sMnidtJ7ms8KbYxF6JCQWGFj227DYAusFol270rKqeVp2RsdAd7Nzr2Dg==
+X-Received: by 2002:a05:6402:c0b:b0:43a:25ff:ff08 with SMTP id co11-20020a0564020c0b00b0043a25ffff08mr44462159edb.148.1658238504156;
+        Tue, 19 Jul 2022 06:48:24 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id v18-20020a170906293200b00721d8e5bf0bsm6758112ejd.6.2022.07.19.06.48.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 06:48:23 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v2 0/5] cleanup for data casting
+To:     Pu Lehui <pulehui@huawei.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220718132938.1031864-1-pulehui@huawei.com>
+ <CAADnVQJQ_WU6wfyaAkk3f9DaawDtsDT4BLZeBp2aPEZ4TMaYVQ@mail.gmail.com>
+ <b5c03458-7fd8-3739-63b1-11618f4b8a6a@huawei.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <df76c412-d9e4-b89d-1bd3-eefb50280f57@gmail.com>
+Date:   Tue, 19 Jul 2022 14:48:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Sender: manuellongman147@gmail.com
-Received: by 2002:a05:6358:2490:b0:af:f781:9abb with HTTP; Tue, 19 Jul 2022
- 06:47:33 -0700 (PDT)
-From:   "Mrs. Rabi Affason Marcus" <affasonrabi@gmail.com>
-Date:   Tue, 19 Jul 2022 06:47:33 -0700
-X-Google-Sender-Auth: PwDg2FQwFE_WJDTco2SGySWWQ-g
-Message-ID: <CA+ZiWatBqaxUzFVPFeH3uUWAde7pdmbekEX3XVC8VwW+xdWBqg@mail.gmail.com>
-Subject: PLEASE CONFIRM MY PREVIOUS MAIL FOR MORE DETAILS.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+In-Reply-To: <b5c03458-7fd8-3739-63b1-11618f4b8a6a@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good morning from here this morning my dear, how are you doing today?
-My name is Mrs. Rabi Affason Marcus; Please I want to confirm if you
-get my previous mail?
+>> On Mon, Jul 18, 2022 at 5:59 AM Pu Lehui <pulehui@huawei.com> wrote:
+>>> Previously, we found that memory address casting in libbpf
+>>> was not appropriate [0]. Memory addresses are conceptually
+>>> unsigned, (unsigned long) casting makes more sense. With the
+>>> suggestion of Daniel, we applied this cleanup to the entire
+>>> bpf, and there is no functional change.
+Fwiw, pointers in C aren't necessarily unsigned; some versions of
+ gcc have treated them as signed and — if no object can straddle
+ the sign boundary — it's even allowed by the standard. [1]
+(And at a hardware level, a memory address is just a pattern of
+ bits on an address bus, which isn't arithmetic at all.)
+
+-ed
+
+[1]: https://yarchive.net/comp/linux/signed_pointers.html
