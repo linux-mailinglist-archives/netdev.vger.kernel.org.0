@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F3857AA46
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 01:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87BDF57AA4A
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 01:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240610AbiGSXLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 19:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
+        id S240675AbiGSXLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 19:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240565AbiGSXLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 19:11:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCCE545C6
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 16:11:40 -0700 (PDT)
+        with ESMTP id S237543AbiGSXLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 19:11:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15DC62A7A
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 16:11:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29C08609FB
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A33AB81DB1
         for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 23:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39ACEC341D0;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D1FC341CF;
         Tue, 19 Jul 2022 23:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658272299;
-        bh=WoAfCEzRBLEK3oYq7LV/+wVRkXy/KeWMPDCMf3BpCkU=;
+        s=k20201202; t=1658272300;
+        bh=s6E/FmdFf7uYZwJleMpbevIzKUkMazRJEgfzE7WY2Qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ship+ei/QrdZXGq1kMPWv7kOWrTPtQSTjc6/Xlrn2JNC8cQLnUa9kY0NvJue1fWvK
-         R+bi7N2mV0GSve9cYz0Ae49izrUJtpGmTmjdhtRHzRIUJG3oHJ+dfmlwSduDlPY+bj
-         AddFuSL4iGv32r9+ok5yZ5xRha9JDBi+W8GwHtqtZLDqMA5Z8g5RSj5VPcAkewr7t1
-         tYz1+Qldv9U0L3iO2v6oIM0+cdZhrk138fR6E4058C8DiOnXVQaCCzz4m9+QrcRSvs
-         ZqPVOI3n9QUg2CH0es7l6xyHpOJP8N7CjzsGkjo6fxr2uiK5dAYX0oyjadwvQPqoZV
-         oOEC4aGHzwi8w==
+        b=Zp2jGMbeZC0ZQogYsK4ZVzot88RB7GPp3fotoxNkU79VyH011Su3O9lP+Z/QakqSK
+         LO/DRgPi7vRsiWLm7xPgeZSewq59v3QJlQ+EIANxGSjdD0OswxxoQNSwSOEBHG8/Gm
+         2mBHpf7TQq6x6Yu5vkJNWsict51FgGd4jGbnfKA30F9D3P27wA804W4a7B2fnQgusk
+         0XxtxDvu821IB9CdHH/J6S7Ci8jp35iTkIfLLkPpMiLKAn5xpPgTWvYEFtBYjskBRY
+         E2I4MbBd5pctXSJXaHYwd2fthS1KQrbyKd7Wsz+KGg8/96de6SPndVPtPZSfEV/WRk
+         Fo1yjYr7gFOvQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 4/7] tls: rx: device: keep the zero copy status with offload
-Date:   Tue, 19 Jul 2022 16:11:26 -0700
-Message-Id: <20220719231129.1870776-5-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org
+Subject: [PATCH net-next v2 5/7] tcp: allow tls to decrypt directly from the tcp rcv queue
+Date:   Tue, 19 Jul 2022 16:11:27 -0700
+Message-Id: <20220719231129.1870776-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719231129.1870776-1-kuba@kernel.org>
 References: <20220719231129.1870776-1-kuba@kernel.org>
@@ -54,112 +55,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The non-zero-copy path assumes a full skb with decrypted contents.
-This means the device offload would have to CoW the data. Try
-to keep the zero-copy status instead, copy the data to user space.
+Expose TCP rx queue accessor and cleanup, so that TLS can
+decrypt directly from the TCP queue. The expectation
+is that the caller can access the skb returned from
+tcp_recv_skb() and up to inq bytes worth of data (some
+of which may be in ->next skbs) and then call
+tcp_read_done() when data has been consumed.
+The socket lock must be held continuously across
+those two operations.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: borisp@nvidia.com
-CC: john.fastabend@gmail.com
+CC: yoshfuji@linux-ipv6.org
+CC: dsahern@kernel.org
 ---
- net/tls/tls.h      |  1 +
- net/tls/tls_strp.c |  9 +++++++++
- net/tls/tls_sw.c   | 30 +++++++++++++++++++++++++-----
- 3 files changed, 35 insertions(+), 5 deletions(-)
+ include/net/tcp.h |  2 ++
+ net/ipv4/tcp.c    | 44 +++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 45 insertions(+), 1 deletion(-)
 
-diff --git a/net/tls/tls.h b/net/tls/tls.h
-index 24bec1c5f1e8..78c5d699bf75 100644
---- a/net/tls/tls.h
-+++ b/net/tls/tls.h
-@@ -127,6 +127,7 @@ int tls_sw_fallback_init(struct sock *sk,
- 			 struct tls_offload_context_tx *offload_ctx,
- 			 struct tls_crypto_info *crypto_info);
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 8e48dc56837b..90340d66b731 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -673,6 +673,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
+ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 		  sk_read_actor_t recv_actor);
+ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
++struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off);
++void tcp_read_done(struct sock *sk, size_t len);
  
-+struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx);
- int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
- 		      struct sk_buff_head *dst);
+ void tcp_initialize_rcv_mss(struct sock *sk);
  
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index 9ccab79a6e1e..40b177366121 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -4,6 +4,15 @@
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 96b6e9c22068..155251a6c5a6 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1625,7 +1625,7 @@ static void tcp_eat_recv_skb(struct sock *sk, struct sk_buff *skb)
+ 	__kfree_skb(skb);
+ }
  
- #include "tls.h"
+-static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
++struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
+ {
+ 	struct sk_buff *skb;
+ 	u32 offset;
+@@ -1648,6 +1648,7 @@ static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
+ 	}
+ 	return NULL;
+ }
++EXPORT_SYMBOL(tcp_recv_skb);
  
-+struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx)
+ /*
+  * This routine provides an alternative to tcp_recvmsg() for routines
+@@ -1778,6 +1779,47 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ }
+ EXPORT_SYMBOL(tcp_read_skb);
+ 
++void tcp_read_done(struct sock *sk, size_t len)
 +{
++	struct tcp_sock *tp = tcp_sk(sk);
++	u32 seq = tp->copied_seq;
 +	struct sk_buff *skb;
++	size_t left;
++	u32 offset;
 +
-+	skb = ctx->recv_pkt;
-+	ctx->recv_pkt = NULL;
-+	return skb;
-+}
++	if (sk->sk_state == TCP_LISTEN)
++		return;
 +
- int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
- 		      struct sk_buff_head *dst)
- {
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 7345b41ded9d..02894a2d1f31 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1631,8 +1631,8 @@ tls_decrypt_sw(struct sock *sk, struct tls_context *tls_ctx,
- }
- 
- static int
--tls_decrypt_device(struct sock *sk, struct tls_context *tls_ctx,
--		   struct tls_decrypt_arg *darg)
-+tls_decrypt_device(struct sock *sk, struct msghdr *msg,
-+		   struct tls_context *tls_ctx, struct tls_decrypt_arg *darg)
- {
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
-@@ -1650,13 +1650,33 @@ tls_decrypt_device(struct sock *sk, struct tls_context *tls_ctx,
- 	if (pad < 0)
- 		return pad;
- 
--	darg->zc = false;
- 	darg->async = false;
- 	darg->skb = tls_strp_msg(ctx);
--	ctx->recv_pkt = NULL;
-+	/* ->zc downgrade check, in case TLS 1.3 gets here */
-+	darg->zc &= !(prot->version == TLS_1_3_VERSION &&
-+		      tls_msg(darg->skb)->control != TLS_RECORD_TYPE_DATA);
- 
- 	rxm = strp_msg(darg->skb);
- 	rxm->full_len -= pad;
++	left = len;
++	while (left && (skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
++		int used;
 +
-+	if (!darg->zc) {
-+		/* Non-ZC case needs a real skb */
-+		darg->skb = tls_strp_msg_detach(ctx);
-+		if (!darg->skb)
-+			return -ENOMEM;
-+	} else {
-+		unsigned int off, len;
++		used = min_t(size_t, skb->len - offset, left);
++		seq += used;
++		left -= used;
 +
-+		/* In ZC case nobody cares about the output skb.
-+		 * Just copy the data here. Note the skb is not fully trimmed.
-+		 */
-+		off = rxm->offset + prot->prepend_size;
-+		len = rxm->full_len - prot->overhead_size;
++		if (skb->len > offset + used)
++			break;
 +
-+		err = skb_copy_datagram_msg(darg->skb, off, msg, len);
-+		if (err)
-+			return err;
++		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
++			tcp_eat_recv_skb(sk, skb);
++			++seq;
++			break;
++		}
++		tcp_eat_recv_skb(sk, skb);
 +	}
- 	return 1;
- }
- 
-@@ -1668,7 +1688,7 @@ static int tls_rx_one_record(struct sock *sk, struct msghdr *msg,
- 	struct strp_msg *rxm;
- 	int err;
- 
--	err = tls_decrypt_device(sk, tls_ctx, darg);
-+	err = tls_decrypt_device(sk, msg, tls_ctx, darg);
- 	if (!err)
- 		err = tls_decrypt_sw(sk, tls_ctx, msg, darg);
- 	if (err < 0)
++	WRITE_ONCE(tp->copied_seq, seq);
++
++	tcp_rcv_space_adjust(sk);
++
++	/* Clean up data we have read: This will do ACK frames. */
++	if (left != len) {
++		tcp_recv_skb(sk, seq, &offset);
++		tcp_cleanup_rbuf(sk, len - left);
++	}
++}
++EXPORT_SYMBOL(tcp_read_done);
++
+ int tcp_peek_len(struct socket *sock)
+ {
+ 	return tcp_inq(sock->sk);
 -- 
 2.36.1
 
