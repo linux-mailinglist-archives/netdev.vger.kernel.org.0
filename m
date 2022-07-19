@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE9D57936C
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69DBD579376
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236937AbiGSGtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 02:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55504 "EHLO
+        id S234970AbiGSGtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 02:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236271AbiGSGtC (ORCPT
+        with ESMTP id S236867AbiGSGtC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:49:02 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E4E275D9
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:48:57 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id x91so18313045ede.1
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:48:57 -0700 (PDT)
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F034A26AF4
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:48:58 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id t3so18333922edd.0
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:48:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rBW/mHE7+MoeZ57YrYfHenG64+IQ0+DrLZq0P9J8Rps=;
-        b=fXHVGP/9F/5M1aMIa9bKpecoZZw/fzWVngXq1O5BUge9LV6yGMjDANQh0p2I7Rb+OA
-         VtfcbYGt/N8uo4bQPfnwNGiSzbKqW1ial2HKtKJqQmM5Dgyk7gr0Dn87L+y6s1AsFqzO
-         h5fLcowP4Kc4DkD9rG61ktgNd6zc55uM7B3DZJ7nO4p61sueqdEN8dRUp/Pt8l1/Ui/t
-         tBE5Cxm9Sav6udrxlB2TdCM2ozp6Q/9t1tV4NWj3BwDci8Jbbg2JDlwgJS2U33W/S4qt
-         z8b9pYjSU0Y2NCzjeFJdRyi2XtA6hiqFH7tEcwarWq0C5lhaIF2yDJSp2LA5sQmFs46C
-         yH/g==
+        bh=44wys52ilsQ8VJ4uJwpgIac5uAf+oQNvEU1pnbpD+OQ=;
+        b=WMtFYNdPvnO42hndcVui6N6xlX05up8lkAfT4Jj5EKxLldKLsB+ZI0FcgUthjZ+Gxx
+         lbqzO7X6hzTLA3whccojhWRjoPQBdvH3Zhm65WcJWJ3N8n9bmtgdz/DSPxREIgBSOawn
+         0stGnH/0DyCGdttH9EFEdKD/x0LMRYI82GHON387kecYaD/eRQ8elWjXgqQJCd+0Ps+L
+         DUpLD8Xb0FR9+KY+RyQ2xVx4+ClevQUjFRyXJtEeq3kuNkQ4yJBZOGk7vyw/VrOQ/hiK
+         lgGgwuDx9GUDWrcfq3cWCWAUjXSH+BqIUAK34yuwBMSWNkqa6Cf81iZ3Cy/FqWGP8YV5
+         VbNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rBW/mHE7+MoeZ57YrYfHenG64+IQ0+DrLZq0P9J8Rps=;
-        b=QDOJJmzjFEz6sjg5RflONx7gdDtSz6sMA/0tj0aJLEMwiazB37HCAIitFmklPI1x6J
-         jIOfhVRwYqkviGqLU6FQrhY431pgvk3OvY5nGTxZtIQL7CwlpzOLVx143SXWIa+i4xHC
-         5owPi8i+li2O1VqcHJIQIC0vdIgN348U10QTcOS0I9qc3wQOWKG12uPvRO4HdpmI0BG7
-         dByWSqqvRuHkYZb52yIxWqryprDa5lp+sXjXDi/4ELNAggmOSMfPUe24HI+w9JIQG68c
-         7bSp5PulEPcWHZy52yVYULBJU4y3dW8oaSFNi5Kd1UEC7lp7jeEQ+BhFzGZ1XfHg7gzP
-         7VeQ==
-X-Gm-Message-State: AJIora9NqqE/oEDI20uVh1Bw+2y0OYHfB+6fkUbpzeLa7KKdkXYin8b3
-        XzzgWMpQnVTpQcZFLOsfyAQoVXNhdWcOA3sMs/o=
-X-Google-Smtp-Source: AGRyM1sSWVtpkGoYbBAhIAjiZUsDKL8Zk4oyLR+RgqK4SyUy4QhemWNBUJtDzyxR8cIc8D6bM6pMdA==
-X-Received: by 2002:aa7:cd64:0:b0:43a:4d43:7077 with SMTP id ca4-20020aa7cd64000000b0043a4d437077mr41912144edb.302.1658213336061;
-        Mon, 18 Jul 2022 23:48:56 -0700 (PDT)
+        bh=44wys52ilsQ8VJ4uJwpgIac5uAf+oQNvEU1pnbpD+OQ=;
+        b=HuTmCvRwR6KPSU9XOs4UPpU+mAi/kPo0F80nOgsIAvtxqCsPhNP6XZ/BdE5jkzC4oN
+         nDnvJn0XDxVca83gm7mx+FQYRUzDkIRV7RL/pFCl48f+c9VGuhK2aSn1uf6GzWmrhZUm
+         o1LlqgHYduzoV36NIj/yA+qAlfJdD2VBephv335c596Q55Ny8sl3YJFQmSm0XP3qhuY4
+         5cJR2/VQ2MBfKeJ3aGf+Sor+TpEiXm76NFgBpcAdT+U2UtCPBACgOgtBmXRCENPoUlOM
+         VO4pmrpkQy9w3hufzpM8xBJ1SKGYVDRaJkJa7At9vteAJNipRJtWFzGJ+QvaideA0Sx2
+         f9uA==
+X-Gm-Message-State: AJIora9jyBZspdhQhg8YuuueUNCEoQe7eyneo/Kt0PZExOTJ5oQeSzfT
+        SC2gOvvq95Y0B/2w/y5aqH+40FLLr9FqH3fHmrU=
+X-Google-Smtp-Source: AGRyM1uZMbCh0HgHuhBJdwtqh4dYgmt6lJ7GqHGRULiNGv5mNhOx7m1Jr3wKgyBBotRAS0LCuGMqjA==
+X-Received: by 2002:a05:6402:348e:b0:43a:953d:ade8 with SMTP id v14-20020a056402348e00b0043a953dade8mr42457032edc.135.1658213337529;
+        Mon, 18 Jul 2022 23:48:57 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id m21-20020aa7d355000000b0043a7de4e526sm9941080edr.44.2022.07.18.23.48.55
+        by smtp.gmail.com with ESMTPSA id w13-20020aa7cb4d000000b0043a5004e714sm9889626edt.64.2022.07.18.23.48.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 23:48:55 -0700 (PDT)
+        Mon, 18 Jul 2022 23:48:57 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: [patch net-next v2 05/12] mlxsw: core_linecards: Expose HW revision and INI version
-Date:   Tue, 19 Jul 2022 08:48:40 +0200
-Message-Id: <20220719064847.3688226-6-jiri@resnulli.us>
+Subject: [patch net-next v2 06/12] mlxsw: reg: Extend MDDQ by device_info
+Date:   Tue, 19 Jul 2022 08:48:41 +0200
+Message-Id: <20220719064847.3688226-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220719064847.3688226-1-jiri@resnulli.us>
 References: <20220719064847.3688226-1-jiri@resnulli.us>
@@ -71,133 +71,122 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Implement info_get() to expose HW revision of a linecard and loaded INI
-version.
-
-Example:
-
-$ devlink dev info auxiliary/mlxsw_core.lc.0
-auxiliary/mlxsw_core.lc.0:
-  versions:
-      fixed:
-        hw.revision 0
-      running:
-        ini.version 4
+Extend existing MDDQ register by possibility to query information about
+devices residing on a line card.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- Documentation/networking/devlink/mlxsw.rst    | 18 ++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  4 +++
- .../mellanox/mlxsw/core_linecard_dev.c        | 11 ++++++++
- .../ethernet/mellanox/mlxsw/core_linecards.c  | 28 +++++++++++++++++++
- 4 files changed, 61 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 83 ++++++++++++++++++++++-
+ 1 file changed, 82 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
-index cf857cb4ba8f..aededcf68df4 100644
---- a/Documentation/networking/devlink/mlxsw.rst
-+++ b/Documentation/networking/devlink/mlxsw.rst
-@@ -58,6 +58,24 @@ The ``mlxsw`` driver reports the following versions
-      - running
-      - Three digit firmware version
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 17ce28e65464..76caf06b17d6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -11297,7 +11297,11 @@ MLXSW_ITEM32(reg, mddq, sie, 0x00, 31, 1);
  
-+Line card auxiliary device info versions
-+========================================
-+
-+The ``mlxsw`` driver reports the following versions for line card auxiliary device
-+
-+.. list-table:: devlink info versions implemented
-+   :widths: 5 5 90
-+
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``hw.revision``
-+     - fixed
-+     - The hardware revision for this line card
-+   * - ``ini.version``
-+     - running
-+     - Version of line card INI loaded
-+
- Driver-specific Traps
- =====================
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index b22db13fa547..87c58b512536 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -599,6 +599,10 @@ mlxsw_linecard_get(struct mlxsw_linecards *linecards, u8 slot_index)
- 	return &linecards->linecards[slot_index - 1];
- }
- 
-+int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
-+				    struct devlink_info_req *req,
-+				    struct netlink_ext_ack *extack);
-+
- int mlxsw_linecards_init(struct mlxsw_core *mlxsw_core,
- 			 const struct mlxsw_bus_info *bus_info);
- void mlxsw_linecards_fini(struct mlxsw_core *mlxsw_core);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-index f41662936a2b..d0ecefee587b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-@@ -97,7 +97,18 @@ void mlxsw_linecard_bdev_del(struct mlxsw_linecard *linecard)
- 	linecard->bdev = NULL;
- }
- 
-+static int mlxsw_linecard_dev_devlink_info_get(struct devlink *devlink,
-+					       struct devlink_info_req *req,
-+					       struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_linecard_dev *linecard_dev = devlink_priv(devlink);
-+	struct mlxsw_linecard *linecard = linecard_dev->linecard;
-+
-+	return mlxsw_linecard_devlink_info_get(linecard, req, extack);
-+}
-+
- static const struct devlink_ops mlxsw_linecard_dev_devlink_ops = {
-+	.info_get			= mlxsw_linecard_dev_devlink_info_get,
+ enum mlxsw_reg_mddq_query_type {
+ 	MLXSW_REG_MDDQ_QUERY_TYPE_SLOT_INFO = 1,
+-	MLXSW_REG_MDDQ_QUERY_TYPE_SLOT_NAME = 3,
++	MLXSW_REG_MDDQ_QUERY_TYPE_DEVICE_INFO, /* If there are no devices
++						* on the slot, data_valid
++						* will be '0'.
++						*/
++	MLXSW_REG_MDDQ_QUERY_TYPE_SLOT_NAME,
  };
  
- static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-index 43696d8badca..c427e07b25dd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-@@ -226,6 +226,34 @@ void mlxsw_linecards_event_ops_unregister(struct mlxsw_core *mlxsw_core,
- }
- EXPORT_SYMBOL(mlxsw_linecards_event_ops_unregister);
+ /* reg_mddq_query_type
+@@ -11311,6 +11315,28 @@ MLXSW_ITEM32(reg, mddq, query_type, 0x00, 16, 8);
+  */
+ MLXSW_ITEM32(reg, mddq, slot_index, 0x00, 0, 4);
  
-+int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
-+				    struct devlink_info_req *req,
-+				    struct netlink_ext_ack *extack)
++/* reg_mddq_response_msg_seq
++ * Response message sequential number. For a specific request, the response
++ * message sequential number is the following one. In addition, the last
++ * message should be 0.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, response_msg_seq, 0x04, 16, 8);
++
++/* reg_mddq_request_msg_seq
++ * Request message sequential number.
++ * The first message number should be 0.
++ * Access: Index
++ */
++MLXSW_ITEM32(reg, mddq, request_msg_seq, 0x04, 0, 8);
++
++/* reg_mddq_data_valid
++ * If set, the data in the data field is valid and contain the information
++ * for the queried index.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, data_valid, 0x08, 31, 1);
++
+ /* reg_mddq_slot_info_provisioned
+  * If set, the INI file is applied and the card is provisioned.
+  * Access: RO
+@@ -11397,6 +11423,61 @@ mlxsw_reg_mddq_slot_info_unpack(const char *payload, u8 *p_slot_index,
+ 	*p_card_type = mlxsw_reg_mddq_slot_info_card_type_get(payload);
+ }
+ 
++/* reg_mddq_device_info_flash_owner
++ * If set, the device is the flash owner. Otherwise, a shared flash
++ * is used by this device (another device is the flash owner).
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, device_info_flash_owner, 0x10, 30, 1);
++
++/* reg_mddq_device_info_device_index
++ * Device index. The first device should number 0.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, device_info_device_index, 0x10, 0, 8);
++
++/* reg_mddq_device_info_fw_major
++ * Major FW version number.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, device_info_fw_major, 0x14, 16, 16);
++
++/* reg_mddq_device_info_fw_minor
++ * Minor FW version number.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, device_info_fw_minor, 0x18, 16, 16);
++
++/* reg_mddq_device_info_fw_sub_minor
++ * Sub-minor FW version number.
++ * Access: RO
++ */
++MLXSW_ITEM32(reg, mddq, device_info_fw_sub_minor, 0x18, 0, 16);
++
++static inline void
++mlxsw_reg_mddq_device_info_pack(char *payload, u8 slot_index,
++				u8 request_msg_seq)
 +{
-+	char buf[32];
-+	int err;
-+
-+	mutex_lock(&linecard->lock);
-+	if (WARN_ON(!linecard->provisioned)) {
-+		err = 0;
-+		goto unlock;
-+	}
-+
-+	sprintf(buf, "%d", linecard->hw_revision);
-+	err = devlink_info_version_fixed_put(req, "hw.revision", buf);
-+	if (err)
-+		goto unlock;
-+
-+	sprintf(buf, "%d", linecard->ini_version);
-+	err = devlink_info_version_running_put(req, "ini.version", buf);
-+	if (err)
-+		goto unlock;
-+
-+unlock:
-+	mutex_unlock(&linecard->lock);
-+	return err;
++	__mlxsw_reg_mddq_pack(payload, slot_index,
++			      MLXSW_REG_MDDQ_QUERY_TYPE_DEVICE_INFO);
++	mlxsw_reg_mddq_request_msg_seq_set(payload, request_msg_seq);
 +}
 +
- static int
- mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
- 			     u16 hw_revision, u16 ini_version)
++static inline void
++mlxsw_reg_mddq_device_info_unpack(const char *payload, u8 *p_response_msg_seq,
++				  bool *p_data_valid, bool *p_flash_owner,
++				  u8 *p_device_index, u16 *p_fw_major,
++				  u16 *p_fw_minor, u16 *p_fw_sub_minor)
++{
++	*p_response_msg_seq = mlxsw_reg_mddq_response_msg_seq_get(payload);
++	*p_data_valid = mlxsw_reg_mddq_data_valid_get(payload);
++	*p_flash_owner = mlxsw_reg_mddq_device_info_flash_owner_get(payload);
++	*p_device_index = mlxsw_reg_mddq_device_info_device_index_get(payload);
++	*p_fw_major = mlxsw_reg_mddq_device_info_fw_major_get(payload);
++	*p_fw_minor = mlxsw_reg_mddq_device_info_fw_minor_get(payload);
++	*p_fw_sub_minor = mlxsw_reg_mddq_device_info_fw_sub_minor_get(payload);
++}
++
+ #define MLXSW_REG_MDDQ_SLOT_ASCII_NAME_LEN 20
+ 
+ /* reg_mddq_slot_ascii_name
 -- 
 2.35.3
 
