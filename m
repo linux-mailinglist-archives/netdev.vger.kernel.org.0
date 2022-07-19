@@ -2,173 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE07579589
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD6D5795C6
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 11:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237097AbiGSIuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 04:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55462 "EHLO
+        id S234471AbiGSJH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 05:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235378AbiGSIuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:50:11 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C32B101D;
-        Tue, 19 Jul 2022 01:50:07 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LnC9P4XPTzVgHp;
-        Tue, 19 Jul 2022 16:46:17 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 16:49:45 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Jul 2022 16:49:45 +0800
-From:   Xu Jia <xujia39@huawei.com>
-To:     <sdf@google.com>, <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <xujia39@huawei.com>
-Subject: [PATCH bpf-next] bpf: fix bpf compile error caused by CONFIG_CGROUP_BPF
-Date:   Tue, 19 Jul 2022 17:01:45 +0800
-Message-ID: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S233997AbiGSJH0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 05:07:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CFD24205EE
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 02:07:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658221643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5xq3a91+TAH7Moxgf8B5LgoKm/+Ua2vqG4jjWG7x1VA=;
+        b=SqRWN/PENUHLCZeaRS1rH0z1r6gfGOTnqZu9iIA2nfe7HjiCOpUtGQ6sYXRXiH60dBgzbu
+        nLy8pYDG0f0K8VntP9nFaPIP0y/o+NputU6ZQRCyQBHbTqQ2L0HP3GwkxdyDzKroPKk9na
+        cV6OOyGAu5WuTzkzC8SwnFVBeXSoQqU=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-182-htDX1nGXMCGc8Dbcjp5TwQ-1; Tue, 19 Jul 2022 05:07:22 -0400
+X-MC-Unique: htDX1nGXMCGc8Dbcjp5TwQ-1
+Received: by mail-qv1-f72.google.com with SMTP id od5-20020a0562142f0500b00473838e0feeso6958665qvb.9
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 02:07:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=5xq3a91+TAH7Moxgf8B5LgoKm/+Ua2vqG4jjWG7x1VA=;
+        b=5jvfbGOn85MKlXkcenc/pswNW5ZU2HCSUJkkHxRV6JWJqeiJ+Z68IucHWT6PAY7Lc7
+         9jjAV6tfwXaoPnEj2xEKgfZ6F4JRtZXqyPS4jbjJJPT7pt+oQv63LGZewaZ1VoFTJttU
+         6OJJDvP/bLU00NNw3kGi5XpzVl8QIFZiMhtj7ylO0qLJO0XIx/xMSCjCJXbYDps6kwT4
+         XO+17nETwVWQ6yjFjfWTWjid0m/WEo34+igepVr/zXVBqGhmlvosx9bFroGjkMFfH4g5
+         0DkyCm1ZDpxNAlichIjjtfYD/GQrzvGlsFuhpvdFtSIaST0RYasOSVO71FT28EepExaI
+         liQw==
+X-Gm-Message-State: AJIora+fwAAMrmSRGbmK4tORiGw98avztAsTgTOIuMVnq1jG64vnmR6p
+        WR9bHJTENkLvIUGQVlrZxIV3B0iqlsOyGB7fNsLD22Jp2ySyujsT/d3RiN1USnKEaOqeJ4Xv2Lv
+        8Vjj2bnfbPgayvZ79
+X-Received: by 2002:a05:622a:1794:b0:317:db58:f413 with SMTP id s20-20020a05622a179400b00317db58f413mr23730539qtk.505.1658221641984;
+        Tue, 19 Jul 2022 02:07:21 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uRKX09vnsNM2yGtz/6mob8/dB7WaX8W9gLTBKi64TLhFALZmpn6m1I/lQV/rd+tPtAJ0qMaw==
+X-Received: by 2002:a05:622a:1794:b0:317:db58:f413 with SMTP id s20-20020a05622a179400b00317db58f413mr23730525qtk.505.1658221641721;
+        Tue, 19 Jul 2022 02:07:21 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
+        by smtp.gmail.com with ESMTPSA id dm53-20020a05620a1d7500b006b4880b08a9sm14138074qkb.88.2022.07.19.02.07.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 02:07:21 -0700 (PDT)
+Message-ID: <00e2c14ffd5bb2214b4d5553c1ed1d331b4cc355.camel@redhat.com>
+Subject: Re: [PATCH V4 net-next] net: marvell: prestera: add phylink support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Date:   Tue, 19 Jul 2022 11:07:17 +0200
+In-Reply-To: <GV1P190MB2019F8813E2E3A169076EE9AE48F9@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
+References: <20220715193454.7627-1-oleksandr.mazur@plvision.eu>
+         <660684000d6820524c61d733fb076225202dad8e.camel@redhat.com>
+         <GV1P190MB2019F8813E2E3A169076EE9AE48F9@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We failed to compile when CONFIG_BPF_LSM is enabled but CONFIG_CGROUP_BPF
-is not set. The failings are shown as below:
+On Tue, 2022-07-19 at 08:56 +0000, Oleksandr Mazur wrote:
+> > > +
+> > > +static void prestera_pcs_an_restart(struct phylink_pcs *pcs)
+> > > +{
+> > > +     /*
+> > > +      * TODO: add 100basex AN restart support
+> 
+> > Possibly typo above ? s/100basex/1000basex/
+> 
+> Hello Paolo, yes, you're right.
+> So, should i wait some time before resubmitting patch again with
+> changes - V5 - or it's okay to resubmit new version now?
 
-kernel/bpf/trampoline.o: in function `bpf_trampoline_link_cgroup_shim'
-trampoline.c: undefined reference to `bpf_cgroup_atype_get'
-kernel/bpf/bpf_lsm.o: In function `bpf_lsm_find_cgroup_shim':
-bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_current'
-bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_sock'
-bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_socket'
+My personal take: v4 has been out for several days, so it's ok to
+submit a new revision now. Others may disagre, but you would be free to
+point the finger against me for the suggestion :)
 
-Fix them by protecting these functions with CONFIG_CGROUP_BPF.
+Please additionally have a look to my other comment, regarding
+read_lock usage.
 
-Fixes: 69fd337a975c ("bpf: per-cgroup lsm flavor")
-Signed-off-by: Xu Jia <xujia39@huawei.com>
----
- include/linux/bpf.h     | 12 +++++++++---
- include/linux/bpf_lsm.h | 10 ++++++----
- kernel/bpf/bpf_lsm.c    |  2 ++
- kernel/bpf/trampoline.c |  2 ++
- 4 files changed, 19 insertions(+), 7 deletions(-)
+Thanks!
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2b21f2a3452f..add8895c02cc 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1255,9 +1255,7 @@ struct bpf_dummy_ops {
- int bpf_struct_ops_test_run(struct bpf_prog *prog, const union bpf_attr *kattr,
- 			    union bpf_attr __user *uattr);
- #endif
--int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
--				    int cgroup_atype);
--void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
-+
- #else
- static inline const struct bpf_struct_ops *bpf_struct_ops_find(u32 type_id)
- {
-@@ -1281,6 +1279,14 @@ static inline int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map,
- {
- 	return -EINVAL;
- }
-+#endif
-+
-+#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL) && \
-+    defined(CONFIG_CGROUP_BPF)
-+int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
-+				    int cgroup_atype);
-+void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
-+#else
- static inline int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
- 						  int cgroup_atype)
- {
-diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-index 4bcf76a9bb06..bed45a0c8a9c 100644
---- a/include/linux/bpf_lsm.h
-+++ b/include/linux/bpf_lsm.h
-@@ -42,8 +42,6 @@ extern const struct bpf_func_proto bpf_inode_storage_get_proto;
- extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
- void bpf_inode_storage_free(struct inode *inode);
- 
--void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
--
- #else /* !CONFIG_BPF_LSM */
- 
- static inline bool bpf_lsm_is_sleepable_hook(u32 btf_id)
-@@ -67,11 +65,15 @@ static inline void bpf_inode_storage_free(struct inode *inode)
- {
- }
- 
-+#endif /* CONFIG_BPF_LSM */
-+
-+#if defined(CONFIG_BPF_LSM) && defined(CONFIG_BPF_CGROUP)
-+void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-+#else
- static inline void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- 					   bpf_func_t *bpf_func)
- {
- }
--
--#endif /* CONFIG_BPF_LSM */
-+#endif
- 
- #endif /* _LINUX_BPF_LSM_H */
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index d469b7f3deef..29527828b38b 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -63,6 +63,7 @@ BTF_ID(func, bpf_lsm_socket_post_create)
- BTF_ID(func, bpf_lsm_socket_socketpair)
- BTF_SET_END(bpf_lsm_unlocked_sockopt_hooks)
- 
-+#ifdef CONFIG_BPF_CGROUP
- void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- 			     bpf_func_t *bpf_func)
- {
-@@ -86,6 +87,7 @@ void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- #endif
- 		*bpf_func = __cgroup_bpf_run_lsm_current;
- }
-+#endif /* CONFIG_BPF_CGROUP */
- 
- int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
- 			const struct bpf_prog *prog)
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 6cd226584c33..127924711935 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -525,6 +525,7 @@ static const struct bpf_link_ops bpf_shim_tramp_link_lops = {
- 	.dealloc = bpf_shim_tramp_link_dealloc,
- };
- 
-+#ifdef CONFIG_CGROUP_BPF
- static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
- 						     bpf_func_t bpf_func,
- 						     int cgroup_atype)
-@@ -668,6 +669,7 @@ void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog)
- 
- 	bpf_trampoline_put(tr); /* bpf_trampoline_lookup above */
- }
-+#endif /* CONFIG_CGROUP_BPF */
- #endif
- 
- struct bpf_trampoline *bpf_trampoline_get(u64 key,
--- 
-2.25.1
+Paolo
 
