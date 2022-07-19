@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90EFE578FA7
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C496578FA2
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236579AbiGSBPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 21:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
+        id S236574AbiGSBPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 21:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236543AbiGSBPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:15:13 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE3F5FF4;
-        Mon, 18 Jul 2022 18:15:12 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id d16so19418580wrv.10;
-        Mon, 18 Jul 2022 18:15:12 -0700 (PDT)
+        with ESMTP id S236564AbiGSBPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:15:15 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8153EA186;
+        Mon, 18 Jul 2022 18:15:13 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id b26so19470905wrc.2;
+        Mon, 18 Jul 2022 18:15:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=gcqNz1RB71kb0BDSAwTXf2+CqK2J47RfVbz1ImZI2Qs=;
-        b=pCw2T+E5etwf1+EKeHwRITGseXjFx/Vb4T0yxbPDpQK3gkqbu0xOKDPEWs/RPgS6d5
-         QCzzKgwB8zNQvLtWbL3KejtvycxGfabhEoPFyGGVGwJDvtED0whhhS4MsPXpXLpYc/QR
-         U4wpU4t+QrlLebzQzhl4W6Ko8Jdmh4Ik5Rx1QnwYjczoxjQFlGlpeRTldmWplmybUKLu
-         1z5dBL14EO1X40HekqooJ2ztOQr3R1LCK9ARJR5Re+Hd7tmuv2WBDhAxGWhKvQS1M8E7
-         HJjE/oVgDAuw4uqFQbC4TYpMopJJGx4Tv7ByRV4gKn26lZJDMsU+JS6VL8OYnokp4rW7
-         L5Ng==
+        bh=ROcGcn87eR0KXtQ1Ip4sx/vhEMiAFqBw6IjmN7wdci8=;
+        b=pQBff0aXHEfqN4Lxk8yqM+xh+dOO1AVzEy5SidG3HgsoR8D8yVZxM7EEw7YW+wbZko
+         2axJRPLIO/c8jhQt+QU6Zu4nuhdFYIq7gAmxAlDY2ag0/916EPUsJYEYKFXlY5ajKQ9E
+         8XeckAkm5y0rkswrFhf6ylXyV5k7Gm3IVNjOBmsVhIDUEK9n8PNcc0mqZOA5QZdN9lQ9
+         3umMoueo9J6gElY9eQRMBeKQNt+vETS8ywqbdVMZswGqyHcNjFZJbr8ljtHrM3VQ7ARP
+         vjJ3VlXC2Ep6ciQ4K+QFjnlpTAEkQrFs8dF2LANDVVRgbi0xBP9g4yVp5BdyX0oqh9p/
+         ZzRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gcqNz1RB71kb0BDSAwTXf2+CqK2J47RfVbz1ImZI2Qs=;
-        b=lluJDjHuAyN+YzGSN3XfZKRgffymtqOW3pv9oZsRshEiAygX7GaDMy0IuxhY1fDOCa
-         FiCGn/b5cs20f7i+W6FosKoONPcqrUkdasUuic5Yz3cdOFOwgO+3kih7lZunewNjSagO
-         JshD11kH6G4ERSGq6UzvESu9KWH7y/qJSK/JWzRxzzox4AuNcfPoCGVFBLh/k8I6KI+l
-         Xfl4NRz8FR0BJzXw9sNth08N0sNyPEs9Q4/mWHV85Vo4/p1wkjZ2lVXgOuCljaBcUupq
-         2JODn8FcocQWSOaUX9zUGSy88k+wTU7CoXEWc4ZTMEKZf6bNvFl9biphYA5Dni83VCqo
-         ScYA==
-X-Gm-Message-State: AJIora+D9IlsqcilWcfIJYQMZ8k6OvXdp9Qc6HEKyhaWd29bQW+OQ8wu
-        NC6bgTsQGYNfHeuJu+rIsI4=
-X-Google-Smtp-Source: AGRyM1tO6wzoXtEiuuCJN43wKpWiUjV0r+FciLCFRGUYUiojy3aUJLX8fFxD0pip98jLaXhz9nmjsg==
-X-Received: by 2002:a05:6000:3c5:b0:21d:9f8f:32eb with SMTP id b5-20020a05600003c500b0021d9f8f32ebmr23803321wrg.49.1658193310723;
-        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
+        bh=ROcGcn87eR0KXtQ1Ip4sx/vhEMiAFqBw6IjmN7wdci8=;
+        b=G9R7cNhwh0deTrpb76EC2Y9RalybJ6EazNoASvHNhdA9W1fwKex9YgflMz4bkPQKxv
+         oC6QzRKstD/tmVyKB9LPL/alHMBITDgl6nyZtgDuNaRDQJfvHrIQVCpc38y1Qzy+w5m3
+         NSGeufz/NrvE/u6w8CCEWOO4DVG4du+BfU6CNOHktfOl1Xgf3K5BW5Ru0hhyD6F4HZPd
+         4OZtJOu0Nh8uLSUMESMF98XwsdmecTD+htMsUIIdJ/tVObad7EkrckUaVG1qzRS6sR2+
+         8EOjmAz55Ei1glogzoC5fwQQ5iPPqoMaVlIvt7rDHzIoc7Whf2l8kvkmNYLFrIXmBZH+
+         B0ug==
+X-Gm-Message-State: AJIora8NTwzc552bcWwiY/uAhCQA+dkTvgsp7924yoF4G/m/WiCGE4Ml
+        +kTr8kfkkvFZOEaHQghqzUg=
+X-Google-Smtp-Source: AGRyM1siKQJq2+Nc5Nhs04l9TsmYvS1E2kJ7meWqKsnFeLJ3uIrCo+Lf8Je5qmZqpMO2K+djPl293w==
+X-Received: by 2002:adf:d1e2:0:b0:21d:d40b:d816 with SMTP id g2-20020adfd1e2000000b0021dd40bd816mr14562951wrd.682.1658193311834;
+        Mon, 18 Jul 2022 18:15:11 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.09
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:15:10 -0700 (PDT)
+        Mon, 18 Jul 2022 18:15:11 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,9 +60,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v2 03/15] net: dsa: qca8k: move qca8k read/write/rmw and reg table to common code
-Date:   Tue, 19 Jul 2022 02:57:13 +0200
-Message-Id: <20220719005726.8739-4-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 03/15] net: dsa: qca8k: move qca8kread/write/rmw and reg table to common code
+Date:   Tue, 19 Jul 2022 02:57:14 +0200
+Message-Id: <20220719005726.8739-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719005726.8739-1-ansuelsmth@gmail.com>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
@@ -78,9 +78,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same reg table and read/write/rmw function are used by drivers
-based on qca8k family switch.
-Move them to common code to make it accessible also by other drivers.
+The same reg table and function are used by drivers based on qca8k family
+switch. Move them to common code to make it accessible also by other
+drivers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
