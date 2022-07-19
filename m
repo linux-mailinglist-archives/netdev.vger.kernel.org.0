@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 209A757A0C4
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91C2B57A0D0
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238903AbiGSOJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        id S239063AbiGSOLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239017AbiGSOJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:09:13 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095AC54648;
-        Tue, 19 Jul 2022 06:26:19 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id tk8so15802141ejc.7;
-        Tue, 19 Jul 2022 06:26:18 -0700 (PDT)
+        with ESMTP id S238833AbiGSOK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:10:27 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF7AA19C;
+        Tue, 19 Jul 2022 06:29:35 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id v12so19586103edc.10;
+        Tue, 19 Jul 2022 06:29:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=4IggUsttmS8IRj/MLnGlpCkdusK1nVkc3vXajVwbtZc=;
-        b=EcI2q2oWrzWeNnUKZw1gOe6LKladc48VXtX/lO8prfBUGiOdjbmZv8n9An6kodJHzN
-         hRpBc6puDfX8vsU2MipHqHgkKdmsfBwAZuOSjj9uAbGt1YpZmk5douqlpB3RwKLKJhq5
-         ByZ68YOaZbqxQtqlLBBO7Ze0LWGZAFtYSG6pPokkZbDfTgc1LkOV/pYuCrco3V9JvlNf
-         UdvXOMNdBaQk+UOLw551H5ZpUgrOBoFyyK5NT7sTr9HWB9Aci6LR99B4Br9MUfCISxwh
-         GKjUEv40LrbMzauJdRHkBl1ko9NlXhYg+P6eyaKV2q8iaKGLbMWMRlQakm73zOm/81Pm
-         ugVQ==
+        bh=7WHAfOkhC9F+z/OW67LryPBcqkUfwOKddTQPn9vK3kE=;
+        b=bZpu4dW/HUvkf0L8vIVI7WkLRas6LDpQyyvRSBelZioFpjCA/ApzeoYg+UwcC6m2tk
+         V9c3v+SIvzJHtmcKPZsS+gZq4IWKh5vqfPSVf94Pda1yUB6iz4o7BIjN9LZQD0qj8V17
+         D+1Py/tWRL9t4nKofJAz9pPcDkCXJu+V/EfYoPBYMqyjzGdYno6x4ikhAt/EvhWIHgkv
+         xOLZ/7ZXz8RBgKfFMqy1uBv16c+9kMkZhAgnAbmuQowRdrOS/Dwt4h1KUxQq9ihwGLK9
+         Dk6fs3zqAL9+uP9Vvksjb+bvAdZqQKzv6iev6uaFHGK+e96SV141COVGMeoLynjJfrKw
+         Jp6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=4IggUsttmS8IRj/MLnGlpCkdusK1nVkc3vXajVwbtZc=;
-        b=pVDa8WbDjZWIznbms14/XnVJAC1fYKDTCFBqc36IUNY5kS23bEONNv69pOALPuOg7I
-         6ArrgBr0ypKkOHRu/CD+yYq7Xu+QkeBB6rpTHrH8GppfCRB7WPmPQi3mepzTjQ72iMpR
-         B0uaLpVdAFWoFwi2k8e0BddaUtDEVRkGhsFpl/Eq1PszPTEig6MKg2IXxTE3fYoGLPLw
-         7Ex0lxZyMtnf2ZMFhL0Do66vw15ma1zbW+Lfr2feO//L0+fWFgin6L1sfMIpA5Z758nb
-         Oq3Uqn9g8f7SjUuW1kGUHTr1pGdUBBoztdVrNBuN9GwS648XhZP/0y2k0uY+m63BdE74
-         j5pQ==
-X-Gm-Message-State: AJIora9mpKORSZksK6STV4FgNRx3L/dBYKD00ZqUZYPrdaLl327fw54D
-        ZB16Z9od6tx86E9/VZZBog0=
-X-Google-Smtp-Source: AGRyM1vAAcrSN2UOChDzYoPNcAk4Rlu1hChwYLltw27SJoH7j4RvuG6PIaWyF3CCrfey5nvr+teI6Q==
-X-Received: by 2002:a17:907:6e02:b0:72b:9f16:1bc5 with SMTP id sd2-20020a1709076e0200b0072b9f161bc5mr30632105ejc.676.1658237177644;
-        Tue, 19 Jul 2022 06:26:17 -0700 (PDT)
+        bh=7WHAfOkhC9F+z/OW67LryPBcqkUfwOKddTQPn9vK3kE=;
+        b=g2a5VTLIilueWN/ZWGhfKmbGIrd9IIU832m7XIeEMIZojf3ycedu2FdoAY1icTUPsS
+         abZMgPzm0I67A69q66WrfovpMHTBITEcFrGsYVLUrhszED2hVZcWf8qaUqdPrePBFDsq
+         wNDo7axUtsdVuQCVTrWFLKv+LQDPnbKqJDuJ+vPw2kRj352hy6+rbLqnbUxyCtFr/nF5
+         TDOx6QADVSpexxv85mWGxMmsP2wQ7J8lrL15zZv/RbfhTCiBTA+XO+Qpc6I6gYCdtzzn
+         rkr/RVg8SMn3lgrhm+YpPbPoWUkbXL1ynEoao9Q0V/cEdDldJ/u9GHI2vNXWdb879ReY
+         Sk4w==
+X-Gm-Message-State: AJIora/NCr0wZ2wMq3JGGwBfctuODwu6QUAN+oqUqoiTMSSKbQ7TQeJ+
+        Hq5b1QdBssC7QCRXkeEfm9w=
+X-Google-Smtp-Source: AGRyM1toR1MOX85UnnhHil3dzsAdsJ0gH7b7cs2+TwebFqyUxWjtSYHTfvnuCev3a77yLoGEJl63RA==
+X-Received: by 2002:a05:6402:ea7:b0:43a:ecea:76e with SMTP id h39-20020a0564020ea700b0043aecea076emr44761193eda.77.1658237374195;
+        Tue, 19 Jul 2022 06:29:34 -0700 (PDT)
 Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id la15-20020a170907780f00b0072aeda86ac3sm6841667ejc.149.2022.07.19.06.26.16
+        by smtp.gmail.com with ESMTPSA id w6-20020a50fa86000000b0043ba0cf5dbasm729892edr.2.2022.07.19.06.29.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:26:17 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:26:14 +0300
+        Tue, 19 Jul 2022 06:29:33 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:29:31 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -60,18 +60,18 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v2 13/15] net: dsa: qca8k: move port LAG
- functions to common code
-Message-ID: <20220719132614.4mb3vzix4qnaehiz@skbuf>
+Subject: Re: [net-next PATCH v2 15/15] net: dsa: qca8k: drop unnecessary
+ exposed function and make them static
+Message-ID: <20220719132931.p3amcmjsjzefmukq@skbuf>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
  <20220719005726.8739-1-ansuelsmth@gmail.com>
- <20220719005726.8739-15-ansuelsmth@gmail.com>
- <20220719005726.8739-15-ansuelsmth@gmail.com>
+ <20220719005726.8739-17-ansuelsmth@gmail.com>
+ <20220719005726.8739-17-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719005726.8739-15-ansuelsmth@gmail.com>
- <20220719005726.8739-15-ansuelsmth@gmail.com>
+In-Reply-To: <20220719005726.8739-17-ansuelsmth@gmail.com>
+ <20220719005726.8739-17-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -82,12 +82,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 02:57:24AM +0200, Christian Marangi wrote:
-> The same port LAG functions are used by drivers based on qca8k family
-> switch. Move them to common code to make them accessible also by other
-> drivers.
+On Tue, Jul 19, 2022 at 02:57:26AM +0200, Christian Marangi wrote:
+> Some function were exposed to permit migration to common code. Drop them
+> and make them static now that the user are in the same common code.
 > 
 > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Hmm, ideally the last patch that removes a certain function from being
+called from qca8k-8xxx.c would also delete its prototype and make it
+static in qca8k-common.c. Would that be hard to change?
