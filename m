@@ -2,99 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4F457A1EB
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C5557A208
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:42:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237105AbiGSOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        id S239519AbiGSOma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239406AbiGSOkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:40:04 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A6C54AEA
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:03 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id y2so11927826ior.12
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:36:03 -0700 (PDT)
+        with ESMTP id S239532AbiGSOmR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:42:17 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C77184
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:39:22 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id e16so13708532pfm.11
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:39:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wk2czZHfKCNnzO8KQpU2wlKEqgQnnAKT3z+bj9HU5pA=;
-        b=NcQSvw7Gb7qySkIMjDLseOccJuRspSwEBfpM8Wp2nKjABwffQqHD7FWib+EWERoRv3
-         Lcx4qq3k5nXxBqjeiIfEFNQsVd1k4Db1Q0nl8LkiGZHEb7L+AFAQTP4ruD2wMYWXg+lT
-         KvG48Eeu1l/QQY2ubIns1KycpBaH72PmaViZxfK7YH4QffoYuOrZP8M8e+alTli04FnT
-         8lpmNgWGihFwumW4pgATYsvW9thPOG8MkDiyuRWjcfeGJ6zUQy5s7kKKhoNooZYSgqu1
-         WnX+/f/dbNWTHDk2rGOkEYgbqDN/5leGEtE2BapEBETLY7C4gZG7EvXqmwZRaTM7l3lV
-         tylQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CcUdcoTXJ3qu+Hm+Ki6doP9e2OuC2e6g8uTH1eXsFCQ=;
+        b=G7oi6hAfh1G7aw8XHS/wUDkZu/L9+r4y6l8gzEy3NSzs+QRCip7TD+GzHbt2XMVxd6
+         cq+JTfpiKV0QCehKDqslEYJSPBCgFCLvdtGU3b4vz4capDAbzCGoqly4fWCLJ2wmQX5y
+         6rHVrpwlKmr2YhJUA0bUfqY4TptwHsIe4BmfQPNmymhlrgG70w36T4AOdBigd8xdH0I2
+         ulf9PJFHODlelIABYT/vbs+hedgcqfR/vvEI+Tnjmo5gxMXzavboPzHzfijfKDA+HooQ
+         LNJKdWhvU8JRvfahZLsuqxPUZ2ft3qktltKiq2I3qVNG/Xbj0eyfhIJ59prseiu+Rd0/
+         3zKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wk2czZHfKCNnzO8KQpU2wlKEqgQnnAKT3z+bj9HU5pA=;
-        b=c/muXB6IkJ0msMqUI1wEEOLjItSyw0vhg0iYMYfQBqrehf7381z8te5tFE+j6rtENj
-         aZ2yvYoJ11ikd6xgpovjf5H6nXStblHdLPFi1abCJtwQr5CI2owFdUKB/2npQzdQakOg
-         geYQdWQ0ibBaaKxKGV25Z4Gk0+oL854qpcP7QRPwMhx7MhlG6Q/n3JvB55OWXsoVIIig
-         HQlLYn7w1vpNpeLXSc4f01b2FyFJrGE2QmO+S9YCJQuwH5HOnHV4OU9mRVroYwVsQ9ez
-         Xeve9zbEI+vYI5qS52hsgJhdBIysx1BgnpO8kxaxMVzdxzxUEmXRQSmLVz5ORa+JAWK6
-         FnWA==
-X-Gm-Message-State: AJIora8noj5odLXFccaYt/4CSZ0aZO5Axmarm1ledDPfTr7eq4HBgt9m
-        asGd+S9MBa1x/DqfDbE9+ktvoA==
-X-Google-Smtp-Source: AGRyM1umkGAm0Fy8Nvn7mJsnFAGVW42OOmvuy4PoGRqz0pD7C9alR/0i4ymidJaA2pOYCgvnVhpWWA==
-X-Received: by 2002:a05:6638:3043:b0:335:ce04:2053 with SMTP id u3-20020a056638304300b00335ce042053mr17986644jak.294.1658241362460;
-        Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.36.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CcUdcoTXJ3qu+Hm+Ki6doP9e2OuC2e6g8uTH1eXsFCQ=;
+        b=Pkq83eYFXgLVHw8fWRaMVMXiUDywATcwhGZeGluUtMX56IZ3R6LPa3GIonnU2XqdFk
+         MNvmBCW8z4qIsdneD0l0ihTueQK3ik4pNdCfvpSEuBexqyPTxwv7UBpV6V2RQvNsG3RG
+         ijYW/guzdCcpiShjKLbpkh/Q/r5S7CGjqAOdiL2NpIVOhrP+VcJebp7GoujxAQH403eo
+         TdNXU6oGyPAOXu5NXUfjLXu5YxJ/bn66BPxfEALwtc/JfAlc0u3i2a1huWruK03Nwo0m
+         k1QU8xJoS3Y6VkUK4wabkPwPVHtHBmW64feZcOvtLcY3KaxF25MrkGlbp4zYxvySU087
+         d7Tw==
+X-Gm-Message-State: AJIora/VA/ROPzbqiz4BggZF/nKlMrp/zmeE5HTbdWnHBD5DQ4caab/7
+        wt2rXie352eiXVBCmjQGD9k=
+X-Google-Smtp-Source: AGRyM1t9423GQOMCQkLOrVnd97BNzzJyZ2TkfiooFcNwJdQgOrcfDoJkO9Mni0VdJx6L2xGo3jDZrA==
+X-Received: by 2002:a63:2254:0:b0:40d:d291:7710 with SMTP id t20-20020a632254000000b0040dd2917710mr28742975pgm.269.1658241562006;
+        Tue, 19 Jul 2022 07:39:22 -0700 (PDT)
+Received: from localhost.localdomain ([104.28.240.137])
+        by smtp.gmail.com with ESMTPSA id q1-20020a170902dac100b0016c46ff9741sm11885496plx.67.2022.07.19.07.39.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:36:02 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: fix an outdated comment
-Date:   Tue, 19 Jul 2022 09:35:53 -0500
-Message-Id: <20220719143553.280908-6-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220719143553.280908-1-elder@linaro.org>
-References: <20220719143553.280908-1-elder@linaro.org>
+        Tue, 19 Jul 2022 07:39:21 -0700 (PDT)
+From:   Qingfang DENG <dqfext@gmail.com>
+To:     Russell King <linux@armlinux.org.uk>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org
+Subject: Handling standalone PCS IRQ
+Date:   Tue, 19 Jul 2022 22:39:12 +0800
+Message-Id: <20220719143912.2727014-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 8797972afff3d ("net: ipa: remove command info pool"),
-we don't allocate "command info" entries for command channel
-transactions.  Fix a comment that seems to suggest we still do.
-(Even before that commit, the comment was out of place.)
+Hi all,
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi_trans.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I was working with an SoC that has a built-in DWC XPCS with IRQ support.
+However the current driver still uses polling.
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index b298ca7968907..76c440cee2e60 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -362,7 +362,7 @@ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
- 	trans->rsvd_count = tre_count;
- 	init_completion(&trans->completion);
+I may modify xpcs_create() to try getting an IRQ number from DT, and fall back
+to polling if it fails (see the code below). But I don't know how to notify
+phylink in the IRQ handler.
+
+There is a phylink_mac_change() function to notify phylink, but it is supposed
+to be used in a MAC driver, and it requires a (struct phylink *), not a
+(struct phylink_pcs *). Do we need a similar one for PCS?
+
+Thanks.
+
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -1272,6 +1272,13 @@ static const struct phylink_pcs_ops xpcs_phylink_ops = {
+ 	.pcs_link_up = xpcs_link_up,
+ };
  
--	/* Allocate the scatterlist and (if requested) info entries. */
-+	/* Allocate the scatterlist */
- 	trans->sgl = gsi_trans_pool_alloc(&trans_info->sg_pool, tre_count);
- 	sg_init_marker(trans->sgl, tre_count);
++static irqreturn_t xpcs_irq(int irq, void *dev_id) {
++	struct dw_xpcs *xpcs = dev_id;
++
++	/* XXX: notify phylink */
++	return IRQ_HANDLED;
++}
++
+ struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+ 			    phy_interface_t interface)
+ {
+@@ -1303,7 +1310,21 @@ struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+ 		}
  
--- 
-2.34.1
+ 		xpcs->pcs.ops = &xpcs_phylink_ops;
+-		xpcs->pcs.poll = true;
++
++		ret = of_irq_get(mdiodev->dev.of_node, 0);
++		if (ret == -EPROBE_DEFER)
++			goto out;
++
++		if (ret > 0) {
++			ret = devm_request_threaded_irq(&mdiodev->dev, ret,
++							NULL, xpcs_irq,
++							IRQF_ONESHOT,
++							KBUILD_MODNAME, xpcs);
++			if (ret < 0)
++				goto out;
++		} else {
++			xpcs->pcs.poll = true;
++		}
+ 
+ 		ret = xpcs_soft_reset(xpcs, compat);
+ 		if (ret)
 
