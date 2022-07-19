@@ -2,161 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AABF57A3E2
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C60957A3EC
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 18:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239437AbiGSQBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 12:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
+        id S237994AbiGSQFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 12:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238478AbiGSQBX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:01:23 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCEA4B4B4;
-        Tue, 19 Jul 2022 09:01:21 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id y8so20250674eda.3;
-        Tue, 19 Jul 2022 09:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R5NV8lh/QLSBV5SugqSDICrSggFKXremEtlOyKUbbQU=;
-        b=Fs1ZG2nAZzCgWO5nKCe1YjXiuNItgQzGKlnH0D9WO0+nhW67uyq5/Tn60RJu7HEych
-         HemK1Xq8ceBRUn+Oez7ARmmYMqkMEGFs0wQFSTNqZ4Fp1W64NbM6IhKC/1KInHGvXYpA
-         FYjAZIzBKd7w736WfUOOoJ8yLy/9qSfsE38hdhOipYSMEIrliOj/I5l1Gr8v/dDz1Xzz
-         xhEk9Q2iqQJSUVxmDiedQ+cXjMZoUO24H6y1Dap899dJ4L/Sh46Y83umL7JYd6cDgTxT
-         VBBuH5nV3hIf1iX8KcC5jFwfRsfg7gY+Y3ayprCegXfyWuz1BKEgeGBhT6mxZUvvqUbc
-         PC7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R5NV8lh/QLSBV5SugqSDICrSggFKXremEtlOyKUbbQU=;
-        b=L85+SQ13mjzWAR+8y4owf6joO0qkWPT76KuAheXcaR2udO2pf+54idVpkEh1KO+ywz
-         gIBXw2X6tFlbpMtHKxRe7SJXdy5qABAWyBIgOf3j+nUc8V4MFtWSeCdaEf/Bz+vzBHj+
-         8EwXHfJSOfhZhQ0lgF6g4SXnvCBOJkjIlr6ncgd9KMRd2mXxr+Z7Jev0ouKyHlHbmZS1
-         53J/94VVOMod+sjKwa2NjDmRP/IRjvtJ3TJV1tk915ygpZtKn76dTEy6wkW2bkD6T3AG
-         hey/givANpPYlWrLpypq3vjqs7bXX4+wBIot20apppySVdMdaZYhe7XvvsIDgyMatRB6
-         Rr/Q==
-X-Gm-Message-State: AJIora8ywhb3pBea0rKgqCIOIo2cn6Fs5Lkxsc3XUNl3TeB/TVRwJqEG
-        RYpGXCNtN6TmvvLdHtNWK2A=
-X-Google-Smtp-Source: AGRyM1tYQiiEUmjS3ra7wGFU09/02p9zdPam6rfl1aAJ+JXhmwTUJNMRYCS75qzDwDCSaAeO/1aliA==
-X-Received: by 2002:a05:6402:149:b0:431:7dde:9b59 with SMTP id s9-20020a056402014900b004317dde9b59mr44945835edu.339.1658246480420;
-        Tue, 19 Jul 2022 09:01:20 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id b6-20020a170906038600b00711edab7622sm6811992eja.40.2022.07.19.09.01.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 09:01:19 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 19:01:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 4/9] net: pcs: lynx: Convert to an mdio
- driver
-Message-ID: <20220719160117.7pftbeytuqkjagsm@skbuf>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-5-sean.anderson@seco.com>
+        with ESMTP id S234133AbiGSQFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 12:05:45 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC802494F;
+        Tue, 19 Jul 2022 09:05:43 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26JErlGt016697;
+        Tue, 19 Jul 2022 09:05:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=BdTlGYbzJIPMmpTiyFJ34X0S9J3G6PTD486dzSp8W18=;
+ b=j6LprSNFqi1wf5SaU7Hd2c6F6jZNwvTqXyZ1WFgITCCqzXJ6e6wArC5Vs2G7Dg898tv8
+ TPlyB5lzH3HYrH6LjIZWyqWh+NtktP8PTtAJfQqHlXMZ66ePqBEmE+5PaAtQvU7nQ6j5
+ DYiuJb08jhIcLXSvYQXdrRjMAGYO/nmOy2c= 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hdxsarjbb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Jul 2022 09:05:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L/3N9VzxK4C/r9Mvk35zluLrO1EMnN05vId79UINKdnp0Iov7KuIsfsAa0rQ4IAPhvsk9I5GRYwGCIPSpytJfB2FqeC4Oj6GhL4lOqJvz82Xo+0oGwCP9T5CYpZ6Ed5b8hs9bQqJcWtd7E0NomSMplq192cfQOHD7ZeBjZok2S3euOU8NaXN2MyzUt/N69aliAgbhM5ImZPUPYgHIo1FYeNfMyymdgT8a/D9VmC+X3PlBtGlkqEisLhWse02JFmGzHz1rcqgIdZszFx4e3TgQH/ZJXNJzMlw74ubwMwieUv0pVUpzTFVC1On4r8Q3Y98kzKNZfm1DTO5EqJX06XO8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BdTlGYbzJIPMmpTiyFJ34X0S9J3G6PTD486dzSp8W18=;
+ b=eFS57SLdUKf2FswRrmAYEP7QFuSYMKyVusuvI/CQLY+Q7jEXpBFMH1GpEjOnCKNcO+kjkBjfFVzPQlATn66K5fvFRHgJ4lj7Nfuhehx9cOi94jhwoUxM1WSEQhmFYnuMuTQee7TFPSpTDJNh+mLdRj+SYNv4Tdzh3td0l4iGxG+tfVBIwYR+tG+ppZAzos3AqQr2+7Bq3A7PLQhnCXPxWAV4nZKwRIH3qdXJggOMOtOUOQEltu+T+ArpoiU32zeyZVu05nf138oxYuyChy5p1G6VT8d4p6ftHvkm+t9ag3Delt2pW5WjPaUxlYacEMLXBzYk13AiH8UZncBULDgpiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by DM6PR15MB3097.namprd15.prod.outlook.com (2603:10b6:5:13d::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
+ 2022 16:05:11 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 16:05:11 +0000
+Message-ID: <d244394a-bea9-bced-fc9e-ffbc096631ed@fb.com>
+Date:   Tue, 19 Jul 2022 09:05:07 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH bpf-next v6 05/23] bpf/verifier: allow kfunc to return an
+ allocated mem
+Content-Language: en-US
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-6-benjamin.tissoires@redhat.com>
+ <7fc49373-55df-c7fd-4a73-c2cf8a62748d@fb.com>
+ <CAO-hwJKwX2LW8wuFzQbWm-ttwqocNBc-evgpn2An-D-92osw0Q@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+In-Reply-To: <CAO-hwJKwX2LW8wuFzQbWm-ttwqocNBc-evgpn2An-D-92osw0Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0022.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::35) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711160519.741990-5-sean.anderson@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a9445ba1-9eaf-4410-5aed-08da69a0758f
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3097:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JRo2wa1CswZ1edeZvjb/WmjPCXkrjdXQkWaC4+X8O8uLY6iKPVeOxfXB+0n3y0D9lxlUPVNQwVRJxOcmF6LyT4KS4ztj4zZ0ELK02JVNwXeGPe4/ZUkI099AStMc9zjNNoyBzs4ROAN2Y5w8pxVs21My7PFXck0gPfBX8x5xJqc2CcBVtyVX2bjuk7YaCux1yRWSCZA87xTotUzHC4eAOUBRWVEFpbE8I/VwHJXjw//9qBg+fwtL46q8EtosWt7oEAXL6aBF8bA+tujvN5s0ws97w278e6KQkEU+nPaioiGvM3c+aTRhWChGGB1HIdmnOTCsgv3yEzAkoCAiDkaPk5IGVPAP0XGRjJQfUYFTKOI5mrPAYIl9X1fQzV8gIJ9gKxUgYzmTjSzi8Mt+jT9Jyy6dqoWmG6YhbvK1R9qvTTB2D5vCDK+BtaahBlXdXZpRzOvviJE7IU5xNzpRJsfAHImupT0A4cF5q86n2hzug9D2ZuQpbYT5KSiLEsH/LcNhRBacGCRVdZwbOWxSTPJZCxrnzLLo6tTA0trmPMGY0L8gCkrl9JmxlkCnu5WJwwm/hQ5C6qbX+noGx7y2WTdu0fkiYEW1IKjwcAuIK11wOPESjmP81M3bD2oDAhbzehNm1eiHLMnkOuiQw2v0ysWjgSDVmcilxzKcvKHIm8qxYB8DgMYH4Kgy6Q25riC2xcNEcr/i23kvSy+j/XL1ZUSaRJB0ruru2GArWUFcH6kXfUCSx2uqkOwC5Qa0a4Jr64RLEK5ZuMNUuPeL21KtFZo0D0a3KvWHaZES/5EB0yFgoczgquo7JPhWn92W/+Kc0aAXGvFqYvKztX1qr9n2nLPtJw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(136003)(346002)(396003)(31686004)(186003)(6916009)(8676002)(54906003)(316002)(66556008)(66476007)(38100700002)(36756003)(66946007)(31696002)(83380400001)(8936002)(86362001)(2616005)(5660300002)(6486002)(53546011)(6506007)(2906002)(6666004)(4326008)(6512007)(7416002)(478600001)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RGYvcDJlSkovM3VIS0MwQmEyM0dHM0wxWnUwekZIQVh4M3lvcittRDRQRThF?=
+ =?utf-8?B?ZmJBeG1iWWJPWkN2a0JJdE03Umg2cFBhWEhocEp1Zy81TjhsTFdrN1VCQ0xn?=
+ =?utf-8?B?VkhRTTZXTVltQmJ4YmdiVHZrZGhmZ2w1RG1DNlVlMnRnbjZKdU9LM1N2NG8w?=
+ =?utf-8?B?MVBDQU9jOTBUSDNqaW1udXNLZXhpWGNyZXNRYVVsakpRaWRYdmhnMW1MTGo5?=
+ =?utf-8?B?TWdxZTArcXpzVFBZT1F4d2RiblYzbTAwY24wd3JtQmpBdG5YWGdhNU9ZL0xh?=
+ =?utf-8?B?U0pBZ25HYTBsQXNneDVUdGE1aWMwUGtyMjNHWmZpWW1NL0owdktVQWlmUmhS?=
+ =?utf-8?B?S0x0MUtDanV5WDFWdnNqM3A4emxzd3kzYjhyUE13OEh1WERPeDdNemlaTWht?=
+ =?utf-8?B?UnArbXdiUzZhOWtsMVRSMm85RGYvbnRMYkI1MjN3dU9pc3p1Uzh4NEJ4ayt3?=
+ =?utf-8?B?WUVLTlhReHFvdk1ZNG1YSEZIK1Yrd3NJaHIxOFBLTkZKTTZrbXhjZmJWVWxH?=
+ =?utf-8?B?SXFjdzhPK2Y5ZG9HOXRwRjJIVEJzVlI3SlZteU4wMFprTmVIRUJRKzRIYndP?=
+ =?utf-8?B?T20yZDFpSWRmMkk2TGJLTXdCRGRXZkFjZW00MUNjUGJOQ2cyUXlnZGkzemdW?=
+ =?utf-8?B?bDZKWHpsQXdiMDZEcXN6TlJGV0xpNkNDODd5OUJTc2E4T2FkT3pSVktaVHlJ?=
+ =?utf-8?B?K3NzeHhyNnoxTWN1TUdHSGFXUHN0QVkxNXlQbGs0bWNjekZGVnNhdzRKYytl?=
+ =?utf-8?B?Y3RiM1VsaXVScjhQSTBFSEdOamZwNUs1ZlNIWU9wYkVocUtPemdrVnhVd2Iz?=
+ =?utf-8?B?K21ZRmhCdDhoUjlMWk1RWlVubStVeWhFMGhQZ0s5ZVk5L3JyRC93a2JIMkdH?=
+ =?utf-8?B?YWE1NDdEZHFqL3VIVklPWm9RVHd1NXYwcm5rSHlDcjJPRFlGMms2QXl6U0RP?=
+ =?utf-8?B?aEdHdi9KRXo2U0VSNFpTYnVnYytaMndUaWpxblVZMjRUdVMzYjdmZkFITU5W?=
+ =?utf-8?B?eXRFVEN6ajZ6NmR2V2NRMkJxV0dMVEpndHlwbll3RGJXZ1ZMR01FS0NERFE4?=
+ =?utf-8?B?SGZiWGdOckVta2dReXNpTEprODYrY3NlcndJR3FFa0N2T3lTNWhXdEdWdWxn?=
+ =?utf-8?B?SHpINUFCTkpUZStJd2pjMmZ2YkJ3alhDQTZwTVI2eTNjdk1zNDN2UWZtK1Ix?=
+ =?utf-8?B?WG1oeEZKWThUTnR3a21pUjhqclBqcEcwcUs5cGZySUJvRHpSSWVUR2l4U1BZ?=
+ =?utf-8?B?d1R5a3ROMnZScmRadEd1dG04WTcrblB0Yk9kNWJRNmZPSlVNNmtmdTYyN2R2?=
+ =?utf-8?B?M0VwTkw2QS9TVFJuWkJ1ZW1LUnR1Z1RQYWtNMGtlR09jemc5QVRNR1NHOG9W?=
+ =?utf-8?B?ZnpmVWJYVTJoZmVtMGhKUmUzMVk4UmdYNnFteXBRdm5WYUNuRkFRMERybUxD?=
+ =?utf-8?B?dXlKL1RETCszMDJCZk1wTlh2emNmbE53aGVOekZrZ2NJazN6bDdDT1VpUDhJ?=
+ =?utf-8?B?R2VCUDZYVDVlZnFlV01heDZNeGIwMnB2U2U2MkFDUkVjRncvYWdpMCtyYkV3?=
+ =?utf-8?B?ZnpYR2NOU09sM3pFTjloRTRacDh3dmxtS0JVSkVlNUZWaDB1aFgwdEhHUWhl?=
+ =?utf-8?B?NFJKZnM5cUZTQVM4ZHBwNnZHUjhxS3ZLQ3NLTkt4bDF2UzVZc2dlWlo0MWtt?=
+ =?utf-8?B?NTBadGxpRHI4K0cveG43Kzl3bW1GUDZQSG1HVTN3blpVUytuTFI5QS8xYkxB?=
+ =?utf-8?B?cFJjY2xUbVh5ejhJaWw2SVlrcVdQaFJlOVdaVVBoYW5TcG5uSTFQV1puUE9W?=
+ =?utf-8?B?b2Rhc1JxclE1aVRNR1RydFNhRnNvbGpLaGZkejF1aGNPZEk0ZEZWK0dYdCtl?=
+ =?utf-8?B?eVFhT0ZQQjVhbWVXRjlvZWxwZmpvMFJkRld5Y1FyNnFEb0hhN1pYZ09iZ1ZG?=
+ =?utf-8?B?b2FSMndDSDM1em44NVdubWhwQnFKKzNCVkZnUWxnemxnTHVvR2RNZFhPcWlP?=
+ =?utf-8?B?TTdWV21ad1VocDRKR1pSMzFCcTFpZlgxM1hCNnNKSklBNGE5em4rbHVNSXE5?=
+ =?utf-8?B?eFMzZjBSM3h3ZDBJUUlPYmhWY0paMW81alk0Z0pIcGZaVTk5N0htYWIrVUNF?=
+ =?utf-8?B?NTdLZTZxS0V5S2k2UjRqUkR2V3FoU1VSaWJhaW9HVDZEZzVkcVpoSndjZ3Rh?=
+ =?utf-8?B?YWc9PQ==?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9445ba1-9eaf-4410-5aed-08da69a0758f
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 16:05:11.5921
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7MyZDxdUXiXrg6r8vpqlNBxekLqsvd3Dbn6URv8e4+FKH6Yk7j7SxvHc/++LcrDp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3097
+X-Proofpoint-GUID: gi9qHIe46GZMPY6R9GNY5oQ_ho-foFVl
+X-Proofpoint-ORIG-GUID: gi9qHIe46GZMPY6R9GNY5oQ_ho-foFVl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-19_04,2022-07-19_01,2022-06-22_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 12:05:14PM -0400, Sean Anderson wrote:
-> This converts the lynx PCS driver to a proper MDIO driver. This allows
-> using a more conventional driver lifecycle (e.g. with a probe and
-> remove). For compatibility with existing device trees lacking a
-> compatible property, we bind the driver in lynx_pcs_create. This is
-> intended only as a transitional method. After compatible properties are
-> added to all existing device trees (and a reasonable amount of time has
-> passed), then lynx_pcs_create can be removed, and users can be converted
-> to pcs_get_fwnode.
+
+
+On 7/18/22 7:36 AM, Benjamin Tissoires wrote:
+> On Sat, Jul 16, 2022 at 6:29 AM Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>>
+>> On 7/12/22 7:58 AM, Benjamin Tissoires wrote:
+>>> When a kfunc is not returning a pointer to a struct but to a plain type,
+>>> we can consider it is a valid allocated memory assuming that:
+>>> - one of the arguments is either called rdonly_buf_size or
+>>>     rdwr_buf_size
+>>> - and this argument is a const from the caller point of view
+>>>
+>>> We can then use this parameter as the size of the allocated memory.
+>>>
+>>> The memory is either read-only or read-write based on the name
+>>> of the size parameter.
+>>
+>> If I understand correctly, this permits a kfunc like
+>>      int *kfunc(..., int rdonly_buf_size);
+>>      ...
+>>      int *p = kfunc(..., 20);
+>> so the 'p' points to a memory buffer with size 20.
 > 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
+> Yes, exactly.
+> 
+>>
+>> This looks like a strange interface although probably there
+>> is a valid reason for this as I didn't participated in
+>> earlier discussions.
+> 
+> Well, the point is I need to be able to access a memory region that
+> was allocated dynamically. For drivers, the incoming data can not
+> usually be bound to a static value, and so we can not have the data
+> statically defined in the matching struct.
+> So this allows defining a kfunc to return any memory properly
+> allocated and owned by the device.
 
-I'm compiling and testing patch by patch now. Here's how things go on
-LS1028A at this stage:
+Okay, thanks for explanation.
 
-[    6.317357] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000110
-[    6.326219] Mem abort info:
-[    6.329027]   ESR = 0x0000000096000004
-[    6.332815]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    6.338182]   SET = 0, FnV = 0
-[    6.341252]   EA = 0, S1PTW = 0
-[    6.344436]   FSC = 0x04: level 0 translation fault
-[    6.349378] Data abort info:
-[    6.352273]   ISV = 0, ISS = 0x00000004
-[    6.356154]   CM = 0, WnR = 0
-[    6.359164] [0000000000000110] user address but active_mm is swapper
-[    6.365629] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-[    6.371221] Modules linked in:
-[    6.374284] CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.19.0-rc6-07010-ga9b9500ffaac-dirty #3317
-[    6.383364] Hardware name: LS1028A RDB Board (DT)
-[    6.388081] Workqueue: events_unbound deferred_probe_work_func
-[    6.393939] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    6.400926] pc : __driver_probe_device+0x1c/0x150
-[    6.405646] lr : device_driver_attach+0x58/0xc0
-[    6.410190] sp : ffff8000085639c0
-[    6.413510] x29: ffff8000085639c0 x28: ffffb1a2587dae50 x27: ffff2b6943304bc0
-[    6.420676] x26: ffff2b694330c000 x25: ffff2b69433010a0 x24: ffff2b69bf719898
-[    6.427840] x23: ffff2b6941074000 x22: ffff2b6943304000 x21: ffff2b6943301880
-[    6.435004] x20: ffff2b6943301800 x19: ffffb1a259faf3d0 x18: ffffffffffffffff
-[    6.442168] x17: 000000002b64f81b x16: 000000006d50a0b2 x15: ffff2b6943307196
-[    6.449332] x14: 0000000000000002 x13: ffff2b6943307194 x12: 0000000000000003
-[    6.456497] x11: ffff2b69433018f0 x10: 0000000000000003 x9 : ffffb1a2578b1e08
-[    6.463662] x8 : ffff2b6940b36200 x7 : ffffb1a25a0da000 x6 : 000000003225858e
-[    6.470826] x5 : 0000000000000000 x4 : ffff79c76227a000 x3 : 0000000000000000
-[    6.477989] x2 : 0000000000000000 x1 : ffff2b6943301800 x0 : ffffb1a259faf3d0
-[    6.485153] Call trace:
-[    6.487601]  __driver_probe_device+0x1c/0x150
-[    6.491971]  device_driver_attach+0x58/0xc0
-[    6.496167]  lynx_pcs_create+0x30/0x7c
-[    6.499927]  enetc_pf_probe+0x984/0xeb0
-[    6.503775]  local_pci_probe+0x4c/0xc0
-[    6.507536]  pci_device_probe+0xb8/0x210
-[    6.511470]  really_probe.part.0+0xa4/0x2b0
-[    6.515665]  __driver_probe_device+0xa0/0x150
-[    6.520033]  driver_probe_device+0xb4/0x150
-[    6.524228]  __device_attach_driver+0xc4/0x130
-[    6.528684]  bus_for_each_drv+0x84/0xe0
-[    6.532529]  __device_attach+0xb0/0x1d0
-[    6.536375]  device_initial_probe+0x20/0x2c
-[    6.540569]  bus_probe_device+0xac/0xb4
-[    6.544414]  deferred_probe_work_func+0x98/0xd4
-[    6.548956]  process_one_work+0x294/0x6d0
-[    6.552979]  worker_thread+0x80/0x460
-[    6.556651]  kthread+0x124/0x130
-[    6.559887]  ret_from_fork+0x10/0x20
-[    6.563475] Code: a9bd7bfd 910003fd a90153f3 f9402422 (39444042)
-
-Disassembly of drivers/base/dd.c shows that dev->p is a NULL pointer,
-and dev->p->dead goes right through it. How did we even get here...
-device_private_init() should be called by device_add().
-
-Curiously enough, mdio_device_create() only calls device_initialize().
-It's mdio_device_register() that calls device_add(). So after this
-patch, we cannot call lynx_pcs_create() without calling
-mdio_device_register().
+> 
+>>
+>>>
+>>> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>>>
+>>> ---
+>>>
+>>> changes in v6:
+>>> - code review from Kartikeya:
+>>>     - remove comment change that had no reasons to be
+>>>     - remove handling of PTR_TO_MEM with kfunc releases
+>>>     - introduce struct bpf_kfunc_arg_meta
+>>>     - do rdonly/rdwr_buf_size check in btf_check_kfunc_arg_match
+>>>     - reverted most of the changes in verifier.c
+>>>     - make sure kfunc acquire is using a struct pointer, not just a plain
+>>>       pointer
+>>>     - also forward ref_obj_id to PTR_TO_MEM in kfunc to not use after free
+>>>       the allocated memory
+>>>
+>>> changes in v5:
+>>> - updated PTR_TO_MEM comment in btf.c to match upstream
+>>> - make it read-only or read-write based on the name of size
+>>>
+>>> new in v4
+>>> ---
+>>>    include/linux/bpf.h   | 10 ++++++-
+>>>    include/linux/btf.h   | 12 ++++++++
+>>>    kernel/bpf/btf.c      | 67 ++++++++++++++++++++++++++++++++++++++++---
+>>>    kernel/bpf/verifier.c | 49 +++++++++++++++++++++++--------
+>>>    4 files changed, 121 insertions(+), 17 deletions(-)
+>>>
+[...]
