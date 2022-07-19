@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74F6D57A100
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415A457A108
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238337AbiGSOPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
+        id S237533AbiGSOQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233997AbiGSOP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:15:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D0C4F18C;
-        Tue, 19 Jul 2022 06:44:32 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id mf4so27280818ejc.3;
-        Tue, 19 Jul 2022 06:44:32 -0700 (PDT)
+        with ESMTP id S237085AbiGSOQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:16:23 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B3EDFCF;
+        Tue, 19 Jul 2022 06:47:13 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id mf4so27295977ejc.3;
+        Tue, 19 Jul 2022 06:47:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=oD0/tmmh2SYshMDeiEQ3PzO3Ao4yC2o+AzCLepDtF1c=;
-        b=lhtxbx+kEExP6P0W4TaTduw1nqNqYlJLfNeA16hBVgXPCLQqK03t8cJKwBFpJvj8Jo
-         3+F8KqRwotdSlBsyOlL0hi+w+1U70gDJbfc57nodec0VIqMY+WCFAOCUqlmJNkkdPK7Z
-         jVAY9ltgqP41WZBS76Zri/oSpsxbpmhjYZ9PSrW5kykE9uA+dFpccGqrn2GRfTibWiCO
-         J3ccIigBV4NEc/n7GRcy/tVeBypIBUNflvkf245Lw43OZOBbQq3esUqqjmCun9rWIn+r
-         oKH/OuQ74XkgiHXgd7d1i5+EWvt40opobU45TptsqmGtYM1m1uQE5lw+sdswiKQoJSsj
-         bkSw==
+        bh=ETPYyloEFdyBzQWObajkaBRkKPp4gQ7kPv9PBYe2erc=;
+        b=YgbtmXtrMSveGqTKsERJ1+XFFwGK5viciTFGd14IPy1eWnpxCtJ0ZizkJJI34RP0E3
+         Wa7l7Sr1HLVkRQ0qCPY1Q3rmvvm1jHbl3Rd0/Z8WrObwCL6XdGHEWHurHlUTAI7jqFHh
+         4P66yW5eRdoKb8iQPxLXqYLFPqPbKO1aveL6CPiw1YPuSdDE32GRPzNJbYnXVbql/Jhw
+         M/Er7ixdFA0anT3X57DKQ4ODT0zVCTDxTa4b9nSQR2L22OSaHVjP9b9igGnGW9pAHE0D
+         /eZ3GErLNjQMXiHqXHCeRdvufrWXB0J2Xx737QQyFvVtDMrBATar3ADeR+UKtQY4qmKf
+         +qRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oD0/tmmh2SYshMDeiEQ3PzO3Ao4yC2o+AzCLepDtF1c=;
-        b=lVgpCsitrs2Ml5BpBRCWcr3oFkZrW1yYvZfOTk6mgWsCNEkVq4UFVDM8RhmG8pQKNz
-         bWJSbumwr+4yMox7EKHqwVOy5uF4F4evguAX72dSbYI5/MS4D2UJwbiGrLAfVSQ+tvzx
-         SQg7dYM/+vYG/t5KCc5IXz2dnjEibpcYRAhaZ0DlNN7LV5CUyNdNUxLR4aLb691Zy/Ac
-         IZZh+ZAN21ukpXIESSpoxt/BH7eXrNtMhD/PmvbuJ8zjlBbmWqoUGhOfW++IbPp5o+dH
-         f8ZD5YkTK/9KGpKurIrUBalX0h6aoSA63n4lhNLOoFEym6TvhKGUqWfcxzPtM24Mw7Kd
-         f0+Q==
-X-Gm-Message-State: AJIora+u0fNjtCz4ZRF/jWEgOQZkkt47Dfd/+H63SLlyM+dmROh9K5EJ
-        9pYbFlBRFpHXeSwd+ceIQg8=
-X-Google-Smtp-Source: AGRyM1sN8frJRiRTwVdvxtbt/bA+p8fdPQuDNrvcBQ6nfdigOUQOxXRPUMytp5elQSWfT+GqDFzUew==
-X-Received: by 2002:a17:907:87b0:b0:72b:9f0d:3f89 with SMTP id qv48-20020a17090787b000b0072b9f0d3f89mr29307197ejc.734.1658238270867;
-        Tue, 19 Jul 2022 06:44:30 -0700 (PDT)
+        bh=ETPYyloEFdyBzQWObajkaBRkKPp4gQ7kPv9PBYe2erc=;
+        b=yDSC3z90PDIhxb7oOgA6ECmex1K+oG4BKS6W4NeS0UzoPANlUSLjo4u3jh8oibnhqF
+         rwKhU9gUimYKM/3t8mjBOlkmKBzsKawi3ZK6ZvirTB423E5zbkLXcTVX7AMigPXXDote
+         iBFvhbXI6BQLoK8HCaaLBkDHyhNP4ce9Z+vmSyHxlwIoCjBgO+TEvihgsHOGSFrI+maJ
+         UWfm2yWK+OP4NixL2pPL7rI5/QBIdXS/cTCzOXLUIfu1sKQzgLd9q/ZV/MJd/mdlD4jn
+         aIBeo2ovSXA4LdR9LcrU+bIc5YmJ6MVCnBQLS4MQPXfx0aXEnLmVcRBD1QB8OkpbOsHc
+         VCKA==
+X-Gm-Message-State: AJIora+2Tc6/gnT80hdEtXLJn9P6QxWuqf/DwHJZLCd3c1hsPOcRW0Pe
+        nxlRTBcdF9LBnQYLTp00RiY=
+X-Google-Smtp-Source: AGRyM1vjayw4zUofmU9mkBXEG0SQV1Eh/t4ctobL0/nokmQOXLRxaBzoH+p1WkK9POQwfSw3SceF7g==
+X-Received: by 2002:a17:907:2887:b0:72b:68ce:2fff with SMTP id em7-20020a170907288700b0072b68ce2fffmr30090257ejc.423.1658238432105;
+        Tue, 19 Jul 2022 06:47:12 -0700 (PDT)
 Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id q14-20020a17090676ce00b00722e50dab2csm6671879ejn.109.2022.07.19.06.44.29
+        by smtp.gmail.com with ESMTPSA id mb17-20020a170906eb1100b006fe9ec4ba9esm6693846ejb.52.2022.07.19.06.47.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 06:44:30 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:44:27 +0300
+        Tue, 19 Jul 2022 06:47:11 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 16:47:09 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -62,17 +62,18 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         netdev@vger.kernel.org
 Subject: Re: [net-next PATCH v2 15/15] net: dsa: qca8k: drop unnecessary
  exposed function and make them static
-Message-ID: <20220719134427.qlqm7xp4yyqs2zip@skbuf>
+Message-ID: <20220719134709.um3rj2ocze65qqej@skbuf>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
  <20220719005726.8739-1-ansuelsmth@gmail.com>
  <20220719005726.8739-17-ansuelsmth@gmail.com>
  <20220719005726.8739-17-ansuelsmth@gmail.com>
  <20220719132931.p3amcmjsjzefmukq@skbuf>
  <62d6b319.1c69fb81.6be76.d6b1@mx.google.com>
+ <20220719134427.qlqm7xp4yyqs2zip@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62d6b319.1c69fb81.6be76.d6b1@mx.google.com>
+In-Reply-To: <20220719134427.qlqm7xp4yyqs2zip@skbuf>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -83,36 +84,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:35:18PM +0200, Christian Marangi wrote:
-> On Tue, Jul 19, 2022 at 04:29:31PM +0300, Vladimir Oltean wrote:
-> > On Tue, Jul 19, 2022 at 02:57:26AM +0200, Christian Marangi wrote:
-> > > Some function were exposed to permit migration to common code. Drop them
-> > > and make them static now that the user are in the same common code.
-> > > 
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > 
-> > Hmm, ideally the last patch that removes a certain function from being
-> > called from qca8k-8xxx.c would also delete its prototype and make it
-> > static in qca8k-common.c. Would that be hard to change?
-> 
-> Can be done, it's really to compile check the changes and fix them.
-> Problem is that the patch number would explode. (ok explode is a big
-> thing but i think that would add 2-3 more patch to this big series...
-> this is why I did the static change as the last patch instead of in the
-> middle of the series)
-> 
-> But yes it's totally doable and not that hard honestly.
+On Tue, Jul 19, 2022 at 04:44:27PM +0300, Vladimir Oltean wrote:
+> My request is that you prune the dangling definitions after each patch
+> that stops using something exported.
 
-Why would it add to the patch count? I don't think you understood what I
-meant.
-
-Take for example qca8k_bulk_read(). You migrated it in patch 4, but
-there was still a user left in qca8k_fdb_read(), which you migrated in
-patch 5. After patch 5 and until the last one, the prototype of
-qca8k_bulk_read() was essentially dangling, but you only removed it in
-the last patch. My request is that you prune the dangling definitions
-after each patch that stops using something exported. That won't
-increase the number of changes, but eliminate the last one.
-Also, it would be great if you could create a dependency graph such that
-you could avoid temporarily exporting some functions that don't need to be.
+Not "after" each patch, but "as part" of each patch.
