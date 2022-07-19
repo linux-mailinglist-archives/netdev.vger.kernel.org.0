@@ -2,130 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4BA357936E
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05408579388
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 08:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233836AbiGSGtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 02:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
+        id S233360AbiGSGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 02:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiGSGtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:49:11 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB7528720
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:07 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id r6so18285565edd.7
-        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7L4Ha1oBjbQvumuTEWh/rgUg6HLMfB7bm1xwqVywznA=;
-        b=GdxsHS9FbAkl/2IGH3UELZg5QOvjq+amGKb4ALYMki5PN7TqyKeTQW0aCEcmnGzO+V
-         wq5FOY7HL+jA3BWrMRnisn3SBNvDdCt6mE5nPgIlsozJxp35kZGnKFu6Dlmj5S8XrsIk
-         USRckNED0D0mWhZUgnloe3C5PE3e5P/vN9dUXKXw3lC+zxhPcn8Vx+G8i4ZVwFxBcHkF
-         u4Kw3f4Kz/R1ubikki320k9ZHRofRIIMjVBD/J1pd+Lv5v+a5n0fXaX5s4wH04SJvg5o
-         8hZFnR5k2NOPlWlKUmQg0hkf0WmHzRlh0g46/toQSZ4uHu65j6vEXB/K7azOceSkhiUA
-         lMYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7L4Ha1oBjbQvumuTEWh/rgUg6HLMfB7bm1xwqVywznA=;
-        b=wkP0mcoVikRzx1NaJI6bTRrtT1ENEzRCUPHAu/SY5vkXS+dabxUFJZUtptXpL2po5U
-         jRyjsSVOE3qnoKISQag3Qo3Y7K5Y8RjDg8fyQ4KJ3W1GqUdbOSqDqAHOw3YHBug9r2vi
-         +Irg+FO58/cOVP0UMHexbW7uUXfJ1WN8AfUYcrTSIl2CfmwH4W4Arotfz3cAaz8g6toE
-         +4iRevFGw/Jv7xndy7NIhQkP6wRa26ksJpOqz9KINBl0PEcqsJkS+rop725cm7aGtEuo
-         f6kkXINClTKYTWaHl6GVChAkJ4r564NmGO9m4ah3W3aTlwdR7V8q9aqHfIxPUScdowx/
-         /ZFA==
-X-Gm-Message-State: AJIora8hMtR6GJa1a1pIVnEp252Oc3oCaqRXeKgIG/pFY5WotvGTbimu
-        RJAkYZZwxoMgj7y5qb+VGdSGM+a4gQ/YmlQ7wLM=
-X-Google-Smtp-Source: AGRyM1uEwNt5/5ZXFIFCp2zqPfeg4X8eV3/e62ENS/hezOYW6g3y8MroMqAnluYqLavNlQn0famR7w==
-X-Received: by 2002:a05:6402:1d50:b0:43a:737c:289c with SMTP id dz16-20020a0564021d5000b0043a737c289cmr41304095edb.47.1658213346543;
-        Mon, 18 Jul 2022 23:49:06 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id k16-20020aa7c050000000b0043af8007e7fsm10032796edo.3.2022.07.18.23.49.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 23:49:06 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: [patch net-next v2 12/12] selftests: mlxsw: Check line card info on activated line card
-Date:   Tue, 19 Jul 2022 08:48:47 +0200
-Message-Id: <20220719064847.3688226-13-jiri@resnulli.us>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220719064847.3688226-1-jiri@resnulli.us>
-References: <20220719064847.3688226-1-jiri@resnulli.us>
+        with ESMTP id S230262AbiGSGyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 02:54:18 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 958CD28E29
+        for <netdev@vger.kernel.org>; Mon, 18 Jul 2022 23:54:17 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-550-h5d0l6MvOry9tQjiREc1Yw-1; Tue, 19 Jul 2022 02:54:06 -0400
+X-MC-Unique: h5d0l6MvOry9tQjiREc1Yw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A57641857F06;
+        Tue, 19 Jul 2022 06:54:05 +0000 (UTC)
+Received: from dreadlord.bne.redhat.com (fdacunha.bne.redhat.com [10.64.0.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 45023141511F;
+        Tue, 19 Jul 2022 06:54:01 +0000 (UTC)
+From:   Dave Airlie <airlied@gmail.com>
+To:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
+        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
+        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>
+Subject: [PATCH] docs: driver-api: firmware: add driver firmware guidelines. (v2)
+Date:   Tue, 19 Jul 2022 16:53:57 +1000
+Message-Id: <20220719065357.2705918-1-airlied@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Dave Airlie <airlied@redhat.com>
 
-Once line card is activated, check the FW version and PSID are exposed.
+A recent snafu where Intel ignored upstream feedback on a firmware
+change, led to a late rc6 fix being required. In order to avoid this
+in the future we should document some expectations around
+linux-firmware.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+I was originally going to write this for drm, but it seems quite generic
+advice.
+
+v2: rewritten with suggestions from Thorsten Leemhuis.
+
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 ---
- .../drivers/net/mlxsw/devlink_linecard.sh     | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ Documentation/driver-api/firmware/core.rst    |  1 +
+ .../firmware/firmware-usage-guidelines.rst    | 34 +++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+ create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-index ca4e9b08a105..224ca3695c89 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-@@ -250,12 +250,32 @@ interface_check()
- 	setup_wait
- }
+diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
+index 1d1688cbc078..803cd574bbd7 100644
+--- a/Documentation/driver-api/firmware/core.rst
++++ b/Documentation/driver-api/firmware/core.rst
+@@ -13,4 +13,5 @@ documents these features.
+    direct-fs-lookup
+    fallback-mechanisms
+    lookup-order
++   firmware-usage-guidelines
  
-+lc_dev_info_active_check()
-+{
-+	local lc=$1
-+	local nested_devlink_dev=$2
-+	local fixed_device_fw_psid
-+	local running_device_fw
+diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+new file mode 100644
+index 000000000000..34d2412e78c6
+--- /dev/null
++++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+@@ -0,0 +1,34 @@
++===================
++Firmware Guidelines
++===================
 +
-+	fixed_device_fw_psid=$(devlink dev info $nested_devlink_dev -j | \
-+			       jq -e -r ".[][].versions.fixed" | \
-+			       jq -e -r '."fw.psid"')
-+	check_err $? "Failed to get linecard $lc fixed fw PSID"
-+	log_info "Linecard $lc fixed.fw.psid: \"$fixed_device_fw_psid\""
++Drivers that use firmware from linux-firmware should attempt to follow
++the rules in this guide.
 +
-+	running_device_fw=$(devlink dev info $nested_devlink_dev -j | \
-+			    jq -e -r ".[][].versions.running.fw")
-+	check_err $? "Failed to get linecard $lc running.fw.version"
-+	log_info "Linecard $lc running.fw: \"$running_device_fw\""
-+}
++* Firmware should be versioned with at least a major/minor version. It
++  is suggested that the firmware files in linux-firmware be named with
++  some device specific name, and just the major version. The
++  major/minor/patch versions should be stored in a header in the
++  firmware file for the driver to detect any non-ABI fixes/issues. The
++  firmware files in linux-firmware should be overwritten with the newest
++  compatible major version. Newer major version firmware should remain
++  compatible with all kernels that load that major number.
 +
- activation_16x100G_test()
- {
- 	RET=0
- 	local lc
- 	local type
- 	local state
-+	local nested_devlink_dev
- 
- 	lc=$LC_SLOT
- 	type=$LC_16X100G_TYPE
-@@ -268,6 +288,10 @@ activation_16x100G_test()
- 
- 	interface_check
- 
-+	nested_devlink_dev=$(lc_nested_devlink_dev_get $lc)
-+	check_err $? "Failed to get nested devlink handle of linecard $lc"
-+	lc_dev_info_active_check $lc $nested_devlink_dev
++* Users should *not* have to install newer firmware to use existing
++  hardware when they install a newer kernel.  If the hardware isn't
++  enabled by default or under development, this can be ignored, until
++  the first kernel release that enables that hardware.  This means no
++  major version bumps without the kernel retaining backwards
++  compatibility for the older major versions.  Minor version bumps
++  should not introduce new features that newer kernels depend on
++  non-optionally.
 +
- 	log_test "Activation 16x100G"
- }
- 
++* If a security fix needs lockstep firmware and kernel fixes in order to
++  be successful, then all supported major versions in the linux-firmware
++  repo should be updated with the security fix, and the kernel patches
++  should detect if the firmware is new enough to declare if the security
++  issue is fixed.  All communications around security fixes should point
++  at both the firmware and kernel fixes. If a security fix requires
++  deprecating old major versions, then this should only be done as a
++  last option, and be stated clearly in all communications.
++
 -- 
-2.35.3
+2.36.1
 
