@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8BC579007
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C9C579009
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234660AbiGSBtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 21:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
+        id S235314AbiGSBte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 21:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiGSBtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:49:32 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8891F1B7A9;
-        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id r14so19557398wrg.1;
-        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
+        with ESMTP id S230369AbiGSBtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:49:33 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA41B2CDED;
+        Mon, 18 Jul 2022 18:49:32 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id i132-20020a1c3b8a000000b003a2fa488efdso672371wma.4;
+        Mon, 18 Jul 2022 18:49:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NRlQ3mxg3RzKLJEGPG1n3tE2Reyt0PmZbkS9Sk9bMTs=;
-        b=I7xGQX4QrHDZwh9zLKLOg9R55Dz23nFRbAU+JW9KAV99wmpuzTbVctG72+amjQ5Zzw
-         tZ4wbHPrtnnViOPfQ7SiQPjReHaBxnVGlTQ7GjKNMVIyx84+AgDRZ4/Nxuk7AimnMNst
-         xqkGPM9AiGMpLeBFsacUWDmFPMS+ocjBx9QynIdO/h/30vdeEM9VRh1pyR9n0UPUyV4w
-         HOmqAPiDnN8d0eIf4zBEGgMgcFLaZONHiDokMYrhwc/dRqKd2JNfAcjSQVIu4ua0XUvH
-         LOVBI3lVHTXrzHx2hcRz4SI1XTO2+T49wm0+XQCuriIebz2Dx7535QYHyhmBdREnE3jr
-         rBIg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dtK+f+e69ktRtm1DfmKkH7OgqSKD4ay2ViO2yXXI+mw=;
+        b=OYKSxoRDJYuxotTPJtxxiPnclu2w1eM3+9GEhvCYItsaVb6YJUTB8NQdP4nX0ZFrco
+         cznxAeMIVrDZMxbUEp2cldX7igHPO0e7TMyvGXDPYnaveHF9Yht+3bvBvW2hdTHzIIhA
+         a1K98xfJ/2qPfkoo1EgMlJh0aQqerVxUnjddSsiQnldDyzC1ECbEV2F6RrGi7iweb2Km
+         iV0vZxlbQ71eMx0tRwtVqBPXleCVeb28qhS5wzw0gGqFBkTLlBAiay6p6zRMy7FvssjT
+         Up1hU8+wDjMNy+9GS+UVyv6yAZT7Y2derqUogNge0mAMI0Ai/9oW6nZAJ4Af64PqLxwm
+         ZMdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NRlQ3mxg3RzKLJEGPG1n3tE2Reyt0PmZbkS9Sk9bMTs=;
-        b=FopFGONG1n7hgxFTE9BW7zCYo4hI8XARjCC9TdTq+SrNfRemD1w6BTUy2mMnZ0eLpt
-         RSF413BRXPb//7oAhVZDfWLetr5P/YJeK6ko4vV7Faezr7w38h1RDaQwEb9srm7yBWiv
-         Y3RKGWbCT8bKGFdxZTEHHpX+h2KQO9YLmW5znc8O4STEOh1AXtqWE/7m0kSE4Qk35rVD
-         ROMb23kc1nW2eCqqDc5arThut2DLABJLtz5s192YgLLFm+inDq0heEzlgsFSIiMdj0t5
-         RZpIeAnKxNxAx5+Q5vmwrjp5hc3uJo8zAgEEJoRgkeRLQIKV9z1k8HZTNAOaa1f0qg0l
-         4W7w==
-X-Gm-Message-State: AJIora+sxIOCeW2qiGneXuH021mlI5T+HXlLYeLOhw6NnpvkYsAYhiXW
-        86Z05OtMR0RTlxnvuj9EvJ0=
-X-Google-Smtp-Source: AGRyM1sgPFrzN1+aui8l4wS4BVl7j70f+1Uo9TEgTIrEo9LFJKayW9/hAmm/cUeLt51/PEU8QtbbvQ==
-X-Received: by 2002:a05:6000:1367:b0:21d:75cd:5ae8 with SMTP id q7-20020a056000136700b0021d75cd5ae8mr24932292wrz.282.1658195370030;
-        Mon, 18 Jul 2022 18:49:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dtK+f+e69ktRtm1DfmKkH7OgqSKD4ay2ViO2yXXI+mw=;
+        b=S6z+ed8XEft9TEzHMNU+nHiKmHVhPCV4m8/umBT5iPQVmmDHcEVYraYK3+fPxwm1pA
+         HesT//3mjHSrhyWIc2ktvqyewJ9hLupHJqtOokEZQsutbGlqmiadzMHbgh7K+8VxLhqO
+         KvXi2Yaq5nQtwm3fzI5Uoy9WvhDHVgZw4BR4eCV1+GwZRcR/Fm9SKCKKhPizZUnnJtVe
+         T09aZP/foXOkfRGz7TDXVFRcKEwsZm0iYwRCCZTLP0iMQwDF2u4yyKPu80y0edvZfXGQ
+         WlmlcFThKj6zfcCu7kPSTSPUAV0oNvhtc201PGmGVMUQBbj0ShhmIgHjm24rxodHRscZ
+         kCAg==
+X-Gm-Message-State: AJIora83l7N/LWGQB6oXdSKuNJimUPtudVie5Mqa7NZszf6uq55N6WxM
+        ty+xwCjDbLI0JUYVDgGntfQ=
+X-Google-Smtp-Source: AGRyM1tRyEwBlbxo7SYBnXsREwjJTGZXVDlD3ka1KEa3mWXGiK5BhVBTxs17G3Uja9WKV2JW1JzS6Q==
+X-Received: by 2002:a05:600c:3ac3:b0:3a0:45b6:7efb with SMTP id d3-20020a05600c3ac300b003a045b67efbmr34460294wms.183.1658195371085;
+        Mon, 18 Jul 2022 18:49:31 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id v10-20020a05600c428a00b003a2fc754313sm16193600wmc.10.2022.07.18.18.49.29
+        by smtp.googlemail.com with ESMTPSA id v10-20020a05600c428a00b003a2fc754313sm16193600wmc.10.2022.07.18.18.49.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:49:29 -0700 (PDT)
+        Mon, 18 Jul 2022 18:49:30 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -60,10 +60,12 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v4 0/5] Add MTU change with stmmac interface running
-Date:   Tue, 19 Jul 2022 03:32:14 +0200
-Message-Id: <20220719013219.11843-1-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 1/5] net: ethernet: stmicro: stmmac: move queue reset to dedicated functions
+Date:   Tue, 19 Jul 2022 03:32:15 +0200
+Message-Id: <20220719013219.11843-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220719013219.11843-1-ansuelsmth@gmail.com>
+References: <20220719013219.11843-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -76,58 +78,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series is to permit MTU change while the interface is running.
-Major rework are needed to permit to allocate a new dma conf based on
-the new MTU before applying it. This is to make sure there is enough
-space to allocate all the DMA queue before releasing the stmmac driver.
+Move queue reset to dedicated functions. This aside from a simple
+cleanup is also required to allocate a dma conf without resetting the tx
+queue while the device is temporarily detached as now the reset is not
+part of the dma init function and can be done later in the code flow.
 
-This was tested with a simple way to stress the network while the
-interface is running.
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 59 ++++++++++---------
+ 1 file changed, 31 insertions(+), 28 deletions(-)
 
-2 ssh connection to the device:
-- One generating simple traffic with while true; do free; done
-- The other making the mtu change with a delay of 1 second
-
-The connection is correctly stopped and recovered after the MTU is changed.
-
-The first 2 patch of this series are minor fixup that fix problems
-presented while testing this. One fix a problem when we renable a queue
-while we are generating a new dma conf. The other is a corner case that
-was notice while stressing the driver and turning down the interface while
-there was some traffic.
-
-(this is a follow-up of a simpler patch that wanted to add the same
-feature. It was suggested to first try to check if it was possible to
-apply the new configuration. Posting as RFC as it does major rework for
-the new concept of DMA conf)
-
-v4:
-- Add additional stmmac_set_rx_mode after stmmac_open
-- Disconnect phylink first on stmmac release
-v3:
-- Fix compilation error reported by kernel test bot
-  (missing dma_confg changes to tc and selftest source)
-v2:
-- Put it out of RFC
-
-Christian Marangi (5):
-  net: ethernet: stmicro: stmmac: move queue reset to dedicated
-    functions
-  net: ethernet: stmicro: stmmac: first disable all queues and
-    disconnect in release
-  net: ethernet: stmicro: stmmac: move dma conf to dedicated struct
-  net: ethernet: stmicro: stmmac: generate stmmac dma conf before open
-  net: ethernet: stmicro: stmmac: permit MTU change with interface up
-
- .../net/ethernet/stmicro/stmmac/chain_mode.c  |   6 +-
- .../net/ethernet/stmicro/stmmac/ring_mode.c   |   4 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  21 +-
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   4 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 720 +++++++++++-------
- .../stmicro/stmmac/stmmac_selftests.c         |   8 +-
- .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
- 7 files changed, 457 insertions(+), 312 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 6f14b00c0b14..5578abb14949 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -130,6 +130,9 @@ static irqreturn_t stmmac_mac_interrupt(int irq, void *dev_id);
+ static irqreturn_t stmmac_safety_interrupt(int irq, void *dev_id);
+ static irqreturn_t stmmac_msi_intr_tx(int irq, void *data);
+ static irqreturn_t stmmac_msi_intr_rx(int irq, void *data);
++static void stmmac_reset_rx_queue(struct stmmac_priv *priv, u32 queue);
++static void stmmac_reset_tx_queue(struct stmmac_priv *priv, u32 queue);
++static void stmmac_reset_queues_param(struct stmmac_priv *priv);
+ static void stmmac_tx_timer_arm(struct stmmac_priv *priv, u32 queue);
+ static void stmmac_flush_tx_descriptors(struct stmmac_priv *priv, int queue);
+ static void stmmac_set_dma_operation_mode(struct stmmac_priv *priv, u32 txmode,
+@@ -1648,9 +1651,6 @@ static int __init_dma_rx_desc_rings(struct stmmac_priv *priv, u32 queue, gfp_t f
+ 			return -ENOMEM;
+ 	}
+ 
+-	rx_q->cur_rx = 0;
+-	rx_q->dirty_rx = 0;
+-
+ 	/* Setup the chained descriptor addresses */
+ 	if (priv->mode == STMMAC_CHAIN_MODE) {
+ 		if (priv->extend_desc)
+@@ -1753,12 +1753,6 @@ static int __init_dma_tx_desc_rings(struct stmmac_priv *priv, u32 queue)
+ 		tx_q->tx_skbuff[i] = NULL;
+ 	}
+ 
+-	tx_q->dirty_tx = 0;
+-	tx_q->cur_tx = 0;
+-	tx_q->mss = 0;
+-
+-	netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
+-
+ 	return 0;
+ }
+ 
+@@ -2644,10 +2638,7 @@ static void stmmac_tx_err(struct stmmac_priv *priv, u32 chan)
+ 	stmmac_stop_tx_dma(priv, chan);
+ 	dma_free_tx_skbufs(priv, chan);
+ 	stmmac_clear_tx_descriptors(priv, chan);
+-	tx_q->dirty_tx = 0;
+-	tx_q->cur_tx = 0;
+-	tx_q->mss = 0;
+-	netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, chan));
++	stmmac_reset_tx_queue(priv, chan);
+ 	stmmac_init_tx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
+ 			    tx_q->dma_tx_phy, chan);
+ 	stmmac_start_tx_dma(priv, chan);
+@@ -3706,6 +3697,8 @@ static int stmmac_open(struct net_device *dev)
+ 		goto init_error;
+ 	}
+ 
++	stmmac_reset_queues_param(priv);
++
+ 	ret = stmmac_hw_setup(dev, true);
+ 	if (ret < 0) {
+ 		netdev_err(priv->dev, "%s: Hw setup failed\n", __func__);
+@@ -6332,6 +6325,7 @@ void stmmac_enable_rx_queue(struct stmmac_priv *priv, u32 queue)
+ 		return;
+ 	}
+ 
++	stmmac_reset_rx_queue(priv, queue);
+ 	stmmac_clear_rx_descriptors(priv, queue);
+ 
+ 	stmmac_init_rx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
+@@ -6393,6 +6387,7 @@ void stmmac_enable_tx_queue(struct stmmac_priv *priv, u32 queue)
+ 		return;
+ 	}
+ 
++	stmmac_reset_tx_queue(priv, queue);
+ 	stmmac_clear_tx_descriptors(priv, queue);
+ 
+ 	stmmac_init_tx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
+@@ -7319,6 +7314,25 @@ int stmmac_suspend(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(stmmac_suspend);
+ 
++static void stmmac_reset_rx_queue(struct stmmac_priv *priv, u32 queue)
++{
++	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
++
++	rx_q->cur_rx = 0;
++	rx_q->dirty_rx = 0;
++}
++
++static void stmmac_reset_tx_queue(struct stmmac_priv *priv, u32 queue)
++{
++	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
++
++	tx_q->cur_tx = 0;
++	tx_q->dirty_tx = 0;
++	tx_q->mss = 0;
++
++	netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
++}
++
+ /**
+  * stmmac_reset_queues_param - reset queue parameters
+  * @priv: device pointer
+@@ -7329,22 +7343,11 @@ static void stmmac_reset_queues_param(struct stmmac_priv *priv)
+ 	u32 tx_cnt = priv->plat->tx_queues_to_use;
+ 	u32 queue;
+ 
+-	for (queue = 0; queue < rx_cnt; queue++) {
+-		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+-
+-		rx_q->cur_rx = 0;
+-		rx_q->dirty_rx = 0;
+-	}
+-
+-	for (queue = 0; queue < tx_cnt; queue++) {
+-		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
++	for (queue = 0; queue < rx_cnt; queue++)
++		stmmac_reset_rx_queue(priv, queue);
+ 
+-		tx_q->cur_tx = 0;
+-		tx_q->dirty_tx = 0;
+-		tx_q->mss = 0;
+-
+-		netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
+-	}
++	for (queue = 0; queue < tx_cnt; queue++)
++		stmmac_reset_tx_queue(priv, queue);
+ }
+ 
+ /**
 -- 
 2.36.1
 
