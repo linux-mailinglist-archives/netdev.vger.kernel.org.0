@@ -2,92 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF8457A353
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:38:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C438E57A36C
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 17:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237364AbiGSPiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 11:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
+        id S238496AbiGSPq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 11:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiGSPiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:38:18 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA8D599FB;
-        Tue, 19 Jul 2022 08:38:17 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id j22so27940641ejs.2;
-        Tue, 19 Jul 2022 08:38:17 -0700 (PDT)
+        with ESMTP id S238470AbiGSPqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 11:46:25 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9BA54670
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:46:24 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id b10so4217978pjq.5
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 08:46:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qnD9woDxfn+LSOscfoHzvBXGTCCBlK5kWUK/hmrm5mc=;
-        b=Fk80keQB94yN1hbOFQ/8Ik5Dn9qiQizXFjlxyiFnOIDjj72zZryknDAIRwKat35COn
-         +g0IvgCMxP7p10jhYIzT40U5BaoqkG0DTfQu17WaQl7LSW8FbPLWr5beE0bClHN7vfI5
-         QX0wRoDtYjxJn3mp/8Utao5/XI+8/wOB29nWOvd5Mof/UnO/Pv3D4ytDzD2qfzp0Kbe8
-         aDhWld/Pid6oLQ2LEXnCXrybVDU0psRQKzsCromDxv98lw1l2FKTcgPkGgRuG7QQhIW1
-         kfs6zo4Tzg+qSTSQep4w+4prkaQm2Lx2E3nx4DiI6udE/ynQaH1Hc7VAfFKu8qGrudA3
-         jygA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rLGineCxzdUhqZ0totHv9/HyxhWkFQEif+a4cEJSDL8=;
+        b=DW0EnfRwpOw1uNv4VAVwjEIGLJYOoNSuCcD40y6h3lKcLGS+MBuBuVX/UegUgNbGel
+         +ty0PUe3Zb5MGym/CRL0C7cxczOoUDRB2VP8Z7dfuTUi4o4EzqlWCDqwMCwNw0ZqySm8
+         dGT45EkwtMUdEu1hOA4Fq6e2jBTS1CT/czPuB5AIWXV/0cy0/bwFrjwF74jEBzBgiLhA
+         zFXzOZPXeQbAVHysr3nHY0jIK04lSl1vTt7r6/RsCR+Sq7IF/S/yNCcDX1b/aF1DMQfz
+         SBLxG1AP0/K0cftPJ8Yez80ecG/GS7X5fD7ZYwk/Nzq9o9RNTDtp/ZjTBQQnUpbL3rxI
+         Ndtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qnD9woDxfn+LSOscfoHzvBXGTCCBlK5kWUK/hmrm5mc=;
-        b=wPhu2T+vExN/awRsYHO8jSNcEAw4MfldknNk0YS8kgBpqmxZ40Adpx4uNtSECfrF97
-         xsAMpHmCeMO4SWd8bAshbZe/M60PsTBxnSSmmD4SWbaHESFPtwphKntgp9k6rBoXkXm0
-         y438r2ZZ6tQjSF1yXFSE8ApkbyMDlNAlGKYF3wYl2A1L9dllQM/GssxHaBcyidGSeDXa
-         4hKUjLFYXp32iURqWmuGohbTLAVymeUmQumOGpb1WlieBb4yF+bqVlj609EkFhgNcWZk
-         cMk6nhMqIf5V2jCAzlUfnRZLpD8szyAUdCCGS6gfN5ir8/2m2CQONxL4StrU01lYsalk
-         Tacg==
-X-Gm-Message-State: AJIora+yEjypIFwJYLsC/6eyXvBwpGAh7V69c7LbLT8jqtFZw8Ndkhlb
-        LMCcRDus7f/GV3pNPfBKhPw=
-X-Google-Smtp-Source: AGRyM1sF+tywVSO3QfunBktfmfaVi0fddzmm/dxFRUi3UiykwFMhU7B4f2YxJkBqXVs7l0XmJXPUNw==
-X-Received: by 2002:a17:907:16ab:b0:72c:7533:7262 with SMTP id hc43-20020a17090716ab00b0072c75337262mr29330300ejc.288.1658245095723;
-        Tue, 19 Jul 2022 08:38:15 -0700 (PDT)
-Received: from skbuf ([188.27.185.104])
-        by smtp.gmail.com with ESMTPSA id s9-20020a170906a18900b00722e5b234basm6939832ejy.179.2022.07.19.08.38.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 08:38:14 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 18:38:11 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [RFC PATCH net-next 0/9] net: pcs: Add support for devices
- probed in the "usual" manner
-Message-ID: <20220719153811.izue2q7qff7fjyru@skbuf>
-References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220719152539.i43kdp7nolbp2vnp@skbuf>
- <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rLGineCxzdUhqZ0totHv9/HyxhWkFQEif+a4cEJSDL8=;
+        b=Hh3+ktlPGBnYsC3EuMAMMQ6OdloDY6br59CCEzVwaNp2JOab2NOV1JdtDVZboLV/tg
+         FTfxqC2RYorsZEAsZBkkwYo3To7JmtRtDcZtBbniog0H98DOd+6yvhzcGb1IIj/5GlKb
+         OVFvvVSBiJTR2p/aNVUg2TIBHqWAB6qyukAUMgLeq2ObW1v6i3RyOzzKKMXKP5PgKaQI
+         Sevr+X//X/qa3mKU+PbTmOjvykJ2hr5JQKhxHLEfd47zxAOwSuYUJVSnHjba/p+tja65
+         mBeFR4ivvjpdg04ocHwoX2ckTFqA9XnoE0lkA1OLLELOAqpa8AxoOXi06gLEq7PmsXJM
+         u/kw==
+X-Gm-Message-State: AJIora81lzuBThs/TJ2PB2Y7croQKWHiBIYqX/hHAlPH9QDi6hiHI62Y
+        EMabR+1tUMoUNP7adDgDOPS40cCT2b8WvyoSBrAAng==
+X-Google-Smtp-Source: AGRyM1vtvaCffnh2l4f56YAsiMoaolRPJSDOCqynhJ372P0N1qzCRKtatEZUvXr8ozYvnmieW+RNiA+CsPVXAjtJMZE=
+X-Received: by 2002:a17:902:db11:b0:16c:3e90:12e5 with SMTP id
+ m17-20020a170902db1100b0016c3e9012e5mr33546576plx.73.1658245583818; Tue, 19
+ Jul 2022 08:46:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
+In-Reply-To: <1658221305-35718-1-git-send-email-xujia39@huawei.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 19 Jul 2022 08:46:12 -0700
+Message-ID: <CAKH8qBuwm75KirLSrTh1jeYqDAn78Ki5sgiAY8y2G2OCsDJP5w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: fix bpf compile error caused by CONFIG_CGROUP_BPF
+To:     Xu Jia <xujia39@huawei.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,43 +67,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 11:28:42AM -0400, Sean Anderson wrote:
-> Hi Vladimir,
-> 
-> On 7/19/22 11:25 AM, Vladimir Oltean wrote:
-> > Hi Sean,
-> > 
-> > On Mon, Jul 11, 2022 at 12:05:10PM -0400, Sean Anderson wrote:
-> >> For a long time, PCSs have been tightly coupled with their MACs. For
-> >> this reason, the MAC creates the "phy" or mdio device, and then passes
-> >> it to the PCS to initialize. This has a few disadvantages:
-> >> 
-> >> - Each MAC must re-implement the same steps to look up/create a PCS
-> >> - The PCS cannot use functions tied to device lifetime, such as devm_*.
-> >> - Generally, the PCS does not have easy access to its device tree node
-> >> 
-> >> I'm not sure if these are terribly large disadvantages. In fact, I'm not
-> >> sure if this series provides any benefit which could not be achieved
-> >> with judicious use of helper functions. In any case, here it is.
-> >> 
-> >> NB: Several (later) patches in this series should not be applied. See
-> >> the notes in each commit for details on when they can be applied.
-> > 
-> > Sorry to burst your bubble, but the networking drivers on NXP LS1028A
-> > (device tree at arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi, drivers
-> > at drivers/net/ethernet/freescale/enetc/ and drivers/net/dsa/ocelot/)
-> > do not use the Lynx PCS through a pcs-handle, because the Lynx PCS in
-> > fact has no backing OF node there, nor do the internal MDIO buses of the
-> > ENETC and of the switch.
-> > 
-> > It seems that I need to point this out explicitly: you need to provide
-> > at least a working migration path to your PCS driver model. Currently
-> > there isn't one, and as a result, networking is broken on the LS1028A
-> > with this patch set.
-> > 
-> 
-> Please refer to patches 4, 5, and 6.
+On Tue, Jul 19, 2022 at 1:49 AM Xu Jia <xujia39@huawei.com> wrote:
+>
+> We failed to compile when CONFIG_BPF_LSM is enabled but CONFIG_CGROUP_BPF
+> is not set. The failings are shown as below:
+>
+> kernel/bpf/trampoline.o: in function `bpf_trampoline_link_cgroup_shim'
+> trampoline.c: undefined reference to `bpf_cgroup_atype_get'
+> kernel/bpf/bpf_lsm.o: In function `bpf_lsm_find_cgroup_shim':
+> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_current'
+> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_sock'
+> bpf_lsm.c: undefined reference to `__cgroup_bpf_run_lsm_socket'
+>
+> Fix them by protecting these functions with CONFIG_CGROUP_BPF.
 
-I don't understand, could you be more clear? Are you saying that I
-shouldn't have applied patch 9 while testing? When would be a good
-moment to apply patch 9?
+Should be fixed by the following?
+
+https://lore.kernel.org/bpf/20220714185404.3647772-1-sdf@google.com/
+
+> Fixes: 69fd337a975c ("bpf: per-cgroup lsm flavor")
+> Signed-off-by: Xu Jia <xujia39@huawei.com>
+> ---
+>  include/linux/bpf.h     | 12 +++++++++---
+>  include/linux/bpf_lsm.h | 10 ++++++----
+>  kernel/bpf/bpf_lsm.c    |  2 ++
+>  kernel/bpf/trampoline.c |  2 ++
+>  4 files changed, 19 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 2b21f2a3452f..add8895c02cc 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1255,9 +1255,7 @@ struct bpf_dummy_ops {
+>  int bpf_struct_ops_test_run(struct bpf_prog *prog, const union bpf_attr *kattr,
+>                             union bpf_attr __user *uattr);
+>  #endif
+> -int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+> -                                   int cgroup_atype);
+> -void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
+> +
+>  #else
+>  static inline const struct bpf_struct_ops *bpf_struct_ops_find(u32 type_id)
+>  {
+> @@ -1281,6 +1279,14 @@ static inline int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map,
+>  {
+>         return -EINVAL;
+>  }
+> +#endif
+> +
+> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL) && \
+> +    defined(CONFIG_CGROUP_BPF)
+> +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+> +                                   int cgroup_atype);
+> +void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog);
+> +#else
+>  static inline int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+>                                                   int cgroup_atype)
+>  {
+> diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
+> index 4bcf76a9bb06..bed45a0c8a9c 100644
+> --- a/include/linux/bpf_lsm.h
+> +++ b/include/linux/bpf_lsm.h
+> @@ -42,8 +42,6 @@ extern const struct bpf_func_proto bpf_inode_storage_get_proto;
+>  extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
+>  void bpf_inode_storage_free(struct inode *inode);
+>
+> -void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
+> -
+>  #else /* !CONFIG_BPF_LSM */
+>
+>  static inline bool bpf_lsm_is_sleepable_hook(u32 btf_id)
+> @@ -67,11 +65,15 @@ static inline void bpf_inode_storage_free(struct inode *inode)
+>  {
+>  }
+>
+> +#endif /* CONFIG_BPF_LSM */
+> +
+> +#if defined(CONFIG_BPF_LSM) && defined(CONFIG_BPF_CGROUP)
+> +void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
+> +#else
+>  static inline void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>                                            bpf_func_t *bpf_func)
+>  {
+>  }
+> -
+> -#endif /* CONFIG_BPF_LSM */
+> +#endif
+>
+>  #endif /* _LINUX_BPF_LSM_H */
+> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> index d469b7f3deef..29527828b38b 100644
+> --- a/kernel/bpf/bpf_lsm.c
+> +++ b/kernel/bpf/bpf_lsm.c
+> @@ -63,6 +63,7 @@ BTF_ID(func, bpf_lsm_socket_post_create)
+>  BTF_ID(func, bpf_lsm_socket_socketpair)
+>  BTF_SET_END(bpf_lsm_unlocked_sockopt_hooks)
+>
+> +#ifdef CONFIG_BPF_CGROUP
+>  void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>                              bpf_func_t *bpf_func)
+>  {
+> @@ -86,6 +87,7 @@ void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+>  #endif
+>                 *bpf_func = __cgroup_bpf_run_lsm_current;
+>  }
+> +#endif /* CONFIG_BPF_CGROUP */
+>
+>  int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
+>                         const struct bpf_prog *prog)
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 6cd226584c33..127924711935 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -525,6 +525,7 @@ static const struct bpf_link_ops bpf_shim_tramp_link_lops = {
+>         .dealloc = bpf_shim_tramp_link_dealloc,
+>  };
+>
+> +#ifdef CONFIG_CGROUP_BPF
+>  static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
+>                                                      bpf_func_t bpf_func,
+>                                                      int cgroup_atype)
+> @@ -668,6 +669,7 @@ void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog)
+>
+>         bpf_trampoline_put(tr); /* bpf_trampoline_lookup above */
+>  }
+> +#endif /* CONFIG_CGROUP_BPF */
+>  #endif
+>
+>  struct bpf_trampoline *bpf_trampoline_get(u64 key,
+> --
+> 2.25.1
+>
