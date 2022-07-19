@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8F4578FB9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9225578FA3
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 03:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236690AbiGSBP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 21:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        id S236763AbiGSBP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 21:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236630AbiGSBPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:15:19 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFF3B4AE;
-        Mon, 18 Jul 2022 18:15:16 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id j1so14988887wrs.4;
-        Mon, 18 Jul 2022 18:15:16 -0700 (PDT)
+        with ESMTP id S236701AbiGSBP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 21:15:28 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AC3BF69;
+        Mon, 18 Jul 2022 18:15:18 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so8294820wmb.5;
+        Mon, 18 Jul 2022 18:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=KudmMtIF0Iopljdpb/EuvtfLfuApsMUVKUxZOnhSPz0=;
-        b=F7MD/6wqz6sPW3NVR6UgZ5UPwkXprPI5hfe/lsruD/hGWJ12qtrCpuvqd3B+Nad/Z5
-         s/fqbLkLoZ+KKFrNkvplVwT3mgQNMlKlkI1KNJQRvnf31KUzjy/Qs68u9YjkJIRDU30J
-         HLEglSRSa9oODlRF5Jk7bBZMNz8LA2vhonNtdyF2xDzxSKmG9BMcdTk2jeeor2xu0dNe
-         vmk4W36f9jI6RRGtAcm9b7wGkXl/IdDG8/cATLV6qlxKKPpDlQgZ0huD2boqkU4z0Xjk
-         wKTWWlGXysUL1nZk5t8cjI6DDELyyVDmTfnbzXkANyMSxTXkWvzJy6xmdYyNgZluttV3
-         9aRw==
+        bh=JrY8Flz5fWn6CXvBsItaOqepqlxqzDGaWzl8I4pTahc=;
+        b=PKy5J/Utw62yK47+ItiIbGz8JHYyDv5ZGhevo4ta/RBQPerlghSwUx/tMZjiDig0hu
+         LrnuDdhX81HP5kZ3rNvXgk1at0/YZMNpWTJtNh9VzmphvtYWTna4XpTk/N/8SIXKLKVl
+         mbzkcB7Iuy7J9Cne7/cC9RHow+3JohBpg/wMvNucAVAZW+zzaZqy8y/mX9QU5gK1opKt
+         wQ6s1r77X7Du83RhKn/eAUn6ewjdTdWqNtfVtTxJp7gIhl1h0x0le8mnpDlbaUzr6FNQ
+         lIL2GU3TEJxgrNNgzy4j5tV5kI/Ne49avWw7v+PqFqxsF17U7LRLQKTnzwDIF7P1/LRp
+         Yn1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KudmMtIF0Iopljdpb/EuvtfLfuApsMUVKUxZOnhSPz0=;
-        b=SxfsErxPF4gdN8FPoZ/C5u8+JaFD0CIJ5Jv+Yj/pkQhJDOxEVS/9bYc74SwKNJjViY
-         pD0XZ2UMZ3TuNRC1BIK6S7nhppzHeCPvNHR5LOWdjt7OI06RLcUqZ7WdL/lnnECXn9lw
-         POL8EeVcPakllh13E6tVxvEFfs6Rm5Q2Bvt56b04GisX8f74ctz0tg32NWy/z34pqxoc
-         Nnoa9b32Pt1c6aNG6IJVr5nH8ra9gopE3TaM//Sr+FAUrLw1L/QL6tA69c8NzptrSgCo
-         Kj7BDVslTlXvjmmL+mPforEnNWk5lpMot/IJa8wUns478S41PxnwwIH+17rv37pVfSp1
-         VUfg==
-X-Gm-Message-State: AJIora+t61SWe2HXD3Ny7CyXmbr9n3uWWQ1T3HZ5HUruO9vZ2w2WZxPn
-        NVaFEoXhI+fIj/3ZFuwUBGk=
-X-Google-Smtp-Source: AGRyM1ujHTHC8NXOkaLFuZCoYxz6Z6ZzxM0uvA58+fmmTIqcdTGpbKHkN+yTeWXVwp9rkNowxGEZIA==
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr24503884wry.206.1658193315471;
-        Mon, 18 Jul 2022 18:15:15 -0700 (PDT)
+        bh=JrY8Flz5fWn6CXvBsItaOqepqlxqzDGaWzl8I4pTahc=;
+        b=hb+gxdEs1+ugOVqO5ODtpYhuV3QPFpQRVIOAaf7iv+tOCkbfCW6K4R206kDi3ttwRy
+         sBYHXYpNk3Sr1m2+cZPJIynF1B+dTEbXisbh8wTHO9xeUe5inma0nHs3XOUfnyX632vB
+         K6HUQlCfb/0bjTi9P3AwUNZU8RjAL3fcQD/BhYLWq4zXJs1RdPPL7q9nRdL6Q2EB1cEx
+         /clc5w/x+ZStScRKkIEwvzsoGFB/gFPBimMx0SuZQOopxkmvLgVcSEIkKdmXDC6nhyg3
+         PhjNvCN2j5BEQ8ItBTaEROSIbEKuYHmF+QeNR/GyVC9+LAHPBoDzq3SSiavBV/DjSoDI
+         Rzww==
+X-Gm-Message-State: AJIora9DJZyCr2ino7XesQO2ctR4vGtDMGJHafqJI7X3QXHDfKfB4GLw
+        o/R4JubeF3RtMEwYymZpHk4yQtGJPqY=
+X-Google-Smtp-Source: AGRyM1uEO71W2pzxOKxA8C2+77xwZshEEHaQxp1V2EQzg9a+xQ72bCfXCqteOnzchb2nyUJToRni6g==
+X-Received: by 2002:a05:600c:4eca:b0:3a1:9c39:ac20 with SMTP id g10-20020a05600c4eca00b003a19c39ac20mr34830674wmq.61.1658193316595;
+        Mon, 18 Jul 2022 18:15:16 -0700 (PDT)
 Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.14
+        by smtp.googlemail.com with ESMTPSA id y11-20020adff14b000000b0021db7b0162esm11840239wro.105.2022.07.18.18.15.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 18:15:15 -0700 (PDT)
+        Mon, 18 Jul 2022 18:15:16 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,9 +60,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v2 06/15] net: dsa: qca8k: move port set status/eee/ethtool stats function to common code
-Date:   Tue, 19 Jul 2022 02:57:17 +0200
-Message-Id: <20220719005726.8739-8-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 07/15] net: dsa: qca8k: move bridge functions to common code
+Date:   Tue, 19 Jul 2022 02:57:18 +0200
+Message-Id: <20220719005726.8739-9-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719005726.8739-1-ansuelsmth@gmail.com>
 References: <20220719005726.8739-1-ansuelsmth@gmail.com>
@@ -78,303 +78,246 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same logic to disable/enable port, set eee and get ethtool stats is
-used by drivers based on qca8k family switch.
-Move it to common code to make it accessible also by other drivers.
+The same bridge functions are used by drivers based on qca8k family
+switch. Move them to common code to make them accessible also by other
+drivers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c   | 114 -----------------------------
- drivers/net/dsa/qca/qca8k-common.c | 114 +++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  11 +++
- 3 files changed, 125 insertions(+), 114 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 93 -----------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 94 ++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        |  9 +++
+ 3 files changed, 103 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index e17567a4b99f..23b4cd6b68ff 100644
+index 23b4cd6b68ff..729f63a865d1 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -441,21 +441,6 @@ static struct regmap_config qca8k_regmap_config = {
- 	.cache_type = REGCACHE_NONE, /* Explicitly disable CACHE */
- };
- 
--static void
--qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
--{
--	u32 mask = QCA8K_PORT_STATUS_TXMAC | QCA8K_PORT_STATUS_RXMAC;
--
--	/* Port 0 and 6 have no internal PHY */
--	if (port > 0 && port < 6)
--		mask |= QCA8K_PORT_STATUS_LINK_AUTO;
--
--	if (enable)
--		regmap_set_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
--	else
--		regmap_clear_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
--}
--
- static int
- qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
- 			struct sk_buff *read_skb, u32 *val)
-@@ -1499,23 +1484,6 @@ static void qca8k_setup_pcs(struct qca8k_priv *priv, struct qca8k_pcs *qpcs,
- 	qpcs->port = port;
- }
- 
--static void
--qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
--{
--	const struct qca8k_match_data *match_data;
--	struct qca8k_priv *priv = ds->priv;
--	int i;
--
--	if (stringset != ETH_SS_STATS)
--		return;
--
--	match_data = of_device_get_match_data(priv->dev);
--
--	for (i = 0; i < match_data->mib_count; i++)
--		strncpy(data + i * ETH_GSTRING_LEN, ar8327_mib[i].name,
--			ETH_GSTRING_LEN);
--}
--
- static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *skb)
- {
- 	const struct qca8k_match_data *match_data;
-@@ -1607,88 +1575,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
+@@ -1575,99 +1575,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
  	return ret;
  }
  
 -static void
--qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
--			uint64_t *data)
+-qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
 -{
 -	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	const struct qca8k_match_data *match_data;
--	const struct qca8k_mib_desc *mib;
--	u32 reg, i, val;
--	u32 hi = 0;
--	int ret;
+-	u32 stp_state;
 -
--	match_data = of_device_get_match_data(priv->dev);
--
--	if (priv->mgmt_master && match_data->autocast_mib &&
--	    match_data->autocast_mib(ds, port, data) > 0)
--		return;
--
--	for (i = 0; i < match_data->mib_count; i++) {
--		mib = &ar8327_mib[i];
--		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
--
--		ret = qca8k_read(priv, reg, &val);
--		if (ret < 0)
--			continue;
--
--		if (mib->size == 2) {
--			ret = qca8k_read(priv, reg + 4, &hi);
--			if (ret < 0)
--				continue;
--		}
--
--		data[i] = val;
--		if (mib->size == 2)
--			data[i] |= (u64)hi << 32;
+-	switch (state) {
+-	case BR_STATE_DISABLED:
+-		stp_state = QCA8K_PORT_LOOKUP_STATE_DISABLED;
+-		break;
+-	case BR_STATE_BLOCKING:
+-		stp_state = QCA8K_PORT_LOOKUP_STATE_BLOCKING;
+-		break;
+-	case BR_STATE_LISTENING:
+-		stp_state = QCA8K_PORT_LOOKUP_STATE_LISTENING;
+-		break;
+-	case BR_STATE_LEARNING:
+-		stp_state = QCA8K_PORT_LOOKUP_STATE_LEARNING;
+-		break;
+-	case BR_STATE_FORWARDING:
+-	default:
+-		stp_state = QCA8K_PORT_LOOKUP_STATE_FORWARD;
+-		break;
 -	}
+-
+-	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+-		  QCA8K_PORT_LOOKUP_STATE_MASK, stp_state);
 -}
 -
--static int
--qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset)
--{
--	const struct qca8k_match_data *match_data;
--	struct qca8k_priv *priv = ds->priv;
--
--	if (sset != ETH_SS_STATS)
--		return 0;
--
--	match_data = of_device_get_match_data(priv->dev);
--
--	return match_data->mib_count;
--}
--
--static int
--qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee)
+-static int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
+-				  struct dsa_bridge bridge,
+-				  bool *tx_fwd_offload,
+-				  struct netlink_ext_ack *extack)
 -{
 -	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	u32 lpi_en = QCA8K_REG_EEE_CTRL_LPI_EN(port);
--	u32 reg;
--	int ret;
+-	int port_mask, cpu_port;
+-	int i, ret;
 -
--	mutex_lock(&priv->reg_mutex);
--	ret = qca8k_read(priv, QCA8K_REG_EEE_CTRL, &reg);
--	if (ret < 0)
--		goto exit;
+-	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+-	port_mask = BIT(cpu_port);
 -
--	if (eee->eee_enabled)
--		reg |= lpi_en;
--	else
--		reg &= ~lpi_en;
--	ret = qca8k_write(priv, QCA8K_REG_EEE_CTRL, reg);
+-	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+-		if (dsa_is_cpu_port(ds, i))
+-			continue;
+-		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
+-			continue;
+-		/* Add this port to the portvlan mask of the other ports
+-		 * in the bridge
+-		 */
+-		ret = regmap_set_bits(priv->regmap,
+-				      QCA8K_PORT_LOOKUP_CTRL(i),
+-				      BIT(port));
+-		if (ret)
+-			return ret;
+-		if (i != port)
+-			port_mask |= BIT(i);
+-	}
 -
--exit:
--	mutex_unlock(&priv->reg_mutex);
+-	/* Add all other ports to this ports portvlan mask */
+-	ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+-			QCA8K_PORT_LOOKUP_MEMBER, port_mask);
+-
 -	return ret;
 -}
 -
--static int
--qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e)
+-static void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
+-				    struct dsa_bridge bridge)
 -{
--	/* Nothing to do on the port's MAC */
--	return 0;
+-	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+-	int cpu_port, i;
+-
+-	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+-
+-	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+-		if (dsa_is_cpu_port(ds, i))
+-			continue;
+-		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
+-			continue;
+-		/* Remove this port to the portvlan mask of the other ports
+-		 * in the bridge
+-		 */
+-		regmap_clear_bits(priv->regmap,
+-				  QCA8K_PORT_LOOKUP_CTRL(i),
+-				  BIT(port));
+-	}
+-
+-	/* Set the cpu port to be the only one in the portvlan mask of
+-	 * this port
+-	 */
+-	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+-		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
 -}
 -
  static void
- qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ qca8k_port_fast_age(struct dsa_switch *ds, int port)
  {
 diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 926a66363cf8..466ea9f9470b 100644
+index 466ea9f9470b..129a82172945 100644
 --- a/drivers/net/dsa/qca/qca8k-common.c
 +++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -507,3 +507,117 @@ int qca8k_mib_init(struct qca8k_priv *priv)
- 	mutex_unlock(&priv->reg_mutex);
- 	return ret;
+@@ -9,6 +9,7 @@
+ #include <linux/netdevice.h>
+ #include <net/dsa.h>
+ #include <linux/of_platform.h>
++#include <linux/if_bridge.h>
+ 
+ #include "qca8k.h"
+ 
+@@ -621,3 +622,96 @@ qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e)
+ 	/* Nothing to do on the port's MAC */
+ 	return 0;
  }
 +
 +void
-+qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
-+{
-+	u32 mask = QCA8K_PORT_STATUS_TXMAC | QCA8K_PORT_STATUS_RXMAC;
-+
-+	/* Port 0 and 6 have no internal PHY */
-+	if (port > 0 && port < 6)
-+		mask |= QCA8K_PORT_STATUS_LINK_AUTO;
-+
-+	if (enable)
-+		regmap_set_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
-+	else
-+		regmap_clear_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
-+}
-+
-+void
-+qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
-+{
-+	const struct qca8k_match_data *match_data;
-+	struct qca8k_priv *priv = ds->priv;
-+	int i;
-+
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	for (i = 0; i < match_data->mib_count; i++)
-+		strncpy(data + i * ETH_GSTRING_LEN, ar8327_mib[i].name,
-+			ETH_GSTRING_LEN);
-+}
-+
-+void
-+qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
-+			uint64_t *data)
++qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
 +{
 +	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
-+	const struct qca8k_match_data *match_data;
-+	const struct qca8k_mib_desc *mib;
-+	u32 reg, i, val;
-+	u32 hi = 0;
-+	int ret;
++	u32 stp_state;
 +
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	if (priv->mgmt_master && match_data->autocast_mib &&
-+	    match_data->autocast_mib(ds, port, data) > 0)
-+		return;
-+
-+	for (i = 0; i < match_data->mib_count; i++) {
-+		mib = &ar8327_mib[i];
-+		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
-+
-+		ret = qca8k_read(priv, reg, &val);
-+		if (ret < 0)
-+			continue;
-+
-+		if (mib->size == 2) {
-+			ret = qca8k_read(priv, reg + 4, &hi);
-+			if (ret < 0)
-+				continue;
-+		}
-+
-+		data[i] = val;
-+		if (mib->size == 2)
-+			data[i] |= (u64)hi << 32;
++	switch (state) {
++	case BR_STATE_DISABLED:
++		stp_state = QCA8K_PORT_LOOKUP_STATE_DISABLED;
++		break;
++	case BR_STATE_BLOCKING:
++		stp_state = QCA8K_PORT_LOOKUP_STATE_BLOCKING;
++		break;
++	case BR_STATE_LISTENING:
++		stp_state = QCA8K_PORT_LOOKUP_STATE_LISTENING;
++		break;
++	case BR_STATE_LEARNING:
++		stp_state = QCA8K_PORT_LOOKUP_STATE_LEARNING;
++		break;
++	case BR_STATE_FORWARDING:
++	default:
++		stp_state = QCA8K_PORT_LOOKUP_STATE_FORWARD;
++		break;
 +	}
++
++	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
++		  QCA8K_PORT_LOOKUP_STATE_MASK, stp_state);
 +}
 +
-+int
-+qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset)
-+{
-+	const struct qca8k_match_data *match_data;
-+	struct qca8k_priv *priv = ds->priv;
-+
-+	if (sset != ETH_SS_STATS)
-+		return 0;
-+
-+	match_data = of_device_get_match_data(priv->dev);
-+
-+	return match_data->mib_count;
-+}
-+
-+int
-+qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee)
++int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
++			   struct dsa_bridge bridge,
++			   bool *tx_fwd_offload,
++			   struct netlink_ext_ack *extack)
 +{
 +	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
-+	u32 lpi_en = QCA8K_REG_EEE_CTRL_LPI_EN(port);
-+	u32 reg;
-+	int ret;
++	int port_mask, cpu_port;
++	int i, ret;
 +
-+	mutex_lock(&priv->reg_mutex);
-+	ret = qca8k_read(priv, QCA8K_REG_EEE_CTRL, &reg);
-+	if (ret < 0)
-+		goto exit;
++	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
++	port_mask = BIT(cpu_port);
 +
-+	if (eee->eee_enabled)
-+		reg |= lpi_en;
-+	else
-+		reg &= ~lpi_en;
-+	ret = qca8k_write(priv, QCA8K_REG_EEE_CTRL, reg);
++	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			continue;
++		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
++			continue;
++		/* Add this port to the portvlan mask of the other ports
++		 * in the bridge
++		 */
++		ret = regmap_set_bits(priv->regmap,
++				      QCA8K_PORT_LOOKUP_CTRL(i),
++				      BIT(port));
++		if (ret)
++			return ret;
++		if (i != port)
++			port_mask |= BIT(i);
++	}
 +
-+exit:
-+	mutex_unlock(&priv->reg_mutex);
++	/* Add all other ports to this ports portvlan mask */
++	ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
++			QCA8K_PORT_LOOKUP_MEMBER, port_mask);
++
 +	return ret;
 +}
 +
-+int
-+qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e)
++void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
++			     struct dsa_bridge bridge)
 +{
-+	/* Nothing to do on the port's MAC */
-+	return 0;
++	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
++	int cpu_port, i;
++
++	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
++
++	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			continue;
++		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
++			continue;
++		/* Remove this port to the portvlan mask of the other ports
++		 * in the bridge
++		 */
++		regmap_clear_bits(priv->regmap,
++				  QCA8K_PORT_LOOKUP_CTRL(i),
++				  BIT(port));
++	}
++
++	/* Set the cpu port to be the only one in the portvlan mask of
++	 * this port
++	 */
++	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
++		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
 +}
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index f9493354d74f..c842564eb61b 100644
+index c842564eb61b..dd3072e2f23c 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -426,6 +426,7 @@ struct qca8k_fdb {
- extern const struct qca8k_mib_desc ar8327_mib[];
- extern const struct regmap_access_table qca8k_readable_table;
- int qca8k_mib_init(struct qca8k_priv *priv);
-+void qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable);
+@@ -460,4 +460,13 @@ int qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset);
+ int qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee);
+ int qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
  
- /* Common read/write/rmw function */
- int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
-@@ -449,4 +450,14 @@ int qca8k_fdb_search_and_del(struct qca8k_priv *priv, u8 port_mask,
- int qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged);
- int qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid);
- 
-+/* Common ethtool stats function */
-+void qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data);
-+void qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
-+			     uint64_t *data);
-+int qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset);
-+
-+/* Common eee function */
-+int qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee);
-+int qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
++/* Common bridge function */
++void qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
++int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
++			   struct dsa_bridge bridge,
++			   bool *tx_fwd_offload,
++			   struct netlink_ext_ack *extack);
++void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
++			     struct dsa_bridge bridge);
 +
  #endif /* __QCA8K_H */
 -- 
