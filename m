@@ -2,269 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 287F257A7E1
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C6457A805
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239848AbiGSUAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 16:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        id S240005AbiGSUIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 16:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239930AbiGSUAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:00:03 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01E75FAFD
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10bd4812c29so33387218fac.11
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aGGVmINUCSfsk250AOJFB90sOOysp1l6u1HPvFdfWvo=;
-        b=ByN/WIZ20Mym344bNDca0YyD6ieOFhDy2+cjjAn7+bgOD4umhohA8AY6fW8GUKxF/E
-         JXtuTSxOeVL8xaQ92eweEBfjCUimNWVPS3L/6yTzIK1dwKqcDg1CRZXgYE92y009O6k5
-         MPHJi4Y6gMZzc4PyDtZlv3BdZ5+mVVA+yx4hc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aGGVmINUCSfsk250AOJFB90sOOysp1l6u1HPvFdfWvo=;
-        b=m/4gfeo45R1LSVeqX6qbqeqUMVF8+cotyQikJM8hFr38FGRftK7eklWSEhaoeTDoUg
-         hwMMwQDDSiivtI9m2GbFzma2pK6Lx8Q5A5Vl9J3wSulVWw1G3bBG0v5Svk1aXWFD+SbZ
-         trtq6pCEVB+3+MGp1IhCP4ct4Gnl9SVGzr8J2pxwD+d8OX9WIZXb/cMsGo8N8d3gfjKp
-         QTuGB5r0oCN//GFNZWyqA5GRbF+jnYTrxZC2F7TZFr6nr9ucP4AL+82IPMUxiRrEXgSU
-         e+T/H6zh+F830HQt1AJaWEpaBPOVmeiK6P+4v7+1duo1xZOJwWGGtsUbfDhOi9fe+5KK
-         Vgzw==
-X-Gm-Message-State: AJIora/qm6fyjjmKBqUPwWymPXkaXOXbvvFkDPbVDQaKnEHJMrrQfD6k
-        368nLrafI5SHEfmFwrlTY6qTGg==
-X-Google-Smtp-Source: AGRyM1vz38JlwdypV+2Kw3t+SJQfxVmBJbWv7CQJcjGO2llN++Gpadp4l+cZxasrvtmR2oIYwSNQ9g==
-X-Received: by 2002:a05:6870:2195:b0:10d:596:40c3 with SMTP id l21-20020a056870219500b0010d059640c3mr654876oae.228.1658260787018;
-        Tue, 19 Jul 2022 12:59:47 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id h24-20020a9d6418000000b00618ecbca69asm6504625otl.74.2022.07.19.12.59.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jul 2022 12:59:46 -0700 (PDT)
-Message-ID: <305d165d-0a29-390c-f424-284333c78c38@cloudflare.com>
-Date:   Tue, 19 Jul 2022 14:59:44 -0500
+        with ESMTP id S236214AbiGSUI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:08:28 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2063.outbound.protection.outlook.com [40.107.95.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320812656C;
+        Tue, 19 Jul 2022 13:08:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MtMsL3vCyXbHqJdb8IHRg+pn6S7udq+TFaehgyLW5GdzvQBT5paI6Wg3DD4swfPKFw6K11RD6lwO+BZ+lviCKUqvtOa+s5kl3FRCYUa9wiTmTUHTKoUv6NddmJ7dgUmACYerxM0DLfjED3qWlorlXBfmTFtixqYUzkOfS3juScqZm6/X269NbFRBVNolSBw8yqP8nyj312A30MYZBq0tAnRnXqr4wE+ZOGNgSIL5FKWkDJ5ph1RmVN/nwWRg/1eWOUWoZ7Yon2jmI4C33TfD9hIpqOtfgLCnkV06fhGdGlb/3yempFjfqXRS6Yg94UaxGAimRNSBeS0i9Mv6CEvKag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F/We8H5/O7oST0RBWJtwBLZUriaO+WXGX+LP/M0Kiz4=;
+ b=Y7W8ort4yRWnTvV1PTZvOUw5es/JONXgivG5f64iGkPt7GZ7b2t6O9oNmU6ovBgp7AJJ0SYG5E1//wfF0Se/QNZlXTtmMGYK3DaG1beX+9DhuKBxeiXFG6g/W1G/CiwVvOdbXJz7xC/TGAJpElYcSmYYJdmhK/Gh6dd+fIK5mcFDkyreHqPgbSaQfGFfhfRpKYPg+pFM2zBoTVBh56NbsTeoNPZDMAe1I9OSvtvKsygudpFnaOMdZ50xlwQcOL77HmrQiRxFySXannIsYd/1+bDd3jDEPndGjJQtuSpk9VwKqF/4rTsG3aeW6wnVB2c5zWhZQr5buiuqzV8JVru2YQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F/We8H5/O7oST0RBWJtwBLZUriaO+WXGX+LP/M0Kiz4=;
+ b=K8c17U41/YNe37DV6xEMpJ174Qa7jph3G+d7xcaBEkJqWGvz68z295hesEVBHEu/WItU0igeAGzqr++UM2M4z/7GWIM6VzWeC4tl3BMlzhfQGKX98+bc1rwSZz5kN6m/3YmzhlHqFvqmi03ub2SvlS4wrXlLHiPX0+FkkvcTaTG6qStz3GtldkJasCo0mR8Ba+jjpTNcMHOGRxV1B7U19QXV6cNFBEG/kJ3IYpNQOy8dVRCnxddW9awcHLwoxlxnTu5o7Jt3k2iss0E8/B5oeyxjPZu6S/Z2ok9NQp87xldXOWMjIaAmXLk2v+lYVioUQeD8uftUUGeUki88e7J5uQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BY5PR12MB3972.namprd12.prod.outlook.com (2603:10b6:a03:1a8::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Tue, 19 Jul
+ 2022 20:08:26 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5438.024; Tue, 19 Jul 2022
+ 20:08:26 +0000
+Date:   Tue, 19 Jul 2022 17:08:25 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, saeedm@nvidia.com,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        kevin.tian@intel.com, joao.m.martins@oracle.com, leonro@nvidia.com,
+        maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V2 vfio 06/11] vfio: Introduce the DMA logging feature
+ support
+Message-ID: <20220719200825.GK4609@nvidia.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
+ <20220714081251.240584-7-yishaih@nvidia.com>
+ <20220718163024.143ec05a.alex.williamson@redhat.com>
+ <8242cd07-0b65-e2b8-3797-3fe5623ec65d@nvidia.com>
+ <20220719132514.7d21dfaf.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719132514.7d21dfaf.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1P221CA0015.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c5::34) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
-Content-Language: en-US
-To:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>
-Cc:     =?UTF-8?Q?Christian_G=c3=b6ttsche?= <cgzones@googlemail.com>,
-        KP Singh <kpsingh@kernel.org>, revest@chromium.org,
-        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220707223228.1940249-1-fred@cloudflare.com>
- <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
- <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com>
- <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
- <20220714142740.GA10621@mail.hallyn.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <20220714142740.GA10621@mail.hallyn.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d5813c21-916d-4ef8-7736-08da69c27094
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3972:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A4Up01t5jC1qPHLb5VMM/9LsnVK/lkgULn9vYXS7w7E8gllFhtzztHlR1JyYT3Z91c+jZ9OVeyKGCT4eb7Nf05N4U5q1IIjlYCS7k8cVBSi2PL/KKYMGs1NYQTJoeRfpIDW5OPGEziYRw3whi0Xy6Ba6RBAqO7eSWdIQ7VQ5HdMtlDvDEiq0q2iUgduO/eIDHHWy1nAmP5xIfTUS62rROfK3HpSrJ2YG8hxRbTKVh04+theHaoVaB7Kl6r+Ven6LaUtV+dUY7XqwTojXJbLotDwgPrYl5uamIq1fg3AaTrmPaAsYfHdx2SlTtvzMAFSTL2KRyMKa6tm+7uMlpiWgz6tYMCdTL7sOKCcZmWTf2eILcqkkDTWeIai2RitG2mBE6Y7QSc5VglBbh7zp2g1khh1axFKM24WRVX/m71u34FbKrJH49WQrb/MD9tTvZmR80utdcI99puxYf2zc3x6ldDtiNGYJWIzwdntO3K6+jsm6WYtoPt99sfWpB+Kh2nFD97Vu42K4ViuLvF+u7auDh1DNM6HkIsvT+TrLojgHNaWDoxdv9qYAhQuKPETevFziSzGNGj9Zwt5807CPtC/MATCvRsScFSi4PCmDP+f8odDtbDjHm1gQ7U9Lp0gaDao8uvaIG4lp75gAE5LhJp7/fdbGDlnio2h2Lc9NsTDwmfl2lxYhLKNrFI1iDbJja1HIQcN89sytOsFG5/2DmDokb21SJX9H6xmvWV9OPyKBzNPV72MiNSu+7TA4UPcYDj+Z
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(396003)(39860400002)(346002)(8936002)(66476007)(5660300002)(8676002)(66946007)(4326008)(66556008)(2906002)(33656002)(36756003)(86362001)(38100700002)(6486002)(478600001)(2616005)(6916009)(186003)(6512007)(1076003)(316002)(83380400001)(41300700001)(6506007)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pWwv7KmjaeodJKSi417xp9lLAI1ibw/AQOPkoJhN9gjuXSqIkNsWaTqA3Omv?=
+ =?us-ascii?Q?uBViLI0oEKYbO7ba4EPSulut7J07GKI1JKqv3spBH3zD2rM1GH5ifzAFbHpn?=
+ =?us-ascii?Q?DiO07tVH0nhxRs6ySgP/UnkfDIUY+wEFxjF3W10whOF9zcS8rSJdRtwfA3ah?=
+ =?us-ascii?Q?+qLVH7ZsIeeMa4/hx3iJaK52yoSySBbyqpkivBxwTka2LcOidl3q1926xJCU?=
+ =?us-ascii?Q?8fJAaMeiUhTvDoaHNN4axUWn08b6sJJKWh1CZ/WIpEjthjZB2746n8GHfGYb?=
+ =?us-ascii?Q?Bhx603prxhXiQ/jPBJItnlsLG94TwtgtJdbj648ePc+LFMYVu6D7PJdKsGQ5?=
+ =?us-ascii?Q?8wMcAt/7BR7uvwEVQA8Go4ptA+NHb8GNq+0ThB3/sFp5eMbjM/19mfZDr+MF?=
+ =?us-ascii?Q?WnmjabiAybgfS5iO7lSRd9+oUDks9f5a6Q+OuhQNS2LXkQV1LeqpI69CAq4n?=
+ =?us-ascii?Q?xbXPaF7x8Z4SgodLv2+nYtnsS+rHd3XaGHGOthjvuuayg4llSf78ATBHVDXH?=
+ =?us-ascii?Q?Qac2NViHsZrONYeRf/i+UfjRNjS4yXuydFf467ZELKLKg2mayJ6Pn09i18Nh?=
+ =?us-ascii?Q?jEW4lBSUFQ3yt/FJUApXDqMSx7HpXTld2B/4Bg1K8EL4VtWggddoJx9m4lPh?=
+ =?us-ascii?Q?6kWP4DwRpKJmyyGFb8bBhEaeftP28whEVwjgQQOi9galHejgO5oERidIl7sA?=
+ =?us-ascii?Q?5KVO7G14Vsx13GWvOztZz2KXNMIwA5nojwhtc4kG9yWPqA12+BREbGMwwOk8?=
+ =?us-ascii?Q?8ckdDt00I9QX+A5IWLvLVLJ9tj1iiUCsxTe68jX1lCH6jIqCi8qSkEoUOls0?=
+ =?us-ascii?Q?tGEnlmSVj85327fJzZWjmycwIBvJx5eC6J+R8z8W/9R/cbI76AypLWVbif4a?=
+ =?us-ascii?Q?d4sz7o6O7bZX3V6CLBRnDjiP16bkxLjIDL5l0hABnyxbg0DTrrwGgGtGiNzM?=
+ =?us-ascii?Q?dPgjLX0yXhEcaR+aTSXc5k5v7paWu1rb8GQdM2qLncVJPU08Qd7h0e1/RmDM?=
+ =?us-ascii?Q?n+4n8RtAh3x7GWEjbTSErnHZ87Fl2SF19GbJ3Bgh7XSWhufECQVaGxNwJPW4?=
+ =?us-ascii?Q?fXVJmttK7diJoBz2EoG4pQ0JaKl/R78U9AvL3FiJMj0F31Xn07pZdvItXlTT?=
+ =?us-ascii?Q?PBhWyMC6LvByoE9gsfXLKQI5684RL178Aq/9mRNHNF+1NDgBXWhOOzUEoikB?=
+ =?us-ascii?Q?8PCNsAgju8smto2SszDNC4gLTiAWNqLhWudaEBY+2SwMTtvs8IS8wu1ktwKV?=
+ =?us-ascii?Q?Jr/qZcw92Pfq8Op2fMbEj4lYmcL4CefnzbgJiAE6Jy4jgrxZGBsWmjXaNI1D?=
+ =?us-ascii?Q?8Z1k34kexyilUke/xZdYM82SLZ+lNa0do5/o/7EvGJJN8WZD2VQLjSi8R+vb?=
+ =?us-ascii?Q?Swuy7EXGRCqW41w6HPt+Av5XBCyc7Xpe2Ft4H/Fb//Or0CUd0E7b9WXL4FVG?=
+ =?us-ascii?Q?Sz9kbgTks9pARrj5ZVEqb7Sbom1I29FCE+SmcErJPNCmXdAOwCiVcJCyt01s?=
+ =?us-ascii?Q?g8+tJKDgtH6eKDx97tlMEkYZnoCQBfcprxcUpXXSFASrOia6ugjmm2U2MrLN?=
+ =?us-ascii?Q?8xcMU/bmvfVE7Rs76naIxj215d70e8zHlEpqvJY6?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5813c21-916d-4ef8-7736-08da69c27094
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2022 20:08:26.0946
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +LlExHgp7TDLoJxtFaTdgSWsXnM1BSmzsuZCELXJwpD6B89lEIOTFKmyEgSI6n3R
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3972
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/22 9:27 AM, Serge E. Hallyn wrote:
-> On Fri, Jul 08, 2022 at 09:11:15AM -0700, Casey Schaufler wrote:
->> On 7/8/2022 7:01 AM, Frederick Lawler wrote:
->>> On 7/8/22 7:10 AM, Christian Göttsche wrote:
->>>> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com>
->>>> wrote:
->>>>>
->>>>> While creating a LSM BPF MAC policy to block user namespace
->>>>> creation, we
->>>>> used the LSM cred_prepare hook because that is the closest hook to
->>>>> prevent
->>>>> a call to create_user_ns().
->>>>>
->>>>> The calls look something like this:
->>>>>
->>>>>       cred = prepare_creds()
->>>>>           security_prepare_creds()
->>>>>               call_int_hook(cred_prepare, ...
->>>>>       if (cred)
->>>>>           create_user_ns(cred)
->>>>>
->>>>> We noticed that error codes were not propagated from this hook and
->>>>> introduced a patch [1] to propagate those errors.
->>>>>
->>>>> The discussion notes that security_prepare_creds()
->>>>> is not appropriate for MAC policies, and instead the hook is
->>>>> meant for LSM authors to prepare credentials for mutation. [2]
->>>>>
->>>>> Ultimately, we concluded that a better course of action is to introduce
->>>>> a new security hook for LSM authors. [3]
->>>>>
->>>>> This patch set first introduces a new security_create_user_ns()
->>>>> function
->>>>> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
->>>>
->>>> Some thoughts:
->>>>
->>>> I.
->>>>
->>>> Why not make the hook more generic, e.g. support all other existing
->>>> and potential future namespaces?
->>>
->>> The main issue with a generic hook is that different namespaces have
->>> different calling contexts. We decided in a previous discussion to
->>> opt-out of a generic hook for this reason. [1]
->>>
->>>> Also I think the naming scheme is <object>_<verb>.
->>>
->>> That's a good call out. I was originally hoping to keep the
->>> security_*() match with the hook name matched with the caller function
->>> to keep things all aligned. If no one objects to renaming the hook, I
->>> can rename the hook for v3.
->>>
->>>>
->>>>       LSM_HOOK(int, 0, namespace_create, const struct cred *cred,
->>>> unsigned int flags)
->>>>
->>>> where flags is a bitmap of CLONE flags from include/uapi/linux/sched.h
->>>> (like CLONE_NEWUSER).
->>>>
->>>> II.
->>>>
->>>> While adding policing for namespaces maybe also add a new hook for
->>>> setns(2)
->>>>
->>>>       LSM_HOOK(int, 0, namespace_join, const struct cred *subj,  const
->>>> struct cred *obj, unsigned int flags)
->>>>
->>>
->>> IIUC, setns() will create a new namespace for the other namespaces
->>> except for user namespace. If we add a security hook for the other
->>> create_*_ns() functions, then we can catch setns() at that point.
->>>
->>>> III.
->>>>
->>>> Maybe even attach a security context to namespaces so they can be
->>>> further governed?
->>
->> That would likely add confusion to the existing security module namespace
->> efforts. SELinux, Smack and AppArmor have all developed namespace models.
->> That, or it could replace the various independent efforts with a single,
-> 
-> I feel like you're attaching more meaning to this than there needs to be.
-> I *think* he's just talking about a user_namespace->u_security void*.
-> So that for instance while deciding whether to allow some transition,
-> selinux could check whether the caller's user namespace was created by
-> a task in an selinux context authorized to create user namespaces.
-> 
-> The "user namespaces are DAC and orthogonal to MAC" is of course true
-> (where the LSM does not itself tie them together), except that we all
-> know that a process running as root in a user namespace gains access to
-> often-less-trustworthy code gated under CAP_SYS_ADMIN.
-> 
->> unified security module namespace effort. There's more work to that than
->> adding a context to a namespace. Treating namespaces as objects is almost,
->> but not quite, solidifying containers as a kernel construct. We know we
->> can't do that.
-> 
-> What we "can't do" (imo) is to create a "full container" construct which
-> ties together the various namespaces and other concepts in a restrictive
-> way.
-> 
+On Tue, Jul 19, 2022 at 01:25:14PM -0600, Alex Williamson wrote:
 
-Is this the direction we want to go with the SELinux implementation? If 
-so, where can I find a similar implementation to make the userns_create 
-work with this? If not, I have a v3 with the hook name change ready to post.
+> > We don't really expect user space to hit this limit, the RAM in QEMU is 
+> > divided today to around ~12 ranges as we saw so far in our evaluation.
+> 
+> There can be far more for vIOMMU use cases or non-QEMU drivers.
 
->>>> SELinux example:
->>>>
->>>>       type domainA_userns_t;
->>>>       type_transition domainA_t domainA_t : namespace domainA_userns_t
->>>> "user";
->>>>       allow domainA_t domainA_userns_t:namespace create;
->>>>
->>>>       # domainB calling setns(2) with domainA as target
->>>>       allow domainB_t domainA_userns_t:namespace join;
->>
->> While I'm not an expert on SELinux policy, I'd bet a refreshing beverage
->> that there's already a way to achieve this with existing constructs.
->> Smack, which is subject+object MAC couldn't care less about the user
->> namespace configuration. User namespaces are DAC constructs.
->>
->>>>
->>>
->>> Links:
->>> 1.
->>> https://lore.kernel.org/all/CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com/
->>>
->>>>>
->>>>> Links:
->>>>> 1.
->>>>> https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
->>>>>
->>>>> 2.
->>>>> https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
->>>>> 3.
->>>>> https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->>>>>
->>>>> Changes since v1:
->>>>> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
->>>>> patch
->>>>> - Add selinux: Implement create_user_ns hook patch
->>>>> - Change function signature of security_create_user_ns() to only take
->>>>>     struct cred
->>>>> - Move security_create_user_ns() call after id mapping check in
->>>>>     create_user_ns()
->>>>> - Update documentation to reflect changes
->>>>>
->>>>> Frederick Lawler (4):
->>>>>     security, lsm: Introduce security_create_user_ns()
->>>>>     bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
->>>>>     selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
->>>>>     selinux: Implement create_user_ns hook
->>>>>
->>>>>    include/linux/lsm_hook_defs.h                 |  1 +
->>>>>    include/linux/lsm_hooks.h                     |  4 +
->>>>>    include/linux/security.h                      |  6 ++
->>>>>    kernel/bpf/bpf_lsm.c                          |  1 +
->>>>>    kernel/user_namespace.c                       |  5 ++
->>>>>    security/security.c                           |  5 ++
->>>>>    security/selinux/hooks.c                      |  9 ++
->>>>>    security/selinux/include/classmap.h           |  2 +
->>>>>    .../selftests/bpf/prog_tests/deny_namespace.c | 88
->>>>> +++++++++++++++++++
->>>>>    .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
->>>>>    10 files changed, 160 insertions(+)
->>>>>    create mode 100644
->>>>> tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->>>>>    create mode 100644
->>>>> tools/testing/selftests/bpf/progs/test_deny_namespace.c
->>>>>
->>>>> -- 
->>>>> 2.30.2
->>>>>
->>>
+Not really, it isn't dynamic so vIOMMU has to decide what it wants to
+track up front. It would never make sense to track based on what is
+currently mapped. So it will be some small list, probably a big linear
+chunk of the IOVA space.
 
+No idea why non-qemu cases would need to be so different?
+
+> We're looking at a very narrow use case with implicit assumptions about
+> the behavior of the user driver.  Some of those assumptions need to be
+> exposed via the uAPI so that userspace can make reasonable choices.
+
+I think we need to see a clear use case for more than a few 10's of
+ranges before we complicate things. I don't see one. If one does crop
+up someday it is easy to add a new query, or some other behavior.
+
+Remember, the devices can't handle huge numbers of ranges anyhow, so
+any userspace should not be designed to have more than a few tens in
+the first place.
+
+Jason
