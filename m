@@ -2,467 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 452BD57959B
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8C25795A9
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 10:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237129AbiGSIxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 04:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
+        id S237161AbiGSI4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 04:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237132AbiGSIxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:53:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0355FD22
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 01:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658220795;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QL/LjGp6/hhB5X9obZ921/tJRebrcy/JjzbVt5Qel7c=;
-        b=d3mHcaKlOY2ZqIwpZaximT0j7rREur0UDllQ7XAPZd5VGkCB/bgZGE950V5byW+kJjxyCN
-        dyZMq13EgLSyyUhRoQOKquXyROTevGvuoiVucs/xx0M6nixAHZ2ZmSZ/8Sszp5QxU3kb43
-        v3WeCCTyA9yOhdVAuFonVgjeUaLcJ8s=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-190-BRoQiyD7P6mAl-M09NejQQ-1; Tue, 19 Jul 2022 04:53:08 -0400
-X-MC-Unique: BRoQiyD7P6mAl-M09NejQQ-1
-Received: by mail-wr1-f71.google.com with SMTP id s16-20020adf9790000000b0021e36810385so227301wrb.15
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 01:53:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=QL/LjGp6/hhB5X9obZ921/tJRebrcy/JjzbVt5Qel7c=;
-        b=Z/OQHFjMoVM6fKMEDND2v2naVOCAUtYv5jeaczmWcTxwlyKnmH9FXMqQtIiHdronqD
-         HbVErFRcjxtLrIYj/FiOvD8SDv/rdrfQIIVH06A95n000B6ublFEEmCIi3WgYCOkSaOR
-         LFhRxuzmO0louVmhmo+FzL8pB4nByUEkTzkx9909aLsUKYR6ORPyysvH3UURVwSj2pRJ
-         9EVdBdJGyfTnsJUv2t1kUGX5LaJ/4Re/WIGSfbta9G2pubHm7KQBr6T++PPqa9JMqEs9
-         W59OKVmkzQVAkFnaAXbHmRuWT+Hy8V42/ufylw22JuWXNX8rU+MJGyBvzVzS7tcWzrVs
-         0xQA==
-X-Gm-Message-State: AJIora+wI+iL9XsozAFeZ6k9027ovvJlUzVXCZ9z007tjZOfbtmehAKs
-        di1JSlO8A5RG0sIKn3AsYbdG5Jt742ssp/4upmak/olqjPIMd7ronRMZEJ4xWF0lGF8nPGnGFwD
-        p4OZkznXi8ZALQPj8
-X-Received: by 2002:a05:6000:1152:b0:21d:7646:a976 with SMTP id d18-20020a056000115200b0021d7646a976mr26119506wrx.416.1658220787648;
-        Tue, 19 Jul 2022 01:53:07 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tlCLY7icpfT1gNd5AcqscJgumEDLXWU9pewSVipJ9rqgFYiEmaj9vwUxMAADEoFR8Z+5VMbA==
-X-Received: by 2002:a05:6000:1152:b0:21d:7646:a976 with SMTP id d18-20020a056000115200b0021d7646a976mr26119483wrx.416.1658220787273;
-        Tue, 19 Jul 2022 01:53:07 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id a13-20020a05600c348d00b003a31d200a7dsm5368485wmq.9.2022.07.19.01.53.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 01:53:06 -0700 (PDT)
-Message-ID: <660684000d6820524c61d733fb076225202dad8e.camel@redhat.com>
+        with ESMTP id S237142AbiGSI4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 04:56:08 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60110.outbound.protection.outlook.com [40.107.6.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B9C13F77;
+        Tue, 19 Jul 2022 01:56:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NTJdbqJPzPbDQ2ag2SjY+6VAVko+BVRnylg3/e+lIn1XOitTLCRW5ylgbfogq3HnESaznpLzwUjNTgXuXG+Ymp5L4kH1R6gG5l3ccxV5C0S8dTO0UgvbPm1rBcn0WtstMa/9VDU2Nx+VpKDW0cWn4tjtaOp0tZimYvjsSorrxwH2moqNVdOmvE9RGqzo/7qNRjTTxpVMC6lvEwYv+1ell5QZPWA9haKD6FH9Lu3IY+q3giHsJRofg1l6aCTa3EyVgXX2kNQf9eIjDWFzvcodJmDxgtoC+20GMhMW/JO78EPrK6HMA88cO8QyGBqPLgm0620g9K2V5g9yA8WIejbhQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Aomm00VJRl/iu86mBcZ+dPDYGWdDF9yz7NVUfvYur+k=;
+ b=Pe1GAXpt98b+rCQXAsuzY4nrBrBHCEo6lqEB3Uljnk6qwLVgHUw5X9vcA/60TiWi7w4mrIt40RQv0m/sArfZak+/0r+iu35DjrNIyj6erm8Evz/kLcCF07fMV5yBjjfh7KgupVlC3oL8QFXCX5NZlbK2FR3XxiK1TEVzoGjt0nru+k/3qkGIrUUKNax7QRZSmJFJ9m8vAxb4yaEh48s6Jkci1ycPogFI/3+FOlro0gdVfIuOroHnSKlt/PvURchAC1B4PgZnwoyYd8aDxIP5zb/McqezJMIbDcQsC0DbzNlQi0rf8BHqNrssso7l4ukPVSNl+smGr4ccKqZI+4jExA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Aomm00VJRl/iu86mBcZ+dPDYGWdDF9yz7NVUfvYur+k=;
+ b=cvymMs6KhfNK8OQb/qV38kTKWGeIvwozzDdAg7nqYiZ41l7RQZdzWdlzahxK+EtbZvjtjyAbIKQkNxLGsuk0F4iSArSwT35Kz2lMYnkpUdR97v/6K8uH9rG188in1LguQnpyZA5f7wsGX7OpTy5bDIt6DY7u5nMhO7MjXRzYpsk=
+Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5b::20)
+ by HE1P190MB0441.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:61::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5438.12; Tue, 19 Jul 2022 08:56:03 +0000
+Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+ ([fe80::9c9d:92b7:367d:e36e]) by GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+ ([fe80::9c9d:92b7:367d:e36e%9]) with mapi id 15.20.5438.023; Tue, 19 Jul 2022
+ 08:56:03 +0000
+From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
 Subject: Re: [PATCH V4 net-next] net: marvell: prestera: add phylink support
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, yevhen.orlov@plvision.eu,
-        taras.chornyi@plvision.eu, linux@armlinux.org.uk, andrew@lunn.ch
-Date:   Tue, 19 Jul 2022 10:53:05 +0200
-In-Reply-To: <20220715193454.7627-1-oleksandr.mazur@plvision.eu>
+Thread-Topic: [PATCH V4 net-next] net: marvell: prestera: add phylink support
+Thread-Index: AQHYmIH7Ix+aAGHCfUeuqdnaoV6+9a2FaOeAgAAAVyQ=
+Date:   Tue, 19 Jul 2022 08:56:02 +0000
+Message-ID: <GV1P190MB2019F8813E2E3A169076EE9AE48F9@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
 References: <20220715193454.7627-1-oleksandr.mazur@plvision.eu>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+ <660684000d6820524c61d733fb076225202dad8e.camel@redhat.com>
+In-Reply-To: <660684000d6820524c61d733fb076225202dad8e.camel@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+suggested_attachment_session_id: 6d7d1be3-d3df-7eaf-e8e8-4f3e71ff70cd
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 994629f2-3da6-48b5-76c2-08da69648254
+x-ms-traffictypediagnostic: HE1P190MB0441:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AiviyWebVO9f9FKKwr64fs5bfZzannsJCOFAPesREMbicORQLO8u76QmvO5XwpQ+sX+zX1R/dGlQHHryPw7w6czZeQjfXHt0Lh8hJlBYwzfb4CJSppUTuqbVih7u0GVKVnsbB3XKwofd1AumBTdJXU6kbNcRMAMYNmZ8EdtzMGb63V4at9oPuErLXwJjND0D9VS92kC/5vXeqKzPyk/bm3sudMPdI9fVOFooWM4PKJBzO6Mrf+/YvnLqW3Mr0eemtg2i/i7i8ljPf71a7h9JS5S3FAvdG5nukjnA6TfgSL57DHAQ6XgXnfWLwBczQwsHS6FIw0Z7k82Q9tqyisONl4bW5ab/bbMfaNUPklfKZJ5+utaKokDNkbSzv+UKOSkrNpL5rzJWLpsAYL51Xxg3cr8WoDe27Vfsnshtbvd9lq3JeowRCsZmSJpw4A5+Ey8YtHzEuBaGje8wO7fVwhgntf0gV1fZqyIfnWmcLWKuA61wR2yexyEB54dRaGwaDPV6NgEcWrghnYMrdJXq9tZUiImuETt6YU6YKCRjI89db7XDE3CLeJxWQGBk/nSwb4oi3tjLgTZoyor9A9WkpqpnslTmLP37wfGnAlfe0qdS5cAtCB1XcPhu4/mSIAK6vHvrBnGCmXJQaBXtJMiA24+1Cfzk9Yq96T6rpxTKrt1EYu/ZMP5fdJ/qf0Rr2hqN3+b0kmW/RyntLTRbiLITGow0nCzfAe1tAGv6xFziDk3UohoTf1+0LSAzUlxGiPk8+h7bOesOzVD56H//YrFPU4dds+CTO0gPdHOiSlHJxf2nqr4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1P190MB2019.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(136003)(376002)(39830400003)(9686003)(86362001)(5660300002)(38070700005)(6506007)(8936002)(41300700001)(7696005)(2906002)(122000001)(26005)(33656002)(4326008)(478600001)(52536014)(44832011)(55016003)(186003)(316002)(66446008)(4744005)(54906003)(76116006)(110136005)(38100700002)(8676002)(66476007)(66946007)(64756008)(66556008)(71200400001)(91956017);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?ey4i/y9qOZ8iI1AdpIDzcqUBiu1wbZq21P5sTDGr69BXE4EqOVv8UJr9YG?=
+ =?iso-8859-1?Q?lss2+AHDzMyhWmSL+R4unvmu4YWbD5Zbuy5hh8uH5N7uQlYdZKiEFJeBXI?=
+ =?iso-8859-1?Q?oVr1JH/9q9WQ1AbJmMv/Bs5t/+Vk38RncC4jbnj2RCnPNkkRFwqR3ncocR?=
+ =?iso-8859-1?Q?eQn2uPhhVF0hRcQEIvBdDLCtuV0m/cnvBm+0K39WNNeGVCNZnQM0IF3F3/?=
+ =?iso-8859-1?Q?RU32yRXM1YWaRnWL7djzitp86gdkgVGfTWjp85PbI+51foHdV/4T4UhbqY?=
+ =?iso-8859-1?Q?BEd9sfrx9c2V4lP5airlftlatvGfDiM0AC2uR3mac+JCYbb4hG5q0p1xH/?=
+ =?iso-8859-1?Q?6jwZ1J2dDrIP9MCK6Av7QXWrMhoehTLy5EoeuJDthXkf3Rq8qPiJXGHo0M?=
+ =?iso-8859-1?Q?qDt0MT20Zvz0OW8kdPIf0y+dL5QFOMP1dgg2wilzGZHHsdq/CKWDuLhGLj?=
+ =?iso-8859-1?Q?V07uwhtU7kTxl+85gHN7c344UHXCg63LjKk2R2lhHR6iXBcRTIeIO2P7tt?=
+ =?iso-8859-1?Q?2PUs673T+NFd8NargAogtaOqCxFbW9UwCGgF9z2ks9KJifQdM0t+Q2f9+B?=
+ =?iso-8859-1?Q?FWr63Po8XnRV6kYA/qNpxluz1sEK7VIZvBNcfCdCO8CfpqI8jZjWfuxyto?=
+ =?iso-8859-1?Q?2p1ulHgUwRBYFcIazC4S4QMyBEozgpV00Dl1weLO09ALvIlAAE3srh8TqJ?=
+ =?iso-8859-1?Q?gb9wPF1rXgnbC/CEH2q9FQpY65RD/bWnDozsLIVJFgY7DRNbeQVfffnJpW?=
+ =?iso-8859-1?Q?mV2XLb2MO1DaCGJdmzKKqkPjP30Bvux4YY+TpvrBPCerkTnt+Ac/ucccWs?=
+ =?iso-8859-1?Q?0R+CvOtfMxtmnm6CRmM56k68RBzSkf5HN9Q+56yeNEd+zVhlPmeYwGLFVt?=
+ =?iso-8859-1?Q?jfwXAUpmjXTAORx6OFqGaOZaygFnzfQ+yrQX8BJ/ubsthB6K0bIOg0cVP0?=
+ =?iso-8859-1?Q?WifnW0LIKcEMHvN3gYWh1Kr2rwEjgBf+mIIky1mDWBsKW5w87M8SBsIYlV?=
+ =?iso-8859-1?Q?1IxpE+ODz6t3aIG9cXgYo1148Y2A6hdAe0R/C9GO0KK5TQT/S7WqMyRJzA?=
+ =?iso-8859-1?Q?CbjLiIpZZazfWxZaP8Lb2eQR/l5PYuLK3gfrR8JjrmDlAVOf4OyWVneCLm?=
+ =?iso-8859-1?Q?6xxA8RLBqFmZEEIgWQGW1Fv0WyWr10fSyEToDYCNoAZU7GuFwLGf5x3Z77?=
+ =?iso-8859-1?Q?WjdzG5i0C+aNs6a5VX7shKBY4kDq9u4BD0ZW7zaHkZFxNs2A2hq0+GhMcK?=
+ =?iso-8859-1?Q?u8S/nAOsUTGUGPdHGLH116/LeWb4wMU7/o1mhRzle3tk+VNreW6rlkawaU?=
+ =?iso-8859-1?Q?CN4TZjNENXj7uYhUmkFX2ISrdsDljvi00KJwdl1GemHmpT5kQuu6K14op3?=
+ =?iso-8859-1?Q?5C0HgKwEh74US9lP5oFcKgWYAh/1Zr87EXE+3QIT1xeh06ZO+ZXiE+M+QA?=
+ =?iso-8859-1?Q?H6aRIgNxsGBtvO9F+x1lDe/lAtijrdI7DS1AquQjZ0LgcgzPyk4XrM7qjC?=
+ =?iso-8859-1?Q?dwK7nVtZqSruK54yCX6FfFcbUIayF0ITsAhPv4AoCb68vttjb0rU8XwcgR?=
+ =?iso-8859-1?Q?0aDpHSR9GepBWmlLRgtFFf1e20KU4zaz1BVCaOvt661kv4T5R64euQB/8z?=
+ =?iso-8859-1?Q?0Cbm4gOx+Sc8T7D+chxwFbVPIf9cIh+b1z?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 994629f2-3da6-48b5-76c2-08da69648254
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2022 08:56:03.0097
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Liy/H6Evrw3a4cH6ChAYJv4zc6qFt/MLRb8dcF/XLe1PB+e4szNkhk33ERsSHw+bO2W/hhyqCV8ISPFHcPOv18kZ3sTN8mm2Ak/mluleUVQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0441
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-07-15 at 22:34 +0300, Oleksandr Mazur wrote:
-> For SFP port prestera driver will use kernel
-> phylink infrastucture to configure port mode based on
-> the module that has beed inserted
-> 
-> Co-developed-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-> Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
-> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> ---
-> PATCH V4:
->   - move changelog under threeline separator.
->   - add small comment that explains reason for
->     empty pcs 'an_restart' function.
-> PATCH V3:
->   - force inband mode for SGMII
->   - fix >80 chars warning of checkpatch where possible (2/5)
->   - structure phylink_mac_change alongside phylink-related if-clause;
-> PATCH V2:
->   - fix mistreat of bitfield values as if they were bools.
->   - remove phylink_config ifdefs.
->   - remove obsolete phylink pcs / mac callbacks;
->   - rework mac (/pcs) config to not look for speed / duplex
->     parameters while link is not yet set up.
->   - remove unused functions.
->   - add phylink select cfg to prestera Kconfig.
-> 
->  drivers/net/ethernet/marvell/prestera/Kconfig |   1 +
->  .../net/ethernet/marvell/prestera/prestera.h  |   9 +
->  .../marvell/prestera/prestera_ethtool.c       |  28 +-
->  .../marvell/prestera/prestera_ethtool.h       |   3 -
->  .../ethernet/marvell/prestera/prestera_main.c | 353 ++++++++++++++++--
->  5 files changed, 332 insertions(+), 62 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/prestera/Kconfig b/drivers/net/ethernet/marvell/prestera/Kconfig
-> index b6f20e2034c6..f2f7663c3d10 100644
-> --- a/drivers/net/ethernet/marvell/prestera/Kconfig
-> +++ b/drivers/net/ethernet/marvell/prestera/Kconfig
-> @@ -8,6 +8,7 @@ config PRESTERA
->  	depends on NET_SWITCHDEV && VLAN_8021Q
->  	depends on BRIDGE || BRIDGE=n
->  	select NET_DEVLINK
-> +	select PHYLINK
->  	help
->  	  This driver supports Marvell Prestera Switch ASICs family.
->  
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-> index bff9651f0a89..832c27e0c284 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera.h
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-> @@ -7,6 +7,7 @@
->  #include <linux/notifier.h>
->  #include <linux/skbuff.h>
->  #include <linux/workqueue.h>
-> +#include <linux/phylink.h>
->  #include <net/devlink.h>
->  #include <uapi/linux/if_ether.h>
->  
-> @@ -92,6 +93,7 @@ struct prestera_lag {
->  struct prestera_flow_block;
->  
->  struct prestera_port_mac_state {
-> +	bool valid;
->  	u32 mode;
->  	u32 speed;
->  	bool oper;
-> @@ -151,6 +153,12 @@ struct prestera_port {
->  	struct prestera_port_phy_config cfg_phy;
->  	struct prestera_port_mac_state state_mac;
->  	struct prestera_port_phy_state state_phy;
-> +
-> +	struct phylink_config phy_config;
-> +	struct phylink *phy_link;
-> +	struct phylink_pcs phylink_pcs;
-> +
-> +	rwlock_t state_mac_lock;
->  };
->  
->  struct prestera_device {
-> @@ -291,6 +299,7 @@ struct prestera_switch {
->  	u32 mtu_min;
->  	u32 mtu_max;
->  	u8 id;
-> +	struct device_node *np;
->  	struct prestera_router *router;
->  	struct prestera_lag *lags;
->  	struct prestera_counter *counter;
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
-> index 40d5b89573bb..1da7ff889417 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
-> @@ -521,6 +521,9 @@ prestera_ethtool_get_link_ksettings(struct net_device *dev,
->  	ecmd->base.speed = SPEED_UNKNOWN;
->  	ecmd->base.duplex = DUPLEX_UNKNOWN;
->  
-> +	if (port->phy_link)
-> +		return phylink_ethtool_ksettings_get(port->phy_link, ecmd);
-> +
->  	ecmd->base.autoneg = port->autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
->  
->  	if (port->caps.type == PRESTERA_PORT_TYPE_TP) {
-> @@ -648,6 +651,9 @@ prestera_ethtool_set_link_ksettings(struct net_device *dev,
->  	u8 adver_fec;
->  	int err;
->  
-> +	if (port->phy_link)
-> +		return phylink_ethtool_ksettings_set(port->phy_link, ecmd);
-> +
->  	err = prestera_port_type_set(ecmd, port);
->  	if (err)
->  		return err;
-> @@ -782,28 +788,6 @@ static int prestera_ethtool_nway_reset(struct net_device *dev)
->  	return -EINVAL;
->  }
->  
-> -void prestera_ethtool_port_state_changed(struct prestera_port *port,
-> -					 struct prestera_port_event *evt)
-> -{
-> -	struct prestera_port_mac_state *smac = &port->state_mac;
-> -
-> -	smac->oper = evt->data.mac.oper;
-> -
-> -	if (smac->oper) {
-> -		smac->mode = evt->data.mac.mode;
-> -		smac->speed = evt->data.mac.speed;
-> -		smac->duplex = evt->data.mac.duplex;
-> -		smac->fc = evt->data.mac.fc;
-> -		smac->fec = evt->data.mac.fec;
-> -	} else {
-> -		smac->mode = PRESTERA_MAC_MODE_MAX;
-> -		smac->speed = SPEED_UNKNOWN;
-> -		smac->duplex = DUPLEX_UNKNOWN;
-> -		smac->fc = 0;
-> -		smac->fec = 0;
-> -	}
-> -}
-> -
->  const struct ethtool_ops prestera_ethtool_ops = {
->  	.get_drvinfo = prestera_ethtool_get_drvinfo,
->  	.get_link_ksettings = prestera_ethtool_get_link_ksettings,
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
-> index 9eb18e99dea6..bd5600886bc6 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
-> @@ -11,7 +11,4 @@ struct prestera_port;
->  
->  extern const struct ethtool_ops prestera_ethtool_ops;
->  
-> -void prestera_ethtool_port_state_changed(struct prestera_port *port,
-> -					 struct prestera_port_event *evt);
-> -
->  #endif /* _PRESTERA_ETHTOOL_H_ */
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> index ea5bd5069826..192ab706e45e 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-> @@ -9,6 +9,7 @@
->  #include <linux/of.h>
->  #include <linux/of_net.h>
->  #include <linux/if_vlan.h>
-> +#include <linux/phylink.h>
->  
->  #include "prestera.h"
->  #include "prestera_hw.h"
-> @@ -142,18 +143,24 @@ static int prestera_port_open(struct net_device *dev)
->  	struct prestera_port_mac_config cfg_mac;
->  	int err = 0;
->  
-> -	if (port->caps.transceiver == PRESTERA_PORT_TCVR_SFP) {
-> -		err = prestera_port_cfg_mac_read(port, &cfg_mac);
-> -		if (!err) {
-> -			cfg_mac.admin = true;
-> -			err = prestera_port_cfg_mac_write(port, &cfg_mac);
-> -		}
-> +	if (port->phy_link) {
-> +		phylink_start(port->phy_link);
->  	} else {
-> -		port->cfg_phy.admin = true;
-> -		err = prestera_hw_port_phy_mode_set(port, true, port->autoneg,
-> -						    port->cfg_phy.mode,
-> -						    port->adver_link_modes,
-> -						    port->cfg_phy.mdix);
-> +		if (port->caps.transceiver == PRESTERA_PORT_TCVR_SFP) {
-> +			err = prestera_port_cfg_mac_read(port, &cfg_mac);
-> +			if (!err) {
-> +				cfg_mac.admin = true;
-> +				err = prestera_port_cfg_mac_write(port,
-> +								  &cfg_mac);
-> +			}
-> +		} else {
-> +			port->cfg_phy.admin = true;
-> +			err = prestera_hw_port_phy_mode_set(port, true,
-> +							    port->autoneg,
-> +							    port->cfg_phy.mode,
-> +							    port->adver_link_modes,
-> +							    port->cfg_phy.mdix);
-> +		}
->  	}
->  
->  	netif_start_queue(dev);
-> @@ -169,23 +176,260 @@ static int prestera_port_close(struct net_device *dev)
->  
->  	netif_stop_queue(dev);
->  
-> -	if (port->caps.transceiver == PRESTERA_PORT_TCVR_SFP) {
-> +	if (port->phy_link) {
-> +		phylink_stop(port->phy_link);
-> +		phylink_disconnect_phy(port->phy_link);
->  		err = prestera_port_cfg_mac_read(port, &cfg_mac);
->  		if (!err) {
->  			cfg_mac.admin = false;
->  			prestera_port_cfg_mac_write(port, &cfg_mac);
->  		}
->  	} else {
-> -		port->cfg_phy.admin = false;
-> -		err = prestera_hw_port_phy_mode_set(port, false, port->autoneg,
-> -						    port->cfg_phy.mode,
-> -						    port->adver_link_modes,
-> -						    port->cfg_phy.mdix);
-> +		if (port->caps.transceiver == PRESTERA_PORT_TCVR_SFP) {
-> +			err = prestera_port_cfg_mac_read(port, &cfg_mac);
-> +			if (!err) {
-> +				cfg_mac.admin = false;
-> +				prestera_port_cfg_mac_write(port, &cfg_mac);
-> +			}
-> +		} else {
-> +			port->cfg_phy.admin = false;
-> +			err = prestera_hw_port_phy_mode_set(port, false, port->autoneg,
-> +							    port->cfg_phy.mode,
-> +							    port->adver_link_modes,
-> +							    port->cfg_phy.mdix);
-> +		}
->  	}
->  
->  	return err;
->  }
->  
-> +static void
-> +prestera_port_mac_state_cache_read(struct prestera_port *port,
-> +				   struct prestera_port_mac_state *state)
-> +{
-> +	read_lock(&port->state_mac_lock);
-> +	*state = port->state_mac;
-> +	read_unlock(&port->state_mac_lock);
-
-read locks are subject to some non fair behavior. That can hurts when
-the relevant lock is accessed quite often/is under contention - likely
-not here, right? - but perhaps a plain spinlock would be nicer.
-
-> +}
-> +
-> +static void
-> +prestera_port_mac_state_cache_write(struct prestera_port *port,
-> +				    struct prestera_port_mac_state *state)
-> +{
-> +	write_lock(&port->state_mac_lock);
-> +	port->state_mac = *state;
-> +	write_unlock(&port->state_mac_lock);
-> +}
-> +
-> +static struct prestera_port *prestera_pcs_to_port(struct phylink_pcs *pcs)
-> +{
-> +	return container_of(pcs, struct prestera_port, phylink_pcs);
-> +}
-> +
-> +static void prestera_mac_config(struct phylink_config *config,
-> +				unsigned int an_mode,
-> +				const struct phylink_link_state *state)
-> +{
-> +}
-> +
-> +static void prestera_mac_link_down(struct phylink_config *config,
-> +				   unsigned int mode, phy_interface_t interface)
-> +{
-> +	struct net_device *ndev = to_net_dev(config->dev);
-> +	struct prestera_port *port = netdev_priv(ndev);
-> +	struct prestera_port_mac_state state_mac;
-> +
-> +	/* Invalidate. Parameters will update on next link event. */
-> +	memset(&state_mac, 0, sizeof(state_mac));
-> +	state_mac.valid = false;
-> +	prestera_port_mac_state_cache_write(port, &state_mac);
-> +}
-> +
-> +static void prestera_mac_link_up(struct phylink_config *config,
-> +				 struct phy_device *phy,
-> +				 unsigned int mode, phy_interface_t interface,
-> +				 int speed, int duplex,
-> +				 bool tx_pause, bool rx_pause)
-> +{
-> +}
-> +
-> +static struct phylink_pcs *
-> +prestera_mac_select_pcs(struct phylink_config *config,
-> +			phy_interface_t interface)
-> +{
-> +	struct net_device *dev = to_net_dev(config->dev);
-> +	struct prestera_port *port = netdev_priv(dev);
-> +
-> +	return &port->phylink_pcs;
-> +}
-> +
-> +static void prestera_pcs_get_state(struct phylink_pcs *pcs,
-> +				   struct phylink_link_state *state)
-> +{
-> +	struct prestera_port *port = container_of(pcs, struct prestera_port,
-> +						  phylink_pcs);
-> +	struct prestera_port_mac_state smac;
-> +
-> +	prestera_port_mac_state_cache_read(port, &smac);
-> +
-> +	if (smac.valid) {
-> +		state->link = smac.oper ? 1 : 0;
-> +		/* AN is completed, when port is up */
-> +		state->an_complete = (smac.oper && port->autoneg) ? 1 : 0;
-> +		state->speed = smac.speed;
-> +		state->duplex = smac.duplex;
-> +	} else {
-> +		state->link = 0;
-> +		state->an_complete = 0;
-> +	}
-> +}
-> +
-> +static int prestera_pcs_config(struct phylink_pcs *pcs,
-> +			       unsigned int mode,
-> +			       phy_interface_t interface,
-> +			       const unsigned long *advertising,
-> +			       bool permit_pause_to_mac)
-> +{
-> +	struct prestera_port *port = port = prestera_pcs_to_port(pcs);
-> +	struct prestera_port_mac_config cfg_mac;
-> +	int err;
-> +
-> +	err = prestera_port_cfg_mac_read(port, &cfg_mac);
-> +	if (err)
-> +		return err;
-> +
-> +	cfg_mac.admin = true;
-> +	cfg_mac.fec = PRESTERA_PORT_FEC_OFF;
-> +
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_10GBASER:
-> +		cfg_mac.speed = SPEED_10000;
-> +		cfg_mac.inband = 0;
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SR_LR;
-> +		break;
-> +	case PHY_INTERFACE_MODE_2500BASEX:
-> +		cfg_mac.speed = SPEED_2500;
-> +		cfg_mac.duplex = DUPLEX_FULL;
-> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					  advertising);
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
-> +		break;
-> +	case PHY_INTERFACE_MODE_SGMII:
-> +		cfg_mac.inband = 1;
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
-> +		break;
-> +	case PHY_INTERFACE_MODE_1000BASEX:
-> +	default:
-> +		cfg_mac.speed = SPEED_1000;
-> +		cfg_mac.duplex = DUPLEX_FULL;
-> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					  advertising);
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_1000BASE_X;
-> +		break;
-> +	}
-> +
-> +	err = prestera_port_cfg_mac_write(port, &cfg_mac);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static void prestera_pcs_an_restart(struct phylink_pcs *pcs)
-> +{
-> +	/*
-> +	 * TODO: add 100basex AN restart support
-
-Possibly typo above ? s/100basex/1000basex/
-
-
-Cheers,
-
-Paolo
-
+=0A=
+>> +=0A=
+>> +static void prestera_pcs_an_restart(struct phylink_pcs *pcs)=0A=
+>> +{=0A=
+>> +=A0=A0=A0=A0 /*=0A=
+>> +=A0=A0=A0=A0=A0 * TODO: add 100basex AN restart support=0A=
+=0A=
+>Possibly typo above ? s/100basex/1000basex/=0A=
+=0A=
+Hello Paolo, yes, you're right.=0A=
+So, should i wait some time before resubmitting patch again with changes - =
+V5 - or it's okay to resubmit new version now?=
