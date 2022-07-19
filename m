@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FDA57A1E2
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D86057A1E5
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239535AbiGSOkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
+        id S239360AbiGSOkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239338AbiGSOj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:39:58 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CC654AD1
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:58 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id h14so531959ilq.12
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:58 -0700 (PDT)
+        with ESMTP id S239349AbiGSOj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:39:59 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFCD54AD5
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:59 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id c17so6735198ilq.5
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:35:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xzUp16TsQa3JipHhgAlv6J/Xx8dlsb3ilhBhSisObpk=;
-        b=NHP7zdBWXkjeJbTso42Mfy3WczpsvYvgt2g0BtRjbaDuzK7gAp4tTNO/KfRwMLHfXK
-         oCWc/97TA933XwvT7jeL6qgY3jVrsbnWtwQilJtx2FFR4vJrqmBgyOf5xj0xat6dmoMn
-         47JTIS9l9YAMm4WnJVH1Qm9Ko8UspQ4/+hH1uy6AjeDP5wi/dCPzK05Ix/UQAQBPGHnd
-         vfqXnx1pERL3UZRnuoQCPHCpZlabG56bJMCfbpPze9Kw6XnPZ5lcGs/NrSCM28buLEKL
-         KDJgHgbvywytGVtRxMos3k+Mr2aTOLqQBLz9PYVQVCd+tly+rr8z/rGqYnzRXZH3+KhV
-         8qzQ==
+        bh=Cj8uxIhpugu8STWvVDJnIKL94YZQlOGZj9xNEZp00WI=;
+        b=mZ7jRAYaonM68F+sHfRyTzo0O640deU6APgrKozUzeRSlwFDw+WjfqI/gi5+V19iO6
+         L/YT5FeVHPjMzqzBtgZFpJshlDCf+Y02bC4pY9yWr/bTYq0ffyQwYbAj/PPcHvCx1VtX
+         dcBdmRcqtz3x+vSHax4OpCMNQJwRkRN0nrRGNFrry/ItunxOV1eZjpmVEXSIkEvqMckM
+         6NGQEne9vFsEk+gbq2G9ypvEXWOqUsH1qfuKmNC1A1TiuGpv8W8aNZqhmoPE72IzB5Gv
+         C+Xv0JbVlTasQpJV4fHeeaS4BXhV94sDr94cmsGA6BxVE5CuHe6kpz2lkwFtnk+BLGBt
+         4PkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xzUp16TsQa3JipHhgAlv6J/Xx8dlsb3ilhBhSisObpk=;
-        b=ZgHYXPLNo5nuJp3rzxtZkc2g/tyaKJR0U2cbU0EM79yJndaVpdjGxE2L8xFMNOSTD8
-         T4rpmHGIhNzVmwMqzPAwx11Hy51W9hZWzNr7+S7kp5XC1TmzqzqRpI2SV39pgDq6h6dt
-         aSXzzzZNFgqkmuBBh29/Y5XxnJ6Q0y12PJfQZrroziBOulg+P44Peu0NaTXUe+HHjq9f
-         LwzVoFhR3Et6bwIbvQG1kxhgwWr3sKWqHM58MFIztwvxg9RVLVMdNGQQawQyUZKfRPjY
-         hMzQtltgkfU9ZO0z2Ob6k76kyEvrdszmKs2lVMaKp9Kd/CjU8ryENpHCze4p33+FUXob
-         6nOA==
-X-Gm-Message-State: AJIora+JQ836UGfXupUOK4Pm5oJSH42twz/kWssAxNiJWN/2g5xn0cIj
-        i51elmBq0pi18XKJ1YjvQozmSQ==
-X-Google-Smtp-Source: AGRyM1tEqutqSPSRY0g9Km97DNuoMzKB13fGREF6wrXyd+UMVywqUlXmZ3GUf5fudnDZ8+Y3cIJ5hg==
-X-Received: by 2002:a05:6e02:1bad:b0:2da:d6d0:a58 with SMTP id n13-20020a056e021bad00b002dad6d00a58mr16080808ili.19.1658241358253;
-        Tue, 19 Jul 2022 07:35:58 -0700 (PDT)
+        bh=Cj8uxIhpugu8STWvVDJnIKL94YZQlOGZj9xNEZp00WI=;
+        b=kG/UK9RhaDpCqlOsYtO4Q/fYTQA1Pu9iIjroyRXk0FabOFS+3QRXQ/LOBr7ec3SdPF
+         6SiVP7OCURVH8mnZz90naQqpSng3/1MSuXIvjjc0qRxVQYC8AuzPMexGHhbthVdMD9GN
+         QRwNpcR3jRWjIIGrLM4AvRLwp8txVGH2IcRjYtRec96+N5RGsf+wpxGkw7ek2+Wgc8eW
+         Zi5E1s31FAGeTWO4DlXRyv70+kPZtCFnaozzAnyJRxUZYZpDilPm4fKpjgj1EInhH+2U
+         9hi1n0NL4fxZ7x/HCh/47TVJFSWXTvV45HNAODs794ewyp2URKB07rSC9oianipGMp4p
+         z98w==
+X-Gm-Message-State: AJIora90nwLWPSE1nAHtZuIJdDNFMh+x2T4itQY4pgOxG+ynSu7cPGGH
+        5BHtf0gZwR9YMyhTjuMkZvIHmwwK2tmOtw==
+X-Google-Smtp-Source: AGRyM1tFOW+TfFfDeVlvuHOfS6ym43Do/9ICPUquZpRo5oIHvzFNgp2oXhtx5ghe6Ixo8BD6v5IY4g==
+X-Received: by 2002:a05:6e02:1c2d:b0:2dc:ec92:6ef2 with SMTP id m13-20020a056e021c2d00b002dcec926ef2mr5043157ilh.179.1658241359290;
+        Tue, 19 Jul 2022 07:35:59 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.35.57
+        by smtp.gmail.com with ESMTPSA id t16-20020a056602141000b00675a83bc1e3sm7286559iov.13.2022.07.19.07.35.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:35:57 -0700 (PDT)
+        Tue, 19 Jul 2022 07:35:58 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -55,9 +55,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/5] net: ipa: add a transaction committed list
-Date:   Tue, 19 Jul 2022 09:35:49 -0500
-Message-Id: <20220719143553.280908-2-elder@linaro.org>
+Subject: [PATCH net-next 2/5] net: ipa: rearrange transaction initialization
+Date:   Tue, 19 Jul 2022 09:35:50 -0500
+Message-Id: <20220719143553.280908-3-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220719143553.280908-1-elder@linaro.org>
 References: <20220719143553.280908-1-elder@linaro.org>
@@ -65,129 +65,145 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We currently put a transaction on the pending list when it has
-been committed.  But until the channel's doorbell rings, these
-transactions aren't actually "owned" by the hardware yet.
+The transaction map is really associated with the transaction pool;
+move its definition earlier in the gsi_trans_info structure.
 
-Add a new "committed" state (and list), to represent transactions
-that have been committed but not yet sent to hardware.  Define
-"pending" to mean committed transactions that have been sent
-to hardware but have not yet completed.
+Rearrange initialization in gsi_channel_trans_init() so it
+sets the tre_avail value first, then initializes the transaction
+pool, and finally allocating the transaction map.
+
+Update comments.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c       |  5 ++++-
- drivers/net/ipa/gsi.h       |  3 ++-
- drivers/net/ipa/gsi_trans.c | 24 +++++++++++++++++++++---
- 3 files changed, 27 insertions(+), 5 deletions(-)
+ drivers/net/ipa/gsi.h       |  3 +-
+ drivers/net/ipa/gsi_trans.c | 60 +++++++++++++++++++------------------
+ 2 files changed, 33 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 4e46974a69ecd..c70fd4bab1d68 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -718,6 +718,9 @@ static struct gsi_trans *gsi_channel_trans_last(struct gsi_channel *channel)
- 	 */
- 	if (channel->toward_ipa) {
- 		list = &trans_info->alloc;
-+		if (!list_empty(list))
-+			goto done;
-+		list = &trans_info->committed;
- 		if (!list_empty(list))
- 			goto done;
- 		list = &trans_info->pending;
-@@ -1363,7 +1366,7 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
-  * first *unfilled* event in the ring (following the last filled one).
-  *
-  * Events are sequential within the event ring, and transactions are
-- * sequential within the transaction pool.
-+ * sequential within the transaction array.
-  *
-  * Note that @index always refers to an element *within* the event ring.
-  */
 diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
-index bad1a78a96ede..d06fc46431d5b 100644
+index d06fc46431d5b..13bf4327b70eb 100644
 --- a/drivers/net/ipa/gsi.h
 +++ b/drivers/net/ipa/gsi.h
-@@ -88,7 +88,8 @@ struct gsi_trans_info {
+@@ -82,9 +82,10 @@ struct gsi_trans_pool {
+ struct gsi_trans_info {
+ 	atomic_t tre_avail;		/* TREs available for allocation */
+ 	struct gsi_trans_pool pool;	/* transaction pool */
++	struct gsi_trans **map;		/* TRE -> transaction map */
++
+ 	struct gsi_trans_pool sg_pool;	/* scatterlist pool */
+ 	struct gsi_trans_pool cmd_pool;	/* command payload DMA pool */
+-	struct gsi_trans **map;		/* TRE -> transaction map */
  
  	spinlock_t spinlock;		/* protects updates to the lists */
  	struct list_head alloc;		/* allocated, not committed */
--	struct list_head pending;	/* committed, awaiting completion */
-+	struct list_head committed;	/* committed, awaiting doorbell */
-+	struct list_head pending;	/* pending, awaiting completion */
- 	struct list_head complete;	/* completed, awaiting poll */
- 	struct list_head polled;	/* returned by gsi_channel_poll_one() */
- };
 diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index 29496ca15825f..1db7497a64745 100644
+index 1db7497a64745..b17f7b5a498be 100644
 --- a/drivers/net/ipa/gsi_trans.c
 +++ b/drivers/net/ipa/gsi_trans.c
-@@ -241,15 +241,31 @@ struct gsi_trans *gsi_channel_trans_complete(struct gsi_channel *channel)
- 					struct gsi_trans, links);
- }
- 
--/* Move a transaction from the allocated list to the pending list */
-+/* Move a transaction from the allocated list to the committed list */
-+static void gsi_trans_move_committed(struct gsi_trans *trans)
-+{
-+	struct gsi_channel *channel = &trans->gsi->channel[trans->channel_id];
-+	struct gsi_trans_info *trans_info = &channel->trans_info;
-+
-+	spin_lock_bh(&trans_info->spinlock);
-+
-+	list_move_tail(&trans->links, &trans_info->committed);
-+
-+	spin_unlock_bh(&trans_info->spinlock);
-+}
-+
-+/* Move transactions from the committed list to the pending list */
- static void gsi_trans_move_pending(struct gsi_trans *trans)
+@@ -709,6 +709,7 @@ void gsi_trans_read_byte_done(struct gsi *gsi, u32 channel_id)
+ int gsi_channel_trans_init(struct gsi *gsi, u32 channel_id)
  {
- 	struct gsi_channel *channel = &trans->gsi->channel[trans->channel_id];
- 	struct gsi_trans_info *trans_info = &channel->trans_info;
-+	struct list_head list;
+ 	struct gsi_channel *channel = &gsi->channel[channel_id];
++	u32 tre_count = channel->tre_count;
+ 	struct gsi_trans_info *trans_info;
+ 	u32 tre_max;
+ 	int ret;
+@@ -716,30 +717,40 @@ int gsi_channel_trans_init(struct gsi *gsi, u32 channel_id)
+ 	/* Ensure the size of a channel element is what's expected */
+ 	BUILD_BUG_ON(sizeof(struct gsi_tre) != GSI_RING_ELEMENT_SIZE);
  
- 	spin_lock_bh(&trans_info->spinlock);
+-	/* The map array is used to determine what transaction is associated
+-	 * with a TRE that the hardware reports has completed.  We need one
+-	 * map entry per TRE.
+-	 */
+ 	trans_info = &channel->trans_info;
+-	trans_info->map = kcalloc(channel->tre_count, sizeof(*trans_info->map),
+-				  GFP_KERNEL);
+-	if (!trans_info->map)
+-		return -ENOMEM;
  
--	list_move_tail(&trans->links, &trans_info->pending);
-+	/* Move this transaction and all predecessors to the pending list */
-+	list_cut_position(&list, &trans_info->committed, &trans->links);
-+	list_splice_tail(&list, &trans_info->pending);
+-	/* We can't use more TREs than there are available in the ring.
++	/* The tre_avail field is what ultimately limits the number of
++	 * outstanding transactions and their resources.  A transaction
++	 * allocation succeeds only if the TREs available are sufficient
++	 * for what the transaction might need.
++	 */
++	tre_max = gsi_channel_tre_max(channel->gsi, channel_id);
++	atomic_set(&trans_info->tre_avail, tre_max);
++
++	/* We can't use more TREs than the number available in the ring.
+ 	 * This limits the number of transactions that can be oustanding.
+ 	 * Worst case is one TRE per transaction (but we actually limit
+-	 * it to something a little less than that).  We allocate resources
+-	 * for transactions (including transaction structures) based on
+-	 * this maximum number.
++	 * it to something a little less than that).  By allocating a
++	 * power-of-two number of transactions we can use an index
++	 * modulo that number to determine the next one that's free.
++	 * Transactions are allocated one at a time.
+ 	 */
+-	tre_max = gsi_channel_tre_max(channel->gsi, channel_id);
+-
+-	/* Transactions are allocated one at a time. */
+ 	ret = gsi_trans_pool_init(&trans_info->pool, sizeof(struct gsi_trans),
+ 				  tre_max, 1);
+ 	if (ret)
+-		goto err_kfree;
++		return -ENOMEM;
++
++	/* A completion event contains a pointer to the TRE that caused
++	 * the event (which will be the last one used by the transaction).
++	 * Each entry in this map records the transaction associated
++	 * with a corresponding completed TRE.
++	 */
++	trans_info->map = kcalloc(tre_count, sizeof(*trans_info->map),
++				  GFP_KERNEL);
++	if (!trans_info->map) {
++		ret = -ENOMEM;
++		goto err_trans_free;
++	}
  
- 	spin_unlock_bh(&trans_info->spinlock);
- }
-@@ -581,13 +597,14 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	if (channel->toward_ipa)
- 		gsi_trans_tx_committed(trans);
- 
--	gsi_trans_move_pending(trans);
-+	gsi_trans_move_committed(trans);
- 
- 	/* Ring doorbell if requested, or if all TREs are allocated */
- 	if (ring_db || !atomic_read(&channel->trans_info.tre_avail)) {
- 		/* Report what we're handing off to hardware for TX channels */
- 		if (channel->toward_ipa)
- 			gsi_trans_tx_queued(trans);
-+		gsi_trans_move_pending(trans);
- 		gsi_channel_doorbell(channel);
- 	}
- }
-@@ -747,6 +764,7 @@ int gsi_channel_trans_init(struct gsi *gsi, u32 channel_id)
+ 	/* A transaction uses a scatterlist array to represent the data
+ 	 * transfers implemented by the transaction.  Each scatterlist
+@@ -751,16 +762,7 @@ int gsi_channel_trans_init(struct gsi *gsi, u32 channel_id)
+ 				  sizeof(struct scatterlist),
+ 				  tre_max, channel->trans_tre_max);
+ 	if (ret)
+-		goto err_trans_pool_exit;
+-
+-	/* Finally, the tre_avail field is what ultimately limits the number
+-	 * of outstanding transactions and their resources.  A transaction
+-	 * allocation succeeds only if the TREs available are sufficient for
+-	 * what the transaction might need.  Transaction resource pools are
+-	 * sized based on the maximum number of outstanding TREs, so there
+-	 * will always be resources available if there are TREs available.
+-	 */
+-	atomic_set(&trans_info->tre_avail, tre_max);
++		goto err_map_free;
  
  	spin_lock_init(&trans_info->spinlock);
  	INIT_LIST_HEAD(&trans_info->alloc);
-+	INIT_LIST_HEAD(&trans_info->committed);
- 	INIT_LIST_HEAD(&trans_info->pending);
- 	INIT_LIST_HEAD(&trans_info->complete);
- 	INIT_LIST_HEAD(&trans_info->polled);
+@@ -771,10 +773,10 @@ int gsi_channel_trans_init(struct gsi *gsi, u32 channel_id)
+ 
+ 	return 0;
+ 
+-err_trans_pool_exit:
+-	gsi_trans_pool_exit(&trans_info->pool);
+-err_kfree:
++err_map_free:
+ 	kfree(trans_info->map);
++err_trans_free:
++	gsi_trans_pool_exit(&trans_info->pool);
+ 
+ 	dev_err(gsi->dev, "error %d initializing channel %u transactions\n",
+ 		ret, channel_id);
 -- 
 2.34.1
 
