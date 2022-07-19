@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC0BB57A848
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665D657A84C
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 22:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239357AbiGSUfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 16:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
+        id S239720AbiGSUfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 16:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239310AbiGSUfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:35:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9661D42AED
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 13:35:37 -0700 (PDT)
+        with ESMTP id S239576AbiGSUfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 16:35:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D785145074
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 13:35:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AA0E61999
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 20:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECCBC341C6;
-        Tue, 19 Jul 2022 20:35:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75278B81D1C
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 20:35:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 299EFC341CA;
+        Tue, 19 Jul 2022 20:35:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658262936;
-        bh=ynYev6bk8VduQUxFTQKhJ1SItkon99frjqPAoHn8uGQ=;
+        s=k20201202; t=1658262937;
+        bh=2rewzlkkqZlTAprRmze4ZIXe1fQcgNdl0cYCoEnsOTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=he5EaQBOWKgjFVp/d2HSZrCz5j+3OaDikrvs8ZdzmRXq0UvYmYOzUqt0sqGAdWxfq
-         3OdoDmhh1RHy/T8rNEquy5gmrdePmzMexfNc6b600mayna1MZDConUxvgJTBjKw2dk
-         EEF1eTLELWIJp9PNufKqWJzVBuHK3OHvESj6dxahuxCFoP47e2EZ1poUS8QZ7Es91q
-         ItnvzMYx6i6neAM9NrqzFV1KvRJm+ttlOruLMsJ0uP+rAtRspmsFsgEiaRM+JuYngL
-         LTeyZm+oHi4TYBGhJiTe/n2dGVyrvS95pkZJdWbg0/HAZjmPmchqmWsGpM7u40VX5j
-         yoEtOxWPrjBDA==
+        b=V9/5r5uAPR5BaheatW+2psZc1VKRuoxtnWHJtX03Zje64ezrQBH30+UBcTOxC2uzj
+         UapUs53RbepMBwSiHHWOAza9IaWyHexWmrvynaNXIu7r8uty9OlPiUNPInGicuoKV9
+         IsmH/q+W2BOtKCNrKH5ULIkouzGRydl2/eISwZ3Cor9OSeql37LOWEodljE3XSoOZV
+         +v3z2wv5N7YhIZ/FL7FlTcdrr/Acb4oyHwdNYEup4IbuacWmNywLaO+fNzQ0u3nlCc
+         LDZoe2eLCYzR7RRWe8ek34ckt6LgtYKY8ak54cyK+c88qNgAtEbVvYvRwsU4QFLm0A
+         hCRsixMfNX/iw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Moshe Tal <moshet@nvidia.com>
-Subject: [net-next V2 02/13] net/mlx5e: Fix mqprio_rl handling on devlink reload
-Date:   Tue, 19 Jul 2022 13:35:18 -0700
-Message-Id: <20220719203529.51151-3-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Moshe Tal <moshet@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: [net-next V2 03/13] net/mlx5e: HTB, reduce visibility of htb functions
+Date:   Tue, 19 Jul 2022 13:35:19 -0700
+Message-Id: <20220719203529.51151-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220719203529.51151-1-saeed@kernel.org>
 References: <20220719203529.51151-1-saeed@kernel.org>
@@ -55,287 +57,288 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Tal <moshet@nvidia.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Keep mqprio_rl data to params and restore the configuration in case of
-devlink reload.
-Change the location of mqprio_rl resources cleanup so it will be done
-also in reload flow.
+No need to expose all htb tc functions to the main driver file,
+expose only the master htb tc function mlx5e_htb_setup_tc()
+which selects the internal "now static" function to call.
 
-Also, remove the rl pointer from the params, since this is dynamic object
-and saved to priv.
-
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Moshe Tal <moshet@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   3 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 144 +++++++++++++-----
- 2 files changed, 106 insertions(+), 41 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 84 +++++++++++++++----
+ .../net/ethernet/mellanox/mlx5/core/en/qos.h  | 16 +---
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 44 +---------
+ 3 files changed, 70 insertions(+), 74 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index da10061d0c03..5c88c3896b96 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -321,7 +321,8 @@ struct mlx5e_params {
- 		u8 num_tc;
- 		struct netdev_tc_txq tc_to_txq[TC_MAX_QUEUE];
- 		struct {
--			struct mlx5e_mqprio_rl *rl;
-+			u64 max_rate[TC_MAX_QUEUE];
-+			u32 hw_id[TC_MAX_QUEUE];
- 		} channel;
- 	} mqprio;
- 	bool rx_cqe_compress_def;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+index 9db677e9ca9c..c37f346b5a3b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+@@ -2,6 +2,7 @@
+ /* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
+ #include <net/sch_generic.h>
+ 
++#include <net/pkt_cls.h>
+ #include "en.h"
+ #include "params.h"
+ #include "../qos.h"
+@@ -482,10 +483,11 @@ static void mlx5e_qos_deactivate_all_queues(struct mlx5e_channels *chs)
+ 		mlx5e_qos_deactivate_queues(chs->c[i]);
+ }
+ 
+-/* HTB API */
++/* HTB TC handlers */
+ 
+-int mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
+-		       struct netlink_ext_ack *extack)
++static int
++mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
++		   struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *root;
+ 	bool opened;
+@@ -542,7 +544,7 @@ int mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
+ 	return err;
+ }
+ 
+-int mlx5e_htb_root_del(struct mlx5e_priv *priv)
++static int mlx5e_htb_root_del(struct mlx5e_priv *priv)
+ {
+ 	struct mlx5e_qos_node *root;
+ 	int err;
+@@ -607,9 +609,10 @@ static void mlx5e_htb_convert_ceil(struct mlx5e_priv *priv, u64 ceil, u32 *max_a
+ 		ceil, *max_average_bw);
+ }
+ 
+-int mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
+-			       u32 parent_classid, u64 rate, u64 ceil,
+-			       struct netlink_ext_ack *extack)
++static int
++mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
++			   u32 parent_classid, u64 rate, u64 ceil,
++			   struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *node, *parent;
+ 	int qid;
+@@ -661,8 +664,9 @@ int mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
+ 	return mlx5e_qid_from_qos(&priv->channels, node->qid);
+ }
+ 
+-int mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
+-			    u64 rate, u64 ceil, struct netlink_ext_ack *extack)
++static int
++mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
++			u64 rate, u64 ceil, struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *node, *child;
+ 	int err, tmp_err;
+@@ -781,8 +785,8 @@ static void mlx5e_reset_qdisc(struct net_device *dev, u16 qid)
+ 	spin_unlock_bh(qdisc_lock(qdisc));
+ }
+ 
+-int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
+-		       struct netlink_ext_ack *extack)
++static int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *node;
+ 	struct netdev_queue *txq;
+@@ -876,8 +880,9 @@ int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
+ 	return 0;
+ }
+ 
+-int mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
+-			    struct netlink_ext_ack *extack)
++static int
++mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
++			struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *node, *parent;
+ 	u32 old_hw_id, new_hw_id;
+@@ -956,8 +961,9 @@ int mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
+ 	return 0;
+ }
+ 
+-static int mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_node *node,
+-				     struct netlink_ext_ack *extack)
++static int
++mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_node *node,
++			  struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_qos_node *child;
+ 	int err = 0;
+@@ -988,8 +994,9 @@ static int mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_n
+ 	return err;
+ }
+ 
+-int mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
+-			  struct netlink_ext_ack *extack)
++static int
++mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
++		      struct netlink_ext_ack *extack)
+ {
+ 	u32 bw_share, max_average_bw;
+ 	struct mlx5e_qos_node *node;
+@@ -1028,6 +1035,48 @@ int mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ce
+ 	return err;
+ }
+ 
++/* HTB API */
++int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb)
++{
++	int res;
++
++	switch (htb->command) {
++	case TC_HTB_CREATE:
++		return mlx5e_htb_root_add(priv, htb->parent_classid, htb->classid,
++					  htb->extack);
++	case TC_HTB_DESTROY:
++		return mlx5e_htb_root_del(priv);
++	case TC_HTB_LEAF_ALLOC_QUEUE:
++		res = mlx5e_htb_leaf_alloc_queue(priv, htb->classid, htb->parent_classid,
++						 htb->rate, htb->ceil, htb->extack);
++		if (res < 0)
++			return res;
++		htb->qid = res;
++		return 0;
++	case TC_HTB_LEAF_TO_INNER:
++		return mlx5e_htb_leaf_to_inner(priv, htb->parent_classid, htb->classid,
++					       htb->rate, htb->ceil, htb->extack);
++	case TC_HTB_LEAF_DEL:
++		return mlx5e_htb_leaf_del(priv, &htb->classid, htb->extack);
++	case TC_HTB_LEAF_DEL_LAST:
++	case TC_HTB_LEAF_DEL_LAST_FORCE:
++		return mlx5e_htb_leaf_del_last(priv, htb->classid,
++					       htb->command == TC_HTB_LEAF_DEL_LAST_FORCE,
++					       htb->extack);
++	case TC_HTB_NODE_MODIFY:
++		return mlx5e_htb_node_modify(priv, htb->classid, htb->rate, htb->ceil,
++					     htb->extack);
++	case TC_HTB_LEAF_QUERY_QUEUE:
++		res = mlx5e_get_txq_by_classid(priv, htb->classid);
++		if (res < 0)
++			return res;
++		htb->qid = res;
++		return 0;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ struct mlx5e_mqprio_rl {
+ 	struct mlx5_core_dev *mdev;
+ 	u32 root_id;
+@@ -1111,3 +1160,4 @@ int mlx5e_mqprio_rl_get_node_hw_id(struct mlx5e_mqprio_rl *rl, int tc, u32 *hw_i
+ 	*hw_id = rl->leaves_id[tc];
+ 	return 0;
+ }
++
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
+index 5d9bd91d86c2..6fbddd586736 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
+@@ -11,6 +11,7 @@
+ struct mlx5e_priv;
+ struct mlx5e_channels;
+ struct mlx5e_channel;
++struct tc_htb_qopt_offload;
+ 
+ int mlx5e_qos_bytes_rate_check(struct mlx5_core_dev *mdev, u64 nbytes);
+ int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev);
+@@ -26,20 +27,7 @@ void mlx5e_qos_deactivate_queues(struct mlx5e_channel *c);
+ void mlx5e_qos_close_queues(struct mlx5e_channel *c);
+ 
+ /* HTB API */
+-int mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls,
+-		       struct netlink_ext_ack *extack);
+-int mlx5e_htb_root_del(struct mlx5e_priv *priv);
+-int mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
+-			       u32 parent_classid, u64 rate, u64 ceil,
+-			       struct netlink_ext_ack *extack);
+-int mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
+-			    u64 rate, u64 ceil, struct netlink_ext_ack *extack);
+-int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 *classid,
+-		       struct netlink_ext_ack *extack);
+-int mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid, bool force,
+-			    struct netlink_ext_ack *extack);
+-int mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil,
+-			  struct netlink_ext_ack *extack);
++int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb);
+ 
+ /* MQPRIO TX rate limit */
+ struct mlx5e_mqprio_rl;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index cac4022ba7f3..fe07180a957a 100644
+index fe07180a957a..d4b39351a223 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1912,8 +1912,7 @@ static int mlx5e_txq_get_qos_node_hw_id(struct mlx5e_params *params, int txq_ix,
- {
- 	int tc;
+@@ -31,7 +31,6 @@
+  */
  
--	if (params->mqprio.mode != TC_MQPRIO_MODE_CHANNEL ||
--	    !params->mqprio.channel.rl) {
-+	if (params->mqprio.mode != TC_MQPRIO_MODE_CHANNEL) {
- 		*hw_id = 0;
- 		return 0;
+ #include <net/tc_act/tc_gact.h>
+-#include <net/pkt_cls.h>
+ #include <linux/mlx5/fs.h>
+ #include <net/vxlan.h>
+ #include <net/geneve.h>
+@@ -3420,47 +3419,6 @@ static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
  	}
-@@ -1922,7 +1921,14 @@ static int mlx5e_txq_get_qos_node_hw_id(struct mlx5e_params *params, int txq_ix,
- 	if (tc < 0)
- 		return tc;
- 
--	return mlx5e_mqprio_rl_get_node_hw_id(params->mqprio.channel.rl, tc, hw_id);
-+	if (tc >= params->mqprio.num_tc) {
-+		WARN(1, "Unexpected TCs configuration. tc %d is out of range of %u",
-+		     tc, params->mqprio.num_tc);
-+		return -EINVAL;
-+	}
-+
-+	*hw_id = params->mqprio.channel.hw_id[tc];
-+	return 0;
  }
  
- static int mlx5e_open_sqs(struct mlx5e_channel *c,
-@@ -2615,13 +2621,6 @@ static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
- 		netdev_warn(netdev, "netif_set_real_num_rx_queues failed, %d\n", err);
- 		goto err_txqs;
- 	}
--	if (priv->mqprio_rl != priv->channels.params.mqprio.channel.rl) {
--		if (priv->mqprio_rl) {
--			mlx5e_mqprio_rl_cleanup(priv->mqprio_rl);
--			mlx5e_mqprio_rl_free(priv->mqprio_rl);
--		}
--		priv->mqprio_rl = priv->channels.params.mqprio.channel.rl;
--	}
- 
- 	return 0;
- 
-@@ -3135,6 +3134,11 @@ int mlx5e_create_tises(struct mlx5e_priv *priv)
- 
- static void mlx5e_cleanup_nic_tx(struct mlx5e_priv *priv)
- {
-+	if (priv->mqprio_rl) {
-+		mlx5e_mqprio_rl_cleanup(priv->mqprio_rl);
-+		mlx5e_mqprio_rl_free(priv->mqprio_rl);
-+		priv->mqprio_rl = NULL;
-+	}
- 	mlx5e_destroy_tises(priv);
- }
- 
-@@ -3203,19 +3207,38 @@ static void mlx5e_params_mqprio_dcb_set(struct mlx5e_params *params, u8 num_tc)
- {
- 	params->mqprio.mode = TC_MQPRIO_MODE_DCB;
- 	params->mqprio.num_tc = num_tc;
--	params->mqprio.channel.rl = NULL;
- 	mlx5e_mqprio_build_default_tc_to_txq(params->mqprio.tc_to_txq, num_tc,
- 					     params->num_channels);
- }
- 
-+static void mlx5e_mqprio_rl_update_params(struct mlx5e_params *params,
-+					  struct mlx5e_mqprio_rl *rl)
-+{
-+	int tc;
-+
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-+		u32 hw_id = 0;
-+
-+		if (rl)
-+			mlx5e_mqprio_rl_get_node_hw_id(rl, tc, &hw_id);
-+		params->mqprio.channel.hw_id[tc] = hw_id;
-+	}
-+}
-+
- static void mlx5e_params_mqprio_channel_set(struct mlx5e_params *params,
--					    struct tc_mqprio_qopt *qopt,
-+					    struct tc_mqprio_qopt_offload *mqprio,
- 					    struct mlx5e_mqprio_rl *rl)
- {
-+	int tc;
-+
- 	params->mqprio.mode = TC_MQPRIO_MODE_CHANNEL;
--	params->mqprio.num_tc = qopt->num_tc;
--	params->mqprio.channel.rl = rl;
--	mlx5e_mqprio_build_tc_to_txq(params->mqprio.tc_to_txq, qopt);
-+	params->mqprio.num_tc = mqprio->qopt.num_tc;
-+
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-+		params->mqprio.channel.max_rate[tc] = mqprio->max_rate[tc];
-+
-+	mlx5e_mqprio_rl_update_params(params, rl);
-+	mlx5e_mqprio_build_tc_to_txq(params->mqprio.tc_to_txq, &mqprio->qopt);
- }
- 
- static void mlx5e_params_mqprio_reset(struct mlx5e_params *params)
-@@ -3241,6 +3264,12 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
- 	err = mlx5e_safe_switch_params(priv, &new_params,
- 				       mlx5e_num_channels_changed_ctx, NULL, true);
- 
-+	if (!err && priv->mqprio_rl) {
-+		mlx5e_mqprio_rl_cleanup(priv->mqprio_rl);
-+		mlx5e_mqprio_rl_free(priv->mqprio_rl);
-+		priv->mqprio_rl = NULL;
-+	}
-+
- 	priv->max_opened_tc = max_t(u8, priv->max_opened_tc,
- 				    mlx5e_get_dcb_num_tc(&priv->channels.params));
- 	return err;
-@@ -3299,16 +3328,38 @@ static int mlx5e_mqprio_channel_validate(struct mlx5e_priv *priv,
- 	return 0;
- }
- 
--static bool mlx5e_mqprio_rate_limit(struct tc_mqprio_qopt_offload *mqprio)
-+static bool mlx5e_mqprio_rate_limit(u8 num_tc, u64 max_rate[])
- {
- 	int tc;
- 
--	for (tc = 0; tc < mqprio->qopt.num_tc; tc++)
--		if (mqprio->max_rate[tc])
-+	for (tc = 0; tc < num_tc; tc++)
-+		if (max_rate[tc])
- 			return true;
- 	return false;
- }
- 
-+static struct mlx5e_mqprio_rl *mlx5e_mqprio_rl_create(struct mlx5_core_dev *mdev,
-+						      u8 num_tc, u64 max_rate[])
-+{
-+	struct mlx5e_mqprio_rl *rl;
-+	int err;
-+
-+	if (!mlx5e_mqprio_rate_limit(num_tc, max_rate))
-+		return NULL;
-+
-+	rl = mlx5e_mqprio_rl_alloc();
-+	if (!rl)
-+		return ERR_PTR(-ENOMEM);
-+
-+	err = mlx5e_mqprio_rl_init(rl, mdev, num_tc, max_rate);
-+	if (err) {
-+		mlx5e_mqprio_rl_free(rl);
-+		return ERR_PTR(err);
-+	}
-+
-+	return rl;
-+}
-+
- static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
- 					 struct tc_mqprio_qopt_offload *mqprio)
- {
-@@ -3322,32 +3373,32 @@ static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
- 	if (err)
- 		return err;
- 
--	rl = NULL;
--	if (mlx5e_mqprio_rate_limit(mqprio)) {
--		rl = mlx5e_mqprio_rl_alloc();
--		if (!rl)
--			return -ENOMEM;
--		err = mlx5e_mqprio_rl_init(rl, priv->mdev, mqprio->qopt.num_tc,
--					   mqprio->max_rate);
--		if (err) {
--			mlx5e_mqprio_rl_free(rl);
--			return err;
--		}
--	}
-+	rl = mlx5e_mqprio_rl_create(priv->mdev, mqprio->qopt.num_tc, mqprio->max_rate);
-+	if (IS_ERR(rl))
-+		return PTR_ERR(rl);
- 
- 	new_params = priv->channels.params;
--	mlx5e_params_mqprio_channel_set(&new_params, &mqprio->qopt, rl);
-+	mlx5e_params_mqprio_channel_set(&new_params, mqprio, rl);
- 
- 	nch_changed = mlx5e_get_dcb_num_tc(&priv->channels.params) > 1;
- 	preactivate = nch_changed ? mlx5e_num_channels_changed_ctx :
- 		mlx5e_update_netdev_queues_ctx;
- 	err = mlx5e_safe_switch_params(priv, &new_params, preactivate, NULL, true);
--	if (err && rl) {
--		mlx5e_mqprio_rl_cleanup(rl);
--		mlx5e_mqprio_rl_free(rl);
-+	if (err) {
-+		if (rl) {
-+			mlx5e_mqprio_rl_cleanup(rl);
-+			mlx5e_mqprio_rl_free(rl);
-+		}
-+		return err;
- 	}
- 
--	return err;
-+	if (priv->mqprio_rl) {
-+		mlx5e_mqprio_rl_cleanup(priv->mqprio_rl);
-+		mlx5e_mqprio_rl_free(priv->mqprio_rl);
-+	}
-+	priv->mqprio_rl = rl;
-+
-+	return 0;
- }
- 
- static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
-@@ -5102,6 +5153,23 @@ static void mlx5e_cleanup_nic_rx(struct mlx5e_priv *priv)
- 	priv->rx_res = NULL;
- }
- 
-+static void mlx5e_set_mqprio_rl(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_params *params;
-+	struct mlx5e_mqprio_rl *rl;
-+
-+	params = &priv->channels.params;
-+	if (params->mqprio.mode != TC_MQPRIO_MODE_CHANNEL)
-+		return;
-+
-+	rl = mlx5e_mqprio_rl_create(priv->mdev, params->mqprio.num_tc,
-+				    params->mqprio.channel.max_rate);
-+	if (IS_ERR(rl))
-+		rl = NULL;
-+	priv->mqprio_rl = rl;
-+	mlx5e_mqprio_rl_update_params(params, rl);
-+}
-+
- static int mlx5e_init_nic_tx(struct mlx5e_priv *priv)
- {
- 	int err;
-@@ -5112,6 +5180,7 @@ static int mlx5e_init_nic_tx(struct mlx5e_priv *priv)
- 		return err;
- 	}
- 
-+	mlx5e_set_mqprio_rl(priv);
- 	mlx5e_dcbnl_initialize(priv);
- 	return 0;
- }
-@@ -5346,11 +5415,6 @@ void mlx5e_priv_cleanup(struct mlx5e_priv *priv)
- 		kfree(priv->htb.qos_sq_stats[i]);
- 	kvfree(priv->htb.qos_sq_stats);
- 
--	if (priv->mqprio_rl) {
--		mlx5e_mqprio_rl_cleanup(priv->mqprio_rl);
--		mlx5e_mqprio_rl_free(priv->mqprio_rl);
--	}
+-static int mlx5e_setup_tc_htb(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb)
+-{
+-	int res;
 -
- 	memset(priv, 0, sizeof(*priv));
- }
+-	switch (htb->command) {
+-	case TC_HTB_CREATE:
+-		return mlx5e_htb_root_add(priv, htb->parent_classid, htb->classid,
+-					  htb->extack);
+-	case TC_HTB_DESTROY:
+-		return mlx5e_htb_root_del(priv);
+-	case TC_HTB_LEAF_ALLOC_QUEUE:
+-		res = mlx5e_htb_leaf_alloc_queue(priv, htb->classid, htb->parent_classid,
+-						 htb->rate, htb->ceil, htb->extack);
+-		if (res < 0)
+-			return res;
+-		htb->qid = res;
+-		return 0;
+-	case TC_HTB_LEAF_TO_INNER:
+-		return mlx5e_htb_leaf_to_inner(priv, htb->parent_classid, htb->classid,
+-					       htb->rate, htb->ceil, htb->extack);
+-	case TC_HTB_LEAF_DEL:
+-		return mlx5e_htb_leaf_del(priv, &htb->classid, htb->extack);
+-	case TC_HTB_LEAF_DEL_LAST:
+-	case TC_HTB_LEAF_DEL_LAST_FORCE:
+-		return mlx5e_htb_leaf_del_last(priv, htb->classid,
+-					       htb->command == TC_HTB_LEAF_DEL_LAST_FORCE,
+-					       htb->extack);
+-	case TC_HTB_NODE_MODIFY:
+-		return mlx5e_htb_node_modify(priv, htb->classid, htb->rate, htb->ceil,
+-					     htb->extack);
+-	case TC_HTB_LEAF_QUERY_QUEUE:
+-		res = mlx5e_get_txq_by_classid(priv, htb->classid);
+-		if (res < 0)
+-			return res;
+-		htb->qid = res;
+-		return 0;
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-}
+-
+ static LIST_HEAD(mlx5e_block_cb_list);
  
+ static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
+@@ -3494,7 +3452,7 @@ static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		return err;
+ 	case TC_SETUP_QDISC_HTB:
+ 		mutex_lock(&priv->state_lock);
+-		err = mlx5e_setup_tc_htb(priv, type_data);
++		err = mlx5e_htb_setup_tc(priv, type_data);
+ 		mutex_unlock(&priv->state_lock);
+ 		return err;
+ 	default:
 -- 
 2.36.1
 
