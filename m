@@ -2,79 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9B25793D9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 09:09:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0545793DC
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 09:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235314AbiGSHJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 03:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        id S235508AbiGSHKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 03:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbiGSHJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 03:09:28 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EC825C54
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 00:09:27 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id b133so8938154pfb.6
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 00:09:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vXMGWlNaGaOEHet64VswotUi5kCwecaKee1diV6zcXQ=;
-        b=icNyjmrUFEPWKJ9lW8Kd4eDsVQcs+r18uNqi31F35PxlI8ovtdBOoHm1MQyp0CAKnm
-         xWjjqeugNMtIO+DdY3Fr9jv8VOPRVa3XJLawh+r0TCLyCrZvlKVOHU5KlBIWFz+JTgS1
-         qMy/8kQSuCnnB2peWZQgFUYOnCNWwAVDZRE9fn74cxOTNQVwuHST6WLlNPI032wC++A+
-         sUHkXNqPxfvvecEQ+77AkWzGmF3/DS4NnKUNe/xM/rB2Jd+uRRX8snZJIMtwoD3/Llzv
-         nwh3CN8oq+HX6tmzSedmvoD5GY2SMkJN5YpV4wZDaNAohPiBJ28yRMhd3pSkkOkY9SKY
-         7oVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vXMGWlNaGaOEHet64VswotUi5kCwecaKee1diV6zcXQ=;
-        b=WSqghclZWyE5rJHO66Q/0lqwe5IQa7mcic+bqqDaVddELjhrgN1dzV3SFgZ+ZxoIyL
-         lcIPjyASSgCUZEch3/HczI5VdYc4QbzJTMJvE6G4bf3Aj/u05CcTIBcYht58433xoN+7
-         HI822lcxidcXCwbDyAfk5Wo52GdjUYO55EhH3X1f7RIvKfpbJjK4sCu8jQIICYmg/rL7
-         KbOMFlKacbe6DSn0B9Vxp572UwDN8zRy/bbLOYiM+barcwNM4nMECGOez173OYuSduUi
-         tcHP54Ph4YivqbPd8TD/F/MhWzZqDZ4bhpiHdCjERPaQnUgDi8mNiv/d9IIizlN0XY+q
-         goKA==
-X-Gm-Message-State: AJIora+r8oKt+/KkYfXHmLRunhE3UGKAADhFpVA/9s8JjkSHei0W714A
-        0YqPr0oYjDMSU1JlS0X9OYQiGcz6LE0PcVEJ3QmZiw==
-X-Google-Smtp-Source: AGRyM1ugzNLQi0rPMC8GvnlXU+zRu+f6X8i33wsJMSEbll2UDL6KImst2IKiZGBlC3hlC5sT7k6cNaTMz8S0LbSkJa8=
-X-Received: by 2002:a63:1246:0:b0:41a:58f:9fee with SMTP id
- 6-20020a631246000000b0041a058f9feemr11975545pgs.413.1658214567052; Tue, 19
- Jul 2022 00:09:27 -0700 (PDT)
+        with ESMTP id S234338AbiGSHJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 03:09:59 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0803326E6;
+        Tue, 19 Jul 2022 00:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=/yn6Pg6Bzg+ZpMdpNayFhtNUih4qa9d4cHz/tBIB/do=;
+        t=1658214598; x=1659424198; b=tvD/poh/7pHBG34Q0a4bIsM8IdmoK1TqyItRnulcHrRpyc8
+        NB8TlBYdO5Vqzh9fgg92MzIL6LzPN/nrPSTX9R+WVCn/lsCfm0a6Wd5pxlEsVeatfqFm2IP+gLh2k
+        FjLB8zSzUyjBND0ZUkRTwbAxh51QChDdrVHQyjXn8L7c164Z7BdWDDymk4YdMHRWfoPtPHeecU2dp
+        +QlasnPBplUT/X3zuvceDfgBAtSNqjm8S54d+C/OO9iDi3r3VlPn0HT2YtH6G1WtXUmyiotZ6PcuN
+        jRd8pUozyf158IPqB87R6barsX0ELypNYJd/Qn1DT77AnhRI8xhiMx/3qvMRsIig==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oDhMQ-002T1l-1J;
+        Tue, 19 Jul 2022 09:09:38 +0200
+Message-ID: <a103d47bacd9c6e85d5c9bf969cd1bc69194eed6.camel@sipsolutions.net>
+Subject: Re: [PATCH -next] wifi: mac80211: clean up one inconsistent
+ indenting
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Yang Li <yang.lee@linux.alibaba.com>, davem@davemloft.net
+Cc:     Larry.Finger@lwfinger.net, kvalo@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Date:   Tue, 19 Jul 2022 09:09:37 +0200
+In-Reply-To: <20220719004423.85142-1-yang.lee@linux.alibaba.com>
+References: <20220719004423.85142-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-References: <20220718091102.498774-1-alvaro.karsz@solid-run.com> <d6423ae9-aa8b-7213-17c9-6027e9096143@redhat.com>
-In-Reply-To: <d6423ae9-aa8b-7213-17c9-6027e9096143@redhat.com>
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-Date:   Tue, 19 Jul 2022 10:08:51 +0300
-Message-ID: <CAJs=3_CQmOYsz5N0=tX-BKyAuiFge3pfzx9aR46hMzkcP7E4MQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing support
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
+Subject should be "wifi: b43legacy: ..." I think.
 
-> This seems an independent fix? I wonder what if we just leave it as before.
-
-
-Before this patch, only ETHTOOL_COALESCE_MAX_FRAMES was supported, now
-we support ETHTOOL_COALESCE_USECS as well.
-
-ETHTOOL_COALESCE_USECS is meaningless if VIRTIO_NET_F_NOTF_COAL
-feature is not negotiated, so I added the mentioned part.
+johannes
