@@ -2,204 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE6557A139
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5756A57A17A
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 16:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238621AbiGSOVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 10:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
+        id S238041AbiGSO2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 10:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238647AbiGSOUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:20:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 570C21183E
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658239365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OazogUGaTCAKTxUDesSa7xd7vVnLXoIUVapwa9DLQ2s=;
-        b=RJ1iTTa428S8m67jOfziGRp0FyZHOquJTVT31FVxDwIb9DcrJgceMCsPkgbAqot7YvGnJ5
-        cMKHpcBAgPYM4SeWltWFGu+wFyUGuqKXs27tFXRpcgh+/GvRO+pcvl56hiY2i6i2Rx2K88
-        +A0UlbwamQmyjJlYaqnO/sTlkOxBjZc=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-UKmM2uJyODm_Wb6RkDRu6A-1; Tue, 19 Jul 2022 10:02:43 -0400
-X-MC-Unique: UKmM2uJyODm_Wb6RkDRu6A-1
-Received: by mail-wm1-f70.google.com with SMTP id az39-20020a05600c602700b003a321d33238so1182973wmb.1
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:02:43 -0700 (PDT)
+        with ESMTP id S237829AbiGSO1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 10:27:44 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B45A47BB1
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:14:32 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id x64so3512755iof.1
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 07:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pkt2mZa+r6CsVBvHdxfl9ZtYgfYBiGtwJR0TyBmBn2k=;
+        b=SlzhZyt9l+GNXk4dk//RRG6m0fZZEzA7Cl4rmeOvfS+69bthJYXVogYlM3UbfRFlGJ
+         FpW3W361WFdTPhlrtyjkLorAsasxSCrmJMdm4eIvabjLg+adPIAhC4lCzyJ5/RygPjQ5
+         BOtavsMGUl4fiP7eIe6BpaIXPhje757ZYr2pqHzz6Lw62+qvOihvU0hbg/uvSW1QaBE1
+         5wEggFBvpbLJZ5VmG6iAhZsoCMb/2oS1yZGMdcdUMoYrJfyA0iFykIGZBz7RPy4oj/KK
+         O7T6PBOCXChw5yAzd0b7MYzo2xAt6r6aLu65XR59PvTL3a+Q83cg+rXA8975vw32XSkm
+         0bmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OazogUGaTCAKTxUDesSa7xd7vVnLXoIUVapwa9DLQ2s=;
-        b=h3tssWMp/EPJgcUIAhWh4uLZ1mqShNBwTdoBWvM7RANn2wcqM0p/k/6asuqvbj1+Xp
-         LouLrRnE2ecI/jlwZ4H2kqhAu1tslBAJRzHQqa17d/cs96zYVVA3hdWsMgPJyV7VbQfG
-         SeHUHhy4sPmISYckeY78ns6s9+SPECUm9F5mcgQhA1A9VVTvw6LhEo68DvxHoZ0aGQ3m
-         1gOFjTmHlxXbLevPdmsnDY9zLheQgqCeg4Zg4TT7SJuBXYEaMY/1/vUTeCPVl4txZziX
-         fuxXVbh8icMBs6PRBc6tizQ1AHBF54oADVQtS4QNgj7ZBZr2LVIvpDpMVp9FwJZaVriM
-         Uhdw==
-X-Gm-Message-State: AJIora8/r+n3cAeDxVDeq057vxyzRkVN3IeeKuIGrNoaFUdvHzF/H1bd
-        wM0eAqfBBQCdGKMYtVUDcuZ8e4uyvqnn989V+BEDwxfLFBPADMofI6hmHIcoPA7vJdi1OI+60ZR
-        ZEL1a5UNlVv+YaVmf
-X-Received: by 2002:a7b:cd15:0:b0:3a3:1d69:5201 with SMTP id f21-20020a7bcd15000000b003a31d695201mr7195521wmj.10.1658239362450;
-        Tue, 19 Jul 2022 07:02:42 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tDezm8A92mTd+muf5BeHpRsDPK7Fgy5dwBdOS7SZtDj/NGlv5bszF4tZKQLWnulPN2pQwHPA==
-X-Received: by 2002:a7b:cd15:0:b0:3a3:1d69:5201 with SMTP id f21-20020a7bcd15000000b003a31d695201mr7195489wmj.10.1658239362223;
-        Tue, 19 Jul 2022 07:02:42 -0700 (PDT)
-Received: from localhost (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id m9-20020adfe949000000b0021d4694fcaesm13424818wrn.107.2022.07.19.07.02.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pkt2mZa+r6CsVBvHdxfl9ZtYgfYBiGtwJR0TyBmBn2k=;
+        b=lzQQlCUYvVoe5koji7troy/WHcBjlhUtzWFEv23g0/7ifiCNYFgktI3aidR1vVkORd
+         Zds73TeH5FFWaqkG9VZ0xYXzW06sME/8UxNdrOsukv0Mx99tYy0bhtLzbQReinF3VavD
+         CFu6lqfIdUCSVF9gB4YL1batlrfL+MpNUIIqQxp0dRJeN0SbGt+ofvsjNPYbWHBSCwsj
+         qn67Ycj2NF20Ym5coGKZGBvFQn0+wwG+XFHJlKrVp1pEywZpYRQ4td3evwyVFg9qCibS
+         XvSCMnzcmVauyjbs3nVttHLDeIZC88qn9gFcrjP57t/yaaD2/431VZ+iapSTRYkpG165
+         U4vQ==
+X-Gm-Message-State: AJIora9z/dZ6hCnT69qcxdRKIPpqadlXGMmMMy+/WlubUyYf+W+5luTU
+        s383tn8i7HFozFw5OFMaNoPsPw==
+X-Google-Smtp-Source: AGRyM1ssez9DZVLlBwQkrRccXEisCNfk4Fizssx9NwajhOtCz64G7Q7uywGs7C+r27zJgLBtjQQU0Q==
+X-Received: by 2002:a05:6602:2e8e:b0:669:d5b1:3fc9 with SMTP id m14-20020a0566022e8e00b00669d5b13fc9mr15406444iow.210.1658240071485;
+        Tue, 19 Jul 2022 07:14:31 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id g7-20020a05663816c700b00335d7c314b1sm6727565jat.53.2022.07.19.07.14.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 07:02:41 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 16:02:38 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, ilias.apalodimas@linaro.org,
-        jbrouer@redhat.com
-Subject: Re: [PATCH v3 net-next 5/5] net: ethernet: mtk_eth_soc: add support
- for page_pool_get_stats
-Message-ID: <Yta5fsw0U6KWMmTL@localhost.localdomain>
-References: <cover.1657956652.git.lorenzo@kernel.org>
- <8592ada26b28995d038ef67f15c145b6cebf4165.1657956652.git.lorenzo@kernel.org>
- <43ff0071f0ce4b958f27427acebcf2c6ace52ba0.camel@redhat.com>
- <YtaE/KJDNOqkvLml@localhost.localdomain>
- <d432c897a8eef451bdd65cfdf5b1da0d866a9a5b.camel@redhat.com>
+        Tue, 19 Jul 2022 07:14:30 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: ipa: add an endpoint device attribute group
+Date:   Tue, 19 Jul 2022 09:14:28 -0500
+Message-Id: <20220719141428.233047-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5EMNoz+9F+nqgqFZ"
-Content-Disposition: inline
-In-Reply-To: <d432c897a8eef451bdd65cfdf5b1da0d866a9a5b.camel@redhat.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Create a new attribute group meant to provide a single place that
+defines endpoint IDs that might be needed by user space.  Not all
+defined endpoints are presented, and only those that are defined
+will be made visible.
 
---5EMNoz+9F+nqgqFZ
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The new attributes use "extended" device attributes to hold endpoint
+IDs, which is a little more compact and efficient.  Reimplement the
+existing modem endpoint ID attribute files using common code.
 
-> On Tue, 2022-07-19 at 12:18 +0200, Lorenzo Bianconi wrote:
-> > > On Sat, 2022-07-16 at 09:34 +0200, Lorenzo Bianconi wrote:
-> > > > Introduce support for the page_pool stats API into mtk_eth_soc
-> > > > driver.
-> > > > Report page_pool stats through ethtool.
-> > > >=20
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > ---
-> > > > =A0drivers/net/ethernet/mediatek/Kconfig       |  1 +
-> > > > =A0drivers/net/ethernet/mediatek/mtk_eth_soc.c | 40
-> > > > +++++++++++++++++++--
-> > > > =A02 files changed, 38 insertions(+), 3 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/net/ethernet/mediatek/Kconfig
-> > > > b/drivers/net/ethernet/mediatek/Kconfig
-> > > > index d2422c7b31b0..97374fb3ee79 100644
-> > > > --- a/drivers/net/ethernet/mediatek/Kconfig
-> > > > +++ b/drivers/net/ethernet/mediatek/Kconfig
-> > > > @@ -18,6 +18,7 @@ config NET_MEDIATEK_SOC
-> > > > =A0	select PHYLINK
-> > > > =A0	select DIMLIB
-> > > > =A0	select PAGE_POOL
-> > > > +	select PAGE_POOL_STATS
-> > > > =A0	help
-> > > > =A0	  This driver supports the gigabit ethernet MACs in the
-> > > > =A0	  MediaTek SoC family.
-> > > > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > index abb8bc281015..eba95a86086d 100644
-> > > > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > > @@ -3517,11 +3517,19 @@ static void mtk_get_strings(struct
-> > > > net_device *dev, u32 stringset, u8 *data)
-> > > > =A0	int i;
-> > > > =A0
-> > > > =A0	switch (stringset) {
-> > > > -	case ETH_SS_STATS:
-> > > > +	case ETH_SS_STATS: {
-> > > > +		struct mtk_mac *mac =3D netdev_priv(dev);
-> > > > +		struct mtk_eth *eth =3D mac->hw;
-> > > > +
-> > > > =A0		for (i =3D 0; i < ARRAY_SIZE(mtk_ethtool_stats);
-> > > > i++) {
-> > > > =A0			memcpy(data, mtk_ethtool_stats[i].str,
-> > > > ETH_GSTRING_LEN);
-> > > > =A0			data +=3D ETH_GSTRING_LEN;
-> > > > =A0		}
-> > > > +		if (!eth->hwlro)
-> > >=20
-> > > I see the page_pool is enabled if and only if !hwlro, but I think
-> > > it
-> > > would be more clear if you explicitly check for page_pool here (and
-> > > in
-> > > a few other places below), so that if the condition to enable
-> > > page_pool
-> > > someday will change, this code will still be fine.
-> >=20
-> > Hi Paolo,
-> >=20
-> > page_pool pointer is defined in mtk_rx_ring structure, so
-> > theoretically we can have a
-> > page_pool defined for queue 0 but not for queues {1, 2, 3}.
->=20
-> I see. I missed hwlro is a per device setting.
->=20
-> > "!eth->hwlro" means
-> > there is at least one page_pool allocated. Do you prefer to do
-> > something like:
-> >=20
-> > bool mtk_is_pp_enabled(struct mtk_eth *eth)
-> > {
->=20
-> > 	for (i =3D 0; i < ARRAY_SIZE(eth->rx_ring); i++) {
-> > 		struct mtk_rx_ring *ring =3D &eth->rx_ring[i];
-> >=20
-> > 		if (ring->page_pool)
-> > 			return true;
-> > 	}
-> > 	return false;
-> > }
->=20
-> Even:
->=20
-> bool mtk_is_pp_enabled(struct mtk_eth *eth)
-> {
-> 	return !eth->hwlro;
-> }
->=20
-> will suffice to encaspulate the logic behind page pool enabling in a
-> single place.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ .../testing/sysfs-devices-platform-soc-ipa    | 62 +++++++++++++----
+ drivers/net/ipa/ipa_main.c                    |  1 +
+ drivers/net/ipa/ipa_sysfs.c                   | 69 ++++++++++++++-----
+ drivers/net/ipa/ipa_sysfs.h                   |  1 +
+ 4 files changed, 102 insertions(+), 31 deletions(-)
 
-ack, I am fine with it. I will fix in v4.
-
-Regards,
-Lorenzo
-
->=20
-> /P
->=20
-
---5EMNoz+9F+nqgqFZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYta5ewAKCRA6cBh0uS2t
-rKuZAQCoCiT1JxTElHC3iJAa4jRFWpzrzUrdHO0YZcFySGakagEAnfzhbDRFauBQ
-FtsqE623N2etCj2VpVdGQz7s7LXAUAQ=
-=RmXr
------END PGP SIGNATURE-----
-
---5EMNoz+9F+nqgqFZ--
+diff --git a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+index c56dcf15bf29d..364b1ba412427 100644
+--- a/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
++++ b/Documentation/ABI/testing/sysfs-devices-platform-soc-ipa
+@@ -46,33 +46,69 @@ Description:
+ 		that is supported by the hardware.  The possible values
+ 		are "MAPv4" or "MAPv5".
+ 
++What:		.../XXXXXXX.ipa/endpoint_id/
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/ directory contains
++		attributes that define IDs associated with IPA
++		endpoints.  The "rx" or "tx" in an endpoint name is
++		from the perspective of the AP.  An endpoint ID is a
++		small unsigned integer.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_rx file contains
++		the ID of the AP endpoint on which packets originating
++		from the embedded modem are received.
++
++What:		.../XXXXXXX.ipa/endpoint_id/modem_tx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/modem_tx file contains
++		the ID of the AP endpoint on which packets destined
++		for the embedded modem are sent.
++
++What:		.../XXXXXXX.ipa/endpoint_id/monitor_rx
++Date:		July 2022
++KernelVersion:	v5.19
++Contact:	Alex Elder <elder@kernel.org>
++Description:
++		The .../XXXXXXX.ipa/endpoint_id/monitor_rx file contains
++		the ID of the AP endpoint on which IPA "monitor" data is
++		received.  The monitor endpoint supplies replicas of
++		packets that enter the IPA hardware for processing.
++		Each replicated packet is preceded by a fixed-size "ODL"
++		header (see .../XXXXXXX.ipa/feature/monitor, above).
++		Large packets are truncated, to reduce the bandwidth
++		required to provide the monitor function.
++
+ What:		.../XXXXXXX.ipa/modem/
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/modem/ directory contains a set of
+-		attributes describing properties of the modem execution
+-		environment reachable by the IPA hardware.
++		The .../XXXXXXX.ipa/modem/ directory contains attributes
++		describing properties of the modem embedded in the SoC.
+ 
+ What:		.../XXXXXXX.ipa/modem/rx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/rx_endpoint_id file contains
+-		the AP endpoint ID that receives packets originating from
+-		the modem execution environment.  The "rx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		producer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/rx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_rx.
+ 
+ What:		.../XXXXXXX.ipa/modem/tx_endpoint_id
+ Date:		June 2021
+ KernelVersion:	v5.14
+ Contact:	Alex Elder <elder@kernel.org>
+ Description:
+-		The .../XXXXXXX.ipa/feature/tx_endpoint_id file contains
+-		the AP endpoint ID used to transmit packets destined for
+-		the modem execution environment.  The "tx" is from the
+-		perspective of the AP; this endpoint is considered an "IPA
+-		consumer".  An endpoint ID is a small unsigned integer.
++		The .../XXXXXXX.ipa/modem/tx_endpoint_id file duplicates
++		the value found in .../XXXXXXX.ipa/endpoint_id/modem_tx.
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 3757ce3de2c59..b989259b02047 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -851,6 +851,7 @@ static void ipa_shutdown(struct platform_device *pdev)
+ static const struct attribute_group *ipa_attribute_groups[] = {
+ 	&ipa_attribute_group,
+ 	&ipa_feature_attribute_group,
++	&ipa_endpoint_id_attribute_group,
+ 	&ipa_modem_attribute_group,
+ 	NULL,
+ };
+diff --git a/drivers/net/ipa/ipa_sysfs.c b/drivers/net/ipa/ipa_sysfs.c
+index ff61dbdd70d8c..747920a23b2b7 100644
+--- a/drivers/net/ipa/ipa_sysfs.c
++++ b/drivers/net/ipa/ipa_sysfs.c
+@@ -96,38 +96,71 @@ const struct attribute_group ipa_feature_attribute_group = {
+ 	.attrs		= ipa_feature_attrs,
+ };
+ 
+-static ssize_t
+-ipa_endpoint_id_show(struct ipa *ipa, char *buf, enum ipa_endpoint_name name)
++static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
++					  struct attribute *attr, int n)
+ {
+-	u32 endpoint_id = ipa->name_map[name]->endpoint_id;
++	struct ipa *ipa = dev_get_drvdata(kobj_to_dev(kobj));
++	struct device_attribute *dev_attr;
++	struct dev_ext_attribute *ea;
++	bool visible;
+ 
+-	return scnprintf(buf, PAGE_SIZE, "%u\n", endpoint_id);
++	/* An endpoint id attribute is only visible if it's defined */
++	dev_attr = container_of(attr, struct device_attribute, attr);
++	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
++
++	visible = !!ipa->name_map[(enum ipa_endpoint_name)ea->var];
++
++	return visible ? attr->mode : 0;
+ }
+ 
+-static ssize_t rx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
++static ssize_t endpoint_id_attr_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
+ {
+ 	struct ipa *ipa = dev_get_drvdata(dev);
++	struct ipa_endpoint *endpoint;
++	struct dev_ext_attribute *ea;
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_RX);
++	ea = container_of(attr, struct dev_ext_attribute, attr);
++	endpoint = ipa->name_map[(enum ipa_endpoint_name)ea->var];
++
++	return sysfs_emit(buf, "%u\n", endpoint->endpoint_id);
+ }
+ 
+-static DEVICE_ATTR_RO(rx_endpoint_id);
++#define ENDPOINT_ID_ATTR(_n, _endpoint_name)				    \
++	static struct dev_ext_attribute dev_attr_endpoint_id_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static ssize_t tx_endpoint_id_show(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct ipa *ipa = dev_get_drvdata(dev);
++ENDPOINT_ID_ATTR(modem_rx, IPA_ENDPOINT_AP_MODEM_RX);
++ENDPOINT_ID_ATTR(modem_tx, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+-	return ipa_endpoint_id_show(ipa, buf, IPA_ENDPOINT_AP_MODEM_TX);
+-}
++static struct attribute *ipa_endpoint_id_attrs[] = {
++	&dev_attr_endpoint_id_modem_rx.attr.attr,
++	&dev_attr_endpoint_id_modem_tx.attr.attr,
++	NULL
++};
++
++const struct attribute_group ipa_endpoint_id_attribute_group = {
++	.name		= "endpoint_id",
++	.is_visible	= ipa_endpoint_id_is_visible,
++	.attrs		= ipa_endpoint_id_attrs,
++};
++
++/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
++#define MODEM_ATTR(_n, _endpoint_name)					    \
++	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
++		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \
++		.var	= (void *)(_endpoint_name),			    \
++	}
+ 
+-static DEVICE_ATTR_RO(tx_endpoint_id);
++MODEM_ATTR(rx_endpoint_id, IPA_ENDPOINT_AP_MODEM_RX);
++MODEM_ATTR(tx_endpoint_id, IPA_ENDPOINT_AP_MODEM_TX);
+ 
+ static struct attribute *ipa_modem_attrs[] = {
+-	&dev_attr_rx_endpoint_id.attr,
+-	&dev_attr_tx_endpoint_id.attr,
+-	NULL
++	&dev_attr_modem_rx_endpoint_id.attr.attr,
++	&dev_attr_modem_tx_endpoint_id.attr.attr,
++	NULL,
+ };
+ 
+ const struct attribute_group ipa_modem_attribute_group = {
+diff --git a/drivers/net/ipa/ipa_sysfs.h b/drivers/net/ipa/ipa_sysfs.h
+index b34e5650bf8cd..4a3ffd1e4e3fb 100644
+--- a/drivers/net/ipa/ipa_sysfs.h
++++ b/drivers/net/ipa/ipa_sysfs.h
+@@ -10,6 +10,7 @@ struct attribute_group;
+ 
+ extern const struct attribute_group ipa_attribute_group;
+ extern const struct attribute_group ipa_feature_attribute_group;
++extern const struct attribute_group ipa_endpoint_id_attribute_group;
+ extern const struct attribute_group ipa_modem_attribute_group;
+ 
+ #endif /* _IPA_SYSFS_H_ */
+-- 
+2.34.1
 
