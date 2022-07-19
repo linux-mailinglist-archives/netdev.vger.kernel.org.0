@@ -2,54 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C765F57913A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 05:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99887579146
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 05:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234195AbiGSDUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 23:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S235726AbiGSDX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 23:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233360AbiGSDUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 23:20:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C078183A5;
-        Mon, 18 Jul 2022 20:20:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE6FB816F8;
-        Tue, 19 Jul 2022 03:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A5C3EC341CA;
-        Tue, 19 Jul 2022 03:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658200814;
-        bh=c+W0yN0thuQ9gLRjN868HNx40Z9Il8fuZwZrOzYSrHg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cA8Njpn682OAE701MxYWMkjTl/WUVYiXO7l1vGMw+kQL+EfWpVa4fLeerH6uPULWu
-         2U5yZvFNIxO9SLl0wqvCXLisR+mbbpNqNqhU3BDBUjBgzyTEuk6bqkHIEKV3Gai04+
-         jETxf84782+nvR5YA60u42JDooXJtGLD+Ui6kMrzxsAHN2JHUoSidQ4cVwZkTWN8ed
-         Bac5BPZUw1RHVaWrUNeYlGx83kgsKEi9yAvrMvOrwYJXF1mZa2doYShMgrjmuSQLdY
-         zUx+53KTiVkWehMbmmxDy44Ee4vBBSi9MseQzQE6p4R0V6DhM1wnveWnC3HKEwHXdj
-         sbNc4/dkrH2MQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C69FE451B3;
-        Tue, 19 Jul 2022 03:20:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230182AbiGSDX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 23:23:27 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F75183A5;
+        Mon, 18 Jul 2022 20:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658201005; x=1689737005;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HIDhUUPfxUeeF5NaAdzQDRStS26/WnQNQwjtuPgjHlY=;
+  b=AGXoYJvYuo5E5sh/I0IFRmScpb6I187MmsfI27QpEYXkjm5Yc658x2oR
+   4ds+K2koWyYv/IPkm2CUApMqiERedwJt7c1qz6o8Xpn2YcUFy+H8z7lcx
+   kY/H9t4jiUTHOFqjHiqLMW087LgkgtfoZl+qNzXnPpgxvAIGGjs1FxkrH
+   Q=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Jul 2022 20:23:25 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 20:23:25 -0700
+Received: from [10.253.14.208] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 18 Jul
+ 2022 20:23:22 -0700
+Message-ID: <aae8b240-ecd8-64d0-6f33-86372417e899@quicinc.com>
+Date:   Tue, 19 Jul 2022 11:23:19 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5] net: lan966x: Fix issues with MAC table
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165820081457.20693.13587149505441847275.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jul 2022 03:20:14 +0000
-References: <20220714194040.231651-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220714194040.231651-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        vladimir.oltean@nxp.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] Bluetooth: hci_sync: Remove redundant func definition
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+CC:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luiz Augusto Von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <1657871102-26907-1-git-send-email-quic_zijuhu@quicinc.com>
+ <CABBYNZ+YcrGn09hxB9t7rn1ccY4xtv1WCLQrOLvyUXdQNA_usw@mail.gmail.com>
+From:   quic_zijuhu <quic_zijuhu@quicinc.com>
+In-Reply-To: <CABBYNZ+YcrGn09hxB9t7rn1ccY4xtv1WCLQrOLvyUXdQNA_usw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,43 +70,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 14 Jul 2022 21:40:35 +0200 you wrote:
-> The patch series fixes 2 issues:
-> - when an entry was forgotten the irq thread was holding a spin lock and then
->   was talking also rtnl_lock.
-> - the access to the HW MAC table is indirect, so the access to the HW MAC
->   table was not synchronized, which means that there could be race conditions.
+On 7/19/2022 7:12 AM, Luiz Augusto von Dentz wrote:
+> Hi Zijun,
 > 
-> Horatiu Vultur (5):
->   net: lan966x: Fix taking rtnl_lock while holding spin_lock
->   net: lan966x: Fix usage of lan966x->mac_lock when entry is added
->   net: lan966x: Fix usage of lan966x->mac_lock when entry is removed
->   net: lan966x: Fix usage of lan966x->mac_lock inside
->     lan966x_mac_irq_handler
->   net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
+> On Fri, Jul 15, 2022 at 12:45 AM Zijun Hu <quic_zijuhu@quicinc.com> wrote:
+>>
+>> both hci_request.c and hci_sync.c have the same definition for
+>> disconnected_accept_list_entries(), so remove a redundant copy.
+>>
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>> ---
+>> v3->v4
+>>  -use 75 characters per line for Linux commit message bodies
+>> v2->v3
+>>  -remove table char to solve gitlint checking failure
+>> v1->v2
+>>  -remove the func copy within hci_request.c instead of hci_sync.c
+>>  net/bluetooth/hci_request.c | 18 ------------------
+>>  net/bluetooth/hci_request.h |  2 ++
+>>  net/bluetooth/hci_sync.c    |  2 +-
+>>  3 files changed, 3 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>> index 635cc5fb451e..edec0447aaa7 100644
+>> --- a/net/bluetooth/hci_request.c
+>> +++ b/net/bluetooth/hci_request.c
+>> @@ -1784,24 +1784,6 @@ int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>>         return 0;
+>>  }
+>>
+>> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>> -{
+>> -       struct bdaddr_list *b;
+>> -
+>> -       list_for_each_entry(b, &hdev->accept_list, list) {
+>> -               struct hci_conn *conn;
+>> -
+>> -               conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
+>> -               if (!conn)
+>> -                       return true;
+>> -
+>> -               if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
+>> -                       return true;
+>> -       }
+>> -
+>> -       return false;
+>> -}
+>> -
+>>  void __hci_req_update_scan(struct hci_request *req)
+>>  {
+>>         struct hci_dev *hdev = req->hdev;
+>> diff --git a/net/bluetooth/hci_request.h b/net/bluetooth/hci_request.h
+>> index 7f8df258e295..e80b500878d9 100644
+>> --- a/net/bluetooth/hci_request.h
+>> +++ b/net/bluetooth/hci_request.h
+>> @@ -120,6 +120,8 @@ void __hci_req_update_scan(struct hci_request *req);
+>>  int hci_update_random_address(struct hci_request *req, bool require_privacy,
+>>                               bool use_rpa, u8 *own_addr_type);
+>>
+>> +bool disconnected_accept_list_entries(struct hci_dev *hdev);
 > 
-> [...]
-
-Here is the summary with links:
-  - [net,1/5] net: lan966x: Fix taking rtnl_lock while holding spin_lock
-    https://git.kernel.org/netdev/net/c/45533a534a45
-  - [net,2/5] net: lan966x: Fix usage of lan966x->mac_lock when entry is added
-    https://git.kernel.org/netdev/net/c/43243bb3195b
-  - [net,3/5] net: lan966x: Fix usage of lan966x->mac_lock when entry is removed
-    https://git.kernel.org/netdev/net/c/99343cfa4f75
-  - [net,4/5] net: lan966x: Fix usage of lan966x->mac_lock inside lan966x_mac_irq_handler
-    https://git.kernel.org/netdev/net/c/c19246843697
-  - [net,5/5] net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
-    https://git.kernel.org/netdev/net/c/675c807ae26b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> I rather not add anything to hci_request.h since we want to deprecate
+> its functions, in fact we might as well try to start removing the code
+> paths that attempt to access things like
+> disconnected_accept_list_entries since I think most of the code is
+> already in place in hci_sync.c things like __hci_req_update_scan if it
+> is no longer used anywhere else.
+> 
+so A: move extern disconnected_accept_list_entries() from hci_request.h to hci_request.c
+   B: discard this change
+what is your suggestion? A or B
+>>  int hci_abort_conn(struct hci_conn *conn, u8 reason);
+>>  void __hci_abort_conn(struct hci_request *req, struct hci_conn *conn,
+>>                       u8 reason);
+>> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+>> index 212b0cdb25f5..48a262f0ae49 100644
+>> --- a/net/bluetooth/hci_sync.c
+>> +++ b/net/bluetooth/hci_sync.c
+>> @@ -2419,7 +2419,7 @@ int hci_write_fast_connectable_sync(struct hci_dev *hdev, bool enable)
+>>         return err;
+>>  }
+>>
+>> -static bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>> +bool disconnected_accept_list_entries(struct hci_dev *hdev)
+>>  {
+>>         struct bdaddr_list *b;
+>>
+>> --
+>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+>>
+> 
+> 
 
