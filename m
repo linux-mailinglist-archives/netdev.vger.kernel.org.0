@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FF057A69C
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8903357A6B8
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 20:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229379AbiGSShw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 14:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        id S237560AbiGSStL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 14:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235311AbiGSShu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:37:50 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CBF4D832;
-        Tue, 19 Jul 2022 11:37:49 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id c3so13465063pfb.13;
-        Tue, 19 Jul 2022 11:37:49 -0700 (PDT)
+        with ESMTP id S238785AbiGSStK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 14:49:10 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7D7558D9;
+        Tue, 19 Jul 2022 11:49:09 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-10bec750eedso33112683fac.8;
+        Tue, 19 Jul 2022 11:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=wJ5Ojd6kShb79O9mahIFggm0V7bnmYUCaYihQuOlx0s=;
-        b=FpMZ70NauUPMpfgQmItV9B90OGWaHQsY2HLseqWTlLaWajPpT6v4f+kMTdMhbAHEca
-         GPm11Zq/deIN5Peuvwr9o47o0zRCnHVMwI+AZjEsg35DaeLIu+Rhq0O8O4Qvs3hjGieT
-         qeTAwEU4PNmQn+5vCyVBMFgZf92Xy98/lXd6gjC8/fSl9idr4tvJcSDIrjBCs01LkW3i
-         y75FU/AwVspg9K54QrdDDV7TpgtUALZWGplZwK2b3RLwKo+gj+BQ1Ktc5y5N/SE+Sw6w
-         w8Em0XzSHJzMBnzfQaD69z7Ux4VpxBKXm/Vbb9Yng1lk1N55SnBzi1Q6sFMsG6sxmO6g
-         Vyag==
+        bh=E4ttxU8+ap0OTMUcEGg/HhKTy2xbEmbewTLmzetmHn8=;
+        b=ggi2NZglo9gjhkbv7T+uQTK91MM2KJee6xCbeLQqPNG7qDAFi9IvxG6Lj+Oy7IPA45
+         LCK/iOxP9xK7aSccFakylkoiRZRx01PLHMETZN7gBOJkaOlxDO32zAQZ3MfIS878eTID
+         jmLcdFujMOoSoNCJCloAyrA4VF6a9zgjiPuWz4xfB8SGZpae3EcKg43t+mxd+4DvR5eD
+         /BrMokAYZLbcV7Az0RDydcgilcwMirpZ9f3UNp7hVvQgbrWUeuCtC4XPw8EPUnmdWch3
+         eH29hREXGb7SzQFBRnwFSdLttSQJWTSnoNaq79lWBeuuz5Cbb/5WRTiiSTSM95hjSqhU
+         Q5ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wJ5Ojd6kShb79O9mahIFggm0V7bnmYUCaYihQuOlx0s=;
-        b=5cCSKmGwggeYaay27o7DYQMnjGk10hQrG/0I5eqPNFrqNvcBwgLx9gPHcSj8ErZT9I
-         jjejemMEPH2O09Pz6QYrXwNm/T66ANoFxWLLp3ZKDRzGil249JuZd4Jv/L+ZU12tLA/J
-         elF+EtLxbNs0LWl6Ob7MDmfVoiIgqCaWwxB+etbW+UsRpW14DUQMlMO7gIFpLVYI26Rm
-         g5k+Ml3GNcCMpbWYAr0fEdcEpQIGNNnJLmJ/3KrKL98TxKHTZroxwERMW6GoqYprLyf6
-         WdxGC5t+U01VToGmX8OV6EtbfkHkptljDxEqmkRuqM/9VQ7dWyRO3oiHwb8HGH0NpFIZ
-         Jr1g==
-X-Gm-Message-State: AJIora9Ixr2r1CS/Q6KNE/PhFbtRPO2NTdGDTjorLKc7Tic/npCvkmk5
-        BT8J3QA4bpTeEDEhkqSD52jwkGHo3lQ=
-X-Google-Smtp-Source: AGRyM1uqPxX4R64vBZ0PZOQRY4f/yJyDgiD+Gxu5WENAvfeZJN2S9JvQNz64HK+j1ZtDzgGy2GcdMg==
-X-Received: by 2002:a63:1a4c:0:b0:416:1821:733d with SMTP id a12-20020a631a4c000000b004161821733dmr30128624pgm.444.1658255868680;
-        Tue, 19 Jul 2022 11:37:48 -0700 (PDT)
-Received: from MacBook-Pro-3.local ([2620:10d:c090:500::1:8aa3])
-        by smtp.gmail.com with ESMTPSA id x89-20020a17090a6c6200b001e2f892b352sm13979540pjj.45.2022.07.19.11.37.47
+        bh=E4ttxU8+ap0OTMUcEGg/HhKTy2xbEmbewTLmzetmHn8=;
+        b=HdLhQt3c6hKOciJMDdAwi31d8uxQSuKOil0bLcBM6UEaBlTSgUNeetUXm21ry8n5uP
+         FfMfnj5GhK81NEt8MpBo/wjT9NqBwKbH/ZoSQst+vrkzatcqlj92j3R3MmRnLv/o6D0H
+         ZPeXxmXtyAuHdY3YQbBSJ+QmvW8gAW7glLg997iQJ4apOyES80ZFIHR41U/9bToQabmi
+         5lm/cOyMuZkppS+MvROpw4WycOrYSkbkKD3Cf2+66Bh8pp1vQZ56CXSry1rc+SSArV+F
+         3GLEWa5jivY9oPoWR3GDirjljXaABRwLtuA2DVuNGtlonVqcfJIg7cI05fxsJieD2nq9
+         PLTg==
+X-Gm-Message-State: AJIora85gTMdOAXK3YpIKd8H3haIJvKZ7acr0mCl34yJkzdqSQ8s/gyG
+        Dn3lP9z/hGr9+q6PD3U9G9s=
+X-Google-Smtp-Source: AGRyM1toHUuwzZ1J1nDTbjOBul+SZVzVKwx7fUuWX2T06+2BuSEHFJXWXR33wCorf8Jlew7Z3JbFTw==
+X-Received: by 2002:a05:6870:73cd:b0:10c:31f9:9f48 with SMTP id a13-20020a05687073cd00b0010c31f99f48mr474773oan.13.1658256549077;
+        Tue, 19 Jul 2022 11:49:09 -0700 (PDT)
+Received: from t14s.localdomain ([2804:d59:ad0f:1800:4914:cce5:a4fb:5a6d])
+        by smtp.gmail.com with ESMTPSA id z29-20020a4a655d000000b004279be23ed4sm6331124oog.41.2022.07.19.11.49.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jul 2022 11:37:48 -0700 (PDT)
-Date:   Tue, 19 Jul 2022 11:37:45 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v6 01/13] bpf: Introduce BTF ID flags and 8-byte
- BTF set
-Message-ID: <20220719183745.4ojhwpuo7ookjvvk@MacBook-Pro-3.local>
-References: <20220719132430.19993-1-memxor@gmail.com>
- <20220719132430.19993-2-memxor@gmail.com>
+        Tue, 19 Jul 2022 11:49:08 -0700 (PDT)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 7076335AA37; Tue, 19 Jul 2022 15:49:06 -0300 (-03)
+Date:   Tue, 19 Jul 2022 15:49:06 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH net] Documentation: fix sctp_wmem in ip-sysctl.rst
+Message-ID: <Ytb8ouxpPfV4MHru@t14s.localdomain>
+References: <0ad4093257791efe9651303b91ece0de244aafa4.1658166896.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719132430.19993-2-memxor@gmail.com>
+In-Reply-To: <0ad4093257791efe9651303b91ece0de244aafa4.1658166896.git.lucien.xin@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,50 +71,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 03:24:18PM +0200, Kumar Kartikeya Dwivedi wrote:
+On Mon, Jul 18, 2022 at 01:54:56PM -0400, Xin Long wrote:
+> Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
+> SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
+> by sk_wmem_schedule(). So we should fix the description for this option in
+> ip-sysctl.rst accordingly.
+> 
+> Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 0e58001f8580..b7db2e5e5cc5 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -2870,7 +2870,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
+>  	Default: 4K
 >  
-> +#define ____BTF_ID_FLAGS_LIST(_0, _1, _2, _3, _4, _5, N, ...) _1##_##_2##_##_3##_##_4##_##_5##__
-> +#define __BTF_ID_FLAGS_LIST(...) ____BTF_ID_FLAGS_LIST(0x0, ##__VA_ARGS__, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+>  sctp_wmem  - vector of 3 INTEGERs: min, default, max
+> -	Currently this tunable has no effect.
+> +	Only the first value ("min") is used, "default" and "max" are
+> +	ignored.
 > +
-> +#define __FLAGS(prefix, ...) \
-> +	__PASTE(prefix, __BTF_ID_FLAGS_LIST(__VA_ARGS__))
+> +	min: Minimal size of send buffer used by SCTP socket.
+
+I'm not a native English speaker, but this seems better:
+"Minimum size of send buffer that can be used by an SCTP socket."
+
+> +	It is guaranteed to each SCTP socket (but not association) even
+> +	under moderate memory pressure.
 > +
-> +#define BTF_ID_FLAGS(prefix, name, ...) \
-> +	BTF_ID(prefix, name)		\
-> +	__BTF_ID(__ID(__FLAGS(__BTF_ID__flags__, ##__VA_ARGS__)))
-> +
->  /*
->   * The BTF_ID_LIST macro defines pure (unsorted) list
->   * of BTF IDs, with following layout:
-> @@ -145,10 +164,53 @@ asm(							\
->  ".popsection;                                 \n");	\
->  extern struct btf_id_set name;
+> +	Default: 4K
 >  
-> +/*
-> + * The BTF_SET8_START/END macros pair defines sorted list of
-> + * BTF IDs and their flags plus its members count, with the
-> + * following layout:
-> + *
-> + * BTF_SET8_START(list)
-> + * BTF_ID_FLAGS(type1, name1, flags...)
-> + * BTF_ID_FLAGS(type2, name2, flags...)
-> + * BTF_SET8_END(list)
-> + *
-> + * __BTF_ID__set8__list:
-> + * .zero 8
-> + * list:
-> + * __BTF_ID__type1__name1__3:
-> + * .zero 4
-> + * __BTF_ID__flags__0x0_0x0_0x0_0x0_0x0__4:
-> + * .zero 4
-
-Overall looks great,
-but why encode flags into a name?
-Why reuse ____BTF_ID for flags and complicate resolve_btfid?
-Instead of .zero 4 insert the actual flags as .word ?
-
-The usage will be slightly different.
-Instead of:
-BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE, KF_RET_NULL)
-it will be
-BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE | KF_RET_NULL)
+>  addr_scope_policy - INTEGER
+>  	Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
+> -- 
+> 2.31.1
+> 
