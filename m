@@ -2,201 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D41057A7D4
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1BAE57A7C7
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 21:58:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239999AbiGST7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 15:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44786 "EHLO
+        id S239712AbiGST6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 15:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239929AbiGST7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:59:05 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A302C6068B;
-        Tue, 19 Jul 2022 12:58:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=WoDhjsWh6AEBPcpDgb9UnX2r2PUFNxOqgzwoPHKQOTE=; b=JqxeulwSMdmgxDuBt1v3zEAY45
-        WqdXE6/pAG8EWcZuFCACdF7sX/7jDrBbu0PmgEYeaRFlNpW+qd1LWjeJ4piZIirK/RsFHHj/cnlcH
-        GgnI4NGs02BZbdPfGzZTpCDtPDkHpkTRMaLn71GVyJaX7q3wR72VP8Rz+G1NJYUTZEF95s45npK8c
-        qFVyt3sAFMbNsG+UOjiILy/FU9v9PLG6I/M8RPXoGfARmMgRG9GdO4let4KHUk1ZzNQVufT9CXM7r
-        e0KUZR2/6bx3NVLPFS6mcdanQ0mGb75v8l9T67h+xoBRj+xVVtzNRn+g+tG6KGK5Aw2aHmWl8++AC
-        zCZy942Q==;
-Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oDtME-006fhg-H8; Tue, 19 Jul 2022 21:58:15 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH v2 13/13] panic: Fixes the panic_print NMI backtrace setting
-Date:   Tue, 19 Jul 2022 16:53:26 -0300
-Message-Id: <20220719195325.402745-14-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
+        with ESMTP id S239911AbiGST5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 15:57:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C9885F99E
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:57:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658260638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nmfj/HdGo7zFRPrsqEE+zb+jXM6fuJ575jDepw2rtxo=;
+        b=iDi+K7zKP27alqjnwi8YML1X1xLgANuImcJeCxesTu0afBbYLCuFqVmL9q2fekkp0Ynon9
+        uyHVNMm2XS5sXXOPChrmADpanaBPetW4tQzXmzVrZLqtlIbWMXlfTxxq+43TQrdRzp29JK
+        aGF/e1jYJY2WUc4LsWjQRrHOx+lIw04=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-76-WA0x73_3O0i44EJj-7f-Iw-1; Tue, 19 Jul 2022 15:57:16 -0400
+X-MC-Unique: WA0x73_3O0i44EJj-7f-Iw-1
+Received: by mail-io1-f71.google.com with SMTP id m9-20020a6b7b49000000b0067c0331524cso3795893iop.21
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 12:57:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=nmfj/HdGo7zFRPrsqEE+zb+jXM6fuJ575jDepw2rtxo=;
+        b=C1fqfj8PRlZdNfofKmHRwrAwfQmbv64ioqkim+gzfs5ECT8iv9wAoefwYPGHDXaYZF
+         pNm3Uu/8oJ12GqBl1av4psFmFlbkHoc9mg/3c/+c0RlQ0HcJNceugue0LXshK9DAwfa4
+         xEbegI7S2doSz8uT78Tox7TaZVgxx/ByNf/T67xnSJPGlfS77bPk5yvaOtY0xrPfK12N
+         TLyVqx3W3YD2TpzUDT2Pf4PY2Zm6aN8sAYFIjc509Zoq0Q6A+orcUcEbtxzbNx8He8kJ
+         weMxstsKb4AsmNWYz558BqjIYz6FbpPAU1poTgdNdMejO9DEd0IZnI65xTuitUThG3Ev
+         Qb1g==
+X-Gm-Message-State: AJIora//Zxl1PM0tC2c6qxWIs//rMR0ZydGMa7rnyGMGzZoDKX/sep4j
+        BOUCwNPYR5RxQsIXyeDSRpeiP4u6aOig6abi2F2rxBCEKLOdEnwEuvACQya2om+57eJfTjJTf3f
+        qcE+FB7xa32MgIYhA
+X-Received: by 2002:a05:6638:3387:b0:33c:9f9e:5a17 with SMTP id h7-20020a056638338700b0033c9f9e5a17mr18235287jav.12.1658260636108;
+        Tue, 19 Jul 2022 12:57:16 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sQetubxeBzqoGe5fqjeSCwtA6S4PWe6B2nZ4dj8f5zYaQba41N3W8PtWwuSRb7EBMTMQ3JGg==
+X-Received: by 2002:a05:6638:3387:b0:33c:9f9e:5a17 with SMTP id h7-20020a056638338700b0033c9f9e5a17mr18235279jav.12.1658260635833;
+        Tue, 19 Jul 2022 12:57:15 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id i13-20020a02ca0d000000b00339c1f7130csm7099085jak.84.2022.07.19.12.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 12:57:15 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 13:57:14 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <leonro@nvidia.com>, <maorg@nvidia.com>, <cohuck@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>
+Subject: Re: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Message-ID: <20220719135714.330297ed.alex.williamson@redhat.com>
+In-Reply-To: <49bb237a-5d95-f9fc-6d0b-8bcf082034c1@nvidia.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
+        <20220714081251.240584-4-yishaih@nvidia.com>
+        <20220718162957.45ac2a0b.alex.williamson@redhat.com>
+        <49bb237a-5d95-f9fc-6d0b-8bcf082034c1@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 8d470a45d1a6 ("panic: add option to dump all CPUs backtraces in panic_print")
-introduced a setting for the "panic_print" kernel parameter to allow
-users to request a NMI backtrace on panic. Problem is that the panic_print
-handling happens after the secondary CPUs are already disabled, hence
-this option ended-up being kind of a no-op - kernel skips the NMI trace
-in idling CPUs, which is the case of offline CPUs.
+On Tue, 19 Jul 2022 10:49:42 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-Fix it by checking the NMI backtrace bit in the panic_print prior to
-the CPU disabling function.
+> On 19/07/2022 1:29, Alex Williamson wrote:
+> > On Thu, 14 Jul 2022 11:12:43 +0300
+> > Yishai Hadas <yishaih@nvidia.com> wrote:
+> >  
+> >> DMA logging allows a device to internally record what DMAs the device is
+> >> initiating and report them back to userspace. It is part of the VFIO
+> >> migration infrastructure that allows implementing dirty page tracking
+> >> during the pre copy phase of live migration. Only DMA WRITEs are logged,
+> >> and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
+> >>
+> >> This patch introduces the DMA logging involved uAPIs.
+> >>
+> >> It uses the FEATURE ioctl with its GET/SET/PROBE options as of below.
+> >>
+> >> It exposes a PROBE option to detect if the device supports DMA logging.
+> >> It exposes a SET option to start device DMA logging in given IOVAs
+> >> ranges.
+> >> It exposes a SET option to stop device DMA logging that was previously
+> >> started.
+> >> It exposes a GET option to read back and clear the device DMA log.
+> >>
+> >> Extra details exist as part of vfio.h per a specific option.  
+> >
+> > Kevin, Kirti, others, any comments on this uAPI proposal?  Are there
+> > potentially other devices that might make use of this or is everyone
+> > else waiting for IOMMU based dirty tracking?
+> >
+> >     
+> >> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> >> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> >> ---
+> >>   include/uapi/linux/vfio.h | 79 +++++++++++++++++++++++++++++++++++++++
+> >>   1 file changed, 79 insertions(+)
+> >>
+> >> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> >> index 733a1cddde30..81475c3e7c92 100644
+> >> --- a/include/uapi/linux/vfio.h
+> >> +++ b/include/uapi/linux/vfio.h
+> >> @@ -986,6 +986,85 @@ enum vfio_device_mig_state {
+> >>   	VFIO_DEVICE_STATE_RUNNING_P2P = 5,
+> >>   };
+> >>   
+> >> +/*
+> >> + * Upon VFIO_DEVICE_FEATURE_SET start device DMA logging.
+> >> + * VFIO_DEVICE_FEATURE_PROBE can be used to detect if the device supports
+> >> + * DMA logging.
+> >> + *
+> >> + * DMA logging allows a device to internally record what DMAs the device is
+> >> + * initiating and report them back to userspace. It is part of the VFIO
+> >> + * migration infrastructure that allows implementing dirty page tracking
+> >> + * during the pre copy phase of live migration. Only DMA WRITEs are logged,
+> >> + * and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
+> >> + *
+> >> + * When DMA logging is started a range of IOVAs to monitor is provided and the
+> >> + * device can optimize its logging to cover only the IOVA range given. Each
+> >> + * DMA that the device initiates inside the range will be logged by the device
+> >> + * for later retrieval.
+> >> + *
+> >> + * page_size is an input that hints what tracking granularity the device
+> >> + * should try to achieve. If the device cannot do the hinted page size then it
+> >> + * should pick the next closest page size it supports. On output the device
+> >> + * will return the page size it selected.
+> >> + *
+> >> + * ranges is a pointer to an array of
+> >> + * struct vfio_device_feature_dma_logging_range.
+> >> + */
+> >> +struct vfio_device_feature_dma_logging_control {
+> >> +	__aligned_u64 page_size;
+> >> +	__u32 num_ranges;
+> >> +	__u32 __reserved;
+> >> +	__aligned_u64 ranges;
+> >> +};
+> >> +
+> >> +struct vfio_device_feature_dma_logging_range {
+> >> +	__aligned_u64 iova;
+> >> +	__aligned_u64 length;
+> >> +};
+> >> +
+> >> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_START 3
+> >> +
+> >> +/*
+> >> + * Upon VFIO_DEVICE_FEATURE_SET stop device DMA logging that was started
+> >> + * by VFIO_DEVICE_FEATURE_DMA_LOGGING_START
+> >> + */
+> >> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP 4
+> >> +
+> >> +/*
+> >> + * Upon VFIO_DEVICE_FEATURE_GET read back and clear the device DMA log
+> >> + *
+> >> + * Query the device's DMA log for written pages within the given IOVA range.
+> >> + * During querying the log is cleared for the IOVA range.
+> >> + *
+> >> + * bitmap is a pointer to an array of u64s that will hold the output bitmap
+> >> + * with 1 bit reporting a page_size unit of IOVA. The mapping of IOVA to bits
+> >> + * is given by:
+> >> + *  bitmap[(addr - iova)/page_size] & (1ULL << (addr % 64))
+> >> + *
+> >> + * The input page_size can be any power of two value and does not have to
+> >> + * match the value given to VFIO_DEVICE_FEATURE_DMA_LOGGING_START. The driver
+> >> + * will format its internal logging to match the reporting page size, possibly
+> >> + * by replicating bits if the internal page size is lower than requested.
+> >> + *
+> >> + * Bits will be updated in bitmap using atomic or to allow userspace to
 
-Fixes: 8d470a45d1a6 ("panic: add option to dump all CPUs backtraces in panic_print")
-Cc: Feng Tang <feng.tang@intel.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+s/or/OR/
 
----
+> >> + * combine bitmaps from multiple trackers together. Therefore userspace must
+> >> + * zero the bitmap before doing any reports.  
+> > Somewhat confusing, perhaps "between report sets"?  
+> 
+> The idea was that the driver just turns on its own dirty bits and 
+> doesn't touch others.
 
+Right, we can aggregate dirty bits from multiple devices into a single
+bitmap.
 
-V2:
-- new patch, there was no V1 of this one.
+> Do you suggest the below ?
+> 
+> "Therefore userspace must zero the bitmap between report sets".
 
+It may be best to simply drop this guidance, we don't need to presume
+the user algorithm, we only need to make it apparent that
+LOGGING_REPORT will only set bits in the bitmap and never clear or
+preform any initialization of the user provided bitmap.
 
-Hi folks, thanks upfront for reviews. This is a new patch, fixing an issue
-I found in my tests, so I shoved it into this fixes series.
+> >> + *
+> >> + * If any error is returned userspace should assume that the dirty log is
+> >> + * corrupted and restart.  
+> > Restart what?  The user can't just zero the bitmap and retry, dirty
+> > information at the device has been lost.  
+> 
+> Right
+> 
+> >   Are we suggesting they stop
+> > DMA logging and restart it, which sounds a lot like failing a migration
+> > and starting over.  Or could the user gratuitously mark the bitmap
+> > fully dirty and a subsequent logging report iteration might work?
+> > Thanks,
+> >
+> > Alex  
+> 
+> An error at that step is not expected and might be fatal.
+> 
+> User space can consider marking all as dirty and continue with that 
+> approach for next iterations, maybe even without calling the driver.
+> 
+> Alternatively, user space can abort the migration and retry later on.
+> 
+> We can come with some rephrasing as of the above.
+> 
+> What do you think ?
 
-Notice that while at it, I got rid of the "crash_kexec_post_notifiers"
-local copy in panic(). This was introduced by commit b26e27ddfd2a
-("kexec: use core_param for crash_kexec_post_notifiers boot option"),
-but it is not clear from comments or commit message why this local copy
-is required.
+If userspace needs to consider the bitmap undefined for any errno,
+that's a pretty serious usage restriction that may negate the
+practical utility of atomically OR'ing in dirty bits.  We can certainly
+have EINVAL, ENOTTY, EFAULT, E2BIG, ENOMEM conditions that don't result
+in a corrupted/undefined bitmap, right?  Maybe some of those result in
+an incomplete bitmap, but how does the bitmap actually get corrupted?
+It seems like such a condition should be pretty narrowly defined and
+separate from errors resulting in an incomplete bitmap, maybe we'd
+reserve -EIO for such a case.  The driver itself can also gratuitously
+mark ranges dirty itself if it loses sync with the device, and can
+probably do so at a much more accurate granularity than userspace.
+Thanks,
 
-My understanding is that it's a mechanism to prevent some concurrency,
-in case some other CPU modify this variable while panic() is running.
-I find it very unlikely, hence I removed it - but if people consider
-this copy needed, I can respin this patch and keep it, even providing a
-comment about that, in order to be explict about its need.
+Alex
 
-Let me know your thoughts! Cheers,
-
-Guilherme
-
-
- kernel/panic.c | 47 +++++++++++++++++++++++++++--------------------
- 1 file changed, 27 insertions(+), 20 deletions(-)
-
-diff --git a/kernel/panic.c b/kernel/panic.c
-index a3308af28a21..7fb604e95ef9 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -180,9 +180,6 @@ static void panic_print_sys_info(bool console_flush)
- 		return;
- 	}
- 
--	if (panic_print & PANIC_PRINT_ALL_CPU_BT)
--		trigger_all_cpu_backtrace();
--
- 	if (panic_print & PANIC_PRINT_TASK_INFO)
- 		show_state();
- 
-@@ -199,6 +196,30 @@ static void panic_print_sys_info(bool console_flush)
- 		ftrace_dump(DUMP_ALL);
- }
- 
-+/*
-+ * Helper that triggers the NMI backtrace (if set in panic_print)
-+ * and then performs the secondary CPUs shutdown - we cannot have
-+ * the NMI backtrace after the CPUs are off!
-+ */
-+static void panic_other_cpus_shutdown(void)
-+{
-+	if (panic_print & PANIC_PRINT_ALL_CPU_BT)
-+		trigger_all_cpu_backtrace();
-+
-+	/*
-+	 * Note that smp_send_stop() is the usual SMP shutdown function,
-+	 * which unfortunately may not be hardened to work in a panic
-+	 * situation. If we want to do crash dump after notifier calls
-+	 * and kmsg_dump, we will need architecture dependent extra
-+	 * bits in addition to stopping other CPUs, hence we rely on
-+	 * crash_smp_send_stop() for that.
-+	 */
-+	if (!crash_kexec_post_notifiers)
-+		smp_send_stop();
-+	else
-+		crash_smp_send_stop();
-+}
-+
- /**
-  *	panic - halt the system
-  *	@fmt: The text string to print
-@@ -214,7 +235,6 @@ void panic(const char *fmt, ...)
- 	long i, i_next = 0, len;
- 	int state = 0;
- 	int old_cpu, this_cpu;
--	bool _crash_kexec_post_notifiers = crash_kexec_post_notifiers;
- 
- 	if (panic_on_warn) {
- 		/*
-@@ -289,23 +309,10 @@ void panic(const char *fmt, ...)
- 	 *
- 	 * Bypass the panic_cpu check and call __crash_kexec directly.
- 	 */
--	if (!_crash_kexec_post_notifiers) {
-+	if (!crash_kexec_post_notifiers)
- 		__crash_kexec(NULL);
- 
--		/*
--		 * Note smp_send_stop is the usual smp shutdown function, which
--		 * unfortunately means it may not be hardened to work in a
--		 * panic situation.
--		 */
--		smp_send_stop();
--	} else {
--		/*
--		 * If we want to do crash dump after notifier calls and
--		 * kmsg_dump, we will need architecture dependent extra
--		 * works in addition to stopping other CPUs.
--		 */
--		crash_smp_send_stop();
--	}
-+	panic_other_cpus_shutdown();
- 
- 	/*
- 	 * Run any panic handlers, including those that might need to
-@@ -326,7 +333,7 @@ void panic(const char *fmt, ...)
- 	 *
- 	 * Bypass the panic_cpu check and call __crash_kexec directly.
- 	 */
--	if (_crash_kexec_post_notifiers)
-+	if (crash_kexec_post_notifiers)
- 		__crash_kexec(NULL);
- 
- #ifdef CONFIG_VT
--- 
-2.37.1
+> >> + *
+> >> + * If DMA logging is not enabled, an error will be returned.
+> >> + *
+> >> + */
+> >> +struct vfio_device_feature_dma_logging_report {
+> >> +	__aligned_u64 iova;
+> >> +	__aligned_u64 length;
+> >> +	__aligned_u64 page_size;
+> >> +	__aligned_u64 bitmap;
+> >> +};
+> >> +
+> >> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT 5
+> >> +
+> >>   /* -------- API for Type1 VFIO IOMMU -------- */
+> >>   
+> >>   /**  
+> 
+> 
 
