@@ -2,72 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF1F578F51
-	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68637578F5E
+	for <lists+netdev@lfdr.de>; Tue, 19 Jul 2022 02:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235997AbiGSAeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jul 2022 20:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        id S234563AbiGSAld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jul 2022 20:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiGSAd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:33:59 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9B820BE3;
-        Mon, 18 Jul 2022 17:33:58 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id tk8so12968667ejc.7;
-        Mon, 18 Jul 2022 17:33:58 -0700 (PDT)
+        with ESMTP id S232768AbiGSAlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jul 2022 20:41:32 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241A24947;
+        Mon, 18 Jul 2022 17:41:31 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id tk8so12988856ejc.7;
+        Mon, 18 Jul 2022 17:41:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IvxZ+pT9eeB1oLC9gFmEKd/KuQtpynmxv5JFp2p4LmA=;
-        b=gIwUl/XuJhRTTGvtNQ0aWFNNZ72RlbJkwCpGM7wO/sSbDoqxUvqlBJWjDWb4nUVxkr
-         wA4kzWGIsYd+oyTYPVOyC2ZEirNy56kC6YvoOg+Fu9JlIyx/BhzBlvQ+GB0MbVTk2jEb
-         eyBlXAwQJroWvaq2gnY/J8A7Jy+02RK/TtexgA7MBUZK9FnxBH7HPm/OPbZR2kp6FIOG
-         BYDIh26pR+njlg0wqOtuaPaePG5L+WBmSIyBqxyMD5dCULrXaEhs9vg/GnJqlYLpsG/y
-         w38dp1uD5s55WeggWwrAh2xQxeFiYqJgAS/5mGamYHgRw4gT0je1cudllgWrZEayUSK0
-         E39A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=N0UFO2LEB4N3gT8fM5N0L2BjWrPKcIQI1x0+D9+PXyM=;
+        b=CrsObfdoQkRTNBGQviz57J895etCe1uCs6faYu8P9SApkKbWomIm/hs3s7+oYHIULl
+         FVYWW0/w/csJyjTU6BpJBb9aHdYFWI05ZR9s9+ubvInSO1K8j7u+NM2eARqCag4FrPUc
+         Ax0xXDi35ZeMgzJ9HnCM43PQawEcART3F5Yyul+sWxMI2Auk/h27zBlc/kB+UUJBBVMQ
+         IUOd4OrTYiUAo4VBnWUECIXMm/pILggQhzNGN3pRWZLy+vkipLooLggqlmcNLSOrQy2M
+         JflfZ1PICW+KLpe6DrtyEDZa+kP3XxvUybLwldorMfSbd2fX4HGJdXmMiP9ItRqSQjQc
+         7a6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IvxZ+pT9eeB1oLC9gFmEKd/KuQtpynmxv5JFp2p4LmA=;
-        b=3pozF0Sp0Y31M6XUXg5S/pg5PQ13T7OSXUI/u2d+ngzgnenZaMrKdO629nBNmeWgaV
-         Z3v5bRHB17DWBN5oYUBjDNFHhCNu0vZiPPOwfymIjFbjWChr7WSzs+R6V34YH+U19Uzt
-         6rJanp842pyNVovP9mzCtmEt1nNpJxy47uzLplu14L6nH4JjqcSd25fu5Bxcu1dj5lFy
-         A4oWGSWmK/oPkvYllMLtce9K6fy9UMOhCW38s7vGzS+/svDbiubNe9GF6KTHKmoLTnnJ
-         5H3dmqQOwXwYadKi/VLKJ8rOG+AxNsi5OoQFVSylk9202nm9Lhq7QfAGK06YuwwUy0AW
-         X7UQ==
-X-Gm-Message-State: AJIora+rHTGTED0YfyLnHtBoK9I+cU5fbEc/G345v467NOlVM8Y0IQRV
-        CGEj0Esz4xHEXBrRkwPytQSkZjfs3QgMF4WVmNc=
-X-Google-Smtp-Source: AGRyM1sRm67nRsWZfFSFhouVBqucc4bOtFjiV6na1gILOaBHlxhxwORoLOL7DxP/wH7oPhk7TCfa/L42Gn4aM8oO2I8=
-X-Received: by 2002:a17:906:149:b0:712:502:bc62 with SMTP id
- 9-20020a170906014900b007120502bc62mr28280283ejh.720.1658190836834; Mon, 18
- Jul 2022 17:33:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220718072144.2699487-1-airlied@gmail.com> <97e5afd3-77a3-2227-0fbf-da2f9a41520f@leemhuis.info>
- <20220718150414.1767bbd8@kernel.org>
-In-Reply-To: <20220718150414.1767bbd8@kernel.org>
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Tue, 19 Jul 2022 10:33:45 +1000
-Message-ID: <CAPM=9tw6iP3Ti1idrBLTLVX57uYgf79rG2-0ad-fS48z+pXzeA@mail.gmail.com>
-Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware guidelines.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Thorsten Leemhuis <linux@leemhuis.info>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N0UFO2LEB4N3gT8fM5N0L2BjWrPKcIQI1x0+D9+PXyM=;
+        b=nph7fztI5LX5YGGv6ml+HB8+IYp90OM5vj+xoy9LslNgoGF9/8xryuN5jajE63qN0Q
+         5IQie48uPeJkXsV74EBi9Di6gxfT+ZAEI4GlMyqJSzC9A0fSjO+Q75S5FBo9zzHyPtHD
+         speLqXREgHVfCLawJh7xq2VFLG1IrQ8GVmn9RVNEABNqMGa94m0HCDW/K9W9V359QAEh
+         Dn+PcOAK27WaqCrHIt7nidR3ch/PTQLVyCl9XsBXmpQzve2zn7su0JWk5m3BfAW6gu8T
+         /zVIvamy6WCnFe/5uWi4JCGMgUf4GZmxTcwRyNlcKcbYD+lnX3BycDKXyQPiEDXTT1Pg
+         Ao6w==
+X-Gm-Message-State: AJIora/SkGNWS5tjN5pGIiEwqtJ+CwYTvLkO+EH35QBinvgrKeCt+w91
+        EYxr3SrRdoF5dn9T46oJy+Q=
+X-Google-Smtp-Source: AGRyM1svc/KRbFwjDP944pTBOdvhHaa4ZAuA4xFFY+a7/Zcbuaqb4XYRStVOgEjyFucz8SKjqDGgkA==
+X-Received: by 2002:a17:907:9706:b0:72b:4b0d:86a2 with SMTP id jg6-20020a170907970600b0072b4b0d86a2mr26993817ejc.242.1658191289781;
+        Mon, 18 Jul 2022 17:41:29 -0700 (PDT)
+Received: from skbuf ([188.25.231.190])
+        by smtp.gmail.com with ESMTPSA id d25-20020a170906305900b0072f42ca292bsm1095210ejd.129.2022.07.18.17.41.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jul 2022 17:41:29 -0700 (PDT)
+Date:   Tue, 19 Jul 2022 03:41:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.sf.net" <dri-devel@lists.sf.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux Wireless List <linux-wireless@vger.kernel.org>,
-        alsa-devel@alsa-project.org,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 1/4] net: dsa: qca8k: drop
+ qca8k_read/write/rmw for regmap variant
+Message-ID: <20220719004126.2ysae4vhbmfnqsta@skbuf>
+References: <20220718184017.o2ogalgjt6zwwhq3@skbuf>
+ <62d5ad12.1c69fb81.2dfa5.a834@mx.google.com>
+ <20220718193521.ap3fc7mzkpstw727@skbuf>
+ <62d5b8f5.1c69fb81.ae62f.1177@mx.google.com>
+ <20220718203042.j3ahonkf3jhw7rg3@skbuf>
+ <62d5daa7.1c69fb81.111b1.97f2@mx.google.com>
+ <20220718234358.27zv5ogeuvgmaud4@skbuf>
+ <62d5f18e.1c69fb81.35e7.46fe@mx.google.com>
+ <20220719001811.ty6brvavbrts6rk4@skbuf>
+ <62d5fc18.1c69fb81.28c9a.a5c2@mx.google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62d5fc18.1c69fb81.28c9a.a5c2@mx.google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,25 +88,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jul 2022 at 08:04, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 18 Jul 2022 11:33:11 +0200 Thorsten Leemhuis wrote:
-> > > If the hardware isn't
-> > > +  enabled by default or under development,
-> >
-> > Wondering if it might be better to drop the "or under development", as
-> > the "enabled by default" is the main part afaics. Maybe something like
-> > "If support for the hardware is normally inactive (e.g. has to be
-> > enabled manually by a kernel parameter)" would be better anyway.
->
-> It's a tricky one, I'd say something like you can break the FW ABI
-> "until HW becomes available for public consumption" or such.
-> I'm guessing what we're after is letting people break the compatibility
-> in early stages of the product development cycles. Pre-silicon and
-> bring up, but not after there are products on the market?
+On Tue, Jul 19, 2022 at 02:17:20AM +0200, Christian Marangi wrote:
+> Wonder if a good idea would be leave things as is for now and work of a
+> single dsa_switch_ops on another series.
+> 
+> With "leave things as is" I mean that function will get migrated to
+> qca8k-common.c and exposed with the header file.
+> 
+> And the dsa_switch_ops is defined in qca8k specific code.
+> 
+> The warn about the 23 patch was scary so considering this series is
+> already a bit big and I can squash only a few patch, putting extra logic
+> to correctly handle each would make this even bigger.
+> 
+> Think the right thing to do is handling the changes for single
+> dsa_switch_ops to a separate series and at the same time also get some
+> info on ipq4019 and what can be generalized.
+> 
+> What do you think?
 
-I'll stick with enabled by default I think, "public consumption"
-invites efforts to describe corners of the cloud or other places where
-hw has shipped but is not technically "public",
-
-Dave.
+I don't have a clear mental image right now of how things would look like,
+but I suppose you can try and I can review the result. I imagine the
+only code added now that you'll need to delete when you later migrate from
+switch-specific dsa_switch_ops to common dsa_switch_ops are the function
+prototypes from qca8k.h, since the implementations of the dsa_switch_ops
+will become static functions at some point in the future.
