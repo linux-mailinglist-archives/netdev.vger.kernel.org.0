@@ -2,139 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7A057B2CE
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18C357B2D7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiGTIXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S231650AbiGTI0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbiGTIXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:23:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 198F46BC15
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658305395;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WqWXkpMYDjGMkR6N048q9/Kkfh0q8LEuKcrhvdxBx9U=;
-        b=Pc6LMPEyoz2HtuKBXbsluaQEs7uFaCR3iNU1AAK4zJvRQB6lMUKw/Sq3+yUVECyPMBHdZu
-        XTn5FW1R64ucmf5NgTP4yDz2g3yhNmdO96FxjeDqfb9cR85gKvPM8Umv1uq8fs6Hx6894Y
-        ay57I/mFkWs+yfXgBXQOEZf13d2QyGg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-586-zBer2eaSOBuT2u7QDKwumA-1; Wed, 20 Jul 2022 04:23:13 -0400
-X-MC-Unique: zBer2eaSOBuT2u7QDKwumA-1
-Received: by mail-wr1-f70.google.com with SMTP id h6-20020adfaa86000000b0021e47bcbc6dso259362wrc.16
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:23:13 -0700 (PDT)
+        with ESMTP id S230354AbiGTI0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:26:09 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C571A664D1
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:26:05 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so780080wmm.4
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=7jccUrZM299hCC1xnWZMw1fh8jQct5pN4foSe7t64Vg=;
+        b=V0pUHWqXlIT/C3pRkMKh87YcEqXAFmsDU+1EJSljEYE0cUx11qU671Aqr+ptMpP6VQ
+         zKgX2TcgGMbClqCPMY15Zh2XFCBL5GIHXUUcD1ahyV7QlUnSnlPSmtGchwVC78fmpEkt
+         Ie6j0zkivb6ymfzZDK5B/6DIpOU4FHlrm81asQQ14X2xRiHLzK5XvSCc844HdeP0/WyV
+         oQabpaw/1rM5SI/+V+7JNf3gjWOzHsxoIiq1o+o3+blQvglmaZBUGUqzCN3BAGMwgyuV
+         jC3NqRO8qpAu+RLOud+FKGjDJdgL+GjA0dcBUTvzXpmF2Dfok2HupzuKWIUVQEbge3Pm
+         Imww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=WqWXkpMYDjGMkR6N048q9/Kkfh0q8LEuKcrhvdxBx9U=;
-        b=0J1eujKuF/Ao+IKNXBQtFkT0C1dXtREbHWSatWEI7bLGmV0bip22ZB5LdmuWV6t19C
-         zBkMpnGQF5ovotCLrQClGHi6FbkD/ICelSh41idekXjlY59TGINJ4MqBC4dEiC5Dim+2
-         Eyc7cI6H4mwZrnUbT9EWSnFXX6wsPt9jNCYrIeO8G0LMWkygR8xWHx7O3YLXPuXy2XWQ
-         FaR8YBGY3dC5uaNG6dVgamzF9r1uTjQNZy9ZAw+SCNndAljp9L+teMn46YtFrTXIV4pV
-         HmvKMtd/XVlsmu0rL4GKZ2IduVP6qr1LDpVzsHlFSdgzvsnzhgi3Y8+fliAdqDYUvo6f
-         D+fg==
-X-Gm-Message-State: AJIora8XwOilnAn1Oi/MriZ0e+sygpjvmJ3j9U7iB21aBIUYC4yVygEE
-        W05NJlmXKcjIAOxxDLoJU0DrWNyb3ukrS+FAf7l9XGks3vPe1aN7iM0K4Uy01LX+Q1DG8UV2K2T
-        HJ/VkupvDGPwfOQ/S
-X-Received: by 2002:a05:600c:3227:b0:3a3:be7:2917 with SMTP id r39-20020a05600c322700b003a30be72917mr2760523wmp.83.1658305392296;
-        Wed, 20 Jul 2022 01:23:12 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sk2lxdgaBkVc5Kem0cnAq2mfCBRvNA74098gzKOVACYFwhUlWyh6yfDCAwDcJmLBObthn+bA==
-X-Received: by 2002:a05:600c:3227:b0:3a3:be7:2917 with SMTP id r39-20020a05600c322700b003a30be72917mr2760502wmp.83.1658305392025;
-        Wed, 20 Jul 2022 01:23:12 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id g8-20020a05600c4ec800b003a317ee3036sm1887541wmq.2.2022.07.20.01.23.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 01:23:11 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 10:23:07 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Dexuan Cui <decui@microsoft.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 2/3] virtio/vsock: use 'target' in notify_poll_in,
- callback.
-Message-ID: <20220720082307.djbf7qgnlsjmrxcf@sgarzare-redhat>
-References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
- <358f8d52-fd88-ad2e-87e2-c64bfa516a58@sberdevices.ru>
- <20220719124857.akv25sgp6np3pdaw@sgarzare-redhat>
- <15f38fcf-f1ff-3aad-4c30-4436bb8c4c44@sberdevices.ru>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=7jccUrZM299hCC1xnWZMw1fh8jQct5pN4foSe7t64Vg=;
+        b=TQ1yyMf9OCYjjgGUGLxeevsq1Rs9htbn7mKV/SIOYQ8ut/ug17khJ1BKCoo8GDzNOJ
+         0KPTAXyHT29Vf5Zr54p6MNuNLEJ9F+bGYKuLN5l5tfEwo174zSQW1hA0nVxBsWqph169
+         kdetiqVboKc1dQwXUhVEtH6GphCOr0a1pIKWyqNZ3927L35M+ERrCgH8mLyn/o7SwbiT
+         qEbW2h35xMhpvkj9w5kRsZNGzNOLT8y+/OGBmbFFUlwWsF9D7i63XjjpBH8IEbpHD/06
+         WTb5Z8TOEiUJI/ivaonYhD5kWR76BpynwrI1UrIA/Fqta7Df/GCdzoNUbf58GicE+Yd9
+         cfwQ==
+X-Gm-Message-State: AJIora+qGcW237DEJqkFbYyICE55aD7UUGsuUjUaXGkvMGZJith856TZ
+        vQ57cKTkRZjGoBn3UlhbUm0CPQ==
+X-Google-Smtp-Source: AGRyM1utC3apUmp4vpBaAQOO786Z1FegeNRlsYviqlJEBaI222tnk/Lm04rdJzJdpYk/zYnHDkFLqg==
+X-Received: by 2002:a05:600c:28c:b0:3a3:2b26:d1cd with SMTP id 12-20020a05600c028c00b003a32b26d1cdmr1037678wmk.0.1658305564354;
+        Wed, 20 Jul 2022 01:26:04 -0700 (PDT)
+Received: from [172.31.98.152] ([185.13.181.2])
+        by smtp.gmail.com with ESMTPSA id i64-20020a1c3b43000000b003a2c67aa6c0sm1952155wma.23.2022.07.20.01.26.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 01:26:04 -0700 (PDT)
+Message-ID: <3feb6514-de2c-4b95-b203-74362b3cc002@6wind.com>
+Date:   Wed, 20 Jul 2022 10:26:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next] net: ipv6: avoid accepting values greater than 2
+ for accept_untracked_na
+Content-Language: en-US
+To:     Jaehee Park <jhpark1013@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        dsahern@gmail.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        aajith@arista.com, roopa@nvidia.com, roopa.prabhu@gmail.com,
+        aroulin@nvidia.com, sbrivio@redhat.com
+References: <20220720065211.369241-1-jhpark1013@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220720065211.369241-1-jhpark1013@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <15f38fcf-f1ff-3aad-4c30-4436bb8c4c44@sberdevices.ru>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 05:38:03AM +0000, Arseniy Krasnov wrote:
->On 19.07.2022 15:48, Stefano Garzarella wrote:
->> On Mon, Jul 18, 2022 at 08:17:31AM +0000, Arseniy Krasnov wrote:
->>> This callback controls setting of POLLIN,POLLRDNORM output bits
->>> of poll() syscall,but in some cases,it is incorrectly to set it,
->>> when socket has at least 1 bytes of available data. Use 'target'
->>> which is already exists and equal to sk_rcvlowat in this case.
->>>
->>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>> ---
->>> net/vmw_vsock/virtio_transport_common.c | 2 +-
->>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->>> index ec2c2afbf0d0..591908740992 100644
->>> --- a/net/vmw_vsock/virtio_transport_common.c
->>> +++ b/net/vmw_vsock/virtio_transport_common.c
->>> @@ -634,7 +634,7 @@ virtio_transport_notify_poll_in(struct vsock_sock *vsk,
->>>                 size_t target,
->>>                 bool *data_ready_now)
->>> {
->>> -    if (vsock_stream_has_data(vsk))
->>> +    if (vsock_stream_has_data(vsk) >= target)
->>>         *data_ready_now = true;
->>>     else
->>>         *data_ready_now = false;
->>
->> Perhaps we can take the opportunity to clean up the code in this way:
->>
->>     *data_ready_now = vsock_stream_has_data(vsk) >= target;
->Ack
->>
->> Anyway, I think we also need to fix the other transports (vmci and hyperv), what do you think?
->For vmci it is look clear to fix it. For hyperv i need to check it more, because it already
->uses some internal target value.
 
-Yep, I see. Maybe you can pass `target` to hvs_channel_readable() and 
-use it as parameter of HVS_PKT_LEN().
+Le 20/07/2022 Ã  08:52, Jaehee Park a Ã©critÂ :
+> The accept_untracked_na sysctl changed from a boolean to an integer
+> when a new knob '2' was added. This patch provides a safeguard to avoid
+> accepting values that are not defined in the sysctl. When setting a
+> value greater than 2, the user will get an 'invalid argument' warning.
+> 
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> Suggested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Suggested-by: Roopa Prabhu <roopa@nvidia.com>
+> ---
+>  net/ipv6/addrconf.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 6ed807b6c647..d3e77ea24f05 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -7042,9 +7042,9 @@ static const struct ctl_table addrconf_sysctl[] = {
+>  		.data		= &ipv6_devconf.accept_untracked_na,
+>  		.maxlen		= sizeof(int),
+>  		.mode		= 0644,
+> -		.proc_handler	= proc_dointvec,
+> +		.proc_handler	= proc_dointvec_minmax,
+>  		.extra1		= (void *)SYSCTL_ZERO,
+> -		.extra2		= (void *)SYSCTL_ONE,
+> +		.extra2		= (void *)SYSCTL_TWO,
+Nit: the cast is useless:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/sysctl.h#n40
 
-@Dexuan what do you think?
 
-Thanks,
-Stefano
-
+Regards,
+Nicolas
