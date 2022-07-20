@@ -2,144 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1825B57B1FA
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:45:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B177B57B200
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:46:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbiGTHph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 03:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
+        id S240141AbiGTHqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 03:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbiGTHpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:45:36 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2061.outbound.protection.outlook.com [40.107.220.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D1D20BEB
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:45:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bkuU9i1reIcqBRxQfosUHxIDbGgJhkZCFNIWGCKKS00HC4ypdO9tt5Gzvi8TQZCuXaFBAVUW8HBJ0caDjpZvNIjotNGxhY1Zj5I/dxADnokkGjndhCvYyyAhadBx5PRXiseOvQapQZOH/UyJAY26XcCc/+lZkQeMCRSCjEKxpy99nW+FFjVcwY3Q/RWx9MO/1NZzjS3KggNC255Fr6S1atszjzcsGh4qOwN5VtGkEH6Cmfw49305fYy8S6CS3apxqRRUthPnDsBkQ9JnixNu3zTNukYdZY5eS4g4zSvQ0zL4zKRu3eOKpekXiUK6zxVn6l+aY91b8yaEOxkm2PdgMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e27xhBsrJFiHbnr9QczfZ+CZXNRrW9A8aB6f2xnXjUw=;
- b=SVUr4q3E875XWfAhnUFCyVt9tkAf75vDkylGNLN8Szbljk+0xHQanLLwK2UPromAXEvT2Zr9PuY4lRRdpE6nNZsrI1UrOIEZnx7CBd8QkIDIEm0in0myPxnXA9BhlFEPa1xsLHYHhAZe8X3Bss9YFw3UHG/Q0/hawBm/8iUEvVHly7pn18MLXVuMYwo4td4DSgPYlUwE6r8GJbIGXiFSHonEnnzYXr62VNrWC/lZIq1hG5YFKLqiyqIjgkcOzGVr2VV4lzXIgA0gSe4GEUYa5J8lh8NkAEvfW+7GdJoyE39VVI/8pKP44JPIDo9qOlwZ+MJQIuQuOOQaXWVkDc/5tw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e27xhBsrJFiHbnr9QczfZ+CZXNRrW9A8aB6f2xnXjUw=;
- b=bQom3Ieyh2C0w4HN7L5S62Uv7n0o+tSyTHBi/m6SHPuazMuwsV9rnhwHTpgrEHPh0eQV5UX97QaSUZXZsVchm5eHjQ6oR/Kv6oYbsvmVqSini/5iSwLNVbO8Y9P5dgSpiG17wW7J/yZ0smDz4JMIkzFA5Ha0qKvay9zax7juQ6bsbzKwFHaIYSini/snVpi5Q6L2Lf+7XyVlnPyTV083B1SCgtL/dxSfu5NaAWbZQdtESi46Zw2C1OUTRgdFU++Ux7UlKnYXyzHOC7jAI0JzSDsAMYncsQFP8T4JHqDXsbmxMIE3bOeLaU2u64Y6ekqrJ5H/eHBge9haO7d83Rln7A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by BN6PR12MB1857.namprd12.prod.outlook.com (2603:10b6:404:102::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Wed, 20 Jul
- 2022 07:45:33 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
- 07:45:32 +0000
-Date:   Wed, 20 Jul 2022 10:45:26 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v2 01/12] net: devlink: make sure that
- devlink_try_get() works with valid pointer during xarray iteration
-Message-ID: <YteyloM9mtRqCI0T@shredder>
-References: <20220719064847.3688226-1-jiri@resnulli.us>
- <20220719064847.3688226-2-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719064847.3688226-2-jiri@resnulli.us>
-X-ClientProxiedBy: VI1PR0701CA0029.eurprd07.prod.outlook.com
- (2603:10a6:800:90::15) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S238447AbiGTHqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:46:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 462D65143A
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:46:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658303175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TbZhJzi1XjEO0VjMc3OCE070kAR/2Bm1MhVgWqQyN3E=;
+        b=V1/zPyFpZC/QkAbTxFJDWuzA8u/ntJuC6wGdubJyyecM/NNh0M9vXYn2KmOeKu1gZsXO4J
+        W1zzv2ilOzxMA3yt2JUeJ823EUFLNSXefeNVzU+UE2DgaXYU8veFhRCBAt69DQX1u6n5mE
+        cwXj0YWWWr0duea7uiL1OrXfj03GRqs=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-48-N9m6-2FTONeWFImOeDBW-w-1; Wed, 20 Jul 2022 03:46:13 -0400
+X-MC-Unique: N9m6-2FTONeWFImOeDBW-w-1
+Received: by mail-lj1-f200.google.com with SMTP id z11-20020a05651c11cb00b0025d8baefafdso2885712ljo.9
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:46:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TbZhJzi1XjEO0VjMc3OCE070kAR/2Bm1MhVgWqQyN3E=;
+        b=Av4wTszA0v/sw6G6e+Qi5KHzR501LB4tgNbyn+mpNh1uozAWrBXifSLHbpVFEGZBT6
+         NKmxfzSY1xSo/zqI4i0R/7vlIsrBgYGvVjYL+w5p7qNkHMXlFg+K10sv2j4YrWel3fGf
+         lTC5WfQCatgwxiDT5PI3pwXaSRf8lnZxomebkHVaUxjTLJ8l0vL6aezI9H1yAKwDsL15
+         t2HFSgUsY8vtHojY+93XC3W2fW5eFa4fvwYH4f2OHscvwDE7PI7qRD4qENc5YSDcO0X6
+         Evha4445ChBqwcydIPGVvY1ANiPW1Gb4Vab2gzwoifdBIqwIILshUy0/ywaRN4jWEU4S
+         ltAQ==
+X-Gm-Message-State: AJIora8LP9qSmg+9MoZopoESBPhBKVf0hoUZa3OlWvLfKXv0tZcprlxM
+        +ry6/STzyPwWWogcfTAAaPcd8Q7+4fA/bW/VcB4X+z5iRi2o/ElJ7VYcQRZkeWXmtTsraC8gksc
+        bkuk9uZBZ+6v1i2vInackQ/TKu5yLGJdh
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id h21-20020a0565123c9500b0048a03d109dfmr20408788lfv.641.1658303170905;
+        Wed, 20 Jul 2022 00:46:10 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sBHZbWAClAKFaljG/LXylheGAMREbjMAZVjFxCsAUlkvf/2k9MEDHXhq8r7jzuqdP4PcupZRfy2LL4RBym048=
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id
+ h21-20020a0565123c9500b0048a03d109dfmr20408782lfv.641.1658303170713; Wed, 20
+ Jul 2022 00:46:10 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cb56d5c7-0f58-4138-e838-08da6a23d2cf
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1857:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tu4I92dhTsnhmOJO+VDfm4shF4S1hIYbqu5U9MnXN3mm69MY4Ozw4pAYwCiLRco1AJWS7dJ61hN7schXcWDcmM1uaPT4FJR//IrlDs+F3HNkgjUjC/zvojjcQyGPzRlb5N2ILAZ9+XHknGeyP57d8gt6QB5rwZAvMOWhUZtqKwZmiO7yJ3xlcqGfO32nwv5QXHUOaFy1O4AVvqj4E/6MkZASN0FQ++NEjC1ZCbrfUc0g4umMfiyrts40PP/bjrl85GXhMBCxuEAwlVHHT7gDWAdaWiaqDp/ri/MIPByNM1GwZcKoQQHC//eA3gS8YvP1bhlhIxJHS7Ci7YcurTuZZ7bnQUQY+fhNUuKo7NuO+VM8M5A/HBnEj+Mmg0XalfaJvLIhsOeeSKolurrYJ9Lbl3Rwq5+Td0FEYe3BBfmfXnnfsEUc+o8TKzAANPYA0iF1bT7WOBxP8bpiFTWMPmwFArOw+1iDrIGE3bmuVKzdqHULb+aZ1xOCEyKFVaK3dLE+wwLgFp28KN2ZNMbwGNteA7AQ/knBGToREolWvxcn7ld83ClLi2S1zl6svSLu1Be0nt+6OqsmsQXHw/PfjCNrqX/U3c7qZ/qnfG9HuQnr/ovvpxMaSM8MiVDHzw8Iq/f152RVc9jrG7zFAMFAlnLGBh+HMujhMNxtjw1DPmxFrE9fippd8JhEtYJdLo8ZXXSnw5sdW3iD+N6BPae0sEn5MBjRpqrDTRXTP/+9AxGiOcUwSdgTa32f/YHtCrKm9FFe
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(5660300002)(8936002)(83380400001)(478600001)(6916009)(186003)(316002)(41300700001)(86362001)(38100700002)(6506007)(33716001)(2906002)(6666004)(6486002)(26005)(9686003)(6512007)(66476007)(66556008)(66946007)(4326008)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GfZLRST8Nj2WcV22SqlKWCNCgvR76KJXk5LPVSvnm3JGMkWUYJAmchpDgCCR?=
- =?us-ascii?Q?022MnT7679El35/YU97M2JefWUqCOt/d9kU6NYXMgQjw0z8fMCHW0T9KojSw?=
- =?us-ascii?Q?Za7nbZS1LGv1PqbOWPTi/PlgZe4ikn6s+03LyXPs6WLz4E9CZvydmwkJwcMQ?=
- =?us-ascii?Q?BKrlb3ckunttwT/i615+HPr0HWyZ2WxWNI8VgpjkKfJKm4PU0HZBVO/IEyCe?=
- =?us-ascii?Q?3FytNC2WlFxKqtVTP0+bMYERRHaX79Au9OmoauEJHc6dU+1YmAeWj7G5q05g?=
- =?us-ascii?Q?TEhHsRG0ZVW8NwCC1OBJVH87A15szqd7ET55fDtmaYJkHcvYCQm9EJqEdM6S?=
- =?us-ascii?Q?Az/i5mRZPX7NCVfQbmYxS0+gTQtVcw7Eq/mCiubIH4D3SDrg01bU4UgtlJv4?=
- =?us-ascii?Q?F3kvQ2wCeD6UjUBgUj7gmDCzOPlgRT5CnPiAM2PIJ2++rJlVBaGqCJ8glac6?=
- =?us-ascii?Q?DAxt+pGqIEg9JTPt4AlT+ypZRlZm7KvbdfmKfJxsyi6vzi5loOWIzLmhlOeT?=
- =?us-ascii?Q?AKzvnMFi/QsDnWIiC3OQsyo1uCOWlaU0uhm6sQZ5wpalpOhtn/4X/QcIjxi1?=
- =?us-ascii?Q?Hkq2Rpil6G6hrsxZmbnPN7IY2i3J9pmbf0AUN6Q1/VOdvI/CS9ZA6LL6VHB8?=
- =?us-ascii?Q?zvPSRG8YUXhw4l75V/mhUwdx+/X4097XNLffbEGyKiB8NPEmgHl1omAf9vsr?=
- =?us-ascii?Q?uRoyM2laY0hX57ScdKbghxGJuqinjyRaQvOEcDD2KzCDgGmJzAWVsd6a/NAM?=
- =?us-ascii?Q?H9G8luRx+gt6vqiJ5dey+ZzaSZZfr6q7c7KPBO7cAvFN5W8o3KGDKzbRCCBZ?=
- =?us-ascii?Q?7yUzT+n+cEqWcU14oO+plg+uJFa6gnUXfBg4RYzzsiMikWS/9BacFfciAJCb?=
- =?us-ascii?Q?2cmHJx+WFtfo1urEElNnkJjzeSg3lsUDvz/XGSsMNP/g71k/lElFSgyIirp7?=
- =?us-ascii?Q?PqLGBmBXku41QJqLp6RX+PFRDtitoaKZu4AjtZl7WO8CIsdN2GseWC6cl0y5?=
- =?us-ascii?Q?5AhFG/GMJPYmRIKJn9qJ0zSIOoff02m/YPM2fjNrQp6I0htJnR8o7JSRCAYA?=
- =?us-ascii?Q?DE/Y3srOpQVTi/FoyltSQYPOFZP7kLPevOcMDfzC9TmKMee48t1/IY5LSDFw?=
- =?us-ascii?Q?TaC5TJiqJkcvjT4bOgLn0nU3/CaLAnwIqD06z4HWcKV+9NqGZsXloMEQ3akI?=
- =?us-ascii?Q?TOSLKDrwQ8QV5vAdmNzGG+r81F5Ag2nDrkH+d4eQB3uDaB94N3wIkSmigxCH?=
- =?us-ascii?Q?Mefov4cbgmx6EVWc1Z72bXBNUA57HZADO3d3UQKgvF7vwqMb275Vjy8F/KC9?=
- =?us-ascii?Q?0NqwUIa7d+4K7YdYZ2Yq6EMKNH5Iq2+h0DsWNpEOPQBk62hRW/O1bs+NP0qw?=
- =?us-ascii?Q?EKCk6oEboaI6UOBQGAuRcyfZynbXvserjSF1UyuHeWWwFr8uPi1cyziE+aVD?=
- =?us-ascii?Q?7vVA4IRTc0KeKBRc8J93s5iWanw5mnMTG36gsL+E4Me2bo2OfxrvBitc1fxb?=
- =?us-ascii?Q?FFRlIc6ITHOEMxWytFTwmoEBVIVlvtKG7QuLoT2p9XZCMn+5dYz0RZA9M8vX?=
- =?us-ascii?Q?RRD5TW6ce/MgaDSe5R/Fkj2lBZLOv2sf4Mah6Uv+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb56d5c7-0f58-4138-e838-08da6a23d2cf
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 07:45:32.1149
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PVLAwsDpCIw3ASYUCzRFzS8vi2RvYGJwSroC5KXzfeA9dTDqjqCiiRR1xZl47dRWZIkHc2fkfzzf0oa8P7Qzyg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1857
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
+ <20220719172652.0d072280@kernel.org> <20220720022901-mutt-send-email-mst@kernel.org>
+ <CACGkMEvFdMRX-sb7hUpEq+6e04ubehefr8y5Gjnjz8R26f=qDA@mail.gmail.com>
+ <20220720030343-mutt-send-email-mst@kernel.org> <CAJs=3_DHW6qwjjx3ZBH2SVC0kaKviSrHHG+Hsh8-VxAbRNdP7A@mail.gmail.com>
+ <20220720031436-mutt-send-email-mst@kernel.org> <CACGkMEuhFjXCBpVVTr7fvu4ma1Lw=JJyoz8rACb_eqLrWJW6aw@mail.gmail.com>
+In-Reply-To: <CACGkMEuhFjXCBpVVTr7fvu4ma1Lw=JJyoz8rACb_eqLrWJW6aw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 20 Jul 2022 15:45:59 +0800
+Message-ID: <CACGkMEttcb+qitwP1v3vg=UGJ9s_XxbNxQv=onyWqAmKLYrHHA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing support
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 08:48:36AM +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Remove dependency on devlink_mutex during devlinks xarray iteration.
+On Wed, Jul 20, 2022 at 3:42 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Wed, Jul 20, 2022 at 3:15 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Wed, Jul 20, 2022 at 10:07:11AM +0300, Alvaro Karsz wrote:
+> > > > Hmm. we currently (ab)use tx_max_coalesced_frames values 0 and 1 to mean tx
+> > > napi on/off.
+> > > > However I am not sure we should treat any value != 1 as napi on.
+> > > >
+> > > > I don't really have good ideas - I think abusing coalescing might
+> > > > have been a mistake. But now that we are there, I feel we need
+> > > > a way for userspace to at least be able to figure out whether
+> > > > setting coalescing to 0 will have nasty side effects.
+> > >
+> > >
+> > > So, how can I proceed from here?
+> > > Maybe we don't need to use tx napi when this feature is negotiated (like Jakub
+> > > suggested in prev. versions)?
+> > > It makes sense, since the number of TX notifications can be reduced by setting
+> > > tx_usecs/tx_max_packets with ethtool.
+> >
+> >
+> > Hmm Jason had some ideas about extensions in mind when he
+> > coded the current UAPI, let's see if he has ideas.
+> > I'll ruminate on compatibility a bit too.
+>
+> I might be wrong, but using 1 to enable tx napi is a way to try to be
+> compatible with the interrupt coalescing.
+>
+> That is, without notification coalescing, if 1 is set, we enable tx
+> notifications (and NAPI) for each packet. This works as if
+> tx-max-coalesced-frames is set to 1 when notification coalescing is
+> negotiated.
+>
+> Thanks
+>
+> >
+> > > > It's also a bit of a spec defect that it does not document corner cases
+> > > > like what do 0 values do, are they different from 1? or what are max values.
+> > > > Not too late to fix?
+> > >
+> > >
+> > > I think that some of the corner cases can be understood from the coalescing
+> > > values.
+> > > For example:
+> > > if rx_usecs=0 we should wait for 0 usecs, meaning that we should send a
+> > > notification immediately.
+> > > But if rx_usecs=1 we should wait for 1 usec.
+> > > The case with max_packets is a little bit unclear for the values 0/1, and it
+> > > seems that in both cases we should send a notification immediately after
+> > > receiving/sending a packet.
 
-Missing motivation... Need to explain that devlink_mutex is held
-throughout every user space command and that while issuing a reload and
-registering / unregistering auxiliary devlink instances we will
-deadlock on this mutex.
+Then we probably need to document this in the spec.
 
-> 
-> The devlinks xarray consistency is ensured by internally by xarray.
+And we need an upper limit for those values, this helps for e.g
+migration compatibility.
 
-s/by//
+Thanks
 
-> There is a reference taken when working with devlink using
-> devlink_try_get(). But there is no guarantee that devlink pointer
-> picked during xarray iteration is not freed before devlink_try_get()
-> is called.
-> 
-> Make sure that devlink_try_get() works with valid pointer.
-> Achieve it by:
-> 1) Splitting devlink_put() so the completion is sent only
->    after grace period. Completion unblocks the devlink_unregister()
->    routine, which is followed-up by devlink_free()
-> 2) Iterate the devlink xarray holding RCU read lock.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> > >
+> > >
+> > > > So the spec says
+> > > >         Device supports notifications coalescing.
+> > > >
+> > > > which makes more sense - there's not a lot guest needs to do here.
+> > >
+> > >
+> > > Noted.
+> > >
+> > > > parameters?
+> > >
+> > >
+> > > I'll change it to "settings".
+> > >
+> > > > why with dash here? And why not just put the comments near the fields
+> > > > themselves?
+> > >
+> > >
+> > > Noted.
+> >
+
