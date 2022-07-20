@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3C857AAFF
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E7F57AB0C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233240AbiGTAcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 20:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
+        id S237979AbiGTAkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 20:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiGTAcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:32:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10AB45F53
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:32:03 -0700 (PDT)
+        with ESMTP id S234367AbiGTAkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9F24BD34
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28880616CB
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F3CC341C6;
-        Wed, 20 Jul 2022 00:32:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F558616DB
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0F11C341D3;
+        Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658277122;
-        bh=B1Wx6UTgWlcjDtqBK00/uID4IV/Nrs7SUFVuffIIsy0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tUma2/mlesh8j3cY9yE+xehcSbVAnrePJB/ObdRF1XrZWv6OB5z3sUC4fCMdqM2sd
-         lo5d94H3lNcXp1ihNKFLI/Kr0061PoDUkpHs3opHtTcn68F8JltXfKa00tnaC7I/qq
-         OXPLZGB9J6ndYQUmNpn2DDEWGF2Czgd9W253p5bjwpRI4cxXM/X0v0GnodlxkrxDrK
-         Q4jWxeq2vVmtAclGqcUDa7A2fw4/VpGRL3HbXteMfiIE1qLxt1mETlXRYUG6tUQI76
-         k+bH7T3PDsOed4FGEjCS9X7etypyB17reo5PxIYY1eqLgcmD4p5Yln0IaGvuXsjNys
-         ErQWHcylAmoMw==
-Date:   Tue, 19 Jul 2022 17:32:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v1 net-next] selftests: net: af_unix: Fix a build error
- of unix_connect.c.
-Message-ID: <20220719173201.01807d65@kernel.org>
-In-Reply-To: <20220718162350.19186-1-kuniyu@amazon.com>
-References: <20220718162350.19186-1-kuniyu@amazon.com>
+        s=k20201202; t=1658277614;
+        bh=mhYF+RXH2bZz2NxisfDpP7bXCvKVae458Xn4iKkkzL0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=acrNeAAYsnjwaAVgnSSZjuBT08Oi0coNAWMk0Ob+7CCIDPN9SCY2jPuguiyyEIUxG
+         i1f+rciNXCdw/iB5CsFQZ76E5Wak/dcapYPdfBpAvcMzndd9jtsMK9tzsDhvHsBeUQ
+         sU7dHTcfarj14FfqG3Fl4Q4ox7zv8u8HOcqedMBI+pMNcAybNlBXSAhjOdtmjPZtDm
+         ZdW/JLLBcPHcaXMApjFqaPDFl4I0jfUYKNeSGTJqY7QkmDAoi+iHQ7yuMyyeDsCeFr
+         rduE3BdI0VuhiXV1rb8nGsKiO43fQ/RDMh2SsYDyh72F3Cmp3qXzTajIRF/yBhAR89
+         KWpawxOGaGyow==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D998CE451BC;
+        Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net/sched: remove qdisc_root_lock() helper
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165827761388.10063.580570722533348875.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Jul 2022 00:40:13 +0000
+References: <703d549e3088367651d92a059743f1be848d74b7.1658133689.git.dcaratti@redhat.com>
+In-Reply-To: <703d549e3088367651d92a059743f1be848d74b7.1658133689.git.dcaratti@redhat.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,54 +55,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Jul 2022 09:23:50 -0700 Kuniyuki Iwashima wrote:
-> This patch fixes a build error reported in the link. [0]
->=20
->   unix_connect.c: In function =E2=80=98unix_connect_test=E2=80=99:
->   unix_connect.c:115:55: error: expected identifier before =E2=80=98(=E2=
-=80=99 token
->    #define offsetof(type, member) ((size_t)&((type *)0)->(member))
->                                                        ^
->   unix_connect.c:128:12: note: in expansion of macro =E2=80=98offsetof=E2=
-=80=99
->     addrlen =3D offsetof(struct sockaddr_un, sun_path) + variant->len;
->               ^~~~~~~~
+Hello:
 
-Can we delete this define and use stddef.h instead?  man offsetof
-This is not kernel code the C standard lib is at our disposal.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> The checkpatch.pl will complain about this change, but the root cause of
-> the build failure is that I fixed this in the v2 -> v3 change. [1]
->=20
->   CHECK: Macro argument 'member' may be better as '(member)' to avoid pre=
-cedence issues
->   #33: FILE: tools/testing/selftests/net/af_unix/unix_connect.c:115:
->   +#define offsetof(type, member) ((size_t)&((type *)0)->member)
->=20
-> [0]: https://lore.kernel.org/linux-mm/202207182205.FrkMeDZT-lkp@intel.com/
-> [1]: https://lore.kernel.org/netdev/20220702154818.66761-1-kuniyu@amazon.=
-com/
->=20
-> Fixes: e95ab1d85289 ("selftests: net: af_unix: Test connect() with differ=
-ent netns.")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Mon, 18 Jul 2022 10:55:12 +0200 you wrote:
+> the last caller has been removed with commit 96f5e66e8a79 ("mac80211: fix
+> aggregation for hardware with ampdu queues"), so it's safe to remove this
+> function.
+> 
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 > ---
->  tools/testing/selftests/net/af_unix/unix_connect.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/tools/testing/selftests/net/af_unix/unix_connect.c b/tools/t=
-esting/selftests/net/af_unix/unix_connect.c
-> index 157e44ef7f37..5b231d8c4683 100644
-> --- a/tools/testing/selftests/net/af_unix/unix_connect.c
-> +++ b/tools/testing/selftests/net/af_unix/unix_connect.c
-> @@ -112,7 +112,7 @@ FIXTURE_TEARDOWN(unix_connect)
->  		remove("test");
->  }
-> =20
-> -#define offsetof(type, member) ((size_t)&((type *)0)->(member))
-> +#define offsetof(type, member) ((size_t)&((type *)0)->member)
-> =20
->  TEST_F(unix_connect, test)
->  {
+>  include/net/sch_generic.h | 19 -------------------
+>  1 file changed, 19 deletions(-)
+
+Here is the summary with links:
+  - [net-next] net/sched: remove qdisc_root_lock() helper
+    https://git.kernel.org/netdev/net-next/c/ca0cab119288
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
