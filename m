@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB6957B902
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1804E57B906
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241077AbiGTO6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 10:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
+        id S238566AbiGTO6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 10:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237462AbiGTO56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:57:58 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61314AD47
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id p132so11143275oif.9
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
+        with ESMTP id S234517AbiGTO63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:58:29 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C356052442
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:58:27 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bp15so33571413ejb.6
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:58:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XSU2WUPOvF0fUCTGSGRZkl8WCZhfSChGKTGTEOsuYNI=;
-        b=iGIpbP2d3UEwVFWw5G9dZlMqJx4o8UCPvRj6piZLN7Qixwv38zIteUBoiwtf11TzoJ
-         8pcI1FzJmEI8s8Z8r4wNd/P56A7AMD40p0ifu6Z8wqaycmhnxl9M7kNdXzB8SXogNKD/
-         YVqd80JtH2cgsBKx3SUf9wdgi1qit4j7Py/II=
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v7UZQSWTIkyXAAAPYRDQke900KvI9B81j2LTJEOpCIo=;
+        b=7p2TvOmDj6oUxzXY1i/TAIn2ycRdM1xZEiL72CjxWuLMZLKeG86xYLqcvcbwwNcU5B
+         hIHeLNId7ThSCgMmJr2pxuFKJrJ6/jqcwBzCuNKqDYSm0DG7HOKkXOP0ONp5h4z5TVF+
+         jRZfC2HzvV9RqK0Xq/UWYGYCcIDxWmN9aa+h65FOA3JsLK84SWP/TxBQwlC9pXJVHCvK
+         efZAYbSC5XooO9ZkWNMOJ+7R2wKADm1pcA+ZMgzu1P48ND3XlFVZjkJsJDiUxhFP2EV3
+         9KEWCjA7STm6H1+4k8MCFEw+UB1Ddvokye6i9KyjdLzOdTbWTJF4Mw5+U1ILKRedMgZ7
+         GaPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XSU2WUPOvF0fUCTGSGRZkl8WCZhfSChGKTGTEOsuYNI=;
-        b=j4/w5olrx4e7wFpPwaNW2D4g22R+YOj3gpuOa/chvDO2Xa1DzqzXq6gmOo9ndikAKj
-         0IPmhGcaaOH4SL+GM9UJGlyycTDTmi4J17bxU7GGtH50WVcFwHa8IRSVInH4CfyxHOQh
-         YfbgmfzahsbLeQGJgiAZ4PZnEVFG8JomSJ8fzKxkPAzmRGTu2CTJTTHuAh4tYDiis6iC
-         hrVczoPesbQjk4BvKGxrwRnON3D6K5j85cHcucvM6ntAQepE7VeObs7Qj0sLnN4A9+Xk
-         KCgHO2ZBPTNWMgkCC6DA2r39V+YEz2+yce7H6OFvXEcbqgTEFkRTELvjWrnJMGOdAxAm
-         g+nA==
-X-Gm-Message-State: AJIora9dTsFvO55J3MYlJaAqs54S6MUlEdfR1JoUXYUg3d2gfJgki877
-        AzxwGWtivE7Tre9tOjNPivS8+w==
-X-Google-Smtp-Source: AGRyM1v5UNxUPAVexBnv65PVVqbWvE8t6MWf9AqqczcauOBSa7XBiaehpgEh3k3h5n6IkYivB27NLA==
-X-Received: by 2002:a05:6808:170c:b0:335:1d14:f99d with SMTP id bc12-20020a056808170c00b003351d14f99dmr2435919oib.243.1658329076048;
-        Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id z14-20020a9d62ce000000b0061c7a5691f2sm7425058otk.47.2022.07.20.07.57.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 07:57:55 -0700 (PDT)
-Message-ID: <42069251-3ea7-b0c7-4efb-e144c52ebf51@cloudflare.com>
-Date:   Wed, 20 Jul 2022 09:57:53 -0500
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v7UZQSWTIkyXAAAPYRDQke900KvI9B81j2LTJEOpCIo=;
+        b=2/VP7lxyoJZCUYSl8VDe6GO2kcmwLYYAOnVGRe44FAEBuqx6RB/tRuVf/XFWEt/2Rr
+         4Xs09kWu7fntGnFOSkxTvnNFCW3OJpwA1dEQyQ2s+WsO+XcoHSBk+jCNsKAeRp6Nu4Rq
+         I7LzQlX2uF1nqG6syGEqSaupQ8erxBr2gGPb26zNM8No8bwEGznqKsd0OZmv5c87Qpws
+         qjMTddfMXr51OZQ3VBe+UW/M+ttPGp3tbW40OnzBr1aQb0MW6/Ar0umkikTfkRw0TPOg
+         8id/08lCUZiewT3QZMAlfPSQ3MwYsZ+9j/j4M+0tBtgy+t/EQkyd5r0tdslJVSOo3qJu
+         RRRg==
+X-Gm-Message-State: AJIora/GeKPTIq8yQ0dwpOqASn0zVyWwMsrzwqnA1Iv5pTt6LKbxZNt3
+        utQDyE41P1/pm3cKqbVYHUWrig==
+X-Google-Smtp-Source: AGRyM1ueY55U4t39Qn7MmTSF3bzm0qNAcFuNYMyjWa//+s0fsF5aQDmZ7Hh0ZNEkmYZ5l2Qt60X0YA==
+X-Received: by 2002:a17:907:a067:b0:72b:8f93:dff with SMTP id ia7-20020a170907a06700b0072b8f930dffmr35414720ejc.238.1658329106315;
+        Wed, 20 Jul 2022 07:58:26 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 15-20020a170906318f00b0072f2ed809casm4046538ejy.49.2022.07.20.07.58.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 07:58:25 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 16:58:24 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v2 05/12] mlxsw: core_linecards: Expose HW
+ revision and INI version
+Message-ID: <YtgYEN2jXIZftqSH@nanopsycho>
+References: <20220719064847.3688226-1-jiri@resnulli.us>
+ <20220719064847.3688226-6-jiri@resnulli.us>
+ <YtfDQ6hpGKXFKfCD@shredder>
+ <Ytf0vDVH7+05f0IS@nanopsycho>
+ <Ytf4ZaJdJY20ULfw@shredder>
+ <Ytf6ASAXTFItHcT/@shredder>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 4/4] selinux: Implement create_user_ns hook
-Content-Language: en-US
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220707223228.1940249-1-fred@cloudflare.com>
- <20220707223228.1940249-5-fred@cloudflare.com>
- <CAHC9VhTkvPvqGQjyEKbi2pkKBtRQE=Uat34aoKsxjWU0qkF6CA@mail.gmail.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <CAHC9VhTkvPvqGQjyEKbi2pkKBtRQE=Uat34aoKsxjWU0qkF6CA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytf6ASAXTFItHcT/@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,81 +75,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/19/22 8:32 PM, Paul Moore wrote:
-> On Thu, Jul 7, 2022 at 6:32 PM Frederick Lawler <fred@cloudflare.com> wrote:
->>
->> Unprivileged user namespace creation is an intended feature to enable
->> sandboxing, however this feature is often used to as an initial step to
->> perform a privilege escalation attack.
->>
->> This patch implements a new namespace { userns_create } access control
->> permission to restrict which domains allow or deny user namespace
->> creation. This is necessary for system administrators to quickly protect
->> their systems while waiting for vulnerability patches to be applied.
->>
->> This permission can be used in the following way:
->>
->>          allow domA_t domB_t : namespace { userns_create };
->>
->> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
->>
->> ---
->> Changes since v1:
->> - Introduce this patch
->> ---
->>   security/selinux/hooks.c            | 9 +++++++++
->>   security/selinux/include/classmap.h | 2 ++
->>   2 files changed, 11 insertions(+)
->>
->> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
->> index beceb89f68d9..73fbcb434fe0 100644
->> --- a/security/selinux/hooks.c
->> +++ b/security/selinux/hooks.c
->> @@ -4227,6 +4227,14 @@ static void selinux_task_to_inode(struct task_struct *p,
->>          spin_unlock(&isec->lock);
->>   }
->>
->> +static int selinux_userns_create(const struct cred *cred)
->> +{
->> +       u32 sid = current_sid();
->> +
->> +       return avc_has_perm(&selinux_state, sid, sid, SECCLASS_NAMESPACE,
->> +                                               NAMESPACE__USERNS_CREATE, NULL);
->> +}
-> 
-> As we continue to discuss this, I'm beginning to think that having a
-> dedicated object class for the userns might be a good idea.  I believe
-> I was the one who gave you these code snippets, so feel free to blame
-> me for the respin ;)
-> 
+Wed, Jul 20, 2022 at 02:50:09PM CEST, idosch@nvidia.com wrote:
+>On Wed, Jul 20, 2022 at 03:43:17PM +0300, Ido Schimmel wrote:
+>> On Wed, Jul 20, 2022 at 02:27:40PM +0200, Jiri Pirko wrote:
+>> > Wed, Jul 20, 2022 at 10:56:35AM CEST, idosch@nvidia.com wrote:
+>> > >On Tue, Jul 19, 2022 at 08:48:40AM +0200, Jiri Pirko wrote:
+>> > >> +int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
+>> > >> +				    struct devlink_info_req *req,
+>> > >> +				    struct netlink_ext_ack *extack)
+>> > >> +{
+>> > >> +	char buf[32];
+>> > >> +	int err;
+>> > >> +
+>> > >> +	mutex_lock(&linecard->lock);
+>> > >> +	if (WARN_ON(!linecard->provisioned)) {
+>> > >> +		err = 0;
+>> > >
+>> > >Why not:
+>> > >
+>> > >err = -EINVAL;
+>> > >
+>> > >?
+>> > 
+>> > Well, a) this should not happen. No need to push error to the user for
+>> > this as the rest of the info message is still fine.
+>> 
+>> Not sure what you mean by "the rest of the info message is still fine".
+>> Which info message? If the line card is not provisioned, then it
+>> shouldn't even have a devlink instance and it will not appear in
+>> "devlink dev info" dump.
+>
+>How about returning '-EOPNOTSUPP'? Looks like devlink will skip it in a
+>dump
 
-No worries, I'll make this change for v3.
-
-> This is what I'm thinking:
-> 
->    static int selinux_userns_create(const struct cred *cred)
->    {
->      u32 sid = current_sid();
-> 
->      return avc_has_perm(&selinux_state, sid, sid,
->                          SECCLASS_USER_NAMESPACE,
->                          USER_NAMESPACE__CREATE, NULL);
->    }
-> 
->> diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
->> index ff757ae5f253..9943e85c6b3e 100644
->> --- a/security/selinux/include/classmap.h
->> +++ b/security/selinux/include/classmap.h
->> @@ -254,6 +254,8 @@ const struct security_class_mapping secclass_map[] = {
->>            { COMMON_FILE_PERMS, NULL } },
->>          { "io_uring",
->>            { "override_creds", "sqpoll", NULL } },
->> +       { "namespace",
->> +         { "userns_create", NULL } },
-> 
-> The above would need to change to:
-> 
->    { "user_namespace",
->      { "create", NULL } }
-> 
+Okay.
 
