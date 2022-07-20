@@ -2,127 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED81F57B6B0
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 14:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC9357B6C0
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 14:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234142AbiGTMqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 08:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S232547AbiGTMuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 08:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbiGTMqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 08:46:42 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40AB20F7B
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 05:46:40 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id r24so3744106plg.3
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 05:46:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=a+qtmzzXRmiCZLPtii0K4DVzu9nTbF3p2kDITsU2fc4=;
-        b=OFJC5vfD+HFETrKRo6YNhpbeXtd7/CtGhte1S9RcEq1IZyUCMFAtdnJ0vncTQyO9ib
-         tdv9l2n8XJYzRHnu22TxJ0FsgLrMkd/QI70CkhbwbWPtM2TXklIw2Ou8yyt8WM9F7vw0
-         YdcnsklkM53aF2f4qBhqJ2gIfFVnHH5tCU/aXdbcOqfJkh22iz7GcxplMPv+sDd5i7gG
-         MKv0xFG55i0/G/GOnQ/Mr5JD4zo1m5gKA3L9ZR3R0nC09Vl4OtQ095Ar2IqDxNKJ9DR3
-         6Qu2IizsQwNrhbr+7MqMlOwiSbSVFD1EBzpb9hT30pERgGd59oa2s2ONxZkWu5+EBSq1
-         K8Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=a+qtmzzXRmiCZLPtii0K4DVzu9nTbF3p2kDITsU2fc4=;
-        b=NF5uKVyD7GpseS5fFRtLQr1696V/9BG7JRZzXDGk7oTFhjwoTUl6qpls1u44JRXDod
-         9RkYrG7KyLsolNXQn2xUyQeVdXq/gCmr2yTv0mp5ZRp522Agb/Fi2EwGKwYrkPM78Wkm
-         8UziUW0vm/vPi5egSPCP9tLzLlG9V5Gj0AaT5KU4EnpUpiO8VLP/pLJZR57oXpXEn18n
-         RGkM41UO852pl/x7NgIKOPnuUG1Orutu3JEUTWXwOOJPmadRf4sIaPrU96tBkWR+NGPz
-         sWSrkAQpDl8OadL5NwCBVq39cpocY58ftb1o2HgSsjkazeg6/QLCvd9GwHZmACJzwQyK
-         3Erg==
-X-Gm-Message-State: AJIora9RO3Xa69v3ap2zpQfQcKx2m37QrcV6K+mHArQcRXsGfdp0YzvW
-        zoufbH7dusSGb575IBcyP9pzJg==
-X-Google-Smtp-Source: AGRyM1u6GT0s6u9syKNvfuPPJk2baUy+NE+VTFS47oj6wtMrKn3Cd9Y/VsJfGJceJsfSuj4cfizvqQ==
-X-Received: by 2002:a17:90b:1997:b0:1ef:7bcd:e8c3 with SMTP id mv23-20020a17090b199700b001ef7bcde8c3mr5340706pjb.55.1658321200411;
-        Wed, 20 Jul 2022 05:46:40 -0700 (PDT)
-Received: from [127.0.1.1] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id o17-20020a170902d4d100b0016be9fa6807sm3173171plg.284.2022.07.20.05.46.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 05:46:39 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     netdev@vger.kernel.org, asml.silence@gmail.com,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, willemb@google.com,
-        jonathan.lemon@gmail.com, kernel-team@fb.com, dsahern@kernel.org
-In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
-References: <cover.1657643355.git.asml.silence@gmail.com>
-Subject: Re: (subset) [PATCH net-next v5 00/27] io_uring zerocopy send
-Message-Id: <165832119923.248138.16883055488620625980.b4-ty@kernel.dk>
-Date:   Wed, 20 Jul 2022 06:46:39 -0600
+        with ESMTP id S231272AbiGTMuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 08:50:17 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22F414D25
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 05:50:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e1krJKkyENgoJP0x6ZOfMc+/bU/mvWEDPvUh8YzbJmmPDiJh99S+kwjphKVj2P7zurAyE2D6WHEy5uxb5FGqfNYtSqsL8XSe+0LQccA4tmH2GMfW4ZOMd75+0OTKCM9S5toFvFyWY1EtCa4s7CDrCxbvpWIrqfgJR5zxJaz2HYKBtMHerJCMtcLXAirJNHr2pqZ+DF28Dsh1F53MvYq2Rz+CQKl70Yu4L3vgyy7Udk0ekUV93jfArP13aHoWy7JdeYfKojUY5vAsxtIULfmFFPV2LBkRFRkmJ4wOD1tjMj8V9KCxfx8UiYzDajq5buTH0KIIYC9ziRBA3S/E8UXyNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7cjpPmqkpqcVKWI0UCA+hogFgSvWwcV07sokpElc428=;
+ b=hrkFxzjCOBzMeunCspdFZVjaysd+syM8UY1Ng8qitpMn8qTau09kYVvPJzn5mu581w8Nwlt3rXlxFhEVNgJDjMiJ16YgHjP5qlVkcwo+pizhx3jeTGap4yMtXOs/XHr+PC3te+VP/VcebQ7Yoc3BKlWw+tMj5KL4ZywvE7gX9UaClinhQZx0QKIBYYT5/0ykHy1VYQINcxGKeB9EdwwPe+n2rCarIR1cj25IX7SRUJNCU9haHu0BFPR9XGgHw5hE2DBJmbh5MdCGV6RMxgyd0OHgOi3IKi96CxigeCH5PKgh5OFh+WVJKNptkb2xwkyfGwukQHuCJHaL8JP2QVCGYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7cjpPmqkpqcVKWI0UCA+hogFgSvWwcV07sokpElc428=;
+ b=XISryuVVBU7/EqmGtbFUjQnFXzrr3HmT5BTwRG1e4Qy0t3pWYQBFy2bkVK4O/539YeR5CQYbQ/DBZM/tip3W95rnYyscsn1AXxdy2+63sqJVFBLyzU2L7GXrF67YLwTXjjAh+9oLoCGL2SsrWkrs9xxm7cLRHM/wp7j2DuQgx63m8X242Iie7MlYtEsg3R1gtUW6FpYox9NpE+bsyVuKW3UvcfH+EurhA3g4icgMQfMfuta3/at5+18of5rfjp5/AdIvqe9as1QPNeU/7xMqQc9IZftItJlyphsQ/ZMP1st+mxzmnnZ0CI5bTGAvlGWw6TH9KQ20m+STQ2aeH2PRCg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by SJ0PR12MB5674.namprd12.prod.outlook.com (2603:10b6:a03:42c::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Wed, 20 Jul
+ 2022 12:50:15 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
+ 12:50:15 +0000
+Date:   Wed, 20 Jul 2022 15:50:09 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v2 05/12] mlxsw: core_linecards: Expose HW
+ revision and INI version
+Message-ID: <Ytf6ASAXTFItHcT/@shredder>
+References: <20220719064847.3688226-1-jiri@resnulli.us>
+ <20220719064847.3688226-6-jiri@resnulli.us>
+ <YtfDQ6hpGKXFKfCD@shredder>
+ <Ytf0vDVH7+05f0IS@nanopsycho>
+ <Ytf4ZaJdJY20ULfw@shredder>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ytf4ZaJdJY20ULfw@shredder>
+X-ClientProxiedBy: VI1PR0302CA0022.eurprd03.prod.outlook.com
+ (2603:10a6:800:e9::32) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d3438b39-0516-4233-abab-08da6a4e647a
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB5674:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yd3smQCVPyOTTEn1Mgu4k2xIgLkTVHm0yNK74WUvfS8wxnGJOlyubc73bCYYs+yv2YOvAPM1jilFXvihWgGXfJWTeaVVe2AXXB+MXBOKt/gS8IDix6p2Ys6jgYHYa5LtJ4SyfUKkqhw2SwoeRYOrcD+5zoAnl5ZW0zWsCJUk7B+rbJgWsxaGAJeiHoHp7ojfcp/dS6LINmyB7EkszTGamLwhZrI20qc1SuKh4j1XOVMpjJKi/fUI7OugCiyDeIrIElPyO59mmnXI25TWJ1G5OaflViqDX30o6HOx8HChtRzUWCb4hEHH08DfRmsuxonClegEn0mSTqx46ulWhsHJphnTwt4AezXzVsb7XsCmWCgkH/olcP5txUAyFnT1F9YdWAYrzqa6raepX0xcsFc2TfTJMIUPBnzwt6Vy6/zIySPO9oS9AIXXexXnCN7aKL0Z5AwNBtYN2bs3md5UKfMwOZ1XxMqhhN706vm/kXAtLoPnPYxily1Aihz0pPHl9fCs2f8JXcR6b1Da9+jsuEU8sDcNND7Bob/lgP/D58SGEHs9bBjKtNTahG6Qsl2AsH2xPf/ccn5lfdfzA1FycAiV4SfA+SsksU1NYuNdjfQrGy0hYTQe+g4eL9LyGjfYKSa49yrkA6hhq+7Fs6Pcxi/rzdX39NiI95GUjgvdwkrBrboy46oOEr9rZORCZ1avuPx8iWLyfg1iv460B+ubdRuNQkP2PFynMVqu5WEhpw8a3h9YlySev4wNyk+WYAlVwopP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(376002)(396003)(366004)(346002)(39860400002)(136003)(86362001)(38100700002)(8936002)(2906002)(66946007)(5660300002)(4326008)(316002)(66556008)(66476007)(8676002)(478600001)(33716001)(186003)(41300700001)(6506007)(6916009)(83380400001)(9686003)(6486002)(6666004)(6512007)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RAOu/0uerDcZ7uc3UwcZvoeY78sEcNi88stXrmjnLt3hcAwbQCxj7VOvWjvS?=
+ =?us-ascii?Q?3OIpk2ybcypxt+N4UrfkEcNNmsUEeEJcoyVWycjZQZroFCq32laoNIhiznTA?=
+ =?us-ascii?Q?hrbfAnlz6QTxjEE+lmYzW1xQdwblMM4fZSn1vv53iTqkWyIPdFeguEThSdbY?=
+ =?us-ascii?Q?+IbSFF70jwQCjZmuV4x19NGOGrieBB3Q5roaKR5huoa5sgE+SCWKqAUhsq+Z?=
+ =?us-ascii?Q?uGzizKQnwXZ3BSeCB1oO1lfMgpzq/EeAssCp10DGZIXSc9DPtn7o4ICn+w6m?=
+ =?us-ascii?Q?yYZFAwdiYuUNCTnWy1ieYcDR1NOGVuSBMMqtgCeoVvujYgWr3vsu/IVPMDKU?=
+ =?us-ascii?Q?C2j7JXYBJBJbj2hVVaHoyr3dTf2XkHctWu2Pga8xtsEUf6EObzD/Qrd2oFxA?=
+ =?us-ascii?Q?d5O5TqR0ZseL5ef5/o86RaW/kqRb9BMUaNd7yo4Radb9f5VSon1sWJO8rLIY?=
+ =?us-ascii?Q?JxzGFup+K3Lr3taZJWUj+ISyq/dC8I33t8Rgk8m48gKnZ6H7C6+jMX50TVSE?=
+ =?us-ascii?Q?zrKwMfjgVqaOLkH1QDMz5uzIKl6kJVdW8qb4M7Y7LLsrFFPfS8ZYoNqS4NNX?=
+ =?us-ascii?Q?egsN4awwXFxr0mQSU2K90vv+C2LDdLoHHRObvTEsuFdACFAskppILwDWUKv3?=
+ =?us-ascii?Q?0YA501w1taLN2b/PlPW7WlRCA4XWwI17FZkypLq1i5cf8kvKiCB841erQy/J?=
+ =?us-ascii?Q?zuVsH1ZaJ9salUuFE4Zq4ev7HhCNdfBPQ0Gbi8gMmdV2wRkZnTDEROuqBW3+?=
+ =?us-ascii?Q?DwB1EjEt27TAxTiUDmuyPPmzYQ49aSESoX3bKTUuY94oyo6lvKPb4OXzPgRi?=
+ =?us-ascii?Q?+5SRtcUiNp3662wbZm+M0CrByj1tCCjdyErx4ohKJR4myW8Rh9uXqPm3F/6i?=
+ =?us-ascii?Q?Zhn0jGeT5luQSywCaRUU8yuGEZ411neTjBH6+Lx1ZQhaolT4TanAHG7W9Wjt?=
+ =?us-ascii?Q?nMMbECnXlYQ8YyNVgH5AAcGiVXLDJPBEtpnmkHSwT53vvI/ZAzDKxthtfyNB?=
+ =?us-ascii?Q?K83nQMuI1reS0oXHG8OUkyfV+S1AHLdEwSpIQoPoIZlzqF+8VhnB/jNTmcqH?=
+ =?us-ascii?Q?kVdhgdXeUebhfYaVZEVvu5hJf9D1DRk//aWJFYJvX695gtTqVP7vu/D57Kpo?=
+ =?us-ascii?Q?OHx8gHAvDFPN2gYpIomkwhCYnpCb+x9RnERdVIylO2L1kH9ee2AFJOJSQ0AA?=
+ =?us-ascii?Q?HzEtU7C8IBpX0agC2w2uVzG7/qU4E/ybkzfl4VPAD7KmGAQ0r8XgjeuhBEj7?=
+ =?us-ascii?Q?VtbfWELMXUWZtkgZPwj20YMSPwAnFPlfJzXR1o2afmZI7EH4QHR6XeA6rzh5?=
+ =?us-ascii?Q?DLZv50GpXXbYdfMDJ94JsanG12XlBN52pRTZWmuT6z0mOy9Emg1Y3I4d5mbQ?=
+ =?us-ascii?Q?/kMXEw4QeBpVMZ9bAJhOaJHMvz/5DDN95OxV/stUZdFcTCQBhSI8bXL0NHLI?=
+ =?us-ascii?Q?43Z4kbsfXeKBa5rSGrjKnfQUvwZG6KgV0cebWicrUqKsLyjJIRsX04C+ahng?=
+ =?us-ascii?Q?c0gQyiwgYLoOpIj8TDGM5w/SCJKA/UX2k+L1PvZMXRoYIh2YKjb20wWNJij1?=
+ =?us-ascii?Q?cAKx8T0qbhW64IBtqXdQ2MiEiCkumB65L9HVy8L4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d3438b39-0516-4233-abab-08da6a4e647a
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 12:50:15.3350
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IpIqu03YpA9k8xnoze/591y27oaVa0jO6h28CsJn3Cm0b7edAd2lmNAKK7hkjTWVT5PXhyL9OotkCYFItXZcRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5674
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 21:52:24 +0100, Pavel Begunkov wrote:
-> NOTE: Not to be picked directly. After getting necessary acks, I'll be
->       working out merging with Jakub and Jens.
+On Wed, Jul 20, 2022 at 03:43:17PM +0300, Ido Schimmel wrote:
+> On Wed, Jul 20, 2022 at 02:27:40PM +0200, Jiri Pirko wrote:
+> > Wed, Jul 20, 2022 at 10:56:35AM CEST, idosch@nvidia.com wrote:
+> > >On Tue, Jul 19, 2022 at 08:48:40AM +0200, Jiri Pirko wrote:
+> > >> +int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
+> > >> +				    struct devlink_info_req *req,
+> > >> +				    struct netlink_ext_ack *extack)
+> > >> +{
+> > >> +	char buf[32];
+> > >> +	int err;
+> > >> +
+> > >> +	mutex_lock(&linecard->lock);
+> > >> +	if (WARN_ON(!linecard->provisioned)) {
+> > >> +		err = 0;
+> > >
+> > >Why not:
+> > >
+> > >err = -EINVAL;
+> > >
+> > >?
+> > 
+> > Well, a) this should not happen. No need to push error to the user for
+> > this as the rest of the info message is still fine.
 > 
-> The patchset implements io_uring zerocopy send. It works with both registered
-> and normal buffers, mixing is allowed but not recommended. Apart from usual
-> request completions, just as with MSG_ZEROCOPY, io_uring separately notifies
-> the userspace when buffers are freed and can be reused (see API design below),
-> which is delivered into io_uring's Completion Queue. Those "buffer-free"
-> notifications are not necessarily per request, but the userspace has control
-> over it and should explicitly attaching a number of requests to a single
-> notification. The series also adds some internal optimisations when used with
-> registered buffers like removing page referencing.
-> 
-> [...]
+> Not sure what you mean by "the rest of the info message is still fine".
+> Which info message? If the line card is not provisioned, then it
+> shouldn't even have a devlink instance and it will not appear in
+> "devlink dev info" dump.
 
-Applied, thanks!
-
-[12/27] io_uring: initialise msghdr::msg_ubuf
-        commit: 06f241e2bf4ba2a3e77269be25d21c0196a57a4f
-[13/27] io_uring: export io_put_task()
-        commit: ba64c07a6ef9a05ca9eb09e13b70df7500e78cf8
-[14/27] io_uring: add zc notification infrastructure
-        commit: 6f322c753daee4b9d4ad494d4e8b05da610d804c
-[15/27] io_uring: cache struct io_notif
-        commit: cf49e2d47c49e547d4bc370efe73785fc82354e5
-[16/27] io_uring: complete notifiers in tw
-        commit: 9cc16ae447db07d210175d2ad2419784dd20f784
-[17/27] io_uring: add rsrc referencing for notifiers
-        commit: e133e289093ea35c1f7f940fe4c0ceb62037dc59
-[18/27] io_uring: add notification slot registration
-        commit: f20b817fd29b64ef6de24b83ef23e1f3fb273967
-[19/27] io_uring: wire send zc request type
-        commit: 480ec5ff9a5a75d68423c0bd02e57a9ee6325320
-[20/27] io_uring: account locked pages for non-fixed zc
-        commit: fcb98e61d0232cff7dd14ae85ad1c88d68f98273
-[21/27] io_uring: allow to pass addr into sendzc
-        commit: 7ab12997edc9aa3e2be4169f929c50a1fcd41004
-[22/27] io_uring: sendzc with fixed buffers
-        commit: bb4019de9ea11d21137b4a8ff01d9e338071d633
-[23/27] io_uring: flush notifiers after sendzc
-        commit: 95a70c191696da64a6ae235d52132a5c17866dae
-[24/27] io_uring: rename IORING_OP_FILES_UPDATE
-        commit: d488e605a45192f9f60c7624d46ba0b8c4d93aab
-[25/27] io_uring: add zc notification flush requests
-        commit: cb155defb9bf20a647c8825a085695f3f94fdb60
-[26/27] io_uring: enable managed frags with register buffers
-        commit: 04ae3dbe8a027cf10ab759456ffc4fb119486f74
-[27/27] selftests/io_uring: test zerocopy send
-        commit: 0c450de20ce7d6bc8a2f97c98387baf910454477
-
-Best regards,
--- 
-Jens Axboe
-
-
+How about returning '-EOPNOTSUPP'? Looks like devlink will skip it in a
+dump
