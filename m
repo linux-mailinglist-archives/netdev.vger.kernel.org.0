@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2709557BDE0
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 20:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF96757BDDF
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 20:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbiGTSew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 14:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S231182AbiGTSey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 14:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiGTSev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 14:34:51 -0400
+        with ESMTP id S229625AbiGTSew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 14:34:52 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81C87173A
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 11:34:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2426A71BC4
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 11:34:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658342090; x=1689878090;
+  t=1658342091; x=1689878091;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2lFtIpxPzZPCz4lsFPRgzsTrIT1tgnhvjwl6v6FHnGw=;
-  b=YuZOQsF5Of4KlaC0b495YJhQQ4BFhPt4pk3uTdkc/bZIb2Mr1dp5uyqE
-   IbzLMoJBWY8faNDi5de1QaqoYhfJc5DdzQs2Or3mYbacT6ZVgP79ukIvA
-   Fh8zbSzJ3QuS0ODS/2slPBHs6y+e0xFd67Ud2zSpkQSgBMxnhXE8FbBcm
-   yflqVOsdiZI8KeOJmvQMiHQqq5R25sXT9n36IZeF0LvkVpjDwPzQ2jqtZ
-   UuUjhJt8EfkKZuNrE7eS9mm7YnNudwVGGqiOqpSOZQ2LoOxAWf1haUdXy
-   aiH0IQQlA9O9dPhbK9597SqGnd5TQonPh0vpNuHod2/svO1x2Oe/YPUs+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="350846112"
+  bh=fUzCTbUmsgN7GEIzpEzMrhCfYj4QkGRFTYAOKgSYXt8=;
+  b=cSXaS4nnEMTgq+HTQCy6xsNFDSqhhJsRWVwRGcs+fwNHBNmW5FZ6SmEk
+   xC68BDK1m3a/OPjwQuMfEwHNtjeiCYWgostWJywqHzbwlXan8fp9DeC+C
+   wPW4/jNfgY5LG6oXXWuP4KsDIQR3mGKKA7efVEgNl1Mrt2ONDjDw+VIqQ
+   cOeeJ6Fzhavm1zJCuTrArJXGvzcUhJ+ZMcQT0e45HlXx7D6DYvBr1ow2D
+   s5qZ8TsmF/flm/T2QRtnMEdsUCkKHV21zvxaZpDh2S67j0gIk14RVBgQW
+   Pj1BDF0rBAbMVUCWWL5vg/dflSNRT5xyKfa+w67SMi2epc6yba4zDfL6+
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="350846113"
 X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
-   d="scan'208";a="350846112"
+   d="scan'208";a="350846113"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 11:34:46 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 11:34:47 -0700
 X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
-   d="scan'208";a="656389765"
+   d="scan'208";a="656389768"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
   by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 11:34:46 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [net-next PATCH 1/2] devlink: add dry run attribute to flash update
-Date:   Wed, 20 Jul 2022 11:34:32 -0700
-Message-Id: <20220720183433.2070122-2-jacob.e.keller@intel.com>
+Subject: [net-next PATCH 2/2] ice: support dry run of a flash update to validate firmware file
+Date:   Wed, 20 Jul 2022 11:34:33 -0700
+Message-Id: <20220720183433.2070122-3-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.35.1.456.ga9c7032d4631
 In-Reply-To: <20220720183433.2070122-1-jacob.e.keller@intel.com>
 References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
@@ -57,163 +57,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users use the devlink flash interface to request a device driver program or
-update the device flash chip. In some cases, a user (or script) may want to
-verify that a given flash update command is supported without actually
-committing to immediately updating the device. For example, a system
-administrator may want to validate that a particular flash binary image
-will be accepted by the device, or simply validate a command before finally
-committing to it.
+Now that devlink core flash update can handle dry run requests, update
+the ice driver to allow validating a PLDM file in dry_run mode.
 
-The current flash update interface lacks a method to support such a dry
-run. Add a new DEVLINK_ATTR_DRY_RUN attribute which shall be used by a
-devlink command to indicate that a request is a dry run which should not
-perform device configuration. Instead, the command should report whether
-the command or configuration request is valid.
+First, add a new dry_run field to the pldmfw context structure. This
+indicates that the PLDM firmware file library should only validate the
+file and verify that it has a matching record. Update the pldmfw
+documentation to indicate this "dry run" mode.
 
-While we can validate the initial arguments of the devlink command, a
-proper dry run must be processed by the device driver. This is required
-because only the driver can perform validation of the flash binary file.
+In the ice driver, let the stack know that we support the dry run
+attribute for flash update by setting the appropriate bit in the
+.supported_flash_update_params field.
 
-Add a new dry_run parameter to the devlink_flash_update_params struct,
-along with the associated bit to indicate if a driver supports verifying a
-dry run.
-
-We always check the dry run attribute last in order to allow as much
-verification of other parameters as possible. For example, even if a driver
-does not support the dry_run option, we can still validate the other
-optional parameters such as the overwrite_mask and per-component update
-name.
-
-Document that userspace should take care when issuing a dry run to older
-kernels, as the flash update command is not strictly verified. Thus,
-unknown attributes will be ignored and this could cause a request for a dry
-run to perform an actual update. We can't fix old kernels to verify unknown
-attributes, but userspace can check the maximum attribute and reject the
-dry run request if it is not supported by the kernel.
+If the dry run is requested, notify the PLDM firmware library by setting
+the context bit appropriately. Don't cancel a pending update during
+a dry run.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- .../networking/devlink/devlink-flash.rst      | 23 +++++++++++++++++++
- include/net/devlink.h                         |  2 ++
- include/uapi/linux/devlink.h                  |  8 +++++++
- net/core/devlink.c                            | 19 ++++++++++++++-
- 4 files changed, 51 insertions(+), 1 deletion(-)
+ Documentation/driver-api/pldmfw/index.rst      | 10 ++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.c   |  3 ++-
+ drivers/net/ethernet/intel/ice/ice_fw_update.c | 14 ++++++++++----
+ include/linux/pldmfw.h                         |  5 +++++
+ lib/pldmfw/pldmfw.c                            | 12 ++++++++++++
+ 5 files changed, 39 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
-index 603e732f00cc..1dc373229a54 100644
---- a/Documentation/networking/devlink/devlink-flash.rst
-+++ b/Documentation/networking/devlink/devlink-flash.rst
-@@ -44,6 +44,29 @@ preserved across the update. A device may not support every combination and
- the driver for such a device must reject any combination which cannot be
- faithfully implemented.
+diff --git a/Documentation/driver-api/pldmfw/index.rst b/Documentation/driver-api/pldmfw/index.rst
+index ad2c33ece30f..454b3ed6576a 100644
+--- a/Documentation/driver-api/pldmfw/index.rst
++++ b/Documentation/driver-api/pldmfw/index.rst
+@@ -51,6 +51,16 @@ unaligned access of multi-byte fields, and to properly convert from Little
+ Endian to CPU host format. Additionally the records, descriptors, and
+ components are stored in linked lists.
  
-+Dry run
-+=======
++Validating a PLDM firmware file
++===============================
 +
-+Users can request a "dry run" of a flash update by adding the
-+``DEVLINK_ATTR_DRY_RUN`` attribute to the ``DEVLINK_CMD_FLASH_UPDATE``
-+command. If the attribute is present, the kernel will only verify that the
-+provided command is valid. During a dry run, an update is not performed.
++To simply validate a PLDM firmware file, and verify whether it applies to
++the device, set the ``dry_run`` flag in the ``pldmfw`` context structure.
++If this flag is set, the library will parse the file, validating its UUID
++and checking if any record matches the device. Note that in a dry run, the
++library will *not* issue any ops besides ``match_record``. It will not
++attempt to send the component table or package data to the device firmware.
 +
-+If supported by the driver, the flash image contents are also validated and
-+the driver may indicate whether the file is a valid flash image for the
-+device.
-+
-+.. code:: shell
-+
-+   $ devlink dev flash pci/0000:af:00.0 file image.bin dry-run
-+   Validating flash binary
-+
-+Note that user space should take care when adding this attribute. Older
-+kernels which do not recognize the attribute may accept the command with an
-+unknown attribute. This could lead to a request for a dry run which performs
-+an unexpected update. To avoid this, user space should check the policy dump
-+and verify that the attribute is recognized before adding it to the command.
-+
- Firmware Loading
- ================
+ Performing a flash update
+ =========================
  
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 88c701b375a2..ff5b1e60ad6a 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -622,10 +622,12 @@ struct devlink_flash_update_params {
- 	const struct firmware *fw;
- 	const char *component;
- 	u32 overwrite_mask;
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 3337314a7b35..18214ea33e2d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -467,7 +467,8 @@ ice_devlink_reload_empr_finish(struct devlink *devlink,
+ }
+ 
+ static const struct devlink_ops ice_devlink_ops = {
+-	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
++	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK |
++					 DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN,
+ 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+ 	/* The ice driver currently does not support driver reinit */
+ 	.reload_down = ice_devlink_reload_empr_start,
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+index 3dc5662d62a6..63317ae88186 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+@@ -1015,15 +1015,21 @@ int ice_devlink_flash_update(struct devlink *devlink,
+ 	else
+ 		priv.context.ops = &ice_fwu_ops_e810;
+ 	priv.context.dev = dev;
++	priv.context.dry_run = params->dry_run;
+ 	priv.extack = extack;
+ 	priv.pf = pf;
+ 	priv.activate_flags = preservation;
+ 
+-	devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL, 0, 0);
++	if (params->dry_run)
++		devlink_flash_update_status_notify(devlink, "Validating flash binary", NULL, 0, 0);
++	else
++		devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL, 0, 0);
+ 
+-	err = ice_cancel_pending_update(pf, NULL, extack);
+-	if (err)
+-		return err;
++	if (!params->dry_run) {
++		err = ice_cancel_pending_update(pf, NULL, extack);
++		if (err)
++			return err;
++	}
+ 
+ 	err = ice_acquire_nvm(hw, ICE_RES_WRITE);
+ 	if (err) {
+diff --git a/include/linux/pldmfw.h b/include/linux/pldmfw.h
+index 0fc831338226..d9add301582b 100644
+--- a/include/linux/pldmfw.h
++++ b/include/linux/pldmfw.h
+@@ -124,10 +124,15 @@ struct pldmfw_ops;
+  * should embed this in a private structure and use container_of to obtain
+  * a pointer to their own data, used to implement the device specific
+  * operations.
++ *
++ * @ops: function pointers used as callbacks from the PLDMFW library
++ * @dev: pointer to the device being updated
++ * @dry_run: if true, only validate the file, do not perform an update.
+  */
+ struct pldmfw {
+ 	const struct pldmfw_ops *ops;
+ 	struct device *dev;
 +	bool dry_run;
  };
  
- #define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
- #define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
-+#define DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN		BIT(2)
+ bool pldmfw_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record);
+diff --git a/lib/pldmfw/pldmfw.c b/lib/pldmfw/pldmfw.c
+index 6e77eb6d8e72..29a132a39876 100644
+--- a/lib/pldmfw/pldmfw.c
++++ b/lib/pldmfw/pldmfw.c
+@@ -827,6 +827,10 @@ static int pldm_finalize_update(struct pldmfw_priv *data)
+  * to the device firmware. Extract and write the flash data for each of the
+  * components indicated in the firmware file.
+  *
++ * If the context->dry_run is set, this is a request for a dry run, i.e. to
++ * only validate the PLDM firmware file. In this case, stop and exit after we
++ * find a valid matching record.
++ *
+  * Returns: zero on success, or a negative error code on failure.
+  */
+ int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw)
+@@ -844,14 +848,22 @@ int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw)
+ 	data->fw = fw;
+ 	data->context = context;
  
- struct devlink_region;
- struct devlink_info_req;
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index b3d40a5d72ff..e24a5a808a12 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -576,6 +576,14 @@ enum devlink_attr {
- 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
- 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
++	/* Parse the image and make sure it is a valid PLDM firmware binary */
+ 	err = pldm_parse_image(data);
+ 	if (err)
+ 		goto out_release_data;
  
-+	/* Before adding this attribute to a command, user space should check
-+	 * the policy dump and verify the kernel recognizes the attribute.
-+	 * Otherwise older kernels which do not recognize the attribute may
-+	 * silently accept the unknown attribute while not actually performing
-+	 * a dry run.
-+	 */
-+	DEVLINK_ATTR_DRY_RUN,			/* flag */
++	/* Search for a record matching the device */
+ 	err = pldm_find_matching_record(data);
+ 	if (err)
+ 		goto out_release_data;
+ 
++	/* If this is a dry run, do not perform an update */
++	if (context->dry_run)
++		goto out_release_data;
 +
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index a9776ea923ae..7d403151bee2 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4736,7 +4736,8 @@ EXPORT_SYMBOL_GPL(devlink_flash_update_timeout_notify);
- static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 				       struct genl_info *info)
- {
--	struct nlattr *nla_component, *nla_overwrite_mask, *nla_file_name;
-+	struct nlattr *nla_component, *nla_overwrite_mask, *nla_file_name,
-+		      *nla_dry_run;
- 	struct devlink_flash_update_params params = {};
- 	struct devlink *devlink = info->user_ptr[0];
- 	const char *file_name;
-@@ -4782,6 +4783,21 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 		return ret;
- 	}
- 
-+	/* Always check dry run last, in order to allow verification of other
-+	 * parameter support even if the particular driver does not yet
-+	 * support a full dry-run
-+	 */
-+	nla_dry_run = info->attrs[DEVLINK_ATTR_DRY_RUN];
-+	if (nla_dry_run) {
-+		if (!(supported_params & DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN)) {
-+			NL_SET_ERR_MSG_ATTR(info->extack, nla_dry_run,
-+					    "flash update is supported, but dry run is not supported for this device");
-+			release_firmware(params.fw);
-+			return -EOPNOTSUPP;
-+		}
-+		params.dry_run = true;
-+	}
++	/* Perform the device update */
 +
- 	devlink_flash_update_begin_notify(devlink);
- 	ret = devlink->ops->flash_update(devlink, &params, info->extack);
- 	devlink_flash_update_end_notify(devlink);
-@@ -8997,6 +9013,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
- 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
-+	[DEVLINK_ATTR_DRY_RUN] = { .type = NLA_FLAG },
- };
- 
- static const struct genl_small_ops devlink_nl_ops[] = {
+ 	err = pldm_send_package_data(data);
+ 	if (err)
+ 		goto out_release_data;
 -- 
 2.35.1.456.ga9c7032d4631
 
