@@ -2,125 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4266357B12D
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 08:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8357957B139
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 08:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiGTGjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 02:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40642 "EHLO
+        id S230228AbiGTGtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 02:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiGTGjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 02:39:31 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF85402F4;
-        Tue, 19 Jul 2022 23:39:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1658299170; x=1689835170;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=I6SdapWfhcN5YzSovhTu3AGuzmo8W2cQvh1AYyIQ9cQ=;
-  b=eXSCg4XOgci4SJ/gt0u0FTcP4d67/B58zaF3EjOU9uY+VeqQKwbQ9VdN
-   nVYs27JxUnfZOSP1QrtPwNJVG0sw2W6BLwdIeKeAHycaoV53Ye3FahmZQ
-   xu+HLlX6NijbrieRdZw2rpnc0UHrKQgjR/5NkcFqNNZ9c2X49QGEX3H7R
-   7J2pMeio351Ocbr99wKWpP5VWxXitweW+k6HtQ/kRJz4O7E9KYbkO1kBR
-   oRcNmt9LXZL/dxGb6go19mNSdNjOkyONX7ka5DSn5kTgk5mU0IXuZqMRm
-   r3DJqfSLsjnYp6bf0AK7+1a021FzQ1FLUo0+sWKiDC6M0oT45rWZ+qpn1
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,286,1650924000"; 
-   d="scan'208";a="25147499"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 20 Jul 2022 08:39:28 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 20 Jul 2022 08:39:28 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 20 Jul 2022 08:39:28 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1658299168; x=1689835168;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=I6SdapWfhcN5YzSovhTu3AGuzmo8W2cQvh1AYyIQ9cQ=;
-  b=q+fQEiXHeB4zqVXP6cXjTux/RAidBx5pkbTHIordvKQtNb6y4jxsA3YN
-   XBzEIgd2jSSShpCwJiUhZN/dUhW83Ku3LBJ6PtwMhpLKYOYh1XQHFnWVu
-   T5q3Ltk5WBdLFU8PEhi+UWAV/jNR1O+eTAgyK4oC3/XQfvhT3bQ2cQrF6
-   qH5bfHsn9yHgy+0P7sYnm8A+wKU5lONCwp98aVjo7rfBMhk25/6a0r3EL
-   tGl4/QRz0NwwvMuR18kME+cDXmvX+Fa/4jmyeDBx2qihYiYJ0chW9gP4X
-   Ma5DVZNYTmkC3x0MfUIhahwyOd1qB1H3UlfSmi7gAjAET+05Yaxcf4r/W
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,286,1650924000"; 
-   d="scan'208";a="25147498"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 20 Jul 2022 08:39:28 +0200
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 17865280056;
-        Wed, 20 Jul 2022 08:39:28 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        with ESMTP id S230316AbiGTGoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 02:44:11 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A7D42ACE;
+        Tue, 19 Jul 2022 23:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=buEbPj35VBOKwfMS/RY6ZEKeyl1ASTH12iRmqn5wlKI=; b=tAs8wmxKzaPfRWJEnOqN1t6ahZ
+        D7QhCw4w8oRh1hNY3RPCkYfpOpyldLf2EI3TqEwoIQPVOHOxBM3AYw+40YJiu5exXIVCGHZk4AWdi
+        5MWfHQz4yYLZCe3wRLixuMbKfKBhHCmiiui/tkWBFouUEaHa8QTIBKq3DMNJdmD+CrAdD1vDG5RVZ
+        XbucAhRE8BOdAajR+S8lFPCZTjmaJfM8PpGkwvOMtQr+oNrgLR/OtoEiL8bmtQSQqT6KWrWLXAVoq
+        bpjA9Bsb4qWUH2Z4lK4kO7YFa8bGzR97Kszey4V18OORYSpSZ2aUSM+b6nH/txhAC/tOWW+ZOpnBg
+        f1dan0aA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33454)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oE3RD-0003mj-LK; Wed, 20 Jul 2022 07:44:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oE3R9-0003gE-F7; Wed, 20 Jul 2022 07:43:59 +0100
+Date:   Wed, 20 Jul 2022 07:43:59 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v3 1/1] dt-bindings: net: fsl,fec: Add nvmem-cells / nvmem-cell-names properties
-Date:   Wed, 20 Jul 2022 08:39:24 +0200
-Message-Id: <20220720063924.1412799-1-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
+        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2 06/11] net: phylink: Support differing link/interface
+ speed/duplex
+Message-ID: <YtekL4y/XKn1m/V4@shell.armlinux.org.uk>
+References: <20220719235002.1944800-1-sean.anderson@seco.com>
+ <20220719235002.1944800-7-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719235002.1944800-7-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These properties are inherited from ethernet-controller.yaml.
-This fixes the dt_binding_check warning:
-imx8mm-tqma8mqml-mba8mx.dt.yaml: ethernet@30be0000: 'nvmem-cell-names',
-'nvmem-cells' do not match any of the regexes: 'pinctrl-[0-9]+'
+On Tue, Jul 19, 2022 at 07:49:56PM -0400, Sean Anderson wrote:
+> This adds support for cases when the link speed or duplex differs from
+> the speed or duplex of the phy interface mode. Such cases can occur when
+> some kind of rate adaptation is occurring.
+> 
+> The following terms are used within this and the following patches. I
+> do not believe the meaning of these terms are uncommon or surprising,
+> but for maximum clarity I would like to be explicit:
+> 
+> - Phy interface mode: the protocol used to communicate between the MAC
+>   or PCS (if used) and the phy. If no phy is in use, this is the same as
+>   the link mode. Each phy interface mode supported by Linux is a member
+>   of phy_interface_t.
+> - Link mode: the protocol used to communicate between the local phy (or
+>   PCS) and the remote phy (or PCS) over the physical medium. Each link
+>   mode supported by Linux is a member of ethtool_link_mode_bit_indices.
+> - Phy interface mode speed: the speed of unidirectional data transfer
+>   over a phy interface mode, including encoding overhead, but excluding
+>   protocol and flow-control overhead. The speed of a phy interface mode
+>   may vary. For example, SGMII may have a speed of 10, 100, or 1000
+>   Mbit/s.
+> - Link mode speed: similarly, the speed of unidirectional data transfer
+>   over a physical medium, including overhead, but excluding protocol and
+>   flow-control overhead. The speed of a link mode is usually fixed, but
+>   some exceptional link modes (such as 2BASE-TL) may vary their speed
+>   depending on the medium characteristics.
+> 
+> Before this patch, phylink assumed that the link mode speed was the same
+> as the phy interface mode speed. This is typically the case; however,
+> some phys have the ability to adapt between differing link mode and phy
+> interface mode speeds. To support these phys, this patch removes this
+> assumption, and adds a separate variable for link speed. Additionally,
+> to support rate adaptation, a MAC may need to have a certain duplex
+> (such as half or full). This may be different from the link's duplex. To
+> keep track of this distunction, this patch adds another variable to
+> track link duplex.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
-Changes in v3:
-* Use nvmem-cells/nvmem-cell-names properties from ethernet-controller.yaml
-* Set unevaluatedProperties instead of additionalProperties
+I thought we had decided that using the term "link" in these new members
+was a bad idea.
 
-Changes in v2:
-* Add amount and names of nvmem-cells (copied from ethernet-controller.yaml)
+> @@ -925,12 +944,16 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+>  	linkmode_zero(state->lp_advertising);
+>  	state->interface = pl->link_config.interface;
+>  	state->an_enabled = pl->link_config.an_enabled;
+> -	if  (state->an_enabled) {
+> +	if (state->an_enabled) {
+> +		state->link_speed = SPEED_UNKNOWN;
+> +		state->link_duplex = DUPLEX_UNKNOWN;
+>  		state->speed = SPEED_UNKNOWN;
+>  		state->duplex = DUPLEX_UNKNOWN;
+>  		state->pause = MLO_PAUSE_NONE;
+>  	} else {
+> -		state->speed =  pl->link_config.speed;
+> +		state->link_speed = pl->link_config.link_speed;
+> +		state->link_duplex = pl->link_config.link_duplex;
+> +		state->speed = pl->link_config.speed;
+>  		state->duplex = pl->link_config.duplex;
+>  		state->pause = pl->link_config.pause;
+>  	}
+> @@ -944,6 +967,9 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+>  		pl->mac_ops->mac_pcs_get_state(pl->config, state);
+>  	else
+>  		state->link = 0;
+> +
+> +	state->link_speed = state->speed;
+> +	state->link_duplex = state->duplex;
 
- Documentation/devicetree/bindings/net/fsl,fec.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Why do you need to set link_speed and link_duple above if they're always
+copied over here?
 
-diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-index daa2f79a294f..85a8d8fb6b8f 100644
---- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-+++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-@@ -121,6 +121,10 @@ properties:
- 
-   mac-address: true
- 
-+  nvmem-cells: true
-+
-+  nvmem-cell-names: true
-+
-   tx-internal-delay-ps:
-     enum: [0, 2000]
- 
-@@ -213,7 +217,7 @@ required:
- # least undocumented properties. However, PHY may have a deprecated option to
- # place PHY OF properties in the MAC node, such as Micrel PHY, and we can find
- # these boards which is based on i.MX6QDL.
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
+>  /* The fixed state is... fixed except for the link state,
+> @@ -953,10 +979,17 @@ static void phylink_get_fixed_state(struct phylink *pl,
+>  				    struct phylink_link_state *state)
+>  {
+>  	*state = pl->link_config;
+> -	if (pl->config->get_fixed_state)
+> +	if (pl->config->get_fixed_state) {
+>  		pl->config->get_fixed_state(pl->config, state);
+> -	else if (pl->link_gpio)
+> +		/* FIXME: these should not be updated, but
+> +		 * bcm_sf2_sw_fixed_state does it anyway
+> +		 */
+> +		state->link_speed = state->speed;
+> +		state->link_duplex = state->duplex;
+> +		phylink_state_fill_speed_duplex(state);
+
+This looks weird. Why copy state->xxx to state->link_xxx and then copy
+them back to state->xxx in a helper function?
+
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
