@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA8A57B956
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:13:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4286257B94C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:13:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241293AbiGTPNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 11:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        id S241294AbiGTPNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 11:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241168AbiGTPNC (ORCPT
+        with ESMTP id S241178AbiGTPNC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:13:02 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D95B5886F
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0CC5A444
         for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:12:54 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id i132-20020a1c3b8a000000b003a2fa488efdso1545153wma.4
+Received: by mail-wr1-x42a.google.com with SMTP id e15so21321920wro.5
         for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:12:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uBiHGApY9AeZlxNFdVrppuoURWMXeJrxh0IUdxyISek=;
-        b=OKjs13hLMaOhH50xbK97aCleR98fOhYkbirIUMVxvmMDTGL3sPg8hvOgi6eP2Eqhgh
-         zGCLsD2QJ4Wxtqt1Phb4dsyykq3yBS97MjpwIKVWjl9H0IlHO9fTZLQbFtF3wFOjZM5M
-         Tqo/sjUNHAtEbbeIKzv1qc/43059gLlXi+oPcF0li4l0vIDjcYQQPgFbpzR+9c6smP8P
-         2d+2pUjn13REF0WljPw/v4fQGfZwPjstuTkvL+Fwq+5e5DjU8bGME/awKO0Fb5GRCm0+
-         5kDnPBQWy1dpXvg06fHvEO3rUPqKHsUYeu3uumDzJnhkBuSkn+qGg0LAFzwdrByv8c3B
-         DJ5A==
+        bh=7L4Ha1oBjbQvumuTEWh/rgUg6HLMfB7bm1xwqVywznA=;
+        b=yD4XcgPqiQZ7QByC+uYHhWdwI8MuVOKtBAW6Zt0LRtLnWlzeV1iXocVnebKJOsOO9r
+         GaEzguKR/lqQYe8uuempY6bZ8snOu33W7g6gmhRWBXty3KgZiSTDj1EwyrL0iHVLjqOI
+         p6ki3fynE5nYF5JinmHq7fWvE+Tpu9Sjs55fm6F4N7ITVPgt4v6vAcu37to1FrANX43v
+         EXciHSGYLD8ooCACMeFMm7gJLWZX4rq9RuF3tb53/RHDkNq9PeuE1kffV+Rw3moTb7ON
+         8m8/Ypi5IfBieRUptMehzP0u65QZFl+XjTwr1c7pznSaOpwX+Wmwj4oScr9fA4MJvpEU
+         9xkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uBiHGApY9AeZlxNFdVrppuoURWMXeJrxh0IUdxyISek=;
-        b=haBgRVynWzHFtKKKrkS58e2NTpH8X5GD2c0Zqns9WPmHDI+0vLaddBE4sKkWRdSWw6
-         wX4H1vjJ0oVrNXQwc7sYVKNWCZNmT2tUI2MqbscJPhKul7mhtwMoJNFHJbqweEA0sXiG
-         XCEZQ6gjcAxgvjX/FKQEZM2YiJYeBe6x8nIR71w4E/Um3R+LZqICoPLEu9wDGdXZP0T1
-         p8G0FAUS5NkKNY2f6zvl7RIWRZ7126VVSJWpCSE6Re9euf1OYFz7IwKhJxNk6Srvznlq
-         Fd//eR9ZYXUXUr+aDHEoTUcj2cw5qpsKAK4zaILjI7YY2bw3d+6y6yoFuPPhNVp2jSTx
-         wbbw==
-X-Gm-Message-State: AJIora8WpXLDxIly31sEi2D/0hLBe/kH+yZeY2aJTX5hLpHKIANJ2b/r
-        ExEE2g7N4XYbRP7KF2apW+cYvVlQNfd/IiuJ9bo=
-X-Google-Smtp-Source: AGRyM1vVg1i+40KkDc5ukJMm6uTOimb1+GqL3YKPVJcDWGPjn2cZ+3sktz+JBl+quZRNFQiCrFHAPg==
-X-Received: by 2002:a05:600c:2ccb:b0:3a2:f171:8d74 with SMTP id l11-20020a05600c2ccb00b003a2f1718d74mr4420633wmc.47.1658329972609;
-        Wed, 20 Jul 2022 08:12:52 -0700 (PDT)
+        bh=7L4Ha1oBjbQvumuTEWh/rgUg6HLMfB7bm1xwqVywznA=;
+        b=yjfYpNwQGrE0/he9eelFqfIEsDInxshPnkz52H4PCi9UWHJgdsjQ20jLRqh8xX3m5S
+         x2sU2VeSUwfVcQhSifbysNU3wTeGwbdQ5mgZRME/DFOAcgIpg3UiBOSgT1LKj6JCryMc
+         R+JWkGTTpmK6FFr72ApFdbYbA3Rcydufuy/1kraY+EiVsdtnvW9aYEbf6WatIyrApKXN
+         JtvIHslaR3E6QRcjvnomSYZUK1FjOrdSFveEPwd69Fdlz3nmfrOQlNwr5vq2kocqOjc5
+         xL1SDypEXCBI/JSklYBtrCxXQUd1dhG1xqii1vFPRV4nVF8aHt4uRXXrv+iFkRXMN+L7
+         EBKA==
+X-Gm-Message-State: AJIora/2qxQ7/v4hbzB9G/LYyOSdOkVFyOFHwLH7xd11KF93vgKinynE
+        5XfTCT/1H6f7B+WnZubx4TulrGTwYU58i9WfZPw=
+X-Google-Smtp-Source: AGRyM1uLl/bMZsnSrcg52UG9t8NshoI0hAVfciwRDSvrkSfESbZRcUtioBzdZugvjqmg+SzsC5/tMw==
+X-Received: by 2002:a05:6000:1ac5:b0:21d:beaf:c2c3 with SMTP id i5-20020a0560001ac500b0021dbeafc2c3mr29394301wry.609.1658329973918;
+        Wed, 20 Jul 2022 08:12:53 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o4-20020adfcf04000000b0021d7fa77710sm15837453wrj.92.2022.07.20.08.12.51
+        by smtp.gmail.com with ESMTPSA id n12-20020a05600c3b8c00b003a2ed2a40e4sm3380954wms.17.2022.07.20.08.12.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 08:12:52 -0700 (PDT)
+        Wed, 20 Jul 2022 08:12:53 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: [patch net-next v3 10/11] selftests: mlxsw: Check line card info on provisioned line card
-Date:   Wed, 20 Jul 2022 17:12:33 +0200
-Message-Id: <20220720151234.3873008-11-jiri@resnulli.us>
+Subject: [patch net-next v3 11/11] selftests: mlxsw: Check line card info on activated line card
+Date:   Wed, 20 Jul 2022 17:12:34 +0200
+Message-Id: <20220720151234.3873008-12-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220720151234.3873008-1-jiri@resnulli.us>
 References: <20220720151234.3873008-1-jiri@resnulli.us>
@@ -71,54 +71,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Once line card is provisioned, check if HW revision and INI version
-are exposed on associated nested auxiliary device.
+Once line card is activated, check the FW version and PSID are exposed.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../drivers/net/mlxsw/devlink_linecard.sh     | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ .../drivers/net/mlxsw/devlink_linecard.sh     | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
 diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-index 08a922d8b86a..ca4e9b08a105 100755
+index ca4e9b08a105..224ca3695c89 100755
 --- a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
 +++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-@@ -84,6 +84,13 @@ lc_wait_until_port_count_is()
- 	busywait "$timeout" until_lc_port_count_is "$port_count" lc_port_count_get "$lc"
+@@ -250,12 +250,32 @@ interface_check()
+ 	setup_wait
  }
  
-+lc_nested_devlink_dev_get()
-+{
-+	local lc=$1
-+
-+	devlink lc show $DEVLINK_DEV lc $lc -j | jq -e -r ".[][][].nested_devlink"
-+}
-+
- PROV_UNPROV_TIMEOUT=8000 # ms
- POST_PROV_ACT_TIMEOUT=2000 # ms
- PROV_PORTS_INSTANTIATION_TIMEOUT=15000 # ms
-@@ -191,12 +198,30 @@ ports_check()
- 	check_err $? "Unexpected port count linecard $lc (got $port_count, expected $expected_port_count)"
- }
- 
-+lc_dev_info_provisioned_check()
++lc_dev_info_active_check()
 +{
 +	local lc=$1
 +	local nested_devlink_dev=$2
-+	local fixed_hw_revision
-+	local running_ini_version
++	local fixed_device_fw_psid
++	local running_device_fw
 +
-+	fixed_hw_revision=$(devlink dev info $nested_devlink_dev -j | \
-+			    jq -e -r '.[][].versions.fixed."hw.revision"')
-+	check_err $? "Failed to get linecard $lc fixed.hw.revision"
-+	log_info "Linecard $lc fixed.hw.revision: \"$fixed_hw_revision\""
-+	running_ini_version=$(devlink dev info $nested_devlink_dev -j | \
-+			      jq -e -r '.[][].versions.running."ini.version"')
-+	check_err $? "Failed to get linecard $lc running.ini.version"
-+	log_info "Linecard $lc running.ini.version: \"$running_ini_version\""
++	fixed_device_fw_psid=$(devlink dev info $nested_devlink_dev -j | \
++			       jq -e -r ".[][].versions.fixed" | \
++			       jq -e -r '."fw.psid"')
++	check_err $? "Failed to get linecard $lc fixed fw PSID"
++	log_info "Linecard $lc fixed.fw.psid: \"$fixed_device_fw_psid\""
++
++	running_device_fw=$(devlink dev info $nested_devlink_dev -j | \
++			    jq -e -r ".[][].versions.running.fw")
++	check_err $? "Failed to get linecard $lc running.fw.version"
++	log_info "Linecard $lc running.fw: \"$running_device_fw\""
 +}
 +
- provision_test()
+ activation_16x100G_test()
  {
  	RET=0
  	local lc
@@ -127,17 +114,16 @@ index 08a922d8b86a..ca4e9b08a105 100755
 +	local nested_devlink_dev
  
  	lc=$LC_SLOT
- 	supported_types_check $lc
-@@ -207,6 +232,11 @@ provision_test()
- 	fi
- 	provision_one $lc $LC_16X100G_TYPE
- 	ports_check $lc $LC_16X100G_PORT_COUNT
-+
+ 	type=$LC_16X100G_TYPE
+@@ -268,6 +288,10 @@ activation_16x100G_test()
+ 
+ 	interface_check
+ 
 +	nested_devlink_dev=$(lc_nested_devlink_dev_get $lc)
 +	check_err $? "Failed to get nested devlink handle of linecard $lc"
-+	lc_dev_info_provisioned_check $lc $nested_devlink_dev
++	lc_dev_info_active_check $lc $nested_devlink_dev
 +
- 	log_test "Provision"
+ 	log_test "Activation 16x100G"
  }
  
 -- 
