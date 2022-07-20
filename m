@@ -2,156 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0903F57BD90
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 20:17:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 385D657BDC3
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 20:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiGTSQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 14:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S234710AbiGTSaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 14:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiGTSQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 14:16:56 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCEB4E60B;
-        Wed, 20 Jul 2022 11:16:55 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KGcpOu024998;
-        Wed, 20 Jul 2022 18:16:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=3B2kszBedckSK9t4wJNJKLTYG5uxGwwporKDMUqrgcU=;
- b=k5vzBlOUboEqVOM1nbnmkujTc5YOlaBmyA+v+XpH+cIoh0TcEjLJbvTlR4yDGXg56tDJ
- kwHYuDmzkLWxoNGK2aqLZXniChVT8yxkhHAZFqGnCvgs8OAsqj8NvOS1kx3a1e2w9JWx
- j2VpB95DkxadV79QY8SSGY0ne1x5Kkjk+haQ/7P9IZ8ZWDB5aKGeT5ug1F8VF1NeUStJ
- e0FvrqbbFEGZgpLCaWt45TTKqI5DwUOclaLy7LBSnoNaStHASbxQXvs8FCMMbizE1rHF
- MMBMaxyVNSuYDNYLLz+QKru3D/Pp3W+u3u2S6KL/Oc8HXiNmuynMxao2kApm6sG+AKTd ug== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbnvtjevx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 18:16:47 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26KGJvAC007750;
-        Wed, 20 Jul 2022 18:16:46 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2172.outbound.protection.outlook.com [104.47.55.172])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1k4h1ks-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 18:16:46 +0000
+        with ESMTP id S234607AbiGTSaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 14:30:03 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C4F4A834
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 11:30:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LXMGmzdmcbaPmeqYnvJeGQfxxSK5ZBxTBVmgEmToSx4xq/+zDcnnbWD815oFlx2Ve+wMYs813uPQoSLsCKLdNAYSL0qOU+Rj6BB0WhmPo/ZnR/kgFI316EEsyiD/NOOg0EnCY2mdoeWvBZpnUOWjIvwcaCi5jt95s79UVnx/f2TUnDBjIULIyu0hGi3pQ6gxRnoCo4ZDmYCxcr8/mweEdhweRIxca15LYB+8KF2g1MJ9j7HjS3L3gorZx+A5syBmHf2cioiWpIs3c6XHheqUnMYvAMsYp1WzU64COQFKcwOiV20dJimgZOVjC3QNh/NxRja2/eWBfQ00fZvp7rZ2Ig==
+ b=C9FV/xOxvBGrBwvfTqtQ2FqsQwDQioYIUbuTepEuXcqem3wyI2afZOt3L/kj2u4ozBeZPCLmoRMtD8H2cR/7Q22M4bhZyweZHcw/rmoLWYeTRX7Qp4PAu1MQAbgafAhjyXwo8OWBBWEzPAOwFFGrBsenyZTOC5sEmHcxzgVIo3+WmKD4gC8mjcDodVY41kzr1UZH1KTUPj671W0Se+eHu55Ws4/XKcQKaPp8WJhq+7Iy+kmNjsMto9hEX5xfVLoEhI6HkeHIJ16RdjAQDBxGDnmhPPPPPXrwTqSIFcAlPsAnlOpRb2ScEvOxHDCZMJwt9TN9rVgvGmZHpH/JIdWJ3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3B2kszBedckSK9t4wJNJKLTYG5uxGwwporKDMUqrgcU=;
- b=J07658cOg2ZMWh7q2WjdBOi6iEpIZuyl/sAXSjLDU0q4Tc+0IsI+6uj+MyWCEPd6x6yu1pJLWDfoaeeSREwtdQ94DOHBoTLyDWr84eZMVlIlWlRocT9sEndH2ZnZtxlfUvd4rz4iS8iL2GtMjqO/kfTRe0Uj+8LozrXvODrFWBFmtZ13LKiz5qxKZFV+lKVYpoo6ReMD7lg6dS5RVTYGRW4aiEFgfvJY5ZroKkzjOzMPU3iGF8pFAzd+X0eTKVbd74Fcs4dZWtxk6akdNsiWAs/zZamGs7WTWmEM9tY7ytFBizcxBH9DzOt5VhDBKa6vS2fnW62z3n+Ff3/rHZ/mbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ bh=82XJrUX7WGfQrtV9/NBXxENEMzvXjc2Y5QVoA8xC8/s=;
+ b=Mw3X3CgYJTPr6kMagbq96PeDeQMlyQwqbdCPKiU/dLObwd3kLa/oBnkGuk5ak4GzCm3NliKM8Qjt8q6jbHYmtg5JandwDjI79oPPFyrh7FpIF1RtdLVmjQNurZ3vDHxvvn1HfFP5d6Fl6uIkl2oamXwARR3/LgvFAWLyEWxaJ1iUGhmjiyY+lGS3frDTLqbXmRa/YKMsozSFTcyVHRYY2PcGGDV2UrkIqL/5yeuflBDVSZ1IaTCSjMKW9IU4JfQJ8e2368T8akDu717d55ULq1XkDaFXBo7NTl3FZ5LJjk5QPmIabV1r8+NdOG4L8cIsDCQ/5guOwWRg8t9VG+gyTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3B2kszBedckSK9t4wJNJKLTYG5uxGwwporKDMUqrgcU=;
- b=AEl8m/uMNMqxow9ls/Ev3dex08sc4LFI8IEtQ1fgyxKH1CpoKodtdI52HZ3u4LFZd3TkZNSCAiQNXJurLVWunu5a8n92/rc2DPorJu+kfe+4tlhZGqPjci36Z88u6J7MF1n++hYtY6jzv25sawy/SI4/xFdvk4EIl52EqtZaWPg=
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by MN2PR10MB3631.namprd10.prod.outlook.com (2603:10b6:208:113::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Wed, 20 Jul
- 2022 18:16:44 +0000
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::b842:a301:806d:231e]) by BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::b842:a301:806d:231e%8]) with mapi id 15.20.5438.025; Wed, 20 Jul 2022
- 18:16:44 +0000
-Message-ID: <028506a9-d5f8-04e9-7427-5a39e0772987@oracle.com>
-Date:   Wed, 20 Jul 2022 19:16:35 +0100
-Subject: Re: [PATCH V2 vfio 05/11] vfio: Add an IOVA bitmap support
-Content-Language: en-US
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
-        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        kuba@kernel.org, kevin.tian@intel.com, leonro@nvidia.com,
-        maorg@nvidia.com, cohuck@redhat.com
-References: <20220714081251.240584-1-yishaih@nvidia.com>
- <20220714081251.240584-6-yishaih@nvidia.com>
- <20220719130114.2eecbba1.alex.williamson@redhat.com>
- <11865968-4a13-11b0-abfb-267f9adf3a95@oracle.com>
- <20220720104725.19aadc5d.alex.williamson@redhat.com>
-From:   Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <20220720104725.19aadc5d.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR04CA0144.eurprd04.prod.outlook.com
- (2603:10a6:208:55::49) To BLAPR10MB4835.namprd10.prod.outlook.com
- (2603:10b6:208:331::11)
+ bh=82XJrUX7WGfQrtV9/NBXxENEMzvXjc2Y5QVoA8xC8/s=;
+ b=DLnQnWDjj7StyhUJapRTVD5T8Xrqk1e/PGURMCxnTfb1iXtJ9zsNL7njS2HcZe0pb223bVDRcWr6O4AT6YDWr6HlMgSnL/pDBpVT0QTyWdTDgnyPbenTDaDwnSxGKp3D0I8Olr5aXcybi6JvlVQ9lxJmHF0hxov7hmGLlq8rfsTxWGZof6l5Ql7gbpAEANua6nC4jOXpq5xRBZj8eKtI36jIz1cTjnuCtcZ2VgMiiwBK9fDgWuBhmzQGrt8T/b60oNcG7WHDYfadb1Ych4ic3xo9H0osK0WwXO4r7Vp+uBlAi2pYxeN70oYjJlblExVwjxpprDHRjV47JMf8kkFirw==
+Received: from DM6PR07CA0042.namprd07.prod.outlook.com (2603:10b6:5:74::19) by
+ CH2PR12MB4891.namprd12.prod.outlook.com (2603:10b6:610:36::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5458.18; Wed, 20 Jul 2022 18:30:00 +0000
+Received: from DM6NAM11FT023.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::88) by DM6PR07CA0042.outlook.office365.com
+ (2603:10b6:5:74::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
+ Transport; Wed, 20 Jul 2022 18:29:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT023.mail.protection.outlook.com (10.13.173.96) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5458.17 via Frontend Transport; Wed, 20 Jul 2022 18:29:59 +0000
+Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 20 Jul
+ 2022 13:29:58 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
+ (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 20 Jul
+ 2022 11:29:58 -0700
+Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
+ Transport; Wed, 20 Jul 2022 13:29:57 -0500
+From:   <ecree@xilinx.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-net-drivers@amd.com>
+CC:     <netdev@vger.kernel.org>, Edward Cree <ecree.xilinx@gmail.com>
+Subject: [PATCH v3 net-next 0/9] sfc: VF representors for EF100
+Date:   Wed, 20 Jul 2022 19:29:23 +0100
+Message-ID: <cover.1658341691.git.ecree.xilinx@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 057b401d-606d-40b2-0258-08da6a7c0079
-X-MS-TrafficTypeDiagnostic: MN2PR10MB3631:EE_
-X-MS-Exchange-SenderADCheck: 1
+X-MS-Office365-Filtering-Correlation-Id: d54267f6-9866-4ab8-7491-08da6a7dda91
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4891:EE_
+X-MS-Exchange-SenderADCheck: 0
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9cW1Aw+daD0o5IlaU/eWB7z7eRs/IXLGF1O5FhuZm8T9KT5chIuXZXCUzj6dmJoqJdCercndePWWBGt5gh1UI8N1hdUk3QB/WeymZ89wxBL8guOD7ANfoHdqvhtII90QylylcBnzShhQ9mmmjWdFCJnlCXZtAvo07wCKoxe6ZN6JdMLrhNoDgDTNWGwIlZjo3RunCBE1ZZJYMyTnPCDLDeivqV//LHsdJxIWVXlMzkzf1gHR80EvHuKm/lMiWX0gYFy2awNzv9L2m+dPRbAzwMA8rX8Hb9f/PVo7qQqYSvG820vMi42Vl/bHNVxLw/R3Kja6jvQdYy+U4qJUj4wXjiwTtcw+8JmSRRg5ycEDCHbR3jPfi73NVmhZGnSG5M2trDacEFQaa/7iiLyE64bC5k+tIQRTDzqv0NKKu7uaxTFRQcKmNWUkqa+XOK4Xup39n/M1fhhvAhGhKj2iycnxVPIGoJSaxj6iCR+sZkNrrrCivyQWYCEtcC8iktPKAgiKJworWIYiYxwD+YMDdue4Lr+3OjC49gsFVGDIkZZK9giF4GxCEhQa8F3e0A61Ak7Sqjp3S4RVDIDSE2v8npfZrQP1BMgWvN77/lgoxiDDIgBWCc2h36IC6li9My/p2C7TKZ1a44arMVRmM1cRtewsF5PAhknoZoiMBZdwBj5vlDyU3y413wY9zRNxODHGydh2/LJnM2Itm2+OBD4+CiI2JLi92k76/5yO5flKRhcnLinyry2zrrf6edVxsBnL+AqHrcHVz9ZHQ8dSPIZwpcZFaRVPJV887JGI/mZjbleBm5s=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(376002)(366004)(346002)(39860400002)(83380400001)(38100700002)(2616005)(186003)(41300700001)(5660300002)(36756003)(7416002)(8936002)(2906002)(6506007)(26005)(53546011)(478600001)(66556008)(4326008)(66946007)(66476007)(8676002)(6666004)(6916009)(86362001)(6486002)(316002)(31686004)(31696002)(6512007)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dXZjMzVWN3NnVHZqc3pNYmQ0cXNGRXAwSUdZV2xOdmVlV3ZXanV4QU9GVHBM?=
- =?utf-8?B?Tk9TQkFPcEhtS2VrdVVXRW9sT0FvTWUwRG5MeHpiOE9VOHhlb1ZEZk9mTEFl?=
- =?utf-8?B?N3FVMGpWSU03TDVFR28weVhhYkpaYkFuYkZrV2p6VUU0b1Npdy9ydVVZQTk5?=
- =?utf-8?B?dFN6d0xTeTNUbld3ejZqM0VhSVpaRkt0cmxIUklvL051TmdBaUZTQy84ZGIz?=
- =?utf-8?B?bUs4S3VxckRrb0t6MzlHMEp0Qm5GNnQ3bDFlaG1wZjlGdUN2dmQ2QUFXUWU3?=
- =?utf-8?B?L1F4anZnZDdYZy9QUy9YV3puMVhITXJGWnI4VlduTEhqQkpOQ01BUjVwaGdO?=
- =?utf-8?B?dG9oamdlSnNGcGtiMWJIcU90bFYzYWNaMXVrNjBmMUpUTHF5OXhGTlFrb0Zk?=
- =?utf-8?B?dE1ZZGZ3UWFyM1FqTGFpM0Z1RnN2Y2VXdVNma1ZRajI5YnU2NTJRRFJkdElZ?=
- =?utf-8?B?QTRwUEdNNXdFMXpkQ2F4VDEwUlRLQ3BSNm5SRnJ3ckpCSFBmWEd4RG9KQk80?=
- =?utf-8?B?akprNEpSTTNtRGpGZmtPUnJaMy8wTmN5VEs1d2I0QnNlSmNrcVJNb1djb2dB?=
- =?utf-8?B?aitZaTd0YjVzZjQ5SHNwVFU3NEpIYlluZ05JbytkNDRoWElUWDNzSjNRaHhm?=
- =?utf-8?B?cHNndmNXYlVta0ZZZHV1VVM0UUhhTG5vR3NxL0J0QlVjcER1L3IxYm5wOTRY?=
- =?utf-8?B?WS9kdHQ1NjJBeGJOTnZ4akVmZWJWUmkwZHk3YTdIeVFtNGxqSHViMVljUjZR?=
- =?utf-8?B?MlRzekYwa0czZWVOejIzUTNHWi8rdVVqbFMrbHFoRy8yWElRNTE1a0c1UFBI?=
- =?utf-8?B?bXY0anpvQUFHWWZ6TzdxZFNCTE9xQmErZjBiK2JJYys0UjhNMzJsRnRIbDEr?=
- =?utf-8?B?Tk1ZU0FLOWlEeVdlMTBwVGdPNWxWUldQcWhOSDE2Tlh1S3NRZjFjLy9LRFZt?=
- =?utf-8?B?T25FSS9ycVFMaUVJNWNxbkEvYjRVeWo5Z1cxZ2s1cjlLV0owRXF5TWVGZDll?=
- =?utf-8?B?Y0FhMllPeFl5R2VmdnVvcGtzWkROWTFXTW9VY1dDOHd0WGlodmpXcEpMSWQz?=
- =?utf-8?B?Mk02cFVsMTZOdDNvMHhrZHBLNnQ4bTJ4cnZOcnI2NFZSR1FFeEpWQmRRY1l2?=
- =?utf-8?B?Nng0bG9rbWdQTzJuWnFPWDVNNmxNdHFseFgyMGVCYmRzMzRZa002eWtMSWtk?=
- =?utf-8?B?ZWI4d0JaWE9oeHNFNGNabnJUNG1vaDZ0MEsvK1hRRldTZy9lZnBPM2xKVDAw?=
- =?utf-8?B?U2NrSFVZd09JWDFoK3hOZEZQSlF4YXdaSUxFSmcvWnovc0xMUHJuc0ZwNDRW?=
- =?utf-8?B?K1lWeUk0dWhOdVFleFlTdmFINEprOUZuRzNPNS9URDJ3K0NER2locjJnWFhE?=
- =?utf-8?B?a3hTTTlBVFpLQVVuMlh4SDk4YkkraW5LZGdUdzhqSGhFVUdSOVByRllMeFhN?=
- =?utf-8?B?WXFiWjhSWmw2U3JLNklzSmxmVmJreFpqbmUyOERWZHZFcXVGYy9xa1ExMDVy?=
- =?utf-8?B?bEF6MmF2ekJIVEVPSWpibXF2a3BFeUhGeUY3eXN1RDhDOEk1ajV5c1BFQ0h1?=
- =?utf-8?B?SzlTZGVZenZmTU9tVTJSU0tob21TS0xpeDJFVnN6ekluL1NKZUxsMGtXYnRv?=
- =?utf-8?B?RzZWMlBjY3ZTZkJSSkVOOXAyZmxrT1VTaGQvWTVjWUZrVVhJaE1uVUVIOTVq?=
- =?utf-8?B?R3JjU1o5TmtIZjl6M1VIeUlieXg2YVlyRlBYbFIwZVBrS2ZsZzRzWGJJWU5B?=
- =?utf-8?B?UTA5b1QreFJWenZmbGRUbVpSK0tSM0ZtWHZ2a2M3RU5Wei90VldibUE2eGQr?=
- =?utf-8?B?STR0TlpVd0tOTU1SeUZrVkRYNGJ2WlVXdGc5bXdRaUw0ZUdjdWtSaUxqcXhk?=
- =?utf-8?B?cFdhSW9sbjI3VzRKZFFQbE1qOWdTV3VEenZDWTRZcXdXN1FNRWtkK2FmUlRa?=
- =?utf-8?B?bnltRTZuZXJwdFdhQ0ZqOW0ydGxuQStuL0V3bFFvbThnVXdUZitYbm1tR05x?=
- =?utf-8?B?VmJoalJwOEVqb1VrU0Y0czAva3JTcDlpMnpvQ1dQODRJUWI3cXA4Uk5kWVVE?=
- =?utf-8?B?aUFRblRKamZNRXVjNUIxUTc3OUdqV01DVnpGcm5NYUNPY0tKNWlmV2k4WENo?=
- =?utf-8?B?dFRjaHJHYkxCWiswbFZDb3BONXZ2eEpHVThYeWVIMVpJOGV4dXNhV2lMU05Q?=
- =?utf-8?B?M3c9PQ==?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 057b401d-606d-40b2-0258-08da6a7c0079
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 18:16:44.4640
+X-Microsoft-Antispam-Message-Info: I5A8zrMmJ7DFzmvvgN/gcmGFzGeqIHfCcw0xbv6kxn5Bahs1eq+CzeTahmy+lcMFc2o8udt0KpQBk3sV5NWNQRpEwbxITxin0/fnzAQRBFkaV7hvZx3NA6CpMclMOCTs5BCsjxzNWQus+ZZZ+sHuzNcKnRBVCvW77I8uJ4pr1avNTpB/nsfSypk/qhDQmfIfDfX3itwTu0aGigLEmxx5DCuGSqLa3XondihTTz9HtzgmR1vTSJWXBQn2ejJRGUNe0E7Vz5MEWbk7k31r16zbwE4CwwPnoivVgSEYojigRQv0czPkblDmj4VT2DFzVKSmhmVvLk9bjklUZc8NSVwOsr+QAEQGk53ZDytMgEFLlb9CvbBLM7zZk3rS8YtJWy3VJpLjYBkjYSomaSfwDqGPeS9GF5H7xeY4rbw6u8fyX/f4ty6n/3ast9Ft7gc+xn5lTr65NFX9mx7d3eKSoBm3eyYQ4C55e5doJWjxh7KHoXioBmxKZuGzWyv9MGFKIn+mmLgF5Frtam6/y72qOv1EpEyPMcpdWQw7CkmLp3yr1fqMjDyK+5w5hrimfCpRwG44/hrCwI4Kwf4OqkGD7C8hytx2X6aE9f+Nhxuqr2Enjjsm3VmFVDPblxp6/WHd8aXdHbMg6Kezi7s0o00uo6Dpiaa3lHXQyp/8cGCpRUGE5rv3CeVRKRalWBT950sULbcO5sscTslA/OJkf1bsMrlNOAiN9lpGkmXEk9IfhUuPBaGGkPQA0pVPvRtkY6NFSptcOQRNpcfYNWV77Fb7oSw14QvNkFshWEQkMv6v7Cz7w8AbHH/YKfMmpQUL1hci0cthSTj49waYJIyweOTxExrJsg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(136003)(376002)(36840700001)(40470700004)(46966006)(36860700001)(36756003)(82310400005)(41300700001)(55446002)(2876002)(6666004)(26005)(478600001)(40480700001)(356005)(2906002)(8936002)(110136005)(83170400001)(70206006)(5660300002)(9686003)(40460700003)(186003)(47076005)(42882007)(83380400001)(70586007)(54906003)(336012)(316002)(81166007)(82740400003)(8676002)(4326008)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 18:29:59.5674
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DLCMfnWvOXAHyVU+xhq8BcTirYCiKBnppY1nEbHMykZz8TOrJ+OY73sJkqFoMJ6NYZKLUHYkP30GIKHGheSf9mbo8dQdAuLdY3uEyv0E5Mg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3631
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 adultscore=0 phishscore=0
- mlxlogscore=999 spamscore=0 malwarescore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207200075
-X-Proofpoint-GUID: 2z-QvWWzLIwgtVSCvxPQ15pmmdcsOit5
-X-Proofpoint-ORIG-GUID: 2z-QvWWzLIwgtVSCvxPQ15pmmdcsOit5
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-MS-Exchange-CrossTenant-Network-Message-Id: d54267f6-9866-4ab8-7491-08da6a7dda91
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT023.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4891
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -159,141 +101,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/22 17:47, Alex Williamson wrote:
-> On Wed, 20 Jul 2022 02:57:24 +0100
-> Joao Martins <joao.m.martins@oracle.com> wrote:
->> On 7/19/22 20:01, Alex Williamson wrote:
->>> On Thu, 14 Jul 2022 11:12:45 +0300
->>> Yishai Hadas <yishaih@nvidia.com> wrote:
->>>> From: Joao Martins <joao.m.martins@oracle.com>
+From: Edward Cree <ecree.xilinx@gmail.com>
 
-[snip]
+This series adds representor netdevices for EF100 VFs, as a step towards
+ supporting TC offload and vDPA usecases in future patches.
+In this first series is basic netdevice creation and packet TX; the
+ following series will add the RX path.
 
->>>> diff --git a/include/linux/iova_bitmap.h b/include/linux/iova_bitmap.h
->>>> new file mode 100644
->>>> index 000000000000..c474c351634a
->>>> --- /dev/null
->>>> +++ b/include/linux/iova_bitmap.h
->>>> @@ -0,0 +1,46 @@
->>>> +/* SPDX-License-Identifier: GPL-2.0 */
->>>> +/*
->>>> + * Copyright (c) 2022, Oracle and/or its affiliates.
->>>> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
->>>> + */
->>>> +
->>>> +#ifndef _IOVA_BITMAP_H_
->>>> +#define _IOVA_BITMAP_H_
->>>> +
->>>> +#include <linux/highmem.h>
->>>> +#include <linux/mm.h>
->>>> +#include <linux/uio.h>
->>>> +
->>>> +struct iova_bitmap {
->>>> +	unsigned long iova;
->>>> +	unsigned long pgshift;
->>>> +	unsigned long start_offset;
->>>> +	unsigned long npages;
->>>> +	struct page **pages;
->>>> +};
->>>> +
->>>> +struct iova_bitmap_iter {
->>>> +	struct iova_bitmap dirty;
->>>> +	u64 __user *data;
->>>> +	size_t offset;
->>>> +	size_t count;
->>>> +	unsigned long iova;
->>>> +	unsigned long length;
->>>> +};
->>>> +
->>>> +int iova_bitmap_iter_init(struct iova_bitmap_iter *iter, unsigned long iova,
->>>> +			  unsigned long length, u64 __user *data);
->>>> +void iova_bitmap_iter_free(struct iova_bitmap_iter *iter);
->>>> +bool iova_bitmap_iter_done(struct iova_bitmap_iter *iter);
->>>> +unsigned long iova_bitmap_length(struct iova_bitmap_iter *iter);
->>>> +unsigned long iova_bitmap_iova(struct iova_bitmap_iter *iter);
->>>> +void iova_bitmap_iter_advance(struct iova_bitmap_iter *iter);
->>>> +int iova_bitmap_iter_get(struct iova_bitmap_iter *iter);
->>>> +void iova_bitmap_iter_put(struct iova_bitmap_iter *iter);
->>>> +void iova_bitmap_init(struct iova_bitmap *bitmap,
->>>> +		      unsigned long base, unsigned long pgshift);
->>>> +unsigned int iova_bitmap_set(struct iova_bitmap *dirty,
->>>> +			     unsigned long iova,
->>>> +			     unsigned long length);
->>>> +
->>>> +#endif  
->>>
->>> No relevant comments, no theory of operation.  I found this really
->>> difficult to review and the page handling is still not clear to me.
->>> I'm not willing to take on maintainership of this code under
->>> drivers/vfio/ as is.   
->>
->> Sorry for the lack of comments/docs and lack of clearity in some of the
->> functions. I'll document all functions/fields and add a comment bloc at
->> the top explaining the theory on how it should be used/works, alongside
->> the improvements you suggested above.
->>
->> Meanwhile what is less clear for you on the page handling? We are essentially
->> calculating the number of pages based of @offset and @count and then preping
->> the iova_bitmap (@dirty) with the base IOVA and page offset. iova_bitmap_set()
->> then computes where is the should start setting bits, and then it kmap() each page
->> and sets the said bits. So far I am not caching kmap() kaddr,
->> so the majority of iova_bitmap_set() complexity comes from iterating over number
->> of bits to kmap and accounting to the offset that user bitmap address had.
-> 
-> It could have saved a lot of struggling through this code if it were
-> presented as a windowing scheme to iterate over a user bitmap.
-> 
-> As I understand it more though, does the API really fit the expected use
-> cases?  As presented here and used in the following patch, we map every
-> section of the user bitmap, present that section to the device driver
-> and ask them to mark dirty bits and atomically clear their internal
-> tracker for that sub-range.  This seems really inefficient.
-> 
-So with either IOMMU and VFIO vendor driver the hardware may marshal their dirty
-bits in entirely separate manners. On IOMMUs it is unbounded and PTEs format
-vary, so there's no way but to walk all domain pagetables since the beginning of the
-(mapped) IOVA range and check that every PTE is dirty or not and this is going to be
-rather expensive, the next cost would be between 1) to copy bitmaps back and forth or
-2) pin . 2)  it's cheaper if it is over 2M chunks (i.e. fewer atomics there) unless
-we take the slow-path. On VFIO there's no intermediate storage for the driver,
-and even we were going to preregister anything vendor we would have to copy MBs
-of bitmaps to user memory (worst case e.g 32MiB per Tb). Although there's some
-unefficiency on unnecessary pinning of potential non-dirty IOVA ranges if the user
-doesn't mark anything dirty.
+v3: dropped massive mcdi_pcol.h patch which was applied separately.
+v2: converted comments on struct efx_nic members added in patch #4 to
+ kernel-doc (Jakub).  While at it, also gave struct efx_rep its own kdoc
+ since several members had comments on them.
 
-Trying to avoid copies as iova_bitmap, the main cost is in the pinning and
-making it dependent on dirties (rather than windowing) means we could pin
-individual pages of the bitmap more often (with efficiency being a bit more
-tied to the VF workload or vIOMMU).
+Edward Cree (9):
+  sfc: update EF100 register descriptions
+  sfc: detect ef100 MAE admin privilege/capability at probe time
+  sfc: add skeleton ef100 VF representors
+  sfc: add basic ethtool ops to ef100 reps
+  sfc: phys port/switch identification for ef100 reps
+  sfc: determine representee m-port for EF100 representors
+  sfc: support passing a representor to the EF100 TX path
+  sfc: hook up ef100 representor TX
+  sfc: attach/detach EF100 representors along with their owning PF
 
-> Are we just counting on the fact that each 2MB window of dirty bitmap
-> is 64GB of guest RAM (assuming 4KB pages) and there's likely something
-> dirty there?
-> 
-Yes, and likely there's enough except when we get reports for very big
-IOVA ranges when usually there's more than one iteration. 4K of user
-memory would represent a section (128M).
+ drivers/net/ethernet/sfc/Makefile       |   2 +-
+ drivers/net/ethernet/sfc/ef100_netdev.c |  16 +-
+ drivers/net/ethernet/sfc/ef100_netdev.h |   5 +
+ drivers/net/ethernet/sfc/ef100_nic.c    |   7 +
+ drivers/net/ethernet/sfc/ef100_nic.h    |   1 +
+ drivers/net/ethernet/sfc/ef100_regs.h   |  83 +++++---
+ drivers/net/ethernet/sfc/ef100_rep.c    | 244 ++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ef100_rep.h    |  49 +++++
+ drivers/net/ethernet/sfc/ef100_sriov.c  |  32 +++-
+ drivers/net/ethernet/sfc/ef100_sriov.h  |   2 +-
+ drivers/net/ethernet/sfc/ef100_tx.c     |  84 +++++++-
+ drivers/net/ethernet/sfc/ef100_tx.h     |   3 +
+ drivers/net/ethernet/sfc/efx.h          |   9 +-
+ drivers/net/ethernet/sfc/efx_common.c   |  38 ++++
+ drivers/net/ethernet/sfc/efx_common.h   |   3 +
+ drivers/net/ethernet/sfc/mae.c          |  44 +++++
+ drivers/net/ethernet/sfc/mae.h          |  22 +++
+ drivers/net/ethernet/sfc/mcdi.c         |  46 +++++
+ drivers/net/ethernet/sfc/mcdi.h         |   1 +
+ drivers/net/ethernet/sfc/net_driver.h   |   5 +
+ drivers/net/ethernet/sfc/tx.c           |   6 +-
+ drivers/net/ethernet/sfc/tx_common.c    |  35 +++-
+ drivers/net/ethernet/sfc/tx_common.h    |   3 +-
+ 23 files changed, 687 insertions(+), 53 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/ef100_rep.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_rep.h
+ create mode 100644 drivers/net/ethernet/sfc/mae.c
+ create mode 100644 drivers/net/ethernet/sfc/mae.h
 
-> It seems like a more efficient API might be for us to call the device
-> driver with an iterator object, which the device driver uses to call
-> back into this bitmap helper to set specific iova+length ranges as
-> dirty.
-
-I can explore another variant. With some control over how it advances
-the bitmap the driver could easily adjust the iova_bitmap as it see fit
-without necessarily having to walk the whole bitmap memory while retaining
-the same iova_bitmap general facility. The downside(?) would be that end
-drivers (iommu driver, or vfio vendor driver) need to work (pin) with user
-buffers rather than kernel managed pages.
-
-> The iterator could still cache the kmap'd page (or pages) to
-> optimize localized dirties, but we don't necessarily need to kmap and
-> present every section of the bitmap to the driver. 
-kmap_local_page() is cheap (IOW page_address(page)), unless its highmem (AIUI).
-
-The expensive part for zerocopy approach is having to pin pages prior to have
-iova_bitmap_set(). If the device is doing IOs scattered across a relatively
-ram sections I am not sure how the caching will be efficient.
-
-> Thanks,
-> 
