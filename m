@@ -2,157 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8357957B139
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 08:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D4657B131
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 08:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbiGTGtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 02:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
+        id S230101AbiGTGpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 02:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbiGTGoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 02:44:11 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A7D42ACE;
-        Tue, 19 Jul 2022 23:44:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=buEbPj35VBOKwfMS/RY6ZEKeyl1ASTH12iRmqn5wlKI=; b=tAs8wmxKzaPfRWJEnOqN1t6ahZ
-        D7QhCw4w8oRh1hNY3RPCkYfpOpyldLf2EI3TqEwoIQPVOHOxBM3AYw+40YJiu5exXIVCGHZk4AWdi
-        5MWfHQz4yYLZCe3wRLixuMbKfKBhHCmiiui/tkWBFouUEaHa8QTIBKq3DMNJdmD+CrAdD1vDG5RVZ
-        XbucAhRE8BOdAajR+S8lFPCZTjmaJfM8PpGkwvOMtQr+oNrgLR/OtoEiL8bmtQSQqT6KWrWLXAVoq
-        bpjA9Bsb4qWUH2Z4lK4kO7YFa8bGzR97Kszey4V18OORYSpSZ2aUSM+b6nH/txhAC/tOWW+ZOpnBg
-        f1dan0aA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33454)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oE3RD-0003mj-LK; Wed, 20 Jul 2022 07:44:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oE3R9-0003gE-F7; Wed, 20 Jul 2022 07:43:59 +0100
-Date:   Wed, 20 Jul 2022 07:43:59 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229607AbiGTGpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 02:45:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0CB1FD09
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 23:45:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658299542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KwYZJuMW6GMuidvnwhTLUewlByMo6MPnShkgNq/ptrE=;
+        b=HiEsm8WpZbshhJ5ledhiPHQOcOCekhGlyhK3FWMrsPo9ZYEbduR4AkEgTuE/iGUKkf0qKr
+        GNjvXAt/27G4ZNN118OqpUPDeAanvwnKm0QM6kPauG/X/9AjY4uDFv5yD/SJP5v2mV/Ce4
+        fjgDeK6F39Q9H5RkASNQQqdAmGAcCuY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-246-68yx6NDzM9-vemNcjfSV3g-1; Wed, 20 Jul 2022 02:45:40 -0400
+X-MC-Unique: 68yx6NDzM9-vemNcjfSV3g-1
+Received: by mail-wm1-f69.google.com with SMTP id 131-20020a1c0289000000b003a32b902668so197379wmc.9
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 23:45:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KwYZJuMW6GMuidvnwhTLUewlByMo6MPnShkgNq/ptrE=;
+        b=3xRTJ+L+ReoyByFOZPh+4FoBw8Y51ilxVNIedFQd/7cKsakJjxGN6hGx+YUC4B2EQ3
+         fM7gPdU7dP6PojXtfMbEmGj9g9/wIN6ZD49S1O+zzZmlgCzx/EBpc4ofLHdkjUk2pqn2
+         LQB+UsdBDdlMhq2f5DgDuethjEahuEXFwVuIAtoLjB+/G4n8yU3sFuDNW8htJ530HsrE
+         vIcnS2jrJplsW7c8oH4t5nsh4cYGEdaNpddxNuC2eA3w2ixTHfFLKKn6VbNYVdnKwbv0
+         rCWpj7YRyY/K+1hShzYzQ6rAx+hS7Hedr5xCWrGfoYSH95+s8fVdMRtaO59bODRITIS8
+         c2oQ==
+X-Gm-Message-State: AJIora829LgDetEnqb9Z5acLaPw8UpqDoYgCJhLa2MQ8F4vxRhFIyWXf
+        repm0ciCGRuotc8AxpDSsiB95FUdhIKXaapbU4T4/uwcWos++NHmu8hfQsEKZbZDZtR3lv8vgvN
+        LSeVzCpd+Q+EY1400
+X-Received: by 2002:a05:600c:1991:b0:3a1:9fc4:b67d with SMTP id t17-20020a05600c199100b003a19fc4b67dmr2384263wmq.49.1658299539816;
+        Tue, 19 Jul 2022 23:45:39 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sNuEje7rPskCqjX+NjqkIBiSr8DZ0YYrXUmjKNZHQmAXgwZ2/eMV9ChYWVkZsnRLOZ+zwNlQ==
+X-Received: by 2002:a05:600c:1991:b0:3a1:9fc4:b67d with SMTP id t17-20020a05600c199100b003a19fc4b67dmr2384239wmq.49.1658299539579;
+        Tue, 19 Jul 2022 23:45:39 -0700 (PDT)
+Received: from redhat.com ([2.55.25.63])
+        by smtp.gmail.com with ESMTPSA id v130-20020a1cac88000000b003a03be171b1sm1234056wme.43.2022.07.19.23.45.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jul 2022 23:45:39 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 02:45:35 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v2 06/11] net: phylink: Support differing link/interface
- speed/duplex
-Message-ID: <YtekL4y/XKn1m/V4@shell.armlinux.org.uk>
-References: <20220719235002.1944800-1-sean.anderson@seco.com>
- <20220719235002.1944800-7-sean.anderson@seco.com>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing
+ support
+Message-ID: <20220720022901-mutt-send-email-mst@kernel.org>
+References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
+ <20220719172652.0d072280@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719235002.1944800-7-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220719172652.0d072280@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 07:49:56PM -0400, Sean Anderson wrote:
-> This adds support for cases when the link speed or duplex differs from
-> the speed or duplex of the phy interface mode. Such cases can occur when
-> some kind of rate adaptation is occurring.
+On Tue, Jul 19, 2022 at 05:26:52PM -0700, Jakub Kicinski wrote:
+> On Mon, 18 Jul 2022 12:11:02 +0300 Alvaro Karsz wrote:
+> > New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
+> > 
+> > Control a Virtio network device notifications coalescing parameters
+> > using the control virtqueue.
+> > 
+> > A device that supports this fetature can receive
+> > VIRTIO_NET_CTRL_NOTF_COAL control commands.
+> > 
+> > - VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
+> >   Ask the network device to change the following parameters:
+> >   - tx_usecs: Maximum number of usecs to delay a TX notification.
+> >   - tx_max_packets: Maximum number of packets to send before a
+> >     TX notification.
+> > 
+> > - VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
+> >   Ask the network device to change the following parameters:
+> >   - rx_usecs: Maximum number of usecs to delay a RX notification.
+> >   - rx_max_packets: Maximum number of packets to receive before a
+> >     RX notification.
+> > 
+> > VirtIO spec. patch:
+> > https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
+> > 
+> > Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
 > 
-> The following terms are used within this and the following patches. I
-> do not believe the meaning of these terms are uncommon or surprising,
-> but for maximum clarity I would like to be explicit:
+> Waiting a bit longer for Michael's ack, so in case other netdev
+> maintainer takes this:
 > 
-> - Phy interface mode: the protocol used to communicate between the MAC
->   or PCS (if used) and the phy. If no phy is in use, this is the same as
->   the link mode. Each phy interface mode supported by Linux is a member
->   of phy_interface_t.
-> - Link mode: the protocol used to communicate between the local phy (or
->   PCS) and the remote phy (or PCS) over the physical medium. Each link
->   mode supported by Linux is a member of ethtool_link_mode_bit_indices.
-> - Phy interface mode speed: the speed of unidirectional data transfer
->   over a phy interface mode, including encoding overhead, but excluding
->   protocol and flow-control overhead. The speed of a phy interface mode
->   may vary. For example, SGMII may have a speed of 10, 100, or 1000
->   Mbit/s.
-> - Link mode speed: similarly, the speed of unidirectional data transfer
->   over a physical medium, including overhead, but excluding protocol and
->   flow-control overhead. The speed of a link mode is usually fixed, but
->   some exceptional link modes (such as 2BASE-TL) may vary their speed
->   depending on the medium characteristics.
-> 
-> Before this patch, phylink assumed that the link mode speed was the same
-> as the phy interface mode speed. This is typically the case; however,
-> some phys have the ability to adapt between differing link mode and phy
-> interface mode speeds. To support these phys, this patch removes this
-> assumption, and adds a separate variable for link speed. Additionally,
-> to support rate adaptation, a MAC may need to have a certain duplex
-> (such as half or full). This may be different from the link's duplex. To
-> keep track of this distunction, this patch adds another variable to
-> track link duplex.
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-I thought we had decided that using the term "link" in these new members
-was a bad idea.
-
-> @@ -925,12 +944,16 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
->  	linkmode_zero(state->lp_advertising);
->  	state->interface = pl->link_config.interface;
->  	state->an_enabled = pl->link_config.an_enabled;
-> -	if  (state->an_enabled) {
-> +	if (state->an_enabled) {
-> +		state->link_speed = SPEED_UNKNOWN;
-> +		state->link_duplex = DUPLEX_UNKNOWN;
->  		state->speed = SPEED_UNKNOWN;
->  		state->duplex = DUPLEX_UNKNOWN;
->  		state->pause = MLO_PAUSE_NONE;
->  	} else {
-> -		state->speed =  pl->link_config.speed;
-> +		state->link_speed = pl->link_config.link_speed;
-> +		state->link_duplex = pl->link_config.link_duplex;
-> +		state->speed = pl->link_config.speed;
->  		state->duplex = pl->link_config.duplex;
->  		state->pause = pl->link_config.pause;
->  	}
-> @@ -944,6 +967,9 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
->  		pl->mac_ops->mac_pcs_get_state(pl->config, state);
->  	else
->  		state->link = 0;
-> +
-> +	state->link_speed = state->speed;
-> +	state->link_duplex = state->duplex;
-
-Why do you need to set link_speed and link_duple above if they're always
-copied over here?
-
->  /* The fixed state is... fixed except for the link state,
-> @@ -953,10 +979,17 @@ static void phylink_get_fixed_state(struct phylink *pl,
->  				    struct phylink_link_state *state)
->  {
->  	*state = pl->link_config;
-> -	if (pl->config->get_fixed_state)
-> +	if (pl->config->get_fixed_state) {
->  		pl->config->get_fixed_state(pl->config, state);
-> -	else if (pl->link_gpio)
-> +		/* FIXME: these should not be updated, but
-> +		 * bcm_sf2_sw_fixed_state does it anyway
-> +		 */
-> +		state->link_speed = state->speed;
-> +		state->link_duplex = state->duplex;
-> +		phylink_state_fill_speed_duplex(state);
-
-This looks weird. Why copy state->xxx to state->link_xxx and then copy
-them back to state->xxx in a helper function?
+Yea was going to ack this but looking at the UAPI again we have a
+problem because we abused tax max frames values 0 and 1 to control napi
+in the past. technically does not affect legacy cards but userspace
+can't easily tell the difference, can it?
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+MST
+
