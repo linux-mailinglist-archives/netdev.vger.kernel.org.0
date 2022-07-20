@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDAF457AB0B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17CB157AB0E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237998AbiGTAkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 20:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S238020AbiGTAko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 20:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237990AbiGTAkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:40:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED6D4F18C
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:40:16 -0700 (PDT)
+        with ESMTP id S232544AbiGTAkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:40:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B8DF5AC
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:40:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ED63B81DD7
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C80CBC341CE;
-        Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D271DB81DC9
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A833C341C6;
+        Wed, 20 Jul 2022 00:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658277613;
-        bh=rKl6+n8U0dNHbTkWDeG4PWDZcTMCHPPupA9tyCjbTOg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Cc14G45xNTO1HvktI9I7MQEwB6JQW2ATKXy91DZDt77xDfQe1YHucDTUcYonRhtJH
-         dDbzWTk3wxO7VUs6YLMxbOCOPgGknRjwtmVcJg3UK5akqUeE6jjvE/dOQqNxMapx6k
-         XgaBKNo14jjUKpYNrBgdQE8rJGX9hes3uhAHHJn9yvLoVWlyXUPtACOT0jDVuULIEf
-         UWZ53iDfX1VvjWUBfiEidsqhgW0a2bYNgu6lIf48TsCvBTEKOQwVvT0tXSVq1U0cS8
-         oqySyUwdQt2dSs4NRkhblbDoAPxOrulSzhuT5nw/yvCCmUddhhRySmU0PUoDCfIPmA
-         eCyllgHsrqJ6A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9A6B9D9DDDB;
-        Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: mtk_ppe: fix possible NULL pointer
- dereference in mtk_flow_get_wdma_info
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165827761362.10063.15701613419779196006.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 00:40:13 +0000
-References: <4e1685bc4976e21e364055f6bee86261f8f9ee93.1658137753.git.lorenzo@kernel.org>
-In-Reply-To: <4e1685bc4976e21e364055f6bee86261f8f9ee93.1658137753.git.lorenzo@kernel.org>
+        s=k20201202; t=1658277639;
+        bh=xRO8Cerl/DsoZ7VXIDoqk7KPdb3xy0m5ieKJhE+IzbE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L+AK2xxcxjO/IGBmuodb0J7D+3BB6rkaFmyBySN7f1XaTq3HiVwSmpHfxd2Kds0Fi
+         F9xzxaF1UGYG6MzR3Jq1x9ObDZgDAT/J8qlRVnTmzf+V4fLf4wqN8quSKijJKZSE4V
+         uWrK8PYbAB9KCZKnOXscoj9kkaYEXOp91AYfeuhdjM5QjJOZldbA1Mjkwdd7HUXr5t
+         k/qXH/UQImPMDHNCRE0XyX2Ad07YInhyQDSIbz9yeoeNLKerKCftOLg0IMDhtTlBVA
+         OTmOhZ123APoI6hJ8jkXXvx5sNKvtW1o1jwcNNADjgXRn8SozHeOnqxnvX9i2P0v6p
+         YofbBXt7r63kg==
+Date:   Tue, 19 Jul 2022 17:40:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
         sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        pablo@netfilter.org, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Ryder.Lee@mediatek.com, Evelyn.Tsai@mediatek.com
+Subject: Re: [PATCH net-next] net: ethernet: mtk-ppe: fix traffic offload
+ with bridged wlan
+Message-ID: <20220719174038.7ee25c6d@kernel.org>
+In-Reply-To: <7fa3ce7e77fb579515e0a7c5a7dee60fc5999e2b.1658168627.git.lorenzo@kernel.org>
+References: <7fa3ce7e77fb579515e0a7c5a7dee60fc5999e2b.1658168627.git.lorenzo@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,28 +57,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 18 Jul 2022 20:36:39 +0200 Lorenzo Bianconi wrote:
+> A typical flow offload scenario for OpenWrt users is routed traffic
+> received by the wan interface that is redirected to a wlan device
+> belonging to the lan bridge. Current implementation fails to
+> fill wdma offload info in mtk_flow_get_wdma_info() since odev device is
+> the local bridge. Fix the issue running dev_fill_forward_path routine in
+> mtk_flow_get_wdma_info in order to identify the wlan device.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 18 Jul 2022 11:51:53 +0200 you wrote:
-> odev pointer can be NULL in mtk_flow_offload_replace routine according
-> to the flower action rules. Fix possible NULL pointer dereference in
-> mtk_flow_get_wdma_info.
-> 
-> Fixes: a333215e10cb5 ("net: ethernet: mtk_eth_soc: implement flow offloading to WED devices")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net: ethernet: mtk_ppe: fix possible NULL pointer dereference in mtk_flow_get_wdma_info
-    https://git.kernel.org/netdev/net/c/53eb9b04560c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+AFAIU this will conflict with 53eb9b04560c ("net: ethernet: mtk_ppe:
+fix possible NULL pointer dereference in mtk_flow_get_wdma_info")? 
+We merge net -> net-next every Thu, please wait for that to happen 
+and then repost. Conflicting patches are extra work for Stephen and
+for me.
