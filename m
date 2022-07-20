@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9759557AB3B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 661F457AB40
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237303AbiGTA6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 20:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        id S236350AbiGTBAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 21:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiGTA6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:58:21 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987FF422D1
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:58:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1658278700; x=1689814700;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=j2kriUbnAfHpL6pn+9Mkc6xiHOmARhZ8YDVy2cZI77Q=;
-  b=uyGrUnPWhjOkTHNmcvWo9gVkru20dsSFPuzS525VA5ZIbguSfMLaWmhy
-   jnlIqYSD4vuLI423g7+XOTcgeJ2JiBcj2BDmpxB+lD8Q9fdgU0aV5D8Wa
-   jyWyu7Y+WGoTa2Zbe2yJCns8+K3ZLXiqpAcc9pMq1o9i2PFQ0MVo3e7mB
-   4=;
-X-IronPort-AV: E=Sophos;i="5.92,285,1650931200"; 
-   d="scan'208";a="110199718"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 20 Jul 2022 00:58:05 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id 4AA80E0153;
-        Wed, 20 Jul 2022 00:58:03 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 20 Jul 2022 00:58:02 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.161.172) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 20 Jul 2022 00:57:59 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 net-next] selftests: net: af_unix: Fix a build error of unix_connect.c.
-Date:   Tue, 19 Jul 2022 17:57:50 -0700
-Message-ID: <20220720005750.16600-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S238094AbiGTBAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:00:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF2E2A
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 18:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50DFD61721
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A8BEEC341CE;
+        Wed, 20 Jul 2022 01:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658278813;
+        bh=eznlbhHnBSqzI+iCCt2cNxHK8+0WWamAzsLFTbYZ4X0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FWAAIVvLcbJlZMksru9w+rXp3RE5b3vdZ0sOyaCtJKxjwawqhkzUveKsnfRwOYCpj
+         3sYe4Jh4IGwjxZGjl01iv2bezUPk4EqQYGwWoGZ6K8auSTbVdu1ZcS8MQJh899u+pq
+         uZVKzfGq3u7a9LoNpt/u3AAsTPVgbAEJSN7ggmcgy5n7k33MFCkM4TBhyzvJf2396+
+         vWNwJgnP+Rm7WvzjOlRDK0R1lhWJawJmpoGX+7L7AE1hXYDdsNhW08Xo8aj9HPRtQj
+         YYftBxKbD+3hEaZBrwed8c157E9i6KCfbBDDFUL8WI/4H/mOMPdngMKv+jyZeLOm7Q
+         faFFcCC2g9zgQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A43FE451B0;
+        Wed, 20 Jul 2022 01:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.43.161.172]
-X-ClientProxiedBy: EX13D29UWC003.ant.amazon.com (10.43.162.80) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next 0/3][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2022-07-18
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165827881356.21433.5825241131111257864.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Jul 2022 01:00:13 +0000
+References: <20220718180109.4114540-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220718180109.4114540-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org, sasha.neftin@intel.com
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a build error reported in the link. [0]
+Hello:
 
-  unix_connect.c: In function ‘unix_connect_test’:
-  unix_connect.c:115:55: error: expected identifier before ‘(’ token
-   #define offsetof(type, member) ((size_t)&((type *)0)->(member))
-                                                       ^
-  unix_connect.c:128:12: note: in expansion of macro ‘offsetof’
-    addrlen = offsetof(struct sockaddr_un, sun_path) + variant->len;
-              ^~~~~~~~
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-We can fix this by removing () around member, but checkpatch will complain
-about it, and the root cause of the build failure is that I followed the
-warning and fixed this in the v2 -> v3 change of the blamed commit. [1]
+On Mon, 18 Jul 2022 11:01:06 -0700 you wrote:
+> This series contains updates to igc driver only.
+> 
+> Kurt Kanzenbach adds support for Qbv schedules where one queue stays open
+> in consecutive entries.
+> 
+> Sasha removes an unused define and field.
+> 
+> [...]
 
-  CHECK: Macro argument 'member' may be better as '(member)' to avoid precedence issues
-  #33: FILE: tools/testing/selftests/net/af_unix/unix_connect.c:115:
-  +#define offsetof(type, member) ((size_t)&((type *)0)->member)
+Here is the summary with links:
+  - [net-next,1/3] igc: Lift TAPRIO schedule restriction
+    https://git.kernel.org/netdev/net-next/c/a5fd39464a40
+  - [net-next,2/3] igc: Remove MSI-X PBA Clear register
+    https://git.kernel.org/netdev/net-next/c/fb24f341c7b9
+  - [net-next,3/3] igc: Remove forced_speed_duplex value
+    https://git.kernel.org/netdev/net-next/c/6ac0db3f2bf6
 
-To avoid this warning, let's use offsetof() defined in stddef.h instead.
-
-[0]: https://lore.kernel.org/linux-mm/202207182205.FrkMeDZT-lkp@intel.com/
-[1]: https://lore.kernel.org/netdev/20220702154818.66761-1-kuniyu@amazon.com/
-
-Fixes: e95ab1d85289 ("selftests: net: af_unix: Test connect() with different netns.")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-v2:
-  * Use offsetof() in stddef.h instead of defining it. (Jakub Kicinski)
-
-v1: https://lore.kernel.org/netdev/20220718162350.19186-1-kuniyu@amazon.com/
----
- tools/testing/selftests/net/af_unix/unix_connect.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/af_unix/unix_connect.c b/tools/testing/selftests/net/af_unix/unix_connect.c
-index 157e44ef7f37..d799fd8f5c7c 100644
---- a/tools/testing/selftests/net/af_unix/unix_connect.c
-+++ b/tools/testing/selftests/net/af_unix/unix_connect.c
-@@ -3,6 +3,7 @@
- #define _GNU_SOURCE
- #include <sched.h>
- 
-+#include <stddef.h>
- #include <stdio.h>
- #include <unistd.h>
- 
-@@ -112,8 +113,6 @@ FIXTURE_TEARDOWN(unix_connect)
- 		remove("test");
- }
- 
--#define offsetof(type, member) ((size_t)&((type *)0)->(member))
--
- TEST_F(unix_connect, test)
- {
- 	socklen_t addrlen;
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
