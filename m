@@ -2,137 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49CE257AD49
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC5E57AD56
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240047AbiGTBlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 21:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
+        id S241364AbiGTBoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 21:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241718AbiGTBlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:41:04 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD387AC29
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 18:32:44 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id r1-20020a05600c35c100b003a326685e7cso1216648wmq.1
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 18:32:43 -0700 (PDT)
+        with ESMTP id S240076AbiGTBoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:44:12 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Jul 2022 18:44:08 PDT
+Received: from ewsoutbound.kpnmail.nl (ewsoutbound.kpnmail.nl [195.121.94.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB31F26
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 18:44:08 -0700 (PDT)
+X-KPN-MessageId: 48b152f4-07cd-11ed-92d5-005056abbe64
+Received: from smtp.kpnmail.nl (unknown [10.31.155.39])
+        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
+        id 48b152f4-07cd-11ed-92d5-005056abbe64;
+        Wed, 20 Jul 2022 03:42:58 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=tQp/N6Uk+UKd7eDu5UmzGuGhmF0Y+ibaoFPpIegLF+Y=;
-        b=by6T/E8VkX8oFtD8dnsR64IT7UFDcrTPCAIRCgOPa/LJUI8JOCFbfiz7J364/bCOeH
-         rd2SkAx8XnmkmyymE0WIWkYVOzMHAWDtTOM7/pu4iS/Fe00JFXhg564o71FrfrqpBCLX
-         kNQx4x/jPUrpwvMLbAB7FQyDSSJU5xbxfQ3JJ8oycJgKPUTeAw2TRAoGo85orXqi0A8u
-         Xs58+Hntk7L9VAArrtF/7CD3yaGAuk+/qXl0aNv10D0zU/SEvOHRpjy0Q2PZ1bdEhEgl
-         88w2QZanxV32ADu69Bwbh0ecfaxCfSbzFZyoWEIAXF445J3pol4ru5Qh5EMeLZvIwOIM
-         TLcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tQp/N6Uk+UKd7eDu5UmzGuGhmF0Y+ibaoFPpIegLF+Y=;
-        b=l++4oje1AjIFiE/54ZRVD0/AUrp0YCMIjiFhVGb0qd7iy4aS9zFxTPErfTr2y3CnF6
-         shpQgeEMi8Ngb5CS8OQ8JOpZAY3iKsfGQM5Z21q8E72juRSqZA5J6nVVqqM/p8Pxs/ei
-         EhNVZBTyOguq3Xv9T4NNFa6sKTb/leJPr2oY6zEvneRRUc9xRdNJ5WIg8vPfqsDhOY6U
-         /7bhh+BcUaZ/4tUDlk0QoUNHf0jBSOkO46RunTLPk8UqfikONUPR32vUfv1wAChJCUMm
-         OUbB9TzcSlR+sKneTHLgCUzvbJaQCMrtTPhIoPBdAM0RgZPwXRCyHsIR9NZ6+KrPcP3r
-         XuBA==
-X-Gm-Message-State: AJIora864ZLtQdXW+9WGXBDd0K654JrrAYPZHCpfknHidFDcVQlUaWvL
-        y1lSJqQHIuPg+qU15Obtgze+z8E7z47yCp1uk7l6
-X-Google-Smtp-Source: AGRyM1ubeyz5pphxIFoknkif5zSYvGormRenvsTvDWi7UK6OclfHHNS+LtozRpPhZOyHN270g6dMP5377DarcQ4fJ5w=
-X-Received: by 2002:a7b:ce8f:0:b0:3a2:ff2d:915f with SMTP id
- q15-20020a7bce8f000000b003a2ff2d915fmr1512608wmj.165.1658280762556; Tue, 19
- Jul 2022 18:32:42 -0700 (PDT)
+        d=xs4all.nl; s=xs4all01;
+        h=content-type:mime-version:message-id:subject:to:from:date;
+        bh=rJFJglb4/UlXPUAHi1JzAHBD/M9s09bPsFmPwi9LOVE=;
+        b=K+cK7q+3qNmRzBhVqnrb6dcvzHwTNPb0eIHNfYy+/w9+5NhJGbV4DGkcBa1KUI0oE0OnCKtb5VKsW
+         LBKidygns/An+tmmTcJlAhuoay2aJjeeiCNVbTnTJzIAWDDdO8D1ZIK0F2S6YnaJRALGwkDW5hyNiw
+         FVnqretpsqOtryhtSVt95SRQwlK+f4XfUyyZwt9HFoV8bZ0RziblHCGN29eCMfURmr8ud2muyNUPpY
+         zzTh3AZb/rYAvinh6li1lZLbR/g/ewjqq/uMdSHwFDqXM4EHdlWg1OqUy84NWH+GUIfHEXnjlsdDM6
+         3lIuKGlcofXTuBTPowWEM6pmbH5ny1w==
+X-KPN-MID: 33|X/FwXldpKQeT69J14RQrO3wWCDlNHTXiDFH+z4/5b410baHBlVm0Lo5m+k0owV3
+ TzWwt78voBp9KvHnL1iswi5re4OiCxH/fUHIxGdjKB4U=
+X-KPN-VerifiedSender: Yes
+X-CMASSUN: 33|kw9TlpbAUpy2EFas4/riRupArFIg6BG1fOWsU6N4exHkaFUlNJ5+lQgOtSkXTgm
+ dJHzaYn3cIm9roNAMOgcphw==
+X-Originating-IP: 86.86.234.244
+Received: from wim.jer (86-86-234-244.fixed.kpn.net [86.86.234.244])
+        by smtp.xs4all.nl (Halon) with ESMTPSA
+        id 4a3e2c51-07cd-11ed-b8b0-005056ab7447;
+        Wed, 20 Jul 2022 03:43:02 +0200 (CEST)
+Date:   Wed, 20 Jul 2022 03:43:00 +0200
+From:   Jeroen Roovers <jer@xs4all.nl>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-parisc@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH v2 07/13] parisc: Replace regular spinlock with
+ spin_trylock on panic path
+Message-ID: <20220720034300.6d2905b8@wim.jer>
+In-Reply-To: <20220719195325.402745-8-gpiccoli@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+        <20220719195325.402745-8-gpiccoli@igalia.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220707223228.1940249-1-fred@cloudflare.com> <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
- <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com> <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
-In-Reply-To: <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 19 Jul 2022 21:32:31 -0400
-Message-ID: <CAHC9VhQ-mBYH-GwSULDyyQ6mNC6K8GNB4fra0pJ+s0ZnEpCgcg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>,
-        =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        KP Singh <kpsingh@kernel.org>, revest@chromium.org,
-        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 12:11 PM Casey Schaufler <casey@schaufler-ca.com> wr=
-ote:
-> On 7/8/2022 7:01 AM, Frederick Lawler wrote:
-> > On 7/8/22 7:10 AM, Christian G=C3=B6ttsche wrote:
-> >> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com>
-> >> wrote:
+     Hi Guilherme,
 
-...
+On Tue, 19 Jul 2022 16:53:20 -0300
+"Guilherme G. Piccoli" <gpiccoli@igalia.com> wrote:
 
-> >> Also I think the naming scheme is <object>_<verb>.
-> >
-> > That's a good call out. I was originally hoping to keep the
-> > security_*() match with the hook name matched with the caller function
-> > to keep things all aligned. If no one objects to renaming the hook, I
-> > can rename the hook for v3.
+> The panic notifiers' callbacks execute in an atomic context, with
+> interrupts/preemption disabled, and all CPUs not running the panic
+> function are off, so it's very dangerous to wait on a regular
+> spinlock, there's a risk of deadlock.
+> 
+> Refactor the panic notifier of parisc/power driver to make use
+> of spin_trylock - for that, we've added a second version of the
+> soft-power function. Also, some comments were reorganized and
+> trailing white spaces, useless header inclusion and blank lines
+> were removed.
+> 
+> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+> Acked-by: Helge Deller <deller@gmx.de> # parisc
+> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> 
+> ---
+> 
+> V2:
+> - Added Helge's ACK - thanks!
+> 
+>  arch/parisc/include/asm/pdc.h |  1 +
+>  arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
+>  drivers/parisc/power.c        | 17 ++++++++++-------
+>  3 files changed, 34 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/parisc/include/asm/pdc.h
+> b/arch/parisc/include/asm/pdc.h index b643092d4b98..7a106008e258
+> 100644 --- a/arch/parisc/include/asm/pdc.h
+> +++ b/arch/parisc/include/asm/pdc.h
+> @@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long
+> ftc_bitmap); int pdc_do_reset(void);
+>  int pdc_soft_power_info(unsigned long *power_reg);
+>  int pdc_soft_power_button(int sw_control);
+> +int pdc_soft_power_button_panic(int sw_control);
+>  void pdc_io_reset(void);
+>  void pdc_io_reset_devices(void);
+>  int pdc_iodc_getc(void);
+> diff --git a/arch/parisc/kernel/firmware.c
+> b/arch/parisc/kernel/firmware.c index 6a7e315bcc2e..0e2f70b592f4
+> 100644 --- a/arch/parisc/kernel/firmware.c
+> +++ b/arch/parisc/kernel/firmware.c
+> @@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long
+> *power_reg) }
+>  
+>  /*
+> - * pdc_soft_power_button - Control the soft power button behaviour
+> - * @sw_control: 0 for hardware control, 1 for software control 
+> + * pdc_soft_power_button{_panic} - Control the soft power button
+> behaviour
+> + * @sw_control: 0 for hardware control, 1 for software control
+>   *
+>   *
+>   * This PDC function places the soft power button under software or
+>   * hardware control.
+> - * Under software control the OS may control to when to allow to
+> shut 
+> - * down the system. Under hardware control pressing the power button 
+> + * Under software control the OS may control to when to allow to shut
+> + * down the system. Under hardware control pressing the power button
+>   * powers off the system immediately.
+> + *
+> + * The _panic version relies in spin_trylock to prevent deadlock
+> + * on panic path.
 
-No objection from me.
+in => on
 
-[Sorry for the delay, the last week or two has been pretty busy.]
+>   */
+>  int pdc_soft_power_button(int sw_control)
+>  {
+> @@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
+>  	return retval;
+>  }
+>  
+> +int pdc_soft_power_button_panic(int sw_control)
+> +{
+> +	int retval;
+> +	unsigned long flags;
+> +
+> +	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
+> +		pr_emerg("Couldn't enable soft power button\n");
+> +		return -EBUSY; /* ignored by the panic notifier */
+> +	}
+> +
+> +	retval = mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE,
+> __pa(pdc_result), sw_control);
+> +	spin_unlock_irqrestore(&pdc_lock, flags);
+> +
+> +	return retval;
+> +}
+> +
+>  /*
+>   * pdc_io_reset - Hack to avoid overlapping range registers of
+> Bridges devices.
+>   * Primarily a problem on T600 (which parisc-linux doesn't support)
+> but diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+> index 456776bd8ee6..8512884de2cf 100644
+> --- a/drivers/parisc/power.c
+> +++ b/drivers/parisc/power.c
+> @@ -37,7 +37,6 @@
+>  #include <linux/module.h>
+>  #include <linux/init.h>
+>  #include <linux/kernel.h>
+> -#include <linux/notifier.h>
+>  #include <linux/panic_notifier.h>
+>  #include <linux/reboot.h>
+>  #include <linux/sched/signal.h>
+> @@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void
+> *x) 
+>  
+>  
+> -/* parisc_panic_event() is called by the panic handler.
+> - * As soon as a panic occurs, our tasklets above will not be
+> - * executed any longer. This function then re-enables the 
+> - * soft-power switch and allows the user to switch off the system
+> +/*
+> + * parisc_panic_event() is called by the panic handler.
+> + *
+> + * As soon as a panic occurs, our tasklets above will not
+> + * be executed any longer. This function then re-enables
+> + * the soft-power switch and allows the user to switch off
+> + * the system. We rely in pdc_soft_power_button_panic()
+> + * since this version spin_trylocks (instead of regular
+> + * spinlock), preventing deadlocks on panic path.
+>   */
+>  static int parisc_panic_event(struct notifier_block *this,
+>  		unsigned long event, void *ptr)
+>  {
+>  	/* re-enable the soft-power switch */
+> -	pdc_soft_power_button(0);
+> +	pdc_soft_power_button_panic(0);
+>  	return NOTIFY_DONE;
+>  }
+>  
+> @@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block =
+> { .priority	= INT_MAX,
+>  };
+>  
+> -
+>  static int __init power_init(void)
+>  {
+>  	unsigned long ret;
 
-> >> III.
-> >>
-> >> Maybe even attach a security context to namespaces so they can be
-> >> further governed?
->
-> That would likely add confusion to the existing security module namespace
-> efforts. SELinux, Smack and AppArmor have all developed namespace models.
 
-I'm not sure I fully understand what Casey is saying here as SELinux
-does not yet have an established namespace model to the best of my
-understanding, but perhaps we are talking about different concepts for
-the word "namespace"?
-
-From a SELinux perspective, if we are going to control access to a
-namespace beyond simple creation, we would need to assign the
-namespace a label (inherited from the creating process).  Although
-that would need some discussion among the SELinux folks as this would
-mean treating a userns as a proper system entity from a policy
-perspective which is ... interesting.
-
-> That, or it could replace the various independent efforts with a single,
-> unified security module namespace effort.
-
-We've talked about this before and I just don't see how that could
-ever work, the LSM implementations are just too different to do
-namespacing at the LSM layer.  If a LSM is going to namespace
-themselves, they need the ability to define what that means without
-having to worry about what other LSMs want to do.
-
-
---
-paul-moore.com
+Kind regards,
+     jer
