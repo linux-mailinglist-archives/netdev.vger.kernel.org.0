@@ -2,169 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D171B57BCD7
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:38:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAFCA57BD8C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 20:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237379AbiGTRii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 13:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S229811AbiGTSQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 14:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241396AbiGTRib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:38:31 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDA670E6C;
-        Wed, 20 Jul 2022 10:38:30 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26KHQu6x016806;
-        Wed, 20 Jul 2022 17:38:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=oRYSDww+xT2kBVZi4n+vXxIVbL6AE6OfPZiR44/2RWo=;
- b=QR4J3FXggDWq+Gc+6Zoe/aYKzTjkebIINEBfoBjM/DcM6DkvECM7oWfqa2ZAbo2Udvjl
- ZSQk6Bm8K0NUohAW5YyFW7NQ7JhLKRpcbX8mce8qqkXSq7pSa1m1lZxlDEFh/GbJU7WY
- LjU8X87UtELFFJOXErQYlz3h+SVbnqz215M103lSekbdYPsTTthavmLlwI5hpBaZCcri
- exzAqJ+GdaAn/5VXZ4qivDi5uq/yyrTQkZRHW6oJXUR8w6dk6RkR9GLOx6kekio4eHil
- j9fHLUxmA1ECYnPv7uN0P6AF/E1rp22nQzHC6wHXjnM4h/oalD+LGOPqZPEG0IUw/yPP 9A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hen382yx4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 17:38:24 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26KGnasC035260;
-        Wed, 20 Jul 2022 17:38:24 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hen382ywg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 17:38:24 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26KHNT6o002129;
-        Wed, 20 Jul 2022 17:38:23 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma03dal.us.ibm.com with ESMTP id 3hbmy9hp5h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jul 2022 17:38:23 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26KHcMgq3080866
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Jul 2022 17:38:22 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9A7FFB2067;
-        Wed, 20 Jul 2022 17:38:22 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C372B2064;
-        Wed, 20 Jul 2022 17:38:20 +0000 (GMT)
-Received: from [9.211.34.199] (unknown [9.211.34.199])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 20 Jul 2022 17:38:20 +0000 (GMT)
-Message-ID: <016ae05e-6d8c-2c95-ffcf-239230597def@linux.ibm.com>
-Date:   Wed, 20 Jul 2022 19:38:19 +0200
+        with ESMTP id S229635AbiGTSQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 14:16:20 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078EB54CBD
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 11:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658340978; x=1689876978;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/Xc9obqdSGjIGYgDP51B7rB0fCJR6Fd9Pke6LbtAZ2M=;
+  b=eUOCHSlO/aUh+56L2Fx7ABErQRAwHvcdBWhyFL1WV/PnotSEJih6yTjb
+   DkN/lngcE6Myp/AFOLZnmwKymIOtePZePsQsFn1TT2jcJOXIMh5CPGLdK
+   IfGAE/QhSUM360LGWDIKABtzeyvWweQBRfW9YKluFzBA/BQ8dAWLDG4wp
+   Q6r/B1dDfCy42CkXyLQN3y9OzzyVuT3auJK2MG4EUpnbmd9tzOXn6Q/j+
+   CWFqyppBpyKggrIOwl0TSxAw1SA0Pk1P1oib3NNiT/BIY/AFY8zpodTyI
+   DkCawgVcKZL0uXhg/mRWMVryT8iIvSIbwCICWZCDKMVxpX1QYAIeLP9Tm
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="285616567"
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="285616567"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 11:16:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
+   d="scan'208";a="844136658"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga006.fm.intel.com with ESMTP; 20 Jul 2022 11:16:18 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Alan Brady <alan.brady@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net-next v2 1/1] ping: support ipv6 ping socket flow labels
+Date:   Wed, 20 Jul 2022 11:13:10 -0700
+Message-Id: <20220720181310.1719994-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v2 0/6] net/smc: Introduce virtually contiguous
- buffers for SMC-R
-To:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: t4wdqEfuOEECHH7y4DP_PucxfT6lBMWz
-X-Proofpoint-GUID: cUwd6s4raPyTqXGcA1qpEnLNEbltzJ5k
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-20_10,2022-07-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 clxscore=1015 mlxscore=0 mlxlogscore=999 phishscore=0
- lowpriorityscore=0 adultscore=0 bulkscore=0 priorityscore=1501 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207200071
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alan Brady <alan.brady@intel.com>
 
+Ping sockets don't appear to make any attempt to preserve flow labels
+created and set by userspace using IPV6_FLOWINFO_SEND. Instead they are
+clobbered by autolabels (if enabled) or zero.
 
-On 14.07.22 11:43, Wen Gu wrote:
-> On long-running enterprise production servers, high-order contiguous
-> memory pages are usually very rare and in most cases we can only get
-> fragmented pages.
-> 
-> When replacing TCP with SMC-R in such production scenarios, attempting
-> to allocate high-order physically contiguous sndbufs and RMBs may result
-> in frequent memory compaction, which will cause unexpected hung issue
-> and further stability risks.
-> 
-> So this patch set is aimed to allow SMC-R link group to use virtually
-> contiguous sndbufs and RMBs to avoid potential issues mentioned above.
-> Whether to use physically or virtually contiguous buffers can be set
-> by sysctl smcr_buf_type.
-> 
-> Note that using virtually contiguous buffers will bring an acceptable
-> performance regression, which can be mainly divided into two parts:
-> 
-> 1) regression in data path, which is brought by additional address
->     translation of sndbuf by RNIC in Tx. But in general, translating
->     address through MTT is fast. According to qperf test, this part
->     regression is basically less than 10% in latency and bandwidth.
->     (see patch 5/6 for details)
-> 
-> 2) regression in buffer initialization and destruction path, which is
->     brought by additional MR operations of sndbufs. But thanks to link
->     group buffer reuse mechanism, the impact of this kind of regression
->     decreases as times of buffer reuse increases.
-> 
-> Patch set overview:
-> - Patch 1/6 and 2/6 mainly about simplifying and optimizing DMA sync
->    operation, which will reduce overhead on the data path, especially
->    when using virtually contiguous buffers;
-> - Patch 3/6 and 4/6 introduce a sysctl smcr_buf_type to set the type
->    of buffers in new created link group;
-> - Patch 5/6 allows SMC-R to use virtually contiguous sndbufs and RMBs,
->    including buffer creation, destruction, MR operation and access;
-> - patch 6/6 extends netlink attribute for buffer type of SMC-R link group;
-> 
-> v1->v2:
-> - Patch 5/6 fixes build issue on 32bit;
-> - Patch 3/6 adds description of new sysctl in smc-sysctl.rst;
-> 
-> Guangguan Wang (2):
->    net/smc: remove redundant dma sync ops
->    net/smc: optimize for smc_sndbuf_sync_sg_for_device and
->      smc_rmb_sync_sg_for_cpu
-> 
-> Wen Gu (4):
->    net/smc: Introduce a sysctl for setting SMC-R buffer type
->    net/smc: Use sysctl-specified types of buffers in new link group
->    net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
->    net/smc: Extend SMC-R link group netlink attribute
-> 
->   Documentation/networking/smc-sysctl.rst |  13 ++
->   include/net/netns/smc.h                 |   1 +
->   include/uapi/linux/smc.h                |   1 +
->   net/smc/af_smc.c                        |  68 +++++++--
->   net/smc/smc_clc.c                       |   8 +-
->   net/smc/smc_clc.h                       |   2 +-
->   net/smc/smc_core.c                      | 246 +++++++++++++++++++++-----------
->   net/smc/smc_core.h                      |  20 ++-
->   net/smc/smc_ib.c                        |  44 +++++-
->   net/smc/smc_ib.h                        |   2 +
->   net/smc/smc_llc.c                       |  33 +++--
->   net/smc/smc_rx.c                        |  92 +++++++++---
->   net/smc/smc_sysctl.c                    |  11 ++
->   net/smc/smc_tx.c                        |  10 +-
->   14 files changed, 404 insertions(+), 147 deletions(-)
-> 
-It looks good for us. Thank you!
-Acked-by: Wenjia Zhang <wenjia@linux.ibm.com>
+Grab the flowlabel out of the msghdr similar to how rawv6_sendmsg does
+it and move the memset up so it doesn't get zeroed after.
+
+Signed-off-by: Alan Brady <alan.brady@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+v2: change 'fix' to 'support' and add some selftests
+
+ net/ipv6/ping.c                               |  6 +-
+ tools/testing/selftests/net/ipv6_flowlabel.c  | 75 +++++++++++++++----
+ tools/testing/selftests/net/ipv6_flowlabel.sh | 16 ++++
+ 3 files changed, 81 insertions(+), 16 deletions(-)
+
+diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
+index ecf3a553a0dc..b1179f62bd23 100644
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -64,6 +64,8 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	if (err)
+ 		return err;
+ 
++	memset(&fl6, 0, sizeof(fl6));
++
+ 	if (msg->msg_name) {
+ 		DECLARE_SOCKADDR(struct sockaddr_in6 *, u, msg->msg_name);
+ 		if (msg->msg_namelen < sizeof(*u))
+@@ -72,12 +74,15 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			return -EAFNOSUPPORT;
+ 		}
+ 		daddr = &(u->sin6_addr);
++		if (np->sndflow)
++			fl6.flowlabel = u->sin6_flowinfo & IPV6_FLOWINFO_MASK;
+ 		if (__ipv6_addr_needs_scope_id(ipv6_addr_type(daddr)))
+ 			oif = u->sin6_scope_id;
+ 	} else {
+ 		if (sk->sk_state != TCP_ESTABLISHED)
+ 			return -EDESTADDRREQ;
+ 		daddr = &sk->sk_v6_daddr;
++		fl6.flowlabel = np->flow_label;
+ 	}
+ 
+ 	if (!oif)
+@@ -101,7 +106,6 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	ipc6.sockc.tsflags = sk->sk_tsflags;
+ 	ipc6.sockc.mark = sk->sk_mark;
+ 
+-	memset(&fl6, 0, sizeof(fl6));
+ 	fl6.flowi6_oif = oif;
+ 
+ 	if (msg->msg_controllen) {
+diff --git a/tools/testing/selftests/net/ipv6_flowlabel.c b/tools/testing/selftests/net/ipv6_flowlabel.c
+index a7c41375374f..708a9822259d 100644
+--- a/tools/testing/selftests/net/ipv6_flowlabel.c
++++ b/tools/testing/selftests/net/ipv6_flowlabel.c
+@@ -9,6 +9,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <limits.h>
++#include <linux/icmpv6.h>
+ #include <linux/in6.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+@@ -29,26 +30,48 @@
+ #ifndef IPV6_FLOWLABEL_MGR
+ #define IPV6_FLOWLABEL_MGR 32
+ #endif
++#ifndef IPV6_FLOWINFO_SEND
++#define IPV6_FLOWINFO_SEND 33
++#endif
+ 
+ #define FLOWLABEL_WILDCARD	((uint32_t) -1)
+ 
+ static const char cfg_data[]	= "a";
+ static uint32_t cfg_label	= 1;
++static bool use_ping;
++static bool use_flowinfo_send;
++
++static struct icmp6hdr icmp6 = {
++	.icmp6_type = ICMPV6_ECHO_REQUEST
++};
++
++static struct sockaddr_in6 addr = {
++	.sin6_family = AF_INET6,
++	.sin6_addr = IN6ADDR_LOOPBACK_INIT,
++};
+ 
+ static void do_send(int fd, bool with_flowlabel, uint32_t flowlabel)
+ {
+ 	char control[CMSG_SPACE(sizeof(flowlabel))] = {0};
+ 	struct msghdr msg = {0};
+-	struct iovec iov = {0};
++	struct iovec iov = {
++		.iov_base = (char *)cfg_data,
++		.iov_len = sizeof(cfg_data)
++	};
+ 	int ret;
+ 
+-	iov.iov_base = (char *)cfg_data;
+-	iov.iov_len = sizeof(cfg_data);
++	if (use_ping) {
++		iov.iov_base = &icmp6;
++		iov.iov_len = sizeof(icmp6);
++	}
+ 
+ 	msg.msg_iov = &iov;
+ 	msg.msg_iovlen = 1;
+ 
+-	if (with_flowlabel) {
++	if (use_flowinfo_send) {
++		msg.msg_name = &addr;
++		msg.msg_namelen = sizeof(addr);
++	} else if (with_flowlabel) {
+ 		struct cmsghdr *cm;
+ 
+ 		cm = (void *)control;
+@@ -94,6 +117,8 @@ static void do_recv(int fd, bool with_flowlabel, uint32_t expect)
+ 	ret = recvmsg(fd, &msg, 0);
+ 	if (ret == -1)
+ 		error(1, errno, "recv");
++	if (use_ping)
++		goto parse_cmsg;
+ 	if (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))
+ 		error(1, 0, "recv: truncated");
+ 	if (ret != sizeof(cfg_data))
+@@ -101,6 +126,7 @@ static void do_recv(int fd, bool with_flowlabel, uint32_t expect)
+ 	if (memcmp(data, cfg_data, sizeof(data)))
+ 		error(1, 0, "recv: data mismatch");
+ 
++parse_cmsg:
+ 	cm = CMSG_FIRSTHDR(&msg);
+ 	if (with_flowlabel) {
+ 		if (!cm)
+@@ -114,9 +140,11 @@ static void do_recv(int fd, bool with_flowlabel, uint32_t expect)
+ 		flowlabel = ntohl(*(uint32_t *)CMSG_DATA(cm));
+ 		fprintf(stderr, "recv with label %u\n", flowlabel);
+ 
+-		if (expect != FLOWLABEL_WILDCARD && expect != flowlabel)
++		if (expect != FLOWLABEL_WILDCARD && expect != flowlabel) {
+ 			fprintf(stderr, "recv: incorrect flowlabel %u != %u\n",
+ 					flowlabel, expect);
++			error(1, 0, "recv: flowlabel is wrong");
++		}
+ 
+ 	} else {
+ 		fprintf(stderr, "recv without label\n");
+@@ -165,11 +193,17 @@ static void parse_opts(int argc, char **argv)
+ {
+ 	int c;
+ 
+-	while ((c = getopt(argc, argv, "l:")) != -1) {
++	while ((c = getopt(argc, argv, "l:ps")) != -1) {
+ 		switch (c) {
+ 		case 'l':
+ 			cfg_label = strtoul(optarg, NULL, 0);
+ 			break;
++		case 'p':
++			use_ping = true;
++			break;
++		case 's':
++			use_flowinfo_send = true;
++			break;
+ 		default:
+ 			error(1, 0, "%s: parse error", argv[0]);
+ 		}
+@@ -178,27 +212,30 @@ static void parse_opts(int argc, char **argv)
+ 
+ int main(int argc, char **argv)
+ {
+-	struct sockaddr_in6 addr = {
+-		.sin6_family = AF_INET6,
+-		.sin6_port = htons(8000),
+-		.sin6_addr = IN6ADDR_LOOPBACK_INIT,
+-	};
+ 	const int one = 1;
+ 	int fdt, fdr;
++	int prot = 0;
++
++	addr.sin6_port = htons(8000);
+ 
+ 	parse_opts(argc, argv);
+ 
+-	fdt = socket(PF_INET6, SOCK_DGRAM, 0);
++	if (use_ping) {
++		fprintf(stderr, "attempting to use ping sockets\n");
++		prot = IPPROTO_ICMPV6;
++	}
++
++	fdt = socket(PF_INET6, SOCK_DGRAM, prot);
+ 	if (fdt == -1)
+ 		error(1, errno, "socket t");
+ 
+-	fdr = socket(PF_INET6, SOCK_DGRAM, 0);
++	fdr = use_ping ? fdt : socket(PF_INET6, SOCK_DGRAM, 0);
+ 	if (fdr == -1)
+ 		error(1, errno, "socket r");
+ 
+ 	if (connect(fdt, (void *)&addr, sizeof(addr)))
+ 		error(1, errno, "connect");
+-	if (bind(fdr, (void *)&addr, sizeof(addr)))
++	if (!use_ping && bind(fdr, (void *)&addr, sizeof(addr)))
+ 		error(1, errno, "bind");
+ 
+ 	flowlabel_get(fdt, cfg_label, IPV6_FL_S_EXCL, IPV6_FL_F_CREATE);
+@@ -216,13 +253,21 @@ int main(int argc, char **argv)
+ 		do_recv(fdr, false, 0);
+ 	}
+ 
++	if (use_flowinfo_send) {
++		fprintf(stderr, "using IPV6_FLOWINFO_SEND to send label\n");
++		addr.sin6_flowinfo = htonl(cfg_label);
++		if (setsockopt(fdt, SOL_IPV6, IPV6_FLOWINFO_SEND, &one,
++			       sizeof(one)) == -1)
++			error(1, errno, "setsockopt flowinfo_send");
++	}
++
+ 	fprintf(stderr, "send label\n");
+ 	do_send(fdt, true, cfg_label);
+ 	do_recv(fdr, true, cfg_label);
+ 
+ 	if (close(fdr))
+ 		error(1, errno, "close r");
+-	if (close(fdt))
++	if (!use_ping && close(fdt))
+ 		error(1, errno, "close t");
+ 
+ 	return 0;
+diff --git a/tools/testing/selftests/net/ipv6_flowlabel.sh b/tools/testing/selftests/net/ipv6_flowlabel.sh
+index d3bc6442704e..cee95e252bee 100755
+--- a/tools/testing/selftests/net/ipv6_flowlabel.sh
++++ b/tools/testing/selftests/net/ipv6_flowlabel.sh
+@@ -18,4 +18,20 @@ echo "TEST datapath (with auto-flowlabels)"
+ ./in_netns.sh \
+   sh -c 'sysctl -q -w net.ipv6.auto_flowlabels=1 && ./ipv6_flowlabel -l 1'
+ 
++echo "TEST datapath (with ping-sockets)"
++./in_netns.sh \
++  sh -c 'sysctl -q -w net.ipv6.flowlabel_reflect=4 && \
++    sysctl -q -w net.ipv4.ping_group_range="0 2147483647" && \
++    ./ipv6_flowlabel -l 1 -p'
++
++echo "TEST datapath (with flowinfo-send)"
++./in_netns.sh \
++  sh -c './ipv6_flowlabel -l 1 -s'
++
++echo "TEST datapath (with ping-sockets flowinfo-send)"
++./in_netns.sh \
++  sh -c 'sysctl -q -w net.ipv6.flowlabel_reflect=4 && \
++    sysctl -q -w net.ipv4.ping_group_range="0 2147483647" && \
++    ./ipv6_flowlabel -l 1 -p -s'
++
+ echo OK. All tests passed
+-- 
+2.35.1
+
