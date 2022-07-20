@@ -2,130 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F382757BC57
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F406357BC59
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbiGTRJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 13:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
+        id S232829AbiGTRKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 13:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230447AbiGTRJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:09:33 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526F66D2F8
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:09:32 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id t3-20020a5d81c3000000b0067bcd25f108so8544319iol.4
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:09:32 -0700 (PDT)
+        with ESMTP id S233513AbiGTRKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:10:12 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746201B797
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:10:11 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id 7so15589080ybw.0
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:10:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7RJxbc6X+Lqd7Ps0PV6dZcLQEF/AiZQzRAhaI8EtSwc=;
+        b=h7uhrzu9AgTNk8DgnUwlDwuKu7y/FEGnlWi0fFONmJjPM6JsL4Zf+DP8AjFERCJgXi
+         Cd1NVjGJ5q+dheIZmlF+YGCXTlO4Tyfxj5hEQ6aQyt3TMWAXMUGoUpPoJmDWzbno+tBh
+         sC7FHelgKdRGv1ci8jYpE+QlOWL8kDb2XMGYHthklSDbifPtrlhz3VGoqIAiHF6VoTwj
+         6OdFqzG8tZXuf/6PfRz0ezJCLwiIW6lOMuj0TRDzxb/SV7T4LhSXo6psu1OjfA3ao30r
+         0VfJFUxVEcan+AHRemoH2pbs3Tfkf83JGJR/e3fypqJRI0jLPKXZ4huMcsK2m75n+sKx
+         uEnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cmzFT4h31a1T2jFibLO3TAgARdQJGAATchWIxh6fpuQ=;
-        b=fvgMIxFXTHCPzTW+yIrr/l0BaOpo8FlK4y1btPdsf91V3gerXCH7svw1C52vCkL1G7
-         sNXJ3XAbl27giunwFGkUBfWRdN59esvtNyH0b4MEUhzOAKSJPB1Y0Z9LH/oegeN2vvQH
-         r5/YYcROP50jAIdxeFrwFPK256N5qFmDtRsTA7Req3zT0T+K3RD5tgXS2auq1dmcJIR6
-         Tlh14rJ65WeGlTXVhFtl3sLtjSBipXXNE6bFV+JCwavjapgKdG3OfOBg4A8J833AytbV
-         GFvDh7jLc/6J3dr7Heg6I4DdAFCz5Ovt1ZVb4MbY0Brv0nlnp3G1dloZKp21F868aHUr
-         1FYw==
-X-Gm-Message-State: AJIora+Ve09amapX22/RUnMlG2YIHAeWZFggst2cG1BM/K+nB0UTP45+
-        eYWq9eAeOrg7Ae4uyMp6fR9Pc1pH6BkZK2+85NMCZjep+BlN
-X-Google-Smtp-Source: AGRyM1s/3CQQWjJCZ/ZWEkjKS1d8JEADjyq3XmeNtHUoON5cuL3ztpqDKmrqHL3AdOpDjoIMvmSDZTyy0o5cfWceheOjk4VZ3hG2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7RJxbc6X+Lqd7Ps0PV6dZcLQEF/AiZQzRAhaI8EtSwc=;
+        b=fx1yVkzv9T1jgdryEVfIfwbpj0Ocm+H3XUmksVAegHtqVqz6wZdnLtI28acnO+3CK9
+         9wdFg5xYHWjeolsVlydp4A4vomnkCmuBGI6zjOt+4wNoYh4l27SfkWINO3G6WBdJMW6Z
+         QszWja4+Fyry8FctcZ4Q1VOTOGD2T3hBZJPJoOWs1pPkF3paZjtwpWrQx6On6o8w6RZg
+         X6Zbq7UJ8ntlz/5UWCeHuhQic7eDl1oMbh+JtHmFWHi7F3y3ElwUiVzbQ+oScsnS+EiE
+         k8QTtvpolS8qOb2SPRd6hiH3PU//NuVn9wrMbH612UUlSuS+jNgkNquDnlmPc0fk1OOM
+         nCRQ==
+X-Gm-Message-State: AJIora8AhRfw+5jgz99IZ0ZUa+rDQHBJ8MaH7B3MPDMwhe5MqTQaRpJ8
+        MZvDofUPMpAP4jwn/Jb1/z2lepxXFY+2rzgD63uS7A==
+X-Google-Smtp-Source: AGRyM1u5Flf9OQv4+m8UdpU25c8MKBtRtwaqt6H0hbgJU0fMZc7GBRVJ7JulaDPnDlnck22wJNrJ5UHzw0ov/6n2ubo=
+X-Received: by 2002:a05:6902:114b:b0:66f:d0:57c7 with SMTP id
+ p11-20020a056902114b00b0066f00d057c7mr37650036ybu.55.1658337010325; Wed, 20
+ Jul 2022 10:10:10 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4511:b0:33f:4ccb:3139 with SMTP id
- bs17-20020a056638451100b0033f4ccb3139mr20195589jab.20.1658336971661; Wed, 20
- Jul 2022 10:09:31 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 10:09:31 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001d2a9405e43faa78@google.com>
-Subject: [syzbot] WARNING: still has locks held in tls_rx_reader_lock
-From:   syzbot <syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com>
-To:     borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, john.fastabend@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20220715052235.1452170-1-kuba@kernel.org> <20220715052235.1452170-2-kuba@kernel.org>
+ <CANn89iLtDU+w=5bb89Om5FGx6MrQwsDBQKp8UL6=O21wS0LFqw@mail.gmail.com> <20220720095936.3cfa28bc@kernel.org>
+In-Reply-To: <20220720095936.3cfa28bc@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 20 Jul 2022 19:09:59 +0200
+Message-ID: <CANn89iKcmSfWgvZjzNGbsrndmCch2HC_EPZ7qmGboDNaWoviNQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 01/11] tls: rx: allow only one reader at a time
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>, vfedorenko@novek.ru
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Jul 20, 2022 at 6:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 20 Jul 2022 10:37:02 +0200 Eric Dumazet wrote:
+> > > +               if (!timeo)
+> > > +                       return -EAGAIN;
+> >
+> > We return with socket lock held, and callers seem to not release the lock.
+> >
+> > > +               if (signal_pending(current))
+> > > +                       return sock_intr_errno(timeo);
+> >
+> > same here.
+>
+> Thanks a lot for catching these.
+>
+> > Let's wait for syzbot to catch up :)
+>
+> I'll send the fixes later today. This is just a passing comment, right?
+> There isn't a report you know is coming? Otherwise I can wait to give
+> syzbot credit, too.
 
-syzbot found the following issue on:
+I now have a full syzbot report, with a repro and bisection, I am
+releasing it now.
 
-HEAD commit:    e22c88799f26 Merge branch '100GbE' of git://git.kernel.org..
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=159aa626080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3c46ba1483fd8356
-dashboard link: https://syzkaller.appspot.com/bug?extid=16e72110feb2b653ef27
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11d11d78080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147797ac080000
+>
+> I have two additional questions while I have you :)
+>
+> Is the timeo supposed to be for the entire operation? Right now TLS
+> seems to use a fresh timeo every time it goes to wait so the cumulative
+> wait can be much longer, as long as some data keeps coming in :/
 
-The issue was bisected to:
+Good question. I am not sure how this timeout is used in applications, but
+I would think it serves as a way to make sure a stall is detected.
+So restarting the timeout every time there is progress would make sense.
 
-commit 4cbc325ed6b4dce4910be06d9d6940a8b919c59b
-Author: Jakub Kicinski <kuba@kernel.org>
-Date:   Fri Jul 15 05:22:25 2022 +0000
+Application needing a different behavior can still use regular timer,
+independent of networking, ( alarm() being the most simple one)
 
-    tls: rx: allow only one reader at a time
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16966bac080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=15966bac080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11966bac080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com
-Fixes: 4cbc325ed6b4 ("tls: rx: allow only one reader at a time")
-
-====================================
-WARNING: syz-executor279/3626 still has locks held!
-5.19.0-rc6-syzkaller-01454-ge22c88799f26 #0 Not tainted
-------------------------------------
-1 lock held by syz-executor279/3626:
- #0: ffff888026449ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1659 [inline]
- #0: ffff888026449ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: tls_rx_reader_lock+0x2da/0x4e0 net/tls/tls_sw.c:1817
-
-stack backtrace:
-CPU: 0 PID: 3626 Comm: syz-executor279 Not tainted 5.19.0-rc6-syzkaller-01454-ge22c88799f26 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- try_to_freeze include/linux/freezer.h:66 [inline]
- get_signal+0x1424/0x2600 kernel/signal.c:2647
- arch_do_signal_or_restart+0x82/0x2300 arch/x86/kernel/signal.c:869
- exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
- exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:201
- __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
- syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f66234ef999
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f66234802f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-RAX: fffffffffffffe00 RBX: 00007f66235773f0 RCX: 00007f66234ef999
-RDX: 00000000000000c1 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00007f6623545064 R08: 00007f6623480700 R09: 0000000000000000
-R10: 00007f6623480700 R11: 0000000000000246 R12: 0100000000000000
-R13: e8fece2d4e6d48fb R14: 0cb28def7c465af4 R15: 00007f66235773f8
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>
+> Last one - I posted a bit of a disemboweling patch for TCP, LMK if it's
+> no bueno:
+>
+> https://lore.kernel.org/all/20220719231129.1870776-6-kuba@kernel.org/
