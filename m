@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF7B57AC2E
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C76CD57AC76
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241416AbiGTBTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 21:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
+        id S241396AbiGTBXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 21:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241695AbiGTBT2 (ORCPT
+        with ESMTP id S241693AbiGTBT2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:19:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C210691C3;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9117968DFD;
         Tue, 19 Jul 2022 18:15:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA53FB81DE3;
-        Wed, 20 Jul 2022 01:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1BDC341CA;
-        Wed, 20 Jul 2022 01:15:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04A246176F;
+        Wed, 20 Jul 2022 01:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 140E2C341D0;
+        Wed, 20 Jul 2022 01:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279731;
-        bh=z7iBJy5Yjy8zO9n/ZqopUEeBf43/XBe9Ivswdo0nPyw=;
+        s=k20201202; t=1658279733;
+        bh=VVfD/PvNIBacnTAoesvePzKBgQsTor72WSKO/3BjT6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q2g0ojDrqdhFo0BL0G/qBSBlH6cHkhc7yV675gb4JOF53fX8KELauC+toz8KKaBAL
-         TKT9aIy9zxam4MQoDETqjO7yQIR99GBHRquJ62CV/S8/HXti2SngzFGsFvJlb3nzBm
-         rro30V9WxOJSlR0i0KzcPTNo4wgMd4W+p/LMfF4Dd364RZu4NlWi5XXiOOtGNBGF0x
-         /Rvx7/8WSWtz7ALhWCwNAFibv469x/e6Wu1L277zd0d5Qbhe7R+8k+1nUDJRADkN0v
-         Zk1LE0eN5wefgYZRHkIyOpYfc2gpcVjeLsw+8F6CxzfCwtL/Ad2Jcmz/J9nX0jr55j
-         Yx47MrTVBsN4Q==
+        b=Y/4dGnA1vnZmQFmapklWh734saCqEC7I8UfRuDG390wwXSUSXYk6sLEgFLWIR34Gn
+         eluZ1gsgrpePw49oQmtFKOIghD68c5grEZKfRTTir1ZkiSp7M4l7dSre8fsqx/hg48
+         8JZbxNsKgVYG8nMd/F3Yh+Nx2GbiGYzM+5BqSOiS5ud/ATGu+n23JjokuW7nBRTjM1
+         2RvIL8NYAmypnQesZ6ZxqpwnjK3WpoyHoD7Aw9DV6H5Y2mgJdlOvMzQ/8dJhDZd2wj
+         8vg8KAVkw1oIl0ZpTuGei5c0dJv/Rud6OiTG2tGl3SyrRz7UekYlve5Ty1xqewmGGw
+         8TDLj7scnpLKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 23/42] wifi: mac80211: check skb_shared in ieee80211_8023_xmit()
-Date:   Tue, 19 Jul 2022 21:13:31 -0400
-Message-Id: <20220720011350.1024134-23-sashal@kernel.org>
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 24/42] wifi: mac80211: do not wake queues on a vif that is being stopped
+Date:   Tue, 19 Jul 2022 21:13:32 -0400
+Message-Id: <20220720011350.1024134-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011350.1024134-1-sashal@kernel.org>
 References: <20220720011350.1024134-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,90 +60,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ryder Lee <ryder.lee@mediatek.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit a4926abb787e2ef3ee2997e6ca8844d859478647 ]
+[ Upstream commit f856373e2f31ffd340e47e2b00027bd4070f74b3 ]
 
-Add a missing skb_shared check into 802.3 path to prevent potential
-use-after-free from happening. This also uses skb_share_check()
-instead of open-coding in tx path.
+When a vif is being removed and sdata->bss is cleared, __ieee80211_wake_txqs
+can still be called on it, which crashes as soon as sdata->bss is being
+dereferenced.
+To fix this properly, check for SDATA_STATE_RUNNING before waking queues,
+and take the fq lock when setting it (to ensure that __ieee80211_wake_txqs
+observes the change when running on a different CPU)
 
-Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
-Link: https://lore.kernel.org/r/e7a73aaf7742b17e43421c56625646dfc5c4d2cb.1653571902.git.ryder.lee@mediatek.com
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Acked-by: Toke Høiland-Jørgensen <toke@kernel.org>
+Link: https://lore.kernel.org/r/20220531190824.60019-1-nbd@nbd.name
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/tx.c | 36 +++++++++++++-----------------------
- 1 file changed, 13 insertions(+), 23 deletions(-)
+ net/mac80211/iface.c | 2 ++
+ net/mac80211/util.c  | 3 +++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index a499b07fee33..717698ff5a37 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -2817,19 +2817,10 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
- 	/*
- 	 * If the skb is shared we need to obtain our own copy.
- 	 */
--	if (skb_shared(skb)) {
--		struct sk_buff *tmp_skb = skb;
--
--		/* can't happen -- skb is a clone if info_id != 0 */
--		WARN_ON(info_id);
--
--		skb = skb_clone(skb, GFP_ATOMIC);
--		kfree_skb(tmp_skb);
--
--		if (!skb) {
--			ret = -ENOMEM;
--			goto free;
--		}
-+	skb = skb_share_check(skb, GFP_ATOMIC);
-+	if (unlikely(!skb)) {
-+		ret = -ENOMEM;
-+		goto free;
- 	}
+diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+index 041859b5b71d..1f6878a14fff 100644
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -377,7 +377,9 @@ static void ieee80211_do_stop(struct ieee80211_sub_if_data *sdata, bool going_do
+ 	bool cancel_scan;
+ 	struct cfg80211_nan_func *func;
  
- 	hdr.frame_control = fc;
-@@ -3540,15 +3531,9 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
++	spin_lock_bh(&local->fq.lock);
+ 	clear_bit(SDATA_STATE_RUNNING, &sdata->state);
++	spin_unlock_bh(&local->fq.lock);
  
- 	/* after this point (skb is modified) we cannot return false */
+ 	cancel_scan = rcu_access_pointer(local->scan_sdata) == sdata;
+ 	if (cancel_scan)
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index be1911d8089f..d85a39a7b843 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -301,6 +301,9 @@ static void __ieee80211_wake_txqs(struct ieee80211_sub_if_data *sdata, int ac)
+ 	local_bh_disable();
+ 	spin_lock(&fq->lock);
  
--	if (skb_shared(skb)) {
--		struct sk_buff *tmp_skb = skb;
--
--		skb = skb_clone(skb, GFP_ATOMIC);
--		kfree_skb(tmp_skb);
--
--		if (!skb)
--			return true;
--	}
-+	skb = skb_share_check(skb, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return true;
- 
- 	if ((hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_QOS_DATA)) &&
- 	    ieee80211_amsdu_aggregate(sdata, sta, fast_tx, skb))
-@@ -4438,7 +4423,7 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
- 				struct net_device *dev, struct sta_info *sta,
- 				struct ieee80211_key *key, struct sk_buff *skb)
- {
--	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
-+	struct ieee80211_tx_info *info;
- 	struct ieee80211_local *local = sdata->local;
- 	struct tid_ampdu_tx *tid_tx;
- 	u8 tid;
-@@ -4453,6 +4438,11 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
- 	    test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state))
- 		goto out_free;
- 
-+	skb = skb_share_check(skb, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return;
++	if (!test_bit(SDATA_STATE_RUNNING, &sdata->state))
++		goto out;
 +
-+	info = IEEE80211_SKB_CB(skb);
- 	memset(info, 0, sizeof(*info));
+ 	if (sdata->vif.type == NL80211_IFTYPE_AP)
+ 		ps = &sdata->bss->ps;
  
- 	ieee80211_aggr_check(sdata, sta, skb);
 -- 
 2.35.1
 
