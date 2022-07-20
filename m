@@ -2,158 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D08657B34B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:56:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 606DB57B34F
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiGTI4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
+        id S229832AbiGTI5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiGTI4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:56:45 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4709E67584
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:56:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fGZKhV8GIV36ZDY/llwRUqn93bh8ZciXCEKdjNHtn6ike4RS1jtw2Ij3H5OenxU4Xr2ISmDBYk0B40SLVVRfThWnuMFamnlWywqywZyO9YmxSBRickuOWxHqfAsfiAQeqRYHEoJSV0Bur11lk1q1uTQiqJstkXwPabg01DP/SIr9GFSmqzL6+CqQ3l9CfpeXzi9fvoiehf7XfQl6QF/TlnRO/c0WU3fV9B6YtC/RcJbTPjWWmMHEiSaB460pOwnzma95goqt8n14K0WgHAH/ICgtkDQGZH3w7/LwDWKOVTVwiQeN9t1JdmZ9FKZejE/gjvLBpeDUol2j1ozeyJ09Fw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G2Ep2U22fWfGaY7NUL914MT6w6M7hAXxoNNUQeSOrYA=;
- b=ZUyZhvBXw5VFhBX/87DFDdtOAqrP+9fySAQzMDUvblkIBa2iEwiC5ZxkE4eUGMSCAQFUUGs19uGwRL87muWYso1QYDPzKZs8MCWZqD3dn+OFutZULdNznOacioPzizGwK9pz4bJXlFHujY5aZ9PKlWokvApNkPW/HnCRYJoZhdNuBWTx+AnI4vW2BVdrB1FeMDHKXc7zv1XsNLW79kMhj59PanhU9wokwtumMhVnQnM6U/2RuJfoUnr2e9cTVgcK0zgl5qIQxKqeF7yZ9rUWpJdaXkG9MVntqhJ4X86SFrrd4yv77Pq6ZUGujhdU9UO8xEusFW/6MBtRBbZYkl222w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G2Ep2U22fWfGaY7NUL914MT6w6M7hAXxoNNUQeSOrYA=;
- b=racx/i7J8u0nXzbQ8Pr20lw5zW9t8V2RryndS4A1wt0kY8UtpEGxuRAdCp3eGqt6XZI8IUiM+xHjxRKpl5y/1/WMfUcdnMNRfmKwhPtIimvFIGjRfV6WjIpi66i8r1zsh3HLOfed24zcIl+Kk0iwGCkaZBjcYujjULI9HPYcPhMKz8/HeD8RTz0W9GcQC3zWjCOsNx8npfohNdSzI0FzQESI2Ilttqs6McX2mFaDb6Y53VBfwlhz4tx0bt4m5I8kXQm9bTEIVCYP9icURan9THQwKzizt4/VJ6gvA7RiyX3CQq0h0k3/slmT2SWbd0rKOMi3uW4ibKYi1TO0lFOGmA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by BL1PR12MB5753.namprd12.prod.outlook.com (2603:10b6:208:390::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Wed, 20 Jul
- 2022 08:56:41 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
- 08:56:41 +0000
-Date:   Wed, 20 Jul 2022 11:56:35 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v2 05/12] mlxsw: core_linecards: Expose HW
- revision and INI version
-Message-ID: <YtfDQ6hpGKXFKfCD@shredder>
-References: <20220719064847.3688226-1-jiri@resnulli.us>
- <20220719064847.3688226-6-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719064847.3688226-6-jiri@resnulli.us>
-X-ClientProxiedBy: VI1PR08CA0115.eurprd08.prod.outlook.com
- (2603:10a6:800:d4::17) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S229686AbiGTI5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:57:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F10F6B26E
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658307419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0PlCq6ajL/Z4I1TluumiywIvpa4NQvyOba7zhGyb68U=;
+        b=ebBkxX3IjlOBd2+hIVkw77iyTufI9P9wdSFPQm7ZYvtq5167aEB3sTo/VtlnpGPNMBOqcQ
+        0wUj+XDqXyF23xhAfFF7xxGZbmC5P+mWOwZshzxm0mG+6GL372MeOePsdJsgellyHaCxjf
+        /iRs026U6mNgaKGS9SbdeYBhzpadbEY=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-674-9ERMYyNPNTadTPZBNqvbVw-1; Wed, 20 Jul 2022 04:56:57 -0400
+X-MC-Unique: 9ERMYyNPNTadTPZBNqvbVw-1
+Received: by mail-qt1-f200.google.com with SMTP id u12-20020a05622a010c00b0031ef5b46dc0so4375114qtw.16
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:56:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0PlCq6ajL/Z4I1TluumiywIvpa4NQvyOba7zhGyb68U=;
+        b=DyARUdCG9WHA8Ffc+5HkYZlNuoK9UoFnymkDC98lbmJ49yOS1+IHX67YD/QG5zd9u/
+         pnU6M7WX3meJW8QYUUnCJFZ7K7dtK8Fd3qGPdVZITNEBPGB4vVHcdnC0trXTFJ1dZAm7
+         lDJeLOaFXwkpmw29OJfMK9YgkLIvg39wa39ez70xUfDbp+eMzV2ideBQgYmMFVDnOYdT
+         0BjKgk8u0nMiSB2m+Fw7Qe7343yz97WE4RfY2tGkZBJS9R7PsIN/E/+tpbD7hbl+DGqW
+         r8hsQdkkn1E12ir9j5R6r71qWGBDKwnbeiEogb1u7w1RV3yX993GyV4EYJcYgRYo3Izx
+         Mudg==
+X-Gm-Message-State: AJIora+16rHtnGZlwj4gTuxh/yTT/O7q8r3s7UbLggeTlLgvKG2tuylG
+        RJ1kJjD2NgstVxIP5n34Ao5jCjAIbzEFfPQ9NNlIFymTmyVi5BgyXJk3TS26bSVsi/Qo4ep8LeV
+        M2bQuxBCFPc/CEXKx
+X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id p9-20020a0c8c89000000b004709ab6bb27mr28764652qvb.118.1658307417213;
+        Wed, 20 Jul 2022 01:56:57 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uUEd8wd9tFBWjZIynLvqe+YW58v3ThG/Igh7FbI5iMXJ4uDVuxP2SQYrdm0ppCHCoqmP9x8A==
+X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id p9-20020a0c8c89000000b004709ab6bb27mr28764632qvb.118.1658307416999;
+        Wed, 20 Jul 2022 01:56:56 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id bn10-20020a05622a1dca00b0031ece6e0f17sm3229189qtb.71.2022.07.20.01.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 01:56:56 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 10:56:49 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 3/3] vsock_test: POLLIN + SO_RCVLOWAT test.
+Message-ID: <20220720085649.6pqj55hmkxlamxjq@sgarzare-redhat>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+ <df70a274-4e69-ca1f-acba-126eb517e532@sberdevices.ru>
+ <20220719125227.bktosg3yboeaeoo5@sgarzare-redhat>
+ <ea414c31-741f-6994-651a-a686cba3d25e@sberdevices.ru>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 75a6b993-4867-4997-bae5-08da6a2dc3aa
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5753:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iJyLYI3t8Vp2xgHpC3rs/gJdvZIrLhpcuNngxxeoDHWFm2IHYUfmiCWtCYD/m4SF3YYwkY2DoW67u10L0a49+IAPqyxz8FDUiiYFCN+Il2MjyHP6K1+t4WelTzYRk+gWVtGLzqnSE0ckzZIr1F9MbB4I2ERSbKymRQPTURbZSvjc8T5MtsKRElecwGkRVw9MWPwoEYlN/uQJTuBOwg9bn7975QfNmJmmUOu5Le/rxzNb5PFy6MXGN5Yza97jb6qymNuVHFX49dP94r75gtb03K2M8n12S/ftDKTtqPel0W+yacxhnYdPgQ3/CPb3XqJkokCCumEh8dXxkW4K8q2B7XSIvv9HQQq3t+tAGnfVGko7ABCBnsnW4wVXHjQ1t4JPk1z4AfJwgci5osmw04R99LvnED/UiOVkoxkSKCCj6zNeMcfTlqt47T60sYGZzPgFFpCA/xWJ7TbfuCegeWlsv892H52U57D+/MRfm7WnaSippIBXGSf16rStzf2rDzwFjBNus8n1xV0KMFTZhkxpLtIBU5xvEtqek8AFTANOtPq2wYsHOZP/fj8oMzzyyTxfW9jeo/Ek8Y+qd/0FHssnz4lZN443rCuN6LJmrOl5jsP+5luu92VWY9JbCtmZpQekSlYaLC5f8RwECmIMC8cgRJ+GzANpDYb3V4Xs+SdDEYDNaxWm6Leo0TTrYbY/my6mUOFFk9gUsayUy4LUsgcelrzIm7KjYse7VlscXH8cvf6bfUc2hNPBV3247/2dnUXY
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(376002)(346002)(396003)(366004)(136003)(39860400002)(66556008)(478600001)(6666004)(41300700001)(186003)(33716001)(4744005)(8936002)(5660300002)(83380400001)(86362001)(66476007)(6506007)(66946007)(6916009)(2906002)(316002)(4326008)(38100700002)(6512007)(6486002)(8676002)(9686003)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DElkIIji3lfh9QrnLCiU3BGy/6q87agIdIo5mIPDP2hvcuVwPLUbzzvutOdH?=
- =?us-ascii?Q?ulSiTqFJajnusw83p1sjPNtfudyHUqT3hqD8yk7QyMPD7JbIFloLVKybenFj?=
- =?us-ascii?Q?aTFs1d05PctQObNQG34US9lDxB8fvXIXhX2RWxxIocOm2ERVUBjt18mWQBDu?=
- =?us-ascii?Q?MQq8luAAWe2bKrRmy97+aaMashykfxfD25xgl/0Gn1oK2dB7DDYYPVeRq2ZJ?=
- =?us-ascii?Q?u4qYR0yelfi7Hk24pNJR6IzqR9AC7AZhYpVUQ5f5GvdAz8upgt5yMv8HiSin?=
- =?us-ascii?Q?NVodztj2194EjCUbBTV3A2bGbI0EsV0qECsY6O2x2JnKfbct/yVnF0UxomQ9?=
- =?us-ascii?Q?t2mv57E8RIeMyTr6Zygglu1ebr2QHm1ZlX/pnoV5vN6u+MSBHA2uQdSNNToN?=
- =?us-ascii?Q?9pMAjy36X6PJRXYj3nlU4DuTnuBCY+L+4cbmB8RRigHPltjQYC/mgeds5crb?=
- =?us-ascii?Q?GVIv7a4vaiXoG8s1rzMaO3ahKuAcYPJ0oDCM0NxvnF0obXTd2B/uCkvjNP9P?=
- =?us-ascii?Q?n5nJB5DdBLWUyROPV22ZJCb1KiY8EaTEhHp/j+w64yFCaZ/tXBI604/g2RCP?=
- =?us-ascii?Q?oOWmQ3d/cYnxe+yzYy8Eivr9xpievCTQOHzm4gTSS2UVlKd/hYE2Wx5xySyA?=
- =?us-ascii?Q?s1Cf9z1rBe+oHRF4sJZkaVxtVES3Y/oikq5yUahDbEzQgjkKYfz1SKrEIaus?=
- =?us-ascii?Q?yJoIouObhe9TXRj4gI61j3LvZbWgZgF1RuWaN5iZPRD5HtPAz01LpeUwu/c/?=
- =?us-ascii?Q?azLNX7CYScPIdMqSgHoB90Z9YV3ZgsXOqIHb73T6YskIEeXI7nzxbQL8l1wN?=
- =?us-ascii?Q?Jwc7LiOrKjMbx8wyKDM7nLq38qGXPQw+IwHLLxYzqEMerwMlXPF0SeKlejGS?=
- =?us-ascii?Q?+wQJEOMZF61firZzm61fLTN1VbpxMC+hdkK9UH/Xfu3c3LTh4OAdtt4o9vI8?=
- =?us-ascii?Q?+XwU8B1KwhZheHKZTvxHZ9Wjmdg5yiDjm4cK8Ikcf//UuU51rCqRAdQE0IQf?=
- =?us-ascii?Q?p/mB9G/5j5+Z5Fr7zdul5XhPr/GH8+Ww/lI1bEgrNtysSVC7WOVSDCdksdWu?=
- =?us-ascii?Q?Q7g3dnG+QRxHV2CYFI3dLzJLbMB5iV1atbRIuUZT1ZqXjdsp++sAz0tfC7lR?=
- =?us-ascii?Q?8wWDD/hCoMc8KEsspFSCRPHEanN1wXOspwbnvUkJ0WECYmFUszvlTm50pXL5?=
- =?us-ascii?Q?BMr5FYci/9h0eKflI8aaNnDtFVLDES4qYUPjs5DlF5UPek+dBRM9kHd927mx?=
- =?us-ascii?Q?XVr62caeWqYpagSooz+hLwfQZLhkRH3qbtBumSC+GuuphrOS5L73zmgSq/bz?=
- =?us-ascii?Q?4salt9tqhy+nmBLB548rTrMg7SV3fXyROLH1NzzxP5cEDKRIFjTqliQxnwqT?=
- =?us-ascii?Q?7G+qThlliKNV8vY9L6XezmY3e4Nx03a/V3jguZ70tC4zG4mGqn2KmRcQw7Yo?=
- =?us-ascii?Q?LOkyfW1YE9ygOyTU/RLCKtVLlNOTfG38UOnt94K955y+nCvKSZd3HIlgRr5g?=
- =?us-ascii?Q?k9BkIet1YiUdrYU8zYRe/QROocWo2p56faqNaPdZpGZUyFIsfkFZQO+oM/xp?=
- =?us-ascii?Q?nx+duVheGqHLJdU2bI8Anp5Ad9VI5XHCe76HtSF/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75a6b993-4867-4997-bae5-08da6a2dc3aa
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 08:56:41.6414
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zz/8QjU0g2khzTVK94yAfs37d6huhBe76MCKj2Mz4vPwuy3uJB+dryQDHkN3WIJN5lA3IgDCt8/OJ5/9soYfeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5753
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ea414c31-741f-6994-651a-a686cba3d25e@sberdevices.ru>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 08:48:40AM +0200, Jiri Pirko wrote:
-> +int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
-> +				    struct devlink_info_req *req,
-> +				    struct netlink_ext_ack *extack)
-> +{
-> +	char buf[32];
-> +	int err;
-> +
-> +	mutex_lock(&linecard->lock);
-> +	if (WARN_ON(!linecard->provisioned)) {
-> +		err = 0;
+On Wed, Jul 20, 2022 at 05:46:01AM +0000, Arseniy Krasnov wrote:
+>On 19.07.2022 15:52, Stefano Garzarella wrote:
+>> On Mon, Jul 18, 2022 at 08:19:06AM +0000, Arseniy Krasnov wrote:
+>>> This adds test to check, that when poll() returns POLLIN and
+>>> POLLRDNORM bits, next read call won't block.
+>>>
+>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>> ---
+>>> tools/testing/vsock/vsock_test.c | 90 ++++++++++++++++++++++++++++++++
+>>> 1 file changed, 90 insertions(+)
+>>>
+>>> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>>> index dc577461afc2..8e394443eaf6 100644
+>>> --- a/tools/testing/vsock/vsock_test.c
+>>> +++ b/tools/testing/vsock/vsock_test.c
+>>> @@ -18,6 +18,7 @@
+>>> #include <sys/socket.h>
+>>> #include <time.h>
+>>> #include <sys/mman.h>
+>>> +#include <poll.h>
+>>>
+>>> #include "timeout.h"
+>>> #include "control.h"
+>>> @@ -596,6 +597,90 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
+>>>     close(fd);
+>>> }
+>>>
+>>> +static void test_stream_poll_rcvlowat_server(const struct test_opts *opts)
+>>> +{
+>>> +#define RCVLOWAT_BUF_SIZE 128
+>>> +    int fd;
+>>> +    int i;
+>>> +
+>>> +    fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
+>>> +    if (fd < 0) {
+>>> +        perror("accept");
+>>> +        exit(EXIT_FAILURE);
+>>> +    }
+>>> +
+>>> +    /* Send 1 byte. */
+>>> +    send_byte(fd, 1, 0);
+>>> +
+>>> +    control_writeln("SRVSENT");
+>>> +
+>>> +    /* Just empirically delay value. */
+>>> +    sleep(4);
+>>
+>> Why we need this sleep()?
+>Purpose of sleep() is to move client in state, when it has 1 byte of rx data
+>and poll() won't wake. For example:
+>client:                        server:
+>waits for "SRVSENT"
+>                               send 1 byte
+>                               send "SRVSENT"
+>poll()
+>                               sleep
+>...
+>poll sleeps
+>...
+>                               send rest of data
+>poll wake up
+>
+>I think, without sleep there is chance, that client enters poll() when whole
+>data from server is already received, thus test will be useless(it just tests
 
-Why not:
+Right, I see (maybe add a comment in the test).
 
-err = -EINVAL;
+>poll()). May be i can remove "SRVSENT" as sleep is enough.
 
-?
+I think it's fine.
 
-> +		goto unlock;
-> +	}
-> +
-> +	sprintf(buf, "%d", linecard->hw_revision);
-> +	err = devlink_info_version_fixed_put(req, "hw.revision", buf);
-> +	if (err)
-> +		goto unlock;
-> +
-> +	sprintf(buf, "%d", linecard->ini_version);
-> +	err = devlink_info_version_running_put(req, "ini.version", buf);
-> +	if (err)
-> +		goto unlock;
-> +
-> +unlock:
-> +	mutex_unlock(&linecard->lock);
-> +	return err;
-> +}
-> +
->  static int
->  mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
->  			     u16 hw_revision, u16 ini_version)
-> -- 
-> 2.35.3
-> 
+An alternative could be to use the `timeout` of poll():
+
+client:                        server:
+waits for "SRVSENT"
+                                send 1 byte
+                                send "SRVSENT"
+poll(, timeout = 1 * 1000)
+                                wait for "CLNSENT"
+poll should return 0
+send "CLNSENT"
+
+poll(, timeout = 10 * 1000)
+...
+poll sleeps
+...
+                                send rest of data
+poll wake up
+
+
+I don't have a strong opinion, also your version seems fine, just an 
+alternative ;-)
+
+Maybe in your version you can add a 10 sec timeout to poll, to avoid 
+that the test stuck for some reason (failing if the timeout is reached).
+
+Thanks,
+Stefano
+
