@@ -2,141 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C2457B4D9
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1DA57B4E1
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbiGTKxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 06:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
+        id S239777AbiGTKyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 06:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbiGTKx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:53:26 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCFC7173A;
-        Wed, 20 Jul 2022 03:52:56 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id C851A5FD2F;
-        Wed, 20 Jul 2022 13:52:41 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658314361;
-        bh=Reu0fuSf+RtOwElI8k8f5OiCjMhFmisHomzOclTNIRc=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=N3gwopGugWOONNgObmfj2QjNpW+/oJAJV9LTye8vjSxMraUowYebGdh1Wz0wFGbsb
-         33flSeW587hQ/ouMb0rkf2DQQr1OTm0h+Ap+sWSPk4nWxnCrhgsjOKJJzaaBilDU+A
-         RFufZyaWZFg2TeJxa0CY+K9AKGZOaCBnrgSvjazVD3ynqGETzUI2ecOPYSeLhznm1r
-         ZYSx5whjO16VPBcLY448f2qWEW+s4psKD5/OG5NEjFEuDP4ZWINifEjW1OofeyWnzU
-         gBqw4pogXwV366eG/inIA0IrMt5SrJBdeLbyi9aQZ0CCkBauw5dwVEKIzBnG6hQOL/
-         VrISluw0z7WkQ==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 20 Jul 2022 13:52:37 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
- POLLIN/POLLRDNORM
-Thread-Topic: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
- POLLIN/POLLRDNORM
-Thread-Index: AQHYmn4tqUccpAClwkSIQKaYrjmRMa2Fd1UAgAEfggCAADh4gIAAFxCA
-Date:   Wed, 20 Jul 2022 10:52:25 +0000
-Message-ID: <3e954621-4496-17be-4b73-d0971372b8c5@sberdevices.ru>
-References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
- <20220719125856.a6bfwrvy66gxxzqe@sgarzare-redhat>
- <ac05e1ee-23b3-75e0-f9a4-1056a68934d8@sberdevices.ru>
- <20220720093005.2unej4jnnvrn55f2@sgarzare-redhat>
-In-Reply-To: <20220720093005.2unej4jnnvrn55f2@sgarzare-redhat>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E7D43A9AB1AF3341827A5BC6EA70248A@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S240314AbiGTKxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:53:54 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E52C6EE83
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:53:51 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id oy13so32267143ejb.1
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DToKmnYd83h60Xnz9eurKa8Zg+H7Mt/b4hhs0pCPFVc=;
+        b=pwDL0YX8vYZcP1xBl0N7uZUa7MS1X1G/ahYCh4rUqupBovoF0kgw6f174MqlFJaIZn
+         qbUh8u1O/ZtB5dRaxSLOHiGa1jiAM3nMJ3N8CS1C6OI+p4oBvKkzvlDUbaL4YAL5VQoa
+         0YpfYW+WLmSogB0cieqih3QZmgow7jxrfSWncr01zrdJtMG5D0S8CiVUPhELTS3Elelc
+         XrrPoMg7C6idGbhuKAux/T27a8gn+/gzou+8TE7tJUOkPNwAZye1sKl16MdSAErM1C33
+         dU8ugpMqEJMQWJIstl4+zu0WtsqxjlXNAQ+1VkmrCtF+L5jmzXT09uEqYEA0/SH+1UQh
+         dn4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DToKmnYd83h60Xnz9eurKa8Zg+H7Mt/b4hhs0pCPFVc=;
+        b=ARrga9dfUK8RPgXRAbekzOPxDFBNrOD6RiLQ5fCgdIjdAXkHBbpbCytTu/fSc6cJhd
+         bF/Y92iRlvk274iNfY6kR9p0KqmcmWJjhs6bb2EMKx5XEjhGSF7cJxYJakRjATEB8r67
+         kP7GOtmuf9EVuN0cwWhGTwdCUGpfjcsKSEyNObwkgJve1nJ9VUku1jEgQjHNzWcPAS2d
+         FtdiGKKocDI2YZ+2FM8nRsKS+SMoJtcRr5DHx0Z+P1GvadVk8X76WwtOW0nwg58p6963
+         tPSo+iSvuLHrj27UzdeNIw33sANTRVQXltYPwB99hBhffuIrn8ZGQRAl7/9UjqokTJM/
+         Yt5g==
+X-Gm-Message-State: AJIora8AYaIOMC+hxmave5DsZ58Gr4sq+gwdKkzDqZdE9r0s2FklTK5C
+        n4a5M9Y2kltRLx8pDtRkUwmfEw==
+X-Google-Smtp-Source: AGRyM1vYHD1n9ingmGrJjl4RDfYQVCUZa9XoQzbdr4lOUih2W6bUCEf5yoI5WxLyLK+Dj2zr9jAn+w==
+X-Received: by 2002:a17:906:478d:b0:72e:e902:587 with SMTP id cw13-20020a170906478d00b0072ee9020587mr26306969ejc.548.1658314429625;
+        Wed, 20 Jul 2022 03:53:49 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id o7-20020aa7c507000000b0043ab81e4230sm12184133edq.50.2022.07.20.03.53.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 03:53:49 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 12:53:47 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v2 10/12] mlxsw: core_linecards: Implement line
+ card device flashing
+Message-ID: <Ytfeu1QFOyP5s+UF@nanopsycho>
+References: <20220719064847.3688226-1-jiri@resnulli.us>
+ <20220719064847.3688226-11-jiri@resnulli.us>
+ <YtfdAenTfUa+EyL2@shredder>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/20 09:26:00 #19927092
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtfdAenTfUa+EyL2@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjAuMDcuMjAyMiAxMjozMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBXZWQs
-IEp1bCAyMCwgMjAyMiBhdCAwNjowNzo0N0FNICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6
-DQo+PiBPbiAxOS4wNy4yMDIyIDE1OjU4LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+Pj4g
-T24gTW9uLCBKdWwgMTgsIDIwMjIgYXQgMDg6MTI6NTJBTSArMDAwMCwgQXJzZW5peSBLcmFzbm92
-IHdyb3RlOg0KPj4+PiBIZWxsbywNCj4+Pj4NCj4+Pj4gZHVyaW5nIG15IGV4cGVyaW1lbnRzIHdp
-dGggemVyb2NvcHkgcmVjZWl2ZSwgaSBmb3VuZCwgdGhhdCBpbiBzb21lDQo+Pj4+IGNhc2VzLCBw
-b2xsKCkgaW1wbGVtZW50YXRpb24gdmlvbGF0ZXMgUE9TSVg6IHdoZW4gc29ja2V0IGhhcyBub24t
-DQo+Pj4+IGRlZmF1bHQgU09fUkNWTE9XQVQoZS5nLiBub3QgMSksIHBvbGwoKSB3aWxsIGFsd2F5
-cyBzZXQgUE9MTElOIGFuZA0KPj4+PiBQT0xMUkROT1JNIGJpdHMgaW4gJ3JldmVudHMnIGV2ZW4g
-bnVtYmVyIG9mIGJ5dGVzIGF2YWlsYWJsZSB0byByZWFkDQo+Pj4+IG9uIHNvY2tldCBpcyBzbWFs
-bGVyIHRoYW4gU09fUkNWTE9XQVQgdmFsdWUuIEluIHRoaXMgY2FzZSx1c2VyIHNlZXMNCj4+Pj4g
-UE9MTElOIGZsYWcgYW5kIHRoZW4gdHJpZXMgdG8gcmVhZCBkYXRhKGZvciBleGFtcGxlIHVzaW5n
-wqAgJ3JlYWQoKScNCj4+Pj4gY2FsbCksIGJ1dCByZWFkIGNhbGwgd2lsbCBiZSBibG9ja2VkLCBi
-ZWNhdXNlwqAgU09fUkNWTE9XQVQgbG9naWMgaXMNCj4+Pj4gc3VwcG9ydGVkIGluIGRlcXVldWUg
-bG9vcCBpbiBhZl92c29jay5jLiBCdXQgdGhlIHNhbWUgdGltZSzCoCBQT1NJWA0KPj4+PiByZXF1
-aXJlcyB0aGF0Og0KPj4+Pg0KPj4+PiAiUE9MTElOwqDCoMKgwqAgRGF0YSBvdGhlciB0aGFuIGhp
-Z2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0DQo+Pj4+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIGJsb2NraW5nLg0KPj4+PiBQT0xMUkROT1JNIE5vcm1hbCBkYXRhIG1heSBiZSByZWFk
-IHdpdGhvdXQgYmxvY2tpbmcuIg0KPj4+Pg0KPj4+PiBTZWUgaHR0cHM6Ly93d3cub3Blbi1zdGQu
-b3JnL2p0YzEvc2MyMi9vcGVuL240MjE3LnBkZiwgcGFnZSAyOTMuDQo+Pj4+DQo+Pj4+IFNvLCB3
-ZSBoYXZlLCB0aGF0IHBvbGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxs
-IHdpbGwNCj4+Pj4gYmUgYmxvY2tlZC4NCj4+Pj4NCj4+Pj4gQWxzbyBpbiBtYW4gcGFnZSBzb2Nr
-ZXQoNykgaSBmb3VuZCB0aGF0Og0KPj4+Pg0KPj4+PiAiU2luY2UgTGludXggMi42LjI4LCBzZWxl
-Y3QoMiksIHBvbGwoMiksIGFuZCBlcG9sbCg3KSBpbmRpY2F0ZSBhDQo+Pj4+IHNvY2tldCBhcyBy
-ZWFkYWJsZSBvbmx5IGlmIGF0IGxlYXN0IFNPX1JDVkxPV0FUIGJ5dGVzIGFyZSBhdmFpbGFibGUu
-Ig0KPj4+Pg0KPj4+PiBJIGNoZWNrZWQgVENQIGNhbGxiYWNrIGZvciBwb2xsKCkobmV0L2lwdjQv
-dGNwLmMsIHRjcF9wb2xsKCkpLCBpdA0KPj4+PiB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNl
-dCBQT0xMSU4gYml0LCBhbHNvIGkndmUgdGVzdGVkIFRDUCB3aXRoDQo+Pj4+IHRoaXMgY2FzZSBm
-b3IgVENQIHNvY2tldCwgaXQgd29ya3MgYXMgUE9TSVggcmVxdWlyZWQuDQo+Pj4NCj4+PiBJIHRy
-aWVkIHRvIGxvb2sgYXQgdGhlIGNvZGUgYW5kIGl0IHNlZW1zIHRoYXQgb25seSBUQ1AgY29tcGxp
-ZXMgd2l0aCBpdCBvciBhbSBJIHdyb25nPw0KPj4gWWVzLCBpIGNoZWNrZWQgQUZfVU5JWCwgaXQg
-YWxzbyBkb24ndCBjYXJlIGFib3V0IHRoYXQuIEl0IGNhbGxzIHNrYl9xdWV1ZV9lbXB0eSgpIHRo
-YXQgb2YNCj4+IGNvdXJzZSBpZ25vcmVzIFNPX1JDVkxPV0FULg0KPj4+DQo+Pj4+DQo+Pj4+IEkn
-dmUgYWRkZWQgc29tZSBmaXhlcyB0byBhZl92c29jay5jIGFuZCB2aXJ0aW9fdHJhbnNwb3J0X2Nv
-bW1vbi5jLA0KPj4+PiB0ZXN0IGlzIGFsc28gaW1wbGVtZW50ZWQuDQo+Pj4+DQo+Pj4+IFdoYXQg
-ZG8gWW91IHRoaW5rIGd1eXM/DQo+Pj4NCj4+PiBOaWNlLCB0aGFua3MgZm9yIGZpeGluZyB0aGlz
-IGFuZCBmb3IgdGhlIHRlc3QhDQo+Pj4NCj4+PiBJIGxlZnQgc29tZSBjb21tZW50cywgYnV0IEkg
-dGhpbmsgdGhlIHNlcmllcyBpcyBmaW5lIGlmIHdlIHdpbGwgc3VwcG9ydCBpdCBpbiBhbGwgdHJh
-bnNwb3J0cy4NCj4+IEFjaw0KPj4+DQo+Pj4gSSdkIGp1c3QgbGlrZSB0byB1bmRlcnN0YW5kIGlm
-IGl0J3MganVzdCBUQ1AgY29tcGx5aW5nIHdpdGggaXQgb3IgSSdtIG1pc3Npbmcgc29tZSBjaGVj
-ayBpbmNsdWRlZCBpbiB0aGUgc29ja2V0IGxheWVyIHRoYXQgd2UgY291bGQgcmV1c2UuDQo+PiBT
-ZWVtcyBzb2NrX3BvbGwoKSB3aGljaCBpcyBzb2NrZXQgbGF5ZXIgZW50cnkgcG9pbnQgZm9yIHBv
-bGwoKSBkb2Vzbid0IGNvbnRhaW4gYW55IHN1Y2ggY2hlY2tzDQo+Pj4NCj4+PiBARGF2aWQsIEBK
-YWt1YiwgQFBhb2xvLCBhbnkgYWR2aWNlPw0KPj4+DQo+Pj4gVGhhbmtzLA0KPj4+IFN0ZWZhbm8N
-Cj4+Pg0KPj4NCj4+IFBTOiBtb3Jlb3ZlciwgaSBmb3VuZCBvbmUgbW9yZSBpbnRlcmVzdGluZyB0
-aGluZyB3aXRoIFRDUCBhbmQgcG9sbDogVENQIHJlY2VpdmUgbG9naWMgd2FrZXMgdXAgcG9sbCB3
-YWl0ZXINCj4+IG9ubHkgd2hlbiBudW1iZXIgb2YgYXZhaWxhYmxlIGJ5dGVzID4gU09fUkNWTE9X
-QVQuIEUuZy4gaXQgcHJldmVudHMgInNwdXJpb3VzIiB3YWtlIHVwcywgd2hlbiBwb2xsIHdpbGwg
-YmUNCj4+IHdva2VuIHVwIGJlY2F1c2UgbmV3IGRhdGEgYXJyaXZlZCwgYnV0IFBPTExJTiB0byBh
-bGxvdyB1c2VyIGRlcXVldWUgdGhpcyBkYXRhIHdvbid0IGJlIHNldChhcyBhbW91bnQgb2YgZGF0
-YQ0KPj4gaXMgdG9vIHNtYWxsKS4NCj4+IFNlZSB0Y3BfZGF0YV9yZWFkeSgpIGluIG5ldC9pcHY0
-L3RjcF9pbnB1dC5jDQo+IA0KPiBEbyB5b3UgbWVhbiB0aGF0IHdlIHNob3VsZCBjYWxsIHNrLT5z
-a19kYXRhX3JlYWR5KHNrKSBjaGVja2luZyBTT19SQ1ZMT1dBVD8NClllcywgbGlrZSB0Y3BfZGF0
-YV9yZWFkKCkuDQo+IA0KPiBJdCBzZWVtcyBmaW5lLCBtYXliZSB3ZSBjYW4gYWRkIHZzb2NrX2Rh
-dGFfcmVhZHkoKSBpbiBhZl92c29jay5jIHRoYXQgdHJhbnNwb3J0cyBzaG91bGQgY2FsbCBpbnN0
-ZWFkIG9mIGNhbGxpbmcgc2stPnNrX2RhdGFfcmVhZHkoc2spIGRpcmVjdGx5Lg0KWWVzLCB0aGlz
-IHdpbGwgYWxzbyB1cGRhdGUgbG9naWMgaW4gdm1jaSBhbmQgaHlwZXJ2IHRyYW5zcG9ydHMNCj4g
-DQo+IFRoZW4gd2UgY2FuIHNvbWV0aGluZyBzaW1pbGFyIHRvIHRjcF9kYXRhX3JlYWR5KCkuDQo+
-IA0KPiBUaGFua3MsDQo+IFN0ZWZhbm8NCj4gDQoNCg==
+Wed, Jul 20, 2022 at 12:46:25PM CEST, idosch@nvidia.com wrote:
+>On Tue, Jul 19, 2022 at 08:48:45AM +0200, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Implement flash_update() devlink op for the line card devlink instance
+>> to allow user to update line card gearbox FW using MDDT register
+>> and mlxfw.
+>> 
+>> Example:
+>> $ devlink dev flash auxiliary/mlxsw_core.lc.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+>
+>Need to mention that this is only possible when line card is
+>active/ready
+
+I don't see the need. This is an example. When user issues it and device
+is not ready, he gets back an error. As with any other example.
+
+
+>
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>
+>[...]
+>
+>> +int mlxsw_linecard_flash_update(struct devlink *linecard_devlink,
+>> +				struct mlxsw_linecard *linecard,
+>> +				const struct firmware *firmware,
+>> +				struct netlink_ext_ack *extack)
+>> +{
+>> +	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
+>> +	struct mlxsw_linecard_device_fw_info info = {
+>> +		.mlxfw_dev = {
+>> +			.ops = &mlxsw_linecard_device_dev_ops,
+>> +			.psid = linecard->device.info.psid,
+>> +			.psid_size = strlen(linecard->device.info.psid),
+>> +			.devlink = linecard_devlink,
+>> +		},
+>> +		.mlxsw_core = mlxsw_core,
+>> +		.linecard = linecard,
+>> +	};
+>> +	int err;
+>> +
+>> +	mutex_lock(&linecard->lock);
+>> +	if (WARN_ON(!linecard->ready)) {
+>
+>Can't this be easily triggered from user space when executing the above
+>command for a provisioned line card? If so, please remove the WARN_ON()
+>and add an extack
+
+Yep, you are correct, this is leftover I missed to fix. Will do.
+
+
+>
+>> +		err = -EINVAL;
+>> +		goto unlock;
+>> +	}
+>> +	err = mlxsw_core_fw_flash(mlxsw_core, &info.mlxfw_dev,
+>> +				  firmware, extack);
+>> +unlock:
+>> +	mutex_unlock(&linecard->lock);
+>> +	return err;
+>> +}
