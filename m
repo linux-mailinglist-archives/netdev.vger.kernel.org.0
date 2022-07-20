@@ -2,111 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E4E57BC3C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB0A57BC43
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:04:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237880AbiGTREI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 13:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
+        id S237022AbiGTREp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 13:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236760AbiGTRD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:03:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E709D6BC14
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:03:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658336636;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xuZtPMEGTJUPyCThBRbp89TRLDnOnODjmUD0CEahbP8=;
-        b=CVAu6LmcAcqnMZf1TZM6C5W4tGhNKu4IqdRBgey9xS3UWFr1c//+UALKENczomwvRAHPiG
-        wzVqGpycsFFsNQ/JrWWltYSSPQA39TLkO3eOfpLyn78HyzCCMM6WbSMdxxj0XMxCCqK9Uj
-        k5k7SHMN0pvLGJoYG3RQuRjxOWsSStE=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-85EjtdyGMki40zuPtBHeOg-1; Wed, 20 Jul 2022 13:03:55 -0400
-X-MC-Unique: 85EjtdyGMki40zuPtBHeOg-1
-Received: by mail-ej1-f69.google.com with SMTP id ji2-20020a170907980200b0072b5b6d60c2so4347996ejc.22
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 10:03:55 -0700 (PDT)
+        with ESMTP id S236991AbiGTREm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:04:42 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979B06BC3B;
+        Wed, 20 Jul 2022 10:04:41 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10d6e8990b9so8811062fac.7;
+        Wed, 20 Jul 2022 10:04:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DRRDvUhGg+XRjKdigaR0X/x0hmvUMO6VH2v80OeYkr4=;
+        b=Hzg47Ce57bKJQpKUXLmRt/A3U9MSi/nuq05G4YNOexuwXKt8HFg9czBNGI/lSjdpx5
+         fJAV/OHnvaqMAlTbklbDDeeA1NIv0frKKvUSOdyAdy1RZlr+9NI7BxmPcJwV9SyreSYO
+         45q03idsXJLwXDRRH4+lnDi9QQRpeu9+RR1pYm3lO5DcSkd1VevS50fsLrzfEGvC249l
+         aeRCOr6adfaUvDldzA9R2KmBjW4Ww0VEhdrzfshTtTCuIFMOtWjcjVPXK8wKGtilPGTj
+         PhIjoHcQfRcDJXXO7o00xLS9dVgpxW8+tiZ2Jg9CV2Pu/JqrrhcapKYLENvbfYJrDdql
+         tvmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=xuZtPMEGTJUPyCThBRbp89TRLDnOnODjmUD0CEahbP8=;
-        b=yIZfuNKEFS3W2IPf15X4G5ptxGaGIvc+/9GbJYfeE8RJ5DVGaILJxpZzI2uip7lIPw
-         AlDcqTu9L13cYKoO6S51u1Y1JPrdnf3krWWB0dc/sKvLojiB9aiFc5X6uRa5AcXLVSeA
-         njYcY+8wwRF/EY5N4yW1eb9fZ7pJzQ+i8Itp8rZ5YFJh/PvuLZjMuMnLpEYjLO5iJ0PJ
-         r2XEnLqF99j4+O0TCYjlmZTf+GFVzxTPN57b4bqX154JeO17c8UFUnTAZl19ouviYJao
-         HZMo9SmyIlL5qB7KowjKreDjashai8vSH2I+QIFEklwqbkGKK9VxupNbbbk/45o4rjUH
-         jhKA==
-X-Gm-Message-State: AJIora/wgOPYPrS6pgb14kdMW2Aaaeu/EkGYX4y+qX+NWWgatPdBC+r4
-        1ZGizPeFub3ESqflhjJzn9uWcMobiYkxK/hO5VzGLSIQabSaGuvt+ZVxLH4ocX7mAaNBecTAkvA
-        PbrGsQKR5NDqN8J+i
-X-Received: by 2002:a17:907:7d8b:b0:72f:2306:329a with SMTP id oz11-20020a1709077d8b00b0072f2306329amr16924726ejc.369.1658336634572;
-        Wed, 20 Jul 2022 10:03:54 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v8HK3Vlfjf43MlHI1Fad5ztpTBq9UeLWcrb3eFi6pmR6+PN79I0J3ji7iEf9BXw4FEHd/yNQ==
-X-Received: by 2002:a17:907:7d8b:b0:72f:2306:329a with SMTP id oz11-20020a1709077d8b00b0072f2306329amr16924697ejc.369.1658336634208;
-        Wed, 20 Jul 2022 10:03:54 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id w6-20020a50fa86000000b0043ba0cf5dbasm2875285edr.2.2022.07.20.10.03.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 10:03:53 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 38BC34DA0BE; Wed, 20 Jul 2022 19:03:52 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
-Cc:     KP Singh <kpsingh@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v6 05/13] bpf: Add documentation for kfuncs
-In-Reply-To: <20220719132430.19993-6-memxor@gmail.com>
-References: <20220719132430.19993-1-memxor@gmail.com>
- <20220719132430.19993-6-memxor@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 20 Jul 2022 19:03:52 +0200
-Message-ID: <878ronu35z.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DRRDvUhGg+XRjKdigaR0X/x0hmvUMO6VH2v80OeYkr4=;
+        b=QDFQTzPDmNKevJnsVSsTJxbsk43dvkq2Mz+GcH8wh45eea2GQZZ+cK21Zwg60V1Q88
+         f2X30fLEfIAgHRj61xOIE5gEZh2tW1IPl7+gBAiQUpVPE9r0u2i3siStHykx/pxGhu70
+         u7ieaT/a4tqiUnvK1LAsUH4o7pJtLmMYruj5hS2TfCcN4vkQaWZ3nHuC2+jsZ8rLSW+t
+         HezLUueJHfrpGsFFfL/Xbkr70hfU3BHGGg3lDztSBP0jThtU+s3K7O5IUX+7eMXQb2Lr
+         VT7Y/NyolV5p8h/4x3LXQXwjsSEjjeeuiOy83UEJRgC2L+CZMTnZvc0DJssX0j7tdqnu
+         7Sog==
+X-Gm-Message-State: AJIora9iJUFZWizY3NtX8GbLa2qIYI467jXlPbi6z/dg0um4Hc0nSoHc
+        TBPZb+DvUFbdEGmpZQ29j7K9EgcHEYfGWHXEXYBI+QqTkOM=
+X-Google-Smtp-Source: AGRyM1uPOe53CvlPmI83IFhM84ZZmMexJ5f5+r9sqKdJ0kODBAuE/sBz/QwuQ8qQRMkrao8I4Iwa0n8hoEZYVo+jpRw=
+X-Received: by 2002:a05:6871:88e:b0:10b:f6bf:490 with SMTP id
+ r14-20020a056871088e00b0010bf6bf0490mr3238585oaq.129.1658336680911; Wed, 20
+ Jul 2022 10:04:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <0ad4093257791efe9651303b91ece0de244aafa4.1658166896.git.lucien.xin@gmail.com>
+ <Ytb8ouxpPfV4MHru@t14s.localdomain>
+In-Reply-To: <Ytb8ouxpPfV4MHru@t14s.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 20 Jul 2022 13:03:56 -0400
+Message-ID: <CADvbK_dj83ajdamWDZpT1OUFBDJT-9udtKS97+W8Khw9XoVDrA@mail.gmail.com>
+Subject: Re: [PATCH net] Documentation: fix sctp_wmem in ip-sysctl.rst
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+On Tue, Jul 19, 2022 at 2:49 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Mon, Jul 18, 2022 at 01:54:56PM -0400, Xin Long wrote:
+> > Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
+> > SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
+> > by sk_wmem_schedule(). So we should fix the description for this option in
+> > ip-sysctl.rst accordingly.
+> >
+> > Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  Documentation/networking/ip-sysctl.rst | 9 ++++++++-
+> >  1 file changed, 8 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> > index 0e58001f8580..b7db2e5e5cc5 100644
+> > --- a/Documentation/networking/ip-sysctl.rst
+> > +++ b/Documentation/networking/ip-sysctl.rst
+> > @@ -2870,7 +2870,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
+> >       Default: 4K
+> >
+> >  sctp_wmem  - vector of 3 INTEGERs: min, default, max
+> > -     Currently this tunable has no effect.
+> > +     Only the first value ("min") is used, "default" and "max" are
+> > +     ignored.
+> > +
+> > +     min: Minimal size of send buffer used by SCTP socket.
+>
+> I'm not a native English speaker, but this seems better:
+> "Minimum size of send buffer that can be used by an SCTP socket."
+This is from "sctp_rmem" part:
 
-> As the usage of kfuncs grows, we are starting to form consensus on the
-> kinds of attributes and annotations that kfuncs can have. To better help
-> developers make sense of the various options available at their disposal
-> to present an unstable API to the BPF users, document the various kfunc
-> flags and annotations, their expected usage, and explain the process of
-> defining and registering a kfunc set.
+"min: Minimal size of receive buffer used by SCTP socket."
 
-[...]
+I think it was copied from "tcp_rmem", and yes it should be "SCTP sockets"
+or "an SCTP socket.", and "Minimum size" seems more common.
 
-> +2.4.2 KF_RET_NULL flag
-> +----------------------
-> +
-> +The KF_RET_NULL flag is used to indicate that the pointer returned by the kfunc
-> +may be NULL. Hence, it forces the user to do a NULL check on the pointer
-> +returned from the kfunc before making use of it (dereferencing or passing to
-> +another helper). This flag is often used in pairing with KF_ACQUIRE flag, but
-> +both are mutually exclusive.
+will post v2. Thanks.
 
-That last sentence is contradicting itself. "Mutually exclusive" means
-"can't be used together". I think you mean "orthogonal" or something to
-that effect?
-
--Toke
-
+>
+> > +     It is guaranteed to each SCTP socket (but not association) even
+> > +     under moderate memory pressure.
+> > +
+> > +     Default: 4K
+> >
+> >  addr_scope_policy - INTEGER
+> >       Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
+> > --
+> > 2.31.1
+> >
