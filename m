@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F03257AEDD
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 638BB57AEEC
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241913AbiGTDHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 23:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        id S241945AbiGTDHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 23:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240937AbiGTDGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:06:40 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5BC70E43;
-        Tue, 19 Jul 2022 20:05:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VJuvIdk_1658286319;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJuvIdk_1658286319)
+        with ESMTP id S240951AbiGTDGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:06:43 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF787171C;
+        Tue, 19 Jul 2022 20:05:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VJuvIf5_1658286322;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJuvIf5_1658286322)
           by smtp.aliyun-inc.com;
-          Wed, 20 Jul 2022 11:05:20 +0800
+          Wed, 20 Jul 2022 11:05:23 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v12 18/40] virtio_ring: packed: extract the logic of attach vring
-Date:   Wed, 20 Jul 2022 11:04:14 +0800
-Message-Id: <20220720030436.79520-19-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v12 19/40] virtio_ring: packed: extract the logic of vring init
+Date:   Wed, 20 Jul 2022 11:04:15 +0800
+Message-Id: <20220720030436.79520-20-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
 References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
@@ -72,69 +72,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate the logic of attach vring, the subsequent patch will call it
-separately.
+Separate the logic of initializing vring, and subsequent patches will
+call it separately.
+
+This function completes the variable initialization of packed vring. It
+together with the logic of atatch constitutes the initialization of
+vring.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/virtio/virtio_ring.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 1f8d6417b46a..19ed20d7d433 100644
+index 19ed20d7d433..3bbeb385fb8c 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -1932,6 +1932,22 @@ static int vring_alloc_state_extra_packed(struct vring_virtqueue_packed *vring_p
- 	return -ENOMEM;
+@@ -1948,6 +1948,21 @@ static void virtqueue_vring_attach_packed(struct vring_virtqueue *vq,
+ 	vq->packed.desc_extra = vring_packed->desc_extra;
  }
  
-+static void virtqueue_vring_attach_packed(struct vring_virtqueue *vq,
-+					  struct vring_virtqueue_packed *vring_packed)
++static void virtqueue_vring_init_packed(struct vring_virtqueue *vq)
 +{
-+	vq->packed.ring_dma_addr = vring_packed->ring_dma_addr;
-+	vq->packed.driver_event_dma_addr = vring_packed->driver_event_dma_addr;
-+	vq->packed.device_event_dma_addr = vring_packed->device_event_dma_addr;
++	vq->packed.next_avail_idx = 0;
++	vq->packed.avail_wrap_counter = 1;
++	vq->packed.event_flags_shadow = 0;
++	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
 +
-+	vq->packed.ring_size_in_bytes = vring_packed->ring_size_in_bytes;
-+	vq->packed.event_size_in_bytes = vring_packed->event_size_in_bytes;
-+
-+	vq->packed.vring = vring_packed->vring;
-+
-+	vq->packed.desc_state = vring_packed->desc_state;
-+	vq->packed.desc_extra = vring_packed->desc_extra;
++	/* No callback?  Tell other side not to bother us. */
++	if (!vq->vq.callback) {
++		vq->packed.event_flags_shadow = VRING_PACKED_EVENT_FLAG_DISABLE;
++		vq->packed.vring.driver->flags =
++			cpu_to_le16(vq->packed.event_flags_shadow);
++	}
 +}
 +
  static struct virtqueue *vring_create_virtqueue_packed(
  	unsigned int index,
  	unsigned int num,
-@@ -1972,15 +1988,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
+@@ -1988,24 +2003,13 @@ static struct virtqueue *vring_create_virtqueue_packed(
  	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
  		!context;
  
--	vq->packed.ring_dma_addr = vring_packed.ring_dma_addr;
--	vq->packed.driver_event_dma_addr = vring_packed.driver_event_dma_addr;
--	vq->packed.device_event_dma_addr = vring_packed.device_event_dma_addr;
+-	vq->packed.next_avail_idx = 0;
+-	vq->packed.avail_wrap_counter = 1;
+-	vq->packed.event_flags_shadow = 0;
+-	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
 -
--	vq->packed.ring_size_in_bytes = vring_packed.ring_size_in_bytes;
--	vq->packed.event_size_in_bytes = vring_packed.event_size_in_bytes;
--
--	vq->packed.vring = vring_packed.vring;
--
- 	vq->packed.next_avail_idx = 0;
- 	vq->packed.avail_wrap_counter = 1;
- 	vq->packed.event_flags_shadow = 0;
-@@ -1990,10 +1997,8 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	err = vring_alloc_state_extra_packed(&vring_packed);
  	if (err)
  		goto err_state_extra;
  
--	vq->packed.desc_state = vring.desc_state;
--	vq->packed.desc_extra = vring.desc_extra;
--
  	virtqueue_init(vq, num);
-+	virtqueue_vring_attach_packed(vq, &vring_packed);
+ 	virtqueue_vring_attach_packed(vq, &vring_packed);
+-
+-	/* No callback?  Tell other side not to bother us. */
+-	if (!callback) {
+-		vq->packed.event_flags_shadow = VRING_PACKED_EVENT_FLAG_DISABLE;
+-		vq->packed.vring.driver->flags =
+-			cpu_to_le16(vq->packed.event_flags_shadow);
+-	}
++	virtqueue_vring_init_packed(vq);
  
- 	/* No callback?  Tell other side not to bother us. */
- 	if (!callback) {
+ 	spin_lock(&vdev->vqs_list_lock);
+ 	list_add_tail(&vq->vq.list, &vdev->vqs);
 -- 
 2.31.0
 
