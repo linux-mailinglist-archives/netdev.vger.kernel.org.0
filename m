@@ -2,51 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 661F457AB40
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C20E857AB4E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236350AbiGTBAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 21:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
+        id S238183AbiGTBHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 21:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238094AbiGTBAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:00:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF2E2A
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 18:00:14 -0700 (PDT)
+        with ESMTP id S231440AbiGTBHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:07:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2152148EBF;
+        Tue, 19 Jul 2022 18:07:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50DFD61721
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A8BEEC341CE;
-        Wed, 20 Jul 2022 01:00:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4A55B81DE0;
+        Wed, 20 Jul 2022 01:07:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26920C341CA;
+        Wed, 20 Jul 2022 01:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658278813;
-        bh=eznlbhHnBSqzI+iCCt2cNxHK8+0WWamAzsLFTbYZ4X0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FWAAIVvLcbJlZMksru9w+rXp3RE5b3vdZ0sOyaCtJKxjwawqhkzUveKsnfRwOYCpj
-         3sYe4Jh4IGwjxZGjl01iv2bezUPk4EqQYGwWoGZ6K8auSTbVdu1ZcS8MQJh899u+pq
-         uZVKzfGq3u7a9LoNpt/u3AAsTPVgbAEJSN7ggmcgy5n7k33MFCkM4TBhyzvJf2396+
-         vWNwJgnP+Rm7WvzjOlRDK0R1lhWJawJmpoGX+7L7AE1hXYDdsNhW08Xo8aj9HPRtQj
-         YYftBxKbD+3hEaZBrwed8c157E9i6KCfbBDDFUL8WI/4H/mOMPdngMKv+jyZeLOm7Q
-         faFFcCC2g9zgQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A43FE451B0;
-        Wed, 20 Jul 2022 01:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1658279226;
+        bh=VZKQyUqkgOyxor/CL4FV3kbbmHu2L+VLW6W/lsqp7cU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ecce4uPTOaJ7kVbgFxANyF8ec/qlzYu22XOUCG8lM6f6LZmPKb0D098n+do+fLQWi
+         TWUCc0v2qMOkPdEXf4nJ79DrdbyZaCDY6PWVkieUkH9wsv9l4KeOZS4rErVA0PKJtX
+         CDhQlBc73y4KlP4UeThiBzOZj3bG0BKF+ZG0s9PWGxDvW0XZ4UjSackLrDeEWVVyno
+         Qx9K0ZKUUQcHtFaxdCET2qNY7ImAHhZz6JBXBRMA0GOk3CHok+sNu8wuyO5dsP0Zmn
+         OQp3dkMorYONzOH8Gll/+0GYtWXhg/GSKyXwGkfBm05ODVfBVveVe5xeFxei3cT9g9
+         R7InpEGCGkcHg==
+Date:   Tue, 19 Jul 2022 18:07:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v4 4/5] net: ethernet: stmicro: stmmac:
+ generate stmmac dma conf before open
+Message-ID: <20220719180705.45208cb0@kernel.org>
+In-Reply-To: <20220719013219.11843-5-ansuelsmth@gmail.com>
+References: <20220719013219.11843-1-ansuelsmth@gmail.com>
+        <20220719013219.11843-5-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3][pull request] 1GbE Intel Wired LAN Driver
- Updates 2022-07-18
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165827881356.21433.5825241131111257864.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 01:00:13 +0000
-References: <20220718180109.4114540-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220718180109.4114540-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org, sasha.neftin@intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,32 +62,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, 19 Jul 2022 03:32:18 +0200 Christian Marangi wrote:
+> Rework the driver to generate the stmmac dma_conf before stmmac_open.
+> This permits a function to first check if it's possible to allocate a
+> new dma_config and then pass it directly to __stmmac_open and "open" the
+> interface with the new configuration.
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+You missed one kdoc:
 
-On Mon, 18 Jul 2022 11:01:06 -0700 you wrote:
-> This series contains updates to igc driver only.
-> 
-> Kurt Kanzenbach adds support for Qbv schedules where one queue stays open
-> in consecutive entries.
-> 
-> Sasha removes an unused define and field.
-> 
-> [...]
+> @@ -1711,9 +1744,11 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
+>   * and allocates the socket buffers. It supports the chained and ring
+>   * modes.
+>   */
+> -static int __init_dma_tx_desc_rings(struct stmmac_priv *priv, u32 queue)
+> +static int __init_dma_tx_desc_rings(struct stmmac_priv *priv,
+> +				    struct stmmac_dma_conf *dma_conf,
+> +				    u32 queue)
+>  {
 
-Here is the summary with links:
-  - [net-next,1/3] igc: Lift TAPRIO schedule restriction
-    https://git.kernel.org/netdev/net-next/c/a5fd39464a40
-  - [net-next,2/3] igc: Remove MSI-X PBA Clear register
-    https://git.kernel.org/netdev/net-next/c/fb24f341c7b9
-  - [net-next,3/3] igc: Remove forced_speed_duplex value
-    https://git.kernel.org/netdev/net-next/c/6ac0db3f2bf6
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:1750: warning: Function parameter or member 'dma_conf' not described in '__init_dma_tx_desc_rings'
