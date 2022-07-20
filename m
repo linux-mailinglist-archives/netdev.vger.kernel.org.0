@@ -2,119 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E6B57B931
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4BA57B939
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbiGTPJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 11:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        id S241006AbiGTPLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 11:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240905AbiGTPJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:09:11 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD762237D6
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:09:09 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id e15so21306192wro.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PN9SvnUq9sr80nlTjpLBVjvKibhchzGAYby0F+GI01A=;
-        b=PN1z7k6Rfqe5zKoCvNWGpugRL3O2TtMRILEah7PeQxCNTgnzweGkLFKhkkompJQOmD
-         0SxXIn8qRFLMZ4VdvKmqJ4cuDnJf5uqXRjFYq4h18PIvt5P71kOb1v1mgKrGPxmzioI6
-         2NZeUR/pr9ksbKXL6ZuAZf8AMxXyE8f5wC3veVv78NQu1hV9nZoTBGGKvVvNCb7VPMCn
-         IKaDjKzkJJaCh4uwuAQPTUDSVVZEtdajv9XsgFiz3tPCVohbazsQHs1qZjlLIQWtQL81
-         RtyUqOAbrxzw6Neb2ihUURnCEGzMTUIrFix+RcIQccZska6M4MvCmerux9jnD557/JZK
-         fyqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PN9SvnUq9sr80nlTjpLBVjvKibhchzGAYby0F+GI01A=;
-        b=dexcMm29yng4EYUL6uL5ykzcmxDfYJns555pwP84ZRxFlZ1NOruYlVVMLG0u5p/psK
-         a/kMsLjWLou8j8wziQK08WTzuIT5NHO0/mZ6w54PK7VUv9jMT/vRkc8r55h1XWkCQX4v
-         zsaLKv9Yl2oN+IxELRpC48VjP/suvofyh/1UfEYaYRVFiZdWTgq2jOYNPI0i58wtOB7Z
-         Yh+XtcdI0lO8MsdlivvTiiJt8qtWyRWRToyAFMckW8vwXCzCzLGlz/uOnv2Mrb6iUvhQ
-         2zc9tZrqOcmYBhufGmQJRJU/1E4kG1zG1SmIjbmkYua/wbpEVjH1LadOm2m03kTfwPDD
-         50Lw==
-X-Gm-Message-State: AJIora93QSZTB8s07a3+pNjeSNkgLCxWHO8vd3ThN6Mf6D+9Gvaop77G
-        5mGuf+4pF4PfOFNAcEibaoqjaA==
-X-Google-Smtp-Source: AGRyM1vrHoREA6ePgwv5nj7EPRxMqkA/dHU6L0hL4/TpVgaBakQQRRi5UoVdKlWsUBdb3OpetwAbPA==
-X-Received: by 2002:a05:6000:47:b0:21e:417b:95d with SMTP id k7-20020a056000004700b0021e417b095dmr5721434wrx.590.1658329748299;
-        Wed, 20 Jul 2022 08:09:08 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id f8-20020a05600c154800b00397402ae674sm3228665wmg.11.2022.07.20.08.09.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 08:09:07 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 17:09:06 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v2 05/12] mlxsw: core_linecards: Expose HW
- revision and INI version
-Message-ID: <Ytgakkh8hcrbidoY@nanopsycho>
-References: <20220719064847.3688226-1-jiri@resnulli.us>
- <20220719064847.3688226-6-jiri@resnulli.us>
- <YtfDQ6hpGKXFKfCD@shredder>
- <Ytf0vDVH7+05f0IS@nanopsycho>
- <Ytf4ZaJdJY20ULfw@shredder>
- <YtgYN3vi6MyTTT0K@nanopsycho>
- <YtgYuPrO6gw0nR3b@shredder>
+        with ESMTP id S233075AbiGTPLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:11:12 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75C43AB11
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:11:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658329871; x=1689865871;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qK6uRz3wuRC45P86wgP2+w2eANZ5MSchI67ZwRxkB/w=;
+  b=DKSEx9esf8I/awHCQBHww5VzLfzbndMwDi7Zp2p9W5eaLVO2ITULtSY7
+   NHsg1ZDDXxu7uOrkEI8d4D2o4/uQCX1tuGXMuu0pnUkbH2IzwgUAK3Btq
+   IKeg1z8jDKxs8i/9bVFhVfng8bmgUmWLou/90l+AEmeH4dUpX9kQW+2w5
+   4DnnwjJkPoPymbc+LiC1dG9u24wHBEUkXXOSuhJFgWs9rnBpq3Jbxbalt
+   RK5UcQ9XzJEWhvv+cXc3BD+91SZK7TP4/1CN9cgbo3FTDQptrLVoUQ1Q1
+   lkfwDnD5uXKShaw8Q2Hr+qHv6x9S7AS/ssjZqzFJ1F8w4pMUVgH9G5snR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="373103824"
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="373103824"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 08:10:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
+   d="scan'208";a="665899527"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 08:10:48 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26KFAkRi027439;
+        Wed, 20 Jul 2022 16:10:46 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "shenjian (K)" <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org,
+        lipeng321@huawei.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: Re: [RFCv6 PATCH net-next 02/19] net: replace general features macroes with global netdev_features variables
+Date:   Wed, 20 Jul 2022 17:09:57 +0200
+Message-Id: <20220720150957.3875487-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
+References: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtgYuPrO6gw0nR3b@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        PP_MIME_FAKE_ASCII_TEXT,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 20, 2022 at 05:01:12PM CEST, idosch@nvidia.com wrote:
->On Wed, Jul 20, 2022 at 04:59:03PM +0200, Jiri Pirko wrote:
->> Wed, Jul 20, 2022 at 02:43:17PM CEST, idosch@nvidia.com wrote:
->> >On Wed, Jul 20, 2022 at 02:27:40PM +0200, Jiri Pirko wrote:
->> >> Wed, Jul 20, 2022 at 10:56:35AM CEST, idosch@nvidia.com wrote:
->> >> >On Tue, Jul 19, 2022 at 08:48:40AM +0200, Jiri Pirko wrote:
->> >> >> +int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
->> >> >> +				    struct devlink_info_req *req,
->> >> >> +				    struct netlink_ext_ack *extack)
->> >> >> +{
->> >> >> +	char buf[32];
->> >> >> +	int err;
->> >> >> +
->> >> >> +	mutex_lock(&linecard->lock);
->> >> >> +	if (WARN_ON(!linecard->provisioned)) {
->> >> >> +		err = 0;
->> >> >
->> >> >Why not:
->> >> >
->> >> >err = -EINVAL;
->> >> >
->> >> >?
->> >> 
->> >> Well, a) this should not happen. No need to push error to the user for
->> >> this as the rest of the info message is still fine.
->> >
->> >Not sure what you mean by "the rest of the info message is still fine".
->> >Which info message? If the line card is not provisioned, then it
->> >shouldn't even have a devlink instance and it will not appear in
->> >"devlink dev info" dump.
->> >
->> >I still do not understand why this error is severe enough to print a
->> >WARNING to the kernel log, but not emit an error code to user space.
->> 
->> As I wrote, WARN_ON was a leftover.
->
->It was a leftover in patch #10 where you checked '!linecard->ready'.
->Here I think it's actually correct because it shouldn't happen unless
->I'm missing something
+From: shenjian (K) <shenjian15@huawei.com>
+Date: Wed, 20 Apr 2022 17:54:13 +0800
 
-Correct, I confused myself :)
+> 在 2022/4/19 22:49, Alexander Lobakin 写道:
+> > From: Jian Shen <shenjian15@huawei.com>
+> > Date: Tue, 19 Apr 2022 10:21:49 +0800
+> >
+> >> There are many netdev_features bits group used in kernel. The definition
+> >> will be illegal when using feature bit more than 64. Replace these macroes
+> >> with global netdev_features variables, initialize them when netdev module
+> >> init.
+> >>
+> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> >> ---
+> >>   drivers/net/wireguard/device.c  |  10 +-
+> >>   include/linux/netdev_features.h | 102 +++++++++-----
+> >>   net/core/Makefile               |   2 +-
+> >>   net/core/dev.c                  |  87 ++++++++++++
+> >>   net/core/netdev_features.c      | 241 ++++++++++++++++++++++++++++++++
+> >>   5 files changed, 400 insertions(+), 42 deletions(-)
+> >>   create mode 100644 net/core/netdev_features.c
+> >>
+> > --- 8< ---
+> >
+> >> diff --git a/net/core/dev.c b/net/core/dev.c
+> >> index 4d6b57752eee..85bb418e8ef1 100644
+> >> --- a/net/core/dev.c
+> >> +++ b/net/core/dev.c
+> >> @@ -146,6 +146,7 @@
+> >>   #include <linux/sctp.h>
+> >>   #include <net/udp_tunnel.h>
+> >>   #include <linux/net_namespace.h>
+> >> +#include <linux/netdev_features_helper.h>
+> >>   #include <linux/indirect_call_wrapper.h>
+> >>   #include <net/devlink.h>
+> >>   #include <linux/pm_runtime.h>
+> >> @@ -11255,6 +11256,90 @@ static struct pernet_operations __net_initdata default_device_ops = {
+> >>   	.exit_batch = default_device_exit_batch,
+> >>   };
+> >>   
+> >> +static void netdev_features_init(void)
+> > It is an initialization function, so it must be marked as __init.
+> right, I will add it, thanks!
+> 
+> >> +{
+> >> +	netdev_features_t features;
+> >> +
+> >> +	netdev_features_set_array(&netif_f_never_change_feature_set,
+> >> +				  &netdev_never_change_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_gso_feature_set_mask,
+> > I'm not sure it does make sense to have an empty newline between
+> > each call. I'd leave newlines only between the "regular" blocks
+> > and the "multi-call" blocks, I mean, stuff like VLAN, GSO and
+> > @netdev_ethtool_features.
+> At first, I added empty newline per call for the it used three lines.
+> Now the new call just use two lines, I will remove some unnecessary
+> blank lines.
+> 
+> Thanks!
 
+I see no news regarding the conversion since the end of April, maybe
+I could pick it and finish if nobody objects? I'll preserve the
+original authorship for sure.
+
+> 
+> >> +				  &netdev_gso_features_mask);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_ip_csum_feature_set,
+> >> +				  &netdev_ip_csum_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_csum_feature_set_mask,
+> >> +				  &netdev_csum_features_mask);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_general_tso_feature_set,
+> >> +				  &netdev_general_tso_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_all_tso_feature_set,
+> >> +				  &netdev_all_tso_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_tso_ecn_feature_set,
+> >> +				  &netdev_tso_ecn_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_all_fcoe_feature_set,
+> >> +				  &netdev_all_fcoe_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_gso_soft_feature_set,
+> >> +				  &netdev_gso_software_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_one_for_all_feature_set,
+> >> +				  &netdev_one_for_all_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_all_for_all_feature_set,
+> >> +				  &netdev_all_for_all_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_upper_disables_feature_set,
+> >> +				  &netdev_upper_disable_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_soft_feature_set,
+> >> +				  &netdev_soft_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_soft_off_feature_set,
+> >> +				  &netdev_soft_off_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_rx_vlan_feature_set,
+> >> +				  &netdev_rx_vlan_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_tx_vlan_feature_set,
+> >> +				  &netdev_tx_vlan_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_vlan_filter_feature_set,
+> >> +				  &netdev_vlan_filter_features);
+> >> +
+> >> +	netdev_all_vlan_features = netdev_rx_vlan_features;
+> >> +	netdev_features_set(&netdev_all_vlan_features, netdev_tx_vlan_features);
+> >> +	netdev_features_set(&netdev_all_vlan_features,
+> >> +			    netdev_vlan_filter_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_ctag_vlan_feature_set,
+> >> +				  &netdev_ctag_vlan_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_stag_vlan_feature_set,
+> >> +				  &netdev_stag_vlan_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_gso_encap_feature_set,
+> >> +				  &netdev_gso_encap_all_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_xfrm_feature_set,
+> >> +				  &netdev_xfrm_features);
+> >> +
+> >> +	netdev_features_set_array(&netif_f_tls_feature_set,
+> >> +				  &netdev_tls_features);
+> >> +
+> >> +	netdev_csum_gso_features_mask =
+> >> +		netdev_features_or(netdev_gso_software_features,
+> >> +				   netdev_csum_features_mask);
+> >> +
+> >> +	netdev_features_fill(&features);
+> >> +	netdev_ethtool_features =
+> >> +		netdev_features_andnot(features, netdev_never_change_features);
+> >> +}
+> >> +
+> >>   /*
+> >>    *	Initialize the DEV module. At boot time this walks the device list and
+> >>    *	unhooks any devices that fail to initialise (normally hardware not
+> > --- 8< ---
+> >
+> >> -- 
+> >> 2.33.0
+> > Thanks,
+> > Al
+> >
+> > .
+> >
+
+Thanks,
+Olek
