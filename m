@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEE157B791
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 15:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC64C57B7F7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 15:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234337AbiGTNc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 09:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
+        id S232105AbiGTNxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 09:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiGTNc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 09:32:56 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260A5387;
-        Wed, 20 Jul 2022 06:32:55 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so1298374wmo.0;
-        Wed, 20 Jul 2022 06:32:55 -0700 (PDT)
+        with ESMTP id S229638AbiGTNxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 09:53:21 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2FC564CF;
+        Wed, 20 Jul 2022 06:53:19 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id y4so23845226edc.4;
+        Wed, 20 Jul 2022 06:53:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LTrp5IVhgxS5/Vts16dXeU1eG7r/JSS7dSLwg4addVc=;
-        b=YOnzwnMObQoZd4bRLNPRy3ko1Y7qeyqMYfbuE52CREJ9YJC5joq4C3UVIu9ZnUjToh
-         i51c4crsQ46K/o5TYjiyieJghiXI+jqEmTVs7RERdyswU66ngyjxy0+eI3O99d716ATa
-         mkcebZ4M47kvFV9Exb9IvBUqB3FP0e6ciwVn/o8nK9xiBntWUZiXFBlbGMQ5wfkSWfah
-         /Yu+jHaOQ1ZQnxOY5lUaQt6i7IX8MfGoyVPJ+xK/tm7mtzhUfpVLNfLXekDmNPcEdzwL
-         R6RIdGzE8rrpdhfFEa1MqQE4Ml4+jON0WqEYO5naLzWbRQR9xH4cwqG+M3lBbqKsI7S3
-         6a2Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v7Ua7Pjztqwug82UBS8PZqoIQdh5WrByyVymA7qNXfY=;
+        b=Nmbr0Ft+AJ1qLYlMHWEXMpaR4XELHNyQAwZbdBWe8fGQhHqGPd1gD6d1KCMogKEBpz
+         Bm7n5gTDnNsGpTpIkaOZ/zXnhVIirBjmDIiHPfE54B8fs3L0ulH52s18KafGlgDihKqD
+         PaL3yw6KG6rnj0ZvTD+0rKFVYgv6JFRs8QlaCeMNV8thMquMeGmS7cdhhzAbqDi04V1y
+         bqXgezBmXgeiTzanu4P8w270e0fjtnEJ0Rdb5mMCD7nIRDUxtqJ86WODqq6wl3rOeexs
+         MpaGTPLcOKjG1JGubt82XE2ZHtNLyqAR7dQDQ01s94CBo8rkf6vBBE6N47hf84cFcPIX
+         X2rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LTrp5IVhgxS5/Vts16dXeU1eG7r/JSS7dSLwg4addVc=;
-        b=fu7CXFlEFmXGGic5JYLGEk9b08OSjdOuJZTTZ2i+2r9TqG/dhSMLt0riZQFIRjC07U
-         3IZPtqKxp4uIxc/Q8uFmEKv85uPks7QyTye9IKOXX9WaPRvV2cJvvxm9pY3B5s4dyof4
-         6A19hD7ApHZOH+ukE3v93QjRH1UVwNOiIxz8ZOOAiRnKKKwM+EU7lknpACCRh03W+Odk
-         fugG57NMHiNgz6TpGqr5ft9K35GwY4RUej1r+QeB/sLZv/ixfNINWtjfQesnulaNikOO
-         Gf3d7xBcg3MzgZ4thhYoIpuzXnJMITOlsQS13z8SPWZcexX6OzjdSq7XWEuougKmkQd3
-         Eyng==
-X-Gm-Message-State: AJIora/LTPRfXqXElpimb7fKnNhcSUnUxBhLlwnhzf4srzoBJ1maUG/D
-        JqhcQNRVQ21zfCS7cKmLIFx001VWan0=
-X-Google-Smtp-Source: AGRyM1vCp3ZHQfdoRN3ahvoo+4U5LqV/NfvsUZDqbnkeXjbghbNWZRKFhPFLYoDmsIwVbjRoJuldYQ==
-X-Received: by 2002:a05:600c:2d07:b0:3a3:585:5d96 with SMTP id x7-20020a05600c2d0700b003a305855d96mr3883166wmf.38.1658323973633;
-        Wed, 20 Jul 2022 06:32:53 -0700 (PDT)
-Received: from [192.168.8.198] (188.30.134.15.threembb.co.uk. [188.30.134.15])
-        by smtp.gmail.com with ESMTPSA id y4-20020a5d4ac4000000b0021e47386eb8sm2482647wrs.2.2022.07.20.06.32.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 06:32:52 -0700 (PDT)
-Message-ID: <6ff5f766-61ef-ae40-aea3-a00c651f94a0@gmail.com>
-Date:   Wed, 20 Jul 2022 14:32:12 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v7Ua7Pjztqwug82UBS8PZqoIQdh5WrByyVymA7qNXfY=;
+        b=UEiZ1i4ln1A8kJ/SFQEA3pI04zCXCYWzD1TYPBPTe8TDFzjGW39zPjezhGnbtEQVD8
+         GnPE1MvGHKwM3IpkUUQY/Dtlez2kOspL5S2OmGn9ELp15siVIhzSnXe+7x5kcV5IxOTI
+         KGBRrP4EJ3Z2QhUUUIk/sQ054JKMccz4v4npp5d+ZwI1I7loZisrc4YYGdNLpAEwBzaN
+         JoA5K1lOBnREMSvv9mirHgZOkVAA9GpGpqYFeQuaa6mDilVMYjudGeu5V1jZTTL0YRRT
+         k5HGZYXqMdMUoqCTmbaBNCMc346IJ2KwX2HPz/LlnnjBvjpa4DckH3pKHWquerVcvea/
+         Up2w==
+X-Gm-Message-State: AJIora/Cua7UmNh6VI80AxTlG2ZmARZYgglyBc7NNTMaOeMftV5021Qh
+        zLwwqEPhRve2P6dk1BeUMmyugeEv+YTNwA==
+X-Google-Smtp-Source: AGRyM1tM9Guy5xL3TVWbHbE/7jg1cpe+wU1P3TJ2yS6onGuYZEUFHUh9quYHkm8PmlmdDbV86wGfEA==
+X-Received: by 2002:aa7:d788:0:b0:43b:bcbe:64d3 with SMTP id s8-20020aa7d788000000b0043bbcbe64d3mr1108303edq.15.1658325198189;
+        Wed, 20 Jul 2022 06:53:18 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id h10-20020a170906718a00b00718e4e64b7bsm7934599ejk.79.2022.07.20.06.53.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 06:53:17 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 16:53:14 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
- <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
- <0f54508f-e819-e367-84c2-7aa0d7767097@gmail.com>
- <d10f20a9-851a-33be-2615-a57ab92aca90@kernel.org>
- <bc48e2bb-37ee-5b7c-5a97-01e026de2ba4@gmail.com>
- <812c3233-1b64-8a0d-f820-26b98ff6642d@kernel.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <812c3233-1b64-8a0d-f820-26b98ff6642d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Shawn Guo <shawnguo@kernel.org>, UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [RFC PATCH net-next 0/9] net: pcs: Add support for devices
+ probed in the "usual" manner
+Message-ID: <20220720135314.5cjxiifrq5ig4vjb@skbuf>
+References: <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
+ <20220719181113.q5jf7mpr7ygeioqw@skbuf>
+ <20220711160519.741990-1-sean.anderson@seco.com>
+ <20220719152539.i43kdp7nolbp2vnp@skbuf>
+ <bec4c9c3-e51b-5623-3cae-6df1a8ce898f@seco.com>
+ <20220719153811.izue2q7qff7fjyru@skbuf>
+ <2d028102-dd6a-c9f6-9e18-5abf84eb37a1@seco.com>
+ <20220719181113.q5jf7mpr7ygeioqw@skbuf>
+ <c0a11900-5a31-ca90-220f-74e3380cef8c@seco.com>
+ <c0a11900-5a31-ca90-220f-74e3380cef8c@seco.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c0a11900-5a31-ca90-220f-74e3380cef8c@seco.com>
+ <c0a11900-5a31-ca90-220f-74e3380cef8c@seco.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,91 +103,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/18/22 03:19, David Ahern wrote:
-> On 7/14/22 12:55 PM, Pavel Begunkov wrote:
->>>>>> You dropped comments about TCP testing; any progress there? If not,
->>>>>> can
->>>>>> you relay any issues you are hitting?
->>>>>
->>>>> Not really a problem, but for me it's bottle necked at NIC bandwidth
->>>>> (~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
->>>>> Was actually benchmarked by my colleague quite a while ago, but can't
->>>>> find numbers. Probably need to at least add localhost numbers or grab
->>>>> a better server.
->>>>
->>>> Testing localhost TCP with a hack (see below), it doesn't include
->>>> refcounting optimisations I was testing UDP with and that will be
->>>> sent afterwards. Numbers are in MB/s
->>>>
->>>> IO size | non-zc    | zc
->>>> 1200    | 4174      | 4148
->>>> 4096    | 7597      | 11228
->>>
->>> I am surprised by the low numbers; you should be able to saturate a 100G
->>> link with TCP and ZC TX API.
->>
->> It was a quick test with my laptop, not a super fast CPU, preemptible
->> kernel, etc., and considering that the fact that it processes receives
->> from in the same send syscall roughly doubles the overhead, 87Gb/s
->> looks ok. It's not like MSG_ZEROCOPY would look much different, even
->> more to that all sends here will be executed sequentially in io_uring,
->> so no extra parallelism or so. As for 1200, I think 4GB/s is reasonable,
->> it's just the kernel overhead per byte is too high, should be same with
->> just send(2).
-> 
-> ?
-> It's a stream socket so those sends are coalesced into MTU sized packets.
+On Tue, Jul 19, 2022 at 03:34:45PM -0400, Sean Anderson wrote:
+> We could do it, but it'd be a pretty big hack. Something like the
+> following. Phylink would need to be modified to grab the lock before
+> every op and check if the PCS is dead or not. This is of course still
+> not optimal, since there's no way to re-attach a PCS once it goes away.
 
-That leaves syscall and io_uring overhead, locking the socket, etc.,
-which still requires more cycles than just copying 1200 bytes. And
-the used CPU is not blazingly fast, could be that a better CPU/setup
-will saturate 100G
+You assume it's just phylink who operates on a PCS structure, but if you
+include your search pool to also cover include/linux/pcs/pcs-xpcs.h,
+you'll see a bunch of exported functions which are called directly by
+the client drivers (stmmac, sja1105). At this stage it gets pretty hard
+to validate that drivers won't attempt from any code path to do
+something stupid with a dead PCS. All in all it creates an environment
+with insanely weak guarantees; that's pretty hard to get behind IMO.
 
->>>> Because it's localhost, we also spend cycles here for the recv side.
->>>> Using a real NIC 1200 bytes, zc is worse than non-zc ~5-10%, maybe the
->>>> omitted optimisations will somewhat help. I don't consider it to be a
->>>> blocker. but would be interesting to poke into later. One thing helping
->>>> non-zc is that it squeezes a number of requests into a single page
->>>> whenever zerocopy adds a new frag for every request.
->>>>
->>>> Can't say anything new for larger payloads, I'm still NIC-bound but
->>>> looking at CPU utilisation zc doesn't drain as much cycles as non-zc.
->>>> Also, I don't remember if mentioned before, but another catch is that
->>>> with TCP it expects users to not be flushing notifications too much,
->>>> because it forces it to allocate a new skb and lose a good chunk of
->>>> benefits from using TCP.
->>>
->>> I had issues with TCP sockets and io_uring at the end of 2020:
->>> https://www.spinics.net/lists/io-uring/msg05125.html
->>>
->>> have not tried anything recent (from 2022).
->>
->> Haven't seen it back then. In general io_uring doesn't stop submitting
->> requests if one request fails, at least because we're trying to execute
->> requests asynchronously. And in general, requests can get executed
->> out of order, so most probably submitting a bunch of requests to a single
->> TCP sock without any ordering on io_uring side is likely a bug.
-> 
-> TCP socket buffer fills resulting in a partial send (i.e, for a given
-> sqe submission only part of the write/send succeeded). io_uring was not
-> handling that case.
+> IMO a better solution is to use devlink and submit a patch to add
+> notifications which the MAC driver can register for. That way it can
+> find out when the PCS goes away and potentially do something about it
+> (or just let itself get removed).
 
-Shouldn't have been different from send(2) with MSG_NOWAIT, can be short
-and the user should handle it. Also I believe Jens pushed just recently
-in-kernel retries on the io_uring side for TCP in such cases.
+Not sure I understand what connection there is between devlink (device
+links) and PCS {de}registration notifications. We could probably add those
+notifications without any intervention from the device core: we would
+just need to make this new PCS "core" to register an blocking_notifier_call_chain
+to which interested drivers could add their notifier blocks. How a
+certain phylink user is going to determine that "hey, this PCS is
+definitely mine and I can use it" is an open question. In any case, my
+expectation is that we have a notifier chain, we can at least continue
+operating (avoid unbinding the struct device), but essentially move our
+phylink_create/phylink_destroy calls to within those notifier blocks.
 
-> I'll try to find some time to resurrect the iperf3 patch and try top of
-> tree kernel.
-
-Awesome
-
-
->> You can link io_uring requests, i.e. IOSQE_IO_LINK, guaranteeing
->> execution ordering. And if you meant links in the message, I agree
->> that it was not the best decision to consider len < sqe->len not
->> an error and not breaking links, but it was later added that
->> MSG_WAITALL would also change the success condition to
->> len==sqe->len. But all that is relevant if you was using linking.
-
--- 
-Pavel Begunkov
+Again, retrofitting this model to existing drivers, phylink API (and
+maybe even its internal structure) is something that's hard to hop on
+board of; I think it's a solution waiting for a problem, and I don't
+have an interest to develop or even review it.
