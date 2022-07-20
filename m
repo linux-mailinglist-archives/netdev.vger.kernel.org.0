@@ -2,107 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B2B57B3CF
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 11:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B7B57B3D7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 11:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbiGTJ3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 05:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        id S233958AbiGTJaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 05:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238708AbiGTJ30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 05:29:26 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21215465D;
-        Wed, 20 Jul 2022 02:29:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658309365; x=1689845365;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2DuSt0QvJZbYzemipvJzMJZJe6xxYK68zhMPGtzUfoc=;
-  b=LLlw27yDP7LExfWEdpxdW/3gcObuHnPpm4WnXjqhN6IRYDcMjR3oDBa9
-   dtrqditQMpx1I32sTp+cXMpBbWuoLikWlU+am1ndP37XPmemkP5y/yNH6
-   o9mi3WahnsFxFBAYu0O7c7fod2xJtONJekXYOEU/qv0Y7Ahg+zsPGyQcF
-   mF1/NoIF6ZAHRNwI/MY/2oBLu/cYP3gSXQNvu/exLVYrQ9kSk4wedNGUA
-   xgFTzB8yo7MQSKobUwlEYTXJFnAYtmnh0RseICd3+B3z8Ajbtv7dBzWUA
-   fXtvMg0Ogwf3wWYwfJJe3a8gM6Ush8OYEzgsWoxvFa5l6UwTl4MACzEcp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10413"; a="287474436"
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="287474436"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 02:29:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="548281972"
-Received: from lkp-server01.sh.intel.com (HELO 7dfbdc7c7900) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 20 Jul 2022 02:29:22 -0700
-Received: from kbuild by 7dfbdc7c7900 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oE61B-0000LV-I6;
-        Wed, 20 Jul 2022 09:29:21 +0000
-Date:   Wed, 20 Jul 2022 17:28:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     kbuild-all@lists.01.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230364AbiGTJaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 05:30:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87725EE34
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 02:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658309414;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GDJ3pDuliBBFCjPRQRCyBqUtEOUMI1zRI5vOv79h/yg=;
+        b=LwGze48SNqad5Ms13X7vUnJh7LGSOPOm69OqO3sfSTgL71BujVqTP/9cgqtrSCCFJnAFFZ
+        hFf8ovKz+Ob2yrxpunBvXletrdJ4e3TOOSdXXYnUVqTFBc1dq370i9rC+m3Svozde8cWbD
+        GEEXD7VrRpb+KTYrjbZWyXQ/KWvUqJ0=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-PmxAVSl7Oz-OdzYe4ytW2A-1; Wed, 20 Jul 2022 05:30:13 -0400
+X-MC-Unique: PmxAVSl7Oz-OdzYe4ytW2A-1
+Received: by mail-qk1-f199.google.com with SMTP id l189-20020a37bbc6000000b006af2596c5e8so13871617qkf.14
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 02:30:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=GDJ3pDuliBBFCjPRQRCyBqUtEOUMI1zRI5vOv79h/yg=;
+        b=ReejNpMJ0JjxRfqQ7xPMzZ+XWmeJSMJDf7nG7/mdGDQVJ8W9ewMO8RKohE2J2o75xb
+         K/BnPDubp640AtB2a18R4bjbZyd18JpHilm0j9SDYK4rndJx92xzTrP1RXqjUU7JEJ8V
+         vTsIVqYU0zVyrJnB8kcP9r1Xw7T2UlAVb94gLlKgTttcZ6w2yYhUb/K4gJpUv9mzpf/O
+         jFIsswPPVu30PGTy3RHTeuYj8nqLYRvkdxcLEBNnrdU8bRhEPNOGlk96Oc8qPZUr9r9V
+         zJTAmaYka5ILgqIQVCdJn3HhGl6Rb617b5lDSpY2vW/VjM6gd/0o6/jorNsuc2dTY7oq
+         Z85Q==
+X-Gm-Message-State: AJIora9AD5g3turmWaA83nHOuWUYyAkfqNCn/w/zYDqZ0OfU0L/Oauh4
+        tSETmIn1vCKMtNQm2SmrkAo3yrUcGCR5ReOwxAuzg2jTpM8NC0R5mvDtyJ+q2BF/GE8ID80yOya
+        IkP1bD7E6Gk6+T8eZ
+X-Received: by 2002:ac8:59c7:0:b0:31e:ede9:971b with SMTP id f7-20020ac859c7000000b0031eede9971bmr10707671qtf.208.1658309413092;
+        Wed, 20 Jul 2022 02:30:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s6mJMvfgOsm/KeVUVbnelP8FW2qMJbR3hxdq7pZeKI4iupDApN2I1fzLeoIKhfg5s7AfAEcg==
+X-Received: by 2002:ac8:59c7:0:b0:31e:ede9:971b with SMTP id f7-20020ac859c7000000b0031eede9971bmr10707652qtf.208.1658309412863;
+        Wed, 20 Jul 2022 02:30:12 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id u12-20020a05620a0c4c00b006a6ebde4799sm17257649qki.90.2022.07.20.02.30.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 02:30:12 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 11:30:05 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: Re: [PATCH v2 07/11] net: phylink: Adjust link settings based on
- rate adaptation
-Message-ID: <202207201727.9nqTCybA-lkp@intel.com>
-References: <20220719235002.1944800-8-sean.anderson@seco.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 0/3] virtio/vsock: use SO_RCVLOWAT to set
+ POLLIN/POLLRDNORM
+Message-ID: <20220720093005.2unej4jnnvrn55f2@sgarzare-redhat>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+ <20220719125856.a6bfwrvy66gxxzqe@sgarzare-redhat>
+ <ac05e1ee-23b3-75e0-f9a4-1056a68934d8@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220719235002.1944800-8-sean.anderson@seco.com>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ac05e1ee-23b3-75e0-f9a4-1056a68934d8@sberdevices.ru>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+On Wed, Jul 20, 2022 at 06:07:47AM +0000, Arseniy Krasnov wrote:
+>On 19.07.2022 15:58, Stefano Garzarella wrote:
+>> On Mon, Jul 18, 2022 at 08:12:52AM +0000, Arseniy Krasnov wrote:
+>>> Hello,
+>>>
+>>> during my experiments with zerocopy receive, i found, that in some
+>>> cases, poll() implementation violates POSIX: when socket has non-
+>>> default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
+>>> POLLRDNORM bits in 'revents' even number of bytes available to read
+>>> on socket is smaller than SO_RCVLOWAT value. In this case,user sees
+>>> POLLIN flag and then tries to read data(for example using  'read()'
+>>> call), but read call will be blocked, because  SO_RCVLOWAT logic is
+>>> supported in dequeue loop in af_vsock.c. But the same time,  POSIX
+>>> requires that:
+>>>
+>>> "POLLIN     Data other than high-priority data may be read without
+>>>            blocking.
+>>> POLLRDNORM Normal data may be read without blocking."
+>>>
+>>> See https://www.open-std.org/jtc1/sc22/open/n4217.pdf, page 293.
+>>>
+>>> So, we have, that poll() syscall returns POLLIN, but read call will
+>>> be blocked.
+>>>
+>>> Also in man page socket(7) i found that:
+>>>
+>>> "Since Linux 2.6.28, select(2), poll(2), and epoll(7) indicate a
+>>> socket as readable only if at least SO_RCVLOWAT bytes are available."
+>>>
+>>> I checked TCP callback for poll()(net/ipv4/tcp.c, tcp_poll()), it
+>>> uses SO_RCVLOWAT value to set POLLIN bit, also i've tested TCP with
+>>> this case for TCP socket, it works as POSIX required.
+>>
+>> I tried to look at the code and it seems that only TCP complies with it or am I wrong?
+>Yes, i checked AF_UNIX, it also don't care about that. It calls skb_queue_empty() that of
+>course ignores SO_RCVLOWAT.
+>>
+>>>
+>>> I've added some fixes to af_vsock.c and virtio_transport_common.c,
+>>> test is also implemented.
+>>>
+>>> What do You think guys?
+>>
+>> Nice, thanks for fixing this and for the test!
+>>
+>> I left some comments, but I think the series is fine if we will support it in all transports.
+>Ack
+>>
+>> I'd just like to understand if it's just TCP complying with it or I'm missing some check included in the socket layer that we could reuse.
+>Seems sock_poll() which is socket layer entry point for poll() doesn't contain any such checks
+>>
+>> @David, @Jakub, @Paolo, any advice?
+>>
+>> Thanks,
+>> Stefano
+>>
+>
+>PS: moreover, i found one more interesting thing with TCP and poll: TCP receive logic wakes up poll waiter
+>only when number of available bytes > SO_RCVLOWAT. E.g. it prevents "spurious" wake ups, when poll will be
+>woken up because new data arrived, but POLLIN to allow user dequeue this data won't be set(as amount of data
+>is too small).
+>See tcp_data_ready() in net/ipv4/tcp_input.c
 
-I love your patch! Yet something to improve:
+Do you mean that we should call sk->sk_data_ready(sk) checking 
+SO_RCVLOWAT?
 
-[auto build test ERROR on net-next/master]
-[also build test ERROR on net/master horms-ipvs/master linus/master v5.19-rc7 next-20220719]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+It seems fine, maybe we can add vsock_data_ready() in af_vsock.c that 
+transports should call instead of calling sk->sk_data_ready(sk) 
+directly.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220720-075438
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1f17708b47a99ca5bcad594a6f8d14cb016edfd2
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220720/202207201727.9nqTCybA-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/a17fd2b01914c1c5779a76167def6910a6dd1185
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220720-075438
-        git checkout a17fd2b01914c1c5779a76167def6910a6dd1185
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Then we can something similar to tcp_data_ready().
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
+Stefano
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "phy_rate_adaptation_to_str" [drivers/net/phy/phylink.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
