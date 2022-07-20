@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C9857B464
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7229C57B462
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234164AbiGTKUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 06:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
+        id S232138AbiGTKUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 06:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbiGTKUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:20:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164B5DB9;
-        Wed, 20 Jul 2022 03:20:16 -0700 (PDT)
+        with ESMTP id S230087AbiGTKUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFB5A442;
+        Wed, 20 Jul 2022 03:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0B0BB81EDB;
-        Wed, 20 Jul 2022 10:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 71FDCC341D1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0FA561BA0;
+        Wed, 20 Jul 2022 10:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 377E3C341C7;
         Wed, 20 Jul 2022 10:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658312413;
-        bh=wGgZaOceTr23WAeD4swIODS5yUIifdbxS7SQ1RgbDfQ=;
+        bh=HOQhHtGXtjzLVdj1ro/LNI+1Ny99QaZ7D4TbaiXg7kM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X88gFFBXwz24sx/eiQHpL1sWTr+yU3NbIrbqyav56Sk6JcuPYsklduwl9gup1aTXF
-         QJ76+fydw6s1LkKMOHMjXoQC/Clbg0X0bKuSxgbfxFdZfS3eITgx9tOxYJPAoQfu2z
-         PH4EsxI5NI/D11jtvcq7f12DpHW2jIH7OwFv3trfiPpTKYSCA7RHGIcmyDwpGT56tz
-         XY+2G/KhVBTmavwJIKnEr+s/obdZaAptAaI0PsoR0ITJq3QAWL7v5s2j4q1igdVHq8
-         euaQAefDLrClXsXtvUNlPxJ/ayxY5ZQMsN/vvhAKCnA5drch61N6xJI+x71J84aJ+N
-         3u4+g4U01wPoQ==
+        b=NJnBuh2O0vvm4+r7jN3xINsWwaruI1vle/1OZ5rv2sXDZpriwH11+l8ryfbqVNM8E
+         XtNB7WIhfAVbcIVrZDnA0L8tNedSY20MMKG/VKY3jKNXxM4UIWEkDnaj0DQKx2JEKN
+         PR3jt2Krwi4RONFOKdMENmLOMKRPovMtXu14h9jfk79pDeKHlfGenCYiCSsqncgjna
+         GQIYKJI9WKcUhWqKcw3x4GpN3GQrDYtAUpVFXICl3iLfUQtqC7+v1KiZnG/n29h6Z1
+         yxD9r/Wr7LFO/W0FbyDLnd4oAphDAAGIp9/Dw/a1E/gEnEM0vaNhqB+NMpdiGGHrKu
+         VLJc2eqNkvKdw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5C5CAE451BC;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1D59BE451BC;
         Wed, 20 Jul 2022 10:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ipa: initialize ring indexes to 0
+Subject: Re: [PATCH net 1/2] can: mcp251xfd: fix detection of mcp251863
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165831241337.14288.12233136434309116921.git-patchwork-notify@kernel.org>
+Message-Id: <165831241311.14288.2555817485894575710.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Jul 2022 10:20:13 +0000
-References: <20220719141855.245994-1-elder@linaro.org>
-In-Reply-To: <20220719141855.245994-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220720083621.3294548-2-mkl@pengutronix.de>
+In-Reply-To: <20220720083621.3294548-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,24 +57,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-On Tue, 19 Jul 2022 09:18:55 -0500 you wrote:
-> When a GSI channel is initially allocated, and after it has been
-> reset, the hardware assumes its ring index is 0.  And although we
-> do initialize channels this way, the comments in the IPA code don't
-> really explain this.  For event rings, it doesn't matter what value
-> we use initially, so using 0 is just fine.
+On Wed, 20 Jul 2022 10:36:20 +0200 you wrote:
+> In commit c6f2a617a0a8 ("can: mcp251xfd: add support for mcp251863")
+> support for the mcp251863 was added. However it was not taken into
+> account that the auto detection of the chip model cannot distinguish
+> between mcp2518fd and mcp251863 and would lead to a warning message if
+> the firmware specifies a mcp251863.
 > 
-> Add some information about the assumptions made by hardware above
-> the definition of the gsi_ring structure in "gsi.h".
+> Fix auto detection: If a mcp2518fd compatible chip is found, keep the
+> mcp251863 if specified by firmware, use mcp2518fd instead.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: ipa: initialize ring indexes to 0
-    https://git.kernel.org/netdev/net-next/c/5fb859f79f4f
+  - [net,1/2] can: mcp251xfd: fix detection of mcp251863
+    https://git.kernel.org/netdev/net/c/db87c005b9cc
+  - [net,2/2] can: rcar_canfd: Add missing of_node_put() in rcar_canfd_probe()
+    https://git.kernel.org/netdev/net/c/7b66dfcc6e1e
 
 You are awesome, thank you!
 -- 
