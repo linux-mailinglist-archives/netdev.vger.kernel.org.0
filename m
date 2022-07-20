@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B588357B287
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0074557B280
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240224AbiGTIMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51648 "EHLO
+        id S240141AbiGTIMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240384AbiGTILx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:11:53 -0400
+        with ESMTP id S240397AbiGTILy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:11:54 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2C36B25F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD296B258
         for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:11:35 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oE4nt-0000PM-OX
+        id 1oE4nt-0000Qo-MV
         for netdev@vger.kernel.org; Wed, 20 Jul 2022 10:11:33 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B0126B5935
+        by bjornoya.blackshift.org (Postfix) with SMTP id BF4BDB5939
         for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:10:41 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 08B2CB590B;
-        Wed, 20 Jul 2022 08:10:40 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 2BA1CB590F;
+        Wed, 20 Jul 2022 08:10:41 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id d276d274;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 7ab25c10;
         Wed, 20 Jul 2022 08:10:35 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        kernel test robot <oliver.sang@intel.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 12/29] can: slcan: do not sleep with a spin lock held
-Date:   Wed, 20 Jul 2022 10:10:17 +0200
-Message-Id: <20220720081034.3277385-13-mkl@pengutronix.de>
+Subject: [PATCH net-next 13/29] can: c_can: remove wrong comment
+Date:   Wed, 20 Jul 2022 10:10:18 +0200
+Message-Id: <20220720081034.3277385-14-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720081034.3277385-1-mkl@pengutronix.de>
 References: <20220720081034.3277385-1-mkl@pengutronix.de>
@@ -62,44 +61,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-We can't call close_candev() with a spin lock held, so release the lock
-before calling it. After calling close_candev(), we can update the
-fields of the private `struct can_priv' without having to acquire the
-lock.
+The comment referred to a status (warning) other than the one that was
+being managed (active error).
 
-Fixes: c4e54b063f42f ("can: slcan: use CAN network device driver API")
-Link: https://lore.kernel.org/linux-kernel/Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020/
-Link: https://lore.kernel.org/all/20220715072951.859586-1-dario.binacchi@amarulasolutions.com
-Reported-by: kernel test robot <oliver.sang@intel.com>
+Link: https://lore.kernel.org/all/20220716170112.2020291-1-dario.binacchi@amarulasolutions.com
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/slcan/slcan-core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/can/c_can/c_can_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index d9bf75a25988..057b211f3e7f 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -688,15 +688,14 @@ static int slc_close(struct net_device *dev)
- 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
- 	}
- 	netif_stop_queue(dev);
-+	sl->rcount   = 0;
-+	sl->xleft    = 0;
-+	spin_unlock_bh(&sl->lock);
- 	close_candev(dev);
- 	sl->can.state = CAN_STATE_STOPPED;
- 	if (sl->can.bittiming.bitrate == CAN_BITRATE_UNKNOWN)
- 		sl->can.bittiming.bitrate = CAN_BITRATE_UNSET;
+diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_can/c_can_main.c
+index a7362af0babb..ed4db4cf8716 100644
+--- a/drivers/net/can/c_can/c_can_main.c
++++ b/drivers/net/can/c_can/c_can_main.c
+@@ -952,7 +952,6 @@ static int c_can_handle_state_change(struct net_device *dev,
  
--	sl->rcount   = 0;
--	sl->xleft    = 0;
--	spin_unlock_bh(&sl->lock);
--
- 	return 0;
- }
- 
+ 	switch (error_type) {
+ 	case C_CAN_NO_ERROR:
+-		/* error warning state */
+ 		cf->can_id |= CAN_ERR_CRTL;
+ 		cf->data[1] = CAN_ERR_CRTL_ACTIVE;
+ 		cf->data[6] = bec.txerr;
 -- 
 2.35.1
 
