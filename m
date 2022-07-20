@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4BA57B939
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 348EF57B93E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbiGTPLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 11:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
+        id S241032AbiGTPLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 11:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233075AbiGTPLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:11:12 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75C43AB11
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:11:11 -0700 (PDT)
+        with ESMTP id S241139AbiGTPLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:11:30 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91CDE56BAA
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658329871; x=1689865871;
+  t=1658329889; x=1689865889;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
   bh=qK6uRz3wuRC45P86wgP2+w2eANZ5MSchI67ZwRxkB/w=;
-  b=DKSEx9esf8I/awHCQBHww5VzLfzbndMwDi7Zp2p9W5eaLVO2ITULtSY7
-   NHsg1ZDDXxu7uOrkEI8d4D2o4/uQCX1tuGXMuu0pnUkbH2IzwgUAK3Btq
-   IKeg1z8jDKxs8i/9bVFhVfng8bmgUmWLou/90l+AEmeH4dUpX9kQW+2w5
-   4DnnwjJkPoPymbc+LiC1dG9u24wHBEUkXXOSuhJFgWs9rnBpq3Jbxbalt
-   RK5UcQ9XzJEWhvv+cXc3BD+91SZK7TP4/1CN9cgbo3FTDQptrLVoUQ1Q1
-   lkfwDnD5uXKShaw8Q2Hr+qHv6x9S7AS/ssjZqzFJ1F8w4pMUVgH9G5snR
+  b=IcyRTF1qrKuxFn0JT+Igvo/sVoShplNgo1GGe0GRpT0bwcvT9BuD2UOu
+   SwF8qX2Gn8oeDRYi5DFbP1G5A6MATMf5wWT8uZPfal6RtEJNKB4cSd/wJ
+   zQevxV0eGUe3kM87/efVFHdkuXFw0hc+x1VOIsgopotrLb/UJXSR76RF6
+   PN785rSntDMzx3OfmrM9y1q5zvkqYgL5pPQSOwAaFIy1B1O8oXtmxEijo
+   sIVJnIe3jCPX2j9kD+W+n8Zlblnq9KsC27y0GUeNbaMjWklAYyZEZuqde
+   k8fadV2F5QCzEELzTI9RH5tsPC64SpyI+jbTUWfbIsJ74SmhEgjOcNyLO
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="373103824"
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="267203434"
 X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="373103824"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 08:10:52 -0700
+   d="scan'208";a="267203434"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 08:11:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,286,1650956400"; 
-   d="scan'208";a="665899527"
+   d="scan'208";a="687557081"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 08:10:48 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Jul 2022 08:11:26 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26KFAkRi027439;
-        Wed, 20 Jul 2022 16:10:46 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26KFBPED027482;
+        Wed, 20 Jul 2022 16:11:25 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     "shenjian (K)" <shenjian15@huawei.com>
 Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
@@ -50,11 +50,11 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Subject: Re: [RFCv6 PATCH net-next 02/19] net: replace general features macroes with global netdev_features variables
-Date:   Wed, 20 Jul 2022 17:09:57 +0200
-Message-Id: <20220720150957.3875487-1-alexandr.lobakin@intel.com>
+Date:   Wed, 20 Jul 2022 17:10:33 +0200
+Message-Id: <20220720151033.3875551-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
-References: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
+References: <20220419022206.36381-1-shenjian15@huawei.com> <20220419022206.36381-3-shenjian15@huawei.com> <20220419144944.1665016-1-alexandr.lobakin@intel.com> <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; format=flowed
 Content-Transfer-Encoding: 8bit
