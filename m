@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5624C57AEEF
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5BF57AF32
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:13:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241950AbiGTDHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 23:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
+        id S241956AbiGTDIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 23:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239365AbiGTDGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:06:49 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1450E709B6;
-        Tue, 19 Jul 2022 20:05:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VJux97M_1658286326;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJux97M_1658286326)
+        with ESMTP id S240971AbiGTDGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:06:55 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DC971BD3;
+        Tue, 19 Jul 2022 20:05:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VJuw0Wb_1658286329;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJuw0Wb_1658286329)
           by smtp.aliyun-inc.com;
-          Wed, 20 Jul 2022 11:05:28 +0800
+          Wed, 20 Jul 2022 11:05:30 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v12 21/40] virtio_ring: packed: introduce virtqueue_resize_packed()
-Date:   Wed, 20 Jul 2022 11:04:17 +0800
-Message-Id: <20220720030436.79520-22-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v12 22/40] virtio_ring: introduce virtqueue_resize()
+Date:   Wed, 20 Jul 2022 11:04:18 +0800
+Message-Id: <20220720030436.79520-23-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
 References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
@@ -72,61 +72,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio ring packed supports resize.
+Introduce virtqueue_resize() to implement the resize of vring.
+Based on these, the driver can dynamically adjust the size of the vring.
+For example: ethtool -G.
 
-Only after the new vring is successfully allocated based on the new num,
-we will release the old vring. In any case, an error is returned,
-indicating that the vring still points to the old vring.
+virtqueue_resize() implements resize based on the vq reset function. In
+case of failure to allocate a new vring, it will give up resize and use
+the original vring.
 
-In the case of an error, re-initialize(by virtqueue_reinit_packed()) the
-virtqueue to ensure that the vring can be used.
+During this process, if the re-enable reset vq fails, the vq can no
+longer be used. Although the probability of this situation is not high.
+
+The parameter recycle is used to recycle the buffer that is no longer
+used.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/virtio_ring.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/virtio/virtio_ring.c | 69 ++++++++++++++++++++++++++++++++++++
+ include/linux/virtio.h       |  3 ++
+ 2 files changed, 72 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 5802cd373fd1..b092914e9dcd 100644
+index b092914e9dcd..cf4379175163 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -2045,6 +2045,35 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	return NULL;
+@@ -2545,6 +2545,75 @@ struct virtqueue *vring_create_virtqueue(
  }
+ EXPORT_SYMBOL_GPL(vring_create_virtqueue);
  
-+static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num)
++/**
++ * virtqueue_resize - resize the vring of vq
++ * @_vq: the struct virtqueue we're talking about.
++ * @num: new ring num
++ * @recycle: callback for recycle the useless buffer
++ *
++ * When it is really necessary to create a new vring, it will set the current vq
++ * into the reset state. Then call the passed callback to recycle the buffer
++ * that is no longer used. Only after the new vring is successfully created, the
++ * old vring will be released.
++ *
++ * Caller must ensure we don't call this with other virtqueue operations
++ * at the same time (except where noted).
++ *
++ * Returns zero or a negative error.
++ * 0: success.
++ * -ENOMEM: Failed to allocate a new ring, fall back to the original ring size.
++ *  vq can still work normally
++ * -EBUSY: Failed to sync with device, vq may not work properly
++ * -ENOENT: Transport or device not supported
++ * -E2BIG/-EINVAL: num error
++ * -EPERM: Operation not permitted
++ *
++ */
++int virtqueue_resize(struct virtqueue *_vq, u32 num,
++		     void (*recycle)(struct virtqueue *vq, void *buf))
 +{
-+	struct vring_virtqueue_packed vring_packed = {};
 +	struct vring_virtqueue *vq = to_vvq(_vq);
-+	struct virtio_device *vdev = _vq->vdev;
++	struct virtio_device *vdev = vq->vq.vdev;
++	void *buf;
 +	int err;
 +
-+	if (vring_alloc_queue_packed(&vring_packed, vdev, num))
-+		goto err_ring;
++	if (!vq->we_own_ring)
++		return -EPERM;
 +
-+	err = vring_alloc_state_extra_packed(&vring_packed);
++	if (num > vq->vq.num_max)
++		return -E2BIG;
++
++	if (!num)
++		return -EINVAL;
++
++	if ((vq->packed_ring ? vq->packed.vring.num : vq->split.vring.num) == num)
++		return 0;
++
++	if (!vdev->config->disable_vq_and_reset)
++		return -ENOENT;
++
++	if (!vdev->config->enable_vq_after_reset)
++		return -ENOENT;
++
++	err = vdev->config->disable_vq_and_reset(_vq);
 +	if (err)
-+		goto err_state_extra;
++		return err;
 +
-+	vring_free(&vq->vq);
++	while ((buf = virtqueue_detach_unused_buf(_vq)) != NULL)
++		recycle(_vq, buf);
 +
-+	virtqueue_init(vq, vring_packed.vring.num);
-+	virtqueue_vring_attach_packed(vq, &vring_packed);
-+	virtqueue_vring_init_packed(vq);
++	if (vq->packed_ring)
++		err = virtqueue_resize_packed(_vq, num);
++	else
++		err = virtqueue_resize_split(_vq, num);
 +
-+	return 0;
++	if (vdev->config->enable_vq_after_reset(_vq))
++		return -EBUSY;
 +
-+err_state_extra:
-+	vring_free_packed(&vring_packed, vdev);
-+err_ring:
-+	virtqueue_reinit_packed(vq);
-+	return -ENOMEM;
++	return err;
 +}
++EXPORT_SYMBOL_GPL(virtqueue_resize);
 +
+ /* Only available for split ring */
+ struct virtqueue *vring_new_virtqueue(unsigned int index,
+ 				      unsigned int num,
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index 129bde7521e3..62e31bca5602 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -91,6 +91,9 @@ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *vq);
+ dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
+ dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
  
- /*
-  * Generic functions and exported symbols.
++int virtqueue_resize(struct virtqueue *vq, u32 num,
++		     void (*recycle)(struct virtqueue *vq, void *buf));
++
+ /**
+  * virtio_device - representation of a device using virtio
+  * @index: unique position on the virtio bus
 -- 
 2.31.0
 
