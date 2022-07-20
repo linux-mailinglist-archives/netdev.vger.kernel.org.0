@@ -2,352 +2,1042 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE2057C139
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 01:53:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7FD57C141
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 01:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiGTXxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 19:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32968 "EHLO
+        id S231605AbiGTX6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 19:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231913AbiGTXxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 19:53:06 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20A874CD8
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 16:53:03 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d10so196489pfd.9
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 16:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=2XofxsmOREGdJ+/UG4Mqs4P3JwiOimnrJss1WOuaz7w=;
-        b=QjItlPh+GRhz5Q8T/G4yQtY99dQZv1QIr7mc54mLXz5HJS77fO/9AvbDFmxftawlPM
-         5Sv4zeJbIdZ9BCT65QDzsg6RnpvTVElM8WR7ds/0g+ZEGVfnXbQW18a1y3aip7pSXcqF
-         Qi3EsUasSMMSBDoqQVbGNE22lGPfvYY9gU9A0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=2XofxsmOREGdJ+/UG4Mqs4P3JwiOimnrJss1WOuaz7w=;
-        b=fzWrSGNLduQHoS+iIBSZ/GrObKWYDlUsJMDwDnG78jLZwrYL9KyBvu+P474uo9bKt2
-         RQ694PgTEB3HP0GKsFWRjCSsezohE8LlIco9Ph7Y9m9ffCLrg/WDwXxZh8hur2Fj9wRB
-         Sa97XO/MGaISAm5uzKANKhyRCSxKqPStw6tdxaqWAl/6tAm3QfDJqmIvd/zxG7du3YfJ
-         /COqAcddrCcbfCT+IxFdnWZya8yi+deeVZGso7Ma+inGflUZBL+kitgKotEfD1aXfwKA
-         0Q4LXAL7/DeMbM3zg4AifjZ4aTqJeMvWbE5Wxok4TcEPeVI1VX+jXwQ3Z0SmFZXmhqGE
-         2+wQ==
-X-Gm-Message-State: AJIora9OijJZ8sHN/X74JFul85fc9eZE19k3trMN1m4RP+m18cw/oPsy
-        SIFn1K14Im/RiYFRLqfnGjW+yQ==
-X-Google-Smtp-Source: AGRyM1uc6nnXunIRYc5m3mR+BKhK7HGKmKZEjQNzdIjz8iHioYsO1sVqeonVhUiUU2l//virnqF2EQ==
-X-Received: by 2002:a05:6a00:cc9:b0:52a:b63a:4e5 with SMTP id b9-20020a056a000cc900b0052ab63a04e5mr41284862pfv.59.1658361183016;
-        Wed, 20 Jul 2022 16:53:03 -0700 (PDT)
-Received: from ubuntu-22.localdomain ([192.19.222.250])
-        by smtp.gmail.com with ESMTPSA id j13-20020a170903024d00b0016d1b70872asm133576plh.134.2022.07.20.16.53.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 16:53:02 -0700 (PDT)
-From:   William Zhang <william.zhang@broadcom.com>
-To:     william.zhang@broadcom.com
-Cc:     joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        linux-i2c@vger.kernel.org (open list:I2C SUBSYSTEM HOST DRIVERS),
-        linux-kernel@vger.kernel.org (open list),
-        linux-mtd@lists.infradead.org (open list:MEMORY TECHNOLOGY DEVICES
-        (MTD)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-pci@vger.kernel.org (open list:PCI NATIVE HOST BRIDGE AND
-        ENDPOINT DRIVERS),
-        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK),
-        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
-        linux-mips@vger.kernel.org (open list:BROADCOM BMIPS MIPS ARCHITECTURE),
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-watchdog@vger.kernel.org (open list:WATCHDOG DEVICE DRIVERS)
-Subject: [PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
-Date:   Wed, 20 Jul 2022 16:52:57 -0700
-Message-Id: <20220720235257.29159-1-william.zhang@broadcom.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229776AbiGTX6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 19:58:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453A919C12
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 16:58:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4664B8214E
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 23:58:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D88FC3411E;
+        Wed, 20 Jul 2022 23:58:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658361481;
+        bh=kzQkIwrgVK+OqsOdqeP8rErzjAGH4hJoPZecs7lFSN8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q+hazYscXjLoabNwTqa53SX38tA+0NfNxtqFj39RwZK5cQ0ue10rK/KLBuKehpndr
+         NnXWnjF3xsXFhoMUt1FGjpfEnunSvLHEfprTlYueXwxr24Ll9crPk3R9gnZtw64/XR
+         fc0VSTYSJnGek8gNnspHnFLKI3iRfOzrN9HyFh9+MLFcLtK3drVgdAZYioypmwCSUj
+         qxwqHfzWR2lOhyegqd7EUliPper3CZyLx5m8vwFYphzIXTltpJQIpgrKzhg0SH6clG
+         zw7MtbH6vQskQZo+sD5MHFjWfXjqu0/ihtgaas1Wpz11SvaTwtBLVjtUHppYa6zLXq
+         v68ZfsOvIp7Ew==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: add missing includes and forward declarations under net/
+Date:   Wed, 20 Jul 2022 16:57:58 -0700
+Message-Id: <20220720235758.2373415-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003f242f05e4454ddd"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000003f242f05e4454ddd
-Content-Transfer-Encoding: 8bit
+This patch adds missing includes to headers under include/net.
+All these problems are currently masked by the existing users
+including the missing dependency before the broken header.
 
-Replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
-
-Signed-off-by: William Zhang <william.zhang@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
+ include/linux/lapb.h                |  5 +++++
+ include/net/af_vsock.h              |  1 +
+ include/net/amt.h                   |  3 +++
+ include/net/ax88796.h               |  2 ++
+ include/net/bond_options.h          |  8 ++++++++
+ include/net/codel_qdisc.h           |  1 +
+ include/net/datalink.h              |  7 +++++++
+ include/net/dcbevent.h              |  2 ++
+ include/net/dcbnl.h                 |  2 ++
+ include/net/dn_dev.h                |  1 +
+ include/net/dn_fib.h                |  2 ++
+ include/net/dn_neigh.h              |  2 ++
+ include/net/dn_nsp.h                |  6 ++++++
+ include/net/dn_route.h              |  3 +++
+ include/net/erspan.h                |  3 +++
+ include/net/esp.h                   |  1 +
+ include/net/ethoc.h                 |  3 +++
+ include/net/firewire.h              |  2 ++
+ include/net/fq.h                    |  4 ++++
+ include/net/garp.h                  |  2 ++
+ include/net/gtp.h                   |  4 ++++
+ include/net/gue.h                   |  3 +++
+ include/net/hwbm.h                  |  2 ++
+ include/net/ila.h                   |  2 ++
+ include/net/inet6_connection_sock.h |  2 ++
+ include/net/inet_common.h           |  6 ++++++
+ include/net/inet_frag.h             |  3 +++
+ include/net/ip6_route.h             | 20 ++++++++++----------
+ include/net/ipcomp.h                |  2 ++
+ include/net/ipconfig.h              |  2 ++
+ include/net/llc_c_ac.h              |  7 +++++++
+ include/net/llc_c_st.h              |  4 ++++
+ include/net/llc_s_ac.h              |  4 ++++
+ include/net/llc_s_ev.h              |  1 +
+ include/net/mpls_iptunnel.h         |  3 +++
+ include/net/mrp.h                   |  4 ++++
+ include/net/ncsi.h                  |  2 ++
+ include/net/netevent.h              |  1 +
+ include/net/netns/can.h             |  1 +
+ include/net/netns/core.h            |  2 ++
+ include/net/netns/generic.h         |  1 +
+ include/net/netns/ipv4.h            |  1 +
+ include/net/netns/mctp.h            |  1 +
+ include/net/netns/mpls.h            |  2 ++
+ include/net/netns/nexthop.h         |  1 +
+ include/net/netns/sctp.h            |  3 +++
+ include/net/netns/unix.h            |  2 ++
+ include/net/netrom.h                |  1 +
+ include/net/p8022.h                 |  5 +++++
+ include/net/phonet/pep.h            |  3 +++
+ include/net/phonet/phonet.h         |  4 ++++
+ include/net/phonet/pn_dev.h         |  5 +++++
+ include/net/pptp.h                  |  3 +++
+ include/net/psnap.h                 |  5 +++++
+ include/net/regulatory.h            |  3 +++
+ include/net/rose.h                  |  1 +
+ include/net/secure_seq.h            |  2 ++
+ include/net/smc.h                   |  7 +++++++
+ include/net/stp.h                   |  2 ++
+ include/net/transp_v6.h             |  2 ++
+ include/net/tun_proto.h             |  3 ++-
+ include/net/udplite.h               |  1 +
+ include/net/xdp_priv.h              |  1 +
+ 63 files changed, 183 insertions(+), 11 deletions(-)
 
- drivers/i2c/busses/Kconfig            | 4 ++--
- drivers/mtd/parsers/Kconfig           | 6 +++---
- drivers/net/ethernet/broadcom/Kconfig | 4 ++--
- drivers/pci/controller/Kconfig        | 2 +-
- drivers/phy/broadcom/Kconfig          | 4 ++--
- drivers/pinctrl/bcm/Kconfig           | 4 ++--
- drivers/reset/Kconfig                 | 2 +-
- drivers/soc/bcm/bcm63xx/Kconfig       | 4 ++--
- drivers/tty/serial/Kconfig            | 4 ++--
- drivers/watchdog/Kconfig              | 2 +-
- 10 files changed, 18 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 45a4e9f1b639..fd9a4dd01997 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -487,8 +487,8 @@ config I2C_BCM_KONA
+diff --git a/include/linux/lapb.h b/include/linux/lapb.h
+index eb56472f23b2..b5333f9413dc 100644
+--- a/include/linux/lapb.h
++++ b/include/linux/lapb.h
+@@ -6,6 +6,11 @@
+ #ifndef	LAPB_KERNEL_H
+ #define	LAPB_KERNEL_H
  
- config I2C_BRCMSTB
- 	tristate "BRCM Settop/DSL I2C controller"
--	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCMBCA || \
--		   ARCH_BRCMSTB || BMIPS_GENERIC || COMPILE_TEST
-+	depends on ARCH_BCM2835 || ARCH_BCMBCA || ARCH_BRCMSTB || \
-+		   BMIPS_GENERIC || COMPILE_TEST
- 	default y
- 	help
- 	  If you say yes to this option, support will be included for the
-diff --git a/drivers/mtd/parsers/Kconfig b/drivers/mtd/parsers/Kconfig
-index b43df73927a0..d6db655a1d24 100644
---- a/drivers/mtd/parsers/Kconfig
-+++ b/drivers/mtd/parsers/Kconfig
-@@ -69,8 +69,8 @@ config MTD_OF_PARTS
++#include <linux/skbuff.h>
++#include <linux/timer.h>
++
++struct net_device;
++
+ #define	LAPB_OK			0
+ #define	LAPB_BADTOKEN		1
+ #define	LAPB_INVALUE		2
+diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+index f742e50207fb..1c53c4c4d88f 100644
+--- a/include/net/af_vsock.h
++++ b/include/net/af_vsock.h
+@@ -10,6 +10,7 @@
  
- config MTD_OF_PARTS_BCM4908
- 	bool "BCM4908 partitioning support"
--	depends on MTD_OF_PARTS && (ARCH_BCM4908 || COMPILE_TEST)
--	default ARCH_BCM4908
-+	depends on MTD_OF_PARTS && (ARCH_BCMBCA || COMPILE_TEST)
-+	default ARCH_BCMBCA
- 	help
- 	  This provides partitions parser for BCM4908 family devices
- 	  that can have multiple "firmware" partitions. It takes care of
-@@ -78,7 +78,7 @@ config MTD_OF_PARTS_BCM4908
+ #include <linux/kernel.h>
+ #include <linux/workqueue.h>
++#include <net/sock.h>
+ #include <uapi/linux/vm_sockets.h>
  
- config MTD_OF_PARTS_LINKSYS_NS
- 	bool "Linksys Northstar partitioning support"
--	depends on MTD_OF_PARTS && (ARCH_BCM_5301X || ARCH_BCM4908 || COMPILE_TEST)
-+	depends on MTD_OF_PARTS && (ARCH_BCM_5301X || ARCH_BCMBCA || COMPILE_TEST)
- 	default ARCH_BCM_5301X
- 	help
- 	  This provides partitions parser for Linksys devices based on Broadcom
-diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
-index 56e0fb07aec7..f4e1ca68d831 100644
---- a/drivers/net/ethernet/broadcom/Kconfig
-+++ b/drivers/net/ethernet/broadcom/Kconfig
-@@ -53,8 +53,8 @@ config B44_PCI
+ #include "vsock_addr.h"
+diff --git a/include/net/amt.h b/include/net/amt.h
+index 0e40c3d64fcf..b154ecb3d1c4 100644
+--- a/include/net/amt.h
++++ b/include/net/amt.h
+@@ -7,6 +7,9 @@
  
- config BCM4908_ENET
- 	tristate "Broadcom BCM4908 internal mac support"
--	depends on ARCH_BCM4908 || COMPILE_TEST
--	default y if ARCH_BCM4908
-+	depends on ARCH_BCMBCA || COMPILE_TEST
-+	default y if ARCH_BCMBCA
- 	help
- 	  This driver supports Ethernet controller integrated into Broadcom
- 	  BCM4908 family SoCs.
-diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-index d1c5fcf00a8a..bfd9bac37e24 100644
---- a/drivers/pci/controller/Kconfig
-+++ b/drivers/pci/controller/Kconfig
-@@ -274,7 +274,7 @@ config VMD
+ #include <linux/siphash.h>
+ #include <linux/jhash.h>
++#include <linux/netdevice.h>
++#include <net/gro_cells.h>
++#include <net/rtnetlink.h>
  
- config PCIE_BRCMSTB
- 	tristate "Broadcom Brcmstb PCIe host controller"
--	depends on ARCH_BRCMSTB || ARCH_BCM2835 || ARCH_BCM4908 || \
-+	depends on ARCH_BRCMSTB || ARCH_BCM2835 || ARCH_BCMBCA || \
- 		   BMIPS_GENERIC || COMPILE_TEST
- 	depends on OF
- 	depends on PCI_MSI_IRQ_DOMAIN
-diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
-index 93a6a8ee4716..1d89a2fd9b79 100644
---- a/drivers/phy/broadcom/Kconfig
-+++ b/drivers/phy/broadcom/Kconfig
-@@ -93,11 +93,11 @@ config PHY_BRCM_SATA
+ enum amt_msg_type {
+ 	AMT_MSG_DISCOVERY = 1,
+diff --git a/include/net/ax88796.h b/include/net/ax88796.h
+index 2ed23a368602..b658471f97f0 100644
+--- a/include/net/ax88796.h
++++ b/include/net/ax88796.h
+@@ -8,6 +8,8 @@
+ #ifndef __NET_AX88796_PLAT_H
+ #define __NET_AX88796_PLAT_H
  
- config PHY_BRCM_USB
- 	tristate "Broadcom STB USB PHY driver"
--	depends on ARCH_BCM4908 || ARCH_BRCMSTB || COMPILE_TEST
-+	depends on ARCH_BCMBCA || ARCH_BRCMSTB || COMPILE_TEST
- 	depends on OF
- 	select GENERIC_PHY
- 	select SOC_BRCMSTB if ARCH_BRCMSTB
--	default ARCH_BCM4908 || ARCH_BRCMSTB
-+	default ARCH_BCMBCA || ARCH_BRCMSTB
- 	help
- 	  Enable this to support the Broadcom STB USB PHY.
- 	  This driver is required by the USB XHCI, EHCI and OHCI
-diff --git a/drivers/pinctrl/bcm/Kconfig b/drivers/pinctrl/bcm/Kconfig
-index 8f4d89806fcb..35b51ce4298e 100644
---- a/drivers/pinctrl/bcm/Kconfig
-+++ b/drivers/pinctrl/bcm/Kconfig
-@@ -31,13 +31,13 @@ config PINCTRL_BCM2835
++#include <linux/types.h>
++
+ struct sk_buff;
+ struct net_device;
+ struct platform_device;
+diff --git a/include/net/bond_options.h b/include/net/bond_options.h
+index d2aea5cf1e41..69292ecc0325 100644
+--- a/include/net/bond_options.h
++++ b/include/net/bond_options.h
+@@ -7,6 +7,14 @@
+ #ifndef _NET_BOND_OPTIONS_H
+ #define _NET_BOND_OPTIONS_H
  
- config PINCTRL_BCM4908
- 	tristate "Broadcom BCM4908 pinmux driver"
--	depends on OF && (ARCH_BCM4908 || COMPILE_TEST)
-+	depends on OF && (ARCH_BCMBCA || COMPILE_TEST)
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
- 	select GENERIC_PINCTRL_GROUPS
- 	select GENERIC_PINMUX_FUNCTIONS
--	default ARCH_BCM4908
-+	default ARCH_BCMBCA
- 	help
- 	  Driver for BCM4908 family SoCs with integrated pin controller.
++#include <linux/bits.h>
++#include <linux/limits.h>
++#include <linux/types.h>
++#include <linux/string.h>
++
++struct netlink_ext_ack;
++struct nlattr;
++
+ #define BOND_OPT_MAX_NAMELEN 32
+ #define BOND_OPT_VALID(opt) ((opt) < BOND_OPT_LAST)
+ #define BOND_MODE_ALL_EX(x) (~(x))
+diff --git a/include/net/codel_qdisc.h b/include/net/codel_qdisc.h
+index 58b6d0ebea10..7d3d9219f4fe 100644
+--- a/include/net/codel_qdisc.h
++++ b/include/net/codel_qdisc.h
+@@ -49,6 +49,7 @@
+  * Implemented on linux by Dave Taht and Eric Dumazet
+  */
  
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index f9a7cee01659..7ae71535fe2a 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -201,7 +201,7 @@ config RESET_SCMI
++#include <net/codel.h>
+ #include <net/pkt_sched.h>
  
- config RESET_SIMPLE
- 	bool "Simple Reset Controller Driver" if COMPILE_TEST || EXPERT
--	default ARCH_ASPEED || ARCH_BCM4908 || ARCH_BITMAIN || ARCH_REALTEK || ARCH_STM32 || (ARCH_INTEL_SOCFPGA && ARM64) || ARCH_SUNXI || ARC
-+	default ARCH_ASPEED || ARCH_BCMBCA || ARCH_BITMAIN || ARCH_REALTEK || ARCH_STM32 || (ARCH_INTEL_SOCFPGA && ARM64) || ARCH_SUNXI || ARC
- 	help
- 	  This enables a simple reset controller driver for reset lines that
- 	  that can be asserted and deasserted by toggling bits in a contiguous,
-diff --git a/drivers/soc/bcm/bcm63xx/Kconfig b/drivers/soc/bcm/bcm63xx/Kconfig
-index 9e501c8ac5ce..355c34482076 100644
---- a/drivers/soc/bcm/bcm63xx/Kconfig
-+++ b/drivers/soc/bcm/bcm63xx/Kconfig
-@@ -13,8 +13,8 @@ endif # SOC_BCM63XX
+ /* Qdiscs using codel plugin must use codel_skb_cb in their own cb[] */
+diff --git a/include/net/datalink.h b/include/net/datalink.h
+index d9b7faaa539f..c837ffc7ebf8 100644
+--- a/include/net/datalink.h
++++ b/include/net/datalink.h
+@@ -2,6 +2,13 @@
+ #ifndef _NET_INET_DATALINK_H_
+ #define _NET_INET_DATALINK_H_
  
- config BCM_PMB
- 	bool "Broadcom PMB (Power Management Bus) driver"
--	depends on ARCH_BCM4908 || (COMPILE_TEST && OF)
--	default ARCH_BCM4908
-+	depends on ARCH_BCMBCA || (COMPILE_TEST && OF)
-+	default ARCH_BCMBCA
- 	select PM_GENERIC_DOMAINS if PM
- 	help
- 	  This enables support for the Broadcom's PMB (Power Management Bus) that
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e3279544b03c..f32bb01c3feb 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1100,8 +1100,8 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
--	default ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
-+	depends on ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-+	default ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index 32fd37698932..1f85ec8a4b3b 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -1798,7 +1798,7 @@ config BCM7038_WDT
- 	tristate "BCM63xx/BCM7038 Watchdog"
- 	select WATCHDOG_CORE
- 	depends on HAS_IOMEM
--	depends on ARCH_BCM4908 || ARCH_BRCMSTB || BMIPS_GENERIC || BCM63XX || COMPILE_TEST
-+	depends on ARCH_BCMBCA || ARCH_BRCMSTB || BMIPS_GENERIC || BCM63XX || COMPILE_TEST
- 	help
- 	  Watchdog driver for the built-in hardware in Broadcom 7038 and
- 	  later SoCs used in set-top boxes.  BCM7038 was made public
++#include <linux/list.h>
++
++struct llc_sap;
++struct net_device;
++struct packet_type;
++struct sk_buff;
++
+ struct datalink_proto {
+         unsigned char   type[8];
+ 
+diff --git a/include/net/dcbevent.h b/include/net/dcbevent.h
+index 43e34131a53f..02700262f71a 100644
+--- a/include/net/dcbevent.h
++++ b/include/net/dcbevent.h
+@@ -8,6 +8,8 @@
+ #ifndef _DCB_EVENT_H
+ #define _DCB_EVENT_H
+ 
++struct notifier_block;
++
+ enum dcbevent_notif_type {
+ 	DCB_APP_EVENT = 1,
+ };
+diff --git a/include/net/dcbnl.h b/include/net/dcbnl.h
+index e4ad58c4062c..2b2d86fb3131 100644
+--- a/include/net/dcbnl.h
++++ b/include/net/dcbnl.h
+@@ -10,6 +10,8 @@
+ 
+ #include <linux/dcbnl.h>
+ 
++struct net_device;
++
+ struct dcb_app_type {
+ 	int	ifindex;
+ 	struct dcb_app	  app;
+diff --git a/include/net/dn_dev.h b/include/net/dn_dev.h
+index 595b4f6c1eb1..bec303ea8367 100644
+--- a/include/net/dn_dev.h
++++ b/include/net/dn_dev.h
+@@ -2,6 +2,7 @@
+ #ifndef _NET_DN_DEV_H
+ #define _NET_DN_DEV_H
+ 
++#include <linux/netdevice.h>
+ 
+ struct dn_dev;
+ 
+diff --git a/include/net/dn_fib.h b/include/net/dn_fib.h
+index ddd6565957b3..1929a3cd5ebe 100644
+--- a/include/net/dn_fib.h
++++ b/include/net/dn_fib.h
+@@ -4,6 +4,8 @@
+ 
+ #include <linux/netlink.h>
+ #include <linux/refcount.h>
++#include <linux/rtnetlink.h>
++#include <net/fib_rules.h>
+ 
+ extern const struct nla_policy rtm_dn_policy[];
+ 
+diff --git a/include/net/dn_neigh.h b/include/net/dn_neigh.h
+index 2e3e7793973a..1f7df98bfc33 100644
+--- a/include/net/dn_neigh.h
++++ b/include/net/dn_neigh.h
+@@ -2,6 +2,8 @@
+ #ifndef _NET_DN_NEIGH_H
+ #define _NET_DN_NEIGH_H
+ 
++#include <net/neighbour.h>
++
+ /*
+  * The position of the first two fields of
+  * this structure are critical - SJW
+diff --git a/include/net/dn_nsp.h b/include/net/dn_nsp.h
+index f83932b864a9..a4a18fee0b7c 100644
+--- a/include/net/dn_nsp.h
++++ b/include/net/dn_nsp.h
+@@ -6,6 +6,12 @@
+     
+ *******************************************************************************/
+ /* dn_nsp.c functions prototyping */
++#include <linux/atomic.h>
++#include <linux/types.h>
++#include <net/sock.h>
++
++struct sk_buff;
++struct sk_buff_head;
+ 
+ void dn_nsp_send_data_ack(struct sock *sk);
+ void dn_nsp_send_oth_ack(struct sock *sk);
+diff --git a/include/net/dn_route.h b/include/net/dn_route.h
+index 6f1e94ac0bdf..88c0300236cc 100644
+--- a/include/net/dn_route.h
++++ b/include/net/dn_route.h
+@@ -7,6 +7,9 @@
+     
+ *******************************************************************************/
+ 
++#include <linux/types.h>
++#include <net/dst.h>
++
+ struct sk_buff *dn_alloc_skb(struct sock *sk, int size, gfp_t pri);
+ int dn_route_output_sock(struct dst_entry __rcu **pprt, struct flowidn *,
+ 			 struct sock *sk, int flags);
+diff --git a/include/net/erspan.h b/include/net/erspan.h
+index 0d9e86bd9893..6cb4cbd6a48f 100644
+--- a/include/net/erspan.h
++++ b/include/net/erspan.h
+@@ -58,6 +58,9 @@
+  * GRE proto ERSPAN type I/II = 0x88BE, type III = 0x22EB
+  */
+ 
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <linux/skbuff.h>
+ #include <uapi/linux/erspan.h>
+ 
+ #define ERSPAN_VERSION	0x1	/* ERSPAN type II */
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 9c5637d41d95..322950727dd0 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -5,6 +5,7 @@
+ #include <linux/skbuff.h>
+ 
+ struct ip_esp_hdr;
++struct xfrm_state;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+ {
+diff --git a/include/net/ethoc.h b/include/net/ethoc.h
+index 78519ed42ab4..73810f3ca492 100644
+--- a/include/net/ethoc.h
++++ b/include/net/ethoc.h
+@@ -10,6 +10,9 @@
+ #ifndef LINUX_NET_ETHOC_H
+ #define LINUX_NET_ETHOC_H 1
+ 
++#include <linux/if.h>
++#include <linux/types.h>
++
+ struct ethoc_platform_data {
+ 	u8 hwaddr[IFHWADDRLEN];
+ 	s8 phy_id;
+diff --git a/include/net/firewire.h b/include/net/firewire.h
+index 299e5df38552..2442d645e412 100644
+--- a/include/net/firewire.h
++++ b/include/net/firewire.h
+@@ -2,6 +2,8 @@
+ #ifndef _NET_FIREWIRE_H
+ #define _NET_FIREWIRE_H
+ 
++#include <linux/types.h>
++
+ /* Pseudo L2 address */
+ #define FWNET_ALEN	16
+ union fwnet_hwaddr {
+diff --git a/include/net/fq.h b/include/net/fq.h
+index 2eccbbd2b559..07b5aff6ec58 100644
+--- a/include/net/fq.h
++++ b/include/net/fq.h
+@@ -7,6 +7,10 @@
+ #ifndef __NET_SCHED_FQ_H
+ #define __NET_SCHED_FQ_H
+ 
++#include <linux/skbuff.h>
++#include <linux/spinlock.h>
++#include <linux/types.h>
++
+ struct fq_tin;
+ 
+ /**
+diff --git a/include/net/garp.h b/include/net/garp.h
+index 4d9a0c6a2e5f..59a07b171def 100644
+--- a/include/net/garp.h
++++ b/include/net/garp.h
+@@ -2,6 +2,8 @@
+ #ifndef _NET_GARP_H
+ #define _NET_GARP_H
+ 
++#include <linux/if_ether.h>
++#include <linux/types.h>
+ #include <net/stp.h>
+ 
+ #define GARP_PROTOCOL_ID	0x1
+diff --git a/include/net/gtp.h b/include/net/gtp.h
+index c1d6169df331..2a503f035d18 100644
+--- a/include/net/gtp.h
++++ b/include/net/gtp.h
+@@ -2,6 +2,10 @@
+ #ifndef _GTP_H_
+ #define _GTP_H_
+ 
++#include <linux/netdevice.h>
++#include <linux/types.h>
++#include <net/rtnetlink.h>
++
+ /* General GTP protocol related definitions. */
+ 
+ #define GTP0_PORT	3386
+diff --git a/include/net/gue.h b/include/net/gue.h
+index e42402f180b7..dfca298bec9c 100644
+--- a/include/net/gue.h
++++ b/include/net/gue.h
+@@ -30,6 +30,9 @@
+  * may refer to options placed after this field.
+  */
+ 
++#include <asm/byteorder.h>
++#include <linux/types.h>
++
+ struct guehdr {
+ 	union {
+ 		struct {
+diff --git a/include/net/hwbm.h b/include/net/hwbm.h
+index c81444611a22..aa495decec35 100644
+--- a/include/net/hwbm.h
++++ b/include/net/hwbm.h
+@@ -2,6 +2,8 @@
+ #ifndef _HWBM_H
+ #define _HWBM_H
+ 
++#include <linux/mutex.h>
++
+ struct hwbm_pool {
+ 	/* Capacity of the pool */
+ 	int size;
+diff --git a/include/net/ila.h b/include/net/ila.h
+index f98dcd5791b0..73ebe5eab272 100644
+--- a/include/net/ila.h
++++ b/include/net/ila.h
+@@ -8,6 +8,8 @@
+ #ifndef _NET_ILA_H
+ #define _NET_ILA_H
+ 
++struct sk_buff;
++
+ int ila_xlat_outgoing(struct sk_buff *skb);
+ int ila_xlat_incoming(struct sk_buff *skb);
+ 
+diff --git a/include/net/inet6_connection_sock.h b/include/net/inet6_connection_sock.h
+index 7392f959a405..025bd8d3c769 100644
+--- a/include/net/inet6_connection_sock.h
++++ b/include/net/inet6_connection_sock.h
+@@ -11,6 +11,8 @@
+ 
+ #include <linux/types.h>
+ 
++struct flowi;
++struct flowi6;
+ struct request_sock;
+ struct sk_buff;
+ struct sock;
+diff --git a/include/net/inet_common.h b/include/net/inet_common.h
+index cad2a611efde..cec453c18f1d 100644
+--- a/include/net/inet_common.h
++++ b/include/net/inet_common.h
+@@ -3,6 +3,10 @@
+ #define _INET_COMMON_H
+ 
+ #include <linux/indirect_call_wrapper.h>
++#include <linux/net.h>
++#include <linux/netdev_features.h>
++#include <linux/types.h>
++#include <net/sock.h>
+ 
+ extern const struct proto_ops inet_stream_ops;
+ extern const struct proto_ops inet_dgram_ops;
+@@ -12,6 +16,8 @@ extern const struct proto_ops inet_dgram_ops;
+  */
+ 
+ struct msghdr;
++struct net;
++struct page;
+ struct sock;
+ struct sockaddr;
+ struct socket;
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index 911ad930867d..0b0876610553 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -4,6 +4,9 @@
+ 
+ #include <linux/rhashtable-types.h>
+ #include <linux/completion.h>
++#include <linux/in6.h>
++#include <linux/rbtree_types.h>
++#include <linux/refcount.h>
+ 
+ /* Per netns frag queues directory */
+ struct fqdir {
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index ca2d6b60e1ec..035d61d50a98 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -2,6 +2,16 @@
+ #ifndef _NET_IP6_ROUTE_H
+ #define _NET_IP6_ROUTE_H
+ 
++#include <net/addrconf.h>
++#include <net/flow.h>
++#include <net/ip6_fib.h>
++#include <net/sock.h>
++#include <net/lwtunnel.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <linux/route.h>
++#include <net/nexthop.h>
++
+ struct route_info {
+ 	__u8			type;
+ 	__u8			length;
+@@ -19,16 +29,6 @@ struct route_info {
+ 	__u8			prefix[];	/* 0,8 or 16 */
+ };
+ 
+-#include <net/addrconf.h>
+-#include <net/flow.h>
+-#include <net/ip6_fib.h>
+-#include <net/sock.h>
+-#include <net/lwtunnel.h>
+-#include <linux/ip.h>
+-#include <linux/ipv6.h>
+-#include <linux/route.h>
+-#include <net/nexthop.h>
+-
+ #define RT6_LOOKUP_F_IFACE		0x00000001
+ #define RT6_LOOKUP_F_REACHABLE		0x00000002
+ #define RT6_LOOKUP_F_HAS_SADDR		0x00000004
+diff --git a/include/net/ipcomp.h b/include/net/ipcomp.h
+index fee6fc451597..c31108295079 100644
+--- a/include/net/ipcomp.h
++++ b/include/net/ipcomp.h
+@@ -2,11 +2,13 @@
+ #ifndef _NET_IPCOMP_H
+ #define _NET_IPCOMP_H
+ 
++#include <linux/skbuff.h>
+ #include <linux/types.h>
+ 
+ #define IPCOMP_SCRATCH_SIZE     65400
+ 
+ struct crypto_comp;
++struct ip_comp_hdr;
+ 
+ struct ipcomp_data {
+ 	u16 threshold;
+diff --git a/include/net/ipconfig.h b/include/net/ipconfig.h
+index e3534299bd2a..8276897d0c2e 100644
+--- a/include/net/ipconfig.h
++++ b/include/net/ipconfig.h
+@@ -7,6 +7,8 @@
+ 
+ /* The following are initdata: */
+ 
++#include <linux/types.h>
++
+ extern int ic_proto_enabled;	/* Protocols enabled (see IC_xxx) */
+ extern int ic_set_manually;	/* IPconfig parameters set manually */
+ 
+diff --git a/include/net/llc_c_ac.h b/include/net/llc_c_ac.h
+index e766300b3e99..3e1f76786d7b 100644
+--- a/include/net/llc_c_ac.h
++++ b/include/net/llc_c_ac.h
+@@ -16,6 +16,13 @@
+  * Connection state transition actions
+  * (Fb = F bit; Pb = P bit; Xb = X bit)
+  */
++
++#include <linux/types.h>
++
++struct sk_buff;
++struct sock;
++struct timer_list;
++
+ #define LLC_CONN_AC_CLR_REMOTE_BUSY			 1
+ #define LLC_CONN_AC_CONN_IND				 2
+ #define LLC_CONN_AC_CONN_CONFIRM			 3
+diff --git a/include/net/llc_c_st.h b/include/net/llc_c_st.h
+index 48f3f891b2f9..53823d61d8b6 100644
+--- a/include/net/llc_c_st.h
++++ b/include/net/llc_c_st.h
+@@ -11,6 +11,10 @@
+  *
+  * See the GNU General Public License for more details.
+  */
++
++#include <net/llc_c_ac.h>
++#include <net/llc_c_ev.h>
++
+ /* Connection component state management */
+ /* connection states */
+ #define LLC_CONN_OUT_OF_SVC		 0	/* prior to allocation */
+diff --git a/include/net/llc_s_ac.h b/include/net/llc_s_ac.h
+index a61b98c108ee..f71790305bc9 100644
+--- a/include/net/llc_s_ac.h
++++ b/include/net/llc_s_ac.h
+@@ -11,6 +11,10 @@
+  *
+  * See the GNU General Public License for more details.
+  */
++
++struct llc_sap;
++struct sk_buff;
++
+ /* SAP component actions */
+ #define SAP_ACT_UNITDATA_IND	1
+ #define SAP_ACT_SEND_UI		2
+diff --git a/include/net/llc_s_ev.h b/include/net/llc_s_ev.h
+index 84db3a59ed28..fb7df1d70af3 100644
+--- a/include/net/llc_s_ev.h
++++ b/include/net/llc_s_ev.h
+@@ -13,6 +13,7 @@
+  */
+ 
+ #include <linux/skbuff.h>
++#include <net/llc.h>
+ 
+ /* Defines SAP component events */
+ /* Types of events (possible values in 'ev->type') */
+diff --git a/include/net/mpls_iptunnel.h b/include/net/mpls_iptunnel.h
+index 9deb3a3735da..0c71c27979fb 100644
+--- a/include/net/mpls_iptunnel.h
++++ b/include/net/mpls_iptunnel.h
+@@ -6,6 +6,9 @@
+ #ifndef _NET_MPLS_IPTUNNEL_H
+ #define _NET_MPLS_IPTUNNEL_H 1
+ 
++#include <linux/types.h>
++#include <net/lwtunnel.h>
++
+ struct mpls_iptunnel_encap {
+ 	u8	labels;
+ 	u8	ttl_propagate;
+diff --git a/include/net/mrp.h b/include/net/mrp.h
+index 1c308c034e1a..92cd3fb6cf9d 100644
+--- a/include/net/mrp.h
++++ b/include/net/mrp.h
+@@ -2,6 +2,10 @@
+ #ifndef _NET_MRP_H
+ #define _NET_MRP_H
+ 
++#include <linux/netdevice.h>
++#include <linux/skbuff.h>
++#include <linux/types.h>
++
+ #define MRP_END_MARK		0x0
+ 
+ struct mrp_pdu_hdr {
+diff --git a/include/net/ncsi.h b/include/net/ncsi.h
+index fbefe80361ee..08a50d9acb0a 100644
+--- a/include/net/ncsi.h
++++ b/include/net/ncsi.h
+@@ -2,6 +2,8 @@
+ #ifndef __NET_NCSI_H
+ #define __NET_NCSI_H
+ 
++#include <linux/types.h>
++
+ /*
+  * The NCSI device states seen from external. More NCSI device states are
+  * only visible internally (in net/ncsi/internal.h). When the NCSI device
+diff --git a/include/net/netevent.h b/include/net/netevent.h
+index 4107016c3bb4..1be3757a8b7f 100644
+--- a/include/net/netevent.h
++++ b/include/net/netevent.h
+@@ -14,6 +14,7 @@
+ 
+ struct dst_entry;
+ struct neighbour;
++struct notifier_block ;
+ 
+ struct netevent_redirect {
+ 	struct dst_entry *old;
+diff --git a/include/net/netns/can.h b/include/net/netns/can.h
+index 52fbd8291a96..48b79f7e6236 100644
+--- a/include/net/netns/can.h
++++ b/include/net/netns/can.h
+@@ -7,6 +7,7 @@
+ #define __NETNS_CAN_H__
+ 
+ #include <linux/spinlock.h>
++#include <linux/timer.h>
+ 
+ struct can_dev_rcv_lists;
+ struct can_pkg_stats;
+diff --git a/include/net/netns/core.h b/include/net/netns/core.h
+index 388244e315e7..8249060cf5d0 100644
+--- a/include/net/netns/core.h
++++ b/include/net/netns/core.h
+@@ -2,6 +2,8 @@
+ #ifndef __NETNS_CORE_H__
+ #define __NETNS_CORE_H__
+ 
++#include <linux/types.h>
++
+ struct ctl_table_header;
+ struct prot_inuse;
+ 
+diff --git a/include/net/netns/generic.h b/include/net/netns/generic.h
+index 8a1ab47c3fb3..7ce68183f6e1 100644
+--- a/include/net/netns/generic.h
++++ b/include/net/netns/generic.h
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/bug.h>
+ #include <linux/rcupdate.h>
++#include <net/net_namespace.h>
+ 
+ /*
+  * Generic net pointers are to be used by modules to put some private
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index ce0cc4e8d8c7..c7320ef356d9 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -9,6 +9,7 @@
+ #include <linux/uidgid.h>
+ #include <net/inet_frag.h>
+ #include <linux/rcupdate.h>
++#include <linux/seqlock.h>
+ #include <linux/siphash.h>
+ 
+ struct ctl_table_header;
+diff --git a/include/net/netns/mctp.h b/include/net/netns/mctp.h
+index acedef12a35e..1db8f9aaddb4 100644
+--- a/include/net/netns/mctp.h
++++ b/include/net/netns/mctp.h
+@@ -6,6 +6,7 @@
+ #ifndef __NETNS_MCTP_H__
+ #define __NETNS_MCTP_H__
+ 
++#include <linux/mutex.h>
+ #include <linux/types.h>
+ 
+ struct netns_mctp {
+diff --git a/include/net/netns/mpls.h b/include/net/netns/mpls.h
+index a7bdcfbb0b28..19ad2574b267 100644
+--- a/include/net/netns/mpls.h
++++ b/include/net/netns/mpls.h
+@@ -6,6 +6,8 @@
+ #ifndef __NETNS_MPLS_H__
+ #define __NETNS_MPLS_H__
+ 
++#include <linux/types.h>
++
+ struct mpls_route;
+ struct ctl_table_header;
+ 
+diff --git a/include/net/netns/nexthop.h b/include/net/netns/nexthop.h
+index 1849e77eb68a..434239b37014 100644
+--- a/include/net/netns/nexthop.h
++++ b/include/net/netns/nexthop.h
+@@ -6,6 +6,7 @@
+ #ifndef __NETNS_NEXTHOP_H__
+ #define __NETNS_NEXTHOP_H__
+ 
++#include <linux/notifier.h>
+ #include <linux/rbtree.h>
+ 
+ struct netns_nexthop {
+diff --git a/include/net/netns/sctp.h b/include/net/netns/sctp.h
+index 40240722cdca..a681147aecd8 100644
+--- a/include/net/netns/sctp.h
++++ b/include/net/netns/sctp.h
+@@ -2,6 +2,9 @@
+ #ifndef __NETNS_SCTP_H__
+ #define __NETNS_SCTP_H__
+ 
++#include <linux/timer.h>
++#include <net/snmp.h>
++
+ struct sock;
+ struct proc_dir_entry;
+ struct sctp_mib;
+diff --git a/include/net/netns/unix.h b/include/net/netns/unix.h
+index 6f1a33df061d..9859d134d5a8 100644
+--- a/include/net/netns/unix.h
++++ b/include/net/netns/unix.h
+@@ -5,6 +5,8 @@
+ #ifndef __NETNS_UNIX_H__
+ #define __NETNS_UNIX_H__
+ 
++#include <linux/spinlock.h>
++
+ struct unix_table {
+ 	spinlock_t		*locks;
+ 	struct hlist_head	*buckets;
+diff --git a/include/net/netrom.h b/include/net/netrom.h
+index 80f15b1c1a48..f0565a5987d1 100644
+--- a/include/net/netrom.h
++++ b/include/net/netrom.h
+@@ -14,6 +14,7 @@
+ #include <net/sock.h>
+ #include <linux/refcount.h>
+ #include <linux/seq_file.h>
++#include <net/ax25.h>
+ 
+ #define	NR_NETWORK_LEN			15
+ #define	NR_TRANSPORT_LEN		5
+diff --git a/include/net/p8022.h b/include/net/p8022.h
+index c2bacc66bfbc..b690ffcad66b 100644
+--- a/include/net/p8022.h
++++ b/include/net/p8022.h
+@@ -1,6 +1,11 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #ifndef _NET_P8022_H
+ #define _NET_P8022_H
++
++struct net_device;
++struct packet_type;
++struct sk_buff;
++
+ struct datalink_proto *
+ register_8022_client(unsigned char type,
+ 		     int (*func)(struct sk_buff *skb,
+diff --git a/include/net/phonet/pep.h b/include/net/phonet/pep.h
+index 27b1ab5e4e6d..645dddf5ce77 100644
+--- a/include/net/phonet/pep.h
++++ b/include/net/phonet/pep.h
+@@ -10,6 +10,9 @@
+ #ifndef NET_PHONET_PEP_H
+ #define NET_PHONET_PEP_H
+ 
++#include <linux/skbuff.h>
++#include <net/phonet/phonet.h>
++
+ struct pep_sock {
+ 	struct pn_sock		pn_sk;
+ 
+diff --git a/include/net/phonet/phonet.h b/include/net/phonet/phonet.h
+index a27bdc6cfeab..862f1719b523 100644
+--- a/include/net/phonet/phonet.h
++++ b/include/net/phonet/phonet.h
+@@ -10,6 +10,10 @@
+ #ifndef AF_PHONET_H
+ #define AF_PHONET_H
+ 
++#include <linux/phonet.h>
++#include <linux/skbuff.h>
++#include <net/sock.h>
++
+ /*
+  * The lower layers may not require more space, ever. Make sure it's
+  * enough.
+diff --git a/include/net/phonet/pn_dev.h b/include/net/phonet/pn_dev.h
+index 05b49d4d2b11..e9dc8dca5817 100644
+--- a/include/net/phonet/pn_dev.h
++++ b/include/net/phonet/pn_dev.h
+@@ -10,6 +10,11 @@
+ #ifndef PN_DEV_H
+ #define PN_DEV_H
+ 
++#include <linux/list.h>
++#include <linux/mutex.h>
++
++struct net;
++
+ struct phonet_device_list {
+ 	struct list_head list;
+ 	struct mutex lock;
+diff --git a/include/net/pptp.h b/include/net/pptp.h
+index 383e25ca53a7..e63176bdd4c8 100644
+--- a/include/net/pptp.h
++++ b/include/net/pptp.h
+@@ -2,6 +2,9 @@
+ #ifndef _NET_PPTP_H
+ #define _NET_PPTP_H
+ 
++#include <linux/types.h>
++#include <net/gre.h>
++
+ #define PPP_LCP_ECHOREQ 0x09
+ #define PPP_LCP_ECHOREP 0x0A
+ #define SC_RCV_BITS     (SC_RCV_B7_1|SC_RCV_B7_0|SC_RCV_ODDP|SC_RCV_EVNP)
+diff --git a/include/net/psnap.h b/include/net/psnap.h
+index 7cb0c8ab4171..88802b0754ad 100644
+--- a/include/net/psnap.h
++++ b/include/net/psnap.h
+@@ -2,6 +2,11 @@
+ #ifndef _NET_PSNAP_H
+ #define _NET_PSNAP_H
+ 
++struct datalink_proto;
++struct sk_buff;
++struct packet_type;
++struct net_device;
++
+ struct datalink_proto *
+ register_snap_client(const unsigned char *desc,
+ 		     int (*rcvfunc)(struct sk_buff *, struct net_device *,
+diff --git a/include/net/regulatory.h b/include/net/regulatory.h
+index 47f06f6f5a67..896191f420d5 100644
+--- a/include/net/regulatory.h
++++ b/include/net/regulatory.h
+@@ -1,3 +1,4 @@
++
+ #ifndef __NET_REGULATORY_H
+ #define __NET_REGULATORY_H
+ /*
+@@ -19,6 +20,8 @@
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+ 
++#include <linux/ieee80211.h>
++#include <linux/nl80211.h>
+ #include <linux/rcupdate.h>
+ 
+ /**
+diff --git a/include/net/rose.h b/include/net/rose.h
+index 0f0a4ce0fee7..f192a64ddef2 100644
+--- a/include/net/rose.h
++++ b/include/net/rose.h
+@@ -9,6 +9,7 @@
+ #define _ROSE_H 
+ 
+ #include <linux/rose.h>
++#include <net/ax25.h>
+ #include <net/sock.h>
+ 
+ #define	ROSE_ADDR_LEN			5
+diff --git a/include/net/secure_seq.h b/include/net/secure_seq.h
+index dac91aa38c5a..21e7fa2a1813 100644
+--- a/include/net/secure_seq.h
++++ b/include/net/secure_seq.h
+@@ -4,6 +4,8 @@
+ 
+ #include <linux/types.h>
+ 
++struct net;
++
+ u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
+ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport);
+diff --git a/include/net/smc.h b/include/net/smc.h
+index e441aa97ad61..37f829d9c6e5 100644
+--- a/include/net/smc.h
++++ b/include/net/smc.h
+@@ -11,6 +11,13 @@
+ #ifndef _SMC_H
+ #define _SMC_H
+ 
++#include <linux/device.h>
++#include <linux/spinlock.h>
++#include <linux/types.h>
++#include <linux/wait.h>
++
++struct sock;
++
+ #define SMC_MAX_PNETID_LEN	16	/* Max. length of PNET id */
+ 
+ struct smc_hashinfo {
+diff --git a/include/net/stp.h b/include/net/stp.h
+index 2914e6d53490..528103fce2c0 100644
+--- a/include/net/stp.h
++++ b/include/net/stp.h
+@@ -2,6 +2,8 @@
+ #ifndef _NET_STP_H
+ #define _NET_STP_H
+ 
++#include <linux/if_ether.h>
++
+ struct stp_proto {
+ 	unsigned char	group_address[ETH_ALEN];
+ 	void		(*rcv)(const struct stp_proto *, struct sk_buff *,
+diff --git a/include/net/transp_v6.h b/include/net/transp_v6.h
+index da06613c9603..b830463e3dff 100644
+--- a/include/net/transp_v6.h
++++ b/include/net/transp_v6.h
+@@ -3,6 +3,7 @@
+ #define _TRANSP_V6_H
+ 
+ #include <net/checksum.h>
++#include <net/sock.h>
+ 
+ /* IPv6 transport protocols */
+ extern struct proto rawv6_prot;
+@@ -12,6 +13,7 @@ extern struct proto tcpv6_prot;
+ extern struct proto pingv6_prot;
+ 
+ struct flowi6;
++struct ipcm6_cookie;
+ 
+ /* extension headers */
+ int ipv6_exthdrs_init(void);
+diff --git a/include/net/tun_proto.h b/include/net/tun_proto.h
+index 2ea3deba4c99..7b0de7852908 100644
+--- a/include/net/tun_proto.h
++++ b/include/net/tun_proto.h
+@@ -1,7 +1,8 @@
+ #ifndef __NET_TUN_PROTO_H
+ #define __NET_TUN_PROTO_H
+ 
+-#include <linux/kernel.h>
++#include <linux/if_ether.h>
++#include <linux/types.h>
+ 
+ /* One byte protocol values as defined by VXLAN-GPE and NSH. These will
+  * hopefully get a shared IANA registry.
+diff --git a/include/net/udplite.h b/include/net/udplite.h
+index a3c53110d30b..0143b373602e 100644
+--- a/include/net/udplite.h
++++ b/include/net/udplite.h
+@@ -6,6 +6,7 @@
+ #define _UDPLITE_H
+ 
+ #include <net/ip6_checksum.h>
++#include <net/udp.h>
+ 
+ /* UDP-Lite socket options */
+ #define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
+diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+index a2d58b1a12e1..c9df68d5f258 100644
+--- a/include/net/xdp_priv.h
++++ b/include/net/xdp_priv.h
+@@ -3,6 +3,7 @@
+ #define __LINUX_NET_XDP_PRIV_H__
+ 
+ #include <linux/rhashtable.h>
++#include <net/xdp.h>
+ 
+ /* Private to net/core/xdp.c, but used by trace/events/xdp.h */
+ struct xdp_mem_allocator {
 -- 
-2.34.1
+2.36.1
 
-
---0000000000003f242f05e4454ddd
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBIKKBs1QMWv0d7i/9UlOwTZfX77
-QeTnVEOgFYvz+xVOMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDcyMDIzNTMwM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQBQMefMbDPkOgRDA+Tj4iAXacsUtqmeQpPCAenHLDa14IRy
-AKPVnD25vt9VzJ2lY6kXkih3OJKnLuJFiawX5Gog/zjM+vlK6+eUpE0Y0D1klMct1Gjl97bzhnr/
-eCD3Hxhjm2iw7bYi2RUC1H+EGxMtx+ShLIkM4inUgaczlBUcdmL1CAC0IP5GBM8OTVxFRb+H8NN6
-c4q00SbktKwUskexHySkGI5B7iZN2iJpX1t634OQJzIk63U6IvaizktAgbQWPfbs65TMlwuOpYoe
-PBrZqjTbc3Ho9oOJgwKoLDV42YRTjGBXkdvSjvW4I35qlBdz78JyeRWeP6hLIWMEwci5
---0000000000003f242f05e4454ddd--
