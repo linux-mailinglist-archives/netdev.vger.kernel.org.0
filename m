@@ -2,65 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA53E57BACB
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 17:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4C657BB46
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 18:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231374AbiGTPvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 11:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58496 "EHLO
+        id S238427AbiGTQUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 12:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiGTPvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 11:51:41 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35F64B496
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:51:40 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id e15so21480386wro.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 08:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=48fj8+SEYseTJxEMnEnTvEGFV8gDAw0PWcc7VlH/EIs=;
-        b=WYodSGXn5BRD4lcNm2IMZ+/DuGjmlHuhlcaHy9sNuG57HQLQ+pEFClgEtleaglz0GS
-         ahoB7/zGo44BAUGfjvvNAxyx572+LJi7OkpzoPdJT3l5XGe7ewKHBwPDPc1IyzBSCdsJ
-         /tJsciQ7cGY3i9WqBmEGbILi1D5v7opYbg95MM9qjRbJbztAz8ggDpJOkUfRw9LO+g+F
-         GXXlKr6bLM8eCNL7nxiJ8HXe7mkQhSdx1CwtY8/xTNOfuwQNx+aMbW1oV9Q8x/j+6ayF
-         NV7MW8/fo8s+bZBE2fjyoUVCdIprgoWvuL2kFlfC6i8W979R8g21Zqx4uuOW8rlghDHX
-         w2Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=48fj8+SEYseTJxEMnEnTvEGFV8gDAw0PWcc7VlH/EIs=;
-        b=tqAZuCgEGztUxVBJFHv1+VVeTN5IPFQnSEgF5dih1HRlf3+eEC9pMlENotuUQITnCg
-         yLN8WmrxXr49lHlUlpS2RGffYY0Dvpfm1uagjY5ZXu+dI8eFCaLdCjNqTu25DDgTa8NL
-         xUQNbepiGTvPwR6d1QlWs3OTk7YPvm+cZ7DNYGJ2GRT5bb5BYpB1fZOZUK0x2KLOY39V
-         BhiTDZ+5b8B5+klss8gheznW+cfjxkglPbOFI6oz7JtXmmNXh7tvS05J6UfFHWpkTAc+
-         p6et5HwTpRJAL9mLpKl4t47OVsHkPC9c1ozkFTfqKUNxqOzveEWMOcVYZbW4i7lVf0VJ
-         VZ2w==
-X-Gm-Message-State: AJIora/F66h2yJmdeUO0/M33ZcKrI9OnJ15JYTWWvgK7HBAbzW1oRKpF
-        VHvYWshJGaWpy8nsciKr64m8uy7tpF0QwV5h0r0=
-X-Google-Smtp-Source: AGRyM1uMgNfwG3oPgy70AVs3PAuulAsDR0LVyWIpisZ1nu9c47PilKXxE0LYGSehSn8by+OCmgZ4k2XK9VrQAW6W+/4=
-X-Received: by 2002:adf:ee85:0:b0:21e:485a:9720 with SMTP id
- b5-20020adfee85000000b0021e485a9720mr3301932wro.579.1658332299449; Wed, 20
- Jul 2022 08:51:39 -0700 (PDT)
+        with ESMTP id S233552AbiGTQUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 12:20:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64255DE99;
+        Wed, 20 Jul 2022 09:20:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0052161D7C;
+        Wed, 20 Jul 2022 16:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 54604C341D0;
+        Wed, 20 Jul 2022 16:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658334017;
+        bh=BYcsMcijnL0pP/PiWG5nGWH7n3G0OWC2Q7MrG+Nlvj0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gGZxmosbDLlniOH0n0Z2mWELtNt2g2Yiu+vasUz2lXZoC6r/ND4Sbm53IyTN1fQiQ
+         JFwzRSYKrt/j8Rfmxy79FGrFD5NSE+QXn6FENpSmvcoIjCDn6AsSXtfSCBibNnJwDJ
+         HANbFFlCSR8f5wTlKRtoOS82U9Yfdf5Q+lWjhuIKej98CQX5dvq8YUcvisl8pPAOPE
+         jz9fGU8Xy0q756JqdSWbMpSbKJXH3tcntD7DMl5HkTXaEtg42McVoBjOI5cQCgKY7N
+         gK11foWL6nbBGyeJoFZf8Mm9bNznXk45XXdKN0ogumzNkygmvv4ZCZ0Wf/tkRAoBBe
+         KvRisABq9/xzA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3CF98E451BD;
+        Wed, 20 Jul 2022 16:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a7b:c404:0:0:0:0:0 with HTTP; Wed, 20 Jul 2022 08:51:38
- -0700 (PDT)
-From:   D B <kosdav71@gmail.com>
-Date:   Wed, 20 Jul 2022 15:51:38 +0000
-Message-ID: <CAN6u_H8to_D5MEzecmP8TQW3V01oyJierV+5-ZGY=XBgbMM1Nw@mail.gmail.com>
-Subject: Re:
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/5] Bluetooth: hci_bcm: Improve FW load time on CYW55572
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165833401724.6265.284056488301192508.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Jul 2022 16:20:17 +0000
+References: <cover.1656583541.git.hakan.jansson@infineon.com>
+In-Reply-To: <cover.1656583541.git.hakan.jansson@infineon.com>
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linus.walleij@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        linux-bluetooth@vger.kernel.org
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Afternoon,
-Please am still waiting for your reply on the mail i sent you yesterday
-Mr David
+Hello:
+
+This series was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+
+On Thu, 30 Jun 2022 14:45:19 +0200 you wrote:
+> These patches add an optional device specific data member to specify max
+> baudrate of a device when in autobaud mode. This allows the host to set a
+> first baudrate higher than "init speed" to improve FW load time.
+> 
+> The host baudrate will later be changed to "init speed" (as usual) once FW
+> loading is complete and the device has been reset to begin normal
+> operation.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,1/5] dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT binding
+    https://git.kernel.org/bluetooth/bluetooth-next/c/c6480829cda7
+  - [v2,2/5] dt-bindings: net: broadcom-bluetooth: Add conditional constraints
+    https://git.kernel.org/bluetooth/bluetooth-next/c/f5d25901c5cc
+  - [v2,3/5] Bluetooth: hci_bcm: Add DT compatible for CYW55572
+    https://git.kernel.org/bluetooth/bluetooth-next/c/7386459d24b3
+  - [v2,4/5] Bluetooth: hci_bcm: Prevent early baudrate setting in autobaud mode
+    https://git.kernel.org/bluetooth/bluetooth-next/c/31e65c6d44a2
+  - [v2,5/5] Bluetooth: hci_bcm: Increase host baudrate for CYW55572 in autobaud mode
+    https://git.kernel.org/bluetooth/bluetooth-next/c/719a11a62d19
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
