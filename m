@@ -2,71 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B831157B180
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8DD757B182
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiGTHP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 03:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
+        id S231223AbiGTHPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 03:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbiGTHP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:15:26 -0400
+        with ESMTP id S231649AbiGTHPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:15:35 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB2B613CF8
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2E6E24BEA
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658301324;
+        s=mimecast20190719; t=1658301333;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yV3Z2US3lJGM8Odcv2oPe9zY/cE+J6SYHmjcc47m2lQ=;
-        b=OcA6og3SZ0vUk/rC3Uj6GuglqcW+6nh0TE/Y3jg10oC9Kf8VvtYbnTI3BC8tDMqyYdBI10
-        4awYLwxyJYfx2e6iXB0XzBkZJQz1DSlSbztDJl99DI8Y4uHt07XIHbPl5m8YyyHqtc7XSm
-        TGpVbfgFeWhUFm4idDs4KnwRU9L11FY=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=SMUVaPglTlK65G+/E3LhTM8Mfs/GIAQi7/iblHbTRlo=;
+        b=L8sqjh2TudcolXXJYdWL9u1XMbVw+ajA5Bnm1EYyxS9iG7yWccG45FfcVFMr3gXOb12biW
+        QN4glHPCAaO103foTj1l+L64Ymrq2xmJ3JH967Z6eMW23Iev2KL91Oib+ULJ1W1wQVHnAS
+        aHDdg2QF28IZSygwb8vMSYkSqoG6APA=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-VCkLmAJCOMivvoLzAs6hjg-1; Wed, 20 Jul 2022 03:15:21 -0400
-X-MC-Unique: VCkLmAJCOMivvoLzAs6hjg-1
-Received: by mail-lf1-f71.google.com with SMTP id z28-20020a0565120c1c00b0048a2049d2feso5541898lfu.22
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:21 -0700 (PDT)
+ us-mta-37-uv8nxNwhNIGetmFwEKn3gQ-1; Wed, 20 Jul 2022 03:15:32 -0400
+X-MC-Unique: uv8nxNwhNIGetmFwEKn3gQ-1
+Received: by mail-wr1-f71.google.com with SMTP id a3-20020adfbc43000000b0021e46febb93so285714wrh.4
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yV3Z2US3lJGM8Odcv2oPe9zY/cE+J6SYHmjcc47m2lQ=;
-        b=UcLfru/5qLazVRtb95Rkzt9TBjlHlmFM+guDL1dsGk98NiKTijE7vnVoNhJNL5c7vm
-         OFBDsbuy3H3nlKVZ0BiIz7ux7P3NfnRUUhxLZySgqdvJ2k0ECXWC+j+ZmHyY6k3SKvwp
-         c1KPgl2m9uYY6bU3xFtVR3fPFZDRSwi0wCiskdictaR7NAbPMDj5YD6xQ8G5f4vfrqsw
-         AQPnlpZchDJxCmADfXRfXkl+OP8LUwSrZQJkQ/TcATOLgnl+WklZdkKDFqgnZ7oOg1sm
-         CUpw3lDWBHtyIZwHnDBu+G4KD4L/sQ7s3IIJb6O7AhBieLan+siEBgYYDp4dMGesI2kN
-         O6Bg==
-X-Gm-Message-State: AJIora+AjrFhVVedh1tvhRJwb4ILpfA/Aycr/6eEtZuj5sJP6c7Nd7N0
-        H21lEpwP0WhQQC9wQIC3tDpy8fiyL2oHxx1g78PdCFOQheLaHgvkyRUdJQpLywgBl+u4z0YCy7i
-        N/4XjVTrUPrjJwVPy/zTlSRmS/T821LaM
-X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id h21-20020a0565123c9500b0048a03d109dfmr20361199lfv.641.1658301320255;
-        Wed, 20 Jul 2022 00:15:20 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vRijlKLwPBOi/360M74uIAuqhlJ71c7QISF2XxTXk+Cfl6sjVmbqE8qnZ9ij4MIW7iMxRbltcGTPXBzrrrx/A=
-X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id
- h21-20020a0565123c9500b0048a03d109dfmr20361186lfv.641.1658301320071; Wed, 20
- Jul 2022 00:15:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
- <20220719172652.0d072280@kernel.org> <20220720022901-mutt-send-email-mst@kernel.org>
- <CACGkMEvFdMRX-sb7hUpEq+6e04ubehefr8y5Gjnjz8R26f=qDA@mail.gmail.com> <20220720030343-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220720030343-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 20 Jul 2022 15:15:08 +0800
-Message-ID: <CACGkMEuLSAFfh-vZ1XoerjNrbPWVmfF-L5DCGBPMnwzif7ENSA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing support
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alvaro Karsz <alvaro.karsz@solid-run.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SMUVaPglTlK65G+/E3LhTM8Mfs/GIAQi7/iblHbTRlo=;
+        b=3oOAg01EstpPZVroR3awj8Ym04H7F8/4JexZ8Rj5MzxDqLQ92MpdezCg+8g1gnKLkO
+         UfUjYdYLJbesm8jCcYLeYCZ6atsiyh0DJkxrCyRk1VDLn12sxlHiKbQr2AR0Io6L8Hbk
+         kOzkqMuZbN1KklGxmtjoaTRpGl1i2Tjfh/Ktl0oPC2HR8vjBnpacUaK+J9fgomXWH6Da
+         OcOxUarpOvW3uKeaZMZi++0+RBW6a5mqSp0pg0tGA6ZPGzXaXNBbLtOtnr1hp8RZfepK
+         VWcj2Lrl1ie3CUqohw8rgFJPk8JkuFwi1vZcZwmaCtZNz1ShKcbcWLIsB/tUq6GonPkM
+         eN6w==
+X-Gm-Message-State: AJIora+t+EPi6U3hUnpgotuPyPJfS0Kp3M2CWrT8U4WwGaX3+q1RgMIU
+        U6CtX+Unuor2s5vmRnXVlv/LthY5qasBO8qdXoSzE1kugiIJtM7SbHa5If9q23TAJ11rFBsM4Wt
+        Zx6+WvKSiZCsaYAeU
+X-Received: by 2002:a5d:6c67:0:b0:21d:b9bf:5e12 with SMTP id r7-20020a5d6c67000000b0021db9bf5e12mr28533280wrz.127.1658301331185;
+        Wed, 20 Jul 2022 00:15:31 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u+ViyEMqYUc/IQO0E4XrKgBIM1BPnt0iY6qv99AjW2typyyiyVKLoKB6lEkRc6WZHXyO97Jg==
+X-Received: by 2002:a5d:6c67:0:b0:21d:b9bf:5e12 with SMTP id r7-20020a5d6c67000000b0021db9bf5e12mr28533269wrz.127.1658301330929;
+        Wed, 20 Jul 2022 00:15:30 -0700 (PDT)
+Received: from redhat.com ([2.55.47.4])
+        by smtp.gmail.com with ESMTPSA id p22-20020a05600c431600b003a327b98c0asm1321138wme.22.2022.07.20.00.15.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 00:15:30 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 03:15:27 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     Jason Wang <jasowang@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing
+ support
+Message-ID: <20220720031436-mutt-send-email-mst@kernel.org>
+References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
+ <20220719172652.0d072280@kernel.org>
+ <20220720022901-mutt-send-email-mst@kernel.org>
+ <CACGkMEvFdMRX-sb7hUpEq+6e04ubehefr8y5Gjnjz8R26f=qDA@mail.gmail.com>
+ <20220720030343-mutt-send-email-mst@kernel.org>
+ <CAJs=3_DHW6qwjjx3ZBH2SVC0kaKviSrHHG+Hsh8-VxAbRNdP7A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJs=3_DHW6qwjjx3ZBH2SVC0kaKviSrHHG+Hsh8-VxAbRNdP7A@mail.gmail.com>
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -76,73 +86,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 3:05 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Jul 20, 2022 at 03:02:04PM +0800, Jason Wang wrote:
-> > On Wed, Jul 20, 2022 at 2:45 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Tue, Jul 19, 2022 at 05:26:52PM -0700, Jakub Kicinski wrote:
-> > > > On Mon, 18 Jul 2022 12:11:02 +0300 Alvaro Karsz wrote:
-> > > > > New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
-> > > > >
-> > > > > Control a Virtio network device notifications coalescing parameters
-> > > > > using the control virtqueue.
-> > > > >
-> > > > > A device that supports this fetature can receive
-> > > > > VIRTIO_NET_CTRL_NOTF_COAL control commands.
-> > > > >
-> > > > > - VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
-> > > > >   Ask the network device to change the following parameters:
-> > > > >   - tx_usecs: Maximum number of usecs to delay a TX notification.
-> > > > >   - tx_max_packets: Maximum number of packets to send before a
-> > > > >     TX notification.
-> > > > >
-> > > > > - VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
-> > > > >   Ask the network device to change the following parameters:
-> > > > >   - rx_usecs: Maximum number of usecs to delay a RX notification.
-> > > > >   - rx_max_packets: Maximum number of packets to receive before a
-> > > > >     RX notification.
-> > > > >
-> > > > > VirtIO spec. patch:
-> > > > > https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
-> > > > >
-> > > > > Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-> > > >
-> > > > Waiting a bit longer for Michael's ack, so in case other netdev
-> > > > maintainer takes this:
-> > > >
-> > > > Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-> > >
-> > > Yea was going to ack this but looking at the UAPI again we have a
-> > > problem because we abused tax max frames values 0 and 1 to control napi
-> > > in the past. technically does not affect legacy cards but userspace
-> > > can't easily tell the difference, can it?
+On Wed, Jul 20, 2022 at 10:07:11AM +0300, Alvaro Karsz wrote:
+> > Hmm. we currently (ab)use tx_max_coalesced_frames values 0 and 1 to mean tx
+> napi on/off.
+> > However I am not sure we should treat any value != 1 as napi on.
 > >
-> > The "abuse" only works for iproute2.
->
-> That's kernel/userspace API. That's what this patch affects, right?
+> > I don't really have good ideas - I think abusing coalescing might
+> > have been a mistake. But now that we are there, I feel we need
+> > a way for userspace to at least be able to figure out whether
+> > setting coalescing to 0 will have nasty side effects.
+> 
+> 
+> So, how can I proceed from here?
+> Maybe we don't need to use tx napi when this feature is negotiated (like Jakub
+> suggested in prev. versions)?
+> It makes sense, since the number of TX notifications can be reduced by setting
+> tx_usecs/tx_max_packets with ethtool.
 
-I'm not sure I get this.
 
-The 1-to-enable-napi is only used between iproute2 and kernel via
-ETHTOOL_A_COALESCE_TX_MAX_FRAMES not the uAPI introduced here.
+Hmm Jason had some ideas about extensions in mind when he
+coded the current UAPI, let's see if he has ideas.
+I'll ruminate on compatibility a bit too.
 
-So I don't see how it can conflict with the virito uAPI extension here.
-
-Thanks
-
->
-> > For uAPI we know it should follow
-> > the spec? (anyhow NAPI is something out of the spec)
+> > It's also a bit of a spec defect that it does not document corner cases
+> > like what do 0 values do, are they different from 1? or what are max values.
+> > Not too late to fix?
+> 
+> 
+> I think that some of the corner cases can be understood from the coalescing
+> values.
+> For example:
+> if rx_usecs=0 we should wait for 0 usecs, meaning that we should send a
+> notification immediately.
+> But if rx_usecs=1 we should wait for 1 usec.
+> The case with max_packets is a little bit unclear for the values 0/1, and it
+> seems that in both cases we should send a notification immediately after
+> receiving/sending a packet.
+> 
+> 
+> > So the spec says
+> >         Device supports notifications coalescing.
 > >
-> > Thanks
->
-> When you say uAPI here you mean the virtio header. I am not
-> worried about that just yet (maybe I should be).
->
-> > >
-> > > --
-> > > MST
-> > >
->
+> > which makes more sense - there's not a lot guest needs to do here.
+> 
+> 
+> Noted.
+> 
+> > parameters?
+> 
+>  
+> I'll change it to "settings".
+> 
+> > why with dash here? And why not just put the comments near the fields
+> > themselves?
+> 
+> 
+> Noted.
 
