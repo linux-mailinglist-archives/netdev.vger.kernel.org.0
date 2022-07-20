@@ -2,168 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FA557BF68
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 23:04:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7498457BFB5
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 23:40:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbiGTVEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 17:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
+        id S231145AbiGTVj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 17:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbiGTVEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 17:04:10 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B255D5465B;
-        Wed, 20 Jul 2022 14:04:09 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id k30so25285234edk.8;
-        Wed, 20 Jul 2022 14:04:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qBbFw1ZzXTyz8cXktrqbhLMBulYSHXFcjiUZp1QOwIo=;
-        b=BzFvTJvsKL4FG1GYa6Q+7NtfLeL0wK89LFMMkH2hgRKKLBpLVKGextSPrYHMpGYOYG
-         7xgFo2qzLkOvyOKSCNfhANJ9EXsYd0RET/N6JY7AoYRdDj+gp8+cPVeWZTunQtIV466u
-         ELjgTHv0ByWjKAzdwmL3Mc0fwbnKcE4lGCCjKxQkzJ1L+le9HYxubexI+74koO8snCtY
-         7scvBnIxfxphFqgU8aKbpuMF4VIwE+DhSXmtT8xzxDZk00TFVhj3/FVdvAtfz7kpKAhL
-         I0Ko8aQAKp7FXoahOMFBMWPnsjFnk0/JcfEHpjwfQSbXP0jLfPYQJxuBI5pdc5zFFxx9
-         Go7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qBbFw1ZzXTyz8cXktrqbhLMBulYSHXFcjiUZp1QOwIo=;
-        b=qiF3bWTygdn6n8jkKXu8rqzBzigBQ1v/hgf12QQ39LiR27mYibdZG6VVdKDYWPi5FS
-         Pb2Eqx8E+y1Q8AAo1rXEJ4KasmzWN7Oh7WkhAPArTcqppPB9GQur1B9qS/MGPzNHfGM3
-         yjCF29Vd445gYi515rQn72DTLJk1efBaSk8qzgpMsGy0l0cw93nG5AG9ZGC3E2oAkg8g
-         0DBtHWzRL75mVXO5Ngen5uMSEM5plOcgAAp9KXLTmKEKY6IdqOkXlKN6oTMrhRDajrwn
-         CUuyiMaO2mviapgE7CHIwuZ2uG1DdzD+5Vfr9mmne+vr/cSwGE9KbwIz5z2D0DDp/+f6
-         yfrA==
-X-Gm-Message-State: AJIora/KnOof6E9zvDy3RhGbHSQC5tCDs3CY4d9rGKCUijMSyc0AbiZk
-        uKqk5vWkvl5QPXFvpxAUf/g=
-X-Google-Smtp-Source: AGRyM1sLRHct8gnE6Y0WQhR4/ucqWyzO//vOE3v98s8caAwHN1r02tMVaC3RUG8zErb45zRCYxrTDg==
-X-Received: by 2002:a05:6402:11d3:b0:43a:c43b:7ff9 with SMTP id j19-20020a05640211d300b0043ac43b7ff9mr54388522edw.130.1658351048064;
-        Wed, 20 Jul 2022 14:04:08 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id da24-20020a056402177800b0043bbea24595sm24421edb.31.2022.07.20.14.04.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 14:04:07 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 00:04:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, f.fainelli@gmail.com, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [RFC Patch net-next 07/10] net: dsa: microchip: apply rgmii tx
- and rx delay in phylink mac config
-Message-ID: <20220720210405.6wv6d3fssopnpm7x@skbuf>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
- <20220712160308.13253-8-arun.ramadoss@microchip.com>
- <20220719102532.ndny6lrcxwwte7gw@skbuf>
- <d4696bc19472e9efd3a5581ea5c3bca201c90580.camel@microchip.com>
+        with ESMTP id S229504AbiGTVj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 17:39:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11E866B86
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 14:39:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658353195; x=1689889195;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=uXR2sMnQiAev67GH2WYLd4COiH3NbrjHC6BlBxtypKU=;
+  b=ctdOAPl1daVIE+lcE7SWNAsWRN3IIclg2c3f9dHm3neJX/OiTEXj36R2
+   40fAVJV96NEHKuqIzshRH0HTNmlIXhlCHyMrKzEIQx5TESnPJlwiqypoc
+   gNopbIeTZRYTRZNiWzX23wUCMi3Dpm5gmPB/XRdPeGiCbmIY2Cv6ydXcy
+   aPiqxarLDySf4rdtFjrm4ywOLigZNlETNPj+sFHziFHrJ2lV33xLqxwAP
+   qMz0gtyx0auY6ghs5p+Zqtfbyyod8EC11wXhM4yl47LifZc71gPA2stDz
+   eS1izjDn5r6u0cmVuwe53CN1TRnwvG/klhkvoPqobbERKGNbxlhZDKjis
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="312594683"
+X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
+   d="scan'208";a="312594683"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 14:39:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,287,1650956400"; 
+   d="scan'208";a="666028636"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jul 2022 14:39:48 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Wed, 20 Jul 2022 14:39:47 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 20 Jul 2022 14:39:47 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 20 Jul 2022 14:39:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YYnvfhZQUKwAjDqHy6ql3UEPvBOaocp9+OJc+ZAfHBICB3IHaroNRqe8gwCvOXJk75hIT0ptzBbflt8T6BakRarb+YVjBxyAxopw26O2MDr/UDqhkR6Br5QOpxZAKbYuPieNtVzXbMSAwO1izGkwSoQta6smajYFiKMvjvNn4Mdd+bGRQSZAVa/TPl83qT2KpX8zqaO0TwqUY7crzELf9NV6gvMH+MmVN6gBXB90IG1HqT2+UqhyXcgQLFUIaOEEjV9TifzGGAorM1sk7hyy1a+mmbW4b4JJuEF37BSPKlURSlmH/6/5KdM0kdN3wOa8RpRHs8uMuryIs9zVG8lXOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=25XHFSWehtTPMbUVo/fy5ZhlBx8pQ3XwJLF11k7Ld38=;
+ b=KMp3qh5N4/4KPoI5Mtb5EWw7MFnXGYFNSkayJp0cGmR2HG+PZ+pPijeThzSIs2Ob+P55qx5sKCTWHuOkMytj2IYgtGh9CSd2PknoHkEx6pwiMSifq9t1oST5Wa7HVx0vuDzZIFxg5ZNMHqmv3LFgtOVF0rKlzSW8B2rBg9CmDY2hcgtnzU1ekuoMKTRL5Xf2gyFzfWVEy9I4hbmBzmX7C1bcV9Hmnu9xwVvl8vgka/xVaL/oFsHBQQfnSU2o6n1WkGu5B/DlrOz66+rpnjAlr6RHcqvYZNzgSjW+ZGE3tiL28CBhfaFPmjkacRO6vun1sv5x1uo3f5kzvtZ8M6TVfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by IA1PR11MB6265.namprd11.prod.outlook.com (2603:10b6:208:3e7::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Wed, 20 Jul
+ 2022 21:39:46 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::7504:add2:2794:3ecb]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::7504:add2:2794:3ecb%7]) with mapi id 15.20.5438.023; Wed, 20 Jul 2022
+ 21:39:46 +0000
+Message-ID: <04864247-0e37-6294-9ff8-4c7e9d7a830a@intel.com>
+Date:   Wed, 20 Jul 2022 14:39:42 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [Intel-wired-lan] [PATCH] ixgbe: Manual AN-37 for troublesome
+ link partners for X550 SFI
+Content-Language: en-US
+To:     Jeff Daly <jeffd@silicom-usa.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Skajewski, PiotrX" <piotrx.skajewski@intel.com>
+CC:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+References: <20220316192710.9947-1-jeffd@silicom-usa.com>
+ <56cd0dde-600d-1bb0-1555-e66de8c37236@intel.com>
+ <51308ed3-09c1-6bf2-190b-306abd42f3da@intel.com>
+ <VI1PR0402MB35172FB699C5CF918C65D3DCEA8F9@VI1PR0402MB3517.eurprd04.prod.outlook.com>
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+In-Reply-To: <VI1PR0402MB35172FB699C5CF918C65D3DCEA8F9@VI1PR0402MB3517.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4P223CA0028.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:303:80::33) To SN6PR11MB3229.namprd11.prod.outlook.com
+ (2603:10b6:805:ba::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d4696bc19472e9efd3a5581ea5c3bca201c90580.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c8317fa8-609d-4793-5488-08da6a985d53
+X-MS-TrafficTypeDiagnostic: IA1PR11MB6265:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uDFPCvNLn86fgW7ww/SEC5RbWvt+2+zGMEB52usikVhqteu/ixq6oYgFlbP7G5NWm2ZQn9wt12NQVvZGRmX7B0p3/9VX/oQA1ztvkViI9T5h5Fr/m5l9xof2weMOD67yZP/Fp1QfNB/F1sEuWWtmI7rIjPRkcg16M+eqgPtNZG8GRVVKj5c4hYiyV5IOfBu21WNAQmASAS/G2+K0rEvP2Wff4yDH8s4IJg9sz+Fh8jT5g6Q/iwpH/6TGriuBK+ibMpXCkGnLhqnxrUBRZ4LahJjmYzMMiDA+WUaLnk19MQEkvn3CFAPNTT5IpMBWBMepnoO4947a8fWppsbh6N/BTgo9Rmg+S+Rm4Mqkv3QcNWe19pDQ6sbdvdjKF58GUwNWASNDf2j+ZOUyrXSzVViW/khIkKg46qL0qgUf/2GKhyPigHnekpkUzxgmKLmFIR5ycAdJCDPuOxwxRWSOFxO4ZmCF4lsZF1KGx/pm3LBYeMig45OIqYicTbF1Dz0RKgN9zk43A4PthnwaITcO+sgNWteidzyMoZj2owxv+prBqJibi6I6Alxieyir9hb3i5Hfffcme3bXQnR/Tbfl2gIcQPTVsH7ukNDf+R5VwUo2ZMh75Rhdohd8J0xJ8zVkqSu+BBgYFxKNbS0altJeHehVn+A455jzlEAirJLELTzqvCATPIoWY3qV/3aB4G7DQBRstSJFIvGkBaX5vUrOYZ+XYVolrVrQFqPvmwQx6ImbnRRF1BAUd77ko6By+3yNWAlaK9jioE5TMVnPjDnFiG3XG2CVfqWrXBGntWQCqd8G9+xwlb5dURISKtpLAZ+G2GP2jgY0MoVDyYm19rP4OtgHxA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39860400002)(366004)(346002)(376002)(136003)(2616005)(38100700002)(186003)(83380400001)(316002)(66556008)(8676002)(4744005)(4326008)(5660300002)(66476007)(8936002)(66946007)(6636002)(478600001)(41300700001)(6512007)(6666004)(26005)(53546011)(2906002)(6506007)(6486002)(110136005)(31696002)(86362001)(36756003)(31686004)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TktZUDU2dXFXZFplbGRUbDZabGE5ODQyZU1HZ0wzOHp1bEdwcGJJdFY1SUYy?=
+ =?utf-8?B?Vndib0ZudzBqbXUxdXpBbWFNN3ZIWG5hSGFtTlhzby9INlF4b0JvU091T0Zv?=
+ =?utf-8?B?bThwdzdRNDVaK1Y3cEFHemhMOGltSU1zL0pQR0k2YWYrekZEY2xUYk1maWdr?=
+ =?utf-8?B?VkE0UlJzcjJYOEZEK0o2T2U2aEpKdkM3SFpoZ0JFeS9wc2ZYWU9WbThFOCtE?=
+ =?utf-8?B?RjlkTVUvbDAvUjgvVzhlM2NmMUNvNnZqZlhqNmxDSnZxMFpBWGxLa0M0WGI0?=
+ =?utf-8?B?bmRTRFljdmdiQ2ppS0IvTXN1UzdBVUwyaGd3aEpOaWdscDRwUzdWd2RaQmNQ?=
+ =?utf-8?B?Mk03clBHeVlnZTBBYVJsTmJQVlhJR3ZRV0NKZDh6c3dQVmVUS1Z5blFVL3Ba?=
+ =?utf-8?B?Z0ZZVWtaKzlYcmlDYTJWSDJ1VEM2MjB6UzRMa0JLYmdBVUZFMm81akh5QUk5?=
+ =?utf-8?B?bFJWSkMvT082WUZFSGVUT1Z3cHJuTGhQdlZmSDRlOW5kVDEvR1ZZdW1vNkFJ?=
+ =?utf-8?B?ak1CVFU3Qk1YaE1TUHJVVGl3a29jb21RSU9jWWNTTjZMZXJ3RHN3Mi9WcGE4?=
+ =?utf-8?B?VUZrV1hlNS9CK2ZSaG1DdVNXQ0NhSVBjaC9haXFzL3NpbGRMS2UxemJnMFdZ?=
+ =?utf-8?B?M3Bwczh5SENlcWxjTXppSExWRGlweXJaRmJSUU5Yc0JrNlVBTEpLQUhIZzlO?=
+ =?utf-8?B?MGZseUowTVhQYURVUHFpK2dsc2tvRlBaSVlmVUpLUjlPZmRvazBFTW9yWDhn?=
+ =?utf-8?B?SkVkZXFtY2RWaTZSaFNXL2FmZ0FJK0pGMkxuR21IM1JEd2xtK1lBTCtzQzF2?=
+ =?utf-8?B?amFnc0dPZi9NQTRTV2NSU2NFalJIRFRKQzN4NTZiajBPNUpnY2ZkcWJIakpC?=
+ =?utf-8?B?S08rTnRSN1FYUXEzWW85N3p0S0RtUHFMQnMzRzFCUmpZQlZCTzhTY3RqSTk5?=
+ =?utf-8?B?OFZma29aMEk3ZVJXZElka3QxQ09OOXdNcVRxcnNqTTBzbDBicDF3bjJLa2RV?=
+ =?utf-8?B?Q0piTTVuUldaSHNsQkFiLzR0Zk1PcEJRT3Fscis3M01HNXhnd2dDc3dsai8x?=
+ =?utf-8?B?YWxHdVVyaXNRbGtGblFwUkt0RFNjbklWS3d0TFEwTHF3dGlGMDcwTlB1c0lu?=
+ =?utf-8?B?dW4zWnRXSys3RjlZMEduUDlHRkQyWlJyWjBiMklOZGxkL05vTXY2M2F4TXBn?=
+ =?utf-8?B?LzNmQXBvUXk5RWlCYWlUNnlRUG1NL0RmT2hzUFllTzgzTGxkU1cyN3AzV0RH?=
+ =?utf-8?B?akdDdU9mdjJpcU54NlpNRWVKWTJTS3d6OWdPalpMeDl3TDd5Tm5VKy9MaFgr?=
+ =?utf-8?B?a3VkNWxVVmxEaDh3ZTNMenJhUzNaWWRqYVprTkN3RHBZYkhqcDYwUFVxSE0v?=
+ =?utf-8?B?UzdTR3liZ3FyaHlTUjFtOU1QYWVzVktabjlKUjFlTHBzbVJEUXZYTlJqVXBh?=
+ =?utf-8?B?aWJWcTVuUERjYjZRaWRVWnBJNmErbjNsdUFJcGt4MkRWd3lscTQvOWZoa05a?=
+ =?utf-8?B?Rjl6d1dsbTQ1OVVxM0ExY2tQdUhRNTZ4WnhqV2ZRQ3dLQmlETktxYXNoQXp4?=
+ =?utf-8?B?RUxvMDJWajNURWIrUGJFempmcVEwTnRiVWhVUExoSnJXYWpqQjB3dHBIbktX?=
+ =?utf-8?B?dFYyNWtETWZQeXFFRmpTOVFMWFZsZVRSTVRUY2pDY0M1SFpHVlZRdFE0ZVJo?=
+ =?utf-8?B?ZjIvUFNOZEhjTzF5eFZyWlpodWFMdzNSRkdKTDEvdU5vVnJpaGFhNnMwemps?=
+ =?utf-8?B?UEhsdkFPMVNQNGlHRWFvKzhiZjZ5SVRlWlA0VEs0aytLZWlsZmlGUzN1T0ZI?=
+ =?utf-8?B?cHByUlR3ZmFZSURqZWVnV29jOVk4SSswZWhmcFMrMlFjTGZCbmFRdFdMaDhW?=
+ =?utf-8?B?bmUrMDJ5aXY0RFBuU0hCQXhYRWgvMEI1dHNGT3E1Z3lub1libytWc1NvUXY2?=
+ =?utf-8?B?RTZHclNoWW5od3hHVG9oWUhhNlVQWGpDV3pCdTNiUzR4dGFLaldPUkU0ajlK?=
+ =?utf-8?B?RzM4YTBzbWlBYjhIcHZvM0NOTXNsWUdNanIvVldBcUpRZXpaeU5RVjMzaGdQ?=
+ =?utf-8?B?Q2lLL0VrODl0MGhTNkF5RzFzWjN1dUVDdzJaNk52WFBLaUJIZzQyKzh1bXdW?=
+ =?utf-8?B?Nk82NmFreVV0b280Yk5mTWQ5ZmZWVElRL25OREpoUWx3MU5RTVJzTGt5Rk83?=
+ =?utf-8?B?blE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8317fa8-609d-4793-5488-08da6a985d53
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 21:39:46.2318
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eXom37nxgwXDBjmGds3Cyk35rRktZVl+vMIGW5NQjWov8rgego3tc7io5/fnestCtjkiYtGZFL8/SCq49YG1vMMA+Uv3AuhkgdiRd5P5fyE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6265
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 02:51:42PM +0000, Arun.Ramadoss@microchip.com wrote:
-> > Why not all RGMII modes and only these 2? There was a discussion a long
-> > time ago that the "_*ID" values refer to delays applied by an attached PHY.
-> > Here you are refusing to apply RGMII TX delays in the "rgmii" and "rgmii-txid"
-> > modes.
-> 
-> I have reused the code of ksz9477 cpu config function and added the dll
-> configuration for lan937x family alone. And understood that if device
-> tree specificies as rgmii_txid then apply the egress delay, for
-> rgmii_rxid apply ingress delay, for rgmii_id apply both.
-> From your comment, I am inferring that apply the mac delay for all the
-> rgmii interface "rgmii*".
-> Can you correct me if am I wrong and bit elaborate on it.
 
-What we are trying is to interpret what's written in
-Documentation/devicetree/bindings/net/ethernet-controller.yaml in a way
-that is consistent, even though its wording makes it evident that that
-it was written in simpler times.
 
-There it says:
+On 7/19/2022 6:30 AM, Jeff Daly wrote:
+> I can't replace the hardcoded values with meaningful assignments because I don't know what the bit names are.  This was originally a patch that Intel worked on for Silicom.  I suspect they are all DFT bits and as such are probably not going to be disclosed.
 
-      # RX and TX delays are added by the MAC when required
-      - rgmii
+Could you re-send the patch? It's many pages back now and, likely, 
+easier if you could re-send it.
 
-      # RGMII with internal RX and TX delays provided by the PHY,
-      # the MAC should not add the RX or TX delays in this case
-      - rgmii-id
-
-      # RGMII with internal RX delay provided by the PHY, the MAC
-      # should not add an RX delay in this case
-      - rgmii-rxid
-
-      # RGMII with internal TX delay provided by the PHY, the MAC
-      # should not add an TX delay in this case
-      - rgmii-txid
-
-The fact that the PHY adds delays in the directions specified by the
-phy-mode value is established behavior; yet the MAC's behavior is pretty
-much subject to interpretation, and this has resulted in varying
-implementations in drivers.
-
-The wise words above say that "RX and TX delays are added by the MAC
-when required" - ok but when are they required? Determining this is
-impossible based on the phy-mode alone, since there aren't just 2
-degrees of freedom who may add delays (the PHY and the MAC). There also
-exists the possibility of using serpentine traces (PCB delays), which
-practically speaking, can't be described in phy-mode because then, a
-potential PHY on the same link would also think they're for itself to
-apply.
-
-So the modern interpretation of phy-mode is to say that it simply does
-not describe whether a MAC should apply delays in a direction or another.
-
-So a separate set of properties was introduced, "rx-internal-delay-ps"
-and "tx-internal-delay-ps". These have the advantage of being located
-under the OF node of the MAC, and under the OF node of the PHY respectively.
-So it's clearer which side is supposed to configure which delays, and
-you also have finer control over the clock skew.
-
-Initially when Prasanna first tried to upstream the lan937x, we discusssed
-that since it's a new driver, it should support the modern interpretation
-of RGMII delays, and we agreed on that strategy.
-
-Now, with your recent refactoring that makes all switches share the same
-probing logic (and OF node parsing), things are in a bit of a greyer area.
-
-For one thing, you seem to have involuntarily inherited support for dubious
-legacy bindings, such as the "phy-mode under the switch node" that is
-described by commit edecfa98f602 ("net: dsa: microchip: look for
-phy-mode in port nodes").
-
-For another, you've inherited the existing interpretation of RGMII
-delays from the KSZ9477 driver, which is that the driver interprets the
-"phy-mode" as if it's a PHY (when in fact it's a MAC).
-
-The KSZ9477 isn't by far the only MAC driver that applies RGMII delays
-based on the phy-mode string, however in the past we made an effort to
-update existing DSA drivers to the modern interpretation, see commits:
-
-9ca482a246f0 ("net: dsa: sja1105: parse {rx, tx}-internal-delay-ps properties for RGMII delays")
-5654ec78dd7e ("net: dsa: qca8k: rework rgmii delay logic and scan for cpu port 6")
-
-There is a possibility to have a transitioning scheme: if the
-"rx-internal-delay-ps" or "tx-internal-delay-ps" properties are present
-under the MAC OF node, apply delays based on those. Otherwise, apply
-delays based on phy-mode, and warn.
-
-I'd appreciate if you could consider updating the KSZ common driver to
-this interpretation of RGMII delays, so that the modern interpretation
-becomes more widespread, and there are fewer places from which to copy a
-non-standard one.
+Thanks,
+Tony
