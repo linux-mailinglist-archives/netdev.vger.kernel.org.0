@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E7F57AB0C
+	by mail.lfdr.de (Postfix) with ESMTP id EEE3457AB0D
 	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237979AbiGTAkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 20:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
+        id S237973AbiGTAkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 20:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234367AbiGTAkP (ORCPT
+        with ESMTP id S233950AbiGTAkP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:40:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9F24BD34
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91804AD59
         for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F558616DB
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65EC3616C7
         for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F0F11C341D3;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C1ADCC341CB;
         Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658277614;
-        bh=mhYF+RXH2bZz2NxisfDpP7bXCvKVae458Xn4iKkkzL0=;
+        s=k20201202; t=1658277613;
+        bh=Bdvk4V2QhAaXSLg2xjkZft+Jaayvp9yEdTaZq9lemF4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=acrNeAAYsnjwaAVgnSSZjuBT08Oi0coNAWMk0Ob+7CCIDPN9SCY2jPuguiyyEIUxG
-         i1f+rciNXCdw/iB5CsFQZ76E5Wak/dcapYPdfBpAvcMzndd9jtsMK9tzsDhvHsBeUQ
-         sU7dHTcfarj14FfqG3Fl4Q4ox7zv8u8HOcqedMBI+pMNcAybNlBXSAhjOdtmjPZtDm
-         ZdW/JLLBcPHcaXMApjFqaPDFl4I0jfUYKNeSGTJqY7QkmDAoi+iHQ7yuMyyeDsCeFr
-         rduE3BdI0VuhiXV1rb8nGsKiO43fQ/RDMh2SsYDyh72F3Cmp3qXzTajIRF/yBhAR89
-         KWpawxOGaGyow==
+        b=GNNvB1erv3CX23YNzFv4eeShMMt7GfZZOoG7hHq6JJMzcvgpCrKKJVPUIcf/wdqUQ
+         XWHGhuNcnTyaxttnb8jrXkl5g9+rQztRdtjWhPj5QDR7ncEhd1A/K3EL160kP4wAmD
+         3pH6FqMZ8DKamcJTtFz/FuVd6dRlqOfDOyTwkCXMqPRZCy4wbaO2kcR+b6czuFx1ZL
+         5FvEVbn/+BywYp/F0+P9NnMRPLUUNSyWiO3wv2qm89aopR/J7We7FiNogbvBkiQXjy
+         lx9LKHJk5OxwX4SguLy5Rp44O+cTt8TZAnoxkW4ty6ZOZ9BVvciNkAgGAKUXhGP9SF
+         0tVsQruKFqeOQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D998CE451BC;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 92AEDE451B7;
         Wed, 20 Jul 2022 00:40:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net/sched: remove qdisc_root_lock() helper
+Subject: Re: [PATCH net] Documentation: fix udp_wmem_min in ip-sysctl.rst
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165827761388.10063.580570722533348875.git-patchwork-notify@kernel.org>
+Message-Id: <165827761359.10063.2585519986719707110.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Jul 2022 00:40:13 +0000
-References: <703d549e3088367651d92a059743f1be848d74b7.1658133689.git.dcaratti@redhat.com>
-In-Reply-To: <703d549e3088367651d92a059743f1be848d74b7.1658133689.git.dcaratti@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
+References: <c880a963d9b1fb5f442ae3c9e4dfa70d45296a16.1658167019.git.lucien.xin@gmail.com>
+In-Reply-To: <c880a963d9b1fb5f442ae3c9e4dfa70d45296a16.1658167019.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, haoki@redhat.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,22 +57,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 18 Jul 2022 10:55:12 +0200 you wrote:
-> the last caller has been removed with commit 96f5e66e8a79 ("mac80211: fix
-> aggregation for hardware with ampdu queues"), so it's safe to remove this
-> function.
+On Mon, 18 Jul 2022 13:56:59 -0400 you wrote:
+> UDP doesn't support tx memory accounting, and sysctl udp_wmem_min
+> is not really used anywhere. So we should fix the description in
+> ip-sysctl.rst accordingly.
 > 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  include/net/sch_generic.h | 19 -------------------
->  1 file changed, 19 deletions(-)
+> Fixes: 95766fff6b9a ("[UDP]: Add memory accounting.")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] net/sched: remove qdisc_root_lock() helper
-    https://git.kernel.org/netdev/net-next/c/ca0cab119288
+  - [net] Documentation: fix udp_wmem_min in ip-sysctl.rst
+    https://git.kernel.org/netdev/net/c/c6b10de537b9
 
 You are awesome, thank you!
 -- 
