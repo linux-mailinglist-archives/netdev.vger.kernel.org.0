@@ -2,175 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AFD57C026
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 00:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 534A357C03A
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 00:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbiGTWjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 18:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
+        id S229897AbiGTWoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 18:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230342AbiGTWjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 18:39:19 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D592A267
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 15:39:17 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h8so5330966wrw.1
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 15:39:17 -0700 (PDT)
+        with ESMTP id S229540AbiGTWox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 18:44:53 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DA1491C6;
+        Wed, 20 Jul 2022 15:44:52 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id e15so171040edj.2;
+        Wed, 20 Jul 2022 15:44:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gjQxo0hKIVF1YVkSJ8Tt3ejloLl3VpIsO9hirXnFH+U=;
-        b=zI4b6Z/wGUUgwWeOD3pQ7dMozzrzLOSSr5UB4/ki36H/h/zC0Qb1NCR/RhxeQdHB+Z
-         3FCKUbPYT5+bU3pmhLvpKxSDvhXulocHKjQJIK9p2OWuINXr0ivOwxxFVq8r2AsYJL0k
-         h2jIEJlNGTvnLKbR2B1DBtIZIcqD7gzg4o3ocXh3FpoC1frMzUOTzgFrhv924XvD3qy6
-         bGkXIyFJEC3lxyxyiCQL50o2Lakud4qBn1yd2/Ofteeaj17Q+3Q2Y9JWICUkKp2nG3tu
-         nmWKI3COxvtxiKvkkyvYG9tb5TN1DQ3EJhT9fkaryBkGsfd6tZY/Q5QUvQapNTufNH1C
-         bPlA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ct/iLYoKm72/DfhaeEt2u4sR7x6ULpY5sDqkV7W4748=;
+        b=Wjuo1LA2j5Lvu+MusadB1CSwVuBZt99+k2xwxyR2ASPnHVJvFMStOqwxT+NT8krTVl
+         /gu6jsPiF2wTqLapMOWvQkzv/E4da6ONG00nkWBbRfnOwPIibw3nI9ICJo8/oZILfFiY
+         vGn3p//uU6q7Pk/nmELueDFrxul6Aao9gonq2gLcE86BxLGEXaJmPJ/HlOBEmXX2RvSW
+         54XskEOFXmlIiogrueC5oZO481Gdyxej6DrZDRpOBL6OYRiWrHueaX0+JNQJ9+H4kS7c
+         LbFebX7kOUecwZF7P1XRMWFWQryjZTX2SXeMGEWR2UGxmLUfZBjdKgid7e8UDB8Z/PRt
+         PABg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gjQxo0hKIVF1YVkSJ8Tt3ejloLl3VpIsO9hirXnFH+U=;
-        b=urokPief++BdfDjGf6ZeYJY8VctpobFTqQtrZqW63WEE4Apu3dLh7aszxWbvCrvVVQ
-         ETY2RFqU4AnEITcfwuB5y1rr0DjYc1JdUrEeeLeDZUGC2DBYxL+EzhGi1pks1/51PRlh
-         YE2YyJu14SWkOcucyJsZkUYRlrTZRNPVKkbRXGZPhHLbQCBPqF2gu3qcnQhbzYXnYs3I
-         Yu5bbwVoQawbCQBCCciPBs+1CPqLxvGSyyC4c9eNbqxppA7fpqDGUhEuc6NZoOF9lzai
-         eUssxhY5I3ObkpLDFeCL8FvTPGqY3vRCkoLa6pXc7Np0kMiW3Up5r7WOwkYD4cGujCs3
-         yaag==
-X-Gm-Message-State: AJIora8tKKf3Tk4g+dEHZN6p/tunlcHZEpBFa6ee6TT6FDgo8M7ICFQq
-        XDP8fn0R0b9a9gMwEc0cayoFsZRPPM8zKT5V6jAL
-X-Google-Smtp-Source: AGRyM1tdrjUF8cXJwhaIP6PHYKjrB2YVUyMErv5SbIcoUCr7yadS90weIQu40rllAkj9qSRNkrh4MkilhnWcTexYRQo=
-X-Received: by 2002:adf:e492:0:b0:21e:45af:5070 with SMTP id
- i18-20020adfe492000000b0021e45af5070mr5887107wrm.483.1658356756213; Wed, 20
- Jul 2022 15:39:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ct/iLYoKm72/DfhaeEt2u4sR7x6ULpY5sDqkV7W4748=;
+        b=SOOTyBM7HwcwJ1kbKxBkMUsbvhmwWPXHreKbmsgWYOsaGGBQzxMzv3VKaRxARzcYks
+         IQaqV7bX+J5lnRsRft66ICxllnqQd6ynEH2QURYadyXPgagtWVSgQZWgdS3egKQbPaCP
+         Zz85KMOgAtjUVhPzsQlvdBOX9VpgEBnlz/DbKFlPHxHbTa2SFbBNUr/Uda2BPflVPlOG
+         +J+1/EE4yDWlPk2dTn8WhUaBU0f6JqP9Mj1FTPLJqkBLtjYD2zz7lExGruaIFau4rjfN
+         hNBdz+09ubjX05CDmM3nxN6GR9QV+nGGlHXHDfFNpIl9aPVRr5iCJtcA47lC90nZk74d
+         4Vzw==
+X-Gm-Message-State: AJIora/BeSb78/U3F9QR0I0j72Dh6bCm04Lx3FdrCup+TUlcXdWBN91j
+        2IFxQtP97kzvx6aQ4W8jzPY=
+X-Google-Smtp-Source: AGRyM1vMjLYa4KJBKuoZ3VrnudTHejnE3aEB/ZOYLPSzbKDr2CbtfeK5JoT+rtjtarlWmBfNIBXwXQ==
+X-Received: by 2002:a05:6402:f2a:b0:43a:9d53:e0e6 with SMTP id i42-20020a0564020f2a00b0043a9d53e0e6mr54302800eda.394.1658357091241;
+        Wed, 20 Jul 2022 15:44:51 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id s17-20020aa7cb11000000b0043aa5c2ce17sm126831edt.35.2022.07.20.15.44.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 15:44:50 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 01:44:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220720224447.ygoto4av7odsy2tj@skbuf>
+References: <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <20220715172444.yins4kb2b6b35aql@skbuf>
+ <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
+ <20220715222348.okmeyd55o5u3gkyi@skbuf>
+ <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
+ <20220716105711.bjsh763smf6bfjy2@skbuf>
+ <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
+ <20220716123608.chdzbvpinso546oh@skbuf>
+ <YtUec3GTWTC59sky@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20220707223228.1940249-1-fred@cloudflare.com> <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
- <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com> <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
- <CAHC9VhQ-mBYH-GwSULDyyQ6mNC6K8GNB4fra0pJ+s0ZnEpCgcg@mail.gmail.com> <f1f8b350-4dc5-b975-3854-ecbf9f4e54ba@schaufler-ca.com>
-In-Reply-To: <f1f8b350-4dc5-b975-3854-ecbf9f4e54ba@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 20 Jul 2022 18:39:05 -0400
-Message-ID: <CAHC9VhTFb7=FUyq4oM8ULtnZpZYj3ztpNhASy3WtHnn6QWwZig@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>,
-        =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        KP Singh <kpsingh@kernel.org>, revest@chromium.org,
-        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        SElinux list <selinux@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtUec3GTWTC59sky@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 5:42 PM Casey Schaufler <casey@schaufler-ca.com> wr=
-ote:
-> On 7/19/2022 6:32 PM, Paul Moore wrote:
-> > On Fri, Jul 8, 2022 at 12:11 PM Casey Schaufler <casey@schaufler-ca.com=
-> wrote:
-> >> On 7/8/2022 7:01 AM, Frederick Lawler wrote:
-> >>> On 7/8/22 7:10 AM, Christian G=C3=B6ttsche wrote:
-> >>>> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com>
-> >>>> wrote:
+On Mon, Jul 18, 2022 at 09:48:51AM +0100, Russell King (Oracle) wrote:
+> > But drivers could also have their CPU port working simply because those
+> > are internal to an SoC and don't need any software configuration to pass
+> > traffic. In their case, there is no breakage caused by the phylink_pcs
+> > conversion, but breakage caused by sudden registration of phylink is
+> > plausible, if phylink doesn't get the link parameters right.
+> > 
+> > And that breakage is preventable. Gradually more drivers could be
+> > converted to create a fixed-link software node by printing a warning
+> > that they should, and still keep the logic to avoid phylink registration
+> > and putting the respective port down. Driver authors might not be very
+> > responsive to RFC patch sets, but they do look at new warnings in dmesg
+> > and try to see what they're about.
+> 
+> Are you going to do that conversion then? Good luck trying to find all
+> the drivers, sending out series of patches, trying to get people to test
+> the changes.
 
-...
+Not sure if that's a rhetorical question and if it is, what it's trying
+to prove. Of course I'm not going to do any conversion, that's literally
+my whole point, I'd rather err on the side of letting sleeping dogs cry
+than force-converting everyone at once.
 
-> >>>> III.
-> >>>>
-> >>>> Maybe even attach a security context to namespaces so they can be
-> >>>> further governed?
-> >> That would likely add confusion to the existing security module namesp=
-ace
-> >> efforts. SELinux, Smack and AppArmor have all developed namespace mode=
-ls.
-> >
-> > I'm not sure I fully understand what Casey is saying here as SELinux
-> > does not yet have an established namespace model to the best of my
-> > understanding, but perhaps we are talking about different concepts for
-> > the word "namespace"?
->
-> Stephen Smalley proposed a SELinux namespace model, with patches,
-> some time back. It hasn't been adopted, but I've seen at least one
-> attempt to revive it. You're right that there isn't an established
-> model.
+If there is a breakage report and the driver maintainer won't respond,
+then yeah, maybe I'll consider looking at that particular issue and
+converting if it helps, but that's kind of why I'm here.
 
-If it isn't in the mainline kernel, it isn't an established namespace model=
-.
+Otherwise, we may end up pushing phylink to drivers which have some
+wacky link speeds on the CPU port (like 2000, see b53_force_port_config),
+which the software node auto-creation logic absolutely won't get right.
+I know Florian said that "we won't see a regression since we do not use
+the NATP accelerator which would be the reason to run the port at
+2Gbits/sec", but frankly I'm not entirely sure what that even means or
+what Florian counts as "regression". Lower overall termination throughput
+counts or not? Still not worth risking if this isn't the only instance
+of a non-standard speed.
 
-I ported Stephen's initial namespace patches to new kernels for quite
-some time, look at the working-selinuxns branch in the main SELinux
-repository, but that doesn't mean they are ready for upstreaming.
-Aside from some pretty critical implementation holes, there is the
-much larger conceptual issue of how to deal with persistent filesystem
-objects.  We've discussed that quite a bit among the SELinux
-developers but have yet to arrive at a good-enough solution.  I have
-some thoughts on how we might be able to make forward progress on
-that, but it's wildly off-topic for this patchset discussion.  I
-mostly wanted to make sure I was understanding what you were
-referencing when you talked about a "SELinux namespace model", and it
-is what I suspected ... which I believe is unrelated to the patches
-being discussed here.
+> > What I'm missing is the proof that the phylink_pcs conversion has broken
+> > those kinds of switches, and that it's therefore pointless to keep the
+> > existing logic for them. Sorry, but you didn't provide it.
+> 
+> I don't have evidence that existing drivers have broken because I don't
+> have the hardware to test. I only have Marvell DSA switch hardware and
+> that is it.
+> 
+> Everything else has to be based on theory because no one bothers to
+> respond to my patches, so for 99% of the DSA drivers I'm working in the
+> dark - and that makes development an utter shitpile of poo in hell.
+> 
+> As I've said many times, we have NO CLUE which DSA drivers make use of
+> this defaulting behaviour - the only one I'm aware of that does is
+> mv88e6xxx. It all depends on the firmware description, driver behaviour
+> and hardware behaviour. There is not enough information in the kernel 
+> to be able to derive this.
+> 
+> If there was a reported regression, then I would be looking to get this
+> into the NET tree not the NET-NEXT tree.
 
-> >> That, or it could replace the various independent efforts with a singl=
-e,
-> >> unified security module namespace effort.
-> >
-> > We've talked about this before and I just don't see how that could
-> > ever work, the LSM implementations are just too different to do
-> > namespacing at the LSM layer.
->
-> It's possible that fresh eyes might see options that those who have
-> been staring at the current state and historical proposals may have
-> missed.
+I think there are authors who weren't even aware they were opting into
+this interesting DSA feature when they wrote their driver, but didn't
+have the inspiration at the time to validate strict DT bindings either.
 
-That's always a possibility, and I'm definitely open to a clever
-approach that would resolve all the current issues and not paint us
-into a corner in the future, but I haven't seen anything close (or any
-serious effort for that matter).
+We have no proof that they don't have DT blobs using the defaulting
+feature somewhere out there, but we don't have any proof that they do,
+either. The whole problem could become more manageable if we would let
+maintainers say to a user "hey, for my driver this feature was never
+intended to work, so sorry if by accident it did, it was a marginal and
+undocumented condition and now it's broken, so please use something that
+was documented".
 
-... and this still remains way off-topic for a discussion around
-adding a hook to allow LSMs to enforce access controls on user
-namespace creation.
-
-> >   If a LSM is going to namespace
-> > themselves, they need the ability to define what that means without
-> > having to worry about what other LSMs want to do.
->
-> Possibly. On the other hand, if someone came up with a rational scheme
-> for general xattr namespacing I don't see that anyone would pass it up.
-
-Oh geez ...
-
-Namespacing xattrs is not the same thing as namespacing LSMs.  LSMs
-may make use of xattrs, and namespacing xattrs may make it easier to
-namespace a given LSM, but I'm not aware of an in-tree LSM that would
-be magically namespaced if xattrs were namespaced.
-
-This patchset has nothing to do with xattrs, it deals with adding a
-LSM hook to implement LSM-based access controls for user namespace
-creation.
-
---=20
-paul-moore.com
+The ocelot driver is in this exact state, in fact. I really wish there
+was a ready-made helper for validating phylink's OF node; I mentioned this
+already, it needs to cater for all of fixed-link/phy-handle/managed/sfp.
+The more drivers would be calling this (I think the vast majority of
+post-phylink drivers would do it), the more we'd minimize the spectrum
+of unforeseen breakage. In turn this would make the issue more tractable.
