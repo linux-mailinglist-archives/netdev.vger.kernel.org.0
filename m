@@ -2,163 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 677D057B17C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B831157B180
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiGTHPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 03:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
+        id S231305AbiGTHP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 03:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbiGTHPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:15:00 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC12D62493
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:14:59 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id l14-20020a17090a72ce00b001f20ed3c55dso1282630pjk.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:14:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pVkItwTHcetYXqroDuMt1lH+JgP0rFpRC16Og54SJ64=;
-        b=SEMQmcQLfL7FTqdD64nANbE/RadG5iHYHFE5Ojo16Nxd4Fh0MAQqZ2WiVrxbovNDPI
-         3m/zEef4JHoP9UGmF1ojhpLJqBUFapQnTiRvYan/LWJKdlvIXE6esfcOJ2KDJiEgznc5
-         0k3z8xszPxHBEoEQsDWMIax3XWjFU1K9ZvLnELZtnI6xw4PYN/80AoblZYN6yfj8POzo
-         PCnQkj3nOEB0U+6qB3IG9l1ypzqudIGTFs9gnUy1tVmsmFjD+YS7PTobV7sn60Xz0sOP
-         aabWzHaVWyIeHror+J6D5FKppwZywlB5J82h1HEgRECEr5SR9Ji7F+3kbjtnZzJWiQCa
-         /SzQ==
+        with ESMTP id S230150AbiGTHP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:15:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB2B613CF8
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658301324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yV3Z2US3lJGM8Odcv2oPe9zY/cE+J6SYHmjcc47m2lQ=;
+        b=OcA6og3SZ0vUk/rC3Uj6GuglqcW+6nh0TE/Y3jg10oC9Kf8VvtYbnTI3BC8tDMqyYdBI10
+        4awYLwxyJYfx2e6iXB0XzBkZJQz1DSlSbztDJl99DI8Y4uHt07XIHbPl5m8YyyHqtc7XSm
+        TGpVbfgFeWhUFm4idDs4KnwRU9L11FY=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-VCkLmAJCOMivvoLzAs6hjg-1; Wed, 20 Jul 2022 03:15:21 -0400
+X-MC-Unique: VCkLmAJCOMivvoLzAs6hjg-1
+Received: by mail-lf1-f71.google.com with SMTP id z28-20020a0565120c1c00b0048a2049d2feso5541898lfu.22
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:15:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pVkItwTHcetYXqroDuMt1lH+JgP0rFpRC16Og54SJ64=;
-        b=D2K9VXhE/26bVw0Q70CwcMbs1IA7Dxz/A/TUq/tGDLGCWFhz+ihLBLfkMcoljITy12
-         rbbC9EfG8gBoNUR09BOkKORkmlEanN7JBQ4ZU11qGUSx5ap9wIjHIsaJtk4DmrkEK1bM
-         h7G71YKQV5O+HQneUshvPewrxWsCFvCTzbpUHNnSqYCyY8xvLEdrcwggpXdQJP6yr76z
-         zN8w3Np2TUfs58Qx/EgqxQ8rflONxS+xS41AMU+tRley2AiuDmnEQxl75AH3PdhhSXHi
-         9pbhHSDzjRzN1nuZ3RskbkzQQUdXa2bQsCPZWL7hQ+fxlHWGpys1sfaJJzMQcoioTl4F
-         dvJA==
-X-Gm-Message-State: AJIora/fzP1zTpCcwB46cQfmZPazaFJLhwDw13hay0jzidL2kGFTZxqx
-        z97tzzqpCogt6NAKIsQxZlHd3y+JHn0GRvc27I3HLHk7Se8=
-X-Google-Smtp-Source: AGRyM1thKRI2Q3Wt20w/gs/+kf+0PUWGAccSpvKv4GztFsnkMc9x75eCTUOqVa70Wis9GA9jFjpgZzlnKJAZbfjdzOQ=
-X-Received: by 2002:a17:90b:681:b0:1f2:147a:5e55 with SMTP id
- m1-20020a17090b068100b001f2147a5e55mr3719444pjz.159.1658301299301; Wed, 20
- Jul 2022 00:14:59 -0700 (PDT)
+        bh=yV3Z2US3lJGM8Odcv2oPe9zY/cE+J6SYHmjcc47m2lQ=;
+        b=UcLfru/5qLazVRtb95Rkzt9TBjlHlmFM+guDL1dsGk98NiKTijE7vnVoNhJNL5c7vm
+         OFBDsbuy3H3nlKVZ0BiIz7ux7P3NfnRUUhxLZySgqdvJ2k0ECXWC+j+ZmHyY6k3SKvwp
+         c1KPgl2m9uYY6bU3xFtVR3fPFZDRSwi0wCiskdictaR7NAbPMDj5YD6xQ8G5f4vfrqsw
+         AQPnlpZchDJxCmADfXRfXkl+OP8LUwSrZQJkQ/TcATOLgnl+WklZdkKDFqgnZ7oOg1sm
+         CUpw3lDWBHtyIZwHnDBu+G4KD4L/sQ7s3IIJb6O7AhBieLan+siEBgYYDp4dMGesI2kN
+         O6Bg==
+X-Gm-Message-State: AJIora+AjrFhVVedh1tvhRJwb4ILpfA/Aycr/6eEtZuj5sJP6c7Nd7N0
+        H21lEpwP0WhQQC9wQIC3tDpy8fiyL2oHxx1g78PdCFOQheLaHgvkyRUdJQpLywgBl+u4z0YCy7i
+        N/4XjVTrUPrjJwVPy/zTlSRmS/T821LaM
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id h21-20020a0565123c9500b0048a03d109dfmr20361199lfv.641.1658301320255;
+        Wed, 20 Jul 2022 00:15:20 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vRijlKLwPBOi/360M74uIAuqhlJ71c7QISF2XxTXk+Cfl6sjVmbqE8qnZ9ij4MIW7iMxRbltcGTPXBzrrrx/A=
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id
+ h21-20020a0565123c9500b0048a03d109dfmr20361186lfv.641.1658301320071; Wed, 20
+ Jul 2022 00:15:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220719143302.2071223-1-bryan.odonoghue@linaro.org> <20220719143302.2071223-2-bryan.odonoghue@linaro.org>
-In-Reply-To: <20220719143302.2071223-2-bryan.odonoghue@linaro.org>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 20 Jul 2022 09:14:22 +0200
-Message-ID: <CAMZdPi8RpNvycWx7rMMSY31FDkW2Dcyw0jC-eQKKL+rzzit2Gw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] wcn36xx: Rename clunky firmware feature bit enum
-To:     "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
+ <20220719172652.0d072280@kernel.org> <20220720022901-mutt-send-email-mst@kernel.org>
+ <CACGkMEvFdMRX-sb7hUpEq+6e04ubehefr8y5Gjnjz8R26f=qDA@mail.gmail.com> <20220720030343-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220720030343-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 20 Jul 2022 15:15:08 +0800
+Message-ID: <CACGkMEuLSAFfh-vZ1XoerjNrbPWVmfF-L5DCGBPMnwzif7ENSA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing support
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Alvaro Karsz <alvaro.karsz@solid-run.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jul 2022 at 16:33, Bryan O'Donoghue
-<bryan.odonoghue@linaro.org> wrote:
+On Wed, Jul 20, 2022 at 3:05 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> The enum name "place_holder_in_cap_bitmap" is self descriptively asking to
-> be changed to something else.
+> On Wed, Jul 20, 2022 at 03:02:04PM +0800, Jason Wang wrote:
+> > On Wed, Jul 20, 2022 at 2:45 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Tue, Jul 19, 2022 at 05:26:52PM -0700, Jakub Kicinski wrote:
+> > > > On Mon, 18 Jul 2022 12:11:02 +0300 Alvaro Karsz wrote:
+> > > > > New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
+> > > > >
+> > > > > Control a Virtio network device notifications coalescing parameters
+> > > > > using the control virtqueue.
+> > > > >
+> > > > > A device that supports this fetature can receive
+> > > > > VIRTIO_NET_CTRL_NOTF_COAL control commands.
+> > > > >
+> > > > > - VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
+> > > > >   Ask the network device to change the following parameters:
+> > > > >   - tx_usecs: Maximum number of usecs to delay a TX notification.
+> > > > >   - tx_max_packets: Maximum number of packets to send before a
+> > > > >     TX notification.
+> > > > >
+> > > > > - VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
+> > > > >   Ask the network device to change the following parameters:
+> > > > >   - rx_usecs: Maximum number of usecs to delay a RX notification.
+> > > > >   - rx_max_packets: Maximum number of packets to receive before a
+> > > > >     RX notification.
+> > > > >
+> > > > > VirtIO spec. patch:
+> > > > > https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
+> > > > >
+> > > > > Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> > > >
+> > > > Waiting a bit longer for Michael's ack, so in case other netdev
+> > > > maintainer takes this:
+> > > >
+> > > > Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> > >
+> > > Yea was going to ack this but looking at the UAPI again we have a
+> > > problem because we abused tax max frames values 0 and 1 to control napi
+> > > in the past. technically does not affect legacy cards but userspace
+> > > can't easily tell the difference, can it?
+> >
+> > The "abuse" only works for iproute2.
 >
-> Rename place_holder_in_cap_bitmap to wcn36xx_firmware_feat_caps so that the
-> contents and intent of the enum is obvious.
->
-> Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+> That's kernel/userspace API. That's what this patch affects, right?
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+I'm not sure I get this.
 
-> ---
->  drivers/net/wireless/ath/wcn36xx/hal.h  | 2 +-
->  drivers/net/wireless/ath/wcn36xx/main.c | 2 +-
->  drivers/net/wireless/ath/wcn36xx/smd.c  | 6 +++---
->  drivers/net/wireless/ath/wcn36xx/smd.h  | 6 +++---
->  4 files changed, 8 insertions(+), 8 deletions(-)
+The 1-to-enable-napi is only used between iproute2 and kernel via
+ETHTOOL_A_COALESCE_TX_MAX_FRAMES not the uAPI introduced here.
+
+So I don't see how it can conflict with the virito uAPI extension here.
+
+Thanks
+
 >
-> diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
-> index 46a49f0a51b3..5e48c97682c2 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/hal.h
-> +++ b/drivers/net/wireless/ath/wcn36xx/hal.h
-> @@ -4760,7 +4760,7 @@ struct wcn36xx_hal_set_power_params_resp {
+> > For uAPI we know it should follow
+> > the spec? (anyhow NAPI is something out of the spec)
+> >
+> > Thanks
 >
->  /* Capability bitmap exchange definitions and macros starts */
+> When you say uAPI here you mean the virtio header. I am not
+> worried about that just yet (maybe I should be).
 >
-> -enum place_holder_in_cap_bitmap {
-> +enum wcn36xx_firmware_feat_caps {
->         MCC = 0,
->         P2P = 1,
->         DOT11AC = 2,
-> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-> index e34d3d0b7082..efd776b20e60 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/main.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
-> @@ -260,7 +260,7 @@ static const char * const wcn36xx_caps_names[] = {
+> > >
+> > > --
+> > > MST
+> > >
 >
->  #undef DEFINE
->
-> -static const char *wcn36xx_get_cap_name(enum place_holder_in_cap_bitmap x)
-> +static const char *wcn36xx_get_cap_name(enum wcn36xx_firmware_feat_caps x)
->  {
->         if (x >= ARRAY_SIZE(wcn36xx_caps_names))
->                 return "UNKNOWN";
-> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-> index 7ac9a1e6f768..88ee92be8562 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/smd.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-> @@ -2431,7 +2431,7 @@ int wcn36xx_smd_dump_cmd_req(struct wcn36xx *wcn, u32 arg1, u32 arg2,
->         return ret;
->  }
->
-> -void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
-> +void set_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
->  {
->         int arr_idx, bit_idx;
->
-> @@ -2445,7 +2445,7 @@ void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
->         bitmap[arr_idx] |= (1 << bit_idx);
->  }
->
-> -int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
-> +int get_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
->  {
->         int arr_idx, bit_idx;
->
-> @@ -2460,7 +2460,7 @@ int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
->         return (bitmap[arr_idx] & (1 << bit_idx)) ? 1 : 0;
->  }
->
-> -void clear_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
-> +void clear_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
->  {
->         int arr_idx, bit_idx;
->
-> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.h b/drivers/net/wireless/ath/wcn36xx/smd.h
-> index 3fd598ac2a27..186dad4fe80e 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/smd.h
-> +++ b/drivers/net/wireless/ath/wcn36xx/smd.h
-> @@ -125,9 +125,9 @@ int wcn36xx_smd_keep_alive_req(struct wcn36xx *wcn,
->  int wcn36xx_smd_dump_cmd_req(struct wcn36xx *wcn, u32 arg1, u32 arg2,
->                              u32 arg3, u32 arg4, u32 arg5);
->  int wcn36xx_smd_feature_caps_exchange(struct wcn36xx *wcn);
-> -void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
-> -int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
-> -void clear_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
-> +void set_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
-> +int get_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
-> +void clear_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
->
->  int wcn36xx_smd_add_ba_session(struct wcn36xx *wcn,
->                 struct ieee80211_sta *sta,
-> --
-> 2.36.1
->
+
