@@ -2,135 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F1DA57B4E1
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E0457B4F0
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 12:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239777AbiGTKyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 06:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        id S240407AbiGTK5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 06:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240314AbiGTKxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:53:54 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E52C6EE83
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:53:51 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id oy13so32267143ejb.1
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DToKmnYd83h60Xnz9eurKa8Zg+H7Mt/b4hhs0pCPFVc=;
-        b=pwDL0YX8vYZcP1xBl0N7uZUa7MS1X1G/ahYCh4rUqupBovoF0kgw6f174MqlFJaIZn
-         qbUh8u1O/ZtB5dRaxSLOHiGa1jiAM3nMJ3N8CS1C6OI+p4oBvKkzvlDUbaL4YAL5VQoa
-         0YpfYW+WLmSogB0cieqih3QZmgow7jxrfSWncr01zrdJtMG5D0S8CiVUPhELTS3Elelc
-         XrrPoMg7C6idGbhuKAux/T27a8gn+/gzou+8TE7tJUOkPNwAZye1sKl16MdSAErM1C33
-         dU8ugpMqEJMQWJIstl4+zu0WtsqxjlXNAQ+1VkmrCtF+L5jmzXT09uEqYEA0/SH+1UQh
-         dn4g==
+        with ESMTP id S240136AbiGTK5p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 06:57:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 200AC4B0D8
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658314659;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L3tIBK3odCi2wiUtSPbriFkXsk8gcjLDaLnSU7OmMoI=;
+        b=fPBJa0/py+kGodCSgF2EepSI/mEiozAkR7y84kNKKo9vMFKvEypX2jSvSt1T+X57Vp+qzQ
+        0EML7H+XcMb0Zel14PMPCo3FSliGgUyfj+k71OZrviFr5pOKx2jPQG4Rj4imKf3kKXtA1m
+        aC9qlE7k6rQeAj0PxIWjCTjVVPgR694=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-MuSP0FTYNRqfMXiEAoR0EA-1; Wed, 20 Jul 2022 06:57:37 -0400
+X-MC-Unique: MuSP0FTYNRqfMXiEAoR0EA-1
+Received: by mail-ej1-f70.google.com with SMTP id nb10-20020a1709071c8a00b006e8f89863ceso3932530ejc.18
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 03:57:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DToKmnYd83h60Xnz9eurKa8Zg+H7Mt/b4hhs0pCPFVc=;
-        b=ARrga9dfUK8RPgXRAbekzOPxDFBNrOD6RiLQ5fCgdIjdAXkHBbpbCytTu/fSc6cJhd
-         bF/Y92iRlvk274iNfY6kR9p0KqmcmWJjhs6bb2EMKx5XEjhGSF7cJxYJakRjATEB8r67
-         kP7GOtmuf9EVuN0cwWhGTwdCUGpfjcsKSEyNObwkgJve1nJ9VUku1jEgQjHNzWcPAS2d
-         FtdiGKKocDI2YZ+2FM8nRsKS+SMoJtcRr5DHx0Z+P1GvadVk8X76WwtOW0nwg58p6963
-         tPSo+iSvuLHrj27UzdeNIw33sANTRVQXltYPwB99hBhffuIrn8ZGQRAl7/9UjqokTJM/
-         Yt5g==
-X-Gm-Message-State: AJIora8AYaIOMC+hxmave5DsZ58Gr4sq+gwdKkzDqZdE9r0s2FklTK5C
-        n4a5M9Y2kltRLx8pDtRkUwmfEw==
-X-Google-Smtp-Source: AGRyM1vYHD1n9ingmGrJjl4RDfYQVCUZa9XoQzbdr4lOUih2W6bUCEf5yoI5WxLyLK+Dj2zr9jAn+w==
-X-Received: by 2002:a17:906:478d:b0:72e:e902:587 with SMTP id cw13-20020a170906478d00b0072ee9020587mr26306969ejc.548.1658314429625;
-        Wed, 20 Jul 2022 03:53:49 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id o7-20020aa7c507000000b0043ab81e4230sm12184133edq.50.2022.07.20.03.53.48
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=L3tIBK3odCi2wiUtSPbriFkXsk8gcjLDaLnSU7OmMoI=;
+        b=IWz6+H2U/7D0Ey1mg93QF207/YmXXz0mTW0zMRoHP97GHmYZeSml4bKPYX9b9a73gt
+         bk4Nxl+OEi7OUtfBvoj4/V1VlxHzpTFIOv0cjOleV6L548tU3RmTCGurQpJ+yfoxTibZ
+         cQ0GvqlfY3mHk/jXcqvHB3+s1ci9lqgwQYkdc5dh5TJ4suk5KG+opipBFfJ18fmIh0H3
+         SzVMtOMOAJMxjOyX8QDcVqTqICu6pirC+asmp1scPwylQlDM46eJ4xjE1ffOixGCUS7Q
+         bmwGfLNEJ72MhijpRDdyxj5x22Pp7UfPlFXgTYxnaVDe/1IqILl4alkUgHZZO1cl1GHr
+         NseA==
+X-Gm-Message-State: AJIora/NQ9i1NAa8ZQqIluTUsQAVqHVhT2/Tn42CbSmFK4WINJaAPC8Z
+        JEjYjHRJ6j9k3/0+ODaiuUFoSDeJDWEd0qD+HNUGVEvBTgTWPsb0rDLVd6ruiVo5GMYpzp0vbh1
+        K5ARqQY8iXs5eeN0h
+X-Received: by 2002:a05:6402:1cc8:b0:437:a61a:5713 with SMTP id ds8-20020a0564021cc800b00437a61a5713mr2233488edb.340.1658314656425;
+        Wed, 20 Jul 2022 03:57:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uDdXKfV3xVrIkUIckfn6yUw5ELuqmmf+oZ2zwhtsXXU1rrwGdBmLWNy+ePIewka02ZjThKhw==
+X-Received: by 2002:a05:6402:1cc8:b0:437:a61a:5713 with SMTP id ds8-20020a0564021cc800b00437a61a5713mr2233452edb.340.1658314656095;
+        Wed, 20 Jul 2022 03:57:36 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id g8-20020a056402320800b0043bb8023caesm1031429eda.62.2022.07.20.03.57.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 03:53:49 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 12:53:47 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v2 10/12] mlxsw: core_linecards: Implement line
- card device flashing
-Message-ID: <Ytfeu1QFOyP5s+UF@nanopsycho>
-References: <20220719064847.3688226-1-jiri@resnulli.us>
- <20220719064847.3688226-11-jiri@resnulli.us>
- <YtfdAenTfUa+EyL2@shredder>
+        Wed, 20 Jul 2022 03:57:35 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 8C22B4DA011; Wed, 20 Jul 2022 12:57:34 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Linus =?utf-8?Q?L=C3=BCssing?= <ll@simonwunderlich.de>,
+        Adrian Chadd <adrian@freebsd.org>,
+        Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sven Eckelmann <sven@narfation.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] mac80211: Fix wrong channel bandwidths reported for
+ aggregates
+In-Reply-To: <31e87fa2-6fea-5fe2-ab80-6050da9af7ce@simonwunderlich.de>
+References: <20220718222804.21708-1-linus.luessing@c0d3.blue>
+ <CAJ-VmomaQ-ai7n5i8-8sXsgaih4vjjHXyw+JQESGMERgC8Qqdw@mail.gmail.com>
+ <31e87fa2-6fea-5fe2-ab80-6050da9af7ce@simonwunderlich.de>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Jul 2022 12:57:34 +0200
+Message-ID: <87cze0kq5d.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtfdAenTfUa+EyL2@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 20, 2022 at 12:46:25PM CEST, idosch@nvidia.com wrote:
->On Tue, Jul 19, 2022 at 08:48:45AM +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Implement flash_update() devlink op for the line card devlink instance
->> to allow user to update line card gearbox FW using MDDT register
->> and mlxfw.
->> 
->> Example:
->> $ devlink dev flash auxiliary/mlxsw_core.lc.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
->
->Need to mention that this is only possible when line card is
->active/ready
+Linus L=C3=BCssing <ll@simonwunderlich.de> writes:
 
-I don't see the need. This is an example. When user issues it and device
-is not ready, he gets back an error. As with any other example.
-
-
+> On 19/07/2022 17:03, Adrian Chadd wrote:
+>> Hi!
+>>=20
+>> It's not a hardware bug. Dating back to the original AR5416 11n chip,
+>> most flags aren't valid for subframes in an aggregate. Only the final
+>> frame has valid flags. This was explicitly covered internally way back
+>> when.
 >
->> 
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> Ah, thanks for the clarification! I see it in the datasheet for the=20
+> QCA9531, too, now. And thanks for the confirmation, that what we are=20
+> doing so far is not correct for ath9k.
 >
->[...]
+> Words 0+2 are valid for all RX descriptors, 0+2+11 valid for the last RX=
+=20
+> descriptor of each packet and 0-11 for the last RX descriptor of an=20
+> aggregate or last RX descriptor of a stand-alone packet. Or in other=20
+> words, word 4, which contains the 20 vs. 40 MHz indicator, is invalid=20
+> for any aggregate sub-frame other than the last one. I can rename that=20
+> in the commit message.
 >
->> +int mlxsw_linecard_flash_update(struct devlink *linecard_devlink,
->> +				struct mlxsw_linecard *linecard,
->> +				const struct firmware *firmware,
->> +				struct netlink_ext_ack *extack)
->> +{
->> +	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
->> +	struct mlxsw_linecard_device_fw_info info = {
->> +		.mlxfw_dev = {
->> +			.ops = &mlxsw_linecard_device_dev_ops,
->> +			.psid = linecard->device.info.psid,
->> +			.psid_size = strlen(linecard->device.info.psid),
->> +			.devlink = linecard_devlink,
->> +		},
->> +		.mlxsw_core = mlxsw_core,
->> +		.linecard = linecard,
->> +	};
->> +	int err;
->> +
->> +	mutex_lock(&linecard->lock);
->> +	if (WARN_ON(!linecard->ready)) {
 >
->Can't this be easily triggered from user space when executing the above
->command for a provisioned line card? If so, please remove the WARN_ON()
->and add an extack
+> Another approach that also came to my mind was introducing more explicit=
+=20
+> flags in cfg80211.h's "struct rate_info", like a RATE_INFO_BW_UNKNOWN in=
+=20
+> "enum rate_info_bw" and/or RATE_INFO_FLAGS_UNKNOWN in "enum=20
+> rate_info_flags". And setting those flags in ath9k_cmn_process_rate().
+>
+> The current approach is smaller though, as it simply uses the already=20
+> existing flags. If anyone has any preferences, please let me know.
 
-Yep, you are correct, this is leftover I missed to fix. Will do.
+I have no objections to doing it in mac80211 like you're proposing here :)
 
+-Toke
 
->
->> +		err = -EINVAL;
->> +		goto unlock;
->> +	}
->> +	err = mlxsw_core_fw_flash(mlxsw_core, &info.mlxfw_dev,
->> +				  firmware, extack);
->> +unlock:
->> +	mutex_unlock(&linecard->lock);
->> +	return err;
->> +}
