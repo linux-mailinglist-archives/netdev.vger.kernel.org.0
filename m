@@ -2,165 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E2E57B164
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 677D057B17C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 09:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237308AbiGTHIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 03:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S231253AbiGTHPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 03:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiGTHIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:08:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAB93F30F;
-        Wed, 20 Jul 2022 00:08:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GFX+qSyVeGJnPVlu5lo+Bgmtg0MaLj2TqF38/Ct5tNA=; b=hNvfOTvG6FoWkG+lboFrHiAaYQ
-        kHgOncxnTSe/zflov0BSxv+GS5X8WDKJXLy8pW+7Ecz2AFsmxWkUE7OyZDag7nC39zOo+ANttPoLA
-        RKZZqkon2En7qRRSzYeC0EC87wvxUas48fROIhsQ2Afqq+Hi/n/bTaPsHEp6LXOv1z3KuOwlW3Cc7
-        Fq3/Loa77YGhOOKEPOMXOBD3cFEOLGM0nPPsFrZWAiEhLBOR44Uj+l988zIFJE2qGA5AiMYHxvpXp
-        i/3IACwwXv+y0vXpgViI6GVYYdTwBRtPMKwoVrE0UKHabxYJtH2aF6wlCfXk5BSQcL/Sk7yWJVwTL
-        TKjIMC2A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33458)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oE3oi-0003oL-Bw; Wed, 20 Jul 2022 08:08:20 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oE3og-0003gm-Uu; Wed, 20 Jul 2022 08:08:18 +0100
-Date:   Wed, 20 Jul 2022 08:08:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v2 08/11] net: phylink: Adjust advertisement based on
- rate adaptation
-Message-ID: <Ytep4isHcwFM7Ctc@shell.armlinux.org.uk>
-References: <20220719235002.1944800-1-sean.anderson@seco.com>
- <20220719235002.1944800-9-sean.anderson@seco.com>
+        with ESMTP id S230150AbiGTHPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 03:15:00 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC12D62493
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:14:59 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l14-20020a17090a72ce00b001f20ed3c55dso1282630pjk.5
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:14:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pVkItwTHcetYXqroDuMt1lH+JgP0rFpRC16Og54SJ64=;
+        b=SEMQmcQLfL7FTqdD64nANbE/RadG5iHYHFE5Ojo16Nxd4Fh0MAQqZ2WiVrxbovNDPI
+         3m/zEef4JHoP9UGmF1ojhpLJqBUFapQnTiRvYan/LWJKdlvIXE6esfcOJ2KDJiEgznc5
+         0k3z8xszPxHBEoEQsDWMIax3XWjFU1K9ZvLnELZtnI6xw4PYN/80AoblZYN6yfj8POzo
+         PCnQkj3nOEB0U+6qB3IG9l1ypzqudIGTFs9gnUy1tVmsmFjD+YS7PTobV7sn60Xz0sOP
+         aabWzHaVWyIeHror+J6D5FKppwZywlB5J82h1HEgRECEr5SR9Ji7F+3kbjtnZzJWiQCa
+         /SzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pVkItwTHcetYXqroDuMt1lH+JgP0rFpRC16Og54SJ64=;
+        b=D2K9VXhE/26bVw0Q70CwcMbs1IA7Dxz/A/TUq/tGDLGCWFhz+ihLBLfkMcoljITy12
+         rbbC9EfG8gBoNUR09BOkKORkmlEanN7JBQ4ZU11qGUSx5ap9wIjHIsaJtk4DmrkEK1bM
+         h7G71YKQV5O+HQneUshvPewrxWsCFvCTzbpUHNnSqYCyY8xvLEdrcwggpXdQJP6yr76z
+         zN8w3Np2TUfs58Qx/EgqxQ8rflONxS+xS41AMU+tRley2AiuDmnEQxl75AH3PdhhSXHi
+         9pbhHSDzjRzN1nuZ3RskbkzQQUdXa2bQsCPZWL7hQ+fxlHWGpys1sfaJJzMQcoioTl4F
+         dvJA==
+X-Gm-Message-State: AJIora/fzP1zTpCcwB46cQfmZPazaFJLhwDw13hay0jzidL2kGFTZxqx
+        z97tzzqpCogt6NAKIsQxZlHd3y+JHn0GRvc27I3HLHk7Se8=
+X-Google-Smtp-Source: AGRyM1thKRI2Q3Wt20w/gs/+kf+0PUWGAccSpvKv4GztFsnkMc9x75eCTUOqVa70Wis9GA9jFjpgZzlnKJAZbfjdzOQ=
+X-Received: by 2002:a17:90b:681:b0:1f2:147a:5e55 with SMTP id
+ m1-20020a17090b068100b001f2147a5e55mr3719444pjz.159.1658301299301; Wed, 20
+ Jul 2022 00:14:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719235002.1944800-9-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220719143302.2071223-1-bryan.odonoghue@linaro.org> <20220719143302.2071223-2-bryan.odonoghue@linaro.org>
+In-Reply-To: <20220719143302.2071223-2-bryan.odonoghue@linaro.org>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 20 Jul 2022 09:14:22 +0200
+Message-ID: <CAMZdPi8RpNvycWx7rMMSY31FDkW2Dcyw0jC-eQKKL+rzzit2Gw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] wcn36xx: Rename clunky firmware feature bit enum
+To:     "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 07:49:58PM -0400, Sean Anderson wrote:
-> +static int phylink_caps_to_speed(unsigned long caps)
-> +{
-> +	unsigned int max_cap = __fls(caps);
-> +
-> +	if (max_cap == __fls(MAC_10HD) || max_cap == __fls(MAC_10FD))
-> +		return SPEED_10;
-> +	if (max_cap == __fls(MAC_100HD) || max_cap == __fls(MAC_100FD))
-> +		return SPEED_100;
-> +	if (max_cap == __fls(MAC_1000HD) || max_cap == __fls(MAC_1000FD))
-> +		return SPEED_1000;
-> +	if (max_cap == __fls(MAC_2500FD))
-> +		return SPEED_2500;
-> +	if (max_cap == __fls(MAC_5000FD))
-> +		return SPEED_5000;
-> +	if (max_cap == __fls(MAC_10000FD))
-> +		return SPEED_10000;
-> +	if (max_cap == __fls(MAC_20000FD))
-> +		return SPEED_20000;
-> +	if (max_cap == __fls(MAC_25000FD))
-> +		return SPEED_25000;
-> +	if (max_cap == __fls(MAC_40000FD))
-> +		return SPEED_40000;
-> +	if (max_cap == __fls(MAC_50000FD))
-> +		return SPEED_50000;
-> +	if (max_cap == __fls(MAC_56000FD))
-> +		return SPEED_56000;
-> +	if (max_cap == __fls(MAC_100000FD))
-> +		return SPEED_100000;
-> +	if (max_cap == __fls(MAC_200000FD))
-> +		return SPEED_200000;
-> +	if (max_cap == __fls(MAC_400000FD))
-> +		return SPEED_400000;
-> +	return SPEED_UNKNOWN;
-> +}
+On Tue, 19 Jul 2022 at 16:33, Bryan O'Donoghue
+<bryan.odonoghue@linaro.org> wrote:
+>
+> The enum name "place_holder_in_cap_bitmap" is self descriptively asking to
+> be changed to something else.
+>
+> Rename place_holder_in_cap_bitmap to wcn36xx_firmware_feat_caps so that the
+> contents and intent of the enum is obvious.
+>
+> Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-One of my recent patches introduced "phylink_caps_params" table into
-the DSA code (which isn't merged) but it's about converting the caps
-into the SPEED_* and DUPLEX_*. This is doing more or less the same
-7thing but with a priority for speed rather than duplex. The question
-about whether it should be this way for the DSA case or whether speed
-should take priority was totally ignored by all reviewers of the code
-despite being explicitly asked.
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
 
-Maybe this could be reused here rather than having similar code.
-
-> @@ -482,7 +529,39 @@ unsigned long phylink_get_capabilities(phy_interface_t interface,
->  		break;
->  	}
->  
-> -	return caps & mac_capabilities;
-> +	switch (rate_adaptation) {
-> +	case RATE_ADAPT_NONE:
-> +		break;
-> +	case RATE_ADAPT_PAUSE: {
-> +		/* The MAC must support asymmetric pause towards the local
-> +		 * device for this. We could allow just symmetric pause, but
-> +		 * then we might have to renegotiate if the link partner
-> +		 * doesn't support pause.
-
-Why do we need to renegotiate, and what would this achieve? The link
-partner isn't going to say "oh yes I do support pause after all",
-and in any case this function is working out what the capabilities
-of the system is prior to bringing anything up.
-
-All that we need to know here is whether the MAC supports receiving
-pause frames from the PHY - if it doesn't, then the MAC is
-incompatible with the PHY using rate adaption.
-
-> +		 */
-> +		if (!(mac_capabilities & MAC_SYM_PAUSE) ||
-> +		    !(mac_capabilities & MAC_ASYM_PAUSE))
-> +			break;
-> +
-> +		/* Can't adapt if the MAC doesn't support the interface's max
-> +		 * speed
-> +		 */
-> +		if (state.speed != phylink_caps_to_speed(mac_capabilities))
-> +			break;
-
-I'm not sure this is the right way to check. If the MAC supports e.g.
-10G, 1G, 100M and 10M, but we have a PHY operating in 1000base-X mode
-to the PCS/MAC and is using rate adaption, then phylink_caps_to_speed()
-will return 10G, but state.speed will be 1G.
-
-Don't we instead want to check whether the MAC capabilities has the FD
-bit corresponding to state.speed set?
-
-> +
-> +		adapted_caps = GENMASK(__fls(caps), __fls(MAC_10HD));
-> +		/* We can't use pause frames in half-duplex mode */
-> +		adapted_caps &= ~(MAC_1000HD | MAC_100HD | MAC_10HD);
-
-Have you checked the PHY documentation to see what the behaviour is
-in rate adaption mode with pause frames and it negotiates HD on the
-media side? Does it handle the HD issue internally?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> ---
+>  drivers/net/wireless/ath/wcn36xx/hal.h  | 2 +-
+>  drivers/net/wireless/ath/wcn36xx/main.c | 2 +-
+>  drivers/net/wireless/ath/wcn36xx/smd.c  | 6 +++---
+>  drivers/net/wireless/ath/wcn36xx/smd.h  | 6 +++---
+>  4 files changed, 8 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
+> index 46a49f0a51b3..5e48c97682c2 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/hal.h
+> +++ b/drivers/net/wireless/ath/wcn36xx/hal.h
+> @@ -4760,7 +4760,7 @@ struct wcn36xx_hal_set_power_params_resp {
+>
+>  /* Capability bitmap exchange definitions and macros starts */
+>
+> -enum place_holder_in_cap_bitmap {
+> +enum wcn36xx_firmware_feat_caps {
+>         MCC = 0,
+>         P2P = 1,
+>         DOT11AC = 2,
+> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+> index e34d3d0b7082..efd776b20e60 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/main.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
+> @@ -260,7 +260,7 @@ static const char * const wcn36xx_caps_names[] = {
+>
+>  #undef DEFINE
+>
+> -static const char *wcn36xx_get_cap_name(enum place_holder_in_cap_bitmap x)
+> +static const char *wcn36xx_get_cap_name(enum wcn36xx_firmware_feat_caps x)
+>  {
+>         if (x >= ARRAY_SIZE(wcn36xx_caps_names))
+>                 return "UNKNOWN";
+> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+> index 7ac9a1e6f768..88ee92be8562 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/smd.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+> @@ -2431,7 +2431,7 @@ int wcn36xx_smd_dump_cmd_req(struct wcn36xx *wcn, u32 arg1, u32 arg2,
+>         return ret;
+>  }
+>
+> -void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
+> +void set_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
+>  {
+>         int arr_idx, bit_idx;
+>
+> @@ -2445,7 +2445,7 @@ void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
+>         bitmap[arr_idx] |= (1 << bit_idx);
+>  }
+>
+> -int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
+> +int get_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
+>  {
+>         int arr_idx, bit_idx;
+>
+> @@ -2460,7 +2460,7 @@ int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
+>         return (bitmap[arr_idx] & (1 << bit_idx)) ? 1 : 0;
+>  }
+>
+> -void clear_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap)
+> +void clear_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap)
+>  {
+>         int arr_idx, bit_idx;
+>
+> diff --git a/drivers/net/wireless/ath/wcn36xx/smd.h b/drivers/net/wireless/ath/wcn36xx/smd.h
+> index 3fd598ac2a27..186dad4fe80e 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/smd.h
+> +++ b/drivers/net/wireless/ath/wcn36xx/smd.h
+> @@ -125,9 +125,9 @@ int wcn36xx_smd_keep_alive_req(struct wcn36xx *wcn,
+>  int wcn36xx_smd_dump_cmd_req(struct wcn36xx *wcn, u32 arg1, u32 arg2,
+>                              u32 arg3, u32 arg4, u32 arg5);
+>  int wcn36xx_smd_feature_caps_exchange(struct wcn36xx *wcn);
+> -void set_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
+> -int get_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
+> -void clear_feat_caps(u32 *bitmap, enum place_holder_in_cap_bitmap cap);
+> +void set_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
+> +int get_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
+> +void clear_feat_caps(u32 *bitmap, enum wcn36xx_firmware_feat_caps cap);
+>
+>  int wcn36xx_smd_add_ba_session(struct wcn36xx *wcn,
+>                 struct ieee80211_sta *sta,
+> --
+> 2.36.1
+>
