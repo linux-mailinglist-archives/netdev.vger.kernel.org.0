@@ -2,88 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E63B657AB2F
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9759557AB3B
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 02:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238959AbiGTAuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 20:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
+        id S237303AbiGTA6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 20:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiGTAuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:50:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FCE334
-        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:50:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01F20B81DDD
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 00:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BBB2DC341CB;
-        Wed, 20 Jul 2022 00:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658278218;
-        bh=wKQmKqRicl5I5JvUqeCBqKjUkaANXVd7aI5QABPmGpQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NVbJk/FnxqXwGPxqT0hGD2p3pbtf5x++hB461c+wZsZufEjUGZXkvxIbN8aU67p+2
-         AbVhtzA02BPVCj8JVTYxCOhtcIb7sTqihWFYXpB74X3dr1PbfELB0U0TXBbSnQEgzI
-         8goE4AZcbzgIwJTbcu3J4kxF8RF7ve0ZN0p2yYNdjTHoe8szv1vKi8VgqGF7NxK2/s
-         9GCQwTao36ygJnGy3RK2QZ8Nks0ZPa4Wb6Iv7SSS066uJQHeXUtZwXjDJpxYb8R1KV
-         +1sRNhJmX9HYxwb634D8Pq2L5BOgdkErI+WAnMbG+VRXnII1ogMDO1KlvOewRkJZJN
-         94K6jwVdWpsTA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9F9CCE451BC;
-        Wed, 20 Jul 2022 00:50:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229556AbiGTA6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 20:58:21 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987FF422D1
+        for <netdev@vger.kernel.org>; Tue, 19 Jul 2022 17:58:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1658278700; x=1689814700;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=j2kriUbnAfHpL6pn+9Mkc6xiHOmARhZ8YDVy2cZI77Q=;
+  b=uyGrUnPWhjOkTHNmcvWo9gVkru20dsSFPuzS525VA5ZIbguSfMLaWmhy
+   jnlIqYSD4vuLI423g7+XOTcgeJ2JiBcj2BDmpxB+lD8Q9fdgU0aV5D8Wa
+   jyWyu7Y+WGoTa2Zbe2yJCns8+K3ZLXiqpAcc9pMq1o9i2PFQ0MVo3e7mB
+   4=;
+X-IronPort-AV: E=Sophos;i="5.92,285,1650931200"; 
+   d="scan'208";a="110199718"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 20 Jul 2022 00:58:05 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id 4AA80E0153;
+        Wed, 20 Jul 2022 00:58:03 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 20 Jul 2022 00:58:02 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.161.172) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Wed, 20 Jul 2022 00:57:59 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, kernel test robot <lkp@intel.com>
+Subject: [PATCH v2 net-next] selftests: net: af_unix: Fix a build error of unix_connect.c.
+Date:   Tue, 19 Jul 2022 17:57:50 -0700
+Message-ID: <20220720005750.16600-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/4][pull request] Intel Wired LAN Driver Updates
- 2022-07-18
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165827821865.16777.10137902398154618750.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jul 2022 00:50:18 +0000
-References: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220718174807.4113582-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.43.161.172]
+X-ClientProxiedBy: EX13D29UWC003.ant.amazon.com (10.43.162.80) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch fixes a build error reported in the link. [0]
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+  unix_connect.c: In function ‘unix_connect_test’:
+  unix_connect.c:115:55: error: expected identifier before ‘(’ token
+   #define offsetof(type, member) ((size_t)&((type *)0)->(member))
+                                                       ^
+  unix_connect.c:128:12: note: in expansion of macro ‘offsetof’
+    addrlen = offsetof(struct sockaddr_un, sun_path) + variant->len;
+              ^~~~~~~~
 
-On Mon, 18 Jul 2022 10:48:03 -0700 you wrote:
-> This series contains updates to iavf driver only.
-> 
-> Przemyslaw fixes handling of multiple VLAN requests to account for
-> individual errors instead of rejecting them all. He removes incorrect
-> implementations of ETHTOOL_COALESCE_MAX_FRAMES and
-> ETHTOOL_COALESCE_MAX_FRAMES_IRQ.
-> 
-> [...]
+We can fix this by removing () around member, but checkpatch will complain
+about it, and the root cause of the build failure is that I followed the
+warning and fixed this in the v2 -> v3 change of the blamed commit. [1]
 
-Here is the summary with links:
-  - [net,v2,1/4] iavf: Fix VLAN_V2 addition/rejection
-    https://git.kernel.org/netdev/net/c/968996c070ef
-  - [net,v2,2/4] iavf: Disallow changing rx/tx-frames and rx/tx-frames-irq
-    https://git.kernel.org/netdev/net/c/4635fd3a9d77
-  - [net,v2,3/4] iavf: Fix handling of dummy receive descriptors
-    https://git.kernel.org/netdev/net/c/a9f49e006030
-  - [net,v2,4/4] iavf: Fix missing state logs
-    https://git.kernel.org/netdev/net/c/d8fa2fd791a7
+  CHECK: Macro argument 'member' may be better as '(member)' to avoid precedence issues
+  #33: FILE: tools/testing/selftests/net/af_unix/unix_connect.c:115:
+  +#define offsetof(type, member) ((size_t)&((type *)0)->member)
 
-You are awesome, thank you!
+To avoid this warning, let's use offsetof() defined in stddef.h instead.
+
+[0]: https://lore.kernel.org/linux-mm/202207182205.FrkMeDZT-lkp@intel.com/
+[1]: https://lore.kernel.org/netdev/20220702154818.66761-1-kuniyu@amazon.com/
+
+Fixes: e95ab1d85289 ("selftests: net: af_unix: Test connect() with different netns.")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+v2:
+  * Use offsetof() in stddef.h instead of defining it. (Jakub Kicinski)
+
+v1: https://lore.kernel.org/netdev/20220718162350.19186-1-kuniyu@amazon.com/
+---
+ tools/testing/selftests/net/af_unix/unix_connect.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/net/af_unix/unix_connect.c b/tools/testing/selftests/net/af_unix/unix_connect.c
+index 157e44ef7f37..d799fd8f5c7c 100644
+--- a/tools/testing/selftests/net/af_unix/unix_connect.c
++++ b/tools/testing/selftests/net/af_unix/unix_connect.c
+@@ -3,6 +3,7 @@
+ #define _GNU_SOURCE
+ #include <sched.h>
+ 
++#include <stddef.h>
+ #include <stdio.h>
+ #include <unistd.h>
+ 
+@@ -112,8 +113,6 @@ FIXTURE_TEARDOWN(unix_connect)
+ 		remove("test");
+ }
+ 
+-#define offsetof(type, member) ((size_t)&((type *)0)->(member))
+-
+ TEST_F(unix_connect, test)
+ {
+ 	socklen_t addrlen;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
