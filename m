@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 422B557C09A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 01:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC3F57C099
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 01:08:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbiGTXIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 19:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56992 "EHLO
+        id S231562AbiGTXIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 19:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231460AbiGTXIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 19:08:09 -0400
+        with ESMTP id S231469AbiGTXIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 19:08:10 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0D4262A72;
-        Wed, 20 Jul 2022 16:08:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54F0665561;
+        Wed, 20 Jul 2022 16:08:07 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH nf-next 12/18] netfilter: nf_tables: add and use BE register load-store helpers
-Date:   Thu, 21 Jul 2022 01:07:48 +0200
-Message-Id: <20220720230754.209053-13-pablo@netfilter.org>
+Subject: [PATCH nf-next 13/18] netfilter: nf_tables: use correct integer types
+Date:   Thu, 21 Jul 2022 01:07:49 +0200
+Message-Id: <20220720230754.209053-14-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220720230754.209053-1-pablo@netfilter.org>
 References: <20220720230754.209053-1-pablo@netfilter.org>
@@ -36,93 +36,113 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-Same as the existing ones, no conversions. This is just for sparse sake
-only so that we no longer mix be16/u16 and be32/u32 types.
+Sparse tool complains about mixing of different endianess
+types, so use the correct ones.
 
-Alternative is to add __force __beX in various places, but this
-seems nicer.
+Add type casts where needed.
 
-objdiff shows no changes.
+objdiff shows no changes except in nft_tunnel (type is changed).
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_tables.h      | 15 +++++++++++++++
- net/bridge/netfilter/nft_meta_bridge.c |  2 +-
- net/netfilter/nft_tproxy.c             |  6 +++---
- 3 files changed, 19 insertions(+), 4 deletions(-)
+ net/netfilter/nft_cmp.c    |  6 +++---
+ net/netfilter/nft_ct.c     |  4 ++--
+ net/netfilter/nft_exthdr.c | 10 +++++-----
+ net/netfilter/nft_tunnel.c |  3 ++-
+ 4 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 5c4e5a96a984..dd6ad0b67d7d 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -157,11 +157,26 @@ static inline void nft_reg_store16(u32 *dreg, u16 val)
- 	*(u16 *)dreg = val;
- }
- 
-+static inline void nft_reg_store_be16(u32 *dreg, __be16 val)
-+{
-+	nft_reg_store16(dreg, (__force __u16)val);
-+}
-+
- static inline u16 nft_reg_load16(const u32 *sreg)
+diff --git a/net/netfilter/nft_cmp.c b/net/netfilter/nft_cmp.c
+index 6528f76ca29e..bec22584395f 100644
+--- a/net/netfilter/nft_cmp.c
++++ b/net/netfilter/nft_cmp.c
+@@ -125,13 +125,13 @@ static void nft_payload_n2h(union nft_cmp_offload_data *data,
  {
- 	return *(u16 *)sreg;
- }
- 
-+static inline __be16 nft_reg_load_be16(const u32 *sreg)
-+{
-+	return (__force __be16)nft_reg_load16(sreg);
-+}
-+
-+static inline __be32 nft_reg_load_be32(const u32 *sreg)
-+{
-+	return *(__force __be32 *)sreg;
-+}
-+
- static inline void nft_reg_store64(u32 *dreg, u64 val)
- {
- 	put_unaligned(val, (u64 *)dreg);
-diff --git a/net/bridge/netfilter/nft_meta_bridge.c b/net/bridge/netfilter/nft_meta_bridge.c
-index 8c3eaba87ad2..c3ecd77e25cb 100644
---- a/net/bridge/netfilter/nft_meta_bridge.c
-+++ b/net/bridge/netfilter/nft_meta_bridge.c
-@@ -53,7 +53,7 @@ static void nft_meta_bridge_get_eval(const struct nft_expr *expr,
- 			goto err;
- 
- 		br_vlan_get_proto(br_dev, &p_proto);
--		nft_reg_store16(dest, htons(p_proto));
-+		nft_reg_store_be16(dest, htons(p_proto));
- 		return;
- 	}
+ 	switch (len) {
+ 	case 2:
+-		data->val16 = ntohs(*((u16 *)val));
++		data->val16 = ntohs(*((__be16 *)val));
+ 		break;
+ 	case 4:
+-		data->val32 = ntohl(*((u32 *)val));
++		data->val32 = ntohl(*((__be32 *)val));
+ 		break;
+ 	case 8:
+-		data->val64 = be64_to_cpu(*((u64 *)val));
++		data->val64 = be64_to_cpu(*((__be64 *)val));
+ 		break;
  	default:
-diff --git a/net/netfilter/nft_tproxy.c b/net/netfilter/nft_tproxy.c
-index 801f013971df..68b2eed742df 100644
---- a/net/netfilter/nft_tproxy.c
-+++ b/net/netfilter/nft_tproxy.c
-@@ -52,11 +52,11 @@ static void nft_tproxy_eval_v4(const struct nft_expr *expr,
- 				   skb->dev, NF_TPROXY_LOOKUP_ESTABLISHED);
+ 		WARN_ON_ONCE(1);
+diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
+index d8e1614918a1..b04995c3e17f 100644
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -204,12 +204,12 @@ static void nft_ct_get_eval(const struct nft_expr *expr,
+ 	case NFT_CT_SRC_IP:
+ 		if (nf_ct_l3num(ct) != NFPROTO_IPV4)
+ 			goto err;
+-		*dest = tuple->src.u3.ip;
++		*dest = (__force __u32)tuple->src.u3.ip;
+ 		return;
+ 	case NFT_CT_DST_IP:
+ 		if (nf_ct_l3num(ct) != NFPROTO_IPV4)
+ 			goto err;
+-		*dest = tuple->dst.u3.ip;
++		*dest = (__force __u32)tuple->dst.u3.ip;
+ 		return;
+ 	case NFT_CT_SRC_IP6:
+ 		if (nf_ct_l3num(ct) != NFPROTO_IPV6)
+diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
+index 22c3e05b52db..a67ea9c3ae57 100644
+--- a/net/netfilter/nft_exthdr.c
++++ b/net/netfilter/nft_exthdr.c
+@@ -266,7 +266,7 @@ static void nft_exthdr_tcp_set_eval(const struct nft_expr *expr,
  
- 	if (priv->sreg_addr)
--		taddr = regs->data[priv->sreg_addr];
-+		taddr = nft_reg_load_be32(&regs->data[priv->sreg_addr]);
- 	taddr = nf_tproxy_laddr4(skb, taddr, iph->daddr);
+ 		switch (priv->len) {
+ 		case 2:
+-			old.v16 = get_unaligned((u16 *)(opt + offset));
++			old.v16 = (__force __be16)get_unaligned((u16 *)(opt + offset));
+ 			new.v16 = (__force __be16)nft_reg_load16(
+ 				&regs->data[priv->sreg]);
  
- 	if (priv->sreg_port)
--		tport = nft_reg_load16(&regs->data[priv->sreg_port]);
-+		tport = nft_reg_load_be16(&regs->data[priv->sreg_port]);
- 	if (!tport)
- 		tport = hp->dest;
+@@ -281,18 +281,18 @@ static void nft_exthdr_tcp_set_eval(const struct nft_expr *expr,
+ 			if (old.v16 == new.v16)
+ 				return;
  
-@@ -124,7 +124,7 @@ static void nft_tproxy_eval_v6(const struct nft_expr *expr,
- 	taddr = *nf_tproxy_laddr6(skb, &taddr, &iph->daddr);
+-			put_unaligned(new.v16, (u16*)(opt + offset));
++			put_unaligned(new.v16, (__be16*)(opt + offset));
+ 			inet_proto_csum_replace2(&tcph->check, pkt->skb,
+ 						 old.v16, new.v16, false);
+ 			break;
+ 		case 4:
+-			new.v32 = regs->data[priv->sreg];
+-			old.v32 = get_unaligned((u32 *)(opt + offset));
++			new.v32 = nft_reg_load_be32(&regs->data[priv->sreg]);
++			old.v32 = (__force __be32)get_unaligned((u32 *)(opt + offset));
  
- 	if (priv->sreg_port)
--		tport = nft_reg_load16(&regs->data[priv->sreg_port]);
-+		tport = nft_reg_load_be16(&regs->data[priv->sreg_port]);
- 	if (!tport)
- 		tport = hp->dest;
+ 			if (old.v32 == new.v32)
+ 				return;
  
+-			put_unaligned(new.v32, (u32*)(opt + offset));
++			put_unaligned(new.v32, (__be32*)(opt + offset));
+ 			inet_proto_csum_replace4(&tcph->check, pkt->skb,
+ 						 old.v32, new.v32, false);
+ 			break;
+diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+index d0f9b1d51b0e..5edaaded706d 100644
+--- a/net/netfilter/nft_tunnel.c
++++ b/net/netfilter/nft_tunnel.c
+@@ -383,8 +383,9 @@ static int nft_tunnel_obj_opts_init(const struct nft_ctx *ctx,
+ 				    struct ip_tunnel_info *info,
+ 				    struct nft_tunnel_opts *opts)
+ {
+-	int err, rem, type = 0;
+ 	struct nlattr *nla;
++	__be16 type = 0;
++	int err, rem;
+ 
+ 	err = nla_validate_nested_deprecated(attr, NFTA_TUNNEL_KEY_OPTS_MAX,
+ 					     nft_tunnel_opts_policy, NULL);
 -- 
 2.30.2
 
