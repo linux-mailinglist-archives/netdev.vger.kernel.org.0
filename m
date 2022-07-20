@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA6157B8FA
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB6957B902
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241010AbiGTOye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 10:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
+        id S241077AbiGTO6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 10:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240821AbiGTOyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:54:33 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43ED1F2D1;
-        Wed, 20 Jul 2022 07:54:32 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id n12so13638418wrc.8;
-        Wed, 20 Jul 2022 07:54:32 -0700 (PDT)
+        with ESMTP id S237462AbiGTO56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:57:58 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61314AD47
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id p132so11143275oif.9
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yt+ngO8tmWj/KwQcOUTeK5RaJ2ek4CEzrTIRXEZHAOs=;
-        b=RWgbiuU/cvPX+h0opH2QrKUcF1f35fLSeVIBPTODegHvcQF1C1Gac5Xj4lEiH7z+aw
-         aqixvLfNXF0egWiZWeklp84n8XhYxK3u1bUG47zEDPz7woIa6PkxxGm7VEN9iz2JcIea
-         uCHaWLZSI2FPoIHZtT7gnAoomuie9FmTCrnDitK86iEBau1xL2dG8bQ2HdPMuptOn7PG
-         wFJ3oUw0i05d2GQV5Q75ZZxX93wN7rxvn2K0V2KN/COcaPilsQmyUPhAuvJywOBD+wk5
-         +twk6DST3iNAOVBzNkfGYFO+uabyqoqzSK9j7Fd4eyCy4mkKmgxcEg0foxtN4bI5hBzm
-         CKgA==
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XSU2WUPOvF0fUCTGSGRZkl8WCZhfSChGKTGTEOsuYNI=;
+        b=iGIpbP2d3UEwVFWw5G9dZlMqJx4o8UCPvRj6piZLN7Qixwv38zIteUBoiwtf11TzoJ
+         8pcI1FzJmEI8s8Z8r4wNd/P56A7AMD40p0ifu6Z8wqaycmhnxl9M7kNdXzB8SXogNKD/
+         YVqd80JtH2cgsBKx3SUf9wdgi1qit4j7Py/II=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yt+ngO8tmWj/KwQcOUTeK5RaJ2ek4CEzrTIRXEZHAOs=;
-        b=tsQ8tYTjrXYtoaWrO7rkyGkAJOJw+wZEqYB1rNGb2h8pt69Og/lIVbsz3Vm8u1riym
-         u9Y1KmJoK3+U1nVHBR5YANh0eiT5MWMJylBhT/JO2VtcPcjIJs48UnAub5R68WOxH+N5
-         bxeSykIBAl/+Q7uuW/uNSiZ5HJaLhSwMvHoAKr84Ws6T49qUHRrPfm77YpwfwUg0lZ5w
-         kaJuNiXNQXAB4uwp3QR2XDmbTXavqh3Sr7k0g+V5o/9AaZ4UQAKQIGAoyUiNdaz2b0M4
-         p1vF0JOx9aIkUuUfPWLVCc76LnPOmTYU/cIfS19c/cWCUL+BEZWvYQu3l++/0iIAGNQm
-         cqug==
-X-Gm-Message-State: AJIora+JFsxC5xWaNMeJ8zFZO0IQLTQcvDLNPoyVfdEI5dd+9YvMYkg6
-        qiYY/kMqwsFcSUIs2Rue66U4dRfsf+ek2D37DvE=
-X-Google-Smtp-Source: AGRyM1u2P5XbvgKRTsW66zBf0bTO0ggXnr+RwjXdB2tcSNL9DspNLx9EDuFXv7g/hzXtCaAHKIODXoPbI4So8lly2TY=
-X-Received: by 2002:a5d:5f05:0:b0:21d:9ad7:f281 with SMTP id
- cl5-20020a5d5f05000000b0021d9ad7f281mr32547285wrb.4.1658328871258; Wed, 20
- Jul 2022 07:54:31 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XSU2WUPOvF0fUCTGSGRZkl8WCZhfSChGKTGTEOsuYNI=;
+        b=j4/w5olrx4e7wFpPwaNW2D4g22R+YOj3gpuOa/chvDO2Xa1DzqzXq6gmOo9ndikAKj
+         0IPmhGcaaOH4SL+GM9UJGlyycTDTmi4J17bxU7GGtH50WVcFwHa8IRSVInH4CfyxHOQh
+         YfbgmfzahsbLeQGJgiAZ4PZnEVFG8JomSJ8fzKxkPAzmRGTu2CTJTTHuAh4tYDiis6iC
+         hrVczoPesbQjk4BvKGxrwRnON3D6K5j85cHcucvM6ntAQepE7VeObs7Qj0sLnN4A9+Xk
+         KCgHO2ZBPTNWMgkCC6DA2r39V+YEz2+yce7H6OFvXEcbqgTEFkRTELvjWrnJMGOdAxAm
+         g+nA==
+X-Gm-Message-State: AJIora9dTsFvO55J3MYlJaAqs54S6MUlEdfR1JoUXYUg3d2gfJgki877
+        AzxwGWtivE7Tre9tOjNPivS8+w==
+X-Google-Smtp-Source: AGRyM1v5UNxUPAVexBnv65PVVqbWvE8t6MWf9AqqczcauOBSa7XBiaehpgEh3k3h5n6IkYivB27NLA==
+X-Received: by 2002:a05:6808:170c:b0:335:1d14:f99d with SMTP id bc12-20020a056808170c00b003351d14f99dmr2435919oib.243.1658329076048;
+        Wed, 20 Jul 2022 07:57:56 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id z14-20020a9d62ce000000b0061c7a5691f2sm7425058otk.47.2022.07.20.07.57.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jul 2022 07:57:55 -0700 (PDT)
+Message-ID: <42069251-3ea7-b0c7-4efb-e144c52ebf51@cloudflare.com>
+Date:   Wed, 20 Jul 2022 09:57:53 -0500
 MIME-Version: 1.0
-References: <20220715125013.247085-1-mlombard@redhat.com> <5a469c5a.8b85.1821171d9de.Coremail.chen45464546@163.com>
- <CAFL455nnc04q8TohH+Qbv36Bo3=KKxMWr=diK_F5Ds5K-h5etw@mail.gmail.com>
- <22bf39a6.8f5e.18211c0898a.Coremail.chen45464546@163.com> <CAFL455mXFY5AFOoXxhpUY6EkPzc1677cRPQ8UX-RSykhm_52Nw@mail.gmail.com>
- <CAKgT0Uejy66aFAdD+vMPYFtSu2BWRgTxBG0mO+BLayk3nNuQMw@mail.gmail.com> <8a7e9cf.1b9.18218925734.Coremail.chen45464546@163.com>
-In-Reply-To: <8a7e9cf.1b9.18218925734.Coremail.chen45464546@163.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 20 Jul 2022 07:54:18 -0700
-Message-ID: <CAKgT0Ueq=9XGW4uySmDj1sa9MYosaF4S6Na_jcVyiofW_TqgwA@mail.gmail.com>
-Subject: Re: Re: Re: [PATCH V3] mm: prevent page_frag_alloc() from corrupting
- the memory
-To:     Chen Lin <chen45464546@163.com>
-Cc:     Maurizio Lombardi <mlombard@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 4/4] selinux: Implement create_user_ns hook
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com
+References: <20220707223228.1940249-1-fred@cloudflare.com>
+ <20220707223228.1940249-5-fred@cloudflare.com>
+ <CAHC9VhTkvPvqGQjyEKbi2pkKBtRQE=Uat34aoKsxjWU0qkF6CA@mail.gmail.com>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <CAHC9VhTkvPvqGQjyEKbi2pkKBtRQE=Uat34aoKsxjWU0qkF6CA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,101 +80,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 3:27 PM Chen Lin <chen45464546@163.com> wrote:
->
-> At 2022-07-18 23:33:42, "Alexander Duyck" <alexander.duyck@gmail.com> wro=
-te:
-> >On Mon, Jul 18, 2022 at 8:25 AM Maurizio Lombardi <mlombard@redhat.com> =
-wrote:
-> >>
-> >> po 18. 7. 2022 v 16:40 odes=C3=ADlatel Chen Lin <chen45464546@163.com>=
- napsal:
-> >> >
-> >> > But the original intention of page frag interface is indeed to alloc=
-ate memory
-> >> > less than one page. It's not a good idea to  complicate the definiti=
-on of
-> >> > "page fragment".
-> >>
-> >> I see your point, I just don't think it makes much sense to break
-> >> drivers here and there
-> >> when a practically identical 2-lines patch can fix the memory corrupti=
-on bug
-> >> without changing a single line of code in the drivers.
-> >>
-> >> By the way, I will wait for the maintainers to decide on the matter.
-> >>
-> >> Maurizio
-> >
-> >I'm good with this smaller approach. If it fails only under memory
-> >pressure I am good with that. The issue with the stricter checking is
-> >that it will add additional overhead that doesn't add much value to
-> >the code.
-> >
-> >Thanks,
-> >
->
-> >- Alex
->
-> One additional question=EF=BC=9A
-> I don't understand too much about  why point >=EF=BC=A1<  have more overh=
-ead than point >B<.
-> It all looks the same, except for jumping to the refill process, and the =
-refill is a very long process.
-> Could you please give more explain=EF=BC=9F
->
->         if (unlikely(offset < 0)) {
->                  -------------->=EF=BC=A1<------------
+On 7/19/22 8:32 PM, Paul Moore wrote:
+> On Thu, Jul 7, 2022 at 6:32 PM Frederick Lawler <fred@cloudflare.com> wrote:
+>>
+>> Unprivileged user namespace creation is an intended feature to enable
+>> sandboxing, however this feature is often used to as an initial step to
+>> perform a privilege escalation attack.
+>>
+>> This patch implements a new namespace { userns_create } access control
+>> permission to restrict which domains allow or deny user namespace
+>> creation. This is necessary for system administrators to quickly protect
+>> their systems while waiting for vulnerability patches to be applied.
+>>
+>> This permission can be used in the following way:
+>>
+>>          allow domA_t domB_t : namespace { userns_create };
+>>
+>> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
+>>
+>> ---
+>> Changes since v1:
+>> - Introduce this patch
+>> ---
+>>   security/selinux/hooks.c            | 9 +++++++++
+>>   security/selinux/include/classmap.h | 2 ++
+>>   2 files changed, 11 insertions(+)
+>>
+>> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+>> index beceb89f68d9..73fbcb434fe0 100644
+>> --- a/security/selinux/hooks.c
+>> +++ b/security/selinux/hooks.c
+>> @@ -4227,6 +4227,14 @@ static void selinux_task_to_inode(struct task_struct *p,
+>>          spin_unlock(&isec->lock);
+>>   }
+>>
+>> +static int selinux_userns_create(const struct cred *cred)
+>> +{
+>> +       u32 sid = current_sid();
+>> +
+>> +       return avc_has_perm(&selinux_state, sid, sid, SECCLASS_NAMESPACE,
+>> +                                               NAMESPACE__USERNS_CREATE, NULL);
+>> +}
+> 
+> As we continue to discuss this, I'm beginning to think that having a
+> dedicated object class for the userns might be a good idea.  I believe
+> I was the one who gave you these code snippets, so feel free to blame
+> me for the respin ;)
+> 
 
-In order to verify if the fragsz is larger than a page we would have
-to add a comparison between two values that aren't necessarily related
-to anything else in this block of code.
+No worries, I'll make this change for v3.
 
-Adding a comparison at this point should end up adding instructions
-along the lines of
-        cmp $0x1000,%[some register]
-        jg <return NULL block>
+> This is what I'm thinking:
+> 
+>    static int selinux_userns_create(const struct cred *cred)
+>    {
+>      u32 sid = current_sid();
+> 
+>      return avc_has_perm(&selinux_state, sid, sid,
+>                          SECCLASS_USER_NAMESPACE,
+>                          USER_NAMESPACE__CREATE, NULL);
+>    }
+> 
+>> diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
+>> index ff757ae5f253..9943e85c6b3e 100644
+>> --- a/security/selinux/include/classmap.h
+>> +++ b/security/selinux/include/classmap.h
+>> @@ -254,6 +254,8 @@ const struct security_class_mapping secclass_map[] = {
+>>            { COMMON_FILE_PERMS, NULL } },
+>>          { "io_uring",
+>>            { "override_creds", "sqpoll", NULL } },
+>> +       { "namespace",
+>> +         { "userns_create", NULL } },
+> 
+> The above would need to change to:
+> 
+>    { "user_namespace",
+>      { "create", NULL } }
+> 
 
-These two lines would end up applying to everything that takes this
-path so every time we hit the end of a page we would encounter it, and
-in almost all cases it shouldn't apply so it is extra instructions. In
-addition they would be serialized with the earlier subtraction since
-we can't process it until after the first comparison which is actually
-using the flags to perform the check since it is checking if offset is
-signed.
-
->                 page =3D virt_to_page(nc->va);
->
->                 if (!page_ref_sub_and_test(page, nc->pagecnt_bias))
->                         goto refill;
->
->                 if (unlikely(nc->pfmemalloc)) {
->                         free_the_page(page, compound_order(page));
->                         goto refill;
->                 }
->
-> #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
->                 /* if size can vary use size else just use PAGE_SIZE */
->                 size =3D nc->size;
-> #endif
->                 /* OK, page count is 0, we can safely set it */
->                 set_page_count(page, PAGE_FRAG_CACHE_MAX_SIZE + 1);
->
->                 /* reset page count bias and offset to start of new frag =
-*/
->                 nc->pagecnt_bias =3D PAGE_FRAG_CACHE_MAX_SIZE + 1;
->                 offset =3D size - fragsz;
->                  -------------->B<------------
-
-At this point we have already excluded the shared and pfmemalloc
-pages. Here we don't have to add a comparison. The comparison is
-already handled via the size - fragsz, we just need to make use of the
-flags following the operation by checking to see if offset is signed.
-
-So the added assembler would be something to the effect of:
-        js <return NULL block>
-
-In addition the assignment operations there should have no effect on
-the flags so the js can be added to the end of the block without
-having to do much in terms of forcing any reordering of the
-instructions.
