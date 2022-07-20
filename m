@@ -2,104 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 436CE57B8EE
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D327457B8F8
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 16:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240484AbiGTOwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 10:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
+        id S236357AbiGTOyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 10:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240316AbiGTOwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:52:37 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97941839B
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:52:35 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id bv24so2604862wrb.3
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:52:35 -0700 (PDT)
+        with ESMTP id S240821AbiGTOyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 10:54:23 -0400
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270431EC75
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:54:22 -0700 (PDT)
+Received: by mail-ua1-x934.google.com with SMTP id y19so8100076ual.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 07:54:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PUMNzOcke9F/E6l0+nSlaEl2q/BLzsi49G5O8oR/nQk=;
-        b=05e5XLBmfccOHOTn5Xi23vWg8lqNJPD/R1R0dBx9OAM6rEtAjGyDb7fFMs3y3i/7oD
-         /Ok5WoBVNnLuPSv+vaxNoWo7ozHczx628+bmwDooSBy4Ell7vhkiyYtko7XwBb+kbr/R
-         BAjORV2J0Is7Zf5la7TDJ8tdimEtSTjqnhLmTWTo+VkhDV2SDH+8N+fLRE2KY7wZfezY
-         T+8JyFzZ6P9hW/0ZmdZZ/B/Uv/FqGJI9SKb0Tf0iLP0d+exKHiujMl9frRdeNNWZHTAH
-         i9rgvXBSrNV3XeYyu2mF/sA2JpA/OlBjHP/f6HQ3JwqaawYdWHZ7Uly6ofxMlSylDhlx
-         Vy5Q==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=pRW51Zf8RzoluaRIPps/fzsMK5pZhkAW4XFwEonLMvw=;
+        b=WiGwoKDNAEyBaub3ALOhsOfd8V1Tgkza8OJMERydOJCmZ4SPBYWl5LIlQuX7ywfnCU
+         I3Hb1Joyb660f//GWck9lPLxB2cxJ21o5u7Jl9xGBNS2XfCwAnqqk5yeMAvX9zidy+kr
+         aj3zERckGzNiyDk8T86GBc9WFnCJE1J/4gbw5IptkgJxFeD9Om+//q50EwPi79jF/8AV
+         /8YTLcPvpy6CuJBCoOBO633GITuR+2PhDilJCjeSA5oL3fxiAWbc1/9unROkF1IghZis
+         XstU0yK8SK5yTNWfoLE3blCDa7QI4CNQ9AV5Kfi9r6dMcdRqqLfHN33BG6mLpoUN6rLE
+         BJIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PUMNzOcke9F/E6l0+nSlaEl2q/BLzsi49G5O8oR/nQk=;
-        b=RzmqUHToJjTJDWXke8xT3F2OQ/MWOO4HGR+iHwZyG7561Jxdjq8JxJ1t0Gsf5e3a5S
-         Kwcb8S9ZQrX2Qkho6mc2skW3HCJ1gFrN1Gv9ty41IF/NjUA2NUI5j3Mg6Ne0oQdbZ0Nt
-         LrmVNDECGngEZDqbG9gfKhIOuN9uo4ji8U0nblE7MQkdUWE5InXZm9Y4FzdeNFk+/Jxz
-         rif8fucZHfHbeYNfgO/XOWwam+0sqDHwg2AjU2LzwwHwClrKF14ZGWFlR138zpKidD6b
-         CUVQ/3U13yQtyeEAXrnYyEj7aehEUtIkgN9gqNMOkQmrTb+gX03WFm65KyLOQKDH9wDz
-         1ymQ==
-X-Gm-Message-State: AJIora/1FemPmfg+ONVbdHEvQGmdmOBmwyhN4WrTnfhtLk42JhoKEWAs
-        0MRGOi7hPdfrP8JXfCmnggXr+07jqDqsZJlIxKx2
-X-Google-Smtp-Source: AGRyM1vRgjFuWdos6HfR4YAkcb84ehTx76Uq4a7TaHyarDjXm0pNXoiIf0CYV/zUZqhGSCYFaueGHUufPPeJ3RbZVR0=
-X-Received: by 2002:a5d:4f8f:0:b0:21e:4f09:9e15 with SMTP id
- d15-20020a5d4f8f000000b0021e4f099e15mr1313451wru.55.1658328754216; Wed, 20
- Jul 2022 07:52:34 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=pRW51Zf8RzoluaRIPps/fzsMK5pZhkAW4XFwEonLMvw=;
+        b=tq4zVvzO0t+6ZVaLxZWTJMkjO81aacSXa3ga100iwBz6apQqsrKSEgr0qJ3Q9+cQZB
+         8OnKTxQceiOvFxOxlBZkc9zL/FiuFYGWWrjaNGg+PS7F8RTQymkq9muCsHnp49s8Jq7b
+         SAtHrjy+mQdJ6Cqvpc21buTluuSYxYm0jVG3HFdHI4foBiGrsJ/tw8UhuY7FK/lIigLa
+         kuxcQHYGrJ2NhXLuPCaJcQvL7nHH7//rCPPCNAcjDEqaNeYElDIz7Yft0bmBEwguvjHy
+         4nB2p2jaPkN39p/BGRTV4maLwrsEN9rr0tw7+eyHdf1XTz1ad3F0JPGOpgaWzGHeS9Zn
+         Pq/Q==
+X-Gm-Message-State: AJIora+0SIgMjNrHVdzAVR330x6eaXeAnxt8LIIqfyIg4BGNUdDtLAl9
+        j6tzJr39BRQXYf5DCvwFHiFYyoqUtRKkIOKoWCRBdg==
+X-Google-Smtp-Source: AGRyM1tMJIlVh+piYAR1gu3liiD2a2yD06tL01sT5b1NlAk+YutcH6h+FoabXhj/fEmuMGA7cgOG6qNwc9qAH5EJN18=
+X-Received: by 2002:ab0:215a:0:b0:382:c57:ee13 with SMTP id
+ t26-20020ab0215a000000b003820c57ee13mr14287948ual.68.1658328860989; Wed, 20
+ Jul 2022 07:54:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220707223228.1940249-1-fred@cloudflare.com> <20220707223228.1940249-5-fred@cloudflare.com>
- <CA+EEuAhfMrg=goGhWxVW2=i4Z7mVN4GvfzettvX8T+tFcOPKCw@mail.gmail.com>
-In-Reply-To: <CA+EEuAhfMrg=goGhWxVW2=i4Z7mVN4GvfzettvX8T+tFcOPKCw@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 20 Jul 2022 10:52:23 -0400
-Message-ID: <CAHC9VhSbKct_hY4UNS0oyqsov9ELxXeQc4rqpRO7AuLKfWrGDA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] selinux: Implement create_user_ns hook
-To:     Karl MacMillan <karl@bigbadwolfsecurity.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>, andrii@kernel.org,
-        ast@kernel.org, bpf@vger.kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, daniel@iogearbox.net,
-        ebiederm@xmission.com, eparis@parisplace.org,
-        jackmanb@chromium.org, jmorris@namei.org, john.fastabend@gmail.com,
-        kafai@fb.com, kernel-team@cloudflare.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        revest@chromium.org, selinux@vger.kernel.org, serge@hallyn.com,
-        shuah@kernel.org, songliubraving@fb.com,
-        stephen.smalley.work@gmail.com, yhs@fb.com
+References: <20220607025729.1673212-1-mfaltesek@google.com> <fc85ff14-70d6-0c3e-247d-eda2284a5f6b@oracle.com>
+In-Reply-To: <fc85ff14-70d6-0c3e-247d-eda2284a5f6b@oracle.com>
+From:   Martin Faltesek <mfaltesek@google.com>
+Date:   Wed, 20 Jul 2022 08:53:44 -0600
+Message-ID: <CAOiWkA_AcD_J1r1ncvmX8YswbMiS2fx5WySrYwvfdFE4qgk=hQ@mail.gmail.com>
+Subject: Re: [PATCH net v3 0/3] Split "nfc: st21nfca: Refactor
+ EVT_TRANSACTION" into 3
+To:     Denis Efremov <denis.e.efremov@oracle.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        christophe.ricard@gmail.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@google.com>, jordy@pwning.systems,
+        krzk@kernel.org, Martin Faltesek <martin.faltesek@gmail.com>,
+        netdev@vger.kernel.org, linux-nfc@lists.01.org,
+        sameo@linux.intel.com, William K Lin <wklin@google.com>,
+        theflamefire89@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 10:42 PM Karl MacMillan
-<karl@bigbadwolfsecurity.com> wrote:
-> On Thu, Jul 7, 2022 at 6:34 PM Frederick Lawler <fred@cloudflare.com> wro=
-te:
->>
->> Unprivileged user namespace creation is an intended feature to enable
->> sandboxing, however this feature is often used to as an initial step to
->> perform a privilege escalation attack.
->>
->> This patch implements a new namespace { userns_create } access control
->> permission to restrict which domains allow or deny user namespace
->> creation. This is necessary for system administrators to quickly protect
->> their systems while waiting for vulnerability patches to be applied.
->>
->> This permission can be used in the following way:
->>
->>         allow domA_t domB_t : namespace { userns_create };
+On Wed, Jul 20, 2022 at 1:25 AM Denis Efremov
+<denis.e.efremov@oracle.com> wrote:
+>
+> Hi,
+>
+> On 6/7/22 06:57, Martin Faltesek wrote:
+> >
+> > Martin Faltesek (3):
+> >   nfc: st21nfca: fix incorrect validating logic in EVT_TRANSACTION
+> >   nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
+> >   nfc: st21nfca: fix incorrect sizing calculations in EVT_TRANSACTION
+> >
+> >  drivers/nfc/st21nfca/se.c | 53 ++++++++++++++++++++++-----------------
+> >  1 file changed, 30 insertions(+), 23 deletions(-)
 >
 >
-> Isn=E2=80=99t this actually domA_t domA_t : namespace . . .
+> It looks like driver st-nci contains the same problems and all 3 fixes are
+> also applicable to st_nci_hci_connectivity_event_received() function.
+> At least I can see the memory leak
+> https://elixir.bootlin.com/linux/v5.19-rc7/source/drivers/nfc/st-nci/se.c#L343
 >
-> I got confused reading this initially trying to figure out what the secon=
-d domain type would be, but looking at the code cleared that up.
+> Can you please double check the st-nci driver and send the same fixes to it?
+> Reported-by: Denis Efremov <denis.e.efremov@oracle.com>
 
-Ah, good catch, thanks Karl!
-
---=20
-paul-moore.com
+Will do.
