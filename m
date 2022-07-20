@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5439557BE4D
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 21:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AAB957BEC8
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 21:43:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiGTTOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 15:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
+        id S236920AbiGTTnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 15:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGTTOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 15:14:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE445722E
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 12:14:20 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oEF90-0004W8-0J; Wed, 20 Jul 2022 21:14:02 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oEF8v-0005MV-H8; Wed, 20 Jul 2022 21:13:57 +0200
-Date:   Wed, 20 Jul 2022 21:13:57 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Elenita Hinds <ecathinds@gmail.com>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: Re: [PATCH] can: j1939: Remove unnecessary WARN_ON_ONCE in
- j1939_sk_queue_activate_next_locked()
-Message-ID: <20220720191357.GB5600@pengutronix.de>
-References: <20220720110645.519601-1-pchelkin@ispras.ru>
+        with ESMTP id S236528AbiGTTnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 15:43:50 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86B068DC4;
+        Wed, 20 Jul 2022 12:43:45 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1658346178tf9ar22l
+Received: from harry-jrlc.. ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 21 Jul 2022 03:42:47 +0800 (CST)
+X-QQ-SSF: 0100000000200030C000C00A0000020
+X-QQ-FEAT: KfdWLgjtJHZnYfL4/TlHXincVqdrjmUZX2CfrZIoxIJUb1Jv+GS1V2tXzXOhM
+        pG3EYQNNGq5dwwe6bTd4pSDIPh1YWU0zyyojJMYm2PDPw63PAnN57bsM3V1b8sIlbGAhnmM
+        FErGUxHooWzuzh3CD3yakhRpmzOI+gNlsgkv8C6l1JbsBUYAUCdDpes7rdacyok/hOhWXsi
+        YDcgdvB0mH/R5A1XgK+NxmTEocQGcvK/+4IUxvdgGW4NhZc7M0Q967n44AVs4FWV+p3ryjE
+        E0N6I4dvX3YNvZLCriaKGfTSZGh3YTTFgbVL4bZIwGvJ9BoT4aWmkTbWwFMtrEZ7ZEwbGiH
+        rSxXrSNPWL0bAHxYcaMByIYmEO6AgMmGXc7ile2SGkjo6AXrJVLWqPlM6Sivw==
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] b43:do not initialise statics to 0.
+Date:   Thu, 21 Jul 2022 03:42:45 +0800
+Message-Id: <20220720194245.8442-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220720110645.519601-1-pchelkin@ispras.ru>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+        SPF_PASS,T_SPF_HELO_TEMPERROR autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,58 +49,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fedor,
+do not initialise statics to 0.
 
-On Wed, Jul 20, 2022 at 02:06:45PM +0300, Fedor Pchelkin wrote:
-> The purpose of WARN_ON_ONCE if the session with the same parameters
-> has already been activated and is currently in active_session_list is
-> not very clear. Is this warning implemented to indicate that userspace
-> is doing something wrong?
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+---
+ drivers/net/wireless/broadcom/b43/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yes.
-
-> As far as I can see, there are two lists: active_session_list (which
-> is for the whole device) and sk_session_queue (which is unique for
-> each j1939_sock), and the situation when we have two sessions with
-> the same type, addresses and destinations in two different
-> sk_session_queues (owned by two different sockets) is actually highly
-> probable - one is active and the other is willing to become active
-> but the j1939_session_activate() does not let that happen. It is
-> correct behaviour as I assume.
-
-No. It is not typical use case and most probably it will create
-problems. Are you working on some system where this use case is valid?
-
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
->
-> ---
->  net/can/j1939/socket.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-> index f5ecfdcf57b2..be4b73afa16c 100644
-> --- a/net/can/j1939/socket.c
-> +++ b/net/can/j1939/socket.c
-> @@ -178,7 +178,7 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
->  	if (!first)
->  		return;
->  
-> -	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-> +	if (j1939_session_activate(first)) {
->  		first->err = -EBUSY;
->  		goto activate_next;
->  	} else {
-> -- 
-> 2.25.1
-> 
-> 
-
+diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
+index 17bcec5f3ff7..5e233d0e06c0 100644
+--- a/drivers/net/wireless/broadcom/b43/main.c
++++ b/drivers/net/wireless/broadcom/b43/main.c
+@@ -105,7 +105,7 @@ int b43_modparam_verbose = B43_VERBOSITY_DEFAULT;
+ module_param_named(verbose, b43_modparam_verbose, int, 0644);
+ MODULE_PARM_DESC(verbose, "Log message verbosity: 0=error, 1=warn, 2=info(default), 3=debug");
+ 
+-static int b43_modparam_pio = 0;
++static int b43_modparam_pio;
+ module_param_named(pio, b43_modparam_pio, int, 0644);
+ MODULE_PARM_DESC(pio, "Use PIO accesses by default: 0=DMA, 1=PIO");
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.30.2
+
