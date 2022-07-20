@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 487F057AB6B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D2757ABAD
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 03:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240172AbiGTBLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 21:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S240790AbiGTBN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 21:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239771AbiGTBKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:10:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4634BD18;
-        Tue, 19 Jul 2022 18:10:49 -0700 (PDT)
+        with ESMTP id S240630AbiGTBNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 21:13:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737BC65D7E;
+        Tue, 19 Jul 2022 18:12:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B086C6171C;
-        Wed, 20 Jul 2022 01:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E04B6C341C6;
-        Wed, 20 Jul 2022 01:10:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FBCFB81DDD;
+        Wed, 20 Jul 2022 01:12:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74453C385A2;
+        Wed, 20 Jul 2022 01:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658279448;
-        bh=geJPDdQ7ApT76PWUo/eMmnGiDSRWmu9OjCz9xBHRNgk=;
+        s=k20201202; t=1658279555;
+        bh=EBE5mRVgHUiDZP+rucvxGE4MVVNoWEaOJdWC3cRpNGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VKOlTufDyZHOyqD0D1ykcFS4vjr0srp9gzN+3UCIco4vU7eymqY6sxDaR/xWcrTli
-         MGKQ4CRKXUM791bmxzV882lcPwhNCJ6Wy/LGRisdYuOHxTos2W8Std7y6b4Mbp4/Ri
-         U4Q0bS6WZ/z1Jt63j8a+cTBEma1cRXVcsRulj+0Z45QeyeAt4RbUw+7L6yEwVPEzNT
-         L+Rvjv0aDezVDWet11rZK8u80dz8aWsNrRSRUja3wmMlV8Rvui9xVcXxmaitUswhYd
-         Up9wlxn9/HA9hYyy8FBofIOP0gvCN2Z3VzNk9QySpHpOr4eKjSDKwW1MRZ2v+DuekX
-         wbpdtLD4RIlmQ==
+        b=S7bf2ozjZSjVT/hd6WGGqKbE4lqSLWDet/HW4JSKIkVZC+gUq+Wk3L0Odm18SsdfX
+         3eDhKCphfD0NsK5KYO9STIOPafBdWHVwfPk+Rg7Jo+D4S+c4EeiUYYjbVH+IvYNq2C
+         zD6R650NPLtYnpd9NBPg4Swcv8u/p6MJooqx+y1Wcz2lES1idIi9d7r7ZLWGwy8mGJ
+         EmHAOET4CYH7MTmOa/gkjs1w9bCtBhnYDF3Xzl2MMEHX9F56ChpVlYvfSZJNhl5VrW
+         /P5eRCRJ/MSgcPntqFCxpORjKQzTG+MhwFdIZvrxeVuG1OIKyk1SHLvXmXQQSwjFid
+         N19U5CsedMRSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, tony.luck@intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, fenghua.yu@intel.com,
-        pawan.kumar.gupta@linux.intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 05/54] x86/retpoline: Cleanup some #ifdefery
-Date:   Tue, 19 Jul 2022 21:09:42 -0400
-Message-Id: <20220720011031.1023305-5-sashal@kernel.org>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 29/54] wifi: mac80211: check skb_shared in ieee80211_8023_xmit()
+Date:   Tue, 19 Jul 2022 21:10:06 -0400
+Message-Id: <20220720011031.1023305-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220720011031.1023305-1-sashal@kernel.org>
 References: <20220720011031.1023305-1-sashal@kernel.org>
@@ -63,101 +60,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit 369ae6ffc41a3c1137cab697635a84d0cc7cdcea ]
+[ Upstream commit a4926abb787e2ef3ee2997e6ca8844d859478647 ]
 
-On it's own not much of a cleanup but it prepares for more/similar
-code.
+Add a missing skb_shared check into 802.3 path to prevent potential
+use-after-free from happening. This also uses skb_share_check()
+instead of open-coding in tx path.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Link: https://lore.kernel.org/r/e7a73aaf7742b17e43421c56625646dfc5c4d2cb.1653571902.git.ryder.lee@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/disabled-features.h | 9 ++++++++-
- arch/x86/include/asm/nospec-branch.h     | 7 +++----
- arch/x86/net/bpf_jit_comp.c              | 7 +++----
- 3 files changed, 14 insertions(+), 9 deletions(-)
+ net/mac80211/tx.c | 36 +++++++++++++-----------------------
+ 1 file changed, 13 insertions(+), 23 deletions(-)
 
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 1231d63f836d..f5db93822fc1 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -56,6 +56,13 @@
- # define DISABLE_PTI		(1 << (X86_FEATURE_PTI & 31))
- #endif
- 
-+#ifdef CONFIG_RETPOLINE
-+# define DISABLE_RETPOLINE	0
-+#else
-+# define DISABLE_RETPOLINE	((1 << (X86_FEATURE_RETPOLINE & 31)) | \
-+				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)))
-+#endif
-+
- #ifdef CONFIG_INTEL_IOMMU_SVM
- # define DISABLE_ENQCMD		0
- #else
-@@ -82,7 +89,7 @@
- #define DISABLED_MASK8	0
- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
- #define DISABLED_MASK10	0
--#define DISABLED_MASK11	0
-+#define DISABLED_MASK11	(DISABLE_RETPOLINE)
- #define DISABLED_MASK12	0
- #define DISABLED_MASK13	0
- #define DISABLED_MASK14	0
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index da251a5645b0..5728539a3e77 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -120,17 +120,16 @@
- 	_ASM_PTR " 999b\n\t"					\
- 	".popsection\n\t"
- 
--#ifdef CONFIG_RETPOLINE
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index b6b20f38de0e..5166d8696f7e 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2818,19 +2818,10 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 	/*
+ 	 * If the skb is shared we need to obtain our own copy.
+ 	 */
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
 -
- typedef u8 retpoline_thunk_t[RETPOLINE_THUNK_SIZE];
-+extern retpoline_thunk_t __x86_indirect_thunk_array[];
-+
-+#ifdef CONFIG_RETPOLINE
- 
- #define GEN(reg) \
- 	extern retpoline_thunk_t __x86_indirect_thunk_ ## reg;
- #include <asm/GEN-for-each-reg.h>
- #undef GEN
- 
--extern retpoline_thunk_t __x86_indirect_thunk_array[];
+-		/* can't happen -- skb is a clone if info_id != 0 */
+-		WARN_ON(info_id);
 -
- #ifdef CONFIG_X86_64
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb) {
+-			ret = -ENOMEM;
+-			goto free;
+-		}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb)) {
++		ret = -ENOMEM;
++		goto free;
+ 	}
  
- /*
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 4c71fa04e784..2ad01c75863e 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -407,16 +407,15 @@ static void emit_indirect_jump(u8 **pprog, int reg, u8 *ip)
+ 	hdr.frame_control = fc;
+@@ -3541,15 +3532,9 @@ static bool ieee80211_xmit_fast(struct ieee80211_sub_if_data *sdata,
+ 
+ 	/* after this point (skb is modified) we cannot return false */
+ 
+-	if (skb_shared(skb)) {
+-		struct sk_buff *tmp_skb = skb;
+-
+-		skb = skb_clone(skb, GFP_ATOMIC);
+-		kfree_skb(tmp_skb);
+-
+-		if (!skb)
+-			return true;
+-	}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return true;
+ 
+ 	if ((hdr->frame_control & cpu_to_le16(IEEE80211_STYPE_QOS_DATA)) &&
+ 	    ieee80211_amsdu_aggregate(sdata, sta, fast_tx, skb))
+@@ -4439,7 +4424,7 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 				struct net_device *dev, struct sta_info *sta,
+ 				struct ieee80211_key *key, struct sk_buff *skb)
  {
- 	u8 *prog = *pprog;
+-	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
++	struct ieee80211_tx_info *info;
+ 	struct ieee80211_local *local = sdata->local;
+ 	struct tid_ampdu_tx *tid_tx;
+ 	u8 tid;
+@@ -4454,6 +4439,11 @@ static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
+ 	    test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state))
+ 		goto out_free;
  
--#ifdef CONFIG_RETPOLINE
- 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
- 		EMIT_LFENCE();
- 		EMIT2(0xFF, 0xE0 + reg);
- 	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
- 		OPTIMIZER_HIDE_VAR(reg);
- 		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
--	} else
--#endif
--	EMIT2(0xFF, 0xE0 + reg);
-+	} else {
-+		EMIT2(0xFF, 0xE0 + reg);
-+	}
++	skb = skb_share_check(skb, GFP_ATOMIC);
++	if (unlikely(!skb))
++		return;
++
++	info = IEEE80211_SKB_CB(skb);
+ 	memset(info, 0, sizeof(*info));
  
- 	*pprog = prog;
- }
+ 	ieee80211_aggr_check(sdata, sta, skb);
 -- 
 2.35.1
 
