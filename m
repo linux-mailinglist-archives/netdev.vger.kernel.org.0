@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D75F957B58C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 13:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42A3057B597
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 13:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbiGTLcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 07:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S234060AbiGTLf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 07:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbiGTLcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 07:32:08 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F2C6EE83
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 04:32:07 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id y11so29747117lfs.6
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 04:32:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vE1DDTdSMSu0BCMGaO7at2qVYfDnw/cSZN0qW1IzOb0=;
-        b=BpcMxXscs++dlvbm7hfl4ot+wnp69DZFLoKjSeXRBmwHgptcHIdn9rFi4FjIcHxzUw
-         J3hLmbdBdLRFtBBmtmxK9uC6Itr2nAZoG8KeMxlPspAcTbP5NCFel4xXIf86HGU0Enwh
-         5BXKvg40efoTnDVbSdIiPe9/s1Hrl2Qc32NjQAUg3Zc3spF9RIOMV6gWciM2i37qTKFC
-         nERFQ08mYUOBqIfqQ1NvVYMm7Fk9SvmTDvoNZLAP+AyexsbXgj17YNzSernx56oEh1j9
-         L9UpQSYeuSAe0lbjdQqGW5OoPGWcxG1E1Rx9VL5bcKFzf7Yfe74auYoMPAbal6c2HT4b
-         7z0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vE1DDTdSMSu0BCMGaO7at2qVYfDnw/cSZN0qW1IzOb0=;
-        b=CVq7o47ClczTnTGojEE4UXR5dWg4fr+zIo9HaO3vuoYeTUf0RYKEsl6ZbhYeUlsz4X
-         WQmUgRY3LI5JtLjfM4hKjSaCf6Y13WJxCuRA7a0+MaRBJUH5EXavO2V6XgG3B9nqmEYV
-         GlPqR8tRLiAtRH5g4Jli/E4W8/JTXbWankzHRyLQj67kfpQ/0pjdW+QK+1ozMkY6Mewd
-         R46I3T779HNaNt4gjNHKnuFEb7BLIsaKTGTfs3j9Df4vI7aBwzjfMJXktw877LfWSGa1
-         KyPDiqeHyw8A43y7E/TduCWuEMljNWcq8P52hiRP4y7N9MKWbNufW5RS2rIjTG2VXSwV
-         cj+Q==
-X-Gm-Message-State: AJIora/B/sOcEGTI/b81Tla3G+BXF/RKVZSKyeC3Hp0baKjNU2hacaaa
-        d+EAWH+qe8hDYINwMdnMF4CI4Q==
-X-Google-Smtp-Source: AGRyM1sdCXMj7pl6v4LR2t+sXr/IRvz5U7a1oGnWWqdjNGPkEPSYrvlTzfVGjLw3GXBIUxnN/Ru9lA==
-X-Received: by 2002:a05:6512:3d0b:b0:48a:55d:e5eb with SMTP id d11-20020a0565123d0b00b0048a055de5ebmr19478436lfv.572.1658316726061;
-        Wed, 20 Jul 2022 04:32:06 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id a27-20020a2eb55b000000b0025d5b505df1sm3166137ljn.136.2022.07.20.04.32.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 04:32:05 -0700 (PDT)
-Message-ID: <d836f94c-4e87-31f6-5c3a-341e802a23a6@linaro.org>
-Date:   Wed, 20 Jul 2022 13:32:04 +0200
+        with ESMTP id S231281AbiGTLf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 07:35:26 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A05D1838B;
+        Wed, 20 Jul 2022 04:35:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=hoc3SZ+a6cRMEV4dB3AWnbJTTC3nfLgS/xRzs04z7hg=; b=W3bqgC4atmjinJIsHmrzqz0PRG
+        VdQarQ+8WG5T7XWBl5k/gL4YP+gOSjn0Vuidw1joFx6mX3gatujP8OabM9KsFfCZ223wTVwLM9QCp
+        16DkFRkXeAj4sU/QaaAq9S2pYTgRu9VO80LTELaQum+YJJGuoGg7fQc7zFrq1256eXhbZ5iPOdVol
+        DCQS9Mp7tc8+tsMYQMmiiTrQwQbx6x3wgbSFxtTFucTZkCalFScuqERAA8zi7duCrtgVoP2po7Vy2
+        sm/iZtNbj1NJsTA5p94NeKmcKuBcuEAvW/u7YnQ58QmnYK7WvTnx+UNFsHD7RI78DP8dBJdaybtGo
+        B39z/dhQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33460)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oE7z7-00042D-I7; Wed, 20 Jul 2022 12:35:21 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oE7z5-0003ro-9G; Wed, 20 Jul 2022 12:35:19 +0100
+Date:   Wed, 20 Jul 2022 12:35:19 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2 10/11] net: phy: aquantia: Add some additional phy
+ interfaces
+Message-ID: <YtfodwyLc5pMw4Gb@shell.armlinux.org.uk>
+References: <20220719235002.1944800-1-sean.anderson@seco.com>
+ <20220719235002.1944800-11-sean.anderson@seco.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: cdns,macb: Add versal compatible
- string
-Content-Language: en-US
-To:     Harini Katakam <harini.katakam@xilinx.com>,
-        nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        devicetree@vger.kernel.org, radhey.shyam.pandey@xilinx.com
-References: <20220720112924.1096-1-harini.katakam@xilinx.com>
- <20220720112924.1096-2-harini.katakam@xilinx.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220720112924.1096-2-harini.katakam@xilinx.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719235002.1944800-11-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/07/2022 13:29, Harini Katakam wrote:
-> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> 
-> Add versal compatible string.
-> 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> ---
->  Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> index 9c92156869b2..1e9f49bb8249 100644
-> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> @@ -22,6 +22,7 @@ properties:
->            - enum:
->                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
->                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
-> +              - cdns,versal-gem       # Xilinx Versal
+On Tue, Jul 19, 2022 at 07:50:00PM -0400, Sean Anderson wrote:
+> +/* The following registers all have similar layouts; first the registers... */
+> +#define VEND1_GLOBAL_CFG_10M			0x0310
+> +#define VEND1_GLOBAL_CFG_100M			0x031b
+> +#define VEND1_GLOBAL_CFG_1G			0x031c
+> +#define VEND1_GLOBAL_CFG_2_5G			0x031d
+> +#define VEND1_GLOBAL_CFG_5G			0x031e
+> +#define VEND1_GLOBAL_CFG_10G			0x031f
+> +/* ...and now the fields */
+> +#define VEND1_GLOBAL_CFG_RATE_ADAPT		GENMASK(8, 7)
+> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
+> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
+> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE	2
+> +
 
-Not really ordered by name. Why adding to the end?
+Shouldn't these definitions be in patch 11? They don't appear to be used
+in this patch.
 
-Best regards,
-Krzysztof
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
