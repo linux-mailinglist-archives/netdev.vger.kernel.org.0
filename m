@@ -2,117 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8713057BEDD
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 21:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E96B657BF40
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 22:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiGTTtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 15:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
+        id S229788AbiGTUhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 16:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiGTTtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 15:49:55 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87F870E71
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 12:49:50 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id EFhbo8PoIAeI9EFhbo9xJ4; Wed, 20 Jul 2022 21:49:49 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 20 Jul 2022 21:49:49 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229523AbiGTUhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 16:37:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C2013D7B
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 13:37:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AE9FB81FAB
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 20:37:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3272C3411E;
+        Wed, 20 Jul 2022 20:37:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658349425;
+        bh=dJuXfTN+HXhHrJVphszdPFg1iqvz+4oNyUbvZK7eFbE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gTqCXXryE/uacy2aeC7juRPeEMQ2BQL52qL6Qqmp5ekUvz61uz4vJKTkMTQHyn5/1
+         bloMuhSwJ3QDIoReKEUManyCQ2gRUVVt/bCDOSagR9ipE6h+pwfwbU12tVot50vlHJ
+         2egOe0Lnl/qBJ6pfjsmej2yu+IrWj6BIFlj+QSONlQFjLagT5gdpr1sWgrOUSMOHhZ
+         wOSUNf/5auuIDJ5jGkXRaYR3Z6E4fHK9YC9ja/eOPXDcyGfG7TSkrcM5gWSY4DmiLJ
+         DMNAZD6prY2DKtr9oZgpk7yrr7Rp4vJOi3bQCUg+ddU8RdRcO5bIVwWymqNADVJ/0B
+         Nr+UoMEZPlWvg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Subject: [PATCH] caif: Fix bitmap data type in "struct caifsock"
-Date:   Wed, 20 Jul 2022 21:49:46 +0200
-Message-Id: <b7a88272148a30cf2d0a97f2e82260a0dcb370a1.1658346566.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com
+Subject: [PATCH net-next 1/2] tls: rx: release the sock lock on locking timeout
+Date:   Wed, 20 Jul 2022 13:37:00 -0700
+Message-Id: <20220720203701.2179034-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bitmap are "unsigned long", so use it instead of a "u32" to make things
-more explicit.
+Eric reports we should release the socket lock if the entire
+"grab reader lock" operation has failed. The callers assume
+they don't have to release it or otherwise unwind.
 
-While at it, remove some useless cast (and leading spaces) when using the
-bitmap API.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot+16e72110feb2b653ef27@syzkaller.appspotmail.com
+Fixes: 4cbc325ed6b4 ("tls: rx: allow only one reader at a time")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/caif/caif_socket.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ net/tls/tls_sw.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
-index 251e666ba9a2..748be7253248 100644
---- a/net/caif/caif_socket.c
-+++ b/net/caif/caif_socket.c
-@@ -47,7 +47,7 @@ enum caif_states {
- struct caifsock {
- 	struct sock sk; /* must be first member */
- 	struct cflayer layer;
--	u32 flow_state;
-+	unsigned long flow_state;
- 	struct caif_connect_request conn_req;
- 	struct mutex readlock;
- 	struct dentry *debugfs_socket_dir;
-@@ -56,38 +56,32 @@ struct caifsock {
- 
- static int rx_flow_is_on(struct caifsock *cf_sk)
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 518401997539..0fc24a5ce208 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1846,6 +1846,7 @@ static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
+ 			       bool nonblock)
  {
--	return test_bit(RX_FLOW_ON_BIT,
--			(void *) &cf_sk->flow_state);
-+	return test_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
+ 	long timeo;
++	int err;
+ 
+ 	lock_sock(sk);
+ 
+@@ -1861,15 +1862,23 @@ static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
+ 			      !READ_ONCE(ctx->reader_present), &wait);
+ 		remove_wait_queue(&ctx->wq, &wait);
+ 
+-		if (!timeo)
+-			return -EAGAIN;
+-		if (signal_pending(current))
+-			return sock_intr_errno(timeo);
++		if (timeo <= 0) {
++			err = -EAGAIN;
++			goto err_unlock;
++		}
++		if (signal_pending(current)) {
++			err = sock_intr_errno(timeo);
++			goto err_unlock;
++		}
+ 	}
+ 
+ 	WRITE_ONCE(ctx->reader_present, 1);
+ 
+ 	return timeo;
++
++err_unlock:
++	release_sock(sk);
++	return err;
  }
  
- static int tx_flow_is_on(struct caifsock *cf_sk)
- {
--	return test_bit(TX_FLOW_ON_BIT,
--			(void *) &cf_sk->flow_state);
-+	return test_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
- }
- 
- static void set_rx_flow_off(struct caifsock *cf_sk)
- {
--	 clear_bit(RX_FLOW_ON_BIT,
--		 (void *) &cf_sk->flow_state);
-+	clear_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
- }
- 
- static void set_rx_flow_on(struct caifsock *cf_sk)
- {
--	 set_bit(RX_FLOW_ON_BIT,
--			(void *) &cf_sk->flow_state);
-+	set_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
- }
- 
- static void set_tx_flow_off(struct caifsock *cf_sk)
- {
--	 clear_bit(TX_FLOW_ON_BIT,
--		(void *) &cf_sk->flow_state);
-+	clear_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
- }
- 
- static void set_tx_flow_on(struct caifsock *cf_sk)
- {
--	 set_bit(TX_FLOW_ON_BIT,
--		(void *) &cf_sk->flow_state);
-+	set_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
- }
- 
- static void caif_read_lock(struct sock *sk)
+ static void tls_rx_reader_unlock(struct sock *sk, struct tls_sw_context_rx *ctx)
 -- 
-2.34.1
+2.36.1
 
