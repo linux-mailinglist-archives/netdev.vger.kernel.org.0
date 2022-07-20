@@ -2,192 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 606DB57B34F
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 349B757B353
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbiGTI5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        id S230036AbiGTI5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbiGTI5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:57:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F10F6B26E
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658307419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0PlCq6ajL/Z4I1TluumiywIvpa4NQvyOba7zhGyb68U=;
-        b=ebBkxX3IjlOBd2+hIVkw77iyTufI9P9wdSFPQm7ZYvtq5167aEB3sTo/VtlnpGPNMBOqcQ
-        0wUj+XDqXyF23xhAfFF7xxGZbmC5P+mWOwZshzxm0mG+6GL372MeOePsdJsgellyHaCxjf
-        /iRs026U6mNgaKGS9SbdeYBhzpadbEY=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-674-9ERMYyNPNTadTPZBNqvbVw-1; Wed, 20 Jul 2022 04:56:57 -0400
-X-MC-Unique: 9ERMYyNPNTadTPZBNqvbVw-1
-Received: by mail-qt1-f200.google.com with SMTP id u12-20020a05622a010c00b0031ef5b46dc0so4375114qtw.16
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:56:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0PlCq6ajL/Z4I1TluumiywIvpa4NQvyOba7zhGyb68U=;
-        b=DyARUdCG9WHA8Ffc+5HkYZlNuoK9UoFnymkDC98lbmJ49yOS1+IHX67YD/QG5zd9u/
-         pnU6M7WX3meJW8QYUUnCJFZ7K7dtK8Fd3qGPdVZITNEBPGB4vVHcdnC0trXTFJ1dZAm7
-         lDJeLOaFXwkpmw29OJfMK9YgkLIvg39wa39ez70xUfDbp+eMzV2ideBQgYmMFVDnOYdT
-         0BjKgk8u0nMiSB2m+Fw7Qe7343yz97WE4RfY2tGkZBJS9R7PsIN/E/+tpbD7hbl+DGqW
-         r8hsQdkkn1E12ir9j5R6r71qWGBDKwnbeiEogb1u7w1RV3yX993GyV4EYJcYgRYo3Izx
-         Mudg==
-X-Gm-Message-State: AJIora+16rHtnGZlwj4gTuxh/yTT/O7q8r3s7UbLggeTlLgvKG2tuylG
-        RJ1kJjD2NgstVxIP5n34Ao5jCjAIbzEFfPQ9NNlIFymTmyVi5BgyXJk3TS26bSVsi/Qo4ep8LeV
-        M2bQuxBCFPc/CEXKx
-X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id p9-20020a0c8c89000000b004709ab6bb27mr28764652qvb.118.1658307417213;
-        Wed, 20 Jul 2022 01:56:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uUEd8wd9tFBWjZIynLvqe+YW58v3ThG/Igh7FbI5iMXJ4uDVuxP2SQYrdm0ppCHCoqmP9x8A==
-X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id p9-20020a0c8c89000000b004709ab6bb27mr28764632qvb.118.1658307416999;
-        Wed, 20 Jul 2022 01:56:56 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id bn10-20020a05622a1dca00b0031ece6e0f17sm3229189qtb.71.2022.07.20.01.56.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 01:56:56 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 10:56:49 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 3/3] vsock_test: POLLIN + SO_RCVLOWAT test.
-Message-ID: <20220720085649.6pqj55hmkxlamxjq@sgarzare-redhat>
-References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
- <df70a274-4e69-ca1f-acba-126eb517e532@sberdevices.ru>
- <20220719125227.bktosg3yboeaeoo5@sgarzare-redhat>
- <ea414c31-741f-6994-651a-a686cba3d25e@sberdevices.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+        with ESMTP id S230101AbiGTI5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:57:38 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2056.outbound.protection.outlook.com [40.107.95.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20B16D9E9
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:57:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FsdaWVw8SROWOaNhGrFXklYKwn3cwJyH/YwzENpS5SMzreIpdpS5sVEIRXNddolBUshYqWzd6ugV185NaHxjsK2ojimUdNmLlmITz8wVzy3Zo/+VlYxdI4jwaK5XT9hqlMe5s0/5js9hKzr9JHapAYzjHekRjFJEdkZypMGFLWTlsTRsVyvAz+xnZ/0PilU3Ssg3rt3/EqNFFZghyRbdDM7erY6cd3rVfTjXKBze5W3p/RQRptaT3RsJqE5hcuLxdjJVrrXSGeQ5F5Hw/80wjq9C3+leJzmYkVFmi8Jzwy/cBx6snOLwPxP4jkwoUDWnsG5sZDlP8RC5do/HFH26dg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A0y1uzy8SkzXbPea27VgFryDSWaNUXDyYjo/dhZ8hvk=;
+ b=OgxSuQbGAMbGPS7nqnRgmmG5HuiFiqtc2Oa/2bVtUy71NyiNDMVIgfZBIMdBjpJYcvIKBpIhUfqKEpNrMwscM5x5uJHYsIlHNZ7oP9NUXiDazhRDjDfZ+TzlYkhXwCjuaKMT+CIJg2SkqmDyky1MVWQ6L7W6NwT828syMy82ZlA9eufV8BBZeW1tNSl+EoTZR0rWJR8yZ4HeG+qC4qCUYg6KJthL8pdrariDmeQkAL6A7qMxJSY9St6OsiHQzzslwAyR3tE2O2WcnjlRs9oreeiNiPdQ2rHbBi0BxyUROKeGGZf0VAdQbc8jS2V//yU9cKQUhH+VVKmEOaKb0kuuXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=A0y1uzy8SkzXbPea27VgFryDSWaNUXDyYjo/dhZ8hvk=;
+ b=WfdxiO5E+f5Gakx4HHxK8QUE0Fm5JcnA/gC55gmuF1VbZVj3qmzV5JKToI7zhHNxyGKLmW8f8ytggl5yuaHz8qoJhGcmCLdGMzjkLRnAtTBXxBzFbKszcTaIHRs+2jUnTekYYTLqFl/okUKwjm2fUUxfFQL5TwgrhnRM0KkO2iCqhH2hWJgkhKqOvOodc9UgivOyH+ucbTHCyE/dlhPMz52kBqWE+QRyZVxLplrJSND4zqeP0JZJLh1IzOT6M3tPmyRaoMlJd7MK6wLCVMOkf6l+Z3fVG/j/GBF17W8qEgJxotiVDnUBLp/lCHBfW0B033v3GLbI5fUaTWmEYs8KLg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by BL1PR12MB5753.namprd12.prod.outlook.com (2603:10b6:208:390::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Wed, 20 Jul
+ 2022 08:57:36 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Wed, 20 Jul 2022
+ 08:57:35 +0000
+Date:   Wed, 20 Jul 2022 11:57:30 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v2 06/12] mlxsw: reg: Extend MDDQ by device_info
+Message-ID: <YtfDeoEaaInwXCe3@shredder>
+References: <20220719064847.3688226-1-jiri@resnulli.us>
+ <20220719064847.3688226-7-jiri@resnulli.us>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ea414c31-741f-6994-651a-a686cba3d25e@sberdevices.ru>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220719064847.3688226-7-jiri@resnulli.us>
+X-ClientProxiedBy: VI1PR06CA0189.eurprd06.prod.outlook.com
+ (2603:10a6:803:c8::46) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c69f536-ce7a-48f0-3e53-08da6a2de3d4
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5753:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rDBNYVcONiwcbTN3qf/n47tNmKDRlvHOEDkBo/H//0/wDV3x87V++OxwUlA0KLAa7n0xln21tuBOSzqcJUvX9Q+7R8hFIB+NaEzn8xfoGYHrbRciPj765IP2FYcQdczKCwpqa8O3h/zgu7Su1ww/MgThfFxj81wxQc1GA5d2aN6d6IuUBU4w21HYu4WJ9qa6baZI4kf65hhFr7OyaU84T1SEiBBDagk8dLDYraO9g3tKdJMu5xddHO0SyGJb8WrgdwqVrik94rsu+Ca6f8MYhZxPtA/nDo9ldh0EM9KWgs0Vc+XIEMZhMbwdrMNoyyUBGu+9rx6TQC9InB/S9jXvz6/q+xeRCANxErt2IKoEJEiJTPExFTn+sGNtBbmQnVN4HNSrTPTryJbx5Xq3p2ZEjRIrFaZg6YypXEHKjgkqrYL5yFnxzUoYMourFTUlb6DAv6pVWODU4vleAyXeF/1owwCQqKDGjzDHl60+3Lh5xsRocRGXavl7YwQZvFINh3aR8GN1puKbS+4QVOsDPlatDMRng12z0gtfA2YB34uyThMWO4DeIMPSXZIc4szttrKRNY5r6p9XM9LqMqyPSw6qp3y8ylDymjX43JKDLpL0oie21ZKlDtx89eDwPRCr2OfAFxdr7c5t7HwjZzOi7ZpczwFsmkoynicP9ICCIVq8z122fClrfWC7sIrg/llD1lPIzbadS+LMSrnpiAXo6RySqPk1HqjWALDL8ZzXmYeF6sdS4yzjsGLOaEnNkR6FOZux
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(376002)(346002)(396003)(366004)(136003)(39860400002)(66556008)(478600001)(6666004)(41300700001)(186003)(33716001)(4744005)(8936002)(5660300002)(86362001)(66476007)(6506007)(66946007)(6916009)(2906002)(316002)(4326008)(38100700002)(6512007)(6486002)(8676002)(9686003)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DC6K0OAkNJb/iraTZT//nFdplrIhe3RuCGZSNkgIGMWicRmX6l/kmcfHW71X?=
+ =?us-ascii?Q?3SJ9wG5Grc8EPnNx+Gntn7TLXUGp/sBQvyYql6vEyhSC+UXhbSYU0t32NQJi?=
+ =?us-ascii?Q?lchtFGHkzOKprhz7F2Zy5VxJs58mg2hhT7VrKssfHsO/Vw3rg4PwwWRGj5AI?=
+ =?us-ascii?Q?CXmt2XRdTm6brnmnMZzi9tphKwU6T5taSuM6eHZVPkrwI+hEWtm1V3y+3sAK?=
+ =?us-ascii?Q?7y1bmhuwsqlmEyj6hXijOftP8Qbw8FKM4KNUyQB+FRBedzT2UsrTzLdnDgnR?=
+ =?us-ascii?Q?6nGkE26BtpxNTw+nPx/pr1+ljy9okj3bIn1Krt5vvbwfMA3De4TnBWBlzWgL?=
+ =?us-ascii?Q?TG3vr74Kx4MXarKt9Pxib3L+HovSCtG6UBtypDfAZBLzAG3I/Wx4wBXPa1+0?=
+ =?us-ascii?Q?ow2lW1KEOwyWsNq8U2b1BiLBOtwcqtDphqgtiVXrN+Azo5MtPCEOSajqHScP?=
+ =?us-ascii?Q?b9GprQR/gGzbt+SpFEwWTMeW1TFrgbAK1j6eB+1UqxtLFhKaWiaKAPs7u4z9?=
+ =?us-ascii?Q?5+HXyFdLWpYj7R9ne1TzRLkkdTse+kTHuon6UtyL7v5NIb0CCZsoOeybtXP0?=
+ =?us-ascii?Q?jMC53II+WM+385XLOG2hDsQx4yEjXBZB/vT2Ddqf3A7Fb8Ga6zNupwnhsJCp?=
+ =?us-ascii?Q?rU0P9KQ/ob0H4zng1sVJ8pbAJfXaWOvMDXbIG1TrXVi9oMJ1pZSBFpBERKcs?=
+ =?us-ascii?Q?d0mNGxaHyxABRUkZxP7f1zx7dPHVihyYOXeu/hO2Qi3vykmtdB6ioGHRKzm6?=
+ =?us-ascii?Q?uQbsGWHK5ueYwmlSY+hfbBfVv8OP/3nZygtt2/211MJVKQL85r4r3pSirVA6?=
+ =?us-ascii?Q?tZVKQQxptY2Gu4vUNxmUMulm3pSraRdAyUIdvgNcwZ2ZmVs+WFRdgkda2St7?=
+ =?us-ascii?Q?CpuSQCkZT6TUO5PYGey7GnwuoiWyVGx9YhjB4Mt4rJTCjjvVIgOB1mIogwaR?=
+ =?us-ascii?Q?tfjQNtBMXcx/25mNzlE9A5fvp5VEpqi3Lt0nY+AE0Yk/fdk2CDZtH2dpt6SP?=
+ =?us-ascii?Q?2TCS/cjY6pwp68fpJ924hs+F2t+Obwyguw9lUqCEjOOTdqB3u+2105IRZJ2Q?=
+ =?us-ascii?Q?X9av/OXEQ+go9DOl3VoIKdtjH5ryTje8oJsdSQssquyDMFyWriMXPNp9IYOQ?=
+ =?us-ascii?Q?SyToEWJtfNUet8c3nHfANLbjsuyFgpxvtlZLFvRleV5GA04Z+n75B5izvrXA?=
+ =?us-ascii?Q?wIwUea1e0NedY0wNGlONAp2scGWAaOsRRZrOv429Diq3Bh83Ll6yyuIxkhgg?=
+ =?us-ascii?Q?+yhoodtMWENC8cpyfftlJMZAQH4UuwGfu31bjBp/jJnrbbGCAVtgElLWsgNk?=
+ =?us-ascii?Q?+s9IZBmY1e+mYAxxam+ozHVe7lhqb3TAH2ATH+6wuZFEPn/dMrgXVz9kqTfB?=
+ =?us-ascii?Q?vRRuGnchdMTBOKQE2iwK1GfECkSjbHvbFZHLkrE7jvcLHsjgfXlmKai+s4DP?=
+ =?us-ascii?Q?efc6ZOmxDGFZSRW78ZVDDXDaF78o4cgiO6qWM2Lac3UpZs9pglxexht1XCST?=
+ =?us-ascii?Q?7tvP3KEx0n6rCy39iAhiRBZaW9k1NrvRCIEeI6hyTKE0KUjL8vw++RnSqStb?=
+ =?us-ascii?Q?7vfEDfxBA6kFeLVNf24kDGerUp8rOyES9RxuvkYs?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c69f536-ce7a-48f0-3e53-08da6a2de3d4
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 08:57:35.6006
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gt3/vYEnWUCvyciBLlSXcdvxn6Csw/a0Ms3wZB8/a9hIkkbKwcLqMUj88lk4/c47uS7j+ObxKv6f05LEVYUbKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5753
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 05:46:01AM +0000, Arseniy Krasnov wrote:
->On 19.07.2022 15:52, Stefano Garzarella wrote:
->> On Mon, Jul 18, 2022 at 08:19:06AM +0000, Arseniy Krasnov wrote:
->>> This adds test to check, that when poll() returns POLLIN and
->>> POLLRDNORM bits, next read call won't block.
->>>
->>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>> ---
->>> tools/testing/vsock/vsock_test.c | 90 ++++++++++++++++++++++++++++++++
->>> 1 file changed, 90 insertions(+)
->>>
->>> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
->>> index dc577461afc2..8e394443eaf6 100644
->>> --- a/tools/testing/vsock/vsock_test.c
->>> +++ b/tools/testing/vsock/vsock_test.c
->>> @@ -18,6 +18,7 @@
->>> #include <sys/socket.h>
->>> #include <time.h>
->>> #include <sys/mman.h>
->>> +#include <poll.h>
->>>
->>> #include "timeout.h"
->>> #include "control.h"
->>> @@ -596,6 +597,90 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
->>>     close(fd);
->>> }
->>>
->>> +static void test_stream_poll_rcvlowat_server(const struct test_opts *opts)
->>> +{
->>> +#define RCVLOWAT_BUF_SIZE 128
->>> +    int fd;
->>> +    int i;
->>> +
->>> +    fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
->>> +    if (fd < 0) {
->>> +        perror("accept");
->>> +        exit(EXIT_FAILURE);
->>> +    }
->>> +
->>> +    /* Send 1 byte. */
->>> +    send_byte(fd, 1, 0);
->>> +
->>> +    control_writeln("SRVSENT");
->>> +
->>> +    /* Just empirically delay value. */
->>> +    sleep(4);
->>
->> Why we need this sleep()?
->Purpose of sleep() is to move client in state, when it has 1 byte of rx data
->and poll() won't wake. For example:
->client:                        server:
->waits for "SRVSENT"
->                               send 1 byte
->                               send "SRVSENT"
->poll()
->                               sleep
->...
->poll sleeps
->...
->                               send rest of data
->poll wake up
->
->I think, without sleep there is chance, that client enters poll() when whole
->data from server is already received, thus test will be useless(it just tests
+On Tue, Jul 19, 2022 at 08:48:41AM +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> Extend existing MDDQ register by possibility to query information about
+> devices residing on a line card.
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-Right, I see (maybe add a comment in the test).
+I don't think this changed since internal review, so:
 
->poll()). May be i can remove "SRVSENT" as sleep is enough.
-
-I think it's fine.
-
-An alternative could be to use the `timeout` of poll():
-
-client:                        server:
-waits for "SRVSENT"
-                                send 1 byte
-                                send "SRVSENT"
-poll(, timeout = 1 * 1000)
-                                wait for "CLNSENT"
-poll should return 0
-send "CLNSENT"
-
-poll(, timeout = 10 * 1000)
-...
-poll sleeps
-...
-                                send rest of data
-poll wake up
-
-
-I don't have a strong opinion, also your version seems fine, just an 
-alternative ;-)
-
-Maybe in your version you can add a 10 sec timeout to poll, to avoid 
-that the test stuck for some reason (failing if the timeout is reached).
-
-Thanks,
-Stefano
-
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
