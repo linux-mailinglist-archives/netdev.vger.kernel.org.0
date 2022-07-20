@@ -2,61 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB0A57BC43
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:04:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6726A57BC49
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 19:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237022AbiGTREp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 13:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
+        id S237538AbiGTRG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 13:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236991AbiGTREm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:04:42 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979B06BC3B;
-        Wed, 20 Jul 2022 10:04:41 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10d6e8990b9so8811062fac.7;
-        Wed, 20 Jul 2022 10:04:41 -0700 (PDT)
+        with ESMTP id S237864AbiGTRG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 13:06:27 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E3A6BC1A;
+        Wed, 20 Jul 2022 10:06:26 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id g1so13343452qki.7;
+        Wed, 20 Jul 2022 10:06:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DRRDvUhGg+XRjKdigaR0X/x0hmvUMO6VH2v80OeYkr4=;
-        b=Hzg47Ce57bKJQpKUXLmRt/A3U9MSi/nuq05G4YNOexuwXKt8HFg9czBNGI/lSjdpx5
-         fJAV/OHnvaqMAlTbklbDDeeA1NIv0frKKvUSOdyAdy1RZlr+9NI7BxmPcJwV9SyreSYO
-         45q03idsXJLwXDRRH4+lnDi9QQRpeu9+RR1pYm3lO5DcSkd1VevS50fsLrzfEGvC249l
-         aeRCOr6adfaUvDldzA9R2KmBjW4Ww0VEhdrzfshTtTCuIFMOtWjcjVPXK8wKGtilPGTj
-         PhIjoHcQfRcDJXXO7o00xLS9dVgpxW8+tiZ2Jg9CV2Pu/JqrrhcapKYLENvbfYJrDdql
-         tvmQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=c5dtfvo8X5iwM555XYGNyX8BDWpR76NHDGfyCA16UfI=;
+        b=gXnjZIAPvttLh4w+Ab05XIAYC8D5DFsAcn3ijUuLc+GSaiv8d+uPgFpGnvwgzTS/B3
+         rk2QbOkRfYBeLjblewcyl0Vb+S5PgQDkx3FIdSvkuq9BA0tsTAZGZM4defJCc6/5eI0l
+         G4ECM2998z3lFf5BU+LDBrtFc51bW3sjaGP+oqBRHoO7lFKGHq4j80vF9X43peS43iqa
+         FUBHW0bYtFMPCIRWJIpJpLIpWdOTHNEIfAA+fQwwUnPPqzuuIvUxzM0I9vzqRRgF3ei0
+         vzhw+Xp5jt42ygTQE7MFdspXgtuGzh2oSrTfPAI37A0raDJWGQsjyDo2k1a1jM9Hbw2h
+         Sdgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DRRDvUhGg+XRjKdigaR0X/x0hmvUMO6VH2v80OeYkr4=;
-        b=QDFQTzPDmNKevJnsVSsTJxbsk43dvkq2Mz+GcH8wh45eea2GQZZ+cK21Zwg60V1Q88
-         f2X30fLEfIAgHRj61xOIE5gEZh2tW1IPl7+gBAiQUpVPE9r0u2i3siStHykx/pxGhu70
-         u7ieaT/a4tqiUnvK1LAsUH4o7pJtLmMYruj5hS2TfCcN4vkQaWZ3nHuC2+jsZ8rLSW+t
-         HezLUueJHfrpGsFFfL/Xbkr70hfU3BHGGg3lDztSBP0jThtU+s3K7O5IUX+7eMXQb2Lr
-         VT7Y/NyolV5p8h/4x3LXQXwjsSEjjeeuiOy83UEJRgC2L+CZMTnZvc0DJssX0j7tdqnu
-         7Sog==
-X-Gm-Message-State: AJIora9iJUFZWizY3NtX8GbLa2qIYI467jXlPbi6z/dg0um4Hc0nSoHc
-        TBPZb+DvUFbdEGmpZQ29j7K9EgcHEYfGWHXEXYBI+QqTkOM=
-X-Google-Smtp-Source: AGRyM1uPOe53CvlPmI83IFhM84ZZmMexJ5f5+r9sqKdJ0kODBAuE/sBz/QwuQ8qQRMkrao8I4Iwa0n8hoEZYVo+jpRw=
-X-Received: by 2002:a05:6871:88e:b0:10b:f6bf:490 with SMTP id
- r14-20020a056871088e00b0010bf6bf0490mr3238585oaq.129.1658336680911; Wed, 20
- Jul 2022 10:04:40 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c5dtfvo8X5iwM555XYGNyX8BDWpR76NHDGfyCA16UfI=;
+        b=oqBqUzsJbfKuSC1mXeMnrd0EIQWe3vX8NLWYNDPFPL6pzv7iiBB2G2p6hBg0elyG80
+         enw1Lna4Adg27Jnm5zi8sRdwlSYSXD/gGIhBqTuMkygOTSkgK+wbpAvsaQlYQZ8AXkC9
+         ztrf1rjtnFGc0bZetuVZWjRiVP4SyEJZpwL3HSok91Sb3L8sW/4/Ue1sw7pOcsx0R8KB
+         jKCznIYPjPBwbOwBvjFir4a5aRcmclLTu+iMRhS1S7u+WmsWqLeRBCm4wJj41Suvh95v
+         259BEZpMNtbvwaeJGPk73f2wScZXi/FFozghYb1cGSXv1kOVMXuSpp3++gLgeOiQh0jA
+         Hxfg==
+X-Gm-Message-State: AJIora+VhkK8tzENF4lcsZkY8tMPxwRC5tUuGDx4CDN3rMq5kCgrnLKh
+        7W4VdEvyIWT1K/WwIWx/x+U=
+X-Google-Smtp-Source: AGRyM1uF7lm4SkCoCmiO9CDgTxUf5JkUnMZTBFaY3XD4jl+P4Tu0b4B+1O9aO2TfDEiT41gMmb4a7A==
+X-Received: by 2002:a37:b802:0:b0:6b5:8330:55a with SMTP id i2-20020a37b802000000b006b58330055amr25801868qkf.778.1658336785340;
+        Wed, 20 Jul 2022 10:06:25 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:1230:8a38:8fe4:50f8:8b83])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05620a0c4b00b006b4689e3425sm16467626qki.129.2022.07.20.10.06.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 10:06:25 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 10:06:24 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
+        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 08/16] smp: optimize smp_call_function_many_cond() for
+ more
+Message-ID: <Ytg2EA+2XtzPiyBE@yury-laptop>
+References: <20220718192844.1805158-1-yury.norov@gmail.com>
+ <20220718192844.1805158-9-yury.norov@gmail.com>
+ <YtXQom+a5C+iXSvm@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <0ad4093257791efe9651303b91ece0de244aafa4.1658166896.git.lucien.xin@gmail.com>
- <Ytb8ouxpPfV4MHru@t14s.localdomain>
-In-Reply-To: <Ytb8ouxpPfV4MHru@t14s.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 20 Jul 2022 13:03:56 -0400
-Message-ID: <CADvbK_dj83ajdamWDZpT1OUFBDJT-9udtKS97+W8Khw9XoVDrA@mail.gmail.com>
-Subject: Re: [PATCH net] Documentation: fix sctp_wmem in ip-sysctl.rst
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtXQom+a5C+iXSvm@worktop.programming.kicks-ass.net>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -67,54 +110,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 2:49 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Mon, Jul 18, 2022 at 01:54:56PM -0400, Xin Long wrote:
-> > Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
-> > SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
-> > by sk_wmem_schedule(). So we should fix the description for this option in
-> > ip-sysctl.rst accordingly.
-> >
-> > Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+On Mon, Jul 18, 2022 at 11:29:06PM +0200, Peter Zijlstra wrote:
+> On Mon, Jul 18, 2022 at 12:28:36PM -0700, Yury Norov wrote:
+> 
 > > ---
-> >  Documentation/networking/ip-sysctl.rst | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> > index 0e58001f8580..b7db2e5e5cc5 100644
-> > --- a/Documentation/networking/ip-sysctl.rst
-> > +++ b/Documentation/networking/ip-sysctl.rst
-> > @@ -2870,7 +2870,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
-> >       Default: 4K
-> >
-> >  sctp_wmem  - vector of 3 INTEGERs: min, default, max
-> > -     Currently this tunable has no effect.
-> > +     Only the first value ("min") is used, "default" and "max" are
-> > +     ignored.
+> >  kernel/smp.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/smp.c b/kernel/smp.c
+> > index 7ed2b9b12f74..f96fdf944b4a 100644
+> > --- a/kernel/smp.c
+> > +++ b/kernel/smp.c
+> > @@ -942,7 +942,11 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
+> >  
+> >  	if (run_remote) {
+> >  		cfd = this_cpu_ptr(&cfd_data);
+> > -		cpumask_and(cfd->cpumask, mask, cpu_online_mask);
+> > +		if (mask == cpu_online_mask)
+> > +			cpumask_copy(cfd->cpumask, cpu_online_mask);
+> > +		else
+> > +			cpumask_and(cfd->cpumask, mask, cpu_online_mask);
 > > +
-> > +     min: Minimal size of send buffer used by SCTP socket.
->
-> I'm not a native English speaker, but this seems better:
-> "Minimum size of send buffer that can be used by an SCTP socket."
-This is from "sctp_rmem" part:
+> 
+> Or... you could optimize cpumask_and() to detect the src1p == src2p case?
 
-"min: Minimal size of receive buffer used by SCTP socket."
+This is not what I would consider as optimization. For vast majority
+of users this check is useless because they know for sure that
+cpumasks are different.
 
-I think it was copied from "tcp_rmem", and yes it should be "SCTP sockets"
-or "an SCTP socket.", and "Minimum size" seems more common.
+For this case I can invent something like cpumask_and_check_eq(), so
+that there'll be minimal impact on user code. (Suggestions for a better
+name are very welcome.)
 
-will post v2. Thanks.
-
->
-> > +     It is guaranteed to each SCTP socket (but not association) even
-> > +     under moderate memory pressure.
-> > +
-> > +     Default: 4K
-> >
-> >  addr_scope_policy - INTEGER
-> >       Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
-> > --
-> > 2.31.1
-> >
+Thanks,
+Yury
