@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8E257B2B8
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:19:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7A057B2CE
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239024AbiGTITs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
+        id S231947AbiGTIXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237634AbiGTITr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:19:47 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8FF6A9DC
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:19:45 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id b26so25031969wrc.2
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:19:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=H3cfWCLBlBYx1Erw4k3ViEzQD+OSmuEO+WWt3HWcPoA=;
-        b=rR6JZ+S7IixgYfovd+L1INMwl+54Px8Y0e+3XmVtikQZpCf5s9gkH9XepDR74CWKOZ
-         9JLTcSPGceYWc1eOO1jx2oXTj8YqOvqS+wG9p4hW9xU9asnbOrl0muhhwwYVM34sKjyS
-         rGNKO6m3k8yyWwgDgA44/wk7ypQ69ZOBiVbJOXplDd3cyZ4R2JYioguX7H/tVjlI2fGM
-         q7p8VdQq0WofPlTG8vZcUCZqagSXzBP8TgIbaBoy52M3B4BtUM57AKJhWQroXQr2u/Ik
-         Q2rYGF/IHqCPOuX/qRNGSq9ICsXBurc2g1nYPIlCV4spj2cX1em/XfRo3bW2bZ0s+rWq
-         tK5Q==
+        with ESMTP id S230087AbiGTIXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:23:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 198F46BC15
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:23:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658305395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WqWXkpMYDjGMkR6N048q9/Kkfh0q8LEuKcrhvdxBx9U=;
+        b=Pc6LMPEyoz2HtuKBXbsluaQEs7uFaCR3iNU1AAK4zJvRQB6lMUKw/Sq3+yUVECyPMBHdZu
+        XTn5FW1R64ucmf5NgTP4yDz2g3yhNmdO96FxjeDqfb9cR85gKvPM8Umv1uq8fs6Hx6894Y
+        ay57I/mFkWs+yfXgBXQOEZf13d2QyGg=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-zBer2eaSOBuT2u7QDKwumA-1; Wed, 20 Jul 2022 04:23:13 -0400
+X-MC-Unique: zBer2eaSOBuT2u7QDKwumA-1
+Received: by mail-wr1-f70.google.com with SMTP id h6-20020adfaa86000000b0021e47bcbc6dso259362wrc.16
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:23:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=H3cfWCLBlBYx1Erw4k3ViEzQD+OSmuEO+WWt3HWcPoA=;
-        b=nx4PSqLMaJKPo/BGVm+9oVyB2F8HlpfZeH8/2agKgkZwkvTsqxOx2Zbs9AAu0AYCUf
-         x0xb/t34JN6eKotlJNLyayps2xweNiWzLs0KTivSjJfaY7f6bBWpefJp/gWILt5AYQ3s
-         urgErCyJTg8lVO2EqjyPhq5kRV/xvfwuB0mys054sWzNyhNT+pBspKFSqNH5uEL2HsPi
-         PZBCaibSZR3BKooqMmYU9bz5sqXCszS+m9LyA9Qc2TrTyM1OrJyo8t5sriqjBwZ9YCHZ
-         OrMNOuBv3+cjPyAeKseu732kTssNRhpOMhDW8L4bS0Ac9l/G2pwYYQLCpg4eBLYhkcS/
-         8VzA==
-X-Gm-Message-State: AJIora+ZOrdvYkutT5KOysW+kx2xLmsXpqw1XcpL46Xgd+zdqhKdDWRc
-        zveLgxuwdD3e0DSD8xg0vWcPkQ==
-X-Google-Smtp-Source: AGRyM1tKM9yWRqu/6hb5ToXfPCjx8kO+ohEW+UULtwcZ7Bj7hyGH5XdN95owydZj/Z9UEhfe392XnQ==
-X-Received: by 2002:a5d:64c8:0:b0:21d:9873:bbf0 with SMTP id f8-20020a5d64c8000000b0021d9873bbf0mr29529081wri.150.1658305184429;
-        Wed, 20 Jul 2022 01:19:44 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id bg42-20020a05600c3caa00b003a31b79dc0esm8936892wmb.1.2022.07.20.01.19.43
+        bh=WqWXkpMYDjGMkR6N048q9/Kkfh0q8LEuKcrhvdxBx9U=;
+        b=0J1eujKuF/Ao+IKNXBQtFkT0C1dXtREbHWSatWEI7bLGmV0bip22ZB5LdmuWV6t19C
+         zBkMpnGQF5ovotCLrQClGHi6FbkD/ICelSh41idekXjlY59TGINJ4MqBC4dEiC5Dim+2
+         Eyc7cI6H4mwZrnUbT9EWSnFXX6wsPt9jNCYrIeO8G0LMWkygR8xWHx7O3YLXPuXy2XWQ
+         FaR8YBGY3dC5uaNG6dVgamzF9r1uTjQNZy9ZAw+SCNndAljp9L+teMn46YtFrTXIV4pV
+         HmvKMtd/XVlsmu0rL4GKZ2IduVP6qr1LDpVzsHlFSdgzvsnzhgi3Y8+fliAdqDYUvo6f
+         D+fg==
+X-Gm-Message-State: AJIora8XwOilnAn1Oi/MriZ0e+sygpjvmJ3j9U7iB21aBIUYC4yVygEE
+        W05NJlmXKcjIAOxxDLoJU0DrWNyb3ukrS+FAf7l9XGks3vPe1aN7iM0K4Uy01LX+Q1DG8UV2K2T
+        HJ/VkupvDGPwfOQ/S
+X-Received: by 2002:a05:600c:3227:b0:3a3:be7:2917 with SMTP id r39-20020a05600c322700b003a30be72917mr2760523wmp.83.1658305392296;
+        Wed, 20 Jul 2022 01:23:12 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sk2lxdgaBkVc5Kem0cnAq2mfCBRvNA74098gzKOVACYFwhUlWyh6yfDCAwDcJmLBObthn+bA==
+X-Received: by 2002:a05:600c:3227:b0:3a3:be7:2917 with SMTP id r39-20020a05600c322700b003a30be72917mr2760502wmp.83.1658305392025;
+        Wed, 20 Jul 2022 01:23:12 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id g8-20020a05600c4ec800b003a317ee3036sm1887541wmq.2.2022.07.20.01.23.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 01:19:43 -0700 (PDT)
-Date:   Wed, 20 Jul 2022 09:19:41 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        Wed, 20 Jul 2022 01:23:11 -0700 (PDT)
+Date:   Wed, 20 Jul 2022 10:23:07 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Dexuan Cui <decui@microsoft.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v13 net-next 9/9] mfd: ocelot: add support for the
- vsc7512 chip via spi
-Message-ID: <Yte6nTJ3IMJhdLAp@google.com>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220705204743.3224692-10-colin.foster@in-advantage.com>
- <YtVrtOHy3lAeKCRH@google.com>
- <Ytbuj6qfUj1NOitS@euler>
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 2/3] virtio/vsock: use 'target' in notify_poll_in,
+ callback.
+Message-ID: <20220720082307.djbf7qgnlsjmrxcf@sgarzare-redhat>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+ <358f8d52-fd88-ad2e-87e2-c64bfa516a58@sberdevices.ru>
+ <20220719124857.akv25sgp6np3pdaw@sgarzare-redhat>
+ <15f38fcf-f1ff-3aad-4c30-4436bb8c4c44@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ytbuj6qfUj1NOitS@euler>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+In-Reply-To: <15f38fcf-f1ff-3aad-4c30-4436bb8c4c44@sberdevices.ru>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,80 +94,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jul 2022, Colin Foster wrote:
+On Wed, Jul 20, 2022 at 05:38:03AM +0000, Arseniy Krasnov wrote:
+>On 19.07.2022 15:48, Stefano Garzarella wrote:
+>> On Mon, Jul 18, 2022 at 08:17:31AM +0000, Arseniy Krasnov wrote:
+>>> This callback controls setting of POLLIN,POLLRDNORM output bits
+>>> of poll() syscall,but in some cases,it is incorrectly to set it,
+>>> when socket has at least 1 bytes of available data. Use 'target'
+>>> which is already exists and equal to sk_rcvlowat in this case.
+>>>
+>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>> ---
+>>> net/vmw_vsock/virtio_transport_common.c | 2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>>> index ec2c2afbf0d0..591908740992 100644
+>>> --- a/net/vmw_vsock/virtio_transport_common.c
+>>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>>> @@ -634,7 +634,7 @@ virtio_transport_notify_poll_in(struct vsock_sock *vsk,
+>>> ††††††††††††††† size_t target,
+>>> ††††††††††††††† bool *data_ready_now)
+>>> {
+>>> -††† if (vsock_stream_has_data(vsk))
+>>> +††† if (vsock_stream_has_data(vsk) >= target)
+>>> ††††††† *data_ready_now = true;
+>>> ††††else
+>>> ††††††† *data_ready_now = false;
+>>
+>> Perhaps we can take the opportunity to clean up the code in this way:
+>>
+>> ††††*data_ready_now = vsock_stream_has_data(vsk) >= target;
+>Ack
+>>
+>> Anyway, I think we also need to fix the other transports (vmci and hyperv), what do you think?
+>For vmci it is look clear to fix it. For hyperv i need to check it more, because it already
+>uses some internal target value.
 
-> On Mon, Jul 18, 2022 at 03:18:28PM +0100, Lee Jones wrote:
-> > On Tue, 05 Jul 2022, Colin Foster wrote:
-> > 
-> > > +MODULE_IMPORT_NS(MFD_OCELOT_SPI);
-> > > diff --git a/drivers/mfd/ocelot-spi.c b/drivers/mfd/ocelot-spi.c
-> > > new file mode 100644
-> > > index 000000000000..0c1c5215c706
-> > > --- /dev/null
-> > > +++ b/drivers/mfd/ocelot-spi.c
-> > > @@ -0,0 +1,317 @@
-> > > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> > > +/*
-> > > + * SPI core driver for the Ocelot chip family.
-> > > + *
-> > > + * This driver will handle everything necessary to allow for communication over
-> > > + * SPI to the VSC7511, VSC7512, VSC7513 and VSC7514 chips. The main functions
-> > > + * are to prepare the chip's SPI interface for a specific bus speed, and a host
-> > > + * processor's endianness. This will create and distribute regmaps for any
-> > > + * children.
-> > > + *
-> > > + * Copyright 2021, 2022 Innovative Advantage Inc.
-> > > + *
-> > > + * Author: Colin Foster <colin.foster@in-advantage.com>
-> > > + */
-> > > +
-> > > +#include <linux/ioport.h>
-> > > +#include <linux/kconfig.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/spi/spi.h>
-> > > +
-> > > +#include <asm/byteorder.h>
-> > > +
-> > > +#include "ocelot.h"
-> > > +
-> > > +#define REG_DEV_CPUORG_IF_CTRL		0x0000
-> > > +#define REG_DEV_CPUORG_IF_CFGSTAT	0x0004
-> > > +
-> > > +#define CFGSTAT_IF_NUM_VCORE		(0 << 24)
-> > > +#define CFGSTAT_IF_NUM_VRAP		(1 << 24)
-> > > +#define CFGSTAT_IF_NUM_SI		(2 << 24)
-> > > +#define CFGSTAT_IF_NUM_MIIM		(3 << 24)
-> > > +
-> > > +#define VSC7512_DEVCPU_ORG_RES_START	0x71000000
-> > > +#define VSC7512_DEVCPU_ORG_RES_SIZE	0x38
-> > > +
-> > > +#define VSC7512_CHIP_REGS_RES_START	0x71070000
-> > > +#define VSC7512_CHIP_REGS_RES_SIZE	0x14
-> > > +
-> > > +struct spi_device;
-> > 
-> > Why not just #include?
-> 
-> I mis-understood this to mean drivers/mfd/ocelot-spi.c when it meant
-> drivers/mfd/ocelot.h. Thanks.
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220701192609.3970317-10-colin.foster@in-advantage.com/#24921057
-> 
-> """
-> You missed a lot of forward declarations that are used in this file.
-> 
-> Like
-> 
-> struct spi_device;
-> """
+Yep, I see. Maybe you can pass `target` to hvs_channel_readable() and 
+use it as parameter of HVS_PKT_LEN().
 
-spi_device is used in *this* file.
+@Dexuan what do you think?
 
-You should explicitly add the include file.
+Thanks,
+Stefano
 
--- 
-Lee Jones [ÊùéÁêºÊñØ]
-Principal Technical Lead - Developer Services
-Linaro.org ‚îÇ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
