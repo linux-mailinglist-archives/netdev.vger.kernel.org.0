@@ -2,153 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2419557AF4D
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9AA57AF8E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 05:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242309AbiGTDJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jul 2022 23:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36266 "EHLO
+        id S237206AbiGTDmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jul 2022 23:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiGTDI5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:08:57 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9331145;
-        Tue, 19 Jul 2022 20:06:18 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R221e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VJux9Mt_1658286371;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VJux9Mt_1658286371)
-          by smtp.aliyun-inc.com;
-          Wed, 20 Jul 2022 11:06:13 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        kangjie.xu@linux.alibaba.com
-Subject: [PATCH v12 40/40] virtio_net: support set_ringparam
-Date:   Wed, 20 Jul 2022 11:04:36 +0800
-Message-Id: <20220720030436.79520-41-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
-References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
+        with ESMTP id S235442AbiGTDmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jul 2022 23:42:22 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF61568DD7;
+        Tue, 19 Jul 2022 20:42:21 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id m16so22121304edb.11;
+        Tue, 19 Jul 2022 20:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A0OoNPUELJ/dSSGDR8KkMHB3StJZhXQRZj0KnIM+IGw=;
+        b=VIIQ8U7Ufmij10zNk1oSmGlrHgsRYf6ziCUT9ukZw+92okO4rvvYurKnINAnisfPY8
+         0ZkRGXTuG3TZHqpSf+Yb24NFQXc8FKn5Yxr5ToqW5YOisen5BM0jA4BkAi1nEOVboUKv
+         CDfQmgyb70nB7SuzyrdRXuN2GJCqDLO6aUZcpq3HBbTRCxqXxa8lu8BbRI4xBXn/OEYu
+         HEoXkWjXalBSN8lDiD3yOZBi7uIf94FxDvs8CxhGKaqEtV5KNYKeMh20OD7SruiqZfU8
+         flVsia8L19D9lubBjfV23ssib4wBRc2c8/ypUmwnkqumwe/EroUmngt1LYe1Q4djaioR
+         aZRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A0OoNPUELJ/dSSGDR8KkMHB3StJZhXQRZj0KnIM+IGw=;
+        b=2d+M7zLKRo7kNI+id1MJBKMTxeG5vuzBRn0TBZikSgWrgKtYIk6dNlTKI/0n4jFTw0
+         8bgj2J+m7eEr3KME8Uehk1Qbx6pIzvgz7TgzjTn0EsLJsjPizYkRfht4H2LoPkeOiLv4
+         R2otr9alBPUSDGMuQIafZevHWzcbCts+QsMNCiyizgztHz9SZCa54DAzMqyG600pI8AL
+         97+l0g7kQ/pan0Tk6OTQh8UzD1v3imkF95LyBAfDz6kyh8a1ceIOzXn6/LaXcUMX70/J
+         oaf/VseAhQbIp5ZICCn2a4D6N11dg82yTzRsygno6LC0EdE9ntUsCNEgc6H5NpP+qF5/
+         +Hlg==
+X-Gm-Message-State: AJIora/84UyPDRFsLe2FfZ+HoMlipYBSCGfv6pUfZyE08gb8O/99U971
+        412GAUqSxejL1TrzcTIDaKqJ1qsuk55Ra2DS5lywjewQ
+X-Google-Smtp-Source: AGRyM1uInEkRlcwDbWJT8P/mXmZxsWQh0YNxSyLjjh0wFjK/WSWbHSm7Fqm00GFFtN9vBjiFWwqgLZGh7Zw4p11lHJM=
+X-Received: by 2002:aa7:d053:0:b0:43a:a164:2c3 with SMTP id
+ n19-20020aa7d053000000b0043aa16402c3mr47940490edo.333.1658288540354; Tue, 19
+ Jul 2022 20:42:20 -0700 (PDT)
 MIME-Version: 1.0
-X-Git-Hash: 366032b2ffac
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220720115956.3c27492f@canb.auug.org.au>
+In-Reply-To: <20220720115956.3c27492f@canb.auug.org.au>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 19 Jul 2022 20:42:09 -0700
+Message-ID: <CAADnVQ+xFuff3TRhzrPWkJD+MA16MdRvcprcniX4yzxL5Z+=UA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support set_ringparam based on virtio queue reset.
+On Tue, Jul 19, 2022 at 7:00 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the bpf-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+>
+> ld: warning: discarding dynamic section .glink
+> ld: warning: discarding dynamic section .plt
+> ld: linkage table error against `bpf_trampoline_unlink_cgroup_shim'
+> ld: stubs don't match calculated size
+> ld: can not build stubs: bad value
+> ld: kernel/bpf/cgroup.o: in function `.bpf_cgroup_link_release.part.0':
+> cgroup.c:(.text+0x2fc4): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+> ld: kernel/bpf/cgroup.o: in function `.cgroup_bpf_release':
+> cgroup.c:(.text+0x33b0): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+> ld: cgroup.c:(.text+0x33c0): undefined reference to `.bpf_trampoline_unlink_cgroup_shim'
+>
+> Caused by commit
+>
+>   3908fcddc65d ("bpf: fix lsm_cgroup build errors on esoteric configs")
+>
+> I have reverted that commit for today.
 
-Users can use ethtool -G eth0 <ring_num> to modify the ring size of
-virtio-net.
+Argh.
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+Stan,
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index d1e6940b46d8..59fc48c60403 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2329,6 +2329,53 @@ static void virtnet_get_ringparam(struct net_device *dev,
- 	ring->tx_pending = virtqueue_get_vring_size(vi->sq[0].vq);
- }
- 
-+static int virtnet_set_ringparam(struct net_device *dev,
-+				 struct ethtool_ringparam *ring,
-+				 struct kernel_ethtool_ringparam *kernel_ring,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct virtnet_info *vi = netdev_priv(dev);
-+	u32 rx_pending, tx_pending;
-+	struct receive_queue *rq;
-+	struct send_queue *sq;
-+	int i, err;
-+
-+	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
-+		return -EINVAL;
-+
-+	rx_pending = virtqueue_get_vring_size(vi->rq[0].vq);
-+	tx_pending = virtqueue_get_vring_size(vi->sq[0].vq);
-+
-+	if (ring->rx_pending == rx_pending &&
-+	    ring->tx_pending == tx_pending)
-+		return 0;
-+
-+	if (ring->rx_pending > vi->rq[0].vq->num_max)
-+		return -EINVAL;
-+
-+	if (ring->tx_pending > vi->sq[0].vq->num_max)
-+		return -EINVAL;
-+
-+	for (i = 0; i < vi->max_queue_pairs; i++) {
-+		rq = vi->rq + i;
-+		sq = vi->sq + i;
-+
-+		if (ring->tx_pending != tx_pending) {
-+			err = virtnet_tx_resize(vi, sq, ring->tx_pending);
-+			if (err)
-+				return err;
-+		}
-+
-+		if (ring->rx_pending != rx_pending) {
-+			err = virtnet_rx_resize(vi, rq, ring->rx_pending);
-+			if (err)
-+				return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static bool virtnet_commit_rss_command(struct virtnet_info *vi)
- {
- 	struct net_device *dev = vi->dev;
-@@ -2816,6 +2863,7 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
- 	.get_drvinfo = virtnet_get_drvinfo,
- 	.get_link = ethtool_op_get_link,
- 	.get_ringparam = virtnet_get_ringparam,
-+	.set_ringparam = virtnet_set_ringparam,
- 	.get_strings = virtnet_get_strings,
- 	.get_sset_count = virtnet_get_sset_count,
- 	.get_ethtool_stats = virtnet_get_ethtool_stats,
--- 
-2.31.0
-
+please take a look.
