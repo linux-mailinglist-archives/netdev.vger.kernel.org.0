@@ -2,104 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BCF57B2E5
-	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 023A557B2F6
+	for <lists+netdev@lfdr.de>; Wed, 20 Jul 2022 10:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbiGTI2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 04:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
+        id S240579AbiGTIac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 04:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240383AbiGTI2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:28:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 105626BC13
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:28:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658305725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=L3DfenUCS2zT2sZOgTK20oeEKlbuLDUSug72qMlfIEA=;
-        b=D1NFgTuXy5YNSpy0S3V1qroiUXAFjblezcNCywhE5uKIWoUFJkHHdqPjKJ1LgIHumzVtqu
-        JLkaoKJEB0pH2OkuPW6ajdz1YLt5WwkkFvSmUE0GU1HLla4Z4YLuq7k/1ZLw/eGEj9I6LF
-        yfOxRbDWd5R4G+y5yDfq0aYXdEskvq4=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-jL_WpCjnM7a-sEZbL3iMsw-1; Wed, 20 Jul 2022 04:28:44 -0400
-X-MC-Unique: jL_WpCjnM7a-sEZbL3iMsw-1
-Received: by mail-lj1-f199.google.com with SMTP id h21-20020a2e9ed5000000b0025d516572f4so2946899ljk.12
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 01:28:44 -0700 (PDT)
+        with ESMTP id S240509AbiGTIa2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 04:30:28 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91DB491EC;
+        Wed, 20 Jul 2022 01:30:25 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id ez10so31699111ejc.13;
+        Wed, 20 Jul 2022 01:30:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=58zZ0dZk/I6ddTuNmOqxAUp0PHDAU1gxo0sDWGaX870=;
+        b=Wf7zJJpO6QOfuHHzV921vPoBt1/gRWv5Y7cVmjHm3gOcJWiN2OJVUo2TdW6tMaEcgV
+         uFcVQ4oJeB0Kr3G5IS7A1tPJd43DlTOHtKTGXN3yMvh0VrVfbKWdHEKVBomxVBAobG1h
+         HT9uPqqMW0rxzV2WzczxKJFvL9TgBSmTYKUlq6D8BWRcM8AbrHXSdlkQYpamRwPsOYgk
+         Ra1ODugRTWWBQjMkfpTOgRRdCqkBWnQu7+OzGfV5ihF+AN3EUa7V7+OybomdUrS7Szde
+         CgbJsx8rkbNAMR/XcTI4dOIAMFRDR9QTU6rwXyr7qI1nf51QwqZJwgN/n7wG1C+MOc1t
+         sVfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L3DfenUCS2zT2sZOgTK20oeEKlbuLDUSug72qMlfIEA=;
-        b=13czvrBc8Tigwm28cVFoVEDEf+w4se5BXSllOlarj15LF0H1SAYF+J85U05N4YwAoc
-         ZeG2GZru7wNAOArJpNRW+EiDDv4j6MMx91wifyvp7Yr7k7Rx4rv/z9GLGobhlC8fwlXy
-         LoPw+yZ9WLrtwvnF7RYzNFWeEjx6oq/YcGddoehqj5KKHN4tnBhGqu6JB2jeQaBL8pFa
-         kHJeczDxl6MdEcA5o29tzbVSe6AratxlN8pOAUo4aaiZP6+gTp1FIgQ6QRxcGgd33SCv
-         VQ3DvBmbK0p8tPN+OVx0ZvypJpNelFcZPaPqOtBnB9PdVF+l1rvOQjk4idxnoBhgk/I9
-         8sxA==
-X-Gm-Message-State: AJIora9m+CdDOohR+4dmqjznZcoXFtPR9+QisjVRAGCmzLVs2Vl+mkPx
-        9cEd5md7GsnaK5f3qIXvCX+omjf9cFzZfQtJMQ50z0TAkxR4y3FktF0ZWdPtguKaDQGzwkyDI+I
-        Qaarn4fImO6aUQLtLZ3M5v6TWsHFxFIAH
-X-Received: by 2002:ac2:4c4c:0:b0:489:fe2c:c877 with SMTP id o12-20020ac24c4c000000b00489fe2cc877mr21359816lfk.238.1658305723096;
-        Wed, 20 Jul 2022 01:28:43 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uLAZh5XaF/U2o2Y+GJcoVM2SgiH2Q0PL1pTCphliOM2ioV10XQ+8kac8O0GewO0nmoCuNlrNjn1wj2ekRmpWs=
-X-Received: by 2002:ac2:4c4c:0:b0:489:fe2c:c877 with SMTP id
- o12-20020ac24c4c000000b00489fe2cc877mr21359810lfk.238.1658305722871; Wed, 20
- Jul 2022 01:28:42 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=58zZ0dZk/I6ddTuNmOqxAUp0PHDAU1gxo0sDWGaX870=;
+        b=hi7aS+LFOApm4c1ZKuitQGTl7KT93r0zL/m/S2r3cj0g2BjKDhvP6vDiIKzkS/MFhs
+         mTjXBLc9MY4/iInlj807Ckk18UzmN2gxWArzLjPOGruX6udkCdTrqXzbD9p1B2uvH9ju
+         HOt3Z05l/0EvNj4TvbKiM2Ko3D6Ml1mVqlIdyS8A0kiVSGRXHPlTzCfe6wCCCV2/sd1d
+         7yBDlfd2nE48gHj2hZF0bVnlkZGAKDewgbAAyfeCokZfQgQcYRWXdTovHQMLNgR9Cxn2
+         4VXHQrbtGQ85loGj3qacIZt9O2Q1v/L3jM1Qcz0hTXIdXI7TkfONxphPJqfqZby05hkA
+         uiNw==
+X-Gm-Message-State: AJIora8X8Jl3xroHQfM3bzmKfIsAeqHtHKSwQSLBzyStFu/5hxUV8DBo
+        ooRc1tRk9U1CBMcJxSMryNE=
+X-Google-Smtp-Source: AGRyM1sWsO3sS9m7YX3rzXOiTSeAwjg+z2TZ3hRPGND7I2KuUc+BplqHNa9Z/Zh9clQnKQrszHvxPg==
+X-Received: by 2002:a17:906:93ef:b0:72b:3e88:a47 with SMTP id yl15-20020a17090693ef00b0072b3e880a47mr35179073ejb.706.1658305824326;
+        Wed, 20 Jul 2022 01:30:24 -0700 (PDT)
+Received: from debian ([138.199.38.49])
+        by smtp.gmail.com with ESMTPSA id g21-20020a1709061e1500b00722f8d02928sm7775807ejj.174.2022.07.20.01.30.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 01:30:24 -0700 (PDT)
+From:   Mathias Lark <mathiaslark@gmail.com>
+X-Google-Original-From: Mathias Lark <mathias.lark@gmail.com>
+Date:   Wed, 20 Jul 2022 10:28:34 +0200
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH v2] net-next: improve handling of ICMP_EXT_ECHO icmp type
+Message-ID: <20220720082435.GA31932@debian>
 MIME-Version: 1.0
-References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
- <20220719172652.0d072280@kernel.org> <20220720022901-mutt-send-email-mst@kernel.org>
- <CACGkMEvFdMRX-sb7hUpEq+6e04ubehefr8y5Gjnjz8R26f=qDA@mail.gmail.com>
- <20220720030343-mutt-send-email-mst@kernel.org> <CAJs=3_DHW6qwjjx3ZBH2SVC0kaKviSrHHG+Hsh8-VxAbRNdP7A@mail.gmail.com>
- <20220720031436-mutt-send-email-mst@kernel.org> <CACGkMEuhFjXCBpVVTr7fvu4ma1Lw=JJyoz8rACb_eqLrWJW6aw@mail.gmail.com>
- <CACGkMEttcb+qitwP1v3vg=UGJ9s_XxbNxQv=onyWqAmKLYrHHA@mail.gmail.com> <CAJs=3_BtM2CTRLaA28R7_yjfFcq+wexQudfXBM0jWX02ZkacyQ@mail.gmail.com>
-In-Reply-To: <CAJs=3_BtM2CTRLaA28R7_yjfFcq+wexQudfXBM0jWX02ZkacyQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 20 Jul 2022 16:28:31 +0800
-Message-ID: <CACGkMEs96L+p1M+iK84tu0D5RGuTjo1=LgH0S9eeS57fSe-6mA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing support
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 3:57 PM Alvaro Karsz <alvaro.karsz@solid-run.com> wrote:
->
-> > And we need an upper limit for those values, this helps for e.g
-> > migration compatibility.
->
-> Why not let the device decide the upper limit, making it device specific?
+Introduce a helper for icmp type checking - icmp_is_valid_type.
 
-For example we may want to migrate VM from src to dst.
+There is a number of code paths handling ICMP packets. To check
+icmp type validity, some of those code paths perform the check
+`type <= NR_ICMP_TYPES`. Since the introduction of ICMP_EXT_ECHO
+and ICMP_EXT_ECHOREPLY (RFC 8335), this check is no longer correct.
 
-In src, we set tx-max-coalesced-frames to 512 but the dst only supports 256.
+To fix this inconsistency and avoid further problems with future
+ICMP types, the patch inserts the icmp_is_valid type helper
+wherever it is required. The helper checks if the type is less than
+NR_ICMP_TYPES or is equal to ICMP_EXT_ECHO/REPLY.
 
-> As written in the spec., a device can answer to the coalescing command
-> with VIRTIO_NET_ERR,
-> If it was not able to set the requested settings.
->
-> If a physical device uses virtio datapath, and can for example
-> coalesce notifications up to 500us, why should we limit it with a
-> lower number?
->
+NR_ICMP_TYPES could theoretically be increased to ICMP_EXT_ECHOREPLY
+(43), but that would not make sense as types 19-41 are not used.
 
-See above, for migration compatibility.
+Signed-off-by: Mathias Lark <mathias.lark@gmail.com>
+---
+ include/linux/icmp.h                    | 4 ++++
+ net/ipv4/icmp.c                         | 8 +++-----
+ net/netfilter/nf_conntrack_proto_icmp.c | 4 +---
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
-Thanks
+diff --git a/include/linux/icmp.h b/include/linux/icmp.h
+index 0af4d210ee31..e979c80696b0 100644
+--- a/include/linux/icmp.h
++++ b/include/linux/icmp.h
+@@ -36,6 +36,11 @@ static inline bool icmp_is_err(int type)
+ 	return false;
+ }
+ 
++static inline bool icmp_is_valid_type(int type)
++{
++	return type <= NR_ICMP_TYPES || type == ICMP_EXT_ECHO || type == ICMP_EXT_ECHOREPLY;
++}
++
+ void ip_icmp_error_rfc4884(const struct sk_buff *skb,
+ 			   struct sock_ee_data_rfc4884 *out,
+ 			   int thlen, int off);
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 236debd9fded..686f3133370f 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -273,7 +273,7 @@ EXPORT_SYMBOL(icmp_global_allow);
+ 
+ static bool icmpv4_mask_allow(struct net *net, int type, int code)
+ {
+-	if (type > NR_ICMP_TYPES)
++	if (!icmp_is_valid_type(type))
+ 		return true;
+ 
+ 	/* Don't limit PMTU discovery. */
+@@ -661,7 +661,7 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+ 			 *	Assume any unknown ICMP type is an error. This
+ 			 *	isn't specified by the RFC, but think about it..
+ 			 */
+-			if (*itp > NR_ICMP_TYPES ||
++			if (!icmp_is_valid_type(*itp) ||
+ 			    icmp_pointers[*itp].error)
+ 				goto out;
+ 		}
+@@ -1225,12 +1225,10 @@ int icmp_rcv(struct sk_buff *skb)
+ 	}
+ 
+ 	/*
+-	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
+-	 *
+ 	 *	RFC 1122: 3.2.2  Unknown ICMP messages types MUST be silently
+ 	 *		  discarded.
+ 	 */
+-	if (icmph->type > NR_ICMP_TYPES) {
++	if (!icmp_is_valid_type(icmph->type)) {
+ 		reason = SKB_DROP_REASON_UNHANDLED_PROTO;
+ 		goto error;
+ 	}
+diff --git a/net/netfilter/nf_conntrack_proto_icmp.c b/net/netfilter/nf_conntrack_proto_icmp.c
+index b38b7164acd5..ba4462c393be 100644
+--- a/net/netfilter/nf_conntrack_proto_icmp.c
++++ b/net/netfilter/nf_conntrack_proto_icmp.c
+@@ -225,12 +225,10 @@ int nf_conntrack_icmpv4_error(struct nf_conn *tmpl,
+ 	}
+ 
+ 	/*
+-	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
+-	 *
+ 	 *	RFC 1122: 3.2.2  Unknown ICMP messages types MUST be silently
+ 	 *		  discarded.
+ 	 */
+-	if (icmph->type > NR_ICMP_TYPES) {
++	if (!icmp_is_valid_type(icmph->type)) {
+ 		icmp_error_log(skb, state, "invalid icmp type");
+ 		return -NF_ACCEPT;
+ 	}
+-- 
+2.36.1
 
