@@ -2,132 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 435A057CA36
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 14:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E5DD57CA3B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 14:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233428AbiGUMFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 08:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45952 "EHLO
+        id S233451AbiGUMFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 08:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbiGUMFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 08:05:07 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF23275;
-        Thu, 21 Jul 2022 05:05:05 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id v12so1848305edc.10;
-        Thu, 21 Jul 2022 05:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hIRt+5psI0fBlG5c+/n/fiysz1qxRkLBoG/4SrkuiJE=;
-        b=BydaKhLBRJp/iFzlps/w0ZfZuBS13oz1Ki8ce73VFVSQ6ccbqnmDkqzWL0VtZkitXs
-         0RJYQEvWSAhg8BqpEvOOamDiStCjLC/ap9H1jJ1MGsJvT6B4XsOx06wONHzbha5m/ti+
-         OgG8QPt+bqnTQq1BO/7l8t4FOeE06spuZy7zEo7wxDrf3JH5r3hHNco4PYXzf7mLI4xo
-         G2DLu348tvSB46WOk01bqLu+V95p9/iF27DE1UUGSjW8+HQQT7megPPKwRGShoDxE6tp
-         k2HaStBJYxL/pMtg+yNkMKIIxcapAjD3gSuCp9xRv6vkPqIlUZyRm2IOBae59CQCioai
-         OkRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hIRt+5psI0fBlG5c+/n/fiysz1qxRkLBoG/4SrkuiJE=;
-        b=luwjz/9KUvN+zPU4bDwlef9FK3fXZiR20iaOqVJfh6ftibZzBHaFlrjfqvMTs4GqSM
-         El+28SskBcrrAfab7lp3jw//KpkNXsC7IHOr5GeEmx/SL8YGfEpGTJtGqgRJgJcY/dcf
-         U0aBf1vhSYenxkDZ7HNiGWCXIb40lalU/AMTbwzSFJxoMtj7BJ9+JnU9bFlin7jzy6YQ
-         6ZqsP1E2j7453Fadq2ETdF5ATRNx46QTF3W6Qgm20tI6PvbbO1NrIhyIpxpOBkjuaLGv
-         PyykjgNUVfTxmrIBl7NgKv8BpSjV0q0FITnNTaS5w/Tpo3msdWbwTOtKERUDGhtYb8f7
-         b6Tg==
-X-Gm-Message-State: AJIora+tVLPY2M8faMyvHtgV2HQzc6940r9yipsQjLpuzOu6N3GdqgT/
-        CfWS0IzfJegHTeJCMZkI1Ps=
-X-Google-Smtp-Source: AGRyM1u86Jc71UcjZn1r3mvoQuqtJZrsDnH+UAYVN0SB5I9lwYjOKEs+fAzJCcEJFejXlVzpoGOeEw==
-X-Received: by 2002:a05:6402:484:b0:43b:6e02:71af with SMTP id k4-20020a056402048400b0043b6e0271afmr22964119edv.176.1658405103949;
-        Thu, 21 Jul 2022 05:05:03 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id e11-20020a056402148b00b0043a43fcde13sm897574edv.13.2022.07.21.05.05.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 05:05:02 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 15:04:59 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 5/6] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220721120459.x6mm4coeoe4ecjfv@skbuf>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
- <20220707152930.1789437-6-netdev@kapio-technology.com>
- <20220717004725.ngix64ou2mz566is@skbuf>
- <3918e3d1a8b78dedc14b950ba1eee8d5@kapio-technology.com>
-MIME-Version: 1.0
+        with ESMTP id S233440AbiGUMFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 08:05:22 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2087.outbound.protection.outlook.com [40.107.244.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DDBBC80;
+        Thu, 21 Jul 2022 05:05:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l6auCYbu4+0MxyK6skxJ6EPk/ApM9kxGBdtLrShrCbZ8xCop0t+8waeU1YUC+6tL9ghsdXlBpG61lAG00b3MO0P0ZnokEM6IkSNtHeycUIB22NwAXdEH5MUmgQorOqYrbqAwcICvlPIOf/JuKDEzwOZB2PWkI86cRk+3w2IxzoxhWigURTkWaEFVcQHqjTxjM9thYoCHY9HmGev96JlWpsxg0kdkSgghhB/AkT34podru2vSWh81sNZzfxYrjOA1edcJ33AVxi4i8KStrwwqrakAgTnpg1beh9PLoFYyGpHc5HqiD3YbjKaXOk6SmlQofmSe+c3dfUH0HSvWny92wg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q4wj5QxOqnya3nq5I26NiK+pwMToGk/vd1XWyAQP6qU=;
+ b=lAltYJqnIt68+GKY+b4nl68h2o3O9k7Kb6otmN78XansYkq3feaY+Lto0FwaNzfsTwYf3ArUZG6jXuvTmAdHSjumBHA0e6NFGgLzcZou+XEqPL1vN/Rl+LBeBQ49ZV1hzv1u+RdLgQtN6TsEX1zRvsJXJ4rATR/yJRlbNAWGn5iuyG2/CLVTjBeePo/Jo6GUaO+g48IKsxH79kxvpPBFwKJvJAoSobQvc+Fu75rR8jn5lFZPgyzt8IruCvysQAIy451e4BODLv7wNbS2rY76IvoJsF5HVH50OxdbKZVQsZMtfX4iyk9Z/8VENbp9glU84Jvv6hEckwdTJCAVv4ONvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q4wj5QxOqnya3nq5I26NiK+pwMToGk/vd1XWyAQP6qU=;
+ b=XOjHZLSY2SjVeCbeutQn5OP33f93uyYreTdDs1/9BfFV/FM9uC2GHlPgiqUzHIOaLZMhFMzco8Ysu0mrfvojyXgtEobqP3h1AOj9LZFtnBKhZj3K94zOwz96XspclcgqVKC82UgI5+lTTLh6vxzCaFn8/9ZH5bCU8GXWMJuWqD9l8mnkEEZNX2BBmXSR3EmptMJr2oUJ5ae03cfMWDvzEUj1XIKB3O0fBgrpS4dF+5W6JhkvDAjfPQAE52LAUHFXYlfjWXQCE+9jPDWra26TeZ1EfIkiM+MZhBcsRLDaqjcP3GhDsOz5Wl26wZPux02kFZ1En1gTYzJw+BAkkqcFNA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SN6PR12MB2816.namprd12.prod.outlook.com (2603:10b6:805:75::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Thu, 21 Jul
+ 2022 12:05:19 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 12:05:19 +0000
+Date:   Thu, 21 Jul 2022 09:05:18 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Martins, Joao" <joao.m.martins@oracle.com>,
+        "leonro@nvidia.com" <leonro@nvidia.com>,
+        "maorg@nvidia.com" <maorg@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>
+Subject: Re: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Message-ID: <20220721120518.GZ4609@nvidia.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
+ <20220714081251.240584-4-yishaih@nvidia.com>
+ <BN9PR11MB5276B26F76F409BE27E593758C919@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3918e3d1a8b78dedc14b950ba1eee8d5@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <BN9PR11MB5276B26F76F409BE27E593758C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL1P222CA0026.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c7::31) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dcddf148-e9bf-4826-7ed2-08da6b114839
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2816:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OLBbbPE2EHiMRsr4/iLgIbIJCFUDCRnd/eykvwIvHzEyna7lnnTqtUn+E2O04GRU+o2qyDxEfh4uXNZ1wGoY161BywtRys6c5S2peIPA1oa5gCyau5qM4uxH7q8VkzdcyO4XWvsmFiuyEAL6DGiFeh6q7+ZE08Cp8n3Ccawg6cXm7ewAYyloqQuzxWJbY3ucLyAPCvqL05UKgRniZnTdV0W+ITVs3z1+1qyOanNCBM76vd6SXooG2UqvV5hcZVTn6/a8XLPMklCiJ7YXLlQAr/EnGs2ElfskWHoFoSSAAcVRJEA9x2KidhKTFMx/KvGd8KStL+aUOOcYnrgH+Lz5MZp7ukjsGbJRGIQvaGXMZ1lG2uPDYKVJFbSsrmDeVFcez1qEKr8VonJ5c0lQ2Qqm21BMYEMiUA6Ytd4275epCsBwA47/Roksn3w14pbZ4FhsbH3NV0nv6tBEvFA+FBh7iaFI5ffbKstuEahQ1DJeywDkpiAQojWDJcL12GqD8xwjtXcWHNp7eGoNphDH8WNiewn3+N5QKJj1DucQ6wiAVUvLnHbtJdfK+QS+SNED+21NtQGvcvCIdLWV8VJ7Xr7/Xp107vFD/k9qpsr4Vn42gOSgjWb2x5BBQY+TVy/Y1YMcFair+oqpi0/vMPxJPctijMSPAwSVy2zrnRQfXM/0b6HXAsXVnCvdap4tBrYzLUyVHpq+o+cw/h44Kz778ljyZFSjm0YOFUbLWIhDAy7ObFiP3K0CdrKvLxdPNNlKCXkG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(376002)(396003)(39860400002)(346002)(38100700002)(4744005)(316002)(66556008)(6512007)(8936002)(6862004)(5660300002)(2906002)(33656002)(54906003)(8676002)(4326008)(36756003)(41300700001)(6506007)(478600001)(86362001)(26005)(6486002)(66476007)(1076003)(66946007)(83380400001)(2616005)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IJzW+WCXqOgJmSeL72Sf0A+N2Xl9yybGuFCc1KNjz7+ghY7QogunRHz9Su2u?=
+ =?us-ascii?Q?qlR2kpYpWf4ECrgUqpbuern0xjvj1Z94iA70E96+v2s402PiKd/JgMfXm1wg?=
+ =?us-ascii?Q?NT4XKBeBrsARRBpU0lP4/HxnoDKhGQjOeYBLz5ZJy9PZGwwDvhCCSwi7Mt2S?=
+ =?us-ascii?Q?dwAcjr/QrJSWi4Fio4or0PVISEXcUIvKFOi/KSaYqcX/FJySL9iL0Vcw5btR?=
+ =?us-ascii?Q?Y8HKng3XMjkCo5D867HUvtZ/iOFAxORfBu1thmhBHlh8NgZh4XpAz0btAOeI?=
+ =?us-ascii?Q?ilZ3PSxV57hhJfUjttTPaclPtqTG4MSymbicVGP4FbqwcCOs5SrKqlRzg98/?=
+ =?us-ascii?Q?Ap0YaJZ8tIoEpGTduboAB0ZwDWxYCOcpe4GuUjvtNl2U4RZCJ2N3oIhihoeJ?=
+ =?us-ascii?Q?WABCqie/PkpNp9vXsVj6kDwKs0bfL9ov/Ei5DDxkq2b79yPQgzVw8xYRG8sj?=
+ =?us-ascii?Q?6kes4jykzmDuIqZHUCVMSATCrF6kDLNVARe56WEWnWzGwjvbYeAwSH+31qvM?=
+ =?us-ascii?Q?/WXlFQe2S26Ru3fCFZPpHW992ESuTkVexXyg6cHBzXVYsn5m/rMLVrF4eM35?=
+ =?us-ascii?Q?2VJz/CNQ4zM5pme6AeK8ya0XwldGyARAWN1+h9ntajPWCddqOrf1YbGmkHrJ?=
+ =?us-ascii?Q?CrMj0/L2+XyMsg1W5oezihZxZeWSOKKY0vp94WEk8F7c4nz+AwybLh2t+0B2?=
+ =?us-ascii?Q?t+VndsOfRuQZwoFlvQp8iDh3C6fjY0zLrJGSkFFujZIp0Vxi1uBj1vRzrT+e?=
+ =?us-ascii?Q?Z/8EQBvL5No0UuBDiR599pqFln1HRl36CZUMDeuHcgYYRG3QvjHuK8/KT9qY?=
+ =?us-ascii?Q?RtybFaufAFU1Ud4G30mcD+y0tlQWfeky/K6tCIkfDZhFPG5z06DUXFs33JPr?=
+ =?us-ascii?Q?sC6GypnJzk2RSGqz41jZoP8b665gH0nkWLoGYuxGWYxvxgTLcKLH1T+C4aNf?=
+ =?us-ascii?Q?q02zRpoQVlPwa7Kv+LIMOd2FKMFcmgvcZiaRRpwvC/7dzYhF8reyf/17q3Ai?=
+ =?us-ascii?Q?NWwTqN0xburtLbtMJ/p8DwQm7FyN65o5fV7UyJQT8pRlCuCm11bgwaVqqSGs?=
+ =?us-ascii?Q?i1obut7jQQZSPPok1Rh8N/4GnWVCNeD+MSnSi/ga7/71x24qjPkqSB0h81kW?=
+ =?us-ascii?Q?Bo6Bk7N6kt7Tv8xrePR2x4VnK6DujuBQYr7Eta87cih+pEcd7hE8rJZvYlGL?=
+ =?us-ascii?Q?fr8kSLepicuZtDXo2h76fXRvCcJqwmQ8Ackgsh/puQLGneaymBP4+YADReGj?=
+ =?us-ascii?Q?l7rQwUduTOH5RxVBXlKfjnmqs7Ge/wdVq5ILIXLUHEPWaoTAX593PIaU0/cE?=
+ =?us-ascii?Q?mMPD3b4GJ05aKoTtWpobvY6oN7+8sFOL7w9OwP448wYFlRiG49tn74PnOjhQ?=
+ =?us-ascii?Q?+8GVRd2UEsJfUdgkgffEIFb22QJfFRUmfdSEjy28z69wF7xiKauqZtwX882U?=
+ =?us-ascii?Q?Phlc1EUuE5cy0tM8HqAtqy8zOf/z8wdhQiOIi5cg861kBWy0nSKq6/5jNHAe?=
+ =?us-ascii?Q?uFIPDmY/KoQudSMkelpwChYuUnF1yPSp6tqFpGiVeHkoi4yM7G7m878NJo5j?=
+ =?us-ascii?Q?HENz9978+YrT3y0jUE18n3T/R2Xe+n8FCX3mKqHC?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcddf148-e9bf-4826-7ed2-08da6b114839
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 12:05:19.7783
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8N5IBnb5ECso1PoMO/BO4vE0KhuZBm7nQ83GNJFTTzGWuMvpwWl14pPjQWZn0GqR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2816
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 02:34:22PM +0200, netdev@kapio-technology.com wrote:
-> > If I were to randomly guess at almost 4AM in the morning, it has to do with
-> > "bridge fdb add" rather than the "bridge fdb replace" that's used for
-> > the MAB selftest. The fact I pointed out a few revisions ago, that MAB
-> > needs to be opt-in, is now coming back to bite us. Since it's not
-> > opt-in, the mv88e6xxx driver always creates locked FDB entries, and when
-> > we try to "bridge fdb add", the kernel says "hey, the FDB entry is
-> > already there!". Is that it?
+On Thu, Jul 21, 2022 at 08:45:10AM +0000, Tian, Kevin wrote:
+
+> > + * will format its internal logging to match the reporting page size, possibly
+> > + * by replicating bits if the internal page size is lower than requested.
 > 
-> Yes, that sounds like a reasonable explanation, as it adds 'ext learned,
-> offloaded' entries. If you try and replace the 'add' with 'replace' in those
-> tests, does it work?
+> what's the purpose of this? I didn't quite get why an user would want to
+> start tracking in one page size and then read back the dirty bitmap in
+> another page size...
 
-Well, you have access to the selftests too... But yes, that is the
-reason, and it works when I change 'add' to 'replace', although of
-course this isn't the correct solution.
+There may be multiple kernel trackers that are working with different
+underlying block sizes, so the concept is userspace decides what block
+size it wants to work in and the kernel side transparently adapts. The
+math is simple so putting it in the kernel is convenient.
 
-> > As for how to opt into MAB. Hmm. MAB seems to be essentially CPU
-> > assisted learning, which creates locked FDB entries. I wonder whether we
-> > should reconsider the position that address learning makes no sense on
-> > locked ports, and say that "+locked -learning" means no MAB, and
-> > "+locked +learning" means MAB? This would make a bunch of things more
-> > natural to handle in the kernel, and would also give us the opt-in we
-> > need.
-> 
-> I have done the one and then the other. We need to have some final decision
-> on this point. And remember that this gave rise to an extra patch to fix
-> link-local learning if learning is turned on on a locked port, which
-> resulted in the decision to allways have learning off on locked ports.
+Effectively the general vision is that qemu would allocate one
+reporting buffer and then invoke these IOCTLs in parallel on all the
+trackers then process the single bitmap. Forcing qemu to allocate
+bitmaps per tracker page size is just inefficient.
 
-I think part of the reason for the back-and-forth was not making a very
-clear distinction between basic 802.1X using hostapd, and MAB. While I
-agree hostapd doesn't have what to do with learning, for MAB I'm still
-wondering. It's the same situation for mv88e6xxx's Port Association
-Vector in fact.
-
-> > Side note, the VTU and ATU member violation printks annoy me so badly.
-> > They aren't stating something super useful and they're a DoS attack
-> > vector in itself, even if they're rate limited. I wonder whether we
-> > could just turn the prints into a set of ethtool counters and call it a
-> > day?
-> 
-> Sounds like a good idea to me. :-)
-
-Thinking this through, what we really want is trace points here,
-otherwise we'd lose information about which MAC address/VID/FID was it
-that caused the violation.
+Jason
