@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C3857D4FA
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E9E57D520
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:51:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233214AbiGUUoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 16:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
+        id S229579AbiGUUvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 16:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiGUUoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:44:18 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E8D8F510
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:44:17 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31cb93cadf2so23732627b3.11
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:44:17 -0700 (PDT)
+        with ESMTP id S229472AbiGUUva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:51:30 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09298F52C;
+        Thu, 21 Jul 2022 13:51:29 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y4so3639890edc.4;
+        Thu, 21 Jul 2022 13:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=O+QEbeLs+S11i4hxClCoDMOaRhSL/W2i8PbaqDDW9cA=;
-        b=OFJs6l/46tgihL5dHLtxWsfc2EXRmeL/msZGLmANWhICdw0Ru8kZFpkeJy4XVfLK/F
-         FsrqsvJchbf8CsUG164rc2aMx6kios8Pf/33HzcVuhCXRSOVShP+i/ZOrwDw9nAHCX6Y
-         DFiRKgi/FYYdQfHBt2C9QEk5eLWGMXw5Vw/alHmEf2M7tFmHiYoZyqclnw7NCOPVQitx
-         q4ul72Uyyev/bmOdi2YST8etddxOm45U9xIr0unuwxSGRedCWKB+F5nKbTyWd2o8qcEz
-         Wv5BYDf4MHib9y7KMWAko7rKikBdJ6H9Bz3hrmuFzhfjZS0bae+ny26u8+eXVMhSsYdv
-         s5Nw==
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6vGrA0nNuCMZeyTertcq3i3Pav7G1W9MuISFp9Y13/E=;
+        b=Q5tLlnqSkJp2N9i8gaTXHwGSFc8mgaRW2jaI948gVDzJn33enWzEyYNKK/qnek96G7
+         Clj/TK5p3RYF0rsp8LUGVapH5Gdg9Dm/hS2Bb6OS/SaX+Z9/8B3E6kbEHeT+iTFBCLyV
+         otLw4TYi+nkkGJxIEjQo5pEfEfidYUZoOJ+mgd4ezuvZQ2osf7mZmE213jeK61Gs346d
+         lDX+GpczwDY5mTqP4FX1lgKD3gHteBcytsudyI/9tiTL+kPtfY025qGYs0qfo6pAwwx2
+         rZ257wl41ckTxCLUMLwR98CYFeTL2zMupDdRWC0frb44/9ZP8//Oz5DtYXsih9bUEMuq
+         kDNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=O+QEbeLs+S11i4hxClCoDMOaRhSL/W2i8PbaqDDW9cA=;
-        b=iKLpf56u/3dVKtMQ/g0kUKbCC1fh9WY58cwLN4O+v0jUhf7P6Y8Lc3xd69KGMwT5tQ
-         KMqtQ34pDhwOlu8DFZ5K6a/80N93Wl42odbKcXs9vT3P4NJjAi8fobRel6Or69YUsQVn
-         F+MFmOrsT2+B0ePymXYITN4MRTLoexWFVkcNEE81NRKdYn3lG19+CVI7QAz/ro8uQkAZ
-         u8wAD5E6AdscxNZb6WYk08HcDWrbTFouYIBR3M0p4dnSUuBCh+g9JELUYpsI44NdlofO
-         Jp1aL94A4wPn0qV5gP7C/oqTrCf09AAo3wlRCh0Xg/zqEFZbFQW6yfj7Zn6Chma243rt
-         2akw==
-X-Gm-Message-State: AJIora9MBreh/uV0FYVnECg23haz8L9legcgUG0KP1YNUqH3B7rMdmIa
-        L2PvdG2Fb+NrwUQtwMGCfaKrBW2dPlY=
-X-Google-Smtp-Source: AGRyM1vcby6lmF2Am9THEh7ZMQqdMKdDdA/DBCoiMxkxk0QrR4nFhTbvMsCqHAE9O09loAagwBJRle6RkEw=
-X-Received: from weiwan1.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:1441])
- (user=weiwan job=sendgmr) by 2002:a25:2e50:0:b0:669:9a76:beb with SMTP id
- b16-20020a252e50000000b006699a760bebmr321469ybn.597.1658436256624; Thu, 21
- Jul 2022 13:44:16 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 20:44:04 +0000
-Message-Id: <20220721204404.388396-1-weiwan@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH net v2] Revert "tcp: change pingpong threshold to 3"
-From:   Wei Wang <weiwan@google.com>
-To:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Wei Wang <weiwan@google.com>, LemmyHuang <hlm3280@163.com>,
-        Neal Cardwell <ncardwell@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6vGrA0nNuCMZeyTertcq3i3Pav7G1W9MuISFp9Y13/E=;
+        b=6Ca79X9fw/DUm2nd6DgU9HrkMrypt+9Mcd5+4ig5zm0SaQqxzpG9ES32k4xuLdIkbR
+         ZPu85Tk39aU5uAleSEmi2vJhkNRpfyZOdAN3+mbcMzvh0D+XlFYRQipIqiIOLcpzTpEZ
+         S0VXsT0/m8cebtT6247W1f/u58pw5wCK6YOF0hUP2QowpztXS/fM3bvR7xXE8Su2wacd
+         VrnBSV23sjMTFEY6s89UREV6UON6rskAU76/FqBwFz2hD0ATKPOpUEo+lbeKOYCVBhkI
+         aQI7CmzDgx0OoYLM3N1aL7NRmIetH2cegm3pcY+cIfiZXwoOiPKCQjlmKN7rckkZwoBy
+         LEBQ==
+X-Gm-Message-State: AJIora8E0WOM0Jab4d7+TfSwdub0fRtwXmGVYUArniIZapIYZj+HT2aE
+        kKJyEr2Cwo/6qiohuc+ziU4=
+X-Google-Smtp-Source: AGRyM1sejFx2dIvgh7pJ2wm4ypgEIBeC/PBjq+5YRwLWBGz/qmyT4pWgbajntb6KxSE9TgNo7OVv8A==
+X-Received: by 2002:a05:6402:1546:b0:43b:bc2a:36ad with SMTP id p6-20020a056402154600b0043bbc2a36admr203308edx.330.1658436688135;
+        Thu, 21 Jul 2022 13:51:28 -0700 (PDT)
+Received: from krava ([83.240.60.135])
+        by smtp.gmail.com with ESMTPSA id n2-20020a056402060200b0043a87e6196esm1576295edv.6.2022.07.21.13.51.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 13:51:27 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Thu, 21 Jul 2022 22:51:24 +0200
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v7 02/13] tools/resolve_btfids: Add support for
+ 8-byte BTF sets
+Message-ID: <Ytm8TCggRg6xJe/q@krava>
+References: <20220721134245.2450-1-memxor@gmail.com>
+ <20220721134245.2450-3-memxor@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721134245.2450-3-memxor@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,84 +79,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
+On Thu, Jul 21, 2022 at 03:42:34PM +0200, Kumar Kartikeya Dwivedi wrote:
+> A flag is a 4-byte symbol that may follow a BTF ID in a set8. This is
+> used in the kernel to tag kfuncs in BTF sets with certain flags. Add
+> support to adjust the sorting code so that it passes size as 8 bytes
+> for 8-byte BTF sets.
+> 
+> Cc: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-This to-be-reverted commit was meant to apply a stricter rule for the
-stack to enter pingpong mode. However, the condition used to check for
-interactive session "before(tp->lsndtime, icsk->icsk_ack.lrcvtime)" is
-jiffy based and might be too coarse, which delays the stack entering
-pingpong mode.
-We revert this patch so that we no longer use the above condition to
-determine interactive session, and also reduce pingpong threshold to 1.
+Acked-by: Jiri Olsa <jolsa@kernel.org>
 
-Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
-Reported-by: LemmyHuang <hlm3280@163.com>
-Suggested-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Wei Wang <weiwan@google.com>
+jirka
 
----
-v2: added Fixes tag
-
----
- include/net/inet_connection_sock.h | 10 +---------
- net/ipv4/tcp_output.c              | 15 ++++++---------
- 2 files changed, 7 insertions(+), 18 deletions(-)
-
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index 85cd695e7fd1..ee88f0f1350f 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -321,7 +321,7 @@ void inet_csk_update_fastreuse(struct inet_bind_bucket *tb,
- 
- struct dst_entry *inet_csk_update_pmtu(struct sock *sk, u32 mtu);
- 
--#define TCP_PINGPONG_THRESH	3
-+#define TCP_PINGPONG_THRESH	1
- 
- static inline void inet_csk_enter_pingpong_mode(struct sock *sk)
- {
-@@ -338,14 +338,6 @@ static inline bool inet_csk_in_pingpong_mode(struct sock *sk)
- 	return inet_csk(sk)->icsk_ack.pingpong >= TCP_PINGPONG_THRESH;
- }
- 
--static inline void inet_csk_inc_pingpong_cnt(struct sock *sk)
--{
--	struct inet_connection_sock *icsk = inet_csk(sk);
--
--	if (icsk->icsk_ack.pingpong < U8_MAX)
--		icsk->icsk_ack.pingpong++;
--}
--
- static inline bool inet_csk_has_ulp(struct sock *sk)
- {
- 	return inet_sk(sk)->is_icsk && !!inet_csk(sk)->icsk_ulp_ops;
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index c38e07b50639..d06e72e141ac 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -167,16 +167,13 @@ static void tcp_event_data_sent(struct tcp_sock *tp,
- 	if (tcp_packets_in_flight(tp) == 0)
- 		tcp_ca_event(sk, CA_EVENT_TX_START);
- 
--	/* If this is the first data packet sent in response to the
--	 * previous received data,
--	 * and it is a reply for ato after last received packet,
--	 * increase pingpong count.
--	 */
--	if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
--	    (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
--		inet_csk_inc_pingpong_cnt(sk);
--
- 	tp->lsndtime = now;
-+
-+	/* If it is a reply for ato after last received
-+	 * packet, enter pingpong mode.
-+	 */
-+	if ((u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
-+		inet_csk_enter_pingpong_mode(sk);
- }
- 
- /* Account for an ACK we sent. */
--- 
-2.37.0.170.g444d1eabd0-goog
-
+> ---
+>  tools/bpf/resolve_btfids/main.c | 40 ++++++++++++++++++++++++++++-----
+>  1 file changed, 34 insertions(+), 6 deletions(-)
+> 
+> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+> index 5d26f3c6f918..80cd7843c677 100644
+> --- a/tools/bpf/resolve_btfids/main.c
+> +++ b/tools/bpf/resolve_btfids/main.c
+> @@ -45,6 +45,19 @@
+>   *             .zero 4
+>   *             __BTF_ID__func__vfs_fallocate__4:
+>   *             .zero 4
+> + *
+> + *   set8    - store symbol size into first 4 bytes and sort following
+> + *             ID list
+> + *
+> + *             __BTF_ID__set8__list:
+> + *             .zero 8
+> + *             list:
+> + *             __BTF_ID__func__vfs_getattr__3:
+> + *             .zero 4
+> + *	       .word (1 << 0) | (1 << 2)
+> + *             __BTF_ID__func__vfs_fallocate__5:
+> + *             .zero 4
+> + *	       .word (1 << 3) | (1 << 1) | (1 << 2)
+>   */
+>  
+>  #define  _GNU_SOURCE
+> @@ -72,6 +85,7 @@
+>  #define BTF_TYPEDEF	"typedef"
+>  #define BTF_FUNC	"func"
+>  #define BTF_SET		"set"
+> +#define BTF_SET8	"set8"
+>  
+>  #define ADDR_CNT	100
+>  
+> @@ -84,6 +98,7 @@ struct btf_id {
+>  	};
+>  	int		 addr_cnt;
+>  	bool		 is_set;
+> +	bool		 is_set8;
+>  	Elf64_Addr	 addr[ADDR_CNT];
+>  };
+>  
+> @@ -231,14 +246,14 @@ static char *get_id(const char *prefix_end)
+>  	return id;
+>  }
+>  
+> -static struct btf_id *add_set(struct object *obj, char *name)
+> +static struct btf_id *add_set(struct object *obj, char *name, bool is_set8)
+>  {
+>  	/*
+>  	 * __BTF_ID__set__name
+>  	 * name =    ^
+>  	 * id   =         ^
+>  	 */
+> -	char *id = name + sizeof(BTF_SET "__") - 1;
+> +	char *id = name + (is_set8 ? sizeof(BTF_SET8 "__") : sizeof(BTF_SET "__")) - 1;
+>  	int len = strlen(name);
+>  
+>  	if (id >= name + len) {
+> @@ -444,9 +459,21 @@ static int symbols_collect(struct object *obj)
+>  		} else if (!strncmp(prefix, BTF_FUNC, sizeof(BTF_FUNC) - 1)) {
+>  			obj->nr_funcs++;
+>  			id = add_symbol(&obj->funcs, prefix, sizeof(BTF_FUNC) - 1);
+> +		/* set8 */
+> +		} else if (!strncmp(prefix, BTF_SET8, sizeof(BTF_SET8) - 1)) {
+> +			id = add_set(obj, prefix, true);
+> +			/*
+> +			 * SET8 objects store list's count, which is encoded
+> +			 * in symbol's size, together with 'cnt' field hence
+> +			 * that - 1.
+> +			 */
+> +			if (id) {
+> +				id->cnt = sym.st_size / sizeof(uint64_t) - 1;
+> +				id->is_set8 = true;
+> +			}
+>  		/* set */
+>  		} else if (!strncmp(prefix, BTF_SET, sizeof(BTF_SET) - 1)) {
+> -			id = add_set(obj, prefix);
+> +			id = add_set(obj, prefix, false);
+>  			/*
+>  			 * SET objects store list's count, which is encoded
+>  			 * in symbol's size, together with 'cnt' field hence
+> @@ -571,7 +598,8 @@ static int id_patch(struct object *obj, struct btf_id *id)
+>  	int *ptr = data->d_buf;
+>  	int i;
+>  
+> -	if (!id->id && !id->is_set)
+> +	/* For set, set8, id->id may be 0 */
+> +	if (!id->id && !id->is_set && !id->is_set8)
+>  		pr_err("WARN: resolve_btfids: unresolved symbol %s\n", id->name);
+>  
+>  	for (i = 0; i < id->addr_cnt; i++) {
+> @@ -643,13 +671,13 @@ static int sets_patch(struct object *obj)
+>  		}
+>  
+>  		idx = idx / sizeof(int);
+> -		base = &ptr[idx] + 1;
+> +		base = &ptr[idx] + (id->is_set8 ? 2 : 1);
+>  		cnt = ptr[idx];
+>  
+>  		pr_debug("sorting  addr %5lu: cnt %6d [%s]\n",
+>  			 (idx + 1) * sizeof(int), cnt, id->name);
+>  
+> -		qsort(base, cnt, sizeof(int), cmp_id);
+> +		qsort(base, cnt, id->is_set8 ? sizeof(uint64_t) : sizeof(int), cmp_id);
+>  
+>  		next = rb_next(next);
+>  	}
+> -- 
+> 2.34.1
+> 
