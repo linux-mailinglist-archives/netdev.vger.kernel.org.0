@@ -2,189 +2,478 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48CF457D4CE
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20AC257D4D7
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiGUUca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 16:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
+        id S233201AbiGUUfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 16:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiGUUc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:32:28 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26EF8F50D
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:32:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658435547; x=1689971547;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=FSiBI3yDOQXkxd19LFxnRkY7Qbx+SDp84Q7YREg1suU=;
-  b=dqCwnSCWxX9B9C0W4MAlRfDMXvjh80am2XHoJ+Pd/My5v088uvtpLJDR
-   jxRmzevVz84sSkPf7w5n7YvGTQ9C/M+3nEE+bcKHfMdPfj1p51HZeDMuP
-   c/LcjoMRp4ufsRrKvkp4ywj2bVsgEkwcTifN7wilMPMOmpTVKoOe4xHlb
-   i4AFIBCXDcMPysbZaKy5AOY8YjGMw/oVu0uXe16FwnhhYoZZSwPX1dEC0
-   FBb/Zz2n4BzV8g+QTgMtTs2rIqzfhUc4wF5zG0fZbyfHvFeaMBCUUzapV
-   lVwswcDyfLXE1uAij+hdasFIxYUOhTn/Xfm2KTX091Ul8RGeNmmOgo8qn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288335121"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="288335121"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:32:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="598610838"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga002.jf.intel.com with ESMTP; 21 Jul 2022 13:32:27 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 13:32:26 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Thu, 21 Jul 2022 13:32:26 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 21 Jul 2022 13:32:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h4Njw53VcfHAPDKArgA2Nc1XwfeUKNke0+zbJMKaXil+jHCczkVnfXRSADBs0hIU3Y7uUD8qHp9Y2dEQKGOrBLbkTA8p5mzJhg4TjF8BSaR20S8jqc7vLfqeC4c9G+2on+TyB6uLy7uidCo7fMs/EguOjlBusLuyXMiGGs4nNpqPt6ovwjpxxwh2wZ3T7wbvQJ3luMxZvM6W3kEb0kHELZ3gVG8OI5gRswVuJ9q/1URVY9oJ6If7z8PbsBgLNnP4vioXlceWy629hrp1RNgHsvxCjMBUc0ghVdb/NNPk7tgvi756Yk7DL0NovwQhBTWTDHGjP/LXlxPyRThhbz3NOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b/oWC9s3unEYqpbhqysHlR6FXIGBKtV7772wLnSSWNM=;
- b=Sm5JJSWQWdhLzIUod1mEIPUcOEj6NvTLLM7QWE6YHuvLkMVTjf+me8KyMYqVo/RAY/mMTNTAFEXCBy7pjJXmOLAWo4XpGn2w0NiVgeJpmmhTxoJSmo5b48H7w03t3RmEiBZqFttNziJ/Hjre9ge5BFRuMlh7ve2yJSTqhh2enNs7Jp9CDx6vNS3y7fmpLWFoDaKNFevFS6/J9OXO2B6LECy5ndNAH3gHBmXSCOwdz0a/FNBZkAKF7U01PBBDtdVpry+zfEJiCdbuIgrQuTKXHMAGqxXAajymz+4+g7FV2SYEZS2gnKFN3ubCvOuGn23ZOsLG8uKX4O83jZdeNbxcZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SA2PR11MB5100.namprd11.prod.outlook.com (2603:10b6:806:119::11)
- by MN2PR11MB3823.namprd11.prod.outlook.com (2603:10b6:208:f9::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
- 2022 20:32:25 +0000
-Received: from SA2PR11MB5100.namprd11.prod.outlook.com
- ([fe80::f97c:8114:1f0c:f811]) by SA2PR11MB5100.namprd11.prod.outlook.com
- ([fe80::f97c:8114:1f0c:f811%6]) with mapi id 15.20.5458.019; Thu, 21 Jul 2022
- 20:32:25 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [net-next PATCH 1/2] devlink: add dry run attribute to flash
- update
-Thread-Topic: [net-next PATCH 1/2] devlink: add dry run attribute to flash
- update
-Thread-Index: AQHYnGds4JyoDr5oaE22k7ooTa/97q2IU/QAgAD0rTA=
-Date:   Thu, 21 Jul 2022 20:32:25 +0000
-Message-ID: <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
-References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
- <20220720183433.2070122-2-jacob.e.keller@intel.com>
- <YtjqJjIceW+fProb@nanopsycho>
-In-Reply-To: <YtjqJjIceW+fProb@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 36bb0154-bf9e-433d-04a4-08da6b581f37
-x-ms-traffictypediagnostic: MN2PR11MB3823:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DdNdWHQcoCgiB8M33VoA70HUBSON5plk9JQCPCohuY1HLjCaA66KYCbBrSJRS/70ived5kzs/E9CdTpOBa6ZbmsgEta1myQwDBNsMgNRZIIdohSgdWbN6b9mIK10wPK76behG2SA90yBy0ujRX2ZGWIOGQfVj9t6UPAM8wTnfT6oQ22FA/V1jtFIm9R7cOkkpqGiRuq2neB8mjkmUFtHfLMsqB2N2ZWVtVcZexxGINLekiVa6N2UMn4sHpVIWbAWMlugKG0yb2kk5csyp8vm065yM/O5AMxm9I79tvnUVecEO5kV1yFueEUD6i5qZKNj8V3EpFjJNWWX25jLfQJhufyIz29CpP0HJn9aoa9gBMyfwfFO0RHani5Aj7lYnsVZO1dBENVXxIdcFIHKFVFlUVuZN4iwDAvu+f1mKPis5dXVYEUsH4iArtI8x9HhIkzU3tkAjjFsPS2TmXvp7S9ToVBbrjOp3SaxNvrKT340y6xWZMuaQrRuyr+mMvTxzK6FhpMsdZ72JbZk50ZsuG6XX342/tyvh8dwu6t472lfE4j0wwLeiC15wj7kO8WvA9CvDTocJYJpkFjYzievyuvzbjAeB6ZQQv9KcIe2E74sM3HiGrEG6aaRZWa8l0iBz7S3ecAgxUPS3+PXgBnxfMJDdAfaE57SJqLGeHhElfg5uYQvRsroFR0e9lh0GNt9IhtB3jAHC2YHXOTobOsMXfd1tHImUolaDde+duKxKg8N6Voo1GRJPLhJhuVciz9Skl4oRHZiec7TYsarVGOP5w4/T6lGmKkcAcOhswgxgMdUW+vghfp3qn3/sKfvWBl1MNwM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB5100.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(376002)(136003)(346002)(39860400002)(366004)(76116006)(6916009)(8936002)(8676002)(4326008)(71200400001)(66946007)(5660300002)(316002)(15650500001)(54906003)(478600001)(122000001)(52536014)(66476007)(66446008)(64756008)(66556008)(6506007)(2906002)(7696005)(41300700001)(9686003)(26005)(186003)(53546011)(33656002)(55016003)(38070700005)(82960400001)(83380400001)(86362001)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MOFeP8mBC7ASciOPuNPtaylqJ/qYBtyIbmnWu1GB3eo7pOWOX/UkgWM1uDFI?=
- =?us-ascii?Q?OfeFg2mbD6ncD6qsJZuNEjOtDMgOvp/JeUMAnSuwjVxiPxq0v5P4MY82cmGT?=
- =?us-ascii?Q?z3g+SIT1uOy1CeIjJxeOZ0RzxKHeflIBo9VsatcHNP5h5IHnDNfHE4MdjKF6?=
- =?us-ascii?Q?XMPv4p538905g4VTr3r6DBYyuoPvFXslQmjy0ny0KKsg5fxoRXhXelnXnGZK?=
- =?us-ascii?Q?KfC6dN5VM6CAgo7yV8hVjyoFmTgvICzdcnV4zIxqNbbOrd8IfuoSlesbM9zS?=
- =?us-ascii?Q?A7yvDpr0V5zHnq97CvyFhSFZRqWtgFmMnqotAmI2eh9S50GP6uNEfI3AyXlf?=
- =?us-ascii?Q?AY1oLMekAYvUMm4BPyXaDwlnLbbPI+2x9yCHFYwxu3cHodh683U3XhNvFHBN?=
- =?us-ascii?Q?g8kA3P0l7M3sxSZhzp6sorF8L+/7bsq2cEYymkqdusm/QvwjhVuFbi7aBvK+?=
- =?us-ascii?Q?r7JW21gVDk2dqpNwqETc+4FsroLKciOP6umZlCH/PjA8gCxHzzZWitg/bJc7?=
- =?us-ascii?Q?wLBvqAV8jqc8Uvjx+ZAWyH7j37N8Ah2dqn82iNmOH2gjKoxcP5mThW1kQwd4?=
- =?us-ascii?Q?009qhrBYdQ9QZdm3HmnV13/h41TuHVBn92575CxOH1bVcD3V2KNRCBQ2CaH3?=
- =?us-ascii?Q?kP3sTbsLNy2Vr2zutKEA6zMvDaQCFmmhbUzp3RDxdv/BiVJc+YEdXKuWINxj?=
- =?us-ascii?Q?yzmSnydTXA6LZwKBBKlerFCdu1TgYNTy6lHBmvhejC8EaqB435ETN6/r1K9L?=
- =?us-ascii?Q?ZV+UVhXq4lYtzsXJUqvbOo/Ydi3jUwIVLQgCnqTTKZmOhqXUN7Rdn2FoG2Ia?=
- =?us-ascii?Q?rJCb0QD0w/ckd8XZKBs4iHFSprnN0lImY0rMvKlfVaJKZdl/8/T/q15R7/wP?=
- =?us-ascii?Q?o8W5/H1PpOijfBKr6goDf3ypqkM1+fk3pzhFBeef1/e8e0PeZZ/gU3ZXAMQT?=
- =?us-ascii?Q?+ifNJPk56IH1Rjl5oxab6wXDOomrOn+1EZUb2QumV3JXRw5S3KireR9dymvn?=
- =?us-ascii?Q?WaLsVKY2R7dCg/wzGmrxP1XJmHW7DogLGG8d0azD9zpvXWEKR1nLt+9pq/iY?=
- =?us-ascii?Q?1XfRT7ZgWGUgB029JF3B89u5RuDKaspyFvtvv0jOr+ZwMv3i/h7Z2W1fX2Im?=
- =?us-ascii?Q?Ax47uBRsQK3lKJAvyxlvukAMcbPjEzDLDZWyNRG/dcbu9E5Voct2TAJXtg22?=
- =?us-ascii?Q?IZioRZIPUNb9NHewpLDw+XfeVzbAJMGhLIJGMr5loWalczTFmyHTzpcClv5d?=
- =?us-ascii?Q?ZRjbGAEmcqX4z2xpDNocQ6x/4zBnSk5aJcyXSQIwXpRSYI8cnTDi+Jn+F2lh?=
- =?us-ascii?Q?N4yGcjqn1LmX090HM5d0qgvP+NHSPJVOj4SzwzlY+1DL3p0FfkC2OeKSyD8p?=
- =?us-ascii?Q?AGhba+3ziii6qmWlFCgeqN1PDIMiRXlj5Kej505qvcYKRvfdbrFFgkR0ema3?=
- =?us-ascii?Q?hwbRdnEGL97kREUiHEYD5RAbkPCrNU+mdE9FwMyeP1FQ5jEPwczngzRG4Poh?=
- =?us-ascii?Q?UPPHDbs/mmbqpYiGUNeMvzzywkWR5noCrd1JQvZ+AQFasCaPqhx8yLvhVoFz?=
- =?us-ascii?Q?BEdXmudKCaH9/CptPUvhBaijDZftsJ1sEB9KlxXj?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232579AbiGUUfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:35:38 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8AA4E840;
+        Thu, 21 Jul 2022 13:35:36 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id z23so5076059eju.8;
+        Thu, 21 Jul 2022 13:35:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=mV/dw7vkpS6dqZh16XxyiXycD9pTjTsGfMdvE5yLq8o=;
+        b=g9kp/TvFvMzRDLWx0dMOfD2iH1Ro/KmgVlw1R3yhsOhp1AAUM0K29u+v3Oj1t0RAsM
+         9gWwDceB8DPYyaUZA1cqjs9FSrV+SwV2YLRYSgjLLhJ5yjqGALM92JRgSbVUqugMkgaH
+         FVQGAoAL8wyxouJ36BkcObai5KT+PMJnOPrqm2GsD+onrUWwcl9wXtHNRk79qE3dBFyJ
+         5YCqQ0P5Cd5GRa/vPTqk49I6FtLVTLUBGHBJc3yPetSaRS18EB4X3M8MRVeFfWy/o7PC
+         DhAEaFRl0Tev0cRvabIMes6rkGmrGetdc27ZvDSJSlqLsmz7O0FYmynVVQZZMO1vdRHu
+         CClQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=mV/dw7vkpS6dqZh16XxyiXycD9pTjTsGfMdvE5yLq8o=;
+        b=XgGgDS6daQWkxGJCJtAERSW+j5F3vsObASCtg9Oy6TtExlJt5eqGdfbe3XkJQtcMfP
+         S4u5AP+cbzil2njKpAplEUeRj5GSpkl+L+mWzHMzMunMIDJpKsmt58ekZ2H2AqQLb/v/
+         KdBXZSaN/KAkGkndkvZD6HzMZge1Jv5H/rj34vKGCP+y36b5GGcXkgDXTHQglqPimQFQ
+         4HfURp1R+QGXAnaPQfJfE5oEKIfxbvY4xMmTyRZQ4aJvKdgzsfHtBYXC/MhemrHxYm2V
+         iSaypZpm05WpxqALxNuMqYVfqzw/X6WI5egs0/HtUx/OSjjhIGjgARMiImBISGYphOvQ
+         q91w==
+X-Gm-Message-State: AJIora+XAhWk+ntmn+XjDqxR1PufoRWOjYAMG196OAkrU9Px8LoaZvuE
+        4B36sTWV9wtzn4m/cqaNUk2q5YI6l/Q=
+X-Google-Smtp-Source: AGRyM1tvboGHiZgeI1dBfLVJJ6Hn+aFO5AbWerH8UMOmMnBmGB7bx6BP55wq6EKFabtg1VPd9Z1eWA==
+X-Received: by 2002:a17:907:7f8e:b0:72f:11ec:f5f8 with SMTP id qk14-20020a1709077f8e00b0072f11ecf5f8mr278485ejc.343.1658435734463;
+        Thu, 21 Jul 2022 13:35:34 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:6e18:3e00:5147:bc1c:8bf1:863a? (dynamic-2a01-0c22-6e18-3e00-5147-bc1c-8bf1-863a.c22.pool.telefonica.de. [2a01:c22:6e18:3e00:5147:bc1c:8bf1:863a])
+        by smtp.googlemail.com with ESMTPSA id y3-20020aa7ccc3000000b0043577da51f1sm1558873edt.81.2022.07.21.13.35.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 13:35:33 -0700 (PDT)
+Message-ID: <356f4285-1e83-ab14-c890-4131acd8e61d@gmail.com>
+Date:   Thu, 21 Jul 2022 22:35:21 +0200
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB5100.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36bb0154-bf9e-433d-04a4-08da6b581f37
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 20:32:25.1183
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nUaXcfN/et2V8RH2ZHUTgKQQjwgXEMYEPnv96GR6UEHrCgwPJhbMF2BmmHtZ50PF9FDvko7h3g5NINVIi3xaMpDumhiSDoBKt89+xWA+iBw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3823
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Chunhao Lin <hau@realtek.com>, netdev@vger.kernel.org
+Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org
+References: <20220721144550.4405-1-hau@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] r8169: add support for rtl8168h(revid 0x2a) +
+ rtl8211fs fiber application
+In-Reply-To: <20220721144550.4405-1-hau@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 21.07.2022 16:45, Chunhao Lin wrote:
+> rtl8168h(revid 0x2a) + rtl8211fs is for fiber related application.
+> rtl8168h will control rtl8211fs via its eeprom or gpo pins.
 
+RTL8168h has an integrated PHY, how is it with rev 0x2a? Can this version
+be used with an external PHY only?
+And how about the case that somebody combines this chip version with
+another PHY that supports fiber? It seems the code makes the assumption
+that rev2a is always coupled with an external RTL8211FS.
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Wednesday, July 20, 2022 10:55 PM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
-> Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash=
- update
+Are there any realworld devices that use RTL8168H with fiber?
 
-<...>
+> Fiber module will be connected to rtl8211fs. The link speed between
+> rtl8168h and rtl8211fs is decied by fiber module.
+> 
+> Signed-off-by: Chunhao Lin <hau@realtek.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 315 +++++++++++++++++++++-
+>  1 file changed, 313 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 1b7fdb4f056b..aa817e2f919a 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -344,6 +344,15 @@ enum rtl8125_registers {
+>  	EEE_TXIDLE_TIMER_8125	= 0x6048,
+>  };
+>  
+> +enum rtl8168_sfp_registers {
+> +	MDIO_IN			= 0xdc04,
+> +	PINOE			= 0xdc06,
+> +	PIN_I_SEL_1		= 0xdc08,
+> +	PIN_I_SEL_2		= 0xdc0A,
+> +	PINPU			= 0xdc18,
+> +	GPOUTPIN_SEL	= 0xdc20,
+> +};
+> +
+>  #define RX_VLAN_INNER_8125	BIT(22)
+>  #define RX_VLAN_OUTER_8125	BIT(23)
+>  #define RX_VLAN_8125		(RX_VLAN_INNER_8125 | RX_VLAN_OUTER_8125)
+> @@ -584,6 +593,30 @@ struct rtl8169_tc_offsets {
+>  	__le16	rx_missed;
+>  };
+>  
+> +struct rtl_sfp_if_info {
+> +	u16 mdio_oe_i;
+> +	u16 mdio_oe_o;
+> +	u16 mdio_pu;
+> +	u16 mdio_pd;
+> +	u16 mdc_pu;
+> +	u16 mdc_pd;
+> +};
+> +
+> +struct rtl_sfp_if_mask {
+> +	const u16 pin_mask;
+> +	const u16 mdio_oe_mask;
+> +	const u16 mdio_mask;
+> +	const u16 mdc_mask;
+> +	const u16 phy_addr;
+> +	const u16 rb_pos;
+> +};
+> +
+> +struct rtl_sfp_if_mask rtl_sfp_if_eeprom_mask = {
+> +	0x0050, 0x0040, 0x000f, 0x0f00, 0, 6};
+> +
+> +struct rtl_sfp_if_mask rtl_sfp_if_gpo_mask = {
+> +	0x0210, 0x0200, 0xf000, 0x0f00, 1, 9};
+> +
+>  enum rtl_flag {
+>  	RTL_FLAG_TASK_ENABLED = 0,
+>  	RTL_FLAG_TASK_RESET_PENDING,
+> @@ -596,6 +629,12 @@ enum rtl_dash_type {
+>  	RTL_DASH_EP,
+>  };
+>  
+> +enum rtl_sfp_if_type {
+> +	RTL_SFP_IF_NONE,
+> +	RTL_SFP_IF_EEPROM,
+> +	RTL_SFP_IF_GPIO,
+> +};
+> +
+>  struct rtl8169_private {
+>  	void __iomem *mmio_addr;	/* memory map physical address */
+>  	struct pci_dev *pci_dev;
+> @@ -635,6 +674,8 @@ struct rtl8169_private {
+>  	struct rtl_fw *rtl_fw;
+>  
+>  	u32 ocp_base;
+> +
+> +	enum rtl_sfp_if_type sfp_if_type;
+>  };
+>  
+>  typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
+> @@ -914,8 +955,12 @@ static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
+>  	if (tp->ocp_base != OCP_STD_PHY_BASE)
+>  		reg -= 0x10;
+>  
+> -	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR)
+> +	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR) {
+> +		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value & BMCR_PDOWN)
+> +			return;
+> +
+>  		rtl8168g_phy_suspend_quirk(tp, value);
+> +	}
+>  
+>  	r8168_phy_ocp_write(tp, tp->ocp_base + reg * 2, value);
+>  }
+> @@ -1214,6 +1259,266 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
+>  	}
+>  }
+>  
+> +static void rtl_sfp_shift_bit_in(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_info *sfp_if_info, u32 val, int count)
+> +{
+> +	int i;
+> +	const u16 mdc_reg = PIN_I_SEL_1;
+> +	const u16 mdio_reg = PIN_I_SEL_2;
+> +
+> +	for (i = (count - 1); i >= 0; i--) {
+> +		r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info->mdc_pd);
+> +		if (val & BIT(i))
+> +			r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info->mdio_pu);
+> +		else
+> +			r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info->mdio_pd);
+> +		r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info->mdc_pu);
+> +	}
+> +}
+> +
+> +static u16 rtl_sfp_shift_bit_out(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_info *sfp_if_info, u16 rb_pos)
+> +{
+> +	int i;
+> +	u16 data = 0;
+> +	const u16 mdc_reg = PIN_I_SEL_1;
+> +	const u16 mdio_in_reg = MDIO_IN;
+> +
+> +	for (i = 15; i >= 0; i--) {
+> +		r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info->mdc_pu);
+> +		r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info->mdc_pd);
+> +		data += r8168_mac_ocp_read(tp, mdio_in_reg) & BIT(rb_pos) ? BIT(i) : 0;
+> +	}
+> +
+> +	return data;
+> +}
+> +
+> +static void rtl_select_sfp_if(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_mask *sfp_if_mask,
+> +				  struct rtl_sfp_if_info *sfp_if_info)
+> +{
+> +	u16 pinoe_value, pin_i_sel_1_value, pin_i_sel_2_value;
+> +
+> +	r8168_mac_ocp_modify(tp, PINPU, sfp_if_mask->pin_mask, 0);
+> +	r8168_mac_ocp_modify(tp, PINOE, 0, sfp_if_mask->pin_mask);
+> +
+> +	pinoe_value = r8168_mac_ocp_read(tp, PINOE);
+> +	pin_i_sel_1_value = r8168_mac_ocp_read(tp, PIN_I_SEL_1);
+> +	pin_i_sel_2_value = r8168_mac_ocp_read(tp, PIN_I_SEL_2);
+> +
+> +	sfp_if_info->mdio_oe_i = pinoe_value & ~sfp_if_mask->mdio_oe_mask;
+> +	sfp_if_info->mdio_oe_o = pinoe_value | sfp_if_mask->mdio_oe_mask;
+> +	sfp_if_info->mdio_pd = pin_i_sel_2_value & ~sfp_if_mask->mdio_mask;
+> +	sfp_if_info->mdio_pu = pin_i_sel_2_value | sfp_if_mask->mdio_mask;
+> +	sfp_if_info->mdc_pd = pin_i_sel_1_value & ~sfp_if_mask->mdc_mask;
+> +	sfp_if_info->mdc_pu = pin_i_sel_1_value | sfp_if_mask->mdc_mask;
+> +}
+> +
+> +#define RT_SFP_ST (1)
+> +#define RT_SFP_OP_W (1)
+> +#define RT_SFP_OP_R (2)
+> +#define RT_SFP_TA_W (2)
+> +#define RT_SFP_TA_R (0)
+> +
+> +static void rtl_sfp_if_write(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_mask *sfp_if_mask, u8 reg, u16 val)
+> +{
+> +	struct rtl_sfp_if_info sfp_if_info = {0};
+> +	const u16 mdc_reg = PIN_I_SEL_1;
+> +	const u16 mdio_reg = PIN_I_SEL_2;
+> +
+> +	rtl_select_sfp_if(tp, sfp_if_mask, &sfp_if_info);
+> +
+> +	/* change to output mode */
+> +	r8168_mac_ocp_write(tp, PINOE, sfp_if_info.mdio_oe_o);
+> +
+> +	/* init sfp interface */
+> +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pd);
+> +	r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info.mdio_pu);
+> +
+> +	/* preamble 32bit of 1 */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, 0xffffffff, 32);
+> +
+> +	/* opcode write */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_ST, 2);
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_OP_W, 2);
+> +
+> +	/* phy address */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, sfp_if_mask->phy_addr, 5);
+> +
+> +	/* phy reg */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, reg, 5);
+> +
+> +	/* turn-around(TA) */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_TA_W, 2);
+> +
+> +	/* write phy data */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, val, 16);
+> +}
+> +
+> +static u16 rtl_sfp_if_read(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_mask *sfp_if_mask, u8 reg)
+> +{
+> +	struct rtl_sfp_if_info sfp_if_info = {0};
+> +	const u16 mdc_reg = PIN_I_SEL_1;
+> +	const u16 mdio_reg = PIN_I_SEL_2;
+> +
+> +	rtl_select_sfp_if(tp, sfp_if_mask, &sfp_if_info);
+> +
+> +	/* change to output mode */
+> +	r8168_mac_ocp_write(tp, PINOE, sfp_if_info.mdio_oe_o);
+> +
+> +	/* init sfp interface */
+> +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pd);
+> +	r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info.mdio_pd);
+> +
+> +	/* preamble 32bit of 1 */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, 0xffffffff, 32);
+> +
+> +	/* opcode read */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_ST, 2);
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_OP_R, 2);
+> +
+> +	/* phy address */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, sfp_if_mask->phy_addr, 5);
+> +
+> +	/* phy reg */
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, reg, 5);
+> +
+> +	/* turn-around(TA) */
+> +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pd);
+> +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pu);
+> +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, 0, 1);
+> +
+> +	/* change to input mode */
+> +	r8168_mac_ocp_write(tp, PINOE, sfp_if_info.mdio_oe_i);
+> +
+> +	/* read phy data */
+> +	return rtl_sfp_shift_bit_out(tp, &sfp_if_info, sfp_if_mask->rb_pos);
+> +}
+> +
+> +static void rtl_sfp_eeprom_write(struct rtl8169_private *tp, u8 reg,
+> +				  u16 val)
+> +{
+> +	rtl_sfp_if_write(tp, &rtl_sfp_if_eeprom_mask, reg, val);
+> +}
+> +
+> +static u16 rtl_sfp_eeprom_read(struct rtl8169_private *tp, u8 reg)
+> +{
+> +	return rtl_sfp_if_read(tp, &rtl_sfp_if_eeprom_mask, reg);
+> +}
+> +
+> +static void rtl_sfp_gpo_write(struct rtl8169_private *tp, u8 reg,
+> +				  u16 val)
+> +{
+> +	rtl_sfp_if_write(tp, &rtl_sfp_if_gpo_mask, reg, val);
+> +}
+> +
+> +static u16 rtl_sfp_gpo_read(struct rtl8169_private *tp, u8 reg)
+> +{
+> +	return rtl_sfp_if_read(tp, &rtl_sfp_if_gpo_mask, reg);
+> +}
+> +
+> +static void rtl_sfp_mdio_write(struct rtl8169_private *tp,
+> +				  u8 reg,
+> +				  u16 val)
+> +{
+> +	switch (tp->sfp_if_type) {
+> +	case RTL_SFP_IF_EEPROM:
+> +		return rtl_sfp_eeprom_write(tp, reg, val);
+> +	case RTL_SFP_IF_GPIO:
+> +		return rtl_sfp_gpo_write(tp, reg, val);
+> +	default:
+> +		return;
+> +	}
+> +}
+> +
+> +static u16 rtl_sfp_mdio_read(struct rtl8169_private *tp,
+> +				  u8 reg)
+> +{
+> +	switch (tp->sfp_if_type) {
+> +	case RTL_SFP_IF_EEPROM:
+> +		return rtl_sfp_eeprom_read(tp, reg);
+> +	case RTL_SFP_IF_GPIO:
+> +		return rtl_sfp_gpo_read(tp, reg);
+> +	default:
+> +		return 0xffff;
+> +	}
+> +}
+> +
+> +static void rtl_sfp_mdio_modify(struct rtl8169_private *tp, u32 reg, u16 mask,
+> +				 u16 set)
+> +{
+> +	u16 data = rtl_sfp_mdio_read(tp, reg);
+> +
+> +	rtl_sfp_mdio_write(tp, reg, (data & ~mask) | set);
+> +}
+> +
+> +#define RTL8211FS_PHY_ID_1 0x001c
+> +#define RTL8211FS_PHY_ID_2 0xc916
+> +
+> +static enum rtl_sfp_if_type rtl8168h_check_sfp(struct rtl8169_private *tp)
+> +{
+> +	int i;
+> +	int const checkcnt = 4;
+> +
+> +	rtl_sfp_eeprom_write(tp, 0x1f, 0x0000);
+> +	for (i = 0; i < checkcnt; i++) {
+> +		if (rtl_sfp_eeprom_read(tp, 0x02) != RTL8211FS_PHY_ID_1 ||
+> +			rtl_sfp_eeprom_read(tp, 0x03) != RTL8211FS_PHY_ID_2)
+> +			break;
+> +	}
+> +
+> +	if (i == checkcnt)
+> +		return RTL_SFP_IF_EEPROM;
+> +
+> +	rtl_sfp_gpo_write(tp, 0x1f, 0x0000);
+> +	for (i = 0; i < checkcnt; i++) {
+> +		if (rtl_sfp_gpo_read(tp, 0x02) != RTL8211FS_PHY_ID_1 ||
+> +			rtl_sfp_gpo_read(tp, 0x03) != RTL8211FS_PHY_ID_2)
+> +			break;
+> +	}
+> +
+> +	if (i == checkcnt)
+> +		return RTL_SFP_IF_GPIO;
+> +
+> +	return RTL_SFP_IF_NONE;
+> +}
+> +
+> +static enum rtl_sfp_if_type rtl_check_sfp(struct rtl8169_private *tp)
+> +{
+> +	switch (tp->mac_version) {
+> +	case RTL_GIGA_MAC_VER_45:
+> +	case RTL_GIGA_MAC_VER_46:
+> +		if (tp->pci_dev->revision == 0x2a)
+> +			return rtl8168h_check_sfp(tp);
+> +		else
+> +			return RTL_SFP_IF_NONE;
+> +	default:
+> +		return RTL_SFP_IF_NONE;
+> +	}
+> +}
+> +
+> +static void rtl_hw_sfp_phy_config(struct rtl8169_private *tp)
+> +{
+> +	/* disable ctap */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0a43);
+> +	rtl_sfp_mdio_modify(tp, 0x19, BIT(6), 0);
+> +
+> +	/* change Rx threshold */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0dcc);
+> +	rtl_sfp_mdio_modify(tp, 0x14, 0, BIT(2) | BIT(3) | BIT(4));
+> +
+> +	/* switch pin34 to PMEB pin */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0d40);
+> +	rtl_sfp_mdio_modify(tp, 0x16, 0, BIT(5));
+> +
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
+> +
+> +	/* disable ctap */
+> +	phy_modify_paged(tp->phydev, 0x0a43, 0x11, BIT(6), 0);
+> +}
+> +
+>  static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
+>  {
+>  	switch (tp->mac_version) {
+> @@ -2195,6 +2500,9 @@ static void rtl8169_init_phy(struct rtl8169_private *tp)
+>  	    tp->pci_dev->subsystem_device == 0xe000)
+>  		phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
+>  
+> +	if (tp->sfp_if_type != RTL_SFP_IF_NONE)
+> +		rtl_hw_sfp_phy_config(tp);
+> +
+>  	/* We may have called phy_speed_down before */
+>  	phy_speed_up(tp->phydev);
+>  
+> @@ -2251,7 +2559,8 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
+>  		rtl_ephy_write(tp, 0x19, 0xff64);
+>  
+>  	if (device_may_wakeup(tp_to_dev(tp))) {
+> -		phy_speed_down(tp->phydev, false);
+> +		if (tp->sfp_if_type == RTL_SFP_IF_NONE)
+> +			phy_speed_down(tp->phydev, false);
+>  		rtl_wol_enable_rx(tp);
+>  	}
+>  }
+> @@ -5386,6 +5695,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>  	tp->dash_type = rtl_check_dash(tp);
+>  
+> +	tp->sfp_if_type = rtl_check_sfp(tp);
+> +
+>  	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
+>  
+>  	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
 
-> > struct devlink_region;
-> > struct devlink_info_req;
-> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> >index b3d40a5d72ff..e24a5a808a12 100644
-> >--- a/include/uapi/linux/devlink.h
-> >+++ b/include/uapi/linux/devlink.h
-> >@@ -576,6 +576,14 @@ enum devlink_attr {
-> > 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
-> > 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
-> >
-> >+	/* Before adding this attribute to a command, user space should check
-> >+	 * the policy dump and verify the kernel recognizes the attribute.
-> >+	 * Otherwise older kernels which do not recognize the attribute may
-> >+	 * silently accept the unknown attribute while not actually performing
-> >+	 * a dry run.
->=20
-> Why this comment is needed? Isn't that something generic which applies
-> to all new attributes what userspace may pass and kernel may ignore?
->=20
-
-Because other attributes may not have such a negative and unexpected side e=
-ffect. In most cases the side effect will be "the thing you wanted doesn't =
-happen", but in this case its "the thing you didn't want to happen does". I=
- think that deserves some warning. A dry run is a request to *not* do somet=
-hing.
-
-Thanks,
-Jake
