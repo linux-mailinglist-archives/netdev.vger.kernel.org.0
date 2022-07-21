@@ -2,139 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F1C57D084
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96AA157D07C
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbiGUQBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 12:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        id S229844AbiGUQAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 12:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiGUQBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:01:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F1758876;
-        Thu, 21 Jul 2022 09:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658419305; x=1689955305;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IxIOJp2Qbj+WW3trb3/dQrpMihcnTdPMAtB9cP4gT5k=;
-  b=m19b/MDRaPbVE+V5aAdWfPMeDgKtw3XCNebbXTwyoHDLVphZTzekl8jP
-   75fKkGGLE6myER+53DjpO7fNUJIZSeCgXnpk2noQ90vzw+RwE/23WXB+m
-   O9r97oTqdsdyq/R6hQcftd7WYlwgdpxvN+oytCGySw6hqm/Gs218zeepg
-   5wisXag0wYbopFNSz3aL9bIN9FbuXdppZ+Y+0/56dxSqmC1DD8Wh+SkQx
-   vFxu8zZkR52/mETdI8gQ0MIxnQ31mU2qJm6dD3/H+aN1H09SLsPnu120q
-   zYtM4HO4L9DUmoslL9IEKRKHtSix4VOQwWjT5iVRWsyGZkzYRbLSN8qQ8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="373389478"
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="373389478"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:01:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="598512084"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 21 Jul 2022 09:01:42 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LG1crb003918;
-        Thu, 21 Jul 2022 17:01:41 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] lib/test_bitmap: cover explicitly byteordered arr64s
-Date:   Thu, 21 Jul 2022 17:59:49 +0200
-Message-Id: <20220721155950.747251-4-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220721155950.747251-1-alexandr.lobakin@intel.com>
-References: <20220721155950.747251-1-alexandr.lobakin@intel.com>
+        with ESMTP id S229436AbiGUQAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:00:45 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A550A868A2;
+        Thu, 21 Jul 2022 09:00:44 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id y24so2222834plh.7;
+        Thu, 21 Jul 2022 09:00:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JuIHwz3RkYF7rkj+FsqTcQEnxEppDCpcRUBWvSutdgc=;
+        b=ZByCULSTOU5yhfC/x3yOqAjox4WNGU92LFn/EIzCL3F5gzkLvI9M+Mpa9SbRExfuMF
+         8FRjFXbJBHba+anWMWud/ZOP4yb74aT48usajAOoFagcKz9TeXTWo5L/25UtaVqP0+1+
+         UzTyyLq9WyN2XQvc3udk8vBXPCk78oYs7GKzr+s7tcJWhhMC71t+ufPK2LAbvUHWYovV
+         5NwdETd+WiiWvYYrmcf5MH7dnt3F+hk/LQh9PwobHDkA+XxreJdMsXFoy4wgSWGvfhmd
+         sMauRMgsoS9m4xipMyi2cKTlabLrN2eLD+hkJz0sVwPQffle7r24L0rtw/KbKscw8J+T
+         GV9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=JuIHwz3RkYF7rkj+FsqTcQEnxEppDCpcRUBWvSutdgc=;
+        b=Z62M1BR/c8bamchnKRVMkjgyEyPyFuP5WEmrtMig/q/lgea24Bhajm+67pxDhTTDtK
+         DYc7VIdUq0dZMValj5QJri7YOON6ibXGQwQqN+9jEj3yJvWJnJOW+w/LeDZDAz4J8Zg5
+         aC5kpdWf5WXgICGKipuHfAmypFBtG5hd4e+8uDJg3/zPhlvLuJHaEJIJfWVfyNiMKUbn
+         OiqcsKrMvENWPQqvKxxH94JxQhSBiNB9CxyY++eMMA2ZGqN7rN9yKDJT9lifugPD4GwN
+         6GBSDTJG4crpVhFZxmqIip13xJt5FhM0hXCQMYl3t0gpxD9TxKMo19xaPiDWjnPapWZY
+         YpLA==
+X-Gm-Message-State: AJIora+KXCTiZNKOKVZxIUXbH4HVRmOUA89KJz8f259irwZ+y4KcIKx1
+        mQOzE0TGIUX+TSf+v4/IU9pRpQQBmpbyQg==
+X-Google-Smtp-Source: AGRyM1tmjCjVjuz7PbD1fsn9JySdUBw//MgQZlYicn28XRC9Cl9GZ1/HR2g63KLEyOsHb3ycXkMnaA==
+X-Received: by 2002:a17:90b:4c4e:b0:1f0:48e7:7258 with SMTP id np14-20020a17090b4c4e00b001f048e77258mr12250891pjb.223.1658419243611;
+        Thu, 21 Jul 2022 09:00:43 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id k11-20020a170902c40b00b0016c97d59f6asm1975310plk.93.2022.07.21.09.00.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 09:00:43 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Nathan Chancellor <nathan@kernel.org>, linux-can@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Frank Jungclaus <frank.jungclaus@esd.eu>,
+        =?UTF-8?q?Stefan=20M=C3=A4tje?= <Stefan.Maetje@esd.eu>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH] can: pch_can: initialize errc before using it
+Date:   Fri, 22 Jul 2022 01:00:32 +0900
+Message-Id: <20220721160032.9348-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <YtlwSpoeT+nhmhVn@dev-arch.thelio-3990X>
+References: <YtlwSpoeT+nhmhVn@dev-arch.thelio-3990X>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When testing converting bitmaps <-> arr64, test Big and Little
-Endianned variants as well to make sure it works as expected on
-all platforms.
-Also, use more complex bitmap_validate_arr64_type() instead of just
-checking the tail. It will handle different Endiannesses correctly
-(note we don't pass `sizeof(arr)` to it as we poison it with 0xa5).
+After commit 3a5c7e4611dd, the variable errc is accessed before being
+initialized, c.f. below W=2 warning:
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+| In function 'pch_can_error',
+|     inlined from 'pch_can_poll' at drivers/net/can/pch_can.c:739:4:
+| drivers/net/can/pch_can.c:501:29: warning: 'errc' may be used uninitialized [-Wmaybe-uninitialized]
+|   501 |                 cf->data[6] = errc & PCH_TEC;
+|       |                             ^
+| drivers/net/can/pch_can.c: In function 'pch_can_poll':
+| drivers/net/can/pch_can.c:484:13: note: 'errc' was declared here
+|   484 |         u32 errc, lec;
+|       |             ^~~~
+
+Moving errc initialization up solves this issue.
+
+Fixes: 3a5c7e4611dd ("can: pch_can: do not report txerr and rxerr during bus-off")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- lib/test_bitmap.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ drivers/net/can/pch_can.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
-index 98754ff9fe68..8a44290b60ba 100644
---- a/lib/test_bitmap.c
-+++ b/lib/test_bitmap.c
-@@ -585,7 +585,7 @@ static void __init test_bitmap_arr32(void)
+diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+index 50f6719b3aa4..32804fed116c 100644
+--- a/drivers/net/can/pch_can.c
++++ b/drivers/net/can/pch_can.c
+@@ -489,6 +489,7 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 	if (!skb)
+ 		return;
+ 
++	errc = ioread32(&priv->regs->errc);
+ 	if (status & PCH_BUS_OFF) {
+ 		pch_can_set_tx_all(priv, 0);
+ 		pch_can_set_rx_all(priv, 0);
+@@ -502,7 +503,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+ 		cf->data[7] = (errc & PCH_REC) >> 8;
  	}
- }
  
--static void __init test_bitmap_arr64(void)
-+static void __init test_bitmap_arr64_type(u32 type)
- {
- 	unsigned int nbits, next_bit;
- 	u64 arr[EXP1_IN_BITS / 64];
-@@ -594,9 +594,11 @@ static void __init test_bitmap_arr64(void)
- 	memset(arr, 0xa5, sizeof(arr));
- 
- 	for (nbits = 0; nbits < EXP1_IN_BITS; ++nbits) {
-+		int res;
-+
- 		memset(bmap2, 0xff, sizeof(arr));
--		bitmap_to_arr64(arr, exp1, nbits);
--		bitmap_from_arr64(bmap2, arr, nbits);
-+		bitmap_to_arr64_type(arr, exp1, nbits, type);
-+		bitmap_from_arr64_type(bmap2, arr, nbits, type);
- 		expect_eq_bitmap(bmap2, exp1, nbits);
- 
- 		next_bit = find_next_bit(bmap2, round_up(nbits, BITS_PER_LONG), nbits);
-@@ -604,17 +606,21 @@ static void __init test_bitmap_arr64(void)
- 			pr_err("bitmap_copy_arr64(nbits == %d:"
- 				" tail is not safely cleared: %d\n", nbits, next_bit);
- 
--		if ((nbits % 64) &&
--		    (arr[(nbits - 1) / 64] & ~GENMASK_ULL((nbits - 1) % 64, 0)))
--			pr_err("bitmap_to_arr64(nbits == %d): tail is not safely cleared: 0x%016llx (must be 0x%016llx)\n",
--			       nbits, arr[(nbits - 1) / 64],
--			       GENMASK_ULL((nbits - 1) % 64, 0));
-+		res = bitmap_validate_arr64_type(arr, bitmap_arr64_size(nbits),
-+						 nbits, type);
-+		expect_eq_uint(nbits ? 0 : -EINVAL, res);
- 
- 		if (nbits < EXP1_IN_BITS - 64)
- 			expect_eq_uint(arr[DIV_ROUND_UP(nbits, 64)], 0xa5a5a5a5);
- 	}
- }
- 
-+static void __init test_bitmap_arr64(void)
-+{
-+	for (u32 type = 0; type < __BITMAP_ARR_TYPE_NUM; type++)
-+		test_bitmap_arr64_type(type);
-+}
-+
- static void noinline __init test_mem_optimisations(void)
- {
- 	DECLARE_BITMAP(bmap1, 1024);
+-	errc = ioread32(&priv->regs->errc);
+ 	/* Warning interrupt. */
+ 	if (status & PCH_EWARN) {
+ 		state = CAN_STATE_ERROR_WARNING;
 -- 
-2.36.1
+2.35.1
 
