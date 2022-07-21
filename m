@@ -2,91 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CE0857CE45
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E49E557CE61
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232248AbiGUOzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 10:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
+        id S229989AbiGUO6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 10:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231857AbiGUOzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:55:04 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9256833A03;
-        Thu, 21 Jul 2022 07:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GJms8OFun/ubSdkBaWHWcb6Ty10VDWQdCs1zZ9jGyhY=; b=ParruOU1TaiFmwxpDopn8iE5xb
-        PBBbcYrjpVlwn8/FVBySJV502FPEyp/NYUw9Le2G7RykZqfBiIIkMaWfkFq6SdJZcGkSTZdWNUp7g
-        SO3QpJuLGsK8HgR1NpQdw11aC8U8M3NxghRuKsmxOGrFwUa9+mY9EpYdIHTzk5dXtwA51EJKJSRpD
-        /tAT7222u0J0iuqxN1V56C1GmZrVv+R55s8+dorCMehGUnm3qGB9/EnrWSinar/7FStRgcmo3qH30
-        LfG23A69SH9pO29kFTPie/EX7YCWBGwzMTh1JeY4Wse3ICJkM7kH/OMzNqEj49NbiUCporkPgowCA
-        bF2R2EfA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33480)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oEXZF-0005Xd-9J; Thu, 21 Jul 2022 15:54:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oEXZ9-0004wJ-7C; Thu, 21 Jul 2022 15:54:15 +0100
-Date:   Thu, 21 Jul 2022 15:54:15 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
- interface mode
-Message-ID: <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
-References: <20220715172444.yins4kb2b6b35aql@skbuf>
- <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
- <20220715222348.okmeyd55o5u3gkyi@skbuf>
- <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
- <20220716105711.bjsh763smf6bfjy2@skbuf>
- <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
- <20220716123608.chdzbvpinso546oh@skbuf>
- <YtUec3GTWTC59sky@shell.armlinux.org.uk>
- <20220720224447.ygoto4av7odsy2tj@skbuf>
- <20220721134618.axq3hmtckrumpoy6@skbuf>
+        with ESMTP id S231811AbiGUO6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:58:37 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0598689F
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:58:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658415516; x=1689951516;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tdwBRVC6Xmgk7iGYRKJIl5Uum1pUfZGlMcYYqR8HW8Y=;
+  b=e/sXYgw18t82hyrtJPmzjL4z93W1i+3cC7PIDy7aLa1sG7OaasUJ0/je
+   B/ZMoKGkMWKo1dKtfnJlPIp+xsYpLnrrJ2UHCkeDO/xPUdBrqsSZJVu6B
+   myqAKD11HQ1CFLxs610B+rZFe31aH8PPiQLH8DVoD0lmpa9OPTqNGQGJv
+   W/kxuO8BpdG4XZx1dcXlc7TDDmQbTKtoT6/xvBdVdE9eOkV+0lVsV6tDW
+   yHfcS2WZ2M3S4Okg+ifaD3+jiCj1dJLDB6L9WKtl+8vi/giRX+brt8VFz
+   qPYYCqxASafEK7BzckbVXCBYEJkM+It+9ty5oyYw5XwEADUXmpJyWgHSC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10414"; a="273917241"
+X-IronPort-AV: E=Sophos;i="5.93,290,1654585200"; 
+   d="scan'208";a="273917241"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 07:58:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,290,1654585200"; 
+   d="scan'208";a="598489624"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 21 Jul 2022 07:58:32 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LEwV31023204;
+        Thu, 21 Jul 2022 15:58:31 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "shenjian (K)" <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org,
+        lipeng321@huawei.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: Re: [RFCv6 PATCH net-next 02/19] net: replace general features macroes with global netdev_features variables
+Date:   Thu, 21 Jul 2022 16:57:16 +0200
+Message-Id: <20220721145716.745433-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <eb0625cd-26a4-439a-1aca-fcc773393b8b@huawei.com>
+References: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com> <20220720150957.3875487-1-alexandr.lobakin@intel.com> <eb0625cd-26a4-439a-1aca-fcc773393b8b@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721134618.axq3hmtckrumpoy6@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,92 +68,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 04:46:18PM +0300, Vladimir Oltean wrote:
-> On Thu, Jul 21, 2022 at 01:44:47AM +0300, Vladimir Oltean wrote:
-> > I really wish there was a ready-made helper for validating phylink's
-> > OF node; I mentioned this already, it needs to cater for all of
-> > fixed-link/phy-handle/managed/sfp.
+From: shenjian (K) <shenjian15@huawei.com>
+Date: Thu, 21 Jul 2022 09:15:59 +0800
+
+> 在 2022/7/20 23:09, Alexander Lobakin 写道:
+> > From: shenjian (K) <shenjian15@huawei.com>
+> > Date: Wed, 20 Apr 2022 17:54:13 +0800
+> >
+> >> 在 2022/4/19 22:49, Alexander Lobakin 写道:
+> >> > From: Jian Shen <shenjian15@huawei.com>
+> >> > Date: Tue, 19 Apr 2022 10:21:49 +0800
+> >> >
+> >> >> There are many netdev_features bits group used in kernel. The 
+> >> definition
+> >> >> will be illegal when using feature bit more than 64. Replace these 
+> >> macroes
+> >> >> with global netdev_features variables, initialize them when netdev 
+> >> module
+> >> >> init.
+> >> >>
+> >> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> >> >> ---
+> >> >>   drivers/net/wireguard/device.c  |  10 +-
+> >> >>   include/linux/netdev_features.h | 102 +++++++++-----
+> >> >>   net/core/Makefile               |   2 +-
+> >> >>   net/core/dev.c                  |  87 ++++++++++++
+> >> >>   net/core/netdev_features.c      | 241 
+> >> ++++++++++++++++++++++++++++++++
+> >> >>   5 files changed, 400 insertions(+), 42 deletions(-)
+> >> >>   create mode 100644 net/core/netdev_features.c
+> >> >>
+> >> > --- 8< ---
+> >> >
+> >> >> diff --git a/net/core/dev.c b/net/core/dev.c
+> >> >> index 4d6b57752eee..85bb418e8ef1 100644
+> >> >> --- a/net/core/dev.c
+> >> >> +++ b/net/core/dev.c
+> >> >> @@ -146,6 +146,7 @@
+> >> >>   #include <linux/sctp.h>
+> >> >>   #include <net/udp_tunnel.h>
+> >> >>   #include <linux/net_namespace.h>
+> >> >> +#include <linux/netdev_features_helper.h>
+> >> >>   #include <linux/indirect_call_wrapper.h>
+> >> >>   #include <net/devlink.h>
+> >> >>   #include <linux/pm_runtime.h>
+> >> >> @@ -11255,6 +11256,90 @@ static struct pernet_operations 
+> >> __net_initdata default_device_ops = {
+> >> >>       .exit_batch = default_device_exit_batch,
+> >> >>   };
+> >> >>   >> +static void netdev_features_init(void)
+> >> > It is an initialization function, so it must be marked as __init.
+> >> right, I will add it, thanks!
+> >>
+> >> >> +{
+> >> >> +    netdev_features_t features;
+> >> >> +
+> >> >> + netdev_features_set_array(&netif_f_never_change_feature_set,
+> >> >> +                  &netdev_never_change_features);
+> >> >> +
+> >> >> + netdev_features_set_array(&netif_f_gso_feature_set_mask,
+> >> > I'm not sure it does make sense to have an empty newline between
+> >> > each call. I'd leave newlines only between the "regular" blocks
+> >> > and the "multi-call" blocks, I mean, stuff like VLAN, GSO and
+> >> > @netdev_ethtool_features.
+> >> At first, I added empty newline per call for the it used three lines.
+> >> Now the new call just use two lines, I will remove some unnecessary
+> >> blank lines.
+> >>
+> >> Thanks!
+> >
+> > I see no news regarding the conversion since the end of April, maybe
+> > I could pick it and finish if nobody objects? I'll preserve the
+> > original authorship for sure.
+> >
+> Hi， Alexander
 > 
-> While I was going to expand on this point and state that DSA doesn't
-> currently instantiate phylink for this OF node:
+> Sorry for late to finish the whole patchset with treewide changes, but 
+> I'm still working on it.
+> And most of the convertsions have been completed. I will send to new 
+> patchset in two weeks.
+
+Oh okay, I was only worried that it could be abandoned for some
+reason. Great to hear it's almost done, 120+ drivers is not
+something quick or exciting :)
+I'll start reviewing the series, at least its "core" part, as soon
+as it hits netdev ML. Thanks!
+
 > 
-> 			port@9 {
-> 				reg = <0x9>;
-> 				label = "cpu";
-> 				ethernet = <&eth1>;
-> 				phy-mode = "2500base-x";
-> 				managed = "in-band-status";
-> 			};
+> Jian
 > 
-> I was proven wrong. Today I learned that of_phy_is_fixed_link() returns
-> true if the "managed" property exists and its value differs from "auto".
-> So in the above case, of_phy_is_fixed_link() returns true, hmmm.
+> >>
+> >> >> +                  &netdev_gso_features_mask);
 
-Yes, which is why I said on July 7th:
+[...]
 
-"So I also don't see a problem - sja1105 rejects DTs that fail to
-describe a port using at least one of a phy-handle, a fixed-link, or
-a managed in-band link, and I don't think it needs to do further
-validation, certainly not for the phy describing properties that
-the kernel has chosen to deprecate for new implementations."
-
-I had assumed you knew of_phy_is_fixed_link() returns true in this
-case. Do you now see that sja1105's validation is close enough
-(except for the legacy phy phandle properties which we don't care
-about), and thus do we finally have agreement on this point?
-
-> On the other hand I found arm64/boot/dts/marvell/cn9130-crb.dtsi, where
-> the switch, a "marvell,mv88e6190"-compatible (can't determine going just
-> by that what it actually is) has this:
+> > Thanks,
+> > Olek
+> >
+> > .
+> >
 > 
-> 			port@a {
-> 				reg = <10>;
-> 				label = "cpu";
-> 				ethernet = <&cp0_eth0>;
-> 			};
 
-Port 10 on 88E6393X supports 10GBASE-R, and maybe one day someone will
-get around to implementing USXGMII. This description relies upon this
-defaulting behaviour - as Andrew has described, this has been entirely
-normal behaviour with mv88e6xxx.
-
-> To illustrate how odd the situation is, I am able to follow the phandle
-> to the CPU port and find a comment that it's a 88E6393X, and that the
-> CPU port uses managed = "in-band-status":
-> 
-> &cp0_eth0 {
-> 	/* This port is connected to 88E6393X switch */
-> 	status = "okay";
-> 	phy-mode = "10gbase-r";
-> 	managed = "in-band-status";
-> 	phys = <&cp0_comphy4 0>;
-> };
-
-10GBASE-R has no in-band signalling per-se, so the only effect this has
-on the phylink instance on the CPU side is to read the status from the
-PCS as it does for any other in-band mode. In the case of 10GBASE-R, the
-only retrievable parameter is the link up/down status. This is no
-different from a 10GBASE-R based fibre link in that regard.
-
-A fixed link on the other hand would not read status from the PCS but
-would assume that the link is always up.
-
-> Open question: is it sane to even do what we're trying here, to create a
-> fixed-link for port@a (which makes the phylink instance use MLO_AN_FIXED)
-> when &cp0_eth0 uses MLO_AN_INBAND? My simple mind thinks that if all
-> involved drivers were to behave correctly and not have bugs that cancel
-> out other bugs, the above device tree shouldn't work. The host port
-> would expect a clause 37 base page exchange to take place, the switch
-> wouldn't send any in-band information, and the SERDES lane would never
-> transition to data mode. To fix the above, we'd really need to chase the
-> "ethernet" phandle and attempt to mimic what the DSA master did. This is
-> indeed logic that never existed before, and I don't particularly feel
-> like adding it. How far do we want to go? It seems like never-ending
-> insanity the more I look at it.
-
-10GBASE-R doesn't support clause 37 AN. 10GBASE-KR does support
-inband AN, but it's a different clause and different format.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Olek
