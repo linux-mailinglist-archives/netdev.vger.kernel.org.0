@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D54E57D541
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A6357D584
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 23:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbiGUU4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 16:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46888 "EHLO
+        id S232334AbiGUVGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 17:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGUU4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:56:12 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CE68FD74
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:56:11 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id z18so1982059qki.2
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:56:11 -0700 (PDT)
+        with ESMTP id S231805AbiGUVGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 17:06:39 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353A8904C2;
+        Thu, 21 Jul 2022 14:06:37 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id q14so2340405iod.3;
+        Thu, 21 Jul 2022 14:06:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Yri+NdM2tEeuB8jYT/moyjQf+8pMf3Es1U7Cbr47hBY=;
-        b=fbXAooqtN7BAzu55vnj2PY1f9CiFHmno6gRPQwbpDd7TV3UAOzOmAZFMDXaaLzOmpd
-         4ufDmFy5TaH9vEdfEecPDaLS+B7N4mIY+LnBJFSzpE2ReSJm+Gz1mONz5pGLWuRGYTHw
-         CSSLbPYSvu79xl32t1LffMTw8BP9/FDOlGVIPRNAYhX7ElD0OvYosDJ3cXWGzAmrRGL2
-         BuPXqJ6uOgyBg7fcB7HcOMoSUd6P/C/iYokzTGStO4itKQs0DFxR9ABYaDH9mmD/LjpB
-         O1HyDMamx7o38dmxGhYMmmUkIEHWA6RqVuwBhjNwNB9LltBiS3Y6uV9KPMa0AyMsruKA
-         EKHw==
+        bh=UD6/PHsX06ls442kfkXr+sBUg1Zo13esPXVZU+zxxXo=;
+        b=lr6SWiF1ovkDnMS4jHw8tSYu3+iWiLSMv3qzm78VAjM7sA8u4bvPxO6vGOdV5nqnwF
+         /+Kw3jadBLbpDWck7WkFc/OJs2qZ6MNLLtRtWyKiQO3A8qLAqUQPCFazamo+5CLx2H1u
+         QcAamcduJ+sznu75aQRU9jGDkc91SnXJYVAOINK2TVJqM52wESGPChkRIeM2RRF9NPPO
+         uf8Tb8zAuDBhNA+SzREO2bI/zYGnnxbNte8DkFTx2ya06y7cnIp/KoCexh2UVcyn13O+
+         oLA9as2GswecUrbZ5Rt8uKbCvhuLlaQyQs137wbHaXP7ok9VGCwn/oQRDsarBXxRUvFT
+         U7Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Yri+NdM2tEeuB8jYT/moyjQf+8pMf3Es1U7Cbr47hBY=;
-        b=TYQ/PVCx0sQaKX6HLfW0zXzB/XZxaRhk24EoIpMVT7Jtc9SXXl/naVKDpUb5bFEbvK
-         yn7ppPaEDKIrQ2FjivzoLFgmnlp08ZytwkQgGSiN6OI1hfVQs7aJIj3sCCeQI7g0zgE9
-         H6pgri1cUOFUwI6j+V1DFIAbJz3wg4ZE65AYll56eiw4PV+KJxBE4PDnyodmyEJfjQ7Q
-         kpFOcnlOJKOFqYs08nqRN/0bvyC6z8js0xEX3psSPEbT2Y5N8wo3gZJKQiPvZFgvkwsw
-         rpAvseNbq47DHPpZPcU0tWjHLnr8mMNToiXhE5+ko4jQhYYIA1mZclKM86GiXWNqRxNn
-         xa0g==
-X-Gm-Message-State: AJIora9/yYUN27XAVMtcrV/R+zEeTRVl358BeEtEgUz6JGClOrmYWbwr
-        gQQAAN3+Kie84C6f7W9DEQXEXj++a7kWZoNHTrOT9LN1Verfkw==
-X-Google-Smtp-Source: AGRyM1tZKvM/sEZIKkjihxEJFclSDhyx5MI9S61ynlatHo3yv2fqk6mt/8fxSNVP4W28bnCzcQRb5rWOf+QL1igyeXY=
-X-Received: by 2002:a05:620a:410c:b0:6b2:82d8:dcae with SMTP id
- j12-20020a05620a410c00b006b282d8dcaemr234781qko.259.1658436970947; Thu, 21
- Jul 2022 13:56:10 -0700 (PDT)
+        bh=UD6/PHsX06ls442kfkXr+sBUg1Zo13esPXVZU+zxxXo=;
+        b=koX5wUt/sw4VEwGrQwmn6oODJtt/6VC6PdUVUmScPJKKyfitj/MDYmmT1Y+CkVr71B
+         tJrsi0HRz2PGoWMtvpisPWHQnGjj/+Xjx4M+34dDs2sLV3OdAw4gXwajuQ4u0ND8l1wJ
+         QnFH1tFI91vVvZEpgqPpim5mX8G5VKtUD2SV5eRZkG3shtIrxC8FkJxXvsW6B+hJzI44
+         4MfgZdG+RV8vUQo8uunpaIWUebE+dsvIHm8cKK/QNdqkK5l9bEJQjUWAGFGPqAw1lQ23
+         JeJx2ip5lwiuCD5oxSrEhJyy4wkJ80SbH8Dk19wCqgghQQrA2ZluSoXkBDXuWP/R3NN4
+         uFzQ==
+X-Gm-Message-State: AJIora/REg+X8/QYadrC4lm0pP5wuFbicYXVsJ5e14vo7i0QL4w/EjfL
+        GGOp/CSKpTRTkCRdpQFd0jS07fXVe8Qb3skDTPfIwzqTWyhvtw==
+X-Google-Smtp-Source: AGRyM1uN8l37YfT8hkCKnvwVyvz74b+AfEG+kDrYj5DD7RVMo3dIntZFDDpXM7nlCrOMgEQKChUVSRyOQDvOU3VvY2o=
+X-Received: by 2002:a05:6638:210b:b0:33f:5635:4c4b with SMTP id
+ n11-20020a056638210b00b0033f56354c4bmr227538jaj.116.1658437596830; Thu, 21
+ Jul 2022 14:06:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721204404.388396-1-weiwan@google.com>
-In-Reply-To: <20220721204404.388396-1-weiwan@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 21 Jul 2022 16:55:54 -0400
-Message-ID: <CADVnQy=5VzKqUSyQG48rfYPsS1cyHAW3_bZpvJfCs6AAxjPVQA@mail.gmail.com>
-Subject: Re: [PATCH net v2] Revert "tcp: change pingpong threshold to 3"
-To:     Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>, LemmyHuang <hlm3280@163.com>
+References: <20220721153625.1282007-1-benjamin.tissoires@redhat.com> <20220721153625.1282007-6-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220721153625.1282007-6-benjamin.tissoires@redhat.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Thu, 21 Jul 2022 23:05:59 +0200
+Message-ID: <CAP01T76_CEGR5Vn+7WCah4oLtv4GUYawhC2X5zUDugG1sTB28Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 05/24] bpf/verifier: allow kfunc to return an
+ allocated mem
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,28 +79,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 4:44 PM Wei Wang <weiwan@google.com> wrote:
+On Thu, 21 Jul 2022 at 17:38, Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
 >
-> This reverts commit 4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
+> For drivers (outside of network), the incoming data is not statically
+> defined in a struct. Most of the time the data buffer is kzalloc-ed
+> and thus we can not rely on eBPF and BTF to explore the data.
 >
-> This to-be-reverted commit was meant to apply a stricter rule for the
-> stack to enter pingpong mode. However, the condition used to check for
-> interactive session "before(tp->lsndtime, icsk->icsk_ack.lrcvtime)" is
-> jiffy based and might be too coarse, which delays the stack entering
-> pingpong mode.
-> We revert this patch so that we no longer use the above condition to
-> determine interactive session, and also reduce pingpong threshold to 1.
+> This commit allows to return an arbitrary memory, previously allocated by
+> the driver.
+> An interesting extra point is that the kfunc can mark the exported
+> memory region as read only or read/write.
 >
-> Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
-> Reported-by: LemmyHuang <hlm3280@163.com>
-> Suggested-by: Neal Cardwell <ncardwell@google.com>
-> Signed-off-by: Wei Wang <weiwan@google.com>
+> So, when a kfunc is not returning a pointer to a struct but to a plain
+> type, we can consider it is a valid allocated memory assuming that:
+> - one of the arguments is either called rdonly_buf_size or
+>   rdwr_buf_size
+> - and this argument is a const from the caller point of view
+>
+> We can then use this parameter as the size of the allocated memory.
+>
+> The memory is either read-only or read-write based on the name
+> of the size parameter.
+>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 >
 > ---
-> v2: added Fixes tag
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
-
-Looks great to me. Thanks, Wei!
-
-neal
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
