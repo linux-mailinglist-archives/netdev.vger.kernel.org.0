@@ -2,235 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8044357C1D8
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 03:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A28D57C1DD
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 03:28:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbiGUBQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 21:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
+        id S229881AbiGUB2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 21:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGUBQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 21:16:04 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17AADF4E
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 18:16:02 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LpF3j0DfjzFqPL;
-        Thu, 21 Jul 2022 09:14:57 +0800 (CST)
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Jul
- 2022 09:16:00 +0800
-Subject: Re: [RFCv6 PATCH net-next 02/19] net: replace general features
- macroes with global netdev_features variables
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
-        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <lipeng321@huawei.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-References: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
- <20220720150957.3875487-1-alexandr.lobakin@intel.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <eb0625cd-26a4-439a-1aca-fcc773393b8b@huawei.com>
-Date:   Thu, 21 Jul 2022 09:15:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        with ESMTP id S229515AbiGUB2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 21:28:37 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DD974CD8;
+        Wed, 20 Jul 2022 18:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658366916; x=1689902916;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2taxh7mCw2+GLKWNabZXLdL/LDPI6ZOkmkd+dAwnLEA=;
+  b=LtQZf1ZuNv0J+sxdinA3UMIQzgjsHIRbkROouUIX8Ya7e5f+yUW1sOSZ
+   gvmbJLtEE9lbHOVVxqDVkjW8oW/YbMcfNMLDzr6kBA/uOwkJszm7b7t5H
+   2i3CzCvYZs55qOImdQulgEnihdPZq08ENlw4/r5Smi64N7JTzTdK0wycB
+   I=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 20 Jul 2022 18:28:36 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 18:28:36 -0700
+Received: from [10.253.78.99] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Jul
+ 2022 18:28:33 -0700
+Message-ID: <311eba1b-d62f-7029-9775-e4843d71befa@quicinc.com>
+Date:   Thu, 21 Jul 2022 09:28:31 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220720150957.3875487-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 3/3] Bluetooth: btusb: Remove
+ HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for fake CSR
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+CC:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luiz Augusto Von Dentz <luiz.von.dentz@intel.com>,
+        <swyterzone@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <1658326045-9931-1-git-send-email-quic_zijuhu@quicinc.com>
+ <1658326045-9931-4-git-send-email-quic_zijuhu@quicinc.com>
+ <CABBYNZJ9Re7PZOFXhj-2tRwJ1UU2kY+QhB4dJT-=GyCYqb_Hhw@mail.gmail.com>
+From:   quic_zijuhu <quic_zijuhu@quicinc.com>
+In-Reply-To: <CABBYNZJ9Re7PZOFXhj-2tRwJ1UU2kY+QhB4dJT-=GyCYqb_Hhw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-在 2022/7/20 23:09, Alexander Lobakin 写道:
-> From: shenjian (K) <shenjian15@huawei.com>
-> Date: Wed, 20 Apr 2022 17:54:13 +0800
->
->> åœ¨ 2022/4/19 22:49, Alexander Lobakin å†™é“:
->> > From: Jian Shen <shenjian15@huawei.com>
->> > Date: Tue, 19 Apr 2022 10:21:49 +0800
->> >
->> >> There are many netdev_features bits group used in kernel. The 
->> definition
->> >> will be illegal when using feature bit more than 64. Replace these 
->> macroes
->> >> with global netdev_features variables, initialize them when netdev 
->> module
->> >> init.
->> >>
->> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
->> >> ---
->> >>   drivers/net/wireguard/device.c  |  10 +-
->> >>   include/linux/netdev_features.h | 102 +++++++++-----
->> >>   net/core/Makefile               |   2 +-
->> >>   net/core/dev.c                  |  87 ++++++++++++
->> >>   net/core/netdev_features.c      | 241 
->> ++++++++++++++++++++++++++++++++
->> >>   5 files changed, 400 insertions(+), 42 deletions(-)
->> >>   create mode 100644 net/core/netdev_features.c
->> >>
->> > --- 8< ---
->> >
->> >> diff --git a/net/core/dev.c b/net/core/dev.c
->> >> index 4d6b57752eee..85bb418e8ef1 100644
->> >> --- a/net/core/dev.c
->> >> +++ b/net/core/dev.c
->> >> @@ -146,6 +146,7 @@
->> >>   #include <linux/sctp.h>
->> >>   #include <net/udp_tunnel.h>
->> >>   #include <linux/net_namespace.h>
->> >> +#include <linux/netdev_features_helper.h>
->> >>   #include <linux/indirect_call_wrapper.h>
->> >>   #include <net/devlink.h>
->> >>   #include <linux/pm_runtime.h>
->> >> @@ -11255,6 +11256,90 @@ static struct pernet_operations 
->> __net_initdata default_device_ops = {
->> >>       .exit_batch = default_device_exit_batch,
->> >>   };
->> >>   >> +static void netdev_features_init(void)
->> > It is an initialization function, so it must be marked as __init.
->> right, I will add it, thanks!
+On 7/20/2022 11:38 PM, Luiz Augusto von Dentz wrote:
+> Hi Zijun,
+> 
+> On Wed, Jul 20, 2022 at 7:07 AM Zijun Hu <quic_zijuhu@quicinc.com> wrote:
 >>
->> >> +{
->> >> +    netdev_features_t features;
->> >> +
->> >> + netdev_features_set_array(&netif_f_never_change_feature_set,
->> >> +                  &netdev_never_change_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_gso_feature_set_mask,
->> > I'm not sure it does make sense to have an empty newline between
->> > each call. I'd leave newlines only between the "regular" blocks
->> > and the "multi-call" blocks, I mean, stuff like VLAN, GSO and
->> > @netdev_ethtool_features.
->> At first, I added empty newline per call for the it used three lines.
->> Now the new call just use two lines, I will remove some unnecessary
->> blank lines.
+>> Fake CSR BT controllers do not enable feature "Erroneous Data Reporting"
+>> currently, BT core driver will check the feature bit instead of the quirk
+>> to decide if HCI command HCI_Read|Write_Default_Erroneous_Data_Reporting
+>> work fine, so remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for fake CSR.
 >>
->> Thanks!
->
-> I see no news regarding the conversion since the end of April, maybe
-> I could pick it and finish if nobody objects? I'll preserve the
-> original authorship for sure.
->
-Hi， Alexander
-
-Sorry for late to finish the whole patchset with treewide changes, but 
-I'm still working on it.
-And most of the convertsions have been completed. I will send to new 
-patchset in two weeks.
-
-Jian
-
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>> ---
+>>  drivers/bluetooth/btusb.c | 1 -
+>>  1 file changed, 1 deletion(-)
 >>
->> >> +                  &netdev_gso_features_mask);
->> >> +
->> >> + netdev_features_set_array(&netif_f_ip_csum_feature_set,
->> >> +                  &netdev_ip_csum_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_csum_feature_set_mask,
->> >> +                  &netdev_csum_features_mask);
->> >> +
->> >> + netdev_features_set_array(&netif_f_general_tso_feature_set,
->> >> +                  &netdev_general_tso_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_all_tso_feature_set,
->> >> +                  &netdev_all_tso_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_tso_ecn_feature_set,
->> >> +                  &netdev_tso_ecn_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_all_fcoe_feature_set,
->> >> +                  &netdev_all_fcoe_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_gso_soft_feature_set,
->> >> +                  &netdev_gso_software_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_one_for_all_feature_set,
->> >> +                  &netdev_one_for_all_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_all_for_all_feature_set,
->> >> +                  &netdev_all_for_all_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_upper_disables_feature_set,
->> >> +                  &netdev_upper_disable_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_soft_feature_set,
->> >> +                  &netdev_soft_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_soft_off_feature_set,
->> >> +                  &netdev_soft_off_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_rx_vlan_feature_set,
->> >> +                  &netdev_rx_vlan_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_tx_vlan_feature_set,
->> >> +                  &netdev_tx_vlan_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_vlan_filter_feature_set,
->> >> +                  &netdev_vlan_filter_features);
->> >> +
->> >> +    netdev_all_vlan_features = netdev_rx_vlan_features;
->> >> +    netdev_features_set(&netdev_all_vlan_features, 
->> netdev_tx_vlan_features);
->> >> +    netdev_features_set(&netdev_all_vlan_features,
->> >> +                netdev_vlan_filter_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_ctag_vlan_feature_set,
->> >> +                  &netdev_ctag_vlan_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_stag_vlan_feature_set,
->> >> +                  &netdev_stag_vlan_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_gso_encap_feature_set,
->> >> +                  &netdev_gso_encap_all_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_xfrm_feature_set,
->> >> +                  &netdev_xfrm_features);
->> >> +
->> >> + netdev_features_set_array(&netif_f_tls_feature_set,
->> >> +                  &netdev_tls_features);
->> >> +
->> >> +    netdev_csum_gso_features_mask =
->> >> + netdev_features_or(netdev_gso_software_features,
->> >> +                   netdev_csum_features_mask);
->> >> +
->> >> +    netdev_features_fill(&features);
->> >> +    netdev_ethtool_features =
->> >> +        netdev_features_andnot(features, 
->> netdev_never_change_features);
->> >> +}
->> >> +
->> >>   /*
->> >>    *    Initialize the DEV module. At boot time this walks the 
->> device list and
->> >>    *    unhooks any devices that fail to initialise (normally 
->> hardware not
->> > --- 8< ---
->> >
->> >> -- >> 2.33.0
->> > Thanks,
->> > Al
->> >
->> > .
->> >
->
-> Thanks,
-> Olek
->
-> .
->
+>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+>> index f0f86c5c3b37..f2b3d31d56cf 100644
+>> --- a/drivers/bluetooth/btusb.c
+>> +++ b/drivers/bluetooth/btusb.c
+>> @@ -2072,7 +2072,6 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>>                  * without these the controller will lock up.
+>>                  */
+>>                 set_bit(HCI_QUIRK_BROKEN_STORED_LINK_KEY, &hdev->quirks);
+>> -               set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+>>                 set_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks);
+>>                 set_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks);
+> 
+> You will probably need to remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
+> last otherwise it breaks the build in between patches, and please
+> double check if there are no other instances of driver using it or
+> perhaps leave it defined in case the feature is broken for some reason
+> but then we need a macro that checks both the quirk and the feature
+> bit.
+> 
+okay, i will split this change to solve build error between patches.
+
+yes.  only QCA and CSR device with USB I/F use it. no other driver use it
+
+the quirk was introduced to mark HCI_Read|Write_Default_Erroneous_Data_Reporting
+broken, but the reason why these two HCI commands don't work fine is that the feature
+"Erroneous Data Reporting" is not enabled by firmware.
+so we need to check the feature bit instead of the quirk and don't also need the quirk.
+
+>> --
+>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+>>
+> 
+> 
 
