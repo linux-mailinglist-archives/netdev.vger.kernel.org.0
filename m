@@ -2,119 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B61A57D082
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2001057D095
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiGUQBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 12:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
+        id S231518AbiGUQB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 12:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGUQBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:01:45 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D5E28E09
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 09:01:42 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id h8so2934001wrw.1
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 09:01:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m1PEEMl22cpJGnoDWd66J4i40ZFJwMKFTIUXsHp2fkE=;
-        b=THnqLTBK0d3DJcOHHHxKLaHiqx6eyZdeppAfDoXZBGlpZIiyFSlHbRoSrzkQ34Mlv9
-         uuxHRulCExFjlU++xhNEOcXQ8U8G2AT+2pkxugbiPpZwAIjH5yeBXdRa6vSisyxnf4+6
-         I2aRXt1zPJxbMW7WSdyUQHtPX/8OtxIv4mo4OqWGg5/xa3n0Zo1CeEUNhGRJkYX059e3
-         sSMAimmYmh2HLeMVAx8hmAI3obmgkQuWnM+tQM46fCJmZlwsva2QegrosniI2l1i8JYR
-         8eIvHm97wAevnm6j+jRmZKov5G7cvml1Y/Ql4/HMqxXU3bAIRmZFLwGDcpbDdEYhf8yV
-         2MGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m1PEEMl22cpJGnoDWd66J4i40ZFJwMKFTIUXsHp2fkE=;
-        b=jxZKe7il2l00wRITGb8Wn2p/3kXpWJtU0YyrUa1O4Rft3Os/uJQvFuziOG9VG3bHmf
-         oqFImUnunWNaIY1O3cYBgMO3zUkCTE70ztYLa3rDfU+NiP5+EjK1batpVffQLtaCkrfB
-         kziNYm3aD40xdMd3V+xG5DddmGch8nbKWGv9cjwDZiA/VIa5vCgNv5qSkLn89SeD8kUQ
-         WB6f+ZNpWvoa/8fQ6auiuGIwZHoX/hYUutGdLKW9Eaq7sQxDvAgHHZP/clhSKKaqgJ7h
-         3zVD3gzDofWjogBdanwvBnCtRn0ehepqXqAlLp3My+tCVKVYDFK3YEj9+yAcGfOGAgWg
-         KBiA==
-X-Gm-Message-State: AJIora/ahEI9GmAKxTYJFMVHL0xYCp2hmtBTM1YKMz0QUQ1ywpzfeA/a
-        xs+5FnO5MysBguoVagcsf6ha3w==
-X-Google-Smtp-Source: AGRyM1sUO6p68aqt9CcjqfOkvBtCGlBUtyKVRl38dFuKecz9S4qjLjM7RbGa/YXl5TK70363i669yQ==
-X-Received: by 2002:a05:6000:98d:b0:21e:3b5d:335 with SMTP id by13-20020a056000098d00b0021e3b5d0335mr10353977wrb.148.1658419301191;
-        Thu, 21 Jul 2022 09:01:41 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r17-20020adfe691000000b0020d07d90b71sm2350817wrm.66.2022.07.21.09.01.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 09:01:40 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 18:01:39 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v3 09/11] mlxsw: core_linecards: Implement line
- card device flashing
-Message-ID: <Ytl4Y61M82NOSIrW@nanopsycho>
-References: <20220720151234.3873008-1-jiri@resnulli.us>
- <20220720151234.3873008-10-jiri@resnulli.us>
- <YtkNicMHKuC20RIQ@shredder>
+        with ESMTP id S229510AbiGUQB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:01:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3413187371;
+        Thu, 21 Jul 2022 09:01:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658419316; x=1689955316;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iqgoGFw1imn9cCwvxZvbEsMxjla5mJR4iunaXS/Iqmo=;
+  b=kTEVl1h/+MBzz07GcI7Ugh6pxvttheM9q/mH5mXXYrlgURuilvjDysl/
+   ELG2HYanZsReuuNXVE5ajV7jZRmpTxjNPMYaS6le/DpQw/cUw5XfLu6r8
+   A39WCVQ9thYMpguuKLCfUuQVCPpwOebbmyADYRJ+FR0J0kvUWxiDGfb0w
+   Qay4eFvNtQAitQdhKX9pySsm2X/XRLwTdeeSGOtqyv6s+gG+h/aYZXKfT
+   21mq9IeX7XBOeXjdGssru9oQu6Lrp470PwNkT9xH3mHmjWEjBs+1tp4AG
+   ULz43uMtXaMEdylIuFnUkAgBccn+a7Cx4gUAQ2AdyApWm+l3gKwMnonXu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312804421"
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="312804421"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 09:01:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
+   d="scan'208";a="925701204"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga005.fm.intel.com with ESMTP; 21 Jul 2022 09:01:40 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26LG1crY003918;
+        Thu, 21 Jul 2022 17:01:38 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
+Date:   Thu, 21 Jul 2022 17:59:46 +0200
+Message-Id: <20220721155950.747251-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtkNicMHKuC20RIQ@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 21, 2022 at 10:25:45AM CEST, idosch@nvidia.com wrote:
->On Wed, Jul 20, 2022 at 05:12:32PM +0200, Jiri Pirko wrote:
->> +int mlxsw_linecard_flash_update(struct devlink *linecard_devlink,
->> +				struct mlxsw_linecard *linecard,
->> +				const struct firmware *firmware,
->> +				struct netlink_ext_ack *extack)
->> +{
->> +	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
->> +	struct mlxsw_linecard_device_fw_info info = {
->> +		.mlxfw_dev = {
->> +			.ops = &mlxsw_linecard_device_dev_ops,
->> +			.psid = linecard->device.info.psid,
->> +			.psid_size = strlen(linecard->device.info.psid),
->> +			.devlink = linecard_devlink,
->> +		},
->> +		.mlxsw_core = mlxsw_core,
->> +		.linecard = linecard,
->> +	};
->> +	int err;
->> +
->> +	mutex_lock(&linecard->lock);
->> +	if (!linecard->active) {
->> +		NL_SET_ERR_MSG_MOD(extack, "Failed to flash non-active linecard");
->
->IMO it's not clear enough that the problem is the fact that the line
->card is inactive. Maybe:
->
->"Only active linecards can be flashed"
+Add a new type of Netlink attribute -- bitmap.
 
-Fixed.
+Lots of different bitfields in the kernel grow through time,
+sometimes significantly. They can consume a u8 at fist, then require
+16 bits, 32... To support such bitfields without rewriting code each
+time, kernel have bitmaps. For now, that is purely in-kernel type
+and API, and to communicate with userspace, they need to be
+converted to some primitive at first (e.g. __u32 etc.), dealing with
+that sometimes bitfields will run out of the size set for the
+corresponding Netlink attribute. Those can be netdev features,
+linkmodes and so on.
+Internally, in-kernel bitmaps are represented as arrays of unsigned
+longs. This provides optimal performance and memory usage; however,
+bitness dependent types can't be used to communicate between kernel
+and userspace -- for example, userapp can be 32-bit on a 64-bit
+system. So, to provide reliable communication data type, 64-bit
+arrays are now used. Netlink core takes care of converting them
+from/to unsigned longs when sending or receiving Netlink messages;
+although, on LE and 64-bit systems conversion is a no-op. They also
+can have explicit byteorder -- core code also handles this (both
+kernel and userspace must know in advance the byteorder of a
+particular attribute), as well as cases when the userspace and the
+kernel assume different number of bits (-> different number of u64s)
+for an attribute.
 
->
->Either way:
->
->Reviewed-by: Ido Schimmel <idosch@nvidia.com>
->
->
->> +		err = -EINVAL;
->> +		goto unlock;
->> +	}
->> +	err = mlxsw_core_fw_flash(mlxsw_core, &info.mlxfw_dev,
->> +				  firmware, extack);
->> +unlock:
->> +	mutex_unlock(&linecard->lock);
->> +	return err;
->> +}
+Basic consumer functions/macros are:
+* nla_put_bitmap and nla_get_bitmap families -- to easily put a
+  bitmap to an skb or get it from a received message (only pointer
+  to an unsigned long bitmap and the number of bits in it are
+  needed), with optional explicit byteorder;
+* nla_total_size_bitmap() -- to provide estimate size in bytes to
+  Netlink needed to store a bitmap;
+* {,__}NLA_POLICY_BITMAP() -- to declare a Netlink policy for a
+  bitmap attribute.
+
+Netlink policy for a bitmap can have an optional bitmap mask of bits
+supported by the code -- for example, to filter out obsolete bits
+removed some time ago. Without it, Netlink will make sure no bits
+past the passed number are set. Both variants can be requested from
+the userspace and the kernel will put a mask into a new policy
+attribute (%NL_POLICY_TYPE_ATTR_BITMAP_MASK).
+BTW, Ethtool bitsets provide similar functionality, but it operates
+with u32s (u64 is more convenient and optimal on most platforms) and
+Netlink bitmaps is a generic interface providing policies and data
+verification (Ethtool bitsets are declared simply as %NLA_BINARY),
+generic getters/setters etc.
+
+An example of using this API can be found in my IP tunnel tree[0]
+(planned for submission later), the actual average number of locs
+to start both sending and receiving bitmaps in one subsys is ~10[1].
+And it looks like that some of the already existing APIs could be
+later converted to Netlink bitmaps or expanded as well.
+
+[0] https://github.com/alobakin/linux/commits/ip_tunnel
+[1] https://github.com/alobakin/linux/commit/26d2f2cf13fd
+
+Alexander Lobakin (4):
+  bitmap: add converting from/to 64-bit arrays of explicit byteorder
+  bitmap: add a couple more helpers to work with arrays of u64s
+  lib/test_bitmap: cover explicitly byteordered arr64s
+  netlink: add 'bitmap' attribute type (%NL_ATTR_TYPE_BITMAP /
+    %NLA_BITMAP)
+
+ include/linux/bitmap.h       |  80 ++++++++++++++++--
+ include/net/netlink.h        | 159 ++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/netlink.h |   5 ++
+ lib/bitmap.c                 | 143 +++++++++++++++++++++++++++----
+ lib/nlattr.c                 |  43 +++++++++-
+ lib/test_bitmap.c            |  22 +++--
+ net/netlink/policy.c         |  44 ++++++++++
+ 7 files changed, 461 insertions(+), 35 deletions(-)
+
+
+base-commit: 3a2ba42cbd0b669ce3837ba400905f93dd06c79f
+---
+Targeted for net-next, but uses base-commit from the bitmap tree
+(a merge will be needed) and the API is for kernel-wide/generic
+usage rather than networking-specific.
+-- 
+2.36.1
+
