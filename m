@@ -2,83 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E627B57C9F2
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 13:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1591C57CA0D
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 13:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233254AbiGULvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 07:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
+        id S233046AbiGULyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 07:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiGULvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 07:51:24 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A9A2AC53;
-        Thu, 21 Jul 2022 04:51:22 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id j22so2748438ejs.2;
-        Thu, 21 Jul 2022 04:51:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GmDGNOSJLQLxHyqUbqdShMpk7Rg5vZOsES1osVYWvM8=;
-        b=OGZ65YDJOY1TZJZnVZ0xSIYu44FSqV/GtlogNPVbdgVP4qeyYrQHHb6ra08gEteLzV
-         Xza04ZqfmXuFmhOG2yubswI7rJYU6kah1KAk/PdYFcxZyIUiqrdeuYQK7JWkTWahv2Xx
-         H+xG3OpXRv+ZsZ9rhioXX7uv2G6nrzfmTw7N3N0qOk9X/x9PqACbHtBuZasvnja9gYYF
-         XGFgOoVVvydCpOFf0ll9jxiG+6G7lDcfGhK5m+DOx0uPlszpt/Sur2fiK2z/QmWdmkHp
-         l+f6Bq9/k/W8I3XbHk5jPjUEsVz3hHt6datdIR1dhSigpWSaon9VR/EFMeMQbgLyiwqu
-         SAzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GmDGNOSJLQLxHyqUbqdShMpk7Rg5vZOsES1osVYWvM8=;
-        b=TkjgvM7cB30f4bxfCx8YOzMs4FtlwK6dTKKvKuFg6WAp7WasXVMo2KDwtnXFoIgnDt
-         N1/D0td07rYb82m0PYTPFMbxHC/cYB4WMCp0IBrv8RnHNmr/VZJBqB85ZYTVrPWEnItZ
-         L4SvcQas2RGd4Tdk9jinxv/i2eW/9rGU31GfHDL539fPkzEu7La7F0rD7VuTCWlOSF7m
-         PhglL5JTgtjwgdHEq4KLxlnd+oLaRmEaYi1Y0exg8nGGOjSuUD0RQv8NHP9wMeP67Z1H
-         jpWR/HV5yfEhC/5TXZT0rCdKjcsJ8Gw8gXtP4L3atL5hMmp0p0QusfYZX/5KCyU+KxbU
-         dfcA==
-X-Gm-Message-State: AJIora+V7wrsUQuD5kndzrAoyFVNrquWT1APco6nHKomnlFrCkQH1OuM
-        /EnKGTD3Q/bL0JcvycNAJpU=
-X-Google-Smtp-Source: AGRyM1suSHIrHuomtbcQyx39R4sEOccPsO0YKHzge8wgHA4N/CbmPmzndo1pH08PAhDMKhOryuKMBA==
-X-Received: by 2002:a17:906:2086:b0:715:7983:a277 with SMTP id 6-20020a170906208600b007157983a277mr39840337ejq.386.1658404280576;
-        Thu, 21 Jul 2022 04:51:20 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id 15-20020a170906328f00b006fee98045cdsm814224ejw.10.2022.07.21.04.51.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 04:51:19 -0700 (PDT)
-Date:   Thu, 21 Jul 2022 14:51:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <20220721115116.5avmhghbmbbprq23@skbuf>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
- <20220707152930.1789437-4-netdev@kapio-technology.com>
- <20220708084904.33otb6x256huddps@skbuf>
- <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
- <20220708091550.2qcu3tyqkhgiudjg@skbuf>
- <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+        with ESMTP id S232398AbiGULyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 07:54:52 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247F283225;
+        Thu, 21 Jul 2022 04:54:50 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id DA5C11008B396;
+        Thu, 21 Jul 2022 19:54:46 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id C99782008B6BA;
+        Thu, 21 Jul 2022 19:54:46 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id YmJURmnhOz3I; Thu, 21 Jul 2022 19:54:46 +0800 (CST)
+Received: from [192.168.24.189] (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 1F3E0200C0822;
+        Thu, 21 Jul 2022 19:54:35 +0800 (CST)
+Message-ID: <4c1d4b69-33d9-1b84-1e3f-58441c3e67d3@sjtu.edu.cn>
+Date:   Thu, 21 Jul 2022 19:54:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC 0/5] In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER
+ was introduced.
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     eperezma <eperezma@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>, mst <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+ <CACGkMEtvjy1_NYHOV=VKMWcggYnOUBk3PRue=t0Kd4wtHjfzQg@mail.gmail.com>
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <CACGkMEtvjy1_NYHOV=VKMWcggYnOUBk3PRue=t0Kd4wtHjfzQg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,17 +58,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 11:50:33AM +0200, netdev@kapio-technology.com wrote:
-> On 2022-07-08 11:15, Vladimir Oltean wrote:
-> > When the possibility for it to be true will exist, _all_ switchdev
-> > drivers will need to be updated to ignore that (mlxsw, cpss, ocelot,
-> > rocker, prestera, etc etc), not just DSA. And you don't need to
-> > propagate the is_locked flag to all individual DSA sub-drivers when none
-> > care about is_locked in the ADD_TO_DEVICE direction, you can just ignore
-> > within DSA until needed otherwise.
-> > 
-> 
-> Maybe I have it wrong, but I think that Ido requested me to send it to all
-> the drivers, and have them ignore entries with is_locked=true ...
+On 2022/7/21 17:17, Jason Wang wrote:
+> On Thu, Jul 21, 2022 at 4:44 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>> When this feature has been negotiated, virtio driver will use
+>> descriptors in ring order: starting from offset 0 in the table, and
+>> wrapping around at the end of the table. Vhost devices will always use
+>> descriptors in the same order in which they have been made available.
+>> This can reduce virtio accesses to used ring.
+>>
+>> Based on updated virtio-spec, this series realized IN_ORDER prototype
+>> in virtio driver and vhost.
+> Thanks a lot for the series.
+>
+> I wonder if you can share any performance numbers for this?
+>
+> Thanks
 
-Yes, but re-read my message about what "all the drivers" means.
+As a RFC series, current prototype only support virtio_test, and its 
+performance evaluation between
+
+in order and traditional has little difference. We can focus on the 
+prototype design at this stage.
+
+I will continue work to support real network driver and device, thus 
+share more persuasive performance result.
+
+Thanks.
+
+>> Guo Zhi (5):
+>>    vhost: reorder used descriptors in a batch
+>>    vhost: announce VIRTIO_F_IN_ORDER support
+>>    vhost_test: batch used buffer
+>>    virtio: get desc id in order
+>>    virtio: annouce VIRTIO_F_IN_ORDER support
+>>
+>>   drivers/vhost/test.c         | 15 +++++++++++-
+>>   drivers/vhost/vhost.c        | 44 ++++++++++++++++++++++++++++++++++--
+>>   drivers/vhost/vhost.h        |  4 ++++
+>>   drivers/virtio/virtio_ring.c | 39 +++++++++++++++++++++++++-------
+>>   4 files changed, 91 insertions(+), 11 deletions(-)
+>>
+>> --
+>> 2.17.1
+>>
+
