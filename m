@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B722E57D4CA
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E216257D4CB
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 22:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbiGUUbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 16:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
+        id S231857AbiGUUbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 16:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbiGUUbs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:31:48 -0400
+        with ESMTP id S230392AbiGUUbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 16:31:49 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C7CB1EA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E78C1F9
         for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 13:31:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658435508; x=1689971508;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tvmvJXlVsXUw/Nvu5NHM1iHsP9EMoVgUTslEgSRRY6k=;
-  b=B8xaU9HvWcpWjrHosQUQgokiCumgY8DUZeulSRNpUDkt1mQZnLiH7p4V
-   xMIzJ1SGU05gol3IK5od80Feil6XouVmI2GJO3jDdTED5Byxs4GdFYNJL
-   aMAPRWrzMAbq/i3PVHtgDinuiAp20m/VsfEAKwU88rd5mAB73Kf5fIqSH
-   UH0tgdOTPJiPcj9FxJOBVwGLwSZlO6+OgGf7o/IJfh2myRhaidT3uDwxK
-   GLuWX7BB1rSspaGzG0Tz3ppzRyvwVB2Qa0XXwCfQKiUza1ycqA5LXjiWc
-   O6veaxS6UgbIxrmZDDeBe1RUDmOeZcYu/yItl8EKZORnYisXC4vhe8bfS
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="266941694"
+  bh=yLNfwP/2Ie73zxSgwrUizXljIlMF8FiRvZ2de92+sZA=;
+  b=cn1850pabXVKVtRPhWDor8VMJryEuxhT50ZQX3ybe6jZ/IeFcMSYcWRm
+   zwS7/bRF9826arwqzBgo9e5d0bmOnz2CPVhG/PlQHuXpyyofD5eEBRLPa
+   w724k0UDHD7zuuhvazKOF8X0uY5BUN9KMXMzuYurQXVzLUZPg7WYS3fr+
+   GND5hzKF++aRtqnrNXRw2SQ85rMDlIdu6ufCVFsRQpVSqTf7y8HrbmYga
+   Igu2iEIB8fzZGQW+mdmW1+OHnOKvUeFLQ1YnZ5+hpavGvFYfcf5p6WOTH
+   nkgioSefBqhvAEMiQVHqSRx+gy0iwKWcHZZW0hAqlNtdKC1+/jBlD4z2x
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="266941696"
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="266941694"
+   d="scan'208";a="266941696"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 13:31:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="666432314"
+   d="scan'208";a="666432321"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga004.fm.intel.com with ESMTP; 21 Jul 2022 13:31:47 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -43,9 +43,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 Cc:     Karol Kolacinski <karol.kolacinski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         richardcochran@gmail.com, Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next v2 1/2] ice: add i2c write command
-Date:   Thu, 21 Jul 2022 13:28:41 -0700
-Message-Id: <20220721202842.3276257-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next v2 2/2] ice: add write functionality for GNSS TTY
+Date:   Thu, 21 Jul 2022 13:28:42 -0700
+Message-Id: <20220721202842.3276257-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220721202842.3276257-1-anthony.l.nguyen@intel.com>
 References: <20220721202842.3276257-1-anthony.l.nguyen@intel.com>
@@ -62,136 +62,463 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Karol Kolacinski <karol.kolacinski@intel.com>
 
-Add the possibility to write to connected i2c devices using the AQ
-command. FW may reject the write if the device is not on allowlist.
+Add the possibility to write raw bytes to the GNSS module through the
+first TTY device. This allows user to configure the module.
+
+Create a second read-only TTY device.
 
 Signed-off-by: Karol Kolacinski <karol.kolacinski@intel.com>
 Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  7 +--
- drivers/net/ethernet/intel/ice/ice_common.c   | 47 ++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_common.h   |  4 ++
- 3 files changed, 54 insertions(+), 4 deletions(-)
+ .../device_drivers/ethernet/intel/ice.rst     |   9 +
+ drivers/net/ethernet/intel/ice/ice.h          |   4 +-
+ drivers/net/ethernet/intel/ice/ice_gnss.c     | 242 ++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_gnss.h     |  30 ++-
+ 4 files changed, 254 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 05cb9dd7035a..9939238573a4 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1395,7 +1395,7 @@ struct ice_aqc_get_link_topo {
- 	u8 rsvd[9];
- };
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.rst b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+index 67b7a701ce9e..dc2e60ced927 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+@@ -901,6 +901,15 @@ To enable/disable UDP Segmentation Offload, issue the following command::
  
--/* Read I2C (direct, 0x06E2) */
-+/* Read/Write I2C (direct, 0x06E2/0x06E3) */
- struct ice_aqc_i2c {
- 	struct ice_aqc_link_topo_addr topo_addr;
- 	__le16 i2c_addr;
-@@ -1405,7 +1405,7 @@ struct ice_aqc_i2c {
+   # ethtool -K <ethX> tx-udp-segmentation [off|on]
  
- 	u8 rsvd;
- 	__le16 i2c_bus_addr;
--	u8 rsvd2[4];
-+	u8 i2c_data[4]; /* Used only by write command, reserved in read. */
- };
++GNSS module
++-----------
++Allows user to read messages from the GNSS module and write supported commands.
++If the module is physically present, driver creates 2 TTYs for each supported
++device in /dev, ttyGNSS_<device>:<function>_0 and _1. First one (_0) is RW and
++the second one is RO.
++The protocol of write commands is dependent on the GNSS module as the driver
++writes raw bytes from the TTY to the GNSS i2c. Please refer to the module
++documentation for details.
  
- /* Read I2C Response (direct, 0x06E2) */
-@@ -2124,7 +2124,7 @@ struct ice_aq_desc {
- 		struct ice_aqc_get_link_status get_link_status;
- 		struct ice_aqc_event_lan_overflow lan_overflow;
- 		struct ice_aqc_get_link_topo get_link_topo;
--		struct ice_aqc_i2c read_i2c;
-+		struct ice_aqc_i2c read_write_i2c;
- 		struct ice_aqc_read_i2c_resp read_i2c_resp;
- 	} params;
- };
-@@ -2241,6 +2241,7 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_set_mac_lb				= 0x0620,
- 	ice_aqc_opc_get_link_topo			= 0x06E0,
- 	ice_aqc_opc_read_i2c				= 0x06E2,
-+	ice_aqc_opc_write_i2c				= 0x06E3,
- 	ice_aqc_opc_set_port_id_led			= 0x06E9,
- 	ice_aqc_opc_set_gpio				= 0x06EC,
- 	ice_aqc_opc_get_gpio				= 0x06ED,
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 9619bdb9e49a..27d0cbbd29da 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -4823,7 +4823,7 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
- 	int status;
+ Performance Optimization
+ ========================
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index f72c5cc4e035..1a2e54dbc5a1 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -545,8 +545,8 @@ struct ice_pf {
+ 	u32 msg_enable;
+ 	struct ice_ptp ptp;
+ 	struct tty_driver *ice_gnss_tty_driver;
+-	struct tty_port gnss_tty_port;
+-	struct gnss_serial *gnss_serial;
++	struct tty_port *gnss_tty_port[ICE_GNSS_TTY_MINOR_DEVICES];
++	struct gnss_serial *gnss_serial[ICE_GNSS_TTY_MINOR_DEVICES];
+ 	u16 num_rdma_msix;		/* Total MSIX vectors for RDMA driver */
+ 	u16 rdma_base_vector;
  
- 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_read_i2c);
--	cmd = &desc.params.read_i2c;
-+	cmd = &desc.params.read_write_i2c;
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index c6d755f707aa..b5a7f246d230 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -1,10 +1,103 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/* Copyright (C) 2018-2021, Intel Corporation. */
++/* Copyright (C) 2021-2022, Intel Corporation. */
  
- 	if (!data)
- 		return -EINVAL;
-@@ -4850,6 +4850,51 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
- 	return status;
- }
+ #include "ice.h"
+ #include "ice_lib.h"
+ #include <linux/tty_driver.h>
  
 +/**
-+ * ice_aq_write_i2c
-+ * @hw: pointer to the hw struct
-+ * @topo_addr: topology address for a device to communicate with
-+ * @bus_addr: 7-bit I2C bus address
-+ * @addr: I2C memory address (I2C offset) with up to 16 bits
-+ * @params: I2C parameters: bit [4] - I2C address type, bits [3:0] - data size to write (0-7 bytes)
-+ * @data: pointer to data (0 to 4 bytes) to be written to the I2C device
-+ * @cd: pointer to command details structure or NULL
++ * ice_gnss_do_write - Write data to internal GNSS
++ * @pf: board private structure
++ * @buf: command buffer
++ * @size: command buffer size
 + *
-+ * Write I2C (0x06E3)
-+ *
-+ * * Return:
-+ * * 0             - Successful write to the i2c device
-+ * * -EINVAL       - Data size greater than 4 bytes
-+ * * -EIO          - FW error
++ * Write UBX command data to the GNSS receiver
 + */
-+int
-+ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
-+		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
-+		 struct ice_sq_cd *cd)
++static unsigned int
++ice_gnss_do_write(struct ice_pf *pf, unsigned char *buf, unsigned int size)
 +{
-+	struct ice_aq_desc desc = { 0 };
-+	struct ice_aqc_i2c *cmd;
-+	u8 data_size;
++	struct ice_aqc_link_topo_addr link_topo;
++	struct ice_hw *hw = &pf->hw;
++	unsigned int offset = 0;
++	int err = 0;
 +
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_write_i2c);
-+	cmd = &desc.params.read_write_i2c;
++	memset(&link_topo, 0, sizeof(struct ice_aqc_link_topo_addr));
++	link_topo.topo_params.index = ICE_E810T_GNSS_I2C_BUS;
++	link_topo.topo_params.node_type_ctx |=
++		FIELD_PREP(ICE_AQC_LINK_TOPO_NODE_CTX_M,
++			   ICE_AQC_LINK_TOPO_NODE_CTX_OVERRIDE);
 +
-+	data_size = FIELD_GET(ICE_AQC_I2C_DATA_SIZE_M, params);
++	/* It's not possible to write a single byte to u-blox.
++	 * Write all bytes in a loop until there are 6 or less bytes left. If
++	 * there are exactly 6 bytes left, the last write would be only a byte.
++	 * In this case, do 4+2 bytes writes instead of 5+1. Otherwise, do the
++	 * last 2 to 5 bytes write.
++	 */
++	while (size - offset > ICE_GNSS_UBX_WRITE_BYTES + 1) {
++		err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
++				       cpu_to_le16(buf[offset]),
++				       ICE_MAX_I2C_WRITE_BYTES,
++				       &buf[offset + 1], NULL);
++		if (err)
++			goto err_out;
 +
-+	/* data_size limited to 4 */
-+	if (data_size > 4)
-+		return -EINVAL;
++		offset += ICE_GNSS_UBX_WRITE_BYTES;
++	}
 +
-+	cmd->i2c_bus_addr = cpu_to_le16(bus_addr);
-+	cmd->topo_addr = topo_addr;
-+	cmd->i2c_params = params;
-+	cmd->i2c_addr = addr;
++	/* Single byte would be written. Write 4 bytes instead of 5. */
++	if (size - offset == ICE_GNSS_UBX_WRITE_BYTES + 1) {
++		err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
++				       cpu_to_le16(buf[offset]),
++				       ICE_MAX_I2C_WRITE_BYTES - 1,
++				       &buf[offset + 1], NULL);
++		if (err)
++			goto err_out;
 +
-+	memcpy(cmd->i2c_data, data, data_size);
++		offset += ICE_GNSS_UBX_WRITE_BYTES - 1;
++	}
 +
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
++	/* Do the last write, 2 to 5 bytes. */
++	err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
++			       cpu_to_le16(buf[offset]), size - offset - 1,
++			       &buf[offset + 1], NULL);
++	if (err)
++		goto err_out;
++
++	return size;
++
++err_out:
++	dev_err(ice_pf_to_dev(pf), "GNSS failed to write, offset=%u, size=%u, err=%d\n",
++		offset, size, err);
++
++	return offset;
++}
++
++/**
++ * ice_gnss_write_pending - Write all pending data to internal GNSS
++ * @work: GNSS write work structure
++ */
++static void ice_gnss_write_pending(struct kthread_work *work)
++{
++	struct gnss_serial *gnss = container_of(work, struct gnss_serial,
++						write_work);
++	struct ice_pf *pf = gnss->back;
++
++	if (!list_empty(&gnss->queue)) {
++		struct gnss_write_buf *write_buf = NULL;
++		unsigned int bytes;
++
++		write_buf = list_first_entry(&gnss->queue,
++					     struct gnss_write_buf, queue);
++
++		bytes = ice_gnss_do_write(pf, write_buf->buf, write_buf->size);
++		dev_dbg(ice_pf_to_dev(pf), "%u bytes written to GNSS\n", bytes);
++
++		list_del(&write_buf->queue);
++		kfree(write_buf->buf);
++		kfree(write_buf);
++	}
 +}
 +
  /**
-  * ice_aq_set_driver_param - Set driver parameter to share via firmware
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 872ea7d2332d..61b7c60db689 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -214,5 +214,9 @@ int
- ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
- 		u16 bus_addr, __le16 addr, u8 params, u8 *data,
- 		struct ice_sq_cd *cd);
-+int
-+ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
-+		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
-+		 struct ice_sq_cd *cd);
- bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw);
- #endif /* _ICE_COMMON_H_ */
+  * ice_gnss_read - Read data from internal GNSS module
+  * @work: GNSS read work structure
+@@ -104,8 +197,9 @@ static void ice_gnss_read(struct kthread_work *work)
+ /**
+  * ice_gnss_struct_init - Initialize GNSS structure for the TTY
+  * @pf: Board private structure
++ * @index: TTY device index
+  */
+-static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
++static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf, int index)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct kthread_worker *kworker;
+@@ -118,9 +212,11 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
+ 	mutex_init(&gnss->gnss_mutex);
+ 	gnss->open_count = 0;
+ 	gnss->back = pf;
+-	pf->gnss_serial = gnss;
++	pf->gnss_serial[index] = gnss;
+ 
+ 	kthread_init_delayed_work(&gnss->read_work, ice_gnss_read);
++	INIT_LIST_HEAD(&gnss->queue);
++	kthread_init_work(&gnss->write_work, ice_gnss_write_pending);
+ 	/* Allocate a kworker for handling work required for the GNSS TTY
+ 	 * writes.
+ 	 */
+@@ -156,10 +252,10 @@ static int ice_gnss_tty_open(struct tty_struct *tty, struct file *filp)
+ 	tty->driver_data = NULL;
+ 
+ 	/* Get the serial object associated with this tty pointer */
+-	gnss = pf->gnss_serial;
++	gnss = pf->gnss_serial[tty->index];
+ 	if (!gnss) {
+ 		/* Initialize GNSS struct on the first device open */
+-		gnss = ice_gnss_struct_init(pf);
++		gnss = ice_gnss_struct_init(pf, tty->index);
+ 		if (!gnss)
+ 			return -ENOMEM;
+ 	}
+@@ -212,25 +308,100 @@ static void ice_gnss_tty_close(struct tty_struct *tty, struct file *filp)
+ }
+ 
+ /**
+- * ice_gnss_tty_write - Dummy TTY write function to avoid kernel panic
++ * ice_gnss_tty_write - Write GNSS data
+  * @tty: pointer to the tty_struct
+  * @buf: pointer to the user data
+- * @cnt: the number of characters that was able to be sent to the hardware (or
+- *       queued to be sent at a later time)
++ * @count: the number of characters queued to be sent to the HW
++ *
++ * The write function call is called by the user when there is data to be sent
++ * to the hardware. First the tty core receives the call, and then it passes the
++ * data on to the tty driver's write function. The tty core also tells the tty
++ * driver the size of the data being sent.
++ * If any errors happen during the write call, a negative error value should be
++ * returned instead of the number of characters queued to be written.
+  */
+ static int
+-ice_gnss_tty_write(struct tty_struct *tty, const unsigned char *buf, int cnt)
++ice_gnss_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
+ {
+-	return 0;
++	struct gnss_write_buf *write_buf;
++	struct gnss_serial *gnss;
++	unsigned char *cmd_buf;
++	struct ice_pf *pf;
++	int err = count;
++
++	/* We cannot write a single byte using our I2C implementation. */
++	if (count <= 1 || count > ICE_GNSS_TTY_WRITE_BUF)
++		return -EINVAL;
++
++	gnss = tty->driver_data;
++	if (!gnss)
++		return -EFAULT;
++
++	pf = (struct ice_pf *)tty->driver->driver_state;
++	if (!pf)
++		return -EFAULT;
++
++	/* Only allow to write on TTY 0 */
++	if (gnss != pf->gnss_serial[0])
++		return -EIO;
++
++	mutex_lock(&gnss->gnss_mutex);
++
++	if (!gnss->open_count) {
++		err = -EINVAL;
++		goto exit;
++	}
++
++	cmd_buf = kcalloc(count, sizeof(*buf), GFP_KERNEL);
++	if (!cmd_buf) {
++		err = -ENOMEM;
++		goto exit;
++	}
++
++	memcpy(cmd_buf, buf, count);
++
++	/* Send the data out to a hardware port */
++	write_buf = kzalloc(sizeof(*write_buf), GFP_KERNEL);
++	if (!write_buf) {
++		err = -ENOMEM;
++		goto exit;
++	}
++
++	write_buf->buf = cmd_buf;
++	write_buf->size = count;
++	INIT_LIST_HEAD(&write_buf->queue);
++	list_add_tail(&write_buf->queue, &gnss->queue);
++	kthread_queue_work(gnss->kworker, &gnss->write_work);
++exit:
++	mutex_unlock(&gnss->gnss_mutex);
++	return err;
+ }
+ 
+ /**
+- * ice_gnss_tty_write_room - Dummy TTY write_room function to avoid kernel panic
++ * ice_gnss_tty_write_room - Returns the numbers of characters to be written.
+  * @tty: pointer to the tty_struct
++ *
++ * This routine returns the numbers of characters the tty driver will accept
++ * for queuing to be written or 0 if either the TTY is not open or user
++ * tries to write to the TTY other than the first.
+  */
+ static unsigned int ice_gnss_tty_write_room(struct tty_struct *tty)
+ {
+-	return 0;
++	struct gnss_serial *gnss = tty->driver_data;
++
++	/* Only allow to write on TTY 0 */
++	if (!gnss || gnss != gnss->back->gnss_serial[0])
++		return 0;
++
++	mutex_lock(&gnss->gnss_mutex);
++
++	if (!gnss->open_count) {
++		mutex_unlock(&gnss->gnss_mutex);
++		return 0;
++	}
++
++	mutex_unlock(&gnss->gnss_mutex);
++	return ICE_GNSS_TTY_WRITE_BUF;
+ }
+ 
+ static const struct tty_operations tty_gps_ops = {
+@@ -250,11 +421,13 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+ 	const int ICE_TTYDRV_NAME_MAX = 14;
+ 	struct tty_driver *tty_driver;
+ 	char *ttydrv_name;
++	unsigned int i;
+ 	int err;
+ 
+-	tty_driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
++	tty_driver = tty_alloc_driver(ICE_GNSS_TTY_MINOR_DEVICES,
++				      TTY_DRIVER_REAL_RAW);
+ 	if (IS_ERR(tty_driver)) {
+-		dev_err(ice_pf_to_dev(pf), "Failed to allocate memory for GNSS TTY\n");
++		dev_err(dev, "Failed to allocate memory for GNSS TTY\n");
+ 		return NULL;
+ 	}
+ 
+@@ -284,23 +457,32 @@ static struct tty_driver *ice_gnss_create_tty_driver(struct ice_pf *pf)
+ 	tty_driver->driver_state = pf;
+ 	tty_set_operations(tty_driver, &tty_gps_ops);
+ 
+-	pf->gnss_serial = NULL;
++	for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++) {
++		pf->gnss_tty_port[i] = kzalloc(sizeof(*pf->gnss_tty_port[i]),
++					       GFP_KERNEL);
++		pf->gnss_serial[i] = NULL;
+ 
+-	tty_port_init(&pf->gnss_tty_port);
+-	tty_port_link_device(&pf->gnss_tty_port, tty_driver, 0);
++		tty_port_init(pf->gnss_tty_port[i]);
++		tty_port_link_device(pf->gnss_tty_port[i], tty_driver, i);
++	}
+ 
+ 	err = tty_register_driver(tty_driver);
+ 	if (err) {
+-		dev_err(ice_pf_to_dev(pf), "Failed to register TTY driver err=%d\n",
+-			err);
++		dev_err(dev, "Failed to register TTY driver err=%d\n", err);
+ 
+-		tty_port_destroy(&pf->gnss_tty_port);
++		for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++) {
++			tty_port_destroy(pf->gnss_tty_port[i]);
++			kfree(pf->gnss_tty_port[i]);
++		}
+ 		kfree(ttydrv_name);
+ 		tty_driver_kref_put(pf->ice_gnss_tty_driver);
+ 
+ 		return NULL;
+ 	}
+ 
++	for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++)
++		dev_info(dev, "%s%d registered\n", ttydrv_name, i);
++
+ 	return tty_driver;
+ }
+ 
+@@ -328,17 +510,25 @@ void ice_gnss_init(struct ice_pf *pf)
+  */
+ void ice_gnss_exit(struct ice_pf *pf)
+ {
++	unsigned int i;
++
+ 	if (!test_bit(ICE_FLAG_GNSS, pf->flags) || !pf->ice_gnss_tty_driver)
+ 		return;
+ 
+-	tty_port_destroy(&pf->gnss_tty_port);
++	for (i = 0; i < ICE_GNSS_TTY_MINOR_DEVICES; i++) {
++		if (pf->gnss_tty_port[i]) {
++			tty_port_destroy(pf->gnss_tty_port[i]);
++			kfree(pf->gnss_tty_port[i]);
++		}
+ 
+-	if (pf->gnss_serial) {
+-		struct gnss_serial *gnss = pf->gnss_serial;
++		if (pf->gnss_serial[i]) {
++			struct gnss_serial *gnss = pf->gnss_serial[i];
+ 
+-		kthread_cancel_delayed_work_sync(&gnss->read_work);
+-		kfree(gnss);
+-		pf->gnss_serial = NULL;
++			kthread_cancel_work_sync(&gnss->write_work);
++			kthread_cancel_delayed_work_sync(&gnss->read_work);
++			kfree(gnss);
++			pf->gnss_serial[i] = NULL;
++		}
+ 	}
+ 
+ 	tty_unregister_driver(pf->ice_gnss_tty_driver);
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.h b/drivers/net/ethernet/intel/ice/ice_gnss.h
+index 9211adb2372c..f454dd1d9285 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.h
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.h
+@@ -1,5 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-/* Copyright (C) 2018-2021, Intel Corporation. */
++/* Copyright (C) 2021-2022, Intel Corporation. */
+ 
+ #ifndef _ICE_GNSS_H_
+ #define _ICE_GNSS_H_
+@@ -8,14 +8,34 @@
+ #include <linux/tty_flip.h>
+ 
+ #define ICE_E810T_GNSS_I2C_BUS		0x2
++#define ICE_GNSS_TIMER_DELAY_TIME	(HZ / 10) /* 0.1 second per message */
++/* Create 2 minor devices, both using the same GNSS module. First one is RW,
++ * second one RO.
++ */
++#define ICE_GNSS_TTY_MINOR_DEVICES	2
++#define ICE_GNSS_TTY_WRITE_BUF		250
++#define ICE_MAX_I2C_DATA_SIZE		FIELD_MAX(ICE_AQC_I2C_DATA_SIZE_M)
++#define ICE_MAX_I2C_WRITE_BYTES		4
++
++/* u-blox ZED-F9T specific definitions */
+ #define ICE_GNSS_UBX_I2C_BUS_ADDR	0x42
+ /* Data length register is big endian */
+ #define ICE_GNSS_UBX_DATA_LEN_H		0xFD
+ #define ICE_GNSS_UBX_DATA_LEN_WIDTH	2
+ #define ICE_GNSS_UBX_EMPTY_DATA		0xFF
+-#define ICE_GNSS_TIMER_DELAY_TIME	(HZ / 10) /* 0.1 second per message */
+-#define ICE_MAX_I2C_DATA_SIZE		FIELD_MAX(ICE_AQC_I2C_DATA_SIZE_M)
++/* For u-blox writes are performed without address so the first byte to write is
++ * passed as I2C addr parameter.
++ */
++#define ICE_GNSS_UBX_WRITE_BYTES	(ICE_MAX_I2C_WRITE_BYTES + 1)
+ #define ICE_MAX_UBX_READ_TRIES		255
++#define ICE_MAX_UBX_ACK_READ_TRIES	4095
++
++struct gnss_write_buf {
++	struct list_head queue;
++	unsigned int size;
++	unsigned char *buf;
++};
++
+ 
+ /**
+  * struct gnss_serial - data used to initialize GNSS TTY port
+@@ -25,6 +45,8 @@
+  * @gnss_mutex: gnss_mutex used to protect GNSS serial operations
+  * @kworker: kwork thread for handling periodic work
+  * @read_work: read_work function for handling GNSS reads
++ * @write_work: write_work function for handling GNSS writes
++ * @queue: write buffers queue
+  */
+ struct gnss_serial {
+ 	struct ice_pf *back;
+@@ -33,6 +55,8 @@ struct gnss_serial {
+ 	struct mutex gnss_mutex; /* protects GNSS serial structure */
+ 	struct kthread_worker *kworker;
+ 	struct kthread_delayed_work read_work;
++	struct kthread_work write_work;
++	struct list_head queue;
+ };
+ 
+ #if IS_ENABLED(CONFIG_TTY)
 -- 
 2.35.1
 
