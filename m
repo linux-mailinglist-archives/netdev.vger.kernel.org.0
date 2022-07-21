@@ -2,92 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2A857D0C1
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72F157D0CE
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiGUQKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 12:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S229715AbiGUQMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 12:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGUQKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:10:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE0AB862;
-        Thu, 21 Jul 2022 09:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4AA61D07;
-        Thu, 21 Jul 2022 16:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89AECC341C0;
-        Thu, 21 Jul 2022 16:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658419814;
-        bh=HOE/flbCziKu2voAYBrndOCgntACUbS6q6MoJRpxXLk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n2KSyOjp4la/FcqMfQZnczNR08ZLwUSz+YF3Jw9nyHiLC9ijJUU9U/zGsDioa1Fo0
-         v90CYmjgNA90FJgAws5N90/8uotYe5tht9ClreBRPOfEVeZ1FBFCVErNhVu9ZExPyM
-         5grEu5t6lZb7u83fAoYntI0tQK916iG46+FavPa1JOONtxrUwyj7uM/tYQ6G8y2zCC
-         E9A9co2vBSI+r9Uy9Xh3DIc/UYy1NhCHjEj0x48dz74VSmtW58jJ74HZQkSL/IWnbp
-         j60KpyN9P1/rqZVVvvGAA9TRfU+fPgB5bYL67idAM9UMXs1iOwkQOjgMx1qonwIIfA
-         mKjqgZfKu7f/A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 66BE8E451B0;
-        Thu, 21 Jul 2022 16:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229481AbiGUQMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:12:06 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21022140A1;
+        Thu, 21 Jul 2022 09:12:01 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id f73so3522065yba.10;
+        Thu, 21 Jul 2022 09:12:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LlrLvrHdgIqpNgzIDfPP4ldd7eYPYAt16clK0JtUg4w=;
+        b=dguCHHcpuhJ+4bAfO38pTLyml9mhdcfmmyYhbySGdkWYdnKebv959KEjwOH8BWFbi9
+         8BEgICFM4wwv3xZuu5YqVKsw8J/ltnaEqNvAQey1QV4Ic4XqXecbr9AnGMij6e8vnfjD
+         KfqkQyUbQSDKQSkew8osnFNqQeGlDf5nddiLwGXTxJX7oUVjhq1MxduTmgyEWJvjsJGf
+         j0toNVhPy8iBGStBjV3Aqbfhxh1CHB1Iw2mg93BYOwn4WwP/fN2WWmP2hlQo0vnrWLcN
+         B2CXmd2+HxU74A/TnxMkY9jFasYGtLmRwvmO9ysL556fLDEi0Yp/VpiP7EGQtzDMjnRr
+         QpWQ==
+X-Gm-Message-State: AJIora/kgcdgXBLb8T65W5vGkr88uYMV5N1/ILmlR2g00MLnDyR2FnIA
+        e7Pt+/1No3VGZQwEditPMQ2nfdp6vnqZC/Eluwn7KIkDf8KDhg==
+X-Google-Smtp-Source: AGRyM1strfzaUt2Yd+j6aqpspsXBSpVAh5Odj5eP4TjM0pFLiQTGdS8F+goiBkBgWiSksV8nouUyAX389jRLAFGMf4M=
+X-Received: by 2002:a5b:ed0:0:b0:670:7cd1:a756 with SMTP id
+ a16-20020a5b0ed0000000b006707cd1a756mr14575967ybs.151.1658419920250; Thu, 21
+ Jul 2022 09:12:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/4] Bluetooth: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165841981441.30268.9603484388527010825.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Jul 2022 16:10:14 +0000
-References: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
-In-Reply-To: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
-To:     Zijun Hu <quic_zijuhu@quicinc.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, luiz.von.dentz@intel.com, swyterzone@gmail.com,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220720081034.3277385-1-mkl@pengutronix.de> <20220720081034.3277385-19-mkl@pengutronix.de>
+ <YtlwSpoeT+nhmhVn@dev-arch.thelio-3990X> <20220721154725.ovcsfiio7e6hts2n@pengutronix.de>
+In-Reply-To: <20220721154725.ovcsfiio7e6hts2n@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Fri, 22 Jul 2022 01:11:49 +0900
+Message-ID: <CAMZ6RqLdYCqag_MDp7dj=u1SEjx1r=bs_xHG26w11_A_D_SumQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 18/29] can: pch_can: do not report txerr and
+ rxerr during bus-off
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri. 22 Jul. 2022 at 00:49, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 21.07.2022 08:27:06, Nathan Chancellor wrote:
+> > On Wed, Jul 20, 2022 at 10:10:23AM +0200, Marc Kleine-Budde wrote:
+> > > From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > >
+> > > During bus off, the error count is greater than 255 and can not fit in
+> > > a u8.
+> > >
+> > > Fixes: 0c78ab76a05c ("pch_can: Add setting TEC/REC statistics processing")
+> > > Link: https://lore.kernel.org/all/20220719143550.3681-2-mailhol.vincent@wanadoo.fr
+> > > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > > Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> > > ---
+> > >  drivers/net/can/pch_can.c | 6 +++---
+> > >  1 file changed, 3 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+> > > index fde3ac516d26..497ef77340ea 100644
+> > > --- a/drivers/net/can/pch_can.c
+> > > +++ b/drivers/net/can/pch_can.c
+> > > @@ -496,6 +496,9 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+> > >             cf->can_id |= CAN_ERR_BUSOFF;
+> > >             priv->can.can_stats.bus_off++;
+> > >             can_bus_off(ndev);
+> > > +   } else {
+> > > +           cf->data[6] = errc & PCH_TEC;
+> > > +           cf->data[7] = (errc & PCH_REC) >> 8;
+> > >     }
+> > >
+> > >     errc = ioread32(&priv->regs->errc);
+> > > @@ -556,9 +559,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
+> > >             break;
+> > >     }
+> > >
+> > > -   cf->data[6] = errc & PCH_TEC;
+> > > -   cf->data[7] = (errc & PCH_REC) >> 8;
+> > > -
+> > >     priv->can.state = state;
+> > >     netif_receive_skb(skb);
+> > >  }
+> > > --
+> > > 2.35.1
+> > >
+> > >
+> > >
+> >
+> > Apologies if this has been reported already, I didn't see anything on
+> > the mailing lists.
+> >
+> > This commit is now in -next as commit 3a5c7e4611dd ("can: pch_can: do
+> > not report txerr and rxerr during bus-off"), where it causes the
+> > following clang warning:
+> >
+> >   ../drivers/net/can/pch_can.c:501:17: error: variable 'errc' is uninitialized when used here [-Werror,-Wuninitialized]
+> >                   cf->data[6] = errc & PCH_TEC;
+> >                                 ^~~~
+> >   ../drivers/net/can/pch_can.c:484:10: note: initialize the variable 'errc' to silence this warning
+> >           u32 errc, lec;
+> >                   ^
+> >                    = 0
+> >   1 error generated.
+> >
+> > errc is initialized underneath this now, should it be hoisted or is
+> > there another fix?
 
-This series was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+Thanks for reporting and sorry for the bug.
 
-On Thu, 21 Jul 2022 14:04:29 +0800 you wrote:
-> This patch series remove bluetooth HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
-> the quirk was introduced by 'commit cde1a8a99287 ("Bluetooth: btusb: Fix
-> and detect most of the Chinese Bluetooth controllers")' to mark HCI
-> commands HCI_Read|Write_Default_Erroneous_Data_Reporting broken within BT
-> device driver, but the reason why these two HCI commands are broken is
-> that feature "Erroneous Data Reporting" is not enabled by firmware, so BT
-> core driver can addtionally check feature bit "Erroneous Data Reporting"
-> instead of the quirk to decide if these two HCI commands work fine.
-> 
-> [...]
+That said, I have one complaint: this type of warning is reported at
+W=2 *but* W=2 output is heavily polluted, mostly due to a false
+positive on linux/bits.h's GENMASK_INPUT_CHECK(). Under the current
+situation, the relevant warings become invisible with all the
+flooding.
+I tried to send a patch to silence a huge chunk of the W=2 spam in [1]
+but it got rejected. I am sorry but even with the best intent, I might
+repeat a similar mistake in the future. The W=2 is just not usable.
 
-Here is the summary with links:
-  - [v2,1/4] Bluetooth: hci_sync: Check LMP feature bit instead of quirk
-    https://git.kernel.org/bluetooth/bluetooth-next/c/ca832c5e178f
-  - [v2,2/4] Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
-    https://git.kernel.org/bluetooth/bluetooth-next/c/9ee3f82b5015
-  - [v2,3/4] Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for fake CSR
-    https://git.kernel.org/bluetooth/bluetooth-next/c/08454349a054
-  - [v2,4/4] Bluetooth: hci_sync: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
-    https://git.kernel.org/bluetooth/bluetooth-next/c/4d22b9f84c44
+[1] https://lore.kernel.org/all/20220426161658.437466-1-mailhol.vincent@wanadoo.fr/
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Doh! I'll send a fix.
 
-
+Thanks Marc for the patch!
