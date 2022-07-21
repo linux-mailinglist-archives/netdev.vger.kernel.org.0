@@ -2,42 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC86F57D31A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 584D657D33A
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiGUSQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 14:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        id S230310AbiGUSWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 14:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiGUSQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:16:25 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD6E481FB;
-        Thu, 21 Jul 2022 11:16:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ko/ecmmHmwqq0NBK1EGja/+qrA547dXPD160U10AvfU=; b=H7A1QYw3UiBwcvwGleWFgG6vqR
-        8MymHBVDUonn6FgmkbsxQ720UY+rgXmu0joP150qTGpHSaWg03+jKDktxmpiOI3vAxeFu4wKXyZ/n
-        V54xaQNUPF0+tDClv0DOu56hg6vlq0Ga131rOzvLvUcEni+BIQ+43V7JCHCSw+1k80v11lnZxLV8F
-        /pvS5zI2aKh/hhWxSwXGIAOKjCmqE6OniA97HkAa2vbaQjuds6BAzfF/ExwTPFCfI5mYLBBbZb00V
-        6MN4xAoGuMADbFw7VQ/JtSPQ3lnyYTjtuSEwI6QCK/tLFdSPJkYTQdD4ujJVVqlkTi2ixTXHNaHSO
-        FAZeRlhg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33488)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oEaiQ-0005pP-2P; Thu, 21 Jul 2022 19:16:02 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oEaiL-00053h-1h; Thu, 21 Jul 2022 19:15:57 +0100
-Date:   Thu, 21 Jul 2022 19:15:57 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229672AbiGUSWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:22:24 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443CB18E0A;
+        Thu, 21 Jul 2022 11:22:23 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id j22so4601092ejs.2;
+        Thu, 21 Jul 2022 11:22:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=telDdakKeqGHEY5wudZ4nwhx49SVQMwMuffymH63PGo=;
+        b=XO6ulZkpjNDdBb/M6u2BJKg/17Y5IC8hQ1aMS3hURuUDmP74sjHYARYI3sm2/EIw9y
+         y6/zJOAWEomlFQDiZZ0oQhDwNzkNHn3KGbrxSURAzRS5S40NtxKZpzFZPtUTmub53Xk3
+         YdTVVZy29+H9cdRACJG6aaojCfnXp+8pHYwdQ8twWYFhDkmARKCc6yk067SlEkPPFPk6
+         6EQVPPpy1GnBLIl82R69shy7+vn2NydHcaYPoiI1fBYgnsGznylXM+CP53w1t1ydxAxm
+         6RkuhJ5sB77ojJa7vpQ3l85VvWAcpVby/+wTmp6imQfVD+ytp1DmZr0SLOrgzTBTNtCk
+         mn7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=telDdakKeqGHEY5wudZ4nwhx49SVQMwMuffymH63PGo=;
+        b=nUUNawyvLBsk+n3eyyARMfT2OsTh/MC8ob+j96ncYahXMVetfr6jzXftE7YTs9PR4F
+         iaSuj86O3XvEE+IwzxJeugUqBPeJYVT4+bYjkp7RgQaHHPDwj5QiKky90XsAF0n4rzwU
+         3Gr5CzUi4U+hCThO2zuq0kh7vbeYs2Y5oJPxOQfpPpsPm90ImZEYdr2OCy6v/JFW3Ocu
+         iua6yOTjR7UQyW02ldm+yqEtTiAabsx4Z7KwoZE1EGx5QjdjpVw26nnfKn0ikH11qcAS
+         UIpRSNJIaKN9Tu65OmnqYvc4FMozwmndWHsvXvRqudczaSpQeG+wI+GBxREXVGQVXsFo
+         Vk+A==
+X-Gm-Message-State: AJIora8Ag6hypLqemvUKFRqZHBaLaCq1b0Gv5lRSjR4BErU8X3mhHsR9
+        ytDtI1PTvxySzbGKPinF6Bs=
+X-Google-Smtp-Source: AGRyM1sJrvIzufk8Q3F7TTBGAnC3qPeej57/OshreWEcvuibGnkDJO/s88ycWFKIoC5dVGW5WRGiPQ==
+X-Received: by 2002:a17:907:1b25:b0:6da:8206:fc56 with SMTP id mp37-20020a1709071b2500b006da8206fc56mr41001511ejc.81.1658427741328;
+        Thu, 21 Jul 2022 11:22:21 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id t6-20020a170906608600b0072ecef772acsm1107193ejj.2.2022.07.21.11.22.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 11:22:20 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 21:22:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Alvin __ipraga <alsi@bang-olufsen.dk>,
@@ -68,9 +83,8 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Woojung Huh <woojung.huh@microchip.com>
 Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
  interface mode
-Message-ID: <YtmX3cD8nUqftHDY@shell.armlinux.org.uk>
-References: <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
- <20220716105711.bjsh763smf6bfjy2@skbuf>
+Message-ID: <20220721182216.z4vdaj4zfb6w3emo@skbuf>
+References: <20220716105711.bjsh763smf6bfjy2@skbuf>
  <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
  <20220716123608.chdzbvpinso546oh@skbuf>
  <YtUec3GTWTC59sky@shell.armlinux.org.uk>
@@ -79,15 +93,17 @@ References: <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
  <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
  <20220721151533.3zomvnfogshk5ze3@skbuf>
  <20220721192145.1f327b2a@dellmb>
+ <20220721192145.1f327b2a@dellmb>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 In-Reply-To: <20220721192145.1f327b2a@dellmb>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+ <20220721192145.1f327b2a@dellmb>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -95,133 +111,54 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Jul 21, 2022 at 07:21:45PM +0200, Marek Behún wrote:
-> On Thu, 21 Jul 2022 18:15:33 +0300
-> Vladimir Oltean <olteanv@gmail.com> wrote:
-> 
-> > On Thu, Jul 21, 2022 at 03:54:15PM +0100, Russell King (Oracle) wrote:
-> > > Yes, which is why I said on July 7th:
-> > > 
-> > > "So I also don't see a problem - sja1105 rejects DTs that fail to
-> > > describe a port using at least one of a phy-handle, a fixed-link, or
-> > > a managed in-band link, and I don't think it needs to do further
-> > > validation, certainly not for the phy describing properties that
-> > > the kernel has chosen to deprecate for new implementations."
-> > > 
-> > > I had assumed you knew of_phy_is_fixed_link() returns true in this
-> > > case. Do you now see that sja1105's validation is close enough
-> > > (except for the legacy phy phandle properties which we don't care
-> > > about),  
-> > 
-> > This is why your comment struck me as odd for mentioning managed in-band.
-> > 
-> > > and thus do we finally have agreement on this point?  
-> > 
-> > Yes we do.
-> > 
-> > > > On the other hand I found arm64/boot/dts/marvell/cn9130-crb.dtsi, where
-> > > > the switch, a "marvell,mv88e6190"-compatible (can't determine going just
-> > > > by that what it actually is) has this:
-> > > > 
-> > > > 			port@a {
-> > > > 				reg = <10>;
-> > > > 				label = "cpu";
-> > > > 				ethernet = <&cp0_eth0>;
-> > > > 			};  
-> > > 
-> > > Port 10 on 88E6393X supports 10GBASE-R, and maybe one day someone will
-> > > get around to implementing USXGMII. This description relies upon this
-> > > defaulting behaviour - as Andrew has described, this has been entirely
-> > > normal behaviour with mv88e6xxx.
-> > >   
-> > > > To illustrate how odd the situation is, I am able to follow the phandle
-> > > > to the CPU port and find a comment that it's a 88E6393X, and that the
-> > > > CPU port uses managed = "in-band-status":
-> > > > 
-> > > > &cp0_eth0 {
-> > > > 	/* This port is connected to 88E6393X switch */
-> > > > 	status = "okay";
-> > > > 	phy-mode = "10gbase-r";
-> > > > 	managed = "in-band-status";
-> > > > 	phys = <&cp0_comphy4 0>;
-> > > > };  
-> > > 
-> > > 10GBASE-R has no in-band signalling per-se, so the only effect this has
-> > > on the phylink instance on the CPU side is to read the status from the
-> > > PCS as it does for any other in-band mode. In the case of 10GBASE-R, the
-> > > only retrievable parameter is the link up/down status. This is no
-> > > different from a 10GBASE-R based fibre link in that regard.  
-> > 
-> > Is there any formal definition for what managed = "in-band-status"
-> > actually means? Is it context-specific depending on phy-mode?
-> > In the case of SGMII, would it also mean that clause 37 exchange would
-> > also take place (and its absence would mean it wouldn't), or does it
-> > mean just that, that the driver should read the status from the PCS?
-> > 
-> > > A fixed link on the other hand would not read status from the PCS but
-> > > would assume that the link is always up.
-> > >   
-> > > > Open question: is it sane to even do what we're trying here, to create a
-> > > > fixed-link for port@a (which makes the phylink instance use MLO_AN_FIXED)
-> > > > when &cp0_eth0 uses MLO_AN_INBAND? My simple mind thinks that if all
-> > > > involved drivers were to behave correctly and not have bugs that cancel
-> > > > out other bugs, the above device tree shouldn't work. The host port
-> > > > would expect a clause 37 base page exchange to take place, the switch
-> > > > wouldn't send any in-band information, and the SERDES lane would never
-> > > > transition to data mode. To fix the above, we'd really need to chase the
-> > > > "ethernet" phandle and attempt to mimic what the DSA master did. This is
-> > > > indeed logic that never existed before, and I don't particularly feel
-> > > > like adding it. How far do we want to go? It seems like never-ending
-> > > > insanity the more I look at it.  
-> > > 
-> > > 10GBASE-R doesn't support clause 37 AN. 10GBASE-KR does support
-> > > inband AN, but it's a different clause and different format.  
-> > 
-> > I thought it wouldn't, but then I was led to believe, after seeing it
-> > here, that just the hardware I'm working with doesn't. How about
-> > 2500base-x in Marvell, is there any base page exchange, or is this still
-> > only about retrieving link status from the PCS?
-> 
 > Marvell documentation says that 2500base-x does not implement inband
 > AN.
-> 
+
+Does Marvell documentation actually call it 2500base-x when it says it
+doesn't support in-band autoneg?
+
 > But when it was first implemented, for some reason it was thought that
 > 2500base-x is just 1000base-x at 2.5x speed, and 1000base-x does
 > support inband AN. Also it worked during tests for both switches and
 > SOC NICs, so it was enabled.
+> 
+> At the time 2500base-x was not standardized. Now 2500base-x is
+> stanradrized, and the standard says that 2500base-x does not support
+> clause 37 AN. I guess this is because where it is used, it is intended
+> to work with clause 73 AN somehow.
 
-It comes from Marvell NETA and PP2 documentation, which clearly states
-that when a port is operating in 1000base-X mode, autonegotiation must
-be enabled. It then implements 2500base-X by up-clocking the Serdes by
-2.5x.
+When you say 2500base-x is standardized, do you mean there is a document
+somewhere which I could use to read more about this?
 
-Therefore, to get 2500base-X using 1000base-X mode on these devices, it
-follows that autonegotiation must be enabled. Since phylink's origins
-are for these devices, and 2500base-X was not standardised at the time,
-and there was no documentation online to describe what 2500base-X
-actually was, a decision had to be made, and the logical thing to do
-at that point was to support AN, especially as one can use it to
-negotiate pause modes.
+> And then came 6373X switch, which didn't support clause 37 inband AN in
+> 2500base-x mode (the AN reigster returned 0xffff or something when
+> 2500base-x CMODE was set). Maybe 6373X finally supports clause 73 AN
+> (I don't know, but I don't think so) and that is the reason they now
+> forbid clause 37 AN in HW in 2500base-x.
+> 
+> But the problem is that by this time there is software out there then
+> expects 2500base-x to have clause 37 AN enabled. Indeed a passive SFP
+> cable did not work between MOX' SFP port and CN9130-CRB's SFP port
+> when used with Peridot (6190), if C37 AN was disabled on 6393x and left
+> enabled on Peridot.
+> 
+> I managed to work out how to enable C37 AN on 6393x:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=163000dbc772c1eae9bdfe7c8fe30155db1efd74
+> 
+> So currently we try to enable C37 AN in 2500base-x mode, although
+> the standard says that it shouldn't be there, and it shouldn't be there
+> presumably because they want it to work with C73 AN.
+> 
+> I don't know how to solve this issue. Maybe declare a new PHY interface
+> mode constant, 2500base-x-no-c37-an ?
 
-Note that NETA and PP2 have never supported half-duplex on 1G or 2.5G
-speeds, so the clause 37 negotiation has only ever dealt with pause
-modes, and again, it seemed logical and sensible at the time to allow
-pause modes to still be negotiated at 2500base-X speed. Especially as
-one can use FibreChannel SFPs to link two machines together using
-2500base-X in the same way that you can link them together using
-1000base-X.
+So this is essentially what I'm asking, and you didn't necessarily fully
+answer. I take it that there exist Marvell switches which enable in-band
+autoneg for 2500base-x and switches which don't, and managed = "in-band-status"
+has nothing to do with that decision. Right?
 
-Had manufacturers been more open with their documentation, and had they
-used a common term, maybe this could have been different, but in an
-information vacuum, decisions have to be made, even if they turn out to
-be wrong later on - but we have to live with those consequences.
-
-As I've stated before, I know I'm not alone in this - there are SFPs
-that support 2500base-X (particularly GPON SFPs) that appear to expect
-caluse 37 AN on 2500base-X, since the Armada 3700 uDPU product is
-designed to work with them and it was a requirement to have a working
-2.5G connection between the NETA interfaces and the GPON SFPs. And as
-I say, NETA wants AN enabled.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Is this by design of the 'managed' property, or is it an interpretation
+quirk of Marvell drivers? Some other drivers enable in-band autoneg only
+when manage = "in-band-status", and no one really said anything about
+that during review, so I came to believe that this is the expectation.
+I'm confused now, I was hoping Russell could clarify.
