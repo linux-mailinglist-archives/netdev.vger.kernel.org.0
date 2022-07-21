@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C26357CC67
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C3657CC61
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiGUNot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S230284AbiGUNow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 09:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbiGUNnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:43:41 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BBF84ED3;
-        Thu, 21 Jul 2022 06:43:04 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id v5so1091467wmj.0;
-        Thu, 21 Jul 2022 06:43:04 -0700 (PDT)
+        with ESMTP id S229782AbiGUNnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:43:43 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864C084EE4;
+        Thu, 21 Jul 2022 06:43:06 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id d8so2343710wrp.6;
+        Thu, 21 Jul 2022 06:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b9IGdu44vIQhiDdyqYUwInJvoHZ34VCzR5hVYbDWwvA=;
-        b=jfeeCIB8GONRyCx8yYFOPaQTQzaWdJsOCpVaNuxicaB1LZbDtkzAbVi7dLQTRaGNBX
-         Phz/mNmxsyQYDBZQYsekNXkyOP0hC2bDOvpYgtjJHacUiMmPNkJW8mNZ87MJ3fXUnh9h
-         Jz5eftH9Y72cb/ooOyAYih5iWzD2rlO9frTNDgSYxvU5/EA57taEgyFgJugLJRi6Q1Uv
-         paxB2HCmtl7o7aHz3UpBIV2Guh2I2HvmcCDV40Jj8SDoQumsMVRBLRaTRjFpAQDVyKYR
-         kDQ5CgIkoqGyP8AxrEiMOJdB8DcIGVyEY8ihvtN/GQyC26L3xZZvoni2G8uJ8og5Uh2C
-         ncqQ==
+        bh=4cFR1T4lbutWstXHmbM2dbPlJKpl1mp7S3Dg2sFTtXY=;
+        b=KVkLrWgddpuAVAWsP5eHNLEU1w+B9BdEyAOUBK9BHSL0zpNUPnM4tS1CuoI9ubKYH1
+         SICjA7EYGI5EMSexVGs2Wdbsssu0jIbwwS8UhTla+iNk08CMBsWmf1+ZwQIKMMVOXZ6b
+         ehIQxO9NXOi09puNJ1ada3vfb05Gel4msX+8z50QyLKcS1gU/Xp1jhG70Vmu6zyvtVWw
+         y+SynLbjVa2fqpXkLLjDefpn27cGgteQH6SDGWeJWOC8A14CBosfb/bm/+N6hME9O2xp
+         mVSEc6zfxFs8qEzMoG2jbpBDKVYNUllhWuI+fAXkUEwzHNw7qsvnhBuVoDTyrETtAo6i
+         6Eew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b9IGdu44vIQhiDdyqYUwInJvoHZ34VCzR5hVYbDWwvA=;
-        b=FD38I0e1qM1Bmq3EKfyAa7DIsIHJEliEhyozLbfYNyW6h8aQT6KZpBI1JkZi8BSqw1
-         05skuEHqn4s1hgvUaAVjfHd8QjykDItG1U0BpdKaKQcnvNOX/EsRLR9AUW/teKJyNKKV
-         nmSEJiGIfmaysqV1Yyc55WkIv82a34VBrzM65IlpsbepXWyQh56Cq9DmRCkDyhsPUrNn
-         I5+GTt7/DahNJs8+JN19V0hlt970jkKVitVKXI3itlbDB65lHPAwfcRbQ/cHDH5pmtwY
-         rNmEJhsSwOK4Rzfk/cZ4YSwI5E+FrZK9d2u1Rd9JCMHzLqbA4UO1A3qlHdtHsOPtid+Z
-         imWg==
-X-Gm-Message-State: AJIora8AqbxKC//90gXNVR+LN2IgsFDsODj01ezqpeZAzJYg1XwWJ+i+
-        YhpbqtWEfX7lgg58TVBDO92cRDChijLelw==
-X-Google-Smtp-Source: AGRyM1t2cdhDxKD6EtqwKPFRchU8XyphTdtil/MtBoQw4yuKsOwH3u+/yKIkSfVYK0iEX8Scq/0MCQ==
-X-Received: by 2002:a1c:f607:0:b0:3a0:3dc9:c4db with SMTP id w7-20020a1cf607000000b003a03dc9c4dbmr8598747wmc.30.1658410983045;
-        Thu, 21 Jul 2022 06:43:03 -0700 (PDT)
+        bh=4cFR1T4lbutWstXHmbM2dbPlJKpl1mp7S3Dg2sFTtXY=;
+        b=23qBqFO+803T3s7srrzmPe2ghKkCPaER02nj7JNoPpZDhqCnxF/liwy48lsCXtR1LH
+         VYunLLYoNFPg852YYb/hTBbAXp52lRb1hY8ErhibaVnCIZzgli4Gyrd/kV08US2FQLko
+         17NdRSpS+Wr/tW9z1LySGNbfWB1iyLvfxixgcIxsyvcnVgZ5XgK+BuEnp2Ta/Lsktbh8
+         1Qz1ji3zrgjKgbv8CiNK+OPaOMGVnewyny0CRDoml2rSrbRRVaOqhuj6UY2EGtMDwJfJ
+         BmSaLOAVHqh0bbOHKC7gCVv3blGBrlYtE0cjqtpsZoh9vfc1i8hCT4V+KcY6rkKygH/S
+         mCoA==
+X-Gm-Message-State: AJIora8ZfOH6/BCwTMTQvhwmqn8BkLKJzzsmjCPkeyEr4CfPlOlckbYT
+        ldJuL3ReJ+3mczFX0SZHm3n2J2R94hKn9g==
+X-Google-Smtp-Source: AGRyM1tv8hG/p+LFkPwOIRJrObTsWd8EoZ1vcyWWlOCCMpqph2WBWggbYzK1jZVNASYsZQ/Xdzxu2A==
+X-Received: by 2002:a5d:50c2:0:b0:21e:5ad5:39af with SMTP id f2-20020a5d50c2000000b0021e5ad539afmr1195241wrt.12.1658410984542;
+        Thu, 21 Jul 2022 06:43:04 -0700 (PDT)
 Received: from localhost (212.191.202.62.dynamic.cgnat.res.cust.swisscom.ch. [62.202.191.212])
-        by smtp.gmail.com with ESMTPSA id i6-20020a5d5226000000b0021d6d9c0bd9sm1978871wra.82.2022.07.21.06.43.02
+        by smtp.gmail.com with ESMTPSA id x10-20020adfec0a000000b0021d6c7a9f50sm2061688wrn.41.2022.07.21.06.43.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 06:43:02 -0700 (PDT)
+        Thu, 21 Jul 2022 06:43:03 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -58,14 +58,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
         netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v7 12/13] selftests/bpf: Add negative tests for new nf_conntrack kfuncs
-Date:   Thu, 21 Jul 2022 15:42:44 +0200
-Message-Id: <20220721134245.2450-13-memxor@gmail.com>
+Subject: [PATCH bpf-next v7 13/13] selftests/bpf: Fix test_verifier failed test in unprivileged mode
+Date:   Thu, 21 Jul 2022 15:42:45 +0200
+Message-Id: <20220721134245.2450-14-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220721134245.2450-1-memxor@gmail.com>
 References: <20220721134245.2450-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7143; i=memxor@gmail.com; h=from:subject; bh=5LcT2LZrEhjoAiEPR4V8pZ6D9kYF7/wjj/hDJlCMNNY=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfOVrdejOOcHIycoxy5z5ZvoPl7G3z81nWF9S3e Bt3swsOJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzgAKCRBM4MiGSL8RytkVEA C3H9Ci7SUYNNLyQjwn5uWKdHXDTyQ3z+iARG9vySWOsw9QROYDrHG1khDoTbwV9SfFU1edfU78+Rsp jLq1uCA2Z4nadw/V0Guktd74DJuUsJOExsHLEM0gAfocPYw4RRe+rpvkEHB8K79GerMAn9OSk0irGv 0a9ZNQE50rurxVENpa4gSQWSTqv+3raKmuxuoFdNQCEz0ohwKM1AV16/9M+G7VfYhNYvleix5NR8oa 1LHVtuIQsPVzpcqfzp8bGasKF14MBQY3ieCfcawHVFSRtafwnHdOPRklMeRKE7FqsxZGqXilzHUqlM FVf35XoSnwxvM83P6wT/RIFiVjehxc7iFNUVQsosr25qFlB5RhI1VBQ/nYHHr8ADUI/ZcS6wTJMqil FOe5XhA/EXdwoDiHgj5SJVTxU2psPsPhFRC64/Nj3r4pjOoVimJZTZbViftVOfOSqepAzTtq4PTUb5 JYd/nExRI3KSKc5daiHh+n41xEadPhuGL37gunD52Q/Ca5pGS4NOLqfknoFLm4EnHonjXCWPKHqDvW PimE/6B3vHWXfv7bEHkII+8VbITZ2dY4kFWuFrKuOm/Qeoa4ROeKtYE6zgnqESBHf8STjP2EewqxHO uR/DWfnwyig82Vl+cgssJi9X61DLncDs/KQygAaUIi0aSOJofPtkIpc4pv2w==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1029; i=memxor@gmail.com; h=from:subject; bh=avUxAzVXxTSlvvIczCgkt5Bck8b2xRF1My3q7b4wHho=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfOQgxaln2kgyqBnUL/mSLBYQq2oZzyQ+9iPSWL 0uAGw62JAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzgAKCRBM4MiGSL8RyiH4EA CztFjAuMJPfmhUCCB0S+c41xTfwCWXvVG4a6rEFugOpXn2w11Zt3DViPf12HWrF6AzLE9UWn/Bx17S iP+fhaHYrOP0aKYVwi1MSqrJvt5Yw3KuF1mqPclVPI/kCWnJ8P/ML5di7OK90VT0WTuagcJnRGh+3v LM319hMOVLQPR+Rt7Rz18mTfwl7ybj1f1+m8rpR7atMlc512v9pxiCJvoyJYWLiw0eSnUwMfFX7cIo 8ymTD3/zmdjHyv28gZEd/z2PZaMxTREduY42emQxT5DjCFERq2isJYKPeAx/p8snPU75+NS4OMaOyn q/awgHEWB52rBwOxs5/vjKQ5RrQY3WGc0EvbKl76V5UUqMxxC1PQlKXZFu2XpuGo2il5PabT4K/72C 1thoR4BGAFe5ARoujOvZ02GNgvpQ4z2FgdfWgohZ/r5sL23j1tngQfE3JpePAg3TNjzkt5MjYzIIO0 W+AUfK5yOHWjIVyWDFnXI2uDj2559wEgyR7I4/j2kbYuH4cy2bN57f3PSmC2dBT2SEH9w22ZOW8Y0u zXW5S3TYCl0U4UcbYomarqfG6UWgV9ZHFBgui+u7ecm/bmmYhXfN9/6AjM9IXtW8upAMWNy5IYczgR xBLKb/7SpyPfOs+GW6J73agE7rzLvvWLoY7YeABvf3YeFUNeecOAdJXPO7/Q==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,240 +78,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test cases we care about and ensure improper usage is caught and
-rejected by the verifier.
+Loading the BTF won't be permitted without privileges, hence only test
+for privileged mode by setting the prog type. This makes the
+test_verifier show 0 failures when unprivileged BPF is enabled.
 
+Fixes: 4118e9e9def ("selftest/bpf: Test for use-after-free bug fix in inline_bpf_loop")
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- .../testing/selftests/bpf/prog_tests/bpf_nf.c |  56 +++++++-
- .../selftests/bpf/progs/test_bpf_nf_fail.c    | 134 ++++++++++++++++++
- 2 files changed, 189 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+ tools/testing/selftests/bpf/verifier/bpf_loop_inline.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-index cbada73a61f8..7a74a1579076 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-@@ -2,13 +2,29 @@
- #include <test_progs.h>
- #include <network_helpers.h>
- #include "test_bpf_nf.skel.h"
-+#include "test_bpf_nf_fail.skel.h"
-+
-+static char log_buf[1024 * 1024];
-+
-+struct {
-+	const char *prog_name;
-+	const char *err_msg;
-+} test_bpf_nf_fail_tests[] = {
-+	{ "alloc_release", "kernel function bpf_ct_release args#0 expected pointer to STRUCT nf_conn but" },
-+	{ "insert_insert", "kernel function bpf_ct_insert_entry args#0 expected pointer to STRUCT nf_conn___init but" },
-+	{ "lookup_insert", "kernel function bpf_ct_insert_entry args#0 expected pointer to STRUCT nf_conn___init but" },
-+	{ "set_timeout_after_insert", "kernel function bpf_ct_set_timeout args#0 expected pointer to STRUCT nf_conn___init but" },
-+	{ "set_status_after_insert", "kernel function bpf_ct_set_status args#0 expected pointer to STRUCT nf_conn___init but" },
-+	{ "change_timeout_after_alloc", "kernel function bpf_ct_change_timeout args#0 expected pointer to STRUCT nf_conn but" },
-+	{ "change_status_after_alloc", "kernel function bpf_ct_change_status args#0 expected pointer to STRUCT nf_conn but" },
-+};
- 
- enum {
- 	TEST_XDP,
- 	TEST_TC_BPF,
- };
- 
--void test_bpf_nf_ct(int mode)
-+static void test_bpf_nf_ct(int mode)
- {
- 	struct test_bpf_nf *skel;
- 	int prog_fd, err;
-@@ -51,10 +67,48 @@ void test_bpf_nf_ct(int mode)
- 	test_bpf_nf__destroy(skel);
- }
- 
-+static void test_bpf_nf_ct_fail(const char *prog_name, const char *err_msg)
-+{
-+	LIBBPF_OPTS(bpf_object_open_opts, opts, .kernel_log_buf = log_buf,
-+						.kernel_log_size = sizeof(log_buf),
-+						.kernel_log_level = 1);
-+	struct test_bpf_nf_fail *skel;
-+	struct bpf_program *prog;
-+	int ret;
-+
-+	skel = test_bpf_nf_fail__open_opts(&opts);
-+	if (!ASSERT_OK_PTR(skel, "test_bpf_nf_fail__open"))
-+		return;
-+
-+	prog = bpf_object__find_program_by_name(skel->obj, prog_name);
-+	if (!ASSERT_OK_PTR(prog, "bpf_object__find_program_by_name"))
-+		goto end;
-+
-+	bpf_program__set_autoload(prog, true);
-+
-+	ret = test_bpf_nf_fail__load(skel);
-+	if (!ASSERT_ERR(ret, "test_bpf_nf_fail__load must fail"))
-+		goto end;
-+
-+	if (!ASSERT_OK_PTR(strstr(log_buf, err_msg), "expected error message")) {
-+		fprintf(stderr, "Expected: %s\n", err_msg);
-+		fprintf(stderr, "Verifier: %s\n", log_buf);
-+	}
-+
-+end:
-+	test_bpf_nf_fail__destroy(skel);
-+}
-+
- void test_bpf_nf(void)
- {
-+	int i;
- 	if (test__start_subtest("xdp-ct"))
- 		test_bpf_nf_ct(TEST_XDP);
- 	if (test__start_subtest("tc-bpf-ct"))
- 		test_bpf_nf_ct(TEST_TC_BPF);
-+	for (i = 0; i < ARRAY_SIZE(test_bpf_nf_fail_tests); i++) {
-+		if (test__start_subtest(test_bpf_nf_fail_tests[i].prog_name))
-+			test_bpf_nf_ct_fail(test_bpf_nf_fail_tests[i].prog_name,
-+					    test_bpf_nf_fail_tests[i].err_msg);
-+	}
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
-new file mode 100644
-index 000000000000..bf79af15c808
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
-@@ -0,0 +1,134 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <vmlinux.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_core_read.h>
-+
-+struct nf_conn;
-+
-+struct bpf_ct_opts___local {
-+	s32 netns_id;
-+	s32 error;
-+	u8 l4proto;
-+	u8 reserved[3];
-+} __attribute__((preserve_access_index));
-+
-+struct nf_conn *bpf_skb_ct_alloc(struct __sk_buff *, struct bpf_sock_tuple *, u32,
-+				 struct bpf_ct_opts___local *, u32) __ksym;
-+struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *, struct bpf_sock_tuple *, u32,
-+				  struct bpf_ct_opts___local *, u32) __ksym;
-+struct nf_conn *bpf_ct_insert_entry(struct nf_conn *) __ksym;
-+void bpf_ct_release(struct nf_conn *) __ksym;
-+void bpf_ct_set_timeout(struct nf_conn *, u32) __ksym;
-+int bpf_ct_change_timeout(struct nf_conn *, u32) __ksym;
-+int bpf_ct_set_status(struct nf_conn *, u32) __ksym;
-+int bpf_ct_change_status(struct nf_conn *, u32) __ksym;
-+
-+SEC("?tc")
-+int alloc_release(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	bpf_ct_release(ct);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int insert_insert(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	ct = bpf_ct_insert_entry(ct);
-+	if (!ct)
-+		return 0;
-+	ct = bpf_ct_insert_entry(ct);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int lookup_insert(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_lookup(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	bpf_ct_insert_entry(ct);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int set_timeout_after_insert(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	ct = bpf_ct_insert_entry(ct);
-+	if (!ct)
-+		return 0;
-+	bpf_ct_set_timeout(ct, 0);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int set_status_after_insert(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	ct = bpf_ct_insert_entry(ct);
-+	if (!ct)
-+		return 0;
-+	bpf_ct_set_status(ct, 0);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int change_timeout_after_alloc(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	bpf_ct_change_timeout(ct, 0);
-+	return 0;
-+}
-+
-+SEC("?tc")
-+int change_status_after_alloc(struct __sk_buff *ctx)
-+{
-+	struct bpf_ct_opts___local opts = {};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+
-+	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
-+	if (!ct)
-+		return 0;
-+	bpf_ct_change_status(ct, 0);
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c b/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
+index 2d0023659d88..a535d41dc20d 100644
+--- a/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
++++ b/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
+@@ -251,6 +251,7 @@
+ 	.expected_insns = { PSEUDO_CALL_INSN() },
+ 	.unexpected_insns = { HELPER_CALL_INSN() },
+ 	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
+ 	.func_info = { { 0, MAIN_TYPE }, { 16, CALLBACK_TYPE } },
+ 	.func_info_cnt = 2,
+ 	BTF_TYPES
 -- 
 2.34.1
 
