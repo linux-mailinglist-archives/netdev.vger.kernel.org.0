@@ -2,158 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A403257D24C
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 19:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 677EC57D25F
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 19:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiGURQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 13:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        id S229675AbiGURWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 13:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiGURQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 13:16:05 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2087.outbound.protection.outlook.com [40.107.104.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5041B64F8;
-        Thu, 21 Jul 2022 10:16:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Euvxa+/q9A4LLWQJndjy/E+hMJWNoqlwlMdrFqFv2a9I/uK+TllhzmpqciLvWkqnbBLnblkkRGp2tQffAz1aEveyPMAflL/Nj8PTmNikAoCyGC7TGmKmTY76PjgkLTvjkbprinDiCXBpgFTetPTMtiNxs5NR6nbGsyRtVwrG+FQAEYAwgZPnk/dEu4AL+rjBaXNGPKQJtns4kf2SD+xm4WwPGEe+VTkti5xhWbnlc66Yw5yxykWb4z5i+XbL3NtjqeiO+calDi/oGTzihjxGCkexuBgNFrHy/DAV8DoYisdT9ga6BfqGClsyfjUYI4vZIE+9E4DaQU6n+pPpgQFlZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wKLMoAURk13Y5ouMxTVYXEQRKhHSqeYcHNO+Dp/l/Ok=;
- b=DsChx1OCcDhHzlX6xV2xixPfz+85oKZ6I7ocSPyCez2Yky/eXbpWyJ/ckKtf+59AzU3sSiAkmHtGA6p5mDoSlMblNCEfckdvKHiM3U612fUvM55Ae1WOQvEdkvnbBjFQHCaAYEZyj7jCOo+4cYJPeILJIqj9To+AOPK29g6wKQ/iDLDYXndGEuvqerVkMUnNy0Ov22o5+Cd9D5fnh0jP+RZrfjD8IGWsGFg0lQVD1Cnh6P0GQdzsN4pNOWXUcCZ4/OnEfy2Ff/ft+IJedUzQFnXkiAcn54XoPDRxbVzwt7FbjIZIguWSCmLS2ptUUYj5GEDxUBZsbDTI5UhBcco0wQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wKLMoAURk13Y5ouMxTVYXEQRKhHSqeYcHNO+Dp/l/Ok=;
- b=jyiBQvtUDAbHrekRKW389CQ+TbmEd7A+G+p9P/uVrr/WN4M5wfmZJyIOiwLr+q+67XTFxRvEGWBYUoCpMfJawp55BqSP8VyFqkcOf7K93HyfPUmfUKS6p+lOWK/s21E8VWILnqAq5azE+5kW1PKsXyROqZvkgTrzkwoflCZ1s9UAK364ufatrHKb8Il4VnC54M1ExR8pyMhWpzd5K/pXUXYa5Ex4ZsETwUo9M9ryMnp1oF04xu+tPtU+5pe509SY9Vs2Q01xpq5Bx/PGpxCzR7miylmrQve6CHjGuCjsDP0YeHaA10Ilifc+fCnsTsI0tLr4CDwT7YNEXkFq9ypMhQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by AM6PR03MB5126.eurprd03.prod.outlook.com (2603:10a6:20b:81::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Thu, 21 Jul
- 2022 17:15:59 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 17:15:59 +0000
-Subject: Re: [PATCH v2 10/11] net: phy: aquantia: Add some additional phy
- interfaces
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229776AbiGURWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 13:22:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B24B2DAAB;
+        Thu, 21 Jul 2022 10:21:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9641561ED6;
+        Thu, 21 Jul 2022 17:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBDBC341CE;
+        Thu, 21 Jul 2022 17:21:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658424116;
+        bh=U0B5LjvmQxLng/mwn3ADiMYfRaUDQEHObvhPDEeFM08=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DhldqkYWs/ADwWTfbvpzDfYyVqvLLv+Q2Ipo+/1dU+k2Zt9tOLQ8Aud5vf4jnKa+f
+         9Rcv/ZKm8i+SCCHkv16z90qJwlEzffVL2ziPIfsg6IcdtJcyzJuR41vN0yEWC/qKVZ
+         mr6uqO5pRWjIDmS1FJ/pm5u2zWJ1VlAceCMyIQnExfo+z2I/z49QnefGsmzU5OWDK4
+         99I0/je8ojwplnjkTi+6R3XuKcEQC4y9xzjSKCLp8HzV6qpCR7fTia3UaHyCJQJ29K
+         EIMIRgHvRNu5fc5kS7/4wGh9xf1AzfQ7HMl/YTXF+2VGhBgE4/kiSqeZ+n+NQHf6Si
+         y/JxgStm8X4Sw==
+Date:   Thu, 21 Jul 2022 19:21:45 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220719235002.1944800-1-sean.anderson@seco.com>
- <20220719235002.1944800-11-sean.anderson@seco.com>
- <YtfodwyLc5pMw4Gb@shell.armlinux.org.uk>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <35c49437-c0fa-509f-f56a-530986891131@seco.com>
-Date:   Thu, 21 Jul 2022 13:15:54 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <YtfodwyLc5pMw4Gb@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR10CA0003.namprd10.prod.outlook.com
- (2603:10b6:208:120::16) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220721192145.1f327b2a@dellmb>
+In-Reply-To: <20220721151533.3zomvnfogshk5ze3@skbuf>
+References: <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
+        <20220715222348.okmeyd55o5u3gkyi@skbuf>
+        <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
+        <20220716105711.bjsh763smf6bfjy2@skbuf>
+        <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
+        <20220716123608.chdzbvpinso546oh@skbuf>
+        <YtUec3GTWTC59sky@shell.armlinux.org.uk>
+        <20220720224447.ygoto4av7odsy2tj@skbuf>
+        <20220721134618.axq3hmtckrumpoy6@skbuf>
+        <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
+        <20220721151533.3zomvnfogshk5ze3@skbuf>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 61ff3f9f-1688-4f4d-2e4b-08da6b3cae04
-X-MS-TrafficTypeDiagnostic: AM6PR03MB5126:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D2yVnzsgQkPu0p5f/IpmqUQDCLZbkCO45snZQ7k3dGw0CvxWI4KWYdi70TP/BcVAnnG85dRx+FaVXk/2cd6E5pjEDwz0tqZLybTsrJ2Zg/claMfjtUfwcsDjUAMKtmbFHouYv5fhs8IE49eN4Sh5HW2WZB2G9hNKtQ2sXT7VsOeP9fbIHsW1im6GeyLP8n7iaILftZ7Z5eez6Z7Z69DRicEH8UjQMtTz1g0Jw7LC7aQO7/Cz8Nj4E3qQoRC225bk4u3UOKpRz5ck/tKjcihZ4zNAoXssuPdspFX8o/aksDzoy4NrcNsvnvSOkRIgohZk6jurompvUT+gugy/BCVdHDgZGAZ8Lz1akJVF/ujiM1wnaIQCIZLQXKHPELOz3Z5Oi8OZu4VK7//lc1XF6g0zSxnxUcApkLMJoWx/PGf5q40cWGctOMq0tBZ5sESExTOB7KQPO/zUek3Jxat+lsgc6pIg7JKifq/hLo/z3DY4uPOJl+umVKU4M2f5oW2xJN/Bdckb/bs1f4/rtIx2t5Q7ReXcu0itvnNZVGGW0BMq/AMtAaW5ZxOZX0SBguz4VdEv85CchbzyywmWidJyw0b0xPhVo0LiSEDgsFL2WuZCD/UYH74VMdvZBWSOd/XTtnEDwD1aw1aDFZsiV1J+HCnUSh/aQGcPKx+3pSwL5Ew0eKHhrVnH+wMmpjEIhpjunneggs1U0tV+yoUA/nzJDznNxkrjBbBMh7/qgsnqRqhTMyPqGy+/g5AwiuJNMtYg38luwCdNvA+tlGnavoszimXQ2i1GuBWPasuKocZUJlL9LrM7YaqM/tcPz8ty7I9m66x6PvaOD5EaLagOgiFSIgYmz364PGGQ1CVggf0oPE8qnufsH0GZTCVr+tjqLh2nGVhQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(346002)(376002)(136003)(39850400004)(366004)(316002)(38100700002)(26005)(41300700001)(52116002)(2906002)(4744005)(6512007)(7416002)(53546011)(186003)(6666004)(66476007)(6916009)(31696002)(478600001)(66946007)(38350700002)(36756003)(31686004)(54906003)(4326008)(8676002)(6506007)(6486002)(86362001)(66556008)(2616005)(8936002)(5660300002)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OStwcGFqWWx6UmJmT3FFbFViblhtazY2TFBDQlE0QU5UZmkrK2l2cFJBR1dR?=
- =?utf-8?B?enErZ3JiWW1GRmREUjZDUDd1VXZaWlUrOHByMDdMak9GbFc5ZGVIOHhGQWxj?=
- =?utf-8?B?eTcrdStzMzdoUFRweWpjK0dWcnUydUNzMXQ0M1pCVVJyTERqd2g1RHF5K3FX?=
- =?utf-8?B?YjQ0QStZa2xsVHJVZU1pK0F0U3h5enZ2NGpMYUsvS0dBVmU2V3pQZmVRTm5F?=
- =?utf-8?B?c1R4elIwYWxTbEFacmhxMzd6TkdEZ1RYdWkveHExZEI3VDhiSFNCMmVJRnJS?=
- =?utf-8?B?YWNobEdMQlNaRzM1QXNaZHJGZFRkZzB2dEk5V0JFUVNFNGtIYnNxVTlKQVpD?=
- =?utf-8?B?a2szL0kxTzZPRmNOZUpkd1BCSjNyVjVRcDU3djliY3ZwM0RJL2tUTlNDaGI0?=
- =?utf-8?B?NkttTXF6MTNtQkxBdG5kVjNFSE9rSGlkaDVyMU53OGZob2xJbGF0QnJxaXVE?=
- =?utf-8?B?OURmVFAzZnlMcEVXa2FhZzZFZ3NVU0RuTFRTRWYvS1hDclF1QnJwQ3dBckhW?=
- =?utf-8?B?VVlKTWpsY3FJaUo5UVVFclhWbFpQbU92dGFRSVd1Y1JpU2ROUGJsdVFaV2lS?=
- =?utf-8?B?YnNuQjJlSkx3K3RhNVRsODFndnZHSDFVTUFRVURCbU1KRG1QdXI1N3pKb0Yz?=
- =?utf-8?B?RXRwUUNEK3lhcnVhL3FPNndibVEzVjhuRmc1NmxMcDlNQVBsT2h1MFJhUUVB?=
- =?utf-8?B?dExhdk0vK1Q1a3c0eVlteXZTU0M1TVhFSnhOQnBUYi94UXd6MDVmZFArSUtS?=
- =?utf-8?B?eS80WkYwMS9ETUczbjdxOU56cTFsckQ0ZHIrTjFNVDEzd3F1bitxQ0hZNWVv?=
- =?utf-8?B?Q1JiV3ZjVzJPenlmQlZ4ZWZ2b3hmYXp4d2RSSmVmeGZhSGQ4VkJQcFdnY1NV?=
- =?utf-8?B?d1RReXl0OWxUOXJnYTlIeEM3Y2dZdUZFamI0c29kalNwNVhMNm9kQTJsOFFS?=
- =?utf-8?B?VHI1WjNiVzVreVJNS3FibTNQc1ByOVIrdmRmbC9KSitRbW9BbzRaMXhPcm5D?=
- =?utf-8?B?TXYvSm92SUtpbXdJczdLTTIrNUFBanVENlJPVWovRk14Wnd3MlYvSUNyaks4?=
- =?utf-8?B?bVZ2dktPRE1oeS9EZFVvdWFtWkN5bnRlZnhVbml5TjlLNnVYbmdta2xiOTg4?=
- =?utf-8?B?RFFDVW5UZHl0eUwwUEd0RzNkeU1UYzZ1YVd6VGF4amthNWtnc1BsNTlUWE9H?=
- =?utf-8?B?YWxMc2RqOG9OSGRWd1piMXZ0ci9GUXZmQ2lVNy9yRitCU01lVkMyVDNRelRo?=
- =?utf-8?B?cGlUNENwWWJIQWZsL1BUdVVWMVNTQ05iVG84a2gvZTJxUWcvSFJ3SldrZlNF?=
- =?utf-8?B?d005NjNJeTI0LzRFVVJtN3RyT3NNQkpZaTRLQmFXM1E4M0xrSEJjUGc5NFJJ?=
- =?utf-8?B?ZWVseUEzendvVVhxNVY1QWV2cmgxYW1CbTZSUnd6UVIyOTh0eWVBc1NEK3NZ?=
- =?utf-8?B?Si9rU3FHSUtzNVpFRTRWRzFKTTRnMko4ZGI4OUtnYnJNSlNVWTRjSXN3M2p3?=
- =?utf-8?B?OW5nVWxGYzgwYitwMnZGZEk3cVFLSHpScmJRcnFpZGNVQllYUUlISTU0TndX?=
- =?utf-8?B?VXh1M2ZlYlJXWHYvMms5VnZrWjRNK2VidHJBbURhR1o4enZRUFZ1SzRZL3Fv?=
- =?utf-8?B?a2JIODJTOXdKOUxhN0JjRjRoZGhPcGJMRUcydW0zMW1sc0lnK3Jhd1BUWGkz?=
- =?utf-8?B?MFYzU0xXWVNyV05jRnVGWjlnWGRsbVJzWEdJQkRWOGxadS9XeGd2MHoxUTVi?=
- =?utf-8?B?Ritwa3FQaEJSUjRWQW1VblBxK3Axb1lrYTRJamtXU2xQaUM5ZlRqZlBpb0p0?=
- =?utf-8?B?R2J0T0dvcjc2QS9SbWFXQ3J2MFY0MDh4ajk5SzFiSERnWmMxeFhjL0hMSlFL?=
- =?utf-8?B?eGswNkJDRXlNWllWaTVyeno0TXJJMzlaZ3JrQXA2NklGL2xEZmZTTVNoam8y?=
- =?utf-8?B?QS8xRkszMnFENERjd3NvZ1Y0Q3ZlbFNkdmpGY3lxclM3Y1IyUHQ2Um9VK0M4?=
- =?utf-8?B?QlhKblhxeElCTXZXelFSVmpScUI4TGNwUkZ3UlN0MFN3cWswaC9WUHBaeGVn?=
- =?utf-8?B?dEdlMnhFWDJTTmR3L3RldjZpUksxYXNDNzJJMjZNMG5QRkl5UFJFR0g3REhk?=
- =?utf-8?B?ck1CczFOd0tTR3BIWmdnanF0WW90UHVsTXpLaER1SlVoRlZ1bnhhdHdKaHJT?=
- =?utf-8?B?RXc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61ff3f9f-1688-4f4d-2e4b-08da6b3cae04
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 17:15:58.9940
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6a+Uflh4+dHRYqXFgNJCubbeFCPUh4rWemo3ByprRfA7BkYShraiUIppYk6cVj+U9RJfSck18wNiAv5Flyy1UA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB5126
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 21 Jul 2022 18:15:33 +0300
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-
-On 7/20/22 7:35 AM, Russell King (Oracle) wrote:
-> On Tue, Jul 19, 2022 at 07:50:00PM -0400, Sean Anderson wrote:
->> +/* The following registers all have similar layouts; first the registers... */
->> +#define VEND1_GLOBAL_CFG_10M			0x0310
->> +#define VEND1_GLOBAL_CFG_100M			0x031b
->> +#define VEND1_GLOBAL_CFG_1G			0x031c
->> +#define VEND1_GLOBAL_CFG_2_5G			0x031d
->> +#define VEND1_GLOBAL_CFG_5G			0x031e
->> +#define VEND1_GLOBAL_CFG_10G			0x031f
->> +/* ...and now the fields */
->> +#define VEND1_GLOBAL_CFG_RATE_ADAPT		GENMASK(8, 7)
->> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_NONE	0
->> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_USX		1
->> +#define VEND1_GLOBAL_CFG_RATE_ADAPT_PAUSE	2
->> +
+> On Thu, Jul 21, 2022 at 03:54:15PM +0100, Russell King (Oracle) wrote:
+> > Yes, which is why I said on July 7th:
+> > 
+> > "So I also don't see a problem - sja1105 rejects DTs that fail to
+> > describe a port using at least one of a phy-handle, a fixed-link, or
+> > a managed in-band link, and I don't think it needs to do further
+> > validation, certainly not for the phy describing properties that
+> > the kernel has chosen to deprecate for new implementations."
+> > 
+> > I had assumed you knew of_phy_is_fixed_link() returns true in this
+> > case. Do you now see that sja1105's validation is close enough
+> > (except for the legacy phy phandle properties which we don't care
+> > about),  
 > 
-> Shouldn't these definitions be in patch 11? They don't appear to be used
-> in this patch.
+> This is why your comment struck me as odd for mentioning managed in-band.
+> 
+> > and thus do we finally have agreement on this point?  
+> 
+> Yes we do.
+> 
+> > > On the other hand I found arm64/boot/dts/marvell/cn9130-crb.dtsi, where
+> > > the switch, a "marvell,mv88e6190"-compatible (can't determine going just
+> > > by that what it actually is) has this:
+> > > 
+> > > 			port@a {
+> > > 				reg = <10>;
+> > > 				label = "cpu";
+> > > 				ethernet = <&cp0_eth0>;
+> > > 			};  
+> > 
+> > Port 10 on 88E6393X supports 10GBASE-R, and maybe one day someone will
+> > get around to implementing USXGMII. This description relies upon this
+> > defaulting behaviour - as Andrew has described, this has been entirely
+> > normal behaviour with mv88e6xxx.
+> >   
+> > > To illustrate how odd the situation is, I am able to follow the phandle
+> > > to the CPU port and find a comment that it's a 88E6393X, and that the
+> > > CPU port uses managed = "in-band-status":
+> > > 
+> > > &cp0_eth0 {
+> > > 	/* This port is connected to 88E6393X switch */
+> > > 	status = "okay";
+> > > 	phy-mode = "10gbase-r";
+> > > 	managed = "in-band-status";
+> > > 	phys = <&cp0_comphy4 0>;
+> > > };  
+> > 
+> > 10GBASE-R has no in-band signalling per-se, so the only effect this has
+> > on the phylink instance on the CPU side is to read the status from the
+> > PCS as it does for any other in-band mode. In the case of 10GBASE-R, the
+> > only retrievable parameter is the link up/down status. This is no
+> > different from a 10GBASE-R based fibre link in that regard.  
+> 
+> Is there any formal definition for what managed = "in-band-status"
+> actually means? Is it context-specific depending on phy-mode?
+> In the case of SGMII, would it also mean that clause 37 exchange would
+> also take place (and its absence would mean it wouldn't), or does it
+> mean just that, that the driver should read the status from the PCS?
+> 
+> > A fixed link on the other hand would not read status from the PCS but
+> > would assume that the link is always up.
+> >   
+> > > Open question: is it sane to even do what we're trying here, to create a
+> > > fixed-link for port@a (which makes the phylink instance use MLO_AN_FIXED)
+> > > when &cp0_eth0 uses MLO_AN_INBAND? My simple mind thinks that if all
+> > > involved drivers were to behave correctly and not have bugs that cancel
+> > > out other bugs, the above device tree shouldn't work. The host port
+> > > would expect a clause 37 base page exchange to take place, the switch
+> > > wouldn't send any in-band information, and the SERDES lane would never
+> > > transition to data mode. To fix the above, we'd really need to chase the
+> > > "ethernet" phandle and attempt to mimic what the DSA master did. This is
+> > > indeed logic that never existed before, and I don't particularly feel
+> > > like adding it. How far do we want to go? It seems like never-ending
+> > > insanity the more I look at it.  
+> > 
+> > 10GBASE-R doesn't support clause 37 AN. 10GBASE-KR does support
+> > inband AN, but it's a different clause and different format.  
+> 
+> I thought it wouldn't, but then I was led to believe, after seeing it
+> here, that just the hardware I'm working with doesn't. How about
+> 2500base-x in Marvell, is there any base page exchange, or is this still
+> only about retrieving link status from the PCS?
 
-You're right. It looks like I added these too early.
+Marvell documentation says that 2500base-x does not implement inband
+AN.
 
---Sean
+But when it was first implemented, for some reason it was thought that
+2500base-x is just 1000base-x at 2.5x speed, and 1000base-x does
+support inband AN. Also it worked during tests for both switches and
+SOC NICs, so it was enabled.
+
+At the time 2500base-x was not standardized. Now 2500base-x is
+stanradrized, and the standard says that 2500base-x does not support
+clause 37 AN. I guess this is because where it is used, it is intended
+to work with clause 73 AN somehow.
+
+And then came 6373X switch, which didn't support clause 37 inband AN in
+2500base-x mode (the AN reigster returned 0xffff or something when
+2500base-x CMODE was set). Maybe 6373X finally supports clause 73 AN
+(I don't know, but I don't think so) and that is the reason they now
+forbid clause 37 AN in HW in 2500base-x.
+
+But the problem is that by this time there is software out there then
+expects 2500base-x to have clause 37 AN enabled. Indeed a passive SFP
+cable did not work between MOX' SFP port and CN9130-CRB's SFP port
+when used with Peridot (6190), if C37 AN was disabled on 6393x and left
+enabled on Peridot.
+
+I managed to work out how to enable C37 AN on 6393x:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=163000dbc772c1eae9bdfe7c8fe30155db1efd74
+
+So currently we try to enable C37 AN in 2500base-x mode, although
+the standard says that it shouldn't be there, and it shouldn't be there
+presumably because they want it to work with C73 AN.
+
+I don't know how to solve this issue. Maybe declare a new PHY interface
+mode constant, 2500base-x-no-c37-an ?
+
+:)
+
+Marek
