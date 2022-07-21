@@ -2,88 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5DF57CCB2
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC21357CC7C
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbiGUNvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
+        id S230058AbiGUNr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 09:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiGUNvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:51:20 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F7827CD6;
-        Thu, 21 Jul 2022 06:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1658411171;
-        bh=QtbE3oMbR4Z0fnHisQtcK0R0D/j1pPtQnSsUmsDf4O8=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Ytcw0Z/xL9TPZj+kGCndhevFWR7Ky7APlZAQFIcGjboI1cx2UyN9wc5aLFCSSs7ty
-         26C5mPuAhDoEOe9NDxrN0XSfsMmeb3mO2nomo4hiw4NM0dI1+C27CjHxRJF7vE2pNL
-         FuF6I1O1HAeGVP+ZQMllX4LMQ44ke3wbBwnWQlT8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.130.88]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mof5H-1nhOfq1j4L-00p7fJ; Thu, 21
- Jul 2022 15:46:11 +0200
-Message-ID: <7e5dce87-31c1-401f-324a-2aacb6996625@gmx.de>
-Date:   Thu, 21 Jul 2022 15:45:58 +0200
+        with ESMTP id S229846AbiGUNrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:47:13 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3375578233;
+        Thu, 21 Jul 2022 06:46:24 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id m13so2223769edc.5;
+        Thu, 21 Jul 2022 06:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GFYaO3lKdBQOZgxDPdNq3Av3oecPqgKRyrbG9aidV/Y=;
+        b=D6TZHjSUmzXvzDxLXjlNMssyaqBzUgHg0ruAB0IuMqGRHUg/wcSZY96jHqoLMxD4vF
+         iZCR9oAB3PEletONkwpucJg8qEDQaIIYwbGthkAp8NfMwbB8LtlpvPbn3Q0LZ0dlcLEU
+         3GZJJbutn7D3dMJEr2MlfEr5yjqBUU8z2bz5BZLLLUE5UjQNlS13ZVykjS1mRFkS9UB+
+         2gx8aaRFwFvaV94wyD1yMmeMMaMY7Sx+wd5ASBFySRSLJ1a5fqx+FuG6xYfezAbRWsN9
+         XiuAebhbcJx236kfwZlxjBKWpuX+UDV7yYJ4KB9vhWzexghQchcLQK47JP9VyhN75e6E
+         tSuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GFYaO3lKdBQOZgxDPdNq3Av3oecPqgKRyrbG9aidV/Y=;
+        b=77ACuf+mwGJbw/HvKUKevSrCyewZgkv/wSILKimsoycpuinBOiwiFoUUR6sDOeYxl1
+         mJdiJPKBZMqHU5e6FHHO92EUe00GMtFAoG7uPHGnsDvTszTOjmkLhXJzd5WlIEzouQdh
+         9pAyh/2JD9XWsCZy8NvfscKzH8KXl8YomrZCZaj+QPE0NeVHA/4dex2zbgW860HMx3CP
+         aZG3rn/IX1W1tCkjTd28GANT2KKKF73i9HObGrZ5kpCovp4dl21UoKc2C/ZMGXE0blx/
+         fZbwAZMypTcEmbvwkOsW2cRm0Nh+DnwnpB/LVy7GeBw2YWVKvExNnxwYLOfRUefC4YVt
+         lh/g==
+X-Gm-Message-State: AJIora9THYMT1L3kpmizp3HX0yP9lRQv0CVwL2ukuxWBqB3adUZMjK3e
+        K4hpkdsdNas0yUgS2myj1GhvdSyiZoOJgg==
+X-Google-Smtp-Source: AGRyM1va55K1SZWLz0E6z50sOUk12tbHBTTVllyDYDSE9WX6LAxbFJA+gj27a33bSzA8E8QWWL4OnA==
+X-Received: by 2002:a05:6402:370:b0:43b:bb2e:a0c6 with SMTP id s16-20020a056402037000b0043bbb2ea0c6mr8323565edw.378.1658411182751;
+        Thu, 21 Jul 2022 06:46:22 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id rn9-20020a170906d92900b0072f1e7b06d9sm878295ejb.59.2022.07.21.06.46.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 06:46:21 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 16:46:18 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220721134618.axq3hmtckrumpoy6@skbuf>
+References: <E1oCNl3-006e3n-PT@rmk-PC.armlinux.org.uk>
+ <20220715172444.yins4kb2b6b35aql@skbuf>
+ <YtHcpf4otJQS9hTO@shell.armlinux.org.uk>
+ <20220715222348.okmeyd55o5u3gkyi@skbuf>
+ <YtHw0O5NB6kGkdwV@shell.armlinux.org.uk>
+ <20220716105711.bjsh763smf6bfjy2@skbuf>
+ <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
+ <20220716123608.chdzbvpinso546oh@skbuf>
+ <YtUec3GTWTC59sky@shell.armlinux.org.uk>
+ <20220720224447.ygoto4av7odsy2tj@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 07/13] parisc: Replace regular spinlock with
- spin_trylock on panic path
-Content-Language: en-US
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Jeroen Roovers <jer@xs4all.nl>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-parisc@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-8-gpiccoli@igalia.com>
- <20220720034300.6d2905b8@wim.jer>
- <76b6f764-23a9-ed0b-df3d-b9194c4acc1d@igalia.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <76b6f764-23a9-ed0b-df3d-b9194c4acc1d@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:A2ch0UzKhT2GN3X+8Rl1GQqDJfC/xtKlIw5ATFSiiGdALjoZeLD
- cpq9OM/zovAiIqRw/z1R+GbYN+JEzG9I4ro5GW/OIWKpNEMrIysqUIdBN8k2TDjO5nrIEsP
- BFTW/G/1em9u4Pyk1+Bj9LtVoMH6vp9QwEEsrGJtyJdTnoI2Llbh2h7fVSuDCFgnqXsScgF
- bkLVVvs1ULUD59p94qCdw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UY2rjKtKFdU=:zzQFKWEd2HyBIE9TID5YgU
- yfesTqt7NvGQbl4KsVNmCfYGEgGhWvNtyHYfn3xlomX5B2zG8XSY7uS+54lUq2uPRSEy9/oHJ
- qscEN77zlLdM3O0cpbxhxu139J4lFdxyiirTrGE5xOI/Svm+JvEAjkt1NzYibywdnXunjgsTB
- BeHl9vmucoz4qc3CK+xgQo+C2jWsxim0Nf7Ds67e8GksrCb6SNt869fg2nxg7vARlYal6cQFz
- CaZcM6gMb2rEYF9wtYOIOZ6LXabvp0oGIgBvECaqLtInhYdCBQRQtRnEXnA85Ba+jPOnfGLA9
- 7CW2ldKbApfvDLztSIvgx3EoXjZjGMsJjYPqUmdAXe2tJyd7iNOVeFKfUzlA2hiSzR2q20lkn
- ulF2/7FVm/tyNA8OXlyC6gigOA3lslABqPYmXxV9reUtwtzJ0s5CSnirubJkdO2io9RZA74k5
- eVv9O7HGdFkWnGJhoCidSvJsoeWiLpMdJ1L1VfSFhqCFx7s2Ydd4g0ZMlUg+yXTrfpEcg730b
- 5Af+Dn9vC7GxIAJgOZ24udoy4JKjp7V6ti2hCgL5krFzXW5HYFqtF08OsWW7/ivjHI6Tozz9H
- 7GmOUbslRFE4oDW6uAI1pq+eE8uKqzeqMpsy9EfhVBPeNpzbwAcNgIrwe3wiuztUekhTQCGx0
- 00775x+ngK4H+qHKwuWpQnIj7Z3+ESnX9bBj49u6LYmD6iRGzgmT1frOy0nSKxG98UF/G7tAU
- 42s4KxJ33BkTAmXvjKI0FlKDG5XoywFHQzfOyqK0IADro/3VDgDBZJiPDOesO93Mfdh7pXfaQ
- fNVIurfahRkljwXZ0OwNesf8f5Bxq3XxlnOLWKIGtV1lRcoUu2L7boIwt/VRqLCF2sKng99BW
- 2HpssJFqOgi9LYxJhTe6Ik+VREyiyhyiWKAlf+IxNzovV4esGfV5TSp5pv4lme1lVcEGFHoY3
- +9j3B05xK/vyzKJ85r9Xff2f7lPT97l6N/+IUMudLCRQvURhsJ30WQ/0Hh/NGCS7iyXEPIrpD
- libJ+S1I8L5x/RJT2foeRGYS8og5LADsLmFqIai2e3LR9PTgjr+q6o0YpgT9NRb2/uauxXjgU
- pOkV/ZXxlFN5iVojqS1wec1g/0n0r53hlLtCnyEYduPUyCo9/EvoyutZQ==
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720224447.ygoto4av7odsy2tj@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,24 +107,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/21/22 15:19, Guilherme G. Piccoli wrote:
-> On 19/07/2022 22:43, Jeroen Roovers wrote:
->>      Hi Guilherme,
->> [...]
->>> + *
->>> + * The _panic version relies in spin_trylock to prevent deadlock
->>> + * on panic path.
->>
->> in =3D> on
->
-> Hi Jer, thanks for the suggestion!
->
-> Helge, do you think you could fix it when applying, if there's no other
-> issue in the patch?
-> Thanks,
+On Thu, Jul 21, 2022 at 01:44:47AM +0300, Vladimir Oltean wrote:
+> I really wish there was a ready-made helper for validating phylink's
+> OF node; I mentioned this already, it needs to cater for all of
+> fixed-link/phy-handle/managed/sfp.
 
-Guilherme, I'd really prefer that you push the whole series at once throug=
-h
-some generic tree.
+While I was going to expand on this point and state that DSA doesn't
+currently instantiate phylink for this OF node:
 
-Helge
+			port@9 {
+				reg = <0x9>;
+				label = "cpu";
+				ethernet = <&eth1>;
+				phy-mode = "2500base-x";
+				managed = "in-band-status";
+			};
+
+I was proven wrong. Today I learned that of_phy_is_fixed_link() returns
+true if the "managed" property exists and its value differs from "auto".
+So in the above case, of_phy_is_fixed_link() returns true, hmmm.
+
+
+
+On the other hand I found arm64/boot/dts/marvell/cn9130-crb.dtsi, where
+the switch, a "marvell,mv88e6190"-compatible (can't determine going just
+by that what it actually is) has this:
+
+			port@a {
+				reg = <10>;
+				label = "cpu";
+				ethernet = <&cp0_eth0>;
+			};
+
+To illustrate how odd the situation is, I am able to follow the phandle
+to the CPU port and find a comment that it's a 88E6393X, and that the
+CPU port uses managed = "in-band-status":
+
+&cp0_eth0 {
+	/* This port is connected to 88E6393X switch */
+	status = "okay";
+	phy-mode = "10gbase-r";
+	managed = "in-band-status";
+	phys = <&cp0_comphy4 0>;
+};
+
+Open question: is it sane to even do what we're trying here, to create a
+fixed-link for port@a (which makes the phylink instance use MLO_AN_FIXED)
+when &cp0_eth0 uses MLO_AN_INBAND? My simple mind thinks that if all
+involved drivers were to behave correctly and not have bugs that cancel
+out other bugs, the above device tree shouldn't work. The host port
+would expect a clause 37 base page exchange to take place, the switch
+wouldn't send any in-band information, and the SERDES lane would never
+transition to data mode. To fix the above, we'd really need to chase the
+"ethernet" phandle and attempt to mimic what the DSA master did. This is
+indeed logic that never existed before, and I don't particularly feel
+like adding it. How far do we want to go? It seems like never-ending
+insanity the more I look at it.
