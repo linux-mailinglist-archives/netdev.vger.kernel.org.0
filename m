@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6F857D42C
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 21:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0498657D432
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 21:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiGUTcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 15:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
+        id S233202AbiGUTf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 15:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbiGUTcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 15:32:31 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A79DF1B;
-        Thu, 21 Jul 2022 12:32:27 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id o17so1108517ils.9;
-        Thu, 21 Jul 2022 12:32:27 -0700 (PDT)
+        with ESMTP id S229640AbiGUTfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 15:35:24 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5511115D;
+        Thu, 21 Jul 2022 12:35:22 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id e69so2147643iof.5;
+        Thu, 21 Jul 2022 12:35:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=RW1s9d0AAPQ8Q1ggcxkOL30thDKSyaQDJk2AQocHRzI=;
-        b=hfqDZJKaSHT3oBUj9Lx8hiNTtsLfX9DdevN7s0z+3z105M/J6aa/5ipG/8hkSt3l4Q
-         R1P9Noq73VxDygCFAI9rxy2mfh5L9Wr1lL+d16M4Hkl9iYiuXi30xOI/+kfNhGDn3NyI
-         AIFw7/gv7MYZwlQwxbAv3C6ffIbQrePLeiH/jQ+hFH3+0FfDoRfgmeQlg6NU74atioLm
-         zugIJigUvlbHhGMPmrv2oW9bWy8zrFfyzaZEJhsfHNbgUvCa3Fu8rt510jYhfbsAK59c
-         uoQyNJAnxCdewS/be/Wv85TBbZJ/RXli5pnFIU86vICOd7dYRQt18WMLcKdgTLoJ+Sly
-         IHNw==
-X-Gm-Message-State: AJIora+8CSmEgdf7jvtGnKkqRFvJJ5PYVAb/sFZ66B0bkL80aGiK/SX9
-        w/cNfLEak6qiqNh2mRlrNw==
-X-Google-Smtp-Source: AGRyM1urApMk3RmAgAk80eaJYDGIiCddCIb635mCXcyV8VHha7Y/DzXmZJzaV4JfmCjlsWC3fhIGUw==
-X-Received: by 2002:a92:b70e:0:b0:2dd:10f0:6f8d with SMTP id k14-20020a92b70e000000b002dd10f06f8dmr2526356ili.321.1658431946785;
-        Thu, 21 Jul 2022 12:32:26 -0700 (PDT)
+        bh=wELlNsbxx1+JCD9yf/xGA7zb/NOKO+vQi/OmtkVLBls=;
+        b=vFJBPG4Y+An9/WyTBNgDAdNXiwfKwXBJMrRS39tMIj4k8O5GoP/o0f5F6isbPfMtfM
+         O7ZryzZO/WsB5yqDa0+21vAGidp0B5FE7XI3DC8AXvc3StAzVGhDku6+MQwP1XJ6BZ8F
+         5Xnr/d+DyYcLm3dgtvoJQpzZuajC6rDs0uWUMUk6A6lplBoAJcX9mzsxv0HWyitxDB+h
+         J1y9oSd7//jUNuOFpmiLSiZwsuHKLJTduG2LS9Dqewzk0TeKL6rmtPtJVLGn2mih5PT6
+         +Q6nzsRShoGKsP9COCBQ7BPGPivGo/rbCAeotgODMoNw0oECvnpYJpxERyMlaUjY5Z99
+         hEVw==
+X-Gm-Message-State: AJIora/ObO0uqo64xB5uzpk2eZgVL7eX/mNOmyay8bPf1+TN7eby4zJt
+        Mf070N4RpyW74AJ66Sbf7g==
+X-Google-Smtp-Source: AGRyM1sZvXpaofV6KHrP6nEJBBOrB/+dB8AwbfGYEa2h8d3D2/C7aFPfZcwL3IFjDFf1dLcaryTpdg==
+X-Received: by 2002:a05:6638:15ca:b0:33f:594a:52ba with SMTP id i10-20020a05663815ca00b0033f594a52bamr35159jat.217.1658432122023;
+        Thu, 21 Jul 2022 12:35:22 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id f19-20020a056638113300b0033f3ab94271sm1126125jar.139.2022.07.21.12.32.23
+        by smtp.gmail.com with ESMTPSA id a70-20020a021649000000b003415545d938sm1107557jaa.166.2022.07.21.12.35.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 12:32:26 -0700 (PDT)
-Received: (nullmailer pid 1794689 invoked by uid 1000);
-        Thu, 21 Jul 2022 19:32:22 -0000
-Date:   Thu, 21 Jul 2022 13:32:22 -0600
+        Thu, 21 Jul 2022 12:35:21 -0700 (PDT)
+Received: (nullmailer pid 1799145 invoked by uid 1000);
+        Thu, 21 Jul 2022 19:35:16 -0000
+Date:   Thu, 21 Jul 2022 13:35:16 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     Thierry Reding <thierry.reding@gmail.com>,
@@ -87,14 +87,14 @@ Cc:     Thierry Reding <thierry.reding@gmail.com>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
         linux-spi@vger.kernel.org
-Subject: Re: [PATCH 3/6] dt-bindings: iio: explicitly list SPI CPHA and CPOL
-Message-ID: <20220721193222.GA1792785-robh@kernel.org>
+Subject: Re: [PATCH 5/6] dt-bindings: net: explicitly list SPI CPHA and CPOL
+Message-ID: <20220721193516.GA1798385-robh@kernel.org>
 References: <20220721153155.245336-1-krzysztof.kozlowski@linaro.org>
- <20220721153155.245336-4-krzysztof.kozlowski@linaro.org>
+ <20220721153155.245336-6-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220721153155.245336-4-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220721153155.245336-6-krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -105,7 +105,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 05:31:52PM +0200, Krzysztof Kozlowski wrote:
+On Thu, Jul 21, 2022 at 05:31:54PM +0200, Krzysztof Kozlowski wrote:
 > The spi-cpha and spi-cpol properties are device specific and should be
 > accepted only if device really needs them.  Explicitly list them in
 > device bindings in preparation of their removal from generic
@@ -113,33 +113,10 @@ On Thu, Jul 21, 2022 at 05:31:52PM +0200, Krzysztof Kozlowski wrote:
 > 
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  .../devicetree/bindings/iio/accel/adi,adxl345.yaml   | 10 ++++++++--
->  .../devicetree/bindings/iio/adc/adi,ad7192.yaml      | 10 ++++++++--
->  .../devicetree/bindings/iio/adc/adi,ad7292.yaml      |  5 ++++-
->  .../devicetree/bindings/iio/adc/adi,ad7606.yaml      | 10 ++++++++--
->  .../devicetree/bindings/iio/adc/adi,ad7768-1.yaml    | 10 ++++++++--
->  .../bindings/iio/adc/microchip,mcp3201.yaml          | 12 ++++++++++--
->  .../devicetree/bindings/iio/adc/ti,adc084s021.yaml   | 11 +++++++++--
->  .../devicetree/bindings/iio/adc/ti,ads124s08.yaml    |  5 ++++-
->  .../devicetree/bindings/iio/adc/ti,ads131e08.yaml    |  5 ++++-
->  .../devicetree/bindings/iio/addac/adi,ad74413r.yaml  |  5 ++++-
->  .../devicetree/bindings/iio/dac/adi,ad5592r.yaml     |  5 ++++-
->  .../devicetree/bindings/iio/dac/adi,ad5755.yaml      | 10 ++++++++--
->  .../devicetree/bindings/iio/dac/adi,ad5758.yaml      |  6 +++++-
->  .../devicetree/bindings/iio/dac/adi,ad5766.yaml      |  5 ++++-
->  .../devicetree/bindings/iio/dac/ti,dac082s085.yaml   |  9 +++++++--
->  .../bindings/iio/gyroscope/adi,adxrs290.yaml         | 10 ++++++++--
->  .../devicetree/bindings/iio/imu/adi,adis16460.yaml   | 12 +++++++++---
->  .../devicetree/bindings/iio/imu/adi,adis16475.yaml   | 10 ++++++++--
->  .../devicetree/bindings/iio/imu/adi,adis16480.yaml   | 11 +++++++++--
->  .../bindings/iio/imu/invensense,icm42600.yaml        | 12 ++++++++++--
->  .../bindings/iio/proximity/ams,as3935.yaml           |  5 ++++-
->  .../devicetree/bindings/iio/resolver/adi,ad2s90.yaml | 10 ++++++++--
->  .../bindings/iio/temperature/maxim,max31855k.yaml    |  6 +++++-
->  .../bindings/iio/temperature/maxim,max31856.yaml     |  6 +++++-
->  .../bindings/iio/temperature/maxim,max31865.yaml     |  6 +++++-
->  25 files changed, 166 insertions(+), 40 deletions(-)
+>  .../devicetree/bindings/net/nfc/marvell,nci.yaml     | 12 ++++++++++--
+>  .../devicetree/bindings/net/vertexcom-mse102x.yaml   | 12 +++++++++---
+>  2 files changed, 19 insertions(+), 5 deletions(-)
 
-This whole patch can be dropped which will make merging easier.
+This too should not be needed.
 
 Rob
