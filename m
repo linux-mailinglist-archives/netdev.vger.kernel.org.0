@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B94957C1A0
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4707557C196
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbiGUA2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 20:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        id S230488AbiGUA2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 20:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiGUA22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:28:28 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B3E6249D;
-        Wed, 20 Jul 2022 17:28:26 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id gn24so101829pjb.3;
-        Wed, 20 Jul 2022 17:28:26 -0700 (PDT)
+        with ESMTP id S229540AbiGUA2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:28:30 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609965A88B;
+        Wed, 20 Jul 2022 17:28:29 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id l14-20020a17090a72ce00b001f20ed3c55dso3792014pjk.5;
+        Wed, 20 Jul 2022 17:28:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=X25xQ/eqdmK1FpQIMyTlSMdRWqqjHgGU7AOQyMO4Q7Y=;
-        b=XdzeWtmGbMj5aPdFyVbx/Ko+XFLd4JTyIhXkdh6Mla7VBVgVl/9bGg61+n1rbG+EZn
-         jRVNsYRR48J0qpPAerz48/Uoof1oHFN+idbmSRB+dnJcsDrfr7budLSVvZV6jbpXL5Kn
-         FyIAJ+YODRr1hAIM50Ld5cnbWc9GC5ps0WoxefrI0CSrCSKHJSj8ea3eMkHUWaPtvBh0
-         +001pDp0ZRTBKb6XW+h03ECYWfDkCbIN3TlmSIeieq5UiuD4qbuUVxqpSrz/rCnLZm6c
-         xVTEELslrAzAExtrXbe0Llc1DffyK3AotDv7ie/Reluu5pIKK5RRxturEZIxQQXWD7/O
-         coew==
+        bh=8H9ysJYrnrWkyl8HVfuoBPlJRCyj5PxyA79wuhjjui8=;
+        b=n2R+rVdULpdrk+CQ5xOS2lc2elRYHRgbY7kQe+t/DfTvfaFM2s+/tj7p5CUnb49w2I
+         Km/1dRrZAuECCJRYFm8do5inqCqJADaOl9FlehwjAOOCK7/zaEeHtpICHjXhqJpSwk+S
+         eMcfmGOQtDZxNroLJM/JTODP6DaOgZkoQ+wles8BJL3aCZBlz/BVrELk9v5qPjqwYPDq
+         5qF7LR0wXAr55mk+5qyBRt75Gsvp8IF5dpN2s9IhTGbnFIX58fmHjFY4OISWjbOyPmnU
+         MCaNvJRu41v8iJcC4zNUSYm8R6lY0f5fftLICf3A2Yswu7kQkq41rlhKUzqMp+S0QlNq
+         ILhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=X25xQ/eqdmK1FpQIMyTlSMdRWqqjHgGU7AOQyMO4Q7Y=;
-        b=hd7KPZmQn3BI41jVaHVPu89FjjpKgPWUxBDDUGRWSd1jXjkK/4QOKJxDq7e7emeMVb
-         zLBLcRj3Lo6mjWGc6RAka0mm87lykBbkk6yZ8uWut2hEY8VfdmYqYWZKVl9cHPOfD01R
-         ncgQ1gykeJvmZUh0Xgo0Bd2ZlVLeGcaIWJhMSKlCiggirkc5xYNXUB39MX9R1/6/M4Ac
-         E/Usbxmc6UQXXKBT7bSpB7zgw43IQyzqvuxariDmn7ENIKQUFFrG9UVUvXlK9twQH8Eo
-         ww3s2KhyCpUmeKXiHxQ/gsqH3Jm7MHJWLRQ+1ik21NZGR5hNcg2iaXHoA+raBZea2t+X
-         G9bA==
-X-Gm-Message-State: AJIora/I5SyhLB6GQa15UgCys6754mbwPmkhiXZp3p2M9iDC9hsagh3/
-        E4LvMAnXqIAhxVUHVch8lYk=
-X-Google-Smtp-Source: AGRyM1vlYU0Ke4QzjR05zN7yjqDmle+chzqh0f+WQ6gBNIaoqCkdCccLWulLdO12A8XTiy40EcggyQ==
-X-Received: by 2002:a17:90b:4a83:b0:1f2:2f3:9774 with SMTP id lp3-20020a17090b4a8300b001f202f39774mr8527795pjb.1.1658363306145;
-        Wed, 20 Jul 2022 17:28:26 -0700 (PDT)
+        bh=8H9ysJYrnrWkyl8HVfuoBPlJRCyj5PxyA79wuhjjui8=;
+        b=qCZKXh8cD2mxCE0KOHqikhPMGiZs9HyO2N5tAowtbjWbKrPovPoByIi7lf/jS2R36W
+         yHBsxCjy1orGHRswD3RjPdnBNQTTudpe6SRLFHjtsIN8ho19mCyX4yD0SPspzLq3CTK0
+         ws9LiRF1JWYy6uP59BiCan0oeHYvkKFyINMgPI35GXdR6w6Ckno+FRoJZBcUBsEWDAjS
+         0AOFMwTiOgVYSOSv1g6e5bySHE1X2ZV1DpRGv7Tk/OxyLkNXOxBvAwvURqZAS/7VlQat
+         qovy0CrWUIXX/TLFRer/x506edPkv+Q3oLDKskWdiRxMDMEfhTZcbW24Sy+DXRaoN6hx
+         0z2g==
+X-Gm-Message-State: AJIora+smNgMH3BAZYG7EMEpqTxWPAJz9IhrjkgkbHpQhoSSPmbQeVdJ
+        xKNM3HLgioWNpkZBIKH1yeY=
+X-Google-Smtp-Source: AGRyM1vGGlvuYS+BI01TfP8dEcG/bXsRdc1DfPZ9lsSHsbNRA27OTeMzCPVuZlBmBFBZKRb0sinvQw==
+X-Received: by 2002:a17:90a:ea04:b0:1f2:242d:e2af with SMTP id w4-20020a17090aea0400b001f2242de2afmr4531929pjy.45.1658363308716;
+        Wed, 20 Jul 2022 17:28:28 -0700 (PDT)
 Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b0016bc4a6ce28sm163226plx.98.2022.07.20.17.28.24
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b0016bc4a6ce28sm163226plx.98.2022.07.20.17.28.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Jul 2022 17:28:25 -0700 (PDT)
+        Wed, 20 Jul 2022 17:28:28 -0700 (PDT)
 From:   justinpopo6@gmail.com
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, joalonsof@gmail.com, jesionowskigreg@gmail.com,
@@ -53,9 +53,9 @@ To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     f.fainelli@gmail.com, justin.chen@broadcom.com,
         Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v2 1/5] net: usb: ax88179_178a: remove redundant init code
-Date:   Wed, 20 Jul 2022 17:28:12 -0700
-Message-Id: <1658363296-15734-2-git-send-email-justinpopo6@gmail.com>
+Subject: [PATCH v2 2/5] net: usb: ax88179_178a: clean up pm calls
+Date:   Wed, 20 Jul 2022 17:28:13 -0700
+Message-Id: <1658363296-15734-3-git-send-email-justinpopo6@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
 References: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
@@ -71,144 +71,316 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Justin Chen <justinpopo6@gmail.com>
 
-Bind and reset are basically doing the same thing. Remove the duplicate
-code and have bind call into reset.
+Instead of passing in_pm flags all over the place, use the private
+struct to handle in_pm mode.
 
 Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 ---
- drivers/net/usb/ax88179_178a.c | 85 ++----------------------------------------
- 1 file changed, 4 insertions(+), 81 deletions(-)
+ drivers/net/usb/ax88179_178a.c | 147 +++++++++++++++++------------------------
+ 1 file changed, 59 insertions(+), 88 deletions(-)
 
 diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index ac2d400..b7098688 100644
+index b7098688..c641fd4 100644
 --- a/drivers/net/usb/ax88179_178a.c
 +++ b/drivers/net/usb/ax88179_178a.c
-@@ -164,6 +164,8 @@
- 	#define GMII_PHY_PGSEL_PAGE3	0x0003
- 	#define GMII_PHY_PGSEL_PAGE5	0x0005
- 
-+static int ax88179_reset(struct usbnet *dev);
-+
- struct ax88179_data {
- 	u8  eee_enabled;
+@@ -171,6 +171,7 @@ struct ax88179_data {
  	u8  eee_active;
-@@ -1322,47 +1324,12 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
+ 	u16 rxctl;
+ 	u16 reserved;
++	u8 in_pm;
+ };
  
- static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
+ struct ax88179_int_data {
+@@ -187,15 +188,29 @@ static const struct {
+ 	{7, 0xcc, 0x4c, 0x18, 8},
+ };
+ 
++static void ax88179_set_pm_mode(struct usbnet *dev, bool pm_mode)
++{
++	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
++
++	ax179_data->in_pm = pm_mode;
++}
++
++static int ax88179_in_pm(struct usbnet *dev)
++{
++	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
++
++	return ax179_data->in_pm;
++}
++
+ static int __ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-			      u16 size, void *data, int in_pm)
++			      u16 size, void *data)
  {
--	u8 buf[5];
--	u16 *tmp16;
--	u8 *tmp;
- 	struct ax88179_data *ax179_data = (struct ax88179_data *)dev->data;
--	struct ethtool_eee eee_data;
+ 	int ret;
+ 	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
  
- 	usbnet_get_endpoints(dev, intf);
+ 	BUG_ON(!dev);
  
--	tmp16 = (u16 *)buf;
--	tmp = (u8 *)buf;
--
- 	memset(ax179_data, 0, sizeof(*ax179_data));
+-	if (!in_pm)
++	if (!ax88179_in_pm(dev))
+ 		fn = usbnet_read_cmd;
+ 	else
+ 		fn = usbnet_read_cmd_nopm;
+@@ -211,14 +226,14 @@ static int __ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ }
  
--	/* Power up ethernet PHY */
--	*tmp16 = 0;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, tmp16);
--	*tmp16 = AX_PHYPWR_RSTCTL_IPRL;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, tmp16);
--	msleep(200);
--
--	*tmp = AX_CLK_SELECT_ACS | AX_CLK_SELECT_BCS;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, tmp);
--	msleep(100);
--
--	/* Read MAC address from DTB or asix chip */
--	ax88179_get_mac_addr(dev);
--	memcpy(dev->net->perm_addr, dev->net->dev_addr, ETH_ALEN);
--
--	/* RX bulk configuration */
--	memcpy(tmp, &AX88179_BULKIN_SIZE[0], 5);
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_BULKIN_QCTRL, 5, 5, tmp);
--
--	dev->rx_urb_size = 1024 * 20;
--
--	*tmp = 0x34;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PAUSE_WATERLVL_LOW, 1, 1, tmp);
--
--	*tmp = 0x52;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PAUSE_WATERLVL_HIGH,
--			  1, 1, tmp);
--
- 	dev->net->netdev_ops = &ax88179_netdev_ops;
- 	dev->net->ethtool_ops = &ax88179_ethtool_ops;
- 	dev->net->needed_headroom = 8;
-@@ -1384,46 +1351,7 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
+ static int __ax88179_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-			       u16 size, const void *data, int in_pm)
++			       u16 size, const void *data)
+ {
+ 	int ret;
+ 	int (*fn)(struct usbnet *, u8, u8, u16, u16, const void *, u16);
  
- 	netif_set_tso_max_size(dev->net, 16384);
+ 	BUG_ON(!dev);
  
--	/* Enable checksum offload */
--	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
--	       AX_RXCOE_TCPV6 | AX_RXCOE_UDPV6;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RXCOE_CTL, 1, 1, tmp);
+-	if (!in_pm)
++	if (!ax88179_in_pm(dev))
+ 		fn = usbnet_write_cmd;
+ 	else
+ 		fn = usbnet_write_cmd_nopm;
+@@ -251,47 +266,6 @@ static void ax88179_write_cmd_async(struct usbnet *dev, u8 cmd, u16 value,
+ 	}
+ }
+ 
+-static int ax88179_read_cmd_nopm(struct usbnet *dev, u8 cmd, u16 value,
+-				 u16 index, u16 size, void *data)
+-{
+-	int ret;
 -
--	*tmp = AX_TXCOE_IP | AX_TXCOE_TCP | AX_TXCOE_UDP |
--	       AX_TXCOE_TCPV6 | AX_TXCOE_UDPV6;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, tmp);
+-	if (2 == size) {
+-		u16 buf;
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf, 1);
+-		le16_to_cpus(&buf);
+-		*((u16 *)data) = buf;
+-	} else if (4 == size) {
+-		u32 buf;
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf, 1);
+-		le32_to_cpus(&buf);
+-		*((u32 *)data) = buf;
+-	} else {
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, data, 1);
+-	}
 -
--	/* Configure RX control register => start operation */
--	*tmp16 = AX_RX_CTL_DROPCRCERR | AX_RX_CTL_IPE | AX_RX_CTL_START |
--		 AX_RX_CTL_AP | AX_RX_CTL_AMALL | AX_RX_CTL_AB;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, tmp16);
+-	return ret;
+-}
 -
--	*tmp = AX_MONITOR_MODE_PMETYPE | AX_MONITOR_MODE_PMEPOL |
--	       AX_MONITOR_MODE_RWMP;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD, 1, 1, tmp);
+-static int ax88179_write_cmd_nopm(struct usbnet *dev, u8 cmd, u16 value,
+-				  u16 index, u16 size, const void *data)
+-{
+-	int ret;
 -
--	/* Configure default medium type => giga */
--	*tmp16 = AX_MEDIUM_RECEIVE_EN | AX_MEDIUM_TXFLOW_CTRLEN |
--		 AX_MEDIUM_RXFLOW_CTRLEN | AX_MEDIUM_FULL_DUPLEX |
--		 AX_MEDIUM_GIGAMODE;
--	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
--			  2, 2, tmp16);
+-	if (2 == size) {
+-		u16 buf;
+-		buf = *((u16 *)data);
+-		cpu_to_le16s(&buf);
+-		ret = __ax88179_write_cmd(dev, cmd, value, index,
+-					  size, &buf, 1);
+-	} else {
+-		ret = __ax88179_write_cmd(dev, cmd, value, index,
+-					  size, data, 1);
+-	}
 -
--	ax88179_led_setting(dev);
+-	return ret;
+-}
 -
--	ax179_data->eee_enabled = 0;
--	ax179_data->eee_active = 0;
--
--	ax88179_disable_eee(dev);
--
--	ax88179_ethtool_get_eee(dev, &eee_data);
--	eee_data.advertised = 0;
--	ax88179_ethtool_set_eee(dev, &eee_data);
--
--	/* Restart autoneg */
--	mii_nway_restart(&dev->mii);
--
--	usbnet_link_change(dev, 0, 0);
-+	ax88179_reset(dev);
+ static int ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 			    u16 size, void *data)
+ {
+@@ -299,16 +273,16 @@ static int ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 
+ 	if (2 == size) {
+ 		u16 buf = 0;
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf, 0);
++		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf);
+ 		le16_to_cpus(&buf);
+ 		*((u16 *)data) = buf;
+ 	} else if (4 == size) {
+ 		u32 buf = 0;
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf, 0);
++		ret = __ax88179_read_cmd(dev, cmd, value, index, size, &buf);
+ 		le32_to_cpus(&buf);
+ 		*((u32 *)data) = buf;
+ 	} else {
+-		ret = __ax88179_read_cmd(dev, cmd, value, index, size, data, 0);
++		ret = __ax88179_read_cmd(dev, cmd, value, index, size, data);
+ 	}
+ 
+ 	return ret;
+@@ -324,10 +298,10 @@ static int ax88179_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 		buf = *((u16 *)data);
+ 		cpu_to_le16s(&buf);
+ 		ret = __ax88179_write_cmd(dev, cmd, value, index,
+-					  size, &buf, 0);
++					  size, &buf);
+ 	} else {
+ 		ret = __ax88179_write_cmd(dev, cmd, value, index,
+-					  size, data, 0);
++					  size, data);
+ 	}
+ 
+ 	return ret;
+@@ -430,52 +404,46 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
+ 	u16 tmp16;
+ 	u8 tmp8;
+ 
++	ax88179_set_pm_mode(dev, true);
++
+ 	usbnet_suspend(intf, message);
+ 
+ 	/* Disable RX path */
+-	ax88179_read_cmd_nopm(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
+-			      2, 2, &tmp16);
++	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
++			 2, 2, &tmp16);
+ 	tmp16 &= ~AX_MEDIUM_RECEIVE_EN;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
+-			       2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
++			  2, 2, &tmp16);
+ 
+ 	/* Force bulk-in zero length */
+-	ax88179_read_cmd_nopm(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
+-			      2, 2, &tmp16);
++	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
++			 2, 2, &tmp16);
+ 
+ 	tmp16 |= AX_PHYPWR_RSTCTL_BZ | AX_PHYPWR_RSTCTL_IPRL;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
+-			       2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
++			  2, 2, &tmp16);
+ 
+ 	/* change clock */
+ 	tmp8 = 0;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
+ 
+ 	/* Configure RX control register => stop operation */
+ 	tmp16 = AX_RX_CTL_STOP;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
++
++	ax88179_set_pm_mode(dev, false);
  
  	return 0;
  }
-@@ -1716,6 +1644,7 @@ static int ax88179_reset(struct usbnet *dev)
+ 
+ /* This function is used to enable the autodetach function. */
+ /* This function is determined by offset 0x43 of EEPROM */
+-static int ax88179_auto_detach(struct usbnet *dev, int in_pm)
++static int ax88179_auto_detach(struct usbnet *dev)
+ {
+ 	u16 tmp16;
+ 	u8 tmp8;
+-	int (*fnr)(struct usbnet *, u8, u16, u16, u16, void *);
+-	int (*fnw)(struct usbnet *, u8, u16, u16, u16, const void *);
+-
+-	if (!in_pm) {
+-		fnr = ax88179_read_cmd;
+-		fnw = ax88179_write_cmd;
+-	} else {
+-		fnr = ax88179_read_cmd_nopm;
+-		fnw = ax88179_write_cmd_nopm;
+-	}
+ 
+-	if (fnr(dev, AX_ACCESS_EEPROM, 0x43, 1, 2, &tmp16) < 0)
++	if (ax88179_read_cmd(dev, AX_ACCESS_EEPROM, 0x43, 1, 2, &tmp16) < 0)
+ 		return 0;
+ 
+ 	if ((tmp16 == 0xFFFF) || (!(tmp16 & 0x0100)))
+@@ -483,13 +451,13 @@ static int ax88179_auto_detach(struct usbnet *dev, int in_pm)
+ 
+ 	/* Enable Auto Detach bit */
+ 	tmp8 = 0;
+-	fnr(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
++	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
+ 	tmp8 |= AX_CLK_SELECT_ULR;
+-	fnw(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
+ 
+-	fnr(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
++	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
+ 	tmp16 |= AX_PHYPWR_RSTCTL_AT;
+-	fnw(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
+ 
+ 	return 0;
+ }
+@@ -500,32 +468,36 @@ static int ax88179_resume(struct usb_interface *intf)
+ 	u16 tmp16;
+ 	u8 tmp8;
+ 
++	ax88179_set_pm_mode(dev, true);
++
+ 	usbnet_link_change(dev, 0, 0);
+ 
+ 	/* Power up ethernet PHY */
+ 	tmp16 = 0;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
+-			       2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
++			  2, 2, &tmp16);
+ 	udelay(1000);
+ 
+ 	tmp16 = AX_PHYPWR_RSTCTL_IPRL;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
+-			       2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
++			  2, 2, &tmp16);
+ 	msleep(200);
+ 
+ 	/* Ethernet PHY Auto Detach*/
+-	ax88179_auto_detach(dev, 1);
++	ax88179_auto_detach(dev);
+ 
+ 	/* Enable clock */
+-	ax88179_read_cmd_nopm(dev, AX_ACCESS_MAC,  AX_CLK_SELECT, 1, 1, &tmp8);
++	ax88179_read_cmd(dev, AX_ACCESS_MAC,  AX_CLK_SELECT, 1, 1, &tmp8);
+ 	tmp8 |= AX_CLK_SELECT_ACS | AX_CLK_SELECT_BCS;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
+ 	msleep(100);
+ 
+ 	/* Configure RX control register => start operation */
+ 	tmp16 = AX_RX_CTL_DROPCRCERR | AX_RX_CTL_IPE | AX_RX_CTL_START |
+ 		AX_RX_CTL_AP | AX_RX_CTL_AMALL | AX_RX_CTL_AB;
+-	ax88179_write_cmd_nopm(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
++	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
++
++	ax88179_set_pm_mode(dev, false);
+ 
+ 	return usbnet_resume(intf);
+ }
+@@ -601,8 +573,7 @@ ax88179_get_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
+ 	/* ax88179/178A returns 2 bytes from eeprom on read */
+ 	for (i = first_word; i <= last_word; i++) {
+ 		ret = __ax88179_read_cmd(dev, AX_ACCESS_EEPROM, i, 1, 2,
+-					 &eeprom_buff[i - first_word],
+-					 0);
++					 &eeprom_buff[i - first_word]);
+ 		if (ret < 0) {
+ 			kfree(eeprom_buff);
+ 			return -EIO;
+@@ -1071,7 +1042,7 @@ static int ax88179_check_eeprom(struct usbnet *dev)
+ 		} while (buf & EEP_BUSY);
+ 
+ 		__ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_DATA_LOW,
+-				   2, 2, &eeprom[i * 2], 0);
++				   2, 2, &eeprom[i * 2]);
+ 
+ 		if ((i == 0) && (eeprom[0] == 0xFF))
+ 			return -EINVAL;
+@@ -1640,7 +1611,7 @@ static int ax88179_reset(struct usbnet *dev)
+ 	msleep(100);
+ 
+ 	/* Ethernet PHY Auto Detach*/
+-	ax88179_auto_detach(dev, 0);
++	ax88179_auto_detach(dev);
  
  	/* Read MAC address from DTB or asix chip */
  	ax88179_get_mac_addr(dev);
-+	memcpy(dev->net->perm_addr, dev->net->dev_addr, ETH_ALEN);
- 
- 	/* RX bulk configuration */
- 	memcpy(tmp, &AX88179_BULKIN_SIZE[0], 5);
-@@ -1730,12 +1659,6 @@ static int ax88179_reset(struct usbnet *dev)
- 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PAUSE_WATERLVL_HIGH,
- 			  1, 1, tmp);
- 
--	dev->net->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
--			      NETIF_F_RXCSUM;
--
--	dev->net->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
--				 NETIF_F_RXCSUM;
--
- 	/* Enable checksum offload */
- 	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
- 	       AX_RXCOE_TCPV6 | AX_RXCOE_UDPV6;
 -- 
 2.7.4
 
