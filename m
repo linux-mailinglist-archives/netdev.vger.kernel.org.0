@@ -2,83 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2390057C169
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB7CD57C180
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:15:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231913AbiGUAID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 20:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
+        id S230349AbiGUAPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 20:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231917AbiGUAIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:08:01 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321CC74E19
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 17:07:59 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id q5so265647plr.11
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 17:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=Woa/ViHL7hZIOZFfiWUP84uW6fcixtmOFloR8mZQ60U=;
-        b=KLDQTPw54Rf4Fa44xmgYdpIYofCRISc0cNWQcGEBZ9pkUJjTBXCt3PJD5Kd8BWef/A
-         o7a4CH58I3Rohx+hkw0ixUVocRVIaw0TR3kU8QZfPYhaVraJSRr6o6qSlkf+fUiu/5ES
-         zhuIiaY5Sw0+pz2BUHOgmw+RkFgxgExG//abI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=Woa/ViHL7hZIOZFfiWUP84uW6fcixtmOFloR8mZQ60U=;
-        b=nYAgByel7dvkr9Y28ehZQXorROxeipkXlARXDwjGJ2CJARdbydmWO+fO2T2go/Gq8L
-         jjcAho/+zoUlezt4ZB7HbaN9wdeTBr8IQfL2+0gu0x50RAswY4wBWFGH+w9f3VcpCrEQ
-         FWR4+sRhY00YfwXVAKXhlVCMI3BB2m7rW4iEMdp0eiSuDpfQMUSxhc9IdwyVHT8NeT6b
-         tSgPec+3KNo2eW/3tQcRjdHnZcMZsdnKXT5srtrM8Zf27+/p9sAeddbSWvSRMmGjm7/L
-         k9UXrCVf944LgP9fGwjyw27JtpOnJ5zdOhA7H09Q8yTp9pc+ZihdYN3lC9kAIXpPjAGX
-         1loA==
-X-Gm-Message-State: AJIora+hi1epPRp/2H4vP0AlUOgzAuV5wnYdz5iFZdFvg2pKmnyode2A
-        RhGbhAo+iyhKlo5WdmVaC+950w==
-X-Google-Smtp-Source: AGRyM1vYzu8wzVhb61IYfHfum/1KjMXO24aAOAD+Qs/E3lOaSyQwpxypVqBI891lYhrndPyxD0yMZg==
-X-Received: by 2002:a17:90b:3b4b:b0:1ef:f5b0:ce60 with SMTP id ot11-20020a17090b3b4b00b001eff5b0ce60mr8428674pjb.71.1658362078489;
-        Wed, 20 Jul 2022 17:07:58 -0700 (PDT)
-Received: from ubuntu-22.localdomain ([192.19.222.250])
-        by smtp.gmail.com with ESMTPSA id z10-20020aa79e4a000000b0052878f66f8asm210720pfq.132.2022.07.20.17.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jul 2022 17:07:58 -0700 (PDT)
-From:   William Zhang <william.zhang@broadcom.com>
-To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        with ESMTP id S230105AbiGUAPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:15:06 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastus2azon11021026.outbound.protection.outlook.com [52.101.57.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869BC1F8;
+        Wed, 20 Jul 2022 17:15:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kOldlqkJr3cknuFyuI/sLabEVbryoOylwf+dA9Di94GdWWv/DX3e5SwdWQskiz9RcOQ9T4qzN3/nxah8ADboNnYh9X/wTcWQc5WoqXQJJvDn9r9wyucwV9j9zIBcstgeARZz/vn67A+X7QPHWZV+5d0KDuiEXDHxbVZnh3fAmZh2AV8Y4OZs2ElQprGJrTizMGrnx/yxGlYIG6QlVpkKT1pxdx57+jEHx4ZQMRKfDzubCoGCnb258jeMSkthNOUjDGAV7EpSLWpgbQC1feS6SxWdNOR35QbTX0po1EjR2zhuXpyA9cp+l29Z679lDRZF5H0cZxx50v4kNYfHAMBuHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8HSSWmkLZpwPlAP7IqbuM2a7Ok/uUYjFUCLwbe27C5c=;
+ b=n5AHRRbiz0HBlDxiPhyVxftGsjrEd6dy8ZQHhVf2McJNRSvWWDDcvwSrP6x+rIZu6+i6xHvGBx2Y4v9GVidEs+xmtj57dDZwY/mt75C0e+q8wDpx+ot+pg2CbS8ABEBz6RCva9a33PZphPfJfIFAAnKx7FG3H4kbRTMz9DZyZJnCtmDDGRqPKpiYNEwjhPIlZcEzhY6Ifm0L+aDrkKhKl7tHXXPvXY7gkht4WYjCC/m5riwDr2LUp86sDzfN2xec7KTFXrzIJ4ZcJQvo7mVDO2UAber8SjI/oturfiSG4AuR+VRMMAoZHBetiRpdtGidXm3eZfLa9OZ5asD46Z8YYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8HSSWmkLZpwPlAP7IqbuM2a7Ok/uUYjFUCLwbe27C5c=;
+ b=iac3Sv8CsJ63XV773TfBvuuLGHhOc1C8P2wvo8ZrNnR88NSqmVUPDRvjuMzKQt7ShK8iDVh4HJ0L5k2eKBR7BoC3XvImbwX3lUldAmRBnH10e/uOh1EIlXBHQlBjCKUBAeGVFDc2qZs5a/oXKvyv12b7fLMpifmGS2rwJ8S9VjE=
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
+ by MN0PR21MB3580.namprd21.prod.outlook.com (2603:10b6:208:3d3::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.4; Thu, 21 Jul
+ 2022 00:15:02 +0000
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::69ca:919f:a635:db5a]) by PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::69ca:919f:a635:db5a%7]) with mapi id 15.20.5482.001; Thu, 21 Jul 2022
+ 00:15:02 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>, Dexuan Cui <decui@microsoft.com>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        linux-i2c@vger.kernel.org (open list:I2C SUBSYSTEM HOST DRIVERS),
-        linux-kernel@vger.kernel.org (open list),
-        linux-mtd@lists.infradead.org (open list:MEMORY TECHNOLOGY DEVICES
-        (MTD)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-pci@vger.kernel.org (open list:PCI NATIVE HOST BRIDGE AND
-        ENDPOINT DRIVERS),
-        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK),
-        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
-        linux-mips@vger.kernel.org (open list:BROADCOM BMIPS MIPS ARCHITECTURE),
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-watchdog@vger.kernel.org (open list:WATCHDOG DEVICE DRIVERS)
-Subject: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
-Date:   Wed, 20 Jul 2022 17:07:40 -0700
-Message-Id: <20220721000740.29624-1-william.zhang@broadcom.com>
-X-Mailer: git-send-email 2.34.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [Patch v4 06/12] net: mana: Define data structures for protection
+ domain and memory registration
+Thread-Topic: [Patch v4 06/12] net: mana: Define data structures for
+ protection domain and memory registration
+Thread-Index: AQHYgSXZ4igJqU39v027Ac2C5KX/MK14iO8AgA+Z1ACAAAZm0A==
+Date:   Thu, 21 Jul 2022 00:15:02 +0000
+Message-ID: <PH7PR21MB3263DE7395EEF72796323D0BCE919@PH7PR21MB3263.namprd21.prod.outlook.com>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-7-git-send-email-longli@linuxonhyperv.com>
+ <SN6PR2101MB13276E8879F455D06318118EBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+ <20220720234336.GR5049@ziepe.ca>
+In-Reply-To: <20220720234336.GR5049@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=82c29ab0-52e5-4657-acc2-fadb8db6b951;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-21T00:06:30Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 51a14604-265e-4bcc-9cb3-08da6aae0e7b
+x-ms-traffictypediagnostic: MN0PR21MB3580:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: p9RBDaVYC8UyiPDcNWKjnLR35WDirvtLHiEf0GzXNzUEhSReW1D2dQW4bY9d2kP48yNPu564hWHL4vFMA+xJAAWQg2t/5dV9dWcl1XAJjlcG3rYnmfl+TIIGRXOd4kaYfE7jqNC+SAS/ldYFROnfxry7+bDiP4yiBE2nfSNGpNJj3rHUVUJtNj0a3RgQgUnLbn38qja3YdIx90Tx+mjlaUle2uUw4o3gKJwKQpA2fBL99MlLD3wG/HKd0pKfL19ivYrKNGizfREUqqQS3+zi9f6RrpEeRLZAXanhlUdvksZ42aT1Bu+h2DVZxBxvI9gwD1dl0sS+QmYdxdwgGai6Hwc6D5uJFpdKPSnbkPG85QsqLLc8Pd0fp7YuqOUEyZaWJKHQsRRWlU4BS00oEyxCvglR0pz3tMEw516HiolxOQlH5j+0kbc1ZnrDpBgx3HZoEmWgNJ4wyWbhBnfpQwN0HZ3kj8XnkyncKHQPyhICxHuwwBIHdB9Fqwcqp5Nm2VvuirrIi5/sZ25uDspyaHNiLiE/vbc4qY8JR7Pm5G+fgwQry9yf9MJVOTsySfWrIqljI53BudVeZvcuGFECyqcqMw86B6xNzXufLpFzHlGppOxJ/KMkOR4GNL6+9mOEB9+7Htp3hp8MBRitAiwsUoZwWU7e9OhUb9SrxPgvpIZdzrIobImJWC4TvMYI2mMw5H3X/XkQjlcBKbF0AVNJSIaOXF/FAI9yrATh94K8TiVJ9TPuc/8Sd+rZ9pfXVx+Pco0eRuJ7mBWq67D3qiC0O6i4h89YTmTQ7mqqRczjZOwx+lDkeGFGngEUAZJP6xeDHVdSaLzKSD3QBs6Xkknpi+IpgP4+MY+VjP0K8bl6P4ZRmIo=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(451199009)(66446008)(6636002)(83380400001)(66556008)(4326008)(10290500003)(86362001)(38070700005)(186003)(26005)(8676002)(54906003)(66946007)(71200400001)(76116006)(7416002)(64756008)(55016003)(6506007)(110136005)(66476007)(7696005)(8990500004)(122000001)(38100700002)(82960400001)(5660300002)(478600001)(52536014)(9686003)(2906002)(8936002)(41300700001)(82950400001)(33656002)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?BmPfKJGf/mmHOGA78I5+gWueP8HvjHuHsgu0TqxEgFgmOnydH2kKO0QPvdBs?=
+ =?us-ascii?Q?FkvzcwLx2I2bB0wnLSGoq1KaZ1tC+cGvhi1eQvyzWTpw5iIbYl31cjm4mzne?=
+ =?us-ascii?Q?JAWWiHNJebFkGAq1OJMkmAi8MQLzbZL7q1VH1e8dtl9BfQRos8gPq8n/EGNu?=
+ =?us-ascii?Q?wheMEr+X3uWu+3X79cq1cBVZnvhkoQqLJpJfALZs48G9ycBDm9AM8mDDwi85?=
+ =?us-ascii?Q?shTs4UCsfLOjaw8lr3/JrRTexoRKk88uHXPlTZgwyJvP3G9P2rYWkJN+M6fT?=
+ =?us-ascii?Q?49SHwjD/hH4jnaLtTWLlCC9HPflXLpKLeqFQKGcN75vsng/GPUGFJG6E/8La?=
+ =?us-ascii?Q?GIpi10pfJ9MZvTso/7E/8/WhCu/KjvBTgdxZMam5ABUQmVFYEB/9ghjyOjgG?=
+ =?us-ascii?Q?QgtVJNhwN6QoTyH83RVccg0O30WunWtUQXv0XugVLSrtCK+aucp4oJnKHYqN?=
+ =?us-ascii?Q?VDSpAdjZRilOJ4UvFO4FuEfaZbUlEBcMne7vMSy3Pq3tDQu8OLjjPkre5pFq?=
+ =?us-ascii?Q?S3C5N0ognRXKBRfVGtzjgosMsLTrfeTTo8h94UENU/T0QV2cjdK/cmgIO2w/?=
+ =?us-ascii?Q?8j9sRXUy0zN14D2x1jkIjzbaek964U25WYTDVIp+d1cyykWK+VNMDYGaAw5y?=
+ =?us-ascii?Q?oOBFYZJ/btq8ehGnrgFG5LsneDWaaSIYm3XjgAhmHgs/bIs49xeVMXOLtLzK?=
+ =?us-ascii?Q?xlRh/Q13RMaFOFGYubIGxn4Ni2G2xpbBqHu/pP/M0cSBQ8TlGDz/hmRSuYNB?=
+ =?us-ascii?Q?0uTiB0lxmXG17XBfYjlQwbRmCrNxZ6hOa7aeb0PotOLmmMHe0I74r3d2uU1Q?=
+ =?us-ascii?Q?m5Rq7PIGGD5qN6raXzZnTwNxEU5H71rFXuc+/4i7zcPaqdrUIO61OF536zbM?=
+ =?us-ascii?Q?VXMU7sOjv6Eej1HT4iOK/0YstQMxKUtnd7DPReeC4URuVLd+yO101hUIChXZ?=
+ =?us-ascii?Q?ombiZRgDH/izK40jUAA44Szlc+01kja9saQPMFOylQHq4T0ljFQiTDV0GNC1?=
+ =?us-ascii?Q?9LmbAWpTGt/SPas6XRcsj4Gv5+NLQeCJTaFVr7qInCD+QhMILLoOQFq8QLf5?=
+ =?us-ascii?Q?Ef1xHj5KScRX0ETOn40y7dPtn13RCE7RczKgRjN5U/qWZADUtSHmiPATk1qg?=
+ =?us-ascii?Q?v/YuPaYS6RGO8W5ghgrEHqgKXJ56HpOLDy/MwZxb4l6g5Bu0PuwcG8tsXvoj?=
+ =?us-ascii?Q?RM1Ywy3I55sqfk1EHU1RPIXLz82PoJNrtOPaDlmcPJNKFraiphI5CMzGvEle?=
+ =?us-ascii?Q?Pd9rVubaEImc0PBaMsSIg/6Uhr1m6yBRReYmJ1KcZ38NDqV4HYmT3IUiVYG2?=
+ =?us-ascii?Q?xyDBLYye6CmMbB4jQqcTBwubunBZTUsRbnos2t08CmvJp698hVXe3a1wkd9T?=
+ =?us-ascii?Q?6xvMn4IeBkEleWyHAkcpz8UxBKtDaYT01uf8MMrBa4Ln+8XNL/Nyp86KJnJp?=
+ =?us-ascii?Q?dcymxTwD69XrVs9EuwqMfdh4VBCizfTf9OTTAQSB4+y2F4GdH1tuHq3PkuK6?=
+ =?us-ascii?Q?qQl/2ZxifF7FIb/Q1DCfJAyTRmfFEaLFrljaE1XR9gpzTU2kiadK+iEmnOs3?=
+ =?us-ascii?Q?ymMjZ0WBSb13pGYR6NxZ9sCFpQPotdUNoNPu/nKp?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a00f4d05e445821d"
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51a14604-265e-4bcc-9cb3-08da6aae0e7b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 00:15:02.5869
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QZo0NMIJvSnlHwoskEur3K8bcm7OB8/sDNSyCxRJDempxtqqY+OtcuUmH34RNmS7dx0AlwxOpnfh8IPgCoqdzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3580
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,269 +134,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a00f4d05e445821d
-Content-Transfer-Encoding: 8bit
+> Subject: Re: [Patch v4 06/12] net: mana: Define data structures for prote=
+ction
+> domain and memory registration
+>=20
+> On Mon, Jul 11, 2022 at 01:29:08AM +0000, Dexuan Cui wrote:
+> > > From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
+> > > Sent: Wednesday, June 15, 2022 7:07 PM
+> > >
+> > > The MANA hardware support protection domain and memory
+> registration
+> > > for
+> > s/support/supports
+> >
+> > > diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h
+> > > b/drivers/net/ethernet/microsoft/mana/gdma.h
+> > > index f945755760dc..b1bec8ab5695 100644
+> > > --- a/drivers/net/ethernet/microsoft/mana/gdma.h
+> > > +++ b/drivers/net/ethernet/microsoft/mana/gdma.h
+> > > @@ -27,6 +27,10 @@ enum gdma_request_type {
+> > >  	GDMA_CREATE_DMA_REGION		=3D 25,
+> > >  	GDMA_DMA_REGION_ADD_PAGES	=3D 26,
+> > >  	GDMA_DESTROY_DMA_REGION		=3D 27,
+> > > +	GDMA_CREATE_PD			=3D 29,
+> > > +	GDMA_DESTROY_PD			=3D 30,
+> > > +	GDMA_CREATE_MR			=3D 31,
+> > > +	GDMA_DESTROY_MR			=3D 32,
+> > These are not used in this patch. They're used in the 12th patch for
+> > the first time. Can we move these to that patch?
+>=20
+> This looks like RDMA code anyhow, why is it under net/ethernet?
+>=20
+> Jason
 
-Replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
+This header file belongs to the GDMA layer (as its filename implies) . It's=
+ a hardware communication layer used by both ethernet and RDMA for communic=
+ating with the hardware.
 
-Signed-off-by: William Zhang <william.zhang@broadcom.com>
----
+Some of the RDMA functionalities are implemented at GDMA layer in the PF ru=
+nning on the host, so the message definitions are also there.
 
- drivers/i2c/busses/Kconfig            | 4 ++--
- drivers/mtd/parsers/Kconfig           | 6 +++---
- drivers/net/ethernet/broadcom/Kconfig | 4 ++--
- drivers/pci/controller/Kconfig        | 2 +-
- drivers/phy/broadcom/Kconfig          | 4 ++--
- drivers/pinctrl/bcm/Kconfig           | 4 ++--
- drivers/reset/Kconfig                 | 2 +-
- drivers/soc/bcm/bcm63xx/Kconfig       | 4 ++--
- drivers/tty/serial/Kconfig            | 4 ++--
- drivers/watchdog/Kconfig              | 2 +-
- 10 files changed, 18 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 45a4e9f1b639..fd9a4dd01997 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -487,8 +487,8 @@ config I2C_BCM_KONA
- 
- config I2C_BRCMSTB
- 	tristate "BRCM Settop/DSL I2C controller"
--	depends on ARCH_BCM2835 || ARCH_BCM4908 || ARCH_BCMBCA || \
--		   ARCH_BRCMSTB || BMIPS_GENERIC || COMPILE_TEST
-+	depends on ARCH_BCM2835 || ARCH_BCMBCA || ARCH_BRCMSTB || \
-+		   BMIPS_GENERIC || COMPILE_TEST
- 	default y
- 	help
- 	  If you say yes to this option, support will be included for the
-diff --git a/drivers/mtd/parsers/Kconfig b/drivers/mtd/parsers/Kconfig
-index b43df73927a0..d6db655a1d24 100644
---- a/drivers/mtd/parsers/Kconfig
-+++ b/drivers/mtd/parsers/Kconfig
-@@ -69,8 +69,8 @@ config MTD_OF_PARTS
- 
- config MTD_OF_PARTS_BCM4908
- 	bool "BCM4908 partitioning support"
--	depends on MTD_OF_PARTS && (ARCH_BCM4908 || COMPILE_TEST)
--	default ARCH_BCM4908
-+	depends on MTD_OF_PARTS && (ARCH_BCMBCA || COMPILE_TEST)
-+	default ARCH_BCMBCA
- 	help
- 	  This provides partitions parser for BCM4908 family devices
- 	  that can have multiple "firmware" partitions. It takes care of
-@@ -78,7 +78,7 @@ config MTD_OF_PARTS_BCM4908
- 
- config MTD_OF_PARTS_LINKSYS_NS
- 	bool "Linksys Northstar partitioning support"
--	depends on MTD_OF_PARTS && (ARCH_BCM_5301X || ARCH_BCM4908 || COMPILE_TEST)
-+	depends on MTD_OF_PARTS && (ARCH_BCM_5301X || ARCH_BCMBCA || COMPILE_TEST)
- 	default ARCH_BCM_5301X
- 	help
- 	  This provides partitions parser for Linksys devices based on Broadcom
-diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
-index 56e0fb07aec7..f4e1ca68d831 100644
---- a/drivers/net/ethernet/broadcom/Kconfig
-+++ b/drivers/net/ethernet/broadcom/Kconfig
-@@ -53,8 +53,8 @@ config B44_PCI
- 
- config BCM4908_ENET
- 	tristate "Broadcom BCM4908 internal mac support"
--	depends on ARCH_BCM4908 || COMPILE_TEST
--	default y if ARCH_BCM4908
-+	depends on ARCH_BCMBCA || COMPILE_TEST
-+	default y if ARCH_BCMBCA
- 	help
- 	  This driver supports Ethernet controller integrated into Broadcom
- 	  BCM4908 family SoCs.
-diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-index d1c5fcf00a8a..bfd9bac37e24 100644
---- a/drivers/pci/controller/Kconfig
-+++ b/drivers/pci/controller/Kconfig
-@@ -274,7 +274,7 @@ config VMD
- 
- config PCIE_BRCMSTB
- 	tristate "Broadcom Brcmstb PCIe host controller"
--	depends on ARCH_BRCMSTB || ARCH_BCM2835 || ARCH_BCM4908 || \
-+	depends on ARCH_BRCMSTB || ARCH_BCM2835 || ARCH_BCMBCA || \
- 		   BMIPS_GENERIC || COMPILE_TEST
- 	depends on OF
- 	depends on PCI_MSI_IRQ_DOMAIN
-diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
-index 93a6a8ee4716..1d89a2fd9b79 100644
---- a/drivers/phy/broadcom/Kconfig
-+++ b/drivers/phy/broadcom/Kconfig
-@@ -93,11 +93,11 @@ config PHY_BRCM_SATA
- 
- config PHY_BRCM_USB
- 	tristate "Broadcom STB USB PHY driver"
--	depends on ARCH_BCM4908 || ARCH_BRCMSTB || COMPILE_TEST
-+	depends on ARCH_BCMBCA || ARCH_BRCMSTB || COMPILE_TEST
- 	depends on OF
- 	select GENERIC_PHY
- 	select SOC_BRCMSTB if ARCH_BRCMSTB
--	default ARCH_BCM4908 || ARCH_BRCMSTB
-+	default ARCH_BCMBCA || ARCH_BRCMSTB
- 	help
- 	  Enable this to support the Broadcom STB USB PHY.
- 	  This driver is required by the USB XHCI, EHCI and OHCI
-diff --git a/drivers/pinctrl/bcm/Kconfig b/drivers/pinctrl/bcm/Kconfig
-index 8f4d89806fcb..35b51ce4298e 100644
---- a/drivers/pinctrl/bcm/Kconfig
-+++ b/drivers/pinctrl/bcm/Kconfig
-@@ -31,13 +31,13 @@ config PINCTRL_BCM2835
- 
- config PINCTRL_BCM4908
- 	tristate "Broadcom BCM4908 pinmux driver"
--	depends on OF && (ARCH_BCM4908 || COMPILE_TEST)
-+	depends on OF && (ARCH_BCMBCA || COMPILE_TEST)
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
- 	select GENERIC_PINCTRL_GROUPS
- 	select GENERIC_PINMUX_FUNCTIONS
--	default ARCH_BCM4908
-+	default ARCH_BCMBCA
- 	help
- 	  Driver for BCM4908 family SoCs with integrated pin controller.
- 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index f9a7cee01659..7ae71535fe2a 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -201,7 +201,7 @@ config RESET_SCMI
- 
- config RESET_SIMPLE
- 	bool "Simple Reset Controller Driver" if COMPILE_TEST || EXPERT
--	default ARCH_ASPEED || ARCH_BCM4908 || ARCH_BITMAIN || ARCH_REALTEK || ARCH_STM32 || (ARCH_INTEL_SOCFPGA && ARM64) || ARCH_SUNXI || ARC
-+	default ARCH_ASPEED || ARCH_BCMBCA || ARCH_BITMAIN || ARCH_REALTEK || ARCH_STM32 || (ARCH_INTEL_SOCFPGA && ARM64) || ARCH_SUNXI || ARC
- 	help
- 	  This enables a simple reset controller driver for reset lines that
- 	  that can be asserted and deasserted by toggling bits in a contiguous,
-diff --git a/drivers/soc/bcm/bcm63xx/Kconfig b/drivers/soc/bcm/bcm63xx/Kconfig
-index 9e501c8ac5ce..355c34482076 100644
---- a/drivers/soc/bcm/bcm63xx/Kconfig
-+++ b/drivers/soc/bcm/bcm63xx/Kconfig
-@@ -13,8 +13,8 @@ endif # SOC_BCM63XX
- 
- config BCM_PMB
- 	bool "Broadcom PMB (Power Management Bus) driver"
--	depends on ARCH_BCM4908 || (COMPILE_TEST && OF)
--	default ARCH_BCM4908
-+	depends on ARCH_BCMBCA || (COMPILE_TEST && OF)
-+	default ARCH_BCMBCA
- 	select PM_GENERIC_DOMAINS if PM
- 	help
- 	  This enables support for the Broadcom's PMB (Power Management Bus) that
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e3279544b03c..f32bb01c3feb 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1100,8 +1100,8 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
--	default ARCH_BCM4908 || ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
-+	depends on ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-+	default ARCH_BCMBCA || BCM63XX || BMIPS_GENERIC
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index 32fd37698932..1f85ec8a4b3b 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -1798,7 +1798,7 @@ config BCM7038_WDT
- 	tristate "BCM63xx/BCM7038 Watchdog"
- 	select WATCHDOG_CORE
- 	depends on HAS_IOMEM
--	depends on ARCH_BCM4908 || ARCH_BRCMSTB || BMIPS_GENERIC || BCM63XX || COMPILE_TEST
-+	depends on ARCH_BCMBCA || ARCH_BRCMSTB || BMIPS_GENERIC || BCM63XX || COMPILE_TEST
- 	help
- 	  Watchdog driver for the built-in hardware in Broadcom 7038 and
- 	  later SoCs used in set-top boxes.  BCM7038 was made public
--- 
-2.34.1
-
-
---000000000000a00f4d05e445821d
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBIKKBs1QMWv0d7i/9UlOwTZfX77
-QeTnVEOgFYvz+xVOMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDcyMTAwMDc1OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQAPZQzLP0JqQI+uYLlw9LiMHjd9G/Ms72qlp3OjlAXYTTwX
-lqVqKIKV0MCVDaqt1X0XrOzdL8cwWyBrhTCnpwEBOlYtz6Z4D4F/Rb9LqZsmmx0mvHlGlfWLWkbI
-jm+aH7qyNr1u/ykn9zk8dyUvgMhj8Vn1ZovtUszfd64wAiN44dnHz74M638FSMYSoHfxp3rLstWf
-Y2F8rxn1tThu/BCENmby4qYrehIMNDTMIsf1ByKJaMI5XilbVAl3IWuoMYTvtI9VREB+wvMnhV4I
-VonGJgUSiDcaDcSXgjHwMJsRmsq9i5VcRGt6bvjkfnw7UatXY1lWC5+IqCg83izkEBxo
---000000000000a00f4d05e445821d--
+Long
