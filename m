@@ -2,126 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0939857D2DE
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 350D457D2E8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbiGUSBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 14:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        id S232179AbiGUSCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 14:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiGUSBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:01:36 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2059.outbound.protection.outlook.com [40.107.102.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D278AEE2
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 11:01:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c99ibwgX0QVNUk2eBxACpym0tyL+9ZE0TZWAnhG+KaQX1s3pIWUri6GuoN04ELlRGC5lqkcfOmupKM9QHRCGm+P/TyHgCSaCRsMOFLTQuRyP+mGonTITiWVpkpzdL2jZ8IUFkDKEIrFu9V1dLfzjG668Ii8RWEYT3PRygnqzMvdNyFtxYzTVvVcaRKpkilnZVP4gSJu64aBwgdKbs/iQFTCK6HerD9D8fbXB65aKMYcCgsBCKULyMlEfFZNtcZOr+yDyEZZimxnSYVf1fpf4F+eBUF8pdDGZIv4kQq2MqMeXJIOyMLk3LpeO1xKpkueiV9pufEy4W2BIZ/b3w/c5sQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=47unfUySbWMP15W9DTStFFsd7VfDfwZLweoHw/ZAYag=;
- b=Q2w5hP4/Z/OCzmmrVQCSjV5EsZLurT0xI6ayKhEGgcGxt1Ngmd/v/jS6TOm0KexPrg/CcDIjokSX73ccMOEpaQxki0/C8wpOJ/TK0BZSaUa82xuO6fYIlUB3uzhm0mcqoxrnLy1SduHbaQt0PzDiO2zHI2Jbj/UejS1KUNcKTMnPt9HLv5En/bOzJHiKjVzPXF6fBtEwEHZMKyPgcoO3clLRr1FjJNLaC+ic1ybmGKI+vhHAz93lbJ0rY1UcVqcVLEYgqPbE32U+5zDcMa9BsHMN0xGtXJcN0JxlXmkdWiV7b6fMEAfCHafOgGQMN3PYeh7YYxO7Bukh2EWNkR48KQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=47unfUySbWMP15W9DTStFFsd7VfDfwZLweoHw/ZAYag=;
- b=mKc9JCMGoGcy5GIXfey+vo8Y25w/nx5ZS/rm4XH1VvlCQ0RIAuoupG/mkbY383P8n05mR6ILqv9Jg7vs1MM4HODEylAZCxqipcPeVypUJnJCIvFjzHLFEJVxrFIDYUZxmM9qERievvxEIhnAKa66diOvBF+mcTUhGEoDZ2YIgPHiv9PQyzx6iSbTq0SSex0ayy2JVEHceuhyQsycn7JDhlZCTIzl8Cfya2yMn09rCOsukLAAmFFpGS+5gf99DuN7CbpYkLJu2IbpCbZnC2NOispiTU6N5kZR1S23pcFkwBGYZYZp1YkjowWW6kGQkaqIaDvweAJ5UT1Ee8Tybb76uA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by CY4PR12MB1815.namprd12.prod.outlook.com (2603:10b6:903:122::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Thu, 21 Jul
- 2022 18:01:34 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5438.024; Thu, 21 Jul 2022
- 18:01:33 +0000
-Date:   Thu, 21 Jul 2022 21:01:26 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch net-next] mlxsw: core: Fix use-after-free calling
- devl_unlock() in mlxsw_core_bus_device_unregister()
-Message-ID: <YtmUdnBNEuhlDVFJ@shredder>
-References: <20220721142424.3975704-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721142424.3975704-1-jiri@resnulli.us>
-X-ClientProxiedBy: VI1PR0202CA0011.eurprd02.prod.outlook.com
- (2603:10a6:803:14::24) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S232546AbiGUSCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:02:10 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B10C8B4B6;
+        Thu, 21 Jul 2022 11:02:09 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id o17so971644ils.9;
+        Thu, 21 Jul 2022 11:02:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GgkMsMzEHCdMt0/fh/u0HS1Z5V8qgrEgR8PXqRko9GY=;
+        b=DqNYyEmGFZlbexquB9UnX1yaNueE1z1B122rIgbHhWJe/nOEE4h5arelwrZwNke68Z
+         veXAz3loXHikGJz7cYSuxcJ33ZLSFL4vlXlL1peZPklXeNBWXwe4m/dFO3hfqrhIrmUV
+         m7fNZihjdhPGn6/9Ks6ddRv/d7U/dalvniubB/SBo5dDgLVOet4STGE/TzfO77ckYLYv
+         g3Rwp380nkmP2sF57qNryBHkQC0PNG2l75luENTSrcyHPe3b+GYokmyoDLOKJf0MmXJL
+         cacA2axTy4BDuug9jOUsLu6fSiu4EHafFkD9dqCgv96uiJmIARKBj2s/Iueee5vpRqWv
+         WUcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GgkMsMzEHCdMt0/fh/u0HS1Z5V8qgrEgR8PXqRko9GY=;
+        b=IQcHxcl+pFNncIhMZi9D/Zr+IEfgjt+8KBth3ssgVd4jE1AKjdx5ARWjC6dAGLdd8u
+         4dMMx8LqLyo5TMwh5i9hFdsVPI+LCCawrMP3fRyp+hoMgVldFIEsxUYwPvOJtv1zKWaU
+         +l4Veic+dYWd/oCu/peywjV1B4zDTknYa5lyBvoChl+KYZniQA9fRByZ/g7rZLd3PHIQ
+         IM5fKHIujZAt6xiunLKCtsYZljoXe4fBPMbSwu8qXHcFo8kolBRMpv7bjl68sw2D2CVD
+         FyDWkww4zowwEmGEjz4vYvxr3E36bPQocLW65tyxn2+NoEh8aqDeubORwYODl70HhwGH
+         oqmg==
+X-Gm-Message-State: AJIora9ebe+Ojz8WfYiYskg06JdikVgX+H+SXG4d2aA8I0TMcBUe4gwj
+        XuHL8lwgIVLRExXZ1mH0SQyXfXdyPigiNaXHLnuhO6piwRc=
+X-Google-Smtp-Source: AGRyM1usQT+XAil24tP/cBwL2fHVXIwNnKBoAMM4UcerlAQnp2Xx6SvB/+F3H3elMmvSDSI25Mm67IgZIc9DBec8MpQ=
+X-Received: by 2002:a05:6e02:1d0c:b0:2dc:8919:2768 with SMTP id
+ i12-20020a056e021d0c00b002dc89192768mr21676431ila.164.1658426528866; Thu, 21
+ Jul 2022 11:02:08 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c8065eae-cd97-410e-4e7f-08da6b430bb6
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1815:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tgNr/PmLOilgbrN9eaz+XmnzQoth18yxTt9GyKYCzfYPDP6sScadvvYUWl330H4p7NLn93jDG/TdTX1YI6bmjXeE5BUnUfvDqTKSRwK1kn6Hba3hm/wHOUR0EfDrU5ZU6rIXVSi5snRPjcjrqNtL65I26n2tE9t/LweAl5Sgs39VaOh8xOE/jobci4VG5QRV2Zq1vb9ZscxCx+kVaGVq2NYNzIfLBiR08H8A+wQi9/A9kGuHqmXG/jBb/IMbzxcMzeHGkoBQ/HADA8LXZjQogBDWOoJ9uLYjyzOVeY35UKQvEzAshPvuKFSHF5CY6nOFD3XLw9WFHUD2hB95L8snp0PJtakfMS24TabU3/R7h6Zf2LcY+tw2v5d6OwTyIEX40f1zmvABDicpvM2F4cxWpfX5Cj+5Cj1xwhoMvrbInUWl9gKRs8QwXquWRNLCiTjRo9cdP9DH3yaO5wC19j3jWnvNbfSGR6ohRD+B+38wZq+GrXnB82bbg9hsJ96zTDU5pG8Xajsx+v5Tal7rHl5JpkOhq0nKMQLVVc2bJmg4F90QfmdvDPHYEhp18zu/NMH0n4Fo8kDTQkPmaceivEXAY6R4zqewCA6fNL0D3UvrR8fri/OLyNuI7a+exDaZKqE/5tW2iqg55bQFwHx4ANqkDsJjt9n31awnY6T6bEonWeIfrH4+StUMsCCJy3rfDdpSbOVrWoeil6A/kh+wyBIN+QgrVdpwGta/52JOK1oSoUzDEOv0YfrjffPSKzd90Mfg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(396003)(376002)(136003)(346002)(366004)(39860400002)(33716001)(8936002)(5660300002)(38100700002)(6512007)(478600001)(66476007)(9686003)(186003)(8676002)(66946007)(316002)(6916009)(4326008)(107886003)(66556008)(26005)(6486002)(6666004)(4744005)(6506007)(86362001)(2906002)(83380400001)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EbZ7g2uz1jRYXlaWnjpK2JJ3mNWQSp9u6Jm/tu/A+B/Sp0WK0sCz3BEPIku7?=
- =?us-ascii?Q?ZOuw65D3/ZVZcLZPLfMS6mJwOTINUIFSeB2Y3wx4YQ4F8gtGRjqLsg33in50?=
- =?us-ascii?Q?o6Eit1IHNIT0rPBnB5/359XIiCrlt4opPX6+SXGPAZGt+lhvRvwoGwFgWZ+0?=
- =?us-ascii?Q?adjiMetgmFj55LFie4MAs1vJ3eTXu9ICjAB81wtnEaykAAqdpDmkSx27Cyv1?=
- =?us-ascii?Q?RBmF2IHhdhe7JMfwwQOU0c+1GI0Va4Y5OQv+Z0U/C+Qe6TomgSP6IYPg7txI?=
- =?us-ascii?Q?Udt5DwGL9nzXVZcm89XiA9VJijzi5tjuqWsxk8zdHxHy4JJAoMRhpUeNMLan?=
- =?us-ascii?Q?ARg9REFC6V1Z+SbHfVwoHxjlvuVpVLG5B+gpwy5j1jS2zWlJCkZNBpF75VOt?=
- =?us-ascii?Q?jzBGIwNBr6apYVHzVXLSuvbpnAXPVB+YkQHIWiPYzl4sZ7OKUBaXtamK6h6h?=
- =?us-ascii?Q?JeYLVnU8bU8U8c8ttS+XylpvOGycC0vAizv/nYqrLfK1ztSBWT0MjJpTOFDc?=
- =?us-ascii?Q?xsdEBRDFJM0EY8l0x7VXNpZgticXITW8IGw5Qi7EaLDAukn/Ut7sNzbUIUVv?=
- =?us-ascii?Q?LwL6/lBz2JU/g832yGDxaP7yA1sCRBEyhjVrYaSmZBpCCNYIsp+E85sNF7NQ?=
- =?us-ascii?Q?w9QpeOiRnshUTp7YlqpZIaPSChxk6T40/xHTq/6K99D8UHLlX8XNR/ws2+78?=
- =?us-ascii?Q?gwDv1d7/XF+ilWBQKkWSIxc7dA8mU05y+IfpBhlnXtSLhyFLLkg6FXEC4ERm?=
- =?us-ascii?Q?5dyLI400kCxsCd/SzJO+/S9i5naFtu0q43z0OEBUkohE59SLUL+pxN1B2iwv?=
- =?us-ascii?Q?7cFzmyccrJfzVgAJJsHO5dxi4pEzM5qjJkXhuzyxwpSyYrGgns1Yd+JhiT+L?=
- =?us-ascii?Q?WxvuDfik4band0Gf2jN1LMIMRGMflSRGM+xS+XZBVC38bP9gEE6qcjQ6OwLQ?=
- =?us-ascii?Q?4bkGxS2Y1LkBTd/PTTnaICD8Xq2AoJO5d46jrRC/LEtCYwix+2HiHol0XcFu?=
- =?us-ascii?Q?KcBopb5ztB3fvtwZqWAH4hXZmkQhIjPxPnGCyE49mPeN1cff/CAM2143NpU1?=
- =?us-ascii?Q?HF+gRTsGfXfvoiwJLyAN9i6kKzJTBuMNaKqLhR4Sy6zcaPX7ck/X4+I1751e?=
- =?us-ascii?Q?wGuVmJby4dHgpZKxjNGbkKukWE0ilKfKgmK4PakeWf5rGqTxmv9Z+zLe29XV?=
- =?us-ascii?Q?zX36K0kZypx7Zl8VH4TvVckLCNUrgPjOFUo8w4GkQj3c+fgInusOoZ1c5cGt?=
- =?us-ascii?Q?szVzQ+uE3zCuXx+QEM1FkwDFUJTnW1ITGMZi6qOlVnCA/Hb4VwXX6vuDDTPN?=
- =?us-ascii?Q?K1GgjYlluzuFNgJLkRUrYOgCcQ+TdEgLL1ikB0CLz8pt/wTVV6TCFgEhW/+j?=
- =?us-ascii?Q?zcWzJ7BmhgYM6p6wMXt6Huz4RUQaEqKrypg7Rld2QURFt8oMS9pH6xWkKcGN?=
- =?us-ascii?Q?pS/CQ442AA+dpRJT31h/SMpCoDNaR3mvjU3gpwyaiXGBW3Mhm2p43sBsS7Bc?=
- =?us-ascii?Q?levq0mdOt42/mjLdelF11tX1GULnRWNtQKKkALXNrpIxC/6CAT5F9QsqZOQS?=
- =?us-ascii?Q?ay0lsFLKeSadJabQbz4Rb12kzNfelkZfjdUHdqn2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8065eae-cd97-410e-4e7f-08da6b430bb6
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 18:01:33.1230
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5m9Vlt17AjdGDrris/XOFNV0Wiw0SmjEe4L3uMHcaSV9Uv5AxY+d2oXeDeiu5DLG/2w0Hh8535dFGUZRZpySjQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1815
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220721134245.2450-1-memxor@gmail.com> <CAC1LvL3dh+cdSPcLNZso9RSdOJfZjTZmpb6wC8e1UFcsEYbpvg@mail.gmail.com>
+In-Reply-To: <CAC1LvL3dh+cdSPcLNZso9RSdOJfZjTZmpb6wC8e1UFcsEYbpvg@mail.gmail.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Thu, 21 Jul 2022 20:01:31 +0200
+Message-ID: <CAP01T75ULCUwoZ80A=gLG_HXWFKR0gNePOtnm1UrN8a_yPDUdA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 00/13] New nf_conntrack kfuncs for insertion,
+ changing timeout, status
+To:     Zvi Effron <zeffron@riotgames.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 04:24:24PM +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Do devl_unlock() before freeing the devlink in
-> mlxsw_core_bus_device_unregister() function.
-> 
-> Reported-by: Ido Schimmel <idosch@nvidia.com>
-> Fixes: 72a4c8c94efa ("mlxsw: convert driver to use unlocked devlink API during init/fini")
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+On Thu, 21 Jul 2022 at 19:29, Zvi Effron <zeffron@riotgames.com> wrote:
+>
+> On Thu, Jul 21, 2022 at 6:43 AM Kumar Kartikeya Dwivedi
+> <memxor@gmail.com> wrote:
+> >
+> > Introduce the following new kfuncs:
+> > - bpf_{xdp,skb}_ct_alloc
+> > - bpf_ct_insert_entry
+> > - bpf_ct_{set,change}_timeout
+> > - bpf_ct_{set,change}_status
+> >
+> > The setting of timeout and status on allocated or inserted/looked up CT
+> > is same as the ctnetlink interface, hence code is refactored and shared
+> > with the kfuncs. It is ensured allocated CT cannot be passed to kfuncs
+> > that expected inserted CT, and vice versa. Please see individual patches
+> > for details.
+> >
+>
+> Is it expected that using these helpers and the kernel's conntrack to manage
+> connection state from XDP will outperform using maps and eBPF timers (for XDP
+> use cases that don't have a userspace component that also needs the information
+> in conntrack)? Have you done any benchmarking on the performance of using
+> conntrack from XDP?
+>
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+No, I haven't done any benchmarking against a BPF based conntrack.
+The goal here is to give XDP and TC programs access to kernel's
+existing conntrack, so that in cases where implementing one in BPF is
+not desired/needed, the user can leverage the existing implementation
+in the kernel.
+
+> Thanks!
+> --Zvi
+>
+> > Changelog:
+> > ----------
+> > v6 -> v7:
+> > v6: https://lore.kernel.org/bpf/20220719132430.19993-1-memxor@gmail.com
+> >
+> > * Use .long to encode flags (Alexei)
+> > * Fix description of KF_RET_NULL in documentation (Toke)
+> >
+> > v5 -> v6:
+> > v5: https://lore.kernel.org/bpf/20220623192637.3866852-1-memxor@gmail.com
+> >
+> > * Introduce kfunc flags, rework verifier to work with them
+> > * Add documentation for kfuncs
+> > * Add comment explaining TRUSTED_ARGS kfunc flag (Alexei)
+> > * Fix missing offset check for trusted arguments (Alexei)
+> > * Change nf_conntrack test minimum delta value to 8
+> >
+> > v4 -> v5:
+> > v4: https://lore.kernel.org/bpf/cover.1653600577.git.lorenzo@kernel.org
+> >
+> > * Drop read-only PTR_TO_BTF_ID approach, use struct nf_conn___init (Alexei)
+> > * Drop acquire release pair code that is no longer required (Alexei)
+> > * Disable writes into nf_conn, use dedicated helpers (Florian, Alexei)
+> > * Refactor and share ctnetlink code for setting timeout and status
+> > * Do strict type matching on finding __ref suffix on argument to
+> > prevent passing nf_conn___init as nf_conn (offset = 0, match on walk)
+> > * Remove bpf_ct_opts parameter from bpf_ct_insert_entry
+> > * Update selftests for new additions, add more negative tests
+> >
+> > v3 -> v4:
+> > v3: https://lore.kernel.org/bpf/cover.1652870182.git.lorenzo@kernel.org
+> >
+> > * split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
+> > bpf_ct_insert_entry
+> > * add verifier code to properly populate/configure ct entry
+> > * improve selftests
+> >
+> > v2 -> v3:
+> > v2: https://lore.kernel.org/bpf/cover.1652372970.git.lorenzo@kernel.org
+> >
+> > * add bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc helpers
+> > * remove conntrack dependency from selftests
+> > * add support for forcing kfunc args to be referenced and related selftests
+> >
+> > v1 -> v2:
+> > v1: https://lore.kernel.org/bpf/1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org
+> >
+> > * add bpf_ct_refresh_timeout kfunc selftest
+> >
+> > Kumar Kartikeya Dwivedi (10):
+> > bpf: Introduce 8-byte BTF set
+> > tools/resolve_btfids: Add support for 8-byte BTF sets
+> > bpf: Switch to new kfunc flags infrastructure
+> > bpf: Add support for forcing kfunc args to be trusted
+> > bpf: Add documentation for kfuncs
+> > net: netfilter: Deduplicate code in bpf_{xdp,skb}_ct_lookup
+> > net: netfilter: Add kfuncs to set and change CT timeout
+> > selftests/bpf: Add verifier tests for trusted kfunc args
+> > selftests/bpf: Add negative tests for new nf_conntrack kfuncs
+> > selftests/bpf: Fix test_verifier failed test in unprivileged mode
+> >
+> > Lorenzo Bianconi (3):
+> > net: netfilter: Add kfuncs to allocate and insert CT
+> > net: netfilter: Add kfuncs to set and change CT status
+> > selftests/bpf: Add tests for new nf_conntrack kfuncs
+> >
+> > Documentation/bpf/index.rst | 1 +
+> > Documentation/bpf/kfuncs.rst | 170 ++++++++
+> > include/linux/bpf.h | 3 +-
+> > include/linux/btf.h | 65 ++--
+> > include/linux/btf_ids.h | 68 +++-
+> > include/net/netfilter/nf_conntrack_core.h | 19 +
+> > kernel/bpf/btf.c | 123 +++---
+> > kernel/bpf/verifier.c | 14 +-
+> > net/bpf/test_run.c | 75 ++--
+> > net/ipv4/bpf_tcp_ca.c | 18 +-
+> > net/ipv4/tcp_bbr.c | 24 +-
+> > net/ipv4/tcp_cubic.c | 20 +-
+> > net/ipv4/tcp_dctcp.c | 20 +-
+> > net/netfilter/nf_conntrack_bpf.c | 365 +++++++++++++-----
+> > net/netfilter/nf_conntrack_core.c | 62 +++
+> > net/netfilter/nf_conntrack_netlink.c | 54 +--
+> > tools/bpf/resolve_btfids/main.c | 40 +-
+> > .../selftests/bpf/bpf_testmod/bpf_testmod.c | 10 +-
+> > .../testing/selftests/bpf/prog_tests/bpf_nf.c | 64 ++-
+> > .../testing/selftests/bpf/progs/test_bpf_nf.c | 85 +++-
+> > .../selftests/bpf/progs/test_bpf_nf_fail.c | 134 +++++++
+> > .../selftests/bpf/verifier/bpf_loop_inline.c | 1 +
+> > tools/testing/selftests/bpf/verifier/calls.c | 53 +++
+> > 23 files changed, 1139 insertions(+), 349 deletions(-)
+> > create mode 100644 Documentation/bpf/kfuncs.rst
+> > create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+> >
+> > --
+> > 2.34.1
+> >
