@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C3657CC61
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5DF57CCB2
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiGUNow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
+        id S230462AbiGUNvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 09:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbiGUNnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:43:43 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864C084EE4;
-        Thu, 21 Jul 2022 06:43:06 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id d8so2343710wrp.6;
-        Thu, 21 Jul 2022 06:43:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4cFR1T4lbutWstXHmbM2dbPlJKpl1mp7S3Dg2sFTtXY=;
-        b=KVkLrWgddpuAVAWsP5eHNLEU1w+B9BdEyAOUBK9BHSL0zpNUPnM4tS1CuoI9ubKYH1
-         SICjA7EYGI5EMSexVGs2Wdbsssu0jIbwwS8UhTla+iNk08CMBsWmf1+ZwQIKMMVOXZ6b
-         ehIQxO9NXOi09puNJ1ada3vfb05Gel4msX+8z50QyLKcS1gU/Xp1jhG70Vmu6zyvtVWw
-         y+SynLbjVa2fqpXkLLjDefpn27cGgteQH6SDGWeJWOC8A14CBosfb/bm/+N6hME9O2xp
-         mVSEc6zfxFs8qEzMoG2jbpBDKVYNUllhWuI+fAXkUEwzHNw7qsvnhBuVoDTyrETtAo6i
-         6Eew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4cFR1T4lbutWstXHmbM2dbPlJKpl1mp7S3Dg2sFTtXY=;
-        b=23qBqFO+803T3s7srrzmPe2ghKkCPaER02nj7JNoPpZDhqCnxF/liwy48lsCXtR1LH
-         VYunLLYoNFPg852YYb/hTBbAXp52lRb1hY8ErhibaVnCIZzgli4Gyrd/kV08US2FQLko
-         17NdRSpS+Wr/tW9z1LySGNbfWB1iyLvfxixgcIxsyvcnVgZ5XgK+BuEnp2Ta/Lsktbh8
-         1Qz1ji3zrgjKgbv8CiNK+OPaOMGVnewyny0CRDoml2rSrbRRVaOqhuj6UY2EGtMDwJfJ
-         BmSaLOAVHqh0bbOHKC7gCVv3blGBrlYtE0cjqtpsZoh9vfc1i8hCT4V+KcY6rkKygH/S
-         mCoA==
-X-Gm-Message-State: AJIora8ZfOH6/BCwTMTQvhwmqn8BkLKJzzsmjCPkeyEr4CfPlOlckbYT
-        ldJuL3ReJ+3mczFX0SZHm3n2J2R94hKn9g==
-X-Google-Smtp-Source: AGRyM1tv8hG/p+LFkPwOIRJrObTsWd8EoZ1vcyWWlOCCMpqph2WBWggbYzK1jZVNASYsZQ/Xdzxu2A==
-X-Received: by 2002:a5d:50c2:0:b0:21e:5ad5:39af with SMTP id f2-20020a5d50c2000000b0021e5ad539afmr1195241wrt.12.1658410984542;
-        Thu, 21 Jul 2022 06:43:04 -0700 (PDT)
-Received: from localhost (212.191.202.62.dynamic.cgnat.res.cust.swisscom.ch. [62.202.191.212])
-        by smtp.gmail.com with ESMTPSA id x10-20020adfec0a000000b0021d6c7a9f50sm2061688wrn.41.2022.07.21.06.43.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 06:43:03 -0700 (PDT)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v7 13/13] selftests/bpf: Fix test_verifier failed test in unprivileged mode
-Date:   Thu, 21 Jul 2022 15:42:45 +0200
-Message-Id: <20220721134245.2450-14-memxor@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220721134245.2450-1-memxor@gmail.com>
-References: <20220721134245.2450-1-memxor@gmail.com>
+        with ESMTP id S230168AbiGUNvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:51:20 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F7827CD6;
+        Thu, 21 Jul 2022 06:51:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1658411171;
+        bh=QtbE3oMbR4Z0fnHisQtcK0R0D/j1pPtQnSsUmsDf4O8=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=Ytcw0Z/xL9TPZj+kGCndhevFWR7Ky7APlZAQFIcGjboI1cx2UyN9wc5aLFCSSs7ty
+         26C5mPuAhDoEOe9NDxrN0XSfsMmeb3mO2nomo4hiw4NM0dI1+C27CjHxRJF7vE2pNL
+         FuF6I1O1HAeGVP+ZQMllX4LMQ44ke3wbBwnWQlT8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.130.88]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mof5H-1nhOfq1j4L-00p7fJ; Thu, 21
+ Jul 2022 15:46:11 +0200
+Message-ID: <7e5dce87-31c1-401f-324a-2aacb6996625@gmx.de>
+Date:   Thu, 21 Jul 2022 15:45:58 +0200
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1029; i=memxor@gmail.com; h=from:subject; bh=avUxAzVXxTSlvvIczCgkt5Bck8b2xRF1My3q7b4wHho=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfOQgxaln2kgyqBnUL/mSLBYQq2oZzyQ+9iPSWL 0uAGw62JAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzgAKCRBM4MiGSL8RyiH4EA CztFjAuMJPfmhUCCB0S+c41xTfwCWXvVG4a6rEFugOpXn2w11Zt3DViPf12HWrF6AzLE9UWn/Bx17S iP+fhaHYrOP0aKYVwi1MSqrJvt5Yw3KuF1mqPclVPI/kCWnJ8P/ML5di7OK90VT0WTuagcJnRGh+3v LM319hMOVLQPR+Rt7Rz18mTfwl7ybj1f1+m8rpR7atMlc512v9pxiCJvoyJYWLiw0eSnUwMfFX7cIo 8ymTD3/zmdjHyv28gZEd/z2PZaMxTREduY42emQxT5DjCFERq2isJYKPeAx/p8snPU75+NS4OMaOyn q/awgHEWB52rBwOxs5/vjKQ5RrQY3WGc0EvbKl76V5UUqMxxC1PQlKXZFu2XpuGo2il5PabT4K/72C 1thoR4BGAFe5ARoujOvZ02GNgvpQ4z2FgdfWgohZ/r5sL23j1tngQfE3JpePAg3TNjzkt5MjYzIIO0 W+AUfK5yOHWjIVyWDFnXI2uDj2559wEgyR7I4/j2kbYuH4cy2bN57f3PSmC2dBT2SEH9w22ZOW8Y0u zXW5S3TYCl0U4UcbYomarqfG6UWgV9ZHFBgui+u7ecm/bmmYhXfN9/6AjM9IXtW8upAMWNy5IYczgR xBLKb/7SpyPfOs+GW6J73agE7rzLvvWLoY7YeABvf3YeFUNeecOAdJXPO7/Q==
-X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 07/13] parisc: Replace regular spinlock with
+ spin_trylock on panic path
+Content-Language: en-US
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Jeroen Roovers <jer@xs4all.nl>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-parisc@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-8-gpiccoli@igalia.com>
+ <20220720034300.6d2905b8@wim.jer>
+ <76b6f764-23a9-ed0b-df3d-b9194c4acc1d@igalia.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <76b6f764-23a9-ed0b-df3d-b9194c4acc1d@igalia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:A2ch0UzKhT2GN3X+8Rl1GQqDJfC/xtKlIw5ATFSiiGdALjoZeLD
+ cpq9OM/zovAiIqRw/z1R+GbYN+JEzG9I4ro5GW/OIWKpNEMrIysqUIdBN8k2TDjO5nrIEsP
+ BFTW/G/1em9u4Pyk1+Bj9LtVoMH6vp9QwEEsrGJtyJdTnoI2Llbh2h7fVSuDCFgnqXsScgF
+ bkLVVvs1ULUD59p94qCdw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:UY2rjKtKFdU=:zzQFKWEd2HyBIE9TID5YgU
+ yfesTqt7NvGQbl4KsVNmCfYGEgGhWvNtyHYfn3xlomX5B2zG8XSY7uS+54lUq2uPRSEy9/oHJ
+ qscEN77zlLdM3O0cpbxhxu139J4lFdxyiirTrGE5xOI/Svm+JvEAjkt1NzYibywdnXunjgsTB
+ BeHl9vmucoz4qc3CK+xgQo+C2jWsxim0Nf7Ds67e8GksrCb6SNt869fg2nxg7vARlYal6cQFz
+ CaZcM6gMb2rEYF9wtYOIOZ6LXabvp0oGIgBvECaqLtInhYdCBQRQtRnEXnA85Ba+jPOnfGLA9
+ 7CW2ldKbApfvDLztSIvgx3EoXjZjGMsJjYPqUmdAXe2tJyd7iNOVeFKfUzlA2hiSzR2q20lkn
+ ulF2/7FVm/tyNA8OXlyC6gigOA3lslABqPYmXxV9reUtwtzJ0s5CSnirubJkdO2io9RZA74k5
+ eVv9O7HGdFkWnGJhoCidSvJsoeWiLpMdJ1L1VfSFhqCFx7s2Ydd4g0ZMlUg+yXTrfpEcg730b
+ 5Af+Dn9vC7GxIAJgOZ24udoy4JKjp7V6ti2hCgL5krFzXW5HYFqtF08OsWW7/ivjHI6Tozz9H
+ 7GmOUbslRFE4oDW6uAI1pq+eE8uKqzeqMpsy9EfhVBPeNpzbwAcNgIrwe3wiuztUekhTQCGx0
+ 00775x+ngK4H+qHKwuWpQnIj7Z3+ESnX9bBj49u6LYmD6iRGzgmT1frOy0nSKxG98UF/G7tAU
+ 42s4KxJ33BkTAmXvjKI0FlKDG5XoywFHQzfOyqK0IADro/3VDgDBZJiPDOesO93Mfdh7pXfaQ
+ fNVIurfahRkljwXZ0OwNesf8f5Bxq3XxlnOLWKIGtV1lRcoUu2L7boIwt/VRqLCF2sKng99BW
+ 2HpssJFqOgi9LYxJhTe6Ik+VREyiyhyiWKAlf+IxNzovV4esGfV5TSp5pv4lme1lVcEGFHoY3
+ +9j3B05xK/vyzKJ85r9Xff2f7lPT97l6N/+IUMudLCRQvURhsJ30WQ/0Hh/NGCS7iyXEPIrpD
+ libJ+S1I8L5x/RJT2foeRGYS8og5LADsLmFqIai2e3LR9PTgjr+q6o0YpgT9NRb2/uauxXjgU
+ pOkV/ZXxlFN5iVojqS1wec1g/0n0r53hlLtCnyEYduPUyCo9/EvoyutZQ==
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,28 +91,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Loading the BTF won't be permitted without privileges, hence only test
-for privileged mode by setting the prog type. This makes the
-test_verifier show 0 failures when unprivileged BPF is enabled.
+On 7/21/22 15:19, Guilherme G. Piccoli wrote:
+> On 19/07/2022 22:43, Jeroen Roovers wrote:
+>>      Hi Guilherme,
+>> [...]
+>>> + *
+>>> + * The _panic version relies in spin_trylock to prevent deadlock
+>>> + * on panic path.
+>>
+>> in =3D> on
+>
+> Hi Jer, thanks for the suggestion!
+>
+> Helge, do you think you could fix it when applying, if there's no other
+> issue in the patch?
+> Thanks,
 
-Fixes: 4118e9e9def ("selftest/bpf: Test for use-after-free bug fix in inline_bpf_loop")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- tools/testing/selftests/bpf/verifier/bpf_loop_inline.c | 1 +
- 1 file changed, 1 insertion(+)
+Guilherme, I'd really prefer that you push the whole series at once throug=
+h
+some generic tree.
 
-diff --git a/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c b/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
-index 2d0023659d88..a535d41dc20d 100644
---- a/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
-+++ b/tools/testing/selftests/bpf/verifier/bpf_loop_inline.c
-@@ -251,6 +251,7 @@
- 	.expected_insns = { PSEUDO_CALL_INSN() },
- 	.unexpected_insns = { HELPER_CALL_INSN() },
- 	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
- 	.func_info = { { 0, MAIN_TYPE }, { 16, CALLBACK_TYPE } },
- 	.func_info_cnt = 2,
- 	BTF_TYPES
--- 
-2.34.1
-
+Helge
