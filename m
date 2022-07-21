@@ -2,66 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 309DB57C19F
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2C157C1B3
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 02:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbiGUA2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 20:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
+        id S231244AbiGUAlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 20:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231268AbiGUA2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:28:38 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3286249D;
-        Wed, 20 Jul 2022 17:28:36 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id d7so306510plr.9;
-        Wed, 20 Jul 2022 17:28:36 -0700 (PDT)
+        with ESMTP id S229906AbiGUAlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 20:41:06 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86086753B2
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 17:41:05 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id m16so240690qka.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 17:41:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qHyW/zQGeHxiV8yKl6wtD5EU59PXEqMR+w3eh+TCFyE=;
-        b=SsuaZEcuN5do3+2MU1oonViR5MxpkAeiLETraeHDU+jUrOSJAu6J9p3xgNiIvqmDT+
-         ei/82Wrx/LydCV6FW9oOzc0Sq+Grkd2f0UUTm8kOTfKjPaCeaA8T0Budlm8Ox0c1AEdD
-         SWCU6W5hUo48z1rnXDDrar+YJdt8Mpr+ZDst6Lhym/YPpZB1lflP+KZeoNKEwtnHC8zq
-         USJsHDigua9pVKcCD03+0W1/Q84tK6B9zdcog+qRIXvJK/Viag4Dl4SyiNS1N/LhPEBz
-         pXz9RGfTgr9K7puvvGOjPpgmIChyqy3s4cbt7cdPmlmjrqFxQwf5IAmlQhi5JuwWLOQK
-         cfYQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NLPMp1+Mt0L/+E6R8JU+BLoZczUGaly/ZIP7N/DIUjk=;
+        b=c/VUBK2QvK2vfwdHRofaHZt9HYM7EXslS5s2wi+6Jwim5NYju5JdGCOAHrTetv5xzX
+         P6KxFVcy1D5RFcg/Lvl97dO+5pxv0GXUlzN44Cy5TuZ/gA81BWqp9haTPUM6xx64N0bs
+         SHW6Vm0sBminmKxtKqvJupkRFTQNNDwJV4AcYgtn0fbG/utFhqyLDZJA1eq3+H7nQ+j7
+         BJsTZb0EboDNRuH2YyK6pgTy5VpPPpWotY6gCwtNSxHpU8gv/rBsdETPlA3GXuCsgPb9
+         76rbDja4enOdfJIlMTAQPtwAl4IndOKluUlnQfdcLMztE4Dp/VpnhnLxp0iOhX56xuDc
+         ggBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=qHyW/zQGeHxiV8yKl6wtD5EU59PXEqMR+w3eh+TCFyE=;
-        b=Fs6lvrjGwahaCII5Xz2yel+ZKQ1ZXc68sfsjG+icOBUc6rruYBjtbEwz7uxSuW4HhB
-         r+eyAqJzKhyV6Tr6ilY5XpNXpGqmKwPEvoz6T/hInNva8Gjt6yCk97HRAuajmemc2bne
-         9si9qRQcaTFqDFe0m9VJTCb4yV15Dwxz4l6Yl85HDqb2KVzyssHMYkR2ol3UNmFJpq7E
-         8tf0yJNMAhPx/+0zUpGJSCysRVyI5LdpcHN06fSJBi8B8ZsuK4X+V5FXL2r6y4a3OBhG
-         jbHRTTh1oPi5D1fYsblc7qTfp5T4odS9T8uJiK0VbpP1MH/iTEmLokPpQkksxGNIpk5S
-         8t3A==
-X-Gm-Message-State: AJIora+NG7WV/PBV80F+yCFmHxkpvjmJdGOzciuohx7VpeSCtreDtuQ2
-        eQE72qleGMgfYwea6cf1nEI=
-X-Google-Smtp-Source: AGRyM1tQVpAMPxmkuQ++lKXbIMF1xWaC4zknVeGb01qhRv1EyhtY+pCvWVk+DkpuQji1WGd3qXg5FA==
-X-Received: by 2002:a17:902:c945:b0:16c:49c9:7932 with SMTP id i5-20020a170902c94500b0016c49c97932mr41447676pla.80.1658363315963;
-        Wed, 20 Jul 2022 17:28:35 -0700 (PDT)
-Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b0016bc4a6ce28sm163226plx.98.2022.07.20.17.28.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Jul 2022 17:28:35 -0700 (PDT)
-From:   justinpopo6@gmail.com
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, joalonsof@gmail.com, jesionowskigreg@gmail.com,
-        jackychou@asix.com.tw, jannh@google.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     f.fainelli@gmail.com, justin.chen@broadcom.com,
-        Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v2 5/5] net: usb: ax88179_178a: wol optimizations
-Date:   Wed, 20 Jul 2022 17:28:16 -0700
-Message-Id: <1658363296-15734-6-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
-References: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NLPMp1+Mt0L/+E6R8JU+BLoZczUGaly/ZIP7N/DIUjk=;
+        b=nU9fE82IBZUVLNP2ju7n7xZrFcldEKkFxWy3hkEJJ/TxXfS4Khn+oMdGufVPSlXmHE
+         0FCu/C05klfvehBdk0Kt+yOk+bvJ06Mt0B8QAOzH9lv/egfYC8L4pGbHYpMtotsi4p71
+         TxtejhLkAsy+QThSyw8Mv+yNrBKCOuSSIfrGLwxaO4ORiVNgxdYKMRxr1NrBfLzdtTIi
+         8XZ+VIDYhsfHI3WI9IlNnAJ9CFCiQoIUtVlgCOqbzbtxu3uVkser1f5H9P6U4A2h3UPa
+         Y07UblsTJmqowvaGb6/qo2IReHUlPdLFuMxZByy7a8fcybmkLMI6ijcRoTfhTPVwOIN7
+         AYiQ==
+X-Gm-Message-State: AJIora+5fx2WUgRwuuTwryDD9wRkDfFreSqMAWDpIovq2eZL4xUAzfnX
+        y6MytroCqfeLRoS2AzEJ9MFjHnyzCCx/wRFCqKI0Uw==
+X-Google-Smtp-Source: AGRyM1t7L3IvjLTHGAVSqlP7orZ4xN16eJegyERHUQa/h5YTRHg7oWqGSwg34qaRWfWGU6zWV64OePdr5YgV/f6wBcM=
+X-Received: by 2002:a05:620a:4590:b0:6b5:e884:2d2c with SMTP id
+ bp16-20020a05620a459000b006b5e8842d2cmr12236347qkb.267.1658364064440; Wed, 20
+ Jul 2022 17:41:04 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220709000439.243271-1-yosryahmed@google.com>
+ <20220709000439.243271-5-yosryahmed@google.com> <370cb480-a427-4d93-37d9-3c6acd73b967@fb.com>
+ <a6d048b8-d017-ea7e-36f0-1c4f88fc4399@fb.com> <CA+khW7gmVmXMg4YP4fxTtgqNyAr4mQqnXbP=z0nUeQ8=hfGC3g@mail.gmail.com>
+ <2a26b45d-6fab-b2a2-786e-5cb4572219ea@fb.com>
+In-Reply-To: <2a26b45d-6fab-b2a2-786e-5cb4572219ea@fb.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 20 Jul 2022 17:40:53 -0700
+Message-ID: <CA+khW7jp+0AadVagqCcV8ELNRphP47vJ6=jGyuMJGnTtYynF+Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/8] bpf: Introduce cgroup iter
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,120 +88,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Justin Chen <justinpopo6@gmail.com>
+On Mon, Jul 11, 2022 at 8:45 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> On 7/11/22 5:42 PM, Hao Luo wrote:
+[...]
+> >>>> +
+> >>>> +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
+> >>>> +{
+> >>>> +    struct cgroup_iter_priv *p = seq->private;
+> >>>> +
+> >>>> +    mutex_lock(&cgroup_mutex);
+> >>>> +
+> >>>> +    /* support only one session */
+> >>>> +    if (*pos > 0)
+> >>>> +        return NULL;
+> >>>
+> >>> This might be okay. But want to check what is
+> >>> the practical upper limit for cgroups in a system
+> >>> and whether we may miss some cgroups. If this
+> >>> happens, it will be a surprise to the user.
+> >>>
+> >
+> > Ok. What's the max number of items supported in a single session?
+>
+> The max number of items (cgroups) in a single session is determined
+> by kernel_buffer_size which equals to 8 * PAGE_SIZE. So it really
+> depends on how much data bpf program intends to send to user space.
+> If each bpf program run intends to send 64B to user space, e.g., for
+> cpu, memory, cpu pressure, mem pressure, io pressure, read rate, write
+> rate, read/write rate. Then each session can support 512 cgroups.
+>
 
-- Check if wol is supported on reset instead of everytime get_wol
-is called.
-- Save wolopts in private data instead of relying on the HW to save it.
-- Defer enabling WoL until suspend instead of enabling it everytime
-set_wol is called.
+Hi Yonghong,
 
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
----
- drivers/net/usb/ax88179_178a.c | 52 +++++++++++++++++++++++-------------------
- 1 file changed, 28 insertions(+), 24 deletions(-)
+Sorry about the late reply. It's possible that the number of cgroup
+can be large, 1000+, in our production environment. But that may not
+be common. Would it be good to leave handling large number of cgroups
+as follow up for this patch? If it turns out to be a problem, to
+alleviate it, we could:
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index d0cd986..3b0e8f9 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -171,6 +171,8 @@ struct ax88179_data {
- 	u8  eee_active;
- 	u16 rxctl;
- 	u8 in_pm;
-+	u32 wol_supported;
-+	u32 wolopts;
- };
- 
- struct ax88179_int_data {
-@@ -400,6 +402,7 @@ ax88179_phy_write_mmd_indirect(struct usbnet *dev, u16 prtad, u16 devad,
- static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
- {
- 	struct usbnet *dev = usb_get_intfdata(intf);
-+	struct ax88179_data *priv = dev->driver_priv;
- 	u16 tmp16;
- 	u8 tmp8;
- 
-@@ -407,6 +410,19 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
- 
- 	usbnet_suspend(intf, message);
- 
-+	/* Enable WoL */
-+	if (priv->wolopts) {
-+		ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
-+				 1, 1, &tmp8);
-+		if (priv->wolopts & WAKE_PHY)
-+			tmp8 |= AX_MONITOR_MODE_RWLC;
-+		if (priv->wolopts & WAKE_MAGIC)
-+			tmp8 |= AX_MONITOR_MODE_RWMP;
-+
-+		ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
-+				  1, 1, &tmp8);
-+	}
-+
- 	/* Disable RX path */
- 	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
- 			 2, 2, &tmp16);
-@@ -480,40 +496,22 @@ static void
- ax88179_get_wol(struct net_device *net, struct ethtool_wolinfo *wolinfo)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	u8 opt;
--
--	if (ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
--			     1, 1, &opt) < 0) {
--		wolinfo->supported = 0;
--		wolinfo->wolopts = 0;
--		return;
--	}
-+	struct ax88179_data *priv = dev->driver_priv;
- 
--	wolinfo->supported = WAKE_PHY | WAKE_MAGIC;
--	wolinfo->wolopts = 0;
--	if (opt & AX_MONITOR_MODE_RWLC)
--		wolinfo->wolopts |= WAKE_PHY;
--	if (opt & AX_MONITOR_MODE_RWMP)
--		wolinfo->wolopts |= WAKE_MAGIC;
-+	wolinfo->supported = priv->wol_supported;
-+	wolinfo->wolopts = priv->wolopts;
- }
- 
- static int
- ax88179_set_wol(struct net_device *net, struct ethtool_wolinfo *wolinfo)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	u8 opt = 0;
-+	struct ax88179_data *priv = dev->driver_priv;
- 
--	if (wolinfo->wolopts & ~(WAKE_PHY | WAKE_MAGIC))
-+	if (wolinfo->wolopts & ~(priv->wol_supported))
- 		return -EINVAL;
- 
--	if (wolinfo->wolopts & WAKE_PHY)
--		opt |= AX_MONITOR_MODE_RWLC;
--	if (wolinfo->wolopts & WAKE_MAGIC)
--		opt |= AX_MONITOR_MODE_RWMP;
--
--	if (ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
--			      1, 1, &opt) < 0)
--		return -EINVAL;
-+	priv->wolopts = wolinfo->wolopts;
- 
- 	return 0;
- }
-@@ -1636,6 +1634,12 @@ static int ax88179_reset(struct usbnet *dev)
- 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
- 			  2, 2, tmp16);
- 
-+	/* Check if WoL is supported */
-+	ax179_data->wol_supported = 0;
-+	if (ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
-+			     1, 1, &tmp) > 0)
-+		ax179_data->wol_supported = WAKE_MAGIC | WAKE_PHY;
-+
- 	ax88179_led_setting(dev);
- 
- 	ax179_data->eee_enabled = 0;
--- 
-2.7.4
+1. tell users to write program to skip a certain uninteresting cgroups.
+2. support requesting large kernel_buffer_size for bpf_iter, maybe as
+a new bpf_iter flag.
 
+Hao
+
+> >
+[...]
+> >>> [...]
