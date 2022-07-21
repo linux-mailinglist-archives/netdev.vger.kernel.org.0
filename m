@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A8557D5B1
+	by mail.lfdr.de (Postfix) with ESMTP id 47EAB57D5AF
 	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 23:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbiGUVPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233705AbiGUVPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 21 Jul 2022 17:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbiGUVP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 17:15:26 -0400
+        with ESMTP id S233710AbiGUVP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 17:15:28 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DEF4B0FE;
-        Thu, 21 Jul 2022 14:15:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2781C5727C;
+        Thu, 21 Jul 2022 14:15:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658438125; x=1689974125;
+  t=1658438127; x=1689974127;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IgQ+/HMuFU5/Y784herXZ7Q8bHscE6snojWqY83h2XY=;
-  b=h7tgSgY9SKbM9jeLKqPxssKLk58QOWsLNjAGTx+ErSNyKGqwzoO924Lr
-   9WJGgijAiMw45zrYShdk7PKp55xZWCoMXbKl8pCJUTk0Agv6M6sVJl1zZ
-   ZmliPFmMVZwvMyy5GRDsJc4Mi8WqQVcw8V9oTsGtnuZS6ceE0NC3JC/Hp
-   lZTp1Kh0g5pioVRbD4WQRAWh42SNNfSNv20SRT7QVcySX5/BAzamAM1en
-   VNBPWNCc0OH1RQOnl4HT6FT6UdzIgLZ/OCqx9dupMKW2BWuoy47X8HVtt
-   tWO/LOKCczHUzsGH83c6exCgJnPt+NivqKhQEuy4kEApamP60i4SW+QpL
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312892778"
+  bh=bz91TNeeBfGTVdIdZvjlrnngeTyrZBksJ2a1iP5sz44=;
+  b=HlAYywwVqivU2YTi19n/cL1tyo3FmDl9tqWOpfRcE2hUHkwtLloY2ITO
+   pnzw2iMpm3WQueydHp3YG78+3fw+To3HKqhvKVLu/d80w+EsXeL7Ve6tD
+   rUBDFFgzTqtIuEmNdABpmlN46xRFS+xOxFyKKf+fbnIyUhesV0+ak4t91
+   lXSLXk1keiVtBgHhmx6D1KLV2IduCXwQjc0jrnSo1PIpgmCTIivZQTvI4
+   bxcjfCylqlJFtTloM/Ye41FHycQubPwJpLmvc/ywvWqB7mz/PwSowiknK
+   f4KJFEMLTBeQ4XiE5S/bY6lQoJM3gl9r1PPRs5p7dkSn+NhoYKiK/zTpn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312892789"
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="312892778"
+   d="scan'208";a="312892789"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 14:14:59 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 14:15:00 -0700
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="925816204"
+   d="scan'208";a="925816212"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
   by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 14:14:59 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -48,9 +48,9 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-doc@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [iproute2-next v2 0/3] devlink: support dry run attribute for flash update
-Date:   Thu, 21 Jul 2022 14:14:48 -0700
-Message-Id: <20220721211451.2475600-4-jacob.e.keller@intel.com>
+Subject: [iproute2-next v2 1/3] update <linux/devlink.h> UAPI header
+Date:   Thu, 21 Jul 2022 14:14:49 -0700
+Message-Id: <20220721211451.2475600-5-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.35.1.456.ga9c7032d4631
 In-Reply-To: <20220721211451.2475600-1-jacob.e.keller@intel.com>
 References: <20220721211451.2475600-1-jacob.e.keller@intel.com>
@@ -66,49 +66,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow users to request a dry run of a flash update by adding the
-DEVLINK_ATTR_DRY_RUN.
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ include/uapi/linux/devlink.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Because many devlink commands do not validate and reject unknown attributes,
-this could have unexpected side effects on older kernels which lack the
-attribute. To handle this, check the socket and determine the maximum
-attribute the kernel supports. Only allow passing the DEVLINK_ATTR_DRY_RUN
-for kernels which have the attribute.
-
-This allows a user to validate that a flash update will be accepted by the
-driver and device without being forced to commit to updating.
-
-Changes since v1
-* Add Cc for maintainers
-* Make dl_kernel_supports_dry_run more generic
-
-Cc: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Jiri Pirko <jiri@nvidia.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Cc: linux-doc@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: intel-wired-lan@lists.osuosl.org
-
-Jacob Keller (3):
-  update <linux/devlink.h> UAPI header
-  mnlg: add function to get CTRL_ATTR_MAXATTR value
-  devlink: add dry run attribute support to devlink flash
-
- devlink/devlink.c            | 45 +++++++++++++++++++++++++++--
- devlink/mnlg.c               | 56 ++++++++++++++++++++++++++++++++++++
- devlink/mnlg.h               |  1 +
- include/uapi/linux/devlink.h |  8 ++++++
- 4 files changed, 108 insertions(+), 2 deletions(-)
-
-
-base-commit: 4cb0bec3744ac4f8d21de0e769f170e4059c6b9e
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index da0f1ba8f7a0..90f6cf97d308 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -576,6 +576,14 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
+ 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+ 
++	/* Before adding this attribute to a command, user space should check
++	 * the policy dump and verify the kernel recognizes the attribute.
++	 * Otherwise older kernels which do not recognize the attribute may
++	 * silently accept the unknown attribute while not actually performing
++	 * a dry run.
++	 */
++	DEVLINK_ATTR_DRY_RUN,			/* flag */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
 -- 
 2.36.1
 
