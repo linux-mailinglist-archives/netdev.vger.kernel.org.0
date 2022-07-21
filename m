@@ -2,37 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9B257C419
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 08:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3FFC57C421
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 08:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbiGUGEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 02:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        id S231978AbiGUGHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 02:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbiGUGEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 02:04:48 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747AF7AB1F;
-        Wed, 20 Jul 2022 23:04:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658383487; x=1689919487;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=9nQtO/fPv71V6tDx+aFymqLREpt/9U9gjQ9EAImTFuk=;
-  b=q8/civg/a1lXDVpVQcDq1YUI2HTn9WBnlCktD7m464neuSaRJk6roE2U
-   mVr37wDmg7aGfzFAspFw6aIGYvshIuaHkBa9DjwyPrelekLzsdiUiON/d
-   wRjeIooAv4OeF/T/ZI1zv1wa4F4fUyfEYpJG0s2s3UNR3kpGFOeiJFQnW
-   g=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 Jul 2022 23:04:47 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2022 23:04:47 -0700
+        with ESMTP id S231279AbiGUGHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 02:07:09 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE76C7AC22;
+        Wed, 20 Jul 2022 23:07:08 -0700 (PDT)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26L4IRsu012154;
+        Thu, 21 Jul 2022 06:04:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=SQNfcNEbrZIlU5RmLbPrl2rpv4bjceec877Ap7GBD5M=;
+ b=MSVLMoGvOF7rWOI8uhcI9jsLucu6BGidEJkhCAj814h+dFQQLL9uwT9gyVk9v5eo6Jr9
+ GUq/eBqB8dfPPA8Vntt7mlGS3pNXrXmu+r0CwDy79WLHuaT/DhE1nn+jQnUVvW7rRY11
+ lTVs97ddj2XzZH4UPEYHROUW1I7eGRCSnQFzIogNMDValOrjB6dBeDt5v0FnXsaKId25
+ HOtqKktCzWl7ufNxU28fZAwYy/9zNYZeD7bSVPMKHxYadhhjGiGcr0crV6tEQcmOVqGo
+ dquMpLscvN2ZTKohBLDcOQeRcT69dTktOVM04alrWcskKc7ubtTHIG/LXrMxpDqYlHPt jg== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hef6sthj3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:52 +0000
+Received: from pps.filterd (NASANPPMTA04.qualcomm.com [127.0.0.1])
+        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26L64pVB017305;
+        Thu, 21 Jul 2022 06:04:51 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 3hc6s4j7cx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:51 +0000
+Received: from NASANPPMTA04.qualcomm.com (NASANPPMTA04.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26L64pPK017295;
+        Thu, 21 Jul 2022 06:04:51 GMT
+Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
+        by NASANPPMTA04.qualcomm.com (PPS) with ESMTPS id 26L64pLb017293
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jul 2022 06:04:51 +0000
 Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Jul 2022 23:04:43 -0700
+ 15.2.986.22; Wed, 20 Jul 2022 23:04:48 -0700
 From:   Zijun Hu <quic_zijuhu@quicinc.com>
 To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
         <luiz.dentz@gmail.com>, <davem@davemloft.net>,
@@ -41,9 +56,9 @@ To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
         <quic_zijuhu@quicinc.com>
 CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v2 1/4] Bluetooth: hci_sync: Check LMP feature bit instead of quirk
-Date:   Thu, 21 Jul 2022 14:04:30 +0800
-Message-ID: <1658383473-32188-2-git-send-email-quic_zijuhu@quicinc.com>
+Subject: [PATCH v2 2/4] Bluetooth: btusb: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Thu, 21 Jul 2022 14:04:31 +0800
+Message-ID: <1658383473-32188-3-git-send-email-quic_zijuhu@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
 References: <1658383473-32188-1-git-send-email-quic_zijuhu@quicinc.com>
@@ -52,8 +67,22 @@ Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: D5z0Z3Z5Xoz8OQXcNFjzEQU_QMiZjh6W
+X-Proofpoint-GUID: D5z0Z3Z5Xoz8OQXcNFjzEQU_QMiZjh6W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-20_12,2022-07-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 malwarescore=0 spamscore=0 clxscore=1011
+ adultscore=0 impostorscore=0 mlxlogscore=999 suspectscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207210023
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,89 +90,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BT core driver should addtionally check LMP feature bit
-"Erroneous Data Reporting" instead of quirk
-HCI_QUIRK_BROKEN_ERR_DATA_REPORTING set by BT device driver to decide if
-HCI commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken.
+Core driver addtionally checks LMP feature bit "Erroneous Data Reporting"
+instead of quirk HCI_QUIRK_BROKEN_ERR_DATA_REPORTING to decide if HCI
+commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken, so
+remove this unnecessary quirk for QCA controllers.
 
-BLUETOOTH CORE SPECIFICATION Version 5.3 | Vol 2, Part C | page 587
-This feature indicates whether the device is able to support the
-Packet_Status_Flag and the HCI commands HCI_Write_Default_-
-Erroneous_Data_Reporting and HCI_Read_Default_Erroneous_-
-Data_Reporting.
-
-the quirk was introduced by 'commit cde1a8a99287 ("Bluetooth: btusb: Fix
-and detect most of the Chinese Bluetooth controllers")' to mark HCI
-commands HCI_Read|Write_Default_Erroneous_Data_Reporting broken by BT
-device driver, but the reason why these two HCI commands are broken is
-that feature "Erroneous Data Reporting" is not enabled by firmware, this
-scenario is illustrated by below log of QCA controllers with USB I/F:
+The reason why these two HCI commands are broken for QCA controllers is
+that feature "Erroneous Data Reporting" is not enabled by their firmware
+as shown by below log:
 
 @ RAW Open: hcitool (privileged) version 2.22
 < HCI Command: Read Local Supported Commands (0x04|0x0002) plen 0
 > HCI Event: Command Complete (0x0e) plen 68
-      Read Local Supported Commands (0x04|0x0002) ncmd 1
-        Status: Success (0x00)
-        Commands: 288 entries
+  Read Local Supported Commands (0x04|0x0002) ncmd 1
+    Status: Success (0x00)
+    Commands: 288 entries
 ......
-          Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
-          Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
+      Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
+      Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
 ......
 
 < HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
 > HCI Event: Command Complete (0x0e) plen 4
-      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
-        Status: Unknown HCI Command (0x01)
+  Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+    Status: Unknown HCI Command (0x01)
 
 < HCI Command: Read Local Supported Features (0x04|0x0003) plen 0
 > HCI Event: Command Complete (0x0e) plen 12
-      Read Local Supported Features (0x04|0x0003) ncmd 1
-        Status: Success (0x00)
-        Features: 0xff 0xfe 0x0f 0xfe 0xd8 0x3f 0x5b 0x87
-          3 slot packets
+  Read Local Supported Features (0x04|0x0003) ncmd 1
+    Status: Success (0x00)
+    Features: 0xff 0xfe 0x0f 0xfe 0xd8 0x3f 0x5b 0x87
+      3 slot packets
 ......
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
 ---
- include/net/bluetooth/hci.h | 1 +
- net/bluetooth/hci_sync.c    | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/bluetooth/btusb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 4a45c48eb0d2..5cf0fbfb89b4 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -497,6 +497,7 @@ enum {
- #define LMP_EXT_INQ	0x01
- #define LMP_SIMUL_LE_BR	0x02
- #define LMP_SIMPLE_PAIR	0x08
-+#define LMP_ERR_DATA_REPORTING 0x20
- #define LMP_NO_FLUSH	0x40
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 21135a419bcc..6b7e721bd57c 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3370,7 +3370,6 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
+-	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
  
- #define LMP_LSTO	0x01
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index a4f1b209b4f8..3881c3230643 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3221,7 +3221,7 @@ static int hci_read_page_scan_activity_sync(struct hci_dev *hdev)
- static int hci_read_def_err_data_reporting_sync(struct hci_dev *hdev)
- {
- 	if (!(hdev->commands[18] & 0x04) ||
--	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
-+	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
- 		return 0;
- 
- 	return __hci_cmd_sync_status(hdev, HCI_OP_READ_DEF_ERR_DATA_REPORTING,
-@@ -3706,7 +3706,7 @@ static int hci_set_err_data_report_sync(struct hci_dev *hdev)
- 	bool enabled = hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED);
- 
- 	if (!(hdev->commands[18] & 0x08) ||
--	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
-+	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
- 		return 0;
- 
- 	if (enabled == hdev->err_data_reporting)
+ 	return 0;
+ }
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
 
