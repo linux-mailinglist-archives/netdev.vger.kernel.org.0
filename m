@@ -2,142 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C645C57C39A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 06:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E8157C3D4
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 07:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiGUEoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 00:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        id S229758AbiGUFpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 01:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiGUEoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 00:44:15 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6775C743D9
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 21:44:14 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-198-wCWCKbzDPBOPH_d9xnmbWw-1; Thu, 21 Jul 2022 00:44:01 -0400
-X-MC-Unique: wCWCKbzDPBOPH_d9xnmbWw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80331811E80;
-        Thu, 21 Jul 2022 04:44:00 +0000 (UTC)
-Received: from dreadlord.bne.redhat.com (fdacunha.bne.redhat.com [10.64.0.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BEEA3909FF;
-        Thu, 21 Jul 2022 04:43:55 +0000 (UTC)
-From:   Dave Airlie <airlied@gmail.com>
-To:     torvalds@linux-foundation.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, gregkh@linuxfoundation.org,
-        Daniel Vetter <daniel@ffwll.ch>, mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Harry Wentland <harry.wentland@amd.com>
-Subject: [PATCH] docs: driver-api: firmware: add driver firmware guidelines. (v3)
-Date:   Thu, 21 Jul 2022 14:43:52 +1000
-Message-Id: <20220721044352.3110507-1-airlied@gmail.com>
+        with ESMTP id S229692AbiGUFpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 01:45:07 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E323B941
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 22:45:04 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id z13so652946wro.13
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 22:45:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JgC6TnVmaVyI+8cNV6BTelWP6VUulyVDgSI1A3lEhvM=;
+        b=bcIWEWouhzkskODa8wRiL7xvL1r79wLwlf1fz/Nm89m4DF3cIkQMsxm7OVl1lufKyn
+         xFt14taAd0rDPNUTsCyTswPWaEE7rffWMHaw/FVUYyTXZSXPN1SQg02VhMOpe/H3/we4
+         seTvZXBBlNp7R88Ish2mfTKc8dGLPe8VWjlQjrE+4QwKR1CU38eQQmdKo5OpGnFCR/Qy
+         yCYIyMtbGRQl4LKbgPvf5Xyz19k/mcFoThZ4Ue7VWy8Gij8WFcqpv2kRNLkXwonBAzKZ
+         ZPM8HHCwLQdMrOkSFdAQO+h1kHDdDGtQ5ZRYgY3SrjVzjUqTJmNusJRV/zc0ljDBJUBU
+         HYmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JgC6TnVmaVyI+8cNV6BTelWP6VUulyVDgSI1A3lEhvM=;
+        b=f+iOPRR9Ad7Fa4xLvFSWZYR9IFRQIEjdT6c2bKZFEZhlCYYJMQm9aC2yWkV6ssHkgN
+         2v/lVl4m6T88idO0U5nyUyHnc85A8PP4BN82EZLXXHAE5O7UiNmdfpbIYxVPNAjNlGDs
+         YBklFYe5YEEfqpoEyly45JqYnJ9pDsYkJeXvHcSL1Md3a6oA69SF5XLosxlwjXHOHRsr
+         pr/ALIQzyrB7nDqun5meK5WXitTyvFFUGr7+KKgzTH46hK1z/WWQqerzgbx3ZTPFVF6S
+         pVMi5yC+u1lgm0f9ENC+TmywzrIv+oEIkYLcrjCR8Fq2sVwz65kIdp2tvK2vjjknC1RB
+         0o4w==
+X-Gm-Message-State: AJIora9886oAIjQ9D+7+m1/RtV/WwPn+sfGzqPFs4vETDWEN9mhvLMF0
+        2acfsC4a54LTwLYZU+qQrxAHhg==
+X-Google-Smtp-Source: AGRyM1tqYpmf0B/oFbVsJztpOjrJgt7GFnzhrGiImn2RER1ankHXRh5pCsEKbosK4R0IJ1qy1DYKFg==
+X-Received: by 2002:adf:f588:0:b0:21e:5515:7703 with SMTP id f8-20020adff588000000b0021e55157703mr781289wro.569.1658382302851;
+        Wed, 20 Jul 2022 22:45:02 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id b4-20020a05600c150400b003a2fb1224d9sm677130wmg.19.2022.07.20.22.45.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 22:45:02 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 07:45:00 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "idosch@nvidia.com" <idosch@nvidia.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "mlxsw@nvidia.com" <mlxsw@nvidia.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "snelson@pensando.io" <snelson@pensando.io>
+Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <Ytjn3H9JsxLsPQ0Z@nanopsycho>
+References: <20220720151234.3873008-1-jiri@resnulli.us>
+ <20220720151234.3873008-2-jiri@resnulli.us>
+ <SA2PR11MB510087EB439262BA6DE1E62AD68E9@SA2PR11MB5100.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=1.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SA2PR11MB510087EB439262BA6DE1E62AD68E9@SA2PR11MB5100.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+Thu, Jul 21, 2022 at 12:25:54AM CEST, jacob.e.keller@intel.com wrote:
+>
+>
+>> -----Original Message-----
+>> From: Jiri Pirko <jiri@resnulli.us>
+>> Sent: Wednesday, July 20, 2022 8:12 AM
+>> To: netdev@vger.kernel.org
+>> Cc: davem@davemloft.net; kuba@kernel.org; idosch@nvidia.com;
+>> petrm@nvidia.com; pabeni@redhat.com; edumazet@google.com;
+>> mlxsw@nvidia.com; saeedm@nvidia.com; snelson@pensando.io
+>> Subject: [patch net-next v3 01/11] net: devlink: make sure that devlink_try_get()
+>> works with valid pointer during xarray iteration
+>> 
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Remove dependency on devlink_mutex during devlinks xarray iteration.
+>> 
+>> The reason is that devlink_register/unregister() functions taking
+>> devlink_mutex would deadlock during devlink reload operation of devlink
+>> instance which registers/unregisters nested devlink instances.
+>> 
+>> The devlinks xarray consistency is ensured internally by xarray.
+>> There is a reference taken when working with devlink using
+>> devlink_try_get(). But there is no guarantee that devlink pointer
+>> picked during xarray iteration is not freed before devlink_try_get()
+>> is called.
+>> 
+>> Make sure that devlink_try_get() works with valid pointer.
+>> Achieve it by:
+>> 1) Splitting devlink_put() so the completion is sent only
+>>    after grace period. Completion unblocks the devlink_unregister()
+>>    routine, which is followed-up by devlink_free()
+>> 2) Iterate the devlink xarray holding RCU read lock.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>
+>
+>This makes sense as long as its ok to drop the rcu_read_lock while in the body of the xa loops. That feels a bit odd to me...
 
-A recent snafu where Intel ignored upstream feedback on a firmware
-change, led to a late rc6 fix being required. In order to avoid this
-in the future we should document some expectations around
-linux-firmware.
+Yes, it is okay. See my comment below.
 
-I was originally going to write this for drm, but it seems quite generic
-advice.
 
-v2: rewritten with suggestions from Thorsten Leemhuis
-v3: rewritten with suggestions from Mauro
+>
+>> ---
+>> v2->v3:
+>> - s/enf/end/ in devlink_put() comment
+>> - added missing rcu_read_lock() call to info_get_dumpit()
+>> - extended patch description by motivation
+>> - removed an extra "by" from patch description
+>> v1->v2:
+>> - new patch (originally part of different patchset)
+>> ---
+>>  net/core/devlink.c | 114 ++++++++++++++++++++++++++++++++++++++-------
+>>  1 file changed, 96 insertions(+), 18 deletions(-)
+>> 
+>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> index 98d79feeb3dc..6a3931a8e338 100644
+>> --- a/net/core/devlink.c
+>> +++ b/net/core/devlink.c
+>> @@ -70,6 +70,7 @@ struct devlink {
+>>  	u8 reload_failed:1;
+>>  	refcount_t refcount;
+>>  	struct completion comp;
+>> +	struct rcu_head rcu;
+>>  	char priv[] __aligned(NETDEV_ALIGN);
+>>  };
+>> 
+>> @@ -221,8 +222,6 @@ static DEFINE_XARRAY_FLAGS(devlinks,
+>> XA_FLAGS_ALLOC);
+>>  /* devlink_mutex
+>>   *
+>>   * An overall lock guarding every operation coming from userspace.
+>> - * It also guards devlink devices list and it is taken when
+>> - * driver registers/unregisters it.
+>>   */
+>>  static DEFINE_MUTEX(devlink_mutex);
+>> 
+>> @@ -232,10 +231,21 @@ struct net *devlink_net(const struct devlink *devlink)
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_net);
+>> 
+>> +static void __devlink_put_rcu(struct rcu_head *head)
+>> +{
+>> +	struct devlink *devlink = container_of(head, struct devlink, rcu);
+>> +
+>> +	complete(&devlink->comp);
+>> +}
+>> +
+>>  void devlink_put(struct devlink *devlink)
+>>  {
+>>  	if (refcount_dec_and_test(&devlink->refcount))
+>> -		complete(&devlink->comp);
+>> +		/* Make sure unregister operation that may await the completion
+>> +		 * is unblocked only after all users are after the end of
+>> +		 * RCU grace period.
+>> +		 */
+>> +		call_rcu(&devlink->rcu, __devlink_put_rcu);
+>>  }
+>> 
+>>  struct devlink *__must_check devlink_try_get(struct devlink *devlink)
+>> @@ -295,6 +305,7 @@ static struct devlink *devlink_get_from_attrs(struct net
+>> *net,
+>> 
+>>  	lockdep_assert_held(&devlink_mutex);
+>> 
+>> +	rcu_read_lock();
+>>  	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>>  		if (strcmp(devlink->dev->bus->name, busname) == 0 &&
+>>  		    strcmp(dev_name(devlink->dev), devname) == 0 &&
+>> @@ -306,6 +317,7 @@ static struct devlink *devlink_get_from_attrs(struct net
+>> *net,
+>> 
+>>  	if (!found || !devlink_try_get(devlink))
+>>  		devlink = ERR_PTR(-ENODEV);
+>> +	rcu_read_unlock();
+>> 
+>>  	return devlink;
+>>  }
+>> @@ -1329,9 +1341,11 @@ static int devlink_nl_cmd_rate_get_dumpit(struct
+>> sk_buff *msg,
+>>  	int err = 0;
+>> 
+>>  	mutex_lock(&devlink_mutex);
+>> +	rcu_read_lock();
+>>  	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>>  		if (!devlink_try_get(devlink))
+>>  			continue;
+>> +		rcu_read_unlock();
+>> 
+>>  		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+>>  			goto retry;
+>> @@ -1358,7 +1372,9 @@ static int devlink_nl_cmd_rate_get_dumpit(struct
+>> sk_buff *msg,
+>>  		devl_unlock(devlink);
+>>  retry:
+>>  		devlink_put(devlink);
+>> +		rcu_read_lock();
+>>  	}
+>> +	rcu_read_unlock();
+>>  out:
+>>  	mutex_unlock(&devlink_mutex);
+>>  	if (err != -EMSGSIZE)
+>> @@ -1432,29 +1448,32 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff
+>> *msg,
+>>  	int err;
+>> 
+>>  	mutex_lock(&devlink_mutex);
+>> +	rcu_read_lock();
+>>  	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
+>>  		if (!devlink_try_get(devlink))
+>>  			continue;
+>> +		rcu_read_unlock();
+>> 
+>
+>Is it safe to rcu_read_unlock here while we're still in the middle of the array processing? What happens if something else updates the xarray? is the for_each_marked safe?
 
-Acked-by: Luis Chamberlain <mcgrof@kernel.org>
-Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Acked-by: Daniel Vetter <daniel@ffwll.ch>
-Acked-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
----
- Documentation/driver-api/firmware/core.rst    |  1 +
- .../firmware/firmware-usage-guidelines.rst    | 44 +++++++++++++++++++
- 2 files changed, 45 insertions(+)
- create mode 100644 Documentation/driver-api/firmware/firmware-usage-guidelines.rst
+Sure, you don't need to hold rcu_read_lock during call to xa_for_each_marked.
+The consistency of xarray is itself guaranteed. The only reason to take
+rcu_read_lock outside is that the devlink pointer which is
+rcu_dereference_check()'ed inside xa_for_each_marked() is still valid
+once we devlink_try_get() it.
 
-diff --git a/Documentation/driver-api/firmware/core.rst b/Documentation/driver-api/firmware/core.rst
-index 1d1688cbc078..803cd574bbd7 100644
---- a/Documentation/driver-api/firmware/core.rst
-+++ b/Documentation/driver-api/firmware/core.rst
-@@ -13,4 +13,5 @@ documents these features.
-    direct-fs-lookup
-    fallback-mechanisms
-    lookup-order
-+   firmware-usage-guidelines
- 
-diff --git a/Documentation/driver-api/firmware/firmware-usage-guidelines.rst b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-new file mode 100644
-index 000000000000..fdcfce42c6d2
---- /dev/null
-+++ b/Documentation/driver-api/firmware/firmware-usage-guidelines.rst
-@@ -0,0 +1,44 @@
-+===================
-+Firmware Guidelines
-+===================
-+
-+Users switching to a newer kernel should *not* have to install newer
-+firmware files to keep their hardware working. At the same time updated
-+firmware files must not cause any regressions for users of older kernel
-+releases.
-+
-+Drivers that use firmware from linux-firmware should follow the rules in
-+this guide. (Where there is limited control of the firmware,
-+i.e. company doesn't support Linux, firmwares sourced from misc places,
-+then of course these rules will not apply strictly.)
-+
-+* Firmware files shall be designed in a way that it allows checking for
-+  firmware ABI version changes. It is recommended that firmware files be
-+  versioned with at least a major/minor version. It is suggested that
-+  the firmware files in linux-firmware be named with some device
-+  specific name, and just the major version. The firmware version should
-+  be stored in the firmware header, or as an exception, as part of the
-+  firmware file name, in order to let the driver detact any non-ABI
-+  fixes/changes. The firmware files in linux-firmware should be
-+  overwritten with the newest compatible major version. Newer major
-+  version firmware shall remain compatible with all kernels that load
-+  that major number.
-+
-+* If the kernel support for the hardware is normally inactive, or the
-+  hardware isn't available for public consumption, this can
-+  be ignored, until the first kernel release that enables that hardware.
-+  This means no major version bumps without the kernel retaining
-+  backwards compatibility for the older major versions.  Minor version
-+  bumps should not introduce new features that newer kernels depend on
-+  non-optionally.
-+
-+* If a security fix needs lockstep firmware and kernel fixes in order to
-+  be successful, then all supported major versions in the linux-firmware
-+  repo that are required by currently supported stable/LTS kernels,
-+  should be updated with the security fix. The kernel patches should
-+  detect if the firmware is new enough to declare if the security issue
-+  is fixed.  All communications around security fixes should point at
-+  both the firmware and kernel fixes. If a security fix requires
-+  deprecating old major versions, then this should only be done as a
-+  last option, and be stated clearly in all communications.
-+
--- 
-2.36.1
 
+>
+>> -		if (!net_eq(devlink_net(devlink), sock_net(msg->sk))) {
+>> -			devlink_put(devlink);
+>> -			continue;
+>> -		}
+>> +		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+>> +			goto retry;
+>> 
+>
+>Ahh retry is at the end of the loop, so we'll just skip this one and move to the next one without needing to duplicate both devlink_put and rcu_read_lock.. ok.
+
+Yep.
+
+
+>
+>> -		if (idx < start) {
+>> -			idx++;
+>> -			devlink_put(devlink);
+>> -			continue;
+>> -		}
+>> +		if (idx < start)
+>> +			goto inc;
+>> 
+>>  		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
+>>  				      NETLINK_CB(cb->skb).portid,
+>>  				      cb->nlh->nlmsg_seq, NLM_F_MULTI);
+>> -		devlink_put(devlink);
+>> -		if (err)
+>> +		if (err) {
+>> +			devlink_put(devlink);
+>>  			goto out;
+>> +		}
+>> +inc:
+>>  		idx++;
+>> +retry:
+>> +		devlink_put(devlink);
+>> +		rcu_read_lock();
+>>  	}
+>> +	rcu_read_unlock();
+>>  out:
+>>  	mutex_unlock(&devlink_mutex);
+>> 
+
+[...]
