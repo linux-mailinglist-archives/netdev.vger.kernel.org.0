@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3637D57CDD9
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C70BE57CDE8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiGUOjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 10:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
+        id S229667AbiGUOmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 10:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbiGUOjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:39:03 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881C8689A
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:39:01 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id f9so1321820qvr.2
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:39:01 -0700 (PDT)
+        with ESMTP id S229558AbiGUOmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:42:16 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5884ED7
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:42:15 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id z25so3155858lfr.2
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:42:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kwW27VCQ4+JlDB+iPSDhz5O1D0eurbd7dKtxO/dfIvY=;
-        b=OnzKBTMKPt8ybqoDKEizFWOIZUwtYD8NVniERJQRrRBD+FC+PRdDYfR9tAPu3M63Wt
-         JG3TqJzUoWvMaF0pCE36eey30fVsLVvODRU/er7wla8BCkhleJfMm7QLgdvrEynQfv7f
-         D64FKivghTNDU7lIbls+9rYw7bof/BUsEQ8+fzzuudi9b3k4wY3SXlIAk/SxIJOZJVCQ
-         TzeoL49vw0ePEWJOK2s1Tu0Tc1DJW173uCXzh3pS7Xigojqp5Ood6OfscacTHVee07jq
-         YdRhUB07YqVnhDr/fzI+/qAYhFgZvJyL8yNAyD2VsfUeuUe52gn2DhlXweRSZoq+fOeV
-         FLgA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=thNzHvCp6cjZHmJ/ovw3Dji38lKPQpENV9BvGaehLGw=;
+        b=NEZzqSvG0pj+3+chsobD6C3nUdZDNwikBSErN2n+2h0WF2IzB2BBF8wP9rjYipkOpP
+         EUirwoSfLaOlLLI1mtfNgI7zcK0bJPumnB5rzX1tPJq6KdmfWhMoAUTm4gNAhkZNzl3f
+         VqvvbIGu2iy9d8y8qJlnM5MAcoKqIQE69h0W5NfEEA5VIbx5CNpKr4vLpFNdgit5SkPv
+         HAcZXXHXEAyVK0r0G5JPCkjPygot2GWZ3kA3NHnKinO/gx3ePADnTbIZRujbzwLyHE4s
+         61LB/wrUs18f6S7al3vk74QwWQMRAhXeHt9/dqYpXrr8m6739TmAL14/6DbG8Rv+5qi5
+         0kGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kwW27VCQ4+JlDB+iPSDhz5O1D0eurbd7dKtxO/dfIvY=;
-        b=VzOio07mKUzC8a8riHJY7wYcb6jaouFMx3K25nuaDQdsAF9mXDAMN0fAZt04k04mqB
-         SE3QZG9IJsYkncdbGlNOPG/bTXKqB/N+8m9nr48UuEYzvwqGeDC1cOz9IiUGL+2CKqBZ
-         9MiwniSHtJ0BrfQYohHTOSG93ynDFMmtQr91m9PCATkBnZDHayOBy8z2di2hiPVh3QdR
-         j+rW3jsX2lUmRld4cZ5v8Lavc9lDRlZb6thtco54V0Vm40jXrw54TxuJ6nWOsRDARMy7
-         tDo8lvQEVU1oOZtevXPedeWDEAmhn+EP1mVIrM1Gp3XtTpumTAKHfYmCKJ9YDRD3c/i2
-         0Sbw==
-X-Gm-Message-State: AJIora+tPBZYjx2g6UsOi/basOw5064etIFHsFMqr33eoHhEt9qxSOPQ
-        +FPxJy/1L0LlfOLG+ETXjBfiZA==
-X-Google-Smtp-Source: AGRyM1uWQJMIGs0cFKjzk6jOPxy6nU58JEm7wrsssEUVgVK/vH4DFVTrvRD0ZbRcmdLePWGA232yJQ==
-X-Received: by 2002:ad4:4ea2:0:b0:473:6d91:6759 with SMTP id ed2-20020ad44ea2000000b004736d916759mr34926483qvb.102.1658414340714;
-        Thu, 21 Jul 2022 07:39:00 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id e19-20020a05620a12d300b006b5905999easm1403705qkl.121.2022.07.21.07.38.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 07:38:59 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oEXKM-001wqY-N5; Thu, 21 Jul 2022 11:38:58 -0300
-Date:   Thu, 21 Jul 2022 11:38:58 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Long Li <longli@microsoft.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Message-ID: <20220721143858.GV5049@ziepe.ca>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-4-git-send-email-longli@linuxonhyperv.com>
- <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
- <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220720234209.GP5049@ziepe.ca>
- <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=thNzHvCp6cjZHmJ/ovw3Dji38lKPQpENV9BvGaehLGw=;
+        b=Ip63y5JwLtNeiv38Zz3RQH9R0itVLM+HmJjaJHHLkbbmzLfqgFQb9rrvNSthkqTy1O
+         wJ6ALNzmLNz0+7Fwb8pTPeavu07OF2UzPh7jlyCNQWD66fzR9W9Gp2qk7J/V9vk54iJl
+         sAXVQs0Ei9n0PA4VCKMeLbnXAcLbPOtzrN9qacvgzROqR608/khL5GgFP0B+XptpcW4P
+         hK6gm0wn02/7gaHenCSL8deImJEiDAq/D42l/H5+S2LHjZXSarhYHsDbtx2sLqHBKyJl
+         1qQ+GD5JiDuQptAoXunQ5+Tz82N6EwxuHwGIQgQ4E66KYPgnnHoGPK+CYIqgy0XL4SLM
+         2NAA==
+X-Gm-Message-State: AJIora/ru2ulDlmiNziTAsqVsaQ512pjgyhfyo7l8Qi1mcc6zxDRQ0SY
+        n6By6nvMmX/NUM7l8pyOeGyCnw==
+X-Google-Smtp-Source: AGRyM1uIljE0KwtqdtHRfg15leMXg4zhq3dLayvmUALbiIqC47x9oo2th7HQ2mKA6TYbjXKCJ8GXuA==
+X-Received: by 2002:a05:6512:23a5:b0:489:d513:55a9 with SMTP id c37-20020a05651223a500b00489d51355a9mr21566452lfv.409.1658414533637;
+        Thu, 21 Jul 2022 07:42:13 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id h24-20020a05651c125800b0025bc79181b4sm558765ljh.36.2022.07.21.07.42.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:42:12 -0700 (PDT)
+Message-ID: <e1a8e417-3c4d-a11b-efce-e66bc170d92c@linaro.org>
+Date:   Thu, 21 Jul 2022 16:42:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v3 03/47] dt-bindings: net: Convert FMan MAC
+ bindings to yaml
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220715215954.1449214-1-sean.anderson@seco.com>
+ <20220715215954.1449214-4-sean.anderson@seco.com>
+ <1657926388.246596.1631478.nullmailer@robh.at.kernel.org>
+ <1b694d96-5ea8-e4eb-65bf-0ad7ffefa8eb@seco.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1b694d96-5ea8-e4eb-65bf-0ad7ffefa8eb@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,46 +84,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 12:06:12AM +0000, Long Li wrote:
-> > Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between
-> > devices
-> > 
-> > On Tue, Jul 12, 2022 at 06:48:09PM +0000, Long Li wrote:
-> > > > > @@ -563,9 +581,19 @@ static int mana_cfg_vport(struct
-> > > > > mana_port_context *apc, u32 protection_dom_id,
-> > > > >
-> > > > >  	apc->tx_shortform_allowed = resp.short_form_allowed;
-> > > > >  	apc->tx_vp_offset = resp.tx_vport_offset;
-> > > > > +
-> > > > > +	netdev_info(apc->ndev, "Configured vPort %llu PD %u DB %u\n",
-> > > > > +		    apc->port_handle, protection_dom_id, doorbell_pg_id);
-> > > > Should this be netdev_dbg()?
-> > > > The log buffer can be flooded if there are many vPorts per VF PCI
-> > > > device and there are a lot of VFs.
-> > >
-> > > The reason netdev_info () is used is that this message is important
-> > > for troubleshooting initial setup issues with Ethernet driver. We rely
-> > > on user to get this configured right to share the same hardware port
-> > > between Ethernet and RDMA driver. As far as I know, there is no easy
-> > > way for a driver to "take over" an exclusive hardware resource from
-> > > another driver.
-> > 
-> > This seems like a really strange statement.
-> > 
-> > Exactly how does all of this work?
-> > 
-> > Jason
+On 17/07/2022 00:47, Sean Anderson wrote:
+> On 7/15/22 7:06 PM, Rob Herring wrote:
+>> On Fri, 15 Jul 2022 17:59:10 -0400, Sean Anderson wrote:
+>>> This converts the MAC portion of the FMan MAC bindings to yaml.
+>>>
+>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>>> Reviewed-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>
+>>> Changes in v3:
+>>> - Incorporate some minor changes into the first FMan binding commit
+>>>
+>>> Changes in v2:
+>>> - New
+>>>
+>>>   .../bindings/net/fsl,fman-dtsec.yaml          | 145 ++++++++++++++++++
+>>>   .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
+>>>   2 files changed, 146 insertions(+), 127 deletions(-)
+>>>   create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+>>>
+>>
+>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>
+>> yamllint warnings/errors:
+>>
+>> dtschema/dtc warnings/errors:
+>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.example.dtb: ethernet@e8000: 'phy-connection-type', 'phy-handle' do not match any of the regexes: 'pinctrl-[0-9]+'
+>> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+>>
+>> doc reference errors (make refcheckdocs):
 > 
-> "vport" is a hardware resource that can either be used by an
-> Ethernet device, or an RDMA device. But it can't be used by both at
-> the same time. The "vport" is associated with a protection domain
-> and doorbell, it's programmed in the hardware. Outgoing traffic is
-> enforced on this vport based on how it is programmed.
+> What's the correct way to do this? I have '$ref: ethernet-controller.yaml#'
+> under allOf, but it doesn't seem to apply. IIRC this doesn't occur for actual dts files.
 
-Sure, but how is the users problem to "get this configured right" and
-what exactly is the user supposed to do?
+You do not allow any other properties than explicitly listed
+(additionalProp:false). If you want to apply all properties from other
+schema you need to use unevaluated.
 
-I would expect the allocation of HW resources to be completely
-transparent to the user. Why is it not?
+https://elixir.bootlin.com/linux/v5.19-rc7/source/Documentation/devicetree/bindings/writing-bindings.rst#L75
 
-Jason
+
+
+Best regards,
+Krzysztof
