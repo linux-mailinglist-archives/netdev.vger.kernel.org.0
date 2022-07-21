@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1155F57C8A5
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 12:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911DD57C8E8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 12:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233094AbiGUKLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 06:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        id S233115AbiGUK1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 06:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiGUKLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 06:11:15 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BAE4D158;
-        Thu, 21 Jul 2022 03:11:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658398238; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=TuUjark3ZoO1ybUFDWDoKYnf85FuMcmZLMl4Rz1RsJggUJTi6Y9/0dD8VwsVQpkw8mw9hF6N0EF+uIBhTv2d6rXWG8Wo0/rAovaWJFml1TPd11bVMfL5CoqlD/mzG82/HxasCiety+ElNEM6QpGBgQdqeUkZVG5MBkZotT6j6qs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1658398238; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=S9vlg9DupEI3hGrDSSYRxpjlOWor/7zZq6QR1lSaYFM=; 
-        b=Z8uhq08Da9Q6wotWXUh2hBo8Y+5ZUjmkTAFLUqYscQpa5Lm2C80dA2Jf5l9OIlsLOGF/RPsQGtBaV7ZP3B6o54nhRlvhKdOADkUUh0WuudzYzeo877l8m5VyDLPJuHgv7Nd+iNcFsniGBon9cHgrDX5jUkNRgTCFWlEMS7d99h4=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658398238;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=S9vlg9DupEI3hGrDSSYRxpjlOWor/7zZq6QR1lSaYFM=;
-        b=FtYIS5s2p8VbWn0R/g+5uRbdwRq8z9NiOCNP4/mUZiuIzoUq7U57AX0g1BmmF5yT
-        tS6mem/olhmalsEebm/Bn2MTzXvSw8MgoVDQr0L2oXyH4d7ZF/cNMA8hWWWUJOQZm48
-        RI27Jnk8IRVa9jpFbVMORbk6F7VsZhbl88yJ/nFI=
-Received: from localhost.localdomain (103.250.137.143 [103.250.137.143]) by mx.zoho.in
-        with SMTPS id 1658398236739503.344263611177; Thu, 21 Jul 2022 15:40:36 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com,
-        syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com,
-        syzbot+9250865a55539d384347@syzkaller.appspotmail.com
-Message-ID: <20220721101018.17902-1-code@siddh.me>
-Subject: [RESEND PATCH] net: Fix UAF in ieee80211_scan_rx()
-Date:   Thu, 21 Jul 2022 15:40:18 +0530
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S229926AbiGUK1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 06:27:02 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2CC5D5BC;
+        Thu, 21 Jul 2022 03:27:01 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c139so1371918pfc.2;
+        Thu, 21 Jul 2022 03:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hnx5MUx2Qay45VKPxChWILBO1CDCjk/WOYP9rCnQ4A4=;
+        b=YjrQI/1ayvgUAdDFhvxjLCh8wm+uE3CWIbPq68wdA8NBOFkpBB3jGi5PbI0nTmwVEz
+         AfF1r15nTjZXSKAOQOeMsoreVGtp/c6p3q9dBFT/3JAUT6XYZQiGcigD2R0wm23bIat4
+         2DSIKDf73m7pjDxycdQZGYwR6vnwZv85dUaH8FFa6rE73Fw2u8xQKMXbiOb7ZuPGoW52
+         ESGVeRtj3Nvm6fu9j86/IOrSlFvkirayrQKyxs+cY+3aMqwQNSy3aEzLB9Gvic0Pfatf
+         McmMruj7L3jFaykFy6wsnwhzU5NDxZRHtQ9Fn+M52/+4fdEGzZxpY2Vu6NQcuaj3vzKO
+         0KVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hnx5MUx2Qay45VKPxChWILBO1CDCjk/WOYP9rCnQ4A4=;
+        b=RnGpypPHc1lKFFb6o8O5SFyquD3ZK+bTVE2D2kzS2uM108op5iPDVWBn9X/4dCxZXq
+         PL0+jkscV8btbxcbro8omdEb7wZr98BcKnKf4C2p+DDvNlRFRp/auTP0pFtVSVgMfQz4
+         LPQtOczDA6FCgKOzGu7fxDrlIhm76/peNtndlcpt/v9E/iHBoLVVcwrXJBq3sUfceDP4
+         dWcI7orUr06GUykvlLikmdlAx2Vi9Kkn6stxrtZmI/wTiR+u6yK+IoRH6jtLzxvlufQD
+         eAvwsNROQT1unPeS8vxtcCUYtIGKMukRSnRrA6VgiXPngHraZ6UMBY+YGU1BT9NlZpxk
+         /3MA==
+X-Gm-Message-State: AJIora+nEksDwYzH4t7WWaGJNujNKL6okZKpBPo7bQnOLPmIYrNidvsf
+        8z5nv3lEnNbSjg1WRtsY+p1Paj91GwjH9Vd2vTU=
+X-Google-Smtp-Source: AGRyM1veomwcwmD7njgdLv3uDNpUEWGyLAwEAdjYT3F5q9MrhFq81H8SEWHFwnAb2VVpBxeBowdtHQ==
+X-Received: by 2002:a63:8441:0:b0:41a:8f86:a6dc with SMTP id k62-20020a638441000000b0041a8f86a6dcmr301636pgd.296.1658399220798;
+        Thu, 21 Jul 2022 03:27:00 -0700 (PDT)
+Received: from kvm.. ([58.76.185.115])
+        by smtp.googlemail.com with ESMTPSA id f64-20020a17090a28c600b001ef7c7564fdsm3285752pjd.21.2022.07.21.03.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 03:27:00 -0700 (PDT)
+From:   Juhee Kang <claudiajkang@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     tchornyi@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, idosch@nvidia.com,
+        petrm@nvidia.com, linux-kernel@vger.kernel.org,
+        Juhee Kang <claudiajkang@gmail.com>
+Subject: [PATCH net-next 1/2] mlxsw: use netif_is_any_bridge_port() instead of open code
+Date:   Thu, 21 Jul 2022 19:26:47 +0900
+Message-Id: <20220721102648.2455-1-claudiajkang@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee80211_scan_rx() tries to access scan_req->flags after a null check
-(see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
-kfree() on the scan_req (see line 991 of wireless/scan.c).
+The open code which is netif_is_bridge_port() || netif_is_ovs_port() is
+defined as a new helper function on netdev.h like netif_is_any_bridge_port
+that can check both IFF flags in 1 go. So use netif_is_any_bridge_port()
+function instead of open code. This patch doesn't change logic.
 
-This results in a UAF.
-
-ieee80211_scan_rx() is called inside a RCU read-critical section
-initiated by ieee80211_rx_napi() (see line 5043 of mac80211/rx.c).
-
-Thus, add an rcu_head to the scan_req struct so as to use kfree_rcu()
-instead of kfree() so that we don't free during the critical section.
-
-Bug report (3): https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f2=
-25d
-Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
-Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
-
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
 ---
-Resending because didn't get any reply from maintainers for more
-than 2 weeks.
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- include/net/cfg80211.h | 2 ++
- net/wireless/scan.c    | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 23d526f13f1c..3a16c24154e1 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8590,9 +8590,7 @@ static int mlxsw_sp_inetaddr_port_event(struct net_device *port_dev,
+ 					unsigned long event,
+ 					struct netlink_ext_ack *extack)
+ {
+-	if (netif_is_bridge_port(port_dev) ||
+-	    netif_is_lag_port(port_dev) ||
+-	    netif_is_ovs_port(port_dev))
++	if (netif_is_any_bridge_port(port_dev) || netif_is_lag_port(port_dev))
+ 		return 0;
 
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 6d02e12e4702..ba4a49884de8 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -2368,6 +2368,7 @@ struct cfg80211_scan_6ghz_params {
-  * @n_6ghz_params: number of 6 GHz params
-  * @scan_6ghz_params: 6 GHz params
-  * @bssid: BSSID to scan for (most commonly, the wildcard BSSID)
-+ * @rcu_head: (internal) RCU head to use for freeing
-  */
- struct cfg80211_scan_request {
- =09struct cfg80211_ssid *ssids;
-@@ -2397,6 +2398,7 @@ struct cfg80211_scan_request {
- =09bool scan_6ghz;
- =09u32 n_6ghz_params;
- =09struct cfg80211_scan_6ghz_params *scan_6ghz_params;
-+=09struct rcu_head rcu_head;
-=20
- =09/* keep last */
- =09struct ieee80211_channel *channels[];
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index 6d82bd9eaf8c..638b2805222c 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -988,7 +988,7 @@ void ___cfg80211_scan_done(struct cfg80211_registered_d=
-evice *rdev,
- =09kfree(rdev->int_scan_req);
- =09rdev->int_scan_req =3D NULL;
-=20
--=09kfree(rdev->scan_req);
-+=09kfree_rcu(rdev->scan_req, rcu_head);
- =09rdev->scan_req =3D NULL;
-=20
- =09if (!send_message)
---=20
-2.35.1
-
+ 	return mlxsw_sp_inetaddr_port_vlan_event(port_dev, port_dev, event,
+--
+2.34.1
 
