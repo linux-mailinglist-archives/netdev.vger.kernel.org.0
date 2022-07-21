@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D5F57CC40
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B4F57CC3B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:44:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbiGUNnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
+        id S229906AbiGUNnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 09:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiGUNnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:43:00 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401FA7E83B;
-        Thu, 21 Jul 2022 06:42:55 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so3377011wme.0;
-        Thu, 21 Jul 2022 06:42:55 -0700 (PDT)
+        with ESMTP id S229894AbiGUNnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:43:01 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EAE820C7;
+        Thu, 21 Jul 2022 06:42:56 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id bk26so2321977wrb.11;
+        Thu, 21 Jul 2022 06:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aKDQvr4Ha1ihCYQYI2WnPngxgXWoBDxQkBDVJ/HQ+2c=;
-        b=JOfA0CrB+z9kMyu+BrMsNlDlutUR/4rdDtTKE+rYTGKuZUJtY57sPOwXNjB4RP28Hl
-         fxV58yLWDmPwlpZ0ltfXQ64bm196MgLEhhKhyQfm1rr+1zYsfVYN55wOGaaGFqM1e3dH
-         Be/pLQfFeL4ttP1zRYLAfwy5Aogm7bQPh6zJF0gl/KmGxqP2PsD1LbZFfy0Mz6XBYnIU
-         O+qi44PR9MmL+yRMrI6vC0wb6vqkdBSLSeNxynZ6VNfIqtZuyCL6YKDfXa1EA7NNfsCj
-         qpKXxvH7y0hmcEIvVb7ED5yCIbQZtWwjIeLkRT4vHSYGggttjRjO3oAN4soGBwFdJkVY
-         o93w==
+        bh=cXX0szn72jmlXCuVHtORDjPnQKGmkmyxcyO0+1uQJTw=;
+        b=JqxV4dOXbvjwDnsuTPR7WuK/8a5SoYCa4XI9fTS4RTvKJ7Qw+7Zv5l49ZsOO2vSkYK
+         7xN4C/KsmWewRkB+NOyVVkFZI71n0jIu3sqDqSuO937rsym/fhBDyV0vtEhPIMcuNgRl
+         2z1FzWpac8mfYRq9w4Ql06ZNfgKcL/j9xI5TxiN7fOTOcTq51bWy7bJ8jUf/q56OpDFw
+         qaScfolqNHBWoVtj7eE2JdVXQBj+UZiboulpok+ro4DZjR8tqUKA0fPVH2CBBGZqxbVY
+         72AV4s++4m1Z8+O5S8LArHZOTef64Rpy3gp7uVzFypGRbBOUoA8ebaCBDl0M4L04DzaT
+         aopg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aKDQvr4Ha1ihCYQYI2WnPngxgXWoBDxQkBDVJ/HQ+2c=;
-        b=hIsesyql/dQSo9kwnoTy4oOuFRIeANcq6vCLcYcvJRd0ff552yKeVlEt8YiIOFE0cM
-         Iue0IJ4eV7e9X0jASpNre10/PIfylM17u/yg1qei/HKMcusc4d/1AjKxv932myvvo4kF
-         B5HlWsDpgowrCGvoDfMAIG/x0yNbJ0hZ7ISi1PlwyRFaRTIyHUbF3cVE8g7tj+nsw1Hr
-         7qJafxiATOnVFS/VuaEUNlMFxkbPECi/RksJKCnULfZFgs0+Ijyz974NwERqUOjAhMKW
-         AtyqJ2MIa7GCHGo1IEQfyw1GJNlkFyfWQq8H4XkYv/43vrz/PJyUnWLwMGNDiajfNsfc
-         wR+w==
-X-Gm-Message-State: AJIora+wfcLIagI1xEYOdoMmoy3MiQQobXNIuvamAwiG0od+Fz6Het0/
-        MezDntCandsWy7xgkpJBm+XMIA3Elr1tKw==
-X-Google-Smtp-Source: AGRyM1vHcrDGI21ugSZ0fwHqE4uLxkGQ+WihPsJ2i3HZC9kx12C9Xe5ageUInDtitf+Ha92mjj6o2A==
-X-Received: by 2002:a05:600c:19cc:b0:3a3:10bd:9211 with SMTP id u12-20020a05600c19cc00b003a310bd9211mr8301568wmq.106.1658410973348;
-        Thu, 21 Jul 2022 06:42:53 -0700 (PDT)
+        bh=cXX0szn72jmlXCuVHtORDjPnQKGmkmyxcyO0+1uQJTw=;
+        b=VhdlUR6wQ+JRr1MuUX26JtHeT35EE3OI1rWhrHhxOq8HXuA3aiN2xQKwTup1Zhy1Gu
+         pmLLuvFmAXjeDSZOtznk7uatcO0Dap1o4A4JZua5qAClMK5rAwaxGQCN0nggPpQ7udye
+         16CF7MpMXn4conZBdGOqgtw2DtR2QueIoGMamPUeRx0772ExMJbka8iluJugBhHPajYI
+         7ZPo9SDB6xPvPtjKwP+nUJ0KP8rVAYsjKVhDzl6ZYnIdJFS3IJ1MG4W6Xil8oVHc/gmY
+         9VxOIlj5+YKxMJqeasSNXgh9yM3e8sZCt5gbyq8vSGOAZ0r4+PEoQFCuYoiTY92ZF26L
+         D7hQ==
+X-Gm-Message-State: AJIora+dWE1Pgd4HmlxldktBdISZrmPjduks9v01SV9N1gGWpfbLweXN
+        kCJS9TJCRUAg20wZcanIiloQMKJdF2MqVg==
+X-Google-Smtp-Source: AGRyM1v3HT3wR23TqQlx0wJcy1rSMG2SRAbeycACXbFNj+Rimy/u2XIsORjbuRTL/23HCngDZHK23g==
+X-Received: by 2002:adf:f807:0:b0:21e:5094:aeb9 with SMTP id s7-20020adff807000000b0021e5094aeb9mr4281996wrp.497.1658410974768;
+        Thu, 21 Jul 2022 06:42:54 -0700 (PDT)
 Received: from localhost (212.191.202.62.dynamic.cgnat.res.cust.swisscom.ch. [62.202.191.212])
-        by smtp.gmail.com with ESMTPSA id s23-20020a1cf217000000b003a2e2a2e294sm1915169wmc.18.2022.07.21.06.42.52
+        by smtp.gmail.com with ESMTPSA id g18-20020a05600c4ed200b003a3199c243bsm8451403wmq.0.2022.07.21.06.42.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 06:42:52 -0700 (PDT)
+        Thu, 21 Jul 2022 06:42:54 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+Cc:     KP Singh <kpsingh@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -58,14 +59,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
         netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc args to be trusted
-Date:   Thu, 21 Jul 2022 15:42:36 +0200
-Message-Id: <20220721134245.2450-5-memxor@gmail.com>
+Subject: [PATCH bpf-next v7 05/13] bpf: Add documentation for kfuncs
+Date:   Thu, 21 Jul 2022 15:42:37 +0200
+Message-Id: <20220721134245.2450-6-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220721134245.2450-1-memxor@gmail.com>
 References: <20220721134245.2450-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5959; i=memxor@gmail.com; h=from:subject; bh=BHiQPw04vFEmpC2vFjwdUDUZ6v33xbb9HRikP4q55rA=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfOJiUhpF22fBHYMRbOvxT02mRY1qIxK1d+MmNU FAricliJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzgAKCRBM4MiGSL8Ryt24D/ 0edK8mcFRBr4+RM92mRzOskZlL9uIYEZ9m9oAnbrDIefGm6maDTT8WsfyJJoaJGvXwkGpy6Rbx8z+s ixySjfngirKHXZcv+rIWf8+9P6TQJ4u25tvcCsj9viPMJcS7c587Hr6mCVGlqpfYeoSNb/ZFMRbKar nBspWCWE5OKUYYr5YrELqXjXeXz4OZMhDrbt1/fvGZQIpShlCWkvLME60U2A+XZ3dUj7N3g/0uxS6g EDfEAGChHpQUv+0ojAz7lgzRNe+IGW+JFNgmmhrg55rDibjla5Smp9YNnyqSOR2ehKp+oBgLVimVSQ TBrDMHFshr8n43+S6rNinSf/Wy09usPDiwT5VM+IaWvlJXh5LjbrlZoH8VKqxk4aaXQTMO61U5aDVn n1BVJ/iBEJ0i8Iu/csbGOgT7ecLdRbgDdClB7s7MZqxfECyV+vW8YsSOsamDxK8S/cUd/KIUHcfBGC IXujY02B47s6R/fO7rowQYskmmGe6S4DZamA/JpwFKkklb8T9RYFvDejwGKTPkgJX8T39SDOgtB9zc DIFJSt0kmCvNkvZo28fpSroTcLKVxB5vErxKdDQVxKHEJK8I37KNzXwB16SCrqNY6p+C7P/hULMxVN iqDAbg9PjSSBasE+dPRuEgCdKteFBhM7YUHfuWz2rCvJAy89ts/iKOOoBzJA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8431; i=memxor@gmail.com; h=from:subject; bh=DE0gIPUomdfTMY1AhBA0mS7+gtLIZ0aRzya2LRepgq0=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfOxKjefB8uvFqSSJU2SxRyNHXsdCG4d/rw515v I+NtRdeJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzgAKCRBM4MiGSL8RyoK9D/ 9uMt6epYvHnvvcEWDTynS9kS+2FxNc19fLL5NWbC4th/epCvvndSWieU+qz8oG9szagSrQhNvtSftP ELj4z+TLB0UYUZzYDlGJGgXTMBBUZtgevF3MF4/r99S+SFP9SPPCyPqcyGZAmILUQPs66Nx5SiGLmt v48JIRrwxabJPXmGoHV2VqpKV8Z+Zutcb9tw7Boauulrkd20aBYg0IDmvCUpVLadS+QBd8MCp53U/7 cs4RtJDosi5k35hGLJwPAdImVrYkHsCd5G9plGvHkNBe3cUf7w0kJFRiZEebEpQyqZvJieTC50wkF2 dq0uXykZBZJG0T2pXL2Vo4yi8hUROYExLyVqShIiickDs1dgJfdX2+FhjcMGu/RYWof6vFpmghgtBR X+/oIyO0E9b5FH07wqrKRtjXQpfsAQ3thno/9h43C92I41P7IvBfCUlR67TfMjrLvWv1l2oDPuWjKd w4XyIqsL+6WRXoIG3rKRtjbNVgWDzfcXZEYphB5lfnhNAFl/la33mXdlXVniw22/tK70jup1t4m7Ns LfmsWkkpN5/Zo8/JiqgnjRDvjC44Y16O8PzDWMGr/fpjDfG1iZbugXj5KpuBIQgwoiqK+3fjY79uRz rpwAM3S1kQ5xrqjhgr+m8kOFdcPwlDC8FYXpjFgniKFC0ZSpaVBsrTyzPlxw==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,149 +79,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Teach the verifier to detect a new KF_TRUSTED_ARGS kfunc flag, which
-means each pointer argument must be trusted, which we define as a
-pointer that is referenced (has non-zero ref_obj_id) and also needs to
-have its offset unchanged, similar to how release functions expect their
-argument. This allows a kfunc to receive pointer arguments unchanged
-from the result of the acquire kfunc.
+As the usage of kfuncs grows, we are starting to form consensus on the
+kinds of attributes and annotations that kfuncs can have. To better help
+developers make sense of the various options available at their disposal
+to present an unstable API to the BPF users, document the various kfunc
+flags and annotations, their expected usage, and explain the process of
+defining and registering a kfunc set.
 
-This is required to ensure that kfunc that operate on some object only
-work on acquired pointers and not normal PTR_TO_BTF_ID with same type
-which can be obtained by pointer walking. The restrictions applied to
-release arguments also apply to trusted arguments. This implies that
-strict type matching (not deducing type by recursively following members
-at offset) and OBJ_RELEASE offset checks (ensuring they are zero) are
-used for trusted pointer arguments.
-
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/btf.h | 32 ++++++++++++++++++++++++++++++++
- kernel/bpf/btf.c    | 17 ++++++++++++++---
- net/bpf/test_run.c  |  5 +++++
- 3 files changed, 51 insertions(+), 3 deletions(-)
+ Documentation/bpf/index.rst  |   1 +
+ Documentation/bpf/kfuncs.rst | 170 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 171 insertions(+)
+ create mode 100644 Documentation/bpf/kfuncs.rst
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 6dfc6eaf7f8c..cb63aa71e82f 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -17,6 +17,38 @@
- #define KF_RELEASE	(1 << 1) /* kfunc is a release function */
- #define KF_RET_NULL	(1 << 2) /* kfunc returns a pointer that may be NULL */
- #define KF_KPTR_GET	(1 << 3) /* kfunc returns reference to a kptr */
-+/* Trusted arguments are those which are meant to be referenced arguments with
-+ * unchanged offset. It is used to enforce that pointers obtained from acquire
-+ * kfuncs remain unmodified when being passed to helpers taking trusted args.
-+ *
-+ * Consider
-+ *	struct foo {
-+ *		int data;
-+ *		struct foo *next;
-+ *	};
-+ *
-+ *	struct bar {
-+ *		int data;
-+ *		struct foo f;
-+ *	};
-+ *
-+ *	struct foo *f = alloc_foo(); // Acquire kfunc
-+ *	struct bar *b = alloc_bar(); // Acquire kfunc
-+ *
-+ * If a kfunc set_foo_data() wants to operate only on the allocated object, it
-+ * will set the KF_TRUSTED_ARGS flag, which will prevent unsafe usage like:
-+ *
-+ *	set_foo_data(f, 42);	   // Allowed
-+ *	set_foo_data(f->next, 42); // Rejected, non-referenced pointer
-+ *	set_foo_data(&f->next, 42);// Rejected, referenced, but bad offset
-+ *	set_foo_data(&b->f, 42);   // Rejected, referenced, but wrong type
-+ *
-+ * In the final case, usually for the purposes of type matching, it is deduced
-+ * by looking at the type of the member at the offset, but due to the
-+ * requirement of trusted argument, this deduction will be strict and not done
-+ * for this case.
-+ */
-+#define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
- 
- struct btf;
- struct btf_member;
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 4d9c2d88720f..7ac971ea98d1 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6174,10 +6174,10 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 				    u32 kfunc_flags)
- {
- 	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
-+	bool rel = false, kptr_get = false, trusted_arg = false;
- 	struct bpf_verifier_log *log = &env->log;
- 	u32 i, nargs, ref_id, ref_obj_id = 0;
- 	bool is_kfunc = btf_is_kernel(btf);
--	bool rel = false, kptr_get = false;
- 	const char *func_name, *ref_tname;
- 	const struct btf_type *t, *ref_t;
- 	const struct btf_param *args;
-@@ -6211,6 +6211,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 		/* Only kfunc can be release func */
- 		rel = kfunc_flags & KF_RELEASE;
- 		kptr_get = kfunc_flags & KF_KPTR_GET;
-+		trusted_arg = kfunc_flags & KF_TRUSTED_ARGS;
- 	}
- 
- 	/* check that BTF function arguments match actual types that the
-@@ -6235,10 +6236,19 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 			return -EINVAL;
- 		}
- 
-+		/* Check if argument must be a referenced pointer, args + i has
-+		 * been verified to be a pointer (after skipping modifiers).
-+		 */
-+		if (is_kfunc && trusted_arg && !reg->ref_obj_id) {
-+			bpf_log(log, "R%d must be referenced\n", regno);
-+			return -EINVAL;
-+		}
+diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
+index 96056a7447c7..1bc2c5c58bdb 100644
+--- a/Documentation/bpf/index.rst
++++ b/Documentation/bpf/index.rst
+@@ -19,6 +19,7 @@ that goes into great technical depth about the BPF Architecture.
+    faq
+    syscall_api
+    helpers
++   kfuncs
+    programs
+    maps
+    bpf_prog_run
+diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
+new file mode 100644
+index 000000000000..c0b7dae6dbf5
+--- /dev/null
++++ b/Documentation/bpf/kfuncs.rst
+@@ -0,0 +1,170 @@
++=============================
++BPF Kernel Functions (kfuncs)
++=============================
 +
- 		ref_t = btf_type_skip_modifiers(btf, t->type, &ref_id);
- 		ref_tname = btf_name_by_offset(btf, ref_t->name_off);
- 
--		if (rel && reg->ref_obj_id)
-+		/* Trusted args have the same offset checks as release arguments */
-+		if (trusted_arg || (rel && reg->ref_obj_id))
- 			arg_type |= OBJ_RELEASE;
- 		ret = check_func_arg_reg_off(env, reg, regno, arg_type);
- 		if (ret < 0)
-@@ -6336,7 +6346,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 			reg_ref_tname = btf_name_by_offset(reg_btf,
- 							   reg_ref_t->name_off);
- 			if (!btf_struct_ids_match(log, reg_btf, reg_ref_id,
--						  reg->off, btf, ref_id, rel && reg->ref_obj_id)) {
-+						  reg->off, btf, ref_id,
-+						  trusted_arg || (rel && reg->ref_obj_id))) {
- 				bpf_log(log, "kernel function %s args#%d expected pointer to %s %s but R%d has a pointer to %s %s\n",
- 					func_name, i,
- 					btf_type_str(ref_t), ref_tname,
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index ca5b7234a350..cbc9cd5058cb 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -691,6 +691,10 @@ noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
- {
- }
- 
-+noinline void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p)
-+{
-+}
++1. Introduction
++===============
 +
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-@@ -714,6 +718,7 @@ BTF_ID_FLAGS(func, bpf_kfunc_call_test_fail3)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_pass1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail2)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test_ref, KF_TRUSTED_ARGS)
- BTF_SET8_END(test_sk_check_kfunc_ids)
- 
- static void *bpf_test_init(const union bpf_attr *kattr, u32 user_size,
++BPF Kernel Functions or more commonly known as kfuncs are functions in the Linux
++kernel which are exposed for use by BPF programs. Unlike normal BPF helpers,
++kfuncs do not have a stable interface and can change from one kernel release to
++another. Hence, BPF programs need to be updated in response to changes in the
++kernel.
++
++2. Defining a kfunc
++===================
++
++There are two ways to expose a kernel function to BPF programs, either make an
++existing function in the kernel visible, or add a new wrapper for BPF. In both
++cases, care must be taken that BPF program can only call such function in a
++valid context. To enforce this, visibility of a kfunc can be per program type.
++
++If you are not creating a BPF wrapper for existing kernel function, skip ahead
++to :ref:`BPF_kfunc_nodef`.
++
++2.1 Creating a wrapper kfunc
++----------------------------
++
++When defining a wrapper kfunc, the wrapper function should have extern linkage.
++This prevents the compiler from optimizing away dead code, as this wrapper kfunc
++is not invoked anywhere in the kernel itself. It is not necessary to provide a
++prototype in a header for the wrapper kfunc.
++
++An example is given below::
++
++        /* Disables missing prototype warnings */
++        __diag_push();
++        __diag_ignore_all("-Wmissing-prototypes",
++                          "Global kfuncs as their definitions will be in BTF");
++
++        struct task_struct *bpf_find_get_task_by_vpid(pid_t nr)
++        {
++                return find_get_task_by_vpid(nr);
++        }
++
++        __diag_pop();
++
++A wrapper kfunc is often needed when we need to annotate parameters of the
++kfunc. Otherwise one may directly make the kfunc visible to the BPF program by
++registering it with the BPF subsystem. See :ref:`BPF_kfunc_nodef`.
++
++2.2 Annotating kfunc parameters
++-------------------------------
++
++Similar to BPF helpers, there is sometime need for additional context required
++by the verifier to make the usage of kernel functions safer and more useful.
++Hence, we can annotate a parameter by suffixing the name of the argument of the
++kfunc with a __tag, where tag may be one of the supported annotations.
++
++2.2.1 __sz Annotation
++---------------------
++
++This annotation is used to indicate a memory and size pair in the argument list.
++An example is given below::
++
++        void bpf_memzero(void *mem, int mem__sz)
++        {
++        ...
++        }
++
++Here, the verifier will treat first argument as a PTR_TO_MEM, and second
++argument as its size. By default, without __sz annotation, the size of the type
++of the pointer is used. Without __sz annotation, a kfunc cannot accept a void
++pointer.
++
++.. _BPF_kfunc_nodef:
++
++2.3 Using an existing kernel function
++-------------------------------------
++
++When an existing function in the kernel is fit for consumption by BPF programs,
++it can be directly registered with the BPF subsystem. However, care must still
++be taken to review the context in which it will be invoked by the BPF program
++and whether it is safe to do so.
++
++2.4 Annotating kfuncs
++---------------------
++
++In addition to kfuncs' arguments, verifier may need more information about the
++type of kfunc(s) being registered with the BPF subsystem. To do so, we define
++flags on a set of kfuncs as follows::
++
++        BTF_SET8_START(bpf_task_set)
++        BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE | KF_RET_NULL)
++        BTF_ID_FLAGS(func, bpf_put_pid, KF_RELEASE)
++        BTF_SET8_END(bpf_task_set)
++
++This set encodes the BTF ID of each kfunc listed above, and encodes the flags
++along with it. Ofcourse, it is also allowed to specify no flags.
++
++2.4.1 KF_ACQUIRE flag
++---------------------
++
++The KF_ACQUIRE flag is used to indicate that the kfunc returns a pointer to a
++refcounted object. The verifier will then ensure that the pointer to the object
++is eventually released using a release kfunc, or transferred to a map using a
++referenced kptr (by invoking bpf_kptr_xchg). If not, the verifier fails the
++loading of the BPF program until no lingering references remain in all possible
++explored states of the program.
++
++2.4.2 KF_RET_NULL flag
++----------------------
++
++The KF_RET_NULL flag is used to indicate that the pointer returned by the kfunc
++may be NULL. Hence, it forces the user to do a NULL check on the pointer
++returned from the kfunc before making use of it (dereferencing or passing to
++another helper). This flag is often used in pairing with KF_ACQUIRE flag, but
++both are orthogonal to each other.
++
++2.4.3 KF_RELEASE flag
++---------------------
++
++The KF_RELEASE flag is used to indicate that the kfunc releases the pointer
++passed in to it. There can be only one referenced pointer that can be passed in.
++All copies of the pointer being released are invalidated as a result of invoking
++kfunc with this flag.
++
++2.4.4 KF_KPTR_GET flag
++----------------------
++
++The KF_KPTR_GET flag is used to indicate that the kfunc takes the first argument
++as a pointer to kptr, safely increments the refcount of the object it points to,
++and returns a reference to the user. The rest of the arguments may be normal
++arguments of a kfunc. The KF_KPTR_GET flag should be used in conjunction with
++KF_ACQUIRE and KF_RET_NULL flags.
++
++2.4.5 KF_TRUSTED_ARGS flag
++--------------------------
++
++The KF_TRUSTED_ARGS flag is used for kfuncs taking pointer arguments. It
++indicates that the all pointer arguments will always be refcounted, and have
++their offset set to 0. It can be used to enforce that a pointer to a refcounted
++object acquired from a kfunc or BPF helper is passed as an argument to this
++kfunc without any modifications (e.g. pointer arithmetic) such that it is
++trusted and points to the original object. This flag is often used for kfuncs
++that operate (change some property, perform some operation) on an object that
++was obtained using an acquire kfunc. Such kfuncs need an unchanged pointer to
++ensure the integrity of the operation being performed on the expected object.
++
++2.5 Registering the kfuncs
++--------------------------
++
++Once the kfunc is prepared for use, the final step to making it visible is
++registering it with the BPF subsystem. Registration is done per BPF program
++type. An example is shown below::
++
++        BTF_SET8_START(bpf_task_set)
++        BTF_ID_FLAGS(func, bpf_get_task_pid, KF_ACQUIRE | KF_RET_NULL)
++        BTF_ID_FLAGS(func, bpf_put_pid, KF_RELEASE)
++        BTF_SET8_END(bpf_task_set)
++
++        static const struct btf_kfunc_id_set bpf_task_kfunc_set = {
++                .owner = THIS_MODULE,
++                .set   = &bpf_task_set,
++        };
++
++        static int init_subsystem(void)
++        {
++                return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_task_kfunc_set);
++        }
++        late_initcall(init_subsystem);
 -- 
 2.34.1
 
