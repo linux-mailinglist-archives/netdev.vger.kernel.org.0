@@ -2,84 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A432857D1FF
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C646C57D235
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 19:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbiGUQvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 12:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
+        id S229862AbiGURJR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Jul 2022 13:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231603AbiGUQvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:51:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8048BA93;
-        Thu, 21 Jul 2022 09:51:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23936B825DC;
-        Thu, 21 Jul 2022 16:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645ABC3411E;
-        Thu, 21 Jul 2022 16:51:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658422295;
-        bh=9hfSjSU6ZEOEWK+4sagbygAVSU3WAbHmJYkaTJ7NNWc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UMSv/3zccNh7CJYI+Vr63UmnZOWfZTvtgdrCMyw5flAvpN/345DvFqWoAHNDgp+x6
-         UR/wflk5IpJy3+1Qj8DDFcNswghe6MHZu56pin7eOQblqKtSyiCU4YxgV0stK4Unlv
-         U5G8Qktiq/2NnwrZuyHVPz6wJwHEx2AGK+bHyk0W/ZO10WZFEkuol1cZgpZ9rR7Wc4
-         vMF6oUpRzcGj9cEhSC8LGLF9jn6+z2nOJZF+Hu3mCBJ/C53oVEYVUJ1CIpKgzCwrA8
-         FyCPpZoSYsHMCxp5Z/0maq4raUACS6xzgb7Vg7s+5d1GrWVHJ+R+x5W6XaJCceS8Zn
-         HB5AIW0hHsc6g==
-Date:   Thu, 21 Jul 2022 09:51:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, llvm@lists.linux.dev
-Subject: Re: [PATCH net-next 18/29] can: pch_can: do not report txerr and
- rxerr during bus-off
-Message-ID: <20220721095134.47ac717e@kernel.org>
-In-Reply-To: <Ytl8x20qmsKyYJpS@dev-arch.thelio-3990X>
-References: <20220720081034.3277385-1-mkl@pengutronix.de>
-        <20220720081034.3277385-19-mkl@pengutronix.de>
-        <YtlwSpoeT+nhmhVn@dev-arch.thelio-3990X>
-        <20220721154725.ovcsfiio7e6hts2n@pengutronix.de>
-        <CAMZ6RqLdYCqag_MDp7dj=u1SEjx1r=bs_xHG26w11_A_D_SumQ@mail.gmail.com>
-        <Ytl8x20qmsKyYJpS@dev-arch.thelio-3990X>
+        with ESMTP id S229436AbiGURJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 13:09:16 -0400
+X-Greylist: delayed 905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 10:09:14 PDT
+Received: from sbaee1.zsr.sk (sbaee1.zsr.sk [217.12.48.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5929E0E2
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 10:09:14 -0700 (PDT)
+Received: from SBAEMBX1.intra.zsr.sk (10.17.102.161) by sbaee1.zsr.sk
+ (217.12.48.20) with Microsoft SMTP Server (TLS) id 15.0.1497.36; Thu, 21 Jul
+ 2022 18:54:04 +0200
+Received: from SCTEMBX1.intra.zsr.sk (10.224.64.221) by SBAEMBX1.intra.zsr.sk
+ (10.17.102.161) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 21 Jul
+ 2022 18:54:06 +0200
+Received: from SCTEMBX1.intra.zsr.sk ([fe80::4807:2f49:90bc:6b45]) by
+ SCTEMBX1.intra.zsr.sk ([fe80::4807:2f49:90bc:6b45%12]) with mapi id
+ 15.00.1497.033; Thu, 21 Jul 2022 18:54:06 +0200
+From:   =?iso-8859-2?Q?Fialka_=A5ubom=EDr?= <Fialka.Lubomir@zsr.sk>
+To:     "1@hotmail.com" <1@hotmail.com>
+Subject: proyecto
+Thread-Topic: proyecto
+Thread-Index: AQHYnSJJjAR1SHL3vkeoIr7VGiXeyA==
+Date:   Thu, 21 Jul 2022 16:54:05 +0000
+Message-ID: <1658422381098.94622@zsr.sk>
+Accept-Language: sk-SK, en-US
+Content-Language: sk-SK
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.17.102.224]
+x-kse-serverinfo: SBAEMBX1.intra.zsr.sk, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: Clean, bases: 7/21/2022 2:01:00 PM
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/21/2022 16:27:42
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 171871 [Jul 21 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: Fialka.Lubomir@zsr.sk
+X-KSE-AntiSpam-Info: LuaCore: 493 493 c80a237886b75a8eec705b487193915475443854
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;www.linkedin.com:7.1.1,5.0.1;127.0.0.199:7.1.2;www.facebook.com:7.1.1,5.0.1;www.instagram.com:7.1.1,5.0.1;zsr.sk:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/21/2022 16:31:00
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 09:20:23 -0700 Nathan Chancellor wrote:
-> > That said, I have one complaint: this type of warning is reported at
-> > W=2 *but* W=2 output is heavily polluted, mostly due to a false
-> > positive on linux/bits.h's GENMASK_INPUT_CHECK(). Under the current
-> > situation, the relevant warings become invisible with all the
-> > flooding.
-> > I tried to send a patch to silence a huge chunk of the W=2 spam in [1]
-> > but it got rejected. I am sorry but even with the best intent, I might
-> > repeat a similar mistake in the future. The W=2 is just not usable.
-> > 
-> > [1] https://lore.kernel.org/all/20220426161658.437466-1-mailhol.vincent@wanadoo.fr/  
-> 
-> Yes, having -Wmaybe-uninitialized in W=2 is unfortunate because these
-> types of mistakes will continue to happen. I have been fighting this for
-> a while and so has Dan Carpenter, who started a thread about it a couple
-> of months ago but it doesn't seem like it really went anywhere:
-> 
-> https://lore.kernel.org/20220506091338.GE4031@kadam/
+Good day, i have an urgent discussion with you. contact my private e-mail below
 
-FWIW it's reported by clang and was in fact reported in the netdev
-patchwork:
-https://patchwork.kernel.org/project/netdevbpf/patch/20220720081034.3277385-19-mkl@pengutronix.de/
-DaveM must have not looked before pulling :S
+E-mail:  tilife27@gmail.com
+
+for more info.
+
+
+?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================================================
+
+Dobrý deò,
+
+prosíme o zaslanie úpravy rozpoètu na úhradu cestovných príkazov z dôvodu nedostatku finanèných prostriedkov.
+
+Ïakujeme.
+
+S pozdravom
+
+[cid:image007.png@01D89AB0.CC001A30]
+
+?Mgr. Mária Hudáková
+Sekcia ekonomiky
+Odbor financovania a rozpoètu
+
++421 2 209 25 699
+maria.hudakova@vlada.gov.sk
+www.vlada.gov.sk
+
+[cid:image003.png@01D89AB0.BF34A690]<https://www.facebook.com/UradVladySR/>
+
+
+[cid:image004.png@01D89AB0.BF34A690]<http://www.instagram.com/uradvladysr>
+
+Úrad vlády Slovenskej republiky
+Námestie slobody 1
+813 70 Bratislava
+
+[cid:image005.png@01D89AB0.BF34A690]
+
+
+[cid:image006.png@01D89AB0.BF34A690]<http://www.linkedin.com/company/uvsr>
+
+
+
+[eco.jpg]       Pred vytlaèením tohto mailu zvá¾te prosím vplyv na ¾ivotné prostredie. Ïakujeme.
+
+
+?
+
+?
+
