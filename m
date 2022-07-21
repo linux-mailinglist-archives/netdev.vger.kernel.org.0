@@ -2,195 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1007257CCBF
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7CE57CCC8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbiGUNzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S229926AbiGUOBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 10:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiGUNze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:55:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D39ABE3D
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 06:55:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658411732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=LvPQRsYw5zpTJYf7jh/0JiSUMdGmQLf2KMb1+AuvPVQ=;
-        b=V6NAWFdPNwocYi4UiW3YuEywD7bjIkZzhIkFzIYwoSQF99TmUgtaC3enjmc4BrCJCrf8O2
-        y7LzhWDqbtgef0abqh52l0jFqDUFZDkDs6wWtIsI3KW/twzQoZYMpIboGLQfTuHrppcmwB
-        qvFnCiadPKtArT61w9D6r6fwwaAEipM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-AYCSQABiNeiuhFq2bYykXg-1; Thu, 21 Jul 2022 09:55:28 -0400
-X-MC-Unique: AYCSQABiNeiuhFq2bYykXg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E018A1C03362;
-        Thu, 21 Jul 2022 13:55:27 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.194.129])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B61C492C3B;
-        Thu, 21 Jul 2022 13:55:27 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Alex Elder <elder@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: ipa: fix build
-Date:   Thu, 21 Jul 2022 15:55:14 +0200
-Message-Id: <7105112c38cfe0642a2d9e1779bf784a7aa63d16.1658411666.git.pabeni@redhat.com>
+        with ESMTP id S229713AbiGUOBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:01:04 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCF43D592;
+        Thu, 21 Jul 2022 07:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dlwnS1Fa3TmXXVNwd1KfMLtfg4qW+Hn+l84xHjkNFv4=; b=pM1CVIwQYxiPAKO3GfnMS+lKWM
+        v8JWyHbi4HVsskrZQxy4Ji7eppdHhD1UeK7YeES2Rza9Ju3RbEJUXwt5UYgTNVT2z9kdsVJcQZ2L8
+        N6sK3PA8ObrNJfk7XzTrJZYWeq5vb9MxU4+a7bb7dfmzv/Ic2EqZMfqBN8NDhXaiSx1krB1zjjBqE
+        D6CdkPlu8rryITQUy+7+fBeOogwYiSR19VRwipP0cOL8BciioNlXBMtGct1NVCqFcNqhkzjwMriDU
+        fmUlKR/BahxW7dR+bNhJoxAwIaR0xCbzFpxbFgpew/sJHpTkXKvif23GSxed/IZ1m99labnS42keg
+        BKnGtb8g==;
+Received: from 200-100-212-117.dial-up.telesp.net.br ([200.100.212.117] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oEWjF-001W4c-TX; Thu, 21 Jul 2022 16:00:38 +0200
+Message-ID: <81b1f787-c3d4-1b2d-6b56-38f54947835d@igalia.com>
+Date:   Thu, 21 Jul 2022 11:00:11 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 07/13] parisc: Replace regular spinlock with
+ spin_trylock on panic path
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>, Jeroen Roovers <jer@xs4all.nl>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-parisc@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-8-gpiccoli@igalia.com>
+ <20220720034300.6d2905b8@wim.jer>
+ <76b6f764-23a9-ed0b-df3d-b9194c4acc1d@igalia.com>
+ <7e5dce87-31c1-401f-324a-2aacb6996625@gmx.de>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <7e5dce87-31c1-401f-324a-2aacb6996625@gmx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 2c7b9b936bdc ("net: ipa: move configuration data files
-into a subdirectory"), build of the ipa driver fails with the
-following error:
+On 21/07/2022 10:45, Helge Deller wrote:
+> [...]
+> Guilherme, I'd really prefer that you push the whole series at once through
+> some generic tree.
+> 
+> Helge
 
-drivers/net/ipa/data/ipa_data-v3.1.c:9:10: fatal error: gsi.h: No such file or directory
+Hmm..OK.
 
-After the mentioned commit, all the file included by the configuration
-are in the parent directory. Fix the issue updating the include path.
+Some maintainers will take patches from here and merge, but given your
+preference I can talk to Andrew to see if the can pick via his tree
+(along with the generic panic patches).
 
-Fixes: 2c7b9b936bdc ("net: ipa: move configuration data files into a subdirectory")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
-Note: I could not use CFLAGS_* here, due to the relevant compilation
-unit name including a slash. Any better option more than welcome!
----
- drivers/net/ipa/data/ipa_data-v3.1.c   | 8 ++++----
- drivers/net/ipa/data/ipa_data-v3.5.1.c | 8 ++++----
- drivers/net/ipa/data/ipa_data-v4.11.c  | 8 ++++----
- drivers/net/ipa/data/ipa_data-v4.2.c   | 8 ++++----
- drivers/net/ipa/data/ipa_data-v4.5.c   | 8 ++++----
- drivers/net/ipa/data/ipa_data-v4.9.c   | 8 ++++----
- 6 files changed, 24 insertions(+), 24 deletions(-)
+Cheers,
 
-diff --git a/drivers/net/ipa/data/ipa_data-v3.1.c b/drivers/net/ipa/data/ipa_data-v3.1.c
-index 00f4e506e6e5..1c1895aea811 100644
---- a/drivers/net/ipa/data/ipa_data-v3.1.c
-+++ b/drivers/net/ipa/data/ipa_data-v3.1.c
-@@ -6,10 +6,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v3.1 */
- enum ipa_resource_type {
-diff --git a/drivers/net/ipa/data/ipa_data-v3.5.1.c b/drivers/net/ipa/data/ipa_data-v3.5.1.c
-index b7e32e87733e..58b708d2fc75 100644
---- a/drivers/net/ipa/data/ipa_data-v3.5.1.c
-+++ b/drivers/net/ipa/data/ipa_data-v3.5.1.c
-@@ -6,10 +6,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v3.5.1 */
- enum ipa_resource_type {
-diff --git a/drivers/net/ipa/data/ipa_data-v4.11.c b/drivers/net/ipa/data/ipa_data-v4.11.c
-index 1be823e5c5c2..a204e439c23d 100644
---- a/drivers/net/ipa/data/ipa_data-v4.11.c
-+++ b/drivers/net/ipa/data/ipa_data-v4.11.c
-@@ -4,10 +4,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.11 */
- enum ipa_resource_type {
-diff --git a/drivers/net/ipa/data/ipa_data-v4.2.c b/drivers/net/ipa/data/ipa_data-v4.2.c
-index 683f1f91042f..04f574fe006f 100644
---- a/drivers/net/ipa/data/ipa_data-v4.2.c
-+++ b/drivers/net/ipa/data/ipa_data-v4.2.c
-@@ -4,10 +4,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.2 */
- enum ipa_resource_type {
-diff --git a/drivers/net/ipa/data/ipa_data-v4.5.c b/drivers/net/ipa/data/ipa_data-v4.5.c
-index 79398f286a9c..684239e71f46 100644
---- a/drivers/net/ipa/data/ipa_data-v4.5.c
-+++ b/drivers/net/ipa/data/ipa_data-v4.5.c
-@@ -4,10 +4,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.5 */
- enum ipa_resource_type {
-diff --git a/drivers/net/ipa/data/ipa_data-v4.9.c b/drivers/net/ipa/data/ipa_data-v4.9.c
-index 4b96efd05cf2..2333e15f9533 100644
---- a/drivers/net/ipa/data/ipa_data-v4.9.c
-+++ b/drivers/net/ipa/data/ipa_data-v4.9.c
-@@ -4,10 +4,10 @@
- 
- #include <linux/log2.h>
- 
--#include "gsi.h"
--#include "ipa_data.h"
--#include "ipa_endpoint.h"
--#include "ipa_mem.h"
-+#include "../gsi.h"
-+#include "../ipa_data.h"
-+#include "../ipa_endpoint.h"
-+#include "../ipa_mem.h"
- 
- /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.9 */
- enum ipa_resource_type {
--- 
-2.35.3
 
+Guilherme
