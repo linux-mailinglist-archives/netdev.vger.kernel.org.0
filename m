@@ -2,217 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E2057CCEF
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D36E57CD22
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiGUOLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 10:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
+        id S229549AbiGUOQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 10:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiGUOL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:11:28 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70113.outbound.protection.outlook.com [40.107.7.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9A5481E1;
-        Thu, 21 Jul 2022 07:11:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LFf5ZPwgQ2eqvb7phNY54iPBtPs3QvVV7CzWTGWiRZJWB3+NjZeI7wHmHJe1tIinGg4RGr4OCwfvskpDn9Pf3IyEQVd9G24r0lYKp7+oX1tXx+AhKwoTrlgaC7zESmBXnDhjOQPFUjeflMMGRguTOzN3Ghxb/6N29730yUOLVFUDqn5krSRIXF0bFCPdIz4/uuUZv5Z8bdO/TbNpLIrvq3gSvivl0XhpkuVlhhjz1GEFWbm8S9Br+YyzwwP1sWTvNgoQdost3m8brSR7dcLiVMAAXd0hEGCeKFif7rGG2T/UQ9UWhqHnB2oFirc164V+WY8LQJFfM1tJfhzskVe6uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/1tsxSbgGZIY+t4W9LMlKeN8qqN80NnnnRC4h1eTGug=;
- b=eSpy1x7yhZWd90RVZ6dJQqYlsS3GMjMbF1zwW+Sffb/dIgd6+3LoiUq9+BV1OxhNwewISidJzRZuK/caS55CMbC/pjieN+AKfoNyeP51YVm176AA6qhLjRsw5YfvqGSEDJ9/aEw4o4GG7uY15DawOO26Q878TZxg1cBHnYzTqfhYmbh/KatitPoYFDDSdefmE2U0hKhW4LSwSKVDx1aNd8+Gs/HBoReB9tVG3ZUYCPLa5mbpo03x8/JC/R30bmliE0oBnsIYktTsAjSNe8VYFiHNQAgWO18c/hysKA4jWWn/bqqwIMPWt1spYeY6UVZO2QDv2DKvz7d0ct+OCHPEiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silicom-usa.com; dmarc=pass action=none
- header.from=silicom-usa.com; dkim=pass header.d=silicom-usa.com; arc=none
+        with ESMTP id S231378AbiGUOPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:15:46 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACB7AE51
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:15:44 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-10c0119dd16so2555063fac.6
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:15:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/1tsxSbgGZIY+t4W9LMlKeN8qqN80NnnnRC4h1eTGug=;
- b=mGyRs8x/L5YF3MNKYwG3SDvGuVhnm/LyRf+6BXpEZvmlkXI3OWnAwg9vKajXnbZF48tWV2j9UJoF5LR4Ue5S3HsCxjzpvntO97IU4cU19pJj2t7R5pt0dTRLNMV96slLmYZ+GFJzJSw0MyZIwfxNkZRSz1u0UW2Py5In+17sgxE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silicom-usa.com;
-Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com (2603:10a6:803:b::16)
- by VI1PR0402MB2879.eurprd04.prod.outlook.com (2603:10a6:800:b7::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
- 2022 14:11:24 +0000
-Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com
- ([fe80::d00f:d6d0:6a7e:4d12]) by VI1PR0402MB3517.eurprd04.prod.outlook.com
- ([fe80::d00f:d6d0:6a7e:4d12%4]) with mapi id 15.20.5438.023; Thu, 21 Jul 2022
- 14:11:23 +0000
-From:   Jeff Daly <jeffd@silicom-usa.com>
-To:     intel-wired-lan@osuosl.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] ixgbe: Manual AN-37 for troublesome link partners for X550 SFI
-Date:   Thu, 21 Jul 2022 10:10:30 -0400
-Message-Id: <20220721141104.4898-1-jeffd@silicom-usa.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL0PR02CA0011.namprd02.prod.outlook.com
- (2603:10b6:207:3c::24) To VI1PR0402MB3517.eurprd04.prod.outlook.com
- (2603:10a6:803:b::16)
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=do6FpxeLRuIHGH0TIXGRYODgLCn8/O+9CM9EGnbvBKE=;
+        b=cag7ylSOvf1ugWUUfvEj7cPATj3y5JXKvAqwexhx6B99Uo3DQyzD1+yddwoYvkZKvn
+         H9xDK98jfg+l8viv2vzxgCYzIeQa7fRgQQ0z08Lz/bVfItsePS47AjTb3RXJsNfMi5Za
+         5oJ4LI6tdTxNrXlpZk3ZFd36yT1U9VQQBjWQ8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=do6FpxeLRuIHGH0TIXGRYODgLCn8/O+9CM9EGnbvBKE=;
+        b=FkkS9Ej5koQEBQC2BcCqViSCGiictt8CsPvlpzPVsQiNJIJAdrzwn1ruqYfpMXLwIL
+         WUAGS3ccRo9yMJCTfQU8qJfMWI2WLClVPHACDiCdr7HiTNc1HfSEKHeZWNhMBj6LYCY0
+         GLW4xVDert/XsLGiPVYILjodFlSMYQZQMEjZG4Iwzxy5HC0Yvfv/u4sL1we4oerJ8sdD
+         sCoo+2rXRJ3QNzAI260miTSafqVVv2uY9HhRMDcKm29frdjqOtBHh7RDK1Uxn+cJrY5P
+         zRBnx32s7bnNbraYG0Hf7XeVIN6v7y9SR2P5jvuSPxjniBG/PCSqtilhBHx9yOubzrQj
+         oY0w==
+X-Gm-Message-State: AJIora9NsF389PXYUxzFVFVLTvDBAxmJ5bia3BNGQdOSjSzrUvseD+h7
+        OIaH6MPz+q43guO6hm7/ArrAJ8JSDwINNQ==
+X-Google-Smtp-Source: AGRyM1sK0WgVZUyUOBm1kTNEBLRX5LFVBM9C2IlPtnl+e/zZQ5PtseKndqes1EFjp07qV3DMM0RiIA==
+X-Received: by 2002:a05:6870:c1c1:b0:e6:84ac:4f86 with SMTP id i1-20020a056870c1c100b000e684ac4f86mr5535768oad.46.1658412943897;
+        Thu, 21 Jul 2022 07:15:43 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id u189-20020acaabc6000000b003263cf0f282sm662296oie.26.2022.07.21.07.15.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jul 2022 07:15:43 -0700 (PDT)
+Message-ID: <5a1c541c-3b61-a838-1502-5224d4b8d0a4@ieee.org>
+Date:   Thu, 21 Jul 2022 09:15:42 -0500
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 32dbf040-e561-40de-1f42-08da6b22e4b2
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB2879:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0wxdlEEgYf6wAOyIwpcnLllyUTewOtmRKrBmv/exqkrLD1NLBI+WYKTQxVNiMFwG+ZWvxqWd8FY0Jf8SC3MTvBmpJvdgnRAF2GxW4dzflKsa6pxwUxiyLbqM2+7m/2Ed+b68NiiFFz5Jum62uIaX4d4MdZgPxbVwbyTyrHkwBccFwB+9WWGiTCLSlJtfNUM6Bksk20TLqLUcPXRmAVtHcD/qiljwiiQidaXVIHl4OxWhKjIQ2BKATQLW6cOvr/Vh3DMe0IHy6ZHutwWqvwMuoNFlkU9zsEYjYnz1aIKa9C+wGv1gvcKQZHJ3rvXOZ2KDdyI8x9lgnC3UtDIgAKgVLO+Bqmn78EFSy1WYpxzLIUqmqJqzVD/xrzyvUwscQnTaWLqg6KSZIGb9w/7/lDp1nUkeQqusKWpZC4XVNym8ByUav4LYXiYkAmuoJoL7y66k9DvM1UbhYxMaHTSzCFoaZKu32ciNvsNAz+51ALUw3RVUo0mLzu+aTItnPOy0l2e2H5lm5IRZ5VGcP4QHTtGWtiOcdTEEaxoCEvyR+nDFUT82oWzxzMGGJL2WinyoRboruEAzPBc0MMxDa1yKxAONTyQia1zwwWSpAplVJUgNRiW/yffwFW586y0Dzvc/k6gXFFE7sz7HfwgKa3WE1RtRM8EPUwGIor/13nzQrz066HmV4XDYJgy0pe+1pdN6VO6TMzJioIhOiZ2PsUTOeR0zVpKXivzCiOBrxMuBYcBBAIDwHvqH5aadOhLRpERYJMGLlNbkiRgiK5oo4l//XC3KwXzYhIdX00Txktu6ecUB+NA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3517.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(366004)(39850400004)(376002)(186003)(66556008)(1076003)(83380400001)(2616005)(38100700002)(38350700002)(316002)(4326008)(66476007)(36756003)(6916009)(66946007)(54906003)(8676002)(6506007)(52116002)(2906002)(41300700001)(8936002)(6486002)(5660300002)(6512007)(478600001)(6666004)(86362001)(26005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DpZXgOiERJZe66k7ttmIRX3mjHh72Us3ghXrVZtpC8hhaTDr1oJkYFzTles/?=
- =?us-ascii?Q?UahzyNfuUX7S/k4YowIJepNWOQkqBhpSZqhNOo2s+/jNJ2wMq21JeeHasbIi?=
- =?us-ascii?Q?GXsGo8/CAhaIFIuammcMyg0XfsYZXMyrzny5BHBweAHEjVnYeCstLX3vLaqd?=
- =?us-ascii?Q?CYkfNkExhQqJoTc3wZM0OLbdt4Mzrt++Q2UjMGEPoJnjHc0FExE4w2F4M4TI?=
- =?us-ascii?Q?P8qI6+MV0Y7ZvZsyd1hZXaDuLR+72CVCt7CoaJi+zzghLgRfvUoVer+2mMcY?=
- =?us-ascii?Q?32+DUMWJGEqKOWY+qm3xaCbgWngJ61SC4w2UQbU6LyvQaK+Iz1Tkr2t659JS?=
- =?us-ascii?Q?EAAYvKkbrCt5HRI2a/uCxqCOdy2//2bPzgvLsuvOOKXHnpXK8uubG20G7GmX?=
- =?us-ascii?Q?mKFHaGVf4ZQxjDIkgdvR0w0bsVBAsh8bk/jhoD+W1OhYZiET0IC7l+70JyT9?=
- =?us-ascii?Q?bAW/jSF6GNGLpOvtCMiJozq0Ba2YTIg6qe2U+o/mVziRV6MWxIkeSy/V9ZOB?=
- =?us-ascii?Q?2LPdQ/fhG7GSK4xHE403QRO/k5f8iTjbDxsdARTIQLf9u6Z+2Nt0oQf7VyGi?=
- =?us-ascii?Q?z9uhpQ5IEcQY0HYeR/vCs//B57jFxGMm1b461ESZzYMccpngi7BzqcCAa/Ql?=
- =?us-ascii?Q?Z4h0GcrHdK6kjsHRTxUnn77esCaO+TJy/ryiTHBopyfuB4yuaMRu4ZsS5wrU?=
- =?us-ascii?Q?NBMSvhcbNqvrCTUxz5DoFhGCNobj2o7qPrALBLrakuWoGZi9z+a+vwwA2Y34?=
- =?us-ascii?Q?+3ozvIqvu2JDDUTHgBErkAh8cYkZjWafNxb/SAJXMsyPLHSbxWx+kQ92cUcL?=
- =?us-ascii?Q?/nTxg1ZOV0ts1DQVZFwov4PqyaDxRpAPHmsBKLTJXMcptnS4VeEZLzh6o/Mw?=
- =?us-ascii?Q?gS1IWkVPUumsUtnlpAAyZ97n+Jn5I52UeAG5SEUbOAtqCfdR3q7FZ19kbI49?=
- =?us-ascii?Q?vJIFBOyYfgp7WwRv1wpB+PZ0NjdbIztWK4PdJLOV/5zeUcWx5l/mso4qX+EO?=
- =?us-ascii?Q?qER4PDbTxZptR2qnHtF+l1RqWLVSB2qgqCNwZ2yiYI+oYj42S1mQSooomw6H?=
- =?us-ascii?Q?y4DvofFnMdYSleXWYNSiFpfz88A0u+/ij+tPPFa80er1Pm7zR707BPvmW7KJ?=
- =?us-ascii?Q?dyZlyRnJmKE3a3YbX0dUXyf1wdiwyH2m4uiCIoq0PLNRQqKBgWKAOGzRWSnE?=
- =?us-ascii?Q?1igP1k42LK4C4s3sYBPcUdBsox+UVmtgd5g1ZfCfVAiAwyANw6M3FW8yxSXP?=
- =?us-ascii?Q?KfeQxDeZCev86KPSRVCAlxKvrjGbqbSqD0gcINYska9cSV1PHesT1NYO1Lc8?=
- =?us-ascii?Q?9WKi5lqQvetxRDIYC7JCsiWypVt1T7RW2QB5P2MzzP7YElC3Yh7jQPUXh2N6?=
- =?us-ascii?Q?Q84Qb1++VslBMfhhtPNdu5Esq7HeWebVgqaD/YGpSrP6kdGAuNjuOax3kZY3?=
- =?us-ascii?Q?uWhC94rA5jTDI3DZIAr9Fkjac8tJZ9izlohPeTr+nqRgQaDi2uEZj5lT1zmA?=
- =?us-ascii?Q?ARJDoYsprPz6mfKItI1WFHJ62iwnRdheWDO1YAyayxQ801eX+mqsMZd1pB7G?=
- =?us-ascii?Q?MSHTmPvfobrjuz/s4dANRExI2BNr9K61naIUBsNa?=
-X-OriginatorOrg: silicom-usa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32dbf040-e561-40de-1f42-08da6b22e4b2
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3517.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 14:11:23.8785
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LR32Qbq+5lSoA38uMztPTj3WuK0MD48ZTTP5jYeG3w+Mbg8yPY6flujQSgqQOCUIIbYfSm1jKGF7O76H26O5LA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2879
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next] net: ipa: fix build
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Alex Elder <elder@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+References: <7105112c38cfe0642a2d9e1779bf784a7aa63d16.1658411666.git.pabeni@redhat.com>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <7105112c38cfe0642a2d9e1779bf784a7aa63d16.1658411666.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some (Juniper MX5) SFP link partners exhibit a disinclination to
-autonegotiate with X550 configured in SFI mode.  This patch enables
-a manual AN-37 restart to work around the problem.
+On 7/21/22 8:55 AM, Paolo Abeni wrote:
+> After commit 2c7b9b936bdc ("net: ipa: move configuration data files
+> into a subdirectory"), build of the ipa driver fails with the
+> following error:
+> 
+> drivers/net/ipa/data/ipa_data-v3.1.c:9:10: fatal error: gsi.h: No such file or directory
+> 
+> After the mentioned commit, all the file included by the configuration
+> are in the parent directory. Fix the issue updating the include path.
+> 
+> Fixes: 2c7b9b936bdc ("net: ipa: move configuration data files into a subdirectory")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Signed-off-by: Jeff Daly <jeffd@silicom-usa.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  3 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 56 ++++++++++++++++++-
- 2 files changed, 56 insertions(+), 3 deletions(-)
+Interesting...  This didn't happen for me.
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-index 2647937f7f4d..dc8a259fda5f 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-@@ -3705,7 +3705,9 @@ struct ixgbe_info {
- #define IXGBE_KRM_LINK_S1(P)		((P) ? 0x8200 : 0x4200)
- #define IXGBE_KRM_LINK_CTRL_1(P)	((P) ? 0x820C : 0x420C)
- #define IXGBE_KRM_AN_CNTL_1(P)		((P) ? 0x822C : 0x422C)
-+#define IXGBE_KRM_AN_CNTL_4(P)		((P) ? 0x8238 : 0x4238)
- #define IXGBE_KRM_AN_CNTL_8(P)		((P) ? 0x8248 : 0x4248)
-+#define IXGBE_KRM_PCS_KX_AN(P)		((P) ? 0x9918 : 0x5918)
- #define IXGBE_KRM_SGMII_CTRL(P)		((P) ? 0x82A0 : 0x42A0)
- #define IXGBE_KRM_LP_BASE_PAGE_HIGH(P)	((P) ? 0x836C : 0x436C)
- #define IXGBE_KRM_DSP_TXFFE_STATE_4(P)	((P) ? 0x8634 : 0x4634)
-@@ -3715,6 +3717,7 @@ struct ixgbe_info {
- #define IXGBE_KRM_PMD_FLX_MASK_ST20(P)	((P) ? 0x9054 : 0x5054)
- #define IXGBE_KRM_TX_COEFF_CTRL_1(P)	((P) ? 0x9520 : 0x5520)
- #define IXGBE_KRM_RX_ANA_CTL(P)		((P) ? 0x9A00 : 0x5A00)
-+#define IXGBE_KRM_FLX_TMRS_CTRL_ST31(P)	((P) ? 0x9180 : 0x5180)
- 
- #define IXGBE_KRM_PMD_FLX_MASK_ST20_SFI_10G_DA		~(0x3 << 20)
- #define IXGBE_KRM_PMD_FLX_MASK_ST20_SFI_10G_SR		BIT(20)
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-index e4b50c7781ff..427073757373 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-@@ -1721,9 +1721,59 @@ static s32 ixgbe_setup_sfi_x550a(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
- 		return IXGBE_ERR_LINK_SETUP;
- 	}
- 
--	status = mac->ops.write_iosf_sb_reg(hw,
--				IXGBE_KRM_PMD_FLX_MASK_ST20(hw->bus.lan_id),
--				IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_PMD_FLX_MASK_ST20(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+
-+	/* change mode enforcement rules to hybrid */
-+	(void)mac->ops.read_iosf_sb_reg(hw,
-+			IXGBE_KRM_FLX_TMRS_CTRL_ST31(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
-+	reg_val |= 0x0400;
-+
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_FLX_TMRS_CTRL_ST31(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+
-+	/* manually control the config */
-+	(void)mac->ops.read_iosf_sb_reg(hw,
-+			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
-+	reg_val |= 0x20002240;
-+
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+
-+	/* move the AN base page values */
-+	(void)mac->ops.read_iosf_sb_reg(hw,
-+			IXGBE_KRM_PCS_KX_AN(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
-+	reg_val |= 0x1;
-+
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_PCS_KX_AN(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+
-+	/* set the AN37 over CB mode */
-+	(void)mac->ops.read_iosf_sb_reg(hw,
-+			IXGBE_KRM_AN_CNTL_4(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
-+	reg_val |= 0x20000000;
-+
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_AN_CNTL_4(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
-+
-+	/* restart AN manually */
-+	(void)mac->ops.read_iosf_sb_reg(hw,
-+			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, &reg_val);
-+	reg_val |= IXGBE_KRM_LINK_CTRL_1_TETH_AN_RESTART;
-+
-+	(void)mac->ops.write_iosf_sb_reg(hw,
-+			IXGBE_KRM_LINK_CTRL_1(hw->bus.lan_id),
-+			IXGBE_SB_IOSF_TARGET_KR_PHY, reg_val);
- 
- 	/* Toggle port SW reset by AN reset. */
- 	status = ixgbe_restart_an_internal_phy_x550em(hw);
--- 
-2.25.1
+Can you tell me more about your particular build environment
+so I can try to reproduce it?  I haven't tested your fix yet
+in my environment.
+
+					-Alex
+
+> ---
+> Note: I could not use CFLAGS_* here, due to the relevant compilation
+> unit name including a slash. Any better option more than welcome!
+> ---
+>   drivers/net/ipa/data/ipa_data-v3.1.c   | 8 ++++----
+>   drivers/net/ipa/data/ipa_data-v3.5.1.c | 8 ++++----
+>   drivers/net/ipa/data/ipa_data-v4.11.c  | 8 ++++----
+>   drivers/net/ipa/data/ipa_data-v4.2.c   | 8 ++++----
+>   drivers/net/ipa/data/ipa_data-v4.5.c   | 8 ++++----
+>   drivers/net/ipa/data/ipa_data-v4.9.c   | 8 ++++----
+>   6 files changed, 24 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/net/ipa/data/ipa_data-v3.1.c b/drivers/net/ipa/data/ipa_data-v3.1.c
+> index 00f4e506e6e5..1c1895aea811 100644
+> --- a/drivers/net/ipa/data/ipa_data-v3.1.c
+> +++ b/drivers/net/ipa/data/ipa_data-v3.1.c
+> @@ -6,10 +6,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v3.1 */
+>   enum ipa_resource_type {
+> diff --git a/drivers/net/ipa/data/ipa_data-v3.5.1.c b/drivers/net/ipa/data/ipa_data-v3.5.1.c
+> index b7e32e87733e..58b708d2fc75 100644
+> --- a/drivers/net/ipa/data/ipa_data-v3.5.1.c
+> +++ b/drivers/net/ipa/data/ipa_data-v3.5.1.c
+> @@ -6,10 +6,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v3.5.1 */
+>   enum ipa_resource_type {
+> diff --git a/drivers/net/ipa/data/ipa_data-v4.11.c b/drivers/net/ipa/data/ipa_data-v4.11.c
+> index 1be823e5c5c2..a204e439c23d 100644
+> --- a/drivers/net/ipa/data/ipa_data-v4.11.c
+> +++ b/drivers/net/ipa/data/ipa_data-v4.11.c
+> @@ -4,10 +4,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.11 */
+>   enum ipa_resource_type {
+> diff --git a/drivers/net/ipa/data/ipa_data-v4.2.c b/drivers/net/ipa/data/ipa_data-v4.2.c
+> index 683f1f91042f..04f574fe006f 100644
+> --- a/drivers/net/ipa/data/ipa_data-v4.2.c
+> +++ b/drivers/net/ipa/data/ipa_data-v4.2.c
+> @@ -4,10 +4,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.2 */
+>   enum ipa_resource_type {
+> diff --git a/drivers/net/ipa/data/ipa_data-v4.5.c b/drivers/net/ipa/data/ipa_data-v4.5.c
+> index 79398f286a9c..684239e71f46 100644
+> --- a/drivers/net/ipa/data/ipa_data-v4.5.c
+> +++ b/drivers/net/ipa/data/ipa_data-v4.5.c
+> @@ -4,10 +4,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.5 */
+>   enum ipa_resource_type {
+> diff --git a/drivers/net/ipa/data/ipa_data-v4.9.c b/drivers/net/ipa/data/ipa_data-v4.9.c
+> index 4b96efd05cf2..2333e15f9533 100644
+> --- a/drivers/net/ipa/data/ipa_data-v4.9.c
+> +++ b/drivers/net/ipa/data/ipa_data-v4.9.c
+> @@ -4,10 +4,10 @@
+>   
+>   #include <linux/log2.h>
+>   
+> -#include "gsi.h"
+> -#include "ipa_data.h"
+> -#include "ipa_endpoint.h"
+> -#include "ipa_mem.h"
+> +#include "../gsi.h"
+> +#include "../ipa_data.h"
+> +#include "../ipa_endpoint.h"
+> +#include "../ipa_mem.h"
+>   
+>   /** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.9 */
+>   enum ipa_resource_type {
 
