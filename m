@@ -2,122 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7837E57CBF1
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8668357CC34
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 15:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiGUNap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 09:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
+        id S229951AbiGUNnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 09:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiGUNan (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:30:43 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140051.outbound.protection.outlook.com [40.107.14.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0647633E22;
-        Thu, 21 Jul 2022 06:30:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JlrGt85k0tAVtrU1cGtqdI3F/E2aqfvHCx0cF9ARrnfDjRM6roypx+mpfhg2d3e8nDHECTqNtmLZDYyl4Y/GRiPDEBs6orrN7KMLNBsB5ufs6fLBdQRB2fzVdZurRgge4X19/wbfJGHvELWjZ9UmyYIhTo75qsMb9UR5E/3HcFuwpXjKQtw4YFsVd7u2SR6ES1lAqIjqJWxn+e+zECOvLx9TF1AeCpkbRFfa2usFe3/4AXluGQ17S5bNw0SPl0fuE/j6rJ3elrrOsk5H6w+rQn6HmQ2HkVpdBwCl6mmXDkX7neSe86nvqD0I8uGY8l7wzXSiScatKlyfsqL8ptoa4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9n/zxedwQEhjwdlYgb4QcReutgQKxUTTm2aIbiZeIS4=;
- b=EIcxAIrkWf5LYr7DcEGyP8HMOi8SNiPI9kXUgbx4VWWL01Z1mYhx7k8l73U8VLbhsoqHokuW852DSOpEC/7kCT5wvr32gkdfO/qLuST22KbthpnUBOsT0DcWtdl5TgNfWyLWwV0pKb7URdarBrDSOXdEQrXjzf9qMVi+P5nF3wARAF9kYh5mJznNsMp0w2HhK/uj1CkMPinnuAXq9dyYGq+7cYXAtydHRKYVJWpGrvpiRvme29XBrJjhkJs8jBD9kBqwlvXbl+cEdBMfxMeZAIvInxEGOIzaBy7CFuauj9jN+yd4JlWtnIgGuh0p6r562y37pv7/AMSR+TazjdrQ7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9n/zxedwQEhjwdlYgb4QcReutgQKxUTTm2aIbiZeIS4=;
- b=SD2qVz90CdzuAdIog8upJaeE8VGvQksoCopYQgexFDcb/UN3OldAzKJJDN6w1fgMy16+b1z5VYt+/4RcS1hWIE3ZU70cU3W1w2LcpWbeEv613Z8h8itArNMPuN/ijpe/SBZjdtgma4WYzOmHrAe+2hK9g6VT/tY7pE4U8dF08zk=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by AS8PR04MB8401.eurprd04.prod.outlook.com (2603:10a6:20b:3f3::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
- 2022 13:30:38 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::1df3:3463:6004:6e27%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 13:30:37 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: RE: [PATCH net-next v3 39/47] net: fman: memac: Add serdes support
-Thread-Topic: [PATCH net-next v3 39/47] net: fman: memac: Add serdes support
-Thread-Index: AQHYmJcSjDRhpKy6Qk2ihwHZ5ZBFnq2I17xA
-Date:   Thu, 21 Jul 2022 13:30:37 +0000
-Message-ID: <VI1PR04MB58071192E279070C90F81843F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-40-sean.anderson@seco.com>
-In-Reply-To: <20220715215954.1449214-40-sean.anderson@seco.com>
-Accept-Language: en-GB, ro-RO, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d142825f-c703-49ab-5ea5-08da6b1d32d1
-x-ms-traffictypediagnostic: AS8PR04MB8401:EE_
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CiIgsNueOg1aacCBqvqjIhx2Lk0Q5W+/bTBI9jk8OFUoi6OGmnmkwgpTWVNZk9/wvef5N+haQ/GPTtt9vRzz1Ktp4r3iiS40oBB0bBlceNQ/rKn7FKZfn4tg2SFjeRmCMDFqE+jcDxQf0zaoVH64qY6iesaz6qleI/cAm3mJEjoPSCS+76bQZ4x9N22nTfdirf0OAIQ04GOhnKdMxOMWasCgOxw45kgjwxEgoUK7/4G5pbQSbT+kvJdWyLFK6lmU2QrN+hAa15w9I7yVmw2XwBBeNDHXgJRrsiuX/rLzzSDPlsKr88UjW1ZUwflavF8IFuF19Cz5GzgavPEFiZwMqz4crpUkHDeDB26ZrE2eG7RbRVYcpRZv2sB2cc5BVRhecWBn3ji4ofpGdP9nQJJRW4lsLx+OjSwWGsbYPyOusioIUALuQ+14VoLKDZ06M3hXk3rA368HhJAM/nV9svk7f4vwZxtSNpqkLwi8eIW20llGUseaR33CNaXfx6+M/AGD2jMpOP4cQRRdzOX3ejewwWZ4U4T32Gib4Ib42IKDtDUj+3PVfoe/Q1IQTC2EUfhAsctnIDLYdFUwnvYGq/xoNvaPbI0HoFUzpcLX98gQ17mtqhStbKnoHMQ5nt1TPLrD2XW+wuVbMPZR/fBrwQkX/JS2TJbw85oZiNrk3VUj/A9QQqfiu/6N3HKsHXcpj185BkbgbEyNCWydX5AArTQicnMZ0+Dki0todNCZN1VnYBOtGEZQo9/uLt0qo+ssfiDlCm177hCcleQB3CfaTWjJ54z0EQLEPwnBHP/8znV2iHU2as+rXMZBa5k+ZQWaSPMg
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(396003)(39860400002)(366004)(122000001)(33656002)(2906002)(110136005)(54906003)(9686003)(316002)(38100700002)(478600001)(53546011)(7696005)(186003)(8936002)(55016003)(76116006)(8676002)(66556008)(64756008)(4326008)(5660300002)(66476007)(71200400001)(66946007)(26005)(66446008)(38070700005)(86362001)(6506007)(41300700001)(55236004)(83380400001)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AUWKVo7M4HmBNta+L6UMzdz3nfjmIm/J8Vo+KMdDBinUDblU/0QwEe2vWeDu?=
- =?us-ascii?Q?RppSs2zGKUVa853YgSgnfCAzYmBxjn4GyM7GY3HLxGYqv40iqlDoYcwQ79gv?=
- =?us-ascii?Q?+5KJ0UBrzoGgKLO4v/KatkpImsefi1fCmv3oQm/yPNMTFK1srxCxnZMrHdt4?=
- =?us-ascii?Q?OxYdU5g2KJ0CSpDcZS6WI6PKq5Rdp5VEZmBcYgDV3MRXWF0I91/+Dn8NA4Bs?=
- =?us-ascii?Q?Kw5lRLbL5qnKt7MDiy3FowNn4jqsi07aD7V47cJyBne18IhPBntXI5JDhqqf?=
- =?us-ascii?Q?3WRlxdh1TJD4iSeRIGIhs70EhHaC2aB9Z7n49PEfs4nvwemDrjMVgqDsrPOX?=
- =?us-ascii?Q?my4rF7d1JAy//8tJRQnvUS7gQgAMt7pim8J8UMdccGxyetQktrxi3d193hqv?=
- =?us-ascii?Q?74xo51wtnwUL8zQGNhjp+vNlg4WOloUznp4+QVcKk1Lp1di2Zu9EJN1+35NW?=
- =?us-ascii?Q?AtYlBlkebFaq0GvA7gGOWxUAOyKbWN7grb8FvJF6BT1scz+5H4BPld1N9gtD?=
- =?us-ascii?Q?0o25Q2xI6FqpxMkM2hOq5UsAOOWgdojeDEbzfXMbgEi01x1PYwSl5rVJC22q?=
- =?us-ascii?Q?8eHJ7zbM53JfNjQDoAi7uQe8bjgxTnKSGHkBpQMfqZzNpfVb73TduHFcQ47I?=
- =?us-ascii?Q?NzGQnyX2L4nCvVzDRNijdeqZHFnbhGCCAKn3/zkC1oEbaQTgm4FOYKrfnZB5?=
- =?us-ascii?Q?AayhPCd7wbBmWDzsRTe+yfp02GPXk8X8QHFhsF8LSt/UJ9Hnqd2vpTR5wW+R?=
- =?us-ascii?Q?qQ9YHcoopnrkTC05M4mVIGhJ5mWYFNNdVp9scPMIfE7JpqbcKZO642xxR4bb?=
- =?us-ascii?Q?Ys4QBTH9BF2vpTMbYharVwJNndLntVSq0ZWqZabKHMsE9NMtkypMW9n94VUt?=
- =?us-ascii?Q?Etei3vu7cItfe9cW1Vw4fm9kK/NwOHrQvjstbgpPvS/6AxMlU2Sb7WIk+SAj?=
- =?us-ascii?Q?zRPHGY0Sw4tSQo40BmT9GW9HjOiXFzDa08VGv+zauHC3QxhxZ9KjT/3l9vRa?=
- =?us-ascii?Q?KM7G/KIys2sGfd2+07ChdLolzBouAEBOgD58KoL+wmA57QqTNdnSrAcuEpp4?=
- =?us-ascii?Q?sVIFYJJbWLGJ16ATIQ+Y9Rl/dKcpDpzx4iDrHkmm2qsdXByjFM7b1++C8Vio?=
- =?us-ascii?Q?RVY8fpRaOHJjto6W7GYb8CvYqsD31Ra2mAIr4mhHirs3f4fVb/Y891E7EaAF?=
- =?us-ascii?Q?mYJS5U2aJzbdHtiVTA0dchCild/NYDdqmCa2EPVWtN4CH5UYPCesgH7gLkgM?=
- =?us-ascii?Q?sCifHN9WljjbD4Mei6LEj3DDYjjndnJv+kvPGYbZleFAAJBo4CD5uZUVI8ze?=
- =?us-ascii?Q?O0/EpwMRevlSISlvNLnOcDG8+wPjeQrPtC+Yu3RSwRrzou8ke9E9F8ukJ/LR?=
- =?us-ascii?Q?ZXTgVtHhJQUrpb+nYgqbiWvb4M6CERhUFq5BdsxCQJ3wzcTFTr1NEgeA4i7H?=
- =?us-ascii?Q?tZMRUjbS7pske0phYYC3+AdIDvF1Nc3aytcmHT2QjnlZAJmstUi08yRZ4HFA?=
- =?us-ascii?Q?uAvT5EByYrp7Nt9A8oB6OWgz+E1kdF4M9yxJxkX/xOPH34MQFecbq+wggDI+?=
- =?us-ascii?Q?1N4PlxjvrxLUtOHrZHbBdOwhgoskihVH/FoM/cp0?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229729AbiGUNmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 09:42:55 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E787A820C3;
+        Thu, 21 Jul 2022 06:42:50 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id h9so2382307wrm.0;
+        Thu, 21 Jul 2022 06:42:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lwvps79KHy7KtNwizeez/x07YLJTzOBA86WUP3rssec=;
+        b=C8Zdxg5er8MUPNN9oQiV3qXhfuJ5hYaUTQGmoR0lUVY4fXPDKonsTKS8YjJxbgoEWR
+         Jb9VRF2CvWBWccr3kEf21h5OJEM3pDQ2ozIRsYoX3bQ4eIhHou23cwSzZRTMoVdmql+A
+         GtIsvt861XpM5hBJ7mIaB/84bATU/SiuRFz/NOWEpslSJi7O/LevCogNk2Kxtt0TTOeM
+         nWrCxqKqu8wcfrK+UXbFVibsFZsEvlMzxtooVCvWJ7sqfsXm2EP+6kfpiyC49mPCnN9T
+         aaeFd9zrBTXo3EpwH26S5GuwMMifk6Y6RTG77nRnOmfCx0iVxGNTl41OjfoqJ/yDwJCj
+         H7UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lwvps79KHy7KtNwizeez/x07YLJTzOBA86WUP3rssec=;
+        b=OzPsqTscsZPcPK83t8uHCsc/3VroTEgs9RJVXQfmBMELm5rpWWePED799Orm9EwnqG
+         nX2yTBV2f5liFz3e7ssYmwWAEraN/WMYMwGCbgpnMu14NCd78CaRHbnXr65EVYtnjKur
+         aJ2VmCavs3q6LpCcGG0FOdR10ytvGPtOeCW6UIT3lmxjjO/4iMcf0Zb3W3eP2AE42BB9
+         21WLv3Mn/NiFylwo+UHKXq1Jv4/cBpuYTr55nOQyJNe/hZOZXy7Dyg+Gg580V6s6i8xP
+         Y7LDL5ZJa6xcdeWMzD6z3VUZK6S9oe10RaDWnw3vlqr084QgKvqXcT8yrWZablJyVKyI
+         yeDw==
+X-Gm-Message-State: AJIora/dc3MYR3fmwOZTnjiUdVM/gbefUweivnNt0qKxAD6/RXFTBebt
+        pTfQUr8c5xbjZFhh6hQwFu1Iyh8FehXflQ==
+X-Google-Smtp-Source: AGRyM1syeWeyZz6c/Nf6eP86lznLszZWeVFyQPp8kbzWXcccS8fYoFr+IAphnHeM+y7H8usW/oNrQg==
+X-Received: by 2002:a05:6000:886:b0:21e:2786:4145 with SMTP id ca6-20020a056000088600b0021e27864145mr13472071wrb.541.1658410968334;
+        Thu, 21 Jul 2022 06:42:48 -0700 (PDT)
+Received: from localhost (212.191.202.62.dynamic.cgnat.res.cust.swisscom.ch. [62.202.191.212])
+        by smtp.gmail.com with ESMTPSA id o8-20020a05600c378800b003a2e7c13a3asm1791349wmr.42.2022.07.21.06.42.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 06:42:47 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: [PATCH bpf-next v7 00/13] New nf_conntrack kfuncs for insertion, changing timeout, status
+Date:   Thu, 21 Jul 2022 15:42:32 +0200
+Message-Id: <20220721134245.2450-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d142825f-c703-49ab-5ea5-08da6b1d32d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 13:30:37.6527
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5rTbba5Lwp94ejpL4yaEVQk25r7hQ/dMGCBaQC4lYGQn5GmcaGX3aXdaJyT5+jjWODiuRdLQgzuojF3Xd0vxxA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8401
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4703; i=memxor@gmail.com; h=from:subject; bh=6NY4iFk7x2B7UPaLQA3xE204dN1Rh6iBPE59zmuigpE=; b=owEBbQKS/ZANAwAKAUzgyIZIvxHKAcsmYgBi2VfNFMuugN7XXj2+oHdXc86aKpJCdHOaI2vF7Atf t/wrJ4qJAjMEAAEKAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYtlXzQAKCRBM4MiGSL8RygJID/ 4pkixRRBpzunPIrOmcjwiKFD/QBXrs44yj8p7tOBxXWN35Dxwd2DsZLAbL1IDutnO5A2BFxPqdD2CY NDgSNIlC/EiGePnXk9yUUmUOMQn8FwtFlGREvRf0k36mFU+jLdXbw7YeyI+DWQ6RPm29grvF5QZU4C n8lhp4O+00YLKbwuAkqFqkRQPpwX1LMgsKRVIG7sPp0QDH/oJFMFkFhNQJAoyii9gqR8WM9kpcTnAC jmokD+7KH0CrcPsLiHuhKqI50TcssduYNg4bQYJpST2xh+Be4OATxQ0zrGK8NPfFJEJzlxtEyMBRSe GxrGQOS6kvyh3e2unUCqWJ0b2MGlfxtnQelj0QlG3wNHbXnBhls4gEhlSyWFDmBMXf2fYeTYJJkCyb EqpVRCn25qhndyPT8DHx6j1iybeL8eS1/NwDBf07SPiymc7VELrM9w2yAKIp/ZEXN1gJ0qp2wKbaFk O75Zxmb/5JBSVPyIZgDKPEe6nLRGZ0HJ/DTDqAzjqahO96AOHyaHj1jnYI9U/glhqLBTSn6X89fEOQ FYVQylf7ozGiaCuajeMwzAWFn2NqwsYYQUcdZUIyBPN8s/sPIT53HULdCwKy40btUBwaC7hF+cPDnq paX8XNVfkZGsUx+ngx2dFpNy/rzC9fABdJGDAL082yF/cgPMJj20Ta/yR1zA==
+X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -125,136 +76,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Anderson <sean.anderson@seco.com>
-> Sent: Saturday, July 16, 2022 1:00
-> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
-> netdev@vger.kernel.org
-> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
-> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
-> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
-> <sean.anderson@seco.com>
-> Subject: [PATCH net-next v3 39/47] net: fman: memac: Add serdes support
->=20
-> This adds support for using a serdes which has to be configured. This is
-> primarly in preparation for the next commit, which will then change the
-> serdes mode dynamically.
->=20
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
->=20
-> (no changes since v1)
->=20
->  .../net/ethernet/freescale/fman/fman_memac.c  | 48
-> ++++++++++++++++++-
->  1 file changed, 46 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c
-> b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> index 02b3a0a2d5d1..a62fe860b1d0 100644
-> --- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-> +++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> @@ -13,6 +13,7 @@
->  #include <linux/io.h>
->  #include <linux/phy.h>
->  #include <linux/phy_fixed.h>
-> +#include <linux/phy/phy.h>
->  #include <linux/of_mdio.h>
->=20
->  /* PCS registers */
-> @@ -324,6 +325,7 @@ struct fman_mac {
->  	void *fm;
->  	struct fman_rev_info fm_rev_info;
->  	bool basex_if;
-> +	struct phy *serdes;
->  	struct phy_device *pcsphy;
->  	bool allmulti_enabled;
->  };
-> @@ -1203,17 +1205,55 @@ int memac_initialization(struct mac_device
-> *mac_dev,
->  		}
->  	}
->=20
-> +	memac->serdes =3D devm_of_phy_get(mac_dev->dev, mac_node,
-> "serdes");
+Introduce the following new kfuncs:
+ - bpf_{xdp,skb}_ct_alloc
+ - bpf_ct_insert_entry
+ - bpf_ct_{set,change}_timeout
+ - bpf_ct_{set,change}_status
 
-devm_of_phy_get returns -ENOSYS on PPC builds because CONFIG_GENERIC_PHY is=
-n't
-enabled by default. Please add a dependency.
+The setting of timeout and status on allocated or inserted/looked up CT
+is same as the ctnetlink interface, hence code is refactored and shared
+with the kfuncs. It is ensured allocated CT cannot be passed to kfuncs
+that expected inserted CT, and vice versa. Please see individual patches
+for details.
 
-> +	if (PTR_ERR(memac->serdes) =3D=3D -ENODEV) {
-> +		memac->serdes =3D NULL;
-> +	} else if (IS_ERR(memac->serdes)) {
-> +		err =3D PTR_ERR(memac->serdes);
-> +		dev_err_probe(mac_dev->dev, err, "could not get
-> serdes\n");
-> +		goto _return_fm_mac_free;
-> +	} else {
-> +		err =3D phy_init(memac->serdes);
-> +		if (err) {
-> +			dev_err_probe(mac_dev->dev, err,
-> +				      "could not initialize serdes\n");
-> +			goto _return_fm_mac_free;
-> +		}
-> +
-> +		err =3D phy_power_on(memac->serdes);
-> +		if (err) {
-> +			dev_err_probe(mac_dev->dev, err,
-> +				      "could not power on serdes\n");
-> +			goto _return_phy_exit;
-> +		}
-> +
-> +		if (memac->phy_if =3D=3D PHY_INTERFACE_MODE_SGMII ||
-> +		    memac->phy_if =3D=3D PHY_INTERFACE_MODE_1000BASEX ||
-> +		    memac->phy_if =3D=3D PHY_INTERFACE_MODE_2500BASEX ||
-> +		    memac->phy_if =3D=3D PHY_INTERFACE_MODE_QSGMII ||
-> +		    memac->phy_if =3D=3D PHY_INTERFACE_MODE_XGMII) {
-> +			err =3D phy_set_mode_ext(memac->serdes,
-> PHY_MODE_ETHERNET,
-> +					       memac->phy_if);
-> +			if (err) {
-> +				dev_err_probe(mac_dev->dev, err,
-> +					      "could not set serdes mode
-> to %s\n",
-> +					      phy_modes(memac->phy_if));
-> +				goto _return_phy_power_off;
-> +			}
-> +		}
-> +	}
-> +
->  	if (!mac_dev->phy_node && of_phy_is_fixed_link(mac_node)) {
->  		struct phy_device *phy;
->=20
->  		err =3D of_phy_register_fixed_link(mac_node);
->  		if (err)
-> -			goto _return_fm_mac_free;
-> +			goto _return_phy_power_off;
->=20
->  		fixed_link =3D kzalloc(sizeof(*fixed_link), GFP_KERNEL);
->  		if (!fixed_link) {
->  			err =3D -ENOMEM;
-> -			goto _return_fm_mac_free;
-> +			goto _return_phy_power_off;
->  		}
->=20
->  		mac_dev->phy_node =3D of_node_get(mac_node);
-> @@ -1242,6 +1282,10 @@ int memac_initialization(struct mac_device
-> *mac_dev,
->=20
->  	goto _return;
->=20
-> +_return_phy_power_off:
-> +	phy_power_off(memac->serdes);
-> +_return_phy_exit:
-> +	phy_exit(memac->serdes);
->  _return_fixed_link_free:
->  	kfree(fixed_link);
+Changelog:
+----------
+v6 -> v7:
+v6: https://lore.kernel.org/bpf/20220719132430.19993-1-memxor@gmail.com
 
-_return_fixed_link_free should execute before _return_phy_power_off and _re=
-turn_phy_exit
+ * Use .long to encode flags (Alexei)
+ * Fix description of KF_RET_NULL in documentation (Toke)
 
->  _return_fm_mac_free:
-> --
-> 2.35.1.1320.gc452695387.dirty
+v5 -> v6:
+v5: https://lore.kernel.org/bpf/20220623192637.3866852-1-memxor@gmail.com
+
+ * Introduce kfunc flags, rework verifier to work with them
+ * Add documentation for kfuncs
+ * Add comment explaining TRUSTED_ARGS kfunc flag (Alexei)
+ * Fix missing offset check for trusted arguments (Alexei)
+ * Change nf_conntrack test minimum delta value to 8
+
+v4 -> v5:
+v4: https://lore.kernel.org/bpf/cover.1653600577.git.lorenzo@kernel.org
+
+ * Drop read-only PTR_TO_BTF_ID approach, use struct nf_conn___init (Alexei)
+ * Drop acquire release pair code that is no longer required (Alexei)
+ * Disable writes into nf_conn, use dedicated helpers (Florian, Alexei)
+ * Refactor and share ctnetlink code for setting timeout and status
+ * Do strict type matching on finding __ref suffix on argument to
+   prevent passing nf_conn___init as nf_conn (offset = 0, match on walk)
+ * Remove bpf_ct_opts parameter from bpf_ct_insert_entry
+ * Update selftests for new additions, add more negative tests
+
+v3 -> v4:
+v3: https://lore.kernel.org/bpf/cover.1652870182.git.lorenzo@kernel.org
+
+ * split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
+   bpf_ct_insert_entry
+ * add verifier code to properly populate/configure ct entry
+ * improve selftests
+
+v2 -> v3:
+v2: https://lore.kernel.org/bpf/cover.1652372970.git.lorenzo@kernel.org
+
+ * add bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc helpers
+ * remove conntrack dependency from selftests
+ * add support for forcing kfunc args to be referenced and related selftests
+
+v1 -> v2:
+v1: https://lore.kernel.org/bpf/1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org
+
+ * add bpf_ct_refresh_timeout kfunc selftest
+
+Kumar Kartikeya Dwivedi (10):
+  bpf: Introduce 8-byte BTF set
+  tools/resolve_btfids: Add support for 8-byte BTF sets
+  bpf: Switch to new kfunc flags infrastructure
+  bpf: Add support for forcing kfunc args to be trusted
+  bpf: Add documentation for kfuncs
+  net: netfilter: Deduplicate code in bpf_{xdp,skb}_ct_lookup
+  net: netfilter: Add kfuncs to set and change CT timeout
+  selftests/bpf: Add verifier tests for trusted kfunc args
+  selftests/bpf: Add negative tests for new nf_conntrack kfuncs
+  selftests/bpf: Fix test_verifier failed test in unprivileged mode
+
+Lorenzo Bianconi (3):
+  net: netfilter: Add kfuncs to allocate and insert CT
+  net: netfilter: Add kfuncs to set and change CT status
+  selftests/bpf: Add tests for new nf_conntrack kfuncs
+
+ Documentation/bpf/index.rst                   |   1 +
+ Documentation/bpf/kfuncs.rst                  | 170 ++++++++
+ include/linux/bpf.h                           |   3 +-
+ include/linux/btf.h                           |  65 ++--
+ include/linux/btf_ids.h                       |  68 +++-
+ include/net/netfilter/nf_conntrack_core.h     |  19 +
+ kernel/bpf/btf.c                              | 123 +++---
+ kernel/bpf/verifier.c                         |  14 +-
+ net/bpf/test_run.c                            |  75 ++--
+ net/ipv4/bpf_tcp_ca.c                         |  18 +-
+ net/ipv4/tcp_bbr.c                            |  24 +-
+ net/ipv4/tcp_cubic.c                          |  20 +-
+ net/ipv4/tcp_dctcp.c                          |  20 +-
+ net/netfilter/nf_conntrack_bpf.c              | 365 +++++++++++++-----
+ net/netfilter/nf_conntrack_core.c             |  62 +++
+ net/netfilter/nf_conntrack_netlink.c          |  54 +--
+ tools/bpf/resolve_btfids/main.c               |  40 +-
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  10 +-
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c |  64 ++-
+ .../testing/selftests/bpf/progs/test_bpf_nf.c |  85 +++-
+ .../selftests/bpf/progs/test_bpf_nf_fail.c    | 134 +++++++
+ .../selftests/bpf/verifier/bpf_loop_inline.c  |   1 +
+ tools/testing/selftests/bpf/verifier/calls.c  |  53 +++
+ 23 files changed, 1139 insertions(+), 349 deletions(-)
+ create mode 100644 Documentation/bpf/kfuncs.rst
+ create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+
+-- 
+2.34.1
 
