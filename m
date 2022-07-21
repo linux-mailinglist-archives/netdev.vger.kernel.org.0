@@ -2,193 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D4E57C889
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 12:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1155F57C8A5
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 12:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233054AbiGUKE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 06:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
+        id S233094AbiGUKLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 06:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233046AbiGUKE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 06:04:56 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5885649B5C;
-        Thu, 21 Jul 2022 03:04:54 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id bu1so1503189wrb.9;
-        Thu, 21 Jul 2022 03:04:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=gDu/hT+VQwJWrUSGV6A14r2fpQqdJ2GdOdrqIPA0bxY=;
-        b=NFCkY3ik4eRaELWJyT4sNJvuDd7HWyDz84JGuPoSn96suLGeo8myt51/Ps2no+g8I5
-         5MnoGLblHNwYeyw8HM/fWK+Rkxid3mD9iS7CiV5knT/0jPO28yK/GRllzDgz5UKMyU8N
-         ePysAimtcCLxCwyDSgzSPZKJszaoTAsKT+LTVLYv8XSaOgWYgfw73eSpd3b60S4tArRL
-         2tDpbnwPC8vS/ot1exS273UVhxKbUV+xsO2W0YrRF3kdPjF3M286qDdQutsG43fqn1pc
-         sHMz664/I54fNHTuDmsgpulm+gl00jhZ+2JsaAR756ArWQLomBQEj3fWDBFbwQi9BJsf
-         mA/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=gDu/hT+VQwJWrUSGV6A14r2fpQqdJ2GdOdrqIPA0bxY=;
-        b=qTDKVU9y6Gar6P+VetMOrvZ6ZwDeV1Z4s9bfpD+GTMRsk2xvTJVJwSx/E5FLfSBPU3
-         aoCV44D5T6kxoy8zD7hQwxDPlu+i0+JL/KiZ97E8neYsj4Vhi20/dWo1RJrAwuaN5Ywc
-         eKc12yiDbukMS4s/zvn/xomydOxkEraSrnOoYA2zKhf1KDLPK5iv7lSB8/NKMZKwFfLM
-         iik9sP2rJifWPNqtv9D542bMm4++AK80hLvQIvqKTUOYCl7pRbR18KEo0S/dGcW7UaKu
-         9x2N3iuRQimJCNW8mf24oWyQzsL2dGStdrd8d8mOkHQWXtFkWE70SowzUATUovAzlHXh
-         vngA==
-X-Gm-Message-State: AJIora/WnkLD0DoJD0lyzwaBLKXsgQ1DUOfLhKYrQkrWDoiUQ187cENs
-        62P8ES1rXxA83y/hA9UIDFY=
-X-Google-Smtp-Source: AGRyM1uUbDulSeS4rnCwd85OyAGNoKS35j1myvr3UaAAUGIVopoRWhc+VkZbvKy6k6WzGbftNtmO6g==
-X-Received: by 2002:adf:fbc3:0:b0:21e:3c88:2aa1 with SMTP id d3-20020adffbc3000000b0021e3c882aa1mr9813714wrs.84.1658397892637;
-        Thu, 21 Jul 2022 03:04:52 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c093:600::1:b610])
-        by smtp.gmail.com with ESMTPSA id b4-20020a05600c150400b003a2fb1224d9sm1267027wmg.19.2022.07.21.03.04.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jul 2022 03:04:52 -0700 (PDT)
-Message-ID: <7eea5714-29a7-c6e6-5f36-3c7754806c8d@gmail.com>
-Date:   Thu, 21 Jul 2022 11:03:47 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Pavel Begunkov <asml.silence@gmail.com>
-Subject: Re: [PATCH net-next v5 01/27] ipv4: avoid partial copy for zc
-To:     Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S231739AbiGUKLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 06:11:15 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BAE4D158;
+        Thu, 21 Jul 2022 03:11:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1658398238; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=TuUjark3ZoO1ybUFDWDoKYnf85FuMcmZLMl4Rz1RsJggUJTi6Y9/0dD8VwsVQpkw8mw9hF6N0EF+uIBhTv2d6rXWG8Wo0/rAovaWJFml1TPd11bVMfL5CoqlD/mzG82/HxasCiety+ElNEM6QpGBgQdqeUkZVG5MBkZotT6j6qs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1658398238; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=S9vlg9DupEI3hGrDSSYRxpjlOWor/7zZq6QR1lSaYFM=; 
+        b=Z8uhq08Da9Q6wotWXUh2hBo8Y+5ZUjmkTAFLUqYscQpa5Lm2C80dA2Jf5l9OIlsLOGF/RPsQGtBaV7ZP3B6o54nhRlvhKdOADkUUh0WuudzYzeo877l8m5VyDLPJuHgv7Nd+iNcFsniGBon9cHgrDX5jUkNRgTCFWlEMS7d99h4=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658398238;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+        bh=S9vlg9DupEI3hGrDSSYRxpjlOWor/7zZq6QR1lSaYFM=;
+        b=FtYIS5s2p8VbWn0R/g+5uRbdwRq8z9NiOCNP4/mUZiuIzoUq7U57AX0g1BmmF5yT
+        tS6mem/olhmalsEebm/Bn2MTzXvSw8MgoVDQr0L2oXyH4d7ZF/cNMA8hWWWUJOQZm48
+        RI27Jnk8IRVa9jpFbVMORbk6F7VsZhbl88yJ/nFI=
+Received: from localhost.localdomain (103.250.137.143 [103.250.137.143]) by mx.zoho.in
+        with SMTPS id 1658398236739503.344263611177; Thu, 21 Jul 2022 15:40:36 +0530 (IST)
+From:   Siddh Raman Pant <code@siddh.me>
+To:     Johannes Berg <johannes@sipsolutions.net>,
         "David S . Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
-        kernel-team@fb.com
-References: <cover.1657643355.git.asml.silence@gmail.com>
- <0eb1cb5746e9ac938a7ba7848b33ccf680d30030.1657643355.git.asml.silence@gmail.com>
- <20220718185413.0f393c91@kernel.org>
- <CA+FuTSf0+cJ9_N_xrHmCGX_KoVCWcE0YQBdtgEkzGvcLMSv7Qw@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CA+FuTSf0+cJ9_N_xrHmCGX_KoVCWcE0YQBdtgEkzGvcLMSv7Qw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com,
+        syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com,
+        syzbot+9250865a55539d384347@syzkaller.appspotmail.com
+Message-ID: <20220721101018.17902-1-code@siddh.me>
+Subject: [RESEND PATCH] net: Fix UAF in ieee80211_scan_rx()
+Date:   Thu, 21 Jul 2022 15:40:18 +0530
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/19/22 10:35, Willem de Bruijn wrote:
-> On Tue, Jul 19, 2022 at 3:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Tue, 12 Jul 2022 21:52:25 +0100 Pavel Begunkov wrote:
->>> Even when zerocopy transmission is requested and possible,
->>> __ip_append_data() will still copy a small chunk of data just because it
->>> allocated some extra linear space (e.g. 148 bytes). It wastes CPU cycles
->>> on copy and iter manipulations and also misalignes potentially aligned
->>> data. Avoid such coies. And as a bonus we can allocate smaller skb.
->>
->> s/coies/copies/ can fix when applying
->>
->>>
->>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->>> ---
->>>   net/ipv4/ip_output.c | 8 ++++++--
->>>   1 file changed, 6 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
->>> index 00b4bf26fd93..581d1e233260 100644
->>> --- a/net/ipv4/ip_output.c
->>> +++ b/net/ipv4/ip_output.c
->>> @@ -969,7 +969,6 @@ static int __ip_append_data(struct sock *sk,
->>>        struct inet_sock *inet = inet_sk(sk);
->>>        struct ubuf_info *uarg = NULL;
->>>        struct sk_buff *skb;
->>> -
->>>        struct ip_options *opt = cork->opt;
->>>        int hh_len;
->>>        int exthdrlen;
->>> @@ -977,6 +976,7 @@ static int __ip_append_data(struct sock *sk,
->>>        int copy;
->>>        int err;
->>>        int offset = 0;
->>> +     bool zc = false;
->>>        unsigned int maxfraglen, fragheaderlen, maxnonfragsize;
->>>        int csummode = CHECKSUM_NONE;
->>>        struct rtable *rt = (struct rtable *)cork->dst;
->>> @@ -1025,6 +1025,7 @@ static int __ip_append_data(struct sock *sk,
->>>                if (rt->dst.dev->features & NETIF_F_SG &&
->>>                    csummode == CHECKSUM_PARTIAL) {
->>>                        paged = true;
->>> +                     zc = true;
->>>                } else {
->>>                        uarg->zerocopy = 0;
->>>                        skb_zcopy_set(skb, uarg, &extra_uref);
->>> @@ -1091,9 +1092,12 @@ static int __ip_append_data(struct sock *sk,
->>>                                 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
->>>                                  !(rt->dst.dev->features & NETIF_F_SG)))
->>>                                alloclen = fraglen;
->>> -                     else {
->>> +                     else if (!zc) {
->>>                                alloclen = min_t(int, fraglen, MAX_HEADER);
->>
->> Willem, I think this came in with your GSO work, is there a reason we
->> use MAX_HEADER here? I thought MAX_HEADER is for headers (i.e. more or
->> less to be reserved) not for the min amount of data to be included.
->>
->> I wanna make sure we're not missing something about GSO here.
->>
->> Otherwise I don't think we need the extra branch but that can
->> be a follow up.
+ieee80211_scan_rx() tries to access scan_req->flags after a null check
+(see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
+kfree() on the scan_req (see line 991 of wireless/scan.c).
 
-I brought it up before but left it for later as I don't know workloads
-and there might be perf implications. I'll send a follow up.
+This results in a UAF.
 
-> The change was introduced for UDP GSO, to avoid copying most payload
-> on software segmentation:
-> 
-> "
-> commit 15e36f5b8e982debe43e425d2e12d34e022d51e9
-> Author: Willem de Bruijn <willemb@google.com>
-> Date:   Thu Apr 26 13:42:19 2018 -0400
-> 
->      udp: paged allocation with gso
-> 
->      When sending large datagrams that are later segmented, store data in
->      page frags to avoid copying from linear in skb_segment.
-> "
-> 
-> and in code
-> 
-> -                       else
-> -                               alloclen = datalen + fragheaderlen;
-> +                       else if (!paged)
-> +                               alloclen = fraglen;
-> +                       else {
-> +                               alloclen = min_t(int, fraglen, MAX_HEADER);
-> +                               pagedlen = fraglen - alloclen;
-> +                       }
-> 
-> 
-> MAX_HEADER was a short-hand for the exact header length. "alloclen =
-> fragheaderlen + transhdrlen;" is probably a better choice indeed.
+ieee80211_scan_rx() is called inside a RCU read-critical section
+initiated by ieee80211_rx_napi() (see line 5043 of mac80211/rx.c).
 
-Great, thanks for taking a look!
+Thus, add an rcu_head to the scan_req struct so as to use kfree_rcu()
+instead of kfree() so that we don't free during the critical section.
 
-> 
-> Whether with branch or without, the same change needs to be made to
-> __ip6_append_data, just as in the referenced commit. Let's keep the
-> stacks in sync.
+Bug report (3): https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f2=
+25d
+Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
+Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
+Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
 
-__ip6_append_data() is changed as well but in the following patch.
-I had doubts whether it's preferable to keep ipv4 and ipv6 changes
-separately.
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+---
+Resending because didn't get any reply from maintainers for more
+than 2 weeks.
 
-> This is tricky code. If in doubt, run the msg_zerocopy and udp_gso
-> tests from tools/testing/selftests/net, ideally with KASAN.
+ include/net/cfg80211.h | 2 ++
+ net/wireless/scan.c    | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
--- 
-Pavel Begunkov
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index 6d02e12e4702..ba4a49884de8 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -2368,6 +2368,7 @@ struct cfg80211_scan_6ghz_params {
+  * @n_6ghz_params: number of 6 GHz params
+  * @scan_6ghz_params: 6 GHz params
+  * @bssid: BSSID to scan for (most commonly, the wildcard BSSID)
++ * @rcu_head: (internal) RCU head to use for freeing
+  */
+ struct cfg80211_scan_request {
+ =09struct cfg80211_ssid *ssids;
+@@ -2397,6 +2398,7 @@ struct cfg80211_scan_request {
+ =09bool scan_6ghz;
+ =09u32 n_6ghz_params;
+ =09struct cfg80211_scan_6ghz_params *scan_6ghz_params;
++=09struct rcu_head rcu_head;
+=20
+ =09/* keep last */
+ =09struct ieee80211_channel *channels[];
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 6d82bd9eaf8c..638b2805222c 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -988,7 +988,7 @@ void ___cfg80211_scan_done(struct cfg80211_registered_d=
+evice *rdev,
+ =09kfree(rdev->int_scan_req);
+ =09rdev->int_scan_req =3D NULL;
+=20
+-=09kfree(rdev->scan_req);
++=09kfree_rcu(rdev->scan_req, rcu_head);
+ =09rdev->scan_req =3D NULL;
+=20
+ =09if (!send_message)
+--=20
+2.35.1
+
+
