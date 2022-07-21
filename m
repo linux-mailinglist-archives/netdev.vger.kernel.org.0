@@ -2,161 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2A257D13D
+	by mail.lfdr.de (Postfix) with ESMTP id 14F1A57D13B
 	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 18:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbiGUQR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 12:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
+        id S233939AbiGUQRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 12:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbiGUQRF (ORCPT
+        with ESMTP id S233144AbiGUQRF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 12:17:05 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A7E8C17B;
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2059.outbound.protection.outlook.com [40.107.21.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0425E88F11;
         Thu, 21 Jul 2022 09:16:06 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26LG959t000793;
-        Thu, 21 Jul 2022 09:15:18 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=crSb/D02EAQWHXrlytNzRppEIZpLQ9Wq6QrTmuyMV7E=;
- b=NEroBHJmLjtzx4Hg3GhEPr30JqAwADRkCR7JGoBbtekGEavxZaaYxYSSUdOJ3Ybj3FA9
- bAV1WaHre7iqoJpEbfgeVEt751oBuyExhqfpUv7Qot/l9BF8Y6cGedVqgvg94AGX4GrU
- 8p/biAsBsUAAwmk1GvRnud4EWRUJEi4U0jc= 
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3henhb712x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jul 2022 09:15:17 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OnDFUdsxjvXhPiYtEIY/7tLazE3C9eJRL/caLN09Kkvu4otYGjFlFuktRiKBV0Zy0T0IB9ef1tcVk5z6P06S9PD9mOKyCHr8E8nDwW/EdkstBTFTJqcpzV5V/dGIaWmGLduZZvLVL3r/eKuhQ+yhh+W0VpqXsVlhUFuGUzgsvQmMaZZ9teCQlkNGRiKBQdlsfXIPq5SlyR1etxqPj9YwKwA1EU0C3tTqqXjhCLFJ+P1Ja7TVl3cGMjgTSl7WntJaAXH9WEizA1kEW7hXSIFPvN/agORrdZmoxnpXBfDMkEC+bceCVdm0v3yhwFn6wXZvn0T8A6IbcRTqPS6k99JWjQ==
+ b=f3eOoHSX8XyUdP7UXkJ7cMzpNWvcPybLKkxun71dKUHuEOCFddRnuIG2n5h33QIKq7/+bfZadLoDnbHZHAqlGe+jsm+SJtHXz0Ikze5+b/B0iRSkizs9PMIMnnVf0RWLwFxNjfL7zAHZRj3rYH5xgIwjmjypYOuRACLSdNBoNCFgDkYHauzf6o8u1WEl8VcEuiXY5CCEiMB+Ou7bCd+mDMYLb+1Wev2p9YflFRZjt5ULCoygta2JMQ07jvvXdVSyL0UbZRskso/RVOySMODXKFHZLpwzywF7xJyj3YKyIG2QjjcpkE6yJi3Lj0PRZBYpTHY7+Gh0SnW/SsIOl/SWyA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=crSb/D02EAQWHXrlytNzRppEIZpLQ9Wq6QrTmuyMV7E=;
- b=N/7LNsRXDXfIAmjSrnoxdrdyKQNXut6/dp8jNJ3O+L9klAptVOKN9/8DT5/wAG5IMCCBp29n5h2UZGii33ZZ8TGjhdRZ6WxI5dZWxPAqXCh/6aVlQGlfFkEii8XuQsCcsL0tFXi+wo6QcPRPMiVhcl+QesTg8HlcFVBf2efquSWW8ELVb89h1qvseh5mCY8Jv2zxkIN1rWb44GJkpafBiXaEkrjNl/n8riuIr7POQblwXdvB6qBR1FYjX9IGA5wX2247+zk/RamhWrvqDavL0rVo6yrdo0Y45irz+G08s7f1mBsTktjqYYVyvX0pRkad3S3ALYqyQawiiPBqgkoh3w==
+ bh=bcxdxsbCejSjB6Vy1K+qw1BX+s1IXWhvrS66oX5Tkio=;
+ b=BoEYBoEunchlPkc1pEO9inNjGiprkb6sOu6TOnnQOgdCEYwB0XFUeAvjHOoUWUWqP3POGOeczxM4UYVK2asMI9dO9a0kQG9SId6RVe+Rz+NVNfk+bhh4SRtK7/QoEdze/u+ausXwBl8mmAW9eNp2m820I00HvcXZ/Q1BVwMb3jWKUm+UgHGueBKdIDH+076x+9zuwveFl9aQWRJO71ApH0UpBiZInZjkjkKLn4GYS8fxuRhkYFD5I1n+F0EhwiB4N8920oCuD1BqpBkNu4N14MFnTruHMGktrArWJwnBmCCds2yk0IoyAC7NMnf6Dim5MIbW2Olf9b5GraM+2P3Gwg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by MN2PR15MB3021.namprd15.prod.outlook.com (2603:10b6:208:f4::26) with
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bcxdxsbCejSjB6Vy1K+qw1BX+s1IXWhvrS66oX5Tkio=;
+ b=iycw7J5uEtl9IQwErHWbzbIt8swRJMvy9FKGWT8rv1UaSR420uGlkWgBakP6GX4FI4WG5n9JfHF+vZO7lSO4zAeIIQlQWp7L2IQ9V5FTXF9BImhps4mxbWGptZfg4D7pVlgemfA0eJl56vIoeda8laDR4jwtxBQz2lvvb9X5YKBFosjuBLse8+lNMFT8hDQS0jVPYL4XzrlpD7Uyhq25PAJMxo2dJRF4lKqhXJv36sYpD50slhq4CUQgcNNaZwLp/wpigBeCt9dlMq25aAWiRb8ttDb2CK5E1EqEsQYAP/Dqm24kFRL7n5iK80R0em0Qsq/f/e2EydAvOz/dMEpdGA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by DB7PR03MB4393.eurprd03.prod.outlook.com (2603:10a6:10:17::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
- 2022 16:15:13 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5458.019; Thu, 21 Jul 2022
- 16:15:13 +0000
-Message-ID: <3f3ffe0e-d2ac-c868-a1bf-cdf1b58fd666@fb.com>
-Date:   Thu, 21 Jul 2022 09:15:07 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH bpf-next v3 4/8] bpf: Introduce cgroup iter
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Thu, 21 Jul
+ 2022 16:15:29 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
+ 16:15:29 +0000
+Subject: Re: [PATCH v2 06/11] net: phylink: Support differing link/interface
+ speed/duplex
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220719235002.1944800-1-sean.anderson@seco.com>
+ <20220719235002.1944800-7-sean.anderson@seco.com>
+ <YtekL4y/XKn1m/V4@shell.armlinux.org.uk>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <6a2fe06b-3a96-026b-34da-6e6f13876c62@seco.com>
+Date:   Thu, 21 Jul 2022 12:15:24 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YtekL4y/XKn1m/V4@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Hao Luo <haoluo@google.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
-References: <20220709000439.243271-1-yosryahmed@google.com>
- <20220709000439.243271-5-yosryahmed@google.com>
- <370cb480-a427-4d93-37d9-3c6acd73b967@fb.com>
- <a6d048b8-d017-ea7e-36f0-1c4f88fc4399@fb.com>
- <CA+khW7gmVmXMg4YP4fxTtgqNyAr4mQqnXbP=z0nUeQ8=hfGC3g@mail.gmail.com>
- <2a26b45d-6fab-b2a2-786e-5cb4572219ea@fb.com>
- <CA+khW7jp+0AadVagqCcV8ELNRphP47vJ6=jGyuMJGnTtYynF+Q@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <CA+khW7jp+0AadVagqCcV8ELNRphP47vJ6=jGyuMJGnTtYynF+Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR04CA0018.namprd04.prod.outlook.com
- (2603:10b6:208:d4::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+X-ClientProxiedBy: MN2PR01CA0039.prod.exchangelabs.com (2603:10b6:208:23f::8)
+ To DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ff52a17-8544-4fc1-8403-08da6b3430e5
-X-MS-TrafficTypeDiagnostic: MN2PR15MB3021:EE_
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: 9a95fe51-f40f-4367-beda-08da6b343a82
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4393:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: doTbkgJwzMi6Fl1nywcqeZYAQYepBy4fe1TNTGpgf5wvbG0kyrx/fCIRm5Q2tXxxel6/HPIlE7KxXYoturZ3D5P8QgTpv40AOWD1SRBmBZcRnDopbKrf/Pt+P0H7822c5Wfzqg3gbVm4QkF1XagFZc0xic1dzTMprMQlK2oRlfJP8e4cWRhYyAjDl4+Bd+w1rPAjaJThAsESndN/80EYqabbTxr3UsqA4FgEhEFuS5xWC7JTuN/3MHVo+8RRQ9DVWWK3FXH98Yf6zYE26PoTAtCGqv9xV9FEuVOokD1U9cv1Nc68BbPXSAxC5e+MYMlA6yTaa3dut0UmSRAMOMUaRI7QA4xAlwTp8h/JcbiamafG7u1S5oeecVwzuErtnJ/RNTsC0dcEUvRCDOIxx8tC1liwExHxj6T69btMtSzxy8Y5Gph3Npqmg5gv0RUhykhdv5KfVKRF2PJwbwRDnwp5CgiGUKwjaNrtKjiR1fAJNL6V8yKbQjacs6lC6T2AJBL+qqQTM/ybLQgrZhCksKLa7zdpd6YhMBuzlpMQ18MwX6xkUXBokeoTHY+0EgSwqC4ePENOqyKmFFAj+/YnR5UDFk5Mo8B1t0hKaI7UgRG2nwgnpU2Ehlz25dFgeVYmYsAkS9ZsHR9fiJRl5F3osEauNzV1u9U6zGqOKucf6aY/nRxxvDEqUsxAhWy5l09xF8Cuh/PSB6/jU+y9XTRIFplleSWcRkASZzR4PD4lS33imUZwRRXcvi+mfFKKsB2oV08OGXcgiu5DOsD1NNxmctmUyLDKI1fbytuoyPD7w+P+quIvNVNKOgbHuTv17p/oQTwH1TT7y1BcEk5dY8FJMtnf4g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(86362001)(31696002)(66946007)(38100700002)(83380400001)(8676002)(54906003)(66556008)(66476007)(316002)(4326008)(6916009)(2906002)(8936002)(36756003)(6512007)(5660300002)(6506007)(6666004)(53546011)(2616005)(41300700001)(7416002)(31686004)(6486002)(478600001)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: xV5quRQy7Bdgi4nPFNS7pdaSVtKlvdJZyD/vBzr57Y/8T1mf5ZUZUwQC3ZILbClvyajl5hCi7WaE/Ux2UDYuz9GmvhT9/52950ggXai5AzD/8s4Hu/DRWptu1+Brz1CEO2gAxdO3YgIgg+HQP6xqD8sRysnX9agkgwSun/IJuk2Zne0RIDq+WmZjX2DMpgo3SHz/coxoyANzRkzMnAFqwi3MxdQiEIOmPCR/vsf/BvrCDc+QL42Ieruln4K6KOnCHbHxvKoxjRzIUOJh5XnTQLhta/CE3KmkKnEyWV/h3CFtbDqFH97e2X/CIGr4C6MGtCvRDmKPTUJ9etFTOjam3gf5erI24vSiyPltem1WTgsrsIv9JV8Ql0h46x+I7H4AAnJaznYmj9EwWvh6HNZNEZHenQgyP0KHz/JVItet2yShmkYmOD8i+v9ardKqrAmvWfseKPvKnGJoKuT2yqsQD89HuGmG7uj0IKj8o4izmBljVlVxgHS4Tr09SGMK9NUdh699Ng30IvW4WMhSyV3+5+6ys85vwlGBhXJ0vs00NQ/DA+QL+7fJizvF0E1avPwaz08yj+DBmqWofm7YDNvH71FjBxVqw0iGRQUqXAs3bpUlAPfMrHnVu5CNSSG8rBApPt7v3+Mn5qbYGQtPFWG4hBin59aoxipDCwWWKCDzvuAm9OCRy54xq9J9w/ajNSEeKuxCmi/rZp//jDcWyF4to8JnW8+2ltyhwlVnlTtuZQ9TuB2tG8ixsiluIUfXvL1JQRuhRLkMeg5dlcdIoEBGvOMS2xUx3sGLO4pnhsQrUyAdNsHKNHNIBu3wD821UwCaL1lUNusmk170f8FfuTVnaK4+lbKIZScvMS8b9cpLCz4m6x8H3xNU/aZLx8OBSQ0oqnnciY+TodSuSOcTLmZxcQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(346002)(39850400004)(136003)(396003)(41300700001)(66946007)(26005)(6512007)(44832011)(186003)(83380400001)(38100700002)(2906002)(2616005)(6666004)(52116002)(53546011)(6506007)(38350700002)(316002)(31696002)(54906003)(6486002)(6916009)(31686004)(86362001)(8936002)(478600001)(7416002)(5660300002)(8676002)(36756003)(4326008)(66556008)(66476007)(21314003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aEtSTEFZZ0ZZeXBEME9kYzFnYk53N1dUVmphaTBCOEc3dGhQTG9TT09uRVdI?=
- =?utf-8?B?ZUk4MnZyVzZsZjRJWW0yV0lyQTVmWHIrdnpvNCtzeWovMW5Wd0g2TEg0S3Ey?=
- =?utf-8?B?M1U2OHJqR1pCYkJNWnVma0hNSHAzd0RpZ2JwcXVOWm85QTlUYVQxUUtSZHBr?=
- =?utf-8?B?YzRVbXVqRnhIV01PaWNvM0RkeWpzTklPWkRKYTdsZnlJQWlmYUhqVjgwaWlX?=
- =?utf-8?B?V0dUM2srczg4K2hEaE5Wc09kRVV6bmllYXM3K29lNTR0MzRTVVFxWHlMb3M2?=
- =?utf-8?B?cVM1VkxES2UzNHFtTjcwcytpR2xZSjNBQXNaZDN1WjMrMXRYQTVvR081c0pn?=
- =?utf-8?B?dUZSdm5aY3NJK0RmUlVpVjBOUEdYVzE1RW92OUFsNXRETzhyamJNNFRXWTBi?=
- =?utf-8?B?TTlKZEJoNFhsc3E1Vmh2VVFNTFpsdktyVkJxQmN1QzdTVm04THdwbzB6Mk5h?=
- =?utf-8?B?SFB4OEFqWHNJTFJDMGwrWHI4UnN1MVFkdmVBTWM2UW5JQ1JYVHJxNndEaVlD?=
- =?utf-8?B?VnhMM3dla25OalhvNm9rN1RtNkZkcUZybGk1ZzUvMXM2UmljcFNPT2ROTlVL?=
- =?utf-8?B?eUtiUGNtK0dyb2lhWk9rOFVBQUhtMC9Zc0NmcjFJWHRoZVNuMm1oMFhlcXZh?=
- =?utf-8?B?NWM4MFNrcHdGL1ZjS2t4b21nSXU2blJmYTRiQUhEb1p3aGxFckRUVUwxT1dx?=
- =?utf-8?B?V2J5ZUloTTZZMU9HeWk1c2ptNE1LdjZXRkhkclF2VWpKckZ5cC96NWRhYjFw?=
- =?utf-8?B?M2RiUWhiWVZvZENoSW9vb3pTWjY2VmZHakFJRHhKZXEvYnVER0lEQ0dFVnlR?=
- =?utf-8?B?ZmphUERycTlrYVB4eXdpNGgrUEVSRTRVblgwOVF6Mk1GRXVEM25jNE1EL0VR?=
- =?utf-8?B?REluUWNKR2dxMEs4dGpBTGFDVXJ1YXBkeXRneityVTN6WW9TM3dYdVJvYldv?=
- =?utf-8?B?NlA2NWdqL09pWEZ3U3pzVlNDZVpRSFpFMHVhejdReCtRNWlXYzcydkx3cHM5?=
- =?utf-8?B?MnhWVXBUZUxQOTdLcG5vREFQd3VINnNxYTQ5Q0xvR3J5MjFtcFcxNlpXbU1p?=
- =?utf-8?B?VW9ucFBHZ0Rpcm1saGw5YXV6cUF1ZncrK1hqNjFvUERadHRnM1RUU1o2WUFJ?=
- =?utf-8?B?WGkwWFNnc25DNXpBRTcySWhLaytJMGxINWtsRTFKREtoRzdxUldDeDFiR1l4?=
- =?utf-8?B?QjFlMGJaanIzZjV0UW9xMk9JZGhmVEVqd0c0UExzS3pNVmVhTFFKdWU2REt0?=
- =?utf-8?B?Z3J5dEM1emJNUU5aZ0Nwby9LdE9qQStLelRzYnJzK1hTSTRRRTc0dXJwZFB0?=
- =?utf-8?B?QmdJL1UwR0xJQm4wdTlDcUtQZ2pvTXRmWmdaZ2xHcmFYTTVndzZCdFVaNlc2?=
- =?utf-8?B?R0tLNUhFbzU4bVpKUlpyRWxIY3NhRnBMYXc3RmYrd2d6eTZQeVM0M2JieGt4?=
- =?utf-8?B?ZlNEUkNWSUQybklSNi90Z3pVTVhkL3VUQzBVcGhFY1lZY1grTkw0dUVhRnFF?=
- =?utf-8?B?Zmc2ZzRqK3NobHRjM1Q1OFNWaWo4UEZhKzNCU2xPYVRmYmxYVnoxTXowbTZD?=
- =?utf-8?B?RmxiMHNBSHpKK0VBcUV6bTRXRjAxWSs1aHZ1a05PdUttTU96dFU0ZDhOR1or?=
- =?utf-8?B?c3RBOEc4Q1N6VjdsZEhVWXN2dlRqZUpiOWY0TWx0ZFc2ZEVkQklhdXY4SGFX?=
- =?utf-8?B?NkFwcGVyK25teXNLU1hVN2Zjc1RuVGZmcHUyZ3c2M0RxVVcxTXBDaFVEZEwz?=
- =?utf-8?B?S0pVV2UyR0xpc1hXazVrdFhGSEl2UVVFN01ZZ2NxVHA0N2hnZmZtYTBic2pN?=
- =?utf-8?B?RFZ3Y29lYWZYOUFNcWc3c2RzZWlPSGNkWGhoZTIvKzgvcFg5YlFkT2Y1OGpm?=
- =?utf-8?B?QnhtWlZYNjVyU2xTL1RHb0NZd015dlFjaU1HM2J0bTdNUVlYUDAvU2cyM0Y5?=
- =?utf-8?B?a0NVWTRYWXp0bklsTkMrZ0xCRzR6aE9lVERTVWk3QkJxMVVPSENYc2Z1V1lH?=
- =?utf-8?B?c040c2s5QzlURXMwbTJNMkdzMXFvc0tkRFREVVFTa0NmMkdOK2N2ODZqeHpU?=
- =?utf-8?B?eUZTTFZyc3ozbW00bHM0ZExkdTF1ZTVjZ1JXaEZ1U3M3Tm0ySERVdjB3T3Jh?=
- =?utf-8?B?QWhlS0MzdXZsS05sMFpyOXQrRzlBdUhMVG14YXNsZENJQ29WWFBYdERaY1Ux?=
- =?utf-8?B?bXc9PQ==?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ff52a17-8544-4fc1-8403-08da6b3430e5
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QWc2YmhiVHZQa0dXR3pwMy9OeFc1NmRLQ0g4NlB5QlZzWStweGJFdGloREtG?=
+ =?utf-8?B?WExXeVBqTnV6a2t2UnRRenBOU2VMZTg3bXUrL2RWamxUY2ZGZVVrd3orTE1Q?=
+ =?utf-8?B?ZzhGUkhXZkNPalM2K0h4aG1YYkdybFN6UUdhMXVDSzJjNG81UWpGcW16a1Zx?=
+ =?utf-8?B?Rk85clZkV1lDR0VSenByNnZZWlNadW5qTk52MXkzUnc5c2N5WTVYMjRONERG?=
+ =?utf-8?B?WDVrUnU4dXdNQUo1RzdJTkVXVjZiM0dLSDhFTStmUUcvaFV1aE13c2xEa3Ra?=
+ =?utf-8?B?OWEzWmV3WWtUMmd3cjdCUGthRnI0bGh0R1J5dTNod3Y4Q2QwdWp0Tm1UVC82?=
+ =?utf-8?B?V292R2hIRmNUSk9EZ1VHM1ExcVpsNkZtMElIaGt1cFpuMWh3YmxXbm01TEpj?=
+ =?utf-8?B?L3VnZlZ4dzc4a25Kc05WWHIyQkk3YjZOcVF6L3lIVWVHV2t6ZUlBWXhhQS8z?=
+ =?utf-8?B?R01SbWVLbElGSHpyS1VobkJBTHBqOUpWY25GWGtzOGd4aHZqZXpRcHVyakJ0?=
+ =?utf-8?B?YXhDWmZ0dkRpNHg1aWJVRUkwcTk1cVRSRnFSRkIwTlRBNzBRbVpaV1pkMU5F?=
+ =?utf-8?B?NXV5bTAwOENJQVc4bHVPTmN3bElVNnJ5SXk3eUFiTXVUN0NObUF6dVZqanRu?=
+ =?utf-8?B?VTEyNUN4dlp1Mk5NL292c0E5b3Y0b242VUJrcTBjUkRTWERER2t3QlZ2SVZC?=
+ =?utf-8?B?S3FjbEM4b2F4eHRIaWt2TDFrU0pjTFV0ckR4MUNLTmhyTHp3amVuSG8yM2l0?=
+ =?utf-8?B?RzJoZ3UzZXlzVkQ1OTkvR01LbUsxV21mRGVZMGhHZ2hIenNqcjJYZzF1VC82?=
+ =?utf-8?B?bmhZQm14VGpmTUhPVFBtdVMwejk2L3V0UUorc1htUmtVU2xYdXJnSEdJRUNU?=
+ =?utf-8?B?emFZRDRFN3JYRXl6VmUrWHhKZHIvQTYrMHlRSm15QTZGbGJGMTIvZUhEcVhn?=
+ =?utf-8?B?MCsxSDAzQzBIc1BCWHpIQS9uYXRvd0ZOUDAxR1NHTGttZVIyT1dMeWhkL1dS?=
+ =?utf-8?B?bnBmM1VzWXZmUkhHdHU3dmdSUkQ0Wkg0UzBIRFEvRmFDd1AvN0lacUl3TjZm?=
+ =?utf-8?B?MzEwSHpNdWdTeEg3anF6NFNDNFBXak9oMkpoSlB5QTgvU0tremw1TWYrT1k2?=
+ =?utf-8?B?bXRFcFhjYnJRNzhWY1RVd3VsTDJtT0xBVVo0Mzlqc3RyditUNWpwOFpNVDY0?=
+ =?utf-8?B?VUFoVnFoNm5VS3pWMmI0bTNjZTJLOXVCRG41ZVNmRVBSUi9vRE1lMzJQK04z?=
+ =?utf-8?B?dDF2UlNrNkJJenZPZ1BHZ3NiR3o5akZmZWwxRXpCa3lhdW0va3g4YXFpNDZN?=
+ =?utf-8?B?VEFvbk1JK1BBMWxUZFJEWE90OHY4MGVGdHppcnZKczhpNDZnSWh4dkRjRUZw?=
+ =?utf-8?B?MGY1TVlKYzU2anBhN2lJRUNoWTdrTm1telZZYVRJNHJaOTVRS2FnRnUzTm1E?=
+ =?utf-8?B?NHhSRjZVT0ZLWmZHdDJvdmhmczV5cGpuSjdRdG01K3BLVnlVd092VWtDeWtw?=
+ =?utf-8?B?aTB4M0xPdE55YVVWcHJ6bHJyNEhYSjA4aTRkd2MySGxuTXhUdy92OXIzL2dh?=
+ =?utf-8?B?YUlLZ2pFcjlxenBwSFhSbSs2ZGFXdFdGdnFMMno4UDdQMVEvQUtVTldLTitT?=
+ =?utf-8?B?UTdqajF4cmIybUltdlBqaTk2VWFuZ252NzQyRUlPeDh6OUVDUHVDSDdHbE1O?=
+ =?utf-8?B?T3hUNW9rUG1pczRWbXBkTFFlaVI3Tk9GOGxMbXJRWFN6eE5CT3RYa2pXN2hT?=
+ =?utf-8?B?RWhmSU14VUtXL24yL3BDRzM5QzZpVTZwNFVHQzBaN29paG4va1UvYkN6ZzdK?=
+ =?utf-8?B?ZjRpVE54YkM1UkxhSGF6NkxRdFE2YzdsMkRaTDFhcnlyaWdGOEIyN3NUNTll?=
+ =?utf-8?B?SExVck1FVGd2OGtaaWdlYmFsY3ExR2hLbzdWSG9XeFhHdG1ENDlFWEsreVVi?=
+ =?utf-8?B?SVdOUnVLWjBFd1kyVk93ZTN1QWdVakJMTGZmcHRnS3VWelVJU2I1a3ZsWUpu?=
+ =?utf-8?B?TjRlVlF5STlNeWVldld4UkxTTzFHU2FSVDNjc1RPalI1NGM1NFE4K09sTTBs?=
+ =?utf-8?B?TU90T3ZrZHZSbldKSk1xWVVVMjdEYlBMcGdWQy9ndkNYM3ZIaHU3ZnExUGJX?=
+ =?utf-8?B?Mzh5R1lzNWtzMWU5WEJ1VUdzZ1ZubnUzSy9JOEd4VGFZMXNuYmNxUjBRVjNR?=
+ =?utf-8?B?bnc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a95fe51-f40f-4367-beda-08da6b343a82
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 16:15:13.1978
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 16:15:29.1871
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1XE0xIRprjcgbDHDVyc/YRBd1/g7FtBfov0/lMf9HFSFmlZJr6Rmfgvj61WKqKpl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3021
-X-Proofpoint-GUID: r5rLMkKdlMpBTkQyv1DQzB9nLwV7_RUR
-X-Proofpoint-ORIG-GUID: r5rLMkKdlMpBTkQyv1DQzB9nLwV7_RUR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-21_22,2022-07-20_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: zjhCwIj/aLmggVrqr2ySovNTwRamQNHI79oycV7hiukB/evCM9VO1g81oWjefEflJrBA940WNjJSXaZLKZaxqQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4393
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -165,80 +134,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/20/22 5:40 PM, Hao Luo wrote:
-> On Mon, Jul 11, 2022 at 8:45 PM Yonghong Song <yhs@fb.com> wrote:
->>
->> On 7/11/22 5:42 PM, Hao Luo wrote:
-> [...]
->>>>>> +
->>>>>> +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
->>>>>> +{
->>>>>> +    struct cgroup_iter_priv *p = seq->private;
->>>>>> +
->>>>>> +    mutex_lock(&cgroup_mutex);
->>>>>> +
->>>>>> +    /* support only one session */
->>>>>> +    if (*pos > 0)
->>>>>> +        return NULL;
->>>>>
->>>>> This might be okay. But want to check what is
->>>>> the practical upper limit for cgroups in a system
->>>>> and whether we may miss some cgroups. If this
->>>>> happens, it will be a surprise to the user.
->>>>>
->>>
->>> Ok. What's the max number of items supported in a single session?
->>
->> The max number of items (cgroups) in a single session is determined
->> by kernel_buffer_size which equals to 8 * PAGE_SIZE. So it really
->> depends on how much data bpf program intends to send to user space.
->> If each bpf program run intends to send 64B to user space, e.g., for
->> cpu, memory, cpu pressure, mem pressure, io pressure, read rate, write
->> rate, read/write rate. Then each session can support 512 cgroups.
->>
+On 7/20/22 2:43 AM, Russell King (Oracle) wrote:
+> On Tue, Jul 19, 2022 at 07:49:56PM -0400, Sean Anderson wrote:
+>> This adds support for cases when the link speed or duplex differs from
+>> the speed or duplex of the phy interface mode. Such cases can occur when
+>> some kind of rate adaptation is occurring.
+>> 
+>> The following terms are used within this and the following patches. I
+>> do not believe the meaning of these terms are uncommon or surprising,
+>> but for maximum clarity I would like to be explicit:
+>> 
+>> - Phy interface mode: the protocol used to communicate between the MAC
+>>   or PCS (if used) and the phy. If no phy is in use, this is the same as
+>>   the link mode. Each phy interface mode supported by Linux is a member
+>>   of phy_interface_t.
+>> - Link mode: the protocol used to communicate between the local phy (or
+>>   PCS) and the remote phy (or PCS) over the physical medium. Each link
+>>   mode supported by Linux is a member of ethtool_link_mode_bit_indices.
+>> - Phy interface mode speed: the speed of unidirectional data transfer
+>>   over a phy interface mode, including encoding overhead, but excluding
+>>   protocol and flow-control overhead. The speed of a phy interface mode
+>>   may vary. For example, SGMII may have a speed of 10, 100, or 1000
+>>   Mbit/s.
+>> - Link mode speed: similarly, the speed of unidirectional data transfer
+>>   over a physical medium, including overhead, but excluding protocol and
+>>   flow-control overhead. The speed of a link mode is usually fixed, but
+>>   some exceptional link modes (such as 2BASE-TL) may vary their speed
+>>   depending on the medium characteristics.
+>> 
+>> Before this patch, phylink assumed that the link mode speed was the same
+>> as the phy interface mode speed. This is typically the case; however,
+>> some phys have the ability to adapt between differing link mode and phy
+>> interface mode speeds. To support these phys, this patch removes this
+>> assumption, and adds a separate variable for link speed. Additionally,
+>> to support rate adaptation, a MAC may need to have a certain duplex
+>> (such as half or full). This may be different from the link's duplex. To
+>> keep track of this distunction, this patch adds another variable to
+>> track link duplex.
 > 
-> Hi Yonghong,
+> I thought we had decided that using the term "link" in these new members
+> was a bad idea.
+
+I saw that you and Andrew were not in favor, but I did not get a response to
+my defense of this terminology. That said, this is not a terribly large
+change to make.
+
+>> @@ -925,12 +944,16 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+>>  	linkmode_zero(state->lp_advertising);
+>>  	state->interface = pl->link_config.interface;
+>>  	state->an_enabled = pl->link_config.an_enabled;
+>> -	if  (state->an_enabled) {
+>> +	if (state->an_enabled) {
+>> +		state->link_speed = SPEED_UNKNOWN;
+>> +		state->link_duplex = DUPLEX_UNKNOWN;
+>>  		state->speed = SPEED_UNKNOWN;
+>>  		state->duplex = DUPLEX_UNKNOWN;
+>>  		state->pause = MLO_PAUSE_NONE;
+>>  	} else {
+>> -		state->speed =  pl->link_config.speed;
+>> +		state->link_speed = pl->link_config.link_speed;
+>> +		state->link_duplex = pl->link_config.link_duplex;
+>> +		state->speed = pl->link_config.speed;
+>>  		state->duplex = pl->link_config.duplex;
+>>  		state->pause = pl->link_config.pause;
+>>  	}
+>> @@ -944,6 +967,9 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+>>  		pl->mac_ops->mac_pcs_get_state(pl->config, state);
+>>  	else
+>>  		state->link = 0;
+>> +
+>> +	state->link_speed = state->speed;
+>> +	state->link_duplex = state->duplex;
 > 
-> Sorry about the late reply. It's possible that the number of cgroup
-> can be large, 1000+, in our production environment. But that may not
-> be common. Would it be good to leave handling large number of cgroups
-> as follow up for this patch? If it turns out to be a problem, to
-> alleviate it, we could:
+> Why do you need to set link_speed and link_duple above if they're always
+> copied over here?
+
+This will be conditional on the rate adaptation in the next patch. I should
+have been more clear in the commit message, but this patch is not really useful
+on its own, and primarily serves to break up the changes to make things easier
+to review.
+
+>>  /* The fixed state is... fixed except for the link state,
+>> @@ -953,10 +979,17 @@ static void phylink_get_fixed_state(struct phylink *pl,
+>>  				    struct phylink_link_state *state)
+>>  {
+>>  	*state = pl->link_config;
+>> -	if (pl->config->get_fixed_state)
+>> +	if (pl->config->get_fixed_state) {
+>>  		pl->config->get_fixed_state(pl->config, state);
+>> -	else if (pl->link_gpio)
+>> +		/* FIXME: these should not be updated, but
+>> +		 * bcm_sf2_sw_fixed_state does it anyway
+>> +		 */
+>> +		state->link_speed = state->speed;
+>> +		state->link_duplex = state->duplex;
+>> +		phylink_state_fill_speed_duplex(state);
 > 
-> 1. tell users to write program to skip a certain uninteresting cgroups.
-> 2. support requesting large kernel_buffer_size for bpf_iter, maybe as
-> a new bpf_iter flag.
-
-Currently if we intend to support multiple read() for cgroup_iter,
-the following is a very inefficient approach:
-
-in seq_file private data structure, remember the last cgroup visited
-and for the second read() syscall, do the traversal again (but not 
-calling bpf program) until the last cgroup and proceed from there.
-This is inefficient and probably works. But if the last cgroup is
-gone from the hierarchy, that the above approach won't work. One
-possibility is to rememobe the last two cgroups. If the last cgroup
-is gone, check the 'next' cgroup based on the one before the last
-cgroup. If both are gone, we return NULL.
-
-But in any case, if there are additional cgroups not visited,
-in the second read(), we should not return NULL which indicates
-done with all cgroups. We may return EOPNOTSUPP to indicate there
-are missing cgroups due to not supported.
-
-Once users see EOPNOTSUPP which indicates there are missing
-cgroups, they can do more filtering in bpf program to avoid
-large data volume to user space.
-
-To provide a way to truely visit *all* cgroups,
-we can either use bpf_iter link_create->flags
-to increase the buffer size as your suggested in the above so
-user can try to allocate more kernel buffer size. Or implement
-proper second read() traversal which I don't have a good idea
-how to do it efficiently.
+> This looks weird. Why copy state->xxx to state->link_xxx and then copy
+> them back to state->xxx in a helper function?
 > 
-> Hao
-> 
->>>
-> [...]
->>>>> [...]
+
+Because in the next patch the speed/rate could be different if rate adaptation
+is enabled. This is not really necessary for now, since fixed state links cannot
+specify rate adaptation, but I have tried to be complete.
+
+--Sean
