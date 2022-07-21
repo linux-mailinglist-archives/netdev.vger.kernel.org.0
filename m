@@ -2,173 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F7C57CF3A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 17:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EB2D57CF5F
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 17:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231135AbiGUPe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 11:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        id S232658AbiGUPhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 11:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiGUPei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 11:34:38 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2049.outbound.protection.outlook.com [40.107.21.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99F882135;
-        Thu, 21 Jul 2022 08:34:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i6Urz7HgDv+7Qm4YiHkB6FTDrPRMj6gMUitwXiy9snabBpoV/hkcs4YzEwSNcX01jc+hShrYCRskNuR4j7jp8574XgnagJq++MMUb2pyePIbNeHGCgLkNqPdHrouJpXsAazpan0sY7A7YJM99U2/2KIGq7GGuSP0jYsD8GhnfBcsv3iL8e1WawbsrmQbI4OpchaARn2O+6/x2Hh8vp1u2lG2oecA5zK3xtUaPLz2nu9KfZs29GGbdb6ssQbm0nyUAVUHc8waqXY/wUexqRSCJ91c0jQpqnFIbbkZJj7uIafhH4m1DuG8z5BtQ9g2SlWF6eovcYMuY6rkj22DV70SpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ExAIxaDlOg5+y4++MaIEBuAAqTtvPNkG+WkbRzHDR3o=;
- b=jNf5HlPDtJP1aM5IhaQ0a4xdXPQWf/iVy83R4y3V77b3OqD+6bjeGrd8DzFyhmQtqQ2u9TdQnLHFccowIdktJZRt/e2uGAkGTdKb+j0h5LK6qvN0K8MBF7X4vizrthOcgovTrvoQOyB9nK7CZtOktyWJWfkJn7+mpDIGFKJGfSi1vii9P5HfxpQNs8enF+zJcKazDWIMr+Hf5t7y5ax0raqGkrCucksrdbvJ4dpdXn0wSq2P6HHCmIxG6ehir3NVMeOn/p2wFNvymj53k5+6Rht+7FnQyK6XvXWPRdW/5H2SjxtSFUkLHM2IjJ4GltPJVYuxdzB2oD88kOrH+Xd+dA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ExAIxaDlOg5+y4++MaIEBuAAqTtvPNkG+WkbRzHDR3o=;
- b=Sgwo9+ZWhh3lQdG/Y68ADjpTIxLyPIoCbfTNFEkz23vzdF2n3kYw7e2S0cdh+ZzlX2325CqWTnOmW1oubfv1hwXj0/JvAxoMaWGbX3am+q4Jh5xtQm+MM0Mv+PSvIz0QYFuAsq3vNRIFFbwJom8ztS9qOijHlWB7mpoPJuqrC8wdcF50GmnknJeSt877GuTldBdqBcgbcQjaHZXLqb/ZBd8/UQhW0Eap4Tcf6NaFRDa8QOrV/8LhhXWu+zql4m+Zme3LQsqTEK9YtUyZps9TnEsCJKt5RsB47Ele5IOO6Tv2fuQ/kgBRL2cMV8wM0nMzs10R1xaAaRfut1Dl4ThoFQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by DB7PR03MB4076.eurprd03.prod.outlook.com (2603:10a6:5:36::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 21 Jul
- 2022 15:34:32 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Thu, 21 Jul 2022
- 15:34:32 +0000
-Subject: Re: [PATCH net-next v3 29/47] net: fman: Map the base address once
-To:     Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-30-sean.anderson@seco.com>
- <VI1PR04MB580763F33F7EFB0265DB1C40F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <ffe0a1ec-4ff2-ce98-6eba-7d9e5ec8f04d@seco.com>
-Date:   Thu, 21 Jul 2022 11:34:29 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <VI1PR04MB580763F33F7EFB0265DB1C40F2919@VI1PR04MB5807.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0287.namprd13.prod.outlook.com
- (2603:10b6:208:2bc::22) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        with ESMTP id S232520AbiGUPgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 11:36:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 069621C91B
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 08:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658417796;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=E9vNgely/RNeXoTi/6KXKEKS3Vm4HrmO6DZ21V4RiOg=;
+        b=SkxTaCGJP5nkoCaxcouCFAWIhO7INSfXbcfMsitpUyu/lEpw7GT+RxrSXABcqFId33Quj5
+        NBgm2ZrmZafcqXgqPegf3f12lKd0K7j4sUEWF5z8Iy3YNCDN/jjRBKUoB7Xndyx2JN5TUM
+        DFSh0jFMfImCy86MLiAB5Iy7KVVq8LA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-443-yU1vkqs-P36TDaFyBVoQAw-1; Thu, 21 Jul 2022 11:36:32 -0400
+X-MC-Unique: yU1vkqs-P36TDaFyBVoQAw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7B00B1019C8D;
+        Thu, 21 Jul 2022 15:36:31 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.194.200])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5DCC42166B26;
+        Thu, 21 Jul 2022 15:36:28 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v7 00/24] Introduce eBPF support for HID devices
+Date:   Thu, 21 Jul 2022 17:36:01 +0200
+Message-Id: <20220721153625.1282007-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69d55d5e-ad73-4468-c998-08da6b2e8242
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4076:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 67/lhsFB3n1cjqEJjJriysznslHp1yt4ogawN5bDT0R/l0bfdloyddc0Xqam4gM7yDPutzHdC1fO9uLxGdczuhNhZFHXhOljGemJgBJJQybXvxIscJ7XsAfT2lwuu/BJ8WzEwJcGm/ecxGHuyB2z2ezMUZbrX/QZ2og6/zNrYuFTrANs6EkLClPElI4HRweMAXnvQu+7XJYYAYU402MBiLncgSaxZ1semCJcNQaYqjHDRdyV6Wiz9/Gz4iGfMsuFQeh7h6PkCTN7fJbrQp1s50nMPFU6lblu5eqwbXPeZjsq8ZSVQi8UTayMqpZZ4XWbI8PvhuhJKfAjYi+0XHf1aS0jIdn70tCfDE7oFRxyruFFKPA73v7BBx5NBMRW4NmYkuKGYB/pC8r4PSrx1sl5TIDr9LtTc6B4O/K+nAsKVzfy/H9IqPi+FjCxynNjMwWJ2vCO/7BPGj/27ROw0D3LXVproisBllLQ6ZJ+IbvbNR5Qc+QAskq3xHfP9TB6qDpMBFa+2LmJqp1ZYi2qfliNMRdbffE+Y091QGy2TT5n2guaKAh9Ccfxiy9xoe6w81yKBx/IujTPJjSzgFb4V6aDB+UasKFqpVsxA+1MX2rqVSFNapkSgS+cKu/YwpgLAiIeNWbKthBEaNBiLYjsM4Yujdz7vxEbYV5+bYbqoAPL6j9j6XubCg1E/98SjrWHhHZ5p8GWrwaoQbEZAL2jf9GtH4+LUyX+CT3h8YIOgzu3JWXwPfNfUWNezukoOnfrdRBCfASJwCJ/6G32LoJuyw4+kQXg+DDjmog36V4pzZeG3zTS/v6vwGXAbnF+S00xbBQUrWqL9leebhhl9fyWs/3/lu9gsrQxERw5C2X4UG3qkuA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(346002)(376002)(39850400004)(366004)(86362001)(31696002)(83380400001)(38350700002)(38100700002)(4326008)(8676002)(66476007)(66946007)(66556008)(316002)(54906003)(52116002)(6512007)(44832011)(53546011)(5660300002)(26005)(6506007)(6666004)(8936002)(2906002)(36756003)(2616005)(41300700001)(110136005)(186003)(6486002)(31686004)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?M3dtcnhaU0IxV0hKbTE1NUpHRS9IWWZYS1VyTUFSNWNKMSthOE1zRExadUtC?=
- =?utf-8?B?K2d4Y3ZYRlFwa1p2cWF1b3p2V3pMeDJxQVRlZjJvd1E0Um8ybDloazBFM3V3?=
- =?utf-8?B?d3cxeHVPMUVDTFdpQnpEYWJUdTdnUS9IQzBsSlQ1RnZyRVdjSmcrSHJLSEZs?=
- =?utf-8?B?ZEwwU2JLUTFxSFRGa20yWHo2cmNHTEJRZDBUaXpuMkZvNkZuUWFiY2E4Q05V?=
- =?utf-8?B?NStCVVV5NXVNZjExYWduRHJGdTg3Nnp6UzArZFlpank5ZE8vVHBMblhQRXdh?=
- =?utf-8?B?VjRDeE9TV0hrRHoxN3NVWkVQSjFPaDh5N1VGTDF2VFVmRmZZNFJWaGdhdVNB?=
- =?utf-8?B?SnRGYS9udzhtNWwycmR6SjlocUVpTjhodjYxRXFzb1IxaHNtSjlSVmQ4ZXd4?=
- =?utf-8?B?eklGeHBIUGFZVjVIbnRNaGp2d1dVdHp3MFlIcFJnR3k4c2xjSjFKWG1mOS9l?=
- =?utf-8?B?UkN1QStDcW5DcVdVU3IxSng4UDk5TERLREFyeDVGbzdKVlBvbWFpRGlFVGtZ?=
- =?utf-8?B?d2JoK1RvWFNRTnJEdFFlUTVTN0pnOWRvV1UwWGtWMnVDZ1FyUkswTEI2enMy?=
- =?utf-8?B?UGdpdk1naTJJOGdvY2EyYWFzbks3TzdGdmtqSW5CMlVzMUUrcXVyUko0aUJt?=
- =?utf-8?B?S0RsQjVZdThVMmpRYTArdkp4RmJoT3YrOWYvNFU1VFNHSWVHRjl4MkMvMlhO?=
- =?utf-8?B?SlpsS0twbVdsYmI3ZGRnK3RtY1JmNitMMFpVajZDSTlYL1lRNkNkVVZ1Nmpx?=
- =?utf-8?B?bTdSNlFXQUdjaHhOTi9zZVZrM3phbk1GcHJqNmFYZmNYOU03THBFUGhWVnFv?=
- =?utf-8?B?bmNJZ1MzUENvUHh6bmJpQ25UMm14emhYTmgwTEY2dVNFSHJiZ1Y2MUYvRXhW?=
- =?utf-8?B?aDN4VGNqUzN0WkhWamlJMVlHdXE4cTBrMncyakJVNWU3dVZVWndiWThFVm0x?=
- =?utf-8?B?VUZBM20vMWJoZXUyT3d2VFRoQkM4QnJ2UjVVQ2dOaHFaUHJCTWRUUkZVSGUy?=
- =?utf-8?B?ZWFGb0x0andFU2g0cVZKUTNnL3Z2UXg5RnhXNTdkbk5uNGtZVzZaTHByaVBH?=
- =?utf-8?B?SG43MFU2L08zSXE2ai8vNDNtUldqVlh3QkpOOWtGVDd6MmxTVlV0bTl4dTlN?=
- =?utf-8?B?amIyTGRxTVRXQzN6TWJvVUNpait2a1FQMlRMaDdkRFRMeWl6SE1ZM0l3Zzc0?=
- =?utf-8?B?elJSMGJpZ3JHaGk3SUt4SXFqT2t4VHFpTW5xaHF5VDNhV3lwZTg1dkVJTFhR?=
- =?utf-8?B?ZUVhazV5OTdpcGFhdnNsRlNhVFRWcGJ1NXAzNnZ6cjRpL2RobjU3Sm40REFE?=
- =?utf-8?B?d1l3QU1qaGtDejNsZ0xXb1N1bFllbUVMSTNnSlNDdXUrVXN1MWZ1bVMyRHNY?=
- =?utf-8?B?UzBXOERTV3h2Zm56YXB0RnA5RUh2NDZUNkFjRUN5dFY5SkhVcGVJdG0ycFBK?=
- =?utf-8?B?WDR2QStnS1Y3dGFmT0ZIMWRJZUh1Rm03bXRTRzllN2lDYXpKR0ZnQ3Z3VUFm?=
- =?utf-8?B?WDJhcXllQ1JqYVNLMHVIRWcwcENXUGFsZE1jUCtDUUd1ZmxMOVM2TmV2Y1Vx?=
- =?utf-8?B?cXNRR1JBM1dZRFN5RXRNUTlGM1Q1YkpqWDZjc3E0MXJYeFJ0WGF1a3NKcUJj?=
- =?utf-8?B?R3dOQjFNVDM2Z1d1eHdLOW5PVU5QUGhHaEJ3SW9XOG9pQTB1S2JnaEtGcXNT?=
- =?utf-8?B?TGZldytFeEMyTTlRekN2UE5jT0lzdExZUnhITFBSNVFwb2JhR0ZZaTQvNWdy?=
- =?utf-8?B?TDE3bmxlZWQrNUt5elZxV3ZWZytVN2E2SVU1eE9yRC8wUnR4c0ZjaXlleURO?=
- =?utf-8?B?amtvaEIwbXJCZkJYU0k2TjBWZHM0NnlEd1dGQStveFo5cElndnhvc2o1UHhQ?=
- =?utf-8?B?UnpmWkJoNWRONzByUGU5ZHBxZjhqcFFnNzFUT2oyOVZkVDFvTHVsSE94S0lW?=
- =?utf-8?B?bk9YQ0t4SkxvcUVpSDc5c041QkZCRWNiWTBmdmp5QWJPVGtpZzkyaG5jUUww?=
- =?utf-8?B?cmtab1d1M2RWaXE0SmNQVkFHNmp0UW9kYVB2VDJVTUhRVEw4Yi91d2U1ZEI2?=
- =?utf-8?B?eE5YRDg0Zkk5L1NCV1lIL2VUNjkwYzJqL1VIRVFKUjJjZFhrcDE1WGlaaTlD?=
- =?utf-8?B?TEJHTUkwWW9OUW9KdHlUbkRNM2x6dmc1VEMyVm5LcWRUcXE5YndEeGRHdFcx?=
- =?utf-8?B?Tnc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69d55d5e-ad73-4468-c998-08da6b2e8242
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 15:34:32.5522
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uvSyjERQ+ls9jsi60tfZxyK7fGQ6vW1/8ndLpJkXg+mtqPK1hXtbRue9+NGaV2rfPyGNXe2mmaWKUvkxniaZbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4076
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+here comes the v7 of the HID-BPF series.
 
-On 7/21/22 9:04 AM, Camelia Alexandra Groza wrote:
->> -----Original Message-----
->> From: Sean Anderson <sean.anderson@seco.com>
->> Sent: Saturday, July 16, 2022 1:00
->> To: David S . Miller <davem@davemloft.net>; Jakub Kicinski
->> <kuba@kernel.org>; Madalin Bucur <madalin.bucur@nxp.com>;
->> netdev@vger.kernel.org
->> Cc: Paolo Abeni <pabeni@redhat.com>; Eric Dumazet
->> <edumazet@google.com>; linux-arm-kernel@lists.infradead.org; Russell
->> King <linux@armlinux.org.uk>; linux-kernel@vger.kernel.org; Sean Anderson
->> <sean.anderson@seco.com>
->> Subject: [PATCH net-next v3 29/47] net: fman: Map the base address once
->> 
->> We don't need to remap the base address from the resource twice (once in
->> mac_probe() and again in set_fman_mac_params()). We still need the
->> resource to get the end address, but we can use a single function call
->> to get both at once.
->> 
->> While we're at it, use platform_get_mem_or_io and
->> devm_request_resource
->> to map the resource. I think this is the more "correct" way to do things
->> here, since we use the pdev resource, instead of creating a new one.
->> It's still a bit tricy, since we need to ensure that the resource is a
-> 
-> *tricky* typo
+Again, for a full explanation of HID-BPF, please refer to the last patch
+in this series (24/24).
 
-Thanks, will fix.
+This version sees some minor improvements compared to v6, only
+focusing on the reviews I got.
 
---Sean
+I also wanted to mention that I have started working on the userspace
+side to "see" how the BPF programs would look when automatically loaded.
+See the udev-hid-bpf project[0] for the code.
 
->> child of the fman region when it gets requested.
->> 
->> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> 
-> Acked-by: Camelia Groza <camelia.groza@nxp.com>
-> 
+The idea is to define the HID-BPF userspace programs so we can reuse
+the same semantic in the kernel.
+I am quite happy with the results: this looks pretty similar to a kernel
+module in term of design. The .bpf.c file is a standalone compilation
+unit, and instead of having a table of ids, the filename is used (based
+on the modalias). This allows to have a "probe" like function that we
+can run to decide if the program needs to be attached or not.
+
+All in all, the end result is that we can write the bpf program, compile
+it locally, and send the result to the user. The user needs to drop the
+.bpf.o in a local folder, and udev-hid-bpf will pick it up the next time
+the device is plugged in. No other operations is required.
+
+Next step will be to drop the same source file in the kernel source
+tree, and have some magic to automatically load the compiled program
+when the device is loaded.
+
+Cheers,
+Benjamin
+
+[0] https://gitlab.freedesktop.org/bentiss/udev-hid-bpf (warning: probably
+not the best rust code ever)
+
+Benjamin Tissoires (24):
+  selftests/bpf: fix config for CLS_BPF
+  bpf/verifier: allow kfunc to read user provided context
+  bpf/verifier: do not clear meta in check_mem_size
+  selftests/bpf: add test for accessing ctx from syscall program type
+  bpf/verifier: allow kfunc to return an allocated mem
+  selftests/bpf: Add tests for kfunc returning a memory pointer
+  bpf: prepare for more bpf syscall to be used from kernel and user
+    space.
+  libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
+  HID: core: store the unique system identifier in hid_device
+  HID: export hid_report_type to uapi
+  HID: convert defines of HID class requests into a proper enum
+  HID: Kconfig: split HID support and hid-core compilation
+  HID: initial BPF implementation
+  selftests/bpf: add tests for the HID-bpf initial implementation
+  HID: bpf: allocate data memory for device_event BPF programs
+  selftests/bpf/hid: add test to change the report size
+  HID: bpf: introduce hid_hw_request()
+  selftests/bpf: add tests for bpf_hid_hw_request
+  HID: bpf: allow to change the report descriptor
+  selftests/bpf: add report descriptor fixup tests
+  selftests/bpf: Add a test for BPF_F_INSERT_HEAD
+  samples/bpf: add new hid_mouse example
+  HID: bpf: add Surface Dial example
+  Documentation: add HID-BPF docs
+
+ Documentation/hid/hid-bpf.rst                 | 512 +++++++++
+ Documentation/hid/index.rst                   |   1 +
+ drivers/Makefile                              |   2 +-
+ drivers/hid/Kconfig                           |  20 +-
+ drivers/hid/Makefile                          |   2 +
+ drivers/hid/bpf/Kconfig                       |  18 +
+ drivers/hid/bpf/Makefile                      |  11 +
+ drivers/hid/bpf/entrypoints/Makefile          |  93 ++
+ drivers/hid/bpf/entrypoints/README            |   4 +
+ drivers/hid/bpf/entrypoints/entrypoints.bpf.c |  66 ++
+ .../hid/bpf/entrypoints/entrypoints.lskel.h   | 682 ++++++++++++
+ drivers/hid/bpf/hid_bpf_dispatch.c            | 553 ++++++++++
+ drivers/hid/bpf/hid_bpf_dispatch.h            |  28 +
+ drivers/hid/bpf/hid_bpf_jmp_table.c           | 577 ++++++++++
+ drivers/hid/hid-core.c                        |  49 +-
+ include/linux/bpf.h                           |   9 +-
+ include/linux/btf.h                           |  10 +
+ include/linux/hid.h                           |  38 +-
+ include/linux/hid_bpf.h                       | 148 +++
+ include/uapi/linux/hid.h                      |  26 +-
+ include/uapi/linux/hid_bpf.h                  |  25 +
+ kernel/bpf/btf.c                              |  91 +-
+ kernel/bpf/syscall.c                          |  10 +-
+ kernel/bpf/verifier.c                         |  65 +-
+ net/bpf/test_run.c                            |  23 +
+ samples/bpf/.gitignore                        |   2 +
+ samples/bpf/Makefile                          |  27 +
+ samples/bpf/hid_mouse.bpf.c                   | 134 +++
+ samples/bpf/hid_mouse.c                       | 147 +++
+ samples/bpf/hid_surface_dial.bpf.c            | 161 +++
+ samples/bpf/hid_surface_dial.c                | 212 ++++
+ tools/include/uapi/linux/hid.h                |  62 ++
+ tools/include/uapi/linux/hid_bpf.h            |  25 +
+ tools/lib/bpf/skel_internal.h                 |  23 +
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ tools/testing/selftests/bpf/config            |   5 +-
+ tools/testing/selftests/bpf/prog_tests/hid.c  | 990 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/kfunc_call.c     |  76 ++
+ tools/testing/selftests/bpf/progs/hid.c       | 206 ++++
+ .../selftests/bpf/progs/kfunc_call_test.c     | 125 +++
+ 40 files changed, 5184 insertions(+), 79 deletions(-)
+ create mode 100644 Documentation/hid/hid-bpf.rst
+ create mode 100644 drivers/hid/bpf/Kconfig
+ create mode 100644 drivers/hid/bpf/Makefile
+ create mode 100644 drivers/hid/bpf/entrypoints/Makefile
+ create mode 100644 drivers/hid/bpf/entrypoints/README
+ create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.bpf.c
+ create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.lskel.h
+ create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.c
+ create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.h
+ create mode 100644 drivers/hid/bpf/hid_bpf_jmp_table.c
+ create mode 100644 include/linux/hid_bpf.h
+ create mode 100644 include/uapi/linux/hid_bpf.h
+ create mode 100644 samples/bpf/hid_mouse.bpf.c
+ create mode 100644 samples/bpf/hid_mouse.c
+ create mode 100644 samples/bpf/hid_surface_dial.bpf.c
+ create mode 100644 samples/bpf/hid_surface_dial.c
+ create mode 100644 tools/include/uapi/linux/hid.h
+ create mode 100644 tools/include/uapi/linux/hid_bpf.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
+ create mode 100644 tools/testing/selftests/bpf/progs/hid.c
+
+-- 
+2.36.1
+
