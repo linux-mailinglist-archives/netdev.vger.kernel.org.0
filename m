@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE21557D3B3
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F0C57D3B8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 20:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiGUS5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 14:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S233243AbiGUS6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 14:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiGUS5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:57:22 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EBA8B4AE
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 11:57:21 -0700 (PDT)
+        with ESMTP id S233529AbiGUS5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 14:57:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDF68C16E
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 11:57:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658429841; x=1689965841;
+  t=1658429872; x=1689965872;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=ucZY6zyA2lD//lVAsRvYlwVJl/Z34bQL6ZLl04p14f4=;
-  b=QWx4YxYktE5pX18yc1Xqa3TteKtN8oQEfPvtCCT5U/R9ijZYmGZxcTb1
-   Dn1kHwjTLnQWVyNSPDS/hu7+aBgxgB4TXh8eLP1IGHJVNeHyQPWcM9a1O
-   qD1M97m707RxS+DFVTYxA7YjGtDm9PzwUYoB7cHh1wqcutU0ghZxHfqRZ
-   M7n1JuDTo0naTIO7Z6FDi+fstU/4xuCWCQE+f1v0yZ+dVb5YfrPzErvuc
-   IZrWUdKqNjkSUTZ6KISQQPdmyE8E40wQX47klN4sbPbEZQfKdk7335eyc
-   Mj9593k3j6Cr+MyNCGNkp2hvcXqr2hkoRuHvtRVBP97Jn8AVfEZlEL4YA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="312865767"
+  bh=yIU1AJN+zFZzPnz7C2agldKh35I31J6ga+zSRWtfn6o=;
+  b=M80HIGkpfiEgCloFyGnyM8wSxNRDo7BLWz5VhQYD/LoeErFqkJeaYeNS
+   hSAWZDg1BwUwNFYe4RCk7ZE0qMX8/ImSe8Ri32JXwwAtZjFFFfcQMUszR
+   kQ6mPSw8qrIBwk2mlGrnZUX1BtYDN4Mx6KND7lD0LlCqWxH09wPrLcGS9
+   Svub1IDW3I3bjHxCmPbPAw8dzd/T0yCGVV0R6HXYMr1zgt+3PyWkjofSi
+   blbZ5cPAXEmQ+y9ydXkHiNu/pR5T8szD5Njd2N45CpD3wlIlUUA01L0CU
+   eydcJAvXiitBMsmRy4DV0GoSnl+RA6BEKcqAapzlWDrHvCsNd1+X2l15o
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="373448820"
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="312865767"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 11:57:21 -0700
+   d="scan'208";a="373448820"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 11:57:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,183,1654585200"; 
-   d="scan'208";a="548895724"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga003.jf.intel.com with ESMTP; 21 Jul 2022 11:57:21 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="626251401"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga008.jf.intel.com with ESMTP; 21 Jul 2022 11:57:51 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 11:57:20 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ 15.1.2375.28; Thu, 21 Jul 2022 11:57:50 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 21 Jul 2022 11:57:20 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2375.28; Thu, 21 Jul 2022 11:57:49 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Thu, 21 Jul 2022 11:57:20 -0700
+ 15.1.2375.28 via Frontend Transport; Thu, 21 Jul 2022 11:57:49 -0700
 Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.107)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 21 Jul 2022 11:57:20 -0700
+ 15.1.2308.27; Thu, 21 Jul 2022 11:57:49 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fnXfJWfjEYQbXCoPlzsodswKqdCjDBOlS5yNxx9AmhAj9wtHkbZ3vnZm88MQkblSbubhG1uHzVWLD+RyNZdjQ/jwnfga8cOe0/E9onP0xtBJTvefF1rbqPlaSVaOXH35EobWcGkq8eYKN0TN0qGaVHwbmgQ64pHC5luDXJ6kiaqub5KfzyMSrmwfhgTG1S0PYh1L/rOMpSyzp9RBn5fsqFPzFh4T2YFMbVKJeg7kfseAxuelrpmaa8ThLYWCdOgRGjuH9Pb1kVP1PnJi3IhVAVy7I9eQwlkEHEMPz/kNDoPWb+KuOd/pzTOvtsFhPEszh3R4t40dyleK9xE3kbKHbg==
+ b=lIDI8V+5zbK6IXaCLUFXzdvepIGpe2T4bwS3VfPcSL3tmQ+S1dsIdGMvdRorMfADtspuGyk5yTiSzQ85NyWf1QusSNf1050hWwcrlQBRj5LdHJs5M22NBiWZ38E/jMkyMChejdqExBN/A5pRqdxVWlP1q1SrhjdbfY0BMFVuMnXTPxt3bS+Y6/MVOGD5g3GdfL/5dvtDZ47K9e3KtKyR80RYPZd8Pv8Bz+6yWdpaKX21wU4HaUkljF/5OqLh0E7USGl08a636KGJpWJVJjt/9V7HIunDgus9YliCOrH/ianpxVc2V1fB5kngJObdK8NFpwxU28qq+Fe0+lY3qthSKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xIsVpmbpAqknShRPecgc/qRYBxdV6AGeYvjKTHlCzuI=;
- b=oBmA5W538TCsxCgCSCn1yRuUffgl5x+L+eOytDjp2ctCQ36SbeH8IlQ4s9D3p5QOh/TNe3ost9PnLtmTncUigcs1MIDfowpa7JviWI7hKr7i4CH8hXd6WbRKldKZm/8mY/CH52D394549/xfSrWlh3NgqThLahuNEIPq22+8+GkRdkNcvGFpIdculL4hQWBO/W0hypsZgxHyEcCzF9fhsMxWrFN1UArtqpnDuCyQyee7R4Htve+DAxZLAVe5Jis2EAm7BIsJZZ/5Mn45fIP9xWDOKi106iOlcsmuXUsSLORUZdy8zbATNL61tKJlQNUAtIwOveX054vuxhDNleGdFw==
+ bh=TnwhogXacaVQnyhnSdvkZhk7MN5fYQKNhTRb8MoFa4I=;
+ b=bnBpwztl2/SGsQL8WujRRg1LLCJS1Y50ZuZR+q9xL0TW7ip5ksP0lwebt1r+hPeHQ3eimSMHxnEAmJQfbmgkwf4CL+g05zE6b5Hrst5r8hs8ypSwRJGFSgvFWOZzw5+C0SCRDkVt4pumKp8cIcWsmPY3H+M/pj7KMJXL3PwwuJCyPNP2oRv/9jH1MxO2Jc9nZOk69e2zTvQuXdN+5o9webdzOchQaixHn6iQgxReddTezhM/BsYUzu8UPKZ8NKOeTz8Y6BGnjK5EL8BgsV3Z5FsPcr7xzAQrobv8cxy/ZCjyYQAA9tm0SwqPnusTMvqgLKmGaNh0FM/yXmt1vRQe4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -67,26 +67,25 @@ Received: from SA2PR11MB5100.namprd11.prod.outlook.com (2603:10b6:806:119::11)
  by BYAPR11MB2855.namprd11.prod.outlook.com (2603:10b6:a02:ca::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Thu, 21 Jul
- 2022 18:57:18 +0000
+ 2022 18:57:47 +0000
 Received: from SA2PR11MB5100.namprd11.prod.outlook.com
  ([fe80::f97c:8114:1f0c:f811]) by SA2PR11MB5100.namprd11.prod.outlook.com
  ([fe80::f97c:8114:1f0c:f811%6]) with mapi id 15.20.5458.019; Thu, 21 Jul 2022
- 18:57:17 +0000
+ 18:57:44 +0000
 From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [net-next PATCH 2/2] ice: support dry run of a flash update to
- validate firmware file
-Thread-Topic: [net-next PATCH 2/2] ice: support dry run of a flash update to
- validate firmware file
-Thread-Index: AQHYnGdrsH9VZeOIjEmsD1jkWFaMOa2IVFEAgADaAzA=
-Date:   Thu, 21 Jul 2022 18:57:17 +0000
-Message-ID: <SA2PR11MB5100456266D98F016DCA309AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [net-next PATCH 1/2] devlink: add dry run attribute to flash
+ update
+Thread-Topic: [net-next PATCH 1/2] devlink: add dry run attribute to flash
+ update
+Thread-Index: AQHYnGds4JyoDr5oaE22k7ooTa/97q2JCmWAgAAkR4A=
+Date:   Thu, 21 Jul 2022 18:57:44 +0000
+Message-ID: <SA2PR11MB51008B53EE77ADF3ADA5D8E1D6919@SA2PR11MB5100.namprd11.prod.outlook.com>
 References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
- <20220720183433.2070122-3-jacob.e.keller@intel.com>
- <YtjqdJcGpulWsBHs@nanopsycho>
-In-Reply-To: <YtjqdJcGpulWsBHs@nanopsycho>
+        <20220720183433.2070122-2-jacob.e.keller@intel.com>
+ <20220721094745.18c1900b@kernel.org>
+In-Reply-To: <20220721094745.18c1900b@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -94,59 +93,58 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a74aebf-dfb7-4491-8280-08da6b4ad56b
+x-ms-office365-filtering-correlation-id: 3dbd182f-16ce-4116-143a-08da6b4ae580
 x-ms-traffictypediagnostic: BYAPR11MB2855:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KSO4cIxHEe1cUohmkJQiSAmtFuUrKrSFXQvDSnPNvBpKRDbMdl7iN1rZF7soGiYPjFxV8jS1kDD8h7HmlOnbTRdevzx2D29RG5aYuU8Kpz6QMqSbeNxjo+UAPv+A7UZkvSyAahNeN3ZGvRR2spaY6a2tg61bLmm0sCbc2YyyNnntoh/tcS6ZkmWYaJwk9VAYDtoQTRGNR7Z3aQOoJqn3DyOA6y5pZerUnrvbu1jAutl5snp58aGqYq4JshvLT2C0P/yLoWi0i/Q5YX/GXf4yDc+emm8rBVD03RkPWiAGWRXueq5kvW/3/W9lgTqXaojY2BfWhTrHbNVeLP/3D/PbB5xkRh7PdF4hZt9ZbRih2MrUMmNfsJTaV8agGwRubwmT6JOcERKqZ11zw56eyLlDYND6jNlbpFetOJw0sqpdIconsoP2neKINr8FDsU7o3jrfl9EGRvL7zVv8x/KDcIFG0VQQE/dtC9F4FTNQ3T5YSnatm5sTq+IlPVCfAEJJmRAEUIJKQPnMIoGrY6yh9Wl8UsBRTr1xgG7pUubOZSp/bVsWi3dIgCnIZSt7t0pq4sdXe1cjJFhC5HQTQMkSpNP+j8A7xNTyUBQXul1o/XSjxVi447U6/uKi8KKVo2/il4x5vsobyZE/ddDwM1HoCHkQUUdO1C33OlPzs8ekZt/zfyHc8Afp3Lj2Pg/W6VTmfF9yMCHWff0/2bGJq+4OA2xkreNijrT4vCLpIPZ9DnUAsPb+yIlCiQLBe982KzYh2ofV2zyyVHdu/NQqw70bbJsdfHW8XqFaA1PZUzsGn5wKwN1FN/FoCct4xGj7lWDRiWc
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB5100.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(136003)(376002)(39860400002)(346002)(186003)(316002)(478600001)(26005)(6506007)(9686003)(55016003)(5660300002)(83380400001)(86362001)(41300700001)(122000001)(4326008)(64756008)(8676002)(66556008)(8936002)(66476007)(66446008)(38100700002)(33656002)(54906003)(53546011)(82960400001)(15650500001)(76116006)(66946007)(7696005)(2906002)(38070700005)(6916009)(52536014)(71200400001);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: Rp5M3A4ru09vrnKXrWlgUfRT6o0TCJ83n01XGSZA45ypqIqggc2Wr6KN0FCQnbwgD0z89yEpwZGGOyTJsLW+nWnoO/12PnvACyoUJGUtmQt2Xwop0oo7pK0QrOi825333N27U8sdvagWpUohjRdgzr7n1J1Cun50gIji65wyysX0oH4dnoPELGJgZYVWQe32fd/VeNFnxoGVPl/j4B5PcNY3SbWFtIhdxBk06Lg+XVLKk6Z4XMsx5E1BYqzvfHH0oSeK4MfA/fJesWUjRN2yGnygU+wLOqbp4gCN4Vc4dawZJwEF7uWn40KQF2B5rHaDaKi+k+euZhdGgl2eAcKAe7wPxqeJWyZA7670mnW56VjznA6Du1GYzEL3Gh1OrgoFG71qD+kryrqq6MZw9ZSA9SL7TkFsGAZV7gcq6Qskc42iXeJhq2Mh1uX/TOXgwXtUNyNScCLV8Kgstl0LSMJmsnhVOtn6mPkB+QZRMZhz1gAi+oAu6xeYUhNU04tHLLE8ulApzUBns13xOXuY8BzIFyuaE7N8Nso5FmMHJyKQb0LE2NcVvAnx3M6sY6Pw2nO0UASF+nvEZINPt7mrqibTp1IU0XlLOHHWhfFy8ZqFfx5BSXLbITwowuE9VGvoPUZE4MKP8ycKogAtdQ0adpDEbBEluAWtWnLhCmwOc5CLWSDWRx72CClPJAwTdIjyq+fmai8MJ1LfFZN5tJzY+B+Lw+yt8eKDGpl+b1AQvaTZFwUo/9E32dl5rdhSIJv9QFx+C0sKxEc+xzsW4jcFhDRPxhNfU6mECVUTS4U5OuNQVXbWaetmovUj77Z5fSLvxZs2
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB5100.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(136003)(376002)(39860400002)(346002)(186003)(316002)(478600001)(26005)(6506007)(4744005)(9686003)(55016003)(5660300002)(83380400001)(86362001)(41300700001)(122000001)(4326008)(64756008)(8676002)(66556008)(8936002)(66476007)(66446008)(38100700002)(33656002)(53546011)(82960400001)(15650500001)(76116006)(66946007)(7696005)(2906002)(38070700005)(6916009)(52536014)(71200400001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ot96zgLQTonqwQffsq/PQ3fAO4Pyx5BSbDeO36siunwFll2iXMNB6/7sO6wX?=
- =?us-ascii?Q?1e7BSFYKZR5e6HTKojX/pdyBFb6d/CJHDjJw76zIqn8ae7AT/8UMGrBhkH2g?=
- =?us-ascii?Q?MhV7nij5wPzYQ7ZfbaBhS32Q2AcEIENDSt1I0RAhDu0YaGnt8uAfQNmBqzFx?=
- =?us-ascii?Q?fk0KujcYZ6Ax0Tybx9quV/GxUvP9HtrTrFEGnuirZuxYUb6noum8iVkYTF/G?=
- =?us-ascii?Q?99w+0DaKTWYJ9CDfHOIbDf9C3/qy25wRWdPfff4C+UkDCc9WQth/EBJ3ux96?=
- =?us-ascii?Q?KqXn/VFPCt0Z1OuEOYuJSiXhfDqbectVIhVAS9i6/y71FIMTfMEAVUgwyF5s?=
- =?us-ascii?Q?8qjygGay6/9gEVVre6fXZ2oQNSF6lOpG9X+IL75SA6alWjmyPKXPKHrHrY8b?=
- =?us-ascii?Q?LnJtjNy6Zh8TVpHgEWk67GdMRPPpxxZRUbSzjNMmvKN+dnKAIx31xoagqcHd?=
- =?us-ascii?Q?qM5Pgv4SEWWEuQEB4mw6PiweI3Q1kSGjORdCq0HURWQO5JQL9sanTZu8sT9q?=
- =?us-ascii?Q?/I4oP6c2iHJSKYfp7CSNeb87v5pYgE2q+JqdQxodfX9Lt7VdY8hThmPgBwW5?=
- =?us-ascii?Q?EU0VBQuvvb0mBb94sMvgI4gsylNN1ru0vD5cYj+Y3sRC/CBoYAE9zyu2QFnQ?=
- =?us-ascii?Q?x6DvqmQxXePE4Bpyx+niiDBI51lMrHnkBbAGXeEWJX8KgwIWDAyuAY4Jvmfv?=
- =?us-ascii?Q?/TijOCyo/fnNrrPijfkVh5MBZnv+tIVXzJq54md5CfY3MWlqWcdx8siGJBdM?=
- =?us-ascii?Q?EymV04NhfrOu3nr01wjCczDrNnGy9BOw13mZMl+KjKKmmP3h8MYx1YtyKSVu?=
- =?us-ascii?Q?qf4mbyjOKYepw38j8xNEmxyZ1VUUiYAMEwFAJEiyeZj51B5qOwmFLLvjqT/C?=
- =?us-ascii?Q?il8AawzU+WXoVEzoazKCXcb0Zy5j/L9nS0vbJHxqNKjLi7filQGfTveC5Bai?=
- =?us-ascii?Q?7prSt4mFH0OhKoYHYiOZlSofmcKVBoXN9413fcxujsGtiUgLrxRGzDDl0Ha0?=
- =?us-ascii?Q?02exTTLF9r52rAEF9jeyFtIiwDbd1lBASH0knGZKjlV329quOqeM8+5ScKQ/?=
- =?us-ascii?Q?kNADcpuJjqrY3UYa+izstae4uF680YLORdlrr/UWFEyXrQF7GYkPC3nZWlBe?=
- =?us-ascii?Q?WlSGMZu5zQ5d0Rize6pIprYBsTa7GpmRAhKyam9p4ckcKoU6lr/hA6dLNgxI?=
- =?us-ascii?Q?6VydIamhcEMgU7grvd3FuAM1Uy2DJj3gXVxmtHSQn/nxNIOEN+h+ukb+L4he?=
- =?us-ascii?Q?MjZt/f4szjmnL5IwofdNplK0KnGMJoi/4VZz9fz5+4INJA2cEGVmSz/V7vwn?=
- =?us-ascii?Q?c2mH5zdjcUumdFCorm+DYoqYkEprwduVizazTbpF4lsa7OlRC75xlFNg0N/1?=
- =?us-ascii?Q?XZZeUcCI5ccsFXxvFUzRdLt69PmASudJQG7nBhy8DvDBebmeMtobahrXAQ61?=
- =?us-ascii?Q?7pXKdWkvdCO03jIR0U2qRw9pSh0Y5U8X8qRLGMVIt/sslco1oQypA0nvOHLw?=
- =?us-ascii?Q?Re5A7eerFS9G0ocC2rSzql5oY/yGD2+tcFHzNlsQqAFjBVHMS5w9YYV6C7YT?=
- =?us-ascii?Q?IM3D37YFkpnyxZl67dTL8MiYgrbUlvdjJqRowfpi?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KqDlK82pgmXWcwHPy4derR8agveQg/DEri06tUykeeXkWhqXwwUD66sCbLCW?=
+ =?us-ascii?Q?SobDWbsTXLxl2nYcTqfXI0nQJV7dfNGdASL2GmcYsmInD5Op7bHQcg27mKdA?=
+ =?us-ascii?Q?ymOBMTBwD9rOF39s9AOKgajkJwn1tZLvBJDB+Fv5ruYhLtzctZsl+WHJr9ht?=
+ =?us-ascii?Q?aOdK8KMsx7wWAxgLoZNS61jXaECiPtpcA1zDpGeDzFxoLbDC7YEo3Hew//2U?=
+ =?us-ascii?Q?dkFiTBjIBPAY5yivCtZ99niq0bNRnWKn3RcdBYPeazAafmQiODTpNzrQphTf?=
+ =?us-ascii?Q?6MHIQhpHL0SulSgfcc/JKgAGgFfrXMhpS+gVWTDRQBXGHwpOY8rRFL8uEsGY?=
+ =?us-ascii?Q?wrlGd9l6rrMhRPULBBevjSSQICWgiMHxjICPbu3w/eBi7NEi4zPYoQIAOoAt?=
+ =?us-ascii?Q?+Q2esRtOGK5PYzqWXOjJThqer0cIeWn1ijbYANUKAvLQ1hly6YivAows1XXK?=
+ =?us-ascii?Q?MxPWL+G56qF+EQhedp7sJeHYWokTaknSX/YkJECsClcJr89Rjxcihn78GDM6?=
+ =?us-ascii?Q?P+b9/QaJ+945NsZRrRqEQyUWCIfmIVTFxgoT3nTzYy/q2R9m8nnx2UJqpHsC?=
+ =?us-ascii?Q?MfhNJIlnt6jNY3tqTpimY6pl/+yhPZ9un+DdUYSuYsODrZgdOvgcNioGvW/Y?=
+ =?us-ascii?Q?8vAPIslbenbOXF9i0pp41PGSKy6O6GFGiSiPYVW3HnmwyK6kwhR/Zf4eFOby?=
+ =?us-ascii?Q?lnV74lliNZ/5ulV3Evh3+zjoISnOShi3L4vWmtQRWNEMVvaxxxtj29oHMTMY?=
+ =?us-ascii?Q?bQoUGv4cwUe8hqK49tvzHtp6u7s36qdtctowF0K/B2Bhk3qqRu4XgTYwzpU6?=
+ =?us-ascii?Q?jNn/V10AVZR4pse4QyZF1G1P6HZThaBuwXqfIf1WZH/hxSRIwY9b0plIvBZ4?=
+ =?us-ascii?Q?Ju3bJFlAiBsDMvA57rEFLxT4OB2Az8gYnLgAfxN1P316FzDNXOoMK+to+552?=
+ =?us-ascii?Q?lpJIEZxXyv/CNIVS53x6xrr9fw9+oRmvuBS5YK6CCjMQ5PSbjKNkScWt3nCH?=
+ =?us-ascii?Q?zU6X/gnEMdvIO5Nb/910rBc75riqmzhRdCrQn0781BgRlG29PHtDJtVOtrMZ?=
+ =?us-ascii?Q?qW0GSS1gnkBdtO9yiu/ereRr5xUQlnRM+XrI8Yc783GlWYbthHXzlh8Lj49u?=
+ =?us-ascii?Q?ZJtHZwWZQasAQ15GRuQokgyYN9rAzW9m/ZlodVbKbNDSz2qdTpharSaEo8IL?=
+ =?us-ascii?Q?/QM4zWljvYgnmR//O+bxcGoEDCjzh8vnBf9+Z7qOk13bzdFfm4s6nzP5/1Wx?=
+ =?us-ascii?Q?ZuNpYDn2zNH5VA/Z9E+/H+Twd7VewA48ER/nNCnYwkleZXf8gOXgPh7gFwcV?=
+ =?us-ascii?Q?NqIaf5f4pGtAbJlYuH3OpdVGvaqzPmr18sFmXU766DL+HbFDqyINhsh3ruJL?=
+ =?us-ascii?Q?/hyMlriX8WMQ4NZGskcwatVjUcBX9r+R/L2QhAyZrrfQ/CwXq93KJmoma/Mz?=
+ =?us-ascii?Q?/JM2nju4kf47CSfOYGGJEmHU3eGMxGpeVwnbZ95sgqz2JbDv2PvGTvmAxTrE?=
+ =?us-ascii?Q?3mb1wvB860XuWo2rR2ix1GlVzsnrgcjOcIvT4C7rcTr5gvqGkfaWKEs3YbWd?=
+ =?us-ascii?Q?SAgnTlHLkWBmB2SbnXDUBnvSmerjLdO6x/6zjEVj?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB5100.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a74aebf-dfb7-4491-8280-08da6b4ad56b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 18:57:17.8378
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3dbd182f-16ce-4116-143a-08da6b4ae580
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2022 18:57:44.7849
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BOEFvkHbDTVHcbrSlzQpV5bSw2NAANqahni5FF+Pa9V72C8yneEYmlKMVaBhV/CJkA0zcuRnyqoqBIVGQ1H+GrfReDL7aFJKc68N57lh1yM=
+X-MS-Exchange-CrossTenant-userprincipalname: PLTPCP/MhlkdDX0ZuuUlznM80IiqsDZPYfPcczHoQb5P0EC1qTbxBTl4821ZbDDDD0egptOPNIGqVY+Z8g1k8DB/83G5LyuiKvN9eXEEWlc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2855
 X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -156,119 +154,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 > -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Wednesday, July 20, 2022 10:56 PM
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, July 21, 2022 9:48 AM
 > To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
-> Subject: Re: [net-next PATCH 2/2] ice: support dry run of a flash update =
-to
-> validate firmware file
+> Cc: netdev@vger.kernel.org
+> Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash=
+ update
 >=20
-> Wed, Jul 20, 2022 at 08:34:33PM CEST, jacob.e.keller@intel.com wrote:
-> >Now that devlink core flash update can handle dry run requests, update
-> >the ice driver to allow validating a PLDM file in dry_run mode.
-> >
-> >First, add a new dry_run field to the pldmfw context structure. This
-> >indicates that the PLDM firmware file library should only validate the
-> >file and verify that it has a matching record. Update the pldmfw
-> >documentation to indicate this "dry run" mode.
-> >
-> >In the ice driver, let the stack know that we support the dry run
-> >attribute for flash update by setting the appropriate bit in the
-> >.supported_flash_update_params field.
-> >
-> >If the dry run is requested, notify the PLDM firmware library by setting
-> >the context bit appropriately. Don't cancel a pending update during
-> >a dry run.
-> >
-> >Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> >---
-> > Documentation/driver-api/pldmfw/index.rst      | 10 ++++++++++
-> > drivers/net/ethernet/intel/ice/ice_devlink.c   |  3 ++-
-> > drivers/net/ethernet/intel/ice/ice_fw_update.c | 14 ++++++++++----
-> > include/linux/pldmfw.h                         |  5 +++++
-> > lib/pldmfw/pldmfw.c                            | 12 ++++++++++++
-> > 5 files changed, 39 insertions(+), 5 deletions(-)
-> >
-> >diff --git a/Documentation/driver-api/pldmfw/index.rst
-> b/Documentation/driver-api/pldmfw/index.rst
-> >index ad2c33ece30f..454b3ed6576a 100644
-> >--- a/Documentation/driver-api/pldmfw/index.rst
-> >+++ b/Documentation/driver-api/pldmfw/index.rst
-> >@@ -51,6 +51,16 @@ unaligned access of multi-byte fields, and to properl=
-y
-> convert from Little
-> > Endian to CPU host format. Additionally the records, descriptors, and
-> > components are stored in linked lists.
-> >
-> >+Validating a PLDM firmware file
-> >+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-> >+
-> >+To simply validate a PLDM firmware file, and verify whether it applies =
-to
-> >+the device, set the ``dry_run`` flag in the ``pldmfw`` context structur=
-e.
-> >+If this flag is set, the library will parse the file, validating its UU=
-ID
-> >+and checking if any record matches the device. Note that in a dry run, =
-the
-> >+library will *not* issue any ops besides ``match_record``. It will not
-> >+attempt to send the component table or package data to the device firmw=
-are.
-> >+
-> > Performing a flash update
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> >
-> >diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c
-> b/drivers/net/ethernet/intel/ice/ice_devlink.c
-> >index 3337314a7b35..18214ea33e2d 100644
-> >--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-> >+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-> >@@ -467,7 +467,8 @@ ice_devlink_reload_empr_finish(struct devlink *devli=
-nk,
-> > }
-> >
-> > static const struct devlink_ops ice_devlink_ops =3D {
-> >-	.supported_flash_update_params =3D
-> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
-> >+	.supported_flash_update_params =3D
-> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK |
-> >+
-> DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN,
-> > 	.reload_actions =3D BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-> > 	/* The ice driver currently does not support driver reinit */
-> > 	.reload_down =3D ice_devlink_reload_empr_start,
-> >diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c
-> b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-> >index 3dc5662d62a6..63317ae88186 100644
-> >--- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
-> >+++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-> >@@ -1015,15 +1015,21 @@ int ice_devlink_flash_update(struct devlink
-> *devlink,
-> > 	else
-> > 		priv.context.ops =3D &ice_fwu_ops_e810;
-> > 	priv.context.dev =3D dev;
-> >+	priv.context.dry_run =3D params->dry_run;
-> > 	priv.extack =3D extack;
-> > 	priv.pf =3D pf;
-> > 	priv.activate_flags =3D preservation;
-> >
-> >-	devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL=
-,
-> 0, 0);
-> >+	if (params->dry_run)
-> >+		devlink_flash_update_status_notify(devlink, "Validating flash
-> binary", NULL, 0, 0);
+> On Wed, 20 Jul 2022 11:34:32 -0700 Jacob Keller wrote:
+> > +	nla_dry_run =3D info->attrs[DEVLINK_ATTR_DRY_RUN];
+> > +	if (nla_dry_run) {
+> > +		if (!(supported_params &
+> DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN)) {
+> > +			NL_SET_ERR_MSG_ATTR(info->extack, nla_dry_run,
+> > +					    "flash update is supported, but dry run
+> is not supported for this device");
+> > +			release_firmware(params.fw);
+> > +			return -EOPNOTSUPP;
+> > +		}
+> > +		params.dry_run =3D true;
+> > +	}
 >=20
-> You do validation of the binary instead of the actual flash. Why is it
-> called "dry-run" then? Perhaps "validate" would be more suitable?
+> Looks over-indented. You can do this, right?
 >=20
+> 	params.dry_run =3D nla_get_flag(info->attrs[DEVLINK_ATTR_DRY_RUN]);
+> 	if (params.dry_run &&
+> 	    !(supported_params &
+> DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN)) {
+> 		/* error handling */
+> 	}
 
-I had it as dry-run to match the naming of the devlink, but validate might =
-make more sense for what we are able to do with PLDM here.
+Yea that makes more sense.
 
-I don't believe we have  a method to actually load it and have firmware per=
-form any further validation without actually updating.
-
+Thanks,
+Jake
