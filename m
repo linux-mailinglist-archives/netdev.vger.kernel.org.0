@@ -2,105 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB5257CDC2
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3637D57CDD9
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 16:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiGUOfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 10:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        id S232118AbiGUOjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 10:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiGUOfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:35:52 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E9D186EB;
-        Thu, 21 Jul 2022 07:35:50 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id r24so1374380qtx.6;
-        Thu, 21 Jul 2022 07:35:50 -0700 (PDT)
+        with ESMTP id S230509AbiGUOjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 10:39:03 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881C8689A
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:39:01 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id f9so1321820qvr.2
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 07:39:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TNm3aXN1thCBh+umGTMO255119B8nj1I3dKmFNCEHvU=;
-        b=YCWFOqbwbpDDBfdHjdxnU94lcBxg08CwjCXk1EZUjbjBvWPuo3bfXOnM/lEGivq4wS
-         ia2Q+j4EPucBzXG0DfHPOOZK20UPeSRktKWAE8JTGyaAPJ1ByyVSvV+CYzSUtA+PCxBl
-         ohSl4H551LTW/9Zs/u9kdtlmmTrWHd0JIvjgWxo6QgGFp9KwCxqaV/b3dveRtD4xbMMC
-         RTPMO6RIq3DMusYPBhsCe70N9oiWae99WWJX3DI2jrCVX7l7Qg//vzGveaKt8W5KGmEX
-         pnVe538OweaMgtU4UlU7UhJ/a+4+QW3eDSEoqSVSyTCWAApb+vYhuAhH6CbNODWvvmHO
-         +d2Q==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kwW27VCQ4+JlDB+iPSDhz5O1D0eurbd7dKtxO/dfIvY=;
+        b=OnzKBTMKPt8ybqoDKEizFWOIZUwtYD8NVniERJQRrRBD+FC+PRdDYfR9tAPu3M63Wt
+         JG3TqJzUoWvMaF0pCE36eey30fVsLVvODRU/er7wla8BCkhleJfMm7QLgdvrEynQfv7f
+         D64FKivghTNDU7lIbls+9rYw7bof/BUsEQ8+fzzuudi9b3k4wY3SXlIAk/SxIJOZJVCQ
+         TzeoL49vw0ePEWJOK2s1Tu0Tc1DJW173uCXzh3pS7Xigojqp5Ood6OfscacTHVee07jq
+         YdRhUB07YqVnhDr/fzI+/qAYhFgZvJyL8yNAyD2VsfUeuUe52gn2DhlXweRSZoq+fOeV
+         FLgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TNm3aXN1thCBh+umGTMO255119B8nj1I3dKmFNCEHvU=;
-        b=XXzA959wNajcDAEEQjNR0xFkQrrfycjxUMGCxfR3txaJX24b4iRN7oYzcBMpivfQmE
-         lLaK/FQSsGdWkwTjq21zhHV360Xmt8lNtd1cq3SpUzFLrtTBj1EC9rEyYjf+fTakt4KG
-         V+IxfdSj8a5AVl94u0aT3JEummnNiz/Y99meW/zM39lndh2kDgWFnw5eSm4KBh9UPamh
-         /CJwwdg21zHQFpeQ78brKBbkGHYCCEtklVaAYozyHN07GeOJ783Mx1uz7am2NVQbiLhr
-         b0tiGKzpqmO8wifsd1Eu98U0w0HWZ0Qe9sFWx7Gt0R731bcPt93O6m/5BsWS7F0DZzro
-         kQng==
-X-Gm-Message-State: AJIora+wNk2KN/ItHHA0DhK5RXND5Z9cctC/Jt24pplwYdBMtgJtOs7/
-        d9R1dpkHOnCnRj5uNbtuElcqgA/McFk=
-X-Google-Smtp-Source: AGRyM1uSy7GP6yBulr7nDh1U6Xo+MTIjhZNdr9VWz/vNGz5Ij/Ard9efpzAlTxvW+6u00OE9mrlDXg==
-X-Received: by 2002:a05:622a:13ce:b0:31a:b4ce:1679 with SMTP id p14-20020a05622a13ce00b0031ab4ce1679mr33653394qtk.330.1658414149350;
-        Thu, 21 Jul 2022 07:35:49 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id y5-20020a05620a44c500b006b4880b08a9sm207452qkp.88.2022.07.21.07.35.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kwW27VCQ4+JlDB+iPSDhz5O1D0eurbd7dKtxO/dfIvY=;
+        b=VzOio07mKUzC8a8riHJY7wYcb6jaouFMx3K25nuaDQdsAF9mXDAMN0fAZt04k04mqB
+         SE3QZG9IJsYkncdbGlNOPG/bTXKqB/N+8m9nr48UuEYzvwqGeDC1cOz9IiUGL+2CKqBZ
+         9MiwniSHtJ0BrfQYohHTOSG93ynDFMmtQr91m9PCATkBnZDHayOBy8z2di2hiPVh3QdR
+         j+rW3jsX2lUmRld4cZ5v8Lavc9lDRlZb6thtco54V0Vm40jXrw54TxuJ6nWOsRDARMy7
+         tDo8lvQEVU1oOZtevXPedeWDEAmhn+EP1mVIrM1Gp3XtTpumTAKHfYmCKJ9YDRD3c/i2
+         0Sbw==
+X-Gm-Message-State: AJIora+tPBZYjx2g6UsOi/basOw5064etIFHsFMqr33eoHhEt9qxSOPQ
+        +FPxJy/1L0LlfOLG+ETXjBfiZA==
+X-Google-Smtp-Source: AGRyM1uWQJMIGs0cFKjzk6jOPxy6nU58JEm7wrsssEUVgVK/vH4DFVTrvRD0ZbRcmdLePWGA232yJQ==
+X-Received: by 2002:ad4:4ea2:0:b0:473:6d91:6759 with SMTP id ed2-20020ad44ea2000000b004736d916759mr34926483qvb.102.1658414340714;
+        Thu, 21 Jul 2022 07:39:00 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id e19-20020a05620a12d300b006b5905999easm1403705qkl.121.2022.07.21.07.38.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 07:35:49 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCHv2 net] Documentation: fix sctp_wmem in ip-sysctl.rst
-Date:   Thu, 21 Jul 2022 10:35:46 -0400
-Message-Id: <eb4af790717c41995cd8bee67686d69e6fbb141d.1658414146.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 21 Jul 2022 07:38:59 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oEXKM-001wqY-N5; Thu, 21 Jul 2022 11:38:58 -0300
+Date:   Thu, 21 Jul 2022 11:38:58 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Long Li <longli@microsoft.com>
+Cc:     Dexuan Cui <decui@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
+Message-ID: <20220721143858.GV5049@ziepe.ca>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-4-git-send-email-longli@linuxonhyperv.com>
+ <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+ <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <20220720234209.GP5049@ziepe.ca>
+ <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
-SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
-by sk_wmem_schedule(). So we should fix the description for this option in
-ip-sysctl.rst accordingly.
+On Thu, Jul 21, 2022 at 12:06:12AM +0000, Long Li wrote:
+> > Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between
+> > devices
+> > 
+> > On Tue, Jul 12, 2022 at 06:48:09PM +0000, Long Li wrote:
+> > > > > @@ -563,9 +581,19 @@ static int mana_cfg_vport(struct
+> > > > > mana_port_context *apc, u32 protection_dom_id,
+> > > > >
+> > > > >  	apc->tx_shortform_allowed = resp.short_form_allowed;
+> > > > >  	apc->tx_vp_offset = resp.tx_vport_offset;
+> > > > > +
+> > > > > +	netdev_info(apc->ndev, "Configured vPort %llu PD %u DB %u\n",
+> > > > > +		    apc->port_handle, protection_dom_id, doorbell_pg_id);
+> > > > Should this be netdev_dbg()?
+> > > > The log buffer can be flooded if there are many vPorts per VF PCI
+> > > > device and there are a lot of VFs.
+> > >
+> > > The reason netdev_info () is used is that this message is important
+> > > for troubleshooting initial setup issues with Ethernet driver. We rely
+> > > on user to get this configured right to share the same hardware port
+> > > between Ethernet and RDMA driver. As far as I know, there is no easy
+> > > way for a driver to "take over" an exclusive hardware resource from
+> > > another driver.
+> > 
+> > This seems like a really strange statement.
+> > 
+> > Exactly how does all of this work?
+> > 
+> > Jason
+> 
+> "vport" is a hardware resource that can either be used by an
+> Ethernet device, or an RDMA device. But it can't be used by both at
+> the same time. The "vport" is associated with a protection domain
+> and doorbell, it's programmed in the hardware. Outgoing traffic is
+> enforced on this vport based on how it is programmed.
 
-v1->v2:
-  - Improve the description as Marcelo suggested.
+Sure, but how is the users problem to "get this configured right" and
+what exactly is the user supposed to do?
 
-Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- Documentation/networking/ip-sysctl.rst | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+I would expect the allocation of HW resources to be completely
+transparent to the user. Why is it not?
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 0e58001f8580..af2f0dfd50db 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2870,7 +2870,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
- 	Default: 4K
- 
- sctp_wmem  - vector of 3 INTEGERs: min, default, max
--	Currently this tunable has no effect.
-+	Only the first value ("min") is used, "default" and "max" are
-+	ignored.
-+
-+	min: Minimum size of send buffer that can be used by SCTP sockets.
-+	It is guaranteed to each SCTP socket (but not association) even
-+	under moderate memory pressure.
-+
-+	Default: 4K
- 
- addr_scope_policy - INTEGER
- 	Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
--- 
-2.31.1
-
+Jason
