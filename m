@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C9657C406
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 08:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6089657C408
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 08:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbiGUGBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 02:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
+        id S231645AbiGUGCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 02:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiGUGBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 02:01:17 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2044.outbound.protection.outlook.com [40.107.100.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FE824F1D
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 23:01:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EWJjCInvUWeCOdtvj/OVRCm+BHHUSka003VmSemYnyMlVK2AHRqEkl7CmerA/z6RhR9nC+CYBkfoUX0AAWKeQwn4IfTHAfLy0cWROpeajDN8UILmtfq05xdf+x+UPjZ7S5FNjuTl0iyYMjy0UqpAfqsVhoNWKZ/Ud9jlrKmyIWVGPn6yJAoBZ7M5hXTMmn1ckneL1Sp/XyoPWhpgNrCRtpn5aVIjHkL8YHyrp1fTm8yeG7s8Np8c+uAe3fANBeIoGWV1DjoUQPAwnuDcE5+jnoZshRtDfiiDy2BW1mEXVYs6nRjCuZ88EiCaVN6SfZ76R+qjlarAy859tf7xcV8U1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hoUDM1QwYRmKBhClZqnc/dhU4gXOYxGJL687/Se+XIQ=;
- b=H/bLYchV2Tse+zoVpx42nTHE+7eqwOpUcWn1WIiUvE0Y6wRm1zCalP3g6gNiRMFWFiLsiotmYTeHAPRlsOzhvWG0ZDZWWvD95syjjZmf6kaLzL6rLT6ccQkiF5B76IYq40s+Ns9wt38k6p6sv/EuBZ0tEPWpj2tPzxlLjaO1GHGlBxweSmw4eL4BGcpKSWih9NqTSDeQuBKm9mxM5zfD2GLVAw3VmJVwpgGY8w75e9a8/9ocS+/Qy064NpWDFEjmx9WXOGDIYXaQQ+3ry3NFuTegjOoMRxomiQ69eKZu4+D9GjfWUlmhCApaXrMjbJriyWRURY2hgQ4STphmAowbwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hoUDM1QwYRmKBhClZqnc/dhU4gXOYxGJL687/Se+XIQ=;
- b=AUAJbaM5tgihp3IC4JygvzECNlh44ohEwoElG/tI+1wypJbH4Y7EvgJB7+I1ksJw/eCJw0xN1k7yfnQ6wMZDJF9H/xr6BIya4mHA3n5a9UGhO9uPX7AC4/cKIVknPjGzoG02lzolUlGlfegT6B3qI1AIVH6BfyemkCEsmyZyukDFUXV/Fn9e9noHVmw0D9aLslxP93/6rsJeto0HTOMLjuG4iLja1fxN8svBjTyg8+UTMNhmAdcw6qyo5XA2O+IzOHXInSWT4ysMwIe2K8zXHoRLSq3a5Eb6+h3dluvKrJ75j7bjlauI+Tj+KOP0Mqav+7QGuTs+GoB9LNCbAbB8mg==
-Received: from MW4PR03CA0235.namprd03.prod.outlook.com (2603:10b6:303:b9::30)
- by CY4PR1201MB2550.namprd12.prod.outlook.com (2603:10b6:903:ce::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Thu, 21 Jul
- 2022 06:01:13 +0000
-Received: from CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::d6) by MW4PR03CA0235.outlook.office365.com
- (2603:10b6:303:b9::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.22 via Frontend
- Transport; Thu, 21 Jul 2022 06:01:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT024.mail.protection.outlook.com (10.13.174.162) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5458.17 via Frontend Transport; Thu, 21 Jul 2022 06:01:13 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 21 Jul 2022 06:00:16 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Wed, 20 Jul 2022 23:00:16 -0700
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Wed, 20 Jul 2022 23:00:13 -0700
-From:   Eli Cohen <elic@nvidia.com>
-To:     <dsahern@kernel.org>, <netdev@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>, <jasowang@redhat.com>
-CC:     <si-wei.liu@oracle.com>, <mst@redhat.com>, <eperezma@redhat.com>,
-        "Eli Cohen" <elic@nvidia.com>
-Subject: [PATCH] vdpa: Update man page to include vdpa statistics
-Date:   Thu, 21 Jul 2022 09:00:07 +0300
-Message-ID: <20220721060007.32250-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S229925AbiGUGCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 02:02:45 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFCD1D319;
+        Wed, 20 Jul 2022 23:02:43 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 1B2605FD31;
+        Thu, 21 Jul 2022 09:02:41 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1658383361;
+        bh=LqYtRAFoz0ma2I9ckyn+2XhKXUFisTnrYlNzjAg7q9w=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=c8ZLFxGmHWJMGlq8X4iaj7vfnaYlNSSmD8axx3vJaufz9L+sbBVCoZAX2vzwnxN9y
+         biH7BJrhNwGAydfFNYyKBwrjIDubT8TtlsyN1XmRg5vF8FlnLNA1Je7kw94hChFNLE
+         JK4WDyH7Z7wGobQVssxsmD1mfgaB2fhgYzuO3c82psf7uBDmMJa3Agrj+JRk6sIXer
+         Xk2Nf3Nui3hpQ17PxLIziODCotnuMc3HgK+8X1/y5TEKRBLzBFPqJFvgaX3W26UdHU
+         sJrFpAlH6pAFb5KiC5IKZsEyb8WuGXqMdoGVL/nnL5F9Y54DaXeQRoU2Ihee3uiJGn
+         x0Yhrr3ts9C7w==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 21 Jul 2022 09:02:36 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Dexuan Cui <decui@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 2/3] virtio/vsock: use 'target' in notify_poll_in,
+ callback.
+Thread-Topic: [RFC PATCH v1 2/3] virtio/vsock: use 'target' in notify_poll_in,
+ callback.
+Thread-Index: AQHYmn7T+PqKYxwQ8USiiecixCHJYa2FdImAgAEZ/YCAAC4SgIAAsIoAgAC6iAA=
+Date:   Thu, 21 Jul 2022 06:02:17 +0000
+Message-ID: <420cde93-bc9d-925b-e68e-fdf04326f031@sberdevices.ru>
+References: <c8de13b1-cbd8-e3e0-5728-f3c3648c69f7@sberdevices.ru>
+ <358f8d52-fd88-ad2e-87e2-c64bfa516a58@sberdevices.ru>
+ <20220719124857.akv25sgp6np3pdaw@sgarzare-redhat>
+ <15f38fcf-f1ff-3aad-4c30-4436bb8c4c44@sberdevices.ru>
+ <20220720082307.djbf7qgnlsjmrxcf@sgarzare-redhat>
+ <SN6PR2101MB132703A0F4D08DC28D37A17EBF8E9@SN6PR2101MB1327.namprd21.prod.outlook.com>
+In-Reply-To: <SN6PR2101MB132703A0F4D08DC28D37A17EBF8E9@SN6PR2101MB1327.namprd21.prod.outlook.com>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <281EBE318E5239428D1B59BB68E59335@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73011b29-0148-4945-b8a2-08da6ade6afd
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB2550:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Zd/B13RHrwXafrjuruALSTzvLfCKZcHa5JXQ3NOpv0ohPzU5Iy51pbPAhTEQcD81kVn/EwCQKdTALH3kEksv7Vte2eFW/VWARzVcbAO2kkuQfivvDRay3vzn8bxu7YfFWbqHJqN40+8hi27hpUl09nb83yIP+MT8GUaQUalYfZiaMTxv1C0ncPe8n7HM3WCyfcqIMnWWvVvk0S0pmW2Aj5QCiO5LKRc5VRqUOnZiv9rULDVOZW3kV7SS1B4LXIZeC2s3BxI7sUvK+4yBR23g2sjwCrj5qXHjIC3SLwGRtfGSHUmrSxpQsubu3DstUM3W9Tqm7GiM3fVCBIFx6LAdhjcdWpBjgbBh5stYoJr2W3FZ/WFEsmx/EXJUesTb4LRy1OKza0rDJsr9AC39OwI4T+DyjDUlo6VhmL+CCH/LuklOWI28ysmqWZ40VZO6GKoFpDKNu8uuxH+8/MBS6iSMEvuw9StlXVpUUMxRVQLJ4X+/mWqf7VU7iZSzmlRuqv94CwZzLndpnf52dRtFPw1aZEz2FTVj23MBwSn3sTY2IRqoC9mqy06sXiooNWX1ArSjMcxdjqZYa2GOnANCv5XVC/zGwR9NjRFiRGjZ4vTAcOOCBXd910F54RlUo6EHW+JZtCUsxOXyhkYJPKF3MgMB9MOmPAu8z1/7PEYa5UhkpYy3FbOEMdjobnJcutU2sxyjpRWnU5Eb8wbfNILFqoRIP0HIxQRIFsN6ZpP2gcEoj+R9dg3rqsIrv5zrM/Bw8G/euXxi7c6xXRj7vSN5l5LUlJ49n6JazEGs8WofENenLsVeBROUvdMh1OD9Ws7f1+iCPjrmPq9Im4soptuvXi/ikQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(136003)(376002)(40470700004)(46966006)(36840700001)(4326008)(86362001)(8936002)(8676002)(47076005)(70206006)(5660300002)(316002)(70586007)(7696005)(356005)(40460700003)(15650500001)(36756003)(54906003)(426003)(26005)(41300700001)(1076003)(107886003)(186003)(82740400003)(2616005)(6666004)(110136005)(478600001)(81166007)(36860700001)(336012)(40480700001)(2906002)(82310400005)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2022 06:01:13.5549
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73011b29-0148-4945-b8a2-08da6ade6afd
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2550
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/20 23:43:00 #19928907
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -101,61 +85,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the man page to include vdpa statistics information inroduce in
-6f97e9c9337b ("vdpa: Add support for reading vdpa device statistics")
-
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- man/man8/vdpa-dev.8 | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
-index 432867c65182..9faf38387e53 100644
---- a/man/man8/vdpa-dev.8
-+++ b/man/man8/vdpa-dev.8
-@@ -43,6 +43,13 @@ vdpa-dev \- vdpa device configuration
- .B vdpa dev config show
- .RI "[ " DEV " ]"
- 
-+.ti -8
-+.B vdpa dev vstats show
-+.I DEV
-+.B qidx
-+.I QUEUE_INDEX
-+
-+
- .SH "DESCRIPTION"
- .SS vdpa dev show - display vdpa device attributes
- 
-@@ -93,6 +100,16 @@ Format is:
- .in +2
- VDPA_DEVICE_NAME
- 
-+.SS vdpa dev vstats show - shows vendor specific statistics for the given device and virtqueue index. The information is presented as name-value pairs where name is the name of the field and value is a numeric value for it.
-+
-+.TP
-+.BI "DEV"
-+- specifies the vdpa device to query
-+
-+.TP
-+.BI qidx " QUEUE_INDEX"
-+- specifies the virtqueue index to query
-+
- .SH "EXAMPLES"
- .PP
- vdpa dev show
-@@ -134,6 +151,11 @@ vdpa dev config show foo
- .RS 4
- Shows the vdpa device configuration of device named foo.
- .RE
-+.PP
-+vdpa dev vstats show vdpa0 qidx 1
-+.RS 4
-+Shows vendor specific statistics information for vdpa device vdpa0 and virtqueue index 1
-+.RE
- 
- .SH SEE ALSO
- .BR vdpa (8),
--- 
-2.35.1
-
+T24gMjAuMDcuMjAyMiAyMTo1NCwgRGV4dWFuIEN1aSB3cm90ZToNCj4+IEZyb206IFN0ZWZhbm8g
+R2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0LmNvbT4NCj4+IFNlbnQ6IFdlZG5lc2RheSwgSnVs
+eSAyMCwgMjAyMiAxOjIzIEFNDQo+PiAuLi4NCj4+IE9uIFdlZCwgSnVsIDIwLCAyMDIyIGF0IDA1
+OjM4OjAzQU0gKzAwMDAsIEFyc2VuaXkgS3Jhc25vdiB3cm90ZToNCj4+PiBPbiAxOS4wNy4yMDIy
+IDE1OjQ4LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+Pj4+IE9uIE1vbiwgSnVsIDE4LCAy
+MDIyIGF0IDA4OjE3OjMxQU0gKzAwMDAsIEFyc2VuaXkgS3Jhc25vdiB3cm90ZToNCj4+Pj4+IFRo
+aXMgY2FsbGJhY2sgY29udHJvbHMgc2V0dGluZyBvZiBQT0xMSU4sUE9MTFJETk9STSBvdXRwdXQg
+Yml0cw0KPj4+Pj4gb2YgcG9sbCgpIHN5c2NhbGwsYnV0IGluIHNvbWUgY2FzZXMsaXQgaXMgaW5j
+b3JyZWN0bHkgdG8gc2V0IGl0LA0KPj4+Pj4gd2hlbiBzb2NrZXQgaGFzIGF0IGxlYXN0IDEgYnl0
+ZXMgb2YgYXZhaWxhYmxlIGRhdGEuIFVzZSAndGFyZ2V0Jw0KPj4+Pj4gd2hpY2ggaXMgYWxyZWFk
+eSBleGlzdHMgYW5kIGVxdWFsIHRvIHNrX3Jjdmxvd2F0IGluIHRoaXMgY2FzZS4NCj4+Pj4+DQo+
+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNl
+cy5ydT4NCj4+Pj4+IC0tLQ0KPj4+Pj4gbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2Nv
+bW1vbi5jIHwgMiArLQ0KPj4+Pj4gMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRl
+bGV0aW9uKC0pDQo+Pj4+Pg0KPj4+Pj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlv
+X3RyYW5zcG9ydF9jb21tb24uYw0KPj4gYi9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRf
+Y29tbW9uLmMNCj4+Pj4+IGluZGV4IGVjMmMyYWZiZjBkMC4uNTkxOTA4NzQwOTkyIDEwMDY0NA0K
+Pj4+Pj4gLS0tIGEvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jDQo+Pj4+
+PiArKysgYi9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCj4+Pj4+IEBA
+IC02MzQsNyArNjM0LDcgQEAgdmlydGlvX3RyYW5zcG9ydF9ub3RpZnlfcG9sbF9pbihzdHJ1Y3Qg
+dnNvY2tfc29jaw0KPj4gKnZzaywNCj4+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBzaXplX3QgdGFyZ2V0LA0KPj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGJv
+b2wgKmRhdGFfcmVhZHlfbm93KQ0KPj4+Pj4gew0KPj4+Pj4gLcKgwqDCoCBpZiAodnNvY2tfc3Ry
+ZWFtX2hhc19kYXRhKHZzaykpDQo+Pj4+PiArwqDCoMKgIGlmICh2c29ja19zdHJlYW1faGFzX2Rh
+dGEodnNrKSA+PSB0YXJnZXQpDQo+Pj4+PiDCoMKgwqDCoMKgwqDCoCAqZGF0YV9yZWFkeV9ub3cg
+PSB0cnVlOw0KPj4+Pj4gwqDCoMKgwqBlbHNlDQo+Pj4+PiDCoMKgwqDCoMKgwqDCoCAqZGF0YV9y
+ZWFkeV9ub3cgPSBmYWxzZTsNCj4+Pj4NCj4+Pj4gUGVyaGFwcyB3ZSBjYW4gdGFrZSB0aGUgb3Bw
+b3J0dW5pdHkgdG8gY2xlYW4gdXAgdGhlIGNvZGUgaW4gdGhpcyB3YXk6DQo+Pj4+DQo+Pj4+IMKg
+wqDCoMKgKmRhdGFfcmVhZHlfbm93ID0gdnNvY2tfc3RyZWFtX2hhc19kYXRhKHZzaykgPj0gdGFy
+Z2V0Ow0KPj4+IEFjaw0KPj4+Pg0KPj4+PiBBbnl3YXksIEkgdGhpbmsgd2UgYWxzbyBuZWVkIHRv
+IGZpeCB0aGUgb3RoZXIgdHJhbnNwb3J0cyAodm1jaSBhbmQgaHlwZXJ2KSwNCj4+Pj4gd2hhdCBk
+byB5b3UgdGhpbms/DQo+Pj4gRm9yIHZtY2kgaXQgaXMgbG9vayBjbGVhciB0byBmaXggaXQuIEZv
+ciBoeXBlcnYgaSBuZWVkIHRvIGNoZWNrIGl0IG1vcmUsIGJlY2F1c2UgaXQNCj4+PiBhbHJlYWR5
+IHVzZXMgc29tZSBpbnRlcm5hbCB0YXJnZXQgdmFsdWUuDQo+Pg0KPj4gWWVwLCBJIHNlZS4gTWF5
+YmUgeW91IGNhbiBwYXNzIGB0YXJnZXRgIHRvIGh2c19jaGFubmVsX3JlYWRhYmxlKCkgYW5kDQo+
+PiB1c2UgaXQgYXMgcGFyYW1ldGVyIG9mIEhWU19QS1RfTEVOKCkuDQo+Pg0KPj4gQERleHVhbiB3
+aGF0IGRvIHlvdSB0aGluaz8NCj4+DQo+PiBUaGFua3MsDQo+PiBTdGVmYW5vDQo+IA0KPiBDYW4g
+d2UgcmV0dXJuICJub3Qgc3VwcG9ydGVkIiB0byBzZXRfcmN2bG93YXQgZm9yIEh5cGVyLVYgdnNv
+Y2s/IDotKQ0KPiANCj4gRm9yIEh5cGVyLVYgdnNvY2ssIGl0J3MgZWFzeSB0byB0ZWxsIGlmIHRo
+ZXJlIGlzIGF0IGxlYXN0IDEgYnl0ZSB0byByZWFkOiANCj4gcGxlYXNlIHJlZmVyIHRvIGh2c19j
+aGFubmVsX3JlYWRhYmxlKCksIGJ1dCBpdCdzIGRpZmZpY3VsdCB0byBmaWd1cmUgb3V0DQo+IGV4
+YWN0bHkgaG93IG1hbnkgYnl0ZXMgY2FuIGJlIHJlYWQuIA0KPiANCj4gSW4gaHZzX2NoYW5uZWxf
+cmVhZGFibGUoKSwgaHZfZ2V0X2J5dGVzX3RvX3JlYWQoKSByZXR1cm5zIHRoZSB0b3RhbCANCj4g
+Ynl0ZXMgb2YgMCwgMSBvciBtdWx0aXBsZSBIeXBlci1WIHZzb2NrIHBhY2tldHM6IGVhY2ggcGFj
+a2V0IGhhcyBhDQo+IDI0LWJ5dGUgaGVhZGVyIChzZWUgSFZTX0hFQURFUl9MRU4pLCB0aGUgcGF5
+bG9hZCwgc29tZSBwYWRkaW5nDQo+IGJ5dGVzIChpZiB0aGUgcGF5bG9hZCBsZW5ndGggaXMgbm90
+IGEgbXVsdGlwbGUgb2YgOCksIGFuZCA4IHRyYWlsaW5nDQo+IHVzZWxlc3MgYnl0ZXMuDQo+IA0K
+PiBJdCdzIGhhcmQgdG8gZ2V0IHRoZSB0b3RhbCBwYXlsb2FkIGxlbmd0aCBiZWNhdXNlIHRoZXJl
+IGlzIG5vIEFQSSBpbg0KPiBpbmNsdWRlL2xpbnV4L2h5cGVydi5oLCBkcml2ZXJzL2h2L2NoYW5u
+ZWwuYyBhbmQgDQo+IGRyaXZlcnMvaHYvcmluZ19idWZmZXIuYyB0aGF0IGFsbG93cyB1cyB0byBw
+ZWVrIGF0IHRoZSBkYXRhIGluIHRoZQ0KPiBWTUJ1cyBjaGFubmVsJ3MgcmluZ2J1ZmZlci4gDQo+
+IA0KPiBXZSBjb3VsZCBhZGQgc3VjaCBhICJwZWVrIiBBUEkgaW4gZHJpdmVycy9odi9jaGFubmVs
+LmMgKHNlZSB0aGUNCj4gbm9uLXBlZWsgdmVyc2lvbiBvZiB0aGUgQVBJcyBpbiBodnNfc3RyZWFt
+X2RlcXVldWUoKTogDQo+IGh2X3BrdF9pdGVyX2ZpcnN0KCkgYW5kIGh2X3BrdF9pdGVyX25leHQo
+KSksIGFuZCBleGFtaW5lIHRoZSB3aG9sZQ0KPiByaW5nYnVmZmUgdG8gZmlndXJlIG91dCB0aGUg
+ZXhhY3QgdG90YWwgcGF5bG9hZCBsZW5ndGgsIGJ1dCBJIGZlZWwgaXQgbWF5IA0KPiBub3QgYmUg
+d29ydGggdGhlIG5vbi10cml2aWFsIGNvbXBsZXhpdHkganVzdCB0byBiZSBQT1NJWC1jb21wbGlh
+bnQgLS0NCj4gbm9ib2R5IGV2ZXIgY29tcGxhaW5lZCBhYm91dCB0aGlzIGZvciB0aGUgcGFzdCA1
+IHllYXJzIDotKSBTbyBJJ20NCj4gd29uZGVyaW5nIGlmIHdlIHNob3VsZCBhbGxvdyBIeXBlci1W
+IHZzb2NrIHRvIG5vdCBzdXBwb3J0IHRoZSANCj4gc2V0X3Jjdmxvd2F0IG9wPw0KSSBzZWUsIGkg
+Y2FuIHByZXBhcmUgcGF0Y2ggZm9yIHRoaXMgaW4gdGhpcyBwYXRjaHNldCBpbiB2Mi4gQ2FsbCB0
+byBzZXQgU09fUkNWTE9XQVQgZm9yIEh5cGVyLVYNCnRyYW5zcG9ydCB3aWxsIHJldHVybiBFT1BO
+T1RTVVBQLg0KDQpUaGFuayBZb3UNCj4gDQo+IFRoYW5rcywNCj4gLS0gRGV4dWFuDQo+IA0KDQo=
