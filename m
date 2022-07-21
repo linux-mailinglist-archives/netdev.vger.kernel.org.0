@@ -2,109 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD2C57C1D6
-	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 03:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8044357C1D8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jul 2022 03:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiGUBKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jul 2022 21:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55830 "EHLO
+        id S229701AbiGUBQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jul 2022 21:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbiGUBKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 21:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA86F25283
-        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 18:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E49F461E8E
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 01:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4E5E7C341CA;
-        Thu, 21 Jul 2022 01:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658365815;
-        bh=iiAaHcFI1jJPvLicTF7Ncmsvw56NOOfe0dFnbJoc9Fw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eAT8LaVN8x5SZFORF1XqIHaskNWc8YkIEJzKM98uKNiRcS/Q3N0CXZweogAgFfqSw
-         S27JffFKns/CF9Ee299W5i/lA6IqiHISILV7ReJOfdQY2yT+WDL9zp62Uu8O4SzIeg
-         Y0y7pXxzzGoNolTMwLbC5vMswoN/Nwp0n3kwJcYlaR3Y658KKk3uzK7cO40ywM3O6b
-         RkL+dlVcfX042p74L34KWHfvuQ85bNh+XZ0knVhoALmNwbnbmgoMPw2MHibMDFe+AQ
-         kcwd47rxCQ06tNnCZTVT1nk0wRNw1H8+QwHtFq2Xbp7y//3dIwL9RnjFHaabGP8NXN
-         Drg8ZoLF1rtOg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35348D9DDDD;
-        Thu, 21 Jul 2022 01:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229515AbiGUBQE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jul 2022 21:16:04 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17AADF4E
+        for <netdev@vger.kernel.org>; Wed, 20 Jul 2022 18:16:02 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LpF3j0DfjzFqPL;
+        Thu, 21 Jul 2022 09:14:57 +0800 (CST)
+Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Jul
+ 2022 09:16:00 +0800
+Subject: Re: [RFCv6 PATCH net-next 02/19] net: replace general features
+ macroes with global netdev_features variables
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
+        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <lipeng321@huawei.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+References: <0cec0cac-dae7-cce7-ccf2-92e5d7086642@huawei.com>
+ <20220720150957.3875487-1-alexandr.lobakin@intel.com>
+From:   "shenjian (K)" <shenjian15@huawei.com>
+Message-ID: <eb0625cd-26a4-439a-1aca-fcc773393b8b@huawei.com>
+Date:   Thu, 21 Jul 2022 09:15:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
+In-Reply-To: <20220720150957.3875487-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next V2 01/13] net/mlx5e: Report header-data split state through
- ethtool
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165836581521.10081.13992627967235940137.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Jul 2022 01:10:15 +0000
-References: <20220719203529.51151-2-saeed@kernel.org>
-In-Reply-To: <20220719203529.51151-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com, gal@nvidia.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.103.87]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Tue, 19 Jul 2022 13:35:17 -0700 you wrote:
-> From: Gal Pressman <gal@nvidia.com>
-> 
-> HW-GRO (SHAMPO) packet merger scheme implies header-data split in the
-> driver, report it through the ethtool interface.
-> 
-> Signed-off-by: Gal Pressman <gal@nvidia.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> [...]
+在 2022/7/20 23:09, Alexander Lobakin 写道:
+> From: shenjian (K) <shenjian15@huawei.com>
+> Date: Wed, 20 Apr 2022 17:54:13 +0800
+>
+>> åœ¨ 2022/4/19 22:49, Alexander Lobakin å†™é“:
+>> > From: Jian Shen <shenjian15@huawei.com>
+>> > Date: Tue, 19 Apr 2022 10:21:49 +0800
+>> >
+>> >> There are many netdev_features bits group used in kernel. The 
+>> definition
+>> >> will be illegal when using feature bit more than 64. Replace these 
+>> macroes
+>> >> with global netdev_features variables, initialize them when netdev 
+>> module
+>> >> init.
+>> >>
+>> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+>> >> ---
+>> >>   drivers/net/wireguard/device.c  |  10 +-
+>> >>   include/linux/netdev_features.h | 102 +++++++++-----
+>> >>   net/core/Makefile               |   2 +-
+>> >>   net/core/dev.c                  |  87 ++++++++++++
+>> >>   net/core/netdev_features.c      | 241 
+>> ++++++++++++++++++++++++++++++++
+>> >>   5 files changed, 400 insertions(+), 42 deletions(-)
+>> >>   create mode 100644 net/core/netdev_features.c
+>> >>
+>> > --- 8< ---
+>> >
+>> >> diff --git a/net/core/dev.c b/net/core/dev.c
+>> >> index 4d6b57752eee..85bb418e8ef1 100644
+>> >> --- a/net/core/dev.c
+>> >> +++ b/net/core/dev.c
+>> >> @@ -146,6 +146,7 @@
+>> >>   #include <linux/sctp.h>
+>> >>   #include <net/udp_tunnel.h>
+>> >>   #include <linux/net_namespace.h>
+>> >> +#include <linux/netdev_features_helper.h>
+>> >>   #include <linux/indirect_call_wrapper.h>
+>> >>   #include <net/devlink.h>
+>> >>   #include <linux/pm_runtime.h>
+>> >> @@ -11255,6 +11256,90 @@ static struct pernet_operations 
+>> __net_initdata default_device_ops = {
+>> >>       .exit_batch = default_device_exit_batch,
+>> >>   };
+>> >>   >> +static void netdev_features_init(void)
+>> > It is an initialization function, so it must be marked as __init.
+>> right, I will add it, thanks!
+>>
+>> >> +{
+>> >> +    netdev_features_t features;
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_never_change_feature_set,
+>> >> +                  &netdev_never_change_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_gso_feature_set_mask,
+>> > I'm not sure it does make sense to have an empty newline between
+>> > each call. I'd leave newlines only between the "regular" blocks
+>> > and the "multi-call" blocks, I mean, stuff like VLAN, GSO and
+>> > @netdev_ethtool_features.
+>> At first, I added empty newline per call for the it used three lines.
+>> Now the new call just use two lines, I will remove some unnecessary
+>> blank lines.
+>>
+>> Thanks!
+>
+> I see no news regarding the conversion since the end of April, maybe
+> I could pick it and finish if nobody objects? I'll preserve the
+> original authorship for sure.
+>
+Hi， Alexander
 
-Here is the summary with links:
-  - [net-next,V2,01/13] net/mlx5e: Report header-data split state through ethtool
-    https://git.kernel.org/netdev/net-next/c/07071e47da44
-  - [net-next,V2,02/13] net/mlx5e: Fix mqprio_rl handling on devlink reload
-    https://git.kernel.org/netdev/net-next/c/0bb7228f7096
-  - [net-next,V2,03/13] net/mlx5e: HTB, reduce visibility of htb functions
-    https://git.kernel.org/netdev/net-next/c/efe317997ec9
-  - [net-next,V2,04/13] net/mlx5e: HTB, move ids to selq_params struct
-    https://git.kernel.org/netdev/net-next/c/4f8d1d3adc8d
-  - [net-next,V2,05/13] net/mlx5e: HTB, move section comment to the right place
-    https://git.kernel.org/netdev/net-next/c/66d95936488c
-  - [net-next,V2,06/13] net/mlx5e: HTB, move stats and max_sqs to priv
-    https://git.kernel.org/netdev/net-next/c/db83f24d89e6
-  - [net-next,V2,07/13] net/mlx5e: HTB, hide and dynamically allocate mlx5e_htb structure
-    https://git.kernel.org/netdev/net-next/c/aaffda6b3668
-  - [net-next,V2,08/13] net/mlx5e: HTB, remove priv from htb function calls
-    https://git.kernel.org/netdev/net-next/c/28df4a0117e2
-  - [net-next,V2,09/13] net/mlx5e: HTB, change functions name to follow convention
-    https://git.kernel.org/netdev/net-next/c/3685eed56f81
-  - [net-next,V2,10/13] net/mlx5e: HTB, move htb functions to a new file
-    https://git.kernel.org/netdev/net-next/c/462b00599936
-  - [net-next,V2,11/13] net/mlx5: Expose ts_cqe_metadata_size2wqe_counter
-    https://git.kernel.org/netdev/net-next/c/2e5e4185ff89
-  - [net-next,V2,12/13] net/mlx5e: Add resiliency for PTP TX port timestamp
-    https://git.kernel.org/netdev/net-next/c/58a518948f60
-  - [net-next,V2,13/13] net/mlx5: CT: Remove warning of ignore_flow_level support for non PF
-    https://git.kernel.org/netdev/net-next/c/22df2e93622f
+Sorry for late to finish the whole patchset with treewide changes, but 
+I'm still working on it.
+And most of the convertsions have been completed. I will send to new 
+patchset in two weeks.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Jian
 
+>>
+>> >> +                  &netdev_gso_features_mask);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_ip_csum_feature_set,
+>> >> +                  &netdev_ip_csum_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_csum_feature_set_mask,
+>> >> +                  &netdev_csum_features_mask);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_general_tso_feature_set,
+>> >> +                  &netdev_general_tso_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_all_tso_feature_set,
+>> >> +                  &netdev_all_tso_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_tso_ecn_feature_set,
+>> >> +                  &netdev_tso_ecn_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_all_fcoe_feature_set,
+>> >> +                  &netdev_all_fcoe_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_gso_soft_feature_set,
+>> >> +                  &netdev_gso_software_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_one_for_all_feature_set,
+>> >> +                  &netdev_one_for_all_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_all_for_all_feature_set,
+>> >> +                  &netdev_all_for_all_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_upper_disables_feature_set,
+>> >> +                  &netdev_upper_disable_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_soft_feature_set,
+>> >> +                  &netdev_soft_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_soft_off_feature_set,
+>> >> +                  &netdev_soft_off_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_rx_vlan_feature_set,
+>> >> +                  &netdev_rx_vlan_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_tx_vlan_feature_set,
+>> >> +                  &netdev_tx_vlan_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_vlan_filter_feature_set,
+>> >> +                  &netdev_vlan_filter_features);
+>> >> +
+>> >> +    netdev_all_vlan_features = netdev_rx_vlan_features;
+>> >> +    netdev_features_set(&netdev_all_vlan_features, 
+>> netdev_tx_vlan_features);
+>> >> +    netdev_features_set(&netdev_all_vlan_features,
+>> >> +                netdev_vlan_filter_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_ctag_vlan_feature_set,
+>> >> +                  &netdev_ctag_vlan_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_stag_vlan_feature_set,
+>> >> +                  &netdev_stag_vlan_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_gso_encap_feature_set,
+>> >> +                  &netdev_gso_encap_all_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_xfrm_feature_set,
+>> >> +                  &netdev_xfrm_features);
+>> >> +
+>> >> + netdev_features_set_array(&netif_f_tls_feature_set,
+>> >> +                  &netdev_tls_features);
+>> >> +
+>> >> +    netdev_csum_gso_features_mask =
+>> >> + netdev_features_or(netdev_gso_software_features,
+>> >> +                   netdev_csum_features_mask);
+>> >> +
+>> >> +    netdev_features_fill(&features);
+>> >> +    netdev_ethtool_features =
+>> >> +        netdev_features_andnot(features, 
+>> netdev_never_change_features);
+>> >> +}
+>> >> +
+>> >>   /*
+>> >>    *    Initialize the DEV module. At boot time this walks the 
+>> device list and
+>> >>    *    unhooks any devices that fail to initialise (normally 
+>> hardware not
+>> > --- 8< ---
+>> >
+>> >> -- >> 2.33.0
+>> > Thanks,
+>> > Al
+>> >
+>> > .
+>> >
+>
+> Thanks,
+> Olek
+>
+> .
+>
 
