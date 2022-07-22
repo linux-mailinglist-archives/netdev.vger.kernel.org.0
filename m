@@ -2,156 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11AD057DCC0
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 10:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D200857DCCA
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 10:49:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbiGVIqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 04:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S234864AbiGVItz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 04:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234969AbiGVIqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 04:46:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 880599FE36
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 01:46:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658479567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RSXimuUd+71j8JzSdjJ27yBRxj8T4NPAJaqSzLdyIx8=;
-        b=YRTE23413sJ1NgvWddh00IIzEoJcyRhHvQ6mzWlD+X0a+Oa7/A1LJs9lBvJG+y9P1lcmUl
-        v6YhEUGMIxTcmwWg667YKdyYyv3PudlQchYvZpaJQau/532QNAYHOt1T3aTJZDZ2IeRe2F
-        7cmmmoh2CzV3Bdhf6d/QNo0MUs1/u+c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-QBEJYLHdNXuKeJd-ALmdnQ-1; Fri, 22 Jul 2022 04:46:03 -0400
-X-MC-Unique: QBEJYLHdNXuKeJd-ALmdnQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B101A3C1014E;
-        Fri, 22 Jul 2022 08:46:02 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.194.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 420A340CFD0A;
-        Fri, 22 Jul 2022 08:45:59 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user provided context
-Date:   Fri, 22 Jul 2022 10:45:56 +0200
-Message-Id: <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
-References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
+        with ESMTP id S234360AbiGVIty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 04:49:54 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB4E01CB05;
+        Fri, 22 Jul 2022 01:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=812F7
+        aMPt0o1Pmi3AnCYkux6HBSJ0u2enTRidOLHdWA=; b=bpHYGO8z1F/DloHfkUyTi
+        kIyRkzpB5OZg/y7If2X8JTM+Erogcdk5J3lMi7ZMtfmrEmVZdbOOa9VM0jQQHYuQ
+        R5tNvJtu96hOFDVFsJwDAbDvXk+/Rye9y8BbPPWAY7TYp6ZU6c5eI3x4zAx7WM0J
+        s5+BfKNLAc/Sni4lBr12OY=
+Received: from localhost.localdomain (unknown [112.97.59.29])
+        by smtp1 (Coremail) with SMTP id GdxpCgAXJKRmZNpisiUjPw--.2467S2;
+        Fri, 22 Jul 2022 16:48:40 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] wl1251: Fix typo 'the the' in comment
+Date:   Fri, 22 Jul 2022 16:48:33 +0800
+Message-Id: <20220722084833.76159-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-CM-TRANSID: GdxpCgAXJKRmZNpisiUjPw--.2467S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr13KF45XFyDtr1fZwb_yoW3Zrb_Gw
+        1xKan7G3W8AF1093yYkr95AayIy34UuF1F9F1jqa9agay5ZrW7WF93Zr17J345GFW2gFnx
+        X3sxJF1UC345WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRZYFWPUUUUU==
+X-Originating-IP: [112.97.59.29]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiGQhGZFyPdmxXywAAsm
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a kfunc was trying to access data from context in a syscall eBPF
-program, the verifier was rejecting the call.
-This is because the syscall context is not known at compile time, and
-so we need to check this when actually accessing it.
+Replace 'the the' with 'the' in the comment.
 
-Check for the valid memory access and allow such situation to happen.
-
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
 ---
+ drivers/net/wireless/ti/wl1251/acx.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-changes in v8:
-- fixup comment
-- return -EACCESS instead of -EINVAL for consistency
-
-changes in v7:
-- renamed access_t into atype
-- allow zero-byte read
-- check_mem_access() to the correct offset/size
-
-new in v6
----
- kernel/bpf/verifier.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 7c1e056624f9..c807c5d7085a 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
- 	struct bpf_map *map_ptr;
- 	bool raw_mode;
- 	bool pkt_access;
-+	bool is_kfunc;
- 	u8 release_regno;
- 	int regno;
- 	int access_size;
-@@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
- 				   struct bpf_call_arg_meta *meta)
- {
- 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-+	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
- 	u32 *max_access;
+diff --git a/drivers/net/wireless/ti/wl1251/acx.h b/drivers/net/wireless/ti/wl1251/acx.h
+index 1da6ba95d3d4..1da6ab664e41 100644
+--- a/drivers/net/wireless/ti/wl1251/acx.h
++++ b/drivers/net/wireless/ti/wl1251/acx.h
+@@ -1229,7 +1229,7 @@ struct wl1251_acx_arp_filter {
+ 	u8 address[16];	/* The IP address used to filter ARP packets.
+ 			   ARP packets that do not match this address are
+ 			   dropped. When the IP Version is 4, the last 12
+-			   bytes of the the address are ignored. */
++			   bytes of the address are ignored. */
+ } __attribute__((packed));
  
- 	switch (base_type(reg->type)) {
-@@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
- 				env,
- 				regno, reg->off, access_size,
- 				zero_size_allowed, ACCESS_HELPER, meta);
-+	case PTR_TO_CTX:
-+		/* in case of a kfunc called in a program of type SYSCALL, the context is
-+		 * user supplied, so not computed statically.
-+		 * Dynamically check it now
-+		 */
-+		if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
-+			enum bpf_access_type atype = meta->raw_mode ? BPF_WRITE : BPF_READ;
-+			int offset = access_size - 1;
-+
-+			/* Allow zero-byte read from PTR_TO_CTX */
-+			if (access_size == 0)
-+				return zero_size_allowed ? 0 : -EACCES;
-+
-+			return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
-+						atype, -1, false);
-+		}
-+
-+		fallthrough;
- 	default: /* scalar_value or invalid ptr */
- 		/* Allow zero-byte read from NULL, regardless of pointer type */
- 		if (zero_size_allowed && access_size == 0 &&
-@@ -5335,6 +5355,7 @@ int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state
- 	WARN_ON_ONCE(regno < BPF_REG_2 || regno > BPF_REG_5);
- 
- 	memset(&meta, 0, sizeof(meta));
-+	meta.is_kfunc = true;
- 
- 	if (may_be_null) {
- 		saved_reg = *mem_reg;
+ struct wl1251_acx_ac_cfg {
 -- 
-2.36.1
+2.25.1
 
