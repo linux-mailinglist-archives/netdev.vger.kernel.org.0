@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C33A57DF31
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D321F57DF06
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236641AbiGVJhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 05:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37302 "EHLO
+        id S236596AbiGVJhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 05:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236647AbiGVJg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 05:36:56 -0400
+        with ESMTP id S236580AbiGVJhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 05:37:11 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F2DD2C37;
-        Fri, 22 Jul 2022 02:25:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63565C5D59;
+        Fri, 22 Jul 2022 02:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658481936; x=1690017936;
+  t=1658481960; x=1690017960;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EkYrgW8HSiQhQ97mLr+G51bWfgr/TU5XqmgEXoTsA7A=;
-  b=0DDl9GJYuGEQPWNnqn6MbrdgS/ETtp+iIoCXNk75GIe98/9OlhdVvnHg
-   LEAGnjyXovOMOCyiwIywUpS4lW5cppzDIpoOO1hUZYh7l9KObxZqkJYd0
-   6t2PLrs3MKiPUYeVzRdJpnFg2auLUWsbHeH/A/dkVH5ewl3ULuU13sZoV
-   0+qeWlU8HN/3tL5Y+fTyWY1iWPU7vlpv8ad5gJKCuXsSBzSii5XDJZBvB
-   Q1oeecxD5ISG65oOb4+ivANQV3dHCQnIuZD/1eIXkvm9QYZgo/k70i7aN
-   grH5xV9AK1ySr8f8Q1BhSULPLJxWq0zTXMzusVF/8TVI/9t/YrU/SlpSU
-   w==;
+  bh=Zz1aJ3Do4fgmEKpEF07fhJpvHv35KSHv+N3Bga4dLTc=;
+  b=rzlD1wuUiNbsu15JZiQyyAmgfhW7lskpY4aWlbxTGiXHiRHg9neYujPx
+   UJsD45wT2Xlp0wwtGV3dQxRCypGkX6HH1ascmNfSlokI9AZmrwpe5rN60
+   eho1bOIVlY3BEZWCrJrkfIIWuvHoHme4KI+11edQKDgSY5YBb/ytoEpSF
+   +4PORZJjm6Q/+ryIyKzoT9HaRG/wW6tgD+waWOZpDiirVi7OC0SfHratB
+   b538OYWLTXLqlscwW4ORfoi3dapsdYNN/AD9a1vGE31JbT5yP7kRuef8m
+   yKQfJWa6ODGlJFaDX0r+oB/r2jMZjceFHJ3g4m7c/kZ4EDDxJnMVx7HV2
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
-   d="scan'208";a="165939307"
+   d="scan'208";a="165939341"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jul 2022 02:25:35 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jul 2022 02:25:58 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 22 Jul 2022 02:25:33 -0700
+ 15.1.2375.28; Fri, 22 Jul 2022 02:25:56 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 22 Jul 2022 02:25:28 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 22 Jul 2022 02:25:52 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -51,9 +51,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>,
         "Arun Ramadoss" <arun.ramadoss@microchip.com>,
         Russell King <linux@armlinux.org.uk>
-Subject: [Patch net-next v1 1/9] net: dsa: microchip: add common gigabit set and get function
-Date:   Fri, 22 Jul 2022 14:54:51 +0530
-Message-ID: <20220722092459.18653-2-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v1 2/9] net: dsa: microchip: add common ksz port xmii speed selection function
+Date:   Fri, 22 Jul 2022 14:54:52 +0530
+Message-ID: <20220722092459.18653-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220722092459.18653-1-arun.ramadoss@microchip.com>
 References: <20220722092459.18653-1-arun.ramadoss@microchip.com>
@@ -69,408 +69,315 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add helper function for setting and getting the gigabit
-enable for the ksz series switch. KSZ8795 switch has different register
-address compared to all other ksz switches. KSZ8795 series uses the Port
-5 Interface control 6 Bit 6 for configuring the 1Gbps or 100/10Mbps
-speed selection. All other switches uses the xMII control 1 0xN301
-register Bit6 for gigabit.
-Further, for KSZ8795 & KSZ9893 switches if bit 1 then 1Gbps is chosen
-and if bit 0 then 100/10Mbps is chosen. It is other way around for
-other switches bit 0 is for 1Gbps. So, this patch implements the common
-function for configuring the gigabit set and get capability.
+This patch adds the function for configuring the 100/10Mbps speed
+selection for the ksz switches. KSZ8795 switch uses Global control 4
+register 0x06 bit 4 for choosing 100/10Mpbs. Other switches uses xMII
+control 1 0xN300 for it.
+For KSZ8795, if the bit is set then 10Mbps is chosen and if bit is
+clear then 100Mbps chosen. For all other switches it is other way
+around, if the bit is set then 100Mbps is chosen.
+So, this patch add the generic function for ksz switch to select the
+100/10Mbps speed selection. While configuring, first it disables the
+gigabit functionality and then configure the respective speed.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz9477.c      | 36 ++------------
- drivers/net/dsa/microchip/ksz9477_reg.h  |  4 --
- drivers/net/dsa/microchip/ksz_common.c   | 61 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h   | 12 +++++
- drivers/net/dsa/microchip/lan937x_main.c | 16 ++-----
+ drivers/net/dsa/microchip/ksz9477_reg.h  |  1 -
+ drivers/net/dsa/microchip/ksz_common.c   | 54 ++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h   | 10 +++++
+ drivers/net/dsa/microchip/lan937x_main.c | 18 +++-----
  drivers/net/dsa/microchip/lan937x_reg.h  |  1 -
- 6 files changed, 82 insertions(+), 48 deletions(-)
+ 5 files changed, 69 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 6453642fa14c..cfa7ddf60718 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -866,32 +866,6 @@ void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
- 			     PORT_MIRROR_SNIFFER, false);
- }
- 
--static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
--{
--	bool gbit;
--
--	if (dev->features & NEW_XMII)
--		gbit = !(data & PORT_MII_NOT_1GBIT);
--	else
--		gbit = !!(data & PORT_MII_1000MBIT_S1);
--	return gbit;
--}
--
--static void ksz9477_set_gbit(struct ksz_device *dev, bool gbit, u8 *data)
--{
--	if (dev->features & NEW_XMII) {
--		if (gbit)
--			*data &= ~PORT_MII_NOT_1GBIT;
--		else
--			*data |= PORT_MII_NOT_1GBIT;
--	} else {
--		if (gbit)
--			*data |= PORT_MII_1000MBIT_S1;
--		else
--			*data &= ~PORT_MII_1000MBIT_S1;
--	}
--}
--
- static int ksz9477_get_xmii(struct ksz_device *dev, u8 data)
- {
- 	int mode;
-@@ -977,7 +951,7 @@ static phy_interface_t ksz9477_get_interface(struct ksz_device *dev, int port)
- 	if (port < dev->phy_port_cnt)
- 		return PHY_INTERFACE_MODE_NA;
- 	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
--	gbit = ksz9477_get_gbit(dev, data8);
-+	gbit = ksz_get_gbit(dev, port);
- 	mode = ksz9477_get_xmii(dev, data8);
- 	switch (mode) {
- 	case 2:
-@@ -1122,22 +1096,22 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			ksz9477_set_xmii(dev, 0, &data8);
--			ksz9477_set_gbit(dev, false, &data8);
-+			ksz_set_gbit(dev, port, false);
- 			p->phydev.speed = SPEED_100;
- 			break;
- 		case PHY_INTERFACE_MODE_RMII:
- 			ksz9477_set_xmii(dev, 1, &data8);
--			ksz9477_set_gbit(dev, false, &data8);
-+			ksz_set_gbit(dev, port, false);
- 			p->phydev.speed = SPEED_100;
- 			break;
- 		case PHY_INTERFACE_MODE_GMII:
- 			ksz9477_set_xmii(dev, 2, &data8);
--			ksz9477_set_gbit(dev, true, &data8);
-+			ksz_set_gbit(dev, port, true);
- 			p->phydev.speed = SPEED_1000;
- 			break;
- 		default:
- 			ksz9477_set_xmii(dev, 3, &data8);
--			ksz9477_set_gbit(dev, true, &data8);
-+			ksz_set_gbit(dev, port, true);
- 			data8 &= ~PORT_RGMII_ID_IG_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_EG_ENABLE;
- 			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
 diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index d0cce4ca3cf9..f23ed4809e47 100644
+index f23ed4809e47..2649fdf0bae1 100644
 --- a/drivers/net/dsa/microchip/ksz9477_reg.h
 +++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1185,10 +1185,6 @@
- #define REG_PORT_XMII_CTRL_1		0x0301
+@@ -1179,7 +1179,6 @@
  
- #define PORT_RMII_CLK_SEL		BIT(7)
--/* S1 */
--#define PORT_MII_1000MBIT_S1		BIT(6)
--/* S2 */
--#define PORT_MII_NOT_1GBIT		BIT(6)
- #define PORT_MII_SEL_EDGE		BIT(5)
- #define PORT_RGMII_ID_IG_ENABLE		BIT(4)
- #define PORT_RGMII_ID_EG_ENABLE		BIT(3)
+ #define PORT_SGMII_SEL			BIT(7)
+ #define PORT_MII_FULL_DUPLEX		BIT(6)
+-#define PORT_MII_100MBIT		BIT(4)
+ #define PORT_GRXC_ENABLE		BIT(0)
+ 
+ #define REG_PORT_XMII_CTRL_1		0x0301
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fd12a68c1dcd..343381102cbf 100644
+index 343381102cbf..85392d3b1c2b 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
 @@ -257,6 +257,7 @@ static const u16 ksz8795_regs[] = {
  	[S_START_CTRL]			= 0x01,
  	[S_BROADCAST_CTRL]		= 0x06,
  	[S_MULTICAST_CTRL]		= 0x04,
-+	[P_XMII_CTRL_1]			= 0x56,
++	[P_XMII_CTRL_0]			= 0x06,
+ 	[P_XMII_CTRL_1]			= 0x56,
  };
  
- static const u32 ksz8795_masks[] = {
-@@ -281,6 +282,11 @@ static const u32 ksz8795_masks[] = {
+@@ -282,6 +283,11 @@ static const u32 ksz8795_masks[] = {
  	[DYNAMIC_MAC_TABLE_TIMESTAMP]	= GENMASK(28, 27),
  };
  
-+static const u8 ksz8795_xmii_ctrl1[] = {
-+	[P_GMII_1GBIT]			= 1,
-+	[P_GMII_NOT_1GBIT]		= 0,
++static const u8 ksz8795_xmii_ctrl0[] = {
++	[P_MII_100MBIT]			= 0,
++	[P_MII_10MBIT]			= 1,
 +};
 +
- static const u8 ksz8795_shifts[] = {
- 	[VLAN_TABLE_MEMBERSHIP_S]	= 7,
- 	[VLAN_TABLE]			= 16,
-@@ -351,6 +357,7 @@ static const u16 ksz9477_regs[] = {
+ static const u8 ksz8795_xmii_ctrl1[] = {
+ 	[P_GMII_1GBIT]			= 1,
+ 	[P_GMII_NOT_1GBIT]		= 0,
+@@ -357,6 +363,7 @@ static const u16 ksz9477_regs[] = {
  	[S_START_CTRL]			= 0x0300,
  	[S_BROADCAST_CTRL]		= 0x0332,
  	[S_MULTICAST_CTRL]		= 0x0331,
-+	[P_XMII_CTRL_1]			= 0x0301,
++	[P_XMII_CTRL_0]			= 0x0300,
+ 	[P_XMII_CTRL_1]			= 0x0301,
  };
  
- static const u32 ksz9477_masks[] = {
-@@ -362,6 +369,11 @@ static const u8 ksz9477_shifts[] = {
+@@ -369,6 +376,11 @@ static const u8 ksz9477_shifts[] = {
  	[ALU_STAT_INDEX]		= 16,
  };
  
-+static const u8 ksz9477_xmii_ctrl1[] = {
-+	[P_GMII_1GBIT]			= 0,
-+	[P_GMII_NOT_1GBIT]		= 1,
++static const u8 ksz9477_xmii_ctrl0[] = {
++	[P_MII_100MBIT]			= 1,
++	[P_MII_10MBIT]			= 0,
 +};
 +
- static const u32 lan937x_masks[] = {
- 	[ALU_STAT_WRITE]		= 1,
- 	[ALU_STAT_READ]			= 2,
-@@ -388,6 +400,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ static const u8 ksz9477_xmii_ctrl1[] = {
+ 	[P_GMII_1GBIT]			= 0,
+ 	[P_GMII_NOT_1GBIT]		= 1,
+@@ -400,6 +412,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz8795_regs,
  		.masks = ksz8795_masks,
  		.shifts = ksz8795_shifts,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
++		.xmii_ctrl0 = ksz8795_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -424,6 +437,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -437,6 +450,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz8795_regs,
  		.masks = ksz8795_masks,
  		.shifts = ksz8795_shifts,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
++		.xmii_ctrl0 = ksz8795_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -446,6 +460,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -460,6 +474,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz8795_regs,
  		.masks = ksz8795_masks,
  		.shifts = ksz8795_shifts,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
++		.xmii_ctrl0 = ksz8795_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz8795_xmii_ctrl1,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -488,6 +503,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -503,6 +518,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = ksz9477_masks,
  		.shifts = ksz9477_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   false, true, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -514,6 +530,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -530,6 +546,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = ksz9477_masks,
  		.shifts = ksz9477_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -539,6 +556,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -556,6 +573,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = ksz9477_masks,
  		.shifts = ksz9477_shifts,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
  		.supports_mii = {false, false, true},
  		.supports_rmii = {false, false, true},
- 		.supports_rgmii = {false, false, true},
-@@ -561,6 +579,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -579,6 +597,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = ksz9477_masks,
  		.shifts = ksz9477_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -586,6 +605,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -605,6 +624,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = lan937x_masks,
  		.shifts = lan937x_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -607,6 +627,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -627,6 +647,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = lan937x_masks,
  		.shifts = lan937x_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii = {false, false, false, false, true, true},
  		.supports_rmii = {false, false, false, false, true, true},
- 		.supports_rgmii = {false, false, false, false, true, true},
-@@ -628,6 +649,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -649,6 +670,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = lan937x_masks,
  		.shifts = lan937x_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -653,6 +675,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -675,6 +697,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = lan937x_masks,
  		.shifts = lan937x_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -678,6 +701,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+@@ -701,6 +724,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.regs = ksz9477_regs,
  		.masks = lan937x_masks,
  		.shifts = lan937x_shifts,
-+		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
+ 		.xmii_ctrl1 = ksz9477_xmii_ctrl1,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -1353,6 +1377,43 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
- 		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
+@@ -1414,6 +1438,36 @@ void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
+ 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
  }
  
-+bool ksz_get_gbit(struct ksz_device *dev, int port)
++static void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed)
 +{
-+	const u8 *bitval = dev->info->xmii_ctrl1;
-+	const u16 *regs = dev->info->regs;
-+	bool gbit = false;
-+	u8 data8;
-+	bool val;
-+
-+	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-+
-+	val = FIELD_GET(P_GMII_1GBIT_M, data8);
-+
-+	if (val == bitval[P_GMII_1GBIT])
-+		gbit = true;
-+
-+	return gbit;
-+}
-+
-+void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
-+{
-+	const u8 *bitval = dev->info->xmii_ctrl1;
++	const u8 *bitval = dev->info->xmii_ctrl0;
 +	const u16 *regs = dev->info->regs;
 +	u8 data8;
 +
-+	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
++	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
 +
-+	data8 &= ~P_GMII_1GBIT_M;
++	data8 &= ~P_MII_100MBIT_M;
 +
-+	if (gbit)
-+		data8 |= FIELD_PREP(P_GMII_1GBIT_M, bitval[P_GMII_1GBIT]);
++	if (speed == SPEED_100)
++		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_100MBIT]);
 +	else
-+		data8 |= FIELD_PREP(P_GMII_1GBIT_M, bitval[P_GMII_NOT_1GBIT]);
++		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_10MBIT]);
 +
 +	/* Write the updated value */
-+	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
++	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
++}
++
++void ksz_port_set_xmii_speed(struct ksz_device *dev, int port, int speed)
++{
++	if (speed == SPEED_1000)
++		ksz_set_gbit(dev, port, true);
++	else
++		ksz_set_gbit(dev, port, false);
++
++	if (speed == SPEED_100 || speed == SPEED_10)
++		ksz_set_100_10mbit(dev, port, speed);
 +}
 +
  static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
  				    unsigned int mode,
  				    phy_interface_t interface,
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index d5dddb7ec045..22f03148be0b 100644
+index 22f03148be0b..d87dc88d9f20 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
 @@ -51,6 +51,7 @@ struct ksz_chip_data {
  	const u16 *regs;
  	const u32 *masks;
  	const u8 *shifts;
-+	const u8 *xmii_ctrl1;
++	const u8 *xmii_ctrl0;
+ 	const u8 *xmii_ctrl1;
  	int stp_ctrl_reg;
  	int broadcast_ctrl_reg;
- 	int multicast_ctrl_reg;
-@@ -169,6 +170,7 @@ enum ksz_regs {
+@@ -170,6 +171,7 @@ enum ksz_regs {
  	S_START_CTRL,
  	S_BROADCAST_CTRL,
  	S_MULTICAST_CTRL,
-+	P_XMII_CTRL_1,
++	P_XMII_CTRL_0,
+ 	P_XMII_CTRL_1,
  };
  
- enum ksz_masks {
-@@ -208,6 +210,11 @@ enum ksz_shifts {
+@@ -210,6 +212,11 @@ enum ksz_shifts {
  	ALU_STAT_INDEX,
  };
  
-+enum ksz_xmii_ctrl1 {
-+	P_GMII_1GBIT,
-+	P_GMII_NOT_1GBIT,
++enum ksz_xmii_ctrl0 {
++	P_MII_100MBIT,
++	P_MII_10MBIT,
 +};
 +
- struct alu_struct {
- 	/* entry 1 */
- 	u8	is_static:1;
-@@ -293,6 +300,8 @@ void ksz_switch_remove(struct ksz_device *dev);
- void ksz_init_mib_timer(struct ksz_device *dev);
- void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ enum ksz_xmii_ctrl1 {
+ 	P_GMII_1GBIT,
+ 	P_GMII_NOT_1GBIT,
+@@ -302,6 +309,7 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
  void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
-+bool ksz_get_gbit(struct ksz_device *dev, int port);
-+void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
+ bool ksz_get_gbit(struct ksz_device *dev, int port);
+ void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
++void ksz_port_set_xmii_speed(struct ksz_device *dev, int port, int speed);
  extern const struct ksz_chip_data ksz_switch_chips[];
  
  /* Common register access functions */
-@@ -456,6 +465,9 @@ static inline int is_lan937x(struct ksz_device *dev)
- 
+@@ -466,6 +474,8 @@ static inline int is_lan937x(struct ksz_device *dev)
  #define SW_START			0x01
  
-+/* xMII configuration */
-+#define P_GMII_1GBIT_M			BIT(6)
+ /* xMII configuration */
++#define P_MII_100MBIT_M			BIT(4)
 +
+ #define P_GMII_1GBIT_M			BIT(6)
+ 
  /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
 diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index c29d175ca6f7..efca96b02e15 100644
+index efca96b02e15..c48bae285758 100644
 --- a/drivers/net/dsa/microchip/lan937x_main.c
 +++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -312,14 +312,6 @@ int lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu)
- 	return 0;
+@@ -346,21 +346,14 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
+ 				     int speed, int duplex,
+ 				     bool tx_pause, bool rx_pause)
+ {
+-	u8 xmii_ctrl0, xmii_ctrl1;
++	u8 xmii_ctrl0;
+ 
+-	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
+-	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
+-
+-	xmii_ctrl0 &= ~(PORT_MII_100MBIT | PORT_MII_FULL_DUPLEX |
+-			PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL);
++	ksz_port_set_xmii_speed(dev, port, speed);
+ 
+-	if (speed == SPEED_1000)
+-		ksz_set_gbit(dev, port, true);
+-	else
+-		ksz_set_gbit(dev, port, false);
++	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
+ 
+-	if (speed == SPEED_100)
+-		xmii_ctrl0 |= PORT_MII_100MBIT;
++	xmii_ctrl0 &= ~(PORT_MII_FULL_DUPLEX | PORT_MII_TX_FLOW_CTRL |
++			PORT_MII_RX_FLOW_CTRL);
+ 
+ 	if (duplex)
+ 		xmii_ctrl0 |= PORT_MII_FULL_DUPLEX;
+@@ -372,7 +365,6 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
+ 		xmii_ctrl0 |= PORT_MII_RX_FLOW_CTRL;
+ 
+ 	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
+-	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
  }
  
--static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
--{
--	if (gbit)
--		*data &= ~PORT_MII_NOT_1GBIT;
--	else
--		*data |= PORT_MII_NOT_1GBIT;
--}
--
- static void lan937x_mac_config(struct ksz_device *dev, int port,
- 			       phy_interface_t interface)
- {
-@@ -333,11 +325,11 @@ static void lan937x_mac_config(struct ksz_device *dev, int port,
- 	/* configure MAC based on interface */
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_MII:
--		lan937x_config_gbit(dev, false, &data8);
-+		ksz_set_gbit(dev, port, false);
- 		data8 |= PORT_MII_SEL;
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
--		lan937x_config_gbit(dev, false, &data8);
-+		ksz_set_gbit(dev, port, false);
- 		data8 |= PORT_RMII_SEL;
- 		break;
- 	default:
-@@ -363,9 +355,9 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
- 			PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL);
- 
- 	if (speed == SPEED_1000)
--		lan937x_config_gbit(dev, true, &xmii_ctrl1);
-+		ksz_set_gbit(dev, port, true);
- 	else
--		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		ksz_set_gbit(dev, port, false);
- 
- 	if (speed == SPEED_100)
- 		xmii_ctrl0 |= PORT_MII_100MBIT;
+ void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
 diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-index c187d0a3e7fa..747295d34411 100644
+index 747295d34411..b9364f6a4f8f 100644
 --- a/drivers/net/dsa/microchip/lan937x_reg.h
 +++ b/drivers/net/dsa/microchip/lan937x_reg.h
-@@ -140,7 +140,6 @@
+@@ -135,7 +135,6 @@
+ #define PORT_SGMII_SEL			BIT(7)
+ #define PORT_MII_FULL_DUPLEX		BIT(6)
+ #define PORT_MII_TX_FLOW_CTRL		BIT(5)
+-#define PORT_MII_100MBIT		BIT(4)
+ #define PORT_MII_RX_FLOW_CTRL		BIT(3)
  #define PORT_GRXC_ENABLE		BIT(0)
  
- #define REG_PORT_XMII_CTRL_1		0x0301
--#define PORT_MII_NOT_1GBIT		BIT(6)
- #define PORT_MII_SEL_EDGE		BIT(5)
- #define PORT_RGMII_ID_IG_ENABLE		BIT(4)
- #define PORT_RGMII_ID_EG_ENABLE		BIT(3)
 -- 
 2.36.1
 
