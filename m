@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A174657D810
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 03:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D01D957D82C
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 03:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232715AbiGVBmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 21:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
+        id S231601AbiGVByH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 21:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiGVBmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 21:42:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911E9820F8;
-        Thu, 21 Jul 2022 18:42:49 -0700 (PDT)
+        with ESMTP id S229547AbiGVByG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 21:54:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14B390DB8;
+        Thu, 21 Jul 2022 18:54:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E952461FA2;
-        Fri, 22 Jul 2022 01:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EC4BC3411E;
-        Fri, 22 Jul 2022 01:42:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F775B826EA;
+        Fri, 22 Jul 2022 01:54:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C85C3411E;
+        Fri, 22 Jul 2022 01:54:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658454168;
-        bh=PUyBpsVmRXM3a3LLiAPSq+ZaOk7fRfAc8f9l84o/C3s=;
+        s=k20201202; t=1658454843;
+        bh=0OqRsAZ/QLesAwX9/j/LcVf4uV5ZMaLztMcapuh0XCw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cc5ACvakfQDV3FQLxCSYnR5n8pzEywRpm6MUk+ytF0Nr7UlVB4/mjhtE1COsKyY5D
-         4uYjaoqyFkMAEO5POyPIVNRcxQqX26hAJPcgzgUlnGE6L9QFnbXKxLJmzwieJ66rGL
-         Qq2Q4RRlw5etTIoJjYH7LudbkKZd4snlaqxWnw8qClOT7qhQK0eAWLsZ1DzfWCYXFc
-         Nh4qGSH05iq+mDbfIKC7a2SQSk9Z5xsLcAdzFjkDtLnJbaL2wV/C2N5gdu1rTtn9pH
-         YZL//xNhdGiw+/98IE8JhEi/VnrRhTvm2uFkRX79GT+alNn0BVTVXZf9EoEcEsrKSE
-         YTUcB9zl5Wvtg==
-Date:   Thu, 21 Jul 2022 18:42:47 -0700
+        b=EFbbBo/X5uLrhfgNgsG+c3AzHa7WgGE6Tj0/ulC7BMQjyq/W4LV7ogPTB2/1eba7V
+         Kbs4vceVnGf2Lih0elQltmSM8tghEbbpi9hm+E4FVtDEXx9v+51e2cTRi34fzP7yvz
+         +LJ6j3ij1oipliuf8x4Ydp53md6v2IZZAYAHmh6zmpk9S3sOYo4uG0V/u2DQn7UMiX
+         //cqpsUyW8l8eWsAciO0nE0Gl/OFMZ2QX0fz28VpxAKcrZG3fydAdC7J5lhkha7gKT
+         y7nfV9PGCq1i1cuA8GHKe6txCvZx6vxh/iGFcxwtp4ZgpFcAAsG0uEL6QNtEPEQRCx
+         RxPxB5u61RMxQ==
+Date:   Thu, 21 Jul 2022 18:54:01 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chunhao Lin <hau@realtek.com>
-Cc:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] r8169: add support for rtl8168h(revid 0x2a) +
- rtl8211fs fiber application
-Message-ID: <20220721184243.31ace75f@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20220721144550.4405-1-hau@realtek.com>
-References: <20220721144550.4405-1-hau@realtek.com>
+To:     Marek Majkowski <marek@cloudflare.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com, ivan@cloudflare.com,
+        edumazet@google.com, davem@davemloft.net, pabeni@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH net-next 0/2] RTAX_INITRWND should be able to bring the
+ rcv_ssthresh above 64KiB
+Message-ID: <20220721185401.0bbcd1d0@kernel.org>
+In-Reply-To: <20220721151041.1215017-1-marek@cloudflare.com>
+References: <20220721151041.1215017-1-marek@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,13 +55,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 22:45:50 +0800 Chunhao Lin wrote:
-> rtl8168h(revid 0x2a) + rtl8211fs is for fiber related application.
-> rtl8168h will control rtl8211fs via its eeprom or gpo pins.
-> Fiber module will be connected to rtl8211fs. The link speed between
-> rtl8168h and rtl8211fs is decied by fiber module.
+On Thu, 21 Jul 2022 17:10:39 +0200 Marek Majkowski wrote:
+> Among many route options we support initrwnd/RTAX_INITRWND path
+> attribute:
+> 
+>  $ ip route change local 127.0.0.0/8 dev lo initrwnd 1024
+> 
+> This sets the initial receive window size (in packets). However, it's
+> not very useful in practice. For smaller buffers (<128KiB) it can be
+> used to bring the initial receive window down, but it's hard to
+> imagine when this is useful. The same effect can be achieved with
+> TCP_WINDOW_CLAMP / RTAX_WINDOW option.
 
-Compiler says:
-
-drivers/net/ethernet/realtek/r8169_main.c:614:24: warning: symbol 'rtl_sfp_if_eeprom_mask' was not declared. Should it be static?
-drivers/net/ethernet/realtek/r8169_main.c:617:24: warning: symbol 'rtl_sfp_if_gpo_mask' was not declared. Should it be static?
+I think you based this on bpf-next so you should put bpf-next 
+in the subject, it doesn't apply to net-next. Either way let's 
+wait for Eric to comment.
