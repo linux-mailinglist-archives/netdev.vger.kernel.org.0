@@ -2,74 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C29E57DA3F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 08:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB66257DA52
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 08:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234148AbiGVG0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 02:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
+        id S234230AbiGVGdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 02:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234088AbiGVG0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 02:26:14 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D0485FA7
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 23:26:12 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id j22so6939370ejs.2
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 23:26:12 -0700 (PDT)
+        with ESMTP id S229519AbiGVGdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 02:33:05 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A954D4E5;
+        Thu, 21 Jul 2022 23:33:05 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M6Suuc024173;
+        Fri, 22 Jul 2022 06:32:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
+ bh=2acmMK8XLu+j0qnfdk4cy8/PECXA5Ep3EPzsvYrxsvA=;
+ b=LIDnARg6DnD7aberSTbGRWOzBSidjV6QLUfOYYG+/z8heNpBPhYCiStVH25WhFEhpb4k
+ Fu2zeHPu+c/V+cYiwLQfP9f1LoNTVoktunjxIhBiQHqn/HDwTvjNd2YSQAvVjRe2/axb
+ x3wGjl+A7WYYFByiZG1YPZg6bk3f0poF7DbkFu1jpYR3UU7FrGRtaebUYVRO7+GXreCE
+ vcBXdCXCeCXRqeUWvMQ/U+iR77wrPseZgAoa5N5LoXf1Msf4I2AQpLEWxNc3In8z7Mli
+ wP0qwwAnyVVZ+LTJKDO7swHFSjCvZMO7hFAShAHLyX246cYgJQoMAzJMUXxby+7pfDaY WA== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hbkx16jrg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Jul 2022 06:32:54 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26M3WOsu016449;
+        Fri, 22 Jul 2022 06:32:54 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2170.outbound.protection.outlook.com [104.47.55.170])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hc1eqcvpk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Jul 2022 06:32:54 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PFUQAc74CSCylDVcjePJDYU0ZgS41zfxqxUTG7rsLUx9ARfK/xiU02pbcX7S6N7tiS5mDA2eOZnjX3PuJgDgr5Agq/JPLDtStE3avYVetpAbLZ5cqrYan+HmrIx8tY7++s8E/e9MwqZlPqeW0cM+m9h0/Ws9JA6VqOnPDGR4CEDrTTgj9b5BWeiHnBRrX90WjyWFmWOLMtL6kXtKk8qAbdKPX5JbfBbqW3cjpdHkuarG06es4lGaOhl8b2LFo0uwr2+4pgmJNoinoh5uNSDTuQiPTRuqxiuxE7CgzHzCIPCdd+h0m9VSlCGn9izFg3aj2q8iVKk6Hvv7/DYgcrzK7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2acmMK8XLu+j0qnfdk4cy8/PECXA5Ep3EPzsvYrxsvA=;
+ b=R1kVQj9+grL6YGRScUIZgEvzh2TPKL5nxaSWPIw0RlZkS4UKcQ8qStrdzFnLSwyQB8VQMhgwAFdSdceNunroRCf0NNmwEdJjIWKyN5pKIiOltKJckjFpql+uwrAZwHR2c1uq76wPud6Z79rtQbD8sHl6yd2LPM9IRevB00uJ1mXCPVF0shJqBPTNA8P3uXDmssG38b5Oqp9GbcFqdY+rNLYkvx19AAyR85qP/lTpgycXmDGiMnhLkyAI485By9A39NQAGU+eC8jy+JL7ZMNwMuzyGkSa0G5Cqlnq0+JpasIsUZY8lTReKd5APdUQH9Lj/Aa2ZqMiR4fHEZjjbdrigw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yMVE49QTpYIAzKMre5/nLQ7uVcVNklEmnBRfrBYsHL0=;
-        b=Clw+vWYWK9cODwTMjVZuKWbwl+iTUfN2dQCmUX6jPG5IpTaJuAQYig9hApmoPqUrgn
-         aXkFaH5E1hIrqovdcfGOBkh5pgrJqhgNjL0Z21dKfmAZCmiqvxKJZb4KKCGDj6TR2VmL
-         riOblQnCo+Z10A5hLUbz5zSoxcm7jbIn3CSZfkKngShEMbe9PLZf/ORgJkRv6mHAn35L
-         eyM6mOCvL1H0jNszMqYPJ9sTSni8TDf6VtFSISInmQ9rYxobuHKJ7drBJSYmchmZ8qab
-         0dtIMik9KH6L/a8c0+8BGuiYzowe3f0fJla090nt5jMQBqxlFMe5pB0Rp4E7hE1JSTbj
-         HIIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yMVE49QTpYIAzKMre5/nLQ7uVcVNklEmnBRfrBYsHL0=;
-        b=a6AFSm/xhNtAgPu/xnInQJKPWULz8kpEBwLoAQUtHuteN6NC8EFKMrjH2lR0O3oNGO
-         jS4zOLrmWCWvATymAYIu43L24T8ctR2+TAYPFNijTtdoK0dzU2HveFbXS+DNFqwAkPLN
-         7UFln6hWhfdVfggur05buUwiaws+YtS8aHeTL1RXD8C4JOepTHnoIqf9TiQfX8Ll2mju
-         XBrDn6N2gV1FZRvEqhHs1iC24C7ibd5/l1ea4dN75jC2XdfMSyNB6nH7OyGqvVuZfctw
-         IpvYsxR4caTkzIWQChRkBcah9IOksBEcV9AFyD1nhZIBr/zPlIA9YzfJFfX726hryYfu
-         GvFg==
-X-Gm-Message-State: AJIora+GRJ2YjX6QWlwhcS5ezM2QPewQCYKGugtrqMvyPtwGKnTpZz5m
-        PHoXwTnQ1A4TJVsFwmBjsBdCJA==
-X-Google-Smtp-Source: AGRyM1srQgoGRk2mHXtOr5D80qB898XHyn5r/b2frEFFaVuftb9wpJV5LXYyuy6tYPL8DU0b5fc3Pw==
-X-Received: by 2002:a17:907:94cf:b0:72f:1c2a:d475 with SMTP id dn15-20020a17090794cf00b0072f1c2ad475mr1917361ejc.237.1658471171023;
-        Thu, 21 Jul 2022 23:26:11 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id g22-20020a17090670d600b006f3ef214e27sm1633362ejk.141.2022.07.21.23.26.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 23:26:10 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 08:26:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Jiri Pirko <jiri@nvidia.com>,
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2acmMK8XLu+j0qnfdk4cy8/PECXA5Ep3EPzsvYrxsvA=;
+ b=UG8+1HKbpxO6ANo6o3RBI7YZXZfjlJ3LAOLaSDBHGj91n/pd3dOrUKuTXi2B+/rZ8KCpN9uhszfh4Ohb6+VdPm+emIhAWjRmy0xQXNu/a0fBLEGMCKqXQJ1E30p6basPA/glMcQ7Jb0RFjDGRsOphdyrlLDhWjTczQ86Kjfi67o=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by SJ0PR10MB5744.namprd10.prod.outlook.com
+ (2603:10b6:a03:3ef::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Fri, 22 Jul
+ 2022 06:32:51 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::24dc:9f9a:c139:5c97]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::24dc:9f9a:c139:5c97%4]) with mapi id 15.20.5458.018; Fri, 22 Jul 2022
+ 06:32:51 +0000
+Date:   Fri, 22 Jul 2022 09:32:40 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Cc:     Petr Machata <petrm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-doc@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [net-next v2 1/2] devlink: add dry run attribute to flash update
-Message-ID: <YtpDAQS+eQI9C+LV@nanopsycho>
-References: <20220721211451.2475600-1-jacob.e.keller@intel.com>
- <20220721211451.2475600-2-jacob.e.keller@intel.com>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] mlxsw: fix devlink use after frees
+Message-ID: <YtpEiJz26qVoZG8s@kili>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220721211451.2475600-2-jacob.e.keller@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Mailer: git-send-email haha only kidding
+X-ClientProxiedBy: ZR0P278CA0169.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:45::16) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 82a482e2-65ec-4511-5def-08da6bac007a
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5744:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: i/+tVYC7UUqSiXV7Qoqx1s+lY8c95SI0MwH8uvW0dN5gKR4WxZ/zEpi5cqPqwg52803hNDAhm97V4OLCgOkl4RpREqsO3IUaj9FxG5Nik9Nnaqy+lS/Eb6tezWmGS8QWrqWN96o/VCEthUD6M2zwZkJKuF3xcDwF9Xh4TZlACY69JmsPrwAYFtU3QxZozgBl1auIo/YHaB+jBNeGWtlv3qfN2XY5XUEL4mX6Tpdq8Sx658GIehT/o6XkiZuB7JGfy8chZQMeo8Fqyo4TF/Ea7JWpVeD3ZIgf5kaMESlWnE6Ud7EHvjpT9t02XIekQpSa96V0uwnUTAwlw9Unz7jB5Pw5O+bBQsJNFEqQ+4H3bWTyEpNd7ifPFT+ScyHPvxPFlEI1bh/2LjiBLk1NYhK15U66KBHvfZin3O1WIFVxzE5W3fYqTKpGrv5Bjf7M4ZMZF+ltiU/wNTKiV7YiPVUssHrYYMSbYTMKuaAOpglsCvq3MesSVoeW5ombPL+uz8MHtoNG/LfiE5WkwOvNc4H0hN6CZsDM1sNSQDHAGw72zcQFhuMPKJjz+VuA/SJ3FUcqogzRMq6AMMz5RfWVOwTSDHAedSkpIi7txQKk2NgLyP/7BmsbeOO2j69/934d49UzZoPfs5V8ijnKZqbVP68PttlYp47IOyfkSmHuWHXU/ms5SM+AKipaO10NcEvSOBq0fh/rRNsCapaX7lOdne6uceyafeJUexpi7GhMzDftb325cqOT1LqAEJaEfOgd+QX7grRhCIrfJd2H99U2eRsdq+ITUxDhtUCFfeP+OwVS95k4zNGHuGCYdytXWdItkSb5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(366004)(396003)(39860400002)(376002)(346002)(33716001)(86362001)(38350700002)(478600001)(6486002)(38100700002)(44832011)(8936002)(316002)(5660300002)(66556008)(4326008)(8676002)(110136005)(83380400001)(186003)(66476007)(6506007)(6666004)(41300700001)(2906002)(26005)(6512007)(52116002)(54906003)(9686003)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/tsokYb9kYLONDpg5/IvgeJ5iCe9JXBUTo+mXgpcyS7e6c94HUivD8lo2rVr?=
+ =?us-ascii?Q?ASKfQL8V/+/mIpLrhAxkADiuUOD8Ab+hdYw23DVpCyIHLuDqUkwz6+5JfQVl?=
+ =?us-ascii?Q?p4/ul5oeSRqO5++bNzhEV+KdbTDHVIrQgIkc+3J0L75ixY9Y7st5emzta9Ux?=
+ =?us-ascii?Q?Hopa6ua7Fq9rBgwG+xpTWPkPBaiNYS+l335sbjljpiVq/4rJkD924g0ecnVY?=
+ =?us-ascii?Q?La3CHiCJZf7KdpH4NRcBOxDwDBaz6GGwHCKzquVOg3Ulk/6kzUhNJ4rqyFGY?=
+ =?us-ascii?Q?/Y6vCCPFG0zoW/WpxLAxOrIz4tVHpBeGYErKyzxbI8rgXvLtm0ds0kwlxR/L?=
+ =?us-ascii?Q?rXNkWHLwthIUXLJP+7bOvMroJFBO+/Z9aULaX4JyDIWeU/s6lH3FJWpArAuG?=
+ =?us-ascii?Q?WHY030PXj64xGfU5oz+Ti5D7CDzHC8RS4N5kE586PpruQKAf03d/oGCCkm3s?=
+ =?us-ascii?Q?lh+HU0+EpARgmnr+vsNGpHeFqnjKUBqVtvg1q5cRpZG1tXXLnB7XrxBA6aG9?=
+ =?us-ascii?Q?/mBraF3GMUpo/37k4gpLzPgXWmspUFW9Wkh88rsxQgtbXBagqNY6y8Vvyt+h?=
+ =?us-ascii?Q?9xIPOyf4YTON88HoZxExknLvhy/jomqfnXTynQzB6jyhNb2xVHLNsWp6a7Sa?=
+ =?us-ascii?Q?+2tSuQaDP1OhxB1LpsqQOpVDFEKgJl8rHw7lCnXk3HfTOMneg6J02SruVZFe?=
+ =?us-ascii?Q?qQ0iwskXXFJNOvcePdFJJeePqZ13BdR1H/TeQ9eAdnCy+73cMkbilFWWaTrk?=
+ =?us-ascii?Q?eLCcAE3d3cUyqGd8/7NSFX/DxdzijpMxEkXbZdKiRbPp5D763s6Uz8vUYy1z?=
+ =?us-ascii?Q?uPCvPkE8Co5BK+/SU6sMqHhEtc4i2d9iJrQWv3xci5NpukZ+zJhDJlIopQh6?=
+ =?us-ascii?Q?KyOzvdNXBzpW/FBts9SdIXxw1T/wxp8sjRS9qHyf5uJx+YaeoMD3lsnlBXw8?=
+ =?us-ascii?Q?5okoxJyN2S0eoyVJAoOZm0NMUhEfNJNg8yO1ybeiSuy+9DrMkiEmzIyqjPsd?=
+ =?us-ascii?Q?zf0fLchcrBeAsvtza8lEIvWk+ETwgFxpV2tKWHsckUo/HDaQ93UyN3ktbvBD?=
+ =?us-ascii?Q?4eM0QXaa6Wvl4UqbEnnw7AN946H3CR+DhIpUcgu3ANExNZl2JUaTuE24l1Wn?=
+ =?us-ascii?Q?eO2Hq8OZHQs04A0Y4myZ1+YC80byQ8qP+humwIoaiomFwrX6Y3XBsPgPaA3C?=
+ =?us-ascii?Q?IWCgRKU8Zk21b0ibndV9XcVyRI2jfbol7Hh0jD5E/10xryEj2jNYw1PJiWS7?=
+ =?us-ascii?Q?OgV2zPH6ZmHCz5cB8YMqL7w+b2+CLoqP1fbAFHv74dFM5W5RGbxry1sbq9gc?=
+ =?us-ascii?Q?KFqX9wjBfq7e0eeCc3PQM0k6/c8CUDoEQA/bfuHTAcWN5dvi5VznflmYENXR?=
+ =?us-ascii?Q?zH6h1uI3bhW+ykAgMVM+wTdsOp3frjRy/TRFUISrFCq3gkSg0LdlRuB//9WF?=
+ =?us-ascii?Q?Y6Upkdb4OoPUnVv0v7A5T3Ic+KTTzB0RqWOALDz5siom7AySk1bN5DUYe+9t?=
+ =?us-ascii?Q?fT6Ibg69jUscDuQJ7MZ+wR5j1B1ozSbXulXLM15lPzz1SHygS4lVePm6eF5I?=
+ =?us-ascii?Q?9fPpRMPKIoxhaNQuLa9zxPvts1Gf9fmoynPW+URtBneuQTs+YkZgoDtueYpS?=
+ =?us-ascii?Q?8g=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82a482e2-65ec-4511-5def-08da6bac007a
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 06:32:51.4162
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ist++0/ZUQethDNiPtchDh5oM8gchi2AEqAerS4OeR8Rrl1J+2zBT89lCiWkW+vv+o4g6ch2XgJMPtwhn3leam7cA3bYdW4tF4xeYi5QXQY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5744
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-21_28,2022-07-21_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 mlxlogscore=999
+ suspectscore=0 phishscore=0 adultscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207220026
+X-Proofpoint-GUID: R2n5mQzJvnihKKe0BQQvf47D-DJFRoO9
+X-Proofpoint-ORIG-GUID: R2n5mQzJvnihKKe0BQQvf47D-DJFRoO9
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,186 +145,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 21, 2022 at 11:14:46PM CEST, jacob.e.keller@intel.com wrote:
->Users use the devlink flash interface to request a device driver program or
->update the device flash chip. In some cases, a user (or script) may want to
->verify that a given flash update command is supported without actually
->committing to immediately updating the device. For example, a system
->administrator may want to validate that a particular flash binary image
->will be accepted by the device, or simply validate a command before finally
->committing to it.
->
->The current flash update interface lacks a method to support such a dry
->run. Add a new DEVLINK_ATTR_DRY_RUN attribute which shall be used by a
->devlink command to indicate that a request is a dry run which should not
->perform device configuration. Instead, the command should report whether
->the command or configuration request is valid.
->
->While we can validate the initial arguments of the devlink command, a
->proper dry run must be processed by the device driver. This is required
->because only the driver can perform validation of the flash binary file.
->
->Add a new dry_run parameter to the devlink_flash_update_params struct,
->along with the associated bit to indicate if a driver supports verifying a
->dry run.
->
->We always check the dry run attribute last in order to allow as much
->verification of other parameters as possible. For example, even if a driver
->does not support the dry_run option, we can still validate the other
->optional parameters such as the overwrite_mask and per-component update
->name.
->
->Document that userspace should take care when issuing a dry run to older
->kernels, as the flash update command is not strictly verified. Thus,
->unknown attributes will be ignored and this could cause a request for a dry
->run to perform an actual update. We can't fix old kernels to verify unknown
->attributes, but userspace can check the maximum attribute and reject the
->dry run request if it is not supported by the kernel.
->
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->---
->
->Changes since v1:
->* Add kernel doc comments to devlink_flash_update_params
->* Reduce indentation by using nla_get_flag
->
-> .../networking/devlink/devlink-flash.rst      | 23 +++++++++++++++++++
-> include/net/devlink.h                         |  4 ++++
-> include/uapi/linux/devlink.h                  |  8 +++++++
-> net/core/devlink.c                            | 17 +++++++++++++-
-> 4 files changed, 51 insertions(+), 1 deletion(-)
->
->diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
->index 603e732f00cc..1dc373229a54 100644
->--- a/Documentation/networking/devlink/devlink-flash.rst
->+++ b/Documentation/networking/devlink/devlink-flash.rst
->@@ -44,6 +44,29 @@ preserved across the update. A device may not support every combination and
-> the driver for such a device must reject any combination which cannot be
-> faithfully implemented.
-> 
->+Dry run
->+=======
->+
->+Users can request a "dry run" of a flash update by adding the
->+``DEVLINK_ATTR_DRY_RUN`` attribute to the ``DEVLINK_CMD_FLASH_UPDATE``
->+command. If the attribute is present, the kernel will only verify that the
->+provided command is valid. During a dry run, an update is not performed.
->+
->+If supported by the driver, the flash image contents are also validated and
->+the driver may indicate whether the file is a valid flash image for the
->+device.
->+
->+.. code:: shell
->+
->+   $ devlink dev flash pci/0000:af:00.0 file image.bin dry-run
->+   Validating flash binary
->+
->+Note that user space should take care when adding this attribute. Older
->+kernels which do not recognize the attribute may accept the command with an
->+unknown attribute. This could lead to a request for a dry run which performs
->+an unexpected update. To avoid this, user space should check the policy dump
->+and verify that the attribute is recognized before adding it to the command.
->+
-> Firmware Loading
-> ================
-> 
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index 780744b550b8..47b86ccb85b0 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -613,6 +613,8 @@ enum devlink_param_generic_id {
->  * struct devlink_flash_update_params - Flash Update parameters
->  * @fw: pointer to the firmware data to update from
->  * @component: the flash component to update
->+ * @overwrite_mask: what sections of flash can be overwritten
+Unlock "devlink" before freeing it instead of after.
 
-Well, strictly speaking, this is not related to this patch and should be
-done in a separate one. But hey, it's a comment, so I guess noone really
-cares.
+Fixes: 72a4c8c94efa ("mlxsw: convert driver to use unlocked devlink API during init/fini")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-
->+ * @dry_run: if true, do not actually update the flash
->  *
->  * With the exception of fw, drivers must opt-in to parameters by
->  * setting the appropriate bit in the supported_flash_update_params field in
->@@ -622,10 +624,12 @@ struct devlink_flash_update_params {
-> 	const struct firmware *fw;
-> 	const char *component;
-> 	u32 overwrite_mask;
->+	bool dry_run;
-> };
-> 
-> #define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
-> #define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
->+#define DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN		BIT(2)
-> 
-> struct devlink_region;
-> struct devlink_info_req;
->diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->index b3d40a5d72ff..e24a5a808a12 100644
->--- a/include/uapi/linux/devlink.h
->+++ b/include/uapi/linux/devlink.h
->@@ -576,6 +576,14 @@ enum devlink_attr {
-> 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
-> 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
-> 
->+	/* Before adding this attribute to a command, user space should check
->+	 * the policy dump and verify the kernel recognizes the attribute.
->+	 * Otherwise older kernels which do not recognize the attribute may
->+	 * silently accept the unknown attribute while not actually performing
->+	 * a dry run.
->+	 */
->+	DEVLINK_ATTR_DRY_RUN,			/* flag */
->+
-> 	/* add new attributes above here, update the policy in devlink.c */
-> 
-> 	__DEVLINK_ATTR_MAX,
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index 98d79feeb3dc..1cff636c9b2b 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -4743,7 +4743,8 @@ EXPORT_SYMBOL_GPL(devlink_flash_update_timeout_notify);
-> static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
-> 				       struct genl_info *info)
-> {
->-	struct nlattr *nla_component, *nla_overwrite_mask, *nla_file_name;
->+	struct nlattr *nla_component, *nla_overwrite_mask, *nla_file_name,
->+		      *nla_dry_run;
-> 	struct devlink_flash_update_params params = {};
-> 	struct devlink *devlink = info->user_ptr[0];
-> 	const char *file_name;
->@@ -4789,6 +4790,19 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
-> 		return ret;
-> 	}
-> 
->+	/* Always check dry run last, in order to allow verification of other
->+	 * parameter support even if the particular driver does not yet
->+	 * support a full dry-run
->+	 */
->+	params.dry_run = nla_get_flag(info->attrs[DEVLINK_ATTR_DRY_RUN]);
->+	if (params.dry_run &&
->+	    !(supported_params & DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN)) {
->+		NL_SET_ERR_MSG_ATTR(info->extack, nla_dry_run,
->+				    "flash update is supported, but dry run is not supported for this device");
->+		release_firmware(params.fw);
->+		return -EOPNOTSUPP;
->+	}
->+
-> 	devlink_flash_update_begin_notify(devlink);
-> 	ret = devlink->ops->flash_update(devlink, &params, info->extack);
-> 	devlink_flash_update_end_notify(devlink);
->@@ -9004,6 +9018,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
-> 	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
-> 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
-> 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
->+	[DEVLINK_ATTR_DRY_RUN] = { .type = NLA_FLAG },
-> };
-> 
-> static const struct genl_small_ops devlink_nl_ops[] = {
->-- 
->2.35.1.456.ga9c7032d4631
->
-
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 61eb96b93889..1b61bc8f59a2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2296,8 +2296,8 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ 		devl_resources_unregister(devlink);
+ 	mlxsw_core->bus->fini(mlxsw_core->bus_priv);
+ 	if (!reload) {
+-		devlink_free(devlink);
+ 		devl_unlock(devlink);
++		devlink_free(devlink);
+ 	}
+ 
+ 	return;
+@@ -2305,8 +2305,8 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ reload_fail_deinit:
+ 	mlxsw_core_params_unregister(mlxsw_core);
+ 	devl_resources_unregister(devlink);
+-	devlink_free(devlink);
+ 	devl_unlock(devlink);
++	devlink_free(devlink);
+ }
+ EXPORT_SYMBOL(mlxsw_core_bus_device_unregister);
+ 
+-- 
+2.35.1
 
