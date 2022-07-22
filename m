@@ -2,170 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3E657E9A3
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 00:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D630B57E9DC
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 00:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236314AbiGVW1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 18:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S237064AbiGVWim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 18:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbiGVW1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 18:27:45 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7268D5CD
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 15:27:44 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id s188so7089828oie.0
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 15:27:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CcuiPvBW+hW8D7z0gFEllDUeKqCv7YHCr1OAa5+6XzE=;
-        b=4TvRam5ukjVVe8JnDmc16TBCdOwZSfj8pJ2ktzO/pddhS+72X0U/JjLHReoPf1KY+L
-         ORzwT6JCkTNhvs8dr+jiJbO5BrjPS12JMVYc+YMMI86cAUXNuCMxAWVn2YuW5fnbrfms
-         x3HX0Ah+bglS9zL65V/JsxsSEF2u5jKnE4FNAl8q0ERz2LABYYMGYX9h+pLlC1Lhu79u
-         jlnvEEefG69QNZAi3/s5gfgl5RWBimmp5ziFck17VJFthmxVkZzt5zEnHIfPzbHILANI
-         EiNzHi25aaAI3aSVKaCfzJPfkNtsQpvpsxvfgAd8i6bxPx7Op1+bWmCUZIv7Qqs9gxiX
-         OGEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CcuiPvBW+hW8D7z0gFEllDUeKqCv7YHCr1OAa5+6XzE=;
-        b=UtTAacC10hkMsEXYbw8tJPM7YOuwn83kw2Cow6VYFe2svxn5M85IuMF2y6zf1LnECX
-         Y2ui8eIqNHqYmf82NZBR3gEYYjCVMY9Gj54bNQN85pY6ip+tSgR1k9JNQ4v89dsMkOg7
-         gy3XzfcqzhZ/pjoVYOa3Lj2DRV3z5Zi0yajNeY8Q+PhmKuvP5yZCG8wB6oTJtWFFf874
-         7b4ay04EZXz3Kq0oBAM0Xjgdni8mUi3M4X8Q5huu3KrA4WFbCTHQwvKKYvvBJZV4KdPG
-         HRAi4rxPZ368wSl66qshbf9lacMQ19bkNDtB13PrdhJTol/Jy0rDLJRidVmj2ImJr1gW
-         leJg==
-X-Gm-Message-State: AJIora/Jx3pqXKGQ3L6D67FDnY5lUjOwwJ5aazMfeK8iXmjQnrlK4Vo3
-        mFPRXBf37sZaENJkvvZfiYza4J14nsHzwuAhHLolOw==
-X-Google-Smtp-Source: AGRyM1vbgHuwGubHwjoJm9WIp+tqCf/j+Atfn7qt9u/pqkXXNftWBCviASChTaDSElYGVUOBiN5bH72juWQDH8pueb4=
-X-Received: by 2002:a54:4618:0:b0:326:9f6e:edc6 with SMTP id
- p24-20020a544618000000b003269f6eedc6mr844798oip.2.1658528863393; Fri, 22 Jul
- 2022 15:27:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <c2ef23da1d9a4eb62f4e7b7c4540f9bafb553c15.1658420239.git.dcaratti@redhat.com>
-In-Reply-To: <c2ef23da1d9a4eb62f4e7b7c4540f9bafb553c15.1658420239.git.dcaratti@redhat.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Fri, 22 Jul 2022 18:27:32 -0400
-Message-ID: <CAM0EoMmnkkZryqBMDuoH78Y5R-61beeUg5tDNb0oXDo7GkZjvw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/sched: act_mirred: avoid printout in the
- traffic path
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        with ESMTP id S237134AbiGVWi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 18:38:29 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB74DC47DE;
+        Fri, 22 Jul 2022 15:35:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=NAxOFyO0BR2egR09od52QesiemV72NTb8HyO4J26QeA=; b=JTa85rS25K0jIgKbCHYzbUx9NI
+        oCUnSF6T35Gpbm8U44eBnN+2Lq9I9nPlgc3P79lFHqRv9fhQTZXLjpC8ISsSD3w8WcLMWxvA0iGpF
+        s7eyCOa55MKKRGXXQW99bEOjdGR9MfEP8yeIdF84Vm9hrJx/1hXgtbgYffrD6+WJJY90=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oF1Ed-00BBdb-Vv; Sat, 23 Jul 2022 00:35:03 +0200
+Date:   Sat, 23 Jul 2022 00:35:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <YtsmF+rOs6AwzpGU@lunn.ch>
+References: <20220721182216.z4vdaj4zfb6w3emo@skbuf>
+ <YtnBmFm8Jhokgp7Q@shell.armlinux.org.uk>
+ <20220721213645.57ne2jf7f6try4ec@skbuf>
+ <YtpfmF37FmfY6BV5@shell.armlinux.org.uk>
+ <20220722105238.qhfq5myqa4ixkvy4@skbuf>
+ <YtqNkSDLRDtuooy/@shell.armlinux.org.uk>
+ <20220722124629.7y3p7nt6jmm5hecq@skbuf>
+ <YtqjFKUTsH4CK0L+@shell.armlinux.org.uk>
+ <20220722165600.lldukpdflv7cjp4j@skbuf>
+ <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-You dont want to use the target device if it is operationally/admin down.
-But if that happens momentarily then it comes back up - what happens then?
+> If a DSA driver defaults to AN enabled on the DSA/CPU ports, and makes
+> use of the defaulting firmware description, then this will break with
+> these patches, since we setup a fixed-link specifier that states that
+> no AN should be used.
 
-cheers,
-jamal
+There is another way to look at this. AN is only an issue for SERDES
+based links. A bit of grepping:
 
+vf610-zii-cfu1.dts:			compatible = "marvell,mv88e6085";
+vf610-zii-dev-rev-b.dts:				compatible = "marvell,mv88e6085";
+vf610-zii-dev-rev-b.dts:				compatible = "marvell,mv88e6085";
+vf610-zii-dev-rev-b.dts:				compatible = "marvell,mv88e6085";
+vf610-zii-dev-rev-c.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-dev-rev-c.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-scu4-aib.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-scu4-aib.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-scu4-aib.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-scu4-aib.dts:				compatible = "marvell,mv88e6190";
+vf610-zii-spb4.dts:			compatible = "marvell,mv88e6190";
+vf610-zii-ssmb-dtu.dts:			compatible = "marvell,mv88e6190";
+vf610-zii-ssmb-dtu.dts:				compatible = "marvell,mv88e6xxx-mdio-external";
+vf610-zii-ssmb-spu3.dts:			compatible = "marvell,mv88e6190";
 
+vf610 is a Vybrid, which is fast Ethernet. No SERDES. We cannot break
+the CPU port on these...
 
-On Thu, Jul 21, 2022 at 12:19 PM Davide Caratti <dcaratti@redhat.com> wrote:
->
-> when tc-mirred outputs to a device that's not up, dmesg is cluttered with
-> messages like:
->
->  tc mirred to Houston: device br-int is down
->
-> we can't completely remove this printout: users might be relying on it to
-> detect setups where tc-mirred drops everything, as discussed earlier [1].
-> however, we can at least reduce the amount of these messages, and improve
-> their content as follows:
->  - add a pr_notice(...) in the .init() function, to warn users of missing
->    IFF_UP flag on the target of a newly added tc-mirred action
->  - check for NETDEV_DOWN in the .notifier_call() function, and add proper
->    pr_notice(...) to warn users of missing/down target devices
->
-> [1] https://lore.kernel.org/netdev/CAM_iQpUvn+ijyZtLmca3n+nZmHY9cMmPYwZMp5BTv10bLUhg3Q@mail.gmail.com/
->
-> Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-> CC: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  net/sched/act_mirred.c | 34 +++++++++++++++++++---------------
->  1 file changed, 19 insertions(+), 15 deletions(-)
->
-> diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-> index a1d70cf86843..4af6073e472b 100644
-> --- a/net/sched/act_mirred.c
-> +++ b/net/sched/act_mirred.c
-> @@ -178,6 +178,13 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
->                         err = -ENODEV;
->                         goto put_chain;
->                 }
-> +               if (!(ndev->flags & IFF_UP))
-> +                       pr_notice("tc mirred: action %i %s on %s while device is down",
-> +                                 m->tcf_index,
-> +                                 tcf_mirred_is_act_redirect(parm->eaction) ?
-> +                                       "redirects" : "mirrors",
-> +                                 ndev->name);
-> +
->                 mac_header_xmit = dev_is_mac_header_xmit(ndev);
->                 odev = rcu_replace_pointer(m->tcfm_dev, ndev,
->                                           lockdep_is_held(&m->tcf_lock));
-> @@ -251,16 +258,8 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
->         m_eaction = READ_ONCE(m->tcfm_eaction);
->         retval = READ_ONCE(m->tcf_action);
->         dev = rcu_dereference_bh(m->tcfm_dev);
-> -       if (unlikely(!dev)) {
-> -               pr_notice_once("tc mirred: target device is gone\n");
-> +       if (unlikely(!dev || !(dev->flags & IFF_UP)))
->                 goto out;
-> -       }
-> -
-> -       if (unlikely(!(dev->flags & IFF_UP))) {
-> -               net_notice_ratelimited("tc mirred to Houston: device %s is down\n",
-> -                                      dev->name);
-> -               goto out;
-> -       }
->
->         /* we could easily avoid the clone only if called by ingress and clsact;
->          * since we can't easily detect the clsact caller, skip clone only for
-> @@ -397,16 +396,21 @@ static int mirred_device_event(struct notifier_block *unused,
->         struct tcf_mirred *m;
->
->         ASSERT_RTNL();
-> -       if (event == NETDEV_UNREGISTER) {
-> +       if (event == NETDEV_UNREGISTER || event == NETDEV_DOWN) {
->                 spin_lock(&mirred_list_lock);
->                 list_for_each_entry(m, &mirred_list, tcfm_list) {
->                         spin_lock_bh(&m->tcf_lock);
->                         if (tcf_mirred_dev_dereference(m) == dev) {
-> -                               netdev_put(dev, &m->tcfm_dev_tracker);
-> -                               /* Note : no rcu grace period necessary, as
-> -                                * net_device are already rcu protected.
-> -                                */
-> -                               RCU_INIT_POINTER(m->tcfm_dev, NULL);
-> +                               pr_notice("tc mirred: target device %s is %s\n",
-> +                                         dev->name,
-> +                                         event == NETDEV_UNREGISTER ? "gone" : "down");
-> +                               if (event == NETDEV_UNREGISTER) {
-> +                                       netdev_put(dev, &m->tcfm_dev_tracker);
-> +                                       /* Note : no rcu grace period necessary, as
-> +                                        * net_device are already rcu protected.
-> +                                        */
-> +                                       RCU_INIT_POINTER(m->tcfm_dev, NULL);
-> +                               }
->                         }
->                         spin_unlock_bh(&m->tcf_lock);
->                 }
-> --
-> 2.35.3
->
+kirkwood-dir665.dts:		compatible = "marvell,mv88e6085";
+kirkwood-l-50.dts:		compatible = "marvell,mv88e6085";
+kirkwood-l-50.dts:		compatible = "marvell,mv88e6085";
+kirkwood-linksys-viper.dts:		compatible = "marvell,mv88e6085";
+kirkwood-mv88f6281gtw-ge.dts:		compatible = "marvell,mv88e6085";
+kirkwood-rd88f6281.dtsi:		compatible = "marvell,mv88e6085";
+
+RGMII or GMII. You cannot break the CPU port on these.
+
+orion5x-netgear-wnr854t.dts:		compatible = "marvell,mv88e6085";
+
+Even older than kirkwood, mo chance it uses SERDES.
+
+imx51-zii-rdu1.dts:			compatible = "marvell,mv88e6085";
+imx51-zii-scu2-mezz.dts:			compatible = "marvell,mv88e6085";
+imx51-zii-scu3-esb.dts
+imx6q-bx50v3.dtsi:			compatible = "marvell,mv88e6085"; /* 88e6240*/
+imx6qdl-gw5904.dtsi:			compatible = "marvell,mv88e6085";
+imx6qdl-zii-rdu2.dtsi:			compatible = "marvell,mv88e6085";
+imx7d-zii-rpu2.dts:			compatible = "marvell,mv88e6085";
+
+These all have a FEC, so are either GMII or MII. No SERDES.
+
+What is left for 32bit ARM is:
+
+armada-370-rd.dts:		compatible = "marvell,mv88e6085";
+Has a fixed-link for the switch, and nothing for the SoC
+
+armada-381-netgear-gs110emx.dts:		compatible = "marvell,mv88e6190";
+Has a fixed-link for the switch and a fixed-link for the SoC, as is RGMII
+
+armada-385-clearfog-gtr-l8.dts:		compatible = "marvell,mv88e6190";
+armada-385-clearfog-gtr-s4.dts:		compatible = "marvell,mv88e6085";
+These two have nothing for the CPU port, SoC has fixed-link, "2500base-x"
+
+armada-385-linksys.dtsi:		compatible = "marvell,mv88e6085";
+Has a fixed link, and Soc also has a fixed link, SGMII.
+
+armada-385-turris-omnia.dts:		compatible = "marvell,mv88e6085";
+Has a fixed link, with phy-mode rgmii-id.
+
+armada-388-clearfog.dts:		compatible = "marvell,mv88e6085";
+Has a fixed link, SoC also has a fixed link.
+
+armada-xp-linksys-mamba.dts:		compatible = "marvell,mv88e6085";
+Has a fixed-link, nothing for the SoC side.
+
+So the majority of boards are:
+
+1) Not SERDES based
+
+or
+
+2) Have a fixed-link.
+
+It is just the two clearfog boards which might have a problem, but
+these two also use mvneta, and Russell already pointed out, they are
+by default forgiving with inband signalling.
+
+In the arm64 world, we have:
+
+freescale/imx8mq-zii-ultra.dtsi:			compatible = "marvell,mv88e6085";
+marvell/cn9130-crb.dtsi:		compatible = "marvell,mv88e6190";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6190";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6085";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6190";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6085";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6190";
+marvell/armada-3720-turris-mox.dts:		compatible = "marvell,mv88e6085";
+marvell/armada-3720-espressobin.dtsi:		compatible = "marvell,mv88e6085";
+marvell/armada-7040-mochabin.dts:		compatible = "marvell,mv88e6085";
+marvell/armada-8040-clearfog-gt-8k.dts:		compatible = "marvell,mv88e6085";
+
+So another RGMII FEC, and then Marvell devices which are all pretty
+forgiving.
+
+So i would say, the likelihood of the CPU port breaking is pretty low.
+
+DSA ports could also be an issue here.
+
+armada-3720-turris-mox.dts has:
+
+                                phy-mode = "2500base-x";
+                                managed = "in-band-status";
+for all its DSA ports.
+
+vf610-zii-dev-rev-b.dts has fixed link, some ports are rgmii, some are
+1000base-X.
+
+vf610-zii-dev-rev-c.dts does not have fixed link and the ports are
+xaui. Does xaui have in-band signalling?
+
+vf610-zii-scu4-aib.dts does not have fixed link and the ports are xgmii and 2500base-x.
+
+So there are more open questions here, but a lot less boards.
+
+   Andrew
