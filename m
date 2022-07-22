@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E56857E130
+	by mail.lfdr.de (Postfix) with ESMTP id D9D2357E131
 	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234727AbiGVMBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 08:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
+        id S234110AbiGVMBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 08:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbiGVMBP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:01:15 -0400
+        with ESMTP id S234532AbiGVMBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:01:18 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DEFBB214
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:01:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34664BB228
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658491274; x=1690027274;
+  t=1658491277; x=1690027277;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kEWLumMQSQliyx8zm3H/DRyVtVESwt+9Ud2q9KqZT7A=;
-  b=mfa9noZySR9szvf1rn5juh9nk84cwXOw9bc2eOn4wJoiUzWGvovpVlsT
-   LIzrd+IE1aS+MI1VrsyXq0FaYRJ7wDqv06S2oM8NTkgjOY/BtbkR9tcmc
-   5q6CD866LBy6steNw182fZHLxF4YLXfXDEc4ZrGMkv+DxFh1mJ2+Bbobv
-   BJmgIn5sC9YnrXR6dqhz64f0TCwZFH2bDy6rQEmHficNbJRxqoEbGHAHE
-   n8l22qo0j6Z6LMNlo0IGN5DMUbV32Ke45NJJzexlvTvMqMXsSFvRXG08r
-   ZKf+Ojr6O+bhJFb2YAHGr9z6ZSP9jy0BffiDGqQJVPjaW8PiDyVMSXjqv
+  bh=GxFwkxS5cRCWWPo/uQ64UKzAaDcsovAfTjCnRoqLw44=;
+  b=ZPirlMMqjynGRVg6yIowkyvyW0nSJa9IIyhO9gPITn1bHv7Uz44r0LoA
+   xpP+iZHZSw+N61wE25DeHYT9GdAh7dF7eqjLQY45nvjZc9cM99T4oeQIs
+   fMDiWnASMCZZjbcIU15fwRAv6vY0r+9tphxFuA0TpXpSqpwYJCvdbBLFv
+   oaIOLMqRINHCFlY5Qwbb6ZRBIukw2yA6oeiyyUxo6gty7msLkCea0YlGF
+   oX2uklgPFG/wcYgf7ZosKEPYPf2FS/lVkO6B+9Gy3jeM2igkg3VAyKK2E
+   0b1soDj3vzrUfG7cP7/0PG2Py4b3KeFCy+xbh8Dkw4vCHyhvTCFnQZd9I
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="284850182"
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="284850193"
 X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
-   d="scan'208";a="284850182"
+   d="scan'208";a="284850193"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:14 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:17 -0700
 X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
-   d="scan'208";a="657189812"
+   d="scan'208";a="657189825"
 Received: from unknown (HELO ocsbesrhlrepo01.amr.corp.intel.com) ([10.240.193.73])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:12 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:14 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 1/6] vDPA/ifcvf: get_config_size should return a value no greater than dev implementation
-Date:   Fri, 22 Jul 2022 19:53:04 +0800
-Message-Id: <20220722115309.82746-2-lingshan.zhu@intel.com>
+Subject: [PATCH V4 2/6] vDPA/ifcvf: support userspace to query features and MQ of a management device
+Date:   Fri, 22 Jul 2022 19:53:05 +0800
+Message-Id: <20220722115309.82746-3-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220722115309.82746-1-lingshan.zhu@intel.com>
 References: <20220722115309.82746-1-lingshan.zhu@intel.com>
@@ -58,70 +58,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers must not access a BAR outside the capability length,
-and for a virtio device, ifcvf driver should not report any non-standard
-capability contents to the upper layers.
+Adapting to current netlink interfaces, this commit allows userspace
+to query feature bits and MQ capability of a management device.
 
-Function ifcvf_get_config_size() is introduced here to return a safe value
-of the device config capability size.
+Currently both the vDPA device and the management device are the VF itself,
+thus this ifcvf should initialize the virtio capabilities in probe() before
+setting up the struct vdpa_mgmt_dev.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_base.c | 13 +++++++++++--
- drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/vdpa/ifcvf/ifcvf_main.c | 142 +++++++++++++++++---------------
+ 1 file changed, 76 insertions(+), 66 deletions(-)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index 48c4dadb0c7c..85611be5ccb4 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
- 			break;
- 		case VIRTIO_PCI_CAP_DEVICE_CFG:
- 			hw->dev_cfg = get_cap_addr(hw, &cap);
-+			hw->cap_dev_config_size = le32_to_cpu(cap.length);
- 			IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
- 			break;
- 		}
-@@ -233,15 +234,23 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
- u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index 0a5670729412..3fd0267873f8 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -752,59 +752,36 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
  {
+ 	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
  	struct ifcvf_adapter *adapter;
-+	u32 net_config_size = sizeof(struct virtio_net_config);
-+	u32 blk_config_size = sizeof(struct virtio_blk_config);
-+	u32 cap_size = hw->cap_dev_config_size;
- 	u32 config_size;
++	struct vdpa_device *vdpa_dev;
+ 	struct pci_dev *pdev;
+ 	struct ifcvf_hw *vf;
+-	struct device *dev;
+-	int ret, i;
++	int ret;
  
- 	adapter = vf_to_adapter(hw);
-+	/* If the onboard device config space size is greater than
-+	 * the size of struct virtio_net/blk_config, only the spec
-+	 * implementing contents size is returned, this is very
-+	 * unlikely, defensive programming.
-+	 */
- 	switch (hw->dev_type) {
- 	case VIRTIO_ID_NET:
--		config_size = sizeof(struct virtio_net_config);
-+		config_size = min(cap_size, net_config_size);
- 		break;
- 	case VIRTIO_ID_BLOCK:
--		config_size = sizeof(struct virtio_blk_config);
-+		config_size = min(cap_size, blk_config_size);
- 		break;
- 	default:
- 		config_size = 0;
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 115b61f4924b..f5563f665cc6 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -87,6 +87,8 @@ struct ifcvf_hw {
- 	int config_irq;
- 	int vqs_reused_irq;
- 	u16 nr_vring;
-+	/* VIRTIO_PCI_CAP_DEVICE_CFG size */
-+	u32 cap_dev_config_size;
- };
+ 	ifcvf_mgmt_dev = container_of(mdev, struct ifcvf_vdpa_mgmt_dev, mdev);
+-	if (ifcvf_mgmt_dev->adapter)
++	if (!ifcvf_mgmt_dev->adapter)
+ 		return -EOPNOTSUPP;
  
- struct ifcvf_adapter {
+-	pdev = ifcvf_mgmt_dev->pdev;
+-	dev = &pdev->dev;
+-	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
+-				    dev, &ifc_vdpa_ops, 1, 1, name, false);
+-	if (IS_ERR(adapter)) {
+-		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
+-		return PTR_ERR(adapter);
+-	}
+-
+-	ifcvf_mgmt_dev->adapter = adapter;
+-
++	adapter = ifcvf_mgmt_dev->adapter;
+ 	vf = &adapter->vf;
+-	vf->dev_type = get_dev_type(pdev);
+-	vf->base = pcim_iomap_table(pdev);
++	pdev = adapter->pdev;
++	vdpa_dev = &adapter->vdpa;
+ 
+-	adapter->pdev = pdev;
+-	adapter->vdpa.dma_dev = &pdev->dev;
+-
+-	ret = ifcvf_init_hw(vf, pdev);
+-	if (ret) {
+-		IFCVF_ERR(pdev, "Failed to init IFCVF hw\n");
+-		goto err;
+-	}
+-
+-	for (i = 0; i < vf->nr_vring; i++)
+-		vf->vring[i].irq = -EINVAL;
+-
+-	vf->hw_features = ifcvf_get_hw_features(vf);
+-	vf->config_size = ifcvf_get_config_size(vf);
++	if (name)
++		ret = dev_set_name(&vdpa_dev->dev, "%s", name);
++	else
++		ret = dev_set_name(&vdpa_dev->dev, "vdpa%u", vdpa_dev->index);
+ 
+-	adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
+ 	ret = _vdpa_register_device(&adapter->vdpa, vf->nr_vring);
+ 	if (ret) {
++		put_device(&adapter->vdpa.dev);
+ 		IFCVF_ERR(pdev, "Failed to register to vDPA bus");
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	return 0;
+-
+-err:
+-	put_device(&adapter->vdpa.dev);
+-	return ret;
+ }
+ 
++
+ static void ifcvf_vdpa_dev_del(struct vdpa_mgmt_dev *mdev, struct vdpa_device *dev)
+ {
+ 	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
+@@ -823,61 +800,94 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
+ 	struct device *dev = &pdev->dev;
++	struct ifcvf_adapter *adapter;
++	struct ifcvf_hw *vf;
+ 	u32 dev_type;
+-	int ret;
+-
+-	ifcvf_mgmt_dev = kzalloc(sizeof(struct ifcvf_vdpa_mgmt_dev), GFP_KERNEL);
+-	if (!ifcvf_mgmt_dev) {
+-		IFCVF_ERR(pdev, "Failed to alloc memory for the vDPA management device\n");
+-		return -ENOMEM;
+-	}
+-
+-	dev_type = get_dev_type(pdev);
+-	switch (dev_type) {
+-	case VIRTIO_ID_NET:
+-		ifcvf_mgmt_dev->mdev.id_table = id_table_net;
+-		break;
+-	case VIRTIO_ID_BLOCK:
+-		ifcvf_mgmt_dev->mdev.id_table = id_table_blk;
+-		break;
+-	default:
+-		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", dev_type);
+-		ret = -EOPNOTSUPP;
+-		goto err;
+-	}
+-
+-	ifcvf_mgmt_dev->mdev.ops = &ifcvf_vdpa_mgmt_dev_ops;
+-	ifcvf_mgmt_dev->mdev.device = dev;
+-	ifcvf_mgmt_dev->pdev = pdev;
++	int ret, i;
+ 
+ 	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev, "Failed to enable device\n");
+-		goto err;
++		return ret;
+ 	}
+-
+ 	ret = pcim_iomap_regions(pdev, BIT(0) | BIT(2) | BIT(4),
+ 				 IFCVF_DRIVER_NAME);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev, "Failed to request MMIO region\n");
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+ 	if (ret) {
+ 		IFCVF_ERR(pdev, "No usable DMA configuration\n");
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev,
+ 			  "Failed for adding devres for freeing irq vectors\n");
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	pci_set_master(pdev);
+ 
++	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
++				    dev, &ifc_vdpa_ops, 1, 1, NULL, false);
++	if (IS_ERR(adapter)) {
++		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
++		return PTR_ERR(adapter);
++	}
++
++	vf = &adapter->vf;
++	vf->dev_type = get_dev_type(pdev);
++	vf->base = pcim_iomap_table(pdev);
++
++	adapter->pdev = pdev;
++	adapter->vdpa.dma_dev = &pdev->dev;
++
++	ret = ifcvf_init_hw(vf, pdev);
++	if (ret) {
++		IFCVF_ERR(pdev, "Failed to init IFCVF hw\n");
++		return ret;
++	}
++
++	for (i = 0; i < vf->nr_vring; i++)
++		vf->vring[i].irq = -EINVAL;
++
++	vf->hw_features = ifcvf_get_hw_features(vf);
++	vf->config_size = ifcvf_get_config_size(vf);
++
++	ifcvf_mgmt_dev = kzalloc(sizeof(struct ifcvf_vdpa_mgmt_dev), GFP_KERNEL);
++	if (!ifcvf_mgmt_dev) {
++		IFCVF_ERR(pdev, "Failed to alloc memory for the vDPA management device\n");
++		return -ENOMEM;
++	}
++
++	ifcvf_mgmt_dev->mdev.ops = &ifcvf_vdpa_mgmt_dev_ops;
++	ifcvf_mgmt_dev->mdev.device = dev;
++	ifcvf_mgmt_dev->adapter = adapter;
++
++	dev_type = get_dev_type(pdev);
++	switch (dev_type) {
++	case VIRTIO_ID_NET:
++		ifcvf_mgmt_dev->mdev.id_table = id_table_net;
++		break;
++	case VIRTIO_ID_BLOCK:
++		ifcvf_mgmt_dev->mdev.id_table = id_table_blk;
++		break;
++	default:
++		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", dev_type);
++		ret = -EOPNOTSUPP;
++		goto err;
++	}
++
++	ifcvf_mgmt_dev->mdev.max_supported_vqs = vf->nr_vring;
++	ifcvf_mgmt_dev->mdev.supported_features = vf->hw_features;
++
++	adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
++
++
+ 	ret = vdpa_mgmtdev_register(&ifcvf_mgmt_dev->mdev);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev,
 -- 
 2.31.1
 
