@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F01B57E974
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 00:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAEA057E97E
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 00:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236532AbiGVWEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 18:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        id S236686AbiGVWIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 18:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiGVWEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 18:04:40 -0400
+        with ESMTP id S229667AbiGVWIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 18:08:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F096212AD3
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 15:04:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC3A2316B
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 15:08:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B328FB82B28
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 22:04:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 234D4C341C6;
-        Fri, 22 Jul 2022 22:04:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BDC8B82B1E
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 22:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E7BC341C6;
+        Fri, 22 Jul 2022 22:08:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658527477;
-        bh=nX/JSoO6B6hqeRlgSxaFhwHvFU6j2deWlNk3Sf6KCD8=;
+        s=k20201202; t=1658527698;
+        bh=4Y1LIFbgxz6EhovTkvJt4bF/mE5sWts0Dlfq9mP7atI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QElE4ezErMrCtex91mrCs0RWKqztQycqKd0vg4LH1R6atfn6vilKbIaG4BYMAg0Rg
-         IzD+6zpuhkEkMbrd2tYOTMOKraZ2QZjmREBPxCCfnXSr7mk0g+lxXl/VQyMbzlQFY5
-         M00pajkHm0P1NnHvS0BZb5diBwdyX7IqLC6zKywgUPa4AkxVHnCySV+hW1s4tYTx7E
-         3dJ+uKZHeRzmv7ddxWXD1T7l7haCSt5FZaavvYdqlXKBQ4dQzTjAdhdSiWjYcqmtlw
-         dvnkWy/Dzh995Oz75GThXfELRv0KzvOqPLPRfkOyg7s+QWkdwJs+kvgWRPqzuK3AXI
-         Vrs/2NYueaH9w==
-Date:   Fri, 22 Jul 2022 15:04:35 -0700
+        b=GxgB4+tO4CRuQmbkBUgyMNywcuePekWHb88GmOtY9yJIZMpWpN6zkJdVZnbNk6sCM
+         dFSkgP1hZKfCCIYsvGckqzgiER20HFQmIDNX2qvViI3UfMs28Qyb6qvH7hxHhSuwMM
+         lRiiE4h3lOApU7R+SK7t0NK2fKp6ZfdoZfF5IjjGE3t+Ypr3/J7triKklBg6h/r1ae
+         EmsPmGnQyVEtCR5lWyDgtP8q2yfnAg6SRr/2JS6yJ7wG+FZlnLDPhl31YLxRr7jpRC
+         3DAErAK5XKPmgm7uoua3QjUcCVPMlckyWFgiBtiVRdrPQqoVB4hTPGSm45N4ZiOJ/0
+         W3qkXvsOmT0qQ==
+Date:   Fri, 22 Jul 2022 15:08:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH net] net/tls: Remove the context from the list in
- tls_device_down
-Message-ID: <20220722150435.371a4fd9@kernel.org>
-In-Reply-To: <20220721091127.3209661-1-maximmi@nvidia.com>
-References: <20220721091127.3209661-1-maximmi@nvidia.com>
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net/sched: act_mirred: avoid printout in the
+ traffic path
+Message-ID: <20220722150816.08349bed@kernel.org>
+In-Reply-To: <c2ef23da1d9a4eb62f4e7b7c4540f9bafb553c15.1658420239.git.dcaratti@redhat.com>
+References: <c2ef23da1d9a4eb62f4e7b7c4540f9bafb553c15.1658420239.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,20 +57,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 12:11:27 +0300 Maxim Mikityanskiy wrote:
-> tls_device_down takes a reference on all contexts it's going to move to
-> the degraded state (software fallback). If sk_destruct runs afterwards,
-> it can reduce the reference counter back to 1 and return early without
-> destroying the context. Then tls_device_down will release the reference
-> it took and call tls_device_free_ctx. However, the context will still
-> stay in tls_device_down_list forever. The list will contain an item,
-> memory for which is released, making a memory corruption possible.
-> 
-> Fix the above bug by properly removing the context from all lists before
-> any call to tls_device_free_ctx.
+On Thu, 21 Jul 2022 18:19:22 +0200 Davide Caratti wrote:
+>  			if (tcf_mirred_dev_dereference(m) == dev) {
+> +				pr_notice("tc mirred: target device %s is %s\n",
+> +					  dev->name,
+> +					  event == NETDEV_UNREGISTER ? "gone" : "down");
 
-SGTM. The tls_device_down_list has no use, tho, is the plan to remove
-it later as a cleanup or your upcoming patches make use of it?
-
-We can delete it now if you don't have a preference, either way the fix
-is small.
+Should we only do this print only once per event as well?
+There can be a large number of actions redirecting to a single device,
+no point printing the warning multiple times for one down event.
