@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC06E57D84A
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB8257D848
 	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 04:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233897AbiGVCNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 22:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S233969AbiGVCNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 22:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233820AbiGVCNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 22:13:19 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D486E974AD
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 19:13:18 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id h12-20020a170902748c00b0016d29671bf7so2024575pll.9
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 19:13:18 -0700 (PDT)
+        with ESMTP id S233884AbiGVCNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 22:13:21 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815DA97494
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 19:13:20 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id h5-20020a17090a3d0500b001f2220eb2d2so1479986pjc.1
+        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 19:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=8eRj9fMxXF9DI7dFEv6N0YjYMeiPhUl4vAONmVgAO28=;
-        b=eur06Mq9kngpS3Qvjvz223Zcfqh8cL4QJn1vB2gx/yYrWEeT+nDHrlNwWPUmtc2fsC
-         WKmfoOkNWVW2MqD6n+pewDybeNl7L8lDtPI8CL+DTe7eCNA8kW6XytrY10h1TPzVSY3H
-         8zd9aZX6OZS/c6SIDZ0jQD/rtHS5YJCakj33j23tSt+PpEz/hx5SpYEu3jqqNg4KozUE
-         jhDUj5rKDiKazAfMpj+H/KPbggidtMW1hRzARCI7NNrVd5T8HOmBF/y8GjeresFU0Q7W
-         npC/1KKV9DjiO7FRRQATlhCOL3mR60JFVSWVzYtz/24p0u0i+1EobLITIoACYXkhtmC0
-         CErQ==
+        bh=DhjjSNuficgbRYAqqQ0W8XZGDABdrTHUp2H4nxtLaug=;
+        b=PI4AMB4vSbp0OIWCtIi99l5y4UFdCqR/ok0FBs166w/hgCwQvkncSijD7lGvRoGySS
+         Ua+FnMCqGvIRXN2qe0qH77bKrmYhFAwB5e6L+hNKsACMXnx+MLuG6goCLrTFH/hCi3Pl
+         QHMcf1tqWKZKns+LlKiQ9RodcMfMMI5jeZmU4Sv4uRY3wo8nJnqQubNwUPaJLeqve4w0
+         18WyJP6Wa1gNf02gbU0YwudKDR8P47mc6mIu2MjlZoyN6nr/mHEZFIYgVUiXCTFQY+5Q
+         PSF8Ximzmamk1QeoF2Wacsv93SLBXFR/+gXPNly8OgWAOCz3BLuAMNV6K0Rvv1ycTXz8
+         fIkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=8eRj9fMxXF9DI7dFEv6N0YjYMeiPhUl4vAONmVgAO28=;
-        b=qNrCnd2DdJYvFjP5MJA6GXNRPY+UzfvHOPDD7TLxTuaRWUh0+ieVwcxZto/QRsJtaL
-         xYLN448wK9WvdPEYWupYK4gaS22f7L0uVfXFqg954u9laQ3yucdNkpIqUOpS9u0Zwilk
-         xVg5TIvl0+/RiCTtiWcvS9b5pDLaeotiqPHSW0I4RSTom3BRcVxUjw+gHlITuuMLhUWT
-         KdFm/NL4BTUBzv2gwtd3ozSKN5/BDqhPxjMn7c/oBX3wNlymhFtY+DeefanRMXGMLcPY
-         2CRtbzWkxS+kETewZdFJTA0qEIfrCfdwCXXztwCJIuFbhX6Z8b9I82x1KzJEAXXPCTpK
-         kyfw==
-X-Gm-Message-State: AJIora+lMGJzOSdKNXWJMrvXBHDz7YoaFMyM5SaqB5Z9Db7vdfnMdt6f
-        fLf+N+WeH99WWMxIowR9TveHuG2g1+jw17LZ
-X-Google-Smtp-Source: AGRyM1uW/hpG471gFnWfhqykAOBM2PxntklXAEuVs5vWHo0v4iZ+U9Wq6bNMYhzxZPnUYeFraSTtJT2ss7zsDtn6
+        bh=DhjjSNuficgbRYAqqQ0W8XZGDABdrTHUp2H4nxtLaug=;
+        b=QdTgnbsdJ8I1Qvs8Uj2UpZPFMpZAkWKQTzFH3PYcpxclJ2f1eWp4WGieJTxscbDaQx
+         pFUBkQ5SMTW5FzOb+fwaFSEImXawMGWzhZUiki/HZbaL9pavOPVPJi1l6l3ZsvvMtzc2
+         Fd0Lm3aIGuzfue2Q+jNbw/y5ltNMAPElJgF5GQlHudq3O3ux+bHbVgoROxrbQr900IbK
+         hwapG0lGfuxvTrqqvwbHp8D5ESY4ZQbP+q1PWDie4xby6uSnBbuJxryD9itc/OSLxSMf
+         L+AiQYuqtV3dsv0XjtvkY8iCO+8097L9Fj3WwbwTiCW3Y3GaU8Pmr6pmHfktVBd8Q1dd
+         8gug==
+X-Gm-Message-State: AJIora+B1i+In6ETnfE+Bcmh695R9q0nktl72P/T8ZdMGBZoT2/uZ+GA
+        7SQzPotdoaxKpMPf3NJCdQ2QBZuFsYvUTSGq
+X-Google-Smtp-Source: AGRyM1sxVbhJAl0O1lOjA9XaioVuQButGgTNpgtk+la7oca/XTSvlK2lHRWIXeRdai+FgRh0VzQIg3+/kc0LFxFH
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a05:6a00:148d:b0:52b:946:67d2 with SMTP
- id v13-20020a056a00148d00b0052b094667d2mr1343737pfu.31.1658455997982; Thu, 21
- Jul 2022 19:13:17 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 02:13:06 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a17:90b:10e:b0:1f1:f3b0:9304 with SMTP
+ id p14-20020a17090b010e00b001f1f3b09304mr837705pjz.1.1658455999390; Thu, 21
+ Jul 2022 19:13:19 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 02:13:07 +0000
 In-Reply-To: <20220722021313.3150035-1-yosryahmed@google.com>
-Message-Id: <20220722021313.3150035-2-yosryahmed@google.com>
+Message-Id: <20220722021313.3150035-3-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220722021313.3150035-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH bpf-next v4 1/8] btf: Add a new kfunc set which allows to mark
- a function to be sleepable
+Subject: [PATCH bpf-next v4 2/8] cgroup: enable cgroup_get_from_file() on cgroup1
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -87,80 +86,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+cgroup_get_from_file() currently fails with -EBADF if called on cgroup
+v1. However, the current implementation works on cgroup v1 as well, so
+the restriction is unnecessary.
 
-This allows to declare a kfunc as sleepable and prevents its use in
-a non sleepable program.
+This enabled cgroup_get_from_fd() to work on cgroup v1, which would be
+the only thing stopping bpf cgroup_iter from supporting cgroup v1.
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- include/linux/btf.h |  2 ++
- kernel/bpf/btf.c    | 13 +++++++++++--
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ kernel/cgroup/cgroup.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 1bfed7fa0428..6e7517573d9e 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -18,6 +18,7 @@ enum btf_kfunc_type {
- 	BTF_KFUNC_TYPE_RELEASE,
- 	BTF_KFUNC_TYPE_RET_NULL,
- 	BTF_KFUNC_TYPE_KPTR_ACQUIRE,
-+	BTF_KFUNC_TYPE_SLEEPABLE,
- 	BTF_KFUNC_TYPE_MAX,
- };
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1779ccddb734..9943fcb1e574 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -6090,11 +6090,6 @@ static struct cgroup *cgroup_get_from_file(struct file *f)
+ 		return ERR_CAST(css);
  
-@@ -37,6 +38,7 @@ struct btf_kfunc_id_set {
- 			struct btf_id_set *release_set;
- 			struct btf_id_set *ret_null_set;
- 			struct btf_id_set *kptr_acquire_set;
-+			struct btf_id_set *sleepable_set;
- 		};
- 		struct btf_id_set *sets[BTF_KFUNC_TYPE_MAX];
- 	};
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 5869f03bcb6e..2040e440f347 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6178,7 +6178,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 	struct bpf_verifier_log *log = &env->log;
- 	u32 i, nargs, ref_id, ref_obj_id = 0;
- 	bool is_kfunc = btf_is_kernel(btf);
--	bool rel = false, kptr_get = false;
-+	bool rel = false, kptr_get = false, sleepable = false;
- 	const char *func_name, *ref_tname;
- 	const struct btf_type *t, *ref_t;
- 	const struct btf_param *args;
-@@ -6209,11 +6209,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 	}
- 
- 	if (is_kfunc) {
--		/* Only kfunc can be release func */
-+		/* Only kfunc can be release, kptr acquire, or sleepable func */
- 		rel = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
- 						BTF_KFUNC_TYPE_RELEASE, func_id);
- 		kptr_get = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
- 						     BTF_KFUNC_TYPE_KPTR_ACQUIRE, func_id);
-+		sleepable = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
-+						      BTF_KFUNC_TYPE_SLEEPABLE, func_id);
- 	}
- 
- 	/* check that BTF function arguments match actual types that the
-@@ -6411,6 +6413,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 			func_name);
- 		return -EINVAL;
- 	}
-+
-+	if (sleepable && !env->prog->aux->sleepable) {
-+		bpf_log(log, "kernel function %s is sleepable but the program is not\n",
-+			func_name);
-+		return -EINVAL;
-+	}
-+
- 	/* returns argument register number > 0 in case of reference release kfunc */
- 	return rel ? ref_regno : 0;
+ 	cgrp = css->cgroup;
+-	if (!cgroup_on_dfl(cgrp)) {
+-		cgroup_put(cgrp);
+-		return ERR_PTR(-EBADF);
+-	}
+-
+ 	return cgrp;
  }
+ 
 -- 
 2.37.1.359.gd136c6c3e2-goog
 
