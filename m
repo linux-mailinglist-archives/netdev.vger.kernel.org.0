@@ -2,114 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C0157DA2B
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 08:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 250F257DA2E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 08:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232987AbiGVGSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 02:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        id S232603AbiGVGVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 02:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiGVGSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 02:18:51 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A375466BB9
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 23:18:50 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id c72so1776810edf.8
-        for <netdev@vger.kernel.org>; Thu, 21 Jul 2022 23:18:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2uD2epaAfxMNuwTRTpPls5Nw8PpUWFQrEFoFuEvhGn0=;
-        b=5BVNq20xCgExIi+ptlVrUOuFuwpT6QZSgI7xr6xduWHpw5sJgI7QBY3/BiEKqVluiv
-         b2RBFjGCA2oUjyfFM2JbqoRYBGD9Up1zcIFGD6h3NoD2MlElUFQjjevXTfH1WmqW/O1y
-         B5Nge7bQcJSaDPvah/6/Y9Q13K+ZgjWSSGZ0/mh5dpaWU3Hhk5mjsV+6U3ncl/tAbnm/
-         LGSm1wZJHJvWyig+OHicN/D5ZUXP8DFuTC440y4Cg7nUPyGnxGBeTXrhuVj51SBfryQ4
-         HA++R+QWvePDB6vt+xtwA+4wdW4F9m64y7Y3yNuunCMzV5NIFDhH+4RFpdT6W7hG2nSf
-         4Gmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2uD2epaAfxMNuwTRTpPls5Nw8PpUWFQrEFoFuEvhGn0=;
-        b=zFBoXh3SgywNebwbxKGHOK3kaG6Ej7ck4QE+VYhhLzM0dUSWwvOwuFe2AkO9GOlMhQ
-         sVFMz6sk1hsE4zx90pOA9GHbrr9Y3OUo8gFoYGae6AwnxsHbayJxOCoc4P625SFW+xfL
-         nOLb/sbzm2BkDmtNVQso3YLoHxqkIhKa+0u/S3SgSermSIj0IoGTSC6J5iBOkLHETDsy
-         72IZkHsNwUz7Q/Ym09KLx05O9bSjsVv9UDn9I0tZ7Xxrc58GFJbcloyZlsYv0jI9H/2A
-         EK/qNjAw75B/+gOtSXHBtopkYzmZ3A6Ni+giu29d8rEMrrevPPK1BFWAuPzSh2gUKz9v
-         DLVg==
-X-Gm-Message-State: AJIora/1nG3Tw1zEk329WXU3uiHwZqGgQlt7+tUmKzi/6Ky1L5ZID1yi
-        fOsmX5y4PHbt4c3czMVvta7qVQ==
-X-Google-Smtp-Source: AGRyM1sMnrN7HcyincnXglfMF2Dm4V3mEN+5IFJ8naZlrkhgeUbYcCTeEQN4I55IbIAbaoE2s0Xszg==
-X-Received: by 2002:a05:6402:291c:b0:43b:d177:c59 with SMTP id ee28-20020a056402291c00b0043bd1770c59mr1573641edb.370.1658470729293;
-        Thu, 21 Jul 2022 23:18:49 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id en21-20020a17090728d500b0072b342ad997sm1632315ejc.199.2022.07.21.23.18.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 23:18:48 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 08:18:47 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash
- update
-Message-ID: <YtpBR2ZnR2ieOg5E@nanopsycho>
-References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
- <20220720183433.2070122-2-jacob.e.keller@intel.com>
- <YtjqJjIceW+fProb@nanopsycho>
- <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
+        with ESMTP id S229547AbiGVGVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 02:21:12 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB2B237F6;
+        Thu, 21 Jul 2022 23:21:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658470871; x=1690006871;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=h4H/Zx6LklP4XR6ejecTuQCa5GmpUXVBaolU3VL7Erc=;
+  b=GVamgSV0ApJWtOa7FKkXZRCqcii9nsGghSxlR3rH6af2DOFuIlPw7z48
+   zKU0U2RD1Cv46+SypbdqOhQxEsuxaID06mSUUeUx4FBCOXrU8WXVplGv+
+   e0/mRKv/NXC6Kay06LlH52i1uFz/naxuJsrx+XvMXRG9JUwZOw70+9p0m
+   lMMDZVmkEYuj01ag1g9EbcOpXr7xtWKW55qyKMfObIBGJbJHmZCcEfdqq
+   VVladwrwEuidj9qfLMYl5YiN8PO0SOalMNAb2yP2JSua91+bbP+kWiU5r
+   j1budkMm08754jgqWLV61dVl144uTteMGNXoxyxLmS9aej5SSaAaJqvTq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="348948853"
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="348948853"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 23:21:10 -0700
+X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
+   d="scan'208";a="626439407"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 23:21:02 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 8778B20359;
+        Fri, 22 Jul 2022 09:21:00 +0300 (EEST)
+Date:   Fri, 22 Jul 2022 06:21:00 +0000
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH net-next 2/6] software node: allow named software node to
+ be created
+Message-ID: <YtpBzCf+Vc3yWSUF@paasikivi.fi.intel.com>
+References: <YtHPJNpcN4vNfgT6@smile.fi.intel.com>
+ <20220715204841.pwhvnue2atrkc2fx@skbuf>
+ <YtVSQI5VHtCOTCHc@smile.fi.intel.com>
+ <YtVfppMtW77ICyC5@shell.armlinux.org.uk>
+ <YtWp3WkpCtfe559l@smile.fi.intel.com>
+ <YtWwbMucEyO+W8/Y@shell.armlinux.org.uk>
+ <YtW9goFpOLGvIDog@smile.fi.intel.com>
+ <YtXE0idsKe6FZ+n4@shell.armlinux.org.uk>
+ <YtZwU9BKAO/WSRmK@paasikivi.fi.intel.com>
+ <20220720225652.4uo6fcdcunenej3j@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220720225652.4uo6fcdcunenej3j@skbuf>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 21, 2022 at 10:32:25PM CEST, jacob.e.keller@intel.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Wednesday, July 20, 2022 10:55 PM
->> To: Keller, Jacob E <jacob.e.keller@intel.com>
->> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
->> Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash update
->
-><...>
->
->> > struct devlink_region;
->> > struct devlink_info_req;
->> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->> >index b3d40a5d72ff..e24a5a808a12 100644
->> >--- a/include/uapi/linux/devlink.h
->> >+++ b/include/uapi/linux/devlink.h
->> >@@ -576,6 +576,14 @@ enum devlink_attr {
->> > 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
->> > 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
->> >
->> >+	/* Before adding this attribute to a command, user space should check
->> >+	 * the policy dump and verify the kernel recognizes the attribute.
->> >+	 * Otherwise older kernels which do not recognize the attribute may
->> >+	 * silently accept the unknown attribute while not actually performing
->> >+	 * a dry run.
->> 
->> Why this comment is needed? Isn't that something generic which applies
->> to all new attributes what userspace may pass and kernel may ignore?
->> 
->
->Because other attributes may not have such a negative and unexpected side effect. In most cases the side effect will be "the thing you wanted doesn't happen", but in this case its "the thing you didn't want to happen does". I think that deserves some warning. A dry run is a request to *not* do something.
+Hi Vladimir,
 
-Hmm. Another option, in order to be on the safe side, would be to have a
-new cmd for this...
+On Thu, Jul 21, 2022 at 01:56:52AM +0300, Vladimir Oltean wrote:
+> Hi Sakari,
+> 
+> On Tue, Jul 19, 2022 at 08:50:27AM +0000, Sakari Ailus wrote:
+> > Basically what your patch is doing is adding a helper function that creates
+> > an fwnode with a given name. This functionality was there previously through
+> > software_node_register_nodes(), with node allocation responsibility residing
+> > on the caller. It's used e.g. here:
+> > drivers/media/pci/intel/ipu3/cio2-bridge.c .
+> > 
+> > The larger question is perhaps when can you safely remove software nodes.
+> > And which of these two APIs would be preferred. I haven't checked how many
+> > users each has. There's no refcounting nor locking for software nodes, so
+> > once made visible to the rest of the kernel, they're always expected to be
+> > there, unchanged, or at least it needs to be known when they can be removed.
+> 
+> Just for my clarity, are you saying that this printf selftest is
+> violating the software nodes' expectation to always be there unchanged
+> and never be removed?
 
+No. This is the other case, i.e. it's known the nodes can be removed.
 
->
->Thanks,
->Jake
+> 
+> static void __init fwnode_pointer(void)
+> {
+> 	const struct software_node softnodes[] = {
+> 		{ .name = "first", },
+> 		{ .name = "second", .parent = &softnodes[0], },
+> 		{ .name = "third", .parent = &softnodes[1], },
+> 		{ NULL /* Guardian */ }
+> 	};
+> 	const char * const full_name = "first/second/third";
+> 	const char * const full_name_second = "first/second";
+> 	const char * const second_name = "second";
+> 	const char * const third_name = "third";
+> 	int rval;
+> 
+> 	rval = software_node_register_nodes(softnodes);
+> 	if (rval) {
+> 		pr_warn("cannot register softnodes; rval %d\n", rval);
+> 		return;
+> 	}
+> 
+> 	test(full_name_second, "%pfw", software_node_fwnode(&softnodes[1]));
+> 	test(full_name, "%pfw", software_node_fwnode(&softnodes[2]));
+> 	test(full_name, "%pfwf", software_node_fwnode(&softnodes[2]));
+> 	test(second_name, "%pfwP", software_node_fwnode(&softnodes[1]));
+> 	test(third_name, "%pfwP", software_node_fwnode(&softnodes[2]));
+> 
+> 	software_node_unregister_nodes(softnodes);
+> }
+> 
+> The use case in this patch set is essentially equivalent to what printf
+> does: exposing the software nodes to the rest of the kernel and to user
+> space is probably not necessary, it's just that we need to call a
+> function that parses their structure (essentially an equivalent to
+> calling "test" above). Could you indicate whether there is a better
+> alternative of doing this?
+
+I'm actually not suggesting to do otherwise. What I wanted to say was that
+it'd be best to settle with a single API to create software nodes while
+keeping in mind serialising access to the data structure as well as
+the lifetime of the software nodes.
+
+This patch is adding another API function to register software nodes which
+expands the scope of another that effectively did not allow sub-nodes.
+Lifetime management currently doesn't really exist for ACPI nodes (device
+or data) and only exists in somewhat unsatisfactory form for DT nodes. That
+might be still the best model for software nodes.
+
+Perhaps the API this patch adds is nicer to use than
+software_node_register_nodes() and better lends itself for adding
+refcounting later on.
+
+I wonder what Andy or Heikki think.
+
+-- 
+Kind regards,
+
+Sakari Ailus
