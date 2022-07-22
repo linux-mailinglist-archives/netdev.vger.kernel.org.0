@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F07857DB09
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 09:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4617B57DB27
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 09:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbiGVHVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 03:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
+        id S234399AbiGVHVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 03:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbiGVHVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 03:21:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A448D15713
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 00:21:15 -0700 (PDT)
+        with ESMTP id S234363AbiGVHVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 03:21:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0F520F5E
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 00:21:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58D23B8267D
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 07:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB92C341C6;
-        Fri, 22 Jul 2022 07:21:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAADE621BA
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 07:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C903DC341C6;
+        Fri, 22 Jul 2022 07:21:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658474473;
-        bh=kpLqIwyhx5Mkngpodf9zhchYBbDCqagoWs8dhA4A2UU=;
+        s=k20201202; t=1658474510;
+        bh=gs3Y7OdFr1SCPPKNy/wWytrZ55M3gULs+vke01PyqXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VwtxPD0WjLQozT2GUl6DvrxjjBvAsphO7xo1IKdYqf9+7MIO8RkaIXk54TBTHot8X
-         tEDO4wAFm5A4aqIUSw2NWDAeaTjDmy3GWeNxjjpDir+VFyeCA4dH5HGGU+JpsXoqUo
-         ByqHTzvh3gaKNESTcxCohM7AiTT6lgCm7ag9EXlH6Dj+SKQemmFmhnjL0NZkzsHf5J
-         tSnjkP7dueTtfjDY3ZIcDRU9Vl6MamwQdvOTP4E+j6r3wRECq9Nk+k/V8ChYRaR32m
-         kJOMe9E5qKy4Tm17Hrg6etvOQHf68gHRNcqd/ekCDCao4kFfm0zQPVrNXInGeiXcWl
-         ZdFNDD95/HBVw==
+        b=bbgE+UFPqqmimPs729cTMlBgfJT3YG7OolXl8m9iPmCYPWkYp/u8rY4bFsyAO/hap
+         7jgkvRVwYatw7fdYDAYGG/VIs7k91f9enJEyFNrqyxCHKZlHbRAvUi7gudAU0jCEtY
+         lLu8UQjUx6TCqHuX267meYdmjGdwo5hLwnlBylse1N6I4r3gFdbKF/45M63rIpv2p9
+         5EwkApNczQvvi9jzpKq7+ZVmBT/6IzUaZYjy164P6A87EsHm0rIXSlA8osFAbohDvU
+         +MBu5bMBtZ/XEmzePEzNN7WFnPWVxDNvdbf2hd89wBwXzfnimuaze7kRONrLt1OV7u
+         TTRPvrQPsoCqg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -38,9 +38,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
         linux-mediatek@lists.infradead.org, ilias.apalodimas@linaro.org,
         lorenzo.bianconi@redhat.com, jbrouer@redhat.com
-Subject: [PATCH v4 net-next 2/5] net: ethernet: mtk_eth_soc: add basic XDP support
-Date:   Fri, 22 Jul 2022 09:19:37 +0200
-Message-Id: <280b4e0dd175840dcfba683f01c461685e4692f3.1658474059.git.lorenzo@kernel.org>
+Subject: [PATCH v4 net-next 3/5] net: ethernet: mtk_eth_soc: introduce xdp ethtool counters
+Date:   Fri, 22 Jul 2022 09:19:38 +0200
+Message-Id: <44260c788c793aa6ca63d87eac1b7d0938eb949a.1658474059.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1658474059.git.lorenzo@kernel.org>
 References: <cover.1658474059.git.lorenzo@kernel.org>
@@ -55,295 +55,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce basic XDP support to mtk_eth_soc driver.
-Supported XDP verdicts:
-- XDP_PASS
-- XDP_DROP
-- XDP_REDIRECT
+Report xdp stats through ethtool
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 162 +++++++++++++++++---
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |   2 +
- 2 files changed, 145 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 26 +++++++++++++++++++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 12 ++++++++++
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 9a92d602ebd5..9a40876e5417 100644
+index 9a40876e5417..cd96eaf72b6b 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1432,6 +1432,11 @@ static void mtk_update_rx_cpu_idx(struct mtk_eth *eth)
- 	}
- }
+@@ -34,6 +34,10 @@ MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
+ #define MTK_ETHTOOL_STAT(x) { #x, \
+ 			      offsetof(struct mtk_hw_stats, x) / sizeof(u64) }
  
-+static bool mtk_page_pool_enabled(struct mtk_eth *eth)
-+{
-+	return !eth->hwlro;
-+}
++#define MTK_ETHTOOL_XDP_STAT(x) { #x, \
++				  offsetof(struct mtk_hw_stats, xdp_stats.x) / \
++				  sizeof(u64) }
 +
- static struct page_pool *mtk_create_page_pool(struct mtk_eth *eth,
- 					      struct xdp_rxq_info *xdp_q,
- 					      int id, int size)
-@@ -1494,11 +1499,52 @@ static void mtk_rx_put_buff(struct mtk_rx_ring *ring, void *data, bool napi)
- 		skb_free_frag(data);
- }
- 
-+static u32 mtk_xdp_run(struct mtk_eth *eth, struct mtk_rx_ring *ring,
-+		       struct xdp_buff *xdp, struct net_device *dev)
-+{
-+	struct bpf_prog *prog;
-+	u32 act = XDP_PASS;
-+
-+	rcu_read_lock();
-+
-+	prog = rcu_dereference(eth->prog);
-+	if (!prog)
-+		goto out;
-+
-+	act = bpf_prog_run_xdp(prog, xdp);
-+	switch (act) {
-+	case XDP_PASS:
-+		goto out;
-+	case XDP_REDIRECT:
-+		if (unlikely(xdp_do_redirect(dev, xdp, prog))) {
-+			act = XDP_DROP;
-+			break;
-+		}
-+		goto out;
-+	default:
-+		bpf_warn_invalid_xdp_action(dev, prog, act);
-+		fallthrough;
-+	case XDP_ABORTED:
-+		trace_xdp_exception(dev, prog, act);
-+		fallthrough;
-+	case XDP_DROP:
-+		break;
-+	}
-+
-+	page_pool_put_full_page(ring->page_pool,
-+				virt_to_head_page(xdp->data), true);
-+out:
-+	rcu_read_unlock();
-+
-+	return act;
-+}
-+
- static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		       struct mtk_eth *eth)
- {
- 	struct dim_sample dim_sample = {};
- 	struct mtk_rx_ring *ring;
-+	bool xdp_flush = false;
- 	int idx;
- 	struct sk_buff *skb;
- 	u8 *data, *new_data;
-@@ -1507,9 +1553,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 
- 	while (done < budget) {
- 		unsigned int pktlen, *rxdcsum;
--		u32 hash, reason, reserve_len;
- 		struct net_device *netdev;
- 		dma_addr_t dma_addr;
-+		u32 hash, reason;
- 		int mac = 0;
- 
- 		ring = mtk_get_rx_ring(eth);
-@@ -1539,8 +1585,14 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		if (unlikely(test_bit(MTK_RESETTING, &eth->state)))
- 			goto release_desc;
- 
-+		pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
-+
- 		/* alloc new buffer */
- 		if (ring->page_pool) {
-+			struct page *page = virt_to_head_page(data);
-+			struct xdp_buff xdp;
-+			u32 ret;
-+
- 			new_data = mtk_page_pool_get_buff(ring->page_pool,
- 							  &dma_addr,
- 							  GFP_ATOMIC);
-@@ -1548,6 +1600,34 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 				netdev->stats.rx_dropped++;
- 				goto release_desc;
- 			}
-+
-+			dma_sync_single_for_cpu(eth->dma_dev,
-+				page_pool_get_dma_addr(page) + MTK_PP_HEADROOM,
-+				pktlen, page_pool_get_dma_dir(ring->page_pool));
-+
-+			xdp_init_buff(&xdp, PAGE_SIZE, &ring->xdp_q);
-+			xdp_prepare_buff(&xdp, data, MTK_PP_HEADROOM, pktlen,
-+					 false);
-+			xdp_buff_clear_frags_flag(&xdp);
-+
-+			ret = mtk_xdp_run(eth, ring, &xdp, netdev);
-+			if (ret == XDP_REDIRECT)
-+				xdp_flush = true;
-+
-+			if (ret != XDP_PASS)
-+				goto skip_rx;
-+
-+			skb = build_skb(data, PAGE_SIZE);
-+			if (unlikely(!skb)) {
-+				page_pool_put_full_page(ring->page_pool,
-+							page, true);
-+				netdev->stats.rx_dropped++;
-+				goto skip_rx;
-+			}
-+
-+			skb_reserve(skb, xdp.data - xdp.data_hard_start);
-+			skb_put(skb, xdp.data_end - xdp.data);
-+			skb_mark_for_recycle(skb);
- 		} else {
- 			if (ring->frag_size <= PAGE_SIZE)
- 				new_data = napi_alloc_frag(ring->frag_size);
-@@ -1571,27 +1651,20 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 
- 			dma_unmap_single(eth->dma_dev, trxd.rxd1,
- 					 ring->buf_size, DMA_FROM_DEVICE);
--		}
- 
--		/* receive data */
--		skb = build_skb(data, ring->frag_size);
--		if (unlikely(!skb)) {
--			mtk_rx_put_buff(ring, data, true);
--			netdev->stats.rx_dropped++;
--			goto skip_rx;
--		}
-+			skb = build_skb(data, ring->frag_size);
-+			if (unlikely(!skb)) {
-+				netdev->stats.rx_dropped++;
-+				skb_free_frag(data);
-+				goto skip_rx;
-+			}
- 
--		if (ring->page_pool) {
--			reserve_len = MTK_PP_HEADROOM;
--			skb_mark_for_recycle(skb);
--		} else {
--			reserve_len = NET_SKB_PAD + NET_IP_ALIGN;
-+			skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
-+			skb_put(skb, pktlen);
- 		}
--		skb_reserve(skb, reserve_len);
- 
--		pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
- 		skb->dev = netdev;
--		skb_put(skb, pktlen);
-+		bytes += skb->len;
- 
- 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
- 			rxdcsum = &trxd.rxd3;
-@@ -1603,7 +1676,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		else
- 			skb_checksum_none_assert(skb);
- 		skb->protocol = eth_type_trans(skb, netdev);
--		bytes += pktlen;
- 
- 		hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
- 		if (hash != MTK_RXD4_FOE_ENTRY) {
-@@ -1666,6 +1738,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			  &dim_sample);
- 	net_dim(&eth->rx_dim, dim_sample);
- 
-+	if (xdp_flush)
-+		xdp_do_flush_map();
-+
- 	return done;
- }
- 
-@@ -2011,7 +2086,7 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 	if (!ring->data)
- 		return -ENOMEM;
- 
--	if (!eth->hwlro) {
-+	if (mtk_page_pool_enabled(eth)) {
- 		struct page_pool *pp;
- 
- 		pp = mtk_create_page_pool(eth, &ring->xdp_q, ring_no,
-@@ -2750,6 +2825,48 @@ static int mtk_stop(struct net_device *dev)
- 	return 0;
- }
- 
-+static int mtk_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct mtk_mac *mac = netdev_priv(dev);
-+	struct mtk_eth *eth = mac->hw;
-+	struct bpf_prog *old_prog;
-+	bool need_update;
-+
-+	if (eth->hwlro) {
-+		NL_SET_ERR_MSG_MOD(extack, "XDP not supported with HWLRO");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (dev->mtu > MTK_PP_MAX_BUF_SIZE) {
-+		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	need_update = !!eth->prog != !!prog;
-+	if (netif_running(dev) && need_update)
-+		mtk_stop(dev);
-+
-+	old_prog = rcu_replace_pointer(eth->prog, prog, lockdep_rtnl_is_held());
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+
-+	if (netif_running(dev) && need_update)
-+		return mtk_open(dev);
-+
-+	return 0;
-+}
-+
-+static int mtk_xdp(struct net_device *dev, struct netdev_bpf *xdp)
-+{
-+	switch (xdp->command) {
-+	case XDP_SETUP_PROG:
-+		return mtk_xdp_setup(dev, xdp->prog, xdp->extack);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static void ethsys_reset(struct mtk_eth *eth, u32 reset_bits)
- {
- 	regmap_update_bits(eth->ethsys, ETHSYS_RSTCTRL,
-@@ -3045,6 +3162,12 @@ static int mtk_change_mtu(struct net_device *dev, int new_mtu)
- 	struct mtk_eth *eth = mac->hw;
- 	u32 mcr_cur, mcr_new;
- 
-+	if (rcu_access_pointer(eth->prog) &&
-+	    length > MTK_PP_MAX_BUF_SIZE) {
-+		netdev_err(dev, "Invalid MTU for XDP mode\n");
-+		return -EINVAL;
-+	}
-+
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
- 		mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
- 		mcr_new = mcr_cur & ~MAC_MCR_MAX_RX_MASK;
-@@ -3372,6 +3495,7 @@ static const struct net_device_ops mtk_netdev_ops = {
- 	.ndo_poll_controller	= mtk_poll_controller,
- #endif
- 	.ndo_setup_tc		= mtk_eth_setup_tc,
-+	.ndo_bpf		= mtk_xdp,
+ static const struct mtk_reg_map mtk_reg_map = {
+ 	.tx_irq_mask		= 0x1a1c,
+ 	.tx_irq_status		= 0x1a18,
+@@ -141,6 +145,13 @@ static const struct mtk_ethtool_stats {
+ 	MTK_ETHTOOL_STAT(rx_long_errors),
+ 	MTK_ETHTOOL_STAT(rx_checksum_errors),
+ 	MTK_ETHTOOL_STAT(rx_flow_control_packets),
++	MTK_ETHTOOL_XDP_STAT(rx_xdp_redirect),
++	MTK_ETHTOOL_XDP_STAT(rx_xdp_pass),
++	MTK_ETHTOOL_XDP_STAT(rx_xdp_drop),
++	MTK_ETHTOOL_XDP_STAT(rx_xdp_tx),
++	MTK_ETHTOOL_XDP_STAT(rx_xdp_tx_errors),
++	MTK_ETHTOOL_XDP_STAT(tx_xdp_xmit),
++	MTK_ETHTOOL_XDP_STAT(tx_xdp_xmit_errors),
  };
  
- static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ static const char * const mtk_clks_source_name[] = {
+@@ -1502,6 +1513,9 @@ static void mtk_rx_put_buff(struct mtk_rx_ring *ring, void *data, bool napi)
+ static u32 mtk_xdp_run(struct mtk_eth *eth, struct mtk_rx_ring *ring,
+ 		       struct xdp_buff *xdp, struct net_device *dev)
+ {
++	struct mtk_mac *mac = netdev_priv(dev);
++	struct mtk_hw_stats *hw_stats = mac->hw_stats;
++	u64 *count = &hw_stats->xdp_stats.rx_xdp_drop;
+ 	struct bpf_prog *prog;
+ 	u32 act = XDP_PASS;
+ 
+@@ -1514,13 +1528,16 @@ static u32 mtk_xdp_run(struct mtk_eth *eth, struct mtk_rx_ring *ring,
+ 	act = bpf_prog_run_xdp(prog, xdp);
+ 	switch (act) {
+ 	case XDP_PASS:
+-		goto out;
++		count = &hw_stats->xdp_stats.rx_xdp_pass;
++		goto update_stats;
+ 	case XDP_REDIRECT:
+ 		if (unlikely(xdp_do_redirect(dev, xdp, prog))) {
+ 			act = XDP_DROP;
+ 			break;
+ 		}
+-		goto out;
++
++		count = &hw_stats->xdp_stats.rx_xdp_redirect;
++		goto update_stats;
+ 	default:
+ 		bpf_warn_invalid_xdp_action(dev, prog, act);
+ 		fallthrough;
+@@ -1533,6 +1550,11 @@ static u32 mtk_xdp_run(struct mtk_eth *eth, struct mtk_rx_ring *ring,
+ 
+ 	page_pool_put_full_page(ring->page_pool,
+ 				virt_to_head_page(xdp->data), true);
++
++update_stats:
++	u64_stats_update_begin(&hw_stats->syncp);
++	*count = *count + 1;
++	u64_stats_update_end(&hw_stats->syncp);
+ out:
+ 	rcu_read_unlock();
+ 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 26c019319055..cfb7aeda3f49 100644
+index cfb7aeda3f49..2775da1a6ec3 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -1088,6 +1088,8 @@ struct mtk_eth {
+@@ -570,6 +570,16 @@ struct mtk_tx_dma_v2 {
+ struct mtk_eth;
+ struct mtk_mac;
  
- 	struct mtk_ppe			*ppe;
- 	struct rhashtable		flow_table;
++struct mtk_xdp_stats {
++	u64 rx_xdp_redirect;
++	u64 rx_xdp_pass;
++	u64 rx_xdp_drop;
++	u64 rx_xdp_tx;
++	u64 rx_xdp_tx_errors;
++	u64 tx_xdp_xmit;
++	u64 tx_xdp_xmit_errors;
++};
 +
-+	struct bpf_prog			__rcu *prog;
- };
+ /* struct mtk_hw_stats - the structure that holds the traffic statistics.
+  * @stats_lock:		make sure that stats operations are atomic
+  * @reg_offset:		the status register offset of the SoC
+@@ -593,6 +603,8 @@ struct mtk_hw_stats {
+ 	u64 rx_checksum_errors;
+ 	u64 rx_flow_control_packets;
  
- /* struct mtk_mac -	the structure that holds the info about the MACs of the
++	struct mtk_xdp_stats	xdp_stats;
++
+ 	spinlock_t		stats_lock;
+ 	u32			reg_offset;
+ 	struct u64_stats_sync	syncp;
 -- 
 2.36.1
 
