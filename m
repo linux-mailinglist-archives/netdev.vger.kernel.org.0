@@ -2,34 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F46A57E23E
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 15:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A064257E294
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 15:52:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235007AbiGVNUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 09:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
+        id S235242AbiGVNwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 09:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235110AbiGVNUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 09:20:39 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DAE25C7B;
-        Fri, 22 Jul 2022 06:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uzQ8w7rKAbkoZSRPJucJAgUKh5DCe2hdLAcL4aCnnMM=; b=6M9TuGazI4VSoJjq0Q/Cvs2mB1
-        nIo1v/t8G4J4dFKa6IX82Q4VNZsaTLN5Zg0caUFGesKBHe0zkpVo+KMDaQEC5mi2vUQrXaZH2euZe
-        7/OEkNcwx6P7d7/6i9usYKNx5ub6s1TnBdg6nweAQ3IFbkRdxh2FzH0Iwk/EMoWeIQak=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oEsZY-00B8mU-Ce; Fri, 22 Jul 2022 15:20:04 +0200
-Date:   Fri, 22 Jul 2022 15:20:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        with ESMTP id S234688AbiGVNwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 09:52:05 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE257748B;
+        Fri, 22 Jul 2022 06:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Z7/8Vb+pJfL/cYqKxa7tEtPl84Ey+t1wdd3icfiSAzA=; b=TtYL5rhtwxHHen2/pjLuqGYdn0
+        9CkXajXWWN8l9BKG4c4EWuJGdn5p+frOXLhddZYQ30VZ5PN/KUxneqkW2A8ArkXmoxYvPA2hPaKkY
+        RUhy5WTovLw25CEDTB+wrq8hjuD2Nz2/AQl4Q3u9kvnPAMvDbgd189xA1DoJP6MCj4hMaja6LXCrR
+        2H9xR25irX4QNXhfarqIf7fug7R4WuAFX4eUPJvNc2wGB0CrnG88Jb8Aw/AsBWG0tXG3X3pGPrzYw
+        Ug286XIk8d+E3HHafcd4IbPurKTTN+Yt6QVGE/lTktTCNmaiZUciCe2y017OYqWKeHTRp9BjWjlot
+        +6igktJg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33514)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oEscn-0006zF-04; Fri, 22 Jul 2022 14:23:25 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oEscg-0005qw-6a; Fri, 22 Jul 2022 14:23:18 +0100
+Date:   Fri, 22 Jul 2022 14:23:18 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Alvin __ipraga <alsi@bang-olufsen.dk>,
@@ -60,23 +68,25 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
 Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
  interface mode
-Message-ID: <YtqkBPZUe5j262Z8@lunn.ch>
-References: <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
+Message-ID: <YtqkxklImfR9gW1Z@shell.armlinux.org.uk>
+References: <20220716123608.chdzbvpinso546oh@skbuf>
+ <YtUec3GTWTC59sky@shell.armlinux.org.uk>
+ <20220720224447.ygoto4av7odsy2tj@skbuf>
+ <20220721134618.axq3hmtckrumpoy6@skbuf>
+ <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
  <20220721151533.3zomvnfogshk5ze3@skbuf>
  <20220721192145.1f327b2a@dellmb>
  <20220721192145.1f327b2a@dellmb>
  <20220721182216.z4vdaj4zfb6w3emo@skbuf>
- <YtnBmFm8Jhokgp7Q@shell.armlinux.org.uk>
- <20220721213645.57ne2jf7f6try4ec@skbuf>
- <YtpfmF37FmfY6BV5@shell.armlinux.org.uk>
- <20220722105238.qhfq5myqa4ixkvy4@skbuf>
- <YtqNkSDLRDtuooy/@shell.armlinux.org.uk>
+ <20220722145936.497ac73f@dellmb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YtqNkSDLRDtuooy/@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220722145936.497ac73f@dellmb>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,42 +94,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > The way I understand what you're saying is that there is no guarantee
-> > that the DSA master and CPU port will agree whether to use in-band
-> > autoneg or not here (and implicitly, there is no guarantee that this
-> > link will work):
-> > 
-> > 	&eth0 {
-> > 		phy-mode = "2500base-x";
-> > 		managed = "in-band-status";
-> > 	};
-> > 
-> > 	&switch_cpu_port {
-> > 		ethernet = <&eth0>;
-> > 		phy-mode = "25000base-x";
-> 
-> I'll assume that 25000 is a typo.
-> 
-> > 		managed = "in-band-status";
-> > 	};
-> 
-> Today, there is no guarantee - because it depends on how people have
-> chosen to implement 2500base-X, and whether the hardware requires the
-> use of in-band AN or prohibits it.
+On Fri, Jul 22, 2022 at 02:59:36PM +0200, Marek Behún wrote:
+>   The 2.5GBASE-X PCS does not support Clause 37 Auto-Negotiation.
+>   Hence, the 1000BASE-X PCS is expected to have its Clause 37
+>   Auto-Negotiation functionality disabled so that the /C/ ordered set
+>   will not be transmitted. If a 2.5GBASE-X PCS receives /C/ ordered
+>   set, then undefined behavior may occur.
+>   ...
 
-In practice, a Marvell MAC and a Marvell switch are likely to work,
-since Marvell produce and tested both ends. I would expect this to be
-true for any vendor. It is only going to be a problem when you have
-devices from different vendors. And they have different
-interpretations of what 2500Base-X is.
+The reason that's probably stated is because there hasn't been any
+standardisation of it, different implementations behave differently,
+so they can't define a standard behaviour without breaking what's
+already out there.
 
-So far, mixed vendor systems tend to be
+With mvneta, the reality is that the 2.5G speed is implemented by
+changing the clock configuration in the COMPHY block (serdes) - which
+basically clocks everything 2.5x faster. I seem to remember mvpp2 is
+the same deal.
 
-1) Freescale FEC and Marvell switches, and the FEC it still only 1G RGMII
-2) The smaller simpler devices which are 1G and do not yet use a SERDES.
-
-So this might be a future problem we will have, as more devices start
-supporting 2.5G and 5G, but hopefully those future devices follow the
-standard.
-
-	Andrew
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
