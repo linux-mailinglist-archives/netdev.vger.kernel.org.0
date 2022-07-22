@@ -2,164 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2558757DCBA
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 10:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11AD057DCC0
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 10:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235091AbiGVIpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 04:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S234435AbiGVIqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 04:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234860AbiGVIpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 04:45:34 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2332F820F8;
-        Fri, 22 Jul 2022 01:45:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=iNYJiyysx60oEnrX2De1alRaWHvDmswVZ8hE6v/Ro3o=; b=xDJWFSM4ZFovqGy2DUtYWJe3J1
-        YTEWjm3oJ2+QXeSR0ZuQRSQ86npRBowjBiqOT4hvP1hXs9GII4xXEsfoBunlmHxvQssujNV7WwELZ
-        HvDKisDSqS9sZ+wPiBXO/Dx2bc9dPGO4YngkouBb2tzPODh3z+fGR9bVdZSJyBx6kVbqo5o5zrlVl
-        VFhHxWDZjohBrNe2cZ1W70dU6P85duFdlGepX+MTsefFhHadub0zc5WGGbwtluiQkbK8aY9xghVrz
-        7L6jJma3XDigmxv3BiabiXiEDL79jHelPbgNnfr7idgxMnxy6+hIgWaLSGGbtuqf7t31GtvhIjYDI
-        EYp2M4gg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33502)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oEoHo-0006fT-Mv; Fri, 22 Jul 2022 09:45:28 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oEoHm-0005h9-Er; Fri, 22 Jul 2022 09:45:26 +0100
-Date:   Fri, 22 Jul 2022 09:45:26 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v2 07/11] net: phylink: Adjust link settings based on
- rate adaptation
-Message-ID: <YtpjpowrI3VEyGs2@shell.armlinux.org.uk>
-References: <20220719235002.1944800-1-sean.anderson@seco.com>
- <20220719235002.1944800-8-sean.anderson@seco.com>
- <YtelzB1uO0zACa42@shell.armlinux.org.uk>
- <YthKSYje5e+swg08@shell.armlinux.org.uk>
- <84f4f37e-044c-0fd8-7ba4-cba54200d9fe@seco.com>
+        with ESMTP id S234969AbiGVIqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 04:46:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 880599FE36
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 01:46:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658479567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RSXimuUd+71j8JzSdjJ27yBRxj8T4NPAJaqSzLdyIx8=;
+        b=YRTE23413sJ1NgvWddh00IIzEoJcyRhHvQ6mzWlD+X0a+Oa7/A1LJs9lBvJG+y9P1lcmUl
+        v6YhEUGMIxTcmwWg667YKdyYyv3PudlQchYvZpaJQau/532QNAYHOt1T3aTJZDZ2IeRe2F
+        7cmmmoh2CzV3Bdhf6d/QNo0MUs1/u+c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-QBEJYLHdNXuKeJd-ALmdnQ-1; Fri, 22 Jul 2022 04:46:03 -0400
+X-MC-Unique: QBEJYLHdNXuKeJd-ALmdnQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B101A3C1014E;
+        Fri, 22 Jul 2022 08:46:02 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.194.200])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 420A340CFD0A;
+        Fri, 22 Jul 2022 08:45:59 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user provided context
+Date:   Fri, 22 Jul 2022 10:45:56 +0200
+Message-Id: <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
+References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84f4f37e-044c-0fd8-7ba4-cba54200d9fe@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 05:48:05PM -0400, Sean Anderson wrote:
-> On 7/20/22 2:32 PM, Russell King (Oracle) wrote:
-> > On Wed, Jul 20, 2022 at 07:50:52AM +0100, Russell King (Oracle) wrote:
-> >> We can do that by storing the PHY rate adaption state, and processing
-> >> that in phylink_link_up().
-> > 
-> > Something like this? I haven't included the IPG (open loop) stuff in
-> > this - I think when we come to implement that, we need a new mac
-> > method to call to set the IPG just before calling mac_link_up().
-> > Something like:
-> > 
-> >  void mac_set_ipg(struct phylink_config *config, int packet_speed,
-> > 		  int interface_speed);
-> > 
-> > Note that we also have PCS that do rate adaption too, and I think
-> > fitting those in with the code below may be easier than storing the
-> > media and phy interface speed/duplex separately.
-> 
-> This is another area where the MAC has to know a lot about the PCS.
-> We don't keep track of the PCS interface mode, so the MAC has to know
-> how to connect to the PCS. That could already include some rate
-> adaptation, but I suspect it is all done like GMII (where the clock
-> speed changes).
+When a kfunc was trying to access data from context in a syscall eBPF
+program, the verifier was rejecting the call.
+This is because the syscall context is not known at compile time, and
+so we need to check this when actually accessing it.
 
-In many cases, we don't even know what the interface used to connect the
-PCS to the MAC actually is (we'd have to use something like _INTERNAL).
-Particularly when the PCS and MAC are integrated on the same die,
-manufacturers tend not to tell people how the two blocks are connected.
+Check for the valid memory access and allow such situation to happen.
 
-Even if we assume did use GMII internally for everything (and I mean
-everything), then decoding the GMII interface mode to mean SPEED_1000
-won't work for anything over 1G speeds - so we can't do that. The
-more I think about it, the less meaning the interface mode between
-the PCS and MAC is for our purposes - unless we positively know for
-every device what that mode is, and can reliably translate that into
-the speed of that connection to derive the correct "speed" for the
-MAC.
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-The point of bringing this up was just to bear it in mind, and I
-think when we add support for this, then...
+---
 
-> >  static void phylink_link_up(struct phylink *pl,
-> >  			    struct phylink_link_state link_state)
-> >  {
-> >  	struct net_device *ndev = pl->netdev;
-> > +	int speed, duplex;
-> > +	bool rx_pause;
-> > +
-> > +	speed = link_state.speed;
-> > +	duplex = link_state.duplex;
-> > +	rx_pause = !!(link_state.pause & MLO_PAUSE_RX);
-> > +
-> > +	switch (state->rate_adaption) {
-> > +	case RATE_ADAPT_PAUSE:
-> > +		/* The PHY is doing rate adaption from the media rate (in
-> > +		 * the link_state) to the interface speed, and will send
-> > +		 * pause frames to the MAC to limit its transmission speed.
-> > +		 */
-> > +		speed = phylink_interface_max_speed(link_state.interface);
-> > +		duplex = DUPLEX_FULL;
-> > +		rx_pause = true;
-> > +		break;
-> > +
-> > +	case RATE_ADAPT_CRS:
-> > +		/* The PHY is doing rate adaption from the media rate (in
-> > +		 * the link_state) to the interface speed, and will cause
-> > +		 * collisions to the MAC to limit its transmission speed.
-> > +		 */
-> > +		speed = phylink_interface_max_speed(link_state.interface);
-> > +		duplex = DUPLEX_HALF;
-> > +		break;
-> > +	}
-> >  
-> >  	pl->cur_interface = link_state.interface;
-> >  
-> >  	if (pl->pcs && pl->pcs->ops->pcs_link_up)
-> >  		pl->pcs->ops->pcs_link_up(pl->pcs, pl->cur_link_an_mode,
-> > -					 pl->cur_interface,
-> > -					 link_state.speed, link_state.duplex);
-> > +					 pl->cur_interface, speed, duplex);
-> >  
+changes in v8:
+- fixup comment
+- return -EACCESS instead of -EINVAL for consistency
 
-... we would want to update the speed, duplex and rx_pause parameters
-here for the MAC.
+changes in v7:
+- renamed access_t into atype
+- allow zero-byte read
+- check_mem_access() to the correct offset/size
 
-> >  	pl->mac_ops->mac_link_up(pl->config, pl->phydev,
-> >  				 pl->cur_link_an_mode, pl->cur_interface,
-> > -				 link_state.speed, link_state.duplex,
-> > +				 speed, duplex,
-> >  				 !!(link_state.pause & MLO_PAUSE_TX),
-> > -				 !!(link_state.pause & MLO_PAUSE_RX));
-> > +				 rx_pause);
+new in v6
+---
+ kernel/bpf/verifier.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 7c1e056624f9..c807c5d7085a 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
+ 	struct bpf_map *map_ptr;
+ 	bool raw_mode;
+ 	bool pkt_access;
++	bool is_kfunc;
+ 	u8 release_regno;
+ 	int regno;
+ 	int access_size;
+@@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+ 				   struct bpf_call_arg_meta *meta)
+ {
+ 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
++	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+ 	u32 *max_access;
+ 
+ 	switch (base_type(reg->type)) {
+@@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+ 				env,
+ 				regno, reg->off, access_size,
+ 				zero_size_allowed, ACCESS_HELPER, meta);
++	case PTR_TO_CTX:
++		/* in case of a kfunc called in a program of type SYSCALL, the context is
++		 * user supplied, so not computed statically.
++		 * Dynamically check it now
++		 */
++		if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
++			enum bpf_access_type atype = meta->raw_mode ? BPF_WRITE : BPF_READ;
++			int offset = access_size - 1;
++
++			/* Allow zero-byte read from PTR_TO_CTX */
++			if (access_size == 0)
++				return zero_size_allowed ? 0 : -EACCES;
++
++			return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
++						atype, -1, false);
++		}
++
++		fallthrough;
+ 	default: /* scalar_value or invalid ptr */
+ 		/* Allow zero-byte read from NULL, regardless of pointer type */
+ 		if (zero_size_allowed && access_size == 0 &&
+@@ -5335,6 +5355,7 @@ int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state
+ 	WARN_ON_ONCE(regno < BPF_REG_2 || regno > BPF_REG_5);
+ 
+ 	memset(&meta, 0, sizeof(meta));
++	meta.is_kfunc = true;
+ 
+ 	if (may_be_null) {
+ 		saved_reg = *mem_reg;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.36.1
+
