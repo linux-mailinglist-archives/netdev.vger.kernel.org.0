@@ -2,136 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF30357E8DC
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 23:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1915557E8E0
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 23:29:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234547AbiGVVXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 17:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S231478AbiGVV3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 17:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiGVVXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 17:23:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA754B5C99;
-        Fri, 22 Jul 2022 14:23:49 -0700 (PDT)
+        with ESMTP id S230482AbiGVV3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 17:29:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D727A876B
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 14:29:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 361E5B82B1D;
-        Fri, 22 Jul 2022 21:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8DA3C341C6;
-        Fri, 22 Jul 2022 21:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 082E9620FD
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 21:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAB3C341C6;
+        Fri, 22 Jul 2022 21:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658525026;
-        bh=vVhapYzhoF5T6xapt8OGb62w8w46MvmQ5cBjHBEiDLQ=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Ir6w3Z4lkAUT93V3SuEcqhr9Cw22kquU/jYh1rWulAtUq5KN9B068XdmsoU7TjNIx
-         hn0tpDobMNz6BMJ8B62Qd7jDqPAMS3ySDDKIgHoD06P7hFRHTh871HFq/3JTw8PxuK
-         q4iXZd6kRPhekQeId7XQPu8iyK9qPuQV2xS2QJzSBG5JTJ/dPXv7BIeoOHJjzN5604
-         oVvD382JGRVMfJSl2c7PUyefcUAOlDC5+RDygfkWDkVJ2jOKEW7b2O8CYwbCUdBDFy
-         xCxcvrRbqhdwVK2mzxojvkOiRpNs/BBOLxf4n/IHICRq4y00zLXUGq+Xxk6ek0VHc9
-         Gf1UOaFbYSG/w==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 72BC15C08EB; Fri, 22 Jul 2022 14:23:46 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 14:23:46 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, corbet@lwn.net, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf 2/2] bpf: Update bpf_design_QA.rst to clarify that
- attaching to functions is not ABI
-Message-ID: <20220722212346.GD2860372@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220722180641.2902585-1-paulmck@kernel.org>
- <20220722180641.2902585-2-paulmck@kernel.org>
- <d452fcee-2d15-c3b0-cc44-6b880ecc4722@iogearbox.net>
+        s=k20201202; t=1658525383;
+        bh=/Hl19ZHopwHB2jmOqrlzq4aiXuvU1o07YYOGggoyDRU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=F9Z2vc88s/j+2Op6T5YNX3yLjVE3zcc7Z7BU00eZU+FILiMuVU7CFNz99GaH1mdl7
+         ERnTE7NTFoGKhJmc/Ers/Y3jtMLPQGrPQnU+7cdh983ufgtwr6MRSBUIyy5nnfYBSK
+         kuImwqZGgITQJwnSABh1Uz7g2KmTdBqi4Wl3VY26Rj/UybvG4lePkUkzw/g/cO5jBW
+         joEtBkuX/OcuPRpbcH2ygfUm6tvDU3Dg6fvUDGJvrSMIhnVNbYxSU9fD6qgtdtCvKR
+         b64wzvGVxG1BHzX05Dr7qyLIsXUEXNtm4wRT4lKoUN7AC4lqbhtDI5DGqQeidxyFZN
+         UrdTwPiGbMFHw==
+Date:   Fri, 22 Jul 2022 14:29:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jules Maselbas <jmaselbas@kalray.eu>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: ethtool generate a buffer overflow in strlen
+Message-ID: <20220722142942.48f4332c@kernel.org>
+In-Reply-To: <20220722173745.GB13990@tellis.lin.mbt.kalray.eu>
+References: <20220722173745.GB13990@tellis.lin.mbt.kalray.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d452fcee-2d15-c3b0-cc44-6b880ecc4722@iogearbox.net>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 10:17:57PM +0200, Daniel Borkmann wrote:
-> On 7/22/22 8:06 PM, Paul E. McKenney wrote:
-> > This patch updates bpf_design_QA.rst to clarify that the ability to
-> > attach a BPF program to a given function in the kernel does not make
-> > that function become part of the Linux kernel's ABI.
-> > 
-> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > ---
-> >   Documentation/bpf/bpf_design_QA.rst | 12 ++++++++++++
-> >   1 file changed, 12 insertions(+)
-> > 
-> > diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
-> > index 2ed9128cfbec8..46337a60255e9 100644
-> > --- a/Documentation/bpf/bpf_design_QA.rst
-> > +++ b/Documentation/bpf/bpf_design_QA.rst
-> > @@ -279,3 +279,15 @@ cc (congestion-control) implementations.  If any of these kernel
-> >   functions has changed, both the in-tree and out-of-tree kernel tcp cc
-> >   implementations have to be changed.  The same goes for the bpf
-> >   programs and they have to be adjusted accordingly.
-> > +
-> > +Q: Attaching to kernel functions is an ABI?
+On Fri, 22 Jul 2022 19:37:46 +0200 Jules Maselbas wrote:
+> There is suspicious lines in the file drivers/net/ethernet/freescale/enetc/enetc_ethtool.c:
+>    { ENETC_PM0_R1523X, "MAC rx 1523 to max-octet packets" },
+> and:
+>    { ENETC_PM0_T1523X, "MAC tx 1523 to max-octet packets" },
 > 
-> small nit, I'd change to: Attaching to arbitrary kernel functions [...]
+> Where the string length is actually greater than 32 bytes which is more
+> than the reserved space for the name. This structure is defined as
+> follow:
+>     static const struct {
+>         int reg;
+>         char name[ETH_GSTRING_LEN];
+>     } enetc_port_counters[] = { ...
 > 
-> Otherwise I think this could be a bit misunderstood, e.g. most of the networking
-> programs (e.g. XDP, tc, sock_addr) have a fixed framework around them where
-> attaching programs is part of ABI.
+> In the function enetc_get_strings(), there is a strlcpy call on the
+> counters names which in turns calls strlen on the src string, causing
+> an out-of-bound read, at least out-of the string.
+> 
+> I am not sure that's what caused the BUG, as I don't really know how
+> fortify works but I thinks this might only be visible when fortify is
+> enabled.
+> 
+> I am not sure on how to fix this issue, maybe use `char *` instead of
+> an byte array.
 
-Excellent point, thank you!
+Thanks for the report!
 
-Apologies for the newbie question, but does BTF_ID() mark a function as
-ABI from the viewpoing of a BPF program calling that function, attaching
-to that function, or both?  Either way, is it worth mentioning this
-in this QA entry?
+I'd suggest to just delete the RMON stats in the unstructured API
+in this driver and report them via
+ 
+	ethtool -S eth0 --groups rmon
 
-The updated patch below just adds the "arbitrary".
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-commit 89659e20d11fc1350f5881ff7c9687289806b2ba
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Fri Jul 22 10:52:05 2022 -0700
-
-    bpf: Update bpf_design_QA.rst to clarify that attaching to functions is not ABI
-    
-    This patch updates bpf_design_QA.rst to clarify that the ability to
-    attach a BPF program to an arbitrary function in the kernel does not
-    make that function become part of the Linux kernel's ABI.
-    
-    [ paulmck: Apply Daniel Borkmann feedback. ]
-    
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-
-diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
-index 2ed9128cfbec8..a06ae8a828e3d 100644
---- a/Documentation/bpf/bpf_design_QA.rst
-+++ b/Documentation/bpf/bpf_design_QA.rst
-@@ -279,3 +279,15 @@ cc (congestion-control) implementations.  If any of these kernel
- functions has changed, both the in-tree and out-of-tree kernel tcp cc
- implementations have to be changed.  The same goes for the bpf
- programs and they have to be adjusted accordingly.
-+
-+Q: Attaching to arbitrary kernel functions is an ABI?
-+-----------------------------------------------------
-+Q: BPF programs can be attached to many kernel functions.  Do these
-+kernel functions become part of the ABI?
-+
-+A: NO.
-+
-+The kernel function prototypes will change, and BPF programs attaching to
-+them will need to change.  The BPF compile-once-run-everywhere (CO-RE)
-+should be used in order to make it easier to adapt your BPF programs to
-+different versions of the kernel.
+No point trying to figure out a way to make the old API more
+resilient IMO when we have an alternative.
