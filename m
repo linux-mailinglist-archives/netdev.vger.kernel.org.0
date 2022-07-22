@@ -2,149 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6FD57E34C
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 16:56:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F9457E3B0
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 17:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234812AbiGVO41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 10:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
+        id S235761AbiGVPXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 11:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiGVO40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 10:56:26 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AE357E02;
-        Fri, 22 Jul 2022 07:56:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658501785; x=1690037785;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gDcg3PLNEPvDKVILS1xOIMGfvYZpYQr+B01TmuZK9uM=;
-  b=PQHm8Gt8g5HdK4hN9y7OOo4kVUUDbXkRqzpZQTPnc+KmjQ562kQPysST
-   d8vK9WOP3wA2EGh/3e//8r1S7Lw9EWN4DJLC2xICSnBMtbWbxHBSX5pmP
-   6D6xCseS5Qb2dciSkA7MGWfUTJad3ce5xHchKAhX5GcoCVpAVysNOhdOf
-   onSGOlGpC6vXcYKPHc++B/fOcwMiKnOOf6KcFJ0pnFpcbcO2HGqoJaBRm
-   85N6NsEg1g0GKYqBVQrpMyRgX15OM9rODm6s3MbF+mzKJj1YIr2uX/H8P
-   X8vdnCflw5LDmbiyJu1a0W4Jfz83lCAUPEVhoOaQxiiZ/lywoEAEexT4N
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="288499181"
-X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
-   d="scan'208";a="288499181"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 07:56:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
-   d="scan'208";a="844794732"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Jul 2022 07:56:21 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26MEuKBd003452;
-        Fri, 22 Jul 2022 15:56:20 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
-Date:   Fri, 22 Jul 2022 16:55:14 +0200
-Message-Id: <20220722145514.767592-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220721111318.1b180762@kernel.org>
-References: <20220721155950.747251-1-alexandr.lobakin@intel.com> <20220721111318.1b180762@kernel.org>
+        with ESMTP id S233308AbiGVPXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 11:23:35 -0400
+Received: from a1-bg02.venev.name (a1-bg02.venev.name [IPv6:2001:470:20aa::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B39F050
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=venev.name;
+        s=default; h=Content-Transfer-Encoding:Message-Id:Date:Subject:To:From:
+        Content-Type:Reply-To:Sender; bh=wRzxD5OK0yZmKuNkMhrV09hlvnq/ACuUqTWh/glpdpk=
+        ; b=d75douFD9hLTpbYdz06h3DSfS3E+QtmdhxyJY/kA+po2trXmjTJTCbuTFzw0f9iK75QyCmINF
+        acEVI8p9nL8g5DYIdJjbrxuCGeADA9uCe7+duYao20y2V1M2SWaAlmYW7QQZ039XtOgop3uXj/rrh
+        b0vYfieQT9PzA5uhWLpmXzcY8iYE99gyEF2sPR7rZWmjPWvQ5+bBc+Sk6hXUZebwUNno81ZNGwT57
+        UY5rtorreKMwNiGu62P4sJkzy/iKN00hvmmflOT77Hr5NSEH9cfrGa8f9QBZMX+6xtRXY1/RovyWU
+        2WlC58w1/XCAKD1EdZp7RxcOYU3JAr6AUBOjdVR9zoGGmMV5psJcdv1sL4mYYdmz2gqdayNEvQlB3
+        Qx0U0P1UeL8Mc9uLh4lKe4LDJ1yhX5EQHKYcXxUq9k28r6tkBgnYxKrbnTI9YVFQVVaRtS/N3XCGh
+        BKbgSWaXYkntYjieWCy5W7P39/l7dGZiyHfadLETU4fVQiy16G0KzuOwkSmp+UB7nKXDBvuN3PscG
+        XNu3GDjlhjlFY1jpFLyQeXnRVS4SbHzjdohQjQrbRfusMjTCX7sr4UfV1rRw9ephAeWdH1pBA3EpW
+        ScO+GXUj0zbMC5BlJtKoIkIH8yGGO+X2Qfcf9gIQLKcRgX69wF64EbvNrKdIP7hcRdGlsCg=;
+X-Check-Malware: ok
+Received: from a1-bg02.venev.name ([213.240.239.49] helo=pmx1.venev.name)
+        by a1-bg02.venev.name with esmtps
+        id 1oEuUS-00011t-D6
+        (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+        (envelope-from <hristo@venev.name>);
+        Fri, 22 Jul 2022 15:23:10 +0000
+Received: from venev.name ([213.240.239.49])
+        by pmx1.venev.name with ESMTPSA
+        id 2K0xEc/A2mJ1DwAAdB6GMg
+        (envelope-from <hristo@venev.name>); Fri, 22 Jul 2022 15:22:56 +0000
+From:   Hristo Venev <hristo@venev.name>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hristo Venev <hristo@venev.name>
+Subject: [PATCH] be2net: Fix Smatch error
+Date:   Fri, 22 Jul 2022 18:20:52 +0300
+Message-Id: <20220722152050.3752-1-hristo@venev.name>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <YtlIZgG/wQtxpKMh@kili>
+References: <YtlIZgG/wQtxpKMh@kili>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Thu, 21 Jul 2022 11:13:18 -0700
+    drivers/net/ethernet/emulex/benet/be_ethtool.c:1392 be_get_module_eeprom()
+    error: uninitialized symbol 'status'.
 
-> On Thu, 21 Jul 2022 17:59:46 +0200 Alexander Lobakin wrote:
-> > BTW, Ethtool bitsets provide similar functionality, but it operates
-> > with u32s (u64 is more convenient and optimal on most platforms) and
-> > Netlink bitmaps is a generic interface providing policies and data
-> > verification (Ethtool bitsets are declared simply as %NLA_BINARY),
-> > generic getters/setters etc.
-> 
-> Are you saying we don't need the other two features ethtool bitmaps
-> provide? Masking and compact vs named representations?
+When `eeprom->len == 0` and `eeprom->offset == PAGE_DATA_LEN`, we end
+up with neither of the pages being read, so `status` is left
+uninitialized.
 
-Nah I didn't say that. I'm not too familiar with Ethtool bitsets,
-just know that they're represented as arrays of u32s.
+While it appears that no caller will actually give `get_module_eeprom`
+a zero length, fixing this issue is trivial.
 
-> 
-> I think that straight up bitmap with a fixed word is awkward and leads
-> to too much boilerplate code. People will avoid using it. What about
-> implementing a bigint type instead? Needing more than 64b is extremely
-> rare, so in 99% of the cases the code outside of parsing can keep using
-> its u8/u16/u32.
+Fixes: d7241f679a59 ("be2net: Fix buffer overflow in be_get_module_eeprom")
+Signed-off-by: Hristo Venev <hristo@venev.name>
+---
+ drivers/net/ethernet/emulex/benet/be_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In-kernel code can still use single unsigned long for some flags if
-it wouldn't need more than 64 bits in a couple decades and not
-bother with the bitmap API. Same with userspace -- a single 64 is
-fine for that API, just pass a pointer to it to send it as a bitmap
-to the kernel.
+diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+index bd0df189d871..2145882d00cc 100644
+--- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
++++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+@@ -1361,7 +1361,7 @@ static int be_get_module_eeprom(struct net_device *netdev,
+ 				struct ethtool_eeprom *eeprom, u8 *data)
+ {
+ 	struct be_adapter *adapter = netdev_priv(netdev);
+-	int status;
++	int status = 0;
+ 	u32 begin, end;
+ 
+ 	if (!check_privilege(adapter, MAX_PRIVILEGES))
+-- 
+2.37.1
 
-Re 64b vs extremely rare -- I would say so 5 years go, but now more
-and more bitfields run out of 64 bits. Link modes, netdev features,
-...
-
-Re bigint -- do you mean implementing u128 as a union, like
-
-typedef union __u128 {
-	struct {
-		u32 b127_96;
-		u32 b95_64;
-		u32 b63_32;
-		u32 b31_0;
-	};
-	struct {
-		u64 b127_64;
-		u64 b63_0;
-	};
-#ifdef __HAVE_INT128
-	__int128 b127_0;
-#endif
-} u128;
-
-? We have similar feature in one of our internal trees and planning
-to present generic u128 soon, but this doesn't work well for flags
-I think.
-bitmap API and bitops are widely used and familiar to tons of folks,
-most platforms define their own machine-optimized bitops
-implementation, arrays of unsigned longs are native...
-
-Re awkward -- all u64 <-> bitmap conversion is implemented in the
-core code in 4/4 and users won't need doing anything besides one
-get/set. And still use bitmap/bitops API. Userspace, as I said,
-can use a single __u64 as long as it fits into 64 bits.
-
-Summarizing, I feel like bigints would lead to much more boilerplate
-in both kernel and user spaces and need to implement a whole new API
-instead of using the already existing and well-used bitmap one.
-Continuation of using single objects with fixed size like %NLA_U* or
-%NLA_BITFIELD_U32 will lead to introducing a new Netlink attr every
-32/64 bits (or even 16 like with IP tunnels, that was the initial
-reason why I started working on those 3 series). As Jake wrote me
-in PM earlier,
-
-"I like the concept of an NLA_BITMAP. I could have used this for
-some of the devlink interfaces we've done, and it definitely feels
-a bit more natural than being forced to a single u32 bitfield."
-
-Thanks,
-Olek
