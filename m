@@ -2,143 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A960557E3B7
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 17:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCBAC57E3D7
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 17:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiGVP0w convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Jul 2022 11:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        id S235401AbiGVPi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 11:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiGVP0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 11:26:51 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BC859EC5C;
-        Fri, 22 Jul 2022 08:26:48 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 26MFQW5J0014317, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 26MFQW5J0014317
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 22 Jul 2022 23:26:32 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 22 Jul 2022 23:26:37 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 22 Jul 2022 23:26:36 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::415c:a915:a507:e600]) by
- RTEXMBS04.realtek.com.tw ([fe80::415c:a915:a507:e600%5]) with mapi id
- 15.01.2308.027; Fri, 22 Jul 2022 23:26:36 +0800
-From:   Hau <hau@realtek.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
-Thread-Topic: [PATCH net-next] r8169: add support for rtl8168h(revid 0x2a) +
- rtl8211fs fiber application
-Thread-Index: AQHYnRCVRrASn8LKuEagRDBDIpqm962Iwo2AgABzCoCAAU5IgA==
-Date:   Fri, 22 Jul 2022 15:26:36 +0000
-Message-ID: <146c30d91ffd4514a23f52ac1bac24dd@realtek.com>
-References: <20220721144550.4405-1-hau@realtek.com>
- <356f4285-1e83-ab14-c890-4131acd8e61d@gmail.com> <YtoZCaLTMFw8cTem@lunn.ch>
-In-Reply-To: <YtoZCaLTMFw8cTem@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/7/22_=3F=3F_12:44:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S235296AbiGVPi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 11:38:26 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E038592846
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:38:25 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id h11-20020a92c26b000000b002dd0139d9daso2953454ild.20
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:38:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=lMppGUEb50hZIYPAtBTOe3qW0mUd/jMUvfj5uTqx23M=;
+        b=m/91zdmOFCQ2JPSBfaMHNbM/5aMXpZb8SDGO6Ky8ZcgQn/nqsdbpsN4HDT2l3sI5T0
+         UNmDpBFUo3OBdDU/mfxCQugO8r/ZuorjoFHU6v44I6K/7KxtxOL5V93F6H+c1Ykq+gIw
+         b9Phc29RbPpTPG/1wSsW7a+aWkeZ2rEEVVEM1KgQwc9ZRnQhh15C9doLLCrmlkeHOCZy
+         IF/i4hjdVV96Gh/V9wvv/Tto08iJTJcQJLvOe70R6a7+ffY8lFpOygNenty5WqfDawpK
+         HnQoODcATVNWOEZr7v0RXNE3TQf44JeOI2XWzZi/ZsEQnVMcIhUI5/CRW4k/3oJWkAYF
+         bezw==
+X-Gm-Message-State: AJIora9T5oOLfO3MRquT1l+/SsYYAQFaP4Ns9OmpDLB3Ub2EldE7hqm+
+        tVIVUux1s/W3EK9ZIZVbVa7RSdTix3Bfmz6LvKlHVtLdJJVj
+X-Google-Smtp-Source: AGRyM1vHa1s1m+S9zIZfCosD7S3la9xNWKcVIxZzZeJRwvqQNLp9hrFyXXohQ34KCeuI2dmBot+eu8V5xXEvGSxuclgUwKdryj6B
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:d13:b0:33f:5203:5ab7 with SMTP id
+ q19-20020a0566380d1300b0033f52035ab7mr318471jaj.72.1658504305278; Fri, 22 Jul
+ 2022 08:38:25 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 08:38:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f9821705e4669f6b@google.com>
+Subject: [syzbot] bpf-next build error (4)
+From:   syzbot <syzbot+ea8ff4e064cd21861ec7@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        haoluo@google.com, hawk@kernel.org, john.fastabend@gmail.com,
+        jolsa@kernel.org, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, martin.lau@linux.dev,
+        netdev@vger.kernel.org, pabeni@redhat.com, sdf@google.com,
+        song@kernel.org, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> > > +#define RT_SFP_ST (1)
-> > > +#define RT_SFP_OP_W (1)
-> > > +#define RT_SFP_OP_R (2)
-> > > +#define RT_SFP_TA_W (2)
-> > > +#define RT_SFP_TA_R (0)
-> > > +
-> > > +static void rtl_sfp_if_write(struct rtl8169_private *tp,
-> > > +				  struct rtl_sfp_if_mask *sfp_if_mask, u8 reg,
-> u16 val) {
-> > > +	struct rtl_sfp_if_info sfp_if_info = {0};
-> > > +	const u16 mdc_reg = PIN_I_SEL_1;
-> > > +	const u16 mdio_reg = PIN_I_SEL_2;
-> > > +
-> > > +	rtl_select_sfp_if(tp, sfp_if_mask, &sfp_if_info);
-> > > +
-> > > +	/* change to output mode */
-> > > +	r8168_mac_ocp_write(tp, PINOE, sfp_if_info.mdio_oe_o);
-> > > +
-> > > +	/* init sfp interface */
-> > > +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pd);
-> > > +	r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info.mdio_pu);
-> > > +
-> > > +	/* preamble 32bit of 1 */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, 0xffffffff, 32);
-> > > +
-> > > +	/* opcode write */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_ST, 2);
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_OP_W, 2);
-> > > +
-> > > +	/* phy address */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, sfp_if_mask->phy_addr, 5);
-> > > +
-> > > +	/* phy reg */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, reg, 5);
-> > > +
-> > > +	/* turn-around(TA) */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_TA_W, 2);
-> > > +
-> > > +	/* write phy data */
-> > > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, val, 16);
-> 
-> This looks like a bit-banging MDIO bus? If so, please use the kernel code,
-> drivers/net/mdio/mdio-bitbang.c. You just need to provide it with functions
-> to write and read a bit, and it will do the rest, including C45 which you don't
-> seem to support here.
+Hello,
 
-I will try to use these functions.
+syzbot found the following issue on:
 
-> > > +static enum rtl_sfp_if_type rtl8168h_check_sfp(struct
-> > > +rtl8169_private *tp) {
-> > > +	int i;
-> > > +	int const checkcnt = 4;
-> > > +
-> > > +	rtl_sfp_eeprom_write(tp, 0x1f, 0x0000);
-> > > +	for (i = 0; i < checkcnt; i++) {
-> > > +		if (rtl_sfp_eeprom_read(tp, 0x02) != RTL8211FS_PHY_ID_1 ||
-> > > +			rtl_sfp_eeprom_read(tp, 0x03) !=
-> RTL8211FS_PHY_ID_2)
-> > > +			break;
-> > > +	}
-> 
-> Reading registers 2 and 3 for a PhY idea? Who not just use phylib, and a PHY
-> driver?
-> 
->   Andrew
+HEAD commit:    ac7ac432a67e Merge branch 'New nf_conntrack kfuncs for ins..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=164443d6080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=386b986585586629
+dashboard link: https://syzkaller.appspot.com/bug?extid=ea8ff4e064cd21861ec7
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Reading register 2 and 3, it is for checking hardware use which pin(eeprom or gpo) to connect to RTL8211FS.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ea8ff4e064cd21861ec7@syzkaller.appspotmail.com
 
-> ------Please consider the environment before printing this e-mail.
+net/bpf/test_run.c:703:40: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:704:40: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:703:1: error: unknown type name 'BTF_ID_FLAGS'
+net/bpf/test_run.c:705:40: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:705:1: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'BTF_ID_FLAGS'
+net/bpf/test_run.c:712:48: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:705:1: error: unknown type name 'BTF_ID_FLAGS'
+net/bpf/test_run.c:713:45: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:714:45: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:715:45: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:716:45: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:717:45: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:718:53: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:719:53: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+net/bpf/test_run.c:720:53: error: macro "BTF_ID_FLAGS" requires 3 arguments, but only 2 given
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
