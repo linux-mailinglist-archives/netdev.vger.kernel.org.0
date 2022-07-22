@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A381B57E106
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 13:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6069F57E112
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 13:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234605AbiGVL5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 07:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        id S234930AbiGVL5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 07:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235007AbiGVL5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 07:57:02 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186DA9D1F9
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 04:57:00 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id t3so5598949edd.0
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 04:56:59 -0700 (PDT)
+        with ESMTP id S235091AbiGVL5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 07:57:04 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E96BB221
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 04:57:02 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id t3so5599046edd.0
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 04:57:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=flnEvotZidaUh2ykk93snCPMpbwPpMdDiRUs0F6eFEc=;
-        b=Z6SfeP8zsYcJua2iTIQeZidzdyHntaXwsRbowZ7wR2rGGaujqr2+mDU88XYuiwUBD/
-         bNxPs/fLEpfyBMPa42WlZXmp2Nslb7bqnMpqo70+FQBVckDSgAhrA6PVgtnBV+V75ane
-         6vvH1huOD+yEuf8CiQ1EQSX/rYqyYpAZaLH1I=
+        bh=kU972/Ti7378lz0X9ZqJvIJG14FXu8vb+YycDZtlNEs=;
+        b=iaadc3k9Vb0dBlWleTRhgOHE6k6K/BUKoYvG4LQcVV5ajYnFAsC+LpC+Jc7o4B1pEq
+         u+KUMNvcKJHB/o5l8QuMtG6FOxGNQQR0mQQ5F32d2TcNcjPwp5St9bqUvHzzyH+8Ojfm
+         5iMygMxWNc2uhYkJPOjE07sglSlOJO4tJzwHw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=flnEvotZidaUh2ykk93snCPMpbwPpMdDiRUs0F6eFEc=;
-        b=Sr+GMUH7LvYeeo7t13PdxuR1McRnlcfYwHPebq2VPDUp7UxDb/7u+NcNMLkSa+6nYB
-         e/8zuWEdf5gYe7wQUye933YIBycRrkzCyL62/wAyQxxQri+nTNwR+x7LfVNF5gC8SMef
-         vD0YrBNgopNKF61hwUV+8W593nQXNNAcXf7rz+5xYA5OMrn7pIOj8vAF1TiFapEO03T5
-         J9V/t5pHNzMABNMwoie9KwW/ozg1NSOGPJlEx1ZR+AJCqmHR3rzZGlEewnG3SAbXHqkE
-         yr854gQbh9qHBwy5CMLbPl3ciRa3XLxuRSiq5gmDb77OqmQ5GwQKIAsoujzKE/zEwLHp
-         hqaw==
-X-Gm-Message-State: AJIora8ejqhSeg1dTenYwK8Q0lWEVI/flJrr2ytLsvMCWDLkN5RHFwpw
-        f7QmYJDmI2Lz3cKerTchqdqDew==
-X-Google-Smtp-Source: AGRyM1vURj2VAwzGo07/a5qNyG8Qpq1IH/QMoTDEVKfcuwz69Cs5aCxc6iH2rOLcwmbtCV9HVOtKUQ==
-X-Received: by 2002:a05:6402:2789:b0:43a:de54:40fd with SMTP id b9-20020a056402278900b0043ade5440fdmr234482ede.319.1658491018561;
-        Fri, 22 Jul 2022 04:56:58 -0700 (PDT)
+        bh=kU972/Ti7378lz0X9ZqJvIJG14FXu8vb+YycDZtlNEs=;
+        b=gsCO5JfP3xviH/8p1U7rLs8MqS183/q5tLSZUv1gZkG3DGpvNQPixxieGgASJgPYjM
+         Fj/6PTyBQbWdboNu0591kZ32IqqOwH22h2ckXsTskUXzcfihqmp7V9kbmUaJiINfr2WG
+         ZK7sg6jSMcMcOsOVtqYHou2HK+D8miFqOHoIFCKB6LcoiY86IVePdikpW3sUz0mfAsPu
+         cBfwtzNdSO5YmBH4vWa5QKaRGwG1Er7n5Mz9N7nLYmijoOkPzxghioSxa0ufNaektH3Z
+         dv6DK9RGR6Tjw2Xxn8oIH8DmKtFnJBPsZNflyp3qRPoWmsYALA1vsssa9mvbCcx+I7Zr
+         HjPA==
+X-Gm-Message-State: AJIora/CMq5N4prFaYT1xcn1p1MxJKuMkqBDozI2S9z2+cjxXgyEJd8T
+        J4l8D4XkRIsmWWDMrHIHKsmoBA==
+X-Google-Smtp-Source: AGRyM1tuL1bHSScV4f4fqZVhdg/E7QN0gNWIb72aJ2UbGFtkvUR7uX3cE6hTDLBcuW8sfvGiGSW3FQ==
+X-Received: by 2002:a05:6402:48c:b0:43a:8bc7:f440 with SMTP id k12-20020a056402048c00b0043a8bc7f440mr297826edv.8.1658491020686;
+        Fri, 22 Jul 2022 04:57:00 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id kx6-20020a170907774600b0072b3182368fsm1934370ejc.77.2022.07.22.04.56.57
+        by smtp.gmail.com with ESMTPSA id kx6-20020a170907774600b0072b3182368fsm1934370ejc.77.2022.07.22.04.56.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 04:56:58 -0700 (PDT)
+        Fri, 22 Jul 2022 04:57:00 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -53,17 +53,18 @@ To:     Arend van Spriel <aspriel@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Wataru Gohda <wataru.gohda@cypress.com>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+Cc:     Syed Rafiuddeen <syed.rafiuddeen@cypress.com>,
+        Syed Rafiuddeen <syed.rafiuddeen@infineon.com>,
+        Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 5/6] brcmfmac: Fix to add skb free for TIM update info when tx is completed
-Date:   Fri, 22 Jul 2022 13:56:30 +0200
-Message-Id: <20220722115632.620681-6-alvin@pqrs.dk>
+Subject: [PATCH 6/6] brcmfmac: Update SSID of hidden AP while informing its bss to cfg80211 layer
+Date:   Fri, 22 Jul 2022 13:56:31 +0200
+Message-Id: <20220722115632.620681-7-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220722115632.620681-1-alvin@pqrs.dk>
 References: <20220722115632.620681-1-alvin@pqrs.dk>
@@ -79,85 +80,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wataru Gohda <wataru.gohda@cypress.com>
+From: Syed Rafiuddeen <syed.rafiuddeen@cypress.com>
 
-The skb will be allocated to send TIM update info in brcmf_fws_tim_update.
-Currently the skb will be freed when tx is failed but it will not be freed
-when tx is completed successfully. The fix is to free the skb when tx is
-completed always.
+cfg80211 layer on DUT STA is disconnecting ongoing connection attempt after
+receiving association response, because cfg80211 layer does not have valid
+AP bss information. On association response event, brcmfmac communicates
+the AP bss information to cfg80211 layer, but SSID seem to be empty in AP
+bss information, and cfg80211 layer prints kernel warning and then
+disconnects the ongoing connection attempt.
 
-Signed-off-by: Wataru Gohda <wataru.gohda@cypress.com>
-Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+SSID is empty in SSID IE, but 'bi->SSID' contains a valid SSID, so
+updating the SSID for hidden AP while informing its bss information
+to cfg80211 layer.
+
+Signed-off-by: Syed Rafiuddeen <syed.rafiuddeen@infineon.com>
+Signed-off-by: Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>
+Signed-off-by: Chi-hsien Lin <chi-hsien.lin@infineon.com>
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
- .../wireless/broadcom/brcm80211/brcmfmac/bcdc.c  |  3 +--
- .../broadcom/brcm80211/brcmfmac/fwsignal.c       | 16 ++++++++++------
- .../broadcom/brcm80211/brcmfmac/fwsignal.h       |  3 ++-
- 3 files changed, 13 insertions(+), 9 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c    | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcdc.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcdc.c
-index 2c95a08a5871..02a56edf08ba 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcdc.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcdc.c
-@@ -368,8 +368,7 @@ brcmf_proto_bcdc_txcomplete(struct device *dev, struct sk_buff *txp,
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 6ef574d69755..d6127b855060 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -2989,6 +2989,7 @@ static s32 brcmf_inform_single_bss(struct brcmf_cfg80211_info *cfg,
+ 	u8 *notify_ie;
+ 	size_t notify_ielen;
+ 	struct cfg80211_inform_bss bss_data = {};
++	const struct brcmf_tlv *ssid = NULL;
  
- 	/* await txstatus signal for firmware if active */
- 	if (brcmf_fws_fc_active(bcdc->fws)) {
--		if (!success)
--			brcmf_fws_bustxfail(bcdc->fws, txp);
-+		brcmf_fws_bustxcomplete(bcdc->fws, txp, success);
- 	} else {
- 		if (brcmf_proto_bcdc_hdrpull(bus_if->drvr, false, txp, &ifp))
- 			brcmu_pkt_buf_free_skb(txp);
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-index d58525ebe618..85e3b953b0a9 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-@@ -2475,7 +2475,8 @@ bool brcmf_fws_fc_active(struct brcmf_fws_info *fws)
- 	return fws->fcmode != BRCMF_FWS_FCMODE_NONE;
- }
+ 	if (le32_to_cpu(bi->length) > WL_BSS_INFO_MAX) {
+ 		bphy_err(drvr, "Bss info is larger than buffer. Discarding\n");
+@@ -3018,6 +3019,12 @@ static s32 brcmf_inform_single_bss(struct brcmf_cfg80211_info *cfg,
+ 	notify_ielen = le32_to_cpu(bi->ie_length);
+ 	bss_data.signal = (s16)le16_to_cpu(bi->RSSI) * 100;
  
--void brcmf_fws_bustxfail(struct brcmf_fws_info *fws, struct sk_buff *skb)
-+void brcmf_fws_bustxcomplete(struct brcmf_fws_info *fws, struct sk_buff *skb,
-+			     bool success)
- {
- 	u32 hslot;
- 
-@@ -2483,11 +2484,14 @@ void brcmf_fws_bustxfail(struct brcmf_fws_info *fws, struct sk_buff *skb)
- 		brcmu_pkt_buf_free_skb(skb);
- 		return;
- 	}
--	brcmf_fws_lock(fws);
--	hslot = brcmf_skb_htod_tag_get_field(skb, HSLOT);
--	brcmf_fws_txs_process(fws, BRCMF_FWS_TXSTATUS_HOST_TOSSED, hslot, 0, 0,
--			      1);
--	brcmf_fws_unlock(fws);
-+
-+	if (!success) {
-+		brcmf_fws_lock(fws);
-+		hslot = brcmf_skb_htod_tag_get_field(skb, HSLOT);
-+		brcmf_fws_txs_process(fws, BRCMF_FWS_TXSTATUS_HOST_TOSSED, hslot,
-+				      0, 0, 1);
-+		brcmf_fws_unlock(fws);
++	ssid = brcmf_parse_tlvs(notify_ie, notify_ielen, WLAN_EID_SSID);
++	if (ssid && ssid->data[0] == '\0' && ssid->len == bi->SSID_len) {
++		/* Update SSID for hidden AP */
++		memcpy((u8 *)ssid->data, bi->SSID, bi->SSID_len);
 +	}
- }
- 
- void brcmf_fws_bus_blocked(struct brcmf_pub *drvr, bool flow_blocked)
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.h
-index b16a9d1c0508..f9c36cd8f1de 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.h
-@@ -40,7 +40,8 @@ int brcmf_fws_process_skb(struct brcmf_if *ifp, struct sk_buff *skb);
- void brcmf_fws_reset_interface(struct brcmf_if *ifp);
- void brcmf_fws_add_interface(struct brcmf_if *ifp);
- void brcmf_fws_del_interface(struct brcmf_if *ifp);
--void brcmf_fws_bustxfail(struct brcmf_fws_info *fws, struct sk_buff *skb);
-+void brcmf_fws_bustxcomplete(struct brcmf_fws_info *fws, struct sk_buff *skb,
-+			     bool success);
- void brcmf_fws_bus_blocked(struct brcmf_pub *drvr, bool flow_blocked);
- void brcmf_fws_rxreorder(struct brcmf_if *ifp, struct sk_buff *skb);
- 
++
+ 	brcmf_dbg(CONN, "bssid: %pM\n", bi->BSSID);
+ 	brcmf_dbg(CONN, "Channel: %d(%d)\n", channel, freq);
+ 	brcmf_dbg(CONN, "Capability: %X\n", notify_capability);
 -- 
 2.37.0
 
