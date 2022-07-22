@@ -2,61 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A03D657E3EB
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 17:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F1E57E3F5
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 17:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiGVPro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 11:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        id S231178AbiGVPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 11:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiGVPrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 11:47:43 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68324357D8
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:47:42 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d7so4876981plr.9
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:47:42 -0700 (PDT)
+        with ESMTP id S229778AbiGVPuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 11:50:23 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B29F1116B
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:50:21 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id d16so7051346wrv.10
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 08:50:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=SWsRgEkvTvpQLQ7G9QO4RvqdsyqwGwKlrDl3/HIVORo=;
-        b=rejxAZFkWzJnzBqk2sm0O/8dVVFKsPyFKd5VV2Q640SCX85VYiVJ5gHSmtCPVfCWfb
-         2Fx3GPgDha7NBhyRAaRLvGgFMhgxB4D3OLimtd+YQ2WGL0ZPWdkdFuV1kSRhfW8ImQVB
-         Wm733YWOJt+xlTQ5hOV6nDq5VVGimpmXOiqSMbAzRi1mnjbuDCyEikWv02pCt3lE7NHf
-         uonU25tPlmYJhihaOAYvd+yPpbPhAu8KpqDHou9wKJmXXCGvU9klRdO1KRiPoHF3BbGZ
-         HWOK4pR78cjAfeO9OW0hvuyTEtH7OpcLtJYxoyS+C8N8bUmI+SijHCZ/T2lELGJW8GzJ
-         HUPQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LBC94t+7wCWXkaV+ujaYFCAUxofJcKzgQTzRkUJFaOE=;
+        b=rm5gni2XzKngfHAGwNunbCg39rt3D1FACxvJVK8PNfjNZBfI0CxEHnh8NuEr7b7ksF
+         r1Lkm4//jnN5bS06wvbI6nmuQQgqRED21R8qLFlGDWeTIo+oKvqImEtQNqboojotbT68
+         88fKoKgIZrYOQ7JTG/zOm3v5WyTqq+5P+MW9QyVqItLnjrs+99YERvJgW4xcJZKCuwSm
+         VwOssjKUrG6vxiK6LoT+JMJ7HJjGD3LbrwfriXYUkJ5gFSVRVKhmurNin2BrPaNri0yI
+         K/+xunFLUxpAKYeeP9RJoTXi+REUoL62RofT/eFGeJ+5HGJYPy9nqLdnpTlYjQeXS/CJ
+         Z7rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=SWsRgEkvTvpQLQ7G9QO4RvqdsyqwGwKlrDl3/HIVORo=;
-        b=qvnGC/Up/WnsmJo/Yn0jdr4cTOdH7LMLjnExga4VZhNowOrKsvDDM86rHQMB6NQl7g
-         QQCiH1DPe11mcA63XuIo6hfHAZp8OLiluZ8Xlhd+tRyKOx8xKs560sJyZRBCv5wwnoAr
-         UPKf1h7dFKNV3lZgDGMFxOKzv6hV/YJl8cWmCZxJjXwqSf6l1YpekbNZ0+6x+pB2yrcq
-         62BeEjPKKnLtBX1gJzPMzNfBqWsW4FuBtSMpdFIwjns3nPgiB+zBERdqdFvC3BgaGabq
-         4yB2mFCi0o2mXhNhTvJ8P0DWzDf2mpK9HV085WFwQoeBfpqnwrHOOyyuBZLk8Ro5Ifp2
-         zznw==
-X-Gm-Message-State: AJIora8fEMY98r6Hg8n63Quv3m3CFFMSB2ceWsmVYjFzxRqnlWlsASK+
-        1VYBZk8f2iitF4v1w+MQeu9OdFP6qWsqsvFjmBKIPC7XF2t6gA==
-X-Google-Smtp-Source: AGRyM1v9QZPLhba03qZukCTdz02owhUgS8JUWgxQpZU3B5j2h7UDwp25YusbzThw2Aa6KTFzwCTBu+No6p2pf1rXFHc=
-X-Received: by 2002:a17:90a:a40a:b0:1f2:979:397d with SMTP id
- y10-20020a17090aa40a00b001f20979397dmr234957pjp.179.1658504861273; Fri, 22
- Jul 2022 08:47:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LBC94t+7wCWXkaV+ujaYFCAUxofJcKzgQTzRkUJFaOE=;
+        b=lk2p7O26LZyba6/t0MYDrQeV5RrxV+62ZDWnTzCl0Qm1zuE8/92wLIKbKUCJuPysfb
+         muj25TiZY6sFvUKYmE0VnN8m47MyG1xYOo2I5NXv5FGb4mwSQdS6yMEOc0Fb3sdQy76i
+         If/7cNRpT5ls+vvZj6Jpmh/xZh7Q/AKhLHQ635FJgSwft4aAO/1AUE8FvvOmSS9qJU2Z
+         HIcaDK3ZyN/eZlL6HFe/wKNmMKmtdnFWReLcMhiat/gtYMH8sSduADEl6w3yi6vUBYB1
+         fwWbY2NED9MgkSe8pL0zf8Jvhpo9E1ur0g1/4RuOykdTMMWKkeAiyS9YnrDiSB86fzDM
+         +6kQ==
+X-Gm-Message-State: AJIora/gSY03tKhZ2o+aKyORXbvavb8119/BUhpNrrZLGOeyLTgtSDCL
+        CTXWq2TiYT6tO0L0ai0h3qwFSA==
+X-Google-Smtp-Source: AGRyM1uiNwEQ5+fyRoYshtN7i/5bUTAH310t6iAfUeESmu1s6rxWD7oHsYplxmc/0H1+cI5uqnZx4g==
+X-Received: by 2002:a5d:6f08:0:b0:21d:7e3c:72af with SMTP id ay8-20020a5d6f08000000b0021d7e3c72afmr382342wrb.556.1658505019924;
+        Fri, 22 Jul 2022 08:50:19 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o9-20020a05600c058900b0039c54bb28f2sm5606778wmd.36.2022.07.22.08.50.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 08:50:19 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 17:50:17 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <YtrHOewPlQ0xOwM8@nanopsycho>
+References: <20220720151234.3873008-1-jiri@resnulli.us>
+ <20220720151234.3873008-2-jiri@resnulli.us>
+ <20220720174953.707bcfa9@kernel.org>
 MIME-Version: 1.0
-References: <CAJ+vNU3Eu8Mv3ErH=mw0o2ENcEoWXLXWXX-_mTTg3vDkmnGrxg@mail.gmail.com>
-In-Reply-To: <CAJ+vNU3Eu8Mv3ErH=mw0o2ENcEoWXLXWXX-_mTTg3vDkmnGrxg@mail.gmail.com>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Fri, 22 Jul 2022 08:47:29 -0700
-Message-ID: <CAJ+vNU3_iv=L2n130nVC-2sGbhBGs0giOrsuGo052uodCb_uUg@mail.gmail.com>
-Subject: Re: imx8mp fec/eqos not working
-To:     netdev <netdev@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720174953.707bcfa9@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,23 +72,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 4:02 PM Tim Harvey <tharvey@gateworks.com> wrote:
->
-> Greetings,
->
-> Does anyone have imx8mp fec and/or eqos network support working in
-> mainline Linux? I'm finding the device registers with the kernel and
-> link detect works but I can't get packets through.
->
-> I'm using an imx8mp-evk and linux master for testing. I find both
-> fec/eqos devices work fine in U-Boot but not Linux mainline. The NXP
-> downstream vendor kernel imx_5.4.70_2.3.0 branch works but I haven't
-> been able to pinpoint what is missing/different in mainline.
->
+Thu, Jul 21, 2022 at 02:49:53AM CEST, kuba@kernel.org wrote:
+>On Wed, 20 Jul 2022 17:12:24 +0200 Jiri Pirko wrote:
 
-My mistake... forgot to enable the PHY drivers and imx8mp-evk fec/eqos
-work just fine.
+[...]
 
-Sorry for the noise,
 
-Tim
+>Plus we need to be more careful about the unregistering order, I
+>believe the correct ordering is:
+>
+>	clear_unmark()
+>	put()
+>	wait()
+>	notify()
+>
+>but I believe we'll run afoul of Leon's notification suppression.
+>So I guess notify() has to go before clear_unmark(), but we should
+>unmark before we wait otherwise we could live lock (once the mutex 
+>is really gone, I mean).
+
+Kuba, could you elaborate a bit more about the live lock problem here?
+Thanks!
