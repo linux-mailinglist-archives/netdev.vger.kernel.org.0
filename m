@@ -2,144 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E6657E14F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1371D57E15E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiGVMKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 08:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        id S234717AbiGVMUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 08:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233798AbiGVMKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:10:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768BC120B0
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1342C61EE7
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 12:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 63F57C341CA;
-        Fri, 22 Jul 2022 12:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658491813;
-        bh=2bzWjz/IXziUUjjXsFa/1Z4wUDIFy7afrY54d3dYBXc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y7DNMxCmvQSGIC3ddbSB1i+Xry6ggp+nK+1OfxFwa47Ft3kQm4GML2LzKUkIQgay4
-         IqKNHjOYmnk9JhB7LbohnxO2eXrzISh27qea3bXQlVZLHUTM4y8jfpnsBQ4Uci6wQC
-         13X9fHFQm1E5s5pZwK5mz9gxwx+QY9zn2q5LHD/aTKSP2x6VWBL2fYtNty/Bir3LN/
-         Wb9sPO8c9+rUeTQeBMjxVp2e0Qa6DhKYozwygaAookRq5JRhn13io9yhKEYudTRdHw
-         g6cg1/ItxffXf0cMDocGORROblhBwDtGOy+5rY2is0S+W+9wPcxGoXAwzOqwXCO3ME
-         xj8HQ22i6xuXw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 434BFE451B3;
-        Fri, 22 Jul 2022 12:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231902AbiGVMUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:20:17 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E15413F1F
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:20:15 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id u12so3371681qtk.0
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:20:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
+         :subject:mime-version:content-transfer-encoding;
+        bh=kIKMl7lknNmrR7/g3+eBdSau4//c4Zzr0QaeUiEir7A=;
+        b=cHhHjmlahYQ+EmtKYhfCB8KTNgvpM7+cBXuWAwrqR7qvzNU8+HhLRnTdPxxvFVeHh3
+         1nUaRHsHw8NQy+w+KEbL1WitYxDtz85JVMIVI6ao9QwCutRBsbMgBOX4RICVcuV9E3oe
+         AWc4nmne8ushnOtD6AFil/8ViyNXbqrdkinYxQ3k4aucoZdSrbdYliPQjWq0MBJj/Bn8
+         JL9k1d5L3NzOCtYoIbyj6v7UD2hB1lFi0USJqy10hnlWJwfYP2r/1IG2soYO4rnBxTgq
+         H4IMse2/xdiaEKZwKqcUw9ZoKLvnfHoeFJLzprkjkdjavu6OyvtAFHUEfzaDx+u7Zpd5
+         vOhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:subject:mime-version
+         :content-transfer-encoding;
+        bh=kIKMl7lknNmrR7/g3+eBdSau4//c4Zzr0QaeUiEir7A=;
+        b=PxaRNsZLl0JL1ekAaGm03JMiFBbaQSfW3H31HeCcKBU1MtpOK62WKjDRuBxwB8cDlO
+         vZ48JK3g80rEopo8iBJze2bPJahjV1xkpqz/8LFvZzh+V64XJ3WNmU0xKnpBMnwFCH75
+         gBeixIxqEwJsm5xPX2blpGNmBkG16rqthZ46Xr1R15xZJ3jCclLVF1nbkTkzrvF7F90+
+         Wz+eVf89NQJ4snuSIv+jNFSZ14DvVPO3WKe+H6bO5aEVwuIlPZRccRvRscnrXFRaE+Os
+         7zb+H7GbtnQzr0oSU8CsqrzW/8xNs+bxe6ih1GPQSH0I8cvtDDYyLBmpgf9wuv9rlxTS
+         kyJQ==
+X-Gm-Message-State: AJIora+i1zNQ5JxATQ61wOIPPJwqswN6h5LiEYHPCJRDr4j67ato2qqk
+        vNH2izA6nWp/LDOucbR5qILP
+X-Google-Smtp-Source: AGRyM1vRv8Pg5YMxgoX//w7Bar4An6ugLUhEpTDVLqgE1K9tMb0kLUN+xQP5nT2rrJ4QhsOwsmCzBg==
+X-Received: by 2002:ac8:7f8e:0:b0:31f:10bc:f5d7 with SMTP id z14-20020ac87f8e000000b0031f10bcf5d7mr140040qtj.561.1658492414525;
+        Fri, 22 Jul 2022 05:20:14 -0700 (PDT)
+Received: from [10.130.209.145] (mobile-166-170-54-234.mycingular.net. [166.170.54.234])
+        by smtp.gmail.com with ESMTPSA id m1-20020a05620a24c100b006b259b5dd12sm3456272qkn.53.2022.07.22.05.20.11
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 22 Jul 2022 05:20:13 -0700 (PDT)
+From:   Paul Moore <paul@paul-moore.com>
+To:     Martin KaFai Lau <kafai@fb.com>,
+        Frederick Lawler <fred@cloudflare.com>
+CC:     <kpsingh@kernel.org>, <revest@chromium.org>,
+        <jackmanb@chromium.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andrii@kernel.org>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <jmorris@namei.org>,
+        <serge@hallyn.com>, <stephen.smalley.work@gmail.com>,
+        <eparis@parisplace.org>, <shuah@kernel.org>, <brauner@kernel.org>,
+        <casey@schaufler-ca.com>, <ebiederm@xmission.com>,
+        <bpf@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
+        <selinux@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@cloudflare.com>, <cgzones@googlemail.com>,
+        <karl@bigbadwolfsecurity.com>
+Date:   Fri, 22 Jul 2022 08:20:10 -0400
+Message-ID: <18225d94bf0.28e3.85c95baa4474aabc7814e68940a78392@paul-moore.com>
+In-Reply-To: <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
+References: <20220721172808.585539-1-fred@cloudflare.com>
+ <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
+User-Agent: AquaMail/1.37.0 (build: 103700163)
+Subject: Re: [PATCH v3 0/4] Introduce security_create_user_ns()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: add missing includes and forward declarations
- under net/
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165849181327.15716.14849150996894288516.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Jul 2022 12:10:13 +0000
-References: <20220720235758.2373415-1-kuba@kernel.org>
-In-Reply-To: <20220720235758.2373415-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On July 22, 2022 2:12:03 AM Martin KaFai Lau <kafai@fb.com> wrote:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+> On Thu, Jul 21, 2022 at 12:28:04PM -0500, Frederick Lawler wrote:
+>> While creating a LSM BPF MAC policy to block user namespace creation, we
+>> used the LSM cred_prepare hook because that is the closest hook to preve=
+nt
+>> a call to create_user_ns().
+>>
+>> The calls look something like this:
+>>
+>> cred =3D prepare_creds()
+>> security_prepare_creds()
+>> call_int_hook(cred_prepare, ...
+>> if (cred)
+>> create_user_ns(cred)
+>>
+>> We noticed that error codes were not propagated from this hook and
+>> introduced a patch [1] to propagate those errors.
+>>
+>> The discussion notes that security_prepare_creds()
+>> is not appropriate for MAC policies, and instead the hook is
+>> meant for LSM authors to prepare credentials for mutation. [2]
+>>
+>> Ultimately, we concluded that a better course of action is to introduce
+>> a new security hook for LSM authors. [3]
+>>
+>> This patch set first introduces a new security_create_user_ns() function
+>> and userns_create LSM hook, then marks the hook as sleepable in BPF.
+> Patch 1 and 4 still need review from the lsm/security side.
 
-On Wed, 20 Jul 2022 16:57:58 -0700 you wrote:
-> This patch adds missing includes to headers under include/net.
-> All these problems are currently masked by the existing users
-> including the missing dependency before the broken header.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/linux/lapb.h                |  5 +++++
->  include/net/af_vsock.h              |  1 +
->  include/net/amt.h                   |  3 +++
->  include/net/ax88796.h               |  2 ++
->  include/net/bond_options.h          |  8 ++++++++
->  include/net/codel_qdisc.h           |  1 +
->  include/net/datalink.h              |  7 +++++++
->  include/net/dcbevent.h              |  2 ++
->  include/net/dcbnl.h                 |  2 ++
->  include/net/dn_dev.h                |  1 +
->  include/net/dn_fib.h                |  2 ++
->  include/net/dn_neigh.h              |  2 ++
->  include/net/dn_nsp.h                |  6 ++++++
->  include/net/dn_route.h              |  3 +++
->  include/net/erspan.h                |  3 +++
->  include/net/esp.h                   |  1 +
->  include/net/ethoc.h                 |  3 +++
->  include/net/firewire.h              |  2 ++
->  include/net/fq.h                    |  4 ++++
->  include/net/garp.h                  |  2 ++
->  include/net/gtp.h                   |  4 ++++
->  include/net/gue.h                   |  3 +++
->  include/net/hwbm.h                  |  2 ++
->  include/net/ila.h                   |  2 ++
->  include/net/inet6_connection_sock.h |  2 ++
->  include/net/inet_common.h           |  6 ++++++
->  include/net/inet_frag.h             |  3 +++
->  include/net/ip6_route.h             | 20 ++++++++++----------
->  include/net/ipcomp.h                |  2 ++
->  include/net/ipconfig.h              |  2 ++
->  include/net/llc_c_ac.h              |  7 +++++++
->  include/net/llc_c_st.h              |  4 ++++
->  include/net/llc_s_ac.h              |  4 ++++
->  include/net/llc_s_ev.h              |  1 +
->  include/net/mpls_iptunnel.h         |  3 +++
->  include/net/mrp.h                   |  4 ++++
->  include/net/ncsi.h                  |  2 ++
->  include/net/netevent.h              |  1 +
->  include/net/netns/can.h             |  1 +
->  include/net/netns/core.h            |  2 ++
->  include/net/netns/generic.h         |  1 +
->  include/net/netns/ipv4.h            |  1 +
->  include/net/netns/mctp.h            |  1 +
->  include/net/netns/mpls.h            |  2 ++
->  include/net/netns/nexthop.h         |  1 +
->  include/net/netns/sctp.h            |  3 +++
->  include/net/netns/unix.h            |  2 ++
->  include/net/netrom.h                |  1 +
->  include/net/p8022.h                 |  5 +++++
->  include/net/phonet/pep.h            |  3 +++
->  include/net/phonet/phonet.h         |  4 ++++
->  include/net/phonet/pn_dev.h         |  5 +++++
->  include/net/pptp.h                  |  3 +++
->  include/net/psnap.h                 |  5 +++++
->  include/net/regulatory.h            |  3 +++
->  include/net/rose.h                  |  1 +
->  include/net/secure_seq.h            |  2 ++
->  include/net/smc.h                   |  7 +++++++
->  include/net/stp.h                   |  2 ++
->  include/net/transp_v6.h             |  2 ++
->  include/net/tun_proto.h             |  3 ++-
->  include/net/udplite.h               |  1 +
->  include/net/xdp_priv.h              |  1 +
->  63 files changed, 183 insertions(+), 11 deletions(-)
 
-Here is the summary with links:
-  - [net-next] net: add missing includes and forward declarations under net/
-    https://git.kernel.org/netdev/net-next/c/949d6b405e61
+This patchset is in my review queue and assuming everything checks out, I e=
+xpect to merge it after the upcoming merge window closes.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I would also need an ACK from the BPF LSM folks, but they're CC'd on this p=
+atchset.
+
+--
+paul-moore.com
 
 
