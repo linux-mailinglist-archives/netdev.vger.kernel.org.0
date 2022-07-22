@@ -2,139 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91AC857E1C9
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C2757E216
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 15:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234213AbiGVM7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 08:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
+        id S233126AbiGVNMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 09:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiGVM7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:59:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC4C57E07;
-        Fri, 22 Jul 2022 05:59:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B69261E84;
-        Fri, 22 Jul 2022 12:59:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466A1C341C6;
-        Fri, 22 Jul 2022 12:59:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658494785;
-        bh=BKrizWV96d8+rZwIec8s+GHsD43ct+a/ytonnY3af3Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TAIxnlQx4527e7gKVxmMg1IyqHmGp7XRatUsqJ/ANbfat2x0Ad5ap6wHnp2dNfFrb
-         DYmhQmD0xL3CkWfA0X/VTddr/NosMCBZG7KXgUSNcb7WRDdeAp/I2YkzYYSiOu+n7Y
-         V2cTtfkce9tmYGi3lYZqZPdjjHLxdbW8NbScXEcdh+5Hs0NZoeIjViekvD/r/cgxOR
-         CgGDDglgNry2vcNHljiUSez3IS+uKG/G4sXv/rH5twGAFaYilVJoXWYczvPDhdKu6f
-         jrp213JC37jLfc9Lvflko5MHOE5Ftw7xIYeeBxE9R9yCj53RMKI/kpr/bChYDb21me
-         /AbxW+iqz3aFA==
-Date:   Fri, 22 Jul 2022 14:59:36 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
- interface mode
-Message-ID: <20220722145936.497ac73f@dellmb>
-In-Reply-To: <20220721182216.z4vdaj4zfb6w3emo@skbuf>
-References: <20220716105711.bjsh763smf6bfjy2@skbuf>
-        <YtKdcxupT+INVAhR@shell.armlinux.org.uk>
-        <20220716123608.chdzbvpinso546oh@skbuf>
-        <YtUec3GTWTC59sky@shell.armlinux.org.uk>
-        <20220720224447.ygoto4av7odsy2tj@skbuf>
-        <20220721134618.axq3hmtckrumpoy6@skbuf>
-        <Ytlol8ApI6O2wy99@shell.armlinux.org.uk>
-        <20220721151533.3zomvnfogshk5ze3@skbuf>
-        <20220721192145.1f327b2a@dellmb>
-        <20220721192145.1f327b2a@dellmb>
-        <20220721182216.z4vdaj4zfb6w3emo@skbuf>
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229441AbiGVNMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 09:12:08 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5AB6393A
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 06:12:05 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id w188so1327932oiw.8
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 06:12:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HiMK+ix2bOcz/8bYyY1Tmf0kEt/tYxdd+jsqoDwcKBo=;
+        b=S737dPGEE/1+GuQcdyQ18RfdvG+l1EOtxGeemJUDV4KAo0GYPf3tHP0j55AoJ2vylQ
+         Y1VHgnW98+ApJCa2pV4C4MDb2NoDvIuLrl9j7XZbX/8aLfOLyglHmjA9PHRzLxaiFFU3
+         ptwBe3YZN057XneAY+hhqw/mS3Je78ops8JEQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HiMK+ix2bOcz/8bYyY1Tmf0kEt/tYxdd+jsqoDwcKBo=;
+        b=U6CrxnOf/LZos8AIzX8YGH8Pqdz45rVGo5C5YeP+NAg8G8tDS3VonG33fdO3g3A+0N
+         MKgcQ9ybSaK/kbC3Xk2iI+u1IbrMJ24l5WE2lGos1GWPS8okJ1mCFRe1aw4X1aK2EK0L
+         kpW3vDd41ltnfyrG4R/xb6XY6+osTzxXHH5zP9Nd6CdTrUj2e36n0rnui7pM0ZmrkGTf
+         vapesCERvaMG154wsnU4YE+Y2YMhmc1J1UpXqKwrduKpJiPCVM9g1abcDhZqq4jQVWL8
+         dzBNCFqEV14CCM2Mw+FHSnnLxiE6YGRrXufjsKM7WVxBb3FoIQHCNxgG+lZ/VUm092Rk
+         Tf1A==
+X-Gm-Message-State: AJIora8EaHqwNzPYm+uReyjUIGlSJGKj/gm9vmAnzf6Bfhbs/Rz2MwPw
+        4JoIvpU97vCKcep15FKyjczB8Q==
+X-Google-Smtp-Source: AGRyM1svb+Z6lmNvDMDgNowYwKcoDfXDU+9Ru8JDjUdHBfTiLfTEuL31PsQofvkNn+4cYOnwmUPXDg==
+X-Received: by 2002:a05:6808:1687:b0:32c:3e3e:89b1 with SMTP id bb7-20020a056808168700b0032c3e3e89b1mr154036oib.60.1658495524972;
+        Fri, 22 Jul 2022 06:12:04 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id q206-20020acaf2d7000000b0033a3e6e7ce9sm1751509oih.10.2022.07.22.06.12.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 06:12:04 -0700 (PDT)
+Message-ID: <a23bd6b6-2244-1e58-20d1-5713d304acfd@ieee.org>
+Date:   Fri, 22 Jul 2022 08:12:03 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next] net: ipa: fix build
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Alex Elder <elder@kernel.org>
+References: <7105112c38cfe0642a2d9e1779bf784a7aa63d16.1658411666.git.pabeni@redhat.com>
+ <5a1c541c-3b61-a838-1502-5224d4b8d0a4@ieee.org>
+ <16b633abfdcdcb624054187a5fc342bfeb9831f9.camel@redhat.com>
+ <20220721094107.5766c21b@kernel.org>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <20220721094107.5766c21b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 21:22:16 +0300
-Vladimir Oltean <olteanv@gmail.com> wrote:
+On 7/21/22 11:41 AM, Jakub Kicinski wrote:
+> On Thu, 21 Jul 2022 16:50:20 +0200 Paolo Abeni wrote:
+>>> Interesting...  This didn't happen for me.
+>>>
+>>>
+>>> Can you tell me more about your particular build environment
+>>> so I can try to reproduce it?  I haven't tested your fix yet
+>>> in my environment.
+>>
+>> Possibly ENOCOFFEE here, but on net-next@bf2200e8491b,
+>>
+>> make clean; make allmodconfig; make
+>>
+>> fails reproducibly here, with gcc 11.3.1, make 4.3.
+>>
+>> Do you have by chance uncommited local changes?
+> 
+> Oh, poops. You're right. I think all - the build bots, Alex and I
+> build with O=builddir, in which case the build works. I'll let the
+> build bot catch up to your fix and apply it. Sorry about that!
 
-> On Thu, Jul 21, 2022 at 07:21:45PM +0200, Marek Beh=C3=BAn wrote:
-> > Marvell documentation says that 2500base-x does not implement inband
-> > AN. =20
->=20
-> Does Marvell documentation actually call it 2500base-x when it says it
-> doesn't support in-band autoneg?
+I'm glad you know this, I was just about to start figuring
+out what the difference was:
+- gcc vs clang
+- module vs built-in
+- x86 vs aarch64
+And I didn't even think about "O=<builddir>"...
 
-Yes, it does.
+Is this the right fix?  It's A-OK with me if it is.
 
-> > But when it was first implemented, for some reason it was thought that
-> > 2500base-x is just 1000base-x at 2.5x speed, and 1000base-x does
-> > support inband AN. Also it worked during tests for both switches and
-> > SOC NICs, so it was enabled.
-> >=20
-> > At the time 2500base-x was not standardized. Now 2500base-x is
-> > stanradrized, and the standard says that 2500base-x does not support
-> > clause 37 AN. I guess this is because where it is used, it is intended
-> > to work with clause 73 AN somehow. =20
->=20
-> When you say 2500base-x is standardized, do you mean there is a document
-> somewhere which I could use to read more about this?
+(I'm about to try to reproduce it now without "O="...)
 
-IEEE Std 802.3cb-2018: Amendment 1: Physical Layer Specifications and
-Management Parameters for 2.5 Gb/s and 5 Gb/s Operation over Backplane.
+Thank you.
 
-Annex 127A (informative): Compatibility of 2.5GBASE-X PCS/PMA with
-1000BASE-X PCS/PMA running 2.5 times faster
-
-  ...
-  This annex discusses the restrictions when operating 2.5GBASE-X
-  PCS/PMA with a 1000BASE-X PCS/PMA link partner running 2.5 times
-  faster. Compatibility of the PMD is outside the scope of this annex.
-  In this annex when 1000BASE-X PCS/PMA is referred to, the 2.5 times
-  speed up is implied.
-  ...
-  The 2.5GBASE-X PCS does not support Clause 37 Auto-Negotiation.
-  Hence, the 1000BASE-X PCS is expected to have its Clause 37
-  Auto-Negotiation functionality disabled so that the /C/ ordered set
-  will not be transmitted. If a 2.5GBASE-X PCS receives /C/ ordered
-  set, then undefined behavior may occur.
-  ...
-
-Marek
+					-Alex
