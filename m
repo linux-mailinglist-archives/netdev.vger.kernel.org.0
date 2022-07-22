@@ -2,83 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA6A57E853
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 22:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAE9757E868
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 22:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbiGVUeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 16:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S231784AbiGVUhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 16:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233965AbiGVUeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 16:34:10 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B683AE5D
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 13:34:09 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id h18so4240007qvr.12
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 13:34:09 -0700 (PDT)
+        with ESMTP id S229679AbiGVUhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 16:37:42 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EE99E290
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 13:37:37 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef5380669cso59161947b3.9
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 13:37:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hvLylXowG1GfsIqTvKwqcLz1Ag0GJexcuXjizvpMPq8=;
-        b=bxfj665HUGlRJcOgFw5+3Bv2bh+GceeopwN+vbcm37JdCSFUaWy1x4UMJGTDSERv4S
-         /C2HYm1/xkwiZHr93Xmg5SRk13tGZJJt0HBYuU42gZUcfbcUUFDDI+4o0Ghx3Q3w9Kpk
-         7yXNiMyZg6iCRSWSFJ9aOqLpl2D/fb4p+pGN+UnhZKkmIukvjB7SyvzrUjUnqglqBEcr
-         pRIMnFGeSLexUCfqk4YczJgzzlZ/1nE1z//77NMYFmgWFVEA4DtgArVdD2Lx9prg4Gph
-         ECjKs9TO6Uq88zXQDhCK6kQZnZrp0zwzcc4btWq7WV+WD023aYbHSdaNeylAPuxy1zdw
-         JfbA==
+        bh=6kQ9ks2TEgw64nHcDskFzfZcfxon7lLCFMHEZUNDlUc=;
+        b=Yq6DhR7YwwBsetVvd/yTEbsGLNiwCjYt9+kDdwjVvRVFjsHXxMLWf8XqU2wwyZ/rAo
+         jaKTEMg5G4l7XirJuElYGoUlOXICzKSqfmUSF7QdbdTnKg5qRiPq7hhwV2wXIjSC/n7+
+         SIxt/08NnrdxBhBQuTK9dDWFzMRmQsuW7SOw7V5WqP12KmWkDrbSjI/1XsSqHDwam4h+
+         jGwIxvM/uCF1L12bkUipsVqgtMwc/tmQ6+9z0VqEteU9qQbRURmvBrXY++0GxrshBB6t
+         sFuYYuWTcY6Y1TgsXsSAmK1ayH68oW4btVE31bU/cH8kaAOwbjyelVI8q+qim9wUwyml
+         cnAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hvLylXowG1GfsIqTvKwqcLz1Ag0GJexcuXjizvpMPq8=;
-        b=iyLSrqeS9+6e4D6jzlYTFgblffLT8zTyoQFWNdmmnGxudyL+Sl5wDaQRhyOzx2VjxR
-         xaV5iDeNiz3HhteKVG9d78M/oZ2D5lVkpmO4fe1mWpt2oTy2gcwYKC4XY1kU3JdPqMmf
-         L1eA867HvAc8mLreLwsRd4uumohAT1a0ITkBJUGnD2CekPwazIFn7PDVq+V7EzAjzixQ
-         Ob9z8RFdYiUwSkJ1ckgDPzumGhwrPnMmn4VVIgjuOouwHr/IpqoVwQbpg30OmJiCc4Zg
-         +GyfN0HaX7yIB3XH/2zp6wgbjtZnPfNwJs8oqrNKLi+TfjrG/CzENolgNTKFA+3vyCfr
-         Z57w==
-X-Gm-Message-State: AJIora/nMoQtSlsKKdhB1QgLLAYWOhd9b7/87He5xQHSPH46Ds5JAfKy
-        MfiPU8lZMYN1wjIizT7RMqPX4coh8sn3MRIQeU4muw==
-X-Google-Smtp-Source: AGRyM1s8GwPX9P8LaNxdPHcvvEL2Ky7NdO2HHvMCYsOp0FqEOVBEDg9juL/Bhzv9DZiIbp0kPDd1M+nfYRxfwQiKr7Q=
-X-Received: by 2002:a05:6214:202f:b0:432:4810:1b34 with SMTP id
- 15-20020a056214202f00b0043248101b34mr1734796qvf.35.1658522047550; Fri, 22 Jul
- 2022 13:34:07 -0700 (PDT)
+        bh=6kQ9ks2TEgw64nHcDskFzfZcfxon7lLCFMHEZUNDlUc=;
+        b=v2InR+VRUT2UHgqAbbVtZYxY8G4PNgtPeejxSHaALSbS5n0YuCKgx1Woxc7bxjpbrt
+         jtegWKMznFAZE1CtilVkvvOp/HOpm/RCoeVSFWNPWQPfkALUvl11IObl/mXF2dbUN4L4
+         qRTmz+T/bar9MSI7HLllWvCEYTR/5n+d9Hb8oxVISc2emt3A0NBG+Qc0U/rvAwuJTiHD
+         P7RBARVd+elu2uvYUpXW7yqoYnApPu5tpVg1Q219HQ0UOXHrXcOVOAUsYmvMLzTwZmUI
+         LM/AD4mPe2WB0tAu05ArewcTKeyBlFUE9axN26toEFOMbvgWffTAnEbRJ0Hz2Bew5Mm3
+         DJUA==
+X-Gm-Message-State: AJIora+QrsPwYFLlTfsOy9PnB63qLiLDIfbYYP6aQLoBGiN6RmrcOz1j
+        em9thPou6pKGGLhYFiw2d8uMZHUa7h/Lk8L/skrw9g==
+X-Google-Smtp-Source: AGRyM1uU6CydkWSxoOcjcggzsgJz0Y9reyDKTDEcftYWl0tkM7pSpo6ic2cgcHaedOmJ+/q9sgPdoo9lC5veZmXY924=
+X-Received: by 2002:a81:23ce:0:b0:31e:65c1:f4f with SMTP id
+ j197-20020a8123ce000000b0031e65c10f4fmr1445966ywj.255.1658522256410; Fri, 22
+ Jul 2022 13:37:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220722174829.3422466-1-yosryahmed@google.com>
- <20220722174829.3422466-5-yosryahmed@google.com> <CAP01T76p7CCj2i4X7PmZiG3G3-Bfx_ygnO0Eg+DnfwLHQiEPbA@mail.gmail.com>
-In-Reply-To: <CAP01T76p7CCj2i4X7PmZiG3G3-Bfx_ygnO0Eg+DnfwLHQiEPbA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Fri, 22 Jul 2022 13:33:56 -0700
-Message-ID: <CA+khW7g2kriOb7on0u_UpGpS2A0bftrQowTB0+AJ=S7rpLKaZA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 4/8] bpf: Introduce cgroup iter
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
+References: <20220623043449.1217288-1-edumazet@google.com> <20220623043449.1217288-9-edumazet@google.com>
+ <20220722193432.zdcnnxyigq2yozok@skbuf>
+In-Reply-To: <20220722193432.zdcnnxyigq2yozok@skbuf>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 22 Jul 2022 22:37:24 +0200
+Message-ID: <CANn89iK+UO=FevJxnHN0ua17jwR__MfB_RZ_DavLdJz79eyCBw@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 08/19] ipmr: do not acquire mrt_lock while
+ calling ip_mr_forward()
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,258 +71,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 11:36 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Fri, Jul 22, 2022 at 9:34 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 >
-> On Fri, 22 Jul 2022 at 19:52, Yosry Ahmed <yosryahmed@google.com> wrote:
+> Hi Eric,
+>
+> On Thu, Jun 23, 2022 at 04:34:38AM +0000, Eric Dumazet wrote:
+> > ip_mr_forward() uses standard RCU protection already.
 > >
-> > From: Hao Luo <haoluo@google.com>
-> >
-> > Cgroup_iter is a type of bpf_iter. It walks over cgroups in three modes:
-> >
-> >  - walking a cgroup's descendants in pre-order.
-> >  - walking a cgroup's descendants in post-order.
-> >  - walking a cgroup's ancestors.
-> >
-> > When attaching cgroup_iter, one can set a cgroup to the iter_link
-> > created from attaching. This cgroup is passed as a file descriptor and
-> > serves as the starting point of the walk. If no cgroup is specified,
-> > the starting point will be the root cgroup.
-> >
-> > For walking descendants, one can specify the order: either pre-order or
-> > post-order. For walking ancestors, the walk starts at the specified
-> > cgroup and ends at the root.
-> >
-> > One can also terminate the walk early by returning 1 from the iter
-> > program.
-> >
-> > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > program is called with cgroup_mutex held.
-> >
-> > Currently only one session is supported, which means, depending on the
-> > volume of data bpf program intends to send to user space, the number
-> > of cgroups that can be walked is limited. For example, given the current
-> > buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
-> > cgroup, the total number of cgroups that can be walked is 512. This is
-> > a limitation of cgroup_iter. If the output data is larger than the
-> > buffer size, the second read() will signal EOPNOTSUPP. In order to work
-> > around, the user may have to update their program to reduce the volume
-> > of data sent to output. For example, skip some uninteresting cgroups.
-> > In future, we may extend bpf_iter flags to allow customizing buffer
-> > size.
-> >
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
 > > ---
-> >  include/linux/bpf.h                           |   8 +
-> >  include/uapi/linux/bpf.h                      |  30 +++
-> >  kernel/bpf/Makefile                           |   3 +
-> >  kernel/bpf/cgroup_iter.c                      | 252 ++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h                |  30 +++
-> >  .../selftests/bpf/prog_tests/btf_dump.c       |   4 +-
-> >  6 files changed, 325 insertions(+), 2 deletions(-)
-> >  create mode 100644 kernel/bpf/cgroup_iter.c
+> >  net/ipv4/ipmr.c | 9 ++-------
+> >  1 file changed, 2 insertions(+), 7 deletions(-)
 > >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index a97751d845c9..9061618fe929 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -47,6 +47,7 @@ struct kobject;
-> >  struct mem_cgroup;
-> >  struct module;
-> >  struct bpf_func_state;
-> > +struct cgroup;
+> > diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> > index 6ea54bc3d9b6555aaa9974d81ba4acd47481724f..b0f2e6d79d62273c8c2682f28cb45fe5ec3df6f3 100644
+> > --- a/net/ipv4/ipmr.c
+> > +++ b/net/ipv4/ipmr.c
+> > @@ -1817,7 +1817,7 @@ static bool ipmr_forward_offloaded(struct sk_buff *skb, struct mr_table *mrt,
+> >  }
+> >  #endif
 > >
-> >  extern struct idr btf_idr;
-> >  extern spinlock_t btf_idr_lock;
-> > @@ -1717,7 +1718,14 @@ int bpf_obj_get_user(const char __user *pathname, int flags);
-> >         int __init bpf_iter_ ## target(args) { return 0; }
+> > -/* Processing handlers for ipmr_forward */
+> > +/* Processing handlers for ipmr_forward, under rcu_read_lock() */
 > >
-> >  struct bpf_iter_aux_info {
-> > +       /* for map_elem iter */
-> >         struct bpf_map *map;
-> > +
-> > +       /* for cgroup iter */
-> > +       struct {
-> > +               struct cgroup *start; /* starting cgroup */
-> > +               int order;
-> > +       } cgroup;
-> >  };
+> >  static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+> >                           int in_vifi, struct sk_buff *skb, int vifi)
+> > @@ -1839,9 +1839,7 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+> >               WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
+> >               vif_dev->stats.tx_bytes += skb->len;
+> >               vif_dev->stats.tx_packets++;
+> > -             rcu_read_lock();
+> >               ipmr_cache_report(mrt, skb, vifi, IGMPMSG_WHOLEPKT);
+> > -             rcu_read_unlock();
+> >               goto out_free;
+> >       }
 > >
-> >  typedef int (*bpf_iter_attach_target_t)(struct bpf_prog *prog,
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index ffcbf79a556b..fe50c2489350 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -87,10 +87,30 @@ struct bpf_cgroup_storage_key {
-> >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
-> >  };
+> > @@ -1936,6 +1934,7 @@ static int ipmr_find_vif(const struct mr_table *mrt, struct net_device *dev)
+> >  }
 > >
-> > +enum bpf_iter_cgroup_traversal_order {
-> > +       BPF_ITER_CGROUP_PRE = 0,        /* pre-order traversal */
-> > +       BPF_ITER_CGROUP_POST,           /* post-order traversal */
-> > +       BPF_ITER_CGROUP_PARENT_UP,      /* traversal of ancestors up to the root */
-> > +};
-> > +
-> >  union bpf_iter_link_info {
-> >         struct {
-> >                 __u32   map_fd;
-> >         } map;
-> > +
-> > +       /* cgroup_iter walks either the live descendants of a cgroup subtree, or the
-> > +        * ancestors of a given cgroup.
-> > +        */
-> > +       struct {
-> > +               /* Cgroup file descriptor. This is root of the subtree if walking
-> > +                * descendants; it's the starting cgroup if walking the ancestors.
-> > +                * If it is left 0, the traversal starts from the default cgroup v2
-> > +                * root. For walking v1 hierarchy, one should always explicitly
-> > +                * specify the cgroup_fd.
-> > +                */
-> > +               __u32   cgroup_fd;
-> > +               __u32   traversal_order;
-> > +       } cgroup;
-> >  };
+> >  /* "local" means that we should preserve one skb (for local delivery) */
+> > +/* Called uner rcu_read_lock() */
+> >  static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+> >                         struct net_device *dev, struct sk_buff *skb,
+> >                         struct mfc_cache *c, int local)
+> > @@ -1992,12 +1991,10 @@ static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+> >                              c->_c.mfc_un.res.last_assert +
+> >                              MFC_ASSERT_THRESH)) {
+> >                       c->_c.mfc_un.res.last_assert = jiffies;
+> > -                     rcu_read_lock();
+> >                       ipmr_cache_report(mrt, skb, true_vifi, IGMPMSG_WRONGVIF);
+> >                       if (mrt->mroute_do_wrvifwhole)
+> >                               ipmr_cache_report(mrt, skb, true_vifi,
+> >                                                 IGMPMSG_WRVIFWHOLE);
+> > -                     rcu_read_unlock();
+> >               }
+> >               goto dont_forward;
+> >       }
+> > @@ -2169,9 +2166,7 @@ int ip_mr_input(struct sk_buff *skb)
+> >               return -ENODEV;
+> >       }
 > >
-> >  /* BPF syscall commands, see bpf(2) man-page for more details. */
-> > @@ -6136,6 +6156,16 @@ struct bpf_link_info {
-> >                                         __u32 map_id;
-> >                                 } map;
-> >                         };
-> > +                       union {
-> > +                               struct {
-> > +                                       __u64 cgroup_id;
-> > +                                       __u32 traversal_order;
-> > +                               } cgroup;
-> > +                       };
-> > +                       /* For new iters, if the first field is larger than __u32,
-> > +                        * the struct should be added in the second union. Otherwise,
-> > +                        * it will create holes before map_id, breaking uapi.
-> > +                        */
-> >                 } iter;
-> >                 struct  {
-> >                         __u32 netns_ino;
-> > diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> > index 057ba8e01e70..00e05b69a4df 100644
-> > --- a/kernel/bpf/Makefile
-> > +++ b/kernel/bpf/Makefile
-> > @@ -24,6 +24,9 @@ endif
-> >  ifeq ($(CONFIG_PERF_EVENTS),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += stackmap.o
-> >  endif
-> > +ifeq ($(CONFIG_CGROUPS),y)
-> > +obj-$(CONFIG_BPF_SYSCALL) += cgroup_iter.o
-> > +endif
-> >  obj-$(CONFIG_CGROUP_BPF) += cgroup.o
-> >  ifeq ($(CONFIG_INET),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += reuseport_array.o
-> > diff --git a/kernel/bpf/cgroup_iter.c b/kernel/bpf/cgroup_iter.c
-> > new file mode 100644
-> > index 000000000000..1027faed0b8b
-> > --- /dev/null
-> > +++ b/kernel/bpf/cgroup_iter.c
-> > @@ -0,0 +1,252 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/* Copyright (c) 2022 Google */
-> > +#include <linux/bpf.h>
-> > +#include <linux/btf_ids.h>
-> > +#include <linux/cgroup.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/seq_file.h>
-> > +
-> > +#include "../cgroup/cgroup-internal.h"  /* cgroup_mutex and cgroup_is_dead */
-> > +
-> > +/* cgroup_iter provides three modes of traversal to the cgroup hierarchy.
-> > + *
-> > + *  1. Walk the descendants of a cgroup in pre-order.
-> > + *  2. Walk the descendants of a cgroup in post-order.
-> > + *  2. Walk the ancestors of a cgroup.
-> > + *
-> > + * For walking descendants, cgroup_iter can walk in either pre-order or
-> > + * post-order. For walking ancestors, the iter walks up from a cgroup to
-> > + * the root.
-> > + *
-> > + * The iter program can terminate the walk early by returning 1. Walk
-> > + * continues if prog returns 0.
-> > + *
-> > + * The prog can check (seq->num == 0) to determine whether this is
-> > + * the first element. The prog may also be passed a NULL cgroup,
-> > + * which means the walk has completed and the prog has a chance to
-> > + * do post-processing, such as outputing an epilogue.
-> > + *
-> > + * Note: the iter_prog is called with cgroup_mutex held.
-> > + *
-> > + * Currently only one session is supported, which means, depending on the
-> > + * volume of data bpf program intends to send to user space, the number
-> > + * of cgroups that can be walked is limited. For example, given the current
-> > + * buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
-> > + * cgroup, the total number of cgroups that can be walked is 512. This is
-> > + * a limitation of cgroup_iter. If the output data is larger than the
-> > + * buffer size, the second read() will signal EOPNOTSUPP. In order to work
-> > + * around, the user may have to update their program to reduce the volume
-> > + * of data sent to output. For example, skip some uninteresting cgroups.
-> > + */
-> > +
-> > +struct bpf_iter__cgroup {
-> > +       __bpf_md_ptr(struct bpf_iter_meta *, meta);
-> > +       __bpf_md_ptr(struct cgroup *, cgroup);
-> > +};
-> > +
-> > +struct cgroup_iter_priv {
-> > +       struct cgroup_subsys_state *start_css;
-> > +       bool terminate;
-> > +       int order;
-> > +};
-> > +
-> > +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
-> > +{
-> > +       struct cgroup_iter_priv *p = seq->private;
-> > +
-> > +       mutex_lock(&cgroup_mutex);
-> > +
-> > +       /* cgroup_iter doesn't support read across multiple sessions. */
-> > +       if (*pos > 0)
-> > +               return ERR_PTR(-EOPNOTSUPP);
-> > +
-> > +       ++*pos;
-> > +       p->terminate = false;
-> > +       if (p->order == BPF_ITER_CGROUP_PRE)
-> > +               return css_next_descendant_pre(NULL, p->start_css);
-> > +       else if (p->order == BPF_ITER_CGROUP_POST)
-> > +               return css_next_descendant_post(NULL, p->start_css);
-> > +       else /* BPF_ITER_CGROUP_PARENT_UP */
-> > +               return p->start_css;
-> > +}
-> > +
-> > +static int __cgroup_iter_seq_show(struct seq_file *seq,
-> > +                                 struct cgroup_subsys_state *css, int in_stop);
-> > +
-> > +static void cgroup_iter_seq_stop(struct seq_file *seq, void *v)
-> > +{
-> > +       /* pass NULL to the prog for post-processing */
-> > +       if (!v)
-> > +               __cgroup_iter_seq_show(seq, NULL, true);
-> > +       mutex_unlock(&cgroup_mutex);
+> > -     read_lock(&mrt_lock);
+> >       ip_mr_forward(net, mrt, dev, skb, cache, local);
+> > -     read_unlock(&mrt_lock);
+> >
+> >       if (local)
+> >               return ip_local_deliver(skb);
+> > --
+> > 2.37.0.rc0.104.g0611611a94-goog
+> >
 >
-> I'm just curious, but would it be a good optimization (maybe in a
-> follow up) to move this mutex_unlock before the check on v? That
-> allows you to store/buffer some info you want to print as a compressed
-> struct in a map, then write the full text to the seq_file outside the
-> cgroup_mutex lock in the post-processing invocation.
+> Sorry for reporting this late, but there seems to be 1 call path from
+> which RCU is not watching in ip_mr_forward(). It's via ipmr_mfc_add() ->
+> ipmr_cache_resolve() -> ip_mr_forward().
 >
-> It probably also allows you to walk the whole hierarchy, if one
-> doesn't want to run into seq_file buffer limit (or it can decide what
-> to print within the limit in the post processing invocation), or it
-> can use some out of band way (ringbuf, hashmap, etc.) to send the data
-> to userspace. But all of this can happen without holding cgroup_mutex
-> lock.
+> The warning looks like this:
+>
+> [  632.062382] =============================
+> [  632.068568] WARNING: suspicious RCU usage
+> [  632.073702] 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3374 Not tainted
+> [  632.081098] -----------------------------
+> [  632.086216] net/ipv4/ipmr.c:1080 suspicious rcu_dereference_check() usage!
+> [  632.094152]
+> [  632.094152] other info that might help us debug this:
+> [  632.103349]
+> [  632.103349] rcu_scheduler_active = 2, debug_locks = 1
+> [  632.111011] 1 lock held by smcrouted/359:
+> [  632.116079]  #0: ffffd27b44d23770 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x1c/0x30
+> [  632.124703]
+> [  632.124703] stack backtrace:
+> [  632.129681] CPU: 0 PID: 359 Comm: smcrouted Not tainted 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3374
+> [  632.143426] Call trace:
+> [  632.160542]  lockdep_rcu_suspicious+0xf8/0x10c
+> [  632.165014]  ipmr_cache_report+0x2f0/0x530
+> [  632.169137]  ip_mr_forward+0x364/0x38c
+> [  632.172909]  ipmr_mfc_add+0x894/0xc90
+> [  632.176592]  ip_mroute_setsockopt+0x6ac/0x950
+> [  632.180973]  ip_setsockopt+0x16a0/0x16ac
+> [  632.184921]  raw_setsockopt+0x110/0x184
+> [  632.188780]  sock_common_setsockopt+0x1c/0x2c
+> [  632.193163]  __sys_setsockopt+0x94/0x170
+> [  632.197111]  __arm64_sys_setsockopt+0x2c/0x40
+> [  632.201492]  invoke_syscall+0x48/0x114
+>
+> I don't exactly understand the data structures that are used inside ip_mr_forward(),
+> so I'm unable to say what needs RCU protection and what is fine with the rtnl_mutex
+> that we are holding, just annotated poorly. Could you please take a look?
 
-Thanks Kumar.
+Thanks for the report.
 
-It sounds like an idea, but the key thing is not about moving
-cgroup_mutex unlock before the check IMHO. The user can achieve
-compression using the current infra. Compression could actually be
-done in the bpf program. user can define and output binary content and
-implement a userspace library to parse/decompress when reading out the
-data.
+I guess there are multiple ways to solve this issue, one being:
+
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 73651d17e51f31c8755da6ac3c1c2763a99b1117..1c288a7b60132365c072874d1f811b70679a2bcb
+100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -1004,7 +1004,9 @@ static void ipmr_cache_resolve(struct net *net,
+struct mr_table *mrt,
+
+                        rtnl_unicast(skb, net, NETLINK_CB(skb).portid);
+                } else {
++                       rcu_read_lock();
+                        ip_mr_forward(net, mrt, skb->dev, skb, c, 0);
++                       rcu_read_unlock();
+                }
+        }
+ }
+@@ -1933,7 +1935,7 @@ static int ipmr_find_vif(const struct mr_table
+*mrt, struct net_device *dev)
+ }
+
+ /* "local" means that we should preserve one skb (for local delivery) */
+-/* Called uner rcu_read_lock() */
++/* Called under rcu_read_lock() */
+ static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+                          struct net_device *dev, struct sk_buff *skb,
+                          struct mfc_cache *c, int local)
