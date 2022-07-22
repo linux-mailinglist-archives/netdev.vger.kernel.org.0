@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6DC57E438
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 18:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC0EF57E441
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 18:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbiGVQQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 12:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
+        id S235603AbiGVQUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 12:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232511AbiGVQQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 12:16:48 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B97140F1;
-        Fri, 22 Jul 2022 09:16:47 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id j22so9416460ejs.2;
-        Fri, 22 Jul 2022 09:16:47 -0700 (PDT)
+        with ESMTP id S229850AbiGVQUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 12:20:52 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E217F87228;
+        Fri, 22 Jul 2022 09:20:50 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z22so6452218edd.6;
+        Fri, 22 Jul 2022 09:20:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=97WFVBFeJ/mP7POIyyy1UP0JWOMgZ/bOiCTe1ETU5XI=;
-        b=DPr5GbzJ9gljq8DfC08aakia49SnfaLxsujJZQI7oAQIHdY1grFo4OcBO4dxciU+Qa
-         Or/8tRV8tnIpJ6L8w0iBpM939aGWIBdUIb2ZNSxQzwAj0uIZ6XE13dGUGQzsNipcg9ms
-         tNsO/k+a8prGjijrm4qyOaNWV7VDKznCJNtZD37vsxaAynSdg9lFsqrMGb91IKAuu6tt
-         THrcBbNLQrN2V6v1jn3kyOpm7/cv7uoR3GgfFs9r9BnqO4bX4WeoF4WjEVmGvH3fW1Is
-         jL+u6LyLUyyWEepxJfwOJF/sXhEbu3kloQstYAVH+wMbj89Qwd4H8WyGvPErw6PHUx0/
-         Lbog==
+        bh=cVC7VH4dan2A6lIJvHCy/zypzAUG5xpdNLmt95eeeH0=;
+        b=Q1d+Pjppof/gqv0B7nIuyeAH00eiJSaKutpIB2CZ/+EK1FONt/1ST2s+gYIOMqs5lq
+         e99rqflAaCuYMucMnb2LavMYUkIVzd6Knm4mvn35pGM2uEUuYLEv39lYAyTR/KCF1J3k
+         K0nDSsL6/7nfcBMeecaXQzhaKdyGxEiYlPV1fwl0AUBYXYlrPIenQBNO7NzotEo0oJmk
+         7mon5tTLOnFSLAsHYRgueRTjmir9uSaFCNWhNNooiw6lmV/fl/C8fKqfqVWk/96FX0Bl
+         N5qbgF983FkNt1YzwmVUZt+2BLjjvZHBZ+BE77IemHcvDwkVawmzkDdKJDp9PqVaOZpl
+         EamQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=97WFVBFeJ/mP7POIyyy1UP0JWOMgZ/bOiCTe1ETU5XI=;
-        b=k889UcTzbHcOn3s2Tk+dZ7AMEX08HpvqjQdbFp6PTYSjU+RrELOc1PCyZBM1hCd6Dm
-         s2oisZKynsN8nYNUYka002cZIAf0FD4g1mDpGRECllmmh0NMmd3Sm12jx+PzhPPxQSb2
-         u4Qm4pgMPth7wnHkZ3p8wHqNqTxr8UF9uX62QqD8BjP7C9uL1AxQMLVD+m7yEqZimQW5
-         gSrDKHwTHrO1KkyTb3tNqP/5w2YZINZLzIq9x3g0V1ym2UIKNpzi7VQow1BLNLlk8Oa1
-         KtuZISiFZ0IHHleRYHQppuH2MwbI8gyWMGMPJ+HqVXW+K0ffFow78Xq2X1FofSHHlCuZ
-         D03A==
-X-Gm-Message-State: AJIora+6orXxjz7G992ffRTKj9zy4L9Tzx5QpVKydG2xBMA967RA/X2d
-        rl+51D2u1CrQqYJQkt4Oq25CGPETsJ5wc9LnpOOVjWO7TH4=
-X-Google-Smtp-Source: AGRyM1v1fHCwpN/hlsbBmFOHa0gm/aGOOZHGLRZMX0jdSmOSXL/mCoYZb8NkvX8F2/xv5DnONwmLJbh9lwhOEJ1Cqrg=
-X-Received: by 2002:a17:906:9b86:b0:6fe:d37f:b29d with SMTP id
- dd6-20020a1709069b8600b006fed37fb29dmr488369ejc.327.1658506605946; Fri, 22
- Jul 2022 09:16:45 -0700 (PDT)
+        bh=cVC7VH4dan2A6lIJvHCy/zypzAUG5xpdNLmt95eeeH0=;
+        b=sUCpPLRuDP5MQY7xj0RSdYxnAY0qViZMBg4yhuBuK4Bq2hOVlNpYlJl0La3fZ+xLo6
+         xx27lXFKE/AeykTMjO9B+Szy1I/8bMMjHGUOVEEzy4bx3LPe8kIjpZ9d0PKp9on65jwl
+         GXjxouDtrVMjLDD1iwtn5SF8d7eAp5yG1ToO0ZoVpZtqUJMLAbeCy/4onDKZy3ieS/Fs
+         TuC/zg4dsZLbQZTuyLnO0zSmIh1bkgykl/wB3OQoYsStH4aJY96S8IepwfLbCUCxc7fH
+         GGTMoEze/55etiw9eA9dq3bSa9RioBv/+iTwmSQlxKfxw2nFZU7vdwajvVNdrDkjAldq
+         MLwg==
+X-Gm-Message-State: AJIora+r15rm/yLo9U3YO+165WA+QR/hyhWaS30DNCy2YVuzoth2xjT4
+        7Pr8mGJWGNN1vecWEtsRWoGaACXXvlzLOajYu9g=
+X-Google-Smtp-Source: AGRyM1v8tX9AlPjaUUQNq6sWzJYaGf5FllTis+XOUgeI5WKLL4UcG0LqykqgOOfxD5pSj/RLtAmDFMoEaYztTEZfog8=
+X-Received: by 2002:a05:6402:350c:b0:43a:e25f:d73 with SMTP id
+ b12-20020a056402350c00b0043ae25f0d73mr680596edd.66.1658506849261; Fri, 22 Jul
+ 2022 09:20:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com> <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
+References: <20220722021313.3150035-1-yosryahmed@google.com> <20220722021313.3150035-2-yosryahmed@google.com>
+In-Reply-To: <20220722021313.3150035-2-yosryahmed@google.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 22 Jul 2022 09:16:34 -0700
-Message-ID: <CAADnVQLypx8Yd7L4GByGNEJaWgg0R6ukNV9hz0ge1+ZdW4mdgQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user
- provided context
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Fri, 22 Jul 2022 09:20:38 -0700
+Message-ID: <CAADnVQ+c7uuVXukguvy9x2HjM9K8rj6LOa_QJ_n+MVB-bOx3uQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/8] btf: Add a new kfunc set which allows to
+ mark a function to be sleepable
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Hao Luo <haoluo@google.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
         LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -84,72 +87,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 1:46 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
+On Thu, Jul 21, 2022 at 7:13 PM Yosry Ahmed <yosryahmed@google.com> wrote:
 >
-> When a kfunc was trying to access data from context in a syscall eBPF
-> program, the verifier was rejecting the call.
-> This is because the syscall context is not known at compile time, and
-> so we need to check this when actually accessing it.
+> From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 >
-> Check for the valid memory access and allow such situation to happen.
+> This allows to declare a kfunc as sleepable and prevents its use in
+> a non sleepable program.
 >
-> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 > ---
+>  include/linux/btf.h |  2 ++
+>  kernel/bpf/btf.c    | 13 +++++++++++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
 >
-> changes in v8:
-> - fixup comment
-> - return -EACCESS instead of -EINVAL for consistency
->
-> changes in v7:
-> - renamed access_t into atype
-> - allow zero-byte read
-> - check_mem_access() to the correct offset/size
->
-> new in v6
-> ---
->  kernel/bpf/verifier.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 7c1e056624f9..c807c5d7085a 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
->         struct bpf_map *map_ptr;
->         bool raw_mode;
->         bool pkt_access;
-> +       bool is_kfunc;
->         u8 release_regno;
->         int regno;
->         int access_size;
-> @@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
->                                    struct bpf_call_arg_meta *meta)
->  {
->         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
-> +       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
->         u32 *max_access;
->
->         switch (base_type(reg->type)) {
-> @@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
->                                 env,
->                                 regno, reg->off, access_size,
->                                 zero_size_allowed, ACCESS_HELPER, meta);
-> +       case PTR_TO_CTX:
-> +               /* in case of a kfunc called in a program of type SYSCALL, the context is
-> +                * user supplied, so not computed statically.
-> +                * Dynamically check it now
-> +                */
-> +               if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 1bfed7fa0428..6e7517573d9e 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -18,6 +18,7 @@ enum btf_kfunc_type {
+>         BTF_KFUNC_TYPE_RELEASE,
+>         BTF_KFUNC_TYPE_RET_NULL,
+>         BTF_KFUNC_TYPE_KPTR_ACQUIRE,
+> +       BTF_KFUNC_TYPE_SLEEPABLE,
+>         BTF_KFUNC_TYPE_MAX,
+>  };
 
-prog_type check looks a bit odd here.
-Can we generalize with
-if (!env->ops->convert_ctx_access
+This patch needs refactoring using the new BTF_ID_FLAGS scheme.
+When you do that please update the Documentation/bpf/kfuncs.rst as well.
 
-In other words any program type that doesn't have ctx rewrites can
-use helpers to access ctx fields ?
-
-Also why kfunc only?
-It looks safe to allow normal helpers as well.
+Thanks!
