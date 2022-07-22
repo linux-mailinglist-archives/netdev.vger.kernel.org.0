@@ -2,115 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F5757E674
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 20:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC43857E66E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 20:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236320AbiGVSYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 14:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
+        id S236100AbiGVSXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 14:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235664AbiGVSYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 14:24:42 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476B29E7A7
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 11:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1658514281; x=1690050281;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=In4Wd+SYQwY74S1FEFiUwR1FHom6iUohzZSuXmsIcBg=;
-  b=BK1eFgsXrCNfWA6rp2KtPWtvmYhYQsKkgzI8uz6wNS6n+2KO2jm0xwBI
-   trH+GudRFxRclxOJhwc/+kUxEUZTzuav1X+M1uOzvd1tEfqv1ASsF/NsI
-   UFRxHrQ9zq3tpx8Py8fwLccDYjDrVObI7FO1fi3KmsIJZCAzQd06RK9lh
-   o=;
-X-IronPort-AV: E=Sophos;i="5.93,186,1654560000"; 
-   d="scan'208";a="1037018079"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-c275e159.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 22 Jul 2022 18:24:22 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-c275e159.us-west-2.amazon.com (Postfix) with ESMTPS id C7F9E92CC3;
-        Fri, 22 Jul 2022 18:24:22 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 22 Jul 2022 18:24:22 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.159) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Fri, 22 Jul 2022 18:24:19 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Amit Cohen <amcohen@nvidia.com>
-Subject: [PATCH v1 net 7/7] ipv4: Fix data-races around sysctl_fib_notify_on_flag_change.
-Date:   Fri, 22 Jul 2022 11:22:05 -0700
-Message-ID: <20220722182205.96838-8-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220722182205.96838-1-kuniyu@amazon.com>
-References: <20220722182205.96838-1-kuniyu@amazon.com>
+        with ESMTP id S235917AbiGVSXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 14:23:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2224386C27
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 11:23:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA59F622FB
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 18:23:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1BEC341C6;
+        Fri, 22 Jul 2022 18:23:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658514230;
+        bh=0i0g6wlW4+C0PGDMzbus1rdPjLNF8ICh/+0IE44f1X8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e06FwOi51Y6x542tePk837ruSYa9pEQCAZAiiAK/asADoANtJ3trDX9qdzS9/ibDv
+         OHs2AKC447NTHOvsifRvefoZIar+R5qw754QAdnZdCcnAMSCerFMiAriTkpPGJKhAY
+         XERVtm819i+umuzhQ0eGoLWu+xb7sjsnQlJ9S+PpqNUQcBJyx6TP6IMGIogu4ZaX5i
+         45apezXUpWYHpGpt4MxhSHrr+Yp9VaL8LpKVh7NaqJK8YxkRfkWlqxYS6L1T75UKua
+         EeeYXtVCJWnFE8OFlt92BQnGNYGZCRC0ic6jFaBJrhYde7dR8TPHbQOyd9tfTMI1Xf
+         lCUXtv+Bsg8MA==
+Date:   Fri, 22 Jul 2022 11:23:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <20220722112348.75fb5ccc@kernel.org>
+In-Reply-To: <YtrHOewPlQ0xOwM8@nanopsycho>
+References: <20220720151234.3873008-1-jiri@resnulli.us>
+        <20220720151234.3873008-2-jiri@resnulli.us>
+        <20220720174953.707bcfa9@kernel.org>
+        <YtrHOewPlQ0xOwM8@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.159]
-X-ClientProxiedBy: EX13D13UWB004.ant.amazon.com (10.43.161.218) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading sysctl_fib_notify_on_flag_change, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+On Fri, 22 Jul 2022 17:50:17 +0200 Jiri Pirko wrote:
+> >Plus we need to be more careful about the unregistering order, I
+> >believe the correct ordering is:
+> >
+> >	clear_unmark()
+> >	put()
+> >	wait()
+> >	notify()
+> >
+> >but I believe we'll run afoul of Leon's notification suppression.
+> >So I guess notify() has to go before clear_unmark(), but we should
+> >unmark before we wait otherwise we could live lock (once the mutex 
+> >is really gone, I mean).  
+> 
+> Kuba, could you elaborate a bit more about the live lock problem here?
 
-Fixes: 680aea08e78c ("net: ipv4: Emit notification when fib hardware flags are changed")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-CC: Amit Cohen <amcohen@nvidia.com>
----
- net/ipv4/fib_trie.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Once the devlink_mutex lock is gone - (unprivileged) user space dumping
+devlink objects could prevent any de-registration from happening
+because it can keep the reference of the instance up. So we should mark
+the instance as not REGISTERED first, then go to wait.
 
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index 46e8a5125853..452ff177e4da 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -1042,6 +1042,7 @@ fib_find_matching_alias(struct net *net, const struct fib_rt_info *fri)
- 
- void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri)
- {
-+	u8 fib_notify_on_flag_change;
- 	struct fib_alias *fa_match;
- 	struct sk_buff *skb;
- 	int err;
-@@ -1063,14 +1064,16 @@ void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri)
- 	WRITE_ONCE(fa_match->offload, fri->offload);
- 	WRITE_ONCE(fa_match->trap, fri->trap);
- 
-+	fib_notify_on_flag_change = READ_ONCE(net->ipv4.sysctl_fib_notify_on_flag_change);
-+
- 	/* 2 means send notifications only if offload_failed was changed. */
--	if (net->ipv4.sysctl_fib_notify_on_flag_change == 2 &&
-+	if (fib_notify_on_flag_change == 2 &&
- 	    READ_ONCE(fa_match->offload_failed) == fri->offload_failed)
- 		goto out;
- 
- 	WRITE_ONCE(fa_match->offload_failed, fri->offload_failed);
- 
--	if (!net->ipv4.sysctl_fib_notify_on_flag_change)
-+	if (!fib_notify_on_flag_change)
- 		goto out;
- 
- 	skb = nlmsg_new(fib_nlmsg_size(fa_match->fa_info), GFP_ATOMIC);
--- 
-2.30.2
-
+Pretty theoretical, I guess, but I wanted to mention it in case you can
+figure out a solution along the way :S I don't think it's a blocker
+right now since we still have the mutex.
