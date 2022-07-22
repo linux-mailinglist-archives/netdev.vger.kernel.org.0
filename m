@@ -2,181 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A6757DF5C
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E2057DF8A
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiGVKKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 06:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S233321AbiGVKXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 06:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234772AbiGVKKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:10:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFA3BC3;
-        Fri, 22 Jul 2022 03:10:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=I/TeU7vG/TCOeE+ZVogJWf8GrihqAvOKUnOuXWXxgFM=; b=gpVqBUulvPzgezoxNMRIKP2SGb
-        drQsSP3WP7roNnSXfozLzw/HXwmUhHl6WR2lUaAps63KJzLx0TCnLASXZnAIJx5SMuck8cObaFgwM
-        vzNPCbt4GJj5qOJ0FNb6uENG4gEuaeddmhI1bzhN8Qvm5XmcSt1pUYwjtTd9pY24AQqRo+ZlMWZ2G
-        y99Xl5/V7lmuCggMcxw2zEVQ64M5+9T5f94ZWp5/hDP0Q+plfcZ+LTNEBZCf9z9divaWjTeC5pZq8
-        dBxbIZfpbkmwsfJuTRIfnH42EIveQsG7kzEO/AKy5VXUsmtfJxrEhfTupUaMsNT9hafFmCf91agHB
-        hpDb90ng==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33504)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oEpbc-0006lj-R2; Fri, 22 Jul 2022 11:10:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oEpba-0005k8-67; Fri, 22 Jul 2022 11:09:58 +0100
-Date:   Fri, 22 Jul 2022 11:09:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [Patch net-next v1 3/9] net: dsa: microchip: add common duplex
- and flow control function
-Message-ID: <Ytp3dl5l9jkp94lU@shell.armlinux.org.uk>
-References: <20220722092459.18653-1-arun.ramadoss@microchip.com>
- <20220722092459.18653-4-arun.ramadoss@microchip.com>
+        with ESMTP id S229739AbiGVKXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:23:17 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D473188E0A;
+        Fri, 22 Jul 2022 03:23:13 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M9Hg9K016249;
+        Fri, 22 Jul 2022 10:23:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=jmbe9yVZN73eVPSTlgx/fEPoRr+MKRhjGIu3Gec2OhI=;
+ b=SWqBHKVG5fhl0mGWjhXIWp70GsYUIXlo1Cx1WZ1nWZnyp6lrCR8GYfmBRvcFzFsepNwo
+ SCT5TxVLcn8rwuV7SmDf6Li+BKqwtfD1xHhMSCqEbRO7MqNXEFcOZToUEcaECFmN9CJ1
+ tYDTyZRQubabg+JFnf9FaRcqWHpo91W8QDAuvl8dx5Va8XGEk8IdbHJRmxJ+spA4Mly1
+ OqdXZ4b5nTNmb01FDpFtZNAp0QDsY41H7I8VXF90Utx6gxeMOqHIi0VOECKi1ReAXaDA
+ Ov+/F/PvAwoK/E+iZ4DbTgXn7KaY3Z9iZZUbxix0+uHpjbJTay8+nB8lFqb7nBgInB7M nQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hfs4t9j2u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 10:23:13 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26M9QIsq018257;
+        Fri, 22 Jul 2022 10:23:12 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hfs4t9j1m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 10:23:12 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26MAL114010294;
+        Fri, 22 Jul 2022 10:23:10 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3hbmy903ve-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 10:23:10 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26MALHQ321430688
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Jul 2022 10:21:17 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4305942042;
+        Fri, 22 Jul 2022 10:23:07 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C21364203F;
+        Fri, 22 Jul 2022 10:23:06 +0000 (GMT)
+Received: from [9.145.79.157] (unknown [9.145.79.157])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 22 Jul 2022 10:23:06 +0000 (GMT)
+Message-ID: <434e604c-7fd3-6422-d13b-309a7c1fe0d3@linux.ibm.com>
+Date:   Fri, 22 Jul 2022 12:23:06 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH] s390/qeth: Fix typo 'the the' in comment
+Content-Language: en-US
+To:     Slark Xiao <slark_xiao@163.com>, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com
+Cc:     linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220722093834.77864-1-slark_xiao@163.com>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <20220722093834.77864-1-slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: aJ2v_J8sNMtmmEFys74vdXWAosgiAsjj
+X-Proofpoint-ORIG-GUID: AO4PZTf1Jn4mEHYDGWEdtmGzMboBJDtP
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722092459.18653-4-arun.ramadoss@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-22_02,2022-07-21_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
+ lowpriorityscore=0 priorityscore=1501 suspectscore=0 mlxscore=0
+ malwarescore=0 spamscore=0 impostorscore=0 clxscore=1015 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207220042
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 22.07.22 11:38, Slark Xiao wrote:
+> Replace 'the the' with 'the' in the comment.
+> 
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> ---
+>  drivers/s390/net/qeth_core_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+> index 9e54fe76a9b2..35d4b398c197 100644
+> --- a/drivers/s390/net/qeth_core_main.c
+> +++ b/drivers/s390/net/qeth_core_main.c
+> @@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
+>  			if (!atomic_read(&queue->set_pci_flags_count)) {
+>  				/*
+>  				 * there's no outstanding PCI any more, so we
+> -				 * have to request a PCI to be sure the the PCI
+> +				 * have to request a PCI to be sure the PCI
+>  				 * will wake at some time in the future then we
+>  				 * can flush packed buffers that might still be
+>  				 * hanging around, which can happen if no
 
-On Fri, Jul 22, 2022 at 02:54:53PM +0530, Arun Ramadoss wrote:
-> +void ksz_set_fullduplex(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u8 *bitval = dev->info->xmii_ctrl0;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	data8 &= ~P_MII_DUPLEX_M;
-> +
-> +	if (val)
-> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
-> +				    bitval[P_MII_FULL_DUPLEX]);
-> +	else
-> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
-> +				    bitval[P_MII_HALF_DUPLEX]);
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
-> +void ksz_set_tx_pause(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u32 *masks = dev->info->masks;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	if (val)
-> +		data8 |= masks[P_MII_TX_FLOW_CTRL];
-> +	else
-> +		data8 &= ~masks[P_MII_TX_FLOW_CTRL];
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
-> +void ksz_set_rx_pause(struct ksz_device *dev, int port, bool val)
-> +{
-> +	const u32 *masks = dev->info->masks;
-> +	const u16 *regs = dev->info->regs;
-> +	u8 data8;
-> +
-> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
-> +
-> +	if (val)
-> +		data8 |= masks[P_MII_RX_FLOW_CTRL];
-> +	else
-> +		data8 &= ~masks[P_MII_RX_FLOW_CTRL];
-> +
-> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
-> +}
-> +
-
-Having looked through all the proposed patches and noticed that these
-three functions are always called serially. What is the reason to make
-these separate functions which all read the same register, modify a
-single bit, and then write it back.
-
-What we end up with is the following sequence:
-
-- read P_XMII_CTRL_0
-- udpate P_MII_HALF_DUPLEX bit
-- write P_XMII_CTRL_0
-- read P_XMII_CTRL_0
-- update P_MII_TX_FLOW_CTRL bit
-- write P_XMII_CTRL_0
-- read P_XMII_CTRL_0
-- update P_MII_RX_FLOW_CTRL bit
-- write P_XMII_CTRL_0
-
-whereas the original code did:
-
-- read P_XMII_CTRL_0
-- udpate P_MII_HALF_DUPLEX, P_MII_TX_FLOW_CTRL and P_MII_RX_FLOW_CTRL
-  bits
-- write P_XMII_CTRL_0
-
-which was much more efficient, not only in terms of CPU cycles, but also
-IO cycles and code size.
-
-You could do this instead:
-
-	u8 mask, val, ctrl0;
-
-	mask = P_MII_DUPLEX_M | masks[P_MII_TX_FLOW_CTRL] |
-	       masks[P_MII_RX_FLOW_CTRL];
-
-	if (duplex == DUPLEX_FULL)
-		val = FIELD_PREP(P_MII_DUPLEX_M, bitval[P_MII_FULL_DUPLEX]);
-	else
-		val = FIELD_PREP(P_MII_DUPLEX_M, bitval[P_MII_HALF_DUPLEX]);
-
-	if (tx_pause)
-		val |= masks[P_MII_TX_FLOW_CTRL];
-	
-	if (rx_pause)
-		val |= masks[P_MII_RX_FLOW_CTRL];
-	
-	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &ctrl0);
-	ctrl0 = (ctrl0 & ~mask) | val;
-	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, ctrl0);
-
-and maybe convert that last three lines into a helper, ksz_pmodify8()
-which could be useful in other parts of the driver where you do a
-read-modify-write operation on a register.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+This trivial typo has been sent twice already to this mailinglist:
+https://lore.kernel.org/netdev/Ytb1%2FuU+jlcI4jXw@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com/T/
+https://lore.kernel.org/netdev/7a935730-f3a5-0b1f-2bdc-a629711a3a01@linux.ibm.com/t/
