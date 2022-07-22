@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE7657E02E
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:44:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A20457E033
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234494AbiGVKon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 06:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S234604AbiGVKqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 06:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiGVKom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:44:42 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0FC9BB5C4;
-        Fri, 22 Jul 2022 03:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Gychz
-        J0iPpXunmsp/gWRd2qFA9Qg4Kvr1bpS0rgmKxU=; b=iogwW+rtcIOZjYwa2ViFh
-        pgqXrJjcTtia0/uAiai40DvxEIfUj+FaR788kGfjQ5MFbUFrQGW+UUumP6/g0Q08
-        xBAPrslrO6ms7hzeeEFeVrfUytvuizz4wroGItHm7lwr+yNVHg/lHD27VgdfChzY
-        VZXrXMnppNdy00J07Kvg2Y=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgDX3580f9piU1cyPw--.23671S2;
-        Fri, 22 Jul 2022 18:43:03 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     tglx@linutronix.de, mingo@redhat.com, shuah@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, peterz@infradead.org, dvhart@infradead.org,
-        dave@stgolabs.net, andrealmeid@igalia.com
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] selftests: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 18:42:59 +0800
-Message-Id: <20220722104259.83599-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229980AbiGVKqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:46:05 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 390489D527
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 03:46:04 -0700 (PDT)
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 22 Jul 2022 19:46:03 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 15A542059027;
+        Fri, 22 Jul 2022 19:46:03 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 22 Jul 2022 19:46:03 +0900
+Received: from [10.212.180.8] (unknown [10.212.180.8])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 512D6B62A4;
+        Fri, 22 Jul 2022 19:46:02 +0900 (JST)
+Subject: Re: [PATCH 1/1] drivers/net/ethernet: fix a memory leak
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
+References: <20220722043327.2259-1-ruc_gongyuanjun@163.com>
+Cc:     netdev@vger.kernel.org
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <190b317a-8a32-f1bc-a741-5e7745da962d@socionext.com>
+Date:   Fri, 22 Jul 2022 19:46:01 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgDX3580f9piU1cyPw--.23671S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uF4rZry3Ww13tw4xuryDZFb_yoW8Ww15p3
-        y8tr1YkFy0q3W7Ww18Gan3ZF48GF4kJFWxGr1fXryfZ3y5Xas3XFnrKF17JF1agrWkZw1r
-        A3y2gryjvFs7ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEEoGwUUUUU=
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJRdGZGAJpKgZ6wAAsH
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220722043327.2259-1-ruc_gongyuanjun@163.com>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+Hi,
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+On 2022/07/22 13:33, Yuanjun Gong wrote:
+> In ave_remove, ndev should be freed with free_netdev before return.
+> 
+> Signed-off-by: Yuanjun Gong <ruc_gongyuanjun@163.com>
+> ---
+>   drivers/net/ethernet/socionext/sni_ave.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/socionext/sni_ave.c
+> b/drivers/net/ethernet/socionext/sni_ave.c
+> index f0c8de2c6075..9d1c1cdd04af 100644
+> --- a/drivers/net/ethernet/socionext/sni_ave.c
+> +++ b/drivers/net/ethernet/socionext/sni_ave.c
+> @@ -1725,6 +1725,7 @@ static int ave_remove(struct platform_device *pdev)
+>   	unregister_netdev(ndev);
+>   	netif_napi_del(&priv->napi_rx);
+>   	netif_napi_del(&priv->napi_tx);
+> +	free_netdev(ndev);
+
+This ave driver uses devm_allocate_etherdev() to allocate "ndev".
+It will be released automatically when removing the driver.
+Therefore, it is not necessary to release it explicitly.
+
+Please refer to the commit e87fb82ddc3b
+("net: ethernet: ave: Replace alloc_etherdev() with devm_alloc_etherdev()").
+
+Thank you,
+
+>   
+>   	return 0;
+>   }
+>
 ---
- .../futex/functional/futex_requeue_pi_signal_restart.c          | 2 +-
- tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c b/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-index f8c43ce8fe66..c6b8f32990c8 100644
---- a/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-+++ b/tools/testing/selftests/futex/functional/futex_requeue_pi_signal_restart.c
-@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
- 		/*
- 		 * If res is non-zero, we either requeued the waiter or hit an
- 		 * error, break out and handle it. If it is zero, then the
--		 * signal may have hit before the the waiter was blocked on f1.
-+		 * signal may have hit before the waiter was blocked on f1.
- 		 * Try again.
- 		 */
- 		if (res > 0) {
-diff --git a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-index 0727e2012b68..43469c7de118 100755
---- a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-+++ b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-@@ -525,7 +525,7 @@ arp_suppression()
- 
- 	log_test "neigh_suppress: on / neigh exists: yes"
- 
--	# Delete the neighbour from the the SVI. A single ARP request should be
-+	# Delete the neighbour from the SVI. A single ARP request should be
- 	# received by the remote VTEP
- 	RET=0
- 
--- 
-2.25.1
-
+Best Regards
+Kunihiko Hayashi
