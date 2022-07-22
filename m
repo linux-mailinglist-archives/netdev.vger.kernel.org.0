@@ -2,111 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 441F757D8F8
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 05:27:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FA757D91E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 05:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbiGVD1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 23:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        id S233587AbiGVD57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 23:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiGVD1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 23:27:15 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9261A9368C;
-        Thu, 21 Jul 2022 20:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=5u7RoGzLQzUaoRKGdfln+jG1YUe/P0RSrCB5jT5RLuM=; b=0sMZ7ACkqjUQb6O3VzDVkDhKS1
-        +XwKqrE/tpIKef+upJnJuKhE3bOyDvteAFa6KsBWDQLXCRJEc3NS8XRmUCLaCHfiN3cnV8ASD8AZ0
-        bE/YIYiiP0tv3gPrD5+PwM9/JRO8KP7/5+vHGo2jiyJSw7XNW6EWOfEcntARYMK9l9tY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oEjJh-00B6bG-L8; Fri, 22 Jul 2022 05:27:05 +0200
-Date:   Fri, 22 Jul 2022 05:27:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Chunhao Lin <hau@realtek.com>, netdev@vger.kernel.org,
-        nic_swsd@realtek.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] r8169: add support for rtl8168h(revid 0x2a) +
- rtl8211fs fiber application
-Message-ID: <YtoZCaLTMFw8cTem@lunn.ch>
-References: <20220721144550.4405-1-hau@realtek.com>
- <356f4285-1e83-ab14-c890-4131acd8e61d@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <356f4285-1e83-ab14-c890-4131acd8e61d@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229692AbiGVD54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 23:57:56 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136CD6C105;
+        Thu, 21 Jul 2022 20:57:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VK3SFm4_1658462266;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VK3SFm4_1658462266)
+          by smtp.aliyun-inc.com;
+          Fri, 22 Jul 2022 11:57:47 +0800
+Message-ID: <1658461678.632858-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v12 08/40] virtio_ring: split: extract the logic of alloc queue
+Date:   Fri, 22 Jul 2022 11:47:58 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com,
+        virtualization@lists.linux-foundation.org
+References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
+ <20220720030436.79520-9-xuanzhuo@linux.alibaba.com>
+ <0b3c985d-d479-a554-4fe2-bfe94fc74070@redhat.com>
+In-Reply-To: <0b3c985d-d479-a554-4fe2-bfe94fc74070@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +#define RT_SFP_ST (1)
-> > +#define RT_SFP_OP_W (1)
-> > +#define RT_SFP_OP_R (2)
-> > +#define RT_SFP_TA_W (2)
-> > +#define RT_SFP_TA_R (0)
+On Thu, 21 Jul 2022 17:13:49 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/7/20 11:04, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Separate the logic of split to create vring queue.
+> >
+> > This feature is required for subsequent virtuqueue reset vring.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >   drivers/virtio/virtio_ring.c | 68 ++++++++++++++++++++++--------------
+> >   1 file changed, 42 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index c94c5461e702..c7971438bb2c 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -950,28 +950,19 @@ static void vring_free_split(struct vring_virtque=
+ue_split *vring_split,
+> >   	kfree(vring_split->desc_extra);
+> >   }
+> >
+> > -static struct virtqueue *vring_create_virtqueue_split(
+> > -	unsigned int index,
+> > -	unsigned int num,
+> > -	unsigned int vring_align,
+> > -	struct virtio_device *vdev,
+> > -	bool weak_barriers,
+> > -	bool may_reduce_num,
+> > -	bool context,
+> > -	bool (*notify)(struct virtqueue *),
+> > -	void (*callback)(struct virtqueue *),
+> > -	const char *name)
+> > +static int vring_alloc_queue_split(struct vring_virtqueue_split *vring=
+_split,
+> > +				   struct virtio_device *vdev,
+> > +				   u32 num,
+> > +				   unsigned int vring_align,
+> > +				   bool may_reduce_num)
+> >   {
+> > -	struct virtqueue *vq;
+> >   	void *queue =3D NULL;
+> >   	dma_addr_t dma_addr;
+> > -	size_t queue_size_in_bytes;
+> > -	struct vring vring;
+> >
+> >   	/* We assume num is a power of 2. */
+> >   	if (num & (num - 1)) {
+> >   		dev_warn(&vdev->dev, "Bad virtqueue length %u\n", num);
+> > -		return NULL;
+> > +		return -EINVAL;
+> >   	}
+> >
+> >   	/* TODO: allocate each queue chunk individually */
+> > @@ -982,11 +973,11 @@ static struct virtqueue *vring_create_virtqueue_s=
+plit(
+> >   		if (queue)
+> >   			break;
+> >   		if (!may_reduce_num)
+> > -			return NULL;
+> > +			return -ENOMEM;
+> >   	}
+> >
+> >   	if (!num)
+> > -		return NULL;
+> > +		return -ENOMEM;
+> >
+> >   	if (!queue) {
+> >   		/* Try to get a single page. You are my only hope! */
+> > @@ -994,21 +985,46 @@ static struct virtqueue *vring_create_virtqueue_s=
+plit(
+> >   					  &dma_addr, GFP_KERNEL|__GFP_ZERO);
+> >   	}
+> >   	if (!queue)
+> > -		return NULL;
+> > +		return -ENOMEM;
 > > +
-> > +static void rtl_sfp_if_write(struct rtl8169_private *tp,
-> > +				  struct rtl_sfp_if_mask *sfp_if_mask, u8 reg, u16 val)
+> > +	vring_init(&vring_split->vring, num, queue, vring_align);
+> >
+> > -	queue_size_in_bytes =3D vring_size(num, vring_align);
+> > -	vring_init(&vring, num, queue, vring_align);
+> > +	vring_split->queue_dma_addr =3D dma_addr;
+> > +	vring_split->queue_size_in_bytes =3D vring_size(num, vring_align);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct virtqueue *vring_create_virtqueue_split(
+> > +	unsigned int index,
+> > +	unsigned int num,
+> > +	unsigned int vring_align,
+> > +	struct virtio_device *vdev,
+> > +	bool weak_barriers,
+> > +	bool may_reduce_num,
+> > +	bool context,
+> > +	bool (*notify)(struct virtqueue *),
+> > +	void (*callback)(struct virtqueue *),
+> > +	const char *name)
 > > +{
-> > +	struct rtl_sfp_if_info sfp_if_info = {0};
-> > +	const u16 mdc_reg = PIN_I_SEL_1;
-> > +	const u16 mdio_reg = PIN_I_SEL_2;
+> > +	struct vring_virtqueue_split vring_split =3D {};
+> > +	struct virtqueue *vq;
+> > +	int err;
 > > +
-> > +	rtl_select_sfp_if(tp, sfp_if_mask, &sfp_if_info);
-> > +
-> > +	/* change to output mode */
-> > +	r8168_mac_ocp_write(tp, PINOE, sfp_if_info.mdio_oe_o);
-> > +
-> > +	/* init sfp interface */
-> > +	r8168_mac_ocp_write(tp, mdc_reg, sfp_if_info.mdc_pd);
-> > +	r8168_mac_ocp_write(tp, mdio_reg, sfp_if_info.mdio_pu);
-> > +
-> > +	/* preamble 32bit of 1 */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, 0xffffffff, 32);
-> > +
-> > +	/* opcode write */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_ST, 2);
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_OP_W, 2);
-> > +
-> > +	/* phy address */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, sfp_if_mask->phy_addr, 5);
-> > +
-> > +	/* phy reg */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, reg, 5);
-> > +
-> > +	/* turn-around(TA) */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, RT_SFP_TA_W, 2);
-> > +
-> > +	/* write phy data */
-> > +	rtl_sfp_shift_bit_in(tp, &sfp_if_info, val, 16);
+> > +	err =3D vring_alloc_queue_split(&vring_split, vdev, num, vring_align,
+> > +				      may_reduce_num);
+> > +	if (err)
+> > +		return NULL;
+> >
+> > -	vq =3D __vring_new_virtqueue(index, vring, vdev, weak_barriers, conte=
+xt,
+> > -				   notify, callback, name);
+> > +	vq =3D __vring_new_virtqueue(index, vring_split.vring, vdev, weak_bar=
+riers,
+> > +				   context, notify, callback, name);
+> >   	if (!vq) {
+> > -		vring_free_queue(vdev, queue_size_in_bytes, queue,
+> > -				 dma_addr);
+> > +		vring_free_split(&vring_split, vdev);
+> >   		return NULL;
+> >   	}
+> >
+> > -	to_vvq(vq)->split.queue_dma_addr =3D dma_addr;
+> > -	to_vvq(vq)->split.queue_size_in_bytes =3D queue_size_in_bytes;
+> > +	to_vvq(vq)->split.queue_dma_addr =3D vring_split.queue_dma_addr;
+> > +	to_vvq(vq)->split.queue_size_in_bytes =3D vring_split.queue_size_in_b=
+ytes;
+>
+>
+> This still seems a little bit redundant since the current logic is a
+> little bit complicated since the vq->split is not initialized in a
+> single place.
+>
+> I wonder if it's better to:
+>
+> vring_alloc_queue_split()
+> vring_alloc_desc_extra() (reorder to make patch 9 come first)
+>
+> then we can simply assign vring_split to vq->split in
+> __vring_new_virtqueue() since it has:
+>
+>  =C2=A0=C2=A0=C2=A0 vq->split.queue_dma_addr =3D 0;
+>  =C2=A0=C2=A0 =C2=A0vq->split.queue_size_in_bytes =3D 0;
+>
+>  =C2=A0=C2=A0=C2=A0 vq->split.vring =3D vring;
+>  =C2=A0=C2=A0=C2=A0 vq->split.avail_flags_shadow =3D 0;
+>  =C2=A0=C2=A0=C2=A0 vq->split.avail_idx_shadow =3D 0;
+>
+> This seems to simplify the logic and task of e.g
+> virtqueue_vring_attach_split() to a simple:
+>
+> vq->split=3D vring_split;
 
-This looks like a bit-banging MDIO bus? If so, please use the kernel
-code, drivers/net/mdio/mdio-bitbang.c. You just need to provide it
-with functions to write and read a bit, and it will do the rest,
-including C45 which you don't seem to support here.
+This does look simpler. The reason for not doing this is that the argument
+accepted by __vring_new_virtqueue() is "struct vring", and
+__vring_new_virtqueue() is an export symbol.
 
-> > +static enum rtl_sfp_if_type rtl8168h_check_sfp(struct rtl8169_private *tp)
-> > +{
-> > +	int i;
-> > +	int const checkcnt = 4;
-> > +
-> > +	rtl_sfp_eeprom_write(tp, 0x1f, 0x0000);
-> > +	for (i = 0; i < checkcnt; i++) {
-> > +		if (rtl_sfp_eeprom_read(tp, 0x02) != RTL8211FS_PHY_ID_1 ||
-> > +			rtl_sfp_eeprom_read(tp, 0x03) != RTL8211FS_PHY_ID_2)
-> > +			break;
-> > +	}
+I took a look, and the only external direct call to __vring_new_virtqueue is
+here.
 
-Reading registers 2 and 3 for a PhY idea? Who not just use phylib, and
-a PHY driver?
+	tools/virtio/virtio_test.c
+	static void vq_reset(struct vq_info *info, int num, struct virtio_device *=
+vdev)
+	{
+		if (info->vq)
+			vring_del_virtqueue(info->vq);
 
-  Andrew
+		memset(info->ring, 0, vring_size(num, 4096));
+		vring_init(&info->vring, num, info->ring, 4096);
+		info->vq =3D __vring_new_virtqueue(info->idx, info->vring, vdev, true,
+						 false, vq_notify, vq_callback, "test");
+		assert(info->vq);
+		info->vq->priv =3D info;
+	}
+
+I think this could be replaced with vring_new_virtqueue() so that we don't =
+need
+to make __vring_new_virtqueue as an export function so we can make some
+modifications to it.
+
+nit: vring_alloc_desc_extra() should not have to be extract from
+__vring_new_virtqueue() .
+
+Thanks.
+
+>
+> And if this makes sense, we can do something similar to packed ring.
+>
+> Thanks
+>
+>
+> >   	to_vvq(vq)->we_own_ring =3D true;
+> >
+> >   	return vq;
+>
