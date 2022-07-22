@@ -2,116 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DF157DFF7
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA2D057E016
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbiGVK2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 06:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
+        id S234826AbiGVKes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 06:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235243AbiGVK1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:27:42 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0F7B5C9C;
-        Fri, 22 Jul 2022 03:26:48 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id q14so3324215iod.3;
-        Fri, 22 Jul 2022 03:26:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=++ZOFlOZxMjrOsr2efl/yr+NEpCsW/HIcT4Q3CtS1EA=;
-        b=h0FeYf4usPtRPDWKkAXmKGyuKsyZDBNxj65yEkSBH87oEq5m9ADC2r8UZyeo8robS0
-         PqT684mRn+fJb8PpiOxsBCTODXQ3VU+owR7jj1ELG4QSmRs4OiDX7lOlMwION71AciVq
-         h2842VtVKSGlN8nq9nPkWsvZQk9G8GmLfH5ekuaUFt4aqhRCfYKEZR63A1ep8akYJSVS
-         yQ0Q4ssZzvL+gGyCLigwIgp+L0inHimgwrLJnMqy2v+iiQzk6dFCwV1PMN7D6CRoynqf
-         m8Dpc3TTQ1F3lQ9MpvxS+recTxDue27hx9BkQuZ35sLhyDLC+29oN3e2Ub6Jke3d3dlC
-         iWfw==
+        with ESMTP id S229671AbiGVKeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:34:46 -0400
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DEAB504B;
+        Fri, 22 Jul 2022 03:34:45 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id k11so5460754wrx.5;
+        Fri, 22 Jul 2022 03:34:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=++ZOFlOZxMjrOsr2efl/yr+NEpCsW/HIcT4Q3CtS1EA=;
-        b=Lxk4Ey6bnV1RetpWZCT90KtbHaTWxzd/Pvik1AjziS3QjPnkvRM0afbwO2LyA6J5Mt
-         nmG1KJD6Occ4c00pewwamXP05vh2Ote0UlmVr6MI3jAQ03CbyALCCILjRLWKIja2Inyi
-         NjH1Vyybr561tHvqiPmNOZT6CofjSxoXI9GZ5fz5YTIQCcH0Ty4MeavaOW770cgrM43V
-         xIBhCnYLFkNvH/dIKEFImREPDNdzReQal6kSgxhAHsDuLzcSSlMdebZR8d+PIcSZFYzk
-         lp58xGuNq8jWKBAQ6jHybDRlTw6EhyVWsoU1/SEa77GloIJo+cN/Ze39FZXCCJlAF2PQ
-         y+Sg==
-X-Gm-Message-State: AJIora+bzzSa4OL9/9RtM2LC9bMMin5GIcESnVCt1Qtqj2BFINoiiaa1
-        lbt6VJ1aKJS2U3Cf2MW4fE50okzBvA1ZCC0Kc04=
-X-Google-Smtp-Source: AGRyM1uE3dnjcjkHa9ZDYr6Pi2e/HLy1hn85fMSmA7vDXmZ6J9uPot1KYZ4SLW+O+JKzWO69H3e53X5SlrQsChafoEU=
-X-Received: by 2002:a02:c4c3:0:b0:33f:4fb4:834b with SMTP id
- h3-20020a02c4c3000000b0033f4fb4834bmr1237811jaj.231.1658485608235; Fri, 22
- Jul 2022 03:26:48 -0700 (PDT)
+        bh=nADJV/5h4/gXCaYOhbEKrLOB3utQ1DQ34j9M9pOUKE0=;
+        b=VO1T3ebTHCu1EUWsSLeORLAl1p/Od8dWYZbdI0LL8n2lR8Pr3y2wzoMaS80ob4Wx/r
+         111bAg4GE3yUwig36YYcJBSRM40eBmE/S8ymOgIiNsLg82MOTVBJZywaorkX4d47N8Jw
+         Lo79U0rXodkieL0CMIl0lgVUiZ93w1nhe7gRxsf0UJN2ZOMsVi4tPbiBW+Xe2gffPc9/
+         j4BFeFcpKzic0hPJqqjU2hRhj1ywtA6RCf2DjABovRO/WPevh+pjDbRCLNGQThPTIETi
+         MAQo9etiinkoS6NC8wqE0CJc6pB808OyETkxraWxJbP30HQYkd/4LMEV5CIwB3gwB7ns
+         AVNw==
+X-Gm-Message-State: AJIora9tkpCf6jdxqEhVNVGXnal+cpaoShow1srbtQcfZzgv7PDkD5KU
+        AgMynbh780JgXH9q/M2hTORNBvMVYVri0+hwcGI=
+X-Google-Smtp-Source: AGRyM1sKbSRq+SAZTyfFGHE2wnRenI490IAH0OsYzAtZIRAO4ZCZyR6GjHaXYB2u+5KtBP8xla0cN+koqjKvDJwChw0=
+X-Received: by 2002:a5d:620b:0:b0:21e:5252:311c with SMTP id
+ y11-20020a5d620b000000b0021e5252311cmr2005942wru.604.1658486084189; Fri, 22
+ Jul 2022 03:34:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721134245.2450-1-memxor@gmail.com> <20220721134245.2450-5-memxor@gmail.com>
- <20220722041056.r2ozhs4p3s7mt7go@macbook-pro-3.dhcp.thefacebook.com>
-In-Reply-To: <20220722041056.r2ozhs4p3s7mt7go@macbook-pro-3.dhcp.thefacebook.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 22 Jul 2022 12:26:11 +0200
-Message-ID: <CAP01T77M27ZxZ-_oMujCCpCkSYJ9iMnm4EHTNgTe2odbCfPt2w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc args
- to be trusted
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
+References: <20220720112924.1096-1-harini.katakam@xilinx.com>
+ <20220720112924.1096-3-harini.katakam@xilinx.com> <ba2a4652-31b0-e2c1-94cd-2552efef4f15@microchip.com>
+In-Reply-To: <ba2a4652-31b0-e2c1-94cd-2552efef4f15@microchip.com>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Fri, 22 Jul 2022 16:04:33 +0530
+Message-ID: <CAFcVEC+6uNZ0Sq+GQLxZdCW9+DtAh9e-yxrK--3VTGLsOz0_1Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] net: macb: Update tsu clk usage in runtime
+ suspend/resume for Versal
+To:     Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, edumazet@google.com,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Jul 2022 at 06:11, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Jul 21, 2022 at 03:42:36PM +0200, Kumar Kartikeya Dwivedi wrote:
-> > +/* Trusted arguments are those which are meant to be referenced arguments with
-> > + * unchanged offset. It is used to enforce that pointers obtained from acquire
-> > + * kfuncs remain unmodified when being passed to helpers taking trusted args.
-> > + *
-> > + * Consider
-> > + *   struct foo {
-> > + *           int data;
-> > + *           struct foo *next;
-> > + *   };
-> > + *
-> > + *   struct bar {
-> > + *           int data;
-> > + *           struct foo f;
-> > + *   };
-> > + *
-> > + *   struct foo *f = alloc_foo(); // Acquire kfunc
-> > + *   struct bar *b = alloc_bar(); // Acquire kfunc
-> > + *
-> > + * If a kfunc set_foo_data() wants to operate only on the allocated object, it
-> > + * will set the KF_TRUSTED_ARGS flag, which will prevent unsafe usage like:
-> > + *
-> > + *   set_foo_data(f, 42);       // Allowed
-> > + *   set_foo_data(f->next, 42); // Rejected, non-referenced pointer
-> > + *   set_foo_data(&f->next, 42);// Rejected, referenced, but bad offset
-> > + *   set_foo_data(&b->f, 42);   // Rejected, referenced, but wrong type
->
-> I think you meant to swap above two comments ?
-> That's what I did while applying.
->
-> Also fixed typo in Fixes tag in patch 13. It was missing a letter in sha.
->
-> Since there are 3 other pending patchsets in patchwork that add new kfuncs
-> this cleanup of kfunc registration couldn't have come at better time.
->
-> Thank you for doing this work.
+Hi Claudiu,
 
-Thank you for doing the fixups!
+On Fri, Jul 22, 2022 at 1:55 PM <Claudiu.Beznea@microchip.com> wrote:
+>
+> On 20.07.2022 14:29, Harini Katakam wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >
+> > On Versal TSU clock cannot be disabled irrespective of whether PTP is
+> > used. Hence introduce a new Versal config structure with a "need tsu"
+> > caps flag and check the same in runtime_suspend/resume before cutting
+> > off clocks.
+> >
+> > More information on this for future reference:
+> > This is an IP limitation on versions 1p11 and 1p12 when Qbv is enabled
+> > (See designcfg1, bit 3). However it is better to rely on an SoC specific
+> > check rather than the IP version because tsu clk property itself may not
+> > represent actual HW tsu clock on some chip designs.
+> >
+> > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> > ---
+> >  drivers/net/ethernet/cadence/macb.h      |  1 +
+> >  drivers/net/ethernet/cadence/macb_main.c | 17 +++++++++++++++--
+> >  2 files changed, 16 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+> > index 7ca077b65eaa..8bf67b44b466 100644
+> > --- a/drivers/net/ethernet/cadence/macb.h
+> > +++ b/drivers/net/ethernet/cadence/macb.h
+> > @@ -725,6 +725,7 @@
+> >  #define MACB_CAPS_MACB_IS_GEM                  0x80000000
+> >  #define MACB_CAPS_PCS                          0x01000000
+> >  #define MACB_CAPS_HIGH_SPEED                   0x02000000
+> > +#define MACB_CAPS_NEED_TSUCLK                  0x00001000
+>
+> Can you keep this sorted by the bit position used?
+
+Thanks for the review.
+Sure, I'll sort these in a separate patch first in the same series.
+
+>
+> >
+> >  /* LSO settings */
+> >  #define MACB_LSO_UFO_ENABLE                    0x01
+> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> > index 7eb7822cd184..8bbc46e8a9eb 100644
+> > --- a/drivers/net/ethernet/cadence/macb_main.c
+> > +++ b/drivers/net/ethernet/cadence/macb_main.c
+> > @@ -4735,6 +4735,16 @@ static const struct macb_config zynqmp_config = {
+> >         .usrio = &macb_default_usrio,
+> >  };
+> >
+> > +static const struct macb_config versal_config = {
+> > +       .caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_JUMBO |
+> > +               MACB_CAPS_GEM_HAS_PTP | MACB_CAPS_BD_RD_PREFETCH | MACB_CAPS_NEED_TSUCLK,
+> > +       .dma_burst_length = 16,
+> > +       .clk_init = macb_clk_init,
+> > +       .init = init_reset_optional,
+> > +       .jumbo_max_len = 10240,
+> > +       .usrio = &macb_default_usrio,
+> > +};
+> > +
+>
+> Also, could you keep this not b/w zynq configs to have a bit of sort of these?
+>
+> Other than this:
+>
+> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+
+Thanks.
+
+Regards,
+Harini
