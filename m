@@ -2,113 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B836D57D950
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 06:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C6757D954
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 06:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiGVEKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 00:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
+        id S230312AbiGVELC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 00:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiGVEKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 00:10:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979C81582E;
-        Thu, 21 Jul 2022 21:10:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2049162034;
-        Fri, 22 Jul 2022 04:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 66EB4C341CA;
-        Fri, 22 Jul 2022 04:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658463018;
-        bh=T3OTnT6JXnGMkPLRI43V4DmcD+75jV6haXIUuqrw9q4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=l/0uGgWsL9e9xEu2UuDggNiSmCNJipVr5FIIrlBHpPEyuM+70dUDxW4ca4OyUbIwk
-         Ev6cL0sAS4XidE9AsSEXYCN/edFMx38weSXV0P1YQuqzp+rv1SKKxPNvCqgXYrzR71
-         rWz9jEpxRXjCBV7Yssrb50l1EUlJ1tpoLY+soLinCWwL9NN4Vt5teFUjpktrBL9zVG
-         jjz8L8aTRCfae4Rj0Is25/XyFfdR4CWqbOppfEFiGZj55LE1LlYe3PBXRGrUxKvE0W
-         6yXc4j2Bl9KKwlnNMf4ybxvS+uF8r0qK8ehQBorc/dAAms1xs3dBBrDErkmgCqXfSy
-         rwcER8Fcdoc3g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 49BB5E451B8;
-        Fri, 22 Jul 2022 04:10:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v7 00/13] New nf_conntrack kfuncs for insertion,
- changing timeout, status
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165846301827.26375.18363403275263691735.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Jul 2022 04:10:18 +0000
-References: <20220721134245.2450-1-memxor@gmail.com>
-In-Reply-To: <20220721134245.2450-1-memxor@gmail.com>
+        with ESMTP id S229547AbiGVELB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 00:11:01 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F6D89AA0;
+        Thu, 21 Jul 2022 21:11:00 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id b7-20020a17090a12c700b001f20eb82a08so7122561pjg.3;
+        Thu, 21 Jul 2022 21:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2Hbsikftw7Ck+qtgf2iU/lIUQA7uKjUidRMS9WyjJwE=;
+        b=kmuDdEgzaqZNfJRplcZwi1REHeoWn0ZcztTXgCclg1tmtiO8lfr4u3xTNqHY6hL5cO
+         dFEFPLo8OkEK7jBaSN+IxH44BFY7YxAkQWfm+CO+szn3vIX/z3u1qY4xRrtqZJrYgPXw
+         8jrVGTj9wL5ipeNXnC1gH8Yr+toSEFVMp7LInjohhYFZBEv6GcnsmnW8jRr+yykcI93u
+         xBFCDmgOYptUE6KNyWzAbhRHhZRYrbKbGxzL2R2eP7NHdTuwtfrOK9teJJEILpcUEMUJ
+         z0132+b65ElBIXfRwyMBfevSqd/brYV9ClhJ77/0+jEwLkCUTVDoY02zu29f2H0gkIjA
+         jXPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Hbsikftw7Ck+qtgf2iU/lIUQA7uKjUidRMS9WyjJwE=;
+        b=xMqsiV/ORhqGz8R2bF1Qx7sG2TlzW/UiBcPR4/ipwlnlwDSV4KBSbTKCKQd2Y/yWC6
+         c6+xHPyZuNP7O3Dsq1H123UPF4QpYemv40PCnnLaG3nUTGVSU82g7z3aB8VO0F0A4T7m
+         V2KaLlfgcVoEyc0K+JUCmGHfdxpjI+Sa4ojwSgX24bFcrRnXtQfxgtXu8xQTAUzTDn9P
+         GdOiAHUNjzHPdKSUmA1n5K1fo208ClMHo/yl0FECwN78lzszcTNx29geXa2K+J74t0Bq
+         foifpyCSS3Wcl26JlgvjvmwTjFsi4/DUFeqXqORxk7pskzAvRyB8jlM6GD3fBGwCyd7y
+         XQyw==
+X-Gm-Message-State: AJIora+Sv/K7EpglRqH8pX2W8DBOjBmjG3YNJyZbHBEJ3SrGnqxjcNXa
+        TQczdswpG3lRdDOIS7BGsIg=
+X-Google-Smtp-Source: AGRyM1tUe0HM8qSeNJ2sBlFZGiFYctTy8eEVtrGRGmW8+MxGXqPZPhTqeRag6bmrpEIgHeu/icZF4g==
+X-Received: by 2002:a17:903:1111:b0:16a:acf4:e951 with SMTP id n17-20020a170903111100b0016aacf4e951mr1531884plh.72.1658463059957;
+        Thu, 21 Jul 2022 21:10:59 -0700 (PDT)
+Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:3424])
+        by smtp.gmail.com with ESMTPSA id s27-20020a63525b000000b00419b02043e1sm2307013pgl.38.2022.07.21.21.10.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jul 2022 21:10:59 -0700 (PDT)
+Date:   Thu, 21 Jul 2022 21:10:56 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        daniel@iogearbox.net, pablo@netfilter.org, fw@strlen.de,
-        brouer@redhat.com, toke@redhat.com, lorenzo@kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc
+ args to be trusted
+Message-ID: <20220722041056.r2ozhs4p3s7mt7go@macbook-pro-3.dhcp.thefacebook.com>
+References: <20220721134245.2450-1-memxor@gmail.com>
+ <20220721134245.2450-5-memxor@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721134245.2450-5-memxor@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Jul 21, 2022 at 03:42:36PM +0200, Kumar Kartikeya Dwivedi wrote:
+> +/* Trusted arguments are those which are meant to be referenced arguments with
+> + * unchanged offset. It is used to enforce that pointers obtained from acquire
+> + * kfuncs remain unmodified when being passed to helpers taking trusted args.
+> + *
+> + * Consider
+> + *	struct foo {
+> + *		int data;
+> + *		struct foo *next;
+> + *	};
+> + *
+> + *	struct bar {
+> + *		int data;
+> + *		struct foo f;
+> + *	};
+> + *
+> + *	struct foo *f = alloc_foo(); // Acquire kfunc
+> + *	struct bar *b = alloc_bar(); // Acquire kfunc
+> + *
+> + * If a kfunc set_foo_data() wants to operate only on the allocated object, it
+> + * will set the KF_TRUSTED_ARGS flag, which will prevent unsafe usage like:
+> + *
+> + *	set_foo_data(f, 42);	   // Allowed
+> + *	set_foo_data(f->next, 42); // Rejected, non-referenced pointer
+> + *	set_foo_data(&f->next, 42);// Rejected, referenced, but bad offset
+> + *	set_foo_data(&b->f, 42);   // Rejected, referenced, but wrong type
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+I think you meant to swap above two comments ?
+That's what I did while applying.
 
-On Thu, 21 Jul 2022 15:42:32 +0200 you wrote:
-> Introduce the following new kfuncs:
->  - bpf_{xdp,skb}_ct_alloc
->  - bpf_ct_insert_entry
->  - bpf_ct_{set,change}_timeout
->  - bpf_ct_{set,change}_status
-> 
-> The setting of timeout and status on allocated or inserted/looked up CT
-> is same as the ctnetlink interface, hence code is refactored and shared
-> with the kfuncs. It is ensured allocated CT cannot be passed to kfuncs
-> that expected inserted CT, and vice versa. Please see individual patches
-> for details.
-> 
-> [...]
+Also fixed typo in Fixes tag in patch 13. It was missing a letter in sha.
 
-Here is the summary with links:
-  - [bpf-next,v7,01/13] bpf: Introduce 8-byte BTF set
-    https://git.kernel.org/bpf/bpf-next/c/ab21d6063c01
-  - [bpf-next,v7,02/13] tools/resolve_btfids: Add support for 8-byte BTF sets
-    https://git.kernel.org/bpf/bpf-next/c/ef2c6f370a63
-  - [bpf-next,v7,03/13] bpf: Switch to new kfunc flags infrastructure
-    https://git.kernel.org/bpf/bpf-next/c/a4703e318432
-  - [bpf-next,v7,04/13] bpf: Add support for forcing kfunc args to be trusted
-    https://git.kernel.org/bpf/bpf-next/c/56e948ffc098
-  - [bpf-next,v7,05/13] bpf: Add documentation for kfuncs
-    https://git.kernel.org/bpf/bpf-next/c/63e564ebd1fd
-  - [bpf-next,v7,06/13] net: netfilter: Deduplicate code in bpf_{xdp,skb}_ct_lookup
-    https://git.kernel.org/bpf/bpf-next/c/aed8ee7feb44
-  - [bpf-next,v7,07/13] net: netfilter: Add kfuncs to allocate and insert CT
-    https://git.kernel.org/bpf/bpf-next/c/d7e79c97c00c
-  - [bpf-next,v7,08/13] net: netfilter: Add kfuncs to set and change CT timeout
-    https://git.kernel.org/bpf/bpf-next/c/0b3892364431
-  - [bpf-next,v7,09/13] net: netfilter: Add kfuncs to set and change CT status
-    https://git.kernel.org/bpf/bpf-next/c/ef69aa3a986e
-  - [bpf-next,v7,10/13] selftests/bpf: Add verifier tests for trusted kfunc args
-    https://git.kernel.org/bpf/bpf-next/c/8dd5e75683f7
-  - [bpf-next,v7,11/13] selftests/bpf: Add tests for new nf_conntrack kfuncs
-    https://git.kernel.org/bpf/bpf-next/c/6eb7fba007a7
-  - [bpf-next,v7,12/13] selftests/bpf: Add negative tests for new nf_conntrack kfuncs
-    https://git.kernel.org/bpf/bpf-next/c/c6f420ac9d25
-  - [bpf-next,v7,13/13] selftests/bpf: Fix test_verifier failed test in unprivileged mode
-    https://git.kernel.org/bpf/bpf-next/c/e3fa4735f04d
+Since there are 3 other pending patchsets in patchwork that add new kfuncs
+this cleanup of kfunc registration couldn't have come at better time.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thank you for doing this work.
