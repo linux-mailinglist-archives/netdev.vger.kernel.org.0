@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D01D957D82C
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 03:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F66C57D838
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 04:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiGVByH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jul 2022 21:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        id S233367AbiGVCAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jul 2022 22:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiGVByG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 21:54:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14B390DB8;
-        Thu, 21 Jul 2022 18:54:05 -0700 (PDT)
+        with ESMTP id S229441AbiGVCAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jul 2022 22:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA89B7C3;
+        Thu, 21 Jul 2022 19:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F775B826EA;
-        Fri, 22 Jul 2022 01:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C85C3411E;
-        Fri, 22 Jul 2022 01:54:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F58561FB8;
+        Fri, 22 Jul 2022 02:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02110C341C6;
+        Fri, 22 Jul 2022 02:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658454843;
-        bh=0OqRsAZ/QLesAwX9/j/LcVf4uV5ZMaLztMcapuh0XCw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EFbbBo/X5uLrhfgNgsG+c3AzHa7WgGE6Tj0/ulC7BMQjyq/W4LV7ogPTB2/1eba7V
-         Kbs4vceVnGf2Lih0elQltmSM8tghEbbpi9hm+E4FVtDEXx9v+51e2cTRi34fzP7yvz
-         +LJ6j3ij1oipliuf8x4Ydp53md6v2IZZAYAHmh6zmpk9S3sOYo4uG0V/u2DQn7UMiX
-         //cqpsUyW8l8eWsAciO0nE0Gl/OFMZ2QX0fz28VpxAKcrZG3fydAdC7J5lhkha7gKT
-         y7nfV9PGCq1i1cuA8GHKe6txCvZx6vxh/iGFcxwtp4ZgpFcAAsG0uEL6QNtEPEQRCx
-         RxPxB5u61RMxQ==
-Date:   Thu, 21 Jul 2022 18:54:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marek Majkowski <marek@cloudflare.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com, ivan@cloudflare.com,
-        edumazet@google.com, davem@davemloft.net, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH net-next 0/2] RTAX_INITRWND should be able to bring the
- rcv_ssthresh above 64KiB
-Message-ID: <20220721185401.0bbcd1d0@kernel.org>
-In-Reply-To: <20220721151041.1215017-1-marek@cloudflare.com>
-References: <20220721151041.1215017-1-marek@cloudflare.com>
+        s=k20201202; t=1658455214;
+        bh=65FiU5LF+lUO5mHaxemok8ZbbBBbx1xhBO//j1ABqCY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=k3sZkm2WTDCk4rMeMcp+0NJABt/hev4MjlecRo6uro1jhy1/X2DKbbYdpdPVi2+d/
+         XDRhzhg2dMKH9sJvI087R7xZrNBb3fso6xl3DAV5hX3X832MqYJ2yrBECN0SLINwXP
+         zlanWa64Kujyw45/uNCQcWlJhUCCcfX0T2iIEhVR0OMD+hIX/iNtBkPeyqKPSSibD7
+         BAWK9csoNdu/Z9If4IaDWodyt/t37fFDdXkG0VEMWf0/RwyjnmW2bVUUrW1qgMtysm
+         Ii0krn7nKcx96WVdL17SH5tcOqPGH/IexoxepQIIMQlOWqNndmOosZIMfpB+h4Op9g
+         P3PWpO50R/HOQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5B1CE451BA;
+        Fri, 22 Jul 2022 02:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] can: pch_can: pch_can_error(): initialize errc
+ before using it
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165845521387.922.8823304957699439976.git-patchwork-notify@kernel.org>
+Date:   Fri, 22 Jul 2022 02:00:13 +0000
+References: <20220721163042.3448384-2-mkl@pengutronix.de>
+In-Reply-To: <20220721163042.3448384-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        mailhol.vincent@wanadoo.fr, nathan@kernel.org
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,18 +57,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 17:10:39 +0200 Marek Majkowski wrote:
-> Among many route options we support initrwnd/RTAX_INITRWND path
-> attribute:
-> 
->  $ ip route change local 127.0.0.0/8 dev lo initrwnd 1024
-> 
-> This sets the initial receive window size (in packets). However, it's
-> not very useful in practice. For smaller buffers (<128KiB) it can be
-> used to bring the initial receive window down, but it's hard to
-> imagine when this is useful. The same effect can be achieved with
-> TCP_WINDOW_CLAMP / RTAX_WINDOW option.
+Hello:
 
-I think you based this on bpf-next so you should put bpf-next 
-in the subject, it doesn't apply to net-next. Either way let's 
-wait for Eric to comment.
+This patch was applied to netdev/net-next.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
+
+On Thu, 21 Jul 2022 18:30:42 +0200 you wrote:
+> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> 
+> After commit 3a5c7e4611dd, the variable errc is accessed before being
+> initialized, c.f. below W=2 warning:
+> 
+> | In function 'pch_can_error',
+> |     inlined from 'pch_can_poll' at drivers/net/can/pch_can.c:739:4:
+> | drivers/net/can/pch_can.c:501:29: warning: 'errc' may be used uninitialized [-Wmaybe-uninitialized]
+> |   501 |                 cf->data[6] = errc & PCH_TEC;
+> |       |                             ^
+> | drivers/net/can/pch_can.c: In function 'pch_can_poll':
+> | drivers/net/can/pch_can.c:484:13: note: 'errc' was declared here
+> |   484 |         u32 errc, lec;
+> |       |             ^~~~
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] can: pch_can: pch_can_error(): initialize errc before using it
+    https://git.kernel.org/netdev/net-next/c/9950f1121133
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
