@@ -2,89 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A042257DF28
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A6757DF5C
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236759AbiGVJsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 05:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
+        id S234826AbiGVKKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 06:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236120AbiGVJrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 05:47:35 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB88C87F4A
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 02:44:44 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id j29-20020a05600c1c1d00b003a2fdafdefbso2175027wms.2
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 02:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=E9vcJOsdgIjAaSy7NpDkCxTaNhk4Fnyk07v+Af9hfNE=;
-        b=UEVG9Ul1xV/Pi8+g7CCXwS9rnlt6WG8ar3AAD4WdZyE1jBcnoCLRP7L//NwI1kDL8L
-         ubkFn4w+A7gfw/jnePpdWNkyaKeVPZtHm9VeLeYZZg+1kQHF+pF7jLCensdI/IQTHJW+
-         IpiWa44+MFFgE7ucY8Mr7R2I0+69GyzFe1Y0OwTFvG1k7qj/etUWvzjrFIcbiuYUXGzm
-         QpCV7MFS0hT/5Ln5hXe9baEHC/e5s6zldmt+ypoipKD1yZbVtoc3Yt6jcy+aVP5o3/SJ
-         949wldqEwP8CTzoiiLuCmBHUOubfh47MIzwKABM5FOoC9dNpZrZ8aDK/G81I7fNuQlTr
-         ohPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E9vcJOsdgIjAaSy7NpDkCxTaNhk4Fnyk07v+Af9hfNE=;
-        b=H+5NTeZQiPX8B1YHfV+78GGw7W5q4EczBIzNewFWYWjED6iyPcoF8GnVy9hQYAX6C4
-         DJWkC37dEitnw/yNUQNEYOeRT9sfvubhLgGE8ZTi1oWv557DIs/2ZID9vFc/Hz9MPZjT
-         uTYmbPFAgC6bN/wwEwu2yntSwoDmvBII9JSZCP0k7dPwte3arU2YejM3niFb/kbGppMk
-         K0Gdn/zI4ZNxjv9W4vipPnCitk2D8HAMOD4FPlV/AJW/xt6TLOaHYQRs7SRhdwzJXWx2
-         A5rhEuElGTWcctJw4h96BSfrAunp4JurqUpHIHHx0qikX7KQfQKV4AbAT2bzC4NOEZdR
-         VYhg==
-X-Gm-Message-State: AJIora9E91TDdgCDZLzT/uP+2Fk4GzHKPFmlDuuDRx2v5HSfRh2eI3Zq
-        QWEG3DOu7fsnScsPVWDeqA3jrw==
-X-Google-Smtp-Source: AGRyM1vZwQho/B7YCxdtN3ZF7W1s7uvwXdN7oMnRkFhmKYK6vvky9qhPo/N4v8mUEX38XsEEorD8wQ==
-X-Received: by 2002:a05:600c:198c:b0:3a2:b440:ed46 with SMTP id t12-20020a05600c198c00b003a2b440ed46mr11773857wmq.110.1658483082901;
-        Fri, 22 Jul 2022 02:44:42 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05600c2ca700b003a3253b706esm2417230wmc.34.2022.07.22.02.44.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 02:44:42 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 11:44:41 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vikas Gupta <vikas.gupta@broadcom.com>
-Cc:     jiri@nvidia.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        dsahern@kernel.org, stephen@networkplumber.org,
-        edumazet@google.com, pabeni@redhat.com, ast@kernel.org,
-        leon@kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net,
-        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com
-Subject: Re: [PATCH net-next v5 2/2] bnxt_en: implement callbacks for devlink
- selftests
-Message-ID: <YtpxibOCEZrx0KYF@nanopsycho>
-References: <20220722091129.2271-1-vikas.gupta@broadcom.com>
- <20220722091129.2271-3-vikas.gupta@broadcom.com>
+        with ESMTP id S234772AbiGVKKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 06:10:08 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFA3BC3;
+        Fri, 22 Jul 2022 03:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=I/TeU7vG/TCOeE+ZVogJWf8GrihqAvOKUnOuXWXxgFM=; b=gpVqBUulvPzgezoxNMRIKP2SGb
+        drQsSP3WP7roNnSXfozLzw/HXwmUhHl6WR2lUaAps63KJzLx0TCnLASXZnAIJx5SMuck8cObaFgwM
+        vzNPCbt4GJj5qOJ0FNb6uENG4gEuaeddmhI1bzhN8Qvm5XmcSt1pUYwjtTd9pY24AQqRo+ZlMWZ2G
+        y99Xl5/V7lmuCggMcxw2zEVQ64M5+9T5f94ZWp5/hDP0Q+plfcZ+LTNEBZCf9z9divaWjTeC5pZq8
+        dBxbIZfpbkmwsfJuTRIfnH42EIveQsG7kzEO/AKy5VXUsmtfJxrEhfTupUaMsNT9hafFmCf91agHB
+        hpDb90ng==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33504)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oEpbc-0006lj-R2; Fri, 22 Jul 2022 11:10:00 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oEpba-0005k8-67; Fri, 22 Jul 2022 11:09:58 +0100
+Date:   Fri, 22 Jul 2022 11:09:58 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [Patch net-next v1 3/9] net: dsa: microchip: add common duplex
+ and flow control function
+Message-ID: <Ytp3dl5l9jkp94lU@shell.armlinux.org.uk>
+References: <20220722092459.18653-1-arun.ramadoss@microchip.com>
+ <20220722092459.18653-4-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220722091129.2271-3-vikas.gupta@broadcom.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20220722092459.18653-4-arun.ramadoss@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jul 22, 2022 at 11:11:29AM CEST, vikas.gupta@broadcom.com wrote:
->Add callbacks
->=============
->.selftest_check: returns true for flash selftest.
->.selftest_run: runs a flash selftest.
->
->Also, refactor NVM APIs so that they can be
->used with devlink and ethtool both.
->
->Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
->Reviewed-by: Michael Chan <michael.chan@broadcom.com>
->Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Hi,
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+On Fri, Jul 22, 2022 at 02:54:53PM +0530, Arun Ramadoss wrote:
+> +void ksz_set_fullduplex(struct ksz_device *dev, int port, bool val)
+> +{
+> +	const u8 *bitval = dev->info->xmii_ctrl0;
+> +	const u16 *regs = dev->info->regs;
+> +	u8 data8;
+> +
+> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
+> +
+> +	data8 &= ~P_MII_DUPLEX_M;
+> +
+> +	if (val)
+> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
+> +				    bitval[P_MII_FULL_DUPLEX]);
+> +	else
+> +		data8 |= FIELD_PREP(P_MII_DUPLEX_M,
+> +				    bitval[P_MII_HALF_DUPLEX]);
+> +
+> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
+> +}
+> +
+> +void ksz_set_tx_pause(struct ksz_device *dev, int port, bool val)
+> +{
+> +	const u32 *masks = dev->info->masks;
+> +	const u16 *regs = dev->info->regs;
+> +	u8 data8;
+> +
+> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
+> +
+> +	if (val)
+> +		data8 |= masks[P_MII_TX_FLOW_CTRL];
+> +	else
+> +		data8 &= ~masks[P_MII_TX_FLOW_CTRL];
+> +
+> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
+> +}
+> +
+> +void ksz_set_rx_pause(struct ksz_device *dev, int port, bool val)
+> +{
+> +	const u32 *masks = dev->info->masks;
+> +	const u16 *regs = dev->info->regs;
+> +	u8 data8;
+> +
+> +	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
+> +
+> +	if (val)
+> +		data8 |= masks[P_MII_RX_FLOW_CTRL];
+> +	else
+> +		data8 &= ~masks[P_MII_RX_FLOW_CTRL];
+> +
+> +	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
+> +}
+> +
+
+Having looked through all the proposed patches and noticed that these
+three functions are always called serially. What is the reason to make
+these separate functions which all read the same register, modify a
+single bit, and then write it back.
+
+What we end up with is the following sequence:
+
+- read P_XMII_CTRL_0
+- udpate P_MII_HALF_DUPLEX bit
+- write P_XMII_CTRL_0
+- read P_XMII_CTRL_0
+- update P_MII_TX_FLOW_CTRL bit
+- write P_XMII_CTRL_0
+- read P_XMII_CTRL_0
+- update P_MII_RX_FLOW_CTRL bit
+- write P_XMII_CTRL_0
+
+whereas the original code did:
+
+- read P_XMII_CTRL_0
+- udpate P_MII_HALF_DUPLEX, P_MII_TX_FLOW_CTRL and P_MII_RX_FLOW_CTRL
+  bits
+- write P_XMII_CTRL_0
+
+which was much more efficient, not only in terms of CPU cycles, but also
+IO cycles and code size.
+
+You could do this instead:
+
+	u8 mask, val, ctrl0;
+
+	mask = P_MII_DUPLEX_M | masks[P_MII_TX_FLOW_CTRL] |
+	       masks[P_MII_RX_FLOW_CTRL];
+
+	if (duplex == DUPLEX_FULL)
+		val = FIELD_PREP(P_MII_DUPLEX_M, bitval[P_MII_FULL_DUPLEX]);
+	else
+		val = FIELD_PREP(P_MII_DUPLEX_M, bitval[P_MII_HALF_DUPLEX]);
+
+	if (tx_pause)
+		val |= masks[P_MII_TX_FLOW_CTRL];
+	
+	if (rx_pause)
+		val |= masks[P_MII_RX_FLOW_CTRL];
+	
+	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &ctrl0);
+	ctrl0 = (ctrl0 & ~mask) | val;
+	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, ctrl0);
+
+and maybe convert that last three lines into a helper, ksz_pmodify8()
+which could be useful in other parts of the driver where you do a
+read-modify-write operation on a register.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
