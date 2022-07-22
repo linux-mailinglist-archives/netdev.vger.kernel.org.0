@@ -2,85 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EABD57E0FE
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 13:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4218857E12F
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiGVLuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 07:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S233654AbiGVMBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 08:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiGVLuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 07:50:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BDF10CD
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 04:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E1E9B8282D
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 11:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3A718C341CA;
-        Fri, 22 Jul 2022 11:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658490614;
-        bh=EusVjW1jdK5hU9lxIiyZjcWbtJKnL9bv9PfOmH6gP8s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D+wsZcO498FhZJoG2CJ7S6+9exrpbowEMTjK8J7c0n2slS17M5dZxIOman3a4CmSz
-         ij7erwXiozhDhTaZ3Wo/StpYxQIU0jB5qq7ql9ZydMKJeC5xgKyiwucTtGzRt9+0G+
-         /o+hjmp9rvFTQQpxU3/hBRGPoHkSq5uhvA8WrI/6clhgf5BNn3GJxbMEe07ECTVUz0
-         pk3Ni+/csi9hqQq0YhsupKN+NP+n02pTRxfrrPPW4duPAPeR/og9qaQ3zaC2LXCKr4
-         25FszGdpDB3gIn+vg/PDKy7MPLGAgAHxRTctzAKsf8yGryoeZikiFnhe4krpvLV77v
-         JBSifuVjZJO3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1FA27D9DDDD;
-        Fri, 22 Jul 2022 11:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232125AbiGVMBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:01:14 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94429BB21B
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658491272; x=1690027272;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xMov5voTZZCQEXkDT5G0fnTQ8nIixYdsjLY4N77bGf8=;
+  b=MQQCkXfkt15/4ONW0OtVIlf1umfTE9XLZgEOY1DK3Bn95SUL5C6epjeY
+   1dhY59GK1kZtO5+FLR0eJfRfmNmVJrVrhssVAvu2um0DMN8TP6ieHORtp
+   OMgEExhmMZvtxcE8u9+LyLBhv6yhM2t+Ism7GsTUp8s1rS2a7ErA2hZVt
+   WIIndlJYvqz25rIDO+qC1j5I0xFXreerDcAdsQJRSzxy5Kyec/zQ2YkX2
+   SYuQlkmKHAFoRGX9rD2ZCURW3JurYafzXM7erpSWvJ3KMGJOqdVHM8oBm
+   JSKqdLncqXgHAXTXHrsbYjYgFnkSfT1NwusgQx2fABXu+X6hm8h6iOZ1Z
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="284850172"
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="284850172"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:12 -0700
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="657189800"
+Received: from unknown (HELO ocsbesrhlrepo01.amr.corp.intel.com) ([10.240.193.73])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 05:01:10 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V4 0/6] ifcvf/vDPA: support query device config space through netlink
+Date:   Fri, 22 Jul 2022 19:53:03 +0800
+Message-Id: <20220722115309.82746-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 1/1] ping: support ipv6 ping socket flow labels
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165849061412.6358.11471823288314773131.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Jul 2022 11:50:14 +0000
-References: <20220720181310.1719994-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220720181310.1719994-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, alan.brady@intel.com, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        gurucharanx.g@intel.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series allows userspace to query device config space of vDPA
+devices and the management devices through netlink,
+to get multi-queue, feature bits and etc.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series has introduced a new netlink attr
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, this should be used to query
+features of vDPA  devices than the management device.
 
-On Wed, 20 Jul 2022 11:13:10 -0700 you wrote:
-> From: Alan Brady <alan.brady@intel.com>
-> 
-> Ping sockets don't appear to make any attempt to preserve flow labels
-> created and set by userspace using IPV6_FLOWINFO_SEND. Instead they are
-> clobbered by autolabels (if enabled) or zero.
-> 
-> Grab the flowlabel out of the msghdr similar to how rawv6_sendmsg does
-> it and move the memset up so it doesn't get zeroed after.
-> 
-> [...]
+Please help review.
 
-Here is the summary with links:
-  - [net-next,v2,1/1] ping: support ipv6 ping socket flow labels
-    https://git.kernel.org/netdev/net-next/c/16576a034c4b
+Thanks!
+Zhu Lingshan
 
-You are awesome, thank you!
+Changes from V3:
+(1)drop the fixes tags(Parva)
+(2)better commit log for patch 1/6(Michael)
+(3)assign num_queues to max_supported_vqs than max_vq_pairs(Jason)
+(4)initialize virtio pci capabilities in the probe() function.
+
+Changes from V2:
+Add fixes tags(Parva)
+
+Changes from V1:
+(1) Use __virito16_to_cpu(true, xxx) for the le16 casting(Jason)
+(2) Add a comment in ifcvf_get_config_size(), to explain
+why we should return the minimum value of
+sizeof(struct virtio_net_config) and the onboard
+cap size(Jason)
+(3) Introduced a new attr VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES
+(4) Show the changes of iproute2 output before and after 5/6 patch(Jason)
+(5) Fix cast warning in vdpa_fill_stats_rec() 
+
+Zhu Lingshan (6):
+  vDPA/ifcvf: get_config_size should return a value no greater than dev
+    implementation
+  vDPA/ifcvf: support userspace to query features and MQ of a management
+    device
+  vDPA: allow userspace to query features of a vDPA device
+  vDPA: !FEATURES_OK should not block querying device config space
+  vDPA: answer num of queue pairs = 1 to userspace when VIRTIO_NET_F_MQ
+    == 0
+  vDPA: fix 'cast to restricted le16' warnings in vdpa.c
+
+ drivers/vdpa/ifcvf/ifcvf_base.c |  13 ++-
+ drivers/vdpa/ifcvf/ifcvf_base.h |   2 +
+ drivers/vdpa/ifcvf/ifcvf_main.c | 142 +++++++++++++++++---------------
+ drivers/vdpa/vdpa.c             |  32 ++++---
+ include/uapi/linux/vdpa.h       |   1 +
+ 5 files changed, 105 insertions(+), 85 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
