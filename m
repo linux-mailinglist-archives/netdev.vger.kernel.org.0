@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0790E57E6E9
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 20:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C9157E774
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 21:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235909AbiGVS7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 14:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
+        id S236331AbiGVTej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 15:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiGVS7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 14:59:02 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455AD564E1
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 11:59:01 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id a7so1093551vkl.0
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 11:59:01 -0700 (PDT)
+        with ESMTP id S232157AbiGVTei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 15:34:38 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DE851A1F
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 12:34:37 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id mf4so10252817ejc.3
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 12:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yn7R/clyKf2k9jxNpS2OSdcpGCpHnhI+UiyvsIGIClo=;
-        b=X7eALXzLFu1UDuCO2O1/eGiBlgfYrMiSmyYo5c1PLP2NjtSanu4cj2oDaYkmE8bcRK
-         BMkUKZXi4ePIfeyJ1ZrEQJVkMlwD99YBUwQp2jUCxe5V09rxof4kxoDwyyPzVOqCZKSp
-         RxUsJd9aAar5xs6zAB+8mp4rZU0EsB7m2hBFDEp77swOBiXP4xpDegvQ+V/vHeMdVXas
-         v16+4JY1Ip/2dxBnhpwUnogQiQpDkmEexSLwkIrp1OWRGaBxIcy44dc7hNBAxmExOW9X
-         rIY1vJgU49eSTKYGK3xSlFM5XufafyGuVTbeitsHVS/1Pew1d7dCOJugRDId2tsbB0iA
-         uU+w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lR1hZw0XukXpRfFvnSBQAvUqz/OTx4MLjptGdrtodks=;
+        b=RmWZsbClWP7Fh/dEvfMZZIOjGBmiGK+YAv8r0SldDmAZSzO7RZQ1R6ZZsjpT2IkvmC
+         db4+XkEFrBvzDTuYFlN2tfNuG5PLwNPu1zNgL0IIFI0bkxC6c7RllPHF4ljJNWI0hW9Y
+         7xhtPuKQ+leyCbWiN2i+9wBr1DHsef1ZRkHkMpxka9vWWOXbT/hPsVa+KwPmDFdLN++8
+         iJVTc8coXzJ1t8nFcuJMRq8xebx8mK/UnfgjRIlbAYqLjUGIeVKbWvivjB+r31ir7TcO
+         LcTu6s24DZ0fDqwPkDVFuePBY4lY6blXIWa69Y/FgXxbq8xrK94lHEoudYQIJvV92YUt
+         haBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yn7R/clyKf2k9jxNpS2OSdcpGCpHnhI+UiyvsIGIClo=;
-        b=Ut7fs7iadwl8bjoDJXKw8TSIesBAd5zQsXak2pVqcJxQwythquzbc6idznlFZ91HrD
-         r4w2UlK9hZsc4CLG9RY2DZcShozpfP/V5Ju8+hLQBQb9ztcjupQSU7GzBCc8WTM7mJo8
-         NHZW2hJRXTegJyhtM5uSj8LrTRFAU2U6o7AUPKhgSXEhMCgbZ/89gZQ12iZNnIuRJ5GI
-         T1PkNqbZZsskXlGUpL/ZoMiG/7n56pilXVkBQAkJOt6MyAikX3MG63y92hjn8OuMSxcE
-         2SHze7Ca5dhu02U9wE0lNRJ2awncnSDfmJwEuaY+GfKksB+49+cYUqtvfsCCWqtOH9mc
-         f0fg==
-X-Gm-Message-State: AJIora95Dt2oBZXdXuMysfCs6lXOuWBzhh6v5ItPqlMdUU8w18h4W8aA
-        KG88EAsSRVWTYAI38AOnf8rrTFDseNxuSemUduNBbw==
-X-Google-Smtp-Source: AGRyM1uE/pyDTSP6cJOJSnrhNFsGbV+mR7597FJTpAinJp6Rztz01lvvt/AeQEu2g75ACqjmUNFqwqjeS91vb2YzFFQ=
-X-Received: by 2002:a1f:1887:0:b0:374:750e:ce54 with SMTP id
- 129-20020a1f1887000000b00374750ece54mr439684vky.28.1658516340282; Fri, 22 Jul
- 2022 11:59:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220722182205.96838-1-kuniyu@amazon.com> <20220722182205.96838-7-kuniyu@amazon.com>
-In-Reply-To: <20220722182205.96838-7-kuniyu@amazon.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 22 Jul 2022 11:58:49 -0700
-Message-ID: <CAEA6p_DwfgkLheTK1QvSyZPbotvmadn7cubtqf1UFAHWfdDY=Q@mail.gmail.com>
-Subject: Re: [PATCH v1 net 6/7] tcp: Fix data-races around sysctl_tcp_reflect_tos.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lR1hZw0XukXpRfFvnSBQAvUqz/OTx4MLjptGdrtodks=;
+        b=sg/UjarKvar3GwERrKg7+pgSAL7zHpHX6UR1CZypImPiD0vEYPfBTRKtSUmGt1OFth
+         PayMKjaM0jlfaf749km7SXkuOc2tyQPVCRgPisHm+NAsarjonA46cnqG9I4e1QsBg7MR
+         8GWrI0aO+Ap51JbuVJhlL39sHpdsFqhKtJLtRVTe8N4rdaWTIMZL8oOa9h/jsth+BbrZ
+         qVc4jw0mMem/Mm2P7NimFgkO4usNYjGNcSpaPRa9GwWtl/uU85MC9/928LTPJHpOjKSl
+         A8e7VGxjvL3qNWlFOzh+5CRK9/S6rQUAWCCa+Bu630lTAPI71Dd7GftbfQ5zLN5MMHjP
+         LT0A==
+X-Gm-Message-State: AJIora+kzjtr+WpiAg45tDvekjWcEj/Oad1PmoLEemg38+Ceq8wJtVCM
+        ZaBHY4cXQ7JrY0i3iNwJJhs=
+X-Google-Smtp-Source: AGRyM1sFlh+eb5/k0Y3cAejYshv0yjFKwRVwNo5LjTUwWOX6tAmmppRXWfAFkMnIK5sbGABIC/OIpw==
+X-Received: by 2002:a17:907:2cf3:b0:72b:8ac1:a21f with SMTP id hz19-20020a1709072cf300b0072b8ac1a21fmr1068785ejc.291.1658518475312;
+        Fri, 22 Jul 2022 12:34:35 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id l10-20020a170906938a00b006f3ef214daesm2349416ejx.20.2022.07.22.12.34.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 12:34:34 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 22:34:32 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com
+Subject: Re: [PATCH v2 net-next 08/19] ipmr: do not acquire mrt_lock while
+ calling ip_mr_forward()
+Message-ID: <20220722193432.zdcnnxyigq2yozok@skbuf>
+References: <20220623043449.1217288-1-edumazet@google.com>
+ <20220623043449.1217288-1-edumazet@google.com>
+ <20220623043449.1217288-9-edumazet@google.com>
+ <20220623043449.1217288-9-edumazet@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623043449.1217288-9-edumazet@google.com>
+ <20220623043449.1217288-9-edumazet@google.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,67 +76,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 11:24 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> While reading sysctl_tcp_reflect_tos, it can be changed concurrently.
-> Thus, we need to add READ_ONCE() to its readers.
->
-> Fixes: ac8f1710c12b ("tcp: reflect tos value received in SYN to the socket")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
+Hi Eric,
 
-Acked-by: Wei Wang <weiwan@google.com>
-
-> CC: Wei Wang <weiwan@google.com>
+On Thu, Jun 23, 2022 at 04:34:38AM +0000, Eric Dumazet wrote:
+> ip_mr_forward() uses standard RCU protection already.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 > ---
->  net/ipv4/tcp_ipv4.c | 4 ++--
->  net/ipv6/tcp_ipv6.c | 4 ++--
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index d16e6e40f47b..586c102ce152 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1006,7 +1006,7 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
->         if (skb) {
->                 __tcp_v4_send_check(skb, ireq->ir_loc_addr, ireq->ir_rmt_addr);
->
-> -               tos = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-> +               tos = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos) ?
->                                 (tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
->                                 (inet_sk(sk)->tos & INET_ECN_MASK) :
->                                 inet_sk(sk)->tos;
-> @@ -1526,7 +1526,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
->         /* Set ToS of the new socket based upon the value of incoming SYN.
->          * ECT bits are set later in tcp_init_transfer().
->          */
-> -       if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
-> +       if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
->                 newinet->tos = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
->
->         if (!dst) {
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 9d3ede293258..be09941fe6d9 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -546,7 +546,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
->                 if (np->repflow && ireq->pktopts)
->                         fl6->flowlabel = ip6_flowlabel(ipv6_hdr(ireq->pktopts));
->
-> -               tclass = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-> +               tclass = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos) ?
->                                 (tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
->                                 (np->tclass & INET_ECN_MASK) :
->                                 np->tclass;
-> @@ -1314,7 +1314,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
->         /* Set ToS of the new socket based upon the value of incoming SYN.
->          * ECT bits are set later in tcp_init_transfer().
->          */
-> -       if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
-> +       if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
->                 newnp->tclass = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
->
->         /* Clone native IPv6 options from listening socket (if any)
-> --
-> 2.30.2
->
+>  net/ipv4/ipmr.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> index 6ea54bc3d9b6555aaa9974d81ba4acd47481724f..b0f2e6d79d62273c8c2682f28cb45fe5ec3df6f3 100644
+> --- a/net/ipv4/ipmr.c
+> +++ b/net/ipv4/ipmr.c
+> @@ -1817,7 +1817,7 @@ static bool ipmr_forward_offloaded(struct sk_buff *skb, struct mr_table *mrt,
+>  }
+>  #endif
+>  
+> -/* Processing handlers for ipmr_forward */
+> +/* Processing handlers for ipmr_forward, under rcu_read_lock() */
+>  
+>  static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+>  			    int in_vifi, struct sk_buff *skb, int vifi)
+> @@ -1839,9 +1839,7 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+>  		WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
+>  		vif_dev->stats.tx_bytes += skb->len;
+>  		vif_dev->stats.tx_packets++;
+> -		rcu_read_lock();
+>  		ipmr_cache_report(mrt, skb, vifi, IGMPMSG_WHOLEPKT);
+> -		rcu_read_unlock();
+>  		goto out_free;
+>  	}
+>  
+> @@ -1936,6 +1934,7 @@ static int ipmr_find_vif(const struct mr_table *mrt, struct net_device *dev)
+>  }
+>  
+>  /* "local" means that we should preserve one skb (for local delivery) */
+> +/* Called uner rcu_read_lock() */
+>  static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+>  			  struct net_device *dev, struct sk_buff *skb,
+>  			  struct mfc_cache *c, int local)
+> @@ -1992,12 +1991,10 @@ static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+>  			       c->_c.mfc_un.res.last_assert +
+>  			       MFC_ASSERT_THRESH)) {
+>  			c->_c.mfc_un.res.last_assert = jiffies;
+> -			rcu_read_lock();
+>  			ipmr_cache_report(mrt, skb, true_vifi, IGMPMSG_WRONGVIF);
+>  			if (mrt->mroute_do_wrvifwhole)
+>  				ipmr_cache_report(mrt, skb, true_vifi,
+>  						  IGMPMSG_WRVIFWHOLE);
+> -			rcu_read_unlock();
+>  		}
+>  		goto dont_forward;
+>  	}
+> @@ -2169,9 +2166,7 @@ int ip_mr_input(struct sk_buff *skb)
+>  		return -ENODEV;
+>  	}
+>  
+> -	read_lock(&mrt_lock);
+>  	ip_mr_forward(net, mrt, dev, skb, cache, local);
+> -	read_unlock(&mrt_lock);
+>  
+>  	if (local)
+>  		return ip_local_deliver(skb);
+> -- 
+> 2.37.0.rc0.104.g0611611a94-goog
+> 
+
+Sorry for reporting this late, but there seems to be 1 call path from
+which RCU is not watching in ip_mr_forward(). It's via ipmr_mfc_add() ->
+ipmr_cache_resolve() -> ip_mr_forward().
+
+The warning looks like this:
+
+[  632.062382] =============================
+[  632.068568] WARNING: suspicious RCU usage
+[  632.073702] 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3374 Not tainted
+[  632.081098] -----------------------------
+[  632.086216] net/ipv4/ipmr.c:1080 suspicious rcu_dereference_check() usage!
+[  632.094152]
+[  632.094152] other info that might help us debug this:
+[  632.103349]
+[  632.103349] rcu_scheduler_active = 2, debug_locks = 1
+[  632.111011] 1 lock held by smcrouted/359:
+[  632.116079]  #0: ffffd27b44d23770 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x1c/0x30
+[  632.124703]
+[  632.124703] stack backtrace:
+[  632.129681] CPU: 0 PID: 359 Comm: smcrouted Not tainted 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3374
+[  632.143426] Call trace:
+[  632.160542]  lockdep_rcu_suspicious+0xf8/0x10c
+[  632.165014]  ipmr_cache_report+0x2f0/0x530
+[  632.169137]  ip_mr_forward+0x364/0x38c
+[  632.172909]  ipmr_mfc_add+0x894/0xc90
+[  632.176592]  ip_mroute_setsockopt+0x6ac/0x950
+[  632.180973]  ip_setsockopt+0x16a0/0x16ac
+[  632.184921]  raw_setsockopt+0x110/0x184
+[  632.188780]  sock_common_setsockopt+0x1c/0x2c
+[  632.193163]  __sys_setsockopt+0x94/0x170
+[  632.197111]  __arm64_sys_setsockopt+0x2c/0x40
+[  632.201492]  invoke_syscall+0x48/0x114
+
+I don't exactly understand the data structures that are used inside ip_mr_forward(),
+so I'm unable to say what needs RCU protection and what is fine with the rtnl_mutex
+that we are holding, just annotated poorly. Could you please take a look?
