@@ -2,124 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1371D57E15E
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E98557E16B
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 14:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234717AbiGVMUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 08:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        id S234867AbiGVMaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 08:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbiGVMUR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:20:17 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E15413F1F
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:20:15 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id u12so3371681qtk.0
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:20:15 -0700 (PDT)
+        with ESMTP id S233608AbiGVMaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 08:30:12 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E56362CA
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:30:08 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id y4so5663676edc.4
+        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 05:30:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
-         :subject:mime-version:content-transfer-encoding;
-        bh=kIKMl7lknNmrR7/g3+eBdSau4//c4Zzr0QaeUiEir7A=;
-        b=cHhHjmlahYQ+EmtKYhfCB8KTNgvpM7+cBXuWAwrqR7qvzNU8+HhLRnTdPxxvFVeHh3
-         1nUaRHsHw8NQy+w+KEbL1WitYxDtz85JVMIVI6ao9QwCutRBsbMgBOX4RICVcuV9E3oe
-         AWc4nmne8ushnOtD6AFil/8ViyNXbqrdkinYxQ3k4aucoZdSrbdYliPQjWq0MBJj/Bn8
-         JL9k1d5L3NzOCtYoIbyj6v7UD2hB1lFi0USJqy10hnlWJwfYP2r/1IG2soYO4rnBxTgq
-         H4IMse2/xdiaEKZwKqcUw9ZoKLvnfHoeFJLzprkjkdjavu6OyvtAFHUEfzaDx+u7Zpd5
-         vOhQ==
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zh7X5Uda6egpjw+fh4SnYbKXp8IFNuJykfc8eOEqRcY=;
+        b=oJJbA0UIQDRXkXqxroc0ESaeLjykv5Hz8mdjOy7mQTVNVeHBiL16d+C1Tqddf8l4be
+         rrBWUhDXEF6hudZbp3Q4OwuUqGx4GtTYIptvgB+2bYbzvcfhMVXTV/jO+/R5LaSqYvy8
+         xVkvnuqtJDQfE1amhM8+BZRKepDGwiDVKz4fM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:subject:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kIKMl7lknNmrR7/g3+eBdSau4//c4Zzr0QaeUiEir7A=;
-        b=PxaRNsZLl0JL1ekAaGm03JMiFBbaQSfW3H31HeCcKBU1MtpOK62WKjDRuBxwB8cDlO
-         vZ48JK3g80rEopo8iBJze2bPJahjV1xkpqz/8LFvZzh+V64XJ3WNmU0xKnpBMnwFCH75
-         gBeixIxqEwJsm5xPX2blpGNmBkG16rqthZ46Xr1R15xZJ3jCclLVF1nbkTkzrvF7F90+
-         Wz+eVf89NQJ4snuSIv+jNFSZ14DvVPO3WKe+H6bO5aEVwuIlPZRccRvRscnrXFRaE+Os
-         7zb+H7GbtnQzr0oSU8CsqrzW/8xNs+bxe6ih1GPQSH0I8cvtDDYyLBmpgf9wuv9rlxTS
-         kyJQ==
-X-Gm-Message-State: AJIora+i1zNQ5JxATQ61wOIPPJwqswN6h5LiEYHPCJRDr4j67ato2qqk
-        vNH2izA6nWp/LDOucbR5qILP
-X-Google-Smtp-Source: AGRyM1vRv8Pg5YMxgoX//w7Bar4An6ugLUhEpTDVLqgE1K9tMb0kLUN+xQP5nT2rrJ4QhsOwsmCzBg==
-X-Received: by 2002:ac8:7f8e:0:b0:31f:10bc:f5d7 with SMTP id z14-20020ac87f8e000000b0031f10bcf5d7mr140040qtj.561.1658492414525;
-        Fri, 22 Jul 2022 05:20:14 -0700 (PDT)
-Received: from [10.130.209.145] (mobile-166-170-54-234.mycingular.net. [166.170.54.234])
-        by smtp.gmail.com with ESMTPSA id m1-20020a05620a24c100b006b259b5dd12sm3456272qkn.53.2022.07.22.05.20.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 22 Jul 2022 05:20:13 -0700 (PDT)
-From:   Paul Moore <paul@paul-moore.com>
-To:     Martin KaFai Lau <kafai@fb.com>,
-        Frederick Lawler <fred@cloudflare.com>
-CC:     <kpsingh@kernel.org>, <revest@chromium.org>,
-        <jackmanb@chromium.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <jmorris@namei.org>,
-        <serge@hallyn.com>, <stephen.smalley.work@gmail.com>,
-        <eparis@parisplace.org>, <shuah@kernel.org>, <brauner@kernel.org>,
-        <casey@schaufler-ca.com>, <ebiederm@xmission.com>,
-        <bpf@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
-        <selinux@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-team@cloudflare.com>, <cgzones@googlemail.com>,
-        <karl@bigbadwolfsecurity.com>
-Date:   Fri, 22 Jul 2022 08:20:10 -0400
-Message-ID: <18225d94bf0.28e3.85c95baa4474aabc7814e68940a78392@paul-moore.com>
-In-Reply-To: <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
-References: <20220721172808.585539-1-fred@cloudflare.com>
- <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
-User-Agent: AquaMail/1.37.0 (build: 103700163)
-Subject: Re: [PATCH v3 0/4] Introduce security_create_user_ns()
+        bh=Zh7X5Uda6egpjw+fh4SnYbKXp8IFNuJykfc8eOEqRcY=;
+        b=FElgotC+9F7aFxXEKfn272hvW+Kt9r2WVZ8JhfXh0lxcpwV4oA1SOs2hj17t6+zDXk
+         xpOAUODO58p3b927u+LkLDM2kR1n0BvlZFbKeMltQ5i4d0iWK76azkWMGlTCEuFg7Ad6
+         841yihVyGmq6dfbGEmN8v/0iZBrqAR0dMfxglsK72ZGnX0/2mWPchjIM+2jr6wDQ8P85
+         Mb/qzX73FFsbn1tXlvHLOwUgkTbhLHinTcQ/ZsGXdK+jVD2Lg2ojty+PspXrWgkRM1Ub
+         vVKVjJk/TlWLEkuF2HgGw/z01xLBbfZ+Nxoa/Kx4n0ENNPKR4f80NKBYFTcDFqMJ4iKo
+         aoFA==
+X-Gm-Message-State: AJIora/1REu3hELaLXxEpY6+KMi+XH7pv1gi4RYirrVCjlFeBXhfHIUe
+        xa/mANX6cjA0NZXqOOcrB9qgN7PsB8hC60OS
+X-Google-Smtp-Source: AGRyM1ux80QqQUW+EIA/65Ein87S3N52C0FoamGrt7MvX+qr5lpBaUeLzY66cSjKh/GK9bob3xmuBA==
+X-Received: by 2002:a05:6402:1d4a:b0:43a:ca49:abc6 with SMTP id dz10-20020a0564021d4a00b0043aca49abc6mr418056edb.376.1658493006349;
+        Fri, 22 Jul 2022 05:30:06 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id f6-20020a05640214c600b0043a6df72c11sm2462432edx.63.2022.07.22.05.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 05:30:05 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH -next 0/2] brcmfmac: AP STA concurrency patches from Cypress/Infineon
+Date:   Fri, 22 Jul 2022 14:29:53 +0200
+Message-Id: <20220722122956.841786-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On July 22, 2022 2:12:03 AM Martin KaFai Lau <kafai@fb.com> wrote:
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-> On Thu, Jul 21, 2022 at 12:28:04PM -0500, Frederick Lawler wrote:
->> While creating a LSM BPF MAC policy to block user namespace creation, we
->> used the LSM cred_prepare hook because that is the closest hook to preve=
-nt
->> a call to create_user_ns().
->>
->> The calls look something like this:
->>
->> cred =3D prepare_creds()
->> security_prepare_creds()
->> call_int_hook(cred_prepare, ...
->> if (cred)
->> create_user_ns(cred)
->>
->> We noticed that error codes were not propagated from this hook and
->> introduced a patch [1] to propagate those errors.
->>
->> The discussion notes that security_prepare_creds()
->> is not appropriate for MAC policies, and instead the hook is
->> meant for LSM authors to prepare credentials for mutation. [2]
->>
->> Ultimately, we concluded that a better course of action is to introduce
->> a new security hook for LSM authors. [3]
->>
->> This patch set first introduces a new security_create_user_ns() function
->> and userns_create LSM hook, then marks the hook as sleepable in BPF.
-> Patch 1 and 4 still need review from the lsm/security side.
+We are using these two patches from Infineon (formerly Cypress) to
+enable AP+STA mode on our CYW89359-based platform. They come from the
+FMAC driver release package distributed by Infineon.
 
+The key thing here is that apsta needs to be set to 1 in order for AP
+mode to work concurrently with STA mode. I cannot speak for other
+chipsets so a review from the Broadcom side would be welcome here.
 
-This patchset is in my review queue and assuming everything checks out, I e=
-xpect to merge it after the upcoming merge window closes.
+For the ARP/ND offload being disabled in AP mode, I am of the view that
+this is correct, but while Arend has given his Reviewed-by on it
+previously, it was part of a different series [1], so I am sending
+without in order to jog some memories.
 
-I would also need an ACK from the BPF LSM folks, but they're CC'd on this p=
-atchset.
+[1] https://lore.kernel.org/linux-wireless/20201020022812.37064-3-wright.feng@cypress.com/#t
 
---
-paul-moore.com
+Soontak Lee (1):
+  brcmfmac: Support multiple AP interfaces and fix STA disconnection
+    issue
 
+Ting-Ying Li (1):
+  brcmfmac: don't allow arp/nd offload to be enabled if ap mode exists
+
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 65 +++++++++++++++----
+ .../broadcom/brcm80211/brcmfmac/cfg80211.h    |  2 +
+ .../broadcom/brcm80211/brcmfmac/common.c      |  5 ++
+ .../broadcom/brcm80211/brcmfmac/core.c        |  5 ++
+ 4 files changed, 66 insertions(+), 11 deletions(-)
+
+-- 
+2.37.0
 
