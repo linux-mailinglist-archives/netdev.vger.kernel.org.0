@@ -2,46 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EC257DF2C
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1F657DF40
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 12:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiGVJof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 05:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
+        id S234110AbiGVJpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 05:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236869AbiGVJoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 05:44:20 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F7C7B5052;
-        Fri, 22 Jul 2022 02:38:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0Q8GP
-        PDGmDxF2peYcEH/PdcCOMB27Z5qAxL7/GEvl9E=; b=pTezgVZrdI/97lhXhEtlE
-        GPFO4KUN0l537iUxkz1Vm2Zt/I8X2GlniMP+8pcU4XQG97o6XYSJIGPNi/Ldq+Ng
-        obnmtkZb8c7NXxSaevq2hE25maAHEuHeFYLb4Z26Ck2+nRQGYLU5C//WCboUhcpC
-        LZmWXVTNLOVesvmk6u50d8=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgDn7_cbcNpiRBQqPw--.507S2;
-        Fri, 22 Jul 2022 17:38:37 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com
-Cc:     linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] s390/qeth: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 17:38:34 +0800
-Message-Id: <20220722093834.77864-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236651AbiGVJpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 05:45:32 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3160019C35;
+        Fri, 22 Jul 2022 02:40:27 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id l24so3236306ion.13;
+        Fri, 22 Jul 2022 02:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2ZhwYm25g5CUkNBLcvv47aLz+4/ztjZyFmhgjwxgSH8=;
+        b=hbC65ZHTAQWOQsXUQifcWGbtkJsuRLl7DcB59re3ce8fQNNydIKrAY2SkSNesa11RL
+         taLpvGsCF4iN67ExVmdhdbCS2gcvN9ggatTq/Nupj5b9+nCCQQwnBsf8KovjNusjtS9m
+         ZGxwNKEMmykyKODe39zhzs0ldXjcZKeRdbQ4ACMPw/usPYPZXVhmGIhEP/2IUAqoKzCd
+         18wQtYNALRMJ70ij9CRKUbeu5IQ3RrENPwZ6dsBiAHZaXyqgoLkASTDtPCmmZFHE+/Ou
+         i496RXeW1IuZqVPsTdKyXmhyNMiZSn+wo9O5fzMLDHmaE0YKasXBjHNhS4tXEtNDdNfx
+         jJDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2ZhwYm25g5CUkNBLcvv47aLz+4/ztjZyFmhgjwxgSH8=;
+        b=1HyGU3taZ2+jsw5BqttFTVoA2viPPiuXfT7kP1L5b3PKDrF0aUF8QpANvPNDqXGNqc
+         LjZsrpzdWQKWuG7R0FoMhQYnXNN3qqLB11JKxmUrmyC3L58ZKpQcVq3Qhhuey2+jF+1v
+         ZE4x7MjLNnlw3WdFtuvsZ2QKmM1tRTi4QAd0h/cRJGyLb7yEXpI+ie397uUlUOPTLjed
+         Tnj4tnLPBSKDwaZJbExB6LP2raRQM5MxL+PukoDvlHXzeRFW7OYwu7qQayVvRjW4hJs5
+         dAgMhg+Roe6RE1qpXqHLUjyG+/1H/pa/F+zLDjFaZ/Orgjo3JYxW7GCOgH3+uXxhts2Q
+         tD0w==
+X-Gm-Message-State: AJIora8eoxWdZQ6IP8AoR/uXT1xR00K+0AhwKMR579+OhJzKTQpId6Vg
+        lCs9w9aVqR5knfM536APAyilJxOmidFTf1xgH82DYrP46ds=
+X-Google-Smtp-Source: AGRyM1vp2xc7CkDZF0d5lMKrF+CNrmT/HYLDQYfKsnTmOqamAvk7zjl4QRP/pGgVTLbNo5OQL3QcbS6dA6wi/1ltvfs=
+X-Received: by 2002:a02:c4c3:0:b0:33f:4fb4:834b with SMTP id
+ h3-20020a02c4c3000000b0033f4fb4834bmr1157685jaj.231.1658482826547; Fri, 22
+ Jul 2022 02:40:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgDn7_cbcNpiRBQqPw--.507S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1kXFWDKw43Ww15urg_yoWfJrX_K3
-        y8KrsFyr4FkF1akw12qrW5ZrWF9348ua4fC39agrWfX34UCw1fXr1vvrs8Gw4UWFsrJFnx
-        XF97Ww1F9w1UGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRCRRi7UUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDR5GZFaEKBvfNAAAs7
+References: <20220721134245.2450-1-memxor@gmail.com> <20220721134245.2450-8-memxor@gmail.com>
+ <YtpnmI1oPOQRv3j3@salvia>
+In-Reply-To: <YtpnmI1oPOQRv3j3@salvia>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Fri, 22 Jul 2022 11:39:49 +0200
+Message-ID: <CAP01T75r6OQffvq8u3e4Srj6c1vsN_NP0PohWikYPUbdp1nDXQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 07/13] net: netfilter: Add kfuncs to allocate
+ and insert CT
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     bpf@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -52,26 +73,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+On Fri, 22 Jul 2022 at 11:02, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> Hi,
+>
+> On Thu, Jul 21, 2022 at 03:42:39PM +0200, Kumar Kartikeya Dwivedi wrote:
+> > diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
+> > index 37866c8386e2..83a60c684e6c 100644
+> > --- a/include/net/netfilter/nf_conntrack_core.h
+> > +++ b/include/net/netfilter/nf_conntrack_core.h
+> > @@ -84,4 +84,19 @@ void nf_conntrack_lock(spinlock_t *lock);
+> >
+> >  extern spinlock_t nf_conntrack_expect_lock;
+> >
+> > +/* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
+> > +
+> > +#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
+> > +    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES) || \
+> > +    IS_ENABLED(CONFIG_NF_CT_NETLINK))
+>
+> There must be a better way to do this without ifdef pollution?
+>
+> Could you fix this?
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/s390/net/qeth_core_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I can just remove the ifdefs completely. The first part of the ifdef
+is the correct way to detect BPF support for nf_conntrack, the second
+is for ct netlink. These are the only two users. But it's not a lot of
+code, so until it grows too much we can compile it unconditionally.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 9e54fe76a9b2..35d4b398c197 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
- 			if (!atomic_read(&queue->set_pci_flags_count)) {
- 				/*
- 				 * there's no outstanding PCI any more, so we
--				 * have to request a PCI to be sure the the PCI
-+				 * have to request a PCI to be sure the PCI
- 				 * will wake at some time in the future then we
- 				 * can flush packed buffers that might still be
- 				 * hanging around, which can happen if no
--- 
-2.25.1
-
+Or do you have anything else in mind (like defining a macro for the
+bpf one and making the ifdef look less ugly)?
