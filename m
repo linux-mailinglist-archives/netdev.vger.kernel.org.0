@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A99957D940
-	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 06:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 342C357D946
+	for <lists+netdev@lfdr.de>; Fri, 22 Jul 2022 06:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiGVEHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 00:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
+        id S234245AbiGVEHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 00:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233810AbiGVEGg (ORCPT
+        with ESMTP id S233818AbiGVEGg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 00:06:36 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2097.outbound.protection.outlook.com [40.107.220.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5994F89A68;
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2112.outbound.protection.outlook.com [40.107.237.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE64189AAE;
         Thu, 21 Jul 2022 21:06:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lUosOEPcaBVLqJVMpfUfdbyWuczRsWu5yve+yE3I+ddc2oC6lbMAKOQ2Th1Nimug3EjF5u79oYinbQ8vxvBwZFKhDjqc6pU5SYhna083wXgPoFFewdCkM/OHEtxhTwRsmVu9WbE7J2Gr25N6R4vk5sdYnij5kz+hRqLJlZzP/9kCzsYVjxcngOqO7CJo1JO0ioy7vaqcKIsdpagxEoruq5FMzldjucDfADthKJEycuXzDJGWRiL4yi4N5bBiOZQk8yXR2rpNFy6YnZiXzrtwwIkDOUKyhrz41sdP/EthCLmeHOH6S/k4Srfg1OkaAO0/z6/iMEphqV5vIAFWt6olbw==
+ b=Yuc8GK7omvCMzJunvK4+yCe6+OR8GhxVgC1hShvtGGLAsKHjLliYHGDnecLS/sh5xuWImIJgnm1E5s9EM9/4FpyR0v2wLbPkYpPev83dqCwV7uV949dRXYktEgEK2Yu5XkkL6gaeV+m+tayTNM8QcMt0PnChhyr5wNb66OHm/SSIqyKUW3rBNi2Z62By5q0j5BAtkE/xAzWjJPqdwr2UtrfUp5bJs629t+YR1Qm2+IumaZJ2HfV50cM8b/KO8BR3sMJgDe51RKmZujYTxBE5DZ8APc1ulpFUOkfmjn1LEkSnwF0FmdeuCvD8QMVGOglh7oXBXVrOIcYCRsashtm6MA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lu6RMTzrV2iPUkUz7g79Z4MPGsziOJiTMk1VVuxsbAA=;
- b=Ynr8Kc206ggVQbVudSZVui1WXLL+Zsm3ZXKqjai+vcNQzMFRutM4i85kwQxzIt2tgoJYHn8G8qTRoWf1zG8UuHYMM2TVPsSRQ01oMdOKxYLhsOeSggyHuUuRnCOoFvmw48ELmSDFdU/YG3VFDhiHcTLZpZi33aAF+EDznPdz6xv4xkgNYL8Nh6o+mJ9gD3bHE0rT0j94qDIR0YUSmJ7ylgZlA9SBWEQZT6Wyhe0xsq68HsbvN1sF6yShJZaHtf4oVHF05H/6Xqb5COtuwGr/FbxgB5y8OKYtN2Vzfc7ij+Cjya7swbEogYcgMkTAJnDACXkEJIG1isHpt0PTOaKB9Q==
+ bh=beoq/GP8KB6nG6SPJLuj6c3ukjQD3qlQL3Gw7qKxLGk=;
+ b=RYAF0dksjNAQOhBYO6+AQq/vRowcCmPgefI1ksf0aiCQx2rGCVZOl9QEPOrJYoNC9cXuF2foIG+TgngwY/S5gaE4bttkGFznzaFKaUvvFgwIel+VLSPGZpxhzJerMfgMHIPwS9TRUyrUEbwHKYfWnhC49AdZIBFCbouM4q+91g0aNjK8Nim++VKhtPdDlLugd4nJA7JumEVm6vDNCHfSjSdS3RSM4VXjAbm7KQh6qR67cU8pbrt9iyguQV0FF77dWU+sTDk3E+1AIjwZNayC003I/WJeznjunM8kuCxbvv8McbwEgDYXNx7PbGPM3/MmeOpTyFCV2kaLZKzND1wJKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lu6RMTzrV2iPUkUz7g79Z4MPGsziOJiTMk1VVuxsbAA=;
- b=bamQIURUMMx+CB3g05L0pR52FWLGhmypz3uaBKsk6JGVXVMfRtPMjx4QLOU8lKsRxlqbUiUQ87tz/aBesHAe4yow5r5kg8eOV1rnvJANzCK4rFt0mEfOa/LilywhqOOuzjEQBOfC68cl+teZg6GdKd0POlHUVppawCj2a2jd31Q=
+ bh=beoq/GP8KB6nG6SPJLuj6c3ukjQD3qlQL3Gw7qKxLGk=;
+ b=jS7pc4UUQYqWiszPOBGsSsXeGP+O2X6H4AnCCUmlEfiamIu49E8Z01yJDl1vsmKbqAQUoX8TUGupdxz/GH+WRdBIYRHjLbnCQiyvlEyOKusNs6KVXxA7xECGXjSwyZryIzqF+upQ8E3UQHTzPx3Gk8Jf61UHDx7YrGIcbl9s8zk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
@@ -61,10 +61,11 @@ Cc:     Terry Bowman <terry.bowman@amd.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
-Subject: [PATCH v14 mfd 7/9] resource: add define macro for register address resources
-Date:   Thu, 21 Jul 2022 21:06:07 -0700
-Message-Id: <20220722040609.91703-8-colin.foster@in-advantage.com>
+        Lee Jones <lee.jones@linaro.org>,
+        katie.morris@in-advantage.com, Rob Herring <robh@kernel.org>
+Subject: [PATCH v14 mfd 8/9] dt-bindings: mfd: ocelot: add bindings for VSC7512
+Date:   Thu, 21 Jul 2022 21:06:08 -0700
+Message-Id: <20220722040609.91703-9-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220722040609.91703-1-colin.foster@in-advantage.com>
 References: <20220722040609.91703-1-colin.foster@in-advantage.com>
@@ -75,52 +76,52 @@ X-ClientProxiedBy: MW4PR03CA0044.namprd03.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 65d5e645-a174-44f4-93c9-08da6b978e69
+X-MS-Office365-Filtering-Correlation-Id: 5e40fadb-17ac-478c-dbbc-08da6b978ed4
 X-MS-TrafficTypeDiagnostic: MN2PR10MB3919:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Dpt5e+vdcN9uBzsuyurJgeYF5PrmZ6Pu9xY6uDuR4K5FNRih3QKJJZ0DYa+lMFCogZh8uAAT4GiL7reE0P0tTtm/TI7ZA0otVyDBSReU959R7T5tBBknXX8pMVyvZqWHci0L43LlBlI4QZ+sZmdSPLIr5Iz4O/5rMfwGr9Rz0ndj/4kCdZ9BSVlzwNnM6UT1fZyT81gx6HHa0iC6V8QOBJQMnR1lNdMsiA5PHFkHwISuF+V9SQoKQljRY44kcZVtj7cn7K9Vokzuw9/nYT+eqMflLJ5KbAAC0W6ZMEZ+u4mr24vCEPUKhqoLo38PHwaB73vCCiU5dI6ZVulp2vmblUz9R4UtAk4/PZnwIGJXrgomiF7fYxxFyZ8OSGZX7sDJJlpAWvssQ87yEnz2uCodQnsRY2HyCXjJYi2tmYpILp7F2neoqHhjtK8A5dPNuh9i+Fx7VZbNl3ZAMx7sQ79vzhnZNT/BXXUnrXty9P0nx+e0auFEtvScFXBrnwA1qAuZWF6cGe3QlP8JTvqLewavJdg8ACr+o1MyUCS0iIC/j1MmabxCh5sFqzh6J5zH55o+ikIv1eyb6QI1zuutrDRzBELFAZ7cNkvFsvG1+RprA3V+hmWFX1Q4c9dBmH+ZaDJHerdoLx+i5HTdtTcXhAvwvvPlIM1yzP/L40nCs8xE0L5R5FKNIXbOc/0C/5oz3YwyPsWyB1bSauAEoZcbrTXZV5L8MLXHTfPW4eukRi0l1meDhHjXD/SaIydqhzgfrwO4ZyCMpxt68m+monrJCrHaG997cdFim/8vmPIv02IeSQk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(376002)(136003)(396003)(39840400004)(36756003)(6506007)(2906002)(44832011)(41300700001)(52116002)(5660300002)(1076003)(66556008)(8676002)(8936002)(4326008)(66476007)(186003)(6486002)(478600001)(6666004)(6512007)(7416002)(26005)(316002)(86362001)(38100700002)(107886003)(2616005)(38350700002)(54906003)(66946007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: AM/UiqnCEJjCN/y5F4iLUsvD5uykBnloCVBdrJ63vUrJQ/ZyHi6DOzmdj7T4wdxFfKZtxbGv5ekrGQhzUIZIx5YYJDnJ9KidbidGa5UGx14dH4p25sy6h6AU417G/hCamVvNkoyV5Z/xICzQCnA6OpJsWmH2URX1l7dHuUpA9/yaJ+hXhtuxO8IlyIGwUAKqGd1+2dsvC/VeebEmeXeq2Il/AnSHOrfHozMDaPzEeRjP/sic/lN+W91mDlu3bB/F6e3oI73mKPdxTgHZJx7wuK5pJ46JsKHc9m39boynAyuKgh9W658B/vVxjAuqRsYjgl1NYRZ2Eevu+dZjNDBj3lcdJceHEatS6XDa83b3y9w+wbEuJ6sVG6+SRw4QflE5+fJmrt1fzQCuj0CdunwtdLN3LuK8f1piefKFmkam8sOoLFkx1tUEmDm/E8rA66r2kwb10DXISGai19+bezuSwhY+pWBm28NLeYtM7g5mgKfpOloJDEs4bu+Jjtpx4lLp6ngymW6iy+dBUWQFu6XXdfGDLrutppdPOZPn8OLnj5v8o325M35IPq804rFOXhXOPDcL93qInWrnJ4AcAaL8h8aEqoAiRN7zL6Rg+zJkiAx251nwA/0qN5quKVMcof7pAuLz/6IplYsMNfVNxI2j3dv3qPQSfhuIxb9Yte8GkhpN2DczcZ0uStND9e2vIPNUlZska0+mamk6IiGg/LyL+RAPX07/AKjz/q2nCTE1fQRbbMphY9huXof1gEq2iyDQk1J6cABkdKOMYZBI2CQrR5o12HhS4Q8N9nXlcU6GnzGeQN334+fJEI1nzGj6OYpj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(376002)(136003)(396003)(39840400004)(36756003)(6506007)(2906002)(44832011)(41300700001)(52116002)(5660300002)(1076003)(66556008)(8676002)(8936002)(4326008)(66476007)(186003)(6486002)(478600001)(6666004)(6512007)(7416002)(83380400001)(26005)(316002)(966005)(86362001)(38100700002)(2616005)(38350700002)(54906003)(66946007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?t4XJQGW40zfnxluBECvjAGE6aOMG5uH7kSczk9doB5hL00KjLCwoxt9ljPzS?=
- =?us-ascii?Q?dXWRtE/2Ba9bQBsinD9XItJ7b2xhjBJRuLZaohVRWGuZSfMv9sxe9SwTAmA0?=
- =?us-ascii?Q?SnSEYu7H/wNcz5DdFqKwapGcr2LGQ+UC43OLQ+rCMTnGcINa7h5XW/O1ls2n?=
- =?us-ascii?Q?iYRCSozcboXdWHsFfRW08c2S/8WEUsX4+dzPCMAsVdSaQLJwFLKiuOFRcQR8?=
- =?us-ascii?Q?f9mHgrfYXkTXw70Md1Too0oTBcoTlMA87WN3IQLixqSxtvjoPNHKin7lw3J7?=
- =?us-ascii?Q?UWQH6LMI/bORDzJscvIpMaUH0EpKESIb5cFpZRrjZq4eRvbzNzSpUe67QGhT?=
- =?us-ascii?Q?+YEUutr/HCWXwHDcayjsGKk+oogdgk1eZpHZUpJAo/9NiJNzt4+31ZGjAYuQ?=
- =?us-ascii?Q?NDAUE/HEU/eQoyEAeqkqRExxMmnF7H/PoWG53Kwuq1TUPCVRqf1PDiM+5bGT?=
- =?us-ascii?Q?3z6pzsNeD9wFVdwT4Y8Z+bIgyHGhwLTCnR1Fy0e1NPyk70JRI6/D2S7ZmaIS?=
- =?us-ascii?Q?jj5hnqTOjbFGvvu4SkPflWDqaX7yRBWNi9WJTnCWjnI1riB45yuQWzashB9n?=
- =?us-ascii?Q?Rf5YkeyEZC8m9tO1XMNyPhz9Agcy8T+qNJMiUtRHQjjX4f8Isa2aTD7VBcli?=
- =?us-ascii?Q?p9mjXRA92xSYtCSo1O3d4x9IE3EJkNLf597dy/+7GxX4ix2HX3DedTLTDLQM?=
- =?us-ascii?Q?UJwQs9dFuphv8AVMJeRi/+MPGPqfztD9bAvl+3jQA+/brWumptCzgE4fcfZ/?=
- =?us-ascii?Q?eL54p9uwb9/FrDCwztJNdTF7NOZxNhZ00sQH2L8EoGTqju/yrhn1MVY7cu00?=
- =?us-ascii?Q?R9WUVx2Ofn3Ml96xDexc6+Cyr/K08S00NRYZp3dw8D090ZM7P4yHVmHz7uqw?=
- =?us-ascii?Q?uiWArxjcFygBXmwau7zJXaPgHXYrltDNL2RN11TZp+uMfdPl1eUgouOWjcno?=
- =?us-ascii?Q?fiZ0+QwpxFfYq/7zQy4MsfIxv7G1Mn+viOS/tuU3mITyegTEFgsYEv4EZlhl?=
- =?us-ascii?Q?CvG67dvSTZp6nfkGtRJ7cXgXx1GxIKuDSJXXIsfWGQTPCtdQJywXmalOoJ6D?=
- =?us-ascii?Q?PaXxa6AkHoPvuo1be4r6GHoqfbmntZ8vH2dPzqgYyzaTLp5HTG3BKZ4HSjfQ?=
- =?us-ascii?Q?z9ywa0DeLuT+ogSBAFLhBmJqRKDUQ0kSqd09GIdZtGngC5sGwvqDwdQ8/mYx?=
- =?us-ascii?Q?d7AdoI6nfjItJ3unTUdhiMdM2/+ckAAlHYJ3CWrU2gGNAD6g62Av3YCSoQtJ?=
- =?us-ascii?Q?BaIe8aCLi09RreHB5oG94kPh8MF+3OqAvRhp2ouOGjo2A6MTEw4aEpyt8Itf?=
- =?us-ascii?Q?Hysg1jKJPZTcPRm5t69KE/mOvTA9x3V2KHQ1C3SExFL5uGNrNigfDFfPGPV8?=
- =?us-ascii?Q?ahzkNuP9ECKgSw2yMinHe/ue0xokYOYHoipN/7cy+Fe68y/orQjmeguEg1vy?=
- =?us-ascii?Q?RcI04c85NGBuhTTzd+lPBsefdoGUyHS88fboL24GDQUYp4bHpg9oUD8xAiSP?=
- =?us-ascii?Q?ED9h/BT2IfYkbjLapWT1Kgm71TrCvSkfXhceQWnSiWu9rcZNexj+1NY7grus?=
- =?us-ascii?Q?11z+eWLY+IdhUbuTcj8IhSIoRIUm4zs09f1LBVhGufbLkJpNLWBbVmzUUrHy?=
- =?us-ascii?Q?mrBvy2mbfI/TDHCOTxO5QmA=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/0OoZmXQfMhTVhnikpm2tzJncqkiSiUv/sCX/2InJ7HvGV1Z6zMpALPaJn/x?=
+ =?us-ascii?Q?wob3bLKX+3eU0qIUlHmoEGGfTlNblTPwRLJCFhSokPl9lr94RkkFxVCZLo6O?=
+ =?us-ascii?Q?Err3N6dHLQcCtoRzv4NVxbJfByjLXhX0XlVnsdNjUO/mBU1KYIEoibAwhspL?=
+ =?us-ascii?Q?bz2mEUW+lPEwALWWqm1m0WuRswx4rKvsT1SiSj0nUP77qRT4+HeGHpujQBTM?=
+ =?us-ascii?Q?OmnoH0HVpEZ73nZfQtQwqgOrwvJW3/gfDuupj2W9XWvrcILQcrTGDxHsMMa8?=
+ =?us-ascii?Q?fN59eJxpTqWMDvAaGL6XRK6teTMcLjPNKwwv1d7UmsF3KMFsPLSlReNzazd3?=
+ =?us-ascii?Q?Pq6loU8/CNGwnFca+gFIWi4naUs4GXQlZw7iWBozwYcBNkDomLnmGQiTsfSG?=
+ =?us-ascii?Q?69B9UYkqu8RoW5ndhsb2od3/GsM5+4OncnbpQ9oXibqQCgfiHKVal6J/ptdD?=
+ =?us-ascii?Q?YtnOLuxdNRUAGwMCa34BcvjKIenDye3fpZJr7Jj0rPOzKiSKoaXhMtf9OAJi?=
+ =?us-ascii?Q?V2vkd2eZjgSRceP+Ti7BXbIHET1nhbyAZ6k4wanZ7zwzhGvFCixExIc2R4nD?=
+ =?us-ascii?Q?QtmkPMVk4ZqTnDz9rJb7Lzqrg6tnk5nMK/WtvZyqrGd4ARTbUtIAhTrHYnIH?=
+ =?us-ascii?Q?vajAEBKidURoh2M8pHXALh6ODR0YVTfxyIRr7rUpWGzq2JSl9ZT1KLxA92BJ?=
+ =?us-ascii?Q?q+FxDtc0Q+Fmh8REKauZuJvsqnpfXbXVQXme1xBPybs5tENyje45EZyStR1m?=
+ =?us-ascii?Q?PU1+3ijy5YdF03pM6TeWdWAqHmBAMmYkPswsjWoPADa1w2ZZ7jG9yc7qqi6a?=
+ =?us-ascii?Q?szQuIOMUYTGM0KjbPUrhJ+k9GpTBfqIAsBMDy3LuJxdmxUS1OQ6xFBN+2vhK?=
+ =?us-ascii?Q?slmqyvY44JVZXtLMtUCqTAROID4eUc875yE3Okz3niGvErqON/0ZrNtEgZmh?=
+ =?us-ascii?Q?n8aL4NEahi0s88NhjXYKYdVZCK8u6f1qggFurp+OZW/irTwyNEWx8ehsxcVU?=
+ =?us-ascii?Q?KUih7COTx5rsCjPQcQj6/YQsX0dA5t7vPw3A83e5qhh09udyHRrhiezPP3Oy?=
+ =?us-ascii?Q?M6t0kSpyIUgXWrxWdHbDpqW4Wh0VMNrZMt4HZ0id76BOF9FDzrs2wFl2jNCq?=
+ =?us-ascii?Q?GASfxsr5UC7hCEWJBMIqvdzOcNfFQCuAGZSaLl/2mgmYdlTu6gYTqTSHeSGA?=
+ =?us-ascii?Q?tDIR3j/f1lrAEGIKgXLVxZMD29zCzLqeAUPL2iABzid6uST57ScJRTA7UpRw?=
+ =?us-ascii?Q?lvxGPpYyRVnWfspRTvdmXM/XycHEmdKfdDj+rb27GifPfQjZUNCCs10PPQPA?=
+ =?us-ascii?Q?/4XV0ivfsg13u3nrKRbrU3+YO6buBj6rd5zJnhNzNsHa9NSBowjxfCv1eyNE?=
+ =?us-ascii?Q?Mu5uVGivuvAYjCWdAVwircfg4iwAXsWiBE96U+E0XKIKA3oqbzQ19Y+YWrm2?=
+ =?us-ascii?Q?XMa0xIAPVXMVLgYJvaSx26cCa21qyO4Eov3FmG/98HX1J0sMnQV5uElBWIS4?=
+ =?us-ascii?Q?5uXjSeoWz9RBBt8v4LhaEYQkqBlQIxmmIKQgx2FEzOE/CPYXbgcC+nZ8Hxnn?=
+ =?us-ascii?Q?8XDVz9WluHoaLSD0kJuQ5nw4AXi//926KbqNSMYy1reSAe7MFx73YlD/xOlV?=
+ =?us-ascii?Q?YNN8CUVpbS0/PH0PL+nz7NI=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65d5e645-a174-44f4-93c9-08da6b978e69
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e40fadb-17ac-478c-dbbc-08da6b978ed4
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 04:06:30.1738
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 04:06:30.8769
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v3XmfuXg1YwB0v6ThdGZl7Kd2pqC8v9cDOU5AfNcDJEZsuTJaFlw55QpqSRPzrifWozG1qO11lt9Vt7MsuW1LUtwJAffpskSBGk5c7p54AQ=
+X-MS-Exchange-CrossTenant-UserPrincipalName: G9x6x9JrRUcnGBRX7VkbBK/no5T6yQMBkjz5wUI8BHsxDfGweiXgNZVKt+oFJsm/bPfKIRf5Pkatu8tdexYBBRqVCF1oLQCFlyi1nxsIqdo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3919
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -131,37 +132,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DEFINE_RES_ macros have been created for the commonly used resource types,
-but not IORESOURCE_REG. Add the macro so it can be used in a similar manner
-to all other resource types.
+Add devicetree bindings for SPI-controlled Ocelot chips, specifically the
+VSC7512.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 
 v14
-    * Add Reviewed tag
+    * Add Vladimir Reviewed tag
 
 ---
- include/linux/ioport.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../devicetree/bindings/mfd/mscc,ocelot.yaml  | 160 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 161 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
 
-diff --git a/include/linux/ioport.h b/include/linux/ioport.h
-index ec5f71f7135b..b0d09b6f2ecf 100644
---- a/include/linux/ioport.h
-+++ b/include/linux/ioport.h
-@@ -171,6 +171,11 @@ enum {
- #define DEFINE_RES_MEM(_start, _size)					\
- 	DEFINE_RES_MEM_NAMED((_start), (_size), NULL)
- 
-+#define DEFINE_RES_REG_NAMED(_start, _size, _name)			\
-+	DEFINE_RES_NAMED((_start), (_size), (_name), IORESOURCE_REG)
-+#define DEFINE_RES_REG(_start, _size)					\
-+	DEFINE_RES_REG_NAMED((_start), (_size), NULL)
+diff --git a/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml b/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
+new file mode 100644
+index 000000000000..8bf45a5673a4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
+@@ -0,0 +1,160 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/mscc,ocelot.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- #define DEFINE_RES_IRQ_NAMED(_irq, _name)				\
- 	DEFINE_RES_NAMED((_irq), 1, (_name), IORESOURCE_IRQ)
- #define DEFINE_RES_IRQ(_irq)						\
++title: Ocelot Externally-Controlled Ethernet Switch
++
++maintainers:
++  - Colin Foster <colin.foster@in-advantage.com>
++
++description: |
++  The Ocelot ethernet switch family contains chips that have an internal CPU
++  (VSC7513, VSC7514) and chips that don't (VSC7511, VSC7512). All switches have
++  the option to be controlled externally, which is the purpose of this driver.
++
++  The switch family is a multi-port networking switch that supports many
++  interfaces. Additionally, the device can perform pin control, MDIO buses, and
++  external GPIO expanders.
++
++properties:
++  compatible:
++    enum:
++      - mscc,vsc7512
++
++  reg:
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 1
++
++  spi-max-frequency:
++    maxItems: 1
++
++patternProperties:
++  "^pinctrl@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/pinctrl/mscc,ocelot-pinctrl.yaml
++
++  "^gpio@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/pinctrl/microchip,sparx5-sgpio.yaml
++    properties:
++      compatible:
++        enum:
++          - mscc,ocelot-sgpio
++
++  "^mdio@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/net/mscc,miim.yaml
++    properties:
++      compatible:
++        enum:
++          - mscc,ocelot-miim
++
++required:
++  - compatible
++  - reg
++  - '#address-cells'
++  - '#size-cells'
++  - spi-max-frequency
++
++additionalProperties: false
++
++examples:
++  - |
++    ocelot_clock: ocelot-clock {
++          compatible = "fixed-clock";
++          #clock-cells = <0>;
++          clock-frequency = <125000000>;
++      };
++
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        soc@0 {
++            compatible = "mscc,vsc7512";
++            spi-max-frequency = <2500000>;
++            reg = <0>;
++            #address-cells = <1>;
++            #size-cells = <1>;
++
++            mdio@7107009c {
++                compatible = "mscc,ocelot-miim";
++                #address-cells = <1>;
++                #size-cells = <0>;
++                reg = <0x7107009c 0x24>;
++
++                sw_phy0: ethernet-phy@0 {
++                    reg = <0x0>;
++                };
++            };
++
++            mdio@710700c0 {
++                compatible = "mscc,ocelot-miim";
++                pinctrl-names = "default";
++                pinctrl-0 = <&miim1_pins>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++                reg = <0x710700c0 0x24>;
++
++                sw_phy4: ethernet-phy@4 {
++                    reg = <0x4>;
++                };
++            };
++
++            gpio: pinctrl@71070034 {
++                compatible = "mscc,ocelot-pinctrl";
++                gpio-controller;
++                #gpio-cells = <2>;
++                gpio-ranges = <&gpio 0 0 22>;
++                reg = <0x71070034 0x6c>;
++
++                sgpio_pins: sgpio-pins {
++                    pins = "GPIO_0", "GPIO_1", "GPIO_2", "GPIO_3";
++                    function = "sg0";
++                };
++
++                miim1_pins: miim1-pins {
++                    pins = "GPIO_14", "GPIO_15";
++                    function = "miim";
++                };
++            };
++
++            gpio@710700f8 {
++                compatible = "mscc,ocelot-sgpio";
++                #address-cells = <1>;
++                #size-cells = <0>;
++                bus-frequency = <12500000>;
++                clocks = <&ocelot_clock>;
++                microchip,sgpio-port-ranges = <0 15>;
++                pinctrl-names = "default";
++                pinctrl-0 = <&sgpio_pins>;
++                reg = <0x710700f8 0x100>;
++
++                sgpio_in0: gpio@0 {
++                    compatible = "microchip,sparx5-sgpio-bank";
++                    reg = <0>;
++                    gpio-controller;
++                    #gpio-cells = <3>;
++                    ngpios = <64>;
++                };
++
++                sgpio_out1: gpio@1 {
++                    compatible = "microchip,sparx5-sgpio-bank";
++                    reg = <1>;
++                    gpio-controller;
++                    #gpio-cells = <3>;
++                    ngpios = <64>;
++                };
++            };
++        };
++    };
++
++...
++
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f781caceeb38..5e798c42fa08 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14470,6 +14470,7 @@ F:	tools/testing/selftests/drivers/net/ocelot/*
+ OCELOT EXTERNAL SWITCH CONTROL
+ M:	Colin Foster <colin.foster@in-advantage.com>
+ S:	Supported
++F:	Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
+ F:	include/linux/mfd/ocelot.h
+ 
+ OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
 -- 
 2.25.1
 
