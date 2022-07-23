@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE6CB57EC6D
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 09:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CAC57EC73
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 09:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236540AbiGWHTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 03:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
+        id S232201AbiGWHe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 03:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236333AbiGWHTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 03:19:14 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C58431389
-        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 00:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658560751; x=1690096751;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=B3iwwI3EkH2+qKKVmp5t2oKFiWzJvOJC83hW/8+PVDQ=;
-  b=CFHGumHM6yslDmfy40X1Wp7fnb7CuFMNMkc/35LEw8lUHuC6YB03mhH5
-   LgaXzrCX6Kacftszd19omN8d7pE6fAV/sBmicoa8j4QA3DcuSx7N8rccC
-   Upog9dYdjLj3Fo5HqzhqCn9ui1X1QBmV12N/OyfY5XkV/wKpUDgI45GsI
-   EJMX7IG8ljGXWCkpros3Iy5BmhzfppcbI/OyiHl3oY0y/lNNYuN8q0ubV
-   oEgn1pgcgxiMNQrRUQTMqJPYZcqh2oT0h1/uPzJzDUlcNjuZJGnsXFCwS
-   oWCzVox/pngzBIFIqEvbJGjhxe0aNcfCzba4ap8HOKVY7QBYGdfUJJ9eQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="373756988"
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="373756988"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 00:19:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="741284920"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Jul 2022 00:19:09 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oF9Po-0002Nf-1T;
-        Sat, 23 Jul 2022 07:19:08 +0000
-Date:   Sat, 23 Jul 2022 15:18:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ecree@xilinx.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-net-drivers@amd.com
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 06/14] sfc: receive packets from EF100 VFs into
- representors
-Message-ID: <202207231534.YefS8hZX-lkp@intel.com>
-References: <539b243ca106075d1ed1b78e4eb6b38ba3b92ec1.1658497661.git.ecree.xilinx@gmail.com>
+        with ESMTP id S229708AbiGWHe2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 03:34:28 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B8CD5A164;
+        Sat, 23 Jul 2022 00:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Ou64X
+        cGXcxxJqUURiTJIAC7Xl0xWJ6QNV6r7RUuijgU=; b=ODwoCwnlgxzxPYi/nfRAu
+        PhWPt868LoohwtfPxtSqkRs5n0YEnxba+y/5mR+XNM6iw1NXiUZvMAQarIR85ges
+        z2jfrMMnUxZZltG9bLk8o0FjAh5rJXfsPojd3NpEIz7OysqynxTduJKWuFInXB6R
+        Fv6AZ5LNIOqSTrXU/TGjCI=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp2 (Coremail) with SMTP id GtxpCgAXJ6cIpNtihfkcQw--.2846S2;
+        Sat, 23 Jul 2022 15:32:27 +0800 (CST)
+From:   williamsukatube@163.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-afs@lists.infradead.org
+Cc:     dhowells@redhat.com, marc.dionne@auristor.com,
+        William Dean <williamsukatube@gmail.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH net-next] net: delete extra space and tab in blank line
+Date:   Sat, 23 Jul 2022 15:32:22 +0800
+Message-Id: <20220723073222.2961602-1-williamsukatube@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <539b243ca106075d1ed1b78e4eb6b38ba3b92ec1.1658497661.git.ecree.xilinx@gmail.com>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgAXJ6cIpNtihfkcQw--.2846S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWrKw1rtFy7Kw4fXr1fWF17ZFb_yoW8JrW7pa
+        y3Aa42krWxAry3Xr18Ar18Gr98Xan8Wa43G3929w4FqFn3GFWxtF1fKw4UWFs5WFW0qFW3
+        Zr40qw4rG3Z2yrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bw5rcUUUUU=
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBSQtHg1aEEPhEPgAAsG
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: William Dean <williamsukatube@gmail.com>
 
-I love your patch! Yet something to improve:
+delete extra space and tab in blank line, there is no functional change.
 
-[auto build test ERROR on net-next/master]
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+---
+ net/ethtool/cabletest.c | 2 +-
+ net/rxrpc/protocol.h    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/ecree-xilinx-com/sfc-VF-representors-for-EF100-RX-side/20220723-001059
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 949d6b405e6160ae44baea39192d67b39cb7eeac
-config: s390-randconfig-r003-20220721 (https://download.01.org/0day-ci/archive/20220723/202207231534.YefS8hZX-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/9c27ea557e7daaf1ef637c760e2ea4b29e5141b0
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review ecree-xilinx-com/sfc-VF-representors-for-EF100-RX-side/20220723-001059
-        git checkout 9c27ea557e7daaf1ef637c760e2ea4b29e5141b0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   s390-linux-ld: s390-linux-ld: DWARF error: could not find abbrev number 119
-   drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_probe_netdev_pf':
-   ef100_nic.c:(.text+0x2520): undefined reference to `efx_mae_mport_wire'
-   s390-linux-ld: ef100_nic.c:(.text+0x2534): undefined reference to `efx_mae_lookup_mport'
-   s390-linux-ld: s390-linux-ld: DWARF error: could not find abbrev number 13089
-   drivers/net/ethernet/sfc/ef100_rx.o: in function `__ef100_rx_packet':
-   ef100_rx.c:(.text+0x1f8): undefined reference to `efx_ef100_find_rep_by_mport'
->> s390-linux-ld: ef100_rx.c:(.text+0x240): undefined reference to `efx_ef100_rep_rx_packet'
-
+diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
+index 920aac02fe39..06a151165c31 100644
+--- a/net/ethtool/cabletest.c
++++ b/net/ethtool/cabletest.c
+@@ -356,7 +356,7 @@ int ethnl_act_cable_test_tdr(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_parse_header_dev_put(&req_info);
+ 	return ret;
+ }
+- 
++
+ int ethnl_cable_test_amplitude(struct phy_device *phydev,
+ 			       u8 pair, s16 mV)
+ {
+diff --git a/net/rxrpc/protocol.h b/net/rxrpc/protocol.h
+index 49bb972539aa..d2cf8e1d218f 100644
+--- a/net/rxrpc/protocol.h
++++ b/net/rxrpc/protocol.h
+@@ -57,7 +57,7 @@ struct rxrpc_wire_header {
+ 
+ 	uint8_t		userStatus;	/* app-layer defined status */
+ #define RXRPC_USERSTATUS_SERVICE_UPGRADE 0x01	/* AuriStor service upgrade request */
+-	
++
+ 	uint8_t		securityIndex;	/* security protocol ID */
+ 	union {
+ 		__be16	_rsvd;		/* reserved */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
