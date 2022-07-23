@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6222C57EC1D
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 06:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C922957EC21
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 06:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231594AbiGWEmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 00:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
+        id S236887AbiGWEuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 00:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGWEmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 00:42:08 -0400
+        with ESMTP id S229711AbiGWEuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 00:50:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B196885F80;
-        Fri, 22 Jul 2022 21:42:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61097BC9E;
+        Fri, 22 Jul 2022 21:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FE7960ABE;
-        Sat, 23 Jul 2022 04:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344D7C341C0;
-        Sat, 23 Jul 2022 04:42:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6B3F60AFB;
+        Sat, 23 Jul 2022 04:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3919CC341CA;
+        Sat, 23 Jul 2022 04:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658551326;
-        bh=rTIYV+dl7+/MDOcVDJkYp5QHCw1B6KZG2M1GwTmtAD0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Sh6z5+0n+jDyz6EK2pANxNaysYX6KCyEvv8bpuEVxDtuu9FkMjKCHBhIKJXFHhT4P
-         7UN2hOs4+R9O2QAm/EbsqmJW3OfKO49sbhJ3AKju7D5zZKSsRagmz2bS+J8d/n79Z/
-         hP2K49o1uMhgRZJulxZYUz0CgoQ6wGQB24Vf/bew+2+vsiKvZ9j4WdCljmuHCCoVYD
-         4kCXssPmcQInmuwNoyBS+WMRC9tSjbezuNUMoKojvsBLs4pxjY1Ek9HE22AOUaLvi/
-         +TBnm14ab5Ow6VgjG2E16VJ5NZZkRyXs0VALv7bfGE/4SU8mu2D2c8olTtJmozhioT
-         vsqyRp/NFicNg==
-Date:   Fri, 22 Jul 2022 21:42:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hristo Venev <hristo@venev.name>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] be2net: Fix Smatch error
-Message-ID: <20220722214205.5e384dbb@kernel.org>
-In-Reply-To: <20220722152050.3752-1-hristo@venev.name>
-References: <YtlIZgG/wQtxpKMh@kili>
-        <20220722152050.3752-1-hristo@venev.name>
+        s=k20201202; t=1658551814;
+        bh=2R81MEdDkrmcUH5TdYiN7+26p1LVv5E21UBdKcDEb9A=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=p2QyugrLWntvHVACuNZcIGx/xTvbjy1BNP82xl+gjDyo+zW/fcw9lRYPZKSmrgkfn
+         qSHTgJcFIPt9ZfJHidsQ/Je+Y8S/JnqkRt/kNgN677zSotRW85mO4DliVkiCFJSIgW
+         B5emUb8q3Aldnjx6Utx0gZ99PPIqV+5KQSND47rq/5vR1phb+llHqkAni7dtDrHu2h
+         mUwaKVRFGWwLsW8jdGVcEG+pjTcOACFedEa4O/b2D3H7LdG97+vh1NS+1LFf8tGQ1i
+         prry+xKmAKc2KGQOR74Nq9HBumRBV1FOhOQoB3RG50poPoiUkWVeNyRBQ7mObxNA37
+         HAOvw64jvIZ+Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 20BB0D9DDDD;
+        Sat, 23 Jul 2022 04:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/5] net: usb: ax88179_178a: improvements and bug fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165855181412.32013.12318729017636886593.git-patchwork-notify@kernel.org>
+Date:   Sat, 23 Jul 2022 04:50:14 +0000
+References: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
+In-Reply-To: <1658363296-15734-1-git-send-email-justinpopo6@gmail.com>
+To:     Justin Chen <justinpopo6@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, joalonsof@gmail.com, jesionowskigreg@gmail.com,
+        jackychou@asix.com.tw, jannh@google.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        f.fainelli@gmail.com, justin.chen@broadcom.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,8 +58,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Jul 2022 18:20:52 +0300 Hristo Venev wrote:
-> Subject: [PATCH] be2net: Fix Smatch error
+Hello:
 
-Please describe the problem not the tool that found it, and name the
-target tree in the tag ([PATCH net] in this case).
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 20 Jul 2022 17:28:11 -0700 you wrote:
+> From: Justin Chen <justinpopo6@gmail.com>
+> 
+> v2
+> 	Remove unused variables
+> 	Remove unnecessary memset
+> 
+> Power management was partially broken. There were two issues when dropping
+> into a sleep state.
+> 1. Resume was not doing a fully HW restore. Only a partial restore. This
+> lead to a couple things being broken on resume. One of them being tcp rx.
+> 2. wolopt was not being restored properly on resume.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,1/5] net: usb: ax88179_178a: remove redundant init code
+    https://git.kernel.org/netdev/net-next/c/9718f9ce5b86
+  - [v2,2/5] net: usb: ax88179_178a: clean up pm calls
+    https://git.kernel.org/netdev/net-next/c/843f92052da7
+  - [v2,3/5] net: usb: ax88179_178a: restore state on resume
+    https://git.kernel.org/netdev/net-next/c/c4bf747c6889
+  - [v2,4/5] net: usb: ax88179_178a: move priv to driver_priv
+    https://git.kernel.org/netdev/net-next/c/2bcbd3d8a7b4
+  - [v2,5/5] net: usb: ax88179_178a: wol optimizations
+    https://git.kernel.org/netdev/net-next/c/5050531610a6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
