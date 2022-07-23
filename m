@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E28857EB77
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 04:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EEE557EB76
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 04:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236627AbiGWCK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 22:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
+        id S236618AbiGWCK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 22:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiGWCK1 (ORCPT
+        with ESMTP id S235710AbiGWCK1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 22:10:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0497DF5AD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A11101D7;
         Fri, 22 Jul 2022 19:10:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 998EC6231F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F4AE60F44;
         Sat, 23 Jul 2022 02:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4EBBC341C7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D8CA4C341CA;
         Sat, 23 Jul 2022 02:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658542226;
-        bh=OgJgFHjY1OObcoSi2yee9cax62lJyTHikeZwaWoKPXU=;
+        s=k20201202; t=1658542225;
+        bh=TgDVJqP4jQYvvrf07gRD3WhxPbiGonmxAGY98wXDmS4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Lukm2Zet1Wr+VMnhWRov/SBQpZ3ajUTqL0nD1XvXkQxYJp62SN9fEC0AaaYkPm2LF
-         puNFx3bfSbE2iAyL/ejKmsvs3kXJXTf7yVeFO9ryTADebtRfq3cbkYTMRyT1QhFTJC
-         gDDI5BLpvUM/fYdqd9HRQAbXq+jxaciOpj5W46TDc9qIenFNnXLIRmMXlxAvNEN12N
-         hsgA+zS3k0whup5pyRFHW/kraYaGjEpafYL/da7PTC5dp7FsKh1OPj2BZsY/tLBlF+
-         a0H8WXTO1yiaGaq9Ua183+sr0CnnqBnatQg03wqE7G9M+rudIYRenUO3+5uvEPNid+
-         GJuf4VLF6PX7g==
+        b=VxLg7QhQiJSkDNrS6gwiOrwzMdk1uSbbQKByyRIh4+swRhgO9XzdSOD+b/1HgxyS0
+         6eWUZSsNwIjqy7IFn97U/8Tk28JbUZxmMWxZkRsJbUp7jbYUYi8+hBwkN8h76vizE5
+         hEDfI2r27RXkyB3tpbOz8lNQUEXwDJDrTMTEntZF0oYKfB1wnvIL/Yx1QKFV0CQmf7
+         QgZZOSGLTzAVbBMxxU9UfIc38jOtjuvg10LGS2TyoDQlOX/LRnr563252teN9orAc/
+         +Vkoro5xsH/H9Lq+2l4cgIk4L486bvkYluHj7WIZzAyvZEDnroZtET8rPxd7cmJOTP
+         wS+8Xqt33Xbkw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7415E45200;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD580D9DDDD;
         Sat, 23 Jul 2022 02:10:25 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull request: bluetooth-next 2022-07-22
+Subject: Re: pull-request: bpf-next 2022-07-22
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165854222581.22628.15052144644989173431.git-patchwork-notify@kernel.org>
+Message-Id: <165854222577.22628.10765393378341067283.git-patchwork-notify@kernel.org>
 Date:   Sat, 23 Jul 2022 02:10:25 +0000
-References: <20220723002232.964796-1-luiz.dentz@gmail.com>
-In-Reply-To: <20220723002232.964796-1-luiz.dentz@gmail.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+References: <20220722221218.29943-1-daniel@iogearbox.net>
+In-Reply-To: <20220722221218.29943-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,20 +61,19 @@ Hello:
 This pull request was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 22 Jul 2022 17:22:32 -0700 you wrote:
-> The following changes since commit 6e0e846ee2ab01bc44254e6a0a6a6a0db1cba16d:
+On Sat, 23 Jul 2022 00:12:18 +0200 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
 > 
->   Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-07-21 13:03:39 -0700)
+> The following pull-request contains BPF updates for your *net-next* tree.
 > 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-07-22
+> We've added 73 non-merge commits during the last 12 day(s) which contain
+> a total of 88 files changed, 3458 insertions(+), 860 deletions(-).
 > 
 > [...]
 
 Here is the summary with links:
-  - pull request: bluetooth-next 2022-07-22
-    https://git.kernel.org/netdev/net-next/c/4a934eca7b39
+  - pull-request: bpf-next 2022-07-22
+    https://git.kernel.org/netdev/net-next/c/b3fce974d423
 
 You are awesome, thank you!
 -- 
