@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2109157EB26
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 03:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E28857EB77
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 04:10:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbiGWB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 21:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
+        id S236627AbiGWCK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 22:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiGWB6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 21:58:40 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.187.6.220])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id ADA4D7B1FA;
-        Fri, 22 Jul 2022 18:58:36 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.76.127])
-        by mail-app4 (Coremail) with SMTP id cS_KCgC3L8+yVdtiwTkdAQ--.30584S2;
-        Sat, 23 Jul 2022 09:58:18 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-sctp@vger.kernel.org
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net] sctp: fix sleep in atomic context bug in timer handlers
-Date:   Sat, 23 Jul 2022 09:58:09 +0800
-Message-Id: <20220723015809.11553-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgC3L8+yVdtiwTkdAQ--.30584S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7AF1DXrWruFWDKF4rKrWUXFb_yoW8Xw1rpr
-        yDuF4FqF17tF18ZFZ5ur4Fqw1akws7J34DKF40kwn5A398Jr4YgFy8KrWSyrWxurWUZFWY
-        va15K347Gr1jkFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6w4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfUOMKZDUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcAAVZdtay58AADsc
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229871AbiGWCK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 22:10:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0497DF5AD;
+        Fri, 22 Jul 2022 19:10:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 998EC6231F;
+        Sat, 23 Jul 2022 02:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E4EBBC341C7;
+        Sat, 23 Jul 2022 02:10:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658542226;
+        bh=OgJgFHjY1OObcoSi2yee9cax62lJyTHikeZwaWoKPXU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Lukm2Zet1Wr+VMnhWRov/SBQpZ3ajUTqL0nD1XvXkQxYJp62SN9fEC0AaaYkPm2LF
+         puNFx3bfSbE2iAyL/ejKmsvs3kXJXTf7yVeFO9ryTADebtRfq3cbkYTMRyT1QhFTJC
+         gDDI5BLpvUM/fYdqd9HRQAbXq+jxaciOpj5W46TDc9qIenFNnXLIRmMXlxAvNEN12N
+         hsgA+zS3k0whup5pyRFHW/kraYaGjEpafYL/da7PTC5dp7FsKh1OPj2BZsY/tLBlF+
+         a0H8WXTO1yiaGaq9Ua183+sr0CnnqBnatQg03wqE7G9M+rudIYRenUO3+5uvEPNid+
+         GJuf4VLF6PX7g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7415E45200;
+        Sat, 23 Jul 2022 02:10:25 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull request: bluetooth-next 2022-07-22
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165854222581.22628.15052144644989173431.git-patchwork-notify@kernel.org>
+Date:   Sat, 23 Jul 2022 02:10:25 +0000
+References: <20220723002232.964796-1-luiz.dentz@gmail.com>
+In-Reply-To: <20220723002232.964796-1-luiz.dentz@gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs in timer handlers of sctp
-such as sctp_generate_t3_rtx_event(), sctp_generate_probe_event(),
-sctp_generate_t1_init_event(), sctp_generate_timeout_event(),
-sctp_generate_t3_rtx_event() and so on.
+Hello:
 
-The root cause is sctp_sched_prio_init_sid() with GFP_KERNEL parameter
-that may sleep could be called by different timer handlers which is in
-interrupt context.
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-One of the call paths that could trigger bug is shown below:
+On Fri, 22 Jul 2022 17:22:32 -0700 you wrote:
+> The following changes since commit 6e0e846ee2ab01bc44254e6a0a6a6a0db1cba16d:
+> 
+>   Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-07-21 13:03:39 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-07-22
+> 
+> [...]
 
-      (interrupt context)
-sctp_generate_probe_event
-  sctp_do_sm
-    sctp_side_effects
-      sctp_cmd_interpreter
-        sctp_outq_teardown
-          sctp_outq_init
-            sctp_sched_set_sched
-              n->init_sid(..,GFP_KERNEL)
-                sctp_sched_prio_init_sid //may sleep
+Here is the summary with links:
+  - pull request: bluetooth-next 2022-07-22
+    https://git.kernel.org/netdev/net-next/c/4a934eca7b39
 
-This patch changes gfp_t parameter of init_sid in sctp_sched_set_sched()
-from GFP_KERNEL to GFP_ATOMIC in order to prevent sleep in atomic
-context bugs.
-
-Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- net/sctp/stream_sched.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sctp/stream_sched.c b/net/sctp/stream_sched.c
-index 518b1b9bf89..1ad565ed562 100644
---- a/net/sctp/stream_sched.c
-+++ b/net/sctp/stream_sched.c
-@@ -160,7 +160,7 @@ int sctp_sched_set_sched(struct sctp_association *asoc,
- 		if (!SCTP_SO(&asoc->stream, i)->ext)
- 			continue;
- 
--		ret = n->init_sid(&asoc->stream, i, GFP_KERNEL);
-+		ret = n->init_sid(&asoc->stream, i, GFP_ATOMIC);
- 		if (ret)
- 			goto err;
- 	}
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
