@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D18E057F022
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 17:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DF357F024
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 17:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbiGWPlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 11:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
+        id S232698AbiGWPmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 11:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGWPlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 11:41:14 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384051EC7E
-        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:41:12 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id t3so9028140edd.0
-        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:41:12 -0700 (PDT)
+        with ESMTP id S229478AbiGWPm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 11:42:29 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5AD1EC7E
+        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:42:28 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id g1so8960865edb.12
+        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:42:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=uH0fRA9QgP1SgBU0AbRb25SmklZdBXjQZVKS7So7Ado=;
-        b=ukc16NFxICockWPXpdPuQ+hW1e2ve6MC1H+jsD/FuDgPS82jvIAKzIVJqdwsSfQ+jg
-         GR5c9pt7k+CI5g+OKF2y3xnTAdyJsOWiMmdbWrkX3ChR6rmdxUQoNPhGhuXitqbm72BI
-         X9UJLq+s91p5BvxVWCQdSjOK7WKKFIHVWqPIgYAP8AwFmAA7oMSoB19FY7Hg0Bomvho1
-         s4BJR7ZBfeXKhDD6dcd3YJBXgrYoRE0y0xPgg0SHA5+H4TqJoU+xbD4xE3IftSIJ9N+R
-         TwKmWPhoJUkv4IdmKdQVIYCz6JYnDXqzcThDghyPkJoUsr5Ig2OBmR0efoenQQjlPBsQ
-         oxZw==
+        bh=yAjOYQ8s08rr1l1qltKSmEfHrH1AlKp/rH/SYxzfoRw=;
+        b=bLJ6tJdw8gEMyqnbth4ooa4zuPQ5+YPcZh0TRvZpdfgzne0teVIR9ScJqJuN0u439H
+         lDDs9SSrDKbWG3hf/5cXNsJthReg8AIOIeLH9y8BbcoZdTg1BBmvpIovVltO2Wa/6zCl
+         OnhsSM9SQIgh4ILuD5inZ4SaFu8lNzI3EmMdos5GSpIWiweJx15PXgH0xbAAXSEEeJhs
+         uSV24mM46nT8qoFacVOk6uKwc4+CP4xgnzeyWtgafH1WBIyb4U91/4VnwPBaeAV+PrJr
+         2byVmFYxGpml9Ado9jqXdB8H923mcaxkq2wuTsyuc50nI+J3K5q3U3rQQWbBxD4Ju58z
+         Ulug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=uH0fRA9QgP1SgBU0AbRb25SmklZdBXjQZVKS7So7Ado=;
-        b=ROfJCx4Nu3MiHRhEGKX/tbX15pGiXSg+/68wsbTFur3guoo+IFJcUzm2e2lxdnC8um
-         G5nucyEUrcSeSni9oHpLwVpEXTZZv3g/7i/0HUMPsGlN5b662RdKmgVUcTUOXwKK0woP
-         vAmudW0BUzsjnI8xN9oj5OhdIc3uOOQdh2VWYops0OTMz0j8KPo66UExJ44jBysVIrkR
-         BjyoRSmooV1mwaAp15Uu9NtKDdZnkxDtuZa3X6NapX7+gM+Uvq03H7/eLMepDOPugS2F
-         FfPJ8MmuJYUX8tueSSP0eeay8FzpyTDJ3AZ14MsSlmeexisA4BhjoMLyv93180AXAPiB
-         9WcQ==
-X-Gm-Message-State: AJIora86qJIFxsa/l+5YbHjS0esSrqqOdX1Yfp1ymquDDHzavY6CKQP7
-        Ql9EJW3S2wHioWqEGC47F6k95A==
-X-Google-Smtp-Source: AGRyM1sSMl49BvxItQNSZeOMwEpPqUCDj2Gl77dZULSIjpxwCz1vjkBXA6fA04l1bV6hDW1nx2zpgw==
-X-Received: by 2002:aa7:d6da:0:b0:43b:a05c:cf74 with SMTP id x26-20020aa7d6da000000b0043ba05ccf74mr4763042edr.392.1658590870580;
-        Sat, 23 Jul 2022 08:41:10 -0700 (PDT)
+        bh=yAjOYQ8s08rr1l1qltKSmEfHrH1AlKp/rH/SYxzfoRw=;
+        b=UfV8QKvYLvVWNP8Zjn8IBfzU7qzlsn7MQ+0xyFNurtS616Wzffb24B7UrJOTerQB5l
+         zU0mDbX3CQCUWGYIE2UK4m9uDT3j6YVjGWJ5+puaExzQ58ApF3YFY9720Z0cZjvkx35I
+         mvGAe5bGmreAlTLntZ2fo/RXv9HSMS7lUAGpIO74bQQfXDpt+rXhwMw0Iit2xsaiKhvT
+         0xBEQ4nhpb8tMaWrW/IGAHHGszJhRcoZM/L/rH9kmoreVtppekorGFv+NPz9/zdHs1zu
+         tDzQfSZ5iMN0QztcxEAfKHjx8zUjlV6UucHgnIttZxmAiFvFFU/tTV2kH1LJ6rSAPvky
+         sLlw==
+X-Gm-Message-State: AJIora8D1RrFdAaPD9yar9T85r6UDjwBon1NCG10h2e9a8XLdVpZDV5/
+        K47oa2bruyPOO6lV4jNJGcTj+A==
+X-Google-Smtp-Source: AGRyM1tFWlFXiLxGOQtLbgb4hfhXvnkvvntdYXo1QEu5TEGwJNaW8nTGVCVCWbX9/D8UVv72WZB63Q==
+X-Received: by 2002:aa7:cf13:0:b0:43b:a842:e482 with SMTP id a19-20020aa7cf13000000b0043ba842e482mr4939484edy.192.1658590947494;
+        Sat, 23 Jul 2022 08:42:27 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id v15-20020a17090606cf00b0072b810897desm3181762ejb.105.2022.07.23.08.41.09
+        by smtp.gmail.com with ESMTPSA id u17-20020a1709061db100b0072aeda86ac3sm3270136ejh.149.2022.07.23.08.42.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 08:41:09 -0700 (PDT)
-Date:   Sat, 23 Jul 2022 17:41:08 +0200
+        Sat, 23 Jul 2022 08:42:26 -0700 (PDT)
+Date:   Sat, 23 Jul 2022 17:42:25 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
- devlink_try_get() works with valid pointer during xarray iteration
-Message-ID: <YtwWlOVl4fyrz24D@nanopsycho>
-References: <20220720151234.3873008-1-jiri@resnulli.us>
- <20220720151234.3873008-2-jiri@resnulli.us>
- <20220720174953.707bcfa9@kernel.org>
- <YtrHOewPlQ0xOwM8@nanopsycho>
- <20220722112348.75fb5ccc@kernel.org>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash
+ update
+Message-ID: <YtwW4aMU96JSXIPw@nanopsycho>
+References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
+ <20220720183433.2070122-2-jacob.e.keller@intel.com>
+ <YtjqJjIceW+fProb@nanopsycho>
+ <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
+ <YtpBR2ZnR2ieOg5E@nanopsycho>
+ <CO1PR11MB508957F06BB96DD765A7580FD6909@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220722112348.75fb5ccc@kernel.org>
+In-Reply-To: <CO1PR11MB508957F06BB96DD765A7580FD6909@CO1PR11MB5089.namprd11.prod.outlook.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -74,36 +74,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jul 22, 2022 at 08:23:48PM CEST, kuba@kernel.org wrote:
->On Fri, 22 Jul 2022 17:50:17 +0200 Jiri Pirko wrote:
->> >Plus we need to be more careful about the unregistering order, I
->> >believe the correct ordering is:
->> >
->> >	clear_unmark()
->> >	put()
->> >	wait()
->> >	notify()
->> >
->> >but I believe we'll run afoul of Leon's notification suppression.
->> >So I guess notify() has to go before clear_unmark(), but we should
->> >unmark before we wait otherwise we could live lock (once the mutex 
->> >is really gone, I mean).  
+Fri, Jul 22, 2022 at 11:12:27PM CEST, jacob.e.keller@intel.com wrote:
+>
+>
+>> -----Original Message-----
+>> From: Jiri Pirko <jiri@resnulli.us>
+>> Sent: Thursday, July 21, 2022 11:19 PM
+>> To: Keller, Jacob E <jacob.e.keller@intel.com>
+>> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
+>> Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash update
 >> 
->> Kuba, could you elaborate a bit more about the live lock problem here?
+>> Thu, Jul 21, 2022 at 10:32:25PM CEST, jacob.e.keller@intel.com wrote:
+>> >
+>> >
+>> >> -----Original Message-----
+>> >> From: Jiri Pirko <jiri@resnulli.us>
+>> >> Sent: Wednesday, July 20, 2022 10:55 PM
+>> >> To: Keller, Jacob E <jacob.e.keller@intel.com>
+>> >> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
+>> >> Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash
+>> update
+>> >
+>> ><...>
+>> >
+>> >> > struct devlink_region;
+>> >> > struct devlink_info_req;
+>> >> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+>> >> >index b3d40a5d72ff..e24a5a808a12 100644
+>> >> >--- a/include/uapi/linux/devlink.h
+>> >> >+++ b/include/uapi/linux/devlink.h
+>> >> >@@ -576,6 +576,14 @@ enum devlink_attr {
+>> >> > 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
+>> >> > 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+>> >> >
+>> >> >+	/* Before adding this attribute to a command, user space should check
+>> >> >+	 * the policy dump and verify the kernel recognizes the attribute.
+>> >> >+	 * Otherwise older kernels which do not recognize the attribute may
+>> >> >+	 * silently accept the unknown attribute while not actually performing
+>> >> >+	 * a dry run.
+>> >>
+>> >> Why this comment is needed? Isn't that something generic which applies
+>> >> to all new attributes what userspace may pass and kernel may ignore?
+>> >>
+>> >
+>> >Because other attributes may not have such a negative and unexpected side
+>> effect. In most cases the side effect will be "the thing you wanted doesn't
+>> happen", but in this case its "the thing you didn't want to happen does". I think
+>> that deserves some warning. A dry run is a request to *not* do something.
+>> 
+>> Hmm. Another option, in order to be on the safe side, would be to have a
+>> new cmd for this...
+>> 
 >
->Once the devlink_mutex lock is gone - (unprivileged) user space dumping
->devlink objects could prevent any de-registration from happening
->because it can keep the reference of the instance up. So we should mark
->the instance as not REGISTERED first, then go to wait.
+>I think that the warning and implementation in the iproute2 devlink userspace is sufficient. The alternative would be to work towards converting devlink over to the explicit validation which rejects unknown parameters.. but that has its own backwards compatibility challenges as well.
+>
+>I guess we could use the same code to implement the command so it wouldn't be too much of a burden to add, but that also means we'd have a pattern of using a new command for every future devlink operation that wants a "dry run". I was anticipating we might want this  kind of option for other commands such as port splitting and unsplitting.
+>
+>If we were going to add new commands, I would rather we go to the extra trouble of updating all the commands to be strict validation.
 
-Yeah, that is what I thought. I resolved it as you wrote. I removed the
-WARN_ON from devlink_notify(). It is really not good for anything
-anyway.
-
+I think it is good idea. We would prevent many surprises.
 
 >
->Pretty theoretical, I guess, but I wanted to mention it in case you can
->figure out a solution along the way :S I don't think it's a blocker
->right now since we still have the mutex.
-
-Got it.
+>Thanks,
+>Jake
