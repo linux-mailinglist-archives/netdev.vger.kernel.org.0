@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1476C57EF93
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 16:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7101857EFAB
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 16:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238123AbiGWOVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 10:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S234657AbiGWO3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 10:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237758AbiGWOVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 10:21:03 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B646B18;
-        Sat, 23 Jul 2022 07:20:11 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id b21-20020a05600c4e1500b003a32bc8612fso3914218wmq.3;
-        Sat, 23 Jul 2022 07:20:10 -0700 (PDT)
+        with ESMTP id S232659AbiGWO3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 10:29:46 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6281707B;
+        Sat, 23 Jul 2022 07:29:45 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id c22so4287769wmr.2;
+        Sat, 23 Jul 2022 07:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Orbvc6CQW1YKg6Y2sGBCgufY8y05m0PedIHBV+w/coI=;
-        b=YlhJxfdHBafgSyGFosLw2Dy4zSPi0x0JPAWYduhM6VJ1IPnpnrxdBK2CmK6l8ZD+Hj
-         CxkGx0G2EG+YEORNr6bkp0u07VIVRyiTScg/Tgmw1updChIPbGoIz0/rwYJKJXhFWfrK
-         aQfjo109ubPBnbTYqXihj2dD095lDCRvgwCcvg51DLu6dJT0xFK/fZsK4MVdBUA2S/Gj
-         H6wZhtDOwRJX/90hyHO6iDGyxivKp7CaYXlTGvEKeQOhzuOBcN3hoWc7pWsVXDPjy7GT
-         l46IZU2huShakQDh5hYwK70iuyq/0z2KiD7YLle/cnFDe/b+jbS62G/cSbhlq6IS7SME
-         rn+w==
+        bh=hq2Xmgn0Ku0O4P6lR7XqOtoy//jBBsNeMteoMXkSOuo=;
+        b=ZQ0PygAPKX+uCMzBYmJaijuE63twVe6pps9Q7Pt1jSbgr5VpXB3hJbQi33bzn6ffzl
+         uCBxkdqy5GXx2giRXlaulRet2o7+rJsUrOXKjI59svNrCxyjMUuHWY/of3k7zOJED7Pe
+         MNZepcvce+2EOf5GukLYf/8ukEJJVjKC2iQ10OvQzXAIFrS0LlOJUvy9g4HG7UMV9zJX
+         1O2AVBT+25HZEE5B3qtdJWSjJPEUWtk+wVsiaHo0L3podgeWJ2nNZisx4dIvQK6iO1wN
+         uKpxV0Lr/ojI16CSMo5ywKEm0OFpf2jHVu7BOgjpNrDSeJ0qRVvSSr2zV0DzsOaTYeRz
+         2G0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Orbvc6CQW1YKg6Y2sGBCgufY8y05m0PedIHBV+w/coI=;
-        b=j5UAQkzQy3t7gczIgT4ZkMqkgDeYQMiY/H/wUBu+XFhxnwHpRKngqkb8DwA+wGbPkh
-         6cXIY6XDlvsQpwx864WN4NLoOYXtSpTnSt//0lrQFwJd7rx3VbFZif+z6SR+jmQ59lKX
-         7z05r6GHhGtJ7lwU/cdtEjt0vI9RVIV64EffiH9dz6I6Iu1mUhpglfzDRjNHg3jeOA0a
-         gonT/c1yy8fXzeXQyQpAL23jayaWjaeykcy3FepY4cygbl9iIxHIvR4HplSKYaDbGfC2
-         6utwQFytw40ju/ZQJr9ip73YJTIZbfpZCkzXtXPH4Fz2F2uehtLDBJFDRJ2CaM3X2lZb
-         mgDg==
-X-Gm-Message-State: AJIora9OImUyPwuJq7zoZOMrIzGQjnzhjlaiuiGPNryH8MUV5rWS5F6l
-        3VnyVxEmee2tvp+cuLlKz0g=
-X-Google-Smtp-Source: AGRyM1t3Aiw5eTXBtPSa+h8APipjqt/dtYQwmgLlEKqk3CdtFCHw9DVp1U3KlGw92ZPKwS9EIeYflg==
-X-Received: by 2002:a1c:7707:0:b0:3a2:fedc:392 with SMTP id t7-20020a1c7707000000b003a2fedc0392mr3072091wmi.20.1658586009451;
-        Sat, 23 Jul 2022 07:20:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hq2Xmgn0Ku0O4P6lR7XqOtoy//jBBsNeMteoMXkSOuo=;
+        b=745CahQhXV+5hwjAH7IRqKct87/3Qo4SCQo7QgHjEsafzTRWxHDshdYNvG4yKTJh5p
+         6DlxatE6c8N4SXut9FuiVaNcOZCDrlbf6+DV6nvD19PulyimLd8013H7T1aUQciOxw6r
+         79fOCBECt0YondZU7WNUI2NnmqsN211U49zh9R0r2qfcXuZwoQnqlyzBoXUC4rcY0zgl
+         DMWFSz3sgkikvbPl9pCs0hh+grAWGKixdxk1Ms24aO6O+tnoYVj4nqpMO+ITJEf0J3Wb
+         oY6ok+VHsX9kp5cLa8dxNys+TWQBB56q7Y4Y0nRs7k7VkLTQsd294r/kj028o6Fitdhe
+         RsWg==
+X-Gm-Message-State: AJIora/QT0mrgRGwTgh+bOGVV7uwa9hwtyJM3qD9LO4u5FvAi+9Khe0o
+        dj+bXPGSuCAF3EF/oiiKDbI=
+X-Google-Smtp-Source: AGRyM1tuX7ru0+QSDMniQaKgrPs1+GeHcWREL15bd1ePhphCSjTo1hPxx8fZqMepm6C4Y99CzIGwGg==
+X-Received: by 2002:a05:600c:1f0a:b0:3a3:15a8:a8e1 with SMTP id bd10-20020a05600c1f0a00b003a315a8a8e1mr3091269wmb.167.1658586584285;
+        Sat, 23 Jul 2022 07:29:44 -0700 (PDT)
 Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
-        by smtp.googlemail.com with ESMTPSA id l18-20020a05600c1d1200b003a04d19dab3sm21011960wms.3.2022.07.23.07.20.06
+        by smtp.googlemail.com with ESMTPSA id q6-20020a1cf306000000b0039c5ab7167dsm11689717wmq.48.2022.07.23.07.29.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:20:09 -0700 (PDT)
+        Sat, 23 Jul 2022 07:29:43 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v3 14/14] net: dsa: qca8k: move read_switch_id function to common code
-Date:   Sat, 23 Jul 2022 16:18:45 +0200
-Message-Id: <20220723141845.10570-15-ansuelsmth@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v5 0/5] *Add MTU change with stmmac interface running
+Date:   Sat, 23 Jul 2022 16:29:28 +0200
+Message-Id: <20220723142933.16030-1-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220723141845.10570-1-ansuelsmth@gmail.com>
-References: <20220723141845.10570-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,116 +76,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same function to read the switch id is used by drivers based on
-qca8k family switch. Move them to common code to make them accessible
-also by other drivers.
+This series is to permit MTU change while the interface is running.
+Major rework are needed to permit to allocate a new dma conf based on
+the new MTU before applying it. This is to make sure there is enough
+space to allocate all the DMA queue before releasing the stmmac driver.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c   | 30 -----------------------------
- drivers/net/dsa/qca/qca8k-common.c | 31 ++++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  1 +
- 3 files changed, 32 insertions(+), 30 deletions(-)
+This was tested with a simple way to stress the network while the
+interface is running.
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 34d0c4cea68d..9fed3b638739 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1877,36 +1877,6 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.connect_tag_protocol	= qca8k_connect_tag_protocol,
- };
- 
--static int qca8k_read_switch_id(struct qca8k_priv *priv)
--{
--	const struct qca8k_match_data *data;
--	u32 val;
--	u8 id;
--	int ret;
--
--	/* get the switches ID from the compatible */
--	data = of_device_get_match_data(priv->dev);
--	if (!data)
--		return -ENODEV;
--
--	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
--	if (ret < 0)
--		return -ENODEV;
--
--	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
--	if (id != data->id) {
--		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
--		return -ENODEV;
--	}
--
--	priv->switch_id = id;
--
--	/* Save revision to communicate to the internal PHY driver */
--	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
--
--	return 0;
--}
--
- static int
- qca8k_sw_probe(struct mdio_device *mdiodev)
- {
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 02559990a097..c33e9e11c322 100644
---- a/drivers/net/dsa/qca/qca8k-common.c
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/netdevice.h>
- #include <net/dsa.h>
-+#include <linux/of_platform.h>
- #include <linux/if_bridge.h>
- 
- #include "qca8k.h"
-@@ -1207,3 +1208,33 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
- {
- 	return qca8k_lag_refresh_portmap(ds, port, lag, true);
- }
-+
-+int qca8k_read_switch_id(struct qca8k_priv *priv)
-+{
-+	const struct qca8k_match_data *data;
-+	u32 val;
-+	u8 id;
-+	int ret;
-+
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(priv->dev);
-+	if (!data)
-+		return -ENODEV;
-+
-+	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
-+	if (ret < 0)
-+		return -ENODEV;
-+
-+	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
-+	if (id != data->id) {
-+		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
-+		return -ENODEV;
-+	}
-+
-+	priv->switch_id = id;
-+
-+	/* Save revision to communicate to the internal PHY driver */
-+	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index e6cf1ad68a9f..efbd3438aba8 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -432,6 +432,7 @@ extern const struct qca8k_mib_desc ar8327_mib[];
- extern const struct regmap_access_table qca8k_readable_table;
- int qca8k_mib_init(struct qca8k_priv *priv);
- void qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable);
-+int qca8k_read_switch_id(struct qca8k_priv *priv);
- 
- /* Common read/write/rmw function */
- int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
+2 ssh connection to the device:
+- One generating simple traffic with while true; do free; done
+- The other making the mtu change with a delay of 1 second
+
+The connection is correctly stopped and recovered after the MTU is changed.
+
+The first 2 patch of this series are minor fixup that fix problems
+presented while testing this. One fix a problem when we renable a queue
+while we are generating a new dma conf. The other is a corner case that
+was notice while stressing the driver and turning down the interface while
+there was some traffic.
+
+(this is a follow-up of a simpler patch that wanted to add the same
+feature. It was suggested to first try to check if it was possible to
+apply the new configuration. Posting as RFC as it does major rework for
+the new concept of DMA conf)
+
+v5:
+- Fix double space for kdoc
+- Fix missing kdoc for dma_conf in __init_dma_tx_desc_rings
+v4:
+- Add additional stmmac_set_rx_mode after stmmac_open
+- Disconnect phylink first on stmmac release
+v3:
+- Fix compilation error reported by kernel test bot
+  (missing dma_confg changes to tc and selftest source)
+v2:
+- Put it out of RFC
+
+Christian Marangi (5):
+  net: ethernet: stmicro: stmmac: move queue reset to dedicated
+    functions
+  net: ethernet: stmicro: stmmac: first disable all queues and
+    disconnect in release
+  net: ethernet: stmicro: stmmac: move dma conf to dedicated struct
+  net: ethernet: stmicro: stmmac: generate stmmac dma conf before open
+  net: ethernet: stmicro: stmmac: permit MTU change with interface up
+
+ .../net/ethernet/stmicro/stmmac/chain_mode.c  |   6 +-
+ .../net/ethernet/stmicro/stmmac/ring_mode.c   |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  21 +-
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   4 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 723 +++++++++++-------
+ .../stmicro/stmmac/stmmac_selftests.c         |   8 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+ 7 files changed, 459 insertions(+), 313 deletions(-)
+
 -- 
 2.36.1
 
