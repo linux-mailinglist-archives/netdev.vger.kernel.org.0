@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD4057EB9F
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 05:05:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E270957EBCC
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 05:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232296AbiGWDFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jul 2022 23:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        id S234609AbiGWD5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jul 2022 23:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiGWDE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 23:04:58 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4308A72EDC
-        for <netdev@vger.kernel.org>; Fri, 22 Jul 2022 20:04:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658545497; x=1690081497;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AetxOnkwm8trlbQGo2LGtZBupkHlGDq9hG4G2kZFA4k=;
-  b=ZIRqWp6gr+BSU2ERywbMVQHcNT5pq0n19xWo9oPzc3qcOTQGM39UhXfm
-   KqHtGr84Ty66LwHWbw5dbw7/orvmWGHWeWNFTpwsbE/gOflb5z52SjCOJ
-   z9o1ah+mR3pvm2iVGcIOQSLsJQKMkxOdswCnQQCHo6Srb5KPm0PG+kcj3
-   3wlbYm7HBI+UYFzXbTubBBmcd2RIs7uMVV8udnpIJqp9PT7r/rtz05buW
-   G07Y4o7ph/4q2RD7mfIVMmRdYIF1r+rBbGDjW+8K5TlTmFT2pBWJMEBCR
-   z5QcKMUdki31I2t+29pehfg1NivHPwQQB9wnHlejPrHrrPhPIWyXVJg9g
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="288619316"
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="288619316"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 20:04:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="626785106"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 22 Jul 2022 20:04:54 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oF5Rl-00026H-2I;
-        Sat, 23 Jul 2022 03:04:53 +0000
-Date:   Sat, 23 Jul 2022 11:04:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ecree@xilinx.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-net-drivers@amd.com
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next 04/14] sfc: determine wire m-port at EF100 PF
- probe time
-Message-ID: <202207231002.Bimz8unB-lkp@intel.com>
-References: <3d9db886be3f5dbf3da360f433ca961cb20c5b83.1658497661.git.ecree.xilinx@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d9db886be3f5dbf3da360f433ca961cb20c5b83.1658497661.git.ecree.xilinx@gmail.com>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229469AbiGWD5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jul 2022 23:57:15 -0400
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B43AC74DDA;
+        Fri, 22 Jul 2022 20:57:12 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.76.127])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCHbah+cdtiivhQAQ--.2627S2;
+        Sat, 23 Jul 2022 11:56:57 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] netrom: fix sleep in atomic context bugs in timer handlers
+Date:   Sat, 23 Jul 2022 11:56:46 +0800
+Message-Id: <20220723035646.29857-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCHbah+cdtiivhQAQ--.2627S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CrW5AFW8AF4kuFWxKw17ZFb_yoW8GrWfpF
+        WxKF9IyF4qqw1UA3ykGw48u34Yvw1rJF4UC34v9r4Fy3s0qryDJFWjkFWjqF4v9rWxWayY
+        qFs0vw1UJF12yFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r48
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb2g4DUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkAAVZdtay7fgACsf
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+There are sleep in atomic context bugs in timer handlers of netrom
+such as nr_t1timer_expiry(), nr_t2timer_expiry(), nr_heartbeat_expiry(),
+nr_idletimer_expiry() and so on.
 
-I love your patch! Yet something to improve:
+The root cause is kmemdup() with GFP_KERNEL parameter that may sleep
+could be called by different timer handlers which is in interrupt context.
 
-[auto build test ERROR on net-next/master]
+One of the call paths that could trigger bug is shown below:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/ecree-xilinx-com/sfc-VF-representors-for-EF100-RX-side/20220723-001059
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 949d6b405e6160ae44baea39192d67b39cb7eeac
-config: mips-randconfig-s041-20220721 (https://download.01.org/0day-ci/archive/20220723/202207231002.Bimz8unB-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/f00d0e9f57792091c90518b98e8b722a4018f062
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review ecree-xilinx-com/sfc-VF-representors-for-EF100-RX-side/20220723-001059
-        git checkout f00d0e9f57792091c90518b98e8b722a4018f062
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash
+      (interrupt context)
+nr_heartbeat_expiry
+  nr_write_internal
+    nr_transmit_buffer
+      nr_route_frame
+        nr_add_node
+          kmemdup(..,GFP_KERNEL) //may sleep
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This patch changes gfp_t parameter of kmemdup in nr_add_node()
+from GFP_KERNEL to GFP_ATOMIC in order to prevent sleep in atomic
+context bugs.
 
-All errors (new ones prefixed by >>):
+Fixes: eafff86d3bd8 ("[NETROM]: Use kmemdup")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ net/netrom/nr_route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   mips-linux-ld: drivers/net/ethernet/sfc/ef100_nic.o: in function `ef100_probe_netdev_pf':
-   ef100_nic.c:(.text+0x2904): undefined reference to `efx_mae_mport_wire'
->> mips-linux-ld: ef100_nic.c:(.text+0x2914): undefined reference to `efx_mae_lookup_mport'
-
+diff --git a/net/netrom/nr_route.c b/net/netrom/nr_route.c
+index baea3cbd76c..1ddcf13de6a 100644
+--- a/net/netrom/nr_route.c
++++ b/net/netrom/nr_route.c
+@@ -163,7 +163,7 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
+ 		if (ax25_digi != NULL && ax25_digi->ndigi > 0) {
+ 			nr_neigh->digipeat = kmemdup(ax25_digi,
+ 						     sizeof(*ax25_digi),
+-						     GFP_KERNEL);
++						     GFP_ATOMIC);
+ 			if (nr_neigh->digipeat == NULL) {
+ 				kfree(nr_neigh);
+ 				if (nr_node)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
