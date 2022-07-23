@@ -2,75 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1217B57F085
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 19:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D37F57F092
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 19:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237057AbiGWRDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 13:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
+        id S235791AbiGWRRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 13:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235317AbiGWRDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 13:03:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D7718391;
-        Sat, 23 Jul 2022 10:03:40 -0700 (PDT)
+        with ESMTP id S230005AbiGWRRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 13:17:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDDE1EC72;
+        Sat, 23 Jul 2022 10:17:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B5B8B80932;
-        Sat, 23 Jul 2022 17:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1197C341C7;
-        Sat, 23 Jul 2022 17:03:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4ABF60EA4;
+        Sat, 23 Jul 2022 17:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72240C341C0;
+        Sat, 23 Jul 2022 17:17:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658595818;
-        bh=jkF1ciNW7Z8XW8uh/SwhU5vndEkIN8sjBSUYzVN4iJI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=REmIPo5/LADR3wCzjYcpFgILT6tgBP81AL21H/GKH7pHw/YUmlxv6M/s250sNvxG0
-         RC5AB/bZVdqyynar///GRmf4DXsyGC9/Bg249CX5iOGrwjXfCn7ADBAX3poKep8Nwe
-         N1vopikMXDSqc7X20KMphX6HdhDFsOO1gl+N/H9iJKNy5chhLbFL55wTXH3idgFn2J
-         o01LFduqN9Ob00Pbc1Ium2LJ890NJ4U7K+ehbz+sMVtGiP+7X+HnmFQq5L1+wKVvNM
-         H7svA1804j6bHvOb7QlmmN3qG/N66DYQb9+w8ZK8jEpr3s9/v3X7s+fwPoaK0sY9RB
-         ViCjRlhe/4CQA==
-Message-ID: <b4c65355-6ef8-7704-adc4-34aeed5d152c@kernel.org>
-Date:   Sat, 23 Jul 2022 11:03:35 -0600
+        s=k20201202; t=1658596654;
+        bh=g+frFEGYvuqJLWR0I9sf72sXVoJVX3BDPDsaXFB6A1U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CvyZxylXzhcMbiMfuUSnZI/ye2Uokji1XQNHOmGyRSa//aaqIDKroZchMKtbfCzrn
+         NrDpuPVMH/4aqSHrbM1r1AeYCeMkue+FZeCoMjp/aH35t1nYxqd6OPBA8Hu0HxhZvs
+         QtLctomuNwZifoLDrYw1wKfcO9SHM0cM9ONwNLQUpWvpiT1EnhoMOWJwBFECn1NQgi
+         QNMl/SYpkaj3K/ch5A+ZWqxN5JOuEX3dpe6UniJ+tVCccMyZ4ZbY8MR++TmKW5llms
+         3GrqtzyFq2yZRPWicBFSAt5fv2Lna9BxGsfURUgDoQ/WJeclkSvC8700UqyEFfP71P
+         WjrubvtlIahIg==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, hawk@kernel.org,
+        john.fastabend@gmail.com, lorenzo.bianconi@redhat.com
+Subject: [PATCH bpf-next] bpf: devmap: compute proper xdp_frame len redirecting frames
+Date:   Sat, 23 Jul 2022 19:17:10 +0200
+Message-Id: <894d99c01139e921bdb6868158ff8e67f661c072.1658596075.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v6 1/2] devlink: introduce framework for
- selftests
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Vikas Gupta <vikas.gupta@broadcom.com>
-Cc:     jiri@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com
-References: <20220723042206.8104-1-vikas.gupta@broadcom.com>
- <20220723042206.8104-2-vikas.gupta@broadcom.com>
- <20220723091600.1277e903@kernel.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220723091600.1277e903@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/22 10:16 AM, Jakub Kicinski wrote:
-> Any thoughts on running:
-> 
-> 	sed -i '/_SELFTEST/ {s/_TEST_/_/g}' $patch
-> 
-> on this patch? For example DEVLINK_ATTR_SELFTEST_RESULT_TEST_STATUS
-> is 40 characters long, ain't nobody typing that, and _TEST is repeated..
-> 
+Even if it is currently forbidden to XDP_REDIRECT a multi-frag xdp_frame
+into a devmap, compute proper xdp_frame length in __xdp_enqueue and
+is_valid_dst routines running xdp_get_frame_len().
 
-+1
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ kernel/bpf/devmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index 1400561efb15..a0e02b009487 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -477,7 +477,7 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+ 	if (!dev->netdev_ops->ndo_xdp_xmit)
+ 		return -EOPNOTSUPP;
+ 
+-	err = xdp_ok_fwd_dev(dev, xdpf->len);
++	err = xdp_ok_fwd_dev(dev, xdp_get_frame_len(xdpf));
+ 	if (unlikely(err))
+ 		return err;
+ 
+@@ -536,7 +536,7 @@ static bool is_valid_dst(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf)
+ 	    !obj->dev->netdev_ops->ndo_xdp_xmit)
+ 		return false;
+ 
+-	if (xdp_ok_fwd_dev(obj->dev, xdpf->len))
++	if (xdp_ok_fwd_dev(obj->dev, xdp_get_frame_len(xdpf)))
+ 		return false;
+ 
+ 	return true;
+-- 
+2.36.1
+
