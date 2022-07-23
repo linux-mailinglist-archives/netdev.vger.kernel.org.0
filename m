@@ -2,157 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A35F057EEAA
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 12:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A911557EEE5
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 12:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239343AbiGWKWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 06:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
+        id S237287AbiGWKyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 06:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239266AbiGWKWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 06:22:35 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9531FF1D8A;
-        Sat, 23 Jul 2022 03:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658571114; x=1690107114;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rMa2OJS/UU2W2a1y38QJ76HuiC1jErjNS75ABX0n6eA=;
-  b=PsVL7xjkU1AeYv5L+wcGltgGeiiua7+jH/fjUVeo3xD2yxdW2gD+9nQO
-   5gItBDuBYvr+j9nEtugYw1cazhSJtHPmXydlgPPHTe8qzC2K2vvykg4Fu
-   XFTwqff2Kl+EyRul20AwG4cqIp8BxT26K0qsi3UFQ1LZiRJQL6FtVUtW2
-   G4eHLfpWEGrtSowhYqNaeIqNoyC76Dyr0AmyD7lns5pKz9OIi0Meswkbm
-   6SQYbrAk2YeHwNmOyj8FhUZJs+nQGPCcJ4eEuEOGmGqGaLv6CHQbgJymS
-   mRGs9PjHMgXaLmkbt+8X1p5Q+/MokdPqMp4AM9Z+eL0KSS9a+hDfIJww5
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="286219664"
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="286219664"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 03:11:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="666939418"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Jul 2022 03:11:17 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFC6P-0002VN-0m;
-        Sat, 23 Jul 2022 10:11:17 +0000
-Date:   Sat, 23 Jul 2022 18:11:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yevhen Orlov <yevhen.orlov@plvision.eu>, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        with ESMTP id S230399AbiGWKyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 06:54:16 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB5D11441;
+        Sat, 23 Jul 2022 03:54:14 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id n7so5293533ioo.7;
+        Sat, 23 Jul 2022 03:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YL9wCFcJM1S8aQnJbcoxTMo6SNRCJK/vq4C87hsQwpU=;
+        b=icTe+7uDRr7EXvhDnSXmpnK61DUvZdhBUV1EG52pxLeRH5b4Fp++sDQy0J4X6UI8Eh
+         uGZ7po3LSPCe4MqV6mvQgXp1tKpRTebwdxMFJqJnbVMiOOXYa56IKetWOYEVjupA+mbG
+         twO9t0rDvPLv/LnZwpC1PRjDAm98sUoNPLu5bilwe8uwhUF/REZaKCxGvUR+DG4GwupY
+         96lp4Ne9iS5xiYgOuBNA8rdG3KGBiukHG3Dv1+RXor7fuWoy4onvrQzoGHG68D12evdN
+         qopZqWfKVBQL30UA+lFKUymH1m/li+cOtP1l6Nh3OB+i2U+cnnDaysukc+2hdfwqKlvW
+         HKMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YL9wCFcJM1S8aQnJbcoxTMo6SNRCJK/vq4C87hsQwpU=;
+        b=fet/zYR/MdL65rLypuuwdS1sVnKizFS5itMVT6eLBp3mJD2ioFOkRfXJuKSSZizSrS
+         N1918QxgOWSsRXE/Y2J077OsTQ8OHi82NuW8PxJmyKbMXH25xmB+QSBCZml41tEkFpWL
+         meQ4MoAO2p02fVLqVw83TgewTIQdxGajPG5HSJ6t4ID1P6cNXZA/8nEtXczDe//OXOeQ
+         qWlV3lWXfbe9rRq6gM/W1Sc+bNyRJV47d6uvIRAvNs4HDYfMrAOpn36hQJxSlDsjxtLJ
+         CfQulUJoOilyChWeguQ5i63jQ4Y24qv/L/LNrK9KBDlTbSxml2gDqJCHIPMWP/wbrAOc
+         0Jkw==
+X-Gm-Message-State: AJIora/tK2fYHnenzpMrE5fhRXgPxpm95H2HTranHVHZB7MwFuhESIMy
+        5aVGUDfcWpTqdm4z20vsofcC+NHORPIDQfj0reE=
+X-Google-Smtp-Source: AGRyM1szkUECVWGAESedupd4SaLkQ477HkV5GtL8kMwaKob8JG7T9RM44BdYJtK/AyD8uGaMcylKdTpDzbiO3Mi3N/w=
+X-Received: by 2002:a05:6638:1602:b0:341:3e1f:d862 with SMTP id
+ x2-20020a056638160200b003413e1fd862mr1696518jas.24.1658573654111; Sat, 23 Jul
+ 2022 03:54:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220717133759.8479-1-khalid.masum.92@gmail.com>
+ <3ea0ea90-48bf-ce19-e014-9443d732e831@gmail.com> <CAABMjtHiet1_SRvLBhoNxeEh865rwtZCkb510JmFPkHFMd5chQ@mail.gmail.com>
+ <CABBYNZJVv=pJv60P6fYZh65JU+BV5agGfXEh4VenxELEXqtDsA@mail.gmail.com>
+In-Reply-To: <CABBYNZJVv=pJv60P6fYZh65JU+BV5agGfXEh4VenxELEXqtDsA@mail.gmail.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+Date:   Sat, 23 Jul 2022 16:54:03 +0600
+Message-ID: <CAABMjtEDHLRGVHrjPaCyuTX0SBODVcS+U+G+xS+YQH=23zk=hg@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_core: Use ERR_PTR instead of NULL
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Subject: Re: [PATCH net-next v2 6/9] net: marvell: prestera: Add heplers to
- interact with fib_notifier_info
-Message-ID: <202207231823.Q46D3E5G-lkp@intel.com>
-References: <20220721221148.18787-7-yevhen.orlov@plvision.eu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721221148.18787-7-yevhen.orlov@plvision.eu>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yevhen,
+On Tue, Jul 19, 2022 at 5:04 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Khalid,
+>
+> On Sun, Jul 17, 2022 at 11:34 AM Khalid Masum <khalid.masum.92@gmail.com> wrote:
+> >
+> > On Sun, Jul 17, 2022 at 10:17 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+> > >
+> > > Hi Khalid,
+> > >
+> > > Khalid Masum <khalid.masum.92@gmail.com> says:
+> > > > Failure of kzalloc to allocate memory is not reported. Return Error
+> > > > pointer to ENOMEM if memory allocation fails. This will increase
+> > > > readability and will make the function easier to use in future.
+> > > >
+> > > > Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> > > > ---
+> > >
+> > > [snip]
+> > >
+> > > > index a0f99baafd35..ea50767e02bf 100644
+> > > > --- a/net/bluetooth/hci_core.c
+> > > > +++ b/net/bluetooth/hci_core.c
+> > > > @@ -2419,7 +2419,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
+> > > >
+> > > >       hdev = kzalloc(alloc_size, GFP_KERNEL);
+> > > >       if (!hdev)
+> > > > -             return NULL;
+> > > > +             return ERR_PTR(-ENOMEM);
+> > > >
+> > >
+> > > This will break all callers of hci_alloc_dev(). All callers expect NULL
+> > > in case of an error, so you will leave them with wrong pointer.
+> >
+> > You are right. All callers of hci_alloc_dev() need to be able to handle
+> > the error pointer. I shall send a V2 with all the callers of hci_alloc_dev
+> > handling the ERR_PTR.
+> >
+> > > Also, allocation functionS return an error only in case of ENOMEM, so
+> > > initial code is fine, IMO
+> > >
+>
+> If there just a single error like ENOMEM then Id say this is fine,
+> just as it is fine for kzalloc.
+>
+> > I think it makes the memory allocation error handling look to be a bit
+> > different from what we usually do while allocating memory which is,
+> > returning an error or an error pointer. Here we are returning a NULL
+> > without any context, making it a bit unreadable. So I think returning
+> > an error pointer is better. If I am not mistaken, this also complies with
+> > the return convention:
+> > https://www.kernel.org/doc/htmldocs/kernel-hacking/convention-returns.html
+>
+> Not sure if that would apply to code that is basically a wrapper of kzalloc.
 
-Thank you for the patch! Perhaps something to improve:
+I got you.
+> > > Thanks,
+> > > --Pavel Skripkin
+> >
+> >
+> > Thanks,
+> >   -- Khalid Masum
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Yevhen-Orlov/net-marvell-prestera-add-nexthop-routes-offloading/20220722-061517
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 5588d628027092e66195097bdf6835ddf64418b3
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220723/202207231823.Q46D3E5G-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 72686d68c137551cce816416190a18d45b4d4e2a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a6535f7f7b3aea14504cac208c170d413739d5f9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yevhen-Orlov/net-marvell-prestera-add-nexthop-routes-offloading/20220722-061517
-        git checkout a6535f7f7b3aea14504cac208c170d413739d5f9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/marvell/prestera/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/ethernet/marvell/prestera/prestera_router.c:274:25: warning: address of array 'fen6_info->rt->fib6_nh' will always evaluate to 'true' [-Wpointer-bool-conversion]
-                   return fen6_info->rt->fib6_nh ?
-                          ~~~~~~~~~~~~~~~^~~~~~~ ~
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:466:10: warning: enumeration value 'PRESTERA_FIB_TYPE_UC_NH' not handled in switch [-Wswitch]
-           switch (fc->lpm_info.fib_type) {
-                   ^~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:122:13: warning: unused function 'prestera_fib_info_is_direct' [-Wunused-function]
-   static bool prestera_fib_info_is_direct(struct fib_notifier_info *info)
-               ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:135:13: warning: unused function 'prestera_fib_info_is_nh' [-Wunused-function]
-   static bool prestera_fib_info_is_nh(struct fib_notifier_info *info)
-               ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:194:1: warning: unused function 'prestera_util_kern_n_is_reachable' [-Wunused-function]
-   prestera_util_kern_n_is_reachable(u32 tb_id,
-   ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:206:13: warning: unused function 'prestera_util_kern_set_neigh_offload' [-Wunused-function]
-   static void prestera_util_kern_set_neigh_offload(struct neighbour *n,
-               ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:216:1: warning: unused function 'prestera_util_kern_set_nh_offload' [-Wunused-function]
-   prestera_util_kern_set_nh_offload(struct fib_nh_common *nhc, bool offloaded, bool trap)
-   ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:230:1: warning: unused function 'prestera_kern_fib_info_nhc' [-Wunused-function]
-   prestera_kern_fib_info_nhc(struct fib_notifier_info *info, int n)
-   ^
-   drivers/net/ethernet/marvell/prestera/prestera_router.c:262:12: warning: unused function 'prestera_kern_fib_info_nhs' [-Wunused-function]
-   static int prestera_kern_fib_info_nhs(struct fib_notifier_info *info)
-              ^
-   9 warnings generated.
-
-
-vim +274 drivers/net/ethernet/marvell/prestera/prestera_router.c
-
-   261	
-   262	static int prestera_kern_fib_info_nhs(struct fib_notifier_info *info)
-   263	{
-   264		struct fib6_entry_notifier_info *fen6_info;
-   265		struct fib_entry_notifier_info *fen4_info;
-   266	
-   267		if (info->family == AF_INET) {
-   268			fen4_info = container_of(info, struct fib_entry_notifier_info,
-   269						 info);
-   270			return fib_info_num_path(fen4_info->fi);
-   271		} else if (info->family == AF_INET6) {
-   272			fen6_info = container_of(info, struct fib6_entry_notifier_info,
-   273						 info);
- > 274			return fen6_info->rt->fib6_nh ?
-   275				(fen6_info->rt->fib6_nsiblings + 1) : 0;
-   276		}
-   277	
-   278		return 0;
-   279	}
-   280	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+  -- Khalid Masum
