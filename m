@@ -2,72 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF4857EF07
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 13:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6B2D57EF45
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 15:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237310AbiGWL1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 07:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
+        id S236252AbiGWNox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 09:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiGWL1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 07:27:10 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7CC47BB2
-        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 04:27:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658575629; x=1690111629;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=QYDTXE486QN8SmWXzw9ENizQoUKgROx4sJt4GldQmKM=;
-  b=ejm4Uh4H+ECqKK6uF/2iS5nshg7V12GBaTjAjdyr71u12mzBPg5AOjF3
-   DKeTc5HowUysuB9zslOlH3HYdl42z5Vd5yNbTvXNfoiBmOhv+TLI4aSdU
-   Aj+YUauBhC9r4c/7K9OlWJ6JUedhCup2Nq9nFSlLnOK0pvFcW0wpRGbnE
-   ex0v4UOXJj6+qm79kAZILpk7noDoEDE/jrjXK1fUX8seZhjTq16+6r/JM
-   /xZTkRKZW5TV3vw8LKlv+qMBzl0yOPYKYSjUx+ko3vX1s3R28CEJnj/tB
-   By/2EvdhvPUCDlmrhthbWVC58QNIcm9rUznyFu0dhF+/kHTcdpYBp7C5E
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="349160933"
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="349160933"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 04:27:08 -0700
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="657530257"
-Received: from qianyuwa-mobl2.ccr.corp.intel.com (HELO [10.249.169.178]) ([10.249.169.178])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 04:27:06 -0700
-Message-ID: <cbd81bad-b188-2895-4606-326eac36b02f@intel.com>
-Date:   Sat, 23 Jul 2022 19:27:05 +0800
+        with ESMTP id S236223AbiGWNov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 09:44:51 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BFE220CF;
+        Sat, 23 Jul 2022 06:44:50 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id j22so12998194ejs.2;
+        Sat, 23 Jul 2022 06:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=49amiazncfe+YGfCcsE1Umxq5UaZUxFQiGQFBx6ze1c=;
+        b=GLIzSCflcbjXQKRTFNrUPUCwiNVLFsPGiGJTuboZnWUsmIuIflEZO+CT6K5TmH7rbn
+         RCzLCwDXGvlTP9QmVPo3bhZjTFjnw/SlnMR3uqYCjusfuTisFXtgjvYyt2ZGulp8HT2Y
+         d9fa7k1valp+ReEH69JJtiBLmn5fDHE1Ik89gedHUzegG2JyLzkrpHQ9bFP6j9qrukPy
+         CoJMS8qw+MSB9+LSt20cGAS9do5ANXxYx47Y9pXZq3dQrE5YnNCBi0gLefo7XJTpTTm+
+         QXCMZ7J1bsXPgvFdumg8YVyJAJEPNqeKR8e54kAhIAuZPjBEzyz+Qb318dbcFAsChVL7
+         wEmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=49amiazncfe+YGfCcsE1Umxq5UaZUxFQiGQFBx6ze1c=;
+        b=vfupcyaKS0ShCjyPPiXfc3jw6dPaMMBhgM7gn61kqhJtkA0snBSjbhu5n+09nOlnlw
+         zbOLA1JsLCutdN6PGUQLHdSinESFi2gOSKi8ymb4gUD8vL0w0vzY7yvy5seEuSBIfuPQ
+         l4LoO8rpVI6Q7FQv29GaIbFikcGTQQGtS5nbVZIAOBbkRPgSyJXtZbvQSsUhmrgyo18Z
+         yHUx8QJzG6mO9XZUHcLpWkOcGMnURkNP9g4esh8VRqI6hFTU3OMhAUyM3dQmXLvWMybv
+         pO71jWQ4DteiQ7JwZ7XhCMM4a8rHs1a1K5qpbq5nYywlTsPBcJf9I2diOrCq+qjjZuNy
+         m69g==
+X-Gm-Message-State: AJIora+HKA2TI9TRDZ66VcS8n2D8f/YcJO/pUgvCW0d27QCoyEwFKP3H
+        7YGCm0hVHuRcGynEIE2eU74=
+X-Google-Smtp-Source: AGRyM1uVkPV5hLTPJLLcAQ9tlPKSclPGRO6ACvn74IDvvQ5HKYpLnh7Bs/psd8uUthI973Mvf4L3mQ==
+X-Received: by 2002:a17:907:9608:b0:72f:4b13:c66c with SMTP id gb8-20020a170907960800b0072f4b13c66cmr3445161ejc.531.1658583888669;
+        Sat, 23 Jul 2022 06:44:48 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id 16-20020a170906301000b0072efb6c9697sm3171067ejz.101.2022.07.23.06.44.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Jul 2022 06:44:47 -0700 (PDT)
+Date:   Sat, 23 Jul 2022 16:44:44 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
+ interface mode
+Message-ID: <20220723134444.e65w3zq6pg43fcm4@skbuf>
+References: <YtpfmF37FmfY6BV5@shell.armlinux.org.uk>
+ <20220722105238.qhfq5myqa4ixkvy4@skbuf>
+ <YtqNkSDLRDtuooy/@shell.armlinux.org.uk>
+ <20220722124629.7y3p7nt6jmm5hecq@skbuf>
+ <YtqjFKUTsH4CK0L+@shell.armlinux.org.uk>
+ <20220722165600.lldukpdflv7cjp4j@skbuf>
+ <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
+ <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
+ <20220722223932.poxim3sxz62lhcuf@skbuf>
+ <YtufRO+oeQgmQi57@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Content-Language: en-US
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-To:     Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-4-lingshan.zhu@intel.com>
- <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e8479441-78d2-8b39-c5ad-6729b79a2f35@redhat.com>
- <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1e1e5f8c-d20e-4e54-5fc0-e12a7ba818a3@intel.com>
- <PH0PR12MB5481862D47DCD61F89835B01DC819@PH0PR12MB5481.namprd12.prod.outlook.com>
- <a59209f3-9005-b9f6-6f27-e136443aa3e1@intel.com>
- <PH0PR12MB54816A1864BADD420A2674E8DC819@PH0PR12MB5481.namprd12.prod.outlook.com>
- <814143c9-b7ab-a1c7-c5e2-cff8b024fc2f@intel.com>
-In-Reply-To: <814143c9-b7ab-a1c7-c5e2-cff8b024fc2f@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtufRO+oeQgmQi57@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,66 +107,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jul 23, 2022 at 08:12:04AM +0100, Russell King (Oracle) wrote:
+> > > > Thanks for this explanation, if nothing else, it seems to support the
+> > > > way in which I was interpreting managed = "in-band-status" to mean
+> > > > "enable in-band autoneg", but to be clear, I wasn't debating something
+> > > > about the way in which mvneta was doing things. But rather, I was
+> > > > debating why would *other* drivers do things differently such as to come
+> > > > to expect that a fixed-link master + an in-band-status CPU port, or the
+> > > > other way around, may be compatible with each other.
+> > > 
+> > > Please note that phylink makes a DT specification including both a
+> > > fixed-link descriptor and a managed in-band-status property illegal
+> > > because these are two different modes of operating the link, and they
+> > > conflict with each other.
+> > 
+> > Ok, thank you for this information which I already knew, what is the context?
+> 
+> FFS. You're the one who's writing emails to me that include *both*
+> "fixed-link" and "in-band-status" together. I'm pointing out that
+> specifying that in DT for a port together is not permitted.
+> 
+> And here I give up reading this email. Sorry, I'm too frustrated
+> with this nitpicking, and too frustrated with spending hours writing a
+> reply only to have it torn apart.
 
+This is becoming toxic. You've imagined that when I was talking about
+mixing fixed-link and managed = "in-band-status" I was referring to this
+kind of DSA port OF node:
 
-On 7/6/2022 10:25 AM, Zhu, Lingshan wrote:
->
->
-> On 7/6/2022 1:01 AM, Parav Pandit wrote:
->>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->>> Sent: Tuesday, July 5, 2022 12:56 PM
->>>> Both can be queried simultaneously. Each will return their own 
->>>> feature bits
->>> using same attribute.
->>>> It wont lead to the race.
->>> How? It is just a piece of memory, xxxx[attr], do you see locks in
->>> nla_put_u64_64bit()? It is a typical race condition, data accessed 
->>> by multiple
->>> producers / consumers.
->> No. There is no race condition in here.
->> And new attribute enum by no means avoid any race.
->>
->> Data put using nla_put cannot be accessed until they are transferred.
-> How this is guaranteed? Do you see errors when calling nla_put_xxx() 
-> twice?
-Parav, did you miss this?
->>
->>> And re-use a netlink attr is really confusing.
->> Please put comment for this variable explaining why it is shared for 
->> the exception.
->>
->> Before that lets start, can you share a real world example of when 
->> this feature bitmap will have different value than the mgmt. device 
->> bitmap value?
-> For example,
-> 1. When migrate the VM to a node which has a more resourceful device. 
-> If the source side device does not have MQ, RSS or TSO feature, the 
-> vDPA device assigned to the VM does not
-> have MQ, RSS or TSO as well. When migrating to a node which has a 
-> device with MQ, RSS or TSO, to provide a consistent network device to 
-> the guest, to be transparent to the guest,
-> we need to mask out MQ, RSS or TSO in the vDPA device when 
-> provisioning. This is an example that management device may have 
-> different feature bits than the vDPA device.
->
-> 2.SIOV, if a virtio device is capable of managing SIOV devices, and it 
-> exposes this capability by a feature bit(Like what I am doing in the 
-> "transport virtqueue"),
-> we don't want the SIOV ADIs have SIOV features, so the ADIs don't have 
-> SIOV feature bit.
->
-> Thanks
->>
->>>>> IMHO, I don't see any advantages of re-using this attr.
->>>> We don’t want to continue this mess of VDPA_DEV prefix for new
->>> attributes due to previous wrong naming.
->>> as you point out before, is is a wrong naming, we can't re-nmme it 
->>> because
->>> we don't want to break uAPI, so there needs a new attr, if you don't 
->>> like the
->>> name VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, it is more than
->>> welcome to suggest a new one
->>>
->>> Thanks
->
+	port@N {
+		managed = "in-band-status";
 
+		fixed-link {
+			speed = <1000>;
+			full-duplex;
+		};
+	};
+
+Now you're thinking I'm retarded because you've politely told me the above
+is invalid, and you're wondering why I'm still talking despite of that.
+
+Well guess what, I've never once mentioned this kind of invalid OF node,
+I'm not the one who's writing emails to you that include
+"both fixed-link and in-band-status together", yet in your mind the fact
+that you may have misunderstood isn't even a possibility. What I'm
+talking about is TWO OF nodes, one like this:
+
+	master: ethernet@N: {
+		managed = "in-band-status";
+	};
+
+	switch_cpu_port: port@N: {
+		ethernet = <&master>;
+
+		fixed-link {
+			speed = <1000>;
+			full-duplex;
+		};
+	};
+
+It is *these* two that need to agree on in-band autoneg, when the "fixed-link"
+of switch_cpu_port was created using software nodes, damn it. Andrew
+said that it isn't specified whether in-band autoneg is used or not.
+It was even repeated for the millionth time in the continuation of my
+email, which you should have read instead of frustrating yourself for a
+stupid reason again.
+
+If you think I'm making this up and I *was* talking about in-band-status
+and fixed-link together in the same node, go ahead and search back where
+I've said that, or even implied that. But don't blame me when you'll get
+frustrated again that you won't find it. I re-read what I said once
+yesterday and once today.
+
+That's where our communication problem is, you're politely trying to
+tell your conversation partner that he's an idiot and he JUST DOESN'T
+WANT TO UNDERSTAND, DAMN IT.
+
+In any case, it looks like it's time to remove myself from this conversation.
+I am going to propose a patch shortly which adds validation in DSA for
+the OF nodes of DSA and CPU ports, and opts some drivers out of it.
+I'm going to opt into validation as many drivers as reasonably possible.
+You'll then have to work with the driver maintainers who opted out of
+it. I'm not one of them, so you won't have to work with me. Beyond that,
+I just don't care and I had enough. I have other things to do too.
