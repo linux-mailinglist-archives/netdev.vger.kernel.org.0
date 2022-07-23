@@ -2,73 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A2B57F0E3
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 20:09:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1734957F126
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 21:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbiGWSJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 14:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
+        id S233897AbiGWTZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 15:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiGWSJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 14:09:46 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F33E19280
-        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 11:09:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HMrVcfBCneEN1lHJ47po7PXBaBwRMesVBoiBIEsefRU=; b=V/9jdqWRVmSgPY1mh4885tYLkK
-        0lFtE/gNsry/2qN1XvgAmt6uQvhn6uEE2pJNKO4YI+wQEuVr6BKSVIX7b6rJQRkCsjViQyZPbV9ED
-        26/IJhbDbXM0YuAKSz2ZPAizYMdj7hKwgmUhcwoGNjyv22sRbZj/dOP55SsqQlV4JDtc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oFJZG-00BHw5-UL; Sat, 23 Jul 2022 20:09:34 +0200
-Date:   Sat, 23 Jul 2022 20:09:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Mans Rullgard <mans@mansr.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH net-next] net: dsa: validate that DT nodes of shared
- ports have the properties they need
-Message-ID: <Ytw5XrDYa4FQF+Uk@lunn.ch>
-References: <20220723164635.1621911-1-vladimir.oltean@nxp.com>
+        with ESMTP id S229632AbiGWTZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 15:25:53 -0400
+X-Greylist: delayed 593 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Jul 2022 12:25:51 PDT
+Received: from yangtze.blisses.org (yangtze.blisses.org [144.202.50.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8871055E
+        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 12:25:51 -0700 (PDT)
+Received: from contoocook.blisses.org (contoocook.blisses.org [68.238.57.52])
+        by yangtze.blisses.org (Postfix) with ESMTP id B1231177217;
+        Sat, 23 Jul 2022 15:15:57 -0400 (EDT)
+Authentication-Results: yangtze.blisses.org;
+        dkim=pass (2048-bit key; unprotected) header.d=blisses.org header.i=@blisses.org header.a=rsa-sha256 header.s=default header.b=NsK4bbKy;
+        dkim-atps=neutral
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=blisses.org;
+        s=default; t=1658603757;
+        bh=qATaAbC1rUyDfX/dSVKi6fkk8XGVOsgWeWblIQ2ZFcw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=NsK4bbKyGCwNmeF2RLEtQuF+SxCPEiTn2n85ONAIQu5XVA5hDFoIIBDoyPJxnkb//
+         NNGv7vV3XGjSq5+e+le55fLKYscFB7b7eMYAhDqvaTP6K2ZXV+XF1y7p2+Qv+A7/Je
+         XbkBI/bhH9BdYkgu3S7tagCUM5ZssyryUS0n3rDHopvLqjiL6IsmxAFHe8HXCtHeXa
+         J099rdAmAhqibZC5TfCRooHl+buHorBADUT2E0C0PAuvuhu9gv22Gdn4EOVuv9AMFo
+         9AS65pIEzxCzS12U7MVGEac98x+7eL0bQU5/zg6PIxUof/WlGZMqHcoLhf+0WgO+HL
+         vCr0PSO6eaK4A==
+Date:   Sat, 23 Jul 2022 15:15:56 -0400
+From:   Mason Loring Bliss <mason@blisses.org>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Francois Romieu <romieu@fr.zoreil.com>
+Cc:     netdev@vger.kernel.org
+Subject: Issue with r8169 (using r8168 for now) driving 8111E
+Message-ID: <YtxI7HedPjWCvuVm@blisses.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="KFmEwrdeH28qTct0"
 Content-Disposition: inline
-In-Reply-To: <20220723164635.1621911-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,24 +51,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir
 
-I think this is a first good step.
+--KFmEwrdeH28qTct0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +static const char * const dsa_switches_skipping_validation[] = {
+Hi all. I was happily running Debian Buster with Linux 4.19.194 driving a
+pair of 8111E NICs as included on this board:
 
-One thing to consider is do we want to go one step further and make
-this dsa_switches_dont_enforce_validation
+    https://www.aaeon.com/en/p/mini-itx-emb-cv1
 
-Meaning always run the validation, and report what is not valid, but
-don't enforce with an -EINVAL for switches on the list?
+I upgraded to Debian Bullseye running 5.10.127 and started seeing this
+popping up regularly in dmesg, with the status varying:
 
-Maybe it is too early for that, we first need to submit patches to the
-mainline DT files to fixes those we can?
+    r8169 0000:03:00.0 eth1: Rx ERROR. status =3D 3529c123
 
-Looking at the mv88e6xxx instances, adding fixed-links should not be
-too hard. What might be harder is the phy-mode, in particular, what
-RGMII delay should be specified.
+As this box is being used as a firewall, I didn't want to leave it with an
+obvious issue, so I installed r8168-dkms and it appears to function with no
+issues.
 
-      Andrew
+If it matters, I was not seeing the error against eth0, just eth1, and in
+this case eth1 is used for PPPoE to the world, while eth0 talks to my
+internal network.
 
+I've not yet tried the Debian-backports kernel to see if the r8169 there
+works, but I can do so given some scheduled downtime. I'm writing in
+advance of that in case the nature of the issue jogs a memory of something
+already seen and addressed.
+
+If you tell me what debugging data might be useful, I can supply it.
+
+--=20
+Mason Loring Bliss  ((   If I have not seen as far as others, it is because
+ mason@blisses.org   ))   giants were standing on my shoulders. - Hal Abels=
+on
+
+--KFmEwrdeH28qTct0
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEEXtBZz1axB5rEDCEnrJXcHbvJVUFAmLcSOkACgkQnrJXcHbv
+JVUDtQ/8CgjzbFAV+W/S81fTg+j4dp9W9CHOfRr08Q+c9e/lkkq+tbZTkR5ekoQL
+H/QmvcAPJ3iFWOd8LmtGOhCVFqSnwZ8lJJkGzPi+z615dwD9+h4VnxsKbdnTsH2x
+PWpshx4e6uW7PxLZOGeOjKObVvYYHTq+0scgKu2OTjCIQJhmK4o1D4E5hQg6Id8s
+J1VadrMZYFiRnUacY/VPEsCMroJD6LvZ9zAMNertc+cI6x7PTOjbWrbFz1Nezqkn
+YtF0OPWW3xNtnciK9GQZ4h5q6kvlMbZEIskt7GoqwBbfzVyQBWXhVIQR6NVG8tVC
+28ut+IZLTQ1HoT7g/GHgXQPNQGbyjb3BCHsWvxuBWivNTVwnmlIhuHMpav4Nbyoz
+Svu3waQ4EF6mwadNgHYcae3DXxCJLyJ5Gfq3bsbwiJcxd6S8rQPrkcw7qtIgYDla
+mX4P6HkYNWMSgvkwao/U3ijqYCmRsDJOan+k+BXzE1mXVlNDDIPtJLwjkTE4Am/N
+PAmSizOmLtSjyHWrWIfTMde4zbQ4/juuWhreWcvolJXcazaoc+zXIThIyYAXLcS1
+5i1XNTTGXz0vOxa4wKDzDqDOU2VsuiyLoIUFKoEtEeWeQ632REEW30MaXf4GQfzl
+U1s4wSZSZ6Doe5JjzrtsILmeKBoGfRlz9uWfLpXYfv1OyiHDjls=
+=+evl
+-----END PGP SIGNATURE-----
+
+--KFmEwrdeH28qTct0--
