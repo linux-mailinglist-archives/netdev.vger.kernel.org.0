@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 390C357EFB4
-	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 16:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D18E057F022
+	for <lists+netdev@lfdr.de>; Sat, 23 Jul 2022 17:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238159AbiGWOaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jul 2022 10:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        id S231381AbiGWPlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jul 2022 11:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238104AbiGWOaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 10:30:06 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FEB1CB3A;
-        Sat, 23 Jul 2022 07:30:02 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id v5so4302916wmj.0;
-        Sat, 23 Jul 2022 07:30:02 -0700 (PDT)
+        with ESMTP id S229478AbiGWPlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jul 2022 11:41:14 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384051EC7E
+        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:41:12 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id t3so9028140edd.0
+        for <netdev@vger.kernel.org>; Sat, 23 Jul 2022 08:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GX0e7m5ZrkPjpxkJdIBL+iV+EyM6eAVNIs5WQVoDC5I=;
-        b=GuUs35D+Od53ehyBq7jSWrPuxnPg2k3rYm9X0U1icEB1hrTVCqlqQBL8TjQJp8E9Fu
-         UyD0jy55G4vAFxREf4ZMZVOKBCT5oCkzuLx9FMnVNRjKfN3h6OQ2eYIzl0RItI+9XMJr
-         vNZ1uImREQXKLyZO9AvoWamfOWSQhYgUSQh1ZxrlAOxZLgYdU3dpew+Cbc+4tvsBPULQ
-         8MtbxGJe+v2wSYdspSqQPa8PFQYd685D1/Vwj3nmTOCHo7JlCqSmJ9qL9s2NoxmC+5G0
-         5Ho7csQZ/+WVE5zDHwe1NoeSCbh2Wkn43qweWXZNJgS01xQuE7cpYZ74F6srqK4GThyi
-         aWFQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uH0fRA9QgP1SgBU0AbRb25SmklZdBXjQZVKS7So7Ado=;
+        b=ukc16NFxICockWPXpdPuQ+hW1e2ve6MC1H+jsD/FuDgPS82jvIAKzIVJqdwsSfQ+jg
+         GR5c9pt7k+CI5g+OKF2y3xnTAdyJsOWiMmdbWrkX3ChR6rmdxUQoNPhGhuXitqbm72BI
+         X9UJLq+s91p5BvxVWCQdSjOK7WKKFIHVWqPIgYAP8AwFmAA7oMSoB19FY7Hg0Bomvho1
+         s4BJR7ZBfeXKhDD6dcd3YJBXgrYoRE0y0xPgg0SHA5+H4TqJoU+xbD4xE3IftSIJ9N+R
+         TwKmWPhoJUkv4IdmKdQVIYCz6JYnDXqzcThDghyPkJoUsr5Ig2OBmR0efoenQQjlPBsQ
+         oxZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GX0e7m5ZrkPjpxkJdIBL+iV+EyM6eAVNIs5WQVoDC5I=;
-        b=IAe/TPuHUs+JGLieZHTl+1Nu2u7W1G+1JZ96e2DH5EsG1NpEiw8NH8QBGYRA7NMNvS
-         LHCJS05QNGd4vATbQvcPPieTM2+82sk2+K5qqL/+ed1sYhV7aLklsEjjtMRAsVvM++Vj
-         uCd93lNPuoIBCtWepSzNI5RT5PU8DANkect6aCRTYq27wGKtaQ2RhkVPnaGeDapVMj/i
-         qP9TtPPAi3mZhL5Jxfmqx32JzOr1cBc881TsTFHWgHe/5qrCfvXekli6JZw7KexQnzLx
-         lh4W8Cbv8oB+JKnVUaHueiL/4Ttvv1sYQ12iC15XBkgQoeNaMKdOAzWO70Ou4Z4NZRNo
-         v1gQ==
-X-Gm-Message-State: AJIora8gn5BsautO1vJG3+Yb05dXAZm/YEb/YDVIsBNC6rFp8FjJMvKD
-        YkogtgJ98pFcNvksIldeupWZzcQYX1U=
-X-Google-Smtp-Source: AGRyM1vyEESD+gOYudb18RYonLwuCA9ecgk+Boyi9uzgAedUAyeJVXmG9G/HRzwQjgJRpYQqd/XNAQ==
-X-Received: by 2002:a05:600c:3ba3:b0:3a3:5dd:f10f with SMTP id n35-20020a05600c3ba300b003a305ddf10fmr3105539wms.185.1658586601145;
-        Sat, 23 Jul 2022 07:30:01 -0700 (PDT)
-Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
-        by smtp.googlemail.com with ESMTPSA id q6-20020a1cf306000000b0039c5ab7167dsm11689717wmq.48.2022.07.23.07.29.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uH0fRA9QgP1SgBU0AbRb25SmklZdBXjQZVKS7So7Ado=;
+        b=ROfJCx4Nu3MiHRhEGKX/tbX15pGiXSg+/68wsbTFur3guoo+IFJcUzm2e2lxdnC8um
+         G5nucyEUrcSeSni9oHpLwVpEXTZZv3g/7i/0HUMPsGlN5b662RdKmgVUcTUOXwKK0woP
+         vAmudW0BUzsjnI8xN9oj5OhdIc3uOOQdh2VWYops0OTMz0j8KPo66UExJ44jBysVIrkR
+         BjyoRSmooV1mwaAp15Uu9NtKDdZnkxDtuZa3X6NapX7+gM+Uvq03H7/eLMepDOPugS2F
+         FfPJ8MmuJYUX8tueSSP0eeay8FzpyTDJ3AZ14MsSlmeexisA4BhjoMLyv93180AXAPiB
+         9WcQ==
+X-Gm-Message-State: AJIora86qJIFxsa/l+5YbHjS0esSrqqOdX1Yfp1ymquDDHzavY6CKQP7
+        Ql9EJW3S2wHioWqEGC47F6k95A==
+X-Google-Smtp-Source: AGRyM1sSMl49BvxItQNSZeOMwEpPqUCDj2Gl77dZULSIjpxwCz1vjkBXA6fA04l1bV6hDW1nx2zpgw==
+X-Received: by 2002:aa7:d6da:0:b0:43b:a05c:cf74 with SMTP id x26-20020aa7d6da000000b0043ba05ccf74mr4763042edr.392.1658590870580;
+        Sat, 23 Jul 2022 08:41:10 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id v15-20020a17090606cf00b0072b810897desm3181762ejb.105.2022.07.23.08.41.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:30:00 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v5 5/5] net: ethernet: stmicro: stmmac: permit MTU change with interface up
-Date:   Sat, 23 Jul 2022 16:29:33 +0200
-Message-Id: <20220723142933.16030-6-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220723142933.16030-1-ansuelsmth@gmail.com>
-References: <20220723142933.16030-1-ansuelsmth@gmail.com>
+        Sat, 23 Jul 2022 08:41:09 -0700 (PDT)
+Date:   Sat, 23 Jul 2022 17:41:08 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <YtwWlOVl4fyrz24D@nanopsycho>
+References: <20220720151234.3873008-1-jiri@resnulli.us>
+ <20220720151234.3873008-2-jiri@resnulli.us>
+ <20220720174953.707bcfa9@kernel.org>
+ <YtrHOewPlQ0xOwM8@nanopsycho>
+ <20220722112348.75fb5ccc@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220722112348.75fb5ccc@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,74 +74,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the limitation where the interface needs to be down to change
-MTU by releasing and opening the stmmac driver to set the new MTU.
-Also call the set_filter function to correctly init the port.
-This permits to remove the EBUSY error while the ethernet port is
-running permitting a correct MTU change if for example a DSA request
-a MTU change for a switch CPU port.
+Fri, Jul 22, 2022 at 08:23:48PM CEST, kuba@kernel.org wrote:
+>On Fri, 22 Jul 2022 17:50:17 +0200 Jiri Pirko wrote:
+>> >Plus we need to be more careful about the unregistering order, I
+>> >believe the correct ordering is:
+>> >
+>> >	clear_unmark()
+>> >	put()
+>> >	wait()
+>> >	notify()
+>> >
+>> >but I believe we'll run afoul of Leon's notification suppression.
+>> >So I guess notify() has to go before clear_unmark(), but we should
+>> >unmark before we wait otherwise we could live lock (once the mutex 
+>> >is really gone, I mean).  
+>> 
+>> Kuba, could you elaborate a bit more about the live lock problem here?
+>
+>Once the devlink_mutex lock is gone - (unprivileged) user space dumping
+>devlink objects could prevent any de-registration from happening
+>because it can keep the reference of the instance up. So we should mark
+>the instance as not REGISTERED first, then go to wait.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 +++++++++++++++----
- 1 file changed, 24 insertions(+), 6 deletions(-)
+Yeah, that is what I thought. I resolved it as you wrote. I removed the
+WARN_ON from devlink_notify(). It is really not good for anything
+anyway.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 9a927ce17941..083d08b5ab0e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5552,18 +5552,15 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int txfifosz = priv->plat->tx_fifo_size;
-+	struct stmmac_dma_conf *dma_conf;
- 	const int mtu = new_mtu;
-+	int ret;
- 
- 	if (txfifosz == 0)
- 		txfifosz = priv->dma_cap.tx_fifo_size;
- 
- 	txfifosz /= priv->plat->tx_queues_to_use;
- 
--	if (netif_running(dev)) {
--		netdev_err(priv->dev, "must be stopped to change its MTU\n");
--		return -EBUSY;
--	}
--
- 	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
- 		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
- 		return -EINVAL;
-@@ -5575,8 +5572,29 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
- 		return -EINVAL;
- 
--	dev->mtu = mtu;
-+	if (netif_running(dev)) {
-+		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
-+		/* Try to allocate the new DMA conf with the new mtu */
-+		dma_conf = stmmac_setup_dma_desc(priv, mtu);
-+		if (IS_ERR(dma_conf)) {
-+			netdev_err(priv->dev, "failed allocating new dma conf for new MTU %d\n",
-+				   mtu);
-+			return PTR_ERR(dma_conf);
-+		}
- 
-+		stmmac_release(dev);
-+
-+		ret = __stmmac_open(dev, dma_conf);
-+		kfree(dma_conf);
-+		if (ret) {
-+			netdev_err(priv->dev, "failed reopening the interface after MTU change\n");
-+			return ret;
-+		}
-+
-+		stmmac_set_rx_mode(dev);
-+	}
-+
-+	dev->mtu = mtu;
- 	netdev_update_features(dev);
- 
- 	return 0;
--- 
-2.36.1
 
+>
+>Pretty theoretical, I guess, but I wanted to mention it in case you can
+>figure out a solution along the way :S I don't think it's a blocker
+>right now since we still have the mutex.
+
+Got it.
