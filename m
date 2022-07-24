@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF6257F759
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 00:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E68457F794
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 01:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbiGXWdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 18:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S230342AbiGXXGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 19:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiGXWdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 18:33:53 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9357B6176;
-        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id ss3so17389815ejc.11;
-        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
+        with ESMTP id S229582AbiGXXGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 19:06:33 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1F6E0DA;
+        Sun, 24 Jul 2022 16:06:31 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id z15so104908edc.7;
+        Sun, 24 Jul 2022 16:06:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
-        b=IV+Q4zWxZP4cRCbJYRRl5nEpcWQZFN7c1UO+OmjXNrEf4Uvq1z4Hy5TWx/TT3ki7tR
-         AoOnC5eKwmIqrNuYEgaIpZB+PMBnE97AG9rCQZPecXPX0GznxF48TXtVWEIYzip5eyhU
-         gMWLZNc+n7S/+hPAp+ekGffDymN1TMLyf7DxywmPTKWWEkiv0JeUsMFk2C3lVIsk+RVd
-         lIT6VG7hvOCKuZylH4iefPBSFLb3cQAFl0p5r1tTOS5L/SBzeZLax37/GVgl4LNDL3yz
-         6oRlfLHNgRgRIbU2w80BU4Ajb4Lu8+AZzWHeeO3UoRCoLU2pXs3Vwy56YFT4esTjTMoW
-         sYzQ==
+        bh=ZlVgL9PvHUJsPV9MosF2crMd7iL7RCfuBBeXPJb2B44=;
+        b=jIsG4JnoIg5lOo9v4xwX5flTy0BUef0XzH0qh30P3PJWsis3B6O9kHCupm/rypmYuA
+         q3GzfCxpa9AoxOOYWL6h+qjLQkZ4Lamt+GWVvZG/rDmWG1rkDTUsm3T93l2FskQbsicc
+         RNHycndvwsqsj9jn6+DVOh8nheVuIMf/3tXGUIT3PVN6hw6ieY3j6XIVBXWRgNtyMKnp
+         yEG/FfYhYozyvPvaaC9wsePZL+e1TBcR1jwyE/T93nX+tT2NHmQ/gWbY87wFumSTZgmo
+         kRbuhQv8Dc/wrm8JU1zXtguI6D3xpTZExL/obLhvL2+Hcbn6hZ9U0CDudy1+hYPOztoy
+         Qg0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
-        b=MvmsckTaNsl9RnxGpxv8R2s31+iW+1ox8IT2RMMez0TDCm8XKBuASTg0gE3jMMlbUQ
-         r3BWHdDejVNkbWUbIiNwNN3SGjrtyKsyxrC6uo/H8BPZWIWD6Rcj5xj13kpcLpAVQ3f0
-         1Nm39ghP8ajQ34xJwIgI6s+0KjbRYAUVFkZIfeVXqS2+iYlp6XaH2uXTmqEudGD6VPFr
-         Rahq5Kmsij2VAhOXLgb1MeRo+ctDvLBLK31oBDIwI0tBUfEJa/9sf09znNXzEgLt7+3h
-         +Znn+4hxeCKDF+6pNmnLg6GRwPPWDKElKGA+VFDHkvZ+GW+WvehXrIK7ZLDWAIAEnsKH
-         tD7g==
-X-Gm-Message-State: AJIora8t0eu4uW/aetH++aZn2z5Lm543eLgc/zWHryBJCvf8qxfkuPiK
-        PH6zXX/n0TjnJBq8JwDMgOU=
-X-Google-Smtp-Source: AGRyM1s3dMFTJnj1CooXfK/OlqcUurVIDIX86DDLAnNGzOb3zqck4jrnK/IjG/S2kYm3DeCv+ldSYQ==
-X-Received: by 2002:a17:907:6d07:b0:72f:18bf:505 with SMTP id sa7-20020a1709076d0700b0072f18bf0505mr7646941ejc.406.1658702031008;
-        Sun, 24 Jul 2022 15:33:51 -0700 (PDT)
+        bh=ZlVgL9PvHUJsPV9MosF2crMd7iL7RCfuBBeXPJb2B44=;
+        b=E+oGXxvglOXFJFwuEY01eWWXSB20IeLCbgnj2wk5o7Lf3yANWQcQlQn7N0rLMZAwdS
+         FaLgKsYGMNHfv6L19hN+D9dPWXodDrU4OMq+PMXddk65ZPQk6sFcjvrgIa+ZsO9KYSrh
+         N8bv03/1dkNoKCm7kor9V0iVjsyVrPQpP1zJSPiG2ihixm7tkPRPnzW85Rl7mHClSwXG
+         VrYfB1JK/HMfFA02FwMWowjAke64TXJ4MDcNF/eteJxRbtszPMRz1FhsGt7koE497lMV
+         b9JZOWOSHztvy/qYYn411S/h7PwDUcahapKb2eyKmVvY71/i9lnP2z92AM54vFSZHP9X
+         BYdQ==
+X-Gm-Message-State: AJIora9sw2+lfHwQlRQWCfnL+LrAH9LdfMD6OqFxkTuk1qdlcumT4yy5
+        43IMGVSy6AH7+3LvkoWQO4M=
+X-Google-Smtp-Source: AGRyM1stimPkbh9t3UUd79jMR/0DelRFw2x/rZ6+QMUA3bTi08MRP3stSOXuvwtf2jczvcysAxFLgQ==
+X-Received: by 2002:a05:6402:51d4:b0:43c:1742:430b with SMTP id r20-20020a05640251d400b0043c1742430bmr165083edd.212.1658703989501;
+        Sun, 24 Jul 2022 16:06:29 -0700 (PDT)
 Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090672c500b0072b56098fc6sm4616175ejl.127.2022.07.24.15.33.49
+        by smtp.gmail.com with ESMTPSA id d18-20020aa7d5d2000000b0043a735add09sm6229134eds.21.2022.07.24.16.06.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 15:33:50 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 01:33:48 +0300
+        Sun, 24 Jul 2022 16:06:28 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 02:06:26 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,18 +59,19 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v3 02/14] net: dsa: qca8k: make mib autocast
- feature optional
-Message-ID: <20220724223348.tqh45ygbuyw7jp5s@skbuf>
+Subject: Re: [net-next PATCH v3 01/14] net: dsa: qca8k: cache match data to
+ speed up access
+Message-ID: <20220724230626.rzynvd2pxdcd2z3r@skbuf>
 References: <20220723141845.10570-1-ansuelsmth@gmail.com>
  <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220724223031.2ceczkbov6bcgrtq@skbuf>
+ <62ddce96.1c69fb81.fdc52.a203@mx.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220723141845.10570-3-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
+In-Reply-To: <62ddce96.1c69fb81.fdc52.a203@mx.google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -81,87 +82,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 04:18:33PM +0200, Christian Marangi wrote:
-> Some switch may not support mib autocast feature and require the legacy
-> way of reading the regs directly.
-> Make the mib autocast feature optional and permit to declare support for
-> it using match_data struct in a dedicated qca8k_info_ops struct.
+On Sun, Jul 24, 2022 at 10:27:13PM +0200, Christian Marangi wrote:
+> > > diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> > > index 1cbb05b0323f..212b284f9f73 100644
+> > > --- a/drivers/net/dsa/qca/qca8k.c
+> > > +++ b/drivers/net/dsa/qca/qca8k.c
+> > > @@ -3168,6 +3155,11 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+> > >  	if (ret)
+> > >  		return ret;
+> > >  
+> > > +	/* Cache match data in priv struct.
+> > > +	 * Match data is already checked in read_switch_id.
+> > > +	 */
+> > > +	priv->info = of_device_get_match_data(priv->dev);
+> > > +
+> > 
+> > So why don't you set priv->info right before calling qca8k_read_switch_id(),
+> > then?
+> > 
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca/qca8k.c | 11 +++++++++--
->  drivers/net/dsa/qca/qca8k.h |  5 +++++
->  2 files changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
-> index 212b284f9f73..9820c5942d2a 100644
-> --- a/drivers/net/dsa/qca/qca8k.c
-> +++ b/drivers/net/dsa/qca/qca8k.c
-> @@ -2104,8 +2104,8 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  	u32 hi = 0;
->  	int ret;
->  
-> -	if (priv->mgmt_master &&
-> -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
-> +	if (priv->mgmt_master && priv->info->ops.autocast_mib &&
-> +	    priv->info->ops.autocast_mib(ds, port, data) > 0)
->  		return;
->  
->  	for (i = 0; i < priv->info->mib_count; i++) {
-> @@ -3248,20 +3248,27 @@ static int qca8k_resume(struct device *dev)
->  static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
->  			 qca8k_suspend, qca8k_resume);
->  
-> +static const struct qca8k_info_ops qca8xxx_ops = {
-> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
-> +};
-> +
->  static const struct qca8k_match_data qca8327 = {
->  	.id = QCA8K_ID_QCA8327,
->  	.reduced_package = true,
->  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct qca8k_match_data qca8328 = {
->  	.id = QCA8K_ID_QCA8327,
->  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct qca8k_match_data qca833x = {
->  	.id = QCA8K_ID_QCA8337,
->  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct of_device_id qca8k_of_match[] = {
-> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-> index 0b990b46890a..7b4a698f092a 100644
-> --- a/drivers/net/dsa/qca/qca8k.h
-> +++ b/drivers/net/dsa/qca/qca8k.h
-> @@ -324,10 +324,15 @@ enum qca8k_mid_cmd {
->  	QCA8K_MIB_CAST = 3,
->  };
->  
-> +struct qca8k_info_ops {
-> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
-> +};
-> +
->  struct qca8k_match_data {
->  	u8 id;
->  	bool reduced_package;
->  	u8 mib_count;
-> +	struct qca8k_info_ops ops;
+> The idea was to make the read_switch_id a function to check if the
+> switch is compatible... But yhea now that i think about it doesn't
+> really make sense.
 
-This creates a copy of the structure for each of qca8327, qca8328, etc etc,
-which in turn will consume 3 times more space than necessary when new
-ops are added. Could you make this "const struct qca8k_ops *ops"?
+I am not saying qca8k_read_switch_id() should do anything more than
+reading the switch id. I am saying why can't qca8k_read_switch_id()
+already find priv->info be pre-populated, just like any other function.
+Why don't you set priv->info a lot earlier, see below.
 
->  };
->  
->  enum {
-> -- 
-> 2.36.1
-> 
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index fa91517e930b..590ff810c95e 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -1892,6 +1892,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+ 
+ 	priv->bus = mdiodev->bus;
+ 	priv->dev = &mdiodev->dev;
++	priv->info = of_device_get_match_data(priv->dev);
+ 
+ 	priv->reset_gpio = devm_gpiod_get_optional(priv->dev, "reset",
+ 						   GPIOD_ASIS);
+@@ -1924,11 +1925,6 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Cache match data in priv struct.
+-	 * Match data is already checked in read_switch_id.
+-	 */
+-	priv->info = of_device_get_match_data(priv->dev);
+-
+ 	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
+ 	if (!priv->ds)
+ 		return -ENOMEM;
+diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
+index e6294d6a7b8f..8f634edc52c2 100644
+--- a/drivers/net/dsa/qca/qca8k-common.c
++++ b/drivers/net/dsa/qca/qca8k-common.c
+@@ -1211,23 +1211,19 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
+ 
+ int qca8k_read_switch_id(struct qca8k_priv *priv)
+ {
+-	const struct qca8k_match_data *data;
+ 	u32 val;
+ 	u8 id;
+ 	int ret;
+ 
+-	/* get the switches ID from the compatible */
+-	data = of_device_get_match_data(priv->dev);
+-	if (!data)
+-		return -ENODEV;
+-
+ 	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
+ 	if (ret < 0)
+ 		return -ENODEV;
+ 
+ 	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
+-	if (id != data->id) {
+-		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
++	if (id != priv->info->id) {
++		dev_err(priv->dev,
++			"Switch id detected %x but expected %x",
++			id, priv->info->id);
+ 		return -ENODEV;
+ 	}
+ 
 
+Also note how the "Switch id detected ... but expected ..." message
+lacks a trailing \n.
+
+> (Just for reference I just sent v4 as I got a report from kernel test
+> bot... it's really just this series with a change in 0002 patch that set
+> the struct for ops as a pointer... didn't encounter this with gcc but it
+> seems kernel test bot use some special config...)
+
+Yea, I was still kinda reviewing v3... Anyway, now you'll have to wait
+for me to finish my v3 feedback on the v4, and then send the v5 after at
+least 24 more hours.
