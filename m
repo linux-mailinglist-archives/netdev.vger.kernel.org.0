@@ -2,108 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D10C57F720
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:00:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07AC57F734
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiGXVAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 17:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        id S231246AbiGXV1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 17:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGXVAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:00:49 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DD6B1C5;
-        Sun, 24 Jul 2022 14:00:47 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id w18so14890lje.1;
-        Sun, 24 Jul 2022 14:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0J62l/Q5URIrvVRDydPhg5BQrzftFvW78pkd3tTn9CE=;
-        b=DeQgBoi0hrLfeMnY2oOwtNoppn0BqVxKlu3t+fagRWnWIfJgiPIM2i6am0E9jA8Sal
-         6C18TesFhuqen6Kz55857aUvA7YivbDSO7d0FK7RLFxbBDSqG2lbl9XuSsf08i6H5G5b
-         wRL8vZhoF9+px+/h7eRxAv7WIXgMopwL/8RoxyruD/ky1yz9lucZvVgzffYXTr+g9GS2
-         Y1qrOlgvFXLzCFhq008mEBxD4vQmbrz0oXyvBdj9058l2CRR8Q2yzQ7XFUnnZ23rDX92
-         4+k0UXLPXjggSWBS355RswLkpED2zJ05CZQnKvTxJOzhbRHs36jP9CmrHj0TtJjg8Bf/
-         HRbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0J62l/Q5URIrvVRDydPhg5BQrzftFvW78pkd3tTn9CE=;
-        b=obrDiELOgUK0NkturudXev4Bk87VkvOEtLq4HmI3ksBF4s/otBsJ6x4uUik7BYmyvn
-         yBSqIUncseRs0mpWf3KjZ1pjNoAmyj4Vd0QTcs4Ef4BU5z7l5T4Wn0Or8SxSJ8JUaYVV
-         2NhmXiXR3YuuuIvih/FPkGsbYS1xm+3Ztjv6rUHeDj3jLetygKdCrRomgFWYoGB5Pt2O
-         UQAfERaHUE10gPiT+uCU9UT+FhZk5KztUdYQmOIFXMgf+00+tEX71SwRdt0MnIuafOWY
-         WibGJhN7nIi/iyhN7uPWdA2jVZRfvQDK20PrppOq4hB3Uv9JPk+02KkiBm5Qcv3ayKDL
-         AWww==
-X-Gm-Message-State: AJIora/QszdvQ69XUKaTKHE7NSxl8C/rxuVQ0zWldLgz0T/j8BIgbYb5
-        ef9RN1H18MpQolvIzMCH2+0=
-X-Google-Smtp-Source: AGRyM1uyIUokBOFL8+Stj3NfMd19svBCnM67XIwlnWGpGg6bFM+AeaHWOle1XxdJyIK6MbeK/HftfQ==
-X-Received: by 2002:a2e:a236:0:b0:25e:767:6521 with SMTP id i22-20020a2ea236000000b0025e07676521mr742830ljm.89.1658696445142;
-        Sun, 24 Jul 2022 14:00:45 -0700 (PDT)
-Received: from oak.local ([2001:470:28:561:696c:a896:1096:52d])
-        by smtp.gmail.com with ESMTPSA id g4-20020a056512118400b00482bdd14fdfsm2364463lfr.32.2022.07.24.14.00.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 14:00:44 -0700 (PDT)
-From:   "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
-To:     hdegoede@redhat.com
-Cc:     andriy.shevchenko@linux.intel.com, carlo@endlessm.com,
-        davem@davemloft.net, hkallweit1@gmail.com, js@sig21.net,
-        linux-clk@vger.kernel.org, linux-wireless@vger.kernel.org,
-        mturquette@baylibre.com, netdev@vger.kernel.org,
-        pierre-louis.bossart@linux.intel.com, sboyd@kernel.org
-Subject: [BISECTED] igb initialization failure on Bay Trail
-Date:   Mon, 25 Jul 2022 00:00:37 +0300
-Message-Id: <20220724210037.3906-1-matwey.kornilov@gmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20180912093456.23400-4-hdegoede@redhat.com>
-References: <20180912093456.23400-4-hdegoede@redhat.com>
+        with ESMTP id S229533AbiGXV1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:27:46 -0400
+Received: from yangtze.blisses.org (yangtze.blisses.org [144.202.50.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B816C10FDA
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 14:27:45 -0700 (PDT)
+Received: from contoocook.blisses.org (contoocook.blisses.org [68.238.57.52])
+        by yangtze.blisses.org (Postfix) with ESMTP id B1C4617D711;
+        Sun, 24 Jul 2022 17:27:43 -0400 (EDT)
+Authentication-Results: yangtze.blisses.org;
+        dkim=pass (2048-bit key; unprotected) header.d=blisses.org header.i=@blisses.org header.a=rsa-sha256 header.s=default header.b=Nleyriy1;
+        dkim-atps=neutral
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=blisses.org;
+        s=default; t=1658698063;
+        bh=4gJW88yObdM4qY0NgVKXMqb0Zt1FUTMPxU+PDW73EB8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nleyriy1LXXbD/l/N6xat7TUgrasjWGP5/RqB7M65LxEaIir/IOfZfsYWxT61SNBX
+         P/Oklq3QBR1n0WrY35HEc7BsXFCdKd+j8+g6b6f1w83jXKjSfAdTuYufkeUJIvUEGU
+         JHueH1zJfPBiv2lzFzmMIZzupeP7bdjyItQYf8r1DbUQJPPLVIBxbcLiAzfs1aZN0t
+         KxFGIWr4zzTPx0Cv7REzS7oKyhb3CMppfK2VxqPB2P2nH3+mrYpeEeyJeAWskU1Alz
+         25hOMmXhua03PMDvDQB9sQC/alTqdtUA2970pPNrfNAN8TrTsenmtU04Ez/MW2p2Zk
+         VJpIvmWAtSS7w==
+Date:   Sun, 24 Jul 2022 17:27:42 -0400
+From:   Mason Loring Bliss <mason@blisses.org>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        netdev@vger.kernel.org, hkallweit1@gmail.com
+Subject: Re: Issue with r8169 (using r8168 for now) driving 8111E
+Message-ID: <Yt25TiVImcnpnuAE@blisses.org>
+References: <YtxI7HedPjWCvuVm@blisses.org>
+ <Ytx7nc3FosXV6ptC@electric-eye.fr.zoreil.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="KscbYT9j58UvY3Ip"
+Content-Disposition: inline
+In-Reply-To: <Ytx7nc3FosXV6ptC@electric-eye.fr.zoreil.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-I've just found that the following commit
+--KscbYT9j58UvY3Ip
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-    648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
+On Sun, Jul 24, 2022 at 12:52:13AM +0200, Francois Romieu wrote:
 
-breaks the ethernet on my Lex 3I380CW (Atom E3845) motherboard. The board is
-equipped with dual Intel I211 based 1Gbps copper ethernet.
+> The driver should receive and process this kind of CRC errored packet sin=
+ce
+> 79d0c1d26e1eac0dc5b201e66b65cc5e4e706743 ("r8169: Support RX-FCS flag.")
+> provided ethtool was not used to disable it (see -k/-K and rx-fcs/rx-all).
+> tcpdump may thus help to identify some pattern in the packet.
 
-Before the commit I see the following:
+Thank you for the additional detail!
 
-     igb 0000:01:00.0: added PHC on eth0
-     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
-     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
-     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
-     igb 0000:02:00.0: added PHC on eth1
-     igb 0000:02:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:02:00.0: eth1: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e5
-     igb 0000:02:00.0: eth1: PBA No: FFFFFF-0FF
-     igb 0000:02:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+It appears to be the case that having an APC surge supressor inline,
+despite it being labelled as gigabit-capable, was the cause of the CRC
+errors. I changed cables, and that not helping, I swapped in different APC
+units, and the errors persisted until I went straight from NIC to ONT. Now
+I've gone a couple hours without seeing an error, and haven't in fact seen
+one since the link came back up after the most recent change.
 
-while when the commit is applied I see the following:
+I'm glad the driver stopped suppressing these errors, or I'd not have known
+the inline surge supression was a bit flaky. Thank you.
 
-     igb 0000:01:00.0: added PHC on eth0
-     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
-     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
-     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
-     igb: probe of 0000:02:00.0 failed with error -2
+--=20
+Mason Loring Bliss    mason@blisses.org
+They also surf, who only stand on waves.
 
-Please note, that the second ethernet initialization is failed.
+--KscbYT9j58UvY3Ip
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-See also: http://www.lex.com.tw/products/pdf/3I380A&3I380CW.pdf
+iQIzBAABCgAdFiEEEXtBZz1axB5rEDCEnrJXcHbvJVUFAmLduUcACgkQnrJXcHbv
+JVXKxQ/+JQ85ZD2m9ANWpXWmE8a7iAK81amwFZA/2DkDpsKRQJPPYpyAIDzCEv2m
+lKaWyfzGY5A0f5LerwMdEXEe5bMrLiXqc+gSZhPuNBfwFyOv3dN/NcTgGJxcshmX
+wLcaak0kD6EgZ/VBZuYxWwqOXZiGw3Adydg6FB5fQvT31H2bxxfajO3M/oPa7TTN
+I73QuIxIgWuS2Y8+0thgiLPVp5nvk5geRx72WZeaHwR2xt3dykMfKDR8q08YHROi
+q/fJpswouLHAISVjFZ3wNrJ27gpwXcfiFP5qCMccWw+vWNx1RolYmtopvroCAESh
+t7l7QxVXPbhjXFX0RGPzGmUgeYrmAmFY33dnu8MXuyqTCKlM6kTjxy4Db5jzUdio
++WrWygxiM09x4oo5fIbnH/Ra4kq99LCtydnAyT3hWCwzlOQKsEXfI8DkVbv9U0HK
+8x0DMU9Od41ktR/jt021JRJRZLHyKGtsvDzg077ps9qOQnPLsc7el4cdXfJYNS+d
+u6ZXCOQmU97rqWNQI2t9J3l6cK3lu9A0vEHpI1jrVMjewg+FEh+1Mv2Y+50zu7Wi
+eTYyVnjqP4vhddrMFDUcA4c6BAfDopetS3pjfyWlWb/aERQBlSkT5Bcy9m8a6/NA
+Vx4cWYNVX9gbSbnUjJt6k7vy8jRHTleNXRM/nKCUHAJswIsDinQ=
+=ywiO
+-----END PGP SIGNATURE-----
+
+--KscbYT9j58UvY3Ip--
