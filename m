@@ -2,100 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86FF457F3EF
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:11:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C89F57F3F6
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiGXIL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 04:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
+        id S229478AbiGXIVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 04:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGXIL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:11:26 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2798B15FFA;
-        Sun, 24 Jul 2022 01:11:25 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m17so11604687wrw.7;
-        Sun, 24 Jul 2022 01:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4j2cZN1zYQwRk4mpzSYDT0FtltzsuIeHx0BCJeg+1MI=;
-        b=FDC1RPQ342icpKEeFzetsAQN1Q1CFXtM5cASqyAfrvxxiF0Mi9rDkVLxxGPfS7UXJ+
-         Q3096eUT8BRnrsCb1iY6+0aENWYYoP9qOg+K3yblDf62ndrmf/huBe8vHUeFwDB1nges
-         xqpwsVcbZuRIKHOo9oMu3N2pcEkXHECcFHDaCYfHg8U4oxbeckCHueqb67SdxJdMxj3z
-         wGkeSF/bcFcMQzvlLVdVJ4Gayv17AmSXKOCEqm8HY6VzWhVidZLl0ldUzmX11zvvy4dM
-         chgw6+MRG4eYzqo6i4YV17MMFk+/v1VPkhLngGm8PBJdzOXdYwCQtAHn2ubDmGZiyaGJ
-         2Kgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4j2cZN1zYQwRk4mpzSYDT0FtltzsuIeHx0BCJeg+1MI=;
-        b=l0gxzgmCYxHRAVIp5XxDGt1o/iSTc/MCkrBHp+Ap8emEozMZsc4UIafbByRZuK/+aI
-         fEkh4ESR7tiK7y1N8LD8uk3P5Vuqdhyb+oBnL7/LiSDB5pqHlN6ZH3clf7g+HR8KR73h
-         dowLBFHeGElvbZ0XouVMyZrfjzy4vo0ADdPg8mMi8PKjzl6fQU/nQonkfZP49zK1acBx
-         IuDYAW24Vchk66b4DPB0yVoOUL9mJmJyv6K0Gcrfyd0WbrT2WTF7sEHiLUxtqQxjgyGo
-         zvoGRqJXUaPyeZG+O5SoVv6gZzpExUFnZi5wE/29azPTRC0iSKwj87nr6iwIUtiv9XhA
-         LU2A==
-X-Gm-Message-State: AJIora9BOWD4MKgevDjND85idVpGVBqHPMS2V8M+SmcxxM6ueWSwTwel
-        imLVLnck47kO6caa20Ln9VArPe9zmcnfSKoy/wA=
-X-Google-Smtp-Source: AGRyM1tdv7lj8flnITHW2lunWgSsEX+G51gI971XJKu/diR64iG8Iwygok8RSeTQqFi6tcZnZuQKp/riuVo+gjUzxAo=
-X-Received: by 2002:a5d:42c4:0:b0:21e:2cd4:a72e with SMTP id
- t4-20020a5d42c4000000b0021e2cd4a72emr4545412wrr.249.1658650283641; Sun, 24
- Jul 2022 01:11:23 -0700 (PDT)
+        with ESMTP id S229461AbiGXIVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:21:31 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52F4F11D
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:21:29 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26O30I99005354;
+        Sun, 24 Jul 2022 01:21:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=2TFJgmTkleY7AjAo1uHI56a/LAegCORvD/pzLokBRXc=;
+ b=Z/0fZH0fd+fsRu1/PKMb1x/EviHW2brDq8s6DhtumrORwrGBzklZiCZx4G05Etl1AiLl
+ XtThzJcmzvb86KDOfvTou1yVr8PHBXxg5oZzrqF6L1321vfsuAsFQqGh+8SMZzYGjw15
+ B+EQBh3/ohrLyPWSBelRXZboV5CDfMMtvxwQd9EEL69PPI/tERNgGiBBlAIUZCUBTwQe
+ JZU4R3AUHOxP6IS7TMSl64DzR0z70qKSYnq81PJ0wPG69CbSWC+7FeIdf/MSEOmHGWrG
+ 2Jn13eMF2/cdFHj+uVF2ZEPA07ZbGMaWg4ULtm8cVej1l/4szg5Rpa9WHYI4cDBjvu2e sQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3hgebq2cgn-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 24 Jul 2022 01:21:21 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 24 Jul
+ 2022 01:21:20 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Sun, 24 Jul 2022 01:21:20 -0700
+Received: from hyd1358.marvell.com (unknown [10.29.37.11])
+        by maili.marvell.com (Postfix) with ESMTP id 590EB3F70CF;
+        Sun, 24 Jul 2022 01:21:18 -0700 (PDT)
+From:   Subbaraya Sundeep <sbhatta@marvell.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
+        <netdev@vger.kernel.org>
+CC:     Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net PATCH 0/2] Octeontx2 minor tc fixes
+Date:   Sun, 24 Jul 2022 13:51:12 +0530
+Message-ID: <1658650874-16459-1-git-send-email-sbhatta@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
- <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
- <20220717134610.k3nw6mam256yxj37@skbuf> <20220717140325.p5ox5mhqedbyyiz4@skbuf>
- <CAKUejP6g3HxS=Scj-2yhsQRJApxnq1e31Nkcc995s7gzfMJOew@mail.gmail.com>
- <20220717183852.oi6yg4tgc5vonorp@skbuf> <CAKUejP7WyL2r03EiZU4hA63u2e=Wz3KM4X=rDdji5pdZ0ptaZg@mail.gmail.com>
- <20220721114540.ovm22rtnwqs77nfb@skbuf>
-In-Reply-To: <20220721114540.ovm22rtnwqs77nfb@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Sun, 24 Jul 2022 10:09:11 +0200
-Message-ID: <CAKUejP6xR81p1QeSCnDP_3uh9owafdYr1pifeCzekzUvU3_dPw@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
- traffic cannot unlock a locked port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-GUID: fCoUaMS1XKXvP_rS5Xsy0LPZy43_KLWy
+X-Proofpoint-ORIG-GUID: fCoUaMS1XKXvP_rS5Xsy0LPZy43_KLWy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-23_02,2022-07-21_02,2022-06-22_01
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 1:45 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Sun, Jul 17, 2022 at 09:20:57PM +0200, Hans S wrote:
->
-> I'm only pointing out the obvious here, we need an opt in for MAB, and
-> the implemented behavior I've seen here kind of points to mapping this
-> to "+learning +locked", where the learning process creates locked FDB entries.
+This patch set fixes two problems found in tc code 
+wrt to ratelimiting and when installing UDP/TCP filters.
 
-I can go with the reasoning for the opt in for MAB, but disabling link
-local learning system wide I don't think is a good idea, unless
-someone can ensure me that it does not impact something else.
-In general locked ports should never learn from link local, which is a
-problem if they do, which suggests to me that this patch should
-eventually be accepted as the best solution.
+Patch 1: CN10K has different register format compared to
+CN9xx hence fixes that.
+Patch 2: Check flow mask also before installing a src/dst
+port filter, otherwise installing for one port installs for other one too. 
+
+Thanks,
+Sundeep
+
+
+Subbaraya Sundeep (1):
+  octeontx2-pf: Fix UDP/TCP src and dst port tc filters
+
+Sunil Goutham (1):
+  octeontx2-pf: cn10k: Fix egress ratelimit configuration
+
+ .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   | 106 ++++++++++++++-------
+ 1 file changed, 73 insertions(+), 33 deletions(-)
+
+-- 
+2.7.4
+
