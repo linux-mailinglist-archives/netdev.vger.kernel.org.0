@@ -2,118 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD9857F76E
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 00:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 379E557F754
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 00:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231897AbiGXWvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 18:51:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
+        id S230142AbiGXWal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 18:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGXWvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 18:51:01 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E3A5593;
-        Sun, 24 Jul 2022 15:51:00 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lrdgj419Wz4xD0;
-        Mon, 25 Jul 2022 08:50:57 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658703059;
-        bh=BJ06tJ3A5sxZAH44mcCHE4iMQK2ONFJMQaaQd6Q5xE8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YQhx2EpVTJaq9J19A3lTAvxC0kcYGj7+iu5LaWBGoep2iZCdBi4dHzHt6bPRyAqM5
-         zIhLsVVkicEzu4LZdCyTm67rFr7MzFSjkd/z5Y92QtUX3xcSURflp9dx3AHTpZgy0S
-         o/zhxFVnPx0Z2mju4rJGgW/pm0a5uRQhrXkHsqdmJh3tDm5nZPd2yBvlkiZ28P2KJU
-         GNjoCebS+uYsFF8ZJh4EgIx7ZXM+d1lrWRlVlIESofzLqUMErpo3nR++IDhOfQpofw
-         v6KSsy1AWU1A/kJW+mbsC+hd1qY910Ml4t5TyLgtpoz6rCQ5CzeCJuCiuc9lgyodZY
-         gTxOfqmkTThFw==
-Date:   Mon, 25 Jul 2022 08:17:41 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: linux-next: Signed-off-by missing for commit in the bluetooth
- tree
-Message-ID: <20220725081741.19174e59@canb.auug.org.au>
-In-Reply-To: <20220725075728.499066c9@canb.auug.org.au>
-References: <20220725075728.499066c9@canb.auug.org.au>
+        with ESMTP id S229451AbiGXWak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 18:30:40 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1A75FE2;
+        Sun, 24 Jul 2022 15:30:35 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id ez10so17346874ejc.13;
+        Sun, 24 Jul 2022 15:30:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2Qzx1Z7L+EZixzsm8VAelEwWs1b6t7AVKnbC6Ax2JIM=;
+        b=P7HIlS9EU0iDpPgoa0C7GYzm6uzV2IqroC7M0gsKPXwJllyQh7ylAnnHYeCIDQ3nnq
+         Eh7cndMCdSdb0Cy/tcfEVD0mEB/1V4JdYjlh3dAVwHatkPMk40dB+B0fZ+Ko3xSQhegF
+         4XpVkUri476bRfSTXdIj6rkIe+bCr2XgAisZrJsV4d2anhygD6DhfH2XDstMFxO8zXBE
+         Q4YvGgJvsQKuyTHerbwSKGyKbwpwS2TcU92o2FjI1ZbeQv/gMZvOgcMtyGcKCcMAozXx
+         F2uk00F1uGbOvh9uFWRpzRgJRBiEPtEmSidaYAB5S6EKHgW87Ivk/p51j+5mB1socjgf
+         ky9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Qzx1Z7L+EZixzsm8VAelEwWs1b6t7AVKnbC6Ax2JIM=;
+        b=M+hKQLmefYX9OuEkDBmsNS/XpoplCVSTT0ThzPjdKtFBNP+qxf3i4Dsr/PDuToFUJB
+         80/pjVlRROOTJ8Az1VXsAr9vW9O7ihHMzfL05oY2haeI0KIwdTejdV2CMAukjiKIKZA6
+         4T7sD8kOSwD/rYgjcm9d/ORFsDpvhyxxtWBZGN5hKH20ohif49mmXFfbHU+35XKRqbku
+         yd0u8F/YxczBP+7oOeR9ylCo8YYfiITMp4l+g5opc3+UlSxgFhDRYzxy1BfvTwD8PDuw
+         mtik9vHMGwpPZa3AGQxFmly0jDQsoCD1rU2D8fWFwgbX9z+nCsPwIzuZTVU6lF4XFG7n
+         jcIw==
+X-Gm-Message-State: AJIora/B/sqxO3C1lOpzaK8Y2cx0q4e8KXQbRVExwRT6MsR8orEw5gub
+        P9VMRe5UQG6XDkLc29kCYog=
+X-Google-Smtp-Source: AGRyM1varIJtrZ+zurOQr5356vVX2dxwfzORj61kyaEFoy0mj5AqismRkQPo8DtDcMcZUQ//DGlnRg==
+X-Received: by 2002:a17:907:6d99:b0:72f:4633:65 with SMTP id sb25-20020a1709076d9900b0072f46330065mr7791124ejc.320.1658701834521;
+        Sun, 24 Jul 2022 15:30:34 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id k14-20020a170906578e00b0072f03d10fa0sm4604917ejq.207.2022.07.24.15.30.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 15:30:33 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 01:30:31 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 01/14] net: dsa: qca8k: cache match data to
+ speed up access
+Message-ID: <20220724223031.2ceczkbov6bcgrtq@skbuf>
+References: <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3ezbk4uwBmnvBCoWCEq8/kg";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/3ezbk4uwBmnvBCoWCEq8/kg
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sat, Jul 23, 2022 at 04:18:32PM +0200, Christian Marangi wrote:
+> Using of_device_get_match_data is expensive. Cache match data to speed
 
-Hi all,
+'is expensive' sounds like it's terribly expensive. It's just more than
+it needs to be.
 
-[Resent with corrected mail address]
+> up access and rework user of match data to use the new cached value.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k.c | 28 ++++++++++------------------
+>  drivers/net/dsa/qca/qca8k.h |  1 +
+>  2 files changed, 11 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> index 1cbb05b0323f..212b284f9f73 100644
+> --- a/drivers/net/dsa/qca/qca8k.c
+> +++ b/drivers/net/dsa/qca/qca8k.c
+> @@ -3168,6 +3155,11 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+>  	if (ret)
+>  		return ret;
+>  
+> +	/* Cache match data in priv struct.
+> +	 * Match data is already checked in read_switch_id.
+> +	 */
+> +	priv->info = of_device_get_match_data(priv->dev);
+> +
 
-On Mon, 25 Jul 2022 07:57:28 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Hi all,
->=20
-> Commits
->=20
->   a5133fe87ed8 ("Bluetooth: use memset avoid memory leaks")
->   9111786492f1 ("Bluetooth: fix an error code in hci_register_dev()")
->   4f17c2b6694d ("Bluetooth: hci_bcm: Add BCM4349B1 variant")
->   88b65887aa1b ("dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT bindi=
-ng")
->   359ee4f834f5 ("Bluetooth: Unregister suspend with userchannel")
->   0acef50ba3b5 ("Bluetooth: Fix index added after unregister")
->   877afadad2dc ("Bluetooth: When HCI work queue is drained, only queue ch=
-ained work")
->   ab2d2a982ff7 ("Bluetooth: hci_intel: Add check for platform_driver_regi=
-ster")
->   629f66aaca81 ("Bluetooth: clear the temporary linkkey in hci_conn_clean=
-up")
->   af35e28f0fea ("Bluetooth: hci_bcm: Add support for FW loading in autoba=
-ud mode")
->   0b4de2523f28 ("dt-bindings: net: broadcom-bluetooth: Add property for a=
-utobaud mode")
->   bde63e9effd3 ("Bluetooth: hci_qca: Return wakeup for qca_wakeup")
->   c69ecb0ea4c9 ("Bluetooth: btusb: Add support of IMC Networks PID 0x3568=
-")
->=20
-> are missing a Signed-off-by from their committer.
+So why don't you set priv->info right before calling qca8k_read_switch_id(),
+then?
 
-These are now in the net-next tree.
+>  	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
+>  	if (!priv->ds)
+>  		return -ENOMEM;
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index ec58d0e80a70..0b990b46890a 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -401,6 +401,7 @@ struct qca8k_priv {
+>  	struct qca8k_mdio_cache mdio_cache;
+>  	struct qca8k_pcs pcs_port_0;
+>  	struct qca8k_pcs pcs_port_6;
+> +	const struct qca8k_match_data *info;
+>  };
+>  
+>  struct qca8k_mib_desc {
+> -- 
+> 2.36.1
+> 
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/3ezbk4uwBmnvBCoWCEq8/kg
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLdxQUACgkQAVBC80lX
-0GzuWQf+NoZvlWF9A5nKk8XPwyuljLoPxjT9PWVyqXcP4l8UVEQviFpT7r9jEu4q
-byihzmao17IFEUW+3+TmKCxNOevSf7WXGdB6nhiF4uGHbJsE0juD8g+wcS1rBnYN
-lsPgXh2udF9xaz97F7ZZQAxzSoxZyAoy6xRJdP1KfKXJ//kPSrJEwvuqtyXE5o9e
-0ZyVVzcdghpAbKBikCxIjZNb0aPeBJSoZTP2gVZqTKo03lRQWmpmKS6V13HxSZdT
-EvQF5A4VTon7lDDv7Cj2Gtv4pP+XEhxDZXjPisxZkNxXJ2iQGXK3KfX+n0u3c7Es
-+2sZfgGNbCR3YVkk9oVONIxxOOrSVA==
-=SeWK
------END PGP SIGNATURE-----
-
---Sig_/3ezbk4uwBmnvBCoWCEq8/kg--
