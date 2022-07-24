@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BCCD57F3E5
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:05:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748A457F3E6
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239422AbiGXIFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 04:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
+        id S239767AbiGXIF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 04:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239785AbiGXIFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:05:17 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2048.outbound.protection.outlook.com [40.107.220.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C56A1B6
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:05:13 -0700 (PDT)
+        with ESMTP id S239302AbiGXIFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:05:21 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2058.outbound.protection.outlook.com [40.107.220.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437746343
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:05:20 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jpm1TODtp3WnJLjoEG6S1pt+G9C5ZfDSLx7Zs5Eg5tZFyf26Wzrzwf7EKAJ75ngrz/zOAaET3KXz4tqd+lZ44u03Q7HHUEE58zFdMqz0oan3uwp1k6YdmhDzFIBzlurcnI3+4rh3WgB4jOHTVTLfsgmNEgJEhc68uMiPk1MaChj1Wjh5qOAC4aE6HTXTd4qX4Mrll9WwziNjb5ybXcSrObNyX3B59I8rDJIgzMztiEXEfiv9eM8ieBUnYQf82pjFVxJxkrEBTrqFMoAvsf5AFZNm1cDdAejBd3jUpc1gLsjuD14Msd4wG3hEfzrn1djZq6Q/JSL8GgxpEH88134hCQ==
+ b=FehXjB5m99NVhoieLeBx2aX8jk6bc0ZP0sqsAbhDG/VN3Uix9mmZwurnx7ONMWxUKAaUowgG3v4IMzOsy/f1QGQJVnx2GRfw/bxE/Smnnu6E45KIMR5e6wyaQGqSwpfb1gWSV5ms2biIegTuqFOBmCqcKaJEuqin3R2MAP1U5hCldErIzbhHITe5i9tXjR25Qzhu6aDvhxmr/9LAcKGNUdE1sTgfaQKioabF1gNA70jcd8tCrI1fOzP3s9zKKZRYWspvt+AqDqj76COr8GcnYrWmVDL7lRt5UN11d9ga2wefws7jm0Z4MMJwtTIeOlp8l68CkNntltkPngCd1XWJiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XZHI4fjITXmMkjadsJUCWsVHQfG0rLP/e6CtOjqRBZs=;
- b=CaFshrsdyPNVhrOGiIFegCIlptlrEJFgFYjR0jxOexmInYvFjO7NTYoEUjwkAS9dqBJwSS8uOcLgnuk7zMKypn3zzgROXo9MOjS5Xy4VG400fFI+7X931OD/ZJEjQ90iy5YHCCnyzE9IdDmWSf3kMTdEkaPMfSr7zG/Sy5ERT2yvnSe9M5si2LhltaQdFfZa4i3aPF0kksXoD1Y6JJgNzAyXAxoBPoti1JUdvZNZiZ0yAlqnc+Gc77nfLmjkVJyoH9kEV/Zs6Gf1S9eDhPp8MfVM/UucCb/61l54+SlqsggFFLBKRV+1CFwP0JBg2ijJNeiCj2+v0HCtewRS+pGGJQ==
+ bh=Yvs78+IulLzC1y9sZJqHpxUt95coGY58mM6gad/EuE4=;
+ b=O0ZKenyvSsvMZ7/EtwiXoArcWryJuore2EZGccLV5gaVmnV7smc0LyIpogBBAtfhXfaS7Ss2t9I2BXkES24HA9WxwE+8DyZrDDoobw0w+62JslDlJAo97uMTpzrwr00rudqrYdCK3kZy8ZAh06JYaPYPcHuddcfVDDE1O/23d78Y1RrWDFfFm1+6rs2vqXvEwuKNXNXMCi0zJmlbfG7mVaFJwPXNDOby6dKuVEfvziQrSfRDev9K9Y+UvPZipCDq1ErqLExAnNcBekBlbbncZJnIvNbYOR2mzJ6ojntBNzydDCosG0qrAxHQbi9PX6tCOVzqcfteO4eTHBu1MRthPA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XZHI4fjITXmMkjadsJUCWsVHQfG0rLP/e6CtOjqRBZs=;
- b=jXCyVJTgwiYqTUhHJ/cHdVxur08dLqCQwurjYRaQ6oJ7ShhyAA4Ndp8s040G4RJagMcox5cs5iAnol2FyV9T/Q9MI28LBEmq4nRZrnSJzxhGHUsUIfQpAHiWoM0z1OqImz2idXY+QaJyllDLduigu7cNy4xKKJIbp8gyDo4e2XiTtcmcMhPSycShxg96de3MTc3r0ZF6GOz3CApZEzR/ldZveIBL9M6+g+xZeXnr6LFO44SgS5464uwSiLpLQwxJVEtUoi+xtsOzin/bw+ZNiLncgV88HjKBsSjJNGlIWNqx2GDC0snHYCtHwbLpfXHVEKEC9w6Kl5fKTLNG830TvQ==
+ bh=Yvs78+IulLzC1y9sZJqHpxUt95coGY58mM6gad/EuE4=;
+ b=bwW/7TWxHwMD69t8hT/fcc3C9oG21/sJwr4ov3ZI35l7zaJ0lnDIpygqF5JzC8sfYfqC2Rpg0St6re4xyoOCSb44TFnXonwqEVB5A65wiTq34ON3BhoK91RSzyIeeJbjoy9Xq9Ls7+aS+yFU4EhjAJe79ckhZJM7NTcsX+Z73BWxIIDSYUxEjAwUlhkVELthriITT9Wa8EbBw9wS1H6zX5M0GFFRsm0WVGvprbSVSQUhQEBh4U382ox6eum+XdpoljTdMm0f+rYnIhNM7qpy7yoW++r4K9tDYYfWoXCDEpZTBuTnYF8+tQ6YuSY9rla/zifeFn9itby8qBzrODJbXA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by CH2PR12MB3877.namprd12.prod.outlook.com (2603:10b6:610:27::32) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Sun, 24 Jul
- 2022 08:05:12 +0000
+ 2022 08:05:18 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5458.020; Sun, 24 Jul 2022
- 08:05:12 +0000
+ 08:05:18 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         danieller@nvidia.com, richardcochran@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 09/15] mlxsw: Rename 'read_frc_capable' bit to 'read_clock_capable'
-Date:   Sun, 24 Jul 2022 11:03:23 +0300
-Message-Id: <20220724080329.2613617-10-idosch@nvidia.com>
+Subject: [PATCH net-next 10/15] mlxsw: spectrum_ptp: Initialize the clock to zero as part of initialization
+Date:   Sun, 24 Jul 2022 11:03:24 +0300
+Message-Id: <20220724080329.2613617-11-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220724080329.2613617-1-idosch@nvidia.com>
 References: <20220724080329.2613617-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0409.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a0::13) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: LO4P123CA0582.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:276::17) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 595970b1-d385-4367-5657-08da6d4b3bd7
+X-MS-Office365-Filtering-Correlation-Id: e74af3ce-911a-4973-84f1-08da6d4b3fa4
 X-MS-TrafficTypeDiagnostic: CH2PR12MB3877:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j/dvjHaSdU6gajWzk20v4zKKFqsTTPTSgTRBUhDJPnj7FNJHcl8NzkDgwgBVqzl6V6MSIqYtBLX75R80J/Ev+QDE0CZHiD+WyXZxd6k7NhI8zrROQjBFVCibpeqDCQA3ezJL0PjtRLjfaXCwgGb6jKgAS2izV68Djv0RAz5MHbGpuD6hiAkBFQCdKji6MC1GGsKUtQQaMQ0j1J+VSz2KLX1vEBh5ssGgAnU2YIJ4rvhD+m8XxRruK/LnPsZtSFwk1TdoY91gAIyQ1ROCpcdMm/cnMA01AXY5HdMzQVPhN3QJGFzJhgnieszbNWZQL56BL6Lj2AKth21DdLRlRZyqEUJWN89WPzNyMIwFXW95cAW7k3xGVkloCdjQkKBxfgyn1tTNimtJBB7c8cPLwgB36M7liLRxO4Ej4Oo83KxQMZ04+9/GfpPiGOBp79ZuwCx1j73XFzR52Yc3kr5UmXlsoUOrf6nQMPYA6Hp5f9z7fc/qaFg7+6OQD802pGHb/sRZb10KiH2z5vanAYC6lwMfVp5SlM+857BbmsRA9AhTDH4Q/QDDlFg1i4FGWLhz60TxTISnBzQLbX7woYMincDMxHWTWL/CXSaooZlmmF3sz8HaMuqp4Q2I4HBYktm2hPRi8QVxM+8+oUvbRuB6I4ieH9kiauUpDoaqnNyynkl9O9dUwKqCESF1FmICuWqfWoN5Ilf8AiR6vsTQMOnHw6mOaVggUM6b+nMYG/h6oNojB52LUAC+1oGR2ycJ9EQLRKxS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(396003)(136003)(376002)(186003)(1076003)(2616005)(107886003)(83380400001)(4326008)(66946007)(66476007)(6916009)(8676002)(66556008)(66574015)(36756003)(6512007)(41300700001)(6666004)(6506007)(26005)(2906002)(86362001)(38100700002)(5660300002)(316002)(8936002)(6486002)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Q5Qg15w1E+O8RhwntN/7dRg7IpXY32MnN8vC8SCU4723xomkuVcHchvISYqO5zXpTAOEnV3HzSITeZ4uMKpJAZ6IxZ1rPoJnoyR5/exW8gmfOT3caTU5OxIQNAZkZ3mLN/FDLhfMUY1bQQsUYkC8ST850iFIRgO++hQ8yRN0a0TB7uJbMLv+36IzkF0RQha884GTXU8UbjCJKx/drCtQRTFjpm/S9yJF5DkWnhdpUl44r80T3G+qhBsqM77H7Ub5NsdnAG4jPm7KgVFPshSwJxz1i72kkuR6c1FLrL++2ZmxYRw+g4STYidJKavJqpirWof0JhYmEnSPUia0uB3b3xjMq72TNGSsYB9sQdNMxh8CU9TOJVcVxG4ZgllG/CT20fZy1TpIbGZAZAxs1O8Ow4KytRMSPoMfvgbd1+rSGPkfXPImyaFL6Hr+rFRQW+QNPnG1pGzKed54DeRPSUNlYXLW6X3e+AMCBBsWjQBkUfaDsNMLj6zturEst5eW2d04AL92f3Z0Tp+15ddP5E5s7JR83Ybm0qRmJUqePdoNYFMAQ4ARqMxOYfHjXF/+/ujapIqYGKGRiRI1fQ6mk2C3JWK5pYGI26TiUDK5MleDOP20YDO6D2FKpFB5dbnXZNDDBUMHWZFL8VZ/GoG7CWYp/iOr/CkEpsz4LvZLk2/ipsF5wemDw8Cs0IN4A0C5pvIVFtaCjYasqI6XNBoLdW2t3VVp07TwLX3oiQ7PtKwMBbmh0YbkvnfEPnUc1f2AHN3HGExmnBX+v0AkgnbTDEyJvyTA6JdD6NTEWlXf/dIC47UYBuAylcHMCvUC+cDNqOb4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(396003)(136003)(376002)(186003)(1076003)(2616005)(107886003)(83380400001)(4326008)(66946007)(66476007)(6916009)(8676002)(66556008)(36756003)(6512007)(41300700001)(6666004)(6506007)(26005)(2906002)(86362001)(38100700002)(5660300002)(316002)(8936002)(6486002)(966005)(478600001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rPy0UXuC9/hNhK/1BYJcWsuAkFk7FCW7xyNUmRycClEzkcF2W3mHeXqkoDYX?=
- =?us-ascii?Q?A8BFnEXFCUAmZzyuRohRiDKW7navSQuWAZzCHtvuV4pHw4yQxyIms9xWYcc8?=
- =?us-ascii?Q?V15k2mMesXDc0IJhSjxJJH2kJD/7bHKAXjvwPxqUa783jp0+W5s+itEPLyey?=
- =?us-ascii?Q?Cw6ZZsTPnAFHVHj7TWaW1QKPBUaxopM7EOVBOzRsNagyk8XAZjp80UdBZZlK?=
- =?us-ascii?Q?8wLyxvqjfWMJn9VwT94C4ayTe4hPkcbV3uFwIwUOv8SE7r9d++ZzT7ck8e/F?=
- =?us-ascii?Q?MBH2JuKPJ+fP2QzIFfTFkwcokE6Sn2b7y+LbepqR2PKxSwcbB+1iONVA7fQ8?=
- =?us-ascii?Q?8KzjiVcPl9rrVqBBe5wmNaEaDu2KKyBpquBYawXhzY5cJSWAVeDP/xewEqnA?=
- =?us-ascii?Q?N81MM9UF32qwbsFC9jq+HImLjfxDN33n7JlGIo+1EU5Wg7Rt44mlWHhb4TcS?=
- =?us-ascii?Q?a3WQIJTaeVKUtL4RV1eDl0VB1GWy72l6JEwGMO+L4GIorTW8YGdM89MEiTEf?=
- =?us-ascii?Q?qOnyfdi1+3eGDikeFCrWuzUAHKH6cM1tfom1GuoG5abQBJz6EBSKxbLgvdTn?=
- =?us-ascii?Q?UUpPVDohr2UFuDuxo2sXDfeDm7wtQElf03V9UhNF6G4hyPqalKYduikLrXJa?=
- =?us-ascii?Q?i2HeJ9ywlVZFPfQAQRpyPTmdtffAV3vjX1sVYNkzFNNeIAyM18agWNVNiOze?=
- =?us-ascii?Q?+DmfRpEBQUEoVYcBnzTk3KDcQPxDLo+9kCircuyNzRHQjg0Jg/LH2WeNKp6J?=
- =?us-ascii?Q?mVfoBiQURl4sUcWYTu+7ddNDyDiDNxIrhxD8VgKK4v2PeO+OBqrVy9Jrbrp2?=
- =?us-ascii?Q?g0G0n0Dno55lYUwunOna9YCraMp2TeWmaUCNDf8G5JVUQd7T05//i0fWieSM?=
- =?us-ascii?Q?pwstzZmU1ruTnbDyY4COnyGGOW96nDnVO3rmvCbIrjhwOYtVASgDRKoEOPCw?=
- =?us-ascii?Q?symkDxvTXGFJgKkwzDO2XZpYVQnAJcOkhA2UxLcokgI0xrFtnUeLJugTVB3t?=
- =?us-ascii?Q?ql0Sgz2udFQSMVWnWI5o5vDNIYhgmjMYuoYbCjzkQFo55HVab5u29ZOPzdLF?=
- =?us-ascii?Q?cZwdTF+YDU0LPz//hm7fu1yORU0dOlLKW0ilUUmBhemttkgk3+TTimSaVZnu?=
- =?us-ascii?Q?xGSbZK3xDcugnHhM8NYaE9rEFo6GODYVv7lxgfT8ojqXvlW2KAKvpP6xR3C7?=
- =?us-ascii?Q?LMf/fcuTTXZ/tlLlnHs/3y7ktGX5dvxsLrrfbY/Uh8409qzjvE2GvvYGPQAV?=
- =?us-ascii?Q?IfshXNzGeyMpUkkVx3YL81lzlgdOuWmyXKVRwHIeeTZUEXPeBc0NRZevoY8F?=
- =?us-ascii?Q?ka6VBEFPuM3Od5CPOGTzJ++tLkTwnZaxEMW2QTLs/1wO/1wSSwYsrwlib20e?=
- =?us-ascii?Q?h4hMDxVpUIUXtd2b4po+UL8PfLHZV0pG2eKwl7uIhdeD+nGC8Xg5OjomAkWb?=
- =?us-ascii?Q?6hdv9xYAi+3gkS6NSw73FbziN8uwlhp1bG9IuQK9JJldJqk4mR6o/eHRYU+/?=
- =?us-ascii?Q?LXd32rW7PMgVDD8WstpQM+uCiEUVfYpmrDomPF4kmvhia9aUuzWniw7RVdPb?=
- =?us-ascii?Q?YxnOw3f4Smb5oqG4hnKlzfJ5nesjodpNuCWG3qpD?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/c7MW2kv2QzpgSVXZsjLI+bw4pw+DS1ceRwMoHpVOHbFa91rC9FGyWCuATma?=
+ =?us-ascii?Q?EBjmMQr8Ivklz3tpy4VNvlrbO2VezjaNh1yT4gY0OcJZ6ecTpxwz0vjsxmFq?=
+ =?us-ascii?Q?FWnlYuiBU6Xtmad33uTJ7iZ8dTDayL+OD7nY09bzunSBKKqml1OpVqdtTTps?=
+ =?us-ascii?Q?E6UjPhZ6v5Uat25RGVs7iMFA4yZ0xfOhyStLeY4bMfuWJ1V7a2NCJ/OLqYrZ?=
+ =?us-ascii?Q?db27S3yalwulWssjDRyQ9bXOUpf5YhaRVgtKbvaDndzIFZieNRlN/10KBvej?=
+ =?us-ascii?Q?K6vrIP4ngwJGk3LlEKiHyG1skky7wGh4kA8sw3iG7hEX42f7IA9PBWRpFdEw?=
+ =?us-ascii?Q?27Eax5cVGw914xr72/sZzWAiNmq03RmzOxWRlXhDQhteMq96B6orPISnBlqV?=
+ =?us-ascii?Q?gaahFf4NO+ikXKUQSvgTPWMxmXgzq03gl96gN8hOW25L716jyBm4q/p0ak+E?=
+ =?us-ascii?Q?kX0J2geq3nJMjZGv4zaQlo+ZeUzlU/4+8jta6DtbNX++eSui7DjZdzoRxzu1?=
+ =?us-ascii?Q?mhCpVMCba3JvDqw/zVbnSG05ZreMEp0RtglrcZs2PsVUyDjMj1J99+2EbX7i?=
+ =?us-ascii?Q?i2yGrytszYkBGWGTDvgkts6GAihJeAixSiHp2t2cBz4PBRXdE+JQ8UBT7Uq+?=
+ =?us-ascii?Q?87RBzyyypKzHxl+cmr7HKp1Qr/9YPWElBv7tOqW/MV3nHvWsljaf0zmrFuYN?=
+ =?us-ascii?Q?swkF+VJDy+zIdJr/VtExRSqmL9ATf2ryMZy7prxVt3k0EJWtiwtgAbwEd4kX?=
+ =?us-ascii?Q?3n5wHibQzYte54CeNDJDYP5Q0lNxIjInCu2r2PeLIhQsnpAVN02FlJrMm5G8?=
+ =?us-ascii?Q?aP2vyzHbvuyO6ao7sFfRPIKSYjy3gqPBP7Y8GKZeMqxNVXA0fxABpHnXYkhO?=
+ =?us-ascii?Q?P4OBfEpz28dhZMV5HwMX6w0RS93ncKCk2jMbnzC1lma6CkRkIrz2ThwdTq2G?=
+ =?us-ascii?Q?PR4L+NMWHg7z98BViXdXN1Ah7MQvX8piN4byPht2CFu2EXPca49PVGyLqGHp?=
+ =?us-ascii?Q?Q7U1v6Beojzqync80mBv8qMPafti6j8NsvhjiHW2Nv8w+ZKU1UFx2D5k0nyS?=
+ =?us-ascii?Q?ePPMaCadO7zYhVlNYkSti6MROWmSPlwx/HS4kTAT1iRfRMAJyw5/nrUAzicx?=
+ =?us-ascii?Q?wBZW/vQiH7cNVHUHlj5VdXupoZ2dUY56stp5wccG4DawMOVt6R1PxiUNw+v5?=
+ =?us-ascii?Q?KzNE07C0gtBiHhjR7u0HpdwFH/30mWhg1FG7euCNf85n0BSuUWtRKFuu8FEo?=
+ =?us-ascii?Q?pToauoeK4W9g492y6vCyPLlJ4dt2GI+z2ACyuOs6KrisRDYXpWWCw9my99A7?=
+ =?us-ascii?Q?vWD81UKyyfyhRNOozahq2aLrlgbtIVehuTHV5uwc4WcIQKobvP7iduCTidW5?=
+ =?us-ascii?Q?OnpanGrM6TEcWxmPPBs5Hvwog/XjfBceKA4FjDzlAvZQH6Rg9phPfKYASTdS?=
+ =?us-ascii?Q?1TNMmCuFSlh8clBaTm58FmP/5vELfDBBbVQSI5Ei6YTyo8T8HGNreUZDtEQY?=
+ =?us-ascii?Q?3qZH9DnA3GmsE/2Iwx6rvIAFVaf2Sg93JaIFrYdo4FtiAbQGJElr9qxqOy5p?=
+ =?us-ascii?Q?CuFgBkyxA5TG2Dsl9XkoBFEVtSWkVzvuygYY9qtN?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 595970b1-d385-4367-5657-08da6d4b3bd7
+X-MS-Exchange-CrossTenant-Network-Message-Id: e74af3ce-911a-4973-84f1-08da6d4b3fa4
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2022 08:05:12.2632
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2022 08:05:18.5004
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FALduMDhT5iKac7BocBlMrgyRSWLM+APpT3d2YhLOkSsC/d6Qd62g4ryDMUU3FU6T/PkamjhatWZ8zQqkUgvpw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0KjM5A3ZtzdX5m31WLEbyutQJyUbWwrafkLdRheiTA6sqs1xj0aGrD8wzeC9w3zL95GkY6ouuFsn7jh+buWUfw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3877
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -115,60 +115,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-Rename the 'read_frc_capable' bit to 'read_clock_capable' since now it can
-be both the FRC and UTC clocks.
+As lately recommended in the mailing list[1], set the clock to zero time as
+part of initialization.
 
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+The idea is that when the clock reads 'Jan 1, 1970', then it is clearly
+wrong and user will not mistakenly think that the clock is set correctly.
+If as part of initialization, the driver sets the clock, user might see
+correct date and time (maybe with a small shift) and assume that there
+is no need to sync the clock.
+
+Fix the existing code of Spectrum-1 to set the 'timecounter' to zero.
+
+[1]:
+https://lore.kernel.org/netdev/20220201191041.GB7009@hoboy.vegasvil.org/
+
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.h     | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/pci.c      | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 6b05586052dd..9d2e8a8d3a75 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -487,7 +487,7 @@ struct mlxsw_bus_info {
- 	u8 vsd[MLXSW_CMD_BOARDINFO_VSD_LEN];
- 	u8 psid[MLXSW_CMD_BOARDINFO_PSID_LEN];
- 	u8 low_frequency:1,
--	   read_frc_capable:1;
-+	   read_clock_capable:1;
- };
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+index 39586673b395..eab3d63ad2ac 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+@@ -267,8 +267,7 @@ mlxsw_sp1_ptp_clock_init(struct mlxsw_sp *mlxsw_sp, struct device *dev)
+ 	clock->cycles.mask = CLOCKSOURCE_MASK(MLXSW_SP1_PTP_CLOCK_MASK);
+ 	clock->core = mlxsw_sp->core;
  
- struct mlxsw_hwmon;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 57792e87dee2..0f452c8dabbd 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1923,7 +1923,7 @@ static int mlxsw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	mlxsw_pci->bus_info.device_kind = driver_name;
- 	mlxsw_pci->bus_info.device_name = pci_name(mlxsw_pci->pdev);
- 	mlxsw_pci->bus_info.dev = &pdev->dev;
--	mlxsw_pci->bus_info.read_frc_capable = true;
-+	mlxsw_pci->bus_info.read_clock_capable = true;
- 	mlxsw_pci->id = id;
+-	timecounter_init(&clock->tc, &clock->cycles,
+-			 ktime_to_ns(ktime_get_real()));
++	timecounter_init(&clock->tc, &clock->cycles, 0);
  
- 	err = mlxsw_core_bus_device_register(&mlxsw_pci->bus_info,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index bd7552e8dd5c..641078060b02 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3096,7 +3096,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
- 		goto err_router_init;
- 	}
- 
--	if (mlxsw_sp->bus_info->read_frc_capable) {
-+	if (mlxsw_sp->bus_info->read_clock_capable) {
- 		/* NULL is a valid return value from clock_init */
- 		mlxsw_sp->clock =
- 			mlxsw_sp->ptp_ops->clock_init(mlxsw_sp,
+ 	/* Calculate period in seconds to call the overflow watchdog - to make
+ 	 * sure counter is checked at least twice every wrap around.
 -- 
 2.36.1
 
