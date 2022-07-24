@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF5C57F46B
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 11:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD03057F46D
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 11:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233203AbiGXJag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 05:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
+        id S233581AbiGXJas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 05:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233740AbiGXJa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 05:30:29 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27F6165A6;
-        Sun, 24 Jul 2022 02:30:24 -0700 (PDT)
+        with ESMTP id S233301AbiGXJal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 05:30:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E9F1261A;
+        Sun, 24 Jul 2022 02:30:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658655024; x=1690191024;
+  t=1658655039; x=1690191039;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LTvTZadtNsu2Z5nyzBbQa0+NYJbp8gv3NyTfbBSdsBI=;
-  b=Z7V9UnEgchjyH0JxhmE9M3rybLY+pSz6wTt3hsvac9GydURxObXQbImo
-   M7RUANLRP0G3ALSngxGfOyDbIvjiV1RMW7rWErm3q8H1ZeGn2AuEBstuh
-   uv1h3xK3IAh/CnjsLgNcvE07+xBzOB7CtC6AFurAMNZ+Gc7jvYF/YNsEN
-   Jzqy4BQ5fVAD7XlQ3FpLsdd5ofKJ5dDDhZ62QWb5ItFFdwaMaVrjnSciO
-   H5Mi7kBq/EnN0UKWEsZh0NbXPBfCfW1Uj/EoxHrwv9kD0xrBe5QwE8Dr3
-   gKEzEXt98kPUcFGDzRINA6hrcEzWk7WsFVAYnCXaSf3hxa1/TQZVUeidw
-   w==;
+  bh=ftsk9FmDGrPFYktU3nKTVrwHhsXtZW1VZkvbU2+18So=;
+  b=oJYUJ/IRAH9Aq8gb4WzOqw9nLxtwB1x7FPvN7kfa/fTN620/VzVj7TZk
+   Vtco7xj+4cyE0vLSd7pjmhqWUYefObUqroA4KT5KbL8FhhrGe/+gY6+ae
+   oIaaQMMNmKw98XLmE0zrapYWsbN+m0+B9bj4TrEXfXw6avXwyVIfaCXdk
+   xfHx1A2UaUoK0HY8VibN4sfVR3VWz3SyoTDtauf4FHqygB6KJrbWacozd
+   wfZylY4STnyGRnuCLrVV7RWBobN4kRKhw9ECRnKJ4e4JIaeUvWf56MRdE
+   5LnePFIM0hUswMp3A7lM2izj31K1mY03UnfIhHZexkNn14ZL9X85KXb/1
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="183508590"
+   d="scan'208";a="169239365"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2022 02:30:23 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jul 2022 02:30:39 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 24 Jul 2022 02:30:22 -0700
+ 15.1.2375.17; Sun, 24 Jul 2022 02:30:38 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.28 via Frontend Transport; Sun, 24 Jul 2022 02:30:09 -0700
+ 15.1.2375.28 via Frontend Transport; Sun, 24 Jul 2022 02:30:26 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next v2 6/9] net: dsa: microchip: apply rgmii tx and rx delay in phylink mac config
-Date:   Sun, 24 Jul 2022 14:58:20 +0530
-Message-ID: <20220724092823.24567-7-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v2 7/9] net: dsa: microchip: ksz9477: use common xmii function
+Date:   Sun, 24 Jul 2022 14:58:21 +0530
+Message-ID: <20220724092823.24567-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220724092823.24567-1-arun.ramadoss@microchip.com>
 References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
@@ -68,266 +68,350 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch read the rgmii tx and rx delay from device tree and stored it
-in the ksz_port.  It applies the rgmii delay to the xmii tune adjust
-register based on the interface selected in phylink mac config. There
-are two rgmii port in LAN937x and value to be loaded in the register
-vary depends on the port selected.
+In ksz9477.c file, configuring the xmii register is performed based on
+the flag NEW_XMII. The flag is reset for ksz9893 switch and set for
+other switch. This patch uses the ksz common xmii set and get function.
+The bit values are configured based on the chip id.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz_common.c   | 53 +++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h   |  3 ++
- drivers/net/dsa/microchip/lan937x.h      |  1 +
- drivers/net/dsa/microchip/lan937x_main.c | 56 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/lan937x_reg.h  | 18 ++++++++
- 5 files changed, 130 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz9477.c     | 153 +-----------------------
+ drivers/net/dsa/microchip/ksz9477_reg.h |  18 ---
+ drivers/net/dsa/microchip/ksz_common.c  |  38 +++++-
+ drivers/net/dsa/microchip/ksz_common.h  |   7 +-
+ 4 files changed, 49 insertions(+), 167 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 39b83b4d02ed..237dec7c6e3c 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -223,6 +223,7 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
- 	.mirror_del = ksz9477_port_mirror_del,
- 	.get_caps = lan937x_phylink_get_caps,
- 	.phylink_mac_config = lan937x_phylink_mac_config,
-+	.setup_rgmii_delay = lan937x_setup_rgmii_delay,
- 	.fdb_dump = ksz9477_fdb_dump,
- 	.fdb_add = ksz9477_fdb_add,
- 	.fdb_del = ksz9477_fdb_del,
-@@ -1411,12 +1412,14 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index cfa7ddf60718..301283d1ba82 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -19,11 +19,6 @@
+ #include "ksz_common.h"
+ #include "ksz9477.h"
+ 
+-/* Used with variable features to indicate capabilities. */
+-#define GBIT_SUPPORT			BIT(0)
+-#define NEW_XMII			BIT(1)
+-#define IS_9893				BIT(2)
+-
+ static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
  {
- 	const u8 *bitval = dev->info->xmii_ctrl1;
-+	struct ksz_port *p = &dev->ports[port];
- 	const u16 *regs = dev->info->regs;
- 	u8 data8;
- 
- 	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
- 
--	data8 &= ~P_MII_SEL_M;
-+	data8 &= ~(P_MII_SEL_M | P_RGMII_ID_IG_ENABLE |
-+		   P_RGMII_ID_EG_ENABLE);
- 
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_MII:
-@@ -1440,6 +1443,12 @@ void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface)
- 		return;
- 	}
- 
-+	if (p->rgmii_tx_val)
-+		data8 |= P_RGMII_ID_EG_ENABLE;
-+
-+	if (p->rgmii_rx_val)
-+		data8 |= P_RGMII_ID_IG_ENABLE;
-+
- 	/* Write the updated value */
- 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
- }
-@@ -1452,6 +1461,9 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
- 
- 	if (dev->dev_ops->phylink_mac_config)
- 		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
-+
-+	if (dev->dev_ops->setup_rgmii_delay)
-+		dev->dev_ops->setup_rgmii_delay(dev, port);
+ 	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+@@ -866,116 +861,18 @@ void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
+ 			     PORT_MIRROR_SNIFFER, false);
  }
  
- bool ksz_get_gbit(struct ksz_device *dev, int port)
-@@ -1701,6 +1713,43 @@ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- }
- EXPORT_SYMBOL(ksz_switch_alloc);
- 
-+static void ksz_parse_rgmii_delay(struct ksz_device *dev, int port_num,
-+				  struct device_node *port_dn)
-+{
-+	phy_interface_t phy_mode = dev->ports[port_num].interface;
-+	int rx_delay = -1, tx_delay = -1;
-+
-+	if (!phy_interface_mode_is_rgmii(phy_mode))
-+		return;
-+
-+	of_property_read_u32(port_dn, "rx-internal-delay-ps", &rx_delay);
-+	of_property_read_u32(port_dn, "tx-internal-delay-ps", &tx_delay);
-+
-+	if (rx_delay == -1 && tx_delay == -1) {
-+		dev_warn(dev->dev,
-+			 "Port %d interpreting RGMII delay settings based on \"phy-mode\" property, "
-+			 "please update device tree to specify \"rx-internal-delay-ps\" and "
-+			 "\"tx-internal-delay-ps\"",
-+			 port_num);
-+
-+		if (phy_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
-+		    phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
-+			rx_delay = 2000;
-+
-+		if (phy_mode == PHY_INTERFACE_MODE_RGMII_TXID ||
-+		    phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
-+			tx_delay = 2000;
-+	}
-+
-+	if (rx_delay < 0)
-+		rx_delay = 0;
-+	if (tx_delay < 0)
-+		tx_delay = 0;
-+
-+	dev->ports[port_num].rgmii_rx_val = rx_delay;
-+	dev->ports[port_num].rgmii_tx_val = tx_delay;
-+}
-+
- int ksz_switch_register(struct ksz_device *dev)
+-static int ksz9477_get_xmii(struct ksz_device *dev, u8 data)
+-{
+-	int mode;
+-
+-	if (dev->features & NEW_XMII) {
+-		switch (data & PORT_MII_SEL_M) {
+-		case PORT_MII_SEL:
+-			mode = 0;
+-			break;
+-		case PORT_RMII_SEL:
+-			mode = 1;
+-			break;
+-		case PORT_GMII_SEL:
+-			mode = 2;
+-			break;
+-		default:
+-			mode = 3;
+-		}
+-	} else {
+-		switch (data & PORT_MII_SEL_M) {
+-		case PORT_MII_SEL_S1:
+-			mode = 0;
+-			break;
+-		case PORT_RMII_SEL_S1:
+-			mode = 1;
+-			break;
+-		case PORT_GMII_SEL_S1:
+-			mode = 2;
+-			break;
+-		default:
+-			mode = 3;
+-		}
+-	}
+-	return mode;
+-}
+-
+-static void ksz9477_set_xmii(struct ksz_device *dev, int mode, u8 *data)
+-{
+-	u8 xmii;
+-
+-	if (dev->features & NEW_XMII) {
+-		switch (mode) {
+-		case 0:
+-			xmii = PORT_MII_SEL;
+-			break;
+-		case 1:
+-			xmii = PORT_RMII_SEL;
+-			break;
+-		case 2:
+-			xmii = PORT_GMII_SEL;
+-			break;
+-		default:
+-			xmii = PORT_RGMII_SEL;
+-			break;
+-		}
+-	} else {
+-		switch (mode) {
+-		case 0:
+-			xmii = PORT_MII_SEL_S1;
+-			break;
+-		case 1:
+-			xmii = PORT_RMII_SEL_S1;
+-			break;
+-		case 2:
+-			xmii = PORT_GMII_SEL_S1;
+-			break;
+-		default:
+-			xmii = PORT_RGMII_SEL_S1;
+-			break;
+-		}
+-	}
+-	*data &= ~PORT_MII_SEL_M;
+-	*data |= xmii;
+-}
+-
+ static phy_interface_t ksz9477_get_interface(struct ksz_device *dev, int port)
  {
- 	const struct ksz_chip_data *info;
-@@ -1798,6 +1847,8 @@ int ksz_switch_register(struct ksz_device *dev)
- 				}
- 				of_get_phy_mode(port,
- 						&dev->ports[port_num].interface);
-+
-+				ksz_parse_rgmii_delay(dev, port_num, port);
- 			}
- 			of_node_put(ports);
- 		}
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 24044fc873fd..bf13f72fa9f2 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -79,6 +79,8 @@ struct ksz_port {
- 	struct ksz_port_mib mib;
  	phy_interface_t interface;
- 	u16 max_frame;
-+	u32 rgmii_tx_val;
-+	u32 rgmii_rx_val;
- };
+ 	bool gbit;
+-	int mode;
+-	u8 data8;
  
- struct ksz_device {
-@@ -301,6 +303,7 @@ struct ksz_dev_ops {
- 				    phy_interface_t interface,
- 				    struct phy_device *phydev, int speed,
- 				    int duplex, bool tx_pause, bool rx_pause);
-+	void (*setup_rgmii_delay)(struct ksz_device *dev, int port);
- 	void (*config_cpu_port)(struct dsa_switch *ds);
- 	int (*enable_stp_addr)(struct ksz_device *dev);
- 	int (*reset)(struct ksz_device *dev);
-diff --git a/drivers/net/dsa/microchip/lan937x.h b/drivers/net/dsa/microchip/lan937x.h
-index 0ae553a9b9af..423521a13c9e 100644
---- a/drivers/net/dsa/microchip/lan937x.h
-+++ b/drivers/net/dsa/microchip/lan937x.h
-@@ -20,4 +20,5 @@ void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
- void lan937x_phylink_mac_config(struct ksz_device *dev, int port,
- 				unsigned int mode,
- 				const struct phylink_link_state *state);
-+void lan937x_setup_rgmii_delay(struct ksz_device *dev, int port);
- #endif
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index d86ffdf976b0..797fe7f62394 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -315,6 +315,45 @@ int lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu)
- 	return 0;
+ 	if (port < dev->phy_port_cnt)
+ 		return PHY_INTERFACE_MODE_NA;
+-	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
++
+ 	gbit = ksz_get_gbit(dev, port);
+-	mode = ksz9477_get_xmii(dev, data8);
+-	switch (mode) {
+-	case 2:
+-		interface = PHY_INTERFACE_MODE_GMII;
+-		if (gbit)
+-			break;
+-		fallthrough;
+-	case 0:
+-		interface = PHY_INTERFACE_MODE_MII;
+-		break;
+-	case 1:
+-		interface = PHY_INTERFACE_MODE_RMII;
+-		break;
+-	default:
+-		interface = PHY_INTERFACE_MODE_RGMII;
+-		if (data8 & PORT_RGMII_ID_EG_ENABLE)
+-			interface = PHY_INTERFACE_MODE_RGMII_TXID;
+-		if (data8 & PORT_RGMII_ID_IG_ENABLE) {
+-			interface = PHY_INTERFACE_MODE_RGMII_RXID;
+-			if (data8 & PORT_RGMII_ID_EG_ENABLE)
+-				interface = PHY_INTERFACE_MODE_RGMII_ID;
+-		}
+-		break;
+-	}
++
++	interface = ksz_get_xmii(dev, port, gbit);
++
+ 	return interface;
  }
  
-+static void lan937x_set_tune_adj(struct ksz_device *dev, int port,
-+				 u16 reg, u8 val)
-+{
-+	u16 data16;
-+
-+	ksz_pread16(dev, port, reg, &data16);
-+
-+	/* Update tune Adjust */
-+	data16 |= FIELD_PREP(PORT_TUNE_ADJ, val);
-+	ksz_pwrite16(dev, port, reg, data16);
-+
-+	/* write DLL reset to take effect */
-+	data16 |= PORT_DLL_RESET;
-+	ksz_pwrite16(dev, port, reg, data16);
-+}
-+
-+static void lan937x_set_rgmii_tx_delay(struct ksz_device *dev, int port)
-+{
-+	u8 val;
-+
-+	/* Apply different codes based on the ports as per characterization
-+	 * results
-+	 */
-+	val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_TX_DELAY_2NS :
-+		RGMII_2_TX_DELAY_2NS;
-+
-+	lan937x_set_tune_adj(dev, port, REG_PORT_XMII_CTRL_5, val);
-+}
-+
-+static void lan937x_set_rgmii_rx_delay(struct ksz_device *dev, int port)
-+{
-+	u8 val;
-+
-+	val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_RX_DELAY_2NS :
-+		RGMII_2_RX_DELAY_2NS;
-+
-+	lan937x_set_tune_adj(dev, port, REG_PORT_XMII_CTRL_4, val);
-+}
-+
- void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
- 			      struct phylink_config *config)
+@@ -1049,8 +946,8 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
  {
-@@ -327,6 +366,23 @@ void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
+ 	struct ksz_port *p = &dev->ports[port];
+ 	struct dsa_switch *ds = dev->ds;
+-	u8 data8, member;
+ 	u16 data16;
++	u8 member;
+ 
+ 	/* enable tag tail for host port */
+ 	if (cpu_port)
+@@ -1092,42 +989,7 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 			     true);
+ 
+ 		/* configure MAC to 1G & RGMII mode */
+-		ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
+-		switch (p->interface) {
+-		case PHY_INTERFACE_MODE_MII:
+-			ksz9477_set_xmii(dev, 0, &data8);
+-			ksz_set_gbit(dev, port, false);
+-			p->phydev.speed = SPEED_100;
+-			break;
+-		case PHY_INTERFACE_MODE_RMII:
+-			ksz9477_set_xmii(dev, 1, &data8);
+-			ksz_set_gbit(dev, port, false);
+-			p->phydev.speed = SPEED_100;
+-			break;
+-		case PHY_INTERFACE_MODE_GMII:
+-			ksz9477_set_xmii(dev, 2, &data8);
+-			ksz_set_gbit(dev, port, true);
+-			p->phydev.speed = SPEED_1000;
+-			break;
+-		default:
+-			ksz9477_set_xmii(dev, 3, &data8);
+-			ksz_set_gbit(dev, port, true);
+-			data8 &= ~PORT_RGMII_ID_IG_ENABLE;
+-			data8 &= ~PORT_RGMII_ID_EG_ENABLE;
+-			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+-			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
+-				data8 |= PORT_RGMII_ID_IG_ENABLE;
+-			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+-			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+-				data8 |= PORT_RGMII_ID_EG_ENABLE;
+-			/* On KSZ9893, disable RGMII in-band status support */
+-			if (dev->features & IS_9893)
+-				data8 &= ~PORT_MII_MAC_MODE;
+-			p->phydev.speed = SPEED_1000;
+-			break;
+-		}
+-		ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
+-		p->phydev.duplex = 1;
++		ksz_set_xmii(dev, port, p->interface);
  	}
- }
  
-+void lan937x_setup_rgmii_delay(struct ksz_device *dev, int port)
-+{
-+	struct ksz_port *p = &dev->ports[port];
-+
-+	if (p->rgmii_tx_val) {
-+		lan937x_set_rgmii_tx_delay(dev, port);
-+		dev_info(dev->dev, "Applied rgmii tx delay for the port %d\n",
-+			 port);
-+	}
-+
-+	if (p->rgmii_rx_val) {
-+		lan937x_set_rgmii_rx_delay(dev, port);
-+		dev_info(dev->dev, "Applied rgmii rx delay for the port %d\n",
-+			 port);
-+	}
-+}
-+
- void lan937x_phylink_mac_config(struct ksz_device *dev, int port,
- 				unsigned int mode,
- 				const struct phylink_link_state *state)
-diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-index a6cb3ca22dc3..ba4adaddb3ec 100644
---- a/drivers/net/dsa/microchip/lan937x_reg.h
-+++ b/drivers/net/dsa/microchip/lan937x_reg.h
-@@ -136,6 +136,12 @@
+ 	if (cpu_port)
+@@ -1315,9 +1177,6 @@ int ksz9477_switch_init(struct ksz_device *dev)
+ 			dev->features &= ~GBIT_SUPPORT;
+ 		dev->phy_port_cnt = 2;
+ 	} else {
+-		/* Chip uses new XMII register definitions. */
+-		dev->features |= NEW_XMII;
+-
+ 		/* Chip does not support gigabit. */
+ 		if (!(data8 & SW_GIGABIT_ABLE))
+ 			dev->features &= ~GBIT_SUPPORT;
+diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
+index 6ca859345932..ddf99d1e4bbd 100644
+--- a/drivers/net/dsa/microchip/ksz9477_reg.h
++++ b/drivers/net/dsa/microchip/ksz9477_reg.h
+@@ -1175,29 +1175,11 @@
+ #define PORT_LINK_STATUS_FAIL		BIT(0)
  
+ /* 3 - xMII */
+-#define REG_PORT_XMII_CTRL_0		0x0300
+-
+ #define PORT_SGMII_SEL			BIT(7)
+ #define PORT_GRXC_ENABLE		BIT(0)
+ 
+-#define REG_PORT_XMII_CTRL_1		0x0301
+-
+ #define PORT_RMII_CLK_SEL		BIT(7)
  #define PORT_MII_SEL_EDGE		BIT(5)
+-#define PORT_RGMII_ID_IG_ENABLE		BIT(4)
+-#define PORT_RGMII_ID_EG_ENABLE		BIT(3)
+-#define PORT_MII_MAC_MODE		BIT(2)
+-#define PORT_MII_SEL_M			0x3
+-/* S1 */
+-#define PORT_MII_SEL_S1			0x0
+-#define PORT_RMII_SEL_S1		0x1
+-#define PORT_GMII_SEL_S1		0x2
+-#define PORT_RGMII_SEL_S1		0x3
+-/* S2 */
+-#define PORT_RGMII_SEL			0x0
+-#define PORT_RMII_SEL			0x1
+-#define PORT_GMII_SEL			0x2
+-#define PORT_MII_SEL			0x3
  
-+#define REG_PORT_XMII_CTRL_4		0x0304
-+#define REG_PORT_XMII_CTRL_5		0x0306
-+
-+#define PORT_DLL_RESET			BIT(15)
-+#define PORT_TUNE_ADJ			GENMASK(13, 7)
-+
  /* 4 - MAC */
  #define REG_PORT_MAC_CTRL_0		0x0400
- #define PORT_CHECK_LENGTH		BIT(2)
-@@ -161,6 +167,18 @@
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 237dec7c6e3c..86a2a40cacb4 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1436,6 +1436,9 @@ void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface)
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 		data8 |= bitval[P_RGMII_SEL];
++		/* On KSZ9893, disable RGMII in-band status support */
++		if (dev->features & IS_9893)
++			data8 &= ~P_MII_MAC_MODE;
+ 		break;
+ 	default:
+ 		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
+@@ -1453,6 +1456,39 @@ void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface)
+ 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
+ }
  
- #define P_PRIO_CTRL			REG_PORT_MRI_PRIO_CTRL
++phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit)
++{
++	const u8 *bitval = dev->info->xmii_ctrl1;
++	const u16 *regs = dev->info->regs;
++	phy_interface_t interface;
++	u8 data8;
++	u8 val;
++
++	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
++
++	val = FIELD_GET(P_MII_SEL_M, data8);
++
++	if (val == bitval[P_MII_SEL]) {
++		if (gbit)
++			interface = PHY_INTERFACE_MODE_GMII;
++		else
++			interface = PHY_INTERFACE_MODE_MII;
++	} else if (val == bitval[P_RMII_SEL]) {
++		interface = PHY_INTERFACE_MODE_RGMII;
++	} else {
++		interface = PHY_INTERFACE_MODE_RGMII;
++		if (data8 & P_RGMII_ID_EG_ENABLE)
++			interface = PHY_INTERFACE_MODE_RGMII_TXID;
++		if (data8 & P_RGMII_ID_IG_ENABLE) {
++			interface = PHY_INTERFACE_MODE_RGMII_RXID;
++			if (data8 & P_RGMII_ID_EG_ENABLE)
++				interface = PHY_INTERFACE_MODE_RGMII_ID;
++		}
++	}
++
++	return interface;
++}
++
+ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
+ 				   unsigned int mode,
+ 				   const struct phylink_link_state *state)
+@@ -1484,7 +1520,7 @@ bool ksz_get_gbit(struct ksz_device *dev, int port)
+ 	return gbit;
+ }
  
-+/* The port number as per the datasheet */
-+#define RGMII_2_PORT_NUM		5
-+#define RGMII_1_PORT_NUM		6
-+
-+#define LAN937X_RGMII_2_PORT		(RGMII_2_PORT_NUM - 1)
-+#define LAN937X_RGMII_1_PORT		(RGMII_1_PORT_NUM - 1)
-+
-+#define RGMII_1_TX_DELAY_2NS		2
-+#define RGMII_2_TX_DELAY_2NS		0
-+#define RGMII_1_RX_DELAY_2NS		0x1B
-+#define RGMII_2_RX_DELAY_2NS		0x14
-+
- #define LAN937X_TAG_LEN			2
+-void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
++static void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
+ {
+ 	const u8 *bitval = dev->info->xmii_ctrl1;
+ 	const u16 *regs = dev->info->regs;
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index bf13f72fa9f2..0b5c565d1ff4 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -319,8 +319,8 @@ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
+ bool ksz_get_gbit(struct ksz_device *dev, int port);
+-void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
+ void ksz_set_xmii(struct ksz_device *dev, int port, phy_interface_t interface);
++phy_interface_t ksz_get_xmii(struct ksz_device *dev, int port, bool gbit);
+ extern const struct ksz_chip_data ksz_switch_chips[];
  
- #endif
+ /* Common register access functions */
+@@ -492,6 +492,10 @@ static inline int is_lan937x(struct ksz_device *dev)
+ 
+ #define SW_START			0x01
+ 
++/* Used with variable features to indicate capabilities. */
++#define GBIT_SUPPORT			BIT(0)
++#define IS_9893				BIT(2)
++
+ /* xMII configuration */
+ #define P_MII_DUPLEX_M			BIT(6)
+ #define P_MII_100MBIT_M			BIT(4)
+@@ -499,6 +503,7 @@ static inline int is_lan937x(struct ksz_device *dev)
+ #define P_GMII_1GBIT_M			BIT(6)
+ #define P_RGMII_ID_IG_ENABLE		BIT(4)
+ #define P_RGMII_ID_EG_ENABLE		BIT(3)
++#define P_MII_MAC_MODE			BIT(2)
+ #define P_MII_SEL_M			0x3
+ 
+ /* Regmap tables generation */
 -- 
 2.36.1
 
