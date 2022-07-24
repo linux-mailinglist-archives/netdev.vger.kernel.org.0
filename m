@@ -2,103 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF52357F635
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 19:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53A357F643
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 20:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiGXRj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 13:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        id S229531AbiGXR7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 13:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGXRj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 13:39:26 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D009FE00A;
-        Sun, 24 Jul 2022 10:39:23 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id sz17so16692130ejc.9;
-        Sun, 24 Jul 2022 10:39:23 -0700 (PDT)
+        with ESMTP id S229456AbiGXR7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 13:59:33 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E64F5B7;
+        Sun, 24 Jul 2022 10:59:32 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id r21so6802721qtn.11;
+        Sun, 24 Jul 2022 10:59:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=SmBrzHw52bwH7Xn41Pzy7T17rp33HWokWawPue7k8iA=;
-        b=LNq9KSvvzv7j/HJKV866FauvJfpMaWj4iIoojhYCd7zy8/fAlfdhqDLztzmMAYneot
-         gdKldSWu0TkLVoCamWoFDnwI5Zz5JGTwMXjtTbxFkTdH3+391C4MOS0Ow1atKSS9bPug
-         Zt/3pFwjHtp9P3wj1DhYAsT4uhe3QO+3WU6Rd2w0aLZ+7M/45VZngYlw7Twpws0miflh
-         MDtaKwdHba838HLOL0ByV7Xk9LHJsh6u1VuTV2FSR3ilv1k3tgwBH/Pp4Nsk5lIY9Dlg
-         nmU3Ceyn3ovTxXZENH+htyqqddX1rpxXaKECZo10hcE7UXVxaoHecoQPiW2f2EEFncIB
-         IaVg==
+         :content-disposition:in-reply-to;
+        bh=QTqO+l5XPJwoB7NkXMJQ+Hft1sjPz34y1JLP1RzaRr4=;
+        b=plPzUSE4gg2nAeMZ7oGfeGBmiNvwhihZKt8W+beKdcQdeQA80FEJR7nR1bov1dZrfn
+         vILLi+FqgscWidqdrKtRad93zAhoq9axaX4yZVK+k1tiC69x6A3ih6XY0X8bbT+u/b6C
+         MDU7p8nU96m2pBbw52JnRTvgZQNsuquoEDVDoHtdC4z5b1RtSUIs0CozZSbk6yJCCoT2
+         6ZCN23D7OVSq+ED3TI+5qKaKkg4J6TQHh8fTbPBlG+FuK+g/+PLGIeAZTJW7P4EuKD6d
+         b8at15QOukaQDRJZS+rnbwEgLLreg4tyERoND4ZMFBBMHtwvuEguMCMkEB9zHCCI9wAL
+         1S2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=SmBrzHw52bwH7Xn41Pzy7T17rp33HWokWawPue7k8iA=;
-        b=RIlNXCLW1HlCNbe4oW+vot+q2/jwqPyW/gU5drGmypFz+bjsez8WjzlgBnp/P6CFen
-         bXYehE5odI9YqZ0dLxEmZx6ZCdb9V0v1tGi2mIputfJTOuTk0nYThL/SqgipN6x5IlXE
-         yqoNm/Ee6amR2gcjYw3MXJB30IjcdivmTnEDDEmSSnrbEm44i0v3fqPIGnFWRGD4osH5
-         9ufKXm3kceHuy9urETSouXC7A4OFCgD4/hjPY8n0Lg0pZ+AUDK11BUMcmsez188F2aLX
-         EETfv1ZTL/bZZfKFdohEOwiMNhlfXi/QnFvg5apuhKJHE7eLB6Gn6tenVYtLT0ANENb0
-         yJFA==
-X-Gm-Message-State: AJIora/qojy39QHGkdM96wyT3W+rbGGKylwARtV1vXbN+xki5Y41en9u
-        IZQT3FkKbFoP3c+gC1qKK7A=
-X-Google-Smtp-Source: AGRyM1vTTCYwH5W6U6Fg8IDwjOqz8S2dcUwFkhAR9C2Db19F6GyrIoCWMXAbpPi4n1Jq9tEf0F5ulQ==
-X-Received: by 2002:a17:906:7310:b0:72f:cad0:d436 with SMTP id di16-20020a170906731000b0072fcad0d436mr4380014ejc.751.1658684362088;
-        Sun, 24 Jul 2022 10:39:22 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id g6-20020a17090669c600b0072a815f569bsm4397182ejs.185.2022.07.24.10.39.18
+         :mime-version:content-disposition:in-reply-to;
+        bh=QTqO+l5XPJwoB7NkXMJQ+Hft1sjPz34y1JLP1RzaRr4=;
+        b=vTEiFW5KaozNKVd/y78AQR04HdzrI8kUnzsnjRtdhTDDpT2t/ZnyT10UqM38rVii7h
+         3vOfXVn86P4nlvbRZeYkMslEm37yGix8F2/v1qV7z2m9Bm6bBnX257AhgGRXgRCFm8TH
+         7TIrGkPcLOxkO2EToG5fJ3s68c4OkYnV04R1gZ4k1sySWgOtyaXYiwEQt7+lXdM+miH8
+         YMkxj7HuW4PZIKuzf6+hiwZJf0QlPwnLxdWo7qk8gIxR5Yg73efxZlteRAkyaFWmQxEk
+         q4Q/MxAEaT/VhVAZGk0+J0w7UJtg+wrvhRPsxBrbfNjcAUvfce07G6kMdZkOgcf2abDa
+         JenA==
+X-Gm-Message-State: AJIora/FwxO1m3T/31q+0G0yruyeZx00ncecGzBlboxHfXkAC9AgXNP8
+        iH+I6YsjxW2AqWCoj1pzMjI=
+X-Google-Smtp-Source: AGRyM1vrvpJOkWzsn9avqZwKpEna13skdVadky6z9XJsGLd4fUqjd6IjyHVM7Y10nhgRCpB3W+CDBg==
+X-Received: by 2002:a05:622a:251:b0:31e:f986:5566 with SMTP id c17-20020a05622a025100b0031ef9865566mr7675750qtx.225.1658685571157;
+        Sun, 24 Jul 2022 10:59:31 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:cc3e:96c:f965:f0dd])
+        by smtp.gmail.com with ESMTPSA id q13-20020a05620a2a4d00b006b59f02224asm7745407qkp.60.2022.07.24.10.59.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 10:39:19 -0700 (PDT)
-Date:   Sun, 24 Jul 2022 20:39:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH net-next 3/6] net: dsa: add support for retrieving the
- interface mode
-Message-ID: <20220724173916.lebsvaqveqwus4xj@skbuf>
-References: <YtpfmF37FmfY6BV5@shell.armlinux.org.uk>
- <20220722105238.qhfq5myqa4ixkvy4@skbuf>
- <YtqNkSDLRDtuooy/@shell.armlinux.org.uk>
- <20220722124629.7y3p7nt6jmm5hecq@skbuf>
- <YtqjFKUTsH4CK0L+@shell.armlinux.org.uk>
- <20220722165600.lldukpdflv7cjp4j@skbuf>
- <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
- <YtsUhdg3a2rT3NJC@shell.armlinux.org.uk>
- <20220722223932.poxim3sxz62lhcuf@skbuf>
- <20220723192655.46de7cae@thinkpad>
+        Sun, 24 Jul 2022 10:59:30 -0700 (PDT)
+Date:   Sun, 24 Jul 2022 10:59:28 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [Patch bpf-next] tcp: fix sock skb accounting in tcp_read_skb()
+Message-ID: <Yt2IgGuqVi9BHc/g@pop-os.localdomain>
+References: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
+ <CANn89iJSQh-5DAhEL4Fh5ZDrtY47y0Mo9YJbG-rnj17pdXqoXA@mail.gmail.com>
+ <YtQ/Np8DZBJVFO3l@pop-os.localdomain>
+ <CANn89iLLANJLHG+_uUu5Z+V64BMCsYHRgCHVHENhZiMOrVUtMw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220723192655.46de7cae@thinkpad>
+In-Reply-To: <CANn89iLLANJLHG+_uUu5Z+V64BMCsYHRgCHVHENhZiMOrVUtMw@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -109,173 +75,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 07:26:55PM +0200, Marek Behún wrote:
-> Does Lynx PCS support 1000base-x with AN?
-
-Yes, that would be the intention.
-
-> Because if so, it may be possible to somehow hack working AN for
-> 2500base-x, as I managed it for 88E6393X in the commit I mentioned (by
-> configuring 1000base-x and then hacking the PHY speed to 2.5x).
-
-I would need to try and see. For Lynx, to dynamically change from
-1000base-x to 2500base-x essentially means to move the SERDES lane from
-a PLL that can provide the 1.25 GHz required for 1000base-x to a PLL
-that can provide the 3.125 GHz required for 2500base-x. The procedure
-itself doesn't involve resetting the PCS, but to be honest with you,
-I don't know whether the state of the PCS registers is going to be
-preserved across the PLL change. Maybe it isn't, but this is entirely
-masked out by the phylink major reconfig process, I don't know.
-
-The alternative to dynamic reconfiguration is to program some bits that
-instruct the SoC what to do on power-on reset, and these bits include
-the initial SERDES protocols and PLL assignments too. I only tried to
-experiment with in-band autoneg in this mode (with the lane being
-configured for 2.5G out of reset, rather than dynamically switching it
-to 2.5G).
-
-> Anyway, I am now looking at the standards, and it seems that all the X
-> and R have K variant: 1000base-kx, 2500base-kx, 5gbase-kr and
-> 10gbase-kr. These modes have mandatory clause 73 autonegotiation.
-
-The X in BASE-X stands for 8b/10b coding, the R stands for 64b/66b coding.
-Whereas the K stands for bacKplane, i.e. the medium (compare this with
-the T in BASE-T, for twisted pair copper cable). Or with 1000BASE-SX and
-1000BASE-LX, the S stands for Short wavelength laser and the L for Long
-wavelength.
-
-What I'm trying to say, the 'X' in BASE-X doesn't stand for anything
-having to do with fiber, I guess 1000BASE-X is just a generic name for
-the coding scheme (PCS level) rather than something about the medium
-(PMD level). The terminology is pretty much a mess.
-
-> So either we need to add these as different modes of the
-> phy_interface_t type, or we need to differentiate whether clause 37 or
-> clause 73 AN should be used by another property.
+On Mon, Jul 18, 2022 at 09:26:29AM +0200, Eric Dumazet wrote:
+> On Sun, Jul 17, 2022 at 6:56 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Tue, Jul 12, 2022 at 03:20:37PM +0200, Eric Dumazet wrote:
+> > > On Sun, Jul 10, 2022 at 12:20 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > From: Cong Wang <cong.wang@bytedance.com>
+> > > >
+> > > > Before commit 965b57b469a5 ("net: Introduce a new proto_ops
+> > > > ->read_skb()"), skb was not dequeued from receive queue hence
+> > > > when we close TCP socket skb can be just flushed synchronously.
+> > > >
+> > > > After this commit, we have to uncharge skb immediately after being
+> > > > dequeued, otherwise it is still charged in the original sock. And we
+> > > > still need to retain skb->sk, as eBPF programs may extract sock
+> > > > information from skb->sk. Therefore, we have to call
+> > > > skb_set_owner_sk_safe() here.
+> > > >
+> > > > Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
+> > > > Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+> > > > Tested-by: Stanislav Fomichev <sdf@google.com>
+> > > > Cc: Eric Dumazet <edumazet@google.com>
+> > > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > > > ---
+> > > >  net/ipv4/tcp.c | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > > index 9d2fd3ced21b..c6b1effb2afd 100644
+> > > > --- a/net/ipv4/tcp.c
+> > > > +++ b/net/ipv4/tcp.c
+> > > > @@ -1749,6 +1749,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+> > > >                 int used;
+> > > >
+> > > >                 __skb_unlink(skb, &sk->sk_receive_queue);
+> > > > +               WARN_ON(!skb_set_owner_sk_safe(skb, sk));
+> > > >                 used = recv_actor(sk, skb);
+> > > >                 if (used <= 0) {
+> > > >                         if (!copied)
+> > > > --
+> > > > 2.34.1
+> > > >
+> > >
+> > > I am reading tcp_read_skb(),it seems to have other bugs.
+> > > I wonder why syzbot has not caught up yet.
+> >
+> > As you mentioned this here I assume you suggest I should fix all bugs in
+> > one patch? (I am fine either way in this case, only slightly prefer to fix
+> > one bug in each patch for readability.)
 > 
-> But since 1000base-x supports clause 37 and 1000base-kx clause 73, the
-> one property that we have, managed="in-band-status" is not enough, if
-> we keep calling both modes '1000base-x'.
-> 
-> So maybe we really need to add K variants as separate
-> PHY_INTERFACE_MODED_ constants. That way we can keep assuming clause 37
-> for 2500base-x, and try to implement it for as much drivers as
-> possible, by hacking it up...
+> I only wonder that after fixing all bugs, we might end up with  tcp_read_sk()
+> being a clone of tcp_read_sock() :/
 
-Well, for good or bad, 10GBase-KR does have its own phy-mode string,
-and Sean Anderson is sending a patch to add 1000base-KX now too.
-https://patchwork.kernel.org/project/netdevbpf/patch/20220719235002.1944800-3-sean.anderson@seco.com/
-(I still don't understand what that has to do with the topic of his
-series, but anyway)
+I really wish so, but unfortunately the partial read looks impossible to
+merged with full skb read.
 
-More at the end.
 
 > 
-> And I still don't understand this clause 73 AN at all. For example, if
-> one PHY supports only up to 2.5g speeds, will it complete AN with
-> another PHY that supports up to 10g speeds, if the second PHY will
-> (maybe?) try at higher frequency?
+> syzbot has a relevant report:
+> 
 
-Define what you mean by "one PHY supports only up to 2.5G speeds".
-My copy of IEEE 802.3-2018 doesn't list in Table 73–4—Technology Ability
-Field encoding any signaling mode that is capable of 2.5G, but rather
-1000BASE-KX, 10GBASE-KR, 25GBASE-KR and so on. So you'd have to express
-your question in terms of bits that are actually advertised through the
-Technology Ability field.
+Please provide a reproducer if you have, I don't see this report
+anywhere (except here of course).
 
-Then, clause 73 AN, very much like the clause 28/40 AN of BASE-T (to
-which it is most directly comparable) has a priority resolution function,
-meaning that if 2 link partners advertise support for multiple
-technologies, Table 73–5—Priority Resolution will decide which one of
-the commonly advertised technologies gets used.
+> ------------[ cut here ]------------
+> cleanup rbuf bug: copied 301B4426 seq 301B4426 rcvnxt 302142E8
+> WARNING: CPU: 0 PID: 3744 at net/ipv4/tcp.c:1567
+> tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
+> Modules linked in:
+> CPU: 0 PID: 3744 Comm: kworker/0:7 Not tainted
+> 5.19.0-rc5-syzkaller-01095-gedb2c3476db9 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine,
+> BIOS Google 06/29/2022
+> Workqueue: events nsim_dev_trap_report_work
+> RIP: 0010:tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
+> Code: ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e d7 03 00 00 8b 8d 38
+> 08 00 00 44 89 e2 44 89 f6 48 c7 c7 20 82 df 8a e8 94 d8 58 01 <0f> 0b
+> e8 cc 84 a0 f9 48 8d bd 88 07 00 00 48 b8 00 00 00 00 00 fc
+> RSP: 0018:ffffc90000007700 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: 000000000004fef7 RCX: 0000000000000000
+> RDX: ffff8880201abb00 RSI: ffffffff8160d438 RDI: fffff52000000ed2
+> RBP: ffff888016819800 R08: 0000000000000005 R09: 0000000000000000
+> R10: 0000000000000103 R11: 0000000000000001 R12: 00000000301b4426
+> R13: 0000000000000000 R14: 00000000301b4426 R15: 00000000301b4426
+> FS: 0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000020c55000 CR3: 0000000075009000 CR4: 00000000003506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+> <IRQ>
+> tcp_read_skb+0x29e/0x430 net/ipv4/tcp.c:1775
+> sk_psock_verdict_data_ready+0x9d/0xc0 net/core/skmsg.c:1209
+> tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4985
+> tcp_data_queue+0x1bb2/0x4c60 net/ipv4/tcp_input.c:5059
+> tcp_rcv_established+0x82f/0x20e0 net/ipv4/tcp_input.c:5984
+> tcp_v4_do_rcv+0x66c/0x9b0 net/ipv4/tcp_ipv4.c:1661
+> tcp_v4_rcv+0x343b/0x3940 net/ipv4/tcp_ipv4.c:2078
+> ip_protocol_deliver_rcu+0xa3/0x7c0 net/ipv4/ip_input.c:205
+> ip_local_deliver_finish+0x2e8/0x4c0 net/ipv4/ip_input.c:233
+> NF_HOOK include/linux/netfilter.h:307 [inline]
+> NF_HOOK include/linux/netfilter.h:301 [inline]
+> ip_local_deliver+0x1aa/0x200 net/ipv4/ip_input.c:254
+> dst_input include/net/dst.h:461 [inline]
+> ip_rcv_finish+0x1cb/0x2f0 net/ipv4/ip_input.c:437
+> NF_HOOK include/linux/netfilter.h:307 [inline]
+> NF_HOOK include/linux/netfilter.h:301 [inline]
+> ip_rcv+0xaa/0xd0 net/ipv4/ip_input.c:557
+> __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5480
+> __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5594
+> process_backlog+0x3a0/0x7c0 net/core/dev.c:5922
+> __napi_poll+0xb3/0x6e0 net/core/dev.c:6506
+> napi_poll net/core/dev.c:6573 [inline]
+> net_rx_action+0x9c1/0xd90 net/core/dev.c:6684
+> __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+> do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
+> </IRQ>
+> <TASK>
+> do_softirq kernel/softirq.c:464 [inline]
+> __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
+> spin_unlock_bh include/linux/spinlock.h:394 [inline]
+> nsim_dev_trap_report drivers/net/netdevsim/dev.c:814 [inline]
+> nsim_dev_trap_report_work+0x84d/0xba0 drivers/net/netdevsim/dev.c:840
+> process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+> worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+> kthread+0x2e9/0x3a0 kernel/kthread.c:376
+> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+> </TASK>------------[ cut here ]------------
+> cleanup rbuf bug: copied 301B4426 seq 301B4426 rcvnxt 302142E8
+> WARNING: CPU: 0 PID: 3744 at net/ipv4/tcp.c:1567
+> tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
+> Modules linked in:
+> CPU: 0 PID: 3744 Comm: kworker/0:7 Not tainted
+> 5.19.0-rc5-syzkaller-01095-gedb2c3476db9 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine,
+> BIOS Google 06/29/2022
+> Workqueue: events nsim_dev_trap_report_work
+> RIP: 0010:tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
+> Code: ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e d7 03 00 00 8b 8d 38
+> 08 00 00 44 89 e2 44 89 f6 48 c7 c7 20 82 df 8a e8 94 d8 58 01 <0f> 0b
+> e8 cc 84 a0 f9 48 8d bd 88 07 00 00 48 b8 00 00 00 00 00 fc
+> RSP: 0018:ffffc90000007700 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: 000000000004fef7 RCX: 0000000000000000
+> RDX: ffff8880201abb00 RSI: ffffffff8160d438 RDI: fffff52000000ed2
+> RBP: ffff888016819800 R08: 0000000000000005 R09: 0000000000000000
+> R10: 0000000000000103 R11: 0000000000000001 R12: 00000000301b4426
+> R13: 0000000000000000 R14: 00000000301b4426 R15: 00000000301b4426
+> FS: 0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000020c55000 CR3: 0000000075009000 CR4: 00000000003506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+> <IRQ>
+> tcp_read_skb+0x29e/0x430 net/ipv4/tcp.c:1775
+> sk_psock_verdict_data_ready+0x9d/0xc0 net/core/skmsg.c:1209
+> tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4985
+> tcp_data_queue+0x1bb2/0x4c60 net/ipv4/tcp_input.c:5059
+> tcp_rcv_established+0x82f/0x20e0 net/ipv4/tcp_input.c:5984
+> tcp_v4_do_rcv+0x66c/0x9b0 net/ipv4/tcp_ipv4.c:1661
+> tcp_v4_rcv+0x343b/0x3940 net/ipv4/tcp_ipv4.c:2078
+> ip_protocol_deliver_rcu+0xa3/0x7c0 net/ipv4/ip_input.c:205
+> ip_local_deliver_finish+0x2e8/0x4c0 net/ipv4/ip_input.c:233
+> NF_HOOK include/linux/netfilter.h:307 [inline]
+> NF_HOOK include/linux/netfilter.h:301 [inline]
+> ip_local_deliver+0x1aa/0x200 net/ipv4/ip_input.c:254
+> dst_input include/net/dst.h:461 [inline]
+> ip_rcv_finish+0x1cb/0x2f0 net/ipv4/ip_input.c:437
+> NF_HOOK include/linux/netfilter.h:307 [inline]
+> NF_HOOK include/linux/netfilter.h:301 [inline]
+> ip_rcv+0xaa/0xd0 net/ipv4/ip_input.c:557
+> __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5480
+> __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5594
+> process_backlog+0x3a0/0x7c0 net/core/dev.c:5922
+> __napi_poll+0xb3/0x6e0 net/core/dev.c:6506
+> napi_poll net/core/dev.c:6573 [inline]
+> net_rx_action+0x9c1/0xd90 net/core/dev.c:6684
+> __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+> do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
+> </IRQ>
+> <TASK>
+> do_softirq kernel/softirq.c:464 [inline]
+> __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
+> spin_unlock_bh include/linux/spinlock.h:394 [inline]
+> nsim_dev_trap_report drivers/net/netdevsim/dev.c:814 [inline]
+> nsim_dev_trap_report_work+0x84d/0xba0 drivers/net/netdevsim/dev.c:840
+> process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+> worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+> kthread+0x2e9/0x3a0 kernel/kthread.c:376
+> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+> </TASK>
+> 
+> >
+> > >
+> > > It ignores the offset value from tcp_recv_skb(), this looks wrong to me.
+> > > The reason tcp_read_sock() passes a @len parameter is that is it not
+> > > skb->len, but (skb->len - offset)
+> >
+> > If I understand tcp_recv_skb() correctly it only returns an offset for a
+> > partial read of an skb. IOW, if we always read an entire skb at a time,
+> > offset makes no sense here, right?
+> >
+> > >
+> > > Also if recv_actor(sk, skb) returns 0, we probably still need to
+> > > advance tp->copied_seq,
+> > > for instance if skb had a pure FIN (and thus skb->len == 0), since you
+> > > removed the skb from sk_receive_queue ?
+> >
+> > Doesn't the following code handle this case?
+> >
+> >         if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
+> >                 consume_skb(skb);
+> >                 ++seq;
+> >                 break;
+> >         }
+> >
+> > which is copied from tcp_read_sock()...
+> 
+> I do not think this is enough, because you can break from the loop
+> before doing this  check about TCPHDR_FIN,
 
-Side note: contrast this with flow control, which annoyingly was
-designed by IEEE to not have a priority resolution, in other words you
-don't get a graceful falloff of the resolved pause modes depending on
-what you and the link partner advertised, instead you need to
-preconfigure both ends if you want to achieve a particular result;
-this is IMO as useless as not having AN at all.
-
-There is of course no guarantee that two backplane link partners will
-have any technology ability in common, for example one may advertise
-only 1000Base-KX and the other only 10GBase-KR. In that case, autoneg
-will complete, but the link will simply not come up.
-
-The clause 73 autoneg signaling takes place using a predetermined, low-speed
-encoding. The medium transitions to the highest negotiated technology,
-and performs clause 74 link training on that medium, only after both
-ends agree that clause 73 autoneg has completed. This kind of implies
-that they will agree on the frequency being used for the data traffic.
-
-If you're asking whether 2 backplane devices will advertise 10GBase-KR
-but one of them supports a data rate of only up to 2.5Gbps over that 10G
-link, I think this is vendor-dependent and IEEE doesn't say anything
-about it. For example this is where rate adaptation could come into
-play, either through flow control, or there could be an extension to
-clause 73 similar to what Cisco did with USXGMII, where the lane
-operates at 10GBaud but via symbol replication your data rate can
-actually be only 2.5Gbps. I'm not aware of real life applications of
-rate adaptation over backplane links.
+The logic is same for tcp_read_sock(). :)
 
 
-I hinted earlier that clause 73 autoneg is most directly comparable to
-BASE-T autoneg (these 2 are even situated at different layers if you
-look at the IEEE OSI stack pictures, compared to where clause 37 AN is).
-The problem is that the Linux kernel support for new physical technologies
-grew organically, and we don't have a structure in place that scales
-naturally to all the places in which these technologies may appear in
-the stack. For example we have the phy-mode, and this represents the
+> after skb has been unlinked from sk_receive_queue. TCP won't be able
+> to catch FIN.
 
-...
+So TCP does not process FIN before ->sk_data_ready()? I wonder how FIN
+(at least a pure FIN as you mentioned above) ends up being queued in
+->sk_receive_queue anyway?
 
-/goes searching for the documentation, I don't want to be making this up/
-
-...
-
-  phy-connection-type:
-    description:
-      Specifies interface type between the Ethernet device and a physical
-      layer (PHY) device.
-
-There you go, pretty vague. What's the Ethernet device, and what's the
-PHY device?
-
-For example SGMII connects a MAC to a PHY, but to speak SGMII to reach
-to your PHY, you need another PHY that does the parallel GMII to serial
-translation for you. So to say that the phy-mode is SGMII, you need to
-ignore that the MAC has a PHY too.
-
-10GBase-KR is similar in a way, it can be placed at multiple layers, and
-traditionally, where you put it makes a difference to how we describe it
-in Linux.
-
-Maybe you have a 10GBase-T PHY chip with a backplane host-side PHY, it
-supports clause 73 declaring the 10GBase-KR technology, then it supports
-clause 74 link training, the whole shebang. These things exist. How would
-you describe this? You'd say the phy-mode is "10gbase-kr", according to
-precedent. Would that be the best thing to do, in the spirit of clause 73?
-I don't think it would. Essentially what would need to happen as a
-consequence of this description is that your PCS would essentially
-populate its Technology Ability with a single bit, corresponding to what
-you put in phy-mode, because that's how we shoehorned this. Then we'd
-say what, that managed = "in-band-status" decides whether to bypass
-clause 73 AN or not? I don't think so.
-
-Truth is, a 10G-KR "PCS" (what we mean when we say a PHY integrated into a MAC)
-is much more similar to a dedicated 10G-KR PHY, to the point that it's
-indistinguishable (what Linux thinks of a phy_device is actually 2 PHYs
-back to back, one for the host side and one for the medium side), and it
-*needs* to be treated by Linux in the same way regardless of where it's
-placed. You *need* to be able to control the backplane PCS' advertisement,
-whether to use FEC or not, regardless if it's your medium facing device,
-or an in-between device.
-
-The discussion is much, much bigger than this, but in summary, I think
-it would be quite short-sighted to expand managed = "in-band-status" for
-anything related to clause 73, or for much more than what it means right
-now (the problem is, what _does_ it mean and what _doesn't_ it?).
-
-This, plus I think development needs to be driven by someone with real
-world needs and a sense for what's practical. I am quite well outside of
-the sphere of 10-gig-and-higher networking, I'm just looking from the
-peanut gallery, so that won't be me.
+Thanks!
