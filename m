@@ -2,155 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E04F057F41B
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D3A57F41C
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 10:28:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiGXI2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 04:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
+        id S230111AbiGXI2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 04:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGXI2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:28:19 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7D512F
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:28:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K1Ftjd9MSYCv2le0CtxMt9ysweEP5GpZZrYGyjWY8cKAyFr8WBPBorAd6Ik0VDoOrKJ825SnareDpC58Td7hM54tEzl3YmhP1T5sERsIxGlwWjAVS0Acge98SAp0cgetXxglIUYnquAwDJZ5fLhKUAzy69wgc/xrPBDlwYRx6ugicpCswav9uZzxTgCJpa77iRKItyQedy1deUQqQhnlpkbjym54Tzpx85v+7oeUhei3jAub/as//nuqsz3vetjjWlkJYkQSyxJGS7lkH5V//AyMLwaVpVYPEuVsxb21u1hNFylE4IzRjuHeEVcqz13jpe4MrAZFEd8UKWIjXIdg8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ct5JuO6y9r3u3TVd7TOFQfiopFVeOZ7l+tOVkl1wI64=;
- b=n20m2tf9V700ZGI19Lb3D6133FN3MfDCfkW/hgqxjzSyo/Xkfg0+5Rl26Z9CSGkkAmViw0u24xzy86xwssGgbNl9NDPaVoHb5aC2zKmOgCSs5r6EJUAZv+Z+nxjcIs6ZVq3Ik7MR5fct9ZzP3a4xs0nETRTBEPqv7v6/03NRgoYJYJvn9IXS1hy90W9K1gUu6UqVLIR89XZYc+d/wmhf1z338h43Wht8anG9uqvBlLYhPKndDfflG1QTDWTXl/C83nOPbklH3AtLjcbk8jyxI4inBGx8jwAWlJYoeFpc1fEQs6vxvTV5oeLiaUCtH/w69MK7pfQHAgKVSgM3Kx7rKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ct5JuO6y9r3u3TVd7TOFQfiopFVeOZ7l+tOVkl1wI64=;
- b=rkbw+lQC+ZTZlvY5HSF68myq99xnYqKTvLis7K+lliF8lRrhsrPnl8fgCQD4OGrTc6GkBv+AVUO1Hwf+QqC87G18PPA0fiu2XoGBF7gGQ2zyXKgTMB5GZ2BJHbLu2IKWqoqf8SxgyDeu7MFUf/qw/ylmnkeLv42VOBoGmSIJ/rL5HdtY0N05KaEAKrpyGz9Dxm6SbOVH2oTz5I4p+S9hBvJnXrUbOZWL2e1/SUZgQ6mptuUn4dTHaKYsQzjpkEDt+wsP+WSqWS1p5U6JxqjpGPQplxENBLNeKKauiiJqtBAXyu8OMYO/pYg2wi2hMak3/UWS453Ms+gtYxyPBHY7aA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- DM4PR12MB5916.namprd12.prod.outlook.com (2603:10b6:8:69::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.21; Sun, 24 Jul 2022 08:28:16 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::548c:fcf:1288:6d3]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::548c:fcf:1288:6d3%9]) with mapi id 15.20.5458.021; Sun, 24 Jul 2022
- 08:28:16 +0000
-Message-ID: <3bcae34c-5236-17e3-b2f7-e377eff33739@nvidia.com>
-Date:   Sun, 24 Jul 2022 11:28:09 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [net-next 03/14] net/mlx5e: Expose rx_oversize_pkts_buffer
- counter
-Content-Language: en-US
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20220717213352.89838-1-saeed@kernel.org>
- <20220717213352.89838-4-saeed@kernel.org>
- <20220718202504.3d189f57@kernel.org>
- <24bd2c21-87c2-0ca9-8f57-10dc2ae4774c@nvidia.com>
- <20220719202234.sym2tqtsko5iond2@sx1>
-From:   Gal Pressman <gal@nvidia.com>
-In-Reply-To: <20220719202234.sym2tqtsko5iond2@sx1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO6P123CA0020.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:313::8) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S229770AbiGXI2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 04:28:24 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23A3B1E8
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:28:22 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id b15-20020a92c56f000000b002dd2870c587so2367456ilj.20
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 01:28:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=siNdMcmVC1qeTk+B4F5oiCxVfKOp5O/Vi1z/Kzj7dHM=;
+        b=3r/eOGBOF0eKrlxYyetdOWRtCErDutE3O/mOc+u0wI7KESdIltA06Z2RBXJO4SU7Zh
+         X4stwWImLid5sBrU1dm1XNZK+C2n1nQTsgBHA+bmlopuXynS68cdR69+yrGWuuL1C6VT
+         wRCWq8/nuoHwZFT0fCf0nkzvP/UINWwNEVGaM6AjJZI76KaniiBg0/dL7nQWb5GIAU6l
+         lwzutujuF6HJbKbXG161sc4xhcw+dy6UvmFA/4IJmJTayMqNJGr+wwR7WJWwuUfgIlWz
+         ILqgLByaKDeravBERdaTu6w0pjWivceDiRPNH4x/l9WIfisfQzKU0TBX1h+Qj+9A11qg
+         4oXQ==
+X-Gm-Message-State: AJIora/iDC7U+XAkzgrtr2wsTgpbW57AChdvX48LYtldBYAV+c80JeC3
+        fmt7GgwItvTRCsbCqB04EcFkd0z5MdyUAIpBEHeGh5Us99SM
+X-Google-Smtp-Source: AGRyM1uGd9OBXtc0p0/1RqGf8T8rg3nLMfi8PXAhc6xK5yfQmQ85b1uF9FpNl81Z6HQczKkJ1DqoA4VoOjTpCjCT1HxtwbABIo6x
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b6df9163-9a1c-45a0-5ff0-08da6d4e74dd
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5916:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SeHHmX2oiw6sKL+RY1nhPHtrZ2+pADk2dsHId1/43g/bBIjXaIe+ZJ71AHs3Y38a6Fu2jI3tS99NyrSc6qiIH3VJzdRLqoGhW7TPKKlh6XGDEDfRlxZHkApN6AatHc7PPGntltUBKOEwaxn/Nusg6gygXv5q39unY/xhj6t6UEafvtv1oDR8yRvpbj3usSynFZG9NrdpzQ/N9xt2zIlALvjcyibmBnn/WNdtFCo78wNxIPO6NRZedi/8vjeArjoxGUUZMzfO2U1lU66gTdv1DcL5I6raY7LRSun1eqwnKGGXWsiNpsiI9gyHilEi6TY+6+vHCdI3SpfGYGIipiUfz8dwoRJtNxHM7vReb1dqMTtnYHo+hYYnpWn+sFLfd9kLYCU9HXQ0/IGly1XmBfIQrYWZQWzWDP4ygSvQN/+inJMrSfu8MZoVc6CxP055fjUJke157JX8YkwUwSSulHXf7HrGQjQVOR62C/JIwtLveFquKVlWftKfe0kexQnjVVnlgY9cYgeBeQmQtVtlEoSmznRRPaPX+okJ3fGj3jc4GVWoXXnDN8ILWaIasNGABVo3XVj5qaaaaseTV2CrU1m33RINIrj9A6wQgOuijOq0oD8mvRXVxOwO2hNfaJM+miPsqI+TOf05/w9UaXrMoz7X8UH4dDf1QLodR2mdq00sjtcwfDkvddHVNuYFMIcZ9uZFGfINUkLv1uHtCRuIIDxfi1AEiWYvfLC1Licu1AbV2oDYpc/SKkpoZX3wCxoyE5+CAkJFnsL0IjmA2wvjKmwWLkPWyx8XukB0JvQcKbDJxdWTeK7/RQWuDqBOh+YBUB8BR0YnIbCpFv4pXi3oJa6wmQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(316002)(6916009)(54906003)(41300700001)(6666004)(26005)(6506007)(6512007)(53546011)(478600001)(6486002)(4326008)(66946007)(66556008)(66476007)(8676002)(2906002)(5660300002)(8936002)(38100700002)(86362001)(31696002)(36756003)(31686004)(107886003)(83380400001)(186003)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MDFobEJOOGV1cEl0ZEJWbVJySUx4Sjl2dUo5RGFDemxmdis3R3lsSnY5QkI1?=
- =?utf-8?B?Q2tBRUNpaUhZWTljWjR4cTNFcTB5ZGVmaGZnWG9ab1BWYndmMjNDZGJaTERJ?=
- =?utf-8?B?b2hLRTNjNTJxNUtDN3IyQ2g4Q3QydkNBbDg5VzR2N3hnUjBRWXYxZ1YzT2Zs?=
- =?utf-8?B?R1F2WWZPc05OSUpuNWExNU9RWUdaRXlUb2VaNXcvSkF3RUY5RDdKWWpGUU5D?=
- =?utf-8?B?OUsrdjVDSTBsTUVtM1YyMDVweXpxR0RyTlB6cjdPUHl2YlQ2ZG9zZWd3TnNr?=
- =?utf-8?B?aUEzWUpoaE1maFFSVFZsS1NCaFR6UGlLVjhsaVJCZmxQcmtrTEFqbWRWSUI4?=
- =?utf-8?B?YmFjU0hGcmRmdDZobVIvWnJKTTlLRENDZERGcHRxV0V1aHZCak9udTlwVytH?=
- =?utf-8?B?Z1BjS2JKVmE3QkVFM0s2dEtqajVvZHE2VnZqOFgyZFRDU2xnMTVIRVM5SFpG?=
- =?utf-8?B?MEltS2doaXZ6clQxNFlXZ2hheTc2dG1GUG1pNjV0U3grSXdzTmVOWnFaSTdo?=
- =?utf-8?B?MGNUdXVwb1U4UTBCb28wUjJsY1ZQRld0ZmhYZ3kxcVRkV3BsT2E2THVvNHI2?=
- =?utf-8?B?MGRIOTdUekJjcXJiR2xrd2poSW9RVG5jK3dxR2FrdmxZVFBnOEhQUGtUOU5Y?=
- =?utf-8?B?YVRSQkNqYjJrR3YrSEdoY2E1cFU3WGcya0prWVBHK0cvNTY1MW1Hc0JVKy9S?=
- =?utf-8?B?N09Db2R5c0JGeXJwU0NVQTZ2VzFpeWt6dHJubVNSWkdCaGprdWVkcEF6SFo4?=
- =?utf-8?B?Tk56Mk1iODlMMGFKd0EyQ0JSSVV4cE5HdVJ2M0swUGZmTm1Tc0VpY2dKbVVk?=
- =?utf-8?B?ZTBTTzNjU2prWDBFU1docXBVNTBQM2ZuUTgrd1lQNnNDQ3duRUM0SnNkK2R1?=
- =?utf-8?B?TTBOaWZmNTh5OHorQTRiSlFEbkQ1SnFjUUFsWDBBSzBjcEZWcndqQjJmblc2?=
- =?utf-8?B?M0xJek5mN1hFU01SZERFNlEvS1VVWlVOYnlFSkZtcTZNdW9qODVGQzY2OFR3?=
- =?utf-8?B?ZmFlSEpEVENTbU5NRUNKMlg3VXhSVFRadTVzZ0hrWGJqUEJabUpUeHVZTTRM?=
- =?utf-8?B?aXZ4dk8vMVdrS0VyTVJhZGR3dldDS2U1V3BONkExT0ltd2J5VXpzT09RUzl3?=
- =?utf-8?B?Wm8wM0IyaHFQeHp2Z3M3dWljdGpOUWhRY0FlTStNZjhSUW1XQ0JzSk84Ulll?=
- =?utf-8?B?a21vUkZVMnFDUEtmdVFZOVZodHZ0Y3pJb1pnN0owRVVWN1ovTmQwMWRKdmEv?=
- =?utf-8?B?cDZVL21jWWgybStLM1lVTGxzUWE4UGZOellReDZibHowd3J5N1dZaXovc1lC?=
- =?utf-8?B?WkhMWHlSR0FpcUNLMmw2NkNjWTZJOUJYbjhMYWt0dWlDQUMzMHJ6b2s3cTJy?=
- =?utf-8?B?TkxsQzJscWJVeWVvQUZwcmdtV1U2Q0R6bWZzUVk3QXRZMThHVFRYN24vWHZt?=
- =?utf-8?B?akZCSVE1aXMvQXJBdC9ib1V0N2hpM3dZamFLUWFQbThaczU0WkJpSGJYUzUx?=
- =?utf-8?B?R25LdWJHa01pYS9YazBjT3QwNXlVWnJKU3Q1ajdoOGlxaFRZNHFWd0dzc3RI?=
- =?utf-8?B?cFdZYWNSV0ZteU9WU3Q2UEZHN0p5bHNrUlBnQ3J1OUJmZE9aZU82cXgxb2NV?=
- =?utf-8?B?Rk03b1lJSEFpYkpubHJ2anduN3I2bzRBQmlyb1BkK0hMak5SeUlld3RzM0t0?=
- =?utf-8?B?RDY2T2wwYSsxTEFFeVVrTytSbGhLbkduTlZOcjVlaFZ5eEpMbUpyM0ZTU1Jr?=
- =?utf-8?B?d2VaNGY5YUoyUWg3WEJ6NnlOdUJZbklSSlAranB4c1NtWXJYbGVoUlpZcG1a?=
- =?utf-8?B?amRJQlljV2ZUMDhQYndWOVZpYnl3R3VTNkRsdWF3N0RYRXNGY3dJUWhmams5?=
- =?utf-8?B?SS9Zd3F0S0JvNDV2UjFraGZhQ1pJK0JsRis0eGcreVVBbmNteDlyeklwZHg0?=
- =?utf-8?B?T1RCbzhrV05iZmhPMk5qQS9DNG5lNVcxa1h0L3hKSVZNV2xOZHQxa1FmMUZm?=
- =?utf-8?B?WkdwdFVLZHkyVW9mTkliR3VWVS8rcStrMVY3cDhiQ1dFeVZyMXh5YzhXRVlX?=
- =?utf-8?B?SStUbHJmUDJsRkxaWVBlV3BrOGtoaUwySkJhNktIVFVaMS9iT3NxMkh6Ty9I?=
- =?utf-8?Q?E7jBcCwpcYn4YZvRAmuzUR6Lx?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6df9163-9a1c-45a0-5ff0-08da6d4e74dd
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2022 08:28:16.3439
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: psOoQmwNcDI1OyGDuFTPiEn+VLVxo67a7U4VYzeV/wUWyJlBb+c9Oi3+Jp0UkOJT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5916
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:2a42:0:b0:67c:5ab8:a34e with SMTP id
+ q63-20020a6b2a42000000b0067c5ab8a34emr2408381ioq.143.1658651302109; Sun, 24
+ Jul 2022 01:28:22 -0700 (PDT)
+Date:   Sun, 24 Jul 2022 01:28:22 -0700
+In-Reply-To: <00000000000011f0c905d9097a62@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ab295405e488d921@google.com>
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+From:   syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
+        ericvh@gmail.com, k.kahurani@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux_oss@crudebyte.com,
+        lucho@ionkov.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/07/2022 23:22, Saeed Mahameed wrote:
-> On 19 Jul 14:13, Gal Pressman wrote:
->> On 19/07/2022 06:25, Jakub Kicinski wrote:
->>> On Sun, 17 Jul 2022 14:33:41 -0700 Saeed Mahameed wrote:
->>>> From: Gal Pressman <gal@nvidia.com>
->>>>
->>>> Add the rx_oversize_pkts_buffer counter to ethtool statistics.
->>>> This counter exposes the number of dropped received packets due to
->>>> length which arrived to RQ and exceed software buffer size
->>>> allocated by
->>>> the device for incoming traffic. It might imply that the device MTU is
->>>> larger than the software buffers size.
->>> Is it counted towards any of the existing stats as well? It needs
->>> to end up in struct rtnl_link_stats64::rx_length_errors somehow.
->
-> it is already counted in ethtool->rx_wqe_err, but rx wqe err is more
-> general purpose and can include other errors too, the idea is to have a
-> better resolution for the error reason.
+syzbot has found a reproducer for the following issue on:
 
-rx_wqe_err counts error completions, this counter counts packets which
-are getting dropped by the device and do not necessarily generate a
-completion.
+HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=106a4022080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=5e28cdb7ebd0f2389ca4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156f74ee080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+kmem_cache_destroy 9p-fcall-cache: Slab cache still has objects when called from p9_client_destroy+0x213/0x370 net/9p/client.c:1100
+WARNING: CPU: 0 PID: 3687 at mm/slab_common.c:505 kmem_cache_destroy mm/slab_common.c:505 [inline]
+WARNING: CPU: 0 PID: 3687 at mm/slab_common.c:505 kmem_cache_destroy+0x138/0x140 mm/slab_common.c:493
+Modules linked in:
+CPU: 1 PID: 3687 Comm: syz-executor.0 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:kmem_cache_destroy mm/slab_common.c:505 [inline]
+RIP: 0010:kmem_cache_destroy+0x138/0x140 mm/slab_common.c:493
+Code: 95 18 00 48 89 ef e8 07 96 18 00 eb cc c3 48 8b 55 60 48 c7 c6 80 da d7 89 48 c7 c7 88 e8 61 8b 48 8b 4c 24 18 e8 f2 3a 86 07 <0f> 0b eb ab 0f 1f 40 00 41 56 41 89 d6 41 55 49 89 f5 41 54 49 89
+RSP: 0018:ffffc900034efcf0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 1ffff9200069dfa5 RCX: 0000000000000000
+RDX: ffff88807513ba80 RSI: ffffffff81610608 RDI: fffff5200069df90
+RBP: ffff88801f0cc8c0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000001 R12: 0000000000000001
+R13: ffffc900034efd68 R14: dffffc0000000000 R15: 0000000000000000
+FS:  0000555556019400(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe57b1fe718 CR3: 00000000728bc000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ p9_client_destroy+0x213/0x370 net/9p/client.c:1100
+ v9fs_session_close+0x45/0x2d0 fs/9p/v9fs.c:504
+ v9fs_kill_super+0x49/0x90 fs/9p/vfs_super.c:226
+ deactivate_locked_super+0x94/0x160 fs/super.c:332
+ deactivate_super+0xad/0xd0 fs/super.c:363
+ cleanup_mnt+0x3a2/0x540 fs/namespace.c:1186
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fe57ba8a677
+Code: ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff19aa4578 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fe57ba8a677
+RDX: 00007fff19aa464c RSI: 000000000000000a RDI: 00007fff19aa4640
+RBP: 00007fff19aa4640 R08: 00000000ffffffff R09: 00007fff19aa4410
+R10: 000055555601a8b3 R11: 0000000000000246 R12: 00007fe57bae22a6
+R13: 00007fff19aa5700 R14: 000055555601a810 R15: 00007fff19aa5740
+ </TASK>
+
