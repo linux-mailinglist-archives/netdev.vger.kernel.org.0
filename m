@@ -2,98 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EBCC57F53D
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 15:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7302857F4E8
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 14:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229462AbiGXNnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 09:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
+        id S229903AbiGXMUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 08:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiGXNnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 09:43:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A30E0AA;
-        Sun, 24 Jul 2022 06:43:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC27DB80D32;
-        Sun, 24 Jul 2022 13:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9279CC3411E;
-        Sun, 24 Jul 2022 13:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658670180;
-        bh=maUBUTNvw0Eg0uVI0eTfJ37pCQzM3v+3MOLAjM/O4Dw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uhOxHNmuPO8N7ia5ENwOhWBb/UJwNbxm70SQCqg55A0iLJEuDHw86etfiTDFaGh0b
-         RR4SiAf/Df2jO6UR7KI8Jwi6qYyVuDP7c073nCU4zPffAQiuNiIYwDm05Qy4cetjL6
-         GAWflP+r3wDg1WrpfYq0NcYN4tPtSRLI60ZFfwfk=
-Date:   Sun, 24 Jul 2022 15:42:55 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dipanjan Das <mail.dipanjan.das@gmail.com>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        sashal@kernel.org, edumazet@google.com,
-        steffen.klassert@secunet.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        syzkaller@googlegroups.com, fleischermarius@googlemail.com,
-        its.priyanka.bose@gmail.com
-Subject: Re: general protection fault in sock_def_error_report
-Message-ID: <Yt1MX1Z6z0y82i1I@kroah.com>
-References: <CANX2M5Yphi3JcCsMf3HgPPkk9XCfOKO85gyMdxQf3_O74yc1Hg@mail.gmail.com>
- <Ytzy9IjGXziLaVV0@kroah.com>
- <CANX2M5bxA5FF2Z8PFFc2p-OxkhOJQ8y=8PGF1kdLsJo+C92_gQ@mail.gmail.com>
+        with ESMTP id S229450AbiGXMUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 08:20:03 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCE012ABB;
+        Sun, 24 Jul 2022 05:19:55 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1658665190thxciqmk
+Received: from localhost.localdomain ( [171.223.97.251])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 24 Jul 2022 20:19:48 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: cbck7jzG4wbbtuthirBaXPVLfg+gpwTLWy1jH/yCDaAkqZ0ZMegFdCCJ1VCBi
+        fgNoElUAWi2M/T9xWYrilrApykYb6OIsP+uiZc/XWe5fEqYqymPGWbuvjbXG8Ye2D05Z+dK
+        syuVtFwBGcieqUQ3rNQdVnvxWMIbWvNl4ZFMQaVNRYH7sBU76CJb35t27JRBQqa6AymiqHC
+        uw++O1DnTSZ8PSUOPMfPWQnrcXhGGlqnuUevwnLI982SFpl6/kz0y+zDLtpv+oda2Id/2NA
+        64cd0MH4W36sM4UnhR3RiEm3ZTpP/jwV4eErQoS5ydOyVFeZCWaCflcsveptP3pnWLGPIqx
+        2ksE4UYTugAkK4c1z63WucbVlPUUXUby7QNmsyC/9m8QPbYyPsNrpQrSS/9+w==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     edumazet@google.com
+Cc:     idryomov@gmail.com, xiubli@redhat.com, jlayton@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] libceph: Fix comment typo
+Date:   Mon, 25 Jul 2022 04:11:31 +0800
+Message-Id: <20220724201131.3381-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANX2M5bxA5FF2Z8PFFc2p-OxkhOJQ8y=8PGF1kdLsJo+C92_gQ@mail.gmail.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
+        RDNS_NONE,SPF_PASS,T_SPF_HELO_TEMPERROR autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 12:40:09AM -0700, Dipanjan Das wrote:
-> On Sun, Jul 24, 2022 at 12:26 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Sat, Jul 23, 2022 at 03:07:09PM -0700, Dipanjan Das wrote:
-> > > Hi,
-> > >
-> > > We would like to report the following bug which has been found by our
-> > > modified version of syzkaller.
-> >
-> > Do you have a fix for this issue?  Without that, it's a bit harder as:
-> 
-> We will try to root cause the issue and provide a fix, if possible.
-> 
-> >
-> > > ======================================================
-> > > description: general protection fault in sock_def_error_report
-> > > affected file: net/core/sock.c
-> > > kernel version: 5.4.206
-> >
-> > You are using a very old kernel version, and we have loads of other
-> > syzbot-reported issues to resolve that trigger on newer kernels.
-> 
-> Since 5.4.206 is a longterm release kernel, we were under the
-> impression that the community is still accepting fixes and patches for
-> the same. I understand that adding another bug to the already pending
-> queue of syzbot reported issues is not going to help the developers
-> much. Therefore, we will definitely try our best to analyze the issue
-> and provide a fix in the coming days. Can you please confirm that it
-> is worth the effort for the longterm release kernels?
+The double `without' is duplicated in the comment, remove one.
 
-It is worth the effort if the problem is still in the latest kernel
-release as that is the only place that new development happens.  If the
-issue is not reproducible on Linus's current releases, then finding the
-change that solved the problem is also good so that we can then backport
-it to the stable/long term kernel release for everyone to benefit from.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ net/ceph/pagelist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So does your reproducer still work on the latest 5.19-rc7 release?
+diff --git a/net/ceph/pagelist.c b/net/ceph/pagelist.c
+index 65e34f78b05d..74622b278d57 100644
+--- a/net/ceph/pagelist.c
++++ b/net/ceph/pagelist.c
+@@ -96,7 +96,7 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
+ EXPORT_SYMBOL(ceph_pagelist_append);
+ 
+ /* Allocate enough pages for a pagelist to append the given amount
+- * of data without without allocating.
++ * of data without allocating.
+  * Returns: 0 on success, -ENOMEM on error.
+  */
+ int ceph_pagelist_reserve(struct ceph_pagelist *pl, size_t space)
+-- 
+2.35.1
 
-thanks,
-
-greg k-h
