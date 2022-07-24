@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6ED757F743
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E73D57F773
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 00:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiGXVyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 17:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
+        id S232001AbiGXWvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 18:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiGXVyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:54:07 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7303CE19;
-        Sun, 24 Jul 2022 14:54:06 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id b11so17312196eju.10;
-        Sun, 24 Jul 2022 14:54:06 -0700 (PDT)
+        with ESMTP id S231994AbiGXWvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 18:51:07 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319496169;
+        Sun, 24 Jul 2022 15:51:06 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id sz17so17530565ejc.9;
+        Sun, 24 Jul 2022 15:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Iud5FUy3OZWLd15hXCRbvZsIvxpax/LEixyfDAvU5jg=;
-        b=N8jcFg0CBOtwtU6H4Lv8mCc2cc+Y4aIQjhKrJ+lSVXhHCb7pRykX7bOTen/QYQTINA
-         zu7Y9Jdj6VRtGmvHd7v4tgBpMD4QUfuuL+zhLIbI6e6bjYOh7GxBYfl17wq8C3/lD5ce
-         kKN3t88yJT4jaBwGnTO3TVHmCtaJv55FE2jk3pf+mtB7Vp2C8pdZhkEvbbArkgVxy++S
-         hoj2g3FNfYN80q0kQFya1+dVfSBRMWwwXDwtDpwGv994AMUsuDWOiCzhewnGOhKXNV6R
-         /vXB+wSbObE84S75z0JmX6B+MddPwt6UlnJkwM80r9AIq0+SjlFbGpAgBheO9FpyuE1D
-         ea8g==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iC8ZFOlLhnkf1prx6yWwk+CQsLZ6WJZa0KwwPQLezfU=;
+        b=YM882+zsJMrMfmw70eDSAawArjCbzvZENlE6m8ovXAoUpp/3LqMx6N1oSy1tBhaacT
+         JRrO4j8fW8QXDpA/VqYyZfr9YwKqsGgTqZxOY/wmQ5PKGwhrFI++z/MXxV6Dye0wKrji
+         1sRMIN5CBje9R9/Kl0f5Q497519MKu+1OWkSnhR1oUR4bXWMw0HU2KfYVNJ1/srrbDu9
+         qDZR7ocRlFb7z9QknxQy03VwFvSYdt6uxXar/iKcWhgh8tcYtIHy/V9/sEWfWm2RKkM3
+         VlB9wusgyJbrYZI2SwOYAFGzWFK6ODnb5gsNIA3wgK7Z86h5UbA30vCZsKz3xRJW01O3
+         wYPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Iud5FUy3OZWLd15hXCRbvZsIvxpax/LEixyfDAvU5jg=;
-        b=piJHY9XIUcpLF16B/GhuEfzM7SgqUFR8I1PydZnYUcjAaKyK9o89EXPPflJBg24nof
-         5F+ey+b9CaQyahs2Nra5FCJX+N3gCV7+SLgU7BQFj0KT5iGx72k/pQtbdqE6SPfPlwjd
-         WR8P0qa+qg8NikbGmevTxAXhQer/sth1EnuSDbm52Wz+nJzCNPN0OTlVL+R1c7azcHPr
-         DK5dKZsjwYRIvkvmHnuFt3Ra9uRuYhQttWs1hxhiAl21rJmASwOt9Z+ztitTy+GVfsp4
-         5Lk9LeqAavJ/vLldh9aAAQNr8v07Gf17jp/Ixe4aBKbpGg4+0fACeQmiWqWIpLMAR2m3
-         rBMQ==
-X-Gm-Message-State: AJIora/OIwFcn+unLr9KdZqh3Toj1EYNAOe0m2csvC34QG01xfawHyK+
-        V22sO7T0gx/zQUtUJHb1ATNpuIL66nE=
-X-Google-Smtp-Source: AGRyM1u2/AuF1xzh4ljm4CZPNmjLy24N4PnF/FN4onqEMSp2N4Zn7NFKMHM7wbuuaDYzUcufuDIu1g==
-X-Received: by 2002:a17:907:96a9:b0:72e:ddc3:279c with SMTP id hd41-20020a17090796a900b0072eddc3279cmr7715738ejc.138.1658699645059;
-        Sun, 24 Jul 2022 14:54:05 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id 11-20020a170906310b00b0072b3391193dsm4542438ejx.154.2022.07.24.14.54.03
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iC8ZFOlLhnkf1prx6yWwk+CQsLZ6WJZa0KwwPQLezfU=;
+        b=5/xX+xB7lTMtbxfzCVQc6GpngtorpYh2m2lFkpmCeYJF2d66uxLJQFkMkCclfm4teQ
+         kAtwGBbXMoBY6X+SJxzosa104x4kMNWlCzI2R4G4m3pJeW8InHxQNHnLuJ/496tqsqZg
+         SOTaNnoKQw09yc2/SUCrG5eKlv6ttNZaYakkuIZ0kfRSw0UB3JOxNE3Sh9RkSByYYryB
+         8UdJJKcTIu0uyXHyiHcKrX7KKq+wYvzWOk4GVZRC0dgPz2ZxBJQIpCMywb7lNtSstX91
+         e/kAoHvxn7PGnfs7CP6MYcsPsB75KERxqfTEAxPYwPG9AE2qrGyiCoXmI3AdRkeDI79h
+         WjoQ==
+X-Gm-Message-State: AJIora+v0LNAaU6HR6gKbdzM6MT8dUto2USHd22ixh+qET00pPb2GSQC
+        ZOGNobnkNPcgHky7D5Iin2A=
+X-Google-Smtp-Source: AGRyM1utUH37ezGomhHFXQ/NjekIezTizPa0ydfHEcsaZugnjHb0ju5RaVEbFmWplZ8co3tVh3FYjA==
+X-Received: by 2002:a17:907:94cf:b0:72f:1c2a:d475 with SMTP id dn15-20020a17090794cf00b0072f1c2ad475mr7921257ejc.237.1658703064567;
+        Sun, 24 Jul 2022 15:51:04 -0700 (PDT)
+Received: from localhost.localdomain (93-42-69-122.ip85.fastwebnet.it. [93.42.69.122])
+        by smtp.googlemail.com with ESMTPSA id nc19-20020a1709071c1300b00722d5b26ecesm4645238ejc.205.2022.07.24.15.51.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 14:54:04 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 00:54:02 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Sun, 24 Jul 2022 15:51:04 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
- phylink mac config and link up
-Message-ID: <20220724215402.24426hipwgxlctly@skbuf>
-References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [net-next PATCH v4 00/14] net: dsa: qca8k: code split for qca8k
+Date:   Sun, 24 Jul 2022 22:19:24 +0200
+Message-Id: <20220724201938.17387-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,55 +79,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 02:58:14PM +0530, Arun Ramadoss wrote:
-> This patch series add support common phylink mac config and link up for the ksz
-> series switches. At present, ksz8795 and ksz9477 doesn't implement the phylink
-> mac config and link up. It configures the mac interface in the port setup hook.
-> ksz8830 series switch does not mac link configuration. For lan937x switches, in
-> the part support patch series has support only for MII and RMII configuration.
-> Some group of switches have some register address and bit fields common and
-> others are different. So, this patch aims to have common phylink implementation
-> which configures the register based on the chip id.
+This is needed ad ipq4019 SoC have an internal switch that is
+based on qca8k with very minor changes. The general function is equal.
 
-I don't see something problematic with this patch set.
+Because of this we split the driver to common and specific code.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+As the common function needs to be moved to a different file to be
+reused, we had to convert every remaining user of qca8k_read/write/rmw
+to regmap variant.
+We had also to generilized the special handling for the ethtool_stats
+function that makes use of the autocast mib. (ipq4019 will have a
+different tagger and use mmio so it could be quicker to use mmio instead
+of automib feature)
+And we had to convert the regmap read/write to bulk implementation to
+drop the special function that makes use of it. This will be compatible
+with ipq4019 and at the same time permits normal switch to use the eth
+mgmt way to send the entire ATU table read/write in one go.
 
-> 
-> Changes in v2
-> - combined the modification of duplex, tx_pause and rx_pause into single
->   function.
-> 
-> Changes in v1
-> - Squash the reading rgmii value from dt to patch which apply the rgmii value
-> - Created the new function ksz_port_set_xmii_speed
-> - Seperated the namespace values for xmii_ctrl_0 and xmii_ctrl_1 register
-> - Applied the rgmii delay value based on the rx/tx-internal-delay-ps
-> 
-> Arun Ramadoss (9):
->   net: dsa: microchip: add common gigabit set and get function
->   net: dsa: microchip: add common ksz port xmii speed selection function
->   net: dsa: microchip: add common duplex and flow control function
->   net: dsa: microchip: add support for common phylink mac link up
->   net: dsa: microchip: lan937x: add support for configuing xMII register
->   net: dsa: microchip: apply rgmii tx and rx delay in phylink mac config
->   net: dsa: microchip: ksz9477: use common xmii function
->   net: dsa: microchip: ksz8795: use common xmii function
->   net: dsa: microchip: add support for phylink mac config
-> 
->  drivers/net/dsa/microchip/ksz8795.c      |  40 ---
->  drivers/net/dsa/microchip/ksz8795_reg.h  |   8 -
->  drivers/net/dsa/microchip/ksz9477.c      | 183 +------------
->  drivers/net/dsa/microchip/ksz9477_reg.h  |  24 --
->  drivers/net/dsa/microchip/ksz_common.c   | 312 ++++++++++++++++++++++-
->  drivers/net/dsa/microchip/ksz_common.h   |  54 ++++
->  drivers/net/dsa/microchip/lan937x.h      |   8 +-
->  drivers/net/dsa/microchip/lan937x_main.c | 125 +++------
->  drivers/net/dsa/microchip/lan937x_reg.h  |  32 ++-
->  9 files changed, 431 insertions(+), 355 deletions(-)
-> 
-> 
-> base-commit: 502c6f8cedcce7889ccdefeb88ce36b39acd522f
-> -- 
-> 2.36.1
-> 
+v4:
+- Fix compilation error with clang compiler reported by kernel
+  test bot
+v3:
+- Squash more patch to skip even more "migration patch"
+- Add new patch to cache match data in priv struct
+- Fix extra space
+- Drop unnecessary cast to qca8k_priv from void pointers
+v2:
+- Rework patch to drop dependency with bulk regmap (will be
+  converted later)
+- Split the split patch to additional patch
+- Rework autocast_mib function and move it to match data
+
+Christian Marangi (14):
+  net: dsa: qca8k: cache match data to speed up access
+  net: dsa: qca8k: make mib autocast feature optional
+  net: dsa: qca8k: move mib struct to common code
+  net: dsa: qca8k: move qca8k read/write/rmw and reg table to common
+    code
+  net: dsa: qca8k: move qca8k bulk read/write helper to common code
+  net: dsa: qca8k: move mib init function to common code
+  net: dsa: qca8k: move port set status/eee/ethtool stats function to
+    common code
+  net: dsa: qca8k: move bridge functions to common code
+  net: dsa: qca8k: move set age/MTU/port enable/disable functions to
+    common code
+  net: dsa: qca8k: move port FDB/MDB function to common code
+  net: dsa: qca8k: move port mirror functions to common code
+  net: dsa: qca8k: move port VLAN functions to common code
+  net: dsa: qca8k: move port LAG functions to common code
+  net: dsa: qca8k: move read_switch_id function to common code
+
+ drivers/net/dsa/qca/Makefile                  |    1 +
+ drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} | 1716 +++--------------
+ drivers/net/dsa/qca/qca8k-common.c            | 1240 ++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  100 +
+ 4 files changed, 1584 insertions(+), 1473 deletions(-)
+ rename drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} (63%)
+ create mode 100644 drivers/net/dsa/qca/qca8k-common.c
+
+-- 
+2.36.1
+
