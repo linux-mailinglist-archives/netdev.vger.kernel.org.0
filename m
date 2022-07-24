@@ -2,84 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C460157F717
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 22:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D10C57F720
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:00:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229446AbiGXUuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 16:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S231167AbiGXVAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 17:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiGXUuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 16:50:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110005F58
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 13:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A73D460FD3
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 20:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 041FCC341C0;
-        Sun, 24 Jul 2022 20:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658695813;
-        bh=Da/scRiVqybU/1Q+afvIP/6egzZsk6brHN0v0YpNfT4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ueYvvMhMmWPrn2Oi4FphHI8yW3sgFYL5s1KkKMgiJJvU34HJ8Fn6sAXpFNpHKgx8I
-         +GYwRuW5DIGkdnu/h1ML79c15bfKksEkfx7VQwmt0X6Sqpm4HpBdD3qaTRsFpoBhed
-         C4B2N93zlUe5mczOsC/S7Br8ZDQMK2XnPcKnl2wgTu+OR/xbjmqsxLwYXHQU5GmU5F
-         2o/+bse8d45NFtzVb0xtwbFB6WLMnSbOdTy3jcMCNmDjgMx5r3AMCYnPl6w+/5CziN
-         m4eTjYEydkN1bQyjJmN+Gl73lY41vv8GsPrqsEo+C2iTuRx7lv372krl39NGXtnvvx
-         tWDQbjKYR1sZg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBB0FF83691;
-        Sun, 24 Jul 2022 20:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229456AbiGXVAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:00:49 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DD6B1C5;
+        Sun, 24 Jul 2022 14:00:47 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id w18so14890lje.1;
+        Sun, 24 Jul 2022 14:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0J62l/Q5URIrvVRDydPhg5BQrzftFvW78pkd3tTn9CE=;
+        b=DeQgBoi0hrLfeMnY2oOwtNoppn0BqVxKlu3t+fagRWnWIfJgiPIM2i6am0E9jA8Sal
+         6C18TesFhuqen6Kz55857aUvA7YivbDSO7d0FK7RLFxbBDSqG2lbl9XuSsf08i6H5G5b
+         wRL8vZhoF9+px+/h7eRxAv7WIXgMopwL/8RoxyruD/ky1yz9lucZvVgzffYXTr+g9GS2
+         Y1qrOlgvFXLzCFhq008mEBxD4vQmbrz0oXyvBdj9058l2CRR8Q2yzQ7XFUnnZ23rDX92
+         4+k0UXLPXjggSWBS355RswLkpED2zJ05CZQnKvTxJOzhbRHs36jP9CmrHj0TtJjg8Bf/
+         HRbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0J62l/Q5URIrvVRDydPhg5BQrzftFvW78pkd3tTn9CE=;
+        b=obrDiELOgUK0NkturudXev4Bk87VkvOEtLq4HmI3ksBF4s/otBsJ6x4uUik7BYmyvn
+         yBSqIUncseRs0mpWf3KjZ1pjNoAmyj4Vd0QTcs4Ef4BU5z7l5T4Wn0Or8SxSJ8JUaYVV
+         2NhmXiXR3YuuuIvih/FPkGsbYS1xm+3Ztjv6rUHeDj3jLetygKdCrRomgFWYoGB5Pt2O
+         UQAfERaHUE10gPiT+uCU9UT+FhZk5KztUdYQmOIFXMgf+00+tEX71SwRdt0MnIuafOWY
+         WibGJhN7nIi/iyhN7uPWdA2jVZRfvQDK20PrppOq4hB3Uv9JPk+02KkiBm5Qcv3ayKDL
+         AWww==
+X-Gm-Message-State: AJIora/QszdvQ69XUKaTKHE7NSxl8C/rxuVQ0zWldLgz0T/j8BIgbYb5
+        ef9RN1H18MpQolvIzMCH2+0=
+X-Google-Smtp-Source: AGRyM1uyIUokBOFL8+Stj3NfMd19svBCnM67XIwlnWGpGg6bFM+AeaHWOle1XxdJyIK6MbeK/HftfQ==
+X-Received: by 2002:a2e:a236:0:b0:25e:767:6521 with SMTP id i22-20020a2ea236000000b0025e07676521mr742830ljm.89.1658696445142;
+        Sun, 24 Jul 2022 14:00:45 -0700 (PDT)
+Received: from oak.local ([2001:470:28:561:696c:a896:1096:52d])
+        by smtp.gmail.com with ESMTPSA id g4-20020a056512118400b00482bdd14fdfsm2364463lfr.32.2022.07.24.14.00.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 14:00:44 -0700 (PDT)
+From:   "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+To:     hdegoede@redhat.com
+Cc:     andriy.shevchenko@linux.intel.com, carlo@endlessm.com,
+        davem@davemloft.net, hkallweit1@gmail.com, js@sig21.net,
+        linux-clk@vger.kernel.org, linux-wireless@vger.kernel.org,
+        mturquette@baylibre.com, netdev@vger.kernel.org,
+        pierre-louis.bossart@linux.intel.com, sboyd@kernel.org
+Subject: [BISECTED] igb initialization failure on Bay Trail
+Date:   Mon, 25 Jul 2022 00:00:37 +0300
+Message-Id: <20220724210037.3906-1-matwey.kornilov@gmail.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20180912093456.23400-4-hdegoede@redhat.com>
+References: <20180912093456.23400-4-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/tls: Remove the context from the list in
- tls_device_down
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165869581289.26749.17069670764303732595.git-patchwork-notify@kernel.org>
-Date:   Sun, 24 Jul 2022 20:50:12 +0000
-References: <20220721091127.3209661-1-maximmi@nvidia.com>
-In-Reply-To: <20220721091127.3209661-1-maximmi@nvidia.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, borisp@nvidia.com,
-        john.fastabend@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, tariqt@nvidia.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+I've just found that the following commit
 
-On Thu, 21 Jul 2022 12:11:27 +0300 you wrote:
-> tls_device_down takes a reference on all contexts it's going to move to
-> the degraded state (software fallback). If sk_destruct runs afterwards,
-> it can reduce the reference counter back to 1 and return early without
-> destroying the context. Then tls_device_down will release the reference
-> it took and call tls_device_free_ctx. However, the context will still
-> stay in tls_device_down_list forever. The list will contain an item,
-> memory for which is released, making a memory corruption possible.
-> 
-> [...]
+    648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
 
-Here is the summary with links:
-  - [net] net/tls: Remove the context from the list in tls_device_down
-    https://git.kernel.org/netdev/net/c/f6336724a4d4
+breaks the ethernet on my Lex 3I380CW (Atom E3845) motherboard. The board is
+equipped with dual Intel I211 based 1Gbps copper ethernet.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Before the commit I see the following:
+
+     igb 0000:01:00.0: added PHC on eth0
+     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
+     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
+     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+     igb 0000:02:00.0: added PHC on eth1
+     igb 0000:02:00.0: Intel(R) Gigabit Ethernet Network Connection
+     igb 0000:02:00.0: eth1: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e5
+     igb 0000:02:00.0: eth1: PBA No: FFFFFF-0FF
+     igb 0000:02:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+
+while when the commit is applied I see the following:
+
+     igb 0000:01:00.0: added PHC on eth0
+     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
+     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
+     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+     igb: probe of 0000:02:00.0 failed with error -2
+
+Please note, that the second ethernet initialization is failed.
 
 
+See also: http://www.lex.com.tw/products/pdf/3I380A&3I380CW.pdf
