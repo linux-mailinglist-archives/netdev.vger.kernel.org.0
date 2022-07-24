@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 771C857F7AD
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 01:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3A357F75C
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 00:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbiGXXVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 19:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
+        id S231666AbiGXWeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 18:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiGXXVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 19:21:02 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3423C25DF;
-        Sun, 24 Jul 2022 16:21:01 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ss3so17506153ejc.11;
-        Sun, 24 Jul 2022 16:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/fstXUat/D3R+/oqd7Lu3xW263QleA/JR+y2rPeEERQ=;
-        b=MhesJ8fmE/QZ4o8jbp/RE6pBWZflM+ib2M2OqBYK4/62UDdi87D3PkYtNJzX4KswBH
-         hhAMGcO6800OHiDZ1qkHZ4t/G3vMjiT/vZnH+FoeethuxKnSlIsN6Th0rjbYqj6BmVx2
-         6MetNYCDO2+pYQ6J7zgdlJy0g/s7HmMpLvhrAPkPh/1XHK3twWSyqTHCFv9JrFIaE3Cs
-         rVc6eKJ1XscyY/sjHjyRMyEYt28N8HAaKhIMzpJNObPPnZUi46AWZtpZNJ88vZob7RzM
-         XVwG/cPY6rIZvj39uY3ZP0yoKpCckbOZNouhHcWKeqp2V2xbzQ1LVHj7ODcnf90PVWz4
-         Y5UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/fstXUat/D3R+/oqd7Lu3xW263QleA/JR+y2rPeEERQ=;
-        b=M40BkjESHpzVB7rwp6nsh5wWMKdN4yZ5dNDg5WuGREuS3lEpTAz59hXsAL8j5tiqe4
-         Hi52bJCwy3yz4U39rq87Ckibxq9TV3NDGKkOscPsMRnqsP6+BffLG5JFw7/IG2XY+KN4
-         HWhDtoYu3e0vY54//SdOAkxjhjYCWlXKTUixteQCqtxlP1CmamlChURAdC9aqzPpGh9c
-         Da1Midr64xLd2l04rFwINJCI8ElBQBmOYvLYo141NVUpPFV3V4Ne/EXof+oYVbRAaKjs
-         +OmbPjwTE0LuCWDhEpa88GuAnjfHVIw+4GDXUzxjJoySp6JguMd9Nc4xmEt/xgF+fpuV
-         PRqA==
-X-Gm-Message-State: AJIora+dQlbUhrP7sadSQf/bs5tXZldtH7lwMey2PPvzCnaiMVddky5s
-        LWqJ4HwnYYPx9rN/yJopSJQ=
-X-Google-Smtp-Source: AGRyM1uJJXLGupAbCSW6E6Dya9UA5CKTInT4IcAoKK0Mj47kFxqGQd7bdZ4t+gFxewH0b5niMOWBRg==
-X-Received: by 2002:a17:907:8a1d:b0:72b:9e7b:802a with SMTP id sc29-20020a1709078a1d00b0072b9e7b802amr8117514ejc.189.1658704859713;
-        Sun, 24 Jul 2022 16:20:59 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-69-122.ip85.fastwebnet.it. [93.42.69.122])
-        by smtp.gmail.com with ESMTPSA id 1-20020a170906218100b0072f07213509sm4711884eju.12.2022.07.24.16.20.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 16:20:59 -0700 (PDT)
-Message-ID: <62ddd3db.1c69fb81.d8b0f.a851@mx.google.com>
-X-Google-Original-Message-ID: <Yt2wZUETG129QTl4@Ansuel-xps.>
-Date:   Sun, 24 Jul 2022 22:49:41 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v3 01/14] net: dsa: qca8k: cache match data to
- speed up access
-References: <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-2-ansuelsmth@gmail.com>
- <20220723141845.10570-2-ansuelsmth@gmail.com>
- <20220724223031.2ceczkbov6bcgrtq@skbuf>
- <62ddce96.1c69fb81.fdc52.a203@mx.google.com>
- <20220724230626.rzynvd2pxdcd2z3r@skbuf>
- <62ddd221.1c69fb81.95457.a4ee@mx.google.com>
- <20220724231843.kokvexqptpj4eaao@skbuf>
+        with ESMTP id S231805AbiGXWeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 18:34:18 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7F10FD9;
+        Sun, 24 Jul 2022 15:34:17 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LrdJR0tgZz4xCy;
+        Mon, 25 Jul 2022 08:34:14 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658702056;
+        bh=qnf0MrBahT2hsNdMKM4srx4DyvMmAByL2qQBSDmtfl8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K8keaT2MUsEw82vfiQzGYtLhZEtJMBGDrHt9myQtwDJXeo/VlU2D0NqyImuDdRIb9
+         qIFhKfzJIkDMic19LoViM7DkQpknY0Brei2dmJCyS4ZohlY9wsqLWb6zrIK3L0TkF/
+         Ge90fW+or1/jQ8vj6G6iBmQwVB8woKaaw4tpRCVx98B+GS0pTnKl3BjS+etyDJdt9+
+         ty8BdQ1+oRceuPUS893pPJduTTO18DaMf7wH2A5OpustwKKAU1o1VYC4Y8vG3U35ad
+         ywwU4xdUg1pxYJJUA28ciKht1DVmysCZbdqVOPUfcoOGRL82vRWWImJAeE57ihrSuX
+         S3025TaYyWp3w==
+Date:   Mon, 25 Jul 2022 07:59:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Zhengping Jiang <jiangzp@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: linux-next: Fixes tag needs some work in the bluetooth tree
+Message-ID: <20220725075935.68ef1c10@canb.auug.org.au>
+In-Reply-To: <20220725075350.64662d13@canb.auug.org.au>
+References: <20220725075350.64662d13@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724231843.kokvexqptpj4eaao@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/qfZ4R+jqDqgV3=13KOuU0ys";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 02:18:43AM +0300, Vladimir Oltean wrote:
-> On Sun, Jul 24, 2022 at 10:42:20PM +0200, Christian Marangi wrote:
-> > Sure, it was just a stupid idea to set everything not strictly neeeded
-> > only after verifying that we have a correct switch... But it doesn't
-> > make sense as qca8k_priv is freed anyway if that's the case.
-> 
-> I don't understand what you're saying. With your proposed logic,
-> of_device_get_match_data() will be called anyway in qca8k_read_switch_id(),
-> and if the switch id is valid, it will be called once more in qca8k_sw_probe().
-> With my proposed logic, of_device_get_match_data() will be called exactly
-> once, to populate priv->info *before* the first instance of when it's
-> going to be needed.
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Just ignore... it's me trying to give a reason for my broken logic.
+Hi all,
 
--- 
-	Ansuel
+On Mon, 25 Jul 2022 07:53:50 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> In commit
+>=20
+>   68253f3cd715 ("Bluetooth: hci_sync: Fix resuming scan after suspend res=
+ume")
+>=20
+> Fixes tag
+>=20
+>   Fixes: 3b42055388c30 (Bluetooth: hci_sync: Fix attempting to suspend wi=
+th
+>=20
+> has these problem(s):
+>=20
+>   - Subject has leading but no trailing parentheses
+>=20
+> Please do not split Fixes tags over more than one line, just use:
+>=20
+>   git log -1 --format=3D'Fixes: %h ("%s")' <commit>
+>=20
+> Also, please keep all the commit message tags together at the end of
+> the commit message.
+
+This is now on the net-next tree.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLdwMcACgkQAVBC80lX
+0Gw+tAf7BWb9D3zYHxNd+Jd9yC1LAGv2gj5awCaSTzHlGtZu5JDGp1+G2ELgxRVa
+BBRf0gt9x0VCXLZCr0hWklss4nyKXhT3fbwdif1zuOG/sygDAxdP7u56ID1q0eI7
+sRneNc7HdgSQR5CUrEK099shA9u1B40atwTop1ldEFsvzTs+GOM1IpucnkYNgdz1
+udB0tXR/CsTo+WBwBOiPpdHtyaWe92fNehArduSt4sa4gtzPSsODBf1KFbua27FB
+A9NEn9V9AfIAFtIMd4YPF7cdX1VjsJB79tKBBaMvTF3bE//BtONyd/sw6tMdGxkI
+PoNpo+BQj2MK1YcEahMu/Yg9bz6GWg==
+=mABc
+-----END PGP SIGNATURE-----
+
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys--
