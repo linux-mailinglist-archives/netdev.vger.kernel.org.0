@@ -2,127 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 853AD57F4B5
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 12:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3726E57F4C5
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 13:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbiGXKl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 06:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
+        id S232616AbiGXLLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 07:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGXKl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 06:41:28 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C08013F1E
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 03:41:27 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id c14-20020a056e020bce00b002dd1cb7ce4dso4054510ilu.22
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 03:41:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=gkvQ37tFI06glUdd4oh7VQpcud1L0XJ8uToS1d1FP2Q=;
-        b=IoOyAwIdv+N8pYhATbSpvvQ4ZGTSORPvSvbA9AFv+6jEITFac7qrWMLJFL0NriiD6H
-         N6py1RKWJkBaaFBZ4RuG4SFXWTDt3JWuAjitAe8sKDpBtJcNYVV+sKxRBXum3bAUAhjt
-         svo6uKxJYvIjL1K1f+Z/vLgIz87a6DOeFWVrgcVvZvw6snFluCd6XtG0VyyYSZU6jUQq
-         C5l7n84pyAT9KRscUX18TPBLI6oKcEehnk0Dm1DuiEEA9BVHY9qANleH43R0Kks3J9JA
-         ROjBKWjrmRUQTGYtOSIwBxka6MNZvQHFuWMZuvSb6MFpzl8YJW+TVpEVr1eRSqFIb+Uy
-         IR8Q==
-X-Gm-Message-State: AJIora+I4UapBIc0yn5I6VGUOojhzqtNN2TDYfDdEDfqc7vbPUrOR0SX
-        R3/dG4cC2hsET5WqVjy/k37RCc2dl5VjIU+eLxcVmeKOWMbW
-X-Google-Smtp-Source: AGRyM1sfHZzIglP/EV115Y3kwYJS/9VcS8QLbIHZ/8DyOKaduZEmpZywwTF1uIHt4p+3BrLJ/MHJF2ZTNcH9PNzylXPqGvrt4v+O
+        with ESMTP id S229618AbiGXLLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 07:11:01 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2E013E91;
+        Sun, 24 Jul 2022 04:11:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H1gbP13gC6GAtOssPywrpELHCYzbQbi7P1a0p+dVpLp2kYVYbqCA2cr7cL/HNl1lujTzfbRjlvZ2HsLie/H9Izyk/bzaTDlmpKxO7gjNkovm40knWnNqAP3EenraO3oDjxNKOqp6x58U81r4aG9feaW21mwQfpZNBOxY6KgT5gvdrBMyjFoYRb51YQETiBoW5VSWNUovqFx22Zmms9+kyDQSd6hDO3qTP2HnVYCx82kRRKmFrKSNvsm1rJeSAEuEE5MMKkU8qjp6FW/HVeMpldevnZ+pCOh+S1brlq2bgBd3KwFg10cFEFKKeJ2Ud9M/V9GRnMQd2EEXb/1sNIzRXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0MNcQKxcsAcnnB4B7MQ33OX51yaU5uWz/muePUqkNZ0=;
+ b=N5W7O2wamM1A9kZI4LBmjT2qH0be+YV2p6v6IkUMGEGflrM9/2+N7pEF4B6EtUTF+HIKkY7/+0pNzrHjnbeHA0LyV5JHcElUzcAxGXXhQ46xkOO2v6u42Nb2CR6YQGbDmcK9gKp63wp8H7m/q2er3CXryLfU0+q0GplmFH5ZXJIlUi7v1VJOl4qXrdgD7MnaA6p6jJDKv5jPQiYBXmxlW0nXu3eIksuGvT/jbln5eA7eK/mFtvmnlBed2dWYjFk/5T8hkFreUK+Ww+XcxCwfSXvKco4brJW82KOePV4p0n0EeXUc+S5sZcTAfhFEAutgq2utG84OqicSCZ8uAkqtEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0MNcQKxcsAcnnB4B7MQ33OX51yaU5uWz/muePUqkNZ0=;
+ b=kkJYLKLmW4CQUAD+E80e53pPE8jGoxSr/1Mt86UIjHWKZi8hSrYan1dKDKy5DpriH9STiHEIn9OsQAVgnnAMwuFenwm23ZDj+QLIYYYxivzt04S4E/9EzbEhSg5pyyL+krYwJMbyHgJggCaCPk5EvHQuB0ihwbiZkH8X215ggfjysuaLoP+sGM/75utYCMJhFJWpidJfqS0lSfhmcMIlU6TBSKv98NDNH7pQpVC+69UR9lzB3nqFXVPyryNtVr8M/XYN51S+LggPp2PHpFnxW3y7A8d1CcoaqCQYeJHZr+322Rg/wk/98/UnMaCg1kx8jlrRnBeGgMkKXGGrkGw9fw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
+ by BN9PR12MB5337.namprd12.prod.outlook.com (2603:10b6:408:102::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Sun, 24 Jul
+ 2022 11:10:58 +0000
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::d1f6:16f4:16b5:b71b]) by IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::d1f6:16f4:16b5:b71b%9]) with mapi id 15.20.5458.020; Sun, 24 Jul 2022
+ 11:10:58 +0000
+Date:   Sun, 24 Jul 2022 14:10:50 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@kapio-technology.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+Message-ID: <Yt0ouiEcAHs8AqAA@shredder>
+References: <723e2995314b41ff323272536ef27341@kapio-technology.com>
+ <YsqPWK67U0+Iw2Ru@shredder>
+ <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
+ <Ys69DiAwT0Md+6ai@shredder>
+ <648ba6718813bf76e7b973150b73f028@kapio-technology.com>
+ <YtQosZV0exwyH6qo@shredder>
+ <4500e01ec4e2f34a8bbb58ac9b657a40@kapio-technology.com>
+ <20220721115935.5ctsbtoojtoxxubi@skbuf>
+ <YtlUWGdgViyjF6MK@shredder>
+ <20220721142001.twcmiyvhvlxmp24j@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721142001.twcmiyvhvlxmp24j@skbuf>
+X-ClientProxiedBy: LO6P265CA0002.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:339::11) To IA1PR12MB6163.namprd12.prod.outlook.com
+ (2603:10b6:208:3e9::22)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1c45:b0:2dc:dc24:c103 with SMTP id
- d5-20020a056e021c4500b002dcdc24c103mr3031769ilg.132.1658659286662; Sun, 24
- Jul 2022 03:41:26 -0700 (PDT)
-Date:   Sun, 24 Jul 2022 03:41:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000095c6a005e48ab50f@google.com>
-Subject: [syzbot] WARNING in nsim_map_alloc_elem
-From:   syzbot <syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 14040355-3404-4ad5-fefa-08da6d652f89
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5337:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TbuTa51tGVcKKr7iQW1uhQH7h1kt3CiCGyPV/qyknxD71hyPmM6cB+K25ZjXR7m+oqr+p610qdfidLh1LIByGcgfrlhyYCqWw1HCmPK/oXyGmR2AiVfh+fVjHPNuBqa8tjxOxpMJWA1si7k/VJSjHCaVM5TSl20e1ZIQqYl1Zg/J2Ysz2At1bJ+oadATddD3D23bMEq6Tr0CbKOZ7vGsl0yD63tkfX7fty1C36LN+MO5otcC07ZZbtPWKhYYpGNh94kGpmxqKWfqhYYWWl9hyLkqn3FCQy404LoGzSZS560BV1/OdJIFvf8jXUbCw088DxrBrO7y/ycO/qwCnmh8SxXD3c0zHgTCyoo2d5Pif+7aiOFDl8tochZ6LFeysEewdDH9eQCN4kKkwvvBRuxXYD02iYPWDJjB0HA1Qut+KTcPD2dJ2D3fZgQU6UF03zCRNa3BHymuU4SgC8lwrWlgkXpntAHtzoGQSMyRk4TYgJVaSgXUa4P97e1O40ZS6WYptIotz6Rb9Jsu2o9oaPSFdiIBfaZfXPSDsoYDDAeLp/jX2bVU3B6d0cbd9ogOFBi6B9x9Io6XtgRYiZ+UrIQ4JN8nHQfJV/cEMvlFqH+O556h0z3B9zi5EIKWJFN0frIbjCap9e95aavRbxNT1SxE9QjVc0jXLyguSrPeoOprmeXvvPfH9+aMA4bfCtaDRRUX283dVwzf1uLaAs5PYKpK/hLMyBmNCtpi+wqHTkcJIjwPFdDyDqUb44MQltZ+z57i
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(366004)(346002)(396003)(136003)(376002)(86362001)(8936002)(26005)(83380400001)(9686003)(186003)(38100700002)(6512007)(6506007)(478600001)(41300700001)(6666004)(6486002)(54906003)(6916009)(316002)(66946007)(7416002)(5660300002)(8676002)(66476007)(4326008)(2906002)(33716001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hI+sUhXj98dpw/YFfXfWKrpQXF3kOBN5wGtABYGg4n4VUIMn4aYV2jQ8HGcZ?=
+ =?us-ascii?Q?qskObtFoybUgMMv6N+HRl253oh10uaQMZlFXg6JXy+MapehFCM7qe8W6MiYv?=
+ =?us-ascii?Q?6w6bDXybIUcPRSV4T9bVlTQQ2dxMZMW5Lj7x47BHWuVmQTo4rznIV+tTdHvT?=
+ =?us-ascii?Q?YYEQLapVYFFVMwf83WxAsGHuowFWRsGkpf7jkdXEH3nLdeU3J+05x9ql3k23?=
+ =?us-ascii?Q?q+jbFxMUdsQbuaxF6WFusVm536V5CIW7btAefUmf/dtDNo+1sRzzZTwh3XWc?=
+ =?us-ascii?Q?p60uBxKL55dv6EoyWA/QkekFfikYmZAkz7BQxpasvt9nsXP1yN9Bhm38YcKz?=
+ =?us-ascii?Q?ZYgCcMDtz+2xruiYiKrspnpp4nSkGD4i3rurGdb4VCdn7Gb2aghRToV3yhNc?=
+ =?us-ascii?Q?muj7/vvLk2EZM6l7kgBmxDUAhy5FhwX0azQ1CbthsnhpRjG1SQNfvc9QH+W4?=
+ =?us-ascii?Q?dVZb6mkl+uK8sBwlsMv/7KBX3dY1UfN/m/Rnx+dO+uIm+Kj4SgSwVMSRJaO4?=
+ =?us-ascii?Q?hfEVn1V2k7YbJzZCswjkbykKTT1V1pxTd9IJSXNS1KRbHfiyBYbhT3oVh/Lz?=
+ =?us-ascii?Q?lA6kKLeT59prDAuwJwGMO1QFSuiFddBPGM+B8PRJ8Rp+FVROzTtUMTD12gZb?=
+ =?us-ascii?Q?DDOpS24dTF8V6Rd7lcaSurBceM8exHt0pCv1TkI4GlPLKYnZQ377HyNsrwRk?=
+ =?us-ascii?Q?m1pfgfwwmEdaStWvgA3hsmMg/tRtEjvl4MmPUu/rGEf+49P46KqRePOeSyRm?=
+ =?us-ascii?Q?5EB8/FDgnXTLZcjPohBIiYURiSI9QRwCGwplPm9R/SrMmPdYiwwXA2Z7Dj65?=
+ =?us-ascii?Q?/CpcRuU8r24HwhWcaJmBeOaoEyWj3+ES13hXyvcAs3udJaGG7OvzLjhY8Ion?=
+ =?us-ascii?Q?lYPJzZQi2D/Bzo5R9ZOUC9qgAXkz5Hh58q0cn44Mfll/Ss+s1PN7qCVD6Jq9?=
+ =?us-ascii?Q?DdcVzdp6UwhH+q7PZaf55p3QtxqaJqNZwayTq2YMpJ2whHZFq9IGoLyHS8wt?=
+ =?us-ascii?Q?4LqTUe4XpxjL8+MIE8XDKOOo23b82ScRqyyAQf8+dN+vwHR6W80Bbi8d4liB?=
+ =?us-ascii?Q?GOiLKJRHO0KPZLkzXhBq5LDbL7pQ1OkoA7hDMZNJrPU3aisIPeS2e7ck5Ztm?=
+ =?us-ascii?Q?lRWn47Ddu/oSPH1lvs282FfSPJ02l94/aHCJhPf6M2Yeq7F1a6xvASoKdyZ0?=
+ =?us-ascii?Q?ROuDftHQ/rQ7aOBny+OJzdHgWcNjpXgGvMxK7ynbpBUTHEQihWf6VsgtjR/v?=
+ =?us-ascii?Q?fvA4WzaHIxOK3SOFkVdJC/HC0mD/8dvdFOVOgQuwiDwhjOoViOmX/aHLlgCr?=
+ =?us-ascii?Q?Ix43mOSZhvQPvJ5uUqKH0XP1NVPwDCuZuF4HVBGp9tt9pJO+EnDEIXC+iLfs?=
+ =?us-ascii?Q?T/aheHGqeFfcFFRWpIbE2gUf3d7RcUYaum3etYCztJ/qfBX8LJ2Vea9KRD4i?=
+ =?us-ascii?Q?my/xIniMgjSQQONq5BGxLSRvxq/2YZR3IiJg9Z4neDsDgrs3XKcAmo6QzTD7?=
+ =?us-ascii?Q?fLsARAdrpF5nae/HoWl3iD9jMGkVT/vA8xU181wc4qXtOxtaF+84kBaeZM/y?=
+ =?us-ascii?Q?ZBuO9dBf0e49uYOScqbg5uo/9EzEDzhdjsJAW5aI?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14040355-3404-4ad5-fefa-08da6d652f89
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2022 11:10:58.4606
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4ZxpNaESLCgDSvGtiNH2PzcuOjCzd7wP8PmzKSExhMWxXMAZQQCo+Sj8aGe2cK5slN3a7XsSQ9lYwf2oSpeHVA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5337
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Jul 21, 2022 at 05:20:01PM +0300, Vladimir Oltean wrote:
+> On Thu, Jul 21, 2022 at 04:27:52PM +0300, Ido Schimmel wrote:
+> > I tried looking information about MAB online, but couldn't find
+> > detailed material that answers my questions, so my answers are based
+> > on what I believe is logical, which might be wrong.
+> 
+> I'm kind of in the same situation here.
 
-syzbot found the following issue on:
+:(
 
-HEAD commit:    b77ffb30cfc5 libbpf: fix an snprintf() overflow check
-git tree:       bpf-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=16a7f652080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=386b986585586629
-dashboard link: https://syzkaller.appspot.com/bug?extid=ad24705d3fd6463b18c6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=102ad7c6080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d71a9c080000
+> 
+> > Currently, the bridge will forward packets to a locked entry which
+> > effectively means that an unauthorized host can cause the bridge to
+> > direct packets to it and sniff them. Yes, the host can't send any
+> > packets through the port (while locked) and can't overtake an existing
+> > (unlocked) FDB entry, but it still seems like an odd decision. IMO, the
+> > situation in mv88e6xxx is even worse because there an unauthorized host
+> > can cause packets to a certain DMAC to be blackholed via its zero-DPV
+> > entry.
+> > 
+> > Another (minor?) issue is that locked entries cannot roam between locked
+> > ports. Lets say that my user space MAB policy is to authorize MAC X if
+> > it appears behind one of the locked ports swp1-swp4. An unauthorized
+> > host behind locked port swp5 can generate packets with SMAC X,
+> > preventing the true owner of this MAC behind swp1 from ever being
+> > authorized.
+> 
+> In the mv88e6xxx offload implementation, the locked entries eventually
+> age out from time to time, practically giving the true owner of the MAC
+> address another chance every 5 minutes or so. In the pure software
+> implementation of locked FDB entries I'm not quite sure. It wouldn't
+> make much sense for the behavior to differ significantly though.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
+From what I can tell, the same happens in software, but this behavior
+does not really make sense to me. It differs from how other learned
+entries age/roam and can lead to problems such as the one described
+above. It is also not documented anywhere, so I can't tell if it's
+intentional or an oversight. We need to have a good reason for such a
+behavior other than the fact that it appears to conform to the quirks of
+one hardware implementation.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3609 at mm/page_alloc.c:5402 __alloc_pages+0x39e/0x510 mm/page_alloc.c:5402
-Modules linked in:
-CPU: 0 PID: 3609 Comm: syz-executor427 Not tainted 5.19.0-rc5-syzkaller-01146-gb77ffb30cfc5 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:__alloc_pages+0x39e/0x510 mm/page_alloc.c:5402
-Code: ff ff 00 0f 84 33 fe ff ff 80 ce 01 e9 2b fe ff ff 83 fe 0a 0f 86 3e fd ff ff 80 3d d2 70 e9 0b 00 75 09 c6 05 c9 70 e9 0b 01 <0f> 0b 45 31 f6 e9 8d fe ff ff 65 ff 05 21 55 45 7e 48 c7 c0 a0 16
-RSP: 0018:ffffc900030cf9c0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff92000619f39 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 000000000000000b RDI: 0000000000000000
-RBP: 0000000000140cc0 R08: 0000000000000007 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000001 R12: 000000000000000b
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000400002
-FS:  0000555556dfc300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000001b8ef000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2272
- kmalloc_order+0x34/0xf0 mm/slab_common.c:945
- kmalloc_order_trace+0x14/0x120 mm/slab_common.c:961
- kmalloc include/linux/slab.h:605 [inline]
- nsim_map_alloc_elem+0x119/0x2e0 drivers/net/netdevsim/bpf.c:357
- nsim_bpf_map_alloc drivers/net/netdevsim/bpf.c:512 [inline]
- nsim_bpf+0x8b3/0x1050 drivers/net/netdevsim/bpf.c:573
- bpf_map_offload_ndo+0x132/0x1e0 kernel/bpf/offload.c:359
- bpf_map_offload_map_alloc+0x243/0x450 kernel/bpf/offload.c:394
- find_and_alloc_map kernel/bpf/syscall.c:131 [inline]
- map_create kernel/bpf/syscall.c:1102 [inline]
- __sys_bpf+0x8b8/0x5750 kernel/bpf/syscall.c:4936
- __do_sys_bpf kernel/bpf/syscall.c:5058 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5056 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5056
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f1f9a4a1ba9
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fffebe3a1e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 00007fffebe3a1f8 RCX: 00007f1f9a4a1ba9
-RDX: 0000000000000048 RSI: 0000000020000100 RDI: 0000000000000000
-RBP: 0000000000000003 R08: bb1414ac00000000 R09: bb1414ac00000000
-R10: bb1414ac00000000 R11: 0000000000000246 R12: 00007fffebe3a200
-R13: 00007fffebe3a1f4 R14: 0000000000000003 R15: 0000000000000000
- </TASK>
+> 
+> > It seems like the main purpose of these locked entries is to signal to
+> > user space the presence of a certain MAC behind a locked port, but they
+> > should not be able to affect packet forwarding in the bridge, unlike
+> > regular entries.
+> 
+> So essentially what you want is for br_handle_frame_finish() to treat
+> "dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);" as NULL if
+> test_bit(BR_FDB_LOCKED, &dst->flags) is true?
 
+Yes. It's not clear to me why unauthorized hosts should be given the
+ability to affect packet forwarding in the bridge through these locked
+entries when their primary purpose seems to be notifying user space
+about the presence of the MAC. At the very least this should be
+explained in the commit message, to indicate that some thought went into
+this decision.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> > Regarding a separate knob for MAB, I tend to agree we need it. Otherwise
+> > we cannot control which locked ports are able to populate the FDB with
+> > locked entries. I don't particularly like the fact that we overload an
+> > existing flag ("learning") for that. Any reason not to add an explicit
+> > flag ("mab")? At least with the current implementation, locked entries
+> > cannot roam between locked ports and cannot be refreshed, which differs
+> > from regular learning.
+> 
+> Well, assuming we model the software bridge closer to mv88e6xxx (where
+> locked FDB entries can roam after a certain time), does this change things?
+> In the software implementation I think it would make sense for them to
+> be able to roam right away (the age-out interval in mv88e6xxx is just a
+> compromise between responsiveness to roaming and resistance to DoS).
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Exactly. If this is the best that we can do with mv88e6xxx, then so be
+it, but other implementations (software/hardware) do not have the same
+limitations and I don't see a reason to bend them.
+
+Regarding "learning" vs. "mab" (or something else), the former is a
+well-defined flag available since forever. In 5.18 and 5.19 it can also
+be enabled together with "locked" and packets from an unauthorized host
+(modulo link-local ones) will not populate the FDB. I prefer not to
+change an existing behavior.
+
+From usability point of view, I think a new flag would be easier to
+explain than explaining that "learning on" behaves like A or B, based on
+whether "locked on" is set. The bridge can also be taught to forbid the
+new flag from being set when "locked" is not set.
+
+A user space daemon that wants to try 802.1x and fallback to MAB can
+enable both flags or enable "mab" after some timer expires.
