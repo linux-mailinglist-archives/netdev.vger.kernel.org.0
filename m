@@ -2,114 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E01E57F7A8
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 01:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E32D57F7AA
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 01:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbiGXXQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 19:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        id S231626AbiGXXSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 19:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiGXXQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 19:16:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E804BD79;
-        Sun, 24 Jul 2022 16:16:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91B75B80DD1;
-        Sun, 24 Jul 2022 23:16:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9ABC341C0;
-        Sun, 24 Jul 2022 23:16:51 +0000 (UTC)
-Date:   Sun, 24 Jul 2022 19:16:50 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
+        with ESMTP id S229687AbiGXXSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 19:18:48 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14A5260A;
+        Sun, 24 Jul 2022 16:18:47 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id i13so2815588edj.11;
+        Sun, 24 Jul 2022 16:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xoLvqz4wndADrX4G7bqgitF9BUiRD07x3kH2BZou3m0=;
+        b=SqxGpXV0Xduj/3Hc0JkwpjdzSv2booKmQw8OZmqflUT/dkQkIzK6Hs/soHPk/Tv0eD
+         BAx/ss3m+yqBseCbRdd0XxIalE/fnfAZVdYg1crf73aAd5hctrqKCNyV9qbMZv6CumQK
+         iz27l60GIcInQb5QjTXhobU3zAkf0GsYlrp2hVyzCN/qztafCY978ISz4muGL7fY/zUT
+         XTOOlX/frG3DW9VGCJWMWzCjRN3lggFYtYSmCANFBHfjJVhit04L2APj4GikfS+0YQSf
+         w8fONa1kNG6doiCOR42jPsSyK6nicUKHXIuJXURIuP9khx1NhvNky0FPGBlzsuml7eFK
+         cIzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xoLvqz4wndADrX4G7bqgitF9BUiRD07x3kH2BZou3m0=;
+        b=KGzLaobfBnvBSq7VpVkI4NbqUBJjeNT1ryCVonZBIQvEIMJOqt1KvDDz1YXedf06ZI
+         NAW8BmHTwuukd5/t7w5QfV1IP93N3oFHc0sxaWlsx9rYviwUyZJS1AhLeAn5i4c1A/zj
+         KduiIdCy6oi3VK8UrSvuxZFJTCuXs37GJI1z8IIROcFNnjvmHT7UJwE1vNbFe0V11weK
+         tT0PYoHCx5R3MDpiCfZtRkeEKH4HuvK+3s7iMHIz77bPXY1JqJ7NahdkDh//yKaL+ZeI
+         tM0Q+5WVFYa7qzHuF1w+KW3bill22dciOohI5ZcB9T8BdwopeppYm4a1fw8HP70Xirsc
+         Le3g==
+X-Gm-Message-State: AJIora9W0zYxPg/6weha+MYrtVvArCUsh8lNq+ypiqf3GxYqacfvWF+v
+        FILVbbXkxQHFmWaKtc0FjU8=
+X-Google-Smtp-Source: AGRyM1sufXVHukNAOeXxXT2VRRz2yVx0+1a3gwufLZRpLnS1O4d/eQ3/AOH4gHcuoqgY2tGxsUXuig==
+X-Received: by 2002:a05:6402:444c:b0:43b:d375:e932 with SMTP id o12-20020a056402444c00b0043bd375e932mr10544815edb.399.1658704726466;
+        Sun, 24 Jul 2022 16:18:46 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id i12-20020a170906090c00b0072af56103casm4617690ejd.220.2022.07.24.16.18.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 16:18:45 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 02:18:43 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH v2] batman-adv: tracing: Use the new __vstring() helper
-Message-ID: <20220724191650.236b1355@rorschach.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 01/14] net: dsa: qca8k: cache match data to
+ speed up access
+Message-ID: <20220724231843.kokvexqptpj4eaao@skbuf>
+References: <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220723141845.10570-2-ansuelsmth@gmail.com>
+ <20220724223031.2ceczkbov6bcgrtq@skbuf>
+ <62ddce96.1c69fb81.fdc52.a203@mx.google.com>
+ <20220724230626.rzynvd2pxdcd2z3r@skbuf>
+ <62ddd221.1c69fb81.95457.a4ee@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62ddd221.1c69fb81.95457.a4ee@mx.google.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On Sun, Jul 24, 2022 at 10:42:20PM +0200, Christian Marangi wrote:
+> Sure, it was just a stupid idea to set everything not strictly neeeded
+> only after verifying that we have a correct switch... But it doesn't
+> make sense as qca8k_priv is freed anyway if that's the case.
 
-Instead of open coding a __dynamic_array() with a fixed length (which
-defeats the purpose of the dynamic array in the first place). Use the new
-__vstring() helper that will use a va_list and only write enough of the
-string into the ring buffer that is needed.
-
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: Sven Eckelmann <sven@narfation.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: b.a.t.m.a.n@lists.open-mesh.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
-Changes since v1:  https://lkml.kernel.org/r/20220705224751.080390002@goodmis.org
-
- - Removed no longer used BATADV_MAX_MSG_LEN
-
- net/batman-adv/trace.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/net/batman-adv/trace.h b/net/batman-adv/trace.h
-index d673ebdd0426..31c8f922651d 100644
---- a/net/batman-adv/trace.h
-+++ b/net/batman-adv/trace.h
-@@ -28,8 +28,6 @@
- 
- #endif /* CONFIG_BATMAN_ADV_TRACING */
- 
--#define BATADV_MAX_MSG_LEN	256
--
- TRACE_EVENT(batadv_dbg,
- 
- 	    TP_PROTO(struct batadv_priv *bat_priv,
-@@ -40,16 +38,13 @@ TRACE_EVENT(batadv_dbg,
- 	    TP_STRUCT__entry(
- 		    __string(device, bat_priv->soft_iface->name)
- 		    __string(driver, KBUILD_MODNAME)
--		    __dynamic_array(char, msg, BATADV_MAX_MSG_LEN)
-+		    __vstring(msg, vaf->fmt, vaf->va)
- 	    ),
- 
- 	    TP_fast_assign(
- 		    __assign_str(device, bat_priv->soft_iface->name);
- 		    __assign_str(driver, KBUILD_MODNAME);
--		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
--					   BATADV_MAX_MSG_LEN,
--					   vaf->fmt,
--					   *vaf->va) >= BATADV_MAX_MSG_LEN);
-+		    __assign_vstr(msg, vaf->fmt, vaf->va);
- 	    ),
- 
- 	    TP_printk(
--- 
-2.35.1
-
+I don't understand what you're saying. With your proposed logic,
+of_device_get_match_data() will be called anyway in qca8k_read_switch_id(),
+and if the switch id is valid, it will be called once more in qca8k_sw_probe().
+With my proposed logic, of_device_get_match_data() will be called exactly
+once, to populate priv->info *before* the first instance of when it's
+going to be needed.
