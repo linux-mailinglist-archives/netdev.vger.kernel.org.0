@@ -2,127 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8777557F73A
-	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:40:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6ED757F743
+	for <lists+netdev@lfdr.de>; Sun, 24 Jul 2022 23:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiGXVkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 17:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39620 "EHLO
+        id S230102AbiGXVyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 17:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiGXVkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:40:46 -0400
-X-Greylist: delayed 568 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 24 Jul 2022 14:40:44 PDT
-Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EE6DFFC;
-        Sun, 24 Jul 2022 14:40:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1658698271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=STY0G7UjVAsIewBHvisrVxnFHtCqH1f3rEMAP8NVJFo=;
-        b=yYZ8RmsB9S2snpK16i15T2CYsHd+vHUjG/L9+m0nyQR/JcdLzo92upn7/r5gHo6okNIpzE
-        6p0H27apnA6z5MpPcuEAVCgPC2WkdGvuPA6M4vPVmC4DOgOaDAaBUYowGA9ebIQeOijIzk
-        VHq5PObcAVmxH5lO6MtunZWHmYrMTHU=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
+        with ESMTP id S229451AbiGXVyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 17:54:07 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7303CE19;
+        Sun, 24 Jul 2022 14:54:06 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id b11so17312196eju.10;
+        Sun, 24 Jul 2022 14:54:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Iud5FUy3OZWLd15hXCRbvZsIvxpax/LEixyfDAvU5jg=;
+        b=N8jcFg0CBOtwtU6H4Lv8mCc2cc+Y4aIQjhKrJ+lSVXhHCb7pRykX7bOTen/QYQTINA
+         zu7Y9Jdj6VRtGmvHd7v4tgBpMD4QUfuuL+zhLIbI6e6bjYOh7GxBYfl17wq8C3/lD5ce
+         kKN3t88yJT4jaBwGnTO3TVHmCtaJv55FE2jk3pf+mtB7Vp2C8pdZhkEvbbArkgVxy++S
+         hoj2g3FNfYN80q0kQFya1+dVfSBRMWwwXDwtDpwGv994AMUsuDWOiCzhewnGOhKXNV6R
+         /vXB+wSbObE84S75z0JmX6B+MddPwt6UlnJkwM80r9AIq0+SjlFbGpAgBheO9FpyuE1D
+         ea8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Iud5FUy3OZWLd15hXCRbvZsIvxpax/LEixyfDAvU5jg=;
+        b=piJHY9XIUcpLF16B/GhuEfzM7SgqUFR8I1PydZnYUcjAaKyK9o89EXPPflJBg24nof
+         5F+ey+b9CaQyahs2Nra5FCJX+N3gCV7+SLgU7BQFj0KT5iGx72k/pQtbdqE6SPfPlwjd
+         WR8P0qa+qg8NikbGmevTxAXhQer/sth1EnuSDbm52Wz+nJzCNPN0OTlVL+R1c7azcHPr
+         DK5dKZsjwYRIvkvmHnuFt3Ra9uRuYhQttWs1hxhiAl21rJmASwOt9Z+ztitTy+GVfsp4
+         5Lk9LeqAavJ/vLldh9aAAQNr8v07Gf17jp/Ixe4aBKbpGg4+0fACeQmiWqWIpLMAR2m3
+         rBMQ==
+X-Gm-Message-State: AJIora/OIwFcn+unLr9KdZqh3Toj1EYNAOe0m2csvC34QG01xfawHyK+
+        V22sO7T0gx/zQUtUJHb1ATNpuIL66nE=
+X-Google-Smtp-Source: AGRyM1u2/AuF1xzh4ljm4CZPNmjLy24N4PnF/FN4onqEMSp2N4Zn7NFKMHM7wbuuaDYzUcufuDIu1g==
+X-Received: by 2002:a17:907:96a9:b0:72e:ddc3:279c with SMTP id hd41-20020a17090796a900b0072eddc3279cmr7715738ejc.138.1658699645059;
+        Sun, 24 Jul 2022 14:54:05 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id 11-20020a170906310b00b0072b3391193dsm4542438ejx.154.2022.07.24.14.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 14:54:04 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 00:54:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [for-next][PATCH 17/23] batman-adv: tracing: Use the new __vstring() helper
-Date:   Sun, 24 Jul 2022 23:31:01 +0200
-Message-ID: <8828005.nfsgNN4c79@sven-l14>
-In-Reply-To: <20220714164331.060725040@goodmis.org>
-References: <20220714164256.403842845@goodmis.org> <20220714164331.060725040@goodmis.org>
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
+ phylink mac config and link up
+Message-ID: <20220724215402.24426hipwgxlctly@skbuf>
+References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5204823.eLehfEbLRh"; micalg="pgp-sha512"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart5204823.eLehfEbLRh
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [for-next][PATCH 17/23] batman-adv: tracing: Use the new __vstring() helper
-Date: Sun, 24 Jul 2022 23:31:01 +0200
-Message-ID: <8828005.nfsgNN4c79@sven-l14>
-In-Reply-To: <20220714164331.060725040@goodmis.org>
-References: <20220714164256.403842845@goodmis.org> <20220714164331.060725040@goodmis.org>
+On Sun, Jul 24, 2022 at 02:58:14PM +0530, Arun Ramadoss wrote:
+> This patch series add support common phylink mac config and link up for the ksz
+> series switches. At present, ksz8795 and ksz9477 doesn't implement the phylink
+> mac config and link up. It configures the mac interface in the port setup hook.
+> ksz8830 series switch does not mac link configuration. For lan937x switches, in
+> the part support patch series has support only for MII and RMII configuration.
+> Some group of switches have some register address and bit fields common and
+> others are different. So, this patch aims to have common phylink implementation
+> which configures the register based on the chip id.
 
-On Thursday, 14 July 2022 18:43:13 CEST Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+I don't see something problematic with this patch set.
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
 > 
-> Instead of open coding a __dynamic_array() with a fixed length (which
-> defeats the purpose of the dynamic array in the first place).
-
-Please also make sure to remove the define of BATADV_MAX_MSG_LEN
-
-Kind regards,
-	Sven
-
-[...]
-> --- a/net/batman-adv/trace.h
-> +++ b/net/batman-adv/trace.h
-> @@ -40,16 +40,13 @@ TRACE_EVENT(batadv_dbg,
->  	    TP_STRUCT__entry(
->  		    __string(device, bat_priv->soft_iface->name)
->  		    __string(driver, KBUILD_MODNAME)
-> -		    __dynamic_array(char, msg, BATADV_MAX_MSG_LEN)
-> +		    __vstring(msg, vaf->fmt, vaf->va)
->  	    ),
->  
->  	    TP_fast_assign(
->  		    __assign_str(device, bat_priv->soft_iface->name);
->  		    __assign_str(driver, KBUILD_MODNAME);
-> -		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
-> -					   BATADV_MAX_MSG_LEN,
-> -					   vaf->fmt,
-> -					   *vaf->va) >= BATADV_MAX_MSG_LEN);
-> +		    __assign_vstr(msg, vaf->fmt, vaf->va);
->  	    ),
->  
->  	    TP_printk(
+> Changes in v2
+> - combined the modification of duplex, tx_pause and rx_pause into single
+>   function.
 > 
-
-
---nextPart5204823.eLehfEbLRh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmLduhUACgkQXYcKB8Em
-e0aflhAAnq0E/OqKeySsgXxGHV1QJ+JeXQfRRXBGdw2v8gJsyCJK6Iq8FohqBmO9
-YuNWRE6uw/ZRAdPgx5JqQTuxYVFP/dE0L47RxPviqNAsYJPuRmYNl8AXC9SOJZjq
-H1rRbDqVSI8ougx2Z9RH8PnNALSfDjvghQ8t+K3yiVbocdRETwQHvDs4zCD+dJb6
-97BXrLlRL41O4U5g25NXpx/OD3PL8aHJsZEF/JkbzSKv3ElyHxiyy3bLnaqYZXOJ
-626kdHpgOFHvdun7em66j+l1o9BX97qLdPVkKSe4FCkJvBWH4uy1S8td1+vwrvDm
-USDg5WjcvmwsiyqOhNcXLJ/kW5s2PAOdgHZCqYLRn1IdzpbaQA2kX17Rhl+JHoE9
-Xj0JPYg409jYFZbVywXdt+BXc3+FGyaxDEMuCke9Er2cslMdEofSwq2XBBlKFAzp
-3u3+rX2MgXIyRE7HBiDBlLtCF9rf1qgoXpwztl7Vvkv9AebuEk/igGNKSJW+mRI1
-wwqNeKMfsDA+F4lhwlTZzsZzRoxW078Ex7kLqkWoVqM/CTTUaQagc8aUq92YwTll
-IUe7PGYVsPketoVWq3EQcvyorWY9QGnuKVxNv0Sgjr+pp4ez0BhK6um40cCRQ6s8
-AmTz/TaDt6D7RowsR5k36ymSJ5SNR2cbc2TwZHABSBhdazxVcPc=
-=jX4Z
------END PGP SIGNATURE-----
-
---nextPart5204823.eLehfEbLRh--
-
-
-
+> Changes in v1
+> - Squash the reading rgmii value from dt to patch which apply the rgmii value
+> - Created the new function ksz_port_set_xmii_speed
+> - Seperated the namespace values for xmii_ctrl_0 and xmii_ctrl_1 register
+> - Applied the rgmii delay value based on the rx/tx-internal-delay-ps
+> 
+> Arun Ramadoss (9):
+>   net: dsa: microchip: add common gigabit set and get function
+>   net: dsa: microchip: add common ksz port xmii speed selection function
+>   net: dsa: microchip: add common duplex and flow control function
+>   net: dsa: microchip: add support for common phylink mac link up
+>   net: dsa: microchip: lan937x: add support for configuing xMII register
+>   net: dsa: microchip: apply rgmii tx and rx delay in phylink mac config
+>   net: dsa: microchip: ksz9477: use common xmii function
+>   net: dsa: microchip: ksz8795: use common xmii function
+>   net: dsa: microchip: add support for phylink mac config
+> 
+>  drivers/net/dsa/microchip/ksz8795.c      |  40 ---
+>  drivers/net/dsa/microchip/ksz8795_reg.h  |   8 -
+>  drivers/net/dsa/microchip/ksz9477.c      | 183 +------------
+>  drivers/net/dsa/microchip/ksz9477_reg.h  |  24 --
+>  drivers/net/dsa/microchip/ksz_common.c   | 312 ++++++++++++++++++++++-
+>  drivers/net/dsa/microchip/ksz_common.h   |  54 ++++
+>  drivers/net/dsa/microchip/lan937x.h      |   8 +-
+>  drivers/net/dsa/microchip/lan937x_main.c | 125 +++------
+>  drivers/net/dsa/microchip/lan937x_reg.h  |  32 ++-
+>  9 files changed, 431 insertions(+), 355 deletions(-)
+> 
+> 
+> base-commit: 502c6f8cedcce7889ccdefeb88ce36b39acd522f
+> -- 
+> 2.36.1
+> 
