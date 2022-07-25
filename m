@@ -2,60 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B57E557FCA4
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 11:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B4157FCAF
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 11:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbiGYJoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 05:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        id S233525AbiGYJuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 05:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiGYJoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 05:44:24 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460A813F6B;
-        Mon, 25 Jul 2022 02:44:23 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26OLXD0D012904;
-        Mon, 25 Jul 2022 02:44:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=dutQ9NGuRDjmpyqfsU4lsQO/9zEoJp1k6QzkZrvIygg=;
- b=cBH0HX1pBix5w/Ak0suq70osF3IVWpa6eLfjOATL+CEBHQcsF/bb8TSAhfeysnLOQUAn
- 9M7fwiGmUsyMlMojG2KvipbI9yhwy1cwhzfkaVkpuWvPLWCgIyFWKu/UFdlE1s2SpL3S
- fEnVeZxZlKykNif1ed7RNvfw1Vd+sEBn9/tmP3b1is+yxWMPlzukbEwcjoEEUgc9mhjw
- fAOdsoMlX4OwuwoSKzA1wYrntoSb+4JdE4W1xdgSkT384+l+kJZrBv40omkeBCgQ4fYw
- EyH/3NVIBa3LhjA1YF3SKMq2w241MmFmaBBBwuOK3ML4Ydgl0FgyQJPlOXFz1rVUEeTp Lw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hgggn57r0-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 02:44:12 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jul
- 2022 02:44:11 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 25 Jul 2022 02:44:11 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id E8E053F7053;
-        Mon, 25 Jul 2022 02:44:08 -0700 (PDT)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        "Geetha sowjanya" <gakula@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Subject: [net-next PATCH] octeontx2-pf: Use only non-isolated cpus in irq affinity
-Date:   Mon, 25 Jul 2022 15:14:02 +0530
-Message-ID: <20220725094402.21203-1-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S232747AbiGYJuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 05:50:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38115FCB
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 02:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EBB8B80E2E
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 09:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10EB5C341C7;
+        Mon, 25 Jul 2022 09:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658742614;
+        bh=7KgDUam99vWAh7RjWX40VFff7LVefNo5IqM99eHy+co=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SfrkY7ptB8ytcxOVKXXq9/r+2u9pjGXlILX3FKmyK7+bhyLkmNE9X2v4PMxJFbCkW
+         Grh65bC/v3ZYZWn0p/2mZmQvTqcOQhOI4cJXEhIzrLMJ7nS4thfuzpuYJ8+ca/NUqV
+         LAhhe6OedCZZ0egMkzJKkWvq/KswBg/8yU7vbBJ1Iyp7Pjfrv1LqX62RAj3Z0y/Gnb
+         3SkJ27+HeGHgAae7WVwP+fw1kqBdokca6qeO29t5hP2Sh+FNOqiO89t/8mKyCoskM7
+         r5cxsOfC8ugt8cUvXg4bru7khgGoMsI+JntAueaoTpA88h98Hx/ccOhObJvpy52R/C
+         HFSF+CXftcC5Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E9BFFE450B5;
+        Mon, 25 Jul 2022 09:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 9QF2UXxlF6Dpr3GsE-VaD6_sc7IefsCO
-X-Proofpoint-ORIG-GUID: 9QF2UXxlF6Dpr3GsE-VaD6_sc7IefsCO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-25_07,2022-07-21_02,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net-next 0/5] mtk_eth_soc: add xdp support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165874261395.3948.10032831276100096007.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Jul 2022 09:50:13 +0000
+References: <cover.1658474059.git.lorenzo@kernel.org>
+In-Reply-To: <cover.1658474059.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, ilias.apalodimas@linaro.org,
+        lorenzo.bianconi@redhat.com, jbrouer@redhat.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,58 +59,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch excludes the isolates cpus from the cpus list
-while setting up TX/RX queue interrupts affinity
+Hello:
 
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.c    | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index fb8db5888d2f..9886a02dd756 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -8,6 +8,7 @@
- #include <linux/interrupt.h>
- #include <linux/pci.h>
- #include <net/tso.h>
-+#include <linux/sched/isolation.h>
- 
- #include "otx2_reg.h"
- #include "otx2_common.h"
-@@ -1657,9 +1658,16 @@ void otx2_set_cints_affinity(struct otx2_nic *pfvf)
- {
- 	struct otx2_hw *hw = &pfvf->hw;
- 	int vec, cpu, irq, cint;
-+	cpumask_var_t mask;
-+
-+	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
-+		return;
-+
-+	cpumask_and(mask, cpu_online_mask,
-+		    housekeeping_cpumask(HK_TYPE_DOMAIN));
-+	cpu = cpumask_first(mask);
- 
- 	vec = hw->nix_msixoff + NIX_LF_CINT_VEC_START;
--	cpu = cpumask_first(cpu_online_mask);
- 
- 	/* CQ interrupts */
- 	for (cint = 0; cint < pfvf->hw.cint_cnt; cint++, vec++) {
-@@ -1671,10 +1679,11 @@ void otx2_set_cints_affinity(struct otx2_nic *pfvf)
- 		irq = pci_irq_vector(pfvf->pdev, vec);
- 		irq_set_affinity_hint(irq, hw->affinity_mask[vec]);
- 
--		cpu = cpumask_next(cpu, cpu_online_mask);
-+		cpu = cpumask_next(cpu, mask);
- 		if (unlikely(cpu >= nr_cpu_ids))
- 			cpu = 0;
- 	}
-+	free_cpumask_var(mask);
- }
- 
- u16 otx2_get_max_mtu(struct otx2_nic *pfvf)
+On Fri, 22 Jul 2022 09:19:35 +0200 you wrote:
+> Introduce XDP support for mtk_eth_soc driver if rx hwlro is not
+> enabled in the chipset (e.g. mt7986).
+> Supported XDP verdicts:
+> - XDP_PASS
+> - XDP_DROP
+> - XDP_REDIRECT
+> - XDP_TX
+> - ndo_xdp_xmit
+> Rely on page_pool allocator for single page buffers in order to keep
+> them dma mapped and add skb recycling support.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v4,net-next,1/5] net: ethernet: mtk_eth_soc: rely on page_pool for single page buffers
+    https://git.kernel.org/netdev/net-next/c/23233e577ef9
+  - [v4,net-next,2/5] net: ethernet: mtk_eth_soc: add basic XDP support
+    https://git.kernel.org/netdev/net-next/c/7c26c20da5d4
+  - [v4,net-next,3/5] net: ethernet: mtk_eth_soc: introduce xdp ethtool counters
+    https://git.kernel.org/netdev/net-next/c/916a6ee836d6
+  - [v4,net-next,4/5] net: ethernet: mtk_eth_soc: add xmit XDP support
+    https://git.kernel.org/netdev/net-next/c/5886d26fd25b
+  - [v4,net-next,5/5] net: ethernet: mtk_eth_soc: add support for page_pool_get_stats
+    https://git.kernel.org/netdev/net-next/c/84b9cd389036
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
