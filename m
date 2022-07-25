@@ -2,141 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD54A57FA8D
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 09:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7884657FA97
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 09:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiGYHyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 03:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45218 "EHLO
+        id S231382AbiGYH4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 03:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiGYHyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 03:54:43 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0EC12ADE;
-        Mon, 25 Jul 2022 00:54:37 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 85C7D5FD0C;
-        Mon, 25 Jul 2022 10:54:33 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658735673;
-        bh=Jlqwz8Mf0SX+vFvr8bsEZwYRgZFGP2xbuZquqH8x8g4=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=BEI7uEFQVoAxVHxTvWWYevPIQjqaIvHrKIRspdaYFgpKxFafEMFZXVcgtZR/WAKFC
-         7YIxpUYoG8mMaEn77lC1W8S3C/EpcivFR3h+uO1yGDkrWTEzfVERFj4mUu2UoKZMT7
-         d9jgfNqCo9E94slr2h1KcV4HVZnPmbrhjiVpxbgb9dqAJhukv/4cOU/rJu84kWrLEn
-         ckrMz7C+fMhSzA9NOs147nWzeHX6nfgvvQjMfZ6okAFH0i9mbKgxqYcb3ysexkYYwJ
-         JHFlJRm2D7Yuqc6LHc3cxMQ4pLpKtPIIYwp4JzysxaP3etbozUD9DDkkeseQRyc3FH
-         SAiup18Qa9Vng==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 10:54:24 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Topic: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Index: AQHYn/u277di/gNdd06E3+5muuhZow==
-Date:   Mon, 25 Jul 2022 07:54:05 +0000
-Message-ID: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D097A725E2DA8643AE756956EE8C3728@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229822AbiGYH4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 03:56:49 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2059.outbound.protection.outlook.com [40.107.101.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FBFD135
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 00:56:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=leTkxv7g/iu4Ex9qVs9FZUcjFZ9MSZevUKRS8MzuZnbPb9jp2Tm42gegb+PtvHw1Jn6CAs7v3vAkjp+PVdj1803xZg+EuYuvjgsc14+k6i1oeVSB5Bd2uEO3XZFUKUj7vrHLfuo25K+Ec88EQx6OTRtD4nDpyn/gJ/fECmnQc0Br63m1HcyaZ8RtCmnYzVv2nBxdvj6bRjV0PWciGS3xQoVXUxx25YOIrRU2NSqLqAxJ8kzYGVgLdeVn7XhuBfcteh4w/7NtNkqy2SA+50caEj69KlZ1zZ0XhGXTshzFsZqizw7ZF+97iT4fUzzh6SMJ2B2aYILErBNJpTWw4cCZWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PrlUJtx5NAaFaCw8XMbeUWUI6sI00Er2AjzC0yUB0VM=;
+ b=jJ0E3Hmy6J7oUf0BOEVBIc1VUqi3yb3oBm9vltVrYuHAjheVjfb6dPSrkE8wSa4oHRDtnneAOrX7U6JKfqcBAptoWLHY2uk1QF/zmRe1j58Jy90WFb4OCggg2YhzoZ3z8IyqP5MEZbzIy4uqPWlUpnoIdhAws8r7j2TabFZNManVXDEr47ULExG3itGWcrrKoKDKT6DDlGFAq9ANyDvaHTWty/Cbs0G+f4qsXcX07LR9RZ4uca1OiG5PEdf7CZqTBL9o12zX+Jt2cCtWD6vkP/pHc16n1CqP4uF9zXaZV6xu7SjYKqTxB9nND0BIOnZKSWYxt2ZcDCzgSy9kkLWpoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PrlUJtx5NAaFaCw8XMbeUWUI6sI00Er2AjzC0yUB0VM=;
+ b=Tc1E4FDy9cEsRFZE+oihftRrQEdeEqXPK047Ciod1mQDDG6dhtgrDgRnLccbDfEBcMZE+XMooralSz9BScGaDp9oHsKSwgnVHuHuUwgpELi7L+eXL4WjXP+k0vUCOURi6PvUhoVqfIVaurnk156U+44zGqr3Yp+Dz/ynoPs9GZs=
+Received: from DM6PR03CA0055.namprd03.prod.outlook.com (2603:10b6:5:100::32)
+ by CH2PR12MB4939.namprd12.prod.outlook.com (2603:10b6:610:61::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Mon, 25 Jul
+ 2022 07:56:46 +0000
+Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:100:cafe::bd) by DM6PR03CA0055.outlook.office365.com
+ (2603:10b6:5:100::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.23 via Frontend
+ Transport; Mon, 25 Jul 2022 07:56:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5458.17 via Frontend Transport; Mon, 25 Jul 2022 07:56:45 +0000
+Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 25 Jul
+ 2022 02:56:45 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
+ (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 25 Jul
+ 2022 02:56:44 -0500
+Received: from xcbalucerop41x.xilinx.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Mon, 25 Jul 2022 02:56:43 -0500
+From:   <alejandro.lucero-palau@amd.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-net-drivers@amd.com>
+CC:     <netdev@vger.kernel.org>, <ecree.xilinx@gmail.com>,
+        Alejandro Lucero <alucerop@xilinx.com>,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: [PATCH net] sfc: disable softirqs for ptp TX
+Date:   Mon, 25 Jul 2022 09:56:35 +0200
+Message-ID: <20220725075635.11685-1-alejandro.lucero-palau@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/25 03:52:00 #19956163
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 50d17b6a-e480-4a6c-112c-08da6e133877
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4939:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TQQv20lJbS+/scDWITt+4ONLnXLXTigBHX0Uzk7DJ2CH7GnMq3AFr7mF2finPeY6xSMLlHXOXYjF+m2EK+62Cn5kO0/KepD92b8KZbTIyntEhhS0cIUszfiRr2yMrjCtyTvmU32voiuoBVUokWVo6nJ55V/50pHpRbJaByvLrll46R3FikF79hRuY5n3hGS+TqnzKxy1xl9ZdhwXB5191ZdDiJHqcz1Ujvk7YIS2Yd+kcwlzzL3QfnOBfD+9cN4cFfTfrJwCafRBQ3Mo3LRH/SvbjLtfHDmhCs4YacWRkHX6flf1kxeIcFJDu48veu7jxKDwihVlphYHz4pWyr4A2lywN359QJWQNY0isl/jA+nDcxtpiTGq7cuX/Xv08j6LvJP7vcv86sD4rfHL6WYqLHW2Bdgj6QHveoJ3iywt9mRc6LQRHKzYVjIauhfr7SRXe/awDF1+pHYmjIBgaL+ybDqSZT9H51qdP+8JQg5aeKoQ2VMh5iU+JD/o+Me0zq14eK1IiWmXDOwJdxgZxOyiYsZp8VXdv4b+ZNdaZ7rAfiKhz1q/XYpxS9HGPjFA/HYYM+LvOzAeQU32phBwTf7Rz49q6MPc7EhYkqWC6mTmedE2CPA0q8FDojqhO0HYFeSpuHqAJdSffcwWVm5o3+568FevRssM7+eaNnWLbmjAdCtdRm8r1HEJXoDB3RZBA9RntWU8tWoriwX8JdOFlGLXosEYL9O/enYo4vyz0xY8Si6YnxURVTtGa8SR5zvWQc9vfPA18Hlgzac2SKU9XLGnE8/4KAU3RlbffLC5Vk+UQLz6HvIjU6RHOpQ7AztdN0G9n77vhHpvNIsOy4uD3p5pLw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(396003)(376002)(39860400002)(40470700004)(36840700001)(46966006)(82740400003)(356005)(478600001)(81166007)(86362001)(41300700001)(426003)(26005)(6666004)(110136005)(6636002)(316002)(54906003)(47076005)(1076003)(336012)(186003)(2616005)(40480700001)(70206006)(70586007)(8676002)(82310400005)(4326008)(5660300002)(8936002)(40460700003)(36860700001)(83380400001)(36756003)(2876002)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 07:56:45.6014
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50d17b6a-e480-4a6c-112c-08da6e133877
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4939
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNClRoaXMgcGF0Y2hzZXQgaW5jbHVkZXMgc29tZSB1cGRhdGVzIGZvciBTT19SQ1ZM
-T1dBVDoNCg0KMSkgYWZfdnNvY2s6DQogICBEdXJpbmcgbXkgZXhwZXJpbWVudHMgd2l0aCB6ZXJv
-Y29weSByZWNlaXZlLCBpIGZvdW5kLCB0aGF0IGluIHNvbWUNCiAgIGNhc2VzLCBwb2xsKCkgaW1w
-bGVtZW50YXRpb24gdmlvbGF0ZXMgUE9TSVg6IHdoZW4gc29ja2V0IGhhcyBub24tDQogICBkZWZh
-dWx0IFNPX1JDVkxPV0FUKGUuZy4gbm90IDEpLCBwb2xsKCkgd2lsbCBhbHdheXMgc2V0IFBPTExJ
-TiBhbmQNCiAgIFBPTExSRE5PUk0gYml0cyBpbiAncmV2ZW50cycgZXZlbiBudW1iZXIgb2YgYnl0
-ZXMgYXZhaWxhYmxlIHRvIHJlYWQNCiAgIG9uIHNvY2tldCBpcyBzbWFsbGVyIHRoYW4gU09fUkNW
-TE9XQVQgdmFsdWUuIEluIHRoaXMgY2FzZSx1c2VyIHNlZXMNCiAgIFBPTExJTiBmbGFnIGFuZCB0
-aGVuIHRyaWVzIHRvIHJlYWQgZGF0YShmb3IgZXhhbXBsZSB1c2luZyAgJ3JlYWQoKScNCiAgIGNh
-bGwpLCBidXQgcmVhZCBjYWxsIHdpbGwgYmUgYmxvY2tlZCwgYmVjYXVzZSAgU09fUkNWTE9XQVQg
-bG9naWMgaXMNCiAgIHN1cHBvcnRlZCBpbiBkZXF1ZXVlIGxvb3AgaW4gYWZfdnNvY2suYy4gQnV0
-IHRoZSBzYW1lIHRpbWUsICBQT1NJWA0KICAgcmVxdWlyZXMgdGhhdDoNCg0KICAgIlBPTExJTiAg
-ICAgRGF0YSBvdGhlciB0aGFuIGhpZ2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0
-DQogICAgICAgICAgICAgICBibG9ja2luZy4NCiAgICBQT0xMUkROT1JNIE5vcm1hbCBkYXRhIG1h
-eSBiZSByZWFkIHdpdGhvdXQgYmxvY2tpbmcuIg0KDQogICBTZWUgaHR0cHM6Ly93d3cub3Blbi1z
-dGQub3JnL2p0YzEvc2MyMi9vcGVuL240MjE3LnBkZiwgcGFnZSAyOTMuDQoNCiAgIFNvLCB3ZSBo
-YXZlLCB0aGF0IHBvbGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxsIHdp
-bGwNCiAgIGJlIGJsb2NrZWQuDQoNCiAgIEFsc28gaW4gbWFuIHBhZ2Ugc29ja2V0KDcpIGkgZm91
-bmQgdGhhdDoNCg0KICAgIlNpbmNlIExpbnV4IDIuNi4yOCwgc2VsZWN0KDIpLCBwb2xsKDIpLCBh
-bmQgZXBvbGwoNykgaW5kaWNhdGUgYQ0KICAgc29ja2V0IGFzIHJlYWRhYmxlIG9ubHkgaWYgYXQg
-bGVhc3QgU09fUkNWTE9XQVQgYnl0ZXMgYXJlIGF2YWlsYWJsZS4iDQoNCiAgIEkgY2hlY2tlZCBU
-Q1AgY2FsbGJhY2sgZm9yIHBvbGwoKShuZXQvaXB2NC90Y3AuYywgdGNwX3BvbGwoKSksIGl0DQog
-ICB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNldCBQT0xMSU4gYml0LCBhbHNvIGkndmUgdGVz
-dGVkIFRDUCB3aXRoDQogICB0aGlzIGNhc2UgZm9yIFRDUCBzb2NrZXQsIGl0IHdvcmtzIGFzIFBP
-U0lYIHJlcXVpcmVkLg0KDQogICBJJ3ZlIGFkZGVkIHNvbWUgZml4ZXMgdG8gYWZfdnNvY2suYyBh
-bmQgdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYywNCiAgIHRlc3QgaXMgYWxzbyBpbXBsZW1lbnRl
-ZC4NCg0KMikgdmlydGlvL3Zzb2NrOg0KICAgSXQgYWRkcyBzb21lIG9wdGltaXphdGlvbiB0byB3
-YWtlIHVwcywgd2hlbiBuZXcgZGF0YSBhcnJpdmVkLiBOb3csDQogICBTT19SQ1ZMT1dBVCBpcyBj
-b25zaWRlcmVkIGJlZm9yZSB3YWtlIHVwIHNsZWVwZXJzIHdobyB3YWl0IG5ldyBkYXRhLg0KICAg
-VGhlcmUgaXMgbm8gc2Vuc2UsIHRvIGtpY2sgd2FpdGVyLCB3aGVuIG51bWJlciBvZiBhdmFpbGFi
-bGUgYnl0ZXMNCiAgIGluIHNvY2tldCdzIHF1ZXVlIDwgU09fUkNWTE9XQVQsIGJlY2F1c2UgaWYg
-d2Ugd2FrZSB1cCByZWFkZXIgaW4NCiAgIHRoaXMgY2FzZSwgaXQgd2lsbCB3YWl0IGZvciBTT19S
-Q1ZMT1dBVCBkYXRhIGFueXdheSBkdXJpbmcgZGVxdWV1ZSwNCiAgIG9yIGluIHBvbGwoKSBjYXNl
-LCBQT0xMSU4vUE9MTFJETk9STSBiaXRzIHdvbid0IGJlIHNldCwgc28gc3VjaA0KICAgZXhpdCBm
-cm9tIHBvbGwoKSB3aWxsIGJlICJzcHVyaW91cyIuIFRoaXMgbG9naWMgaXMgYWxzbyB1c2VkIGlu
-IFRDUA0KICAgc29ja2V0cy4NCg0KMykgdm1jaS92c29jazoNCiAgIFNhbWUgYXMgMiksIGJ1dCBp
-J20gbm90IHN1cmUgYWJvdXQgdGhpcyBjaGFuZ2VzLiBXaWxsIGJlIHZlcnkgZ29vZCwNCiAgIHRv
-IGdldCBjb21tZW50cyBmcm9tIHNvbWVvbmUgd2hvIGtub3dzIHRoaXMgY29kZS4NCg0KNCkgSHlw
-ZXItVjoNCiAgIEFzIERleHVhbiBDdWkgbWVudGlvbmVkLCBmb3IgSHlwZXItViB0cmFuc3BvcnQg
-aXQgaXMgZGlmZmljdWx0IHRvDQogICBzdXBwb3J0IFNPX1JDVkxPV0FULCBzbyBoZSBzdWdnZXN0
-ZWQgdG8gZGlzYWJsZSB0aGlzIGZlYXR1cmUgZm9yDQogICBIeXBlci1WLg0KDQpUaGFuayBZb3UN
-Cg0KQXJzZW5peSBLcmFzbm92KDkpOg0KIHZzb2NrOiB1c2Ugc2tfcmN2bG93YXQgdG8gc2V0IFBP
-TExJTi9QT0xMUkROT1JNDQogdmlydGlvL3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3Bv
-bGxfaW4gY2FsbGJhY2sNCiB2bWNpL3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxf
-aW4gY2FsbGJhY2sNCiB2c29ja190ZXN0OiBQT0xMSU4gKyBTT19SQ1ZMT1dBVCB0ZXN0DQogdnNv
-Y2s6IFNPX1JDVkxPV0FUIHRyYW5zcG9ydCBzZXQgY2FsbGJhY2sNCiBodl9zb2NrOiBkaXNhYmxl
-IFNPX1JDVkxPV0FUIHN1cHBvcnQNCiB2c29jazogYWRkIEFQSSBjYWxsIGZvciBkYXRhIHJlYWR5
-DQogdmlydGlvL3Zzb2NrOiBjaGVjayBTT19SQ1ZMT1dBVCBiZWZvcmUgd2FrZSB1cCByZWFkZXIN
-CiB2bWNpL3Zzb2NrOiBjaGVjayBTT19SQ1ZMT1dBVCBiZWZvcmUgd2FrZSB1cCByZWFkZXINCg0K
-IGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAyICsNCiBu
-ZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgICAgICAgICAgICAgICAgICAgICB8ICAzMiArKysrKysr
-LQ0KIG5ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jICAgICAgICAgICAgIHwgICA3ICsr
-DQogbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jICAgICAgfCAgIDcgKy0N
-CiBuZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeS5jICAgICAgICB8ICAgNCArLQ0K
-IG5ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5X3FzdGF0ZS5jIHwgICA2ICstDQog
-dG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMgICAgICAgICAgICAgfCAxMDcgKysrKysr
-KysrKysrKysrKysrKysrKysrKysrDQogNyBmaWxlcyBjaGFuZ2VkLCAxNTQgaW5zZXJ0aW9ucygr
-KSwgMTEgZGVsZXRpb25zKC0pDQoNCi0tIA0KMi4yNS4xDQo=
+From: Alejandro Lucero <alucerop@xilinx.com>
+
+Sending a PTP packet can imply to use the normal TX driver datapath but
+invoked from the driver's ptp worker. The kernel generic TX code
+disables softirqs and preemption before calling specific driver TX code,
+but the ptp worker does not. Although current ptp driver functionality
+does not require it, there are several reasons for doing so:
+
+   1) The invoked code is always executed with softirqs disabled for non
+      PTP packets.
+   2) Better if a ptp packet transmission is not interrupted by softirq
+      handling which could lead to high latencies.
+   3) netdev_xmit_more used by the TX code requires preemption to be
+      disabled.
+
+Indeed a solution for dealing with kernel preemption state based on static
+kernel configuration is not possible since the introduction of dynamic
+preemption level configuration at boot time using the static calls
+functionality.
+
+Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+---
+ drivers/net/ethernet/sfc/ptp.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
+index 4625f85acab2..10ad0b93d283 100644
+--- a/drivers/net/ethernet/sfc/ptp.c
++++ b/drivers/net/ethernet/sfc/ptp.c
+@@ -1100,7 +1100,29 @@ static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
+ 
+ 	tx_queue = efx_channel_get_tx_queue(ptp_data->channel, type);
+ 	if (tx_queue && tx_queue->timestamping) {
++		/* This code invokes normal driver TX code which is always
++		 * protected from softirqs when called from generic TX code,
++		 * which in turn disables preemption. Look at __dev_queue_xmit
++		 * which uses rcu_read_lock_bh disabling preemption for RCU
++		 * plus disabling softirqs. We do not need RCU reader
++		 * protection here.
++		 *
++		 * Although it is theoretically safe for current PTP TX/RX code
++		 * running without disabling softirqs, there are three good
++		 * reasond for doing so:
++		 *
++		 *      1) The code invoked is mainly implemented for non-PTP
++		 *         packets and it is always executed with softirqs
++		 *         disabled.
++		 *      2) This being a single PTP packet, better to not
++		 *         interrupt its processing by softirqs which can lead
++		 *         to high latencies.
++		 *      3) netdev_xmit_more checks preemption is disabled and
++		 *         triggers a BUG_ON if not.
++		 */
++		local_bh_disable();
+ 		efx_enqueue_skb(tx_queue, skb);
++		local_bh_enable();
+ 	} else {
+ 		WARN_ONCE(1, "PTP channel has no timestamped tx queue\n");
+ 		dev_kfree_skb_any(skb);
+-- 
+2.17.1
+
