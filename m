@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A2357FB17
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2CB57FB52
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiGYIRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 04:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
+        id S233508AbiGYI3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 04:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiGYIRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:17:23 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51A313CDA
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:17:21 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id d13so7178081wrn.10
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:17:21 -0700 (PDT)
+        with ESMTP id S233439AbiGYI3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:29:30 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30F413F5B
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:29:28 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id os14so19238750ejb.4
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=plwj0SFeQQOBUB0dRP2yOGK0PA3u7vtSex6F23sBEqg=;
-        b=L+k10AamdU+6H60Ns4ryGGehA6ecOqhx5dcJJL6equZ/epoTTUn+yTSBxll/DwMOs8
-         94ZjlzWr/3hHlMuIq4Y/NTneiQZf15cRHRSH/MzuUxjSRK8sPTH6ZOniySYLmnU1NHsi
-         8vrERcOQZfHBAIoHNjR32lbhAJeUfr020kymkZk4a385sfCqr+YGP4RmCF+eE+Ffsqeq
-         W8iRc/QZFMaiyZBBsT16bjsn/jPMy8ezUogyuc0KMYs/ch6KP7RjmskOQJ+PMJrXXbuy
-         5kQ7EdKhfTQA9kH+d0+ZMO5JWrB9RZ+ZyNMYGJH1VJr/3DCTe1a2HcZ5iJNWBzVIw2kB
-         yQwQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQrr1JlTdLSIB/8RIRDhs4XWfg4t0HMVyQNDxp7JX9Y=;
+        b=rRgClsMcClPfTHXQAmACgkCRy6UdBcxaaknotPJClz2ngaW0Apc4ouehhfDBwI9A8P
+         I8suh/QbPixUdOuj1J6pRWeTPCUN+R3F1u6Vsb4SXzxkWqv7/Kc6slcFY6V+ithPilkG
+         dkTpo0+BX/iETjxddhadJ+8jTlmEAvrnUmn1jLZcBId0El2t+Lsqeeqp9YaIK/PhFvf5
+         tSv77CSRiiGQ0o7/OMj1bvT2vcRIYTpsjWa8kIiIXkuS5qDrnaQo+lKMBXhIS4X0Qm8w
+         GTVB0BfkdAFKcgK3SkH3rioJq8+aAx0tWcP/uqCskFXiCuxlA5sT/OQFPMBytQcxL1uO
+         NCMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=plwj0SFeQQOBUB0dRP2yOGK0PA3u7vtSex6F23sBEqg=;
-        b=pZSAkF4rNW9/aHqpeEdnu7Mh5SkHUC3hxrzd+ynaQx19hjfeKDmhVqk+0EkcJF1E9q
-         or9Q++qPiV8zdwKb4AacmtBYTvvYi3tYCfNginUfuhoq2yMJtxzPWOEASfyq59EqShb3
-         4A9JRmE/RGJZyi4ybEaJORwvidnIFGLFBAuUvKP++ED5dyQoFEQFX9movKD2jlysvBW2
-         zwSc6ptvCcBnq8D1Ge48iULAqwAzpBbzhOlYLWYdGBYLIJtL/yBw9UIzzOk863yrdvv6
-         NEdqB8KedVfhTxHLFk7aFCi3hUffjvLIuy/Df6RatkDFJ7wJzcDPvVcKxgv4DVsmukFC
-         mEqg==
-X-Gm-Message-State: AJIora9Qgue6fW2BcT6AMaHTGjnkeFLScm96BfkJSOJkvrWHLnRHKQBs
-        GX2LBNGhUSaOdnss2INILvAlxA==
-X-Google-Smtp-Source: AGRyM1tBGYRF9WUG62K0ax6MqQ99n+7iNQU6HZVbGC/1XxI2rG8MHKdw3QTqubQvIH8/sVG99wakLQ==
-X-Received: by 2002:adf:e84c:0:b0:21d:83ed:2ce with SMTP id d12-20020adfe84c000000b0021d83ed02cemr6827269wrn.582.1658737039981;
-        Mon, 25 Jul 2022 01:17:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQrr1JlTdLSIB/8RIRDhs4XWfg4t0HMVyQNDxp7JX9Y=;
+        b=ZOujX/3mfNJAbcMnH/Qja8NVD/Ot/eWfHlITC+8vFaCqQnh5DRxyE0IWMd2HkseGFX
+         R3GMRg9S2eFILSAkxfNKsqIYld2XV5vU/g4x1Ym9PF2ulCaxzXfbzfpbx208CkzGUM2w
+         F3ieMRBHnsCuBgRVZ1oCcZiApuZBBjXj3CNBCjXHEw57X95zmZI5DPObDzzNqDZyo9LC
+         srHcjOtUUeS+4WjdUsWvy7PP20n8eW+GowC4DH9PHaGQLL5cFVIitj3h8tQx8Ot27Gbm
+         TOVEdcqMOY42fUH3qPFWTHpIp+tIzw16ySr8/MnFzif1L9aZVUhnwRdh6xy7WF3WZUHJ
+         ONOw==
+X-Gm-Message-State: AJIora8pysaapVohvuNtzZmHgpGDY3b2x3x93E+N42v67a/1+38oDnDm
+        A7oP7/bQf65J4LN/IKTRNGJzf+EloEcVmR0BzQc=
+X-Google-Smtp-Source: AGRyM1udsUukxxDBGv1Pe39REsgArfq2092h/vnRhvd9t4sgO52fg5Zx+XLtCZLjGcohpbT8guamFA==
+X-Received: by 2002:a17:906:7b82:b0:6f3:ee8d:b959 with SMTP id s2-20020a1709067b8200b006f3ee8db959mr9122043ejo.458.1658737767295;
+        Mon, 25 Jul 2022 01:29:27 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id f5-20020adff445000000b0021e5f32ade7sm7916700wrp.68.2022.07.25.01.17.19
+        by smtp.gmail.com with ESMTPSA id ek19-20020a056402371300b0043c0fbdcd8esm748474edb.70.2022.07.25.01.29.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 01:17:19 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 10:17:18 +0200
+        Mon, 25 Jul 2022 01:29:26 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
- devlink_try_get() works with valid pointer during xarray iteration
-Message-ID: <Yt5RjrqG1WZelSOH@nanopsycho>
-References: <20220720151234.3873008-1-jiri@resnulli.us>
- <20220720151234.3873008-2-jiri@resnulli.us>
- <20220720174953.707bcfa9@kernel.org>
- <YtrHOewPlQ0xOwM8@nanopsycho>
- <20220722112348.75fb5ccc@kernel.org>
- <YtwWlOVl4fyrz24D@nanopsycho>
+Subject: [patch net-next v4 00/12] Implement dev info and dev flash for line cards
+Date:   Mon, 25 Jul 2022 10:29:13 +0200
+Message-Id: <20220725082925.366455-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtwWlOVl4fyrz24D@nanopsycho>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -75,45 +67,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Jul 23, 2022 at 05:41:08PM CEST, jiri@resnulli.us wrote:
->Fri, Jul 22, 2022 at 08:23:48PM CEST, kuba@kernel.org wrote:
->>On Fri, 22 Jul 2022 17:50:17 +0200 Jiri Pirko wrote:
->>> >Plus we need to be more careful about the unregistering order, I
->>> >believe the correct ordering is:
->>> >
->>> >	clear_unmark()
->>> >	put()
->>> >	wait()
->>> >	notify()
->>> >
->>> >but I believe we'll run afoul of Leon's notification suppression.
->>> >So I guess notify() has to go before clear_unmark(), but we should
->>> >unmark before we wait otherwise we could live lock (once the mutex 
->>> >is really gone, I mean).  
->>> 
->>> Kuba, could you elaborate a bit more about the live lock problem here?
->>
->>Once the devlink_mutex lock is gone - (unprivileged) user space dumping
->>devlink objects could prevent any de-registration from happening
->>because it can keep the reference of the instance up. So we should mark
->>the instance as not REGISTERED first, then go to wait.
->
->Yeah, that is what I thought. I resolved it as you wrote. I removed the
->WARN_ON from devlink_notify(). It is really not good for anything
->anyway.
+From: Jiri Pirko <jiri@nvidia.com>
 
-The check for "registered" is in more notifications. I will handle this
-in the next patchset, you are right, it is not needed to handle here.
+This patchset implements two features:
+1) "devlink dev info" is exposed for line card (patches 6-9)
+2) "devlink dev flash" is implemented for line card gearbox
+   flashing (patch 10)
 
-Sending v4.
+For every line card, "a nested" auxiliary device is created which
+allows to bind the features mentioned above (patch 4).
 
-Thanks!
+The relationship between line card and its auxiliary dev devlink
+is carried over extra line card netlink attribute (patches 3 and 5).
 
->
->
->>
->>Pretty theoretical, I guess, but I wanted to mention it in case you can
->>figure out a solution along the way :S I don't think it's a blocker
->>right now since we still have the mutex.
->
->Got it.
+The first patch removes devlink_mutex from devlink_register/unregister()
+which eliminates possible deadlock during devlink reload command. The
+second patchset follows up with putting net pointer check into new
+helper.
+
+Examples:
+
+$ devlink lc show pci/0000:01:00.0 lc 1
+pci/0000:01:00.0:
+  lc 1 state active type 16x100G nested_devlink auxiliary/mlxsw_core.lc.0
+    supported_types:
+       16x100G
+
+$ devlink dev show auxiliary/mlxsw_core.lc.0
+auxiliary/mlxsw_core.lc.0
+
+$ devlink dev info auxiliary/mlxsw_core.lc.0
+auxiliary/mlxsw_core.lc.0:
+  versions:
+      fixed:
+        hw.revision 0
+        fw.psid MT_0000000749
+      running:
+        ini.version 4
+        fw 19.2010.1312
+
+$ devlink dev flash auxiliary/mlxsw_core.lc.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+
+Jiri Pirko (12):
+  net: devlink: make sure that devlink_try_get() works with valid
+    pointer during xarray iteration
+  net: devlink: move net check into
+    devlinks_xa_for_each_registered_get()
+  net: devlink: introduce nested devlink entity for line card
+  mlxsw: core_linecards: Introduce per line card auxiliary device
+  mlxsw: core_linecards: Expose HW revision and INI version
+  mlxsw: reg: Extend MDDQ by device_info
+  mlxsw: core_linecards: Probe active line cards for devices and expose
+    FW version
+  mlxsw: reg: Add Management DownStream Device Tunneling Register
+  mlxsw: core_linecards: Expose device PSID over device info
+  mlxsw: core_linecards: Implement line card device flashing
+  selftests: mlxsw: Check line card info on provisioned line card
+  selftests: mlxsw: Check line card info on activated line card
+
+ Documentation/networking/devlink/mlxsw.rst    |  24 ++
+ drivers/net/ethernet/mellanox/mlxsw/Kconfig   |   1 +
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |   2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  44 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  35 ++
+ .../mellanox/mlxsw/core_linecard_dev.c        | 184 ++++++++
+ .../ethernet/mellanox/mlxsw/core_linecards.c  | 405 ++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 173 +++++++-
+ include/net/devlink.h                         |   2 +
+ include/uapi/linux/devlink.h                  |   2 +
+ net/core/devlink.c                            | 288 ++++++-------
+ .../drivers/net/mlxsw/devlink_linecard.sh     |  54 +++
+ 12 files changed, 1043 insertions(+), 171 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
+
+-- 
+2.35.3
+
