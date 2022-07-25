@@ -2,116 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C28457FB09
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A2357FB17
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233825AbiGYIN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 04:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        id S230052AbiGYIRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 04:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233764AbiGYINw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:13:52 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A530C13DD2;
-        Mon, 25 Jul 2022 01:13:45 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 190835FD0B;
-        Mon, 25 Jul 2022 11:13:44 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658736824;
-        bh=0VolYYzByKFenHk7cNZW+B/GD/dVG5AI5iMaU934WLI=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=pl/k/J4dr5/K2zhWjDqsI3QB4a9FNrML10R9GEmttN+XJjuttiEBF7ZMyhqPbFTP7
-         T3wvE53MGKHiFk8A8n+VdPOdRT+HH8hkJKz1cJGNxM1xgEZkgA2N18fqkT0lhJJa6R
-         5ofF5p6KrQxgDMabyrgHjD+AUDQRY4b7kWuw7G9NhObGiXkW/HZ/mnLJEhwZOT1NJA
-         u789hjNHVfSntbLj7RIAOI5RyP5F2psxIpA2HUY5ylq0cPMPdo0WMwC1ytffQH0YVJ
-         Mv/tAicXkZ813BF655eNtgdGCFn9Cq/xBdDWB5PFxZgk3F9f3aWyPhFRQ8GYMsmk3X
-         k3OxeFJPcx5ug==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 11:13:42 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 9/9] vmci/vsock: check SO_RCVLOWAT before wake up
- reader
-Thread-Topic: [RFC PATCH v2 9/9] vmci/vsock: check SO_RCVLOWAT before wake up
- reader
-Thread-Index: AQHYn/5oY29w5nBisUCpLo7sMc0FdQ==
-Date:   Mon, 25 Jul 2022 08:13:23 +0000
-Message-ID: <664ce269-ba46-926e-9c34-070079a7ae3e@sberdevices.ru>
-In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1F5A3AF0531B954A9BA3E54B91976C95@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229694AbiGYIRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:17:23 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51A313CDA
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:17:21 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id d13so7178081wrn.10
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:17:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=plwj0SFeQQOBUB0dRP2yOGK0PA3u7vtSex6F23sBEqg=;
+        b=L+k10AamdU+6H60Ns4ryGGehA6ecOqhx5dcJJL6equZ/epoTTUn+yTSBxll/DwMOs8
+         94ZjlzWr/3hHlMuIq4Y/NTneiQZf15cRHRSH/MzuUxjSRK8sPTH6ZOniySYLmnU1NHsi
+         8vrERcOQZfHBAIoHNjR32lbhAJeUfr020kymkZk4a385sfCqr+YGP4RmCF+eE+Ffsqeq
+         W8iRc/QZFMaiyZBBsT16bjsn/jPMy8ezUogyuc0KMYs/ch6KP7RjmskOQJ+PMJrXXbuy
+         5kQ7EdKhfTQA9kH+d0+ZMO5JWrB9RZ+ZyNMYGJH1VJr/3DCTe1a2HcZ5iJNWBzVIw2kB
+         yQwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=plwj0SFeQQOBUB0dRP2yOGK0PA3u7vtSex6F23sBEqg=;
+        b=pZSAkF4rNW9/aHqpeEdnu7Mh5SkHUC3hxrzd+ynaQx19hjfeKDmhVqk+0EkcJF1E9q
+         or9Q++qPiV8zdwKb4AacmtBYTvvYi3tYCfNginUfuhoq2yMJtxzPWOEASfyq59EqShb3
+         4A9JRmE/RGJZyi4ybEaJORwvidnIFGLFBAuUvKP++ED5dyQoFEQFX9movKD2jlysvBW2
+         zwSc6ptvCcBnq8D1Ge48iULAqwAzpBbzhOlYLWYdGBYLIJtL/yBw9UIzzOk863yrdvv6
+         NEdqB8KedVfhTxHLFk7aFCi3hUffjvLIuy/Df6RatkDFJ7wJzcDPvVcKxgv4DVsmukFC
+         mEqg==
+X-Gm-Message-State: AJIora9Qgue6fW2BcT6AMaHTGjnkeFLScm96BfkJSOJkvrWHLnRHKQBs
+        GX2LBNGhUSaOdnss2INILvAlxA==
+X-Google-Smtp-Source: AGRyM1tBGYRF9WUG62K0ax6MqQ99n+7iNQU6HZVbGC/1XxI2rG8MHKdw3QTqubQvIH8/sVG99wakLQ==
+X-Received: by 2002:adf:e84c:0:b0:21d:83ed:2ce with SMTP id d12-20020adfe84c000000b0021d83ed02cemr6827269wrn.582.1658737039981;
+        Mon, 25 Jul 2022 01:17:19 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id f5-20020adff445000000b0021e5f32ade7sm7916700wrp.68.2022.07.25.01.17.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 01:17:19 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 10:17:18 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v3 01/11] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <Yt5RjrqG1WZelSOH@nanopsycho>
+References: <20220720151234.3873008-1-jiri@resnulli.us>
+ <20220720151234.3873008-2-jiri@resnulli.us>
+ <20220720174953.707bcfa9@kernel.org>
+ <YtrHOewPlQ0xOwM8@nanopsycho>
+ <20220722112348.75fb5ccc@kernel.org>
+ <YtwWlOVl4fyrz24D@nanopsycho>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/25 03:52:00 #19956163
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtwWlOVl4fyrz24D@nanopsycho>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBhZGRzIGV4dHJhIGNvbmRpdGlvbiB0byB3YWtlIHVwIGRhdGEgcmVhZGVyOiBkbyBpdCBv
-bmx5IHdoZW4gbnVtYmVyDQpvZiByZWFkYWJsZSBieXRlcyA+PSBTT19SQ1ZMT1dBVC4gT3RoZXJ3
-aXNlLCB0aGVyZSBpcyBubyBzZW5zZSB0byBraWNrDQp1c2VyLGJlY2F1c2UgaXQgd2lsbCB3YWl0
-IHVudGlsIFNPX1JDVkxPV0FUIGJ5dGVzIHdpbGwgYmUgZGVxdWV1ZWQuDQoNClNpZ25lZC1vZmYt
-Ynk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQogbmV0
-L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuYyAgICAgICAgfCAyICstDQogbmV0L3Zt
-d192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMgfCA0ICsrLS0NCiAyIGZpbGVz
-IGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBh
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMgYi9uZXQvdm13X3Zzb2NrL3Zt
-Y2lfdHJhbnNwb3J0X25vdGlmeS5jDQppbmRleCAxNjg0Yjg1YjA2NjAuLmFiNDJkNzNhYjNkYSAx
-MDA2NDQNCi0tLSBhL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMNCisrKyBi
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMNCkBAIC0zMDcsNyArMzA3LDcg
-QEAgdm1jaV90cmFuc3BvcnRfaGFuZGxlX3dyb3RlKHN0cnVjdCBzb2NrICpzaywNCiAJc3RydWN0
-IHZzb2NrX3NvY2sgKnZzayA9IHZzb2NrX3NrKHNrKTsNCiAJUEtUX0ZJRUxEKHZzaywgc2VudF93
-YWl0aW5nX3JlYWQpID0gZmFsc2U7DQogI2VuZGlmDQotCXNrLT5za19kYXRhX3JlYWR5KHNrKTsN
-CisJdnNvY2tfZGF0YV9yZWFkeShzayk7DQogfQ0KIA0KIHN0YXRpYyB2b2lkIHZtY2lfdHJhbnNw
-b3J0X25vdGlmeV9wa3Rfc29ja2V0X2luaXQoc3RydWN0IHNvY2sgKnNrKQ0KZGlmZiAtLWdpdCBh
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5X3FzdGF0ZS5jIGIvbmV0L3Ztd192
-c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMNCmluZGV4IGE0MDQwNzg3MmI1My4u
-NDFkY2E1ZmJlYTVlIDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9u
-b3RpZnlfcXN0YXRlLmMNCisrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5
-X3FzdGF0ZS5jDQpAQCAtODQsNyArODQsNyBAQCB2bWNpX3RyYW5zcG9ydF9oYW5kbGVfd3JvdGUo
-c3RydWN0IHNvY2sgKnNrLA0KIAkJCSAgICBib29sIGJvdHRvbV9oYWxmLA0KIAkJCSAgICBzdHJ1
-Y3Qgc29ja2FkZHJfdm0gKmRzdCwgc3RydWN0IHNvY2thZGRyX3ZtICpzcmMpDQogew0KLQlzay0+
-c2tfZGF0YV9yZWFkeShzayk7DQorCXZzb2NrX2RhdGFfcmVhZHkoc2spOw0KIH0NCiANCiBzdGF0
-aWMgdm9pZCB2c29ja19ibG9ja191cGRhdGVfd3JpdGVfd2luZG93KHN0cnVjdCBzb2NrICpzaykN
-CkBAIC0yODIsNyArMjgyLDcgQEAgdm1jaV90cmFuc3BvcnRfbm90aWZ5X3BrdF9yZWN2X3Bvc3Rf
-ZGVxdWV1ZSgNCiAJCS8qIFNlZSB0aGUgY29tbWVudCBpbg0KIAkJICogdm1jaV90cmFuc3BvcnRf
-bm90aWZ5X3BrdF9zZW5kX3Bvc3RfZW5xdWV1ZSgpLg0KIAkJICovDQotCQlzay0+c2tfZGF0YV9y
-ZWFkeShzayk7DQorCQl2c29ja19kYXRhX3JlYWR5KHNrKTsNCiAJfQ0KIA0KIAlyZXR1cm4gZXJy
-Ow0KLS0gDQoyLjI1LjENCg==
+Sat, Jul 23, 2022 at 05:41:08PM CEST, jiri@resnulli.us wrote:
+>Fri, Jul 22, 2022 at 08:23:48PM CEST, kuba@kernel.org wrote:
+>>On Fri, 22 Jul 2022 17:50:17 +0200 Jiri Pirko wrote:
+>>> >Plus we need to be more careful about the unregistering order, I
+>>> >believe the correct ordering is:
+>>> >
+>>> >	clear_unmark()
+>>> >	put()
+>>> >	wait()
+>>> >	notify()
+>>> >
+>>> >but I believe we'll run afoul of Leon's notification suppression.
+>>> >So I guess notify() has to go before clear_unmark(), but we should
+>>> >unmark before we wait otherwise we could live lock (once the mutex 
+>>> >is really gone, I mean).  
+>>> 
+>>> Kuba, could you elaborate a bit more about the live lock problem here?
+>>
+>>Once the devlink_mutex lock is gone - (unprivileged) user space dumping
+>>devlink objects could prevent any de-registration from happening
+>>because it can keep the reference of the instance up. So we should mark
+>>the instance as not REGISTERED first, then go to wait.
+>
+>Yeah, that is what I thought. I resolved it as you wrote. I removed the
+>WARN_ON from devlink_notify(). It is really not good for anything
+>anyway.
+
+The check for "registered" is in more notifications. I will handle this
+in the next patchset, you are right, it is not needed to handle here.
+
+Sending v4.
+
+Thanks!
+
+>
+>
+>>
+>>Pretty theoretical, I guess, but I wanted to mention it in case you can
+>>figure out a solution along the way :S I don't think it's a blocker
+>>right now since we still have the mutex.
+>
+>Got it.
