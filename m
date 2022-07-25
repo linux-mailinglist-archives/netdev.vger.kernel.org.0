@@ -2,92 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D0B58046E
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AF958047D
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236586AbiGYTXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 15:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
+        id S232552AbiGYTeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 15:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbiGYTXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:23:50 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2049BE3B;
-        Mon, 25 Jul 2022 12:23:48 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2807D5C0187;
-        Mon, 25 Jul 2022 15:23:48 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 25 Jul 2022 15:23:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1658777028; x=1658863428; bh=Itqe3cTqeN
-        O2sng2SyRO7speA9C+VjPJM1GP+0IL4Yc=; b=p23MTh7vV6M/9Y8DgbLcYqKxL+
-        zzfF/B6G4DGFsbT9OipRrwTUV83aTB9cAnQP/uZ6tf4U+JTB9789vzCiNLgGff0P
-        RS5QxyPXIl4MZa+AgDWBlQrqkXXe3pPmM52kRbt7FYpNP6PnaZKg3wvjhGiKnJN8
-        aY7PSeN5wnWmyttizj8ITuiWmREI/s7T+Xqrq+eSrgDGuQfLJDyMALkO4L12wtMD
-        45hFIWNC28xuV6hOFZfwhCYkSYKCsIZ4l7sWxgxDILS9vTNVE3nDkVpqcy8EAwod
-        hBppe1dtNoYRvA+4xK7m1wj/bYkHEZnG/Y6VqG5htyRUkA07JrdCAINeJD4w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658777028; x=1658863428; bh=Itqe3cTqeNO2sng2SyRO7speA9C+
-        VjPJM1GP+0IL4Yc=; b=MvPHNurBQRSE63/x+TnBwR5hlX0Tdnl1lktx3Lna9puq
-        hdlhl2+wFKteipc+TTgAC+boFW1Z4ghGMxz20gnWEN52Cpcjq82QWjkBBGSlnh46
-        wQQpd3PKvJbw/oym2dLyB1DzFchyw/cTNXBD1/8OrB2Ll1mBJlG/ER2orRQBL/n4
-        FgA5AXbP2yWo+DQhuvjJ1W7XOsl80eu0JE1z9pqMWf9Po+nP0XPEtlw4O55Dhu4H
-        2OQLf6cp95Gwlpf9biR5UtarGcyJMtpoic7HDaXnh7VbCaK4CkrtNY79YBTKEBXH
-        lqig+RKhhiqF8bUB6S23OOdnI5APio0v7+k1YTlUvg==
-X-ME-Sender: <xms:w-3eYk1XGsAVRPMu1xXflCMUtgekQE3vx880iuwT8GDoWXdKtWGmUQ>
-    <xme:w-3eYvF1mP7gl-8GZb1PXljtDYmt6UA2jpB6gF_uydnCDdhoQwjlApSFg6SdGNwor
-    LxjRr7wNeuRVpZxAQ>
-X-ME-Received: <xmr:w-3eYs4VbRBNJcjicVJT5y3nvOYKPnLQ-n91K2t5M_3xhcE2pTlAHitLK1AYeGa36Gci2TZ0dm1pZimtYkc7sA4v8w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtkedgudefiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculdefhedmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredt
-    tddtvdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqe
-    enucggtffrrghtthgvrhhnpeevuddugeeihfdtffehgffgudeggeegheetgfevhfekkeei
-    leeuieejleekiedvgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:w-3eYt3I1AKUN1RSeaRxdUs7zSvLURWTBA8XS7hDU0AIUQFSYFILEQ>
-    <xmx:w-3eYnHYD2_9-UYSXuEJeHXniL0f2GlZBRt6B9DYqWpiV9Yp-O5haA>
-    <xmx:w-3eYm9KR41LvOKr4-IFVG_neXZ3zATk7Yb8t_Xlhh3jhvlAPxJy9g>
-    <xmx:xO3eYv9oUVYuk62pM7ieLtYRuYXHwricA_hYT-jn7UZfvnrnZsAX2Q>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 25 Jul 2022 15:23:46 -0400 (EDT)
-Date:   Mon, 25 Jul 2022 14:23:45 -0500
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Artem Savkov <asavkov@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Daniel Vacek <dvacek@redhat.com>,
-        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] bpf: add BPF_F_DESTRUCTIVE flag for
- BPF_PROG_LOAD
-Message-ID: <20220725192345.jlrqyfktpmttiypp@fedora>
-References: <20220720114652.3020467-1-asavkov@redhat.com>
- <20220720114652.3020467-2-asavkov@redhat.com>
- <CAADnVQ+mt1iEsXUGBeL-dgXRoRwPxoz+G=aRcZTkhx2AA10R-A@mail.gmail.com>
- <YtolJfvSGjSSwbc3@sparkplug.usersys.redhat.com>
- <CAADnVQLyCc7reM1By+TYBaNGh1SBpVqyNyT+WJXOooCqX_w2GA@mail.gmail.com>
+        with ESMTP id S229878AbiGYTeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:34:00 -0400
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CDA1FCD3;
+        Mon, 25 Jul 2022 12:33:59 -0700 (PDT)
+Received: by mail-oo1-f51.google.com with SMTP id j8-20020a4ac548000000b00435a8dd31a2so2348210ooq.5;
+        Mon, 25 Jul 2022 12:33:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KIw937KfRgtYEPX35WUaBoez2BdnKkRvpNFrhrEEgaE=;
+        b=dD9MtLsulX2LksDLMQXrlNUHP7yLsa1OZH126qGyyVnR8DBpZX0PpSeRFtv/RLtfrG
+         CnnyktGByUfD02WnXVSLMbXsDioPP6p06DDsdf9a8lpM2Hpol935iHw1PUh+gfH4UyOM
+         qb5eEg5bIks0lakJvpg+emYsY4HlBJ+3NNdNqtzwbm89OmkFZM6dZ/Ye+jLhAwTybApK
+         HNdAsOGa9Med45ssbbKx7kBItIDK0/i64Y7TXkoI5Kam8emFmtkrT9N5hplMi3ORVfcm
+         TPXaBmR21I4ALj5zvdFawTkO69bhSxNtTyDlIoR3WDOc7YzsoxM71tI/5lBARm9zT/t1
+         owIg==
+X-Gm-Message-State: AJIora8viUvccAQkAupiFMUrYq0zAVPdCuYP/f6fke4t5dJPrjdqKfGl
+        DVDeW4POdBe4jQnRt7z1QA==
+X-Google-Smtp-Source: AGRyM1uTtx/J+WMQ8qtwru58sRJQF2353um12dhZAF81rpKXXTgUH9cVEJf0C4kEVleDBRmC7HIkdA==
+X-Received: by 2002:a4a:d621:0:b0:435:d6cc:b2e1 with SMTP id n1-20020a4ad621000000b00435d6ccb2e1mr4704597oon.88.1658777638776;
+        Mon, 25 Jul 2022 12:33:58 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id y3-20020a544d83000000b0032f7605d1a3sm5208627oix.31.2022.07.25.12.33.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 12:33:58 -0700 (PDT)
+Received: (nullmailer pid 2565486 invoked by uid 1000);
+        Mon, 25 Jul 2022 19:33:56 -0000
+Date:   Mon, 25 Jul 2022 13:33:56 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        harini.katakam@amd.com, devicetree@vger.kernel.org,
+        radhey.shyam.pandey@xilinx.com
+Subject: Re: [PATCH v2 1/3] dt-bindings: net: cdns,macb: Add versal
+ compatible string
+Message-ID: <20220725193356.GA2561062-robh@kernel.org>
+References: <20220722110330.13257-1-harini.katakam@xilinx.com>
+ <20220722110330.13257-2-harini.katakam@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQLyCc7reM1By+TYBaNGh1SBpVqyNyT+WJXOooCqX_w2GA@mail.gmail.com>
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS autolearn=no
+In-Reply-To: <20220722110330.13257-2-harini.katakam@xilinx.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,57 +68,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 09:32:51PM -0700, Alexei Starovoitov wrote:
-> On Thu, Jul 21, 2022 at 9:18 PM Artem Savkov <asavkov@redhat.com> wrote:
-> >
-> > On Thu, Jul 21, 2022 at 07:02:07AM -0700, Alexei Starovoitov wrote:
-> > > On Wed, Jul 20, 2022 at 4:47 AM Artem Savkov <asavkov@redhat.com> wrote:
-> > > >
-> > > > +/* If BPF_F_DESTRUCTIVE is used in BPF_PROG_LOAD command, the loaded program
-> > > > + * will be able to perform destructive operations such as calling bpf_panic()
-> > > > + * helper.
-> > > > + */
-> > > > +#define BPF_F_DESTRUCTIVE      (1U << 6)
-> > >
-> > > I don't understand what value this flag provides.
-> > >
-> > > bpf prog won't be using kexec accidentally.
-> > > Requiring user space to also pass this flag seems pointless.
-> >
-> > bpf program likely won't. But I think it is not uncommon for people to
-> > run bpftrace scripts they fetched off the internet to run them without
-> > fully reading the code. So the idea was to provide intermediate tools
-> > like that with a common way to confirm user's intent without
-> > implementing their own guards around dangerous calls.
-> > If that is not a good enough of a reason to add the flag I can drop it.
->
-> The intent makes sense, but bpftrace will set the flag silently.
-> Since bpftrace compiles the prog it knows what helpers are being
-> called, so it will have to pass that extra flag automatically anyway.
-> You can argue that bpftrace needs to require a mandatory cmdline flag
-> from users to run such scripts, but even if you convince the bpftrace
-> community to do that everybody else might just ignore that request.
-> Any tool (even libbpf) can scan the insns and provide flags.
+On Fri, Jul 22, 2022 at 04:33:28PM +0530, Harini Katakam wrote:
+> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> 
+> Add versal compatible string.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> ---
+> v2:
+> Sort compatible string alphabetically.
+> 
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> index 9c92156869b2..762deccd3640 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -20,6 +20,7 @@ properties:
+>  
+>        - items:
+>            - enum:
+> +              - cdns,versal-gem       # Xilinx Versal
+>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
 
-FWIW I added --unsafe flag to bpftrace a while ago for
-situations/helpers such as these. So this load flag would work OK for
-bpftrace.
+Uh, how did we start this pattern? The vendor here is Xilinx, not 
+Cadence. It should be xlnx,versal-gem instead.
 
-[...]
-> Do you have other ideas to achieve the goal:
-> 'cannot run destructive prog by accident' ?
->
-> If we had an UI it would be a question 'are you sure? please type: yes'.
->
-> I hate to propose the following, since it will delay your patch
-> for a long time, but maybe we should only allow signed bpf programs
-> to be destructive?
-
-I don't have any opinion on the signing part but I do think it'd be nice
-if there was some sort of opt-in mechanism. It wouldn't be very nice if
-some arbitrary tracing tool panicked my machine. But I suppose tracing
-programs could already do some significant damage by bpf_send_signal()ing
-random processes.
-
-Thanks,
-Daniel
+>            - const: cdns,gem           # Generic
+> -- 
+> 2.17.1
+> 
+> 
