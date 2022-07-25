@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 696ED58012F
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F71580131
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235119AbiGYPLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 11:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
+        id S232406AbiGYPLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiGYPLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:11:01 -0400
+        with ESMTP id S235126AbiGYPLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:11:03 -0400
 Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10066.outbound.protection.outlook.com [40.107.1.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A819FF5;
-        Mon, 25 Jul 2022 08:10:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1E99FEB;
+        Mon, 25 Jul 2022 08:11:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KZ3vg6y5e1RXn3GIEUlZmLzy3/69Agq4QTAf75a1E1M5umFuo1lZoT16vF0993hJf6jxzGzlULqu8QOnlj720bxNir3OivgeF1C4FXP6wB00Td5e4Yaj1mnK1VaGpg1lsNjQYCMh8NATfBD9GzyvZ3TFC8m5GnnVKpAI6EWftY8fv9BFO/4QEqT5xR93Ii7RYPbkmgilzCw45eiWlTnb1HTrLL8lM+dfY2FqSPFK03iHV4XIVXjwHG369wVcVEphu5RM4kCnOY9AoFs42HPo79eC6+4l7EQHu8FPAhn2ATL1OcE5kKdEhRc3scDGqlIiIFDIcg8stCxKwwQelowh7g==
+ b=DWwBnV/ZVGWVQkBqPSQwKA/K3YXUtwvT7DRybPzw+BonjOmA9xN55RW6DN7E8T3Ggki0n7+JwvhiPtWqhQzlB8pJDLKv/CgzObJWMYlv5FmLYHVMg7gnnA1gMuAiMISwLjKzevFUcKo04iJ5Zn/DXE5pJfcXmRrOcLAHMNQHv/4ksJMgqIhTjNVi9QTJQ1QM5A8otM7I3SGxUxYkso/r4EUiGZl8kru5LqLiFWeQ3EkFzfHPFAsSRAtq7Hq5nljjPQBFWEzCSuUU7nl7wluxidwvsBxnXgDokS1RCHSc7tjhKaLThUV03zdWP+KLkFN3CelsZCzmeMZy6KCFoRF5nA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iO8ROTcaT90018JtrQ0xpZyawquVtsOjOiokopmXpXU=;
- b=AwAcK3CLManywtGNsSyXxAi3gSwTySPRbW1dqJ9EOink2XTr8UimgKy6cepSZgHiePEd/hsnlYTpXsDOnTtdRuPrVSDNAJfrXwfTiwton8l00BzEpRiz1kFGHJxkjG4PviSqnnVNfGvMkvEvcxGNwwQplsLafTfh5L1FKfJ6Gq3VquFG0fmYMwk7+lWTBh4D+lqZDEO6ETjtLff5gKSwGI6D6G64rswhqyDFsJCLID2DmuP+VHbZbehIRjoAFZ794ZOJmPCDSU4DU8fZ2cEVxltyp4QOHee+pwcrzL0bp5lFjCGfFydJTLFq6uFIKwHSgmuOMUxlVZGo7qbnT0unNQ==
+ bh=Ztt4rIUBOPc1xIJSVIQjxGh+cKK9SDDVoQDd3WCk7MY=;
+ b=YphxfoTzuPDeEQKQ9hj0RKceIlp5HUFOeKJbBkJDInFGYJApgNe5v/iBffft7SBOB4SLyjGlwjNZi7mfPlfqdbUedS+/tX/8vE0XLpxKaGSSGMWDAxqVxYdvT2V+htor2uEaKPb8RrOTZRdWeYuI/lHzR3m0i7TM6uM1EKS0BxFWHXuGKaCXyoO2M9/i4vGndSXDMqBTtbhSjSVVqOcaCqguENZoPyoFSOxraxE1B4sUWPForN/hKt2sjW8mCys4X/VldrCZMvgE3z9VABj0gHLWVXHeNbO+LaxOJhAYThjgGll/xeg90bDpS+kmDn7qisgJ5Fnjg7bSM9Ct27cO2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iO8ROTcaT90018JtrQ0xpZyawquVtsOjOiokopmXpXU=;
- b=OeWFqG5FuAJnfxYuW3aD55YZkRlyiOxRbo0SJtBcOcV0n5CPMBgxKRGP0LQhiUUocJpiKtjvZJyLQExXldqoCnH7bvSmum21P+e5ATC4feskcWMNTBgaQP3TgGrWiKmKPH3XtJNZ0vCNWe9mRXjfkVlFnelONbO4vVFrtrXNE8LV9f1Z5KDGH7bZb65M+TyTNUFGRRuOsoXZgGptm786CbbOS+i72BExcsfyQ8pSFsSYJIPusMuvdLRcWOUX1pqK8PhFt4iwriWR6QspiY8zfchyFERofwMYnHFTN6l44TBIL6yZTLpHEHFPuQ/bT9gO/mhvt/+UC/zQRa6DOTUtcg==
+ bh=Ztt4rIUBOPc1xIJSVIQjxGh+cKK9SDDVoQDd3WCk7MY=;
+ b=vVPvFKjbHSchE0KPauMIn76qv+yFmnLIUc6nabYkQc3N12sv592fotz0bqbZ9Kud5XSa1/+2KFEN9HgI9bwuMv1quCOUVWmbXrH+8nCr45QsYbW7bpb6r9NysMNN1LWNn2WbHPh65nTIL1ypBCW8OSKlkggAMmMAPCuQ7B85JyESgQ/QpwAW2UjU16fMmq2KOKKLe3lWO54qV7ymL5zF9Lst1y3b2WXShQDdbysco9sfNg+6H1EYRdV1hVxsqJRp2ZX8zBxf0FSUGUztQ74nZHLN4HIAkB33wjDOcQfjlDwX3xWrIy+ZU0hgbzTW1t/YOqWFgfVJIrtaII5Sq77BPA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by AM9PR03MB7817.eurprd03.prod.outlook.com (2603:10a6:20b:415::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24; Mon, 25 Jul
- 2022 15:10:57 +0000
+ 2022 15:10:59 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:10:57 +0000
+ 15:10:59 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,13 +50,15 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Madalin Bucur <madalin.bucur@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         Sean Anderson <sean.anderson@seco.com>,
+        Rob Herring <robh@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v4 00/25] net: dpaa: Cleanups in preparation for phylink conversion
-Date:   Mon, 25 Jul 2022 11:10:14 -0400
-Message-Id: <20220725151039.2581576-1-sean.anderson@seco.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v4 01/25] dt-bindings: net: Convert FMan MAC bindings to yaml
+Date:   Mon, 25 Jul 2022 11:10:15 -0400
+Message-Id: <20220725151039.2581576-2-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+In-Reply-To: <20220725151039.2581576-1-sean.anderson@seco.com>
+References: <20220725151039.2581576-1-sean.anderson@seco.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
@@ -64,52 +66,52 @@ X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a05e8b60-d2b6-43d8-8a71-08da6e4fe022
+X-MS-Office365-Filtering-Correlation-Id: c0a077f3-f893-4ef1-4c4e-08da6e4fe18f
 X-MS-TrafficTypeDiagnostic: AM9PR03MB7817:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zH0OB7Ox0cRDGGRKxFMJ+1lkqBMArlhoi2Msg/GHBiD2V1BSjwfpu6+Oy4HurtdczbwXvbCFNTJ7TDgpk46e6Mmk6ryCfv2h0km6uJJx+yIBUZwFFElPNbBkQawBB4ejrRQG3flsxitsDtnzcO7bQWcq7OsWO83mla6IJEKwWuadbYPmhSlPc3+aBOb0C0OFUbWndNtgf/b+SM28pDPWrLmnXfNI1sYTbs+fKpl9C94nbCj9yjJOC3+GPL/bYpHCYBdebAFI/HOq6EZ4I1tj0KRbF8ZA4ulJVeXCN7b3vPc3QcQ/vGln1UB9FQiEgTa2W9NvXr/OV6cPRpzYJ++8z62ew5nJTqovaWe2K9vC8AodpvVl/mYZRhd/PTSnmmSN1Nuq7/ZRHUUQiYok8l6X2h1dAFnzVlKOQpt2xbtXY0tI97ele1FawmFtOasWFjUPCJRZdJlJ+5NbIEPzAlhiNjCaBReIMhzzhVjhHQmpC9XvybYMdpT6UCOHfSdpjWMoJPoMWXWEttCkwQRp7JEMukOY5rWUSnAkVKy98Ih919lfSjMoGydeqe01rkar8qwuRd+o+v8NXyjBqkXRBBzpsP4llZ/wNQddU3ioNCpvwd0QGMT0oxMaUIrF8LKfpLxXXmwNnXfDXiWz58dOFlr5ezmfA6XQD/7rqoyGD5Uv7y4dOl9MgCrRrR0c5ZK+neVlv2o2u033HZ92oJhDo3cJPqJyRCQHFhvZJtxJvXGg8+LLFTzzyV0/90Daz71OUfZBzA6Y7n7awl++bjMndhFubNTPhiear4iMIHJpBggi0qOR2580nGFXGGZRJxLMB4Wtoing/Rl9d6Yk9wF4Jpu8GA==
+X-Microsoft-Antispam-Message-Info: MhfPGcHW5C56e1+lloN74aUx8oZDhEY2H9dNmLqwZshKC1KGwBHai/ggsbMP5xdzuQFpZoiverEpTMNPeS35SF4R8QseWIlNrehntOe9rMp9gtJKVGGJs2AcgaNqGjZ8SO5kx/nqQVHO7M2YGF0ohBCndWHVEHa+7FFoHzl+OZJ5B0AjvgiNBexFTBQTLdz3GEon8uq+C0zq9Nl1pIG4dMQgyTZhyM4GkCnriwNCNhS/6KPjUFs7PQw/GwpJSN/2KhnWgcHj/J7DFM0WWXpwUt76m5H+FDhchMht7gnpbPlLd8y34isjZQkGTlP17MWY7c7z3RWFzcjy27XkOju3b4nbfbfuL7E8XYYLOzI1+FEGXQPt4zVJo+lweP+zUepbxqzwFDnX991oZgVEgoPjvxb1MmFcEn1BTmmLGu3i12jL6LgKc2QHEAzvisowDZqyABBpZV4H0O1CkB7gjO0+sCOhAfR6G3KgAjrOoOjHsIng6FLqgSx+wH02yr2hN41ecJmKo6qSv3xduP1jd1JEtnnE/GOriDfzePjjJEipbK/1IyfMHGuxIMw4kvRc8E4txgL5yQ2zDgB+ViZe1+8wgVWLMpzrG/WwuLHvx2nqd64LsVW2wGuTtZT5aCOH6Idr5An1SEJ1myHAquMCyWd3jm474nqMt4MWeuGKYDW5dp/U5ALzcWK7erh6di8CdnsSEWB2U8o/Nh1PdTwLWASf38st/r4IdvYUuw/umunCqUQEcPbNpphi1SoWcJA2qyAj0ZGg9BFfskoubaPIyFeSKxJZxNXeIPsWk6ugIlrzufILZ1EnbLl/lh/zjxy8UgZwMM1WZlq5h6S5pvGeInGpm0Ftbeo7WogwObTo7gtnTYML6K7+fVbnhjAESurlq09f
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(396003)(346002)(366004)(376002)(36756003)(110136005)(54906003)(186003)(38350700002)(8676002)(66556008)(66946007)(316002)(66476007)(38100700002)(8936002)(86362001)(2616005)(478600001)(4326008)(5660300002)(6666004)(966005)(83380400001)(7416002)(6506007)(41300700001)(6486002)(44832011)(26005)(6512007)(52116002)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nlHho3iVAttAEkzoGaIlYUQ4oE8GR4AsVid/+Df+1AVolIyZdbsdRRt6YNuF?=
- =?us-ascii?Q?Nw8K+k0S5pRYC73RQFdOnoL9/RPYDNoCIKbYGz3iNoBsZu6lAMPudMJmP0XO?=
- =?us-ascii?Q?0REHfPPGM/e95t8WgFbqHHj20y2/L6RSygERqsJWi832ap3945siQFuyJ/AH?=
- =?us-ascii?Q?bgaaIJbwbdMNfUDpul6KoLlY9L8yGgm7Fp3VnTPWlTA3sPx8hL4JpVrl1rER?=
- =?us-ascii?Q?fCa9R5ekgebBX5UaYCkC0HkXLZA5Ew9+WehdN40sghUsEiAzRsYroUmf++Vl?=
- =?us-ascii?Q?iTs2nu6sOaE+biwsyXlilscCocLzGmvC6+OtwfFKMRJSpBsYNyU0ttVu1qoY?=
- =?us-ascii?Q?bcwgh9zHeVbp5lvtuKOAHqdtltca3w8g9mhAl6kVgw+sfRqSwOApdyk7HUN6?=
- =?us-ascii?Q?7YK/Wx9S2z6Oc8EsRr/gYeDa5JzaJ9MjdRTcwRCOWJLIPtGWFpINJIaVnG8Z?=
- =?us-ascii?Q?W9nHSei1bvkdnBAXk88C/gtHNi8qNSyZcd2j7Z09J4SqPbx0pNbYXIX2Sjta?=
- =?us-ascii?Q?sVnVMoHhl8kjqgrEeI0sOciTQJA97kZMIC1eZa/6AyMiPBkpvNnEvOtxhyYU?=
- =?us-ascii?Q?kXFenaVzWy+7vzXioQboKpie3DbRYLgooXhDs4rAmEjGcVFiCcWJ0Z7BkDc4?=
- =?us-ascii?Q?ECk3e5aUBpQJtEIC7gJhfi44ufOxTuCM2bUWmLFawRDq/R8mvxr2zguJgTYT?=
- =?us-ascii?Q?+sT3MskOU8SyyezUDDAb/+w/bd5Ar9z6+zvZzivL7hYzkQCDUTwyje4L1bro?=
- =?us-ascii?Q?uHbGr1qPTuwBLeANmwmEa/8/c90ShtrNPJoWGON+Nqna0zHoQa5qT1G+ltsT?=
- =?us-ascii?Q?yyPNOaVez+ABC7Z/m/j+z7PRyJgFapNH9vO/T0Q0WGbh6RpwKkxbaabqabTi?=
- =?us-ascii?Q?/ewx/RtgjUxG5Irvf8a6Wtx0JWhLBkFd/fgcw92Mg3DFnikMsZQryDg/HnyZ?=
- =?us-ascii?Q?maaDB88QnzTtaqoBA02T5sb1L+9adMDvomydRTy7oG+2sEnWeMvnpPvwamqm?=
- =?us-ascii?Q?FZfNpkrN0g5uXTPT++mnlcWVYZON3M/ysWu3HY2NyK74UrHf1ce2eJBKdyWg?=
- =?us-ascii?Q?ELxEcxjQ3kiD1ZKn8Sz1d0bjzj8VoQlou/RodBrPYdPUt50BMPyESwM5jA+B?=
- =?us-ascii?Q?KW0/y5uf72IQCuI+OSdDo74YPdnSrqd3H0UgxbiAWnxcYZAF3rIi4WZFBu1S?=
- =?us-ascii?Q?F2LWPB4tH2jMmRB2bKOr7KPRzbNz12UvV3pzAA70Uzjr0bKe24NgYiw1Vwzx?=
- =?us-ascii?Q?60MIe/cXAQUzEK54P+JSdzGpMx3j/4cK4DRbTVVb0BZW4GWDfvwEZrrmDlPN?=
- =?us-ascii?Q?M8WQXDirf7Nmn54SqnkmmkB2YOdInViRMgA2RXmTuONdIQzzCM43cO7kX/nN?=
- =?us-ascii?Q?DTodPbsYOQPIObDyJYRwAPudVdgHLoUrXDMC26HgFFYzrI5DdWsEfDXs/0sG?=
- =?us-ascii?Q?g1SqH9plinvgbS+IZPRgbEg5GuxGR2bYQqAyH+eJ9LLBU0PlWVfKocR0MbK5?=
- =?us-ascii?Q?EjzG6AKTpPPn/S5u9gk6Kd8tcYGERW7PdCaA52mcol4iUxJba9v5zbISWumN?=
- =?us-ascii?Q?+MkrIpUtsl1R043bmFg7tNy1xQ0m4E1makvVnvwi/kBh0aSwNC5P/8cRgMMK?=
- =?us-ascii?Q?+w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oXoZ8el4KJTq8IKDswgblYFll0cnGNA2c+JPTmydpL2HY94ZwLqZB5bRIfld?=
+ =?us-ascii?Q?7j+RkMdkIrO4leMNXL1weBnk7shLzNx75tq/LJWSD4nQA7Q+GFVmy96tIsEg?=
+ =?us-ascii?Q?AtmxYbreQQ5WfrR3pZQccwDw3GC70myoWUecSUVntZw4BlWTyTBp851BtAoM?=
+ =?us-ascii?Q?NzcP3uYO7k5rGN3K6BmAdEsy5hThcIe1qD2mnwmM2XqmzhAsUwSzA76u+7PS?=
+ =?us-ascii?Q?06LGhCBNs4HGjZT4ndJjIalv0RooE/kInt248ts/W+tIrqKTFGcFuXDWuOj6?=
+ =?us-ascii?Q?fvOQGKyC+4KHu7rj7vSRNWXWjSSVVvZeNGo8/QL6G7t7HB1sL/S2FRjecm4m?=
+ =?us-ascii?Q?XbzwuMwxNAqj3uPV7D5YkscRNQtpIf3m8g0EMwupPJyNMQw4lKvEnheUMo1W?=
+ =?us-ascii?Q?PguOeqOlZErJ2WnBlUCEeHeapjIidNNS0Bo3udAzZHsiHAnY85pB1LWM+7sm?=
+ =?us-ascii?Q?j+iXNmkAHaF4d/tpu/Eij6F32Wf0ZzMo1/q/2CvLKuOHEUK0FQIekVm5s/mz?=
+ =?us-ascii?Q?z+c0q68JzjXJWj2lBaNLDdO5HO8L5PITyQ+wj7zPYkJS5wlSoBAb75GZ9G3G?=
+ =?us-ascii?Q?fkNMfN97mfx9SqloqVC8d7qRO+ZXK1/JJ+A2AWtCK4o4JSqT5agyYUnvVbhO?=
+ =?us-ascii?Q?MjArA4afEiePVUR4kiEfyWAqJ+NRyp3cRYWRKuG7BoPe1r4ACAkhoMi2H1dw?=
+ =?us-ascii?Q?w/aJC4D7IWJdXQSJBFUxj/dfyD9Qq51y/PvbtiNevqQbsp9Xj97goEORXu8x?=
+ =?us-ascii?Q?0do8ixyCrWilQVaCLKsvIZBuH25QqFQzfu7O5gYJXh0emP1mMNqPJxiIraZE?=
+ =?us-ascii?Q?lfAKwBYWZ/8sIczrkrwIsAZ8tq+BgKBw7D4oRljewriqynsb0cBOvokJ5eHC?=
+ =?us-ascii?Q?Ry0TpzxReguIB3FIYfwsDPwe9K3qVXuFxcEa508UyTrws8sWbGdyi6kXQqXZ?=
+ =?us-ascii?Q?hmfWc2XI2FXj7nK3iW3lqqDprrzx5aIfAfWc97vJC5PoskJ4cuUva+OfUyx4?=
+ =?us-ascii?Q?BOjX19b/VuvQhlk0juuIl+50m8+vQ8XYwVtCHl97r+lbCKL/Wn/lanbYiyhq?=
+ =?us-ascii?Q?DQn/dL274PF5mJmsEhRI85W1VWhXKN9unY+iiGHSaQ5I2jEJ7jVz2LXRcoGY?=
+ =?us-ascii?Q?ljRT97Zt9F9vYcIqWmbZ80KR5PhvmIM+gbWtYE21sSYX8mxSnpi8H8+kC3Nw?=
+ =?us-ascii?Q?rdI4CcdGZVlKzO8vTwI1Fz2WX0YOYm4vFgyFS2P3PCnKtcjxw+flrO0SSeLG?=
+ =?us-ascii?Q?0Vvuf+omA9V5ECjzF8EYsfdJinSPf5Yg5DTX4CLpau+6hHc1JGAixHthmsRV?=
+ =?us-ascii?Q?f569gyHw3Kd7R0A0WNKqFefTziaK2ffseKzyqoNcWggXEmRFvZNMo+R42tK+?=
+ =?us-ascii?Q?+oX8CSdvb/idUxWU3qiPWfilc6wIUzT2oYORN5X/VHJebgUoxkZaifDgM0w/?=
+ =?us-ascii?Q?62W120QufKrY7LsQTRMbwipCrT2JJREQeu/H+bac5QdM9TuhipAdhUjqkaRv?=
+ =?us-ascii?Q?0Hkblw59uxxiqLF7mXBBODK7X1XbyAlfdntBAgzkg+H1Ehtbl0MyhaiPHaJy?=
+ =?us-ascii?Q?WKwUxDGn69T1HGr4OjaGs3bmWqJykkthGaQbpMjpP86IgTez2wVw0E67dy4m?=
+ =?us-ascii?Q?qQ=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a05e8b60-d2b6-43d8-8a71-08da6e4fe022
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0a077f3-f893-4ef1-4c4e-08da6e4fe18f
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:10:57.0365
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:10:59.4114
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HL06Kivjum387nkqWsmfV6zcckEmZVX7WNdQJrI57YkjlJ4AYx3aP9xkd2GVoow65R4vqIMGs+AnWdK8IPlNyg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: mUVryMKgIh33LYSR59VWEQafUfGqdrZeL6oZd8VfwTPLDPrdo93/WelxE6PwvHM4h1ST9+kX01dk8MdgEwlxFQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB7817
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,87 +123,315 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains several cleanup patches for dpaa/fman. While they
-are intended to prepare for a phylink conversion, they stand on their
-own. This series was originally submitted as part of [1].
+This converts the MAC portion of the FMan MAC bindings to yaml.
 
-[1] https://lore.kernel.org/netdev/20220715215954.1449214-1-sean.anderson@seco.com
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
 
-Changes in v4:
-- Clarify commit message
-- weer -> were
-- tricy -> tricky
-- Use mac_dev for calling change_addr
-- qman_cgr_create -> qman_create_cgr
+(no changes since v3)
 
 Changes in v3:
 - Incorperate some minor changes into the first FMan binding commit
 
 Changes in v2:
-- Convert FMan MAC bindings to yaml
-- Remove some unused variables
-- Fix prototype for dtsec_initialization
-- Fix warning if sizeof(void *) != sizeof(resource_size_t)
-- Specify type of mac_dev for exception_cb
-- Add helper for sanity checking cgr ops
-- Add CGR update function
-- Adjust queue depth on rate change
+- New
 
-Sean Anderson (25):
-  dt-bindings: net: Convert FMan MAC bindings to yaml
-  net: fman: Convert to SPDX identifiers
-  net: fman: Don't pass comm_mode to enable/disable
-  net: fman: Store en/disable in mac_device instead of mac_priv_s
-  net: fman: dtsec: Always gracefully stop/start
-  net: fman: Get PCS node in per-mac init
-  net: fman: Store initialization function in match data
-  net: fman: Move struct dev to mac_device
-  net: fman: Configure fixed link in memac_initialization
-  net: fman: Export/rename some common functions
-  net: fman: memac: Use params instead of priv for max_speed
-  net: fman: Move initialization to mac-specific files
-  net: fman: Mark mac methods static
-  net: fman: Inline several functions into initialization
-  net: fman: Remove internal_phy_node from params
-  net: fman: Map the base address once
-  net: fman: Pass params directly to mac init
-  net: fman: Use mac_dev for some params
-  net: fman: Specify type of mac_dev for exception_cb
-  net: fman: Clean up error handling
-  net: fman: Change return type of disable to void
-  net: dpaa: Use mac_dev variable in dpaa_netdev_init
-  soc: fsl: qbman: Add helper for sanity checking cgr ops
-  soc: fsl: qbman: Add CGR update function
-  net: dpaa: Adjust queue depth on rate change
-
- .../bindings/net/fsl,fman-dtsec.yaml          | 145 +++++
- .../devicetree/bindings/net/fsl-fman.txt      | 128 +----
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  59 ++-
- .../ethernet/freescale/dpaa/dpaa_eth_sysfs.c  |   2 +-
- drivers/net/ethernet/freescale/fman/fman.c    |  31 +-
- drivers/net/ethernet/freescale/fman/fman.h    |  31 +-
- .../net/ethernet/freescale/fman/fman_dtsec.c  | 325 ++++++------
- .../net/ethernet/freescale/fman/fman_dtsec.h  |  58 +-
- .../net/ethernet/freescale/fman/fman_keygen.c |  29 +-
- .../net/ethernet/freescale/fman/fman_keygen.h |  29 +-
- .../net/ethernet/freescale/fman/fman_mac.h    |  24 +-
- .../net/ethernet/freescale/fman/fman_memac.c  | 240 +++++----
- .../net/ethernet/freescale/fman/fman_memac.h  |  57 +-
- .../net/ethernet/freescale/fman/fman_muram.c  |  31 +-
- .../net/ethernet/freescale/fman/fman_muram.h  |  32 +-
- .../net/ethernet/freescale/fman/fman_port.c   |  29 +-
- .../net/ethernet/freescale/fman/fman_port.h   |  29 +-
- drivers/net/ethernet/freescale/fman/fman_sp.c |  29 +-
- drivers/net/ethernet/freescale/fman/fman_sp.h |  28 +-
- .../net/ethernet/freescale/fman/fman_tgec.c   | 163 +++---
- .../net/ethernet/freescale/fman/fman_tgec.h   |  54 +-
- drivers/net/ethernet/freescale/fman/mac.c     | 497 ++----------------
- drivers/net/ethernet/freescale/fman/mac.h     |  45 +-
- drivers/soc/fsl/qbman/qman.c                  |  76 ++-
- include/soc/fsl/qman.h                        |   9 +
- 25 files changed, 739 insertions(+), 1441 deletions(-)
+ .../bindings/net/fsl,fman-dtsec.yaml          | 145 ++++++++++++++++++
+ .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
+ 2 files changed, 146 insertions(+), 127 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
 
+diff --git a/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+new file mode 100644
+index 000000000000..3a35ac1c260d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+@@ -0,0 +1,145 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/fsl,fman-dtsec.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP FMan MAC
++
++maintainers:
++  - Madalin Bucur <madalin.bucur@nxp.com>
++
++description: |
++  Each FMan has several MACs, each implementing an Ethernet interface. Earlier
++  versions of FMan used the Datapath Three Speed Ethernet Controller (dTSEC) for
++  10/100/1000 MBit/s speeds, and the 10-Gigabit Ethernet Media Access Controller
++  (10GEC) for 10 Gbit/s speeds. Later versions of FMan use the Multirate
++  Ethernet Media Access Controller (mEMAC) to handle all speeds.
++
++properties:
++  compatible:
++    enum:
++      - fsl,fman-dtsec
++      - fsl,fman-xgec
++      - fsl,fman-memac
++
++  cell-index:
++    maximum: 64
++    description: |
++      FManV2:
++      register[bit]           MAC             cell-index
++      ============================================================
++      FM_EPI[16]              XGEC            8
++      FM_EPI[16+n]            dTSECn          n-1
++      FM_NPI[11+n]            dTSECn          n-1
++              n = 1,..,5
++
++      FManV3:
++      register[bit]           MAC             cell-index
++      ============================================================
++      FM_EPI[16+n]            mEMACn          n-1
++      FM_EPI[25]              mEMAC10         9
++
++      FM_NPI[11+n]            mEMACn          n-1
++      FM_NPI[10]              mEMAC10         9
++      FM_NPI[11]              mEMAC9          8
++              n = 1,..8
++
++      FM_EPI and FM_NPI are located in the FMan memory map.
++
++      2. SoC registers:
++
++      - P2041, P3041, P4080 P5020, P5040:
++      register[bit]           FMan            MAC             cell
++                              Unit                            index
++      ============================================================
++      DCFG_DEVDISR2[7]        1               XGEC            8
++      DCFG_DEVDISR2[7+n]      1               dTSECn          n-1
++      DCFG_DEVDISR2[15]       2               XGEC            8
++      DCFG_DEVDISR2[15+n]     2               dTSECn          n-1
++              n = 1,..5
++
++      - T1040, T2080, T4240, B4860:
++      register[bit]                   FMan    MAC             cell
++                                      Unit                    index
++      ============================================================
++      DCFG_CCSR_DEVDISR2[n-1]         1       mEMACn          n-1
++      DCFG_CCSR_DEVDISR2[11+n]        2       mEMACn          n-1
++              n = 1,..6,9,10
++
++      EVDISR, DCFG_DEVDISR2 and DCFG_CCSR_DEVDISR2 are located in
++      the specific SoC "Device Configuration/Pin Control" Memory
++      Map.
++
++  reg:
++    maxItems: 1
++
++  fsl,fman-ports:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    maxItems: 2
++    description: |
++      An array of two references: the first is the FMan RX port and the second
++      is the TX port used by this MAC.
++
++  ptp-timer:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: A reference to the IEEE1588 timer
++
++  pcsphy-handle:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: A reference to the PCS (typically found on the SerDes)
++
++  tbi-handle:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: A reference to the (TBI-based) PCS
++
++required:
++  - compatible
++  - cell-index
++  - reg
++  - fsl,fman-ports
++  - ptp-timer
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: fsl,fman-dtsec
++    then:
++      required:
++        - tbi-handle
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: fsl,fman-memac
++    then:
++      required:
++        - pcsphy-handle
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    ethernet@e0000 {
++            compatible = "fsl,fman-dtsec";
++            cell-index = <0>;
++            reg = <0xe0000 0x1000>;
++            fsl,fman-ports = <&fman1_rx8 &fman1_tx28>;
++            ptp-timer = <&ptp_timer>;
++            tbi-handle = <&tbi0>;
++    };
++  - |
++    ethernet@e8000 {
++            cell-index = <4>;
++            compatible = "fsl,fman-memac";
++            reg = <0xe8000 0x1000>;
++            fsl,fman-ports = <&fman0_rx_0x0c &fman0_tx_0x2c>;
++            ptp-timer = <&ptp_timer0>;
++            pcsphy-handle = <&pcsphy4>;
++            phy-handle = <&sgmii_phy1>;
++            phy-connection-type = "sgmii";
++    };
++...
+diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
+index 801efc7d6818..b9055335db3b 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fman.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
+@@ -232,133 +232,7 @@ port@81000 {
+ =============================================================================
+ FMan dTSEC/XGEC/mEMAC Node
+ 
+-DESCRIPTION
+-
+-mEMAC/dTSEC/XGEC are the Ethernet network interfaces
+-
+-PROPERTIES
+-
+-- compatible
+-		Usage: required
+-		Value type: <stringlist>
+-		Definition: A standard property.
+-		Must include one of the following:
+-		- "fsl,fman-dtsec" for dTSEC MAC
+-		- "fsl,fman-xgec" for XGEC MAC
+-		- "fsl,fman-memac" for mEMAC MAC
+-
+-- cell-index
+-		Usage: required
+-		Value type: <u32>
+-		Definition: Specifies the MAC id.
+-
+-		The cell-index value may be used by the FMan or the SoC, to
+-		identify the MAC unit in the FMan (or SoC) memory map.
+-		In the tables below there's a description of the cell-index
+-		use, there are two tables, one describes the use of cell-index
+-		by the FMan, the second describes the use by the SoC:
+-
+-		1. FMan Registers
+-
+-		FManV2:
+-		register[bit]		MAC		cell-index
+-		============================================================
+-		FM_EPI[16]		XGEC		8
+-		FM_EPI[16+n]		dTSECn		n-1
+-		FM_NPI[11+n]		dTSECn		n-1
+-			n = 1,..,5
+-
+-		FManV3:
+-		register[bit]		MAC		cell-index
+-		============================================================
+-		FM_EPI[16+n]		mEMACn		n-1
+-		FM_EPI[25]		mEMAC10		9
+-
+-		FM_NPI[11+n]		mEMACn		n-1
+-		FM_NPI[10]		mEMAC10		9
+-		FM_NPI[11]		mEMAC9		8
+-			n = 1,..8
+-
+-		FM_EPI and FM_NPI are located in the FMan memory map.
+-
+-		2. SoC registers:
+-
+-		- P2041, P3041, P4080 P5020, P5040:
+-		register[bit]		FMan		MAC		cell
+-					Unit				index
+-		============================================================
+-		DCFG_DEVDISR2[7]	1		XGEC		8
+-		DCFG_DEVDISR2[7+n]	1		dTSECn		n-1
+-		DCFG_DEVDISR2[15]	2		XGEC		8
+-		DCFG_DEVDISR2[15+n]	2		dTSECn		n-1
+-			n = 1,..5
+-
+-		- T1040, T2080, T4240, B4860:
+-		register[bit]			FMan	MAC		cell
+-						Unit			index
+-		============================================================
+-		DCFG_CCSR_DEVDISR2[n-1]		1	mEMACn		n-1
+-		DCFG_CCSR_DEVDISR2[11+n]	2	mEMACn		n-1
+-			n = 1,..6,9,10
+-
+-		EVDISR, DCFG_DEVDISR2 and DCFG_CCSR_DEVDISR2 are located in
+-		the specific SoC "Device Configuration/Pin Control" Memory
+-		Map.
+-
+-- reg
+-		Usage: required
+-		Value type: <prop-encoded-array>
+-		Definition: A standard property.
+-
+-- fsl,fman-ports
+-		Usage: required
+-		Value type: <prop-encoded-array>
+-		Definition: An array of two phandles - the first references is
+-		the FMan RX port and the second is the TX port used by this
+-		MAC.
+-
+-- ptp-timer
+-		Usage required
+-		Value type: <phandle>
+-		Definition: A phandle for 1EEE1588 timer.
+-
+-- pcsphy-handle
+-		Usage required for "fsl,fman-memac" MACs
+-		Value type: <phandle>
+-		Definition: A phandle for pcsphy.
+-
+-- tbi-handle
+-		Usage required for "fsl,fman-dtsec" MACs
+-		Value type: <phandle>
+-		Definition: A phandle for tbiphy.
+-
+-EXAMPLE
+-
+-fman1_tx28: port@a8000 {
+-	cell-index = <0x28>;
+-	compatible = "fsl,fman-v2-port-tx";
+-	reg = <0xa8000 0x1000>;
+-};
+-
+-fman1_rx8: port@88000 {
+-	cell-index = <0x8>;
+-	compatible = "fsl,fman-v2-port-rx";
+-	reg = <0x88000 0x1000>;
+-};
+-
+-ptp-timer: ptp_timer@fe000 {
+-	compatible = "fsl,fman-ptp-timer";
+-	reg = <0xfe000 0x1000>;
+-};
+-
+-ethernet@e0000 {
+-	compatible = "fsl,fman-dtsec";
+-	cell-index = <0>;
+-	reg = <0xe0000 0x1000>;
+-	fsl,fman-ports = <&fman1_rx8 &fman1_tx28>;
+-	ptp-timer = <&ptp-timer>;
+-	tbi-handle = <&tbi0>;
+-};
++Refer to Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+ 
+ ============================================================================
+ FMan IEEE 1588 Node
 -- 
 2.35.1.1320.gc452695387.dirty
 
