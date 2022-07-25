@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D88A580491
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 815285804BF
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:50:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiGYTjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 15:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
+        id S236531AbiGYTue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 15:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233712AbiGYTjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:39:53 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23AC205D1
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:39:52 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id b16so7104872lfb.7
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7TgkwMCGH8mTLYpuQJ03GCo0HTr07mExTrfJu7QnTBk=;
-        b=btN2MagO7hPo507CmIAjmr7FW6Se5tqp2OzRQNuVFFQw+dEh9SkA+t4wsS36uYIYXf
-         0WU5rQuz+J5wpTpZzdr6Hw+8wOWOw3+NJaEQFQEld775tTqM4nqqcCJzFql/NZcW9PxI
-         mIpuPHy2oNM6U38ry7XrMfD3EGVqphUbjsA1d0AgmG+dPk0zNGyITpqJ+4VQJYmY0RqC
-         IKyylCeq9f/Y/4DTzZms2KGHmZpOEihDhLM9MoZDxbIR9apxWYNRPqS1MQNeVi1fep1l
-         Mf9ifJu9aOTO8y8t4qu1W7wCEDwwW7+H44joqMZk0CsJYYGE6xnPlnyzd598QSX6AH9C
-         OQGw==
+        with ESMTP id S235738AbiGYTuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:50:32 -0400
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE642AFA;
+        Mon, 25 Jul 2022 12:50:30 -0700 (PDT)
+Received: by mail-il1-f171.google.com with SMTP id i5so6251769ila.6;
+        Mon, 25 Jul 2022 12:50:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7TgkwMCGH8mTLYpuQJ03GCo0HTr07mExTrfJu7QnTBk=;
-        b=Txf8jW7xMiFMhb+7NDz8P8IfgO46bYzdSiQtN2eg68fkoK2EQ+3PKVwtG5g46eCFJx
-         RqNmJJrzswbYCmiLX1Ba1q+fDQTLIwn32IBUCh8aEJAFept/JjNOLs8Q76R8IMQ4nm04
-         kNAgIgEidhkswx9XsZve3tx2CbWZxIkTuep0NmloG1sxgaXy3tNUQQTdgEY5u++HVHEt
-         JwF72kltI5i1wosYsGq21Q5qu5GxB3wgyhb1PKtKohAva7+8QaHM1G9uGa3LdaDpaCna
-         wkhYrb5w+xOhyc07oA8p/4/IO3CZMxkEU5/nsDrB1mTRN1FKyWJqqkhCMtKYzsJ5aX8Q
-         khSg==
-X-Gm-Message-State: AJIora+STwHGdNZS5MjAFLi1IUT9SGjlwqiKqiTzdqXcS7rkOp9dplO8
-        oSxJVIEfpIqBnDtjDzwj86VO6Q==
-X-Google-Smtp-Source: AGRyM1uIxsFuo/Pf7kus3RXxJczb4yO8MmUcIhtfROj3yAJgnLiwbh25xjc+u6hAotpQjJH7fjSMyA==
-X-Received: by 2002:a05:6512:22c2:b0:485:8c7a:530d with SMTP id g2-20020a05651222c200b004858c7a530dmr5325325lfu.459.1658777990943;
-        Mon, 25 Jul 2022 12:39:50 -0700 (PDT)
-Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id be9-20020a056512250900b0047f8790085csm2574646lfb.71.2022.07.25.12.39.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Jul 2022 12:39:50 -0700 (PDT)
-Message-ID: <017a3722-d61f-6762-d17f-57417f1e3165@linaro.org>
-Date:   Mon, 25 Jul 2022 21:39:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 1/3] dt-bindings: net: cdns,macb: Add versal compatible
- string
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Harini Katakam <harini.katakam@xilinx.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        harini.katakam@amd.com, devicetree@vger.kernel.org,
-        radhey.shyam.pandey@xilinx.com
-References: <20220722110330.13257-1-harini.katakam@xilinx.com>
- <20220722110330.13257-2-harini.katakam@xilinx.com>
- <20220725193356.GA2561062-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220725193356.GA2561062-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=CxwSt/xsUal4gT/5TyFDB0G+m1WCf7FRK90E3LMUQrc=;
+        b=TcNU9f4t8rhOjiRGNXyBRuwpG3PO8NZopee/tOI2/7cEQRMcQeza26+C/nDszOTk2H
+         jrqOl12yy4KCnjS5PUkt+RBwW0uG2T0m7WvPk0bVPPyhms3iz9PFEa8Zgb/k9Zey3uxS
+         7jNV27QzyAkNOGdzAE8rcW2HbaWEgPgrCmGFjLAO0n4RHY66Xa40x2im12y4faA8JQuF
+         8G+zpGyYbSGQokVzPAvhL6qoDEOjEXzaw7Y/zJESk9WZ7cYyXVJR31k+pzdaQP7P8AuY
+         3AvtexYfMUVi9IFkuQpxcNl4BtA6OZQW/j68bwhgSmvegLuURe8wpTPNS8MjayPp4/yJ
+         ZQuw==
+X-Gm-Message-State: AJIora/8wModCwovc1o+RoEK1ZNZtqbMb63rvkWiWelvz0AGUFZmjV+i
+        +MQmS0gtcPoPrrhyTQfhOA==
+X-Google-Smtp-Source: AGRyM1vmtBQdIBAxkjaAqdiWHoapUP/p7td5ykwiu9kZGXUt1pqG4VV9eyZVrkCOFw9YL4f3a3ZuRA==
+X-Received: by 2002:a05:6e02:152a:b0:2dc:3984:196e with SMTP id i10-20020a056e02152a00b002dc3984196emr5260393ilu.228.1658778630035;
+        Mon, 25 Jul 2022 12:50:30 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id q15-20020a0566022f0f00b0067b85bb05besm6208684iow.17.2022.07.25.12.50.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 12:50:29 -0700 (PDT)
+Received: (nullmailer pid 2597631 invoked by uid 1000);
+        Mon, 25 Jul 2022 19:50:27 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     alexandru.tachici@analog.com
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        gerhard@engleder-embedded.com, edumazet@google.com, joel@jms.id.au,
+        geert@linux-m68k.org, stephen@networkplumber.org,
+        wellslutw@gmail.com, davem@davemloft.net,
+        d.michailidis@fungible.com, l.stelmach@samsung.com,
+        devicetree@vger.kernel.org, kuba@kernel.org,
+        geert+renesas@glider.be, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stefan.wahren@i2se.com
+In-Reply-To: <20220725165312.59471-4-alexandru.tachici@analog.com>
+References: <20220725165312.59471-1-alexandru.tachici@analog.com> <20220725165312.59471-4-alexandru.tachici@analog.com>
+Subject: Re: [net-next v2 3/3] dt-bindings: net: adin1110: Add docs
+Date:   Mon, 25 Jul 2022 13:50:27 -0600
+Message-Id: <1658778627.754213.2597630.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/07/2022 21:33, Rob Herring wrote:
-> On Fri, Jul 22, 2022 at 04:33:28PM +0530, Harini Katakam wrote:
->> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->>
->> Add versal compatible string.
->>
->> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
->> ---
->> v2:
->> Sort compatible string alphabetically.
->>
->>  Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
->> index 9c92156869b2..762deccd3640 100644
->> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
->> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
->> @@ -20,6 +20,7 @@ properties:
->>  
->>        - items:
->>            - enum:
->> +              - cdns,versal-gem       # Xilinx Versal
->>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
->>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+On Mon, 25 Jul 2022 19:53:12 +0300, alexandru.tachici@analog.com wrote:
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
 > 
-> Uh, how did we start this pattern? The vendor here is Xilinx, not 
-> Cadence. It should be xlnx,versal-gem instead.
+> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
+> 
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> ---
+>  .../devicetree/bindings/net/adi,adin1110.yaml | 81 +++++++++++++++++++
+>  1 file changed, 81 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+> 
 
-I missed that piece entirely... Un-ack.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Best regards,
-Krzysztof
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/net/adi,adin1110.example.dts:26.17-27: Warning (reg_format): /example-0/spi/ethernet@0:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dts:23.13-39.11: Warning (spi_bus_bridge): /example-0/spi: incorrect #address-cells for SPI bus
+Documentation/devicetree/bindings/net/adi,adin1110.example.dts:23.13-39.11: Warning (spi_bus_bridge): /example-0/spi: incorrect #size-cells for SPI bus
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (spi_bus_reg): Failed prerequisite 'spi_bus_bridge'
+Documentation/devicetree/bindings/net/adi,adin1110.example.dts:24.24-38.15: Warning (avoid_default_addr_size): /example-0/spi/ethernet@0: Relying on default #address-cells value
+Documentation/devicetree/bindings/net/adi,adin1110.example.dts:24.24-38.15: Warning (avoid_default_addr_size): /example-0/spi/ethernet@0: Relying on default #size-cells value
+Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: Warning (unique_unit_address_if_enabled): Failed prerequisite 'avoid_default_addr_size'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: ethernet@0: Unevaluated properties are not allowed ('spi-max-frequency' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
