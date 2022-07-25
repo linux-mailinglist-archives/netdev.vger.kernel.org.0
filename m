@@ -2,154 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 150DC5800DB
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 696ED58012F
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbiGYOhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 10:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35308 "EHLO
+        id S235119AbiGYPLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235695AbiGYOhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:37:11 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2051.outbound.protection.outlook.com [40.107.102.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CDF17ABB;
-        Mon, 25 Jul 2022 07:37:10 -0700 (PDT)
+        with ESMTP id S232406AbiGYPLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:11:01 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10066.outbound.protection.outlook.com [40.107.1.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A819FF5;
+        Mon, 25 Jul 2022 08:10:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MUehGlbkpZ1ycSVlwjQmhdOnxRSNettl996VtXaPXOIVFC2qPU9PYpM8gIC/zVMWtehHhTrcvEkqxHVv3xSjrs9upt5/+9feq055CH4DzF11UTXWlQ2a4Cm4hcb7GRUjQYORied9ztqZDmVglqljbAk+1sOzSHb2kCJWuianyggX2Z5KmHXgjFDoosfuUhlm0Zxd+7T+uXPtO1UYft+KcLWUSEPgQFXOJBBNeyZPbpv9BkhI1o4Wqs/aE1pKAxpkqfoj8NWnPdpibvRqmF2BkczRNXxZge0CxTVXGOGeEntb8wv31ITjEBBVhBLAAzWAF7hV7a02PJBKSqPArXlboA==
+ b=KZ3vg6y5e1RXn3GIEUlZmLzy3/69Agq4QTAf75a1E1M5umFuo1lZoT16vF0993hJf6jxzGzlULqu8QOnlj720bxNir3OivgeF1C4FXP6wB00Td5e4Yaj1mnK1VaGpg1lsNjQYCMh8NATfBD9GzyvZ3TFC8m5GnnVKpAI6EWftY8fv9BFO/4QEqT5xR93Ii7RYPbkmgilzCw45eiWlTnb1HTrLL8lM+dfY2FqSPFK03iHV4XIVXjwHG369wVcVEphu5RM4kCnOY9AoFs42HPo79eC6+4l7EQHu8FPAhn2ATL1OcE5kKdEhRc3scDGqlIiIFDIcg8stCxKwwQelowh7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=329IoBNhpNzFPJfLrtooZgOHPUbUnuiKBMI8vrHtd3A=;
- b=JqOhQpcszWgrKXz5FEUDXJDg4jX7DyBnzNfsRhZFK1mopZ0jZJFl5ZGDmUTm/QOpP8F8KLGpgj3MUNGPc0gxbmBt87tz6xf+6GY844RHIC0BeqwFWPyAMJVdq0+2Mf7qzmIJCc3WOBAoveNI0Cd3Z3tKBEXbKrJS3+fz6TYgc5A911NIXluKXtM1YPqvx2BIJ0Ro9yNpf/2HgTrwv520+5Pdw7l5WuVRhJkBoRHJmqlrtFv1n6qWLTPHpq40uFMmfVjxx+CXPGsVTMok+SdGAFQDz+m+uc9otZhfz+WYAb9v5Io7i1rULPtQwF9dCuJfgB/zhVlhEjNG6Ilar+Hn2g==
+ bh=iO8ROTcaT90018JtrQ0xpZyawquVtsOjOiokopmXpXU=;
+ b=AwAcK3CLManywtGNsSyXxAi3gSwTySPRbW1dqJ9EOink2XTr8UimgKy6cepSZgHiePEd/hsnlYTpXsDOnTtdRuPrVSDNAJfrXwfTiwton8l00BzEpRiz1kFGHJxkjG4PviSqnnVNfGvMkvEvcxGNwwQplsLafTfh5L1FKfJ6Gq3VquFG0fmYMwk7+lWTBh4D+lqZDEO6ETjtLff5gKSwGI6D6G64rswhqyDFsJCLID2DmuP+VHbZbehIRjoAFZ794ZOJmPCDSU4DU8fZ2cEVxltyp4QOHee+pwcrzL0bp5lFjCGfFydJTLFq6uFIKwHSgmuOMUxlVZGo7qbnT0unNQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=329IoBNhpNzFPJfLrtooZgOHPUbUnuiKBMI8vrHtd3A=;
- b=s0vZnDcSEed+LgxWEchSLC1Zg+B7WhhaS89c5rxtQ4Q24U7Wfpx+cT7OsZnqE5Xb0BWXuhCIZIL73r+Ld8hMlzASN65O4wPvkmDRdSNuls9bA1CIOXPdqZ99nheVA9lZ5PwbG2Sy7yQVcPH77hhDLiO/wfnN58sh/66cgiyQyAqh7QiuR7LGsJ6Bo+VAGnET1t9xvDaOfUcZArdh2MdD8+4iC7do83zLGhuedtGb4OqN1bg5FmnImxgjyRWNOIRhPbqsWZipPkKphJZraFNIcetmlX1uoW8KwG1t9KPnTc1LwmmFVh3rPBw+TVdGmfrSt4yma4JTI0XZMllvhWV91w==
+ bh=iO8ROTcaT90018JtrQ0xpZyawquVtsOjOiokopmXpXU=;
+ b=OeWFqG5FuAJnfxYuW3aD55YZkRlyiOxRbo0SJtBcOcV0n5CPMBgxKRGP0LQhiUUocJpiKtjvZJyLQExXldqoCnH7bvSmum21P+e5ATC4feskcWMNTBgaQP3TgGrWiKmKPH3XtJNZ0vCNWe9mRXjfkVlFnelONbO4vVFrtrXNE8LV9f1Z5KDGH7bZb65M+TyTNUFGRRuOsoXZgGptm786CbbOS+i72BExcsfyQ8pSFsSYJIPusMuvdLRcWOUX1pqK8PhFt4iwriWR6QspiY8zfchyFERofwMYnHFTN6l44TBIL6yZTLpHEHFPuQ/bT9gO/mhvt/+UC/zQRa6DOTUtcg==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CH2PR12MB4232.namprd12.prod.outlook.com (2603:10b6:610:a4::21) with
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by AM9PR03MB7817.eurprd03.prod.outlook.com (2603:10a6:20b:415::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Mon, 25 Jul
- 2022 14:37:08 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
- 14:37:08 +0000
-Date:   Mon, 25 Jul 2022 11:37:06 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Martins, Joao" <joao.m.martins@oracle.com>,
-        "leonro@nvidia.com" <leonro@nvidia.com>,
-        "maorg@nvidia.com" <maorg@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>
-Subject: Re: [PATCH V2 vfio 06/11] vfio: Introduce the DMA logging feature
- support
-Message-ID: <20220725143706.GD3747@nvidia.com>
-References: <20220714081251.240584-1-yishaih@nvidia.com>
- <20220714081251.240584-7-yishaih@nvidia.com>
- <20220718163024.143ec05a.alex.williamson@redhat.com>
- <8242cd07-0b65-e2b8-3797-3fe5623ec65d@nvidia.com>
- <20220719132514.7d21dfaf.alex.williamson@redhat.com>
- <20220719200825.GK4609@nvidia.com>
- <BN9PR11MB527610E578F01DC631F626A88C919@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220721115038.GX4609@nvidia.com>
- <BN9PR11MB5276924990601C5770C633198C959@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276924990601C5770C633198C959@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: MW4PR03CA0283.namprd03.prod.outlook.com
- (2603:10b6:303:b5::18) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24; Mon, 25 Jul
+ 2022 15:10:57 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
+ 15:10:57 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Camelia Groza <camelia.groza@nxp.com>,
+        linux-kernel@vger.kernel.org (open list),
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Sean Anderson <sean.anderson@seco.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH v4 00/25] net: dpaa: Cleanups in preparation for phylink conversion
+Date:   Mon, 25 Jul 2022 11:10:14 -0400
+Message-Id: <20220725151039.2581576-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
+ (2603:10b6:610:e7::24) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c94be7f-c0e6-4b94-c210-08da6e4b26ed
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4232:EE_
+X-MS-Office365-Filtering-Correlation-Id: a05e8b60-d2b6-43d8-8a71-08da6e4fe022
+X-MS-TrafficTypeDiagnostic: AM9PR03MB7817:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jMLu+Vav9+ETz7JJpt4LWHAVLsqSFy2FM66MyKvEsLwAcR9EB/x1SDX7vC/ieK3Og8vacI4ks0bGJ0rDZna7LkIz/7kJ4qpPnFFySrOIBlyz4LFh1BNhLsUP/dKr3QvxMEYeJkBwycoy0REHF7KanwvgkGRXyvEfBBGjqd4jjK+5adg0lMNYR9rcaYm1S7Wlp7Nm4uLnZhkfvOkA79p48Q6M9RJGZi7I1lIMo7/Rc+XaAc01iUeppvQiJb4qsRP3TLc7yRFIR4Gn4vJArdSTfsQnPHcSs16FzIJ4Ch8P7lV1Rf8qGC7THQ2By6VvKQeswDIhWSnpvP48R83e1qfUymBA+1+Zf3CFr1u3a8xmI1cYrA7oFG1LCTmh1QIu5xsr9+w5gwxQw/9dCf2MZCKqacPY+5hoNJcwmi5s3yW0Jwy6NYWiGrR1GviNiVz90Kd2W8WXVYg4jKMI5Az8MgCVq2Zl9CnP2nWVU/XpPc0xCeyhlhliqLM6VaMkzCALlyn8Lx9QOH5pQOX6goENCbz4XcfJP4WnrHspJwLxcClb/9bS0YNjj+VLzwK+tN6SJwuI4WhWkLZSuLUC5L8tsoySyrrhOQdeE17u0MAKMLIpaQlLlgrMPJW2Id0O1AY0V023ihOg9Qs/m64VgbTKIYxJ5b4AhkoJ27CbUJh90DVsBUW1G6wB22CggYLzdtWWtj0cfcePR1uzjYcf77nAUoaLA36nMNsRR3OpnKnng51ZlohGZZ6x6y7WzOiTcR7lo7JD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(33656002)(86362001)(38100700002)(8936002)(478600001)(4744005)(6486002)(6862004)(5660300002)(41300700001)(316002)(66476007)(186003)(66556008)(8676002)(66946007)(4326008)(1076003)(2616005)(6512007)(26005)(6506007)(2906002)(54906003)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zH0OB7Ox0cRDGGRKxFMJ+1lkqBMArlhoi2Msg/GHBiD2V1BSjwfpu6+Oy4HurtdczbwXvbCFNTJ7TDgpk46e6Mmk6ryCfv2h0km6uJJx+yIBUZwFFElPNbBkQawBB4ejrRQG3flsxitsDtnzcO7bQWcq7OsWO83mla6IJEKwWuadbYPmhSlPc3+aBOb0C0OFUbWndNtgf/b+SM28pDPWrLmnXfNI1sYTbs+fKpl9C94nbCj9yjJOC3+GPL/bYpHCYBdebAFI/HOq6EZ4I1tj0KRbF8ZA4ulJVeXCN7b3vPc3QcQ/vGln1UB9FQiEgTa2W9NvXr/OV6cPRpzYJ++8z62ew5nJTqovaWe2K9vC8AodpvVl/mYZRhd/PTSnmmSN1Nuq7/ZRHUUQiYok8l6X2h1dAFnzVlKOQpt2xbtXY0tI97ele1FawmFtOasWFjUPCJRZdJlJ+5NbIEPzAlhiNjCaBReIMhzzhVjhHQmpC9XvybYMdpT6UCOHfSdpjWMoJPoMWXWEttCkwQRp7JEMukOY5rWUSnAkVKy98Ih919lfSjMoGydeqe01rkar8qwuRd+o+v8NXyjBqkXRBBzpsP4llZ/wNQddU3ioNCpvwd0QGMT0oxMaUIrF8LKfpLxXXmwNnXfDXiWz58dOFlr5ezmfA6XQD/7rqoyGD5Uv7y4dOl9MgCrRrR0c5ZK+neVlv2o2u033HZ92oJhDo3cJPqJyRCQHFhvZJtxJvXGg8+LLFTzzyV0/90Daz71OUfZBzA6Y7n7awl++bjMndhFubNTPhiear4iMIHJpBggi0qOR2580nGFXGGZRJxLMB4Wtoing/Rl9d6Yk9wF4Jpu8GA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(396003)(346002)(366004)(376002)(36756003)(110136005)(54906003)(186003)(38350700002)(8676002)(66556008)(66946007)(316002)(66476007)(38100700002)(8936002)(86362001)(2616005)(478600001)(4326008)(5660300002)(6666004)(966005)(83380400001)(7416002)(6506007)(41300700001)(6486002)(44832011)(26005)(6512007)(52116002)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2CiLp5prm/e2w0g7MAWoiGuGA1IX4N8md0rqPb9ESc41cLORmWrQlq77cUvv?=
- =?us-ascii?Q?pYo3DP6lBtsl+vPF39+/hh5h+AJELqY7BRUNWRoJUxOvQHwlHcVd2SRGnwP5?=
- =?us-ascii?Q?ON8tVORk0xWk/kWEO/x69R5k80btRiCATojlbvTFf7SeUzXSjA5PXKVUABf5?=
- =?us-ascii?Q?NWpFC+nW4iU1YdVJ8QF6mxdR54jkZoWxCrBOWoS0fEvvSSC2XXZ+utA+GGq7?=
- =?us-ascii?Q?uJ8pa9O2L9xjPkAcWSIXgKS9y0yMa0isvxh8TKjj38iHybWRct4UBmz8/6Hq?=
- =?us-ascii?Q?/KdMb0Rk5UltOCkqo3+hAaU1yDNIYwCyw2GXP7RGov3VJgJTdHcSWTU20ony?=
- =?us-ascii?Q?m64R0JxvwL74XRCNP5BxzfzrXdqK4DP2Ya+4r5JCsj9ax647zAOrJ+8UY0Mp?=
- =?us-ascii?Q?IYFewUMBXolRQPBh3WahTtbaXuJc/fnZ9sqYNUVetcM33624jwEPFnBRQqwK?=
- =?us-ascii?Q?qiZ/PmDLveI+uedsURI3cZC9RrboxB59dDqdA6isVIxoNMpEGLzPHXeB5+t0?=
- =?us-ascii?Q?ApQJAOQFBAgh8MVU+TLbKClKxje43xOi++UroVAFccbyfuDu8NnwCMFDMG/H?=
- =?us-ascii?Q?IX8KRiEEh3faHgmCzQ7xNvYgWQNh8gwaDMDAFSWJgGlxFecgUl4g2P/Ih0k7?=
- =?us-ascii?Q?aM9tRKB1+reuSSgGOkhxIqvrt949KhHByjMNPS1Wswxqi22rGRVpE6Q+Chbp?=
- =?us-ascii?Q?4tMAd9cor3iSUVKVcHEgRV7YHc+xAQ+9nIcAg9ZnvLcv0oE4KDYc/dSFj+re?=
- =?us-ascii?Q?ovjLzb7LeEesuD3kkf7t1Bg/dZZ2R82rp3GFHCzEfUfI+dUHYYOo+Mn+DjTP?=
- =?us-ascii?Q?QrThbJpp54R+RfWBxo8KFxkAqnG6x+FVlE5rl3Uoa2lViYysKFUY+bvBChrW?=
- =?us-ascii?Q?bOHlRo/UnHQOyXNLLLc8B9G4z6dkXG7IrIcq3/3eOnvzMcjm9oFs6zBH/d6P?=
- =?us-ascii?Q?Yzp+qtfj7Ne3deznmkC7mzNG7LG0Qh+mDvcMb39QcxZKOonNo+0t2kEYkMiB?=
- =?us-ascii?Q?noNzRT2DvqZZtK5HsUsKMhclbz+nzyxDsBIhlza82QedDkaWd7w8NlyHkTtv?=
- =?us-ascii?Q?fyDl1odfxsv0skTJlZBVim6iMD4hM+FGu/gc2FF0FxyXKgqFm5VeCbVxyYCN?=
- =?us-ascii?Q?qrlBupzYXiDXgBoFEyEfDfoyhCS6HD71ZK+t2NMmxp4DG79ERIiKGnrJQ8Hl?=
- =?us-ascii?Q?XtSAvruiLVtKwysLChYQQbT3+Sp+xoxI5xYImdBm2IkoXUUYUbtFc/2/rk00?=
- =?us-ascii?Q?Afb5rCKO+uwTILOYJrf51uwiDdhHK08UYs6olO/MZBPAaqF0QDFv6qaEzL1A?=
- =?us-ascii?Q?U9m+VJAnnlc65EN3LgRXEnZ3R9tH3ygpO3ycGbDVpar7Bak4VLmma3k5xJV5?=
- =?us-ascii?Q?CheBsnnG0/5wYwtz6s2BCTSaklRMwQ4Mu5vtFxjhUQXVbo1A+NIzwmLo3+B1?=
- =?us-ascii?Q?gCNGEHzlHXxmSiIlhlzn+6+KGS/CBKeLaJEd+6AENxcRmoDcQjkGsOfES1A5?=
- =?us-ascii?Q?7scqMNhRZZ+2777SWPK57Bgboi6HOnceCwgD6N4+oeLfq2/5uM0e3cDBO/IH?=
- =?us-ascii?Q?C9e38Td1lZss8opwANZbAYLeZQC5rd4mBXPq9IQK?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c94be7f-c0e6-4b94-c210-08da6e4b26ed
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nlHho3iVAttAEkzoGaIlYUQ4oE8GR4AsVid/+Df+1AVolIyZdbsdRRt6YNuF?=
+ =?us-ascii?Q?Nw8K+k0S5pRYC73RQFdOnoL9/RPYDNoCIKbYGz3iNoBsZu6lAMPudMJmP0XO?=
+ =?us-ascii?Q?0REHfPPGM/e95t8WgFbqHHj20y2/L6RSygERqsJWi832ap3945siQFuyJ/AH?=
+ =?us-ascii?Q?bgaaIJbwbdMNfUDpul6KoLlY9L8yGgm7Fp3VnTPWlTA3sPx8hL4JpVrl1rER?=
+ =?us-ascii?Q?fCa9R5ekgebBX5UaYCkC0HkXLZA5Ew9+WehdN40sghUsEiAzRsYroUmf++Vl?=
+ =?us-ascii?Q?iTs2nu6sOaE+biwsyXlilscCocLzGmvC6+OtwfFKMRJSpBsYNyU0ttVu1qoY?=
+ =?us-ascii?Q?bcwgh9zHeVbp5lvtuKOAHqdtltca3w8g9mhAl6kVgw+sfRqSwOApdyk7HUN6?=
+ =?us-ascii?Q?7YK/Wx9S2z6Oc8EsRr/gYeDa5JzaJ9MjdRTcwRCOWJLIPtGWFpINJIaVnG8Z?=
+ =?us-ascii?Q?W9nHSei1bvkdnBAXk88C/gtHNi8qNSyZcd2j7Z09J4SqPbx0pNbYXIX2Sjta?=
+ =?us-ascii?Q?sVnVMoHhl8kjqgrEeI0sOciTQJA97kZMIC1eZa/6AyMiPBkpvNnEvOtxhyYU?=
+ =?us-ascii?Q?kXFenaVzWy+7vzXioQboKpie3DbRYLgooXhDs4rAmEjGcVFiCcWJ0Z7BkDc4?=
+ =?us-ascii?Q?ECk3e5aUBpQJtEIC7gJhfi44ufOxTuCM2bUWmLFawRDq/R8mvxr2zguJgTYT?=
+ =?us-ascii?Q?+sT3MskOU8SyyezUDDAb/+w/bd5Ar9z6+zvZzivL7hYzkQCDUTwyje4L1bro?=
+ =?us-ascii?Q?uHbGr1qPTuwBLeANmwmEa/8/c90ShtrNPJoWGON+Nqna0zHoQa5qT1G+ltsT?=
+ =?us-ascii?Q?yyPNOaVez+ABC7Z/m/j+z7PRyJgFapNH9vO/T0Q0WGbh6RpwKkxbaabqabTi?=
+ =?us-ascii?Q?/ewx/RtgjUxG5Irvf8a6Wtx0JWhLBkFd/fgcw92Mg3DFnikMsZQryDg/HnyZ?=
+ =?us-ascii?Q?maaDB88QnzTtaqoBA02T5sb1L+9adMDvomydRTy7oG+2sEnWeMvnpPvwamqm?=
+ =?us-ascii?Q?FZfNpkrN0g5uXTPT++mnlcWVYZON3M/ysWu3HY2NyK74UrHf1ce2eJBKdyWg?=
+ =?us-ascii?Q?ELxEcxjQ3kiD1ZKn8Sz1d0bjzj8VoQlou/RodBrPYdPUt50BMPyESwM5jA+B?=
+ =?us-ascii?Q?KW0/y5uf72IQCuI+OSdDo74YPdnSrqd3H0UgxbiAWnxcYZAF3rIi4WZFBu1S?=
+ =?us-ascii?Q?F2LWPB4tH2jMmRB2bKOr7KPRzbNz12UvV3pzAA70Uzjr0bKe24NgYiw1Vwzx?=
+ =?us-ascii?Q?60MIe/cXAQUzEK54P+JSdzGpMx3j/4cK4DRbTVVb0BZW4GWDfvwEZrrmDlPN?=
+ =?us-ascii?Q?M8WQXDirf7Nmn54SqnkmmkB2YOdInViRMgA2RXmTuONdIQzzCM43cO7kX/nN?=
+ =?us-ascii?Q?DTodPbsYOQPIObDyJYRwAPudVdgHLoUrXDMC26HgFFYzrI5DdWsEfDXs/0sG?=
+ =?us-ascii?Q?g1SqH9plinvgbS+IZPRgbEg5GuxGR2bYQqAyH+eJ9LLBU0PlWVfKocR0MbK5?=
+ =?us-ascii?Q?EjzG6AKTpPPn/S5u9gk6Kd8tcYGERW7PdCaA52mcol4iUxJba9v5zbISWumN?=
+ =?us-ascii?Q?+MkrIpUtsl1R043bmFg7tNy1xQ0m4E1makvVnvwi/kBh0aSwNC5P/8cRgMMK?=
+ =?us-ascii?Q?+w=3D=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a05e8b60-d2b6-43d8-8a71-08da6e4fe022
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 14:37:08.3251
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:10:57.0365
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ylpnlcDoPvZcl9/pXzvV9YWQ2mGQOiTZlutLbiECr+Qi5UEiFeARLYmheWT2a+CV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4232
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: HL06Kivjum387nkqWsmfV6zcckEmZVX7WNdQJrI57YkjlJ4AYx3aP9xkd2GVoow65R4vqIMGs+AnWdK8IPlNyg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB7817
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 07:38:52AM +0000, Tian, Kevin wrote:
+This series contains several cleanup patches for dpaa/fman. While they
+are intended to prepare for a phylink conversion, they stand on their
+own. This series was originally submitted as part of [1].
 
-> > Yes. qemu has to select a static aperture at start.
-> > 
-> >  The entire aperture is best, if that fails
-> > 
-> >  A smaller aperture and hope the guest doesn't use the whole space, if
-> >  that fails,
-> > 
-> >  The entire guest physical map and hope the guest is in PT mode
-> 
-> That sounds a bit hacky... does it instead suggest that an interface
-> for reporting the supported ranges on a tracker could be helpful once
-> trying the entire aperture fails?
+[1] https://lore.kernel.org/netdev/20220715215954.1449214-1-sean.anderson@seco.com
 
-It is the "try and fail" approach. It gives the driver the most
-flexability in processing the ranges to try and make them work. If we
-attempt to describe all the device constraints that might exist we
-will be here forever.
+Changes in v4:
+- Clarify commit message
+- weer -> were
+- tricy -> tricky
+- Use mac_dev for calling change_addr
+- qman_cgr_create -> qman_create_cgr
 
-Eg the driver might be able to do the entire aperture, but it has to
-use 2M pages or something.
+Changes in v3:
+- Incorperate some minor changes into the first FMan binding commit
 
-Jason
+Changes in v2:
+- Convert FMan MAC bindings to yaml
+- Remove some unused variables
+- Fix prototype for dtsec_initialization
+- Fix warning if sizeof(void *) != sizeof(resource_size_t)
+- Specify type of mac_dev for exception_cb
+- Add helper for sanity checking cgr ops
+- Add CGR update function
+- Adjust queue depth on rate change
+
+Sean Anderson (25):
+  dt-bindings: net: Convert FMan MAC bindings to yaml
+  net: fman: Convert to SPDX identifiers
+  net: fman: Don't pass comm_mode to enable/disable
+  net: fman: Store en/disable in mac_device instead of mac_priv_s
+  net: fman: dtsec: Always gracefully stop/start
+  net: fman: Get PCS node in per-mac init
+  net: fman: Store initialization function in match data
+  net: fman: Move struct dev to mac_device
+  net: fman: Configure fixed link in memac_initialization
+  net: fman: Export/rename some common functions
+  net: fman: memac: Use params instead of priv for max_speed
+  net: fman: Move initialization to mac-specific files
+  net: fman: Mark mac methods static
+  net: fman: Inline several functions into initialization
+  net: fman: Remove internal_phy_node from params
+  net: fman: Map the base address once
+  net: fman: Pass params directly to mac init
+  net: fman: Use mac_dev for some params
+  net: fman: Specify type of mac_dev for exception_cb
+  net: fman: Clean up error handling
+  net: fman: Change return type of disable to void
+  net: dpaa: Use mac_dev variable in dpaa_netdev_init
+  soc: fsl: qbman: Add helper for sanity checking cgr ops
+  soc: fsl: qbman: Add CGR update function
+  net: dpaa: Adjust queue depth on rate change
+
+ .../bindings/net/fsl,fman-dtsec.yaml          | 145 +++++
+ .../devicetree/bindings/net/fsl-fman.txt      | 128 +----
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  59 ++-
+ .../ethernet/freescale/dpaa/dpaa_eth_sysfs.c  |   2 +-
+ drivers/net/ethernet/freescale/fman/fman.c    |  31 +-
+ drivers/net/ethernet/freescale/fman/fman.h    |  31 +-
+ .../net/ethernet/freescale/fman/fman_dtsec.c  | 325 ++++++------
+ .../net/ethernet/freescale/fman/fman_dtsec.h  |  58 +-
+ .../net/ethernet/freescale/fman/fman_keygen.c |  29 +-
+ .../net/ethernet/freescale/fman/fman_keygen.h |  29 +-
+ .../net/ethernet/freescale/fman/fman_mac.h    |  24 +-
+ .../net/ethernet/freescale/fman/fman_memac.c  | 240 +++++----
+ .../net/ethernet/freescale/fman/fman_memac.h  |  57 +-
+ .../net/ethernet/freescale/fman/fman_muram.c  |  31 +-
+ .../net/ethernet/freescale/fman/fman_muram.h  |  32 +-
+ .../net/ethernet/freescale/fman/fman_port.c   |  29 +-
+ .../net/ethernet/freescale/fman/fman_port.h   |  29 +-
+ drivers/net/ethernet/freescale/fman/fman_sp.c |  29 +-
+ drivers/net/ethernet/freescale/fman/fman_sp.h |  28 +-
+ .../net/ethernet/freescale/fman/fman_tgec.c   | 163 +++---
+ .../net/ethernet/freescale/fman/fman_tgec.h   |  54 +-
+ drivers/net/ethernet/freescale/fman/mac.c     | 497 ++----------------
+ drivers/net/ethernet/freescale/fman/mac.h     |  45 +-
+ drivers/soc/fsl/qbman/qman.c                  |  76 ++-
+ include/soc/fsl/qman.h                        |   9 +
+ 25 files changed, 739 insertions(+), 1441 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+
+-- 
+2.35.1.1320.gc452695387.dirty
+
