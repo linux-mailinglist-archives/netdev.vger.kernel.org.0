@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E12D58020A
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0393458020C
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:39:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbiGYPiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 11:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52736 "EHLO
+        id S235993AbiGYPjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236008AbiGYPip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:38:45 -0400
+        with ESMTP id S236004AbiGYPiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:38:51 -0400
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2061.outbound.protection.outlook.com [40.107.20.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B993218E06;
-        Mon, 25 Jul 2022 08:38:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ED51BE82;
+        Mon, 25 Jul 2022 08:38:13 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rg/eoQndPayKiPVltfUj5euniZ/HeZjNN14mJG/CXt6j75sUNLk+ofA+hRPlOIyMsQwQ4gYC6Z8E1Et1AAA8FcHnRV2gYlPtMZ1cVDKubbLu0FbY6QGK8Tf24OuvxKyJop+alQ8RJARxI+mrU48daw/i/3H6l2Og1T6DrfA2Wn8g+eKW/KtZhFbvkCselaTMa9BU+kg4hz3vKJXzSIPThM8mH7ZCSZCg+tHalVOdzG4ndBKKqWwY+IihJ3xj9YdieU56JRMR0GyW9cpA5/Jj6iAhQG3h0UfC3L53OqPzXWyAMj6OdQ+AurPg2A+E6lsqfgHh7vkn6dH6etKDEYab0g==
+ b=I20/zKrzq7+5NQuJLnlkZcEqCkf0LtMiqCBTF9HeYIhKN5DrDpT03HF+EcLRO7EcqlawET0SU8bzcj/RVy1WDxcwucl7kPFRrdEjmZFfMreuSBnVZh4GxEfHzrzu0qf2Uny2tk32Uri4Dqy39LtV+KKUC+eKUNvjhg663Jxs4EH6Nqk81n8WqpESlEckZb2twCSnWns7lVsWVe0VVSk/KzbZYJMCeGDcFeGMRMA3QNZ/PTKVc1wir0bwAAw2ITmTw1+Gmj2hznCWStW86Fa4qFr+nvvx/0bIl3c1ed92qusq9BQ3/64nfRassV0ockYl7C8iGoopSrkf2/5Zzh8YtA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zt8GmPnXeFRjGPZdW8+JNJkYrYX5L0Vy3LaAG7eFqko=;
- b=e6vGv9hPtCNm8254NqZZ6rTyd9kHL/YRSo2t1II61AW+viFPOYnrkS7neQcPTgwUfod4hfR0J1HlbqECM50Ip5bN20weetJ8H3Sl39ZwlJhbYoJLv+z8FCx71mDv6X0Nf9ybHKOqUVRYwAcMlDn6FUkw+mLAjExq3mfpvuOnLx/CFyr4ZVsmFX0x4kX+WkQ5dzlPBCxWAxx06hbNbDQoqnXFyb3ut4g3TfplkyNQ1sszIAd5wiPwS5bRgVN8Dajs84D5j3zv9KfwhhG5B6Ck2lGKQLCOW8wAv0A1D08zpvMKAfAtfys0IqFqY03nS61KevYKQ1lT9iltgxubg8bnfA==
+ bh=0a7DmimdmbLWoQByLaXg+qTTE0Nxelpm/Mgz/Ri5TYk=;
+ b=W01/hiiTLuR4ET9uiTMHyAXnIhY2sZteM59DBdUhKjOZuFwPnbKt9EUrOQZfDtv67StLAE4Av7fhmdyn/N+uXczBS8DCR0Ryo0j/zriG6oKnikbzHJuWuyqqVkkD/GYR6tLIy8FuwDyE6GxIqJwOo7Boq6euVyycPnPRzjMB6eDcffGpQw+ZE2o06Z5yKoLt5rqq5BR8CzlcanUmsQqpATm4b/WG8baOHweTb+bPR0kyZRo119Yas/ul6D4h2LQeBtLiDwfDMcGMJ/AAKmq9ZbvtIQxUdLoFVabfUX6KN0iWe0NKg68OMnnoyzw2fcMiQUoEiNF06hzvegPNp1jbOw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zt8GmPnXeFRjGPZdW8+JNJkYrYX5L0Vy3LaAG7eFqko=;
- b=piWJ7kWataiV0VPFaqSvKmOyLmcpe6gj8O1bPBNvSpmYQXKs/5j1QZMkkb4R4OBNcQG8KnNpVTa3f8eZNWrPzDyPqQToEN2Hs6RW2XfUE3evapLtyOjxHVCEZ4pNuSV4lK/zGRg1dS7ECcm/jIdpFezSnmwbw4SS7zEd0a+xKuvrDUqmMhQ+meok70DLUCu4PfRTioDf0EB/LqWZtQMewUOH/HBwm0Rmw44Q1hJTYHwRVt7k4mTDsXE6cnuFXCHHVNk6JxY7HLK+rpQW7+odWPfOHwbx5d8xwD0clg+Xn8V316xozu8RPA2KL/lOjk+B6Qofd7pZLpGBusDXikwYhQ==
+ bh=0a7DmimdmbLWoQByLaXg+qTTE0Nxelpm/Mgz/Ri5TYk=;
+ b=18Xx5y+h20nFVEXjEcQADKiROw949c3k3jvK63HMgZgs/gFq/xlA/oa9/ffbIwUGhJYuPTOcWtSSa6l721ZMIZBPkwLzSybl9wVf6DD9/MX+Nj39VOmQGdfaBkHLZDLJsQuC+Jsd027Ov1TsgomDKH3ddBOoBC/r+nC+H8zu89r2dq2aa7qtll30Q77+hJbftPShFTv3bKIe6NmLOHCwAlTVM+JlB7Oh81SgHkrM1Pg/mopCDb02i1bLPd0mEfuaTIVGqaR4HqwCOcWUYha9cHCc1YWyn1Bck59LJWsvN6b/Z1L7JmPOW8WPCoCEuoKZClA43EIV4nDEY7n7emCwpg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by VI1PR03MB6464.eurprd03.prod.outlook.com (2603:10a6:800:19e::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24; Mon, 25 Jul
- 2022 15:37:54 +0000
+ 2022 15:37:55 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:37:54 +0000
+ 15:37:55 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -49,11 +49,10 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: [PATCH v3 07/11] net: phy: Add support for rate adaptation
-Date:   Mon, 25 Jul 2022 11:37:25 -0400
-Message-Id: <20220725153730.2604096-8-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH v3 08/11] net: phylink: Adjust link settings based on rate adaptation
+Date:   Mon, 25 Jul 2022 11:37:26 -0400
+Message-Id: <20220725153730.2604096-9-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220725153730.2604096-1-sean.anderson@seco.com>
 References: <20220725153730.2604096-1-sean.anderson@seco.com>
@@ -64,52 +63,52 @@ X-ClientProxiedBy: BLAPR03CA0137.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8c5f89da-363b-4416-95d8-08da6e53a3f6
+X-MS-Office365-Filtering-Correlation-Id: b5600781-ee76-49f8-9cba-08da6e53a4c3
 X-MS-TrafficTypeDiagnostic: VI1PR03MB6464:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: J0EQh6UN3O7pCKxFT4d75TSl7t+hCnYqRzRjHyI0zoMUY2ezygEBmRPls4wKHkyXFxkveAHil5F6tWY0mBJiQ2AJJfUJrUGDQbqXojVLQrFUiwegjtpf9zH68GbTxFeJOP/79jQeUS5SV8pvIuA6MuO9r2S3y3XFlnPFE7iDqPQ3hENdmkWIA/Kt+tkwIx4WfBHaS3ogMdh50Gyfc5SELdXWnYyYJEjeohj9i1VRIiSQqbOwJLFuhXMDBqVSdh28ITzNlKSkWS1GC7fDK4Q3KeYZvLzl5voMzfdM8stUn4owGazZFJ/zvtLuIdeilG/t1O2qHmDi94T++3uNFThHSDMG8hcNxm4XkfcPUKpSrjj2vOSw92hXXbgF0SzCVCzBoGFxSn7KChDf3+EtkrV6/iWFDaRqjhX8nSnL3GVS23cqd2HdFPYMcYtXQoa06o/OVajdfgMuJH5DrNzu14rV/B6ZcxdI6cul2i4exZwi8RiqKLEtwj4xjgHQr8tZQUSB8ZPjjCDPa8CBJFXnYQ4Sw8PWL2wo+8M+d3o9Iujoka0k44hDOM69JoQw69hsxraH5ZgHm+Fn/vI9vReJy0CjvXe1bAYZ1giqDJaXjbiCBJgpwo1axhpYgt5uro0HbJYxQmKJ+Q7GQv3CPuWAR/B5TNlYZyIKscZZSY8KThflimGpmBiNczi6e/f/kwAbXxvNsf390tZXHu3fh9pY+wYg7rjnJmOPNWwpzjG8kuhQa8fhjHGPPv+zZf5l04KVFawq21vz6QV6Oq/ebw2nVk9YOUv6gSvxVsps8C6i+m3uXQk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(396003)(346002)(366004)(376002)(36756003)(110136005)(54906003)(186003)(38350700002)(8676002)(66556008)(66946007)(316002)(66476007)(38100700002)(8936002)(86362001)(2616005)(478600001)(4326008)(5660300002)(6666004)(83380400001)(7416002)(6506007)(41300700001)(6486002)(44832011)(30864003)(26005)(6512007)(52116002)(1076003)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: U089GrvTrd+aVl52FOJvyn2Lh59yhgja0qrSR4XFjeQ7kYsTCOE35ewdpiLWB4R0Uws9B9wN2jXe/LG1uhrS31GthO/UkxkWyaa50c4mBf+HQL9XmA3bXRIZZs7RNf6bQNPh0NM1WgcQC4YkiPvtDjtMwz17+O06BgycIfnxc6ps4SLLnlB+028dyO6do+DWpHSF+OS2q0pOiXeSG+Ha3JT0GdB+fSOO04WLQP2XoHLp5ZuC08wpNZnMKSMcaBDL4YL7OKsaLdzZ1qT5P2DMGAXK3iYSism7xlH7eC4aUh4MaK/jPk5ZSjDu3Xkaxbb+2bixCvFnGjBxrvTyiqLqtSlh2dLgyEsW2KOa+qbyYm2Ft98UxBrek6RSW5lcpP1eIBt7osgkta5ePP4HNGIEXVbhRw7Auv9sGW1ieNYaUkr+5suWPvMzn6LbQBYDp3PLjeA7mtbDHlX2FxPkoUEO6ytuMKtWU3DDN5eQisPjbeb7K65SyP/kskBnC9+0/xSczkiBdpC3fXORLCEKLUM7yrPmwriyvrhuyd8c6Z5NO39+GsWY/SGI3lJpfjUcAm/TJq9wY28ISrfvmPDJJyJ2cXzT5xs8acEmh66qaL+0rZCt8VfanRyMEKmXqlN8abGoFS74fA1tH2jCCjnttTOUb9td/Y+qW3DVYAxNM48YsDY2nY/1Gv4z6d8X2ryQ2sfi9PMZID186BVoOC+P5Og/msBzLU3Gpn9imBlKrOus5rzG8rGTLuarwEMhW4wpscpDplRsoLnbWFIGOWvYW5VaBNh+MOHvSuFhE3ITXRiqbYU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(396003)(346002)(366004)(376002)(84040400005)(36756003)(110136005)(54906003)(186003)(38350700002)(8676002)(66556008)(66946007)(316002)(66476007)(38100700002)(8936002)(86362001)(2616005)(478600001)(4326008)(5660300002)(6666004)(83380400001)(7416002)(6506007)(41300700001)(6486002)(44832011)(30864003)(26005)(6512007)(52116002)(107886003)(1076003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZIXFynB8B/ueVQSfjADmxJTwg08NS0gja2b+UIxkIm+Ng7jcQKvDmhLRorOq?=
- =?us-ascii?Q?qmk6cEucNVyaIDjJYDC/ayMbcvAhkUqjaBiSyi1zbN3308LfKM3GtOM1UpWQ?=
- =?us-ascii?Q?F11TVAwm8YrpWvMieBAoo71lRlogECNeghVagr2LUD9fNR1Si7pnaL2qvXwv?=
- =?us-ascii?Q?kZiA9BuCb5b0g8Iq2Q+PBV5LNrFTkIHyVB+TcvAEyuNKc2FV/riRkYkCiXWp?=
- =?us-ascii?Q?rP61BOPmz3dSLT356i2zFtxnWlnsS/7A7op9g0qrfJN8Xt2LjwCmTCwYWQDX?=
- =?us-ascii?Q?/VRotb09E+YMzwWcAMGWnugOr0gXpZHB1iubE04PgawquYmeWNxms1jLkgGL?=
- =?us-ascii?Q?xvdE83JRjYB9U5Ij+2WDl2mMvbSM9Qi8I7siHw9axzWTi5zgmN8iqP7LqKzq?=
- =?us-ascii?Q?S5RkXmJBZhh/o/E2+DXENN2hvbN/jCKMN7q9+K4zuizTfA/fmpGqwltvOkzZ?=
- =?us-ascii?Q?RdQnF1+rvjq3i4mI0l8qwFJaQcBTtiIt194ii1ET+MzzNnHs8iEV1a0szF8J?=
- =?us-ascii?Q?8XuxSBq/wxGegHSbJcmEM4PL9v7MS29UaJy0qInPXi4CR8bzQkZeV781GW+x?=
- =?us-ascii?Q?ZH1vlTE9PLC3Xp+yfKZjn2/uCr67xI3hfouLWMpHodDSQ+ZZioeWqVlfzlR7?=
- =?us-ascii?Q?6ZgJKTX5xTKQsOB4jsRS1qOT4gj37HMgtw9QMroOFPsH60lCp0AuX4q7bx4S?=
- =?us-ascii?Q?s/FbvdXM8HYr9mfoX1qSc76UvSKGMqsWiSJyR9t9tD6Jen+e1uq5dvISaJ0l?=
- =?us-ascii?Q?eDaWZIVO3RCFjg7ZDQiR3K6h2tpzMejuoCKedLxxuVlQfaIL6w80bOHAafQP?=
- =?us-ascii?Q?JVYJVNWpuECO3IAl2VIQ31d/xPn8AfIch90yh2miDOU+OSFN1YTwigjBIwRV?=
- =?us-ascii?Q?nZq1MgioAV2/2gu8ycOFpgzUbkHqLh4VYcqP+yx6LFNTRAZjCnsooJba9DkA?=
- =?us-ascii?Q?0gjwGVytdeSDyT9jG8uyNRipSeHMp6oSX8HOS2OvlU4RC8u8FCX5CKuFOUQR?=
- =?us-ascii?Q?q0/ikoySyZqL+0ZF9OIEhmUyeNIYzjsxSPZ4JuFd+b5TdBSJAetF3r2lwygs?=
- =?us-ascii?Q?hHHyYrmCpJufm3yjhT4/ZXGvzKH4Q3FzHDGZ54jxvMjcwj9dpIzrmbXSW1Lx?=
- =?us-ascii?Q?KLCs2Gwueb0HAFf1bRs8Esj2ERzokIqqv98E4GDAdWarpWhr94jUgwt9kVjM?=
- =?us-ascii?Q?VsIX7TqrjgZKcrnMrXZ4Ml7Qsnb8uAhemY3CAoF4B3U8fn3JAPvSmdu6jWgy?=
- =?us-ascii?Q?fGJMxmnufN8TXzYBvKEr1FOhDUsZ/3q4S4y+18G3rbPZzdWHzV0iW+/XeSDk?=
- =?us-ascii?Q?fTaoBOkGfK0xv1ZtTF4RfZnx/utZh4PZ8ykVsbeAyksIb7qqDeAZ69ptYUUj?=
- =?us-ascii?Q?4feSEybdtnQ3vtqkWiOyCsnjroE0D1Dg+d/O79ESwEPjziKQf0Lu9aJQQ1Fp?=
- =?us-ascii?Q?+0otRtssjw+wmeI3tM2YtC4Otfky0vyF6lBH5HY6BbfZKfSUVAjJTTobBk7+?=
- =?us-ascii?Q?ATPD1EZJU+ECr95t2a50YGsxm8WQo9TSgyfgZMngQJsaOhdoDwOsks9883Kx?=
- =?us-ascii?Q?+f1qNbpJAisvPjNXdSndrCFCaaGlK+gicbFQjYpcJTteUqwwxFCXwkXzhZEq?=
- =?us-ascii?Q?MQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D+IFXz0A2RRR0M2R8C3WuyaU6pRJO13HeOX02m5sAlysBJLMgGnrPZ4fGuM9?=
+ =?us-ascii?Q?8I8/R0fhsHWdf1Vpm/3NfHXUlsylOAifJNbdCPJMCcxp6iswWJ/vhlZHvQzz?=
+ =?us-ascii?Q?CsaGlqCEEojPLuX6rVwmbzR3GbiAKCENwzECqLj8J+DuQzGLBvIn9h1oGQ5C?=
+ =?us-ascii?Q?s8fVQAApjA0lCh4TiG2ChQWh7PQS1b4v+sd504zRXCB8s3l81RnM4lXMbxJW?=
+ =?us-ascii?Q?Rj29phfMVq6zxVDtUwgq2U4EFC+7w4N4XfrtVL3dEZ3YwVB2sm7+KCO0comm?=
+ =?us-ascii?Q?pF+ThiqWbRwxg+Dg/6rH5gpUx9vVBs2hW7GggzInOK/jND3P7X6VMLAT3SGk?=
+ =?us-ascii?Q?m2okSSWO0hSaaz54EmYeAuyWn929vjpu5mtjbS+3n+M5GfZGumHjug+yuvZq?=
+ =?us-ascii?Q?7V7yilO2ltlhXm0WRFxZURKsttBNNZ7yk5HpNJF0aJmF9qTru315gpABlGk5?=
+ =?us-ascii?Q?c+Cg471m7mFrEppyJuBIzoNVDr0trqlH7u8UmugTsHXvtXlvplDtR1OmoPMq?=
+ =?us-ascii?Q?P+S162mZDrqyJmMhm8bV2uQ7PyQcoZJX201Pd196EX1OxUOaV/VBSUBpOmKu?=
+ =?us-ascii?Q?rFGw1MTGgLvo/Vu2bZ6LmbzYibxUQnvEDv591Oyazq3OmEAx5ehC2smis7Fs?=
+ =?us-ascii?Q?gZe1i5wkrHfpFidVV4o7ZJGhzjASF9+Dxch7lA1Kbxqp7Frvng2cauEdrBXl?=
+ =?us-ascii?Q?DyDWmN/FGl3gPVfMNbkLzzewM/JNeV4/Tuu7QsUO0a5wG431ANhr/WLzR40L?=
+ =?us-ascii?Q?IC3x5FEJq4Us0WbKv2pVxSzombtQDSHGASW/es839phJVgBx7uNfKLIz5/SY?=
+ =?us-ascii?Q?gqLd6jQX0Ndj36GHDwBn5fagJajw+2iSIfJovi0bFAZmjM9SXwdstKzGSBUl?=
+ =?us-ascii?Q?kcg9PYUAoZF+TO6uMrNqTnb1DnZ9pR0bKSWKJH1lkcK+hGLr5+UvrjJGcUPX?=
+ =?us-ascii?Q?Zhw4AGMK/eg5mxIwSOW7EVJpQYDDuhOS8awz4GhIiRHeF95kYnhamDqzAwEn?=
+ =?us-ascii?Q?p4PRM9HFT/LgplcGyNrEStGW2oa1xpYh3GFJjHEy5caUkWm56TBucgaNNqMp?=
+ =?us-ascii?Q?/Yt7N3CCGl9E8fQ7fUcXMD2iSXVIgM+indCC6ENlkQAIQdZL6s7lZ/il1YTP?=
+ =?us-ascii?Q?Iaz5VRIeUfYHec7XvfpEVDyhNFGYJQ5pOQNjn/2JPqIXzEAzoraVDVuzGjW1?=
+ =?us-ascii?Q?V1JzKiwbt4UtoYoBkhNJeKDPtW10ez9WysZxO0RSHe3jtF30+IYc+UPydxYo?=
+ =?us-ascii?Q?0XBPtokGS1eN8VIEt98dPypjEKind6/aSCG9ilWZJeL/jCBtduDQkt1pXfTi?=
+ =?us-ascii?Q?toTJFvO3bTZpNWM65+LziHibdvFneKfcVqleHerz4XTNhHx60dxRM1cIuWwR?=
+ =?us-ascii?Q?77ETDwrWOhEhBQbZvNSfrq5MEWRfK2wIxqYmiFjMmjuGRg0i8C+EZ8W6xo+X?=
+ =?us-ascii?Q?oXoKbRAOjC4Nh1jUS8bi0Sx84QvTdmDcGWs9VBGwooNFIIlFFarB4/IW+yCs?=
+ =?us-ascii?Q?Umu175dsDsnmeJ9SYzjvDAgDhoSqBpSjA7aH3TwUpVUB2dw/ZTT39r5rlIhh?=
+ =?us-ascii?Q?4eyZHzVdP7aKI18rJlG3pKkFinlXBEOX5c0cimzGePmohpkKWZ7fp8g8R3ZB?=
+ =?us-ascii?Q?bg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5f89da-363b-4416-95d8-08da6e53a3f6
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5600781-ee76-49f8-9cba-08da6e53a4c3
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:37:53.9315
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:37:55.2595
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qWiSkMP2spdhkcy3u5aerW6LRNXeXUCT0d2kZTtAnniXZ0212JVG696rAMdX86LUR5CoqLCQg/0fPzhHdb+eUw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 52/oWyirhII9/GoF+8aQy4Mj3917D3ykeMKfZcffEnp9ZZD09SJWSA6CmIq+YsnsUSbXxpGjEdUUx9zHJtUMbA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB6464
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,309 +120,308 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for rate adaptation to the phy subsystem. The general
-idea is that the phy interface runs at one speed, and the MAC throttles
-the rate at which it sends packets to the link speed. There's a good
-overview of several techniques for achieving this at [1]. This patch
-adds support for three: pause-frame based (such as in Aquantia phys),
-CRS-based (such as in 10PASS-TS and 2BASE-TL), and open-loop-based (such
-as in 10GBASE-W).
+If the phy is configured to use pause-based rate adaptation, ensure that
+the link is full duplex with pause frame reception enabled. As
+suggested, if pause-based rate adaptation is enabled by the phy, then
+pause reception is unconditionally enabled.
 
-This patch makes a few assumptions and a few non assumptions about the
-types of rate adaptation available. First, it assumes that different phys
-may use different forms of rate adaptation. Second, it assumes that phys
-can use rate adaptation for any of their supported link speeds (e.g. if a
-phy supports 10BASE-T and XGMII, then it can adapt XGMII to 10BASE-T).
-Third, it does not assume that all interface modes will use the same form
-of rate adaptation. Fourth, it does not assume that all phy devices will
-support rate adaptation (even some do). Relaxing or strengthening these
-(non-)assumptions could result in a different API. For example, if all
-interface modes were assumed to use the same form of rate adaptation, then
-a bitmask of interface modes supportting rate adaptation would suffice.
+The interface duplex is determined based on the rate adaptation type.
+When rate adaptation is enabled, so is the speed. We assume the maximum
+interface speed is used. This is only relevant for MLO_AN_PHY. For
+MLO_AN_INBAND, the MAC/PCS's view of the interface speed will be used.
 
-For some better visibility into the process, the current rate adaptation
-mode is exposed as part of the ethtool ksettings. For the moment, only
-read access is supported. I'm not sure what userspace might want to
-configure yet (disable it altogether, disable just one mode, specify the
-mode to use, etc.). For the moment, since only pause-based rate
-adaptation support is added in the next few commits, rate adaptation can
-be disabled altogether by adjusting the advertisement.
+Although there are no RATE_ADAPT_CRS phys in-tree, it has been added for
+comparison (and the implementation is quite simple).
 
+Co-developed-by: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
-Should the unimplemented adaptation modes be kept in?
+Russell, I need your SoB as well as RB, since you wrote some of this.
 
-(no changes since v2)
+Changes in v3:
+- Modify link settings directly in phylink_link_up, instead of doing
+  things more indirectly via link_*.
 
 Changes in v2:
-- Use int/defines instead of enum to allow for use in ioctls/netlink
-- Add locking to phy_get_rate_adaptation
-- Add (read-only) ethtool support for rate adaptation
-- Move part of commit message to cover letter, as it gives a good
-  overview of the whole series, and allows this patch to focus more on
-  the specifics.
+- Use the phy's rate adaptation setting to determine whether to use its
+  link speed/duplex or the MAC's speed/duplex with MLO_AN_INBAND.
+- Always use the rate adaptation setting to determine the interface
+  speed/duplex (instead of sometimes using the interface mode).
 
- Documentation/networking/ethtool-netlink.rst |  2 ++
- drivers/net/phy/phy-core.c                   | 15 +++++++++++
- drivers/net/phy/phy.c                        | 28 ++++++++++++++++++++
- include/linux/phy.h                          | 22 ++++++++++++++-
- include/uapi/linux/ethtool.h                 | 18 +++++++++++--
- include/uapi/linux/ethtool_netlink.h         |  1 +
- net/ethtool/ioctl.c                          |  1 +
- net/ethtool/linkmodes.c                      |  5 ++++
- 8 files changed, 89 insertions(+), 3 deletions(-)
+ drivers/net/phy/phylink.c | 160 +++++++++++++++++++++++++++++++++++---
+ include/linux/phylink.h   |   5 ++
+ 2 files changed, 153 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index dbca3e9ec782..65ed29e78499 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -426,6 +426,7 @@ Kernel response contents:
-   ``ETHTOOL_A_LINKMODES_DUPLEX``              u8      duplex mode
-   ``ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG``    u8      Master/slave port mode
-   ``ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE``  u8      Master/slave port state
-+  ``ETHTOOL_A_LINKMODES_RATE_ADAPTATION``     u8      PHY rate adaptation
-   ==========================================  ======  ==========================
- 
- For ``ETHTOOL_A_LINKMODES_OURS``, value represents advertised modes and mask
-@@ -449,6 +450,7 @@ Request contents:
-   ``ETHTOOL_A_LINKMODES_SPEED``               u32     link speed (Mb/s)
-   ``ETHTOOL_A_LINKMODES_DUPLEX``              u8      duplex mode
-   ``ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG``    u8      Master/slave port mode
-+  ``ETHTOOL_A_LINKMODES_RATE_ADAPTATION``     u8      PHY rate adaptation
-   ``ETHTOOL_A_LINKMODES_LANES``               u32     lanes
-   ==========================================  ======  ==========================
- 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 1f2531a1a876..dc70a9088544 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -74,6 +74,21 @@ const char *phy_duplex_to_str(unsigned int duplex)
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 72bf6b607320..27b60a89ddc6 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -155,6 +155,74 @@ static const char *phylink_an_mode_str(unsigned int mode)
+ 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
  }
- EXPORT_SYMBOL_GPL(phy_duplex_to_str);
- 
-+const char *phy_rate_adaptation_to_str(int rate_adaptation)
-+{
-+	switch (rate_adaptation) {
-+	case RATE_ADAPT_NONE:
-+		return "none";
-+	case RATE_ADAPT_PAUSE:
-+		return "pause";
-+	case RATE_ADAPT_CRS:
-+		return "crs";
-+	case RATE_ADAPT_OPEN_LOOP:
-+		return "open-loop";
-+	}
-+	return "Unsupported (update phy-core.c)";
-+}
-+
- /* A mapping of all SUPPORTED settings to speed/duplex.  This table
-  * must be grouped by speed and sorted in descending match priority
-  * - iow, descending speed.
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 8d3ee3a6495b..77cbf07852e6 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -114,6 +114,33 @@ void phy_print_status(struct phy_device *phydev)
- }
- EXPORT_SYMBOL(phy_print_status);
  
 +/**
-+ * phy_get_rate_adaptation - determine if rate adaptation is supported
-+ * @phydev: The phy device to return rate adaptation for
-+ * @iface: The interface mode to use
++ * phylink_interface_max_speed() - get the maximum speed of a phy interface
++ * @interface: phy interface mode defined by &typedef phy_interface_t
 + *
-+ * This determines the type of rate adaptation (if any) that @phy supports
-+ * using @iface. @iface may be %PHY_INTERFACE_MODE_NA to determine if any
-+ * interface supports rate adaptation.
++ * Determine the maximum speed of a phy interface. This is intended to help
++ * determine the correct speed to pass to the MAC when the phy is performing
++ * rate adaptation.
 + *
-+ * Return: The type of rate adaptation @phy supports for @iface, or
-+ *         %RATE_ADAPT_NONE.
++ * Return: The maximum speed of @interface
 + */
-+int phy_get_rate_adaptation(struct phy_device *phydev,
-+			    phy_interface_t iface)
++static int phylink_interface_max_speed(phy_interface_t interface)
 +{
-+	int ret = RATE_ADAPT_NONE;
++	switch (interface) {
++	case PHY_INTERFACE_MODE_100BASEX:
++	case PHY_INTERFACE_MODE_REVRMII:
++	case PHY_INTERFACE_MODE_RMII:
++	case PHY_INTERFACE_MODE_SMII:
++	case PHY_INTERFACE_MODE_REVMII:
++	case PHY_INTERFACE_MODE_MII:
++		return SPEED_100;
 +
-+	if (phydev->drv->get_rate_adaptation) {
-+		mutex_lock(&phydev->lock);
-+		ret = phydev->drv->get_rate_adaptation(phydev, iface);
-+		mutex_unlock(&phydev->lock);
++	case PHY_INTERFACE_MODE_TBI:
++	case PHY_INTERFACE_MODE_MOCA:
++	case PHY_INTERFACE_MODE_RTBI:
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_1000BASEKX:
++	case PHY_INTERFACE_MODE_TRGMII:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_GMII:
++		return SPEED_1000;
++
++	case PHY_INTERFACE_MODE_2500BASEX:
++		return SPEED_2500;
++
++	case PHY_INTERFACE_MODE_5GBASER:
++		return SPEED_5000;
++
++	case PHY_INTERFACE_MODE_XGMII:
++	case PHY_INTERFACE_MODE_RXAUI:
++	case PHY_INTERFACE_MODE_XAUI:
++	case PHY_INTERFACE_MODE_10GBASER:
++	case PHY_INTERFACE_MODE_10GKR:
++	case PHY_INTERFACE_MODE_USXGMII:
++		return SPEED_10000;
++
++	case PHY_INTERFACE_MODE_25GBASER:
++		return SPEED_25000;
++
++	case PHY_INTERFACE_MODE_XLGMII:
++		return SPEED_40000;
++
++	case PHY_INTERFACE_MODE_INTERNAL:
++	case PHY_INTERFACE_MODE_NA:
++	case PHY_INTERFACE_MODE_MAX:
++		/* No idea! Garbage in, unknown out */
++		return SPEED_UNKNOWN;
 +	}
 +
-+	return ret;
++	/* If we get here, someone forgot to add an interface mode above */
++	WARN_ON_ONCE(1);
++	return SPEED_UNKNOWN;
 +}
-+EXPORT_SYMBOL_GPL(phy_get_rate_adaptation);
 +
  /**
-  * phy_config_interrupt - configure the PHY device for the requested interrupts
-  * @phydev: the phy_device struct
-@@ -256,6 +283,7 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
- 	cmd->base.duplex = phydev->duplex;
- 	cmd->base.master_slave_cfg = phydev->master_slave_get;
- 	cmd->base.master_slave_state = phydev->master_slave_state;
-+	cmd->base.rate_adaptation = phydev->rate_adaptation;
- 	if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
- 		cmd->base.port = PORT_BNC;
- 	else
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 81ce76c3e799..4ba8126b64f3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -276,7 +276,6 @@ static inline const char *phy_modes(phy_interface_t interface)
- 	}
+  * phylink_caps_to_linkmodes() - Convert capabilities to ethtool link modes
+  * @linkmodes: ethtool linkmode mask (must be already initialised)
+@@ -360,6 +428,30 @@ int phylink_caps_find_max_speed(unsigned long caps, int *speed,
  }
+ EXPORT_SYMBOL_GPL(phylink_caps_find_max_speed);
  
--
- #define PHY_INIT_TIMEOUT	100000
- #define PHY_FORCE_TIMEOUT	10
- 
-@@ -570,6 +569,7 @@ struct macsec_ops;
-  * @lp_advertising: Current link partner advertised linkmodes
-  * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
-  * @autoneg: Flag autoneg being used
-+ * @rate_adaptation: Current rate adaptation mode
-  * @link: Current link state
-  * @autoneg_complete: Flag auto negotiation of the link has completed
-  * @mdix: Current crossover
-@@ -637,6 +637,8 @@ struct phy_device {
- 	unsigned irq_suspended:1;
- 	unsigned irq_rerun:1;
- 
-+	int rate_adaptation;
-+
- 	enum phy_state state;
- 
- 	u32 dev_flags;
-@@ -801,6 +803,21 @@ struct phy_driver {
- 	 */
- 	int (*get_features)(struct phy_device *phydev);
- 
-+	/**
-+	 * @get_rate_adaptation: Get the supported type of rate adaptation for a
-+	 * particular phy interface. This is used by phy consumers to determine
-+	 * whether to advertise lower-speed modes for that interface. It is
-+	 * assumed that if a rate adaptation mode is supported on an interface,
-+	 * then that interface's rate can be adapted to all slower link speeds
-+	 * supported by the phy. If iface is %PHY_INTERFACE_MODE_NA, and the phy
-+	 * supports any kind of rate adaptation for any interface, then it must
-+	 * return that rate adaptation mode (preferring %RATE_ADAPT_PAUSE, to
-+	 * %RATE_ADAPT_CRS). If the interface is not supported, this should
-+	 * return %RATE_ADAPT_NONE.
-+	 */
-+	int (*get_rate_adaptation)(struct phy_device *phydev,
-+				   phy_interface_t iface);
-+
- 	/* PHY Power Management */
- 	/** @suspend: Suspend the hardware, saving state if needed */
- 	int (*suspend)(struct phy_device *phydev);
-@@ -967,6 +984,7 @@ struct phy_fixup {
- 
- const char *phy_speed_to_str(int speed);
- const char *phy_duplex_to_str(unsigned int duplex);
-+const char *phy_rate_adaptation_to_str(int rate_adaptation);
- 
- /* A structure for mapping a particular speed and duplex
-  * combination to a particular SUPPORTED and ADVERTISED value
-@@ -1681,6 +1699,8 @@ int phy_disable_interrupts(struct phy_device *phydev);
- void phy_request_interrupt(struct phy_device *phydev);
- void phy_free_interrupt(struct phy_device *phydev);
- void phy_print_status(struct phy_device *phydev);
-+int phy_get_rate_adaptation(struct phy_device *phydev,
-+			    phy_interface_t iface);
- void phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
- void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
- void phy_advertise_supported(struct phy_device *phydev);
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index e0f0ee9bc89e..3978f9c3fb83 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -1840,6 +1840,20 @@ static inline int ethtool_validate_duplex(__u8 duplex)
- #define MASTER_SLAVE_STATE_SLAVE		3
- #define MASTER_SLAVE_STATE_ERR			4
- 
-+/* These are used to throttle the rate of data on the phy interface when the
-+ * native speed of the interface is higher than the link speed. These should
-+ * not be used for phy interfaces which natively support multiple speeds (e.g.
-+ * MII or SGMII).
++/**
++ * phylink_cap_from_speed_duplex - Get mac capability from speed/duplex
++ * @speed: the speed to search for
++ * @duplex: the duplex to search for
++ *
++ * Find the mac capability for a given speed and duplex.
++ *
++ * Return: A mask with the mac capability patching @speed and @duplex, or 0 if
++ *         there were no matches.
 + */
-+/* No rate adaptation performed. */
-+#define RATE_ADAPT_NONE		0
-+/* The phy sends pause frames to throttle the MAC. */
-+#define RATE_ADAPT_PAUSE	1
-+/* The phy asserts CRS to prevent the MAC from transmitting. */
-+#define RATE_ADAPT_CRS		2
-+/* The MAC is programmed with a sufficiently-large IPG. */
-+#define RATE_ADAPT_OPEN_LOOP	3
++static unsigned long phylink_cap_from_speed_duplex(int speed,
++						   unsigned int duplex)
++{
++	int i;
 +
- /* Which connector port. */
- #define PORT_TP			0x00
- #define PORT_AUI		0x01
-@@ -2033,8 +2047,8 @@ enum ethtool_reset_flags {
-  *	reported consistently by PHYLIB.  Read-only.
-  * @master_slave_cfg: Master/slave port mode.
-  * @master_slave_state: Master/slave port state.
-+ * @rate_adaptation: Rate adaptation performed by the PHY
-  * @reserved: Reserved for future use; see the note on reserved space.
-- * @reserved1: Reserved for future use; see the note on reserved space.
-  * @link_mode_masks: Variable length bitmaps.
-  *
-  * If autonegotiation is disabled, the speed and @duplex represent the
-@@ -2085,7 +2099,7 @@ struct ethtool_link_settings {
- 	__u8	transceiver;
- 	__u8	master_slave_cfg;
- 	__u8	master_slave_state;
--	__u8	reserved1[1];
-+	__u8	rate_adaptation;
- 	__u32	reserved[7];
- 	__u32	link_mode_masks[0];
- 	/* layout of link_mode_masks fields:
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index d2fb4f7be61b..3a5d81769ff4 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -242,6 +242,7 @@ enum {
- 	ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,	/* u8 */
- 	ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,	/* u8 */
- 	ETHTOOL_A_LINKMODES_LANES,		/* u32 */
-+	ETHTOOL_A_LINKMODES_RATE_ADAPTATION,	/* u8 */
- 
- 	/* add new constants above here */
- 	__ETHTOOL_A_LINKMODES_CNT,
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 6a7308de192d..ef0ad300393a 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -571,6 +571,7 @@ static int ethtool_get_link_ksettings(struct net_device *dev,
- 		= __ETHTOOL_LINK_MODE_MASK_NU32;
- 	link_ksettings.base.master_slave_cfg = MASTER_SLAVE_CFG_UNSUPPORTED;
- 	link_ksettings.base.master_slave_state = MASTER_SLAVE_STATE_UNSUPPORTED;
-+	link_ksettings.base.rate_adaptation = RATE_ADAPT_NONE;
- 
- 	return store_link_ksettings_for_user(useraddr, &link_ksettings);
- }
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index 99b29b4fe947..7905bd985c7f 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -70,6 +70,7 @@ static int linkmodes_reply_size(const struct ethnl_req_info *req_base,
- 		+ nla_total_size(sizeof(u32)) /* LINKMODES_SPEED */
- 		+ nla_total_size(sizeof(u32)) /* LINKMODES_LANES */
- 		+ nla_total_size(sizeof(u8)) /* LINKMODES_DUPLEX */
-+		+ nla_total_size(sizeof(u8)) /* LINKMODES_RATE_ADAPTATION */
- 		+ 0;
- 	ret = ethnl_bitset_size(ksettings->link_modes.advertising,
- 				ksettings->link_modes.supported,
-@@ -143,6 +144,10 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
- 		       lsettings->master_slave_state))
- 		return -EMSGSIZE;
- 
-+	if (nla_put_u8(skb, ETHTOOL_A_LINKMODES_RATE_ADAPTATION,
-+		       lsettings->rate_adaptation))
-+		return -EMSGSIZE;
++	for (i = 0; i < ARRAY_SIZE(phylink_caps_params); i++) {
++		if (speed == phylink_caps_params[i].speed &&
++		    duplex == phylink_caps_params[i].duplex)
++			return phylink_caps_params[i].mask;
++	}
 +
- 	return 0;
++	return 0;
++}
++
+ /**
+  * phylink_get_capabilities() - get capabilities for a given MAC
+  * @interface: phy interface mode defined by &typedef phy_interface_t
+@@ -840,11 +932,12 @@ static void phylink_mac_config(struct phylink *pl,
+ 			       const struct phylink_link_state *state)
+ {
+ 	phylink_dbg(pl,
+-		    "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
++		    "%s: mode=%s/%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
+ 		    __func__, phylink_an_mode_str(pl->cur_link_an_mode),
+ 		    phy_modes(state->interface),
+ 		    phy_speed_to_str(state->speed),
+ 		    phy_duplex_to_str(state->duplex),
++		    phy_rate_adaptation_to_str(state->rate_adaptation),
+ 		    __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
+ 		    state->pause, state->link, state->an_enabled);
+ 
+@@ -981,7 +1074,8 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+ 	linkmode_zero(state->lp_advertising);
+ 	state->interface = pl->link_config.interface;
+ 	state->an_enabled = pl->link_config.an_enabled;
+-	if  (state->an_enabled) {
++	state->rate_adaptation = pl->link_config.rate_adaptation;
++	if (state->an_enabled) {
+ 		state->speed = SPEED_UNKNOWN;
+ 		state->duplex = DUPLEX_UNKNOWN;
+ 		state->pause = MLO_PAUSE_NONE;
+@@ -1064,19 +1158,45 @@ static void phylink_link_up(struct phylink *pl,
+ 			    struct phylink_link_state link_state)
+ {
+ 	struct net_device *ndev = pl->netdev;
++	int speed, duplex;
++	bool rx_pause;
++
++	speed = link_state.speed;
++	duplex = link_state.duplex;
++	rx_pause = !!(link_state.pause & MLO_PAUSE_RX);
++
++	switch (link_state.rate_adaptation) {
++	case RATE_ADAPT_PAUSE:
++		/* The PHY is doing rate adaption from the media rate (in
++		 * the link_state) to the interface speed, and will send
++		 * pause frames to the MAC to limit its transmission speed.
++		 */
++		speed = phylink_interface_max_speed(link_state.interface);
++		duplex = DUPLEX_FULL;
++		rx_pause = true;
++		break;
++
++	case RATE_ADAPT_CRS:
++		/* The PHY is doing rate adaption from the media rate (in
++		 * the link_state) to the interface speed, and will cause
++		 * collisions to the MAC to limit its transmission speed.
++		 */
++		speed = phylink_interface_max_speed(link_state.interface);
++		duplex = DUPLEX_HALF;
++		break;
++	}
+ 
+ 	pl->cur_interface = link_state.interface;
++	if (link_state.rate_adaptation == RATE_ADAPT_PAUSE)
++		link_state.pause |= MLO_PAUSE_RX;
+ 
+ 	if (pl->pcs && pl->pcs->ops->pcs_link_up)
+ 		pl->pcs->ops->pcs_link_up(pl->pcs, pl->cur_link_an_mode,
+-					 pl->cur_interface,
+-					 link_state.speed, link_state.duplex);
++					  pl->cur_interface, speed, duplex);
+ 
+-	pl->mac_ops->mac_link_up(pl->config, pl->phydev,
+-				 pl->cur_link_an_mode, pl->cur_interface,
+-				 link_state.speed, link_state.duplex,
+-				 !!(link_state.pause & MLO_PAUSE_TX),
+-				 !!(link_state.pause & MLO_PAUSE_RX));
++	pl->mac_ops->mac_link_up(pl->config, pl->phydev, pl->cur_link_an_mode,
++				 pl->cur_interface, speed, duplex,
++				 !!(link_state.pause & MLO_PAUSE_TX), rx_pause);
+ 
+ 	if (ndev)
+ 		netif_carrier_on(ndev);
+@@ -1168,6 +1288,17 @@ static void phylink_resolve(struct work_struct *w)
+ 				}
+ 				link_state.interface = pl->phy_state.interface;
+ 
++				/* If we are doing rate adaptation, then the
++				 * link speed/duplex comes from the PHY
++				 */
++				if (pl->phy_state.rate_adaptation) {
++					link_state.rate_adaptation =
++						pl->phy_state.rate_adaptation;
++					link_state.speed = pl->phy_state.speed;
++					link_state.duplex =
++						pl->phy_state.duplex;
++				}
++
+ 				/* If we have a PHY, we need to update with
+ 				 * the PHY flow control bits.
+ 				 */
+@@ -1402,6 +1533,7 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
+ 	mutex_lock(&pl->state_mutex);
+ 	pl->phy_state.speed = phydev->speed;
+ 	pl->phy_state.duplex = phydev->duplex;
++	pl->phy_state.rate_adaptation = phydev->rate_adaptation;
+ 	pl->phy_state.pause = MLO_PAUSE_NONE;
+ 	if (tx_pause)
+ 		pl->phy_state.pause |= MLO_PAUSE_TX;
+@@ -1413,10 +1545,11 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
+ 
+ 	phylink_run_resolve(pl);
+ 
+-	phylink_dbg(pl, "phy link %s %s/%s/%s/%s\n", up ? "up" : "down",
++	phylink_dbg(pl, "phy link %s %s/%s/%s/%s/%s\n", up ? "up" : "down",
+ 		    phy_modes(phydev->interface),
+ 		    phy_speed_to_str(phydev->speed),
+ 		    phy_duplex_to_str(phydev->duplex),
++		    phy_rate_adaptation_to_str(phydev->rate_adaptation),
+ 		    phylink_pause_to_str(pl->phy_state.pause));
  }
  
+@@ -1480,6 +1613,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	pl->phy_state.pause = MLO_PAUSE_NONE;
+ 	pl->phy_state.speed = SPEED_UNKNOWN;
+ 	pl->phy_state.duplex = DUPLEX_UNKNOWN;
++	pl->phy_state.rate_adaptation = RATE_ADAPT_NONE;
+ 	linkmode_copy(pl->supported, supported);
+ 	linkmode_copy(pl->link_config.advertising, config.advertising);
+ 
+@@ -1922,8 +2056,10 @@ static void phylink_get_ksettings(const struct phylink_link_state *state,
+ {
+ 	phylink_merge_link_mode(kset->link_modes.advertising, state->advertising);
+ 	linkmode_copy(kset->link_modes.lp_advertising, state->lp_advertising);
+-	kset->base.speed = state->speed;
+-	kset->base.duplex = state->duplex;
++	if (kset->base.rate_adaptation == RATE_ADAPT_NONE) {
++		kset->base.speed = state->speed;
++		kset->base.duplex = state->duplex;
++	}
+ 	kset->base.autoneg = state->an_enabled ? AUTONEG_ENABLE :
+ 				AUTONEG_DISABLE;
+ }
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index a5a236cfacb6..192a18a8674a 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -75,6 +75,10 @@ static inline bool phylink_autoneg_inband(unsigned int mode)
+  * @speed: link speed, one of the SPEED_* constants.
+  * @duplex: link duplex mode, one of DUPLEX_* constants.
+  * @pause: link pause state, described by MLO_PAUSE_* constants.
++ * @rate_adaptation: rate adaptation being performed, one of the RATE_ADAPT_*
++ *   constants. If rate adaptation is taking place, then the speed/duplex of
++ *   the medium link mode (@speed and @duplex) and the speed/duplex of the phy
++ *   interface mode (@interface) are different.
+  * @link: true if the link is up.
+  * @an_enabled: true if autonegotiation is enabled/desired.
+  * @an_complete: true if autonegotiation has completed.
+@@ -86,6 +90,7 @@ struct phylink_link_state {
+ 	int speed;
+ 	int duplex;
+ 	int pause;
++	int rate_adaptation;
+ 	unsigned int link:1;
+ 	unsigned int an_enabled:1;
+ 	unsigned int an_complete:1;
 -- 
 2.35.1.1320.gc452695387.dirty
 
