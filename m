@@ -2,57 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCC91580488
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:39:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D88A580491
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbiGYTjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 15:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        id S236433AbiGYTjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 15:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiGYTjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:39:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE65A205CC
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:39:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 865F26104F
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 19:39:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C466CC341C8;
-        Mon, 25 Jul 2022 19:39:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658777958;
-        bh=SdfrlchuYJLFvUpMCvr8KA1gHTG0obECyHg17u/1bvE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Az3f8Ns5tZBDxstiMHWxrs7gPIHACyAAu49739riY7vAQUSxG4risl79JHD+hLWQe
-         fSEJAfpNxXGwErUq7QjBuJIbTwvZmW52ijOAk8YQhlndAu0vfMBb8UHS8CGvTYMx6c
-         gCykN6WzrN2bwAhNLXdJMi5Dew1ZreiiwBVAKGU6qlJjYqoH0QNoDZ6g+8WYv+exSj
-         pvpeYdX2OFf9sfwV9lqNyQydhxDrx9anTaBUP3Qe4Cs9mMU0zWmYozMmCxQpwspx4/
-         6dLEwFq6dl+pO0SK64fjuVmxA/GjZIkvNUEb7lWnUwjl7Gabi/DwqcnR5ZyFw2otdH
-         +keSj5hGBejtg==
-Date:   Mon, 25 Jul 2022 12:39:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash
- update
-Message-ID: <20220725123917.78863f79@kernel.org>
-In-Reply-To: <SA2PR11MB5100E125B66263046B322DC1D6959@SA2PR11MB5100.namprd11.prod.outlook.com>
-References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
-        <20220720183433.2070122-2-jacob.e.keller@intel.com>
-        <YtjqJjIceW+fProb@nanopsycho>
-        <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
-        <YtpBR2ZnR2ieOg5E@nanopsycho>
-        <CO1PR11MB508957F06BB96DD765A7580FD6909@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <YtwW4aMU96JSXIPw@nanopsycho>
-        <SA2PR11MB5100E125B66263046B322DC1D6959@SA2PR11MB5100.namprd11.prod.outlook.com>
+        with ESMTP id S233712AbiGYTjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:39:53 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23AC205D1
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:39:52 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id b16so7104872lfb.7
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7TgkwMCGH8mTLYpuQJ03GCo0HTr07mExTrfJu7QnTBk=;
+        b=btN2MagO7hPo507CmIAjmr7FW6Se5tqp2OzRQNuVFFQw+dEh9SkA+t4wsS36uYIYXf
+         0WU5rQuz+J5wpTpZzdr6Hw+8wOWOw3+NJaEQFQEld775tTqM4nqqcCJzFql/NZcW9PxI
+         mIpuPHy2oNM6U38ry7XrMfD3EGVqphUbjsA1d0AgmG+dPk0zNGyITpqJ+4VQJYmY0RqC
+         IKyylCeq9f/Y/4DTzZms2KGHmZpOEihDhLM9MoZDxbIR9apxWYNRPqS1MQNeVi1fep1l
+         Mf9ifJu9aOTO8y8t4qu1W7wCEDwwW7+H44joqMZk0CsJYYGE6xnPlnyzd598QSX6AH9C
+         OQGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7TgkwMCGH8mTLYpuQJ03GCo0HTr07mExTrfJu7QnTBk=;
+        b=Txf8jW7xMiFMhb+7NDz8P8IfgO46bYzdSiQtN2eg68fkoK2EQ+3PKVwtG5g46eCFJx
+         RqNmJJrzswbYCmiLX1Ba1q+fDQTLIwn32IBUCh8aEJAFept/JjNOLs8Q76R8IMQ4nm04
+         kNAgIgEidhkswx9XsZve3tx2CbWZxIkTuep0NmloG1sxgaXy3tNUQQTdgEY5u++HVHEt
+         JwF72kltI5i1wosYsGq21Q5qu5GxB3wgyhb1PKtKohAva7+8QaHM1G9uGa3LdaDpaCna
+         wkhYrb5w+xOhyc07oA8p/4/IO3CZMxkEU5/nsDrB1mTRN1FKyWJqqkhCMtKYzsJ5aX8Q
+         khSg==
+X-Gm-Message-State: AJIora+STwHGdNZS5MjAFLi1IUT9SGjlwqiKqiTzdqXcS7rkOp9dplO8
+        oSxJVIEfpIqBnDtjDzwj86VO6Q==
+X-Google-Smtp-Source: AGRyM1uIxsFuo/Pf7kus3RXxJczb4yO8MmUcIhtfROj3yAJgnLiwbh25xjc+u6hAotpQjJH7fjSMyA==
+X-Received: by 2002:a05:6512:22c2:b0:485:8c7a:530d with SMTP id g2-20020a05651222c200b004858c7a530dmr5325325lfu.459.1658777990943;
+        Mon, 25 Jul 2022 12:39:50 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id be9-20020a056512250900b0047f8790085csm2574646lfb.71.2022.07.25.12.39.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 12:39:50 -0700 (PDT)
+Message-ID: <017a3722-d61f-6762-d17f-57417f1e3165@linaro.org>
+Date:   Mon, 25 Jul 2022 21:39:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: net: cdns,macb: Add versal compatible
+ string
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Harini Katakam <harini.katakam@xilinx.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        harini.katakam@amd.com, devicetree@vger.kernel.org,
+        radhey.shyam.pandey@xilinx.com
+References: <20220722110330.13257-1-harini.katakam@xilinx.com>
+ <20220722110330.13257-2-harini.katakam@xilinx.com>
+ <20220725193356.GA2561062-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220725193356.GA2561062-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,38 +81,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jul 2022 19:15:10 +0000 Keller, Jacob E wrote:
-> I'm not sure exactly what the process would be here. Maybe something
-> like:
+On 25/07/2022 21:33, Rob Herring wrote:
+> On Fri, Jul 22, 2022 at 04:33:28PM +0530, Harini Katakam wrote:
+>> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>>
+>> Add versal compatible string.
+>>
+>> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+>> ---
+>> v2:
+>> Sort compatible string alphabetically.
+>>
+>>  Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+>> index 9c92156869b2..762deccd3640 100644
+>> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+>> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+>> @@ -20,6 +20,7 @@ properties:
+>>  
+>>        - items:
+>>            - enum:
+>> +              - cdns,versal-gem       # Xilinx Versal
+>>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+>>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
 > 
-> 1. identify all of the commands which aren't yet strict
-> 2. introduce new command IDs for these commands with something like
-> _STRICT as a suffix? (or something shorter like _2?) 3. make all of
-> those commands strict validation..
-> 
-> but now that I think about that, i am not sure it would work. We use
-> the same attribute list for all devlink commands. This means that
-> strict validation would only check that its passed existing/known
-> attributes? But that doesn't necessarily mean the kernel will process
-> that particular attribute for a given command does it?
-> 
-> Like, once we introduce DEVLINK_ATTR_DRY_RUN support for flash, if we
-> then want to introduce it later to something like port splitting.. it
-> would be a valid attribute to send from kernels which support flash
-> but would still be ignored on kernels that don't yet support it for
-> port splitting?
-> 
-> Wouldn't we want each individual command to have its own validation
-> of what attributes are valid?
-> 
-> I do think its probably a good idea to migrate to strict mode, but I
-> am not sure it solves the problem of dry run. Thoughts? Am I missing
-> something obvious?
-> 
-> Would we instead have to convert from genl_small_ops to genl_ops and
-> introduce a policy for each command? I think that sounds like the
-> proper approach here....
+> Uh, how did we start this pattern? The vendor here is Xilinx, not 
+> Cadence. It should be xlnx,versal-gem instead.
 
-...or repost without the comment and move on. IDK if Jiri would like 
-to see the general problem of attr rejection solved right now but IMHO
-it's perfectly fine to just make the user space DTRT.
+I missed that piece entirely... Un-ack.
+
+Best regards,
+Krzysztof
