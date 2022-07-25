@@ -2,62 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BD7257FCB7
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 11:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD30D57FD23
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 12:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiGYJwO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 25 Jul 2022 05:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
+        id S234657AbiGYKKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 06:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232747AbiGYJwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 05:52:11 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A70214029;
-        Mon, 25 Jul 2022 02:52:10 -0700 (PDT)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LrwGL3BCDz67Q5R;
-        Mon, 25 Jul 2022 17:48:26 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Jul 2022 11:52:07 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Mon, 25 Jul 2022 11:52:07 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: RE: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc args
- to be trusted
-Thread-Topic: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc
- args to be trusted
-Thread-Index: AQHYnQf5YGGK69PM90+FORw5bILjSq2O3aig
-Date:   Mon, 25 Jul 2022 09:52:07 +0000
-Message-ID: <64f5b92546c14b69a20e9007bb31146b@huawei.com>
-References: <20220721134245.2450-1-memxor@gmail.com>
- <20220721134245.2450-5-memxor@gmail.com>
-In-Reply-To: <20220721134245.2450-5-memxor@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S234795AbiGYKKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 06:10:02 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572261836C
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 03:09:58 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b11so19578674eju.10
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 03:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sLw8Yfzm3c8kou871/a66dUzbZwPUL/eRicOlobjC40=;
+        b=rNPx12rA0JA1rhlipxU/3mPh+AskwJ44Bks9qWvCObOesppBf4cnHDrZ2h29VEONx7
+         MLC0UOa95uzVUTQu5eiflxrNjY7d4YVXKIvwT2IsnJo+6PrBHyak9XmDpC0Cvm/R/4o/
+         HCpIN5cvN+7uTri6ksW3XMcrgjLUmGFJjza/WPrMCSh8PTKJA8RotvW5rraIRFpUoDL2
+         +SKrKL1Hczv056hEIAgkBAB+BoCi9BnHvuxtecN8JAPYVzdnBdgKLEC3+rwPZnEMViMW
+         8qXn6rIkOTtiYzl1qUmIpX+wxAJCiwOjLwpfj1VlVFetFd/0dgA9oyFTiFm7HeAmlhM3
+         W76w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sLw8Yfzm3c8kou871/a66dUzbZwPUL/eRicOlobjC40=;
+        b=l2n5GeMfySA1Fphm3AvA9OXiJ2Cq8ekrwBbWb2d69a8R3FGMCXcm8X6odd6h9lwMed
+         zI+nLRYNydQpkvBSBGBdKpSNnbiKVDRwqd0Hh11yMGepFgCfL85SjGNUAEXJQS61T9OL
+         02wr+OTSufs6DtLvcy/dQ/+7U3mynuZWI6q6h+7alddE3SoUGS3A+p8zIu2cD5GD3GTc
+         N3ZuQiW4gfqyTwLwUKOtDmEc7ZRBi/4ccxMrEcklToy7lPvw3SejxO4m6lpZX2bH2OTH
+         WnFNiS2mNgmNunGfzUT+akjV6+pn/k2fgNwDd/nXjvUU/qeICeh9qgT14cELqI0yzl+N
+         F7ag==
+X-Gm-Message-State: AJIora+1FujDs+CYkvJ77R1xZJ0POVI2Fy9FhT2THZD8Hb2iDV+KrG8V
+        NIhMwyKuTiu2sg2nG/HTp6SDtwqYZu7PQL9Ubn6s+w==
+X-Google-Smtp-Source: AGRyM1v/DspXr7LSCx0zgVSUMOuoILyjQqe7u4bZntAclyVf6lbwv8tujUS1qi3NrDamF82/VHxr1m4z2orqDMaAHsY=
+X-Received: by 2002:a17:907:9606:b0:72f:826d:21b4 with SMTP id
+ gb6-20020a170907960600b0072f826d21b4mr9600818ejc.510.1658743796375; Mon, 25
+ Jul 2022 03:09:56 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20220722182248.1.I20e96c839200bb75cd6af80384f16c8c01498f57@changeid>
+ <CABBYNZ+k+ZOVNi+GYgdiK+B+tqKQXTWYp1QG4JSE_7EwZHNBMw@mail.gmail.com>
+In-Reply-To: <CABBYNZ+k+ZOVNi+GYgdiK+B+tqKQXTWYp1QG4JSE_7EwZHNBMw@mail.gmail.com>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Mon, 25 Jul 2022 18:09:44 +0800
+Message-ID: <CAJQfnxFdnjHdPTdfgE+v=ero01H0dE6LsJ9z3K5LCZ28gogYtw@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_sync: Use safe loop when adding accept list
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Zhengping Jiang <jiangzp@google.com>,
+        Michael Sun <michaelfsun@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,78 +78,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Kumar Kartikeya Dwivedi [mailto:memxor@gmail.com]
-> Sent: Thursday, July 21, 2022 3:43 PM
-> Teach the verifier to detect a new KF_TRUSTED_ARGS kfunc flag, which
-> means each pointer argument must be trusted, which we define as a
-> pointer that is referenced (has non-zero ref_obj_id) and also needs to
-> have its offset unchanged, similar to how release functions expect their
-> argument. This allows a kfunc to receive pointer arguments unchanged
-> from the result of the acquire kfunc.
-> 
-> This is required to ensure that kfunc that operate on some object only
-> work on acquired pointers and not normal PTR_TO_BTF_ID with same type
-> which can be obtained by pointer walking. The restrictions applied to
-> release arguments also apply to trusted arguments. This implies that
-> strict type matching (not deducing type by recursively following members
-> at offset) and OBJ_RELEASE offset checks (ensuring they are zero) are
-> used for trusted pointer arguments.
-> 
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  include/linux/btf.h | 32 ++++++++++++++++++++++++++++++++
->  kernel/bpf/btf.c    | 17 ++++++++++++++---
->  net/bpf/test_run.c  |  5 +++++
->  3 files changed, 51 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/btf.h b/include/linux/btf.h
-> index 6dfc6eaf7f8c..cb63aa71e82f 100644
-> --- a/include/linux/btf.h
-> +++ b/include/linux/btf.h
-> @@ -17,6 +17,38 @@
->  #define KF_RELEASE	(1 << 1) /* kfunc is a release function */
->  #define KF_RET_NULL	(1 << 2) /* kfunc returns a pointer that may be NULL */
->  #define KF_KPTR_GET	(1 << 3) /* kfunc returns reference to a kptr */
-> +/* Trusted arguments are those which are meant to be referenced arguments
-> with
-> + * unchanged offset. It is used to enforce that pointers obtained from acquire
-> + * kfuncs remain unmodified when being passed to helpers taking trusted args.
-> + *
-> + * Consider
-> + *	struct foo {
-> + *		int data;
-> + *		struct foo *next;
-> + *	};
-> + *
-> + *	struct bar {
-> + *		int data;
-> + *		struct foo f;
-> + *	};
-> + *
-> + *	struct foo *f = alloc_foo(); // Acquire kfunc
-> + *	struct bar *b = alloc_bar(); // Acquire kfunc
-> + *
-> + * If a kfunc set_foo_data() wants to operate only on the allocated object, it
-> + * will set the KF_TRUSTED_ARGS flag, which will prevent unsafe usage like:
-> + *
-> + *	set_foo_data(f, 42);	   // Allowed
-> + *	set_foo_data(f->next, 42); // Rejected, non-referenced pointer
-> + *	set_foo_data(&f->next, 42);// Rejected, referenced, but bad offset
-> + *	set_foo_data(&b->f, 42);   // Rejected, referenced, but wrong type
-> + *
-> + * In the final case, usually for the purposes of type matching, it is deduced
-> + * by looking at the type of the member at the offset, but due to the
-> + * requirement of trusted argument, this deduction will be strict and not done
-> + * for this case.
-> + */
-> +#define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer
-> arguments */
+Hi Eric and Luiz,
 
-Hi Kumar
+>  "the userspace can still remove devices" is a bit vague.
+I mean removing devices via MGMT command.
 
-would it make sense to introduce per-parameter flags? I have a function
-that has several parameters, but only one is referenced.
+> It seems that the issue at hand is that hci_le_add_accept_list_sync() can
+> move the current item from  pend_le_conns / pend_le_reports lists ?
+The issue is, hci_le_add_accept_list_sync() is iterating the lists
+when the content is being removed elsewhere.
 
-Thanks
+> Hopefully these lists can not be changed by other threads while
+> hci_update_accept_list_sync() is running ?
+Probably. Looks like Luiz also thinks the same way.
 
-Roberto
+> Please add a Fixes: tag
+Unfortunately I don't know when this is introduced.
+
+> Hmm if this happens it means other threads are actually interfering
+> with cmd_sync queue which is something that is probably a bug since
+> the whole point of cmd_sync is to serialize the commands making it
+> easier to do more complex state updates (such accept+resolve list
+> updates)
+Thanks, I haven't fully grasped the intention of having hci_sync and
+how to properly use it.
+
+> we could perhaps still apply this change as a workaround but
+> ultimately I think it would be better to add a mgmt-tester reproducing
+> the issue and have a proper fix of the code updating the list from a
+> different thread.
+Agree. Having said that, I don't think currently I have the time to
+invest in writing a test and a proper fix, so my apologies on this.
+
+Best,
+Archie
