@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA9357F990
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 08:43:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E7057F988
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 08:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbiGYGnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 02:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S230352AbiGYGkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 02:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230212AbiGYGnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 02:43:06 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2861165;
-        Sun, 24 Jul 2022 23:43:03 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VKIBBAF_1658731375;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKIBBAF_1658731375)
-          by smtp.aliyun-inc.com;
-          Mon, 25 Jul 2022 14:42:56 +0800
-Message-ID: <1658731116.1695666-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v12 38/40] virtio_net: support rx queue resize
-Date:   Mon, 25 Jul 2022 14:38:36 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        with ESMTP id S230135AbiGYGkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 02:40:40 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7FB55BA
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 23:40:38 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id b21so4980208ljk.8
+        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 23:40:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3n2kEuwuuK7IkJ0ff/d4b/av1Jc3vPr0Y+VbQ9saI84=;
+        b=LMFj5ZuaBlD5A8dOVY5use5OPng2TabtOQeQh3sj1+jQuFlqkgAZUEmCK8tSwYgexa
+         o2MsvhXhVrSMXTC9diMSKAfs4wAZuvHIqEhL/GdOURDxkZOeJ7e/fIS5RBAjIuiKWfcA
+         gqtQq0NLk4mZWY2TGmOQJx/c1R0bJUVAsjrac=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3n2kEuwuuK7IkJ0ff/d4b/av1Jc3vPr0Y+VbQ9saI84=;
+        b=tHCZLAOlVsw2FRgcUX+GQL/Momnz2Uvg49wrRgdAs9RR+A554MGedlI39FZGw2oATQ
+         Ny5JcfwSGRg6Py/bJsh83KRm4BGXHLPwo3cavc3EhlK+p2gydDWZKUDIs68hMFBqTHvN
+         FrmhSxC/Cfer1zUY7/79YAr6uVss830VtxXYY4mYWe5k7EQMYMjM+LPmyg3+8Ho5TbpE
+         EV1VgkuHEz6arRtF+u6ADobzctk2LmyjnfFxLGo8+cxqC3AfVWcjoxyo8qQuZRiAhIyt
+         h4OgE6ITXZ4/47PUpz/BjJ74ddDMpG5i+m9ML+p0dPGuuSX5c65q/7O4AgM10jjZMv1s
+         gIFw==
+X-Gm-Message-State: AJIora90EBIrSQfksO90Ha7GEYIbyJ7WubeiNXUELsNJygBbxSfmT8xs
+        EpsSs/uYBmooPSu7KbFg32a2c6EyEYC6lFUitlKUsA==
+X-Google-Smtp-Source: AGRyM1sn3iWkEiLU6hMHnvyasmekyibSLlJDbi1WCJvYwpGTp4FtZLeav7l27mv0g0B0s3BIzRQHP86NWkxqKLRXK1k=
+X-Received: by 2002:a2e:bf0e:0:b0:258:e99e:998c with SMTP id
+ c14-20020a2ebf0e000000b00258e99e998cmr3841212ljr.365.1658731236073; Sun, 24
+ Jul 2022 23:40:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+ <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com> <20220717233842.1451e349.max@enpas.org>
+In-Reply-To: <20220717233842.1451e349.max@enpas.org>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Mon, 25 Jul 2022 08:40:24 +0200
+Message-ID: <CABGWkvrgX+9J-rOb-EO1wXVAZQ5phwKKpbc-iD491rD9zn5UpQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
+To:     Max Staudt <max@enpas.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        kangjie.xu@linux.alibaba.com,
-        virtualization@lists.linux-foundation.org
-References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
- <20220720030436.79520-39-xuanzhuo@linux.alibaba.com>
- <726a5056-789a-b445-a2c6-879008ad270a@redhat.com>
-In-Reply-To: <726a5056-789a-b445-a2c6-879008ad270a@redhat.com>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,83 +75,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jul 2022 17:25:59 +0800, Jason Wang <jasowang@redhat.com> wrote:
+Hi Max,
+
+First of all thank you for your review, it took me a while to get back
+to you because I wanted to
+do some analysis and tests regarding the code you suggested I change
+and also last week
+was very busy.
+
+On Sun, Jul 17, 2022 at 11:38 PM Max Staudt <max@enpas.org> wrote:
 >
-> =E5=9C=A8 2022/7/20 11:04, Xuan Zhuo =E5=86=99=E9=81=93:
-> > This patch implements the resize function of the rx queues.
-> > Based on this function, it is possible to modify the ring num of the
-> > queue.
+> Hi Dario,
+>
+> This looks good, thank you for continuing to look after slcan!
+>
+> A few comments below.
+>
+>
+>
+> On Sat, 16 Jul 2022 19:00:04 +0200
+> Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
+>
+> [...]
+>
+>
+> > @@ -68,7 +62,6 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
+> >                                  SLC_STATE_BE_TXCNT_LEN)
+> >  struct slcan {
+> >       struct can_priv         can;
+> > -     int                     magic;
 > >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/net/virtio_net.c | 22 ++++++++++++++++++++++
-> >   1 file changed, 22 insertions(+)
+> >       /* Various fields. */
+> >       struct tty_struct       *tty;           /* ptr to TTY structure      */
+> > @@ -84,17 +77,14 @@ struct slcan {
+> >       int                     xleft;          /* bytes left in XMIT queue  */
 > >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index fe4dc43c05a1..1115a8b59a08 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -278,6 +278,8 @@ struct padded_vnet_hdr {
-> >   	char padding[12];
-> >   };
+> >       unsigned long           flags;          /* Flag values/ mode etc     */
+> > -#define SLF_INUSE            0               /* Channel in use            */
+> > -#define SLF_ERROR            1               /* Parity, etc. error        */
+> > -#define SLF_XCMD             2               /* Command transmission      */
+> > +#define SLF_ERROR            0               /* Parity, etc. error        */
+> > +#define SLF_XCMD             1               /* Command transmission      */
+> >       unsigned long           cmd_flags;      /* Command flags             */
+> >  #define CF_ERR_RST           0               /* Reset errors on open      */
+> >       wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
+>
+> I assume xcmd_wait() came in as part of the previous patch series?
+>
+
+Yes, correct.
+
+>
+> [...]
+>
+>
+> >  /* Send a can_frame to a TTY queue. */
+> > @@ -652,25 +637,21 @@ static int slc_close(struct net_device *dev)
+> >       struct slcan *sl = netdev_priv(dev);
+> >       int err;
 > >
-> > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf=
-);
+> > -     spin_lock_bh(&sl->lock);
+> > -     if (sl->tty) {
+> > -             if (sl->can.bittiming.bitrate &&
+> > -                 sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> > -                     spin_unlock_bh(&sl->lock);
+> > -                     err = slcan_transmit_cmd(sl, "C\r");
+> > -                     spin_lock_bh(&sl->lock);
+> > -                     if (err)
+> > -                             netdev_warn(dev,
+> > -                                         "failed to send close command 'C\\r'\n");
+> > -             }
+> > -
+> > -             /* TTY discipline is running. */
+> > -             clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> > +     if (sl->can.bittiming.bitrate &&
+> > +         sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+> > +             err = slcan_transmit_cmd(sl, "C\r");
+> > +             if (err)
+> > +                     netdev_warn(dev,
+> > +                                 "failed to send close command 'C\\r'\n");
+> >       }
 > > +
-> >   static bool is_xdp_frame(void *ptr)
-> >   {
-> >   	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-> > @@ -1846,6 +1848,26 @@ static netdev_tx_t start_xmit(struct sk_buff *sk=
-b, struct net_device *dev)
-> >   	return NETDEV_TX_OK;
-> >   }
+> > +     /* TTY discipline is running. */
+> > +     clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+> > +     flush_work(&sl->tx_work);
+> > +
+> >       netif_stop_queue(dev);
+> >       sl->rcount   = 0;
+> >       sl->xleft    = 0;
+>
+> I suggest moving these two assignments to slc_open() - see below.
+>
+>
+> [...]
+>
+>
+> > @@ -883,72 +786,50 @@ static int slcan_open(struct tty_struct *tty)
+> >       if (!tty->ops->write)
+> >               return -EOPNOTSUPP;
 > >
-> > +static int virtnet_rx_resize(struct virtnet_info *vi,
-> > +			     struct receive_queue *rq, u32 ring_num)
-> > +{
-> > +	int err, qindex;
-> > +
-> > +	qindex =3D rq - vi->rq;
-> > +
-> > +	napi_disable(&rq->napi);
+> > -     /* RTnetlink lock is misused here to serialize concurrent
+> > -      * opens of slcan channels. There are better ways, but it is
+> > -      * the simplest one.
+> > -      */
+> > -     rtnl_lock();
+> > +     dev = alloc_candev(sizeof(*sl), 1);
+> > +     if (!dev)
+> > +             return -ENFILE;
+> >
+> > -     /* Collect hanged up channels. */
+> > -     slc_sync();
+> > +     sl = netdev_priv(dev);
+> >
+> > -     sl = tty->disc_data;
+> > +     /* Configure TTY interface */
+> > +     tty->receive_room = 65536; /* We don't flow control */
+> > +     sl->rcount   = 0;
+> > +     sl->xleft    = 0;
 >
->
-> We need to disable refill work as well. So this series might need
-> rebasing on top of
->
-> https://lore.kernel.org/netdev/20220704074859.16912-1-jasowang@redhat.com/
+> I suggest moving the zeroing to slc_open() - i.e. to the netdev open
+> function. As a bonus, you can then remove the same two assignments from
+> slc_close() (see above). They are only used when netif_running(), with
+> appropiate guards already in place as far as I can see.
 
-I understand that your patch is used to solve the situation where dev is
-destoryed but refill work is running.
+I think it is better to keep the code as it is, since at the entry of
+the netdev
+open function, netif_running already returns true (it is set to true by the
+calling function) and therefore it would be less safe to reset the
+rcount and xleft
+fields.
 
-And is there such a possibility here? Or is there any other scenario that I=
-'m
-not expecting?
-
-Thanks.
-
+Thanks and regards,
+Dario
 
 >
-> I will send a new version (probably tomorrow).
 >
-> Thanks
+> > +     spin_lock_init(&sl->lock);
+> > +     INIT_WORK(&sl->tx_work, slcan_transmit);
+> > +     init_waitqueue_head(&sl->xcmd_wait);
+> >
+> > -     err = -EEXIST;
+> > -     /* First make sure we're not already connected. */
+> > -     if (sl && sl->magic == SLCAN_MAGIC)
+> > -             goto err_exit;
+> > +     /* Configure CAN metadata */
+> > +     sl->can.bitrate_const = slcan_bitrate_const;
+> > +     sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
+> >
+> > -     /* OK.  Find a free SLCAN channel to use. */
+> > -     err = -ENFILE;
+> > -     sl = slc_alloc();
+> > -     if (!sl)
+> > -             goto err_exit;
+> > +     /* Configure netdev interface */
+> > +     sl->dev = dev;
+> > +     strscpy(dev->name, "slcan%d", sizeof(dev->name));
+>
+> The third parameter looks... unintentional :)
+>
+> What do the maintainers think of dropping the old "slcan" name, and
+> just allowing this to be a normal canX device? These patches do bring
+> it closer to that, after all. In this case, this name string magic
+> could be dropped altogether.
 >
 >
-> > +
-> > +	err =3D virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_unused_buf=
-);
-> > +	if (err)
-> > +		netdev_err(vi->dev, "resize rx fail: rx queue index: %d err: %d\n", =
-qindex, err);
-> > +
-> > +	if (!try_fill_recv(vi, rq, GFP_KERNEL))
-> > +		schedule_delayed_work(&vi->refill, 0);
-> > +
-> > +	virtnet_napi_enable(rq->vq, &rq->napi);
-> > +	return err;
-> > +}
-> > +
-> >   /*
-> >    * Send command via the control virtqueue and check status.  Commands
-> >    * supported by the hypervisor, as indicated by feature bits, should
+> [...]
 >
+>
+>
+> This looks good to me overall.
+>
+> Thanks Dario!
+>
+>
+> Max
+
+
+
+-- 
+
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
