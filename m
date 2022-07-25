@@ -2,201 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F281057F9C8
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 08:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D313257FA0F
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 09:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiGYG55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 02:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        id S232204AbiGYHUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 03:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbiGYG5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 02:57:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 335962669
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 23:57:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658732246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qmW1hBnXSgXOK1sS9gN4+759LGb0Ym1b2aF+Hz+Xy9U=;
-        b=DB0Yn/B5pWtELFO2zbRk0V+tVWv+F9maGUqFcVpfwzRvyX4QHWK3dIIlvN6W7A5hcjUVeU
-        MawOsQz8V3IKoOPKTwIByO/28BoaU7iB78rNpcr9lgreblKHheQd7XzdI1UysF86zpvopN
-        yP3srVc5uTEToZUdHKo719bj7JN+CAc=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-v936kZY6NHm8rfEvO_9ybw-1; Mon, 25 Jul 2022 02:57:23 -0400
-X-MC-Unique: v936kZY6NHm8rfEvO_9ybw-1
-Received: by mail-lj1-f198.google.com with SMTP id b17-20020a05651c0b1100b0025d6a404ad2so2115626ljr.4
-        for <netdev@vger.kernel.org>; Sun, 24 Jul 2022 23:57:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qmW1hBnXSgXOK1sS9gN4+759LGb0Ym1b2aF+Hz+Xy9U=;
-        b=yDMOqxaYGkqTYrWYtgmyw3n5w7/W0GKYWlJDhN9OpzZQdl4Ir06oppdO1LjTxVcAw7
-         Je1CIhfOy/Yjvii8R7u0NWBAw1QwGSw9CioMy6nzDlXdOevuR69oQwlBV4cvYxCEAuyp
-         y3F47Yahwv7oNgbV7WXEAmTpWeSgMFgvHK5q/9RpclQGqLf/ZCvvO9sExtQ2vpxjDzO7
-         JV207IV50A+fElCHz4zq4nA9eRFwqRPpHb3mzu8u3XEJLCtAwAgJlxeBol6kxPoL/Urh
-         tu/eIWcz0EMiAjTDPZAwAaDM+QLpLkkT4IhhmXPrli0+PshusP2fMBc153cEWpdBAnap
-         Otrg==
-X-Gm-Message-State: AJIora9LNSgmmBPbxwVRW3edKUjvMfFnxNFyKj5jxJVjKit3QzKeCvR2
-        K4KO7znT4AEpkPypWByadHxxauo7YTGCYvuGOy41n1CzOoXcLO2pKTNRTJIOS4hFa/YdREOJFhZ
-        hUODcf+Y7o+ppK7NxPnChWvrXMnE/YBSE
-X-Received: by 2002:ac2:4205:0:b0:48a:95e6:395c with SMTP id y5-20020ac24205000000b0048a95e6395cmr365133lfh.238.1658732242402;
-        Sun, 24 Jul 2022 23:57:22 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1unkGiIlKuXLUSHpJBWTVSAU4zhX72Do0K+zbnbWWScjjTYkm8xiqqQ6k0g8uFHQC6oNFJAAG44P+Vps9/gr6o=
-X-Received: by 2002:ac2:4205:0:b0:48a:95e6:395c with SMTP id
- y5-20020ac24205000000b0048a95e6395cmr365123lfh.238.1658732242186; Sun, 24 Jul
- 2022 23:57:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220720030436.79520-1-xuanzhuo@linux.alibaba.com>
- <20220720030436.79520-39-xuanzhuo@linux.alibaba.com> <726a5056-789a-b445-a2c6-879008ad270a@redhat.com>
- <1658731116.1695666-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1658731116.1695666-1-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 25 Jul 2022 14:57:11 +0800
-Message-ID: <CACGkMEvsAyR5uRprobv-bQYPOKKOM4sZzQ-Vw5ZiETMjiCkdRQ@mail.gmail.com>
-Subject: Re: [PATCH v12 38/40] virtio_net: support rx queue resize
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        Kangjie Xu <kangjie.xu@linux.alibaba.com>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S230135AbiGYHUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 03:20:21 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937C63880;
+        Mon, 25 Jul 2022 00:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658733620; x=1690269620;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=COomx8LJ36kJEDEwMA6aW/uur56j6cNdJDCWQQB46GI=;
+  b=S8zt2zsGktfnPGZ/wnhm7F4cuXUU/+cRtFYAcqXep+aoJwiMRsPdK5LE
+   v1yhWDJrvkQ8xE/M8W/Y1uYUhjvy9GVqhISTUoUXque2KX1+q8/XgCfq5
+   qq6y7nCdHAL/MmgygivkLYvJ64vhKUHExpSfxT7cD+40VlG7GURC2X4hz
+   tjuy3wUQDCC9zZZ3P0cYjVbxYFaQwoJTjbBR/3wUU1mgEtHaHv/52Fcey
+   onfHO6RSv1lDnpEgSyzboLSar0EHeugcFMGvej9jopVFvyjgBF2g2enU4
+   gwkEXONEcMj1uV+9NyhD4kvm/31Gez+eWqW/N0XxiXlRT/ee6/7iZaH+E
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288390639"
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="288390639"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 00:20:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="574938084"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga006.jf.intel.com with ESMTP; 25 Jul 2022 00:20:20 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 25 Jul 2022 00:20:19 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 25 Jul 2022 00:20:19 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Mon, 25 Jul 2022 00:20:19 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 25 Jul 2022 00:20:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Armrt8HFDeq927nMPt16rHhOZEQJ4Rx3ZeYNsnWZ2nnvG1D4pxuoHsP6qSu31wKZpfudsPGa+iYn7vjVakSJG0Rj0gZAvbLvhUnoIFBy32c0wa9ArAWr5dgtsWU2kEiIllp/cyQY/HJWUasxPmvSfU7XoI7W9VxWeKWcNRCxUCcMOE1v+Qgtbu8EtgxyKwpAj//uwr4vb3dx3tj0FmIOzmLIAQf9PUEVWYhatFh+zw4lbHkSBpnvZLmL5Mh5UtByoaZlRcqc0OfxnTxPTMykNUMTXa4FtGxoejGjr78YJJbkMjzlIU8BMuV+CvnDIU1cK62FgY6JDxUxzX61fRTm0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nYYvfatZ0ETCgxc0FTbjXSDdQom2jsHBa2b2vxjKGdI=;
+ b=dzZSvf/VgXRkD5omZdoNNYo6d9cwC69cBdu/6n3Mes6ph/1cvsKwxmHMU653qMBuH68iYL408cODhsVms+C58W6i+ivhqeXeWcZx/f2O6PjlxO8mYx8pltq0N3Q4HroyDnDpwcBizmgoareBaEVKRn+kbRmoiT9Go68lvdaTPhDqmJC4aoIa4+NKX5nZZIR/4qqNDmZUn7ikYH9IjU/G3WuLWFcyPIo8QOI543O0UwKJ94fap8QuXNJTEmK7WagzW611tqIb7GWxgXOpNq7Gz9XNMjgCwq6A91G5NSgDEvvCQTruwtN6Bxn8LzJtzMwqvO4HuKFvaUuvWJm0OYG4Hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM6PR11MB4489.namprd11.prod.outlook.com (2603:10b6:5:203::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.21; Mon, 25 Jul
+ 2022 07:20:16 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
+ 07:20:16 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     Yishai Hadas <yishaih@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Martins, Joao" <joao.m.martins@oracle.com>,
+        "leonro@nvidia.com" <leonro@nvidia.com>,
+        "maorg@nvidia.com" <maorg@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>
+Subject: RE: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Thread-Topic: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Thread-Index: AQHYl1nJKS3L4jvyo020+ZxRKt+bu62IiPNggAA8ogCABfYnUA==
+Date:   Mon, 25 Jul 2022 07:20:16 +0000
+Message-ID: <BN9PR11MB52767FB07E8C4F3C3059A1658C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
+ <20220714081251.240584-4-yishaih@nvidia.com>
+ <BN9PR11MB5276B26F76F409BE27E593758C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220721120518.GZ4609@nvidia.com>
+In-Reply-To: <20220721120518.GZ4609@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: eec2119d-dba1-43f1-9c09-08da6e0e1f6f
+x-ms-traffictypediagnostic: DM6PR11MB4489:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +l5LvF6v0i7RiSAuHqZzLKX3LMJ//Ce/wGRhyOqyFozvEpp2MzPIvo/YvrHaC34nz8rnmIvR8HmJzMCRw49t8ZaR38JzgFvEU6Fm3T3pNWvyHX6hNcmtnoy+ot4/2m5pOMV+EybOp/OPkzMUHdzbIa+cfkk3lgMM6Fho7KJMFeAsWMWXRopXriKbvohNCXDT7yMnANl09yWTLKhKGoeQJvBiJDWtuST1eRnmv1kfePEsKhvC5z6sfgvNLsm5V7A3vJDGdH+zk8Khe1fwAqaLtYuElwQOnkr4S74747TS5NAfJ8TO6BQ2yeZG8rwhF4FpZcTpzoz+srrfVIFTclxuHExubjo78QrqIorae0YCLYm9bhyHdvB0orMEIjuJah7kM1IUUMJIvypymJN9kCFyAE0BjVq5un1NPoTWhHLEqa600WU8/gQ2wF2c01z6oVhzqtpPRKsjCwEWOPov5z7ml0C3PeT73X9BDurt3bFoceHJAvtEvdHi3qVRlhTHBqpx3GLriIA+F04oF91Y8l+4oulFtLzNEnM9kqLF40yqJnaIb7HtLDZXSahyyMuwSyXNpvmqfeVIm5Lj6YrXVoJYaXc/SCdrbkz8jWLBQM2PT70zFJctSF0qQgFhu669QkArcKjX9bo/1w1uMmddqZOu6jNxuLekhIN7x6H2T2WX9BApOpodwkNBuxT7Ec+90crENTEJn47BUuyIwirB+x72ZSDbmvrcnWeWlYyU/Q9rhvQ80KeJwjmQSwlxA4udWkB9V29aRwI0x56H6KdgDynauJvRgWnrOD8MrBSZonOx6dpCebrg2np6WIuoMLb9Bzi/
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(366004)(396003)(346002)(136003)(376002)(83380400001)(82960400001)(38070700005)(122000001)(38100700002)(66946007)(33656002)(76116006)(6916009)(54906003)(316002)(66556008)(66476007)(66446008)(8936002)(5660300002)(8676002)(4326008)(64756008)(9686003)(26005)(7696005)(6506007)(186003)(71200400001)(41300700001)(2906002)(478600001)(86362001)(55016003)(52536014)(7416002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?u808NqKFDXRU8NI8cuvKjAippMn/nneBhucqUJlBdWcECm3pqt2vCRsIRLky?=
+ =?us-ascii?Q?iiajQrDMBMBDk6eLhazWn6fSWurBUxPgUKGOaOibP6owQcJmKCH1Cygm7FYA?=
+ =?us-ascii?Q?skVUH8oH9kySM1zokmBTX+J8QME7Qov84AWl6p570OB85P1Yk6SYMefIA4gP?=
+ =?us-ascii?Q?bMQqGfpPKvzJvDcnN7dPFvMJ588fXWsO/TSutjNJ8v5wunbvIKjFtbl5D0IO?=
+ =?us-ascii?Q?kSjO0P/QbKb8+Dg18hjHrOKSW3+OCaDXNSLqGNt7RY8VB2fWrXJj07p1eZnj?=
+ =?us-ascii?Q?ylDxCH6yyuYwDrs94gQ/aWBFjqAx9VaqScgtnR0tad1EChFct2VoJ8+a+NEp?=
+ =?us-ascii?Q?6afT+vuQ3Oht5tHGS6Dq4idTov04HX2azLdtIVwwzxLa6BHMH24vTrTydY6h?=
+ =?us-ascii?Q?v22Eukvm312HdXOnFhRdeHsg31ypqTzdAWbFJ94l0laZi0KOyyk6l4JiFflN?=
+ =?us-ascii?Q?gJ4YCWz8UG/VSs7BVjPhyrQ3PusEVX3bqbge8NCRhfi/AS6jSXBIr2b7jmDh?=
+ =?us-ascii?Q?ELvvOz9ER8FuvOnlIdJbIFvxj9HVbn6MXVKez26tGdSae1SqkNwhL6g/H4ga?=
+ =?us-ascii?Q?9fLAyS3Px4LsgJcQyksEXFsAA48VQ2Zfy9aVRDSjrn0+ShRsY5x1Z+S8ZWes?=
+ =?us-ascii?Q?3I1bQOYZNRkXuxLkuQd3Yruc+lhQn1D5QkqUBP1uogA+tR8wdBLBgzJmIS39?=
+ =?us-ascii?Q?5GFO6O9fwMMdIty8yHMoUu98hUa4kddhJX4UKf51pu3gmMgw1tPJGIL854qI?=
+ =?us-ascii?Q?6J6dY84wUMGGS0HhPX6gB3Q6qOnNMFxeb1bKwah9kqTcGkaZD7LXydV6Abld?=
+ =?us-ascii?Q?IgNUFLNL3p9oh9AyXePgj0BudMRAUkA3ieDIdqMv/2IdmDXUShoSzLJdNtM+?=
+ =?us-ascii?Q?EPuCNFcFw3BP0Xd6QXnf2jjs/0KvE8rsDSNIBQ+iAh9f2A/XIAAZXO9pesv6?=
+ =?us-ascii?Q?YIbDbXwxJeoyrWuEg5cUbzaN3JgWOlJTiaOj2Z14BNx4V73OGrBgBk2EjCyx?=
+ =?us-ascii?Q?kHMCagAtZKzjXamzb40iylY3ddTSMhSS3PMuXCezMINBffG73IbZrROWDaMC?=
+ =?us-ascii?Q?OqF1a71hghMIM2FN+sK1pVHxrbYrNGv0QlseqsIe2MhfUce/7VDxIQwtWRCj?=
+ =?us-ascii?Q?7GRHa5dtDwnn5i467LRShMSgmk6HKi+WAp357v1UDm/d5RKTCPdbi2I6UggN?=
+ =?us-ascii?Q?vYiJOSRlp5EdjGwHYiHJYYhfiekC7SPxbXsJ66AcTwBlDIKCqKwhggSxP67j?=
+ =?us-ascii?Q?J7CTaPxU72cajLIbLbfocNheUss/LwCEUSZfo8kR57z1ImwpmZizqBCRPr+f?=
+ =?us-ascii?Q?1ry/yKQ5eAGZtoTmIjhxnBnnhm98P/P5dgvn6xjlx1isiIzOzNqYMo/Vt+yi?=
+ =?us-ascii?Q?Zom61Eirnw1pbsPrY69Ckm5Ora2uiNfH9vA+UAvD2EkiDPHELRwubuRkbEr7?=
+ =?us-ascii?Q?pWhdYYWUhI1NOADBVydE233qvjKQWkk1VQ9oZV/nTvEAEDUAusaTKPl/gyLW?=
+ =?us-ascii?Q?1r7liPjuIReaTr+Ou4dX32oKfis3Y+CWaU/Qhk0uDui1GF+I8P4PkNlMEFgH?=
+ =?us-ascii?Q?6zmx0pyF2xiKWphzdggNxRFtgtFcxsWxvKMQgjbC?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eec2119d-dba1-43f1-9c09-08da6e0e1f6f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2022 07:20:16.2195
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LH5y6vLZnDJm2gR9QivPOetcErQduGfWkbtQyGYI09tO/Ueivl0Okzp7VDnMjACzPow2anhhlFnaxXg+69UyvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4489
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 2:43 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrot=
-e:
->
-> On Thu, 21 Jul 2022 17:25:59 +0800, Jason Wang <jasowang@redhat.com> wrot=
-e:
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, July 21, 2022 8:05 PM
+>=20
+> On Thu, Jul 21, 2022 at 08:45:10AM +0000, Tian, Kevin wrote:
+>=20
+> > > + * will format its internal logging to match the reporting page size=
+,
+> possibly
+> > > + * by replicating bits if the internal page size is lower than reque=
+sted.
 > >
-> > =E5=9C=A8 2022/7/20 11:04, Xuan Zhuo =E5=86=99=E9=81=93:
-> > > This patch implements the resize function of the rx queues.
-> > > Based on this function, it is possible to modify the ring num of the
-> > > queue.
-> > >
-> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > ---
-> > >   drivers/net/virtio_net.c | 22 ++++++++++++++++++++++
-> > >   1 file changed, 22 insertions(+)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index fe4dc43c05a1..1115a8b59a08 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -278,6 +278,8 @@ struct padded_vnet_hdr {
-> > >     char padding[12];
-> > >   };
-> > >
-> > > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *b=
-uf);
-> > > +
-> > >   static bool is_xdp_frame(void *ptr)
-> > >   {
-> > >     return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-> > > @@ -1846,6 +1848,26 @@ static netdev_tx_t start_xmit(struct sk_buff *=
-skb, struct net_device *dev)
-> > >     return NETDEV_TX_OK;
-> > >   }
-> > >
-> > > +static int virtnet_rx_resize(struct virtnet_info *vi,
-> > > +                        struct receive_queue *rq, u32 ring_num)
-> > > +{
-> > > +   int err, qindex;
-> > > +
-> > > +   qindex =3D rq - vi->rq;
-> > > +
-> > > +   napi_disable(&rq->napi);
-> >
-> >
-> > We need to disable refill work as well. So this series might need
-> > rebasing on top of
-> >
-> > https://lore.kernel.org/netdev/20220704074859.16912-1-jasowang@redhat.c=
-om/
->
-> I understand that your patch is used to solve the situation where dev is
-> destoryed but refill work is running.
->
-> And is there such a possibility here?
+> > what's the purpose of this? I didn't quite get why an user would want t=
+o
+> > start tracking in one page size and then read back the dirty bitmap in
+> > another page size...
+>=20
+> There may be multiple kernel trackers that are working with different
+> underlying block sizes, so the concept is userspace decides what block
+> size it wants to work in and the kernel side transparently adapts. The
+> math is simple so putting it in the kernel is convenient.
+>=20
+> Effectively the general vision is that qemu would allocate one
+> reporting buffer and then invoke these IOCTLs in parallel on all the
+> trackers then process the single bitmap. Forcing qemu to allocate
+> bitmaps per tracker page size is just inefficient.
+>=20
 
-E.g the refill work runs in parallel with this function?
+I got that point. But my question is slightly different.
+
+A practical flow would like below:
+
+1) Qemu first requests to start dirty tracking in 4KB page size.
+   Underlying trackers may start tracking in 4KB, 256KB, 2MB,
+   etc. based on their own constraints.
+
+2) Qemu then reads back dirty reports in a shared bitmap in
+   4KB page size. All trackers must update dirty bitmap in 4KB
+   granular regardless of the actual size each tracker selects.
+
+Is there a real usage where Qemu would want to attempt
+different page sizes between above two steps?
+
+If not then I wonder whether a simpler design is to just have=20
+page size specified in the first step and then inherited by the=20
+2nd step...
 
 Thanks
-
-> Or is there any other scenario that I'm
-> not expecting?
->
-> Thanks.
->
->
-> >
-> > I will send a new version (probably tomorrow).
-> >
-> > Thanks
-> >
-> >
-> > > +
-> > > +   err =3D virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_unused=
-_buf);
-> > > +   if (err)
-> > > +           netdev_err(vi->dev, "resize rx fail: rx queue index: %d e=
-rr: %d\n", qindex, err);
-> > > +
-> > > +   if (!try_fill_recv(vi, rq, GFP_KERNEL))
-> > > +           schedule_delayed_work(&vi->refill, 0);
-> > > +
-> > > +   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > +   return err;
-> > > +}
-> > > +
-> > >   /*
-> > >    * Send command via the control virtqueue and check status.  Comman=
-ds
-> > >    * supported by the hypervisor, as indicated by feature bits, shoul=
-d
-> >
->
-
+Kevin
