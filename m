@@ -2,110 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5FB57FD3C
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 12:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D6B57FD66
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 12:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233980AbiGYKPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 06:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        id S233562AbiGYK0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 06:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiGYKP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 06:15:27 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572E138BD;
-        Mon, 25 Jul 2022 03:15:26 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 11B61352BB;
-        Mon, 25 Jul 2022 10:15:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658744125; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NfwO3eQzRbJ+P4zZizMEALzAzJGxDQ9gk1SkR5gMIlM=;
-        b=AY53X++4aTD0nCr7lpNAfNGku2A2xh+4RUvLQry8G+cwTvbN/TW8yz8jzBaPvw69qO4sR3
-        uRm+OM9i7waiCQl0qEmegSIgjfOJYyeVX/t6GvX1ffqvPYAx2t8U4yoL37Jq1BzfJYfFcE
-        eAadBhkgMLQ2jk3/LGwQxN0zkUFGeiU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658744125;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NfwO3eQzRbJ+P4zZizMEALzAzJGxDQ9gk1SkR5gMIlM=;
-        b=o0XTcvJA/lPufEvUAQ6IX3VMnLv7FiZ6/eiyqhrbyhoy8ikkByCnqhVs4n35v/RU4zydSD
-        oSY2J+jb8Cnc1fBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BD79313A8D;
-        Mon, 25 Jul 2022 10:15:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id IgmBLTxt3mKPJgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 25 Jul 2022 10:15:24 +0000
-Message-ID: <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
-Date:   Mon, 25 Jul 2022 12:15:24 +0200
+        with ESMTP id S233140AbiGYK0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 06:26:12 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2961582B;
+        Mon, 25 Jul 2022 03:26:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658744771; x=1690280771;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Vb0TKNah0PY8LMc10juOYXDzyQajaqVinXtVknS6mSU=;
+  b=AiMM6QmYA+OUHAvK/CmBoTXg1el/ZQvLyvo2KGX+HYGxZ8p/HrUI0pD+
+   5bPJb+99gjdPf4qMnA+xEr0QxyL5ztwfWtlsA6nRELmmDUCaWGCmcYboE
+   RCHjlygqRWZekBLueOukIoXdeft1pMYm3fFML4O4S+AAJCae+SMaFIARA
+   BzbmahBDIe3pOFO56nSq91DyHxG8KsSRP7B0DaZ34XKRXH214RdqNuaqf
+   fNqsXUQTFnPf4zc58db/6MpUeREe7kACcuyG9w/5iP04FsJTnFXmdMb+Y
+   ShHHgE5RRfDillvH8KY/QmU4TaSLG9h5NDrbolEZ8CzL/ilKGiv82IAV9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="349363359"
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="349363359"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:26:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="632309302"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 25 Jul 2022 03:25:58 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26PAPvQ6031778;
+        Mon, 25 Jul 2022 11:25:57 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
+Date:   Mon, 25 Jul 2022 12:24:18 +0200
+Message-Id: <20220725102418.2083779-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <CAHp75Ve7oXjNyc0GD5x9ZW=DVgCqmLOBfCP4O2cDi2DG=4SiwQ@mail.gmail.com>
+References: <20220721155950.747251-1-alexandr.lobakin@intel.com> <20220721111318.1b180762@kernel.org> <20220722145514.767592-1-alexandr.lobakin@intel.com> <CAHp75Ve7oXjNyc0GD5x9ZW=DVgCqmLOBfCP4O2cDi2DG=4SiwQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [syzbot] WARNING in p9_client_destroy
-Content-Language: en-US
-To:     syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, asmadeus@codewreck.org,
-        davem@davemloft.net, edumazet@google.com, elver@google.com,
-        ericvh@gmail.com, hdanton@sina.com, k.kahurani@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, rientjes@google.com,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        v9fs-developer@lists.sourceforge.net
-References: <000000000000e6917605e48ce2bf@google.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <000000000000e6917605e48ce2bf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/22 15:17, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 7302e91f39a81a9c2efcf4bc5749d18128366945
-> Author: Marco Elver <elver@google.com>
-> Date:   Fri Jan 14 22:03:58 2022 +0000
-> 
->     mm/slab_common: use WARN() if cache still has objects on destroy
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 22 Jul 2022 19:02:35 +0200
 
-Just to state the obvious, bisection pointed to a commit that added the
-warning, but the reason for the warning would be that p9 is destroying a
-kmem_cache without freeing all the objects there first, and that would be
-true even before the commit.
+> On Friday, July 22, 2022, Alexander Lobakin <alexandr.lobakin@intel.com>
+> wrote:
+> 
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Date: Thu, 21 Jul 2022 11:13:18 -0700
+> >
+> > > On Thu, 21 Jul 2022 17:59:46 +0200 Alexander Lobakin wrote:
+> > > > BTW, Ethtool bitsets provide similar functionality, but it operates
+> > > > with u32s (u64 is more convenient and optimal on most platforms) and
+> > > > Netlink bitmaps is a generic interface providing policies and data
+> > > > verification (Ethtool bitsets are declared simply as %NLA_BINARY),
+> > > > generic getters/setters etc.
+> > >
+> > > Are you saying we don't need the other two features ethtool bitmaps
+> > > provide? Masking and compact vs named representations?
+> >
+> > Nah I didn't say that. I'm not too familiar with Ethtool bitsets,
+> > just know that they're represented as arrays of u32s.
+> >
+> > >
+> > > I think that straight up bitmap with a fixed word is awkward and leads
+> > > to too much boilerplate code. People will avoid using it. What about
+> > > implementing a bigint type instead? Needing more than 64b is extremely
+> > > rare, so in 99% of the cases the code outside of parsing can keep using
+> > > its u8/u16/u32.
+> >
+> > In-kernel code can still use single unsigned long for some flags if
+> > it wouldn't need more than 64 bits in a couple decades and not
+> > bother with the bitmap API. Same with userspace -- a single 64 is
+> > fine for that API, just pass a pointer to it to send it as a bitmap
+> > to the kernel.
+> >
+> > Re 64b vs extremely rare -- I would say so 5 years go, but now more
+> > and more bitfields run out of 64 bits. Link modes, netdev features,
+> > ...
+> >
+> > Re bigint -- do you mean implementing u128 as a union, like
+> >
+> > typedef union __u128 {
+> >         struct {
+> >                 u32 b127_96;
+> >                 u32 b95_64;
+> >                 u32 b63_32;
+> >                 u32 b31_0;
+> >         };
+> >         struct {
+> >                 u64 b127_64;
+> >                 u64 b63_0;
+> >         };
+> > #ifdef __HAVE_INT128
+> >         __int128 b127_0;
+> > #endif
+> > } u128;
+> >
+> > ?
+> 
+> 
+> This looks not good (besides union aliasing, have you thought about BE64?).
+
+It was just an example to vizualize the thought.
 
 > 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=142882ce080000
-> start commit:   cb71b93c2dc3 Add linux-next specific files for 20220628
-> git tree:       linux-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=162882ce080000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=122882ce080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5e28cdb7ebd0f2389ca4
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156f74ee080000
 > 
-> Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
-> Fixes: 7302e91f39a8 ("mm/slab_common: use WARN() if cache still has objects on destroy")
 > 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> >
+> >
+> > We have similar feature in one of our internal trees and planning
+> > to present generic u128 soon, but this doesn't work well for flags
+> > I think.
+> > bitmap API and bitops are widely used and familiar to tons of folks,
+> > most platforms define their own machine-optimized bitops
+> > implementation, arrays of unsigned longs are native...
+> >
+> > Re awkward -- all u64 <-> bitmap conversion is implemented in the
+> > core code in 4/4 and users won't need doing anything besides one
+> > get/set. And still use bitmap/bitops API. Userspace, as I said,
+> > can use a single __u64 as long as it fits into 64 bits.
+> >
+> > Summarizing, I feel like bigints would lead to much more boilerplate
+> > in both kernel and user spaces and need to implement a whole new API
+> > instead of using the already existing and well-used bitmap one.
+> > Continuation of using single objects with fixed size like %NLA_U* or
+> > %NLA_BITFIELD_U32 will lead to introducing a new Netlink attr every
+> > 32/64 bits (or even 16 like with IP tunnels, that was the initial
+> > reason why I started working on those 3 series). As Jake wrote me
+> > in PM earlier,
+> >
+> > "I like the concept of an NLA_BITMAP. I could have used this for
+> > some of the devlink interfaces we've done, and it definitely feels
+> > a bit more natural than being forced to a single u32 bitfield."
+> 
+> 
+> Netlink is an ABI, how would you naturally convert unsigned long from
+> 64-bit kernel to the unsigned long on 32-bit user space, esp. on BE
+> architectures?
 
+Uhm, that's what this patchset does. Cover letter says: we can't
+transfer longs between userspace and the kernel, so in Netlink
+messages they're represented as arrays of u64s, then Netlink core
+in the kernel code takes care of converting them to longs when you
+call getter (and vice versa for setter)...
+On LE and 64-bit BE architectures this conversion is a noop (see
+bitmap_{from,to}_arr64()), that's why u64s were chosen, not u32s
+like in Ethtool for example.
+
+> 
+> 
+> >
+> > Thanks,
+> > Olek
+> >
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+
+Thanks,
+Olek
