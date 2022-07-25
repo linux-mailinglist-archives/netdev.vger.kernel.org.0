@@ -2,121 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C27DC5804CA
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57BBA5804D1
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 21:52:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236699AbiGYTvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 15:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S236710AbiGYTwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 15:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236651AbiGYTvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:51:35 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBBB642E
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:51:34 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id e11so14365713ljl.4
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 12:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NSvCdh1JnXJV9BbG2iR0o84dBDKvxPiIeG8bGlvazDU=;
-        b=xsjZBnC1h16SdVwOv69103yJ7hO97v8dLs2zdN2O4KxVzHXqRwfphYqI8u8uTVZqfS
-         xKxFQO7E0Ja7DGUJo7FxUWTZcRzByKZiLn4rnejAsufbrpvmKkJetJJRi5i8mF8c4uHp
-         m3q82dp3fRMepzhpdrKnF/I5KM7B3Kb7ZkzFQ4UlwKeNSjaJ8wZFtN+zywJjZor4Tov5
-         jxY6aY8JcVxI+pmKqqq2BC4eztpitVV2Skt0SoSexnEO9jgFwzKlB7NbHPak97zvesfA
-         E536fifPlfED1t8jHicLmTmnw2wCwdJ/is5eg0QSgNd2xdRZLUOvbj3woL42nF02FE5S
-         AYeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NSvCdh1JnXJV9BbG2iR0o84dBDKvxPiIeG8bGlvazDU=;
-        b=OwR5AfRN706vOz5AIZ064CtQgIPUBDN7a26srmvknVw36d3eGi9z19ewGtQGlesWS2
-         BmCADeEMWXI3M2seY8/lKUEhVZRsjUdiuPJULgK8v5Op4qv2cyDwELQ7O+v2u0lfmFJh
-         TyRn4XlndfHBUgjL8lndljUYoX444uK/401aKBGmt3H7hz8bbTa7BfYfFM+rLVqZoa2s
-         msR9aTARVKp40yMkkMmaoB8wEhfWTMSdPQ5tTvxFUEhb7OuilBo7kwjHRG440Hr9N1tP
-         I1OkBzJR1LZy/oE9ogS9pwYohXKO4TZMI8V1qUXXth+5WzYFeXRmhxlqad0wN8otc18e
-         E4Vg==
-X-Gm-Message-State: AJIora+JQEwFP8t7hu5P7MAEgo96F7kL5r+G5fjnA7sC6vusjE8m/Ou9
-        27zV2+nNOa1Ic+IXhw03BJLckw==
-X-Google-Smtp-Source: AGRyM1spGbsSycgVACNNAANYiq5JFc/Ei6oPs14LVv5I2tM/XVAm8OoPyqzI/f+mAcLTXancVL6+IA==
-X-Received: by 2002:a2e:8046:0:b0:25d:e520:8b80 with SMTP id p6-20020a2e8046000000b0025de5208b80mr4998856ljg.319.1658778692457;
-        Mon, 25 Jul 2022 12:51:32 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056512201400b004790a4ce3e5sm2824973lfb.278.2022.07.25.12.51.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 12:51:32 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH 2/2] net: cdns,macb: use correct xlnx prefix for Xilinx
-Date:   Mon, 25 Jul 2022 21:51:27 +0200
-Message-Id: <20220725195127.49765-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
-References: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S236631AbiGYTwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 15:52:37 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C071C205FE;
+        Mon, 25 Jul 2022 12:52:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fYbQYlYWjEY657B9Vhq+5o/kSaJ7FUGPlg7BC6QXhc4=; b=Gtgjyjbshce6ruDLFonsn9lE9F
+        ixLf1mOEt/aQbEA0EOqZt7HUf7Sy5cHyB0V6lHT07lthfm4Iam2iwqe2MsQn30NjczLVz+3vDs2qL
+        GCFqs/ja6lP2O36CphWsi7GtUUnfLxWzWa1GwRmffGnUQUNBxyWSoGcH/tu2KPE6gB/0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oG47e-00BUWw-RJ; Mon, 25 Jul 2022 21:52:10 +0200
+Date:   Mon, 25 Jul 2022 21:52:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     alexandru.tachici@analog.com, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        gerhard@engleder-embedded.com, geert+renesas@glider.be,
+        joel@jms.id.au, stefan.wahren@i2se.com, wellslutw@gmail.com,
+        geert@linux-m68k.org, robh+dt@kernel.org,
+        d.michailidis@fungible.com, stephen@networkplumber.org,
+        l.stelmach@samsung.com, linux-kernel@vger.kernel.org
+Subject: Re: [net-next v2 3/3] dt-bindings: net: adin1110: Add docs
+Message-ID: <Yt70avEl443NkbJq@lunn.ch>
+References: <20220725165312.59471-1-alexandru.tachici@analog.com>
+ <20220725165312.59471-4-alexandru.tachici@analog.com>
+ <a7d0f6c7-1943-8bef-71ff-736455609cde@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7d0f6c7-1943-8bef-71ff-736455609cde@linaro.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use correct vendor for Xilinx versions of Cadence MACB/GEM Ethernet
-controller.  The Versal compatible was not released, so it can be
-changed.  Zynq-7xxx and Ultrascale+ has to be kept in new and deprecated
-form.
+> You had phy nodes here, but they were not replaced with the phy-handle.
+> No ethernet-ports or mdios with phy?
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Since this is integrated silicon, much of that is not required. There
+is a fixed relationship between the MAC and the PHY, so phy-handle is
+pointless. There is no need to describe the MDIO bus, because nothing
+can change.  phy-mode is pointless, since it can only be internal.
 
----
+ethernet-ports might be useful, if you want to use two different MAC
+addresses. However, with Ethernet switches, you generally use the same
+MAC address on all ports.
 
-Cc: Harini Katakam <harini.katakam@xilinx.com>
-Cc: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+So i don't see a need for any of these properties.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 4cd4f57ca2aa..63d23e341dad 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4797,14 +4797,16 @@ static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "atmel,sama5d3-macb", .data = &sama5d3macb_config },
- 	{ .compatible = "atmel,sama5d4-gem", .data = &sama5d4_config },
- 	{ .compatible = "cdns,at91rm9200-emac", .data = &emac_config },
--	{ .compatible = "cdns,emac", .data = &emac_config },
--	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
-+	{ .compatible = "cdns,emac", .data = &emac_config }, /* deprecated */
-+	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config}, /* deprecated */
- 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
- 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
- 	{ .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
- 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
- 	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
--	{ .compatible = "cdns,versal-gem", .data = &versal_config},
-+	{ .compatible = "xlnx,zynqmp-gem", .data = &zynqmp_config},
-+	{ .compatible = "xlnx,zynq-gem", .data = &zynq_config },
-+	{ .compatible = "xlnx,versal-gem", .data = &versal_config},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, macb_dt_ids);
--- 
-2.34.1
-
+   Andrew
