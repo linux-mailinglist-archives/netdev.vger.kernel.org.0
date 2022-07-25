@@ -2,88 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D7F57FED1
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 14:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 900C857FED7
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 14:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235141AbiGYMPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 08:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
+        id S235101AbiGYMQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 08:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235115AbiGYMP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 08:15:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C2BE09B;
-        Mon, 25 Jul 2022 05:15:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BDA5B80E2F;
-        Mon, 25 Jul 2022 12:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967BCC341C8;
-        Mon, 25 Jul 2022 12:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658751324;
-        bh=FvNn5Wce0AWTev0hZCT01pnzSaPTUW7MLLFA974TLRU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dm5dHN04GQnTjY/dPJUnAJWvixqcxNm9fAwN5pwepLuwgPWGx/mOMN9oOlNZnvTSr
-         dZXoGAOcPhCgbdOkckKCrEt93pEpiQfhOiN64pLRo2Mj/QuW0RTLfcJ9qVh7Dukqf0
-         Rmv3M4+kueBkKHo692YXwfP2xoQohWIdFkrmPer1qnK5vxrtcm8w1akDsk/pJ3qDMj
-         XK/n6240LZDxKzHlaKxtqdvBiy22nnnznNcL/G7o8RcfyJ3Mbcx8H8r7wawYPhNln7
-         sRwogw1HtkXizfvlzX/NrfBiEZwxCr+inFJm94TE3jT5JzxKFZMY5OIfgjDI230bjk
-         rOSar3QWV2DDA==
-Date:   Mon, 25 Jul 2022 15:15:19 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     michael.chan@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca,
-        selvin.xavier@broadcom.com, linux-rdma@vger.kernel.org,
-        andrew.gospodarek@broadcom.com
-Subject: Re: [PATCH 2/2] RDMA/bnxt_re: Use auxiliary driver interface
-Message-ID: <Yt6JV0Vs7nSnI8KB@unreal>
-References: <20220724231458.93830-1-ajit.khaparde@broadcom.com>
- <20220724231458.93830-3-ajit.khaparde@broadcom.com>
+        with ESMTP id S232143AbiGYMQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 08:16:08 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B132BF41;
+        Mon, 25 Jul 2022 05:16:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QxOTMLEK7NykqypuWPrzoA6WBS9tC4bfnwDUZxkPiFk=; b=HlYf3uNjOyGcQCyPoeDaoWsISe
+        slYvNYi6yfo1wREK2pgxaXYiM95GvQR+qpxqELAyFuYhDBxJkPh6Zli4o8mjoZl/WDTx4r7VQ+WNF
+        yO2oTNqBJHKTIW7D+RJhsMU74rPxJLXWnvgVv5PQlKQV8vJcNvs1okr1UvGX4pCvxvE4PjWQTVJpa
+        OQYncVsIc7ebVsBr50sN1LmUD28d0ZTE/Ck22gBawO4yFpddJPMfkzuNc/R0sIGJ7w+J6ybypebcn
+        x54uh7DdAoplhLLvSKPTwFi3RNDBIRV3UFkzFWB+SL/0skbgJNENvO9NRNTlbDsiTQHkW4K4twCCs
+        XQ9LkTng==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oFx01-00160W-EX; Mon, 25 Jul 2022 12:15:49 +0000
+Date:   Mon, 25 Jul 2022 13:15:49 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net,
+        ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf 2/2] bpf: Update bpf_design_QA.rst to clarify that
+ attaching to functions is not ABI
+Message-ID: <Yt6JdYSitC6e2lLk@casper.infradead.org>
+References: <20220722180641.2902585-1-paulmck@kernel.org>
+ <20220722180641.2902585-2-paulmck@kernel.org>
+ <d452fcee-2d15-c3b0-cc44-6b880ecc4722@iogearbox.net>
+ <20220722212346.GD2860372@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220724231458.93830-3-ajit.khaparde@broadcom.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220722212346.GD2860372@paulmck-ThinkPad-P17-Gen-1>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 04:14:58PM -0700, Ajit Khaparde wrote:
-> Use auxiliary driver interface for driver load, unload ROCE driver.
-> The driver does not need to register the interface using the netdev
-> notifier anymore. Removed the bnxt_re_dev_list which is not needed.
-> Currently probe, remove and shutdown ops have been implemented for
-> the auxiliary device.
+On Fri, Jul 22, 2022 at 02:23:46PM -0700, Paul E. McKenney wrote:
+> On Fri, Jul 22, 2022 at 10:17:57PM +0200, Daniel Borkmann wrote:
+> > Otherwise I think this could be a bit misunderstood, e.g. most of the networking
+> > programs (e.g. XDP, tc, sock_addr) have a fixed framework around them where
+> > attaching programs is part of ABI.
 > 
-> BUG: DCSG01157556
-> Change-Id: Ice54f076c1c4fc26d4ee7e77a5dcd1ca21cf4cd0
+> Excellent point, thank you!
+> 
+> Apologies for the newbie question, but does BTF_ID() mark a function as
+> ABI from the viewpoing of a BPF program calling that function, attaching
+> to that function, or both?  Either way, is it worth mentioning this
+> in this QA entry?
 
-Please remove the lines above.
+Not necessarily.  For example, __filemap_add_folio has a BTF_ID(), but
+it is not ABI (it's error injection).
 
-> Signed-off-by: Ajit Khaparde <ajit.khaparde@broadcom.com>
-> ---
->  drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
->  drivers/infiniband/hw/bnxt_re/main.c          | 405 +++++++-----------
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  64 ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |  65 +++
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |   3 +
->  5 files changed, 232 insertions(+), 314 deletions(-)
-
-<...>
-
-> +static DEFINE_IDA(bnxt_aux_dev_ids);
+> The updated patch below just adds the "arbitrary".
+> 
+> 							Thanx, Paul
+> 
+> ------------------------------------------------------------------------
+> 
+> commit 89659e20d11fc1350f5881ff7c9687289806b2ba
+> Author: Paul E. McKenney <paulmck@kernel.org>
+> Date:   Fri Jul 22 10:52:05 2022 -0700
+> 
+>     bpf: Update bpf_design_QA.rst to clarify that attaching to functions is not ABI
+>     
+>     This patch updates bpf_design_QA.rst to clarify that the ability to
+>     attach a BPF program to an arbitrary function in the kernel does not
+>     make that function become part of the Linux kernel's ABI.
+>     
+>     [ paulmck: Apply Daniel Borkmann feedback. ]
+>     
+>     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> 
+> diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
+> index 2ed9128cfbec8..a06ae8a828e3d 100644
+> --- a/Documentation/bpf/bpf_design_QA.rst
+> +++ b/Documentation/bpf/bpf_design_QA.rst
+> @@ -279,3 +279,15 @@ cc (congestion-control) implementations.  If any of these kernel
+>  functions has changed, both the in-tree and out-of-tree kernel tcp cc
+>  implementations have to be changed.  The same goes for the bpf
+>  programs and they have to be adjusted accordingly.
 > +
->  static int bnxt_register_dev(struct bnxt_en_dev *edev, unsigned int ulp_id,
->  			     struct bnxt_ulp_ops *ulp_ops, void *handle)
-
-I would expect that almost all code in bnxt_ulp.c will go after this change.
-
-Thanks
+> +Q: Attaching to arbitrary kernel functions is an ABI?
+> +-----------------------------------------------------
+> +Q: BPF programs can be attached to many kernel functions.  Do these
+> +kernel functions become part of the ABI?
+> +
+> +A: NO.
+> +
+> +The kernel function prototypes will change, and BPF programs attaching to
+> +them will need to change.  The BPF compile-once-run-everywhere (CO-RE)
+> +should be used in order to make it easier to adapt your BPF programs to
+> +different versions of the kernel.
