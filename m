@@ -2,192 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A67645802A8
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 18:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB205802D3
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 18:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236074AbiGYQ1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 12:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        id S236298AbiGYQhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 12:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236065AbiGYQ1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 12:27:48 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279F61CFD0
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 09:27:47 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 17so10951145pfy.0
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 09:27:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rXFH9U3T2tSrxlBT2C8C0ifoE8gVIhTOKlHJ8pnn3Xk=;
-        b=mtTiW8rI0Fpsx7VCHWakBKd2J980LTCPGXI51IPUBYWZK90K1iG9XeoY/IJ65oT+o0
-         ahvt+5dO2MlbiUHuxJf8e/2NwlaLtKsv8l/LMACQGmTrX3b1F+ufEfJOPx5DiH2RvNaS
-         5ASvIy2AnlG89SKaiTNBeYKteIMJ6plIR8dE3ic84f8cXZ0KoV96D/M08XpbWdYv1DkJ
-         NFGQoMndnOOSaC3ILWYubKEHXLhTht0ura/KwgmfghR28M8jps0BD0lVWF0kzkBD2cAD
-         EQ1V7LEYyu5elOxB4wR1gPngLLTDjD0v4ZZ1078yvg43B9VH5vTF0lIbwCtRsYJwB1XP
-         m0og==
+        with ESMTP id S236299AbiGYQhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 12:37:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B6A01CFEA
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 09:37:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658767030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uX/CIl3/NQjIza59k4D84Jqt8oVMF3tjMbQv7DGeXfQ=;
+        b=VAUVGvxIyKOu5UfYJaQfUn93b3y8fTQGl7hytNgzS3qxDn30BQ98a8pnOmjQD6/AbmSa5H
+        +925oSAtdhCfcyrMXtS7NftUZoX9wlVDPEsWC6nINi0aGQALNXB8dF2ll39XE+WNMGBDYS
+        VQOmZm+Ay+f6O/T7qjSc2p7Q0EYs+xM=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-619-p0l6kP98NkO5Z5dAJw854g-1; Mon, 25 Jul 2022 12:37:06 -0400
+X-MC-Unique: p0l6kP98NkO5Z5dAJw854g-1
+Received: by mail-pf1-f200.google.com with SMTP id bt6-20020a056a00438600b0052b41c191a4so3949491pfb.19
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 09:37:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rXFH9U3T2tSrxlBT2C8C0ifoE8gVIhTOKlHJ8pnn3Xk=;
-        b=db+SncRY4E5rcVc5KoD/PY+mbRq2xFrFD0+VVialK5Fj3/YNPzeHf8GLDH1Zz0HSt9
-         ZVMdXzSuysgsDckbchWY2dP8BjsnN5WbMx1IOfyGRn1X6GJRkbwhGaKC7Q/2x9E9tA4I
-         n19ovkSSmko/8tO20zqE79VuBVs8i/twzX/C/TMmdbPlsgdY4RwMymYatmoUhIGOKUu8
-         mEAUwcFRMr1BCnguTFNb+peNQ/FL8un4Wj68qKpbpp6s7/d73pkpNP+p3i0S9UfR4TG5
-         D5hTlQLKV+IFgGx3ww2fFLWFvF1jg2piHCt+7L6hwsOGVl920Zvcfg/SMY9dlpeRxIVs
-         L6+g==
-X-Gm-Message-State: AJIora+PA/B+MKVKqAE2W+xAlMZOzUOvXTp7TUoJ7JxLhMxtsIoYgSS2
-        m6p4WmxU+3ffKsbKj9gcxwQ=
-X-Google-Smtp-Source: AGRyM1vKVs+UPkBLwqJZAtkJyXdH/uxNdg/JArEfjQF/QeG/87vd2nDiQyjB0yX2Hjx8xJjoKgJHVA==
-X-Received: by 2002:a63:d90b:0:b0:41a:ff05:4808 with SMTP id r11-20020a63d90b000000b0041aff054808mr4624345pgg.159.1658766466587;
-        Mon, 25 Jul 2022 09:27:46 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id me5-20020a17090b17c500b001f29ba338c1sm6472464pjb.2.2022.07.25.09.27.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Jul 2022 09:27:46 -0700 (PDT)
-Message-ID: <41ef4895-0450-c0ae-558c-45cdd4f8739b@gmail.com>
-Date:   Mon, 25 Jul 2022 09:27:42 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uX/CIl3/NQjIza59k4D84Jqt8oVMF3tjMbQv7DGeXfQ=;
+        b=pIOfPIp9jWCGOVQp+caHbtVTAjz9+7hHWJBCjfp55Z9ullBEUIq0Vlpj2a+AYYgfk0
+         TpJS3grlVnKxaO5fyRrcVtXJP9m4R4I648bTDV1liAtTegmrdxLgqsF9rw1KEzERD/H4
+         UkEFVzpeEc4g7qMmmu88ZJ57KTX10eO9RcwSo4YANBk28KmGfs+TzlfbwOffczrzsFdl
+         HhsVtpVUzlSOOUfcAgWiy3oJWgME1Z341AQh1JQc2snwwzRHkHQUogo9KVdFZzKpc8di
+         WYNMVBijSVBm+cr+ZccV5WS4K1KdPob/gz8ZENjc9UlpB6SNiUJTqptNDYUwMP7cybjz
+         Vyjg==
+X-Gm-Message-State: AJIora8rGO0wDAJPeQfLBfpMzbTKIOrSC3NspdS3qIy/UnIM87DpTYsC
+        GWJ4XL8tFawA6QEFzKtJqGG9348FbPeQexyBnKigidYFq3QL3MhXUCmsYoM+Ks7pf8oPbNl1vIZ
+        ewBl2xLylUwTSNh4WhM4xtKUks/OTHNIv
+X-Received: by 2002:a17:90b:4a10:b0:1f2:a45c:125 with SMTP id kk16-20020a17090b4a1000b001f2a45c0125mr8074802pjb.246.1658767025427;
+        Mon, 25 Jul 2022 09:37:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sPlHp+QRO5zqoXfQQgsIJG2b+XDIphd1zSrT/UPuRkDTksexdZfM2yMaSi/BkdosJi1NznSztsDTzgOqEBrDI=
+X-Received: by 2002:a17:90b:4a10:b0:1f2:a45c:125 with SMTP id
+ kk16-20020a17090b4a1000b001f2a45c0125mr8074784pjb.246.1658767025181; Mon, 25
+ Jul 2022 09:37:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next] net: dsa: validate that DT nodes of shared ports
- have the properties they need
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Mans Rullgard <mans@mansr.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-References: <20220723164635.1621911-1-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220723164635.1621911-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
+ <20220722084556.1342406-1-benjamin.tissoires@redhat.com> <CAADnVQLypx8Yd7L4GByGNEJaWgg0R6ukNV9hz0ge1+ZdW4mdgQ@mail.gmail.com>
+In-Reply-To: <CAADnVQLypx8Yd7L4GByGNEJaWgg0R6ukNV9hz0ge1+ZdW4mdgQ@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Mon, 25 Jul 2022 18:36:54 +0200
+Message-ID: <CAO-hwJK5v8An5W48x2TDH=iNb49iEbC8uGwMbdCak0Bjnmea+w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user
+ provided context
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/22 09:46, Vladimir Oltean wrote:
+On Fri, Jul 22, 2022 at 6:16 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Jul 22, 2022 at 1:46 AM Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > When a kfunc was trying to access data from context in a syscall eBPF
+> > program, the verifier was rejecting the call.
+> > This is because the syscall context is not known at compile time, and
+> > so we need to check this when actually accessing it.
+> >
+> > Check for the valid memory access and allow such situation to happen.
+> >
+> > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > changes in v8:
+> > - fixup comment
+> > - return -EACCESS instead of -EINVAL for consistency
+> >
+> > changes in v7:
+> > - renamed access_t into atype
+> > - allow zero-byte read
+> > - check_mem_access() to the correct offset/size
+> >
+> > new in v6
+> > ---
+> >  kernel/bpf/verifier.c | 21 +++++++++++++++++++++
+> >  1 file changed, 21 insertions(+)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 7c1e056624f9..c807c5d7085a 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
+> >         struct bpf_map *map_ptr;
+> >         bool raw_mode;
+> >         bool pkt_access;
+> > +       bool is_kfunc;
+> >         u8 release_regno;
+> >         int regno;
+> >         int access_size;
+> > @@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+> >                                    struct bpf_call_arg_meta *meta)
+> >  {
+> >         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+> > +       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+> >         u32 *max_access;
+> >
+> >         switch (base_type(reg->type)) {
+> > @@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+> >                                 env,
+> >                                 regno, reg->off, access_size,
+> >                                 zero_size_allowed, ACCESS_HELPER, meta);
+> > +       case PTR_TO_CTX:
+> > +               /* in case of a kfunc called in a program of type SYSCALL, the context is
+> > +                * user supplied, so not computed statically.
+> > +                * Dynamically check it now
+> > +                */
+> > +               if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
+>
+> prog_type check looks a bit odd here.
+> Can we generalize with
+> if (!env->ops->convert_ctx_access
 
-[snip]
+Yep, seems to be working fine for my use case and the test cases I
+have in this series.
 
-> +static int dsa_shared_port_validate_of_node(struct dsa_port *dp,
-> +					    const char *description)
-> +{
-> +	struct device_node *dn = dp->dn, *phy_np;
-> +	struct dsa_switch *ds = dp->ds;
-> +	phy_interface_t mode;
-> +
-> +	/* Suppress validation if using platform data */
-> +	if (!dn)
-> +		return 0;
-> +
-> +	if (of_device_compatible_match(ds->dev->of_node,
-> +				       dsa_switches_skipping_validation))
-> +		return 0;
-> +
-> +	if (of_get_phy_mode(dn, &mode)) {
-> +		dev_err(ds->dev,
-> +			"%s port %d lacks the required \"phy-mode\" property\n",
-> +			description, dp->index);
-> +		return -EINVAL;
-> +	}
-> +
-> +	phy_np = of_parse_phandle(dn, "phy-handle", 0);
-> +	if (phy_np) {
-> +		of_node_put(phy_np);
-> +		return 0;
-> +	}
-> +
-> +	/* Note: of_phy_is_fixed_link() also returns true for
-> +	 * managed = "in-band-status"
-> +	 */
-> +	if (of_phy_is_fixed_link(dn))
-> +		return 0;
+>
+> In other words any program type that doesn't have ctx rewrites can
+> use helpers to access ctx fields ?
+>
+> Also why kfunc only?
+> It looks safe to allow normal helpers as well.
 
-To echo back my reply from the other email here, if we look beyond the rabbit hole and also attempt to parse these properties from the device_node pointed to us by the "ethernet" property, then I think we can trim down the list, and we still have some assurance that we can use phylink and a fixed link property, except we have to replicate the information from the CPU-port connected Ethernet controller.
+Well, not sure what is happening here, but if I remove the check for
+kfunc, the test for PTR_TO_CTX == NULL and size == 0 gives me a
+-EINVAL.
 
-> +
-> +	/* TODO support SFP cages on DSA/CPU ports,
-> +	 * here and in dsa_port_link_register_of()
-> +	 */
-> +	dev_err(ds->dev,
-> +		"%s port %d lacks the required \"phy-handle\", \"fixed-link\" or \"managed\" properties\n",
-> +		description, dp->index);
-> +
-> +	return -EINVAL;
-> +}
-> +
->  static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
->  {
->  	if (!name)
-> @@ -1373,6 +1534,12 @@ static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
->  
->  static int dsa_port_parse_dsa(struct dsa_port *dp)
->  {
-> +	int err;
-> +
-> +	err = dsa_shared_port_validate_of_node(dp, "DSA");
-> +	if (err)
-> +		return err;
-> +
->  	dp->type = DSA_PORT_TYPE_DSA;
+The original reason for kfunc only was because I wanted to scope the
+changes to something I can control, but now I am completely out of
+ideas on why the NULL test fails if it enters the if branch.
 
-Move up the assignment so you can just read the type from dsa_shared_port_validate_of_node()?
+Unfortunately I won't have a lot of time this week to tackle this (I
+am on holiday with my family), and next will be tough too (at home but
+doing renovations).
 
->  
->  	return 0;
-> @@ -1411,6 +1578,11 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
->  	struct dsa_switch_tree *dst = ds->dst;
->  	const struct dsa_device_ops *tag_ops;
->  	enum dsa_tag_protocol default_proto;
-> +	int err;
-> +
-> +	err = dsa_shared_port_validate_of_node(dp, "CPU");
-> +	if (err)
-> +		return err;
+I can send the fixup to remove the prog_type check as I just made sure
+it works with the selftests. But I won't be able to dig further why it
+fails without the kfunc check, because not enough time and
+concentration.
 
-Likewise, I don't think there are adverse effects of moving up the dp->type assignment all the way to the top?
+Cheers,
+Benjamin
 
->  
->  	/* Find out which protocol the switch would prefer. */
->  	default_proto = dsa_get_tag_protocol(dp, master);
-
-
--- 
-Florian
