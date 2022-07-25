@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB38B57FAEB
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE11857FAF2
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbiGYIHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 04:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
+        id S233589AbiGYIJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 04:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbiGYIHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:07:42 -0400
+        with ESMTP id S229900AbiGYIJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:09:37 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21BC13CD2;
-        Mon, 25 Jul 2022 01:07:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AFA13CF1;
+        Mon, 25 Jul 2022 01:09:35 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 3804D5FD0B;
-        Mon, 25 Jul 2022 11:07:39 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 2FEB15FD0B;
+        Mon, 25 Jul 2022 11:09:34 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658736459;
-        bh=sObFnqMOAqUFZ0if5Z6xdt9QYQocsNhmpGqLuSvEmg0=;
+        s=mail; t=1658736574;
+        bh=8Ivq+HaIhab5sDZRwlp1YxHLjfjPLxbgUFjb3B5LEag=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=ZSC+dgKzMe5KQOX2bHAFy9k1fbo6e4VPd+sP1+eVqADRou6+zZzNJ6VhcMGjrqS2O
-         5Lsv2cP1tdj3yS106hiwsdyYImOVdzfPQlmjW6ZSM8td35SZKUv+wcQIgedQndfDkY
-         vl4bc3aR0gCvDJuY1aFzQ7zsfvZzgMsvVySHd9lJ/6SmbllceHWJJacRVciHcxhZpU
-         k7ZT9Shga1rI+R9xGe2YS8xzye/k4uSxvMmX3DsePSp6NBQL6C3Z7wH4FxIKM5e2yS
-         5yYpSRDNj/GgrmiKD2jPp42rIHLNK9mHvxa3Yp16akDmFOyDuGuMzVdgRFgu9n/EtR
-         W/l2T3ax8vweA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        b=miO2/SbY2I/aFgai9tTMeYxTqrqOESBDM5W50xeYgwrfl/w3iOi18mjdI2/wjPIgc
+         1iJhq9I/ck69I6/JUBJL6oc05XLjYduRzyHEfRVtlwq5eui/8qmfrEo/NUJlbFR5AS
+         aRWF4DlvG44nnQqzXX6i1HZq/4EeuMLUhXTubQJghJZufe5KDBGkzj3RLGMHgiV7dq
+         H3osn6G6llMi/fj3oIIsTdLqS+dkZtBML2IA4kOWGNtGAkkmxJTFrTPavob9FxGOKn
+         ZevFhdRWZCTrHciwGk4LRVUy9/p6TPK81UBvTyBIbiFLM7wg7tj2MCi3fssRvIR46A
+         MGoVN7hJ84teA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 11:07:38 +0300 (MSK)
+        Mon, 25 Jul 2022 11:09:32 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -46,16 +46,16 @@ To:     Stefano Garzarella <sgarzare@redhat.com>,
         Krasnov Arseniy <oxffffaa@gmail.com>
 CC:     "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 6/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Topic: [RFC PATCH v2 6/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Index: AQHYn/2PdDRRTeWJ4EqSAxbUzqz6wg==
-Date:   Mon, 25 Jul 2022 08:07:19 +0000
-Message-ID: <6ee85279-df24-7de1-d62d-7a8249fc8fc3@sberdevices.ru>
+Subject: [RFC PATCH v2 7/9] vsock: add API call for data ready
+Thread-Topic: [RFC PATCH v2 7/9] vsock: add API call for data ready
+Thread-Index: AQHYn/3THBoZAnkEuk6UJ/SrjY0PHA==
+Date:   Mon, 25 Jul 2022 08:09:13 +0000
+Message-ID: <56c7f26b-2996-9a0c-c5fa-0941d6f01542@sberdevices.ru>
 In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
 Accept-Language: en-US, ru-RU
 Content-Language: en-US
@@ -63,7 +63,7 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-originating-ip: [172.16.1.12]
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <0E7C70C150A9C040BEFBAFD04BAAB181@sberdevices.ru>
+Content-ID: <7EEE6F4618DD0C4DB88CB2235D12D41E@sberdevices.ru>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-KSMG-Rule-ID: 4
@@ -82,23 +82,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rm9yIEh5cGVyLVYgaXQgaXMgcXVpZXQgZGlmZmljdWx0IHRvIHN1cHBvcnQgdGhpcyBzb2NrZXQg
-b3B0aW9uLGR1ZSB0bw0KdHJhbnNwb3J0IGludGVybmFscywgc28gZGlzYWJsZSBpdC4NCg0KU2ln
-bmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQot
-LS0NCiBuZXQvdm13X3Zzb2NrL2h5cGVydl90cmFuc3BvcnQuYyB8IDcgKysrKysrKw0KIDEgZmls
-ZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2sv
-aHlwZXJ2X3RyYW5zcG9ydC5jIGIvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCmlu
-ZGV4IGUxMTFlMTNiNjY2MC4uNWZhYjhmMzU2YTg2IDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29j
-ay9oeXBlcnZfdHJhbnNwb3J0LmMNCisrKyBiL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9y
-dC5jDQpAQCAtODAyLDYgKzgwMiwxMiBAQCBpbnQgaHZzX25vdGlmeV9zZW5kX3Bvc3RfZW5xdWV1
-ZShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLCBzc2l6ZV90IHdyaXR0ZW4sDQogCXJldHVybiAwOw0K
-IH0NCiANCitzdGF0aWMNCitpbnQgaHZzX3NldF9yY3Zsb3dhdChzdHJ1Y3QgdnNvY2tfc29jayAq
-dnNrLCBpbnQgdmFsKQ0KK3sNCisJcmV0dXJuIC1FT1BOT1RTVVBQOw0KK30NCisNCiBzdGF0aWMg
-c3RydWN0IHZzb2NrX3RyYW5zcG9ydCBodnNfdHJhbnNwb3J0ID0gew0KIAkubW9kdWxlICAgICAg
-ICAgICAgICAgICAgID0gVEhJU19NT0RVTEUsDQogDQpAQCAtODM3LDYgKzg0Myw3IEBAIHN0YXRp
-YyBzdHJ1Y3QgdnNvY2tfdHJhbnNwb3J0IGh2c190cmFuc3BvcnQgPSB7DQogCS5ub3RpZnlfc2Vu
-ZF9wcmVfZW5xdWV1ZSAgPSBodnNfbm90aWZ5X3NlbmRfcHJlX2VucXVldWUsDQogCS5ub3RpZnlf
-c2VuZF9wb3N0X2VucXVldWUgPSBodnNfbm90aWZ5X3NlbmRfcG9zdF9lbnF1ZXVlLA0KIA0KKwku
-c2V0X3Jjdmxvd2F0ICAgICAgICAgICAgID0gaHZzX3NldF9yY3Zsb3dhdA0KIH07DQogDQogc3Rh
-dGljIGJvb2wgaHZzX2NoZWNrX3RyYW5zcG9ydChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0KLS0g
-DQoyLjI1LjENCg==
+VGhpcyBhZGRzICd2c29ja19kYXRhX3JlYWR5KCknIHdoaWNoIG11c3QgYmUgY2FsbGVkIGJ5IHRy
+YW5zcG9ydCB0byBraWNrDQpzbGVlcGluZyBkYXRhIHJlYWRlcnMuIEl0IGNoZWNrcyBmb3IgU09f
+UkNWTE9XQVQgdmFsdWUgYmVmb3JlIHdha2luZw0KdXNlcix0aHVzIHByZXZlbnRpbmcgc3B1cmlv
+dXMgd2FrZSB1cHMuQmFzZWQgb24gJ3RjcF9kYXRhX3JlYWR5KCknIGxvZ2ljLg0KDQpTaWduZWQt
+b2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCi0tLQ0K
+IGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICB8ICAxICsNCiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2Nr
+LmMgfCAxMCArKysrKysrKysrDQogMiBmaWxlcyBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspDQoN
+CmRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9hZl92c29jay5oIGIvaW5jbHVkZS9uZXQvYWZfdnNv
+Y2suaA0KaW5kZXggZWFlNTg3NGJhZTM1Li43Yjc5ZmM1MTY0Y2MgMTAwNjQ0DQotLS0gYS9pbmNs
+dWRlL25ldC9hZl92c29jay5oDQorKysgYi9pbmNsdWRlL25ldC9hZl92c29jay5oDQpAQCAtNzcs
+NiArNzcsNyBAQCBzdHJ1Y3QgdnNvY2tfc29jayB7DQogczY0IHZzb2NrX3N0cmVhbV9oYXNfZGF0
+YShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKTsNCiBzNjQgdnNvY2tfc3RyZWFtX2hhc19zcGFjZShz
+dHJ1Y3QgdnNvY2tfc29jayAqdnNrKTsNCiBzdHJ1Y3Qgc29jayAqdnNvY2tfY3JlYXRlX2Nvbm5l
+Y3RlZChzdHJ1Y3Qgc29jayAqcGFyZW50KTsNCit2b2lkIHZzb2NrX2RhdGFfcmVhZHkoc3RydWN0
+IHNvY2sgKnNrKTsNCiANCiAvKioqKiBUUkFOU1BPUlQgKioqKi8NCiANCmRpZmYgLS1naXQgYS9u
+ZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCmluZGV4
+IGI3YTI4NmRiNGFmMS4uNGIzZWMzZjkzODNmIDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay9h
+Zl92c29jay5jDQorKysgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCkBAIC04ODIsNiArODgy
+LDE2IEBAIHM2NCB2c29ja19zdHJlYW1faGFzX3NwYWNlKHN0cnVjdCB2c29ja19zb2NrICp2c2sp
+DQogfQ0KIEVYUE9SVF9TWU1CT0xfR1BMKHZzb2NrX3N0cmVhbV9oYXNfc3BhY2UpOw0KIA0KK3Zv
+aWQgdnNvY2tfZGF0YV9yZWFkeShzdHJ1Y3Qgc29jayAqc2spDQorew0KKwlzdHJ1Y3QgdnNvY2tf
+c29jayAqdnNrID0gdnNvY2tfc2soc2spOw0KKw0KKwlpZiAodnNvY2tfc3RyZWFtX2hhc19kYXRh
+KHZzaykgPj0gc2stPnNrX3Jjdmxvd2F0IHx8DQorCSAgICBzb2NrX2ZsYWcoc2ssIFNPQ0tfRE9O
+RSkpDQorCQlzay0+c2tfZGF0YV9yZWFkeShzayk7DQorfQ0KK0VYUE9SVF9TWU1CT0xfR1BMKHZz
+b2NrX2RhdGFfcmVhZHkpOw0KKw0KIHN0YXRpYyBpbnQgdnNvY2tfcmVsZWFzZShzdHJ1Y3Qgc29j
+a2V0ICpzb2NrKQ0KIHsNCiAJX192c29ja19yZWxlYXNlKHNvY2stPnNrLCAwKTsNCi0tIA0KMi4y
+NS4xDQo=
