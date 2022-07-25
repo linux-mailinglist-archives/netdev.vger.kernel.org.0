@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA1A580168
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D12AF58016E
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiGYPO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 11:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        id S236170AbiGYPPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236292AbiGYPOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:14:15 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130075.outbound.protection.outlook.com [40.107.13.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021E819282;
-        Mon, 25 Jul 2022 08:12:28 -0700 (PDT)
+        with ESMTP id S236192AbiGYPOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:14:48 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130088.outbound.protection.outlook.com [40.107.13.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92E01D30E;
+        Mon, 25 Jul 2022 08:12:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T78+QRDfL8wdIPHsRWuql++Rn+aU8A/yf2OEpJJZPsRw4Mn2cZiTCoRLQbbofySrA1ykP3tGiHe8XzmkjVS4W2GavvFltvMDrzfP1E8LXh0RjyXqJrek/DsKSoZmYsTXxpuLEA4TL/9p/RNvl/Eu8pt9W4SgDfSZsTpmPrCpqO7sh6l7jZV3AjaXHPmSpPjIgmRgZq5WmguXv/2vrYPTKhs/ECrFJyTOc6XAYJy1oGWSz329uw2igyb2VY8ouAac1aeMINOP0DPu5GSDp3CyOo0cz0oEVFTqZ+O1j5jfUhqawIPlpg9ae/v7RzgPImNqeC4fnkZS8eQysyORyYKYyQ==
+ b=BNbm3KN57kiFp4D/+nqQ5E0Ye5oQo3ejTL4GFAiMSIFmFwHrMk17YP3EeB4DIOC35tNO70SKvR5DtMcEgWUpW8RzXdUUmtRpfUvOhia4/xkmyXuEtKb8/Xr/TrvXg2czeRUjTv2wjxwQMEkHpdDFTM3R0gg9HFNExSK0NOQHKl0FfN3wKS+w8Ea7vIcEaD9VgtsEmcWwk/R50rMY9UDNd82dRy9UFb3geFfmL2kWMuIrhShnlT4o9dLiwJlwqjef4Z7U/jg5zsLMjEGfixBl+4xlSOZdcTs4o9jUUsGcnSuifAN9ev4cdpch/7gRgh8BxAD9AITGkKzNba1NRLir4A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N0iVIpavMKo9hh8B6pZsnQSMzDiNhLM+JGQPoO6Zp1c=;
- b=VltbbXkMZZ1BVJKkWZ5CEjPZSUiOFfYs/gD9klz9vqv2zUzd7iyuM2Bw8EbvAKZ2293IAlQnV99ndkir0wEQJYSavYQNaQUJuwGHNcEL8LbLUklNDlelwngCEg7KK0IuskVXJZ7G1urPzU+2RFCaSCoJu72Xhk+sAtJQR/3A1cbo4tQ4kgdJHOP9D5pxyZFDaIEPT+1G6/2RANh3Wv3x+kp/SGOL0BvwnL5lyVtTJ0RJ6tRLJ9zH1MFd1LU4nA8mE/N03yOpvLQEDlRkgpG7L4dEiYwsca7kWQRx0BOOTvHEtLahlqBj9TWs89oFHXFEKgEgtalHGwfKr//6acFjOw==
+ bh=F9wh0bRuhapaBW5PoYNdr8D20ugPy+FDu31lyvMXzPE=;
+ b=IjCChOlMfLhau294qQIB2w+owVCJq+s321YA5C771jdLLngzGwgZIn174FwqHrMQPe23Vw9swcoGh1ho8ohC12JmFgN2MDmnXe0tdVaPCLsgMRjeyPTt0bUGJgoO4tzFHMBcdpzHG+3u1rNsRiI93AYGhwsqqVcT47+BeADaCOyx4pE5zUOKqMVjyKaws9cApY78yu2PvM4ha3aOx9pDfXTWib5KYwgkdu/vZ9CUY+4IhLSwP8uKBGrVECnD6Jiosxr3KMKvnfQaP+nsR0krY1YyKtIvJAaQq69MCHe/QNhX8QIGXsGSJVF1NUXHf/xcQIakvcfDHNJ7aTpnEF00XA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N0iVIpavMKo9hh8B6pZsnQSMzDiNhLM+JGQPoO6Zp1c=;
- b=xpPTrrqnvvLMDQ55olY9yA5jq9rz79oGKV6kWPPw9tpyFpCHXeo2o+PLTfmMLSXkiV5FdLLssN6Pia2Xo0YLtpF+w6yPtDjEjEXFbrz1FrbYXSwee3B3wr5ZKqISvsNLQK72UEgA15h7ogS8XnIt2W/Wz4HHC//nOJgsWJswS7pXL8Pd0oVmjqGeA1XZgUX7s8inchn0MXScdo9aLkxfQBHVZL8EtvxFLPnVtR+w6PQfGB8KxcFjZrSVexIs3oAAGDku8US6rJW69d5/vNc9JBC6NUtyf5XjRfPUh52gXOtBzeclKC8Bscml1paYloFQ0f1TwNA4RhRtj2KEesBKPA==
+ bh=F9wh0bRuhapaBW5PoYNdr8D20ugPy+FDu31lyvMXzPE=;
+ b=d1viq9uteUnYi7iMZntXRSFBhD/r4bJLIC1jeXEuTeyjWp7k+0TKQ99e4ap4SiRG+g6oHEo+qaREUWRUbDqwexv1CW6Gx6/JeEdBD9uOII5IT+RFZg8AI3c3ZqgOsl1S4OU90sZxrGXDnoevRoPBOgHqDFGvluVvAhYK22kISQZGSC+f1yxy8wZRKA3pIIpfyUaxFP1vPC86Ri/C5GHZJYXTNDRIpaR2gWSoiKriUU/QBwwzVzOGsQAjD6cgKYpTUeUIajiX6z4WWxBKzvYl9TNXh5TOzKwWNbg5BG94TkooHpXQIzZBtJmg5NkEBY9cGcjgJvYiPI4D04Iw+fVNVQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB7PR03MB3723.eurprd03.prod.outlook.com (2603:10a6:5:6::24) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.18; Mon, 25 Jul 2022 15:11:40 +0000
+ 15.20.5458.18; Mon, 25 Jul 2022 15:11:42 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:11:40 +0000
+ 15:11:42 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,9 +50,9 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         linux-arm-kernel@lists.infradead.org,
         Sean Anderson <sean.anderson@seco.com>,
         Li Yang <leoyang.li@nxp.com>
-Subject: [PATCH v4 23/25] soc: fsl: qbman: Add helper for sanity checking cgr ops
-Date:   Mon, 25 Jul 2022 11:10:37 -0400
-Message-Id: <20220725151039.2581576-24-sean.anderson@seco.com>
+Subject: [PATCH v4 24/25] soc: fsl: qbman: Add CGR update function
+Date:   Mon, 25 Jul 2022 11:10:38 -0400
+Message-Id: <20220725151039.2581576-25-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220725151039.2581576-1-sean.anderson@seco.com>
 References: <20220725151039.2581576-1-sean.anderson@seco.com>
@@ -63,52 +63,52 @@ X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: df88cda3-1c21-4d5a-fef3-08da6e4ffa1d
+X-MS-Office365-Filtering-Correlation-Id: f6d2a981-299a-46ed-145f-08da6e4ffb3c
 X-MS-TrafficTypeDiagnostic: DB7PR03MB3723:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1EnW13eFRzfdCNNpQ277WrHRV+teiF7/WU0Z900yYUk5PZdd1T7a10dJw38CXQfDoILmh9XABSf58rHnaXTL0L6j2D2U4QbkeS/7TUvUKBxbQC76AAvgyMV7V34GYpfu+Ky+0R6V9JHFh5tkzbhdK02NCHojJOQ8Z8l/NR+U70BuKwBvQ4I3Tgt51PKmvTM/MSBgFdkIvz/LYXs2ZOyPFSgWtKzokiw84Ca5bxiQJTCqigB/6JXYz45W8CMXacYXXeMV/DnWac1zU1ebb59mvq8Zfxzl+4fVP5g87uL2fMWUFxtaYQvU3vyZLDyDboa0QBviMLGlQ1N96AzHnf4G71gcLTC70RCf1I1S2DPQVsaGcHcNA/xpjB+EnGMHdvUmP9vfjaH84Z5hq5lUif8FovdK4qwHdH3xA20Ove4uyTUrkE451YmwtGNLRXYU2pwIHSiFCyQ/jAuhcOzAibnkeLmBfMUCGDlYbydzgf3fZxWX7eqEKR7WtuHEK5qosvfKkdl3912wnVoq6CxQXwrWkY3ai8HwhDqZdGX+0OsvJRJL+ZXEwR4KZ5xh/IYY/LzqMjlQOBDn5/NsGziLTQoFhxC/p17DtdmhTbMv/7D8D5meJFSm7U4vZEAL0UKxjC5pH3txvFXGDbPLAwr4u6CYG77laUSAmwKx7MV/xkP/0ey+NTsPNOhTZKXghF25u2qcmx3fkK7aZmv7urTvw4v1HJ6rPO7qYLaYN+KpOaqDia9YPaBT/i/qBaoDOAv/sOrqcisR7JmHyHf48ZS8FYQVhd0W4rwusFuFTdqkdlLfJi8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(346002)(39850400004)(376002)(366004)(186003)(6512007)(2616005)(66946007)(1076003)(316002)(5660300002)(44832011)(66556008)(4326008)(66476007)(8936002)(6506007)(7416002)(52116002)(54906003)(110136005)(6666004)(26005)(8676002)(6486002)(2906002)(38350700002)(86362001)(83380400001)(38100700002)(36756003)(478600001)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: euBQRCzwxnvTpmfnVDYHGBkaHP8EVq9laDOlWDWPoZM6hUJy45qFb+d88TR329LlpASlg9kwAkTrmhgYVmwZxhSsVevLw1aORH/5BweOT1DrrKFY9ORY/qytXIfHZ4Lv6rNrs2CNy9CdwIvhEtUXkuVGHCgnRFo/sl3U32ffGnpsNtf0VaUVPLSmZwE0czCHEvXDj11nzYZ1hT7wuzgx/zUQoBQLASSvkZGxeBZo+m2FIq8gZ2AM1g3sjlRu18b0kqCokX0J1+Go52cRNclcEkS36PJUC+SdanGe38l27vdxmWKKl8pwUtvwExFzOs4SXf24UWDxN3hqvgOgMEBwq2fKA3d9u3aVwaJguthaI0YfNyG/NHbIdEb4RwcSO/yCa+kKVsK1EfG9HpMRqEuKJ8qD/9ygoNDe59HSCi6unGom2qNPhRNId/6hvL+pJEeAq2R77Jqlo/ACWM1jxXUZxma5v+WMuvTASDK4rPi9pdCs+PKnofWai2vpGkUErIsbCywOJqe1dAbj9sdEIxm/0Isu5jbR36mwRDqsm9DK0ivHP2hvkwg0oBqPSzIa66L4KQZjwBTtCRwiVhlw9X7Cdg/dNb4QLdRv6Sn2IgP2OOsInQoCQPig4XbYHSw8YoR8AsNZ5OeYwCe/+mEgw389R+i4anEFTXQztUt0ZFSzVvYvdR9hixUjgkQoisHudzL752oHYEQ+/oQ2BNQHZrsYY4ubf/P2a69ltKFZbRxbYrSoCxbNKaRCDa/LxOhGE0JoD+ZGbrrQSrbzR/JvimQxpmrDep2LBuBaFkssGL4Je18=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(346002)(39850400004)(376002)(366004)(186003)(6512007)(2616005)(66946007)(1076003)(316002)(5660300002)(44832011)(66556008)(15650500001)(4326008)(66476007)(8936002)(6506007)(7416002)(52116002)(54906003)(110136005)(6666004)(26005)(8676002)(6486002)(2906002)(38350700002)(86362001)(83380400001)(38100700002)(36756003)(478600001)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BZIPzoI46sfDdC9XcpfokmvCM+nRn7hGjlE/C4Hi9ioqMivb4hjGAvPupnuF?=
- =?us-ascii?Q?yjV02wBZjP+KJDo1J2yzXlTt5O29AOSMoni3M0oEGfdX7dOaks1kG9qD45AW?=
- =?us-ascii?Q?pvo246hSmvRUwscnjLdv5j2u11Bx8YMBjaHKB6cUliMYZZp0v/+HC/VuIGv8?=
- =?us-ascii?Q?unwEYbxPQE0I/S6VeWTa+dpwPXUNMVrblqNp6gFnd8ZoJs+07YpJrxg6gEfM?=
- =?us-ascii?Q?CbpLwW+gp2tNBor0rq/S7xbwiqlZciRHLhqqckl1bs20VUNE+lykceQ9LnqA?=
- =?us-ascii?Q?RcHOVDY52Mw67vZVNEAUr7fsSBE2+4nl39VgDzSZV6FKYT28d8qIMPa9aObK?=
- =?us-ascii?Q?kTENMn008mfPM/ngo79ySByowuuzD0zBsXPaEE8SPP1kFjPsB8cfNHCUboRv?=
- =?us-ascii?Q?Rh5R/0lbLsV5Y60Si4Uyt1lRDIW5BixCJ2YHqde/QjMuHjEF+HaT4y7h1AVt?=
- =?us-ascii?Q?G+bl0GsOm5Im74hfPoViokW15BfQNMH3ooje1enAEPdfUwFXtFakwZ8jGkJN?=
- =?us-ascii?Q?22jhIAYtPycop2INl14pjJj4azX7u2XuwLrR5dkwOYFXhyhHXDMMvIl2JRny?=
- =?us-ascii?Q?+gwaHwQ68d7p64D+4xAoo0fiR+f8+vk5FfR4BNgl9RlQVzYCwcinhrAllUYQ?=
- =?us-ascii?Q?nvauLZRe0WBTjQtyudga8PoObUJlXJyxqzy7Fvyn33N76k6GYabG6r0Srzta?=
- =?us-ascii?Q?Dv5CR59QBVESGQ5NAs+6AA3KaiXgmA6ezJFK4TIoNpwUFA5HvEFdF30GhaJ/?=
- =?us-ascii?Q?YTJwgVR7Ke/T97gOJLL7Z5aGeMTZd/5hnCHoivc4beanikIL2itqOuSu1z8S?=
- =?us-ascii?Q?Vu+P83Oq4pFMNy3AKECfa0hEoLHhZMy+lXB2wemCehSZQMFUvgeb22kPs+VU?=
- =?us-ascii?Q?sdlNLRpXiOXtwzutPeH31kwhVW639ZCz8QlcBnwTygcr/H1zJ5KHTGfbcQ6Q?=
- =?us-ascii?Q?HNE4fw4rSeXnliJ1Vy1vTeVWz1y3ZkhqDexcOooP7nLun3g4TyIIuyTs6r4Z?=
- =?us-ascii?Q?mNBIRnYTPMyopz0ATT328lJdZ58t61DPH6HT/M6caLqqt7P7yA9zAs8nP+8w?=
- =?us-ascii?Q?p35rlhStm9By46OuEtN/Bh1yNrXytyeRB4S8s+csdd4h+zSRAC+Mz/mNce8L?=
- =?us-ascii?Q?OK7UY8ZTb10KFw5lOtLUJkAdsraOLlBIu25LiFw0pn0IDIQpVSZ2V/i7U8iZ?=
- =?us-ascii?Q?piIgaxmoGU51qf3Qs6FC2odBmKO5rG2o0pdsA2ldTL5tenVWNJpnlTn6MfO3?=
- =?us-ascii?Q?INdMt0UU4d+g/HtLemnCJ4JfMSwXnj5WnyJ/Mh9WN/IzYv7ulZctzeh07KGx?=
- =?us-ascii?Q?7b+J418AYV2+xaScpIxVyeihelS4DmwkYCfC9f9PaguDrTpKn/1yF8FuFZJs?=
- =?us-ascii?Q?EIxS6NCFxtbTSlQswEGuJR5PUntdCkDkvMeV9L0e94yvU+mXkcXCB38OEcX/?=
- =?us-ascii?Q?/rpP5WHnkRY7+NpJF2SpNSJMBqLMS20mqvTYzimf3GrmKQbih33Y6o3WUMzt?=
- =?us-ascii?Q?hfgOqpo/L1d571Bot5WZQui2+VBWyqws8UYyIvIfImc6vYQbmwpNAS+IGji7?=
- =?us-ascii?Q?Ujqn2D0SZR96SVoIISff51LKnUHg+bu69ULhwWYafXZ6e1E0XSVOeuEV+ak1?=
- =?us-ascii?Q?7g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/f5GchLw+zo/VRQnUtT4bbJYPqnRgrpTrTkPxm1ZZJ6LzNcA2RLPKxaYqNMI?=
+ =?us-ascii?Q?T1etHVS2oqq4IjgVlqISqfs0K5qFaEAeL2ukFYVSJrUjDE7W25runWKKrn4C?=
+ =?us-ascii?Q?AqFqesj1mlq4TgES5qcZ3LDY6Hpwzpkqc1PilU+zU4bbOQX18lza7fuO8c9w?=
+ =?us-ascii?Q?7YlxNCDO/duf0P8ocJjFUURQ0WFmfTP94SDBJA0PaQEZhkNuqtvxxQOycvBQ?=
+ =?us-ascii?Q?YDqSROdBiqXRsJIBiKDUKUxOgHkcn5ohgXifr5lvYEa7wbbXt6ObKQmpLHX3?=
+ =?us-ascii?Q?lCgsv0nbV9NHnB/0alarFaoHiUXjqZPQ5rd5lz9Gp1nHPJ25GBrlgAcLYceN?=
+ =?us-ascii?Q?4Zci7cCfBBc7WlRyGvD76qvcHqiYnndCE7jDhirdUD0zxsfT+3o//dKkgDxI?=
+ =?us-ascii?Q?Tp4nQU3Ara6iMXNRTvJA3rmmQBXXQjA1dxmY+0Jw1S+rZMOeMRXQbhXi36XS?=
+ =?us-ascii?Q?htJaiu0n+suPhHIGxGFJGwYy/KAytir5U5ZOajTiobLqRw7TXqX8twofAzTd?=
+ =?us-ascii?Q?oz0iM0hh7SIdinzOZo91+EqSJWueEvWFCK+fOBjG+lEs4x4NfRq8or/zKQy+?=
+ =?us-ascii?Q?e+jV1q5hAxbD3fuYnKUZsFyLwvUyJR9ym8L+VqgKmJhFFPw/nQqjGzcSG9HG?=
+ =?us-ascii?Q?5wmAl0UNutjAGNv7tP6aWtR0J26TsxaToJhkJSoqweE/21npTdKWLckfPdf7?=
+ =?us-ascii?Q?Td7IJNMJ8mzhJ90R9QOc8soSaZw4annh291TPQDe+lE4Etc9fZlJAmp/ltQh?=
+ =?us-ascii?Q?glZtKwRGcN6UlxHK8YQACFhF6MRXX08rOWNz+Z4iaaqBmgtmMyPpUKTzjBEs?=
+ =?us-ascii?Q?XSLW7ScshrQ6G+8Kb0TjR2c4tdNkyvpkbXuNz0lU8lUEVXnLmRvdSSxyYwEf?=
+ =?us-ascii?Q?dTL8SyvZLS9jZ46J4iN//SOi6uAZzuryR/nBYzQvlnl9P5513UmeLEqxUk0Q?=
+ =?us-ascii?Q?JsgODbsEMyRQQ3ewtj0wosyYArPkq6KXStm4a0/bhJVhNVtxZlhVR22V4JTw?=
+ =?us-ascii?Q?imXuwDT8S7UQXTQ2qtTi5q+l4CQsSSGnv7WbHtN6yQcQKPzzICMSx8SnuYKD?=
+ =?us-ascii?Q?Y71wNPpQQe2c6S4R0nUrIUO19gs4vBsLcX8MynuPcYAE1nlM4yWelP87HrEf?=
+ =?us-ascii?Q?oEvUQ8wiYNv1irzHWU/KHSPgxP+6vEp3+KIBc9zLbGUxgOsjKSHjAaWlqCHE?=
+ =?us-ascii?Q?X2adb6MoAefOSj6yKkLEb/tgt+KS/ijkeGSTxumRsqvuzGbF8NHcas1+cRoG?=
+ =?us-ascii?Q?lsCSoBl0o535S2aJFTZJ5eRefNF87jT1NHuokoiJNrlS8H39RiZwHYUs6WZ3?=
+ =?us-ascii?Q?TdX9LyJW0qTRl8hyu1wc6dVlKIzMSutJ10HBx8St5L2v9UFWGtVkSgHGZfKH?=
+ =?us-ascii?Q?c0s6Z2TW2APIas5zDrYUH6sxIa+aR1eRI5t/TD8t3wbldr3i0IX+Kyfx34cG?=
+ =?us-ascii?Q?YmQr/V2BKuGz6dVXWpkvYLZK4M+2JeEwvDtB+rfeXHg6z9H2toW65PSl8r1P?=
+ =?us-ascii?Q?5kogQW5mTCfC3Sw2UY6AhXMolXhp6KkWKuau4sCjb7IYAgqP9uQM5aMN5UwL?=
+ =?us-ascii?Q?yvWzKY0zEV/5BcQAesv+BGjYs+ITIGoB6TO9+p7n6fliV1SVoA+hgQeP3cjD?=
+ =?us-ascii?Q?Sw=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df88cda3-1c21-4d5a-fef3-08da6e4ffa1d
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6d2a981-299a-46ed-145f-08da6e4ffb3c
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:11:40.4869
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:11:42.3774
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9KpfY8HkkxFx4na7fOzrTh6BsTThQrHUoR/w+7D5gb5ngX0mzzcT9/QnQYW03pJmUZLJz4zEeVyod9Fb+sFDdg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: aHHdup6OzcWyzH80ehxL0rvyGXSAVULX46TrBsX7ge2UmiJ85df2Q/6X9D4cX+Y9GwspTekHAQi8AZY5dICTcw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3723
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,77 +120,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This breaks out/combines get_affine_portal and the cgr sanity check in
-preparation for the next commit. No functional change intended.
+This adds a function to update a CGR with new parameters. qman_create_cgr
+can almost be used for this (with flags=0), but it's not suitable because
+it also registers the callback function. The _safe variant was modeled off
+of qman_cgr_delete_safe. However, we handle multiple arguments and a return
+value.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 Acked-by: Camelia Groza <camelia.groza@nxp.com>
 ---
 
-(no changes since v2)
+Changes in v4:
+- qman_cgr_create -> qman_create_cgr
 
 Changes in v2:
 - New
 
- drivers/soc/fsl/qbman/qman.c | 29 +++++++++++++++++++----------
- 1 file changed, 19 insertions(+), 10 deletions(-)
+ drivers/soc/fsl/qbman/qman.c | 47 ++++++++++++++++++++++++++++++++++++
+ include/soc/fsl/qman.h       |  9 +++++++
+ 2 files changed, 56 insertions(+)
 
 diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
-index fde4edd83c14..eb6600aab09b 100644
+index eb6600aab09b..68b825ea10f1 100644
 --- a/drivers/soc/fsl/qbman/qman.c
 +++ b/drivers/soc/fsl/qbman/qman.c
-@@ -2483,13 +2483,8 @@ int qman_create_cgr(struct qman_cgr *cgr, u32 flags,
+@@ -2568,6 +2568,53 @@ void qman_delete_cgr_safe(struct qman_cgr *cgr)
  }
- EXPORT_SYMBOL(qman_create_cgr);
+ EXPORT_SYMBOL(qman_delete_cgr_safe);
  
--int qman_delete_cgr(struct qman_cgr *cgr)
-+static struct qman_portal *qman_cgr_get_affine_portal(struct qman_cgr *cgr)
- {
--	unsigned long irqflags;
--	struct qm_mcr_querycgr cgr_state;
--	struct qm_mcc_initcgr local_opts;
--	int ret = 0;
--	struct qman_cgr *i;
- 	struct qman_portal *p = get_affine_portal();
- 
- 	if (cgr->chan != p->config->channel) {
-@@ -2497,10 +2492,25 @@ int qman_delete_cgr(struct qman_cgr *cgr)
- 		dev_err(p->config->dev, "CGR not owned by current portal");
- 		dev_dbg(p->config->dev, " create 0x%x, delete 0x%x\n",
- 			cgr->chan, p->config->channel);
--
--		ret = -EINVAL;
--		goto put_portal;
-+		put_affine_portal();
-+		return NULL;
- 	}
-+
-+	return p;
-+}
-+
-+int qman_delete_cgr(struct qman_cgr *cgr)
++static int qman_update_cgr(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
 +{
++	int ret;
 +	unsigned long irqflags;
-+	struct qm_mcr_querycgr cgr_state;
-+	struct qm_mcc_initcgr local_opts;
-+	int ret = 0;
-+	struct qman_cgr *i;
 +	struct qman_portal *p = qman_cgr_get_affine_portal(cgr);
 +
 +	if (!p)
 +		return -EINVAL;
 +
- 	memset(&local_opts, 0, sizeof(struct qm_mcc_initcgr));
- 	spin_lock_irqsave(&p->cgr_lock, irqflags);
- 	list_del(&cgr->node);
-@@ -2528,7 +2538,6 @@ int qman_delete_cgr(struct qman_cgr *cgr)
- 		list_add(&cgr->node, &p->cgr_cbs);
- release_lock:
- 	spin_unlock_irqrestore(&p->cgr_lock, irqflags);
--put_portal:
- 	put_affine_portal();
- 	return ret;
- }
++	spin_lock_irqsave(&p->cgr_lock, irqflags);
++	ret = qm_modify_cgr(cgr, 0, opts);
++	spin_unlock_irqrestore(&p->cgr_lock, irqflags);
++	put_affine_portal();
++	return ret;
++}
++
++struct update_cgr_params {
++	struct qman_cgr *cgr;
++	struct qm_mcc_initcgr *opts;
++	int ret;
++};
++
++static void qman_update_cgr_smp_call(void *p)
++{
++	struct update_cgr_params *params = p;
++
++	params->ret = qman_update_cgr(params->cgr, params->opts);
++}
++
++int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
++{
++	struct update_cgr_params params = {
++		.cgr = cgr,
++		.opts = opts,
++	};
++
++	preempt_disable();
++	if (qman_cgr_cpus[cgr->cgrid] != smp_processor_id())
++		smp_call_function_single(qman_cgr_cpus[cgr->cgrid],
++					 qman_update_cgr_smp_call, &params, true);
++	else
++		params.ret = qman_update_cgr(cgr, opts);
++	preempt_enable();
++	return params.ret;
++}
++EXPORT_SYMBOL(qman_update_cgr_safe);
++
+ /* Cleanup FQs */
+ 
+ static int _qm_mr_consume_and_match_verb(struct qm_portal *p, int v)
+diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+index 59eeba31c192..0d3d6beb7fdb 100644
+--- a/include/soc/fsl/qman.h
++++ b/include/soc/fsl/qman.h
+@@ -1171,6 +1171,15 @@ int qman_delete_cgr(struct qman_cgr *cgr);
+  */
+ void qman_delete_cgr_safe(struct qman_cgr *cgr);
+ 
++/**
++ * qman_update_cgr_safe - Modifies a congestion group object from any CPU
++ * @cgr: the 'cgr' object to modify
++ * @opts: state of the CGR settings
++ *
++ * This will select the proper CPU and modify the CGR settings.
++ */
++int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts);
++
+ /**
+  * qman_query_cgr_congested - Queries CGR's congestion status
+  * @cgr: the 'cgr' object to query
 -- 
 2.35.1.1320.gc452695387.dirty
 
