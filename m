@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 157F157F861
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 04:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD0F857F863
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 04:56:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbiGYCzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 22:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        id S231721AbiGYCz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 22:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiGYCzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 22:55:23 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B29E10FC4;
-        Sun, 24 Jul 2022 19:55:22 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-10d83692d5aso13269422fac.1;
-        Sun, 24 Jul 2022 19:55:22 -0700 (PDT)
+        with ESMTP id S230213AbiGYCz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 22:55:58 -0400
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2437F1115F;
+        Sun, 24 Jul 2022 19:55:58 -0700 (PDT)
+Received: by mail-oo1-xc2d.google.com with SMTP id t11-20020a4ad0ab000000b004356ab59d3bso1946444oor.7;
+        Sun, 24 Jul 2022 19:55:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:subject:from:to:cc:date:content-transfer-encoding
          :user-agent:mime-version;
-        bh=K5w8/+hd7XS5EZe2/8Sgqzv2NIT7331GESZ1DksOBfY=;
-        b=m8GRjJvaMEYA3R1tCOHXFHQtnLN7z/K7r+uefEztXZ+xAsCLI7MsoK9KYsiDpH4evb
-         8JW5f036O9l/8DczunzqYiRkwLPvby1u4c0XFnYLOLGJhkFvoKOMPtvSL6yH7jgcPUn0
-         /XT9Eylyz8DYI32YeiqUV5kWX958zG90R4ArA3HYm27m0ZY5kCl5d6clgMv9yGruc4/b
-         Y0Ua/AUFpVg4xCAewZS9QcQRsI5Dw9uwnIFGMmrY7mXxCrC2GJuTWkNGpAsbHtsdUnP5
-         nFMgLOMinDcDu3Gb2iXBU4bY683gZmnnGlfBCRZqY8zdnk2SVw5nOeHKx2FNZfsKDrjN
-         gatg==
+        bh=h60lCE3oBROb+4ER/R2GZ32rbZ3q2pXMIhvMgRxpRmI=;
+        b=dNJDvYxzBcS6ohJCwoCT2knsDkdmg3QaEfRHV6PaWhoT4EZ7aa2unK+g8w3MoOJVhx
+         1lgKNpa4ZJWc8B2k3jtY/U/hzxM0wfVO4PfyPCaTATlhnANx9IKIojrJY9fRBRaUXF4h
+         A/tAMjlK/+gSRKyichMHiJvdPZs6TSfa8tO5W4pVU1ESjYnyy0pJJMTbDW1BkFPwKhsI
+         6mGgsHL+dfZMxE/O1qST0bugtn4dH1LKeg2emo58Yr1HM4wzbJ2vzf+iLpdwdgas9/bK
+         5RNNWmNfnOEwBZzwuO3KpQvlUAOJ/PyHBfSkB4kvUqZjI89vZMeVEHRZEtxd7e5cGXC6
+         mu/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date
          :content-transfer-encoding:user-agent:mime-version;
-        bh=K5w8/+hd7XS5EZe2/8Sgqzv2NIT7331GESZ1DksOBfY=;
-        b=BJGGnfdrk2uNkCcHkSrwotFYMTwHMv2zPmuyKT7H/IyRylVil3KgAeJYnP0KopOznO
-         h/sp/E7DSUCW5S3mfyXui9lc+fnvxchGJ+0lOfDll0+Jx/jfuKTwv7iRFh7dOVEYV27c
-         rR8OtQ7gbc0ZX946jc7/Q5C0Cy00noGn4iUg3Vch2FmXpsCGzOWqNVGQDWKCwCxVqUQj
-         XF5LcZLu+P3zYZIO1DkPq4FllE47AEoBB+0AWyCtqrUc0LIZOuT8Jk/UmW6P7qP3eb5g
-         B73AlU1PqwgU1gVFUxa6nJ/Ua0KdWfabaO/dCM1A9r3XWi96eC1wfAqAqhaEJ4FWF+gm
-         u7tg==
-X-Gm-Message-State: AJIora/clgDRpNx3vwEvA0TKy1JKheTFzOWMwrFE37FOUlU7CkPzq/bS
-        3+flESeYqSoLupimyIunjSxpiJNgE+DjVw==
-X-Google-Smtp-Source: AGRyM1sWiQjseaMLAxvNgXFgGAlJREI+9Jtmvxi7XdHNEfwTyWqNKvkSdwjtz6ZPRfJpli9cWTHTCw==
-X-Received: by 2002:a05:6871:295:b0:10d:c587:d2c4 with SMTP id i21-20020a056871029500b0010dc587d2c4mr5369170oae.122.1658717721073;
-        Sun, 24 Jul 2022 19:55:21 -0700 (PDT)
+        bh=h60lCE3oBROb+4ER/R2GZ32rbZ3q2pXMIhvMgRxpRmI=;
+        b=sA+9CBEUA5p9IxJZ5Op5A9y2X06Wq7BexECb6Wsdi00AYQwUwmffQf1mLfOeCajTXb
+         4oO7/fa2a/QBFRYJgacrAIx4hUkMU7Q0pIyfrOMyuF1OQASqXQTuQVJ499k8tvsEIrrA
+         pO+xpYEbfAKpOLDFTn3Xplra+onzCpF+2vBgV/eiY2vdoDqI7CnoPp6DcHL5VPDHPE5N
+         l+CWzVExNkD0Fk5yIGrKzqnqfVwNvVcDBXyaRQSoQwJSmyr/PnpPP/9NkGqyOuP1MjW8
+         9W54p3GeuYeo48UnGy9XAyTMEadyK3VX/PnBg4NolTvVWc4P19nnmQhUiogPNw+G0QZC
+         EwMQ==
+X-Gm-Message-State: AJIora/lPnorOXDAHloqLlx9NV1UcNO/vuaVoimJddfqk8MDt6P/tU7d
+        pTMfH1SnAzD4OnsCAbBwHMM=
+X-Google-Smtp-Source: AGRyM1sE1TegqbJnyxiSm34K+RLaoPk5aPRnZ/7oH+IS2bi8zQbvt7GQ0Wow5zUZDKvQCPyQRBLdVA==
+X-Received: by 2002:a4a:b048:0:b0:435:b7b4:7505 with SMTP id g8-20020a4ab048000000b00435b7b47505mr3550365oon.57.1658717757437;
+        Sun, 24 Jul 2022 19:55:57 -0700 (PDT)
 Received: from ?IPv6:2804:14c:71:96e6:64c:ef9b:3df0:9e8d? ([2804:14c:71:96e6:64c:ef9b:3df0:9e8d])
-        by smtp.gmail.com with ESMTPSA id o124-20020acad782000000b0033ac7e40050sm2069069oig.52.2022.07.24.19.55.19
+        by smtp.gmail.com with ESMTPSA id d64-20020a4a5243000000b00431003ca076sm4378392oob.44.2022.07.24.19.55.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 19:55:20 -0700 (PDT)
-Message-ID: <f0fad82e79d7794a73189582538c276a9dbb149c.camel@gmail.com>
-Subject: Patch for 5.10 stable tree "net: usb: ax88179_178a needs
+        Sun, 24 Jul 2022 19:55:57 -0700 (PDT)
+Message-ID: <a539c2eea77b33036f282c96b7684e8af8d588c4.camel@gmail.com>
+Subject: Patch for 5.4 stable tree "net: usb: ax88179_178a needs
  FLAG_SEND_ZLP"
 From:   Jose Alonso <joalonsof@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     stable <stable@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>
-Date:   Sun, 24 Jul 2022 23:55:18 -0300
+Date:   Sun, 24 Jul 2022 23:55:55 -0300
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
@@ -70,7 +70,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For 5.10 stable tree:
+For 5.4 stable tree:
 --------------------
 From 36a15e1cb134c0395261ba1940762703f778438c Mon Sep 17 00:00:00 2001
 From: Jose Alonso <joalonsof@gmail.com>
@@ -120,12 +120,12 @@ Signed-off-by: Jose Alonso <joalonsof@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/usb/ax88179_178a.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 --- a/drivers/net/usb/ax88179_178a.c
 +++ b/drivers/net/usb/ax88179_178a.c
-@@ -1796,7 +1796,7 @@ static const struct driver_info ax88179_info =3D {
+@@ -1690,7 +1690,7 @@ static const struct driver_info ax88179_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
  	.stop =3D ax88179_stop,
@@ -134,7 +134,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1809,7 +1809,7 @@ static const struct driver_info ax88178a_info =3D {
+@@ -1703,7 +1703,7 @@ static const struct driver_info ax88178a_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
  	.stop =3D ax88179_stop,
@@ -143,7 +143,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1822,7 +1822,7 @@ static const struct driver_info cypress_GX3_info =3D =
+@@ -1716,7 +1716,7 @@ static const struct driver_info cypress_GX3_info =3D =
 {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
@@ -153,7 +153,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1835,7 +1835,7 @@ static const struct driver_info dlink_dub1312_info =
+@@ -1729,7 +1729,7 @@ static const struct driver_info dlink_dub1312_info =
 =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
@@ -163,7 +163,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1848,7 +1848,7 @@ static const struct driver_info sitecom_info =3D {
+@@ -1742,7 +1742,7 @@ static const struct driver_info sitecom_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
  	.stop =3D ax88179_stop,
@@ -172,7 +172,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1861,7 +1861,7 @@ static const struct driver_info samsung_info =3D {
+@@ -1755,7 +1755,7 @@ static const struct driver_info samsung_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
  	.stop =3D ax88179_stop,
@@ -181,7 +181,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1874,7 +1874,7 @@ static const struct driver_info lenovo_info =3D {
+@@ -1768,7 +1768,7 @@ static const struct driver_info lenovo_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset =3D ax88179_reset,
  	.stop =3D ax88179_stop,
@@ -190,25 +190,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	.rx_fixup =3D ax88179_rx_fixup,
  	.tx_fixup =3D ax88179_tx_fixup,
  };
-@@ -1887,7 +1887,7 @@ static const struct driver_info belkin_info =3D {
- 	.link_reset =3D ax88179_link_reset,
- 	.reset	=3D ax88179_reset,
- 	.stop	=3D ax88179_stop,
--	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup =3D ax88179_rx_fixup,
- 	.tx_fixup =3D ax88179_tx_fixup,
- };
-@@ -1900,7 +1900,7 @@ static const struct driver_info toshiba_info =3D {
- 	.link_reset =3D ax88179_link_reset,
- 	.reset	=3D ax88179_reset,
- 	.stop =3D ax88179_stop,
--	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup =3D ax88179_rx_fixup,
- 	.tx_fixup =3D ax88179_tx_fixup,
- };
-@@ -1913,7 +1913,7 @@ static const struct driver_info mct_info =3D {
+@@ -1781,7 +1781,7 @@ static const struct driver_info belkin_info =3D {
  	.link_reset =3D ax88179_link_reset,
  	.reset	=3D ax88179_reset,
  	.stop	=3D ax88179_stop,
