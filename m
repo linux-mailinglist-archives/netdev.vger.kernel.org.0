@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1B35805FF
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 22:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D225580605
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 22:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbiGYU4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 16:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        id S233504AbiGYU4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 16:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbiGYU4l (ORCPT
+        with ESMTP id S237162AbiGYU4l (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 16:56:41 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154C522BF2;
-        Mon, 25 Jul 2022 13:56:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E6D22BEC;
+        Mon, 25 Jul 2022 13:56:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658782600; x=1690318600;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BNyLVfo5PrO3cul85/39OZl8ZcDQ0DIDuqEiBoEFH+0=;
-  b=axwYOnFqDB6nQAl6QEIrOO0mHqK7d78yGpBsExn5li0uYvdbeb/+qPVe
-   dYLKS5y1RrCrzw8EGiN6xm7QVgPJToJsVpLpEaju4Zcb66jISWOqPhJ09
-   A2MiwXgx1x83sbW1nwHpM85C76+3MtfDO8xFkQwzSxxrb6Vpekv9Oih+9
-   B4Jf0guJ/0CliUUUX6cfcRYkWK0nxFlA1Th+XIlh5zJV9fvCLUxnvMQ8f
-   /dRucYwIZj3b4FLk3YvAabtwk23lVeTjpXk6hGoQ7aY4be+kMuSo8cYQG
-   CS0hcd1uD6xYw/SoBu6D2nZucnZD0uuBVauS/KO0pChQvAh52UJNxAoG+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="267564333"
+  bh=A96Kbpm3i0SigVaYwn2kdkSZyp9EZD3uB6hgozO9nPQ=;
+  b=DgDzUx97k7VNG41N8xTs5DnGUN3qmoYlAr3BE7HT8yMSrn9+Ox2fxBrx
+   zKtjAjygMsGmaiNM31Axe2rDjLvzNBqR8FEM4uGxW0dzDQtiX+jNr33Tm
+   jszGDF+JKEHJ/yFQf2gfu/MNJFI8KVMHtn56joudC9Lr7fXE8ZjXWVO5c
+   +diuTqF9p20B/qBUBUBSSWLGolUPNZLOLpvJdOg57pjJ2aPksLaWAEL/N
+   HpX8TYIu5bQZ7HOYpynSOpb2sxDNGoyhcbJDlKJAhHE3OMBEunKxOjcTX
+   FkYnSNPwLJ1WQ9IcMob0RoCQbqqKN6cG/e4yBfT6LUmCjlfpzhqBd95Vs
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="267564335"
 X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="267564333"
+   d="scan'208";a="267564335"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 13:56:37 -0700
 X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="689191020"
+   d="scan'208";a="689191024"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.7])
   by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 13:56:37 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -48,9 +48,9 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-doc@vger.kernel.org
-Subject: [net-next v3 3/4] pldmfw: offer option to only validate in image but not update
-Date:   Mon, 25 Jul 2022 13:56:28 -0700
-Message-Id: <20220725205629.3993766-4-jacob.e.keller@intel.com>
+Subject: [net-next v3 4/4] ice: support dry run of a flash update to validate firmware file
+Date:   Mon, 25 Jul 2022 13:56:29 -0700
+Message-Id: <20220725205629.3993766-5-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.37.1.208.ge72d93e88cb2
 In-Reply-To: <20220725205629.3993766-1-jacob.e.keller@intel.com>
 References: <20220725205629.3993766-1-jacob.e.keller@intel.com>
@@ -65,103 +65,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add an "only_validate" bit in the PLDM firmware context configuration to
-allow requesting validation of a PLDM image. Setting this bit causes the
-PLDMFW library to stop after finishing validation of the image. No actual
-update will be performed.
+The devlink core flash update and the PLDMFW library can now handle dry run
+requests. Update the ice driver to support this feature.
+
+Indicate that we support dry runs in the .supported_flash_update_params
+field. If the dry run is requested, notify the PLDM firmware library by
+setting the context bit appropriately. Don't cancel a pending update during
+a dry run.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
 Changes since v2
-* Split PLDMFW changes to their own patch
-* Fix code and comments still referring to dry_run
-* Name the parameter "only_validate" instead of validate for clarity
+* Move the PLDMFW changes to their own patch
 
- Documentation/driver-api/pldmfw/index.rst | 11 +++++++++++
- include/linux/pldmfw.h                    |  5 +++++
- lib/pldmfw/pldmfw.c                       | 12 ++++++++++++
- 3 files changed, 28 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_devlink.c   |  3 ++-
+ drivers/net/ethernet/intel/ice/ice_fw_update.c | 14 ++++++++++----
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/driver-api/pldmfw/index.rst b/Documentation/driver-api/pldmfw/index.rst
-index ad2c33ece30f..1eca98f642eb 100644
---- a/Documentation/driver-api/pldmfw/index.rst
-+++ b/Documentation/driver-api/pldmfw/index.rst
-@@ -51,6 +51,17 @@ unaligned access of multi-byte fields, and to properly convert from Little
- Endian to CPU host format. Additionally the records, descriptors, and
- components are stored in linked lists.
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 3337314a7b35..18214ea33e2d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -467,7 +467,8 @@ ice_devlink_reload_empr_finish(struct devlink *devlink,
+ }
  
-+Validating a PLDM firmware file
-+===============================
-+
-+To simply validate a PLDM firmware file, and verify whether it applies to
-+the device, set the ``only_validate`` flag in the ``pldmfw`` context
-+structure. If this flag is set, the library will parse the file, validating
-+its UUID and checking if any record matches the device. Note that in this
-+mode, the library will *not* issue any ops besides ``match_record``. It will
-+not attempt to send the component table or package data to the device
-+firmware.
-+
- Performing a flash update
- =========================
+ static const struct devlink_ops ice_devlink_ops = {
+-	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
++	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK |
++					 DEVLINK_SUPPORT_FLASH_UPDATE_DRY_RUN,
+ 	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+ 	/* The ice driver currently does not support driver reinit */
+ 	.reload_down = ice_devlink_reload_empr_start,
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+index 3dc5662d62a6..51b352bc26a2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+@@ -1015,15 +1015,21 @@ int ice_devlink_flash_update(struct devlink *devlink,
+ 	else
+ 		priv.context.ops = &ice_fwu_ops_e810;
+ 	priv.context.dev = dev;
++	priv.context.only_validate = params->dry_run;
+ 	priv.extack = extack;
+ 	priv.pf = pf;
+ 	priv.activate_flags = preservation;
  
-diff --git a/include/linux/pldmfw.h b/include/linux/pldmfw.h
-index 0fc831338226..820c0e812989 100644
---- a/include/linux/pldmfw.h
-+++ b/include/linux/pldmfw.h
-@@ -124,10 +124,15 @@ struct pldmfw_ops;
-  * should embed this in a private structure and use container_of to obtain
-  * a pointer to their own data, used to implement the device specific
-  * operations.
-+ *
-+ * @ops: function pointers used as callbacks from the PLDMFW library
-+ * @dev: pointer to the device being updated
-+ * @only_validate: if true, only validate the file, do not perform an update.
-  */
- struct pldmfw {
- 	const struct pldmfw_ops *ops;
- 	struct device *dev;
-+	u8 only_validate : 1;
- };
+-	devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL, 0, 0);
++	if (params->dry_run)
++		devlink_flash_update_status_notify(devlink, "Validating flash binary", NULL, 0, 0);
++	else
++		devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL, 0, 0);
  
- bool pldmfw_op_pci_match_record(struct pldmfw *context, struct pldmfw_record *record);
-diff --git a/lib/pldmfw/pldmfw.c b/lib/pldmfw/pldmfw.c
-index 6e77eb6d8e72..cb4a105487bd 100644
---- a/lib/pldmfw/pldmfw.c
-+++ b/lib/pldmfw/pldmfw.c
-@@ -827,6 +827,10 @@ static int pldm_finalize_update(struct pldmfw_priv *data)
-  * to the device firmware. Extract and write the flash data for each of the
-  * components indicated in the firmware file.
-  *
-+ * If the context->only_validate bit is set, this is a request to stop after
-+ * validating the image, and do not actually attempt to update the device. If
-+ * this is set, stop and exit after we find a valid matching record.
-+ *
-  * Returns: zero on success, or a negative error code on failure.
-  */
- int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw)
-@@ -844,14 +848,22 @@ int pldmfw_flash_image(struct pldmfw *context, const struct firmware *fw)
- 	data->fw = fw;
- 	data->context = context;
+-	err = ice_cancel_pending_update(pf, NULL, extack);
+-	if (err)
+-		return err;
++	if (!params->dry_run) {
++		err = ice_cancel_pending_update(pf, NULL, extack);
++		if (err)
++			return err;
++	}
  
-+	/* Parse the image and make sure it is a valid PLDM firmware binary */
- 	err = pldm_parse_image(data);
- 	if (err)
- 		goto out_release_data;
- 
-+	/* Search for a record matching the device */
- 	err = pldm_find_matching_record(data);
- 	if (err)
- 		goto out_release_data;
- 
-+	/* If this is only to validate the file, do not perform an update */
-+	if (context->only_validate)
-+		goto out_release_data;
-+
-+	/* Perform the device update */
-+
- 	err = pldm_send_package_data(data);
- 	if (err)
- 		goto out_release_data;
+ 	err = ice_acquire_nvm(hw, ICE_RES_WRITE);
+ 	if (err) {
 -- 
 2.35.1.456.ga9c7032d4631
 
