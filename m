@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BEA58075A
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 00:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E989758076F
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 00:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiGYW2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 18:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        id S237264AbiGYWe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 18:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237021AbiGYW2p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 18:28:45 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C2D255AD;
-        Mon, 25 Jul 2022 15:28:44 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id c12so8345512ede.3;
-        Mon, 25 Jul 2022 15:28:44 -0700 (PDT)
+        with ESMTP id S237201AbiGYWe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 18:34:26 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA56D25C76
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id q15-20020a17090311cf00b0016d6719f55eso3295295plh.11
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s5F5bTPmIWsgz/PHUFTiPwn7ArH62vLQlD0Ro1hOzT8=;
-        b=EYVKVy9GR8tIisHmLoKIAUDGdhGTgA+V+O8Z1DMo3OCm/8lIX+f2pBj5Fg2PBSooVF
-         VzXhmo5+5SRh+gS/j/TCjZm9g3wuPPfIJR/lHwPjJL/VEagtHu4Dj8nzh2Yo4SFJGt3q
-         zAUrZThxpZhnqya/xFcQ4ZsSQixW2/qBTznI3inG+qxqjP1qimuGWnkE5ilwBjyN3+/y
-         raASv3WxXlCYKvPPX5tYi45XmgelBIcFRlQ0HkBw+VCjLX907GaOeSAK/FU3cnRM4b9W
-         MPdErn+DQYwABxF4eRq6GZgzE3ovur6veftazbNX8N0e8zULCGOPcg3f8KMdCnw0nJuq
-         TVHA==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=oSpcjGYkcXcod89ksW5flXGeS3wxnAvOkS8CIPgpDQU=;
+        b=Gis5dLtYV581itcud3CuHdoEL5SoJJAr2ZN+c7OaJkHgxIY1MxuyCp/WcQlDJPKeX4
+         RTj26kDWYUT3UDbFlBJJjcSesg7V6cE2gKtifdaQs5yb1Eslcj7+ulsmpLnluT1rm+Vd
+         7F7FS71MQUWsgrMHXLX4tnBsDuCB+EocRFDFBzXUSIFGwv5OSuqYtyjNPSbkEUmkgmka
+         ut2jrk2qf32nT+Ink98zM5sHTYt0VvJgWm11f5Qv18c9RRgXnDNfXyCF1yF0SlFAlGix
+         AlsAMI2zaasnBFJS5XIzC0n+VebT3KGUKkNgImCdPnrTVwYmYOe67RVREbXrZn4FVzJ5
+         H91Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s5F5bTPmIWsgz/PHUFTiPwn7ArH62vLQlD0Ro1hOzT8=;
-        b=sP+54nMD81yYcOMQuGpRqWintABlzDRcMesavl3I5iFmQMlSdzYeadGPvN5mIQqygq
-         aa+2d8s4VD700HGOk5ckr+ulKjj5JbExyeBnGuiPJ0UUNKmDNLMwqHN/I8d3Ui7kWOmL
-         e6KR6t45hI7U6JqErsi5+nuGw4CZAAJHXMoNgRnWfnSZmvNpIvjy4uMYBY1Kd95u3s97
-         lA8BPU6viHRrt22jCAgz1RvPu1T9IFAVy8zk0ABzXaMfjq3XxalAfN2FKwHQoyYBTmZr
-         wBdtwfskFhvd8DB1MaA+Y57rFbZ6zQ77eVVaBFUzZZ1dzpNO8lwmZ82T5cBaGqPV3Wro
-         xdpA==
-X-Gm-Message-State: AJIora/VUpFaMZVQvlXAwXoTTOvhT2csd25Z1943Q4Lz+mW5qAFP7FgZ
-        LBgzfIrrttKIAiEHKskuYvYL1gNuHGSuyH8huP4=
-X-Google-Smtp-Source: AGRyM1tyT5tOI9pZi4I45uufPdEI2vvTki7s66xiQ+IU6rwz2Xy9oHm51p5RXCfq5CLrCpa0+X/RHhv6nZlPcKRiYtg=
-X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id
- ev18-20020a056402541200b004355997ccb5mr14756047edb.167.1658788122613; Mon, 25
- Jul 2022 15:28:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220725135026.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
-In-Reply-To: <20220725135026.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 25 Jul 2022 15:28:31 -0700
-Message-ID: <CABBYNZLWUM4JJjm5H=f7szt_7bgSFcAknk4AcVUmO5iPJzQVcQ@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Always set event mask on suspend
-To:     Abhishek Pandit-Subedi <abhishekpandit@google.com>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=oSpcjGYkcXcod89ksW5flXGeS3wxnAvOkS8CIPgpDQU=;
+        b=TydoMvYgIiDCXfu+/8sj2FA73zg/1Kjy2AaKkmu6fnxEkbvU8CDtrlV8qFQrZBk7QZ
+         hrc+v0Jd9pw8k9HONqNvROltF3OZEw+NCb6y8IIUKqCIukw4eyXnQKjlXSAAjojaK7+o
+         MbSFXZxuOHEHft52QQeVTbTBpAbsJQ83TxWaclclNtVRZvIp//w7eCLDqd6IVmM9Z+gI
+         JR9paBLKms2eR3miMJRH3eFeKrfXiipkIcZkeKu7UAMLHyvhV3Kmi2pP817s4jQhItNv
+         0mHm1rXu0Lafgy0rgPSTZJ0EyY0l+Icj2rVSXBXjqF3GXx9R0LmZB13ZjMdPdRh3T30j
+         y3qw==
+X-Gm-Message-State: AJIora96q7b+q+85npvJrwLRUD0cVFJSDMw1zPlf/OFJXgbPwIKajn2s
+        o5lvIWBjH3sKbRUthmsv+wxlyrZU0N5W99gcAuKqHA==
+X-Google-Smtp-Source: AGRyM1vaCq/FkY5ExJrkEYFhAl6BGKDqJIZqy11HorsmSvgSz23CfntiiixB1F93QFwP5fvvzR6Q5ErIeQcrUVT2ObVbKw==
+X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
+ (user=abhishekpandit job=sendgmr) by 2002:a17:902:ebcb:b0:168:e3ba:4b5a with
+ SMTP id p11-20020a170902ebcb00b00168e3ba4b5amr13929563plg.11.1658788464025;
+ Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 15:34:21 -0700
+Message-Id: <20220725153415.v2.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH v2] Bluetooth: Always set event mask on suspend
+From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
+To:     luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,76 +69,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 
-On Mon, Jul 25, 2022 at 1:50 PM Abhishek Pandit-Subedi
-<abhishekpandit@google.com> wrote:
->
-> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
->
-> When suspending, always set the event mask once disconnects are
-> successful. Otherwise, if wakeup is disallowed, the event mask is not
-> set before suspend continues and can result in an early wakeup.
->
+When suspending, always set the event mask once disconnects are
+successful. Otherwise, if wakeup is disallowed, the event mask is not
+set before suspend continues and can result in an early wakeup.
 
-Please include the commit hash it fixes, also it may be a good idea to
-tag it for stable as well.
+Fixes: 182ee45da083 ("Bluetooth: hci_sync: Rework hci_suspend_notifier")
+Cc: stable@vger.kernel.org
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+---
+Observed on ChromeOS as follows:
 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> ---
-> Observed on ChromeOS as follows:
->
-> < HCI Command: Disconnect (0x01|0x0006) plen 3
->         Handle: 256
->         Reason: Remote Device Terminated due to Power Off (0x15)
-> > HCI Event: Command Status (0x0f) plen 4
->       Disconnect (0x01|0x0006) ncmd 1
->         Status: Success (0x00)
-> @ MGMT Event: Device Disconnected (0x000c) plen 8
->         BR/EDR Address: 04:52:C7:C3:65:B5 (Bose Corporation)
->         Reason: Connection terminated by local host for suspend (0x05)
-> @ MGMT Event: Controller Suspended (0x002d) plen 1
->         Suspend state: Disconnected and not scanning (1)
-> > HCI Event: Disconnect Complete (0x05) plen 4
->         Status: Success (0x00)
->         Handle: 256
->         Reason: Connection Terminated By Local Host (0x16)
->
-> The expectation is that we should see Set Event Mask before completing
-> the suspend so that the `Disconnect Complete` doesn't wake us up.
->
->
->  net/bluetooth/hci_sync.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 148ce629a59f..e6d804b82b67 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -5297,6 +5297,9 @@ int hci_suspend_sync(struct hci_dev *hdev)
->                 return err;
->         }
->
-> +       /* Update event mask so only the allowed event can wakeup the host */
-> +       hci_set_event_mask_sync(hdev);
-> +
->         /* Only configure accept list if disconnect succeeded and wake
->          * isn't being prevented.
->          */
-> @@ -5308,9 +5311,6 @@ int hci_suspend_sync(struct hci_dev *hdev)
->         /* Unpause to take care of updating scanning params */
->         hdev->scanning_paused = false;
->
-> -       /* Update event mask so only the allowed event can wakeup the host */
-> -       hci_set_event_mask_sync(hdev);
-> -
->         /* Enable event filter for paired devices */
->         hci_update_event_filter_sync(hdev);
->
-> --
-> 2.37.1.359.gd136c6c3e2-goog
->
+< HCI Command: Disconnect (0x01|0x0006) plen 3
+        Handle: 256
+        Reason: Remote Device Terminated due to Power Off (0x15)
+> HCI Event: Command Status (0x0f) plen 4
+      Disconnect (0x01|0x0006) ncmd 1
+        Status: Success (0x00)
+@ MGMT Event: Device Disconnected (0x000c) plen 8
+        BR/EDR Address: 04:52:C7:C3:65:B5 (Bose Corporation)
+        Reason: Connection terminated by local host for suspend (0x05)
+@ MGMT Event: Controller Suspended (0x002d) plen 1
+        Suspend state: Disconnected and not scanning (1)
+> HCI Event: Disconnect Complete (0x05) plen 4
+        Status: Success (0x00)
+        Handle: 256
+        Reason: Connection Terminated By Local Host (0x16)
+
+The expectation is that we should see Set Event Mask before completing
+the suspend so that the `Disconnect Complete` doesn't wake us up.
 
 
+Changes in v2:
+- Added fixes tag and cc stable
+
+ net/bluetooth/hci_sync.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 148ce629a59f..e6d804b82b67 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -5297,6 +5297,9 @@ int hci_suspend_sync(struct hci_dev *hdev)
+ 		return err;
+ 	}
+ 
++	/* Update event mask so only the allowed event can wakeup the host */
++	hci_set_event_mask_sync(hdev);
++
+ 	/* Only configure accept list if disconnect succeeded and wake
+ 	 * isn't being prevented.
+ 	 */
+@@ -5308,9 +5311,6 @@ int hci_suspend_sync(struct hci_dev *hdev)
+ 	/* Unpause to take care of updating scanning params */
+ 	hdev->scanning_paused = false;
+ 
+-	/* Update event mask so only the allowed event can wakeup the host */
+-	hci_set_event_mask_sync(hdev);
+-
+ 	/* Enable event filter for paired devices */
+ 	hci_update_event_filter_sync(hdev);
+ 
 -- 
-Luiz Augusto von Dentz
+2.37.1.359.gd136c6c3e2-goog
+
