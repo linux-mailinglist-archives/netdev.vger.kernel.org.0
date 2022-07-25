@@ -2,128 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD07857FEDD
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 14:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B0357FEE0
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 14:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbiGYMUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 08:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        id S234591AbiGYMVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 08:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiGYMUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 08:20:31 -0400
-Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181CD6316
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 05:20:29 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx409.security-mail.net (Postfix) with ESMTP id 540B0323914
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 14:20:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1658751627;
-        bh=GlBuXQiyqqsn18a32BzZ1rOEpXiDEPVNqA8AL9a7lTQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=YY/4s2oNJi/Eh94Ya//H0fj+7eiEjleQIdhSwpNkjdDptI3cXJeKyHtJboRMkt6qv
-         18st1KIX4ohK041nR3IDoxn2Xnmp9jiYixgY+E6p69KL+RytD1/MwYG6QHnhSFIJWZ
-         3+dPJo4cKHRiTExYnJ3BsqFsEEqhmch7TCi7yFn0=
-Received: from fx409 (localhost [127.0.0.1]) by fx409.security-mail.net
- (Postfix) with ESMTP id A68BA3238F9; Mon, 25 Jul 2022 14:20:26 +0200 (CEST)
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
- fx409.security-mail.net (Postfix) with ESMTPS id E4F72323896; Mon, 25 Jul
- 2022 14:20:25 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
- zimbra2.kalray.eu (Postfix) with ESMTPS id C308A27E04ED; Mon, 25 Jul 2022
- 14:20:24 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
- (Postfix) with ESMTP id AB35C27E04EE; Mon, 25 Jul 2022 14:20:24 +0200 (CEST)
-Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
- (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
- 8vqviDVoLMbn; Mon, 25 Jul 2022 14:20:24 +0200 (CEST)
-Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206]) by
- zimbra2.kalray.eu (Postfix) with ESMTPSA id 9884D27E04ED; Mon, 25 Jul 2022
- 14:20:24 +0200 (CEST)
-X-Virus-Scanned: E-securemail, by Secumail
-Secumail-id: <4bd4.62de8a89.5a0c7.0>
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu AB35C27E04EE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
- s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1658751624;
- bh=FvGNLwkue8m7Scn+DYtd5NAx6wYs3ZxV5h3llxl7AcU=;
- h=Date:From:To:Message-ID:MIME-Version;
- b=d9S0iuj2IRT7Pfh3vSpYC2LkSoNZQ9t7WzbiYgBQA4vMW55LPSKMt7WEaPe7NRKgp
- BVIgV9C7wgkZsc5v9cBZEuCXB44GDprVs84a42EoKVsYBhzo3OzMozf0IvzbUZQSbs
- /x1tzukvuaxoIi0FIQhpIosREyuVIBuLVinU8fSE=
-Date:   Mon, 25 Jul 2022 14:20:23 +0200
-From:   Jules Maselbas <jmaselbas@kalray.eu>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: ethtool generate a buffer overflow in strlen
-Message-ID: <20220725122023.GB9874@tellis.lin.mbt.kalray.eu>
-References: <20220722173745.GB13990@tellis.lin.mbt.kalray.eu>
- <20220722142942.48f4332c@kernel.org>
+        with ESMTP id S231852AbiGYMVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 08:21:50 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CA912A97;
+        Mon, 25 Jul 2022 05:21:49 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id l23so20266052ejr.5;
+        Mon, 25 Jul 2022 05:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=G0PeCq1InDOkHOrNdVXPwB00U4H1K4rkSaM7X/6x/yY=;
+        b=Qc0ca/A2Fx6A0ywOqLmxQVOBwGXF22OUlBf9l2K1xV4siHvmXO7NgFNEA+FoO06JvH
+         N1dNju0HGfWElAx7YhsO22pH5/P0gYAmSAxyF/6k7olhAGdGqLT8WdCh/Cl276Ydg9Jl
+         QDOhzRFb3UtkTJvwaaZR5PLrTyyzLNdFdw2pJmgFdfjAAjtxc/qrSBKT5THtEqUvSyeS
+         VR1NKqgYn7wMTtgPRcnfAYKjcIWfAlOjqCnv7ticFaiOZLsQmFneGBJhCgKzrKZynA+w
+         Ugn3YJr2tcntbKq8XQcThtfwG+BZrVPEW5lrDniByuDnu94fVv/cxG5abmvJ+cbmwLi1
+         WVtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G0PeCq1InDOkHOrNdVXPwB00U4H1K4rkSaM7X/6x/yY=;
+        b=RH0zq/JGladV97p27EQv9IXo3pfF0uDV1rd4CQjaJ58ZJTLFEtqR6Tw+3j0PyDWewo
+         tc/dAruyL19Nro6nEk4GWSyLXbKmIR2KKpx6aq88oAgPsNOvqpvhCLazWZ4SVotum9bM
+         o31o0DQFclkuBeXd6q1Esnq/t44ABIVXA6wI5RXPWd1rbXJcGWFTocE3LRd+Uc4BkPbF
+         wKYzbe2+ZjW2Eao9Jo+6PXc95lyAba0fb5Sp1JRLnLl4MBImUZdOCZSpGlEdxnBX4O5b
+         PCHT2S3jPxWcb+ZPl/S+4pVzOEwDjaNtgcVuPPe2c/92BtgWQv9GpYrr/FlZbbXaMAno
+         eToA==
+X-Gm-Message-State: AJIora8wCtqOnbyxrvB9/7akaZ+mWErd0XXnY7yu84pmPtd+98OaSqWE
+        k06tawyn52QcEkTvnyK/pAg=
+X-Google-Smtp-Source: AGRyM1stnfooI8JCARcglDL0Mpaxsa/lEzBkf0Yq4zwLyMiM1tz6HnrbKPjfSZRKe/NLBhziXcQBXQ==
+X-Received: by 2002:a17:907:86ac:b0:72b:87f6:75c2 with SMTP id qa44-20020a17090786ac00b0072b87f675c2mr10140367ejc.667.1658751707293;
+        Mon, 25 Jul 2022 05:21:47 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id kx19-20020a170907775300b0072fc952b57csm2468145ejc.55.2022.07.25.05.21.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 05:21:46 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 15:21:44 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>
+Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
+ CPU/DSA ports
+Message-ID: <20220725122144.bdiup756mgquae3n@skbuf>
+References: <20220714010021.1786616-1-mw@semihalf.com>
+ <20220724233807.bthah6ctjadl35by@skbuf>
+ <CAPv3WKdFNOPRg45TiJuAVuxM0LjEnB0qZH70J1rMenJs7eBJzw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220722142942.48f4332c@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-ALTERMIMEV2_out: done
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAPv3WKdFNOPRg45TiJuAVuxM0LjEnB0qZH70J1rMenJs7eBJzw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 02:29:42PM -0700, Jakub Kicinski wrote:
-> On Fri, 22 Jul 2022 19:37:46 +0200 Jules Maselbas wrote:
-> > There is suspicious lines in the file drivers/net/ethernet/freescale/enetc/enetc_ethtool.c:
-> >    { ENETC_PM0_R1523X, "MAC rx 1523 to max-octet packets" },
-> > and:
-> >    { ENETC_PM0_T1523X, "MAC tx 1523 to max-octet packets" },
-> > 
-> > Where the string length is actually greater than 32 bytes which is more
-> > than the reserved space for the name. This structure is defined as
-> > follow:
-> >     static const struct {
-> >         int reg;
-> >         char name[ETH_GSTRING_LEN];
-> >     } enetc_port_counters[] = { ...
-> > 
-> > In the function enetc_get_strings(), there is a strlcpy call on the
-> > counters names which in turns calls strlen on the src string, causing
-> > an out-of-bound read, at least out-of the string.
-> > 
-> > I am not sure that's what caused the BUG, as I don't really know how
-> > fortify works but I thinks this might only be visible when fortify is
-> > enabled.
-> > 
-> > I am not sure on how to fix this issue, maybe use `char *` instead of
-> > an byte array.
-> 
-> Thanks for the report!
-Thanks for the replie :)
+On Mon, Jul 25, 2022 at 02:18:45AM +0200, Marcin Wojtas wrote:
+> I can of course apply both suggestions, however, I am wondering if I
+> should resend them at all, as Russell's series is still being
+> discussed. IMO it may be worth waiting whether it makes it before the
+> merge window - if not, I can resend this patch after v5.20-rc1,
+> targetting the net branch. What do you think?
 
-> I'd suggest to just delete the RMON stats in the unstructured API
-> in this driver and report them via
->  
-> 	ethtool -S eth0 --groups rmon
-I am not familiar with ethtool: I don't understand what you're
-suggesting. Would you mind giving some hints/links to what RMON stats
-are?
+I just don't want a fix for a known regression to slip through the cracks.
+You can resend whenever you consider, but I believe that if you do so now
+(today or in the following few days), you won't conflict with anybody's work,
+considering that this has been said:
 
-
-> No point trying to figure out a way to make the old API more
-> resilient IMO when we have an alternative.
-I was not thinking of changing the API but simply the structure to use
-a string pointer instead of an array, this will make strings in the
-enetc_port_counters properly nul terminated.
-However the name will still be truncated when copied by the _get_strings
-function... but it will not BUG on strlen.
-
-Best,
-Jules
-
-
-
-
+On Fri, Jul 15, 2022 at 11:57:20PM +0100, Russell King (Oracle) wrote:
+> Well, at this point, I'm just going to give up with this kernel cycle.
+> It seems impossible to get this sorted. It seems impossible to move
+> forward with the conversion of Marvell DSA to phylink_pcs.
