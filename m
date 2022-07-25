@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF83E580156
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E93580158
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235896AbiGYPNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 11:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
+        id S235903AbiGYPNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235892AbiGYPMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:12:31 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130088.outbound.protection.outlook.com [40.107.13.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFE31ADAE;
-        Mon, 25 Jul 2022 08:11:38 -0700 (PDT)
+        with ESMTP id S236095AbiGYPMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:12:49 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130075.outbound.protection.outlook.com [40.107.13.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198321ADB2;
+        Mon, 25 Jul 2022 08:11:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MZGwT/C9h9xLcU+TMkmUwdK0mFUExUlyYh5X6CIchoIn3N4XscbJQupgtOyZPjox7oIxsl84dU4iLS/EA7HAvjdpRrJIeMLb9t4Q/xueAIIOgDwSXHpuXNavDyVaLCmbb6w330fE+DbOHYyYu5yL2rw2TpAV1QxLrJwdr4BUZ9Apy4Ces+I4D21iLCAo2hBWyIZ0Hl1VYOxdIVbHbaDbL+Ap6V7qi1MoJEYkggD7m4wl9y1Tqm1w3zee8k0LsBsp9BasPI63BenCy8EJWIu9tX9rth+7cEtyUByQ6IFqWsCs+lk1U0nVqwcJtkX1QHZ7IME8VncChVl0N8uh6BeY4w==
+ b=FA42Kjjx2jwEVZ/EpXcIaE4+e2oGjPiZ+Xpq4ayo9wtC5m+nt+4DQ40AY7UGNq+OtuSPv2U1jflVUsLUfekNgLOPEBtCsqoPSVzybGwu6P7+Cs2piWDQS9mLTIJ1lHtc3wEEIrR+W7tSDOFbQHYIeGzn2XKig+hkkA3bGQVffze0svTMzReYYO98yvRCcy8Un7+tnwUEYF6UOvFOBrCKX1Sw6JjFlYdFhuI83OnchcHPnucDjLKpoXxlaOoq1E2WZGoyEy6nd9gC1zSjAEgPZEX1XhbiT7XQze0vyCbQp/V78wp2ujGKPD1ApVx7dJVoIfrtbQ7Lw+9YCfOZhn5fTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KGWQbBEdK1su/g5tIpfT1wDYLHV0nYKXcAAYaa2UHiA=;
- b=IFUoxCd1/5Qf9OqwfZpWi/6s8mWDQmSJusmMIL/C7yBfzuf3YgEeXqZy+CHdptEQfny/cWmAeEy/SjT1d323EtD7/o9QOJuxXa6jtyBi3AflkdNRz6/Qg/RgZ6lWesSoByqXu33Ps8utXDQB8D/Ea46hY4QAx4pdXUfa7fcD9Dtrspo3tRAogizDlOVlUS1VDxrlld+FSZ1iXjjsdIxQKWniHFMGRKFhT2q60uXG7sNmqshYh/qqXct0bKTGbsuAurFqyQVeE7Rit5kWTk/RE5MCNRwi03vDUytLRJKy2cNDkTacmtr/RQRH3hh40de9EA4D5DrxJ1I2ksVAelWlpw==
+ bh=BrjFhE6GcDc3NyqacZut6e2mzgJ8sem49dgtwHT5lEE=;
+ b=HsKNr9Uu6Ew9iU3ItD5cKHrYxFwAx8UvDj29ulZKPw3egz3IZIE41F4a50LUd+L798kI2txrswYalwCRmDRpazcl70w9hmfwBdl7mLg0FvTNoTSNE1Yi9Vpa9wvAZCpqnEpOYxPNKStYOfQpxDbe9/h29+DBFbr+gxA8Z3KTVXjiiAsBM1Kmv01j1aopNLTZoqncva6MDJaRB15+ERfpRDYBOqldb7/uHEe1YPvLxcaHnAxVYiqQT705YZLI6vd5HJo/pUk9vvcsBKbjXyR0LghM3rQmZuOKd/ZaZ0IOCEG9yoi/pokSz4QlvhEwtmfY5yu79PngVBM4MeR2AkaK0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KGWQbBEdK1su/g5tIpfT1wDYLHV0nYKXcAAYaa2UHiA=;
- b=ocu6NGEVhhQqnNvIh083J+ddRfbsXh/BfUU4Phy6w212BGA5UKfMD7zcv4umhtDIfqkkhYqZYDKdgU/50XixDhXYYfMkhwsSR/B2LujBCkK/nDj7B+WHiGfqbQWdVRefKv1SrFt8MosO8kTlTgfpVyrI3RyYUhEBOBLQA91ESJ3gCt1F/9a78oCNUSEWrhA+MigjTCFJlzSIqfBkFPNkHHRgP2qpN8SaOr2IExay62VRPn5oNfLnu0jxYZT+mC0XwfeFctaOQb+5c44tJpXVn9C/VVZrDu9IX7iiJO4kXtd2WDUgFsVs0tLwoxPy4A4eRSGfMpjDZ7ZvVySiJoia1w==
+ bh=BrjFhE6GcDc3NyqacZut6e2mzgJ8sem49dgtwHT5lEE=;
+ b=d4DaOvRgBfYEqup8k3JG70F/2WdYScySx0jjriba/IakZxXd0UwsEFiKx4W7uxl0OU+rgx/5GmuSunF1zRhI3I4of9NNYAMIcqjdfAfc4nVA6hieR/cyaiARiIZUR3yyTXYaZRO2qwhgC/9s5/L88Re9Cdu0iAmoq++67xKgrqXjIW2zyB8Yv1GqMw0amMR74eK9CWfNZXpKDeetpQsYv1sjA0ddyxoNRJk1oUhoBgoMOZIlVlyjcFLeGWHKAndyVjDBFGD3qifug3NOvoCz2Mioryc7GebUUlPLqYqNd0p2EfoZY1qhlQ+J9Q1yaca4BjSlN6l9uEd84HRMd2ulxA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB7PR03MB3723.eurprd03.prod.outlook.com (2603:10a6:5:6::24) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.18; Mon, 25 Jul 2022 15:11:27 +0000
+ 15.20.5458.18; Mon, 25 Jul 2022 15:11:29 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:11:27 +0000
+ 15:11:29 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -49,9 +49,9 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Madalin Bucur <madalin.bucur@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH v4 16/25] net: fman: Map the base address once
-Date:   Mon, 25 Jul 2022 11:10:30 -0400
-Message-Id: <20220725151039.2581576-17-sean.anderson@seco.com>
+Subject: [PATCH v4 17/25] net: fman: Pass params directly to mac init
+Date:   Mon, 25 Jul 2022 11:10:31 -0400
+Message-Id: <20220725151039.2581576-18-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220725151039.2581576-1-sean.anderson@seco.com>
 References: <20220725151039.2581576-1-sean.anderson@seco.com>
@@ -62,52 +62,52 @@ X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 473f0ff2-17c3-4e88-2af2-08da6e4ff26f
+X-MS-Office365-Filtering-Correlation-Id: 8466f958-a855-4c35-198e-08da6e4ff386
 X-MS-TrafficTypeDiagnostic: DB7PR03MB3723:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IuktGEkGVslFRTeFBZ1RqJCxY9q+ybeH3DVlZakX2q5bu9FIVFkohxxA8r6WJlmGjb+VHncF3fKXCn5MFfSQYQskOjmtVkyD6GptPi9Y7YV/OPpnagZ9f14tmofER/eAG5rd/ye77WEYcRpTyz4gLkUgutljqfaIP6ukaFqxMIHrjnUVwG7afJljiMXPNheHpb4WPWUW78L3gakVi38f7QszB0SV4Va0SNMxWB13QANjpK722EXX8r5JzXrjCXbcLD7PPPXhPj8FcuBBMTpt3ynQYdxbSSf2ymsO1xMuMOvtWvqTVqcQyv8TGEoJae6vpISrBEqvd/670zaIp9fg6zeX6F2LfDjo26XF/oI0YosRWuSKEhIDZuZqVK0mpmBb+5Yw63mA5vdOABh4DrD2zJQ2R9D3mxo3Na7GMab5sezAh03HTPTFnPTcO+Ymg3z2Ks5cTIaebdw77YW9AzCvCr50C7pYZhgJFQU9ria/7h7o/M3mQ1j8G5QWrm+bq/FDEpK/ngHD7HV+gXxOMXuCEEr3MTk8mHgKHVqVKixO0lG10Dn/n8Ve9vg8vKq+NandXsB2hBC4Xm2nmxFrzU50aEAiwNGYKC4z4tqTRia207idS4GlgSWqYIUmWInbgUGuCajBHkDueCNrL/vJPSk1Jv3dBwY1rtJql41Ol61ujVDp2ywj2iSrh8B2ZJGnvMmDVWygZkD1tpcwWDsbaoX24xzRUF3D9pZdNIPApgMgR2BDJjVj5fyRQvrEjTohf0UfoeNBR4hW85avP7ZRaqINNqSc6DmfNSQ09Ze6czWTIXA=
+X-Microsoft-Antispam-Message-Info: n9jLQ9yBBXWpGn5Huy+qwzL/xJ3DyMv9o1tCAkrDuNtgBEwgOxpkmQeSbLqNyOgi799H6+eKhZkdV3qUhdeOWv+p3EgdXOV/O7m8qmSRsKyhZN6/SNjutGAsjFM3SGvCNcAqcETc75pnbiY36aEuZivULB/sCJQ0yMXjwZCuglSws023nboBXziJvs7XFUJelI4Bp2c8qjK4FdTWf3Ka7wgxNS7Zdb1ZnZgDNfojFnRw6p5Z/xr/r9UXDjK/nBoQ4ZC9LB+KDhkxpvS2Pf6/j+LQkKADJwx12TUtDsKFcOuYaca6e44SAGATkvzesI8dw0SPCYxGPGIsih6kpYuK/dLUqRINtxSBIuerfgGOLG1P/hSpvFt15uoQzZcr3RL1XvaomrhbNVcZHkpl7P6C9EqE4dat1G86tvrgw9dwUZsrmlqw8Cy6WvXyk+r3Gyb7lFtgWB6C9ny7bqy6+g0dhxMpstMp6L2tbNUZByvw8DlKRUjFhk9bc/X7NAfFhV+wtJmHhaTXg+rrUDKMC6zY5N/eIJLp9O+V7dFy7+63Eehpc4fwGtnJCRhbRXNl3bca1kiGz3hnNqBUdzSjCHMq0ZCq45qENrP1L9Ubs+FcOc2CYjPUVX1Q5P0Q78NiKytgWqO6EaNhUY9uq8MT5yRN7aXfyR2GOWC/QzYZSvnrgftB93tbjYDuYvipt4sGVSe6xsAE/++8cZ93JdoB8yVPjwnbHt8hhXiZ0XFCdpSQEPv7e8DdSLZDBImmujwg/CMk0OoWzzcFfhMbTbGaKEtE010V+Q9aQfjOSYWOULzVhvw=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(346002)(39850400004)(376002)(366004)(186003)(6512007)(2616005)(107886003)(66946007)(1076003)(316002)(5660300002)(44832011)(66556008)(4326008)(66476007)(8936002)(6506007)(7416002)(52116002)(54906003)(110136005)(6666004)(26005)(8676002)(6486002)(2906002)(38350700002)(86362001)(83380400001)(38100700002)(36756003)(478600001)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mCYthsRXUb3gaYH0ta76dwp5JkZC5XJxJ7Ppkd93L8dW646xDSI09qtYJ0jM?=
- =?us-ascii?Q?r2kldpcNNH1Z/sJUflkDBnQKMNo7zT62z2YlYlFcdEFryPvH8ywX+EXEsL3C?=
- =?us-ascii?Q?oOfumbBfionyhZEt73rp15OYPHR/dXQxeZ4rVd6MDtGT3gVkMLy+ho1Rkh5p?=
- =?us-ascii?Q?Ltp13GWUrEn3dH7qm4/z0GdME6RvLkOeD0ahniyT9vvESMmQGatSu1TUu8MS?=
- =?us-ascii?Q?JULNou38TA1zPRCCwIGpe5JEB74JU+ipmS4XIpJ4Fi6N+Bi5z+Sgmt1+h/vx?=
- =?us-ascii?Q?vqSUapPk4e/2zRnQHq8kJ9ZOON7RjS9r5GhN4vVNum85Wf/ok1X2nwa9GUw0?=
- =?us-ascii?Q?vTxSnLuDWYMe8cAVuHDhn6a8H/TKeOGVik3Ae5iWlpgz0Z7awEUHflJ1ffh3?=
- =?us-ascii?Q?uoufH5fIoI0ibzaOW2iEbZJ+ZHWF6HMmMvXztgINUgDQYUqtfUAoUCRlGg8k?=
- =?us-ascii?Q?0F1bcXdO+M0+parGxLTU4HDTLcgAI/mRrDhoCLEdlCvf6WC+HGQi9of3DtC3?=
- =?us-ascii?Q?eUgaQxt3KoB2pKjWJ4dnG/p6MalwBZAbI+fVvXj27RWTBoktZpL+XIhisA/M?=
- =?us-ascii?Q?GH+ELts+jtir9F3Qa2ZV/cPPTN6WCdafNKKLEplwWTZdLIwjszupnYZuqBaR?=
- =?us-ascii?Q?uxaFY3uFDPxhyL9oMD/EdHwUhCnPdxl13zdK4KdCcdtYvKhXrTAGA54DxB+A?=
- =?us-ascii?Q?1xVZxNgnFQExL0JoWM1kYQ+SlxIOdXBEOazHDIIpY9+9GC9P8PwPyIoFv+zU?=
- =?us-ascii?Q?3BuZiOuRq16kk7dGqkmN/wPa/DtZx8iGNR3P46GUohEGOgkcnoTpmq63SxId?=
- =?us-ascii?Q?CKKCA6a/QLPOqGRCwHanbypLOJpzbfSzeLx99VlZ6hpC6n6VOGHu3bCxhPJC?=
- =?us-ascii?Q?W7N8SXLT/ir/eeh5I7rtJJh6IgtIWLFyWhaAVd9grn45hW7S2UzPN1yy5S6y?=
- =?us-ascii?Q?QIGvN1ZcXAggXnscf5SJEb6v8e3OC22ZvsIvrOpiJgaIX1I9Wzj2FZxGdGMQ?=
- =?us-ascii?Q?F4KqhZcS5M5OwLu1y7dN4ZCWdq1xof4EkNW++ZBBi3dPxEuFF1fd8r8qPMhP?=
- =?us-ascii?Q?qC1ZUc/ZrOx+jVpEgtuNyIquW7HqA+ustFho0+xCNHs240Aedq6obNS0otxF?=
- =?us-ascii?Q?rXzFbu0Ope83rLPcsIh94vdY16ceJdK4uKWZVg7HxuuXQG4ISZTiHhpuJlvi?=
- =?us-ascii?Q?xbuXpYrVjMRDuS6fO569l5eg0St4WA08txYElq8vjzw3DehnJXBrnvLV4zFw?=
- =?us-ascii?Q?KEG+8xkTZ5NdDShDnFZHkbuNMsjgqXH2+5rkm0hAZtxNOgSFpseuHxT2pzwP?=
- =?us-ascii?Q?DeON/Lx4AeTb/6l/sL0+KSA/woOwHOE8Oy/yRaN1Oa0JYYa0Dr8vRar1LshV?=
- =?us-ascii?Q?ooUfKhux84bFPRNIbCKNcMYrwBS6x8HddGuDXK+orKlCCllhdj5UN7m7Wagi?=
- =?us-ascii?Q?9HJhG1fwOrxGLsxaFa1PCJWcR/nRp9PlIs5dv931FPypAwPzaB2T78eL4qv1?=
- =?us-ascii?Q?1fGtRyxH3K64dOIvXeSLFdupOUubZJeWkzn4WxKvE2iAC7ju0QZqODzm7CRr?=
- =?us-ascii?Q?RNg9oXwmgRSNYNWoXbhJtpgc7EfPBtfGuE20KOw5IU6unWtaHXJ2CboCIeMK?=
- =?us-ascii?Q?kA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KpavI02b7RF33XGNgLOUuYPXrPevmFx0vqRRqRc/EyQZkhPQeBFwrbrD6kiR?=
+ =?us-ascii?Q?e5CQtcCxgsc72OF3lGlDwpPFAL+f5YrW/1l7fknSOdGNna+cYNQdOOaJ2Cm1?=
+ =?us-ascii?Q?B8LRKK7oBA1D8s0si25Mzldax2uzvGj++KEvz+cJyFJCpjXs78bm9bi0zB6v?=
+ =?us-ascii?Q?CF6SuLg1XwoWD5SmqGlW2UXH/OnOldEpbwB75Ev+8BqpGKzmi5dj8D7dYFTS?=
+ =?us-ascii?Q?FFxPxICeGIcbIO9VNEKzKXzEGYB1YmK00kGlsT5Gx/122y9+Itxak6qIfaW3?=
+ =?us-ascii?Q?KBlXFSrWBy7Jxr/tgloVMWzHM+IQMEYKLd4Vk7n/LGTtZxxzEQJKehm3FnhN?=
+ =?us-ascii?Q?5PIoiHdaNwWmqGpkctqzMusoePftjrmNk8hbclAvwG6K1wY9vrgHI6eGL/ad?=
+ =?us-ascii?Q?dHFl00G+g6D+aN4tBHWkgsh8BswX7IF+UJ1lGoxSzN6znOV8D2Dlruoopdmk?=
+ =?us-ascii?Q?Nu29b9CfmVHURwOwEj3CDuKEoxakOi0ZLcXQmW5fpcL7bvLAH+SyOcauhoiH?=
+ =?us-ascii?Q?EeYILise2IK48nb8UtD45RXhp4TXrwViurZpEf2rHdLcNoBcgpt40z0YWcuv?=
+ =?us-ascii?Q?hOaFlq3nr56b0kN2V0tBzvMaK8teclvRdw0Wvx3YEzQzEH6zuhsLH2R701Ed?=
+ =?us-ascii?Q?YiWPlYdSljDvMmBcxicK0+la1rlL/N/tUvrI5Xfs0cyDL6bi7f/25SDd/lK6?=
+ =?us-ascii?Q?y3/6746KOgQJe0KqA4fQpQf49bM2DY07GWy+CyzI8bA3qGg+0/ifnNl4jeqA?=
+ =?us-ascii?Q?6nHcafQETTBv2epjsPXB7ZeAhw3cZpUQBEIsAiBv3ovdw1VHTXn3e1HjkkQn?=
+ =?us-ascii?Q?neurchjLNrMia+Qdtu5pvFkZbamz9FE2PG0vMzasBo504Nzow3s4kzHbWYOv?=
+ =?us-ascii?Q?xwHMGyzvsiX+s8PAnapfxbeKAmRHiAUDnA1pThsCCO/pkvnvxe7/uH1IKlvf?=
+ =?us-ascii?Q?VYKS5W2jTa1/2ZduOBIolXP/D4ql7g0idC0aMMLPlA/NeffC7FDNQNqjnPIc?=
+ =?us-ascii?Q?NfZ4GrQ23X7xrsa+he03q7oSnjWSxzdHIZxV3I6fCx1u1P5ez4oBmNjIxzDZ?=
+ =?us-ascii?Q?OUlVvH+3f7VTTlvQ51t40hDLfbgc14+A7EGCVZsITOCY74GEmnShn/ANWWtC?=
+ =?us-ascii?Q?8hvY0dotLNX6dmm/XfBbQiCdk3P6/+e1SSZ7/CEB6WsgvRFj2go+sVbHW6k2?=
+ =?us-ascii?Q?f/fyyHCuSqjqzaIXP8xzOoDDmPc3ceQBdZgrYwaSXrYxRLTxDnYn0E4jvzlz?=
+ =?us-ascii?Q?Sul9cQAPfd+gT+lP5UJMeNVGlayfKlC2w1K0jrGRs4cYtk2R1PXnrBoW4m48?=
+ =?us-ascii?Q?so/qWMhdQGw6B1ngrMWEy24mkSmCvT3yzbni63BchlD/Q3oheJVieVOHKxUX?=
+ =?us-ascii?Q?EZp/Ubefbly9RS6si3AIWQumR1yMK8Khqn4hmh7ox10ErxjmGUit5IoHd91r?=
+ =?us-ascii?Q?qYfwp4Rm/FVNEJ++NzQHmoVieyzN7l/XmNp8s2Dlsk1VW/7dMNAuDEnSSzKC?=
+ =?us-ascii?Q?2TIILpiagZl0wRn/WKrV+TToOZUeiH6NAeEs0eIXdJC7N8Gi04BFUvZlYKYb?=
+ =?us-ascii?Q?ff5Z/zgAgXpzxGmgO+iuE/ObTbJ21OZXp74LNbO11xvjW3il8PhM2NYFaTM9?=
+ =?us-ascii?Q?qg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 473f0ff2-17c3-4e88-2af2-08da6e4ff26f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8466f958-a855-4c35-198e-08da6e4ff386
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:11:27.6908
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:11:29.4563
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wNl46yS/n7FsI1+2ekvFK9FWhuOL2Ouny0MyFvGk2kKlpZjydw25ghIBfLd2q1EbnCHlGuR3SVKTHigFP5xJ2Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5yGqgK1Ar2Cl6TsffZyJg/tXmlsM/mN19oYbWrPDHrXEqx84qYHQKdHSdjW1Bpm75IjUOrfclACOgoir2oUA2w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3723
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -119,152 +119,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't need to remap the base address from the resource twice (once in
-mac_probe() and again in set_fman_mac_params()). We still need the
-resource to get the end address, but we can use a single function call
-to get both at once.
-
-While we're at it, use platform_get_mem_or_io and devm_request_resource
-to map the resource. I think this is the more "correct" way to do things
-here, since we use the pdev resource, instead of creating a new one.
-It's still a bit tricky, since we need to ensure that the resource is a
-child of the fman region when it gets requested.
+Instead of having the mac init functions call back into the fman core to
+get their params, just pass them directly to the init functions.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 Acked-by: Camelia Groza <camelia.groza@nxp.com>
 ---
 
-Changes in v4:
-- tricy -> tricky
+(no changes since v1)
 
-Changes in v2:
-- Fix warning if sizeof(void *) != sizeof(resource_size_t)
+ .../net/ethernet/freescale/fman/fman_dtsec.c  | 10 ++----
+ .../net/ethernet/freescale/fman/fman_dtsec.h  |  3 +-
+ .../net/ethernet/freescale/fman/fman_memac.c  | 14 +++-----
+ .../net/ethernet/freescale/fman/fman_memac.h  |  3 +-
+ .../net/ethernet/freescale/fman/fman_tgec.c   | 10 ++----
+ .../net/ethernet/freescale/fman/fman_tgec.h   |  3 +-
+ drivers/net/ethernet/freescale/fman/mac.c     | 36 ++++++++-----------
+ drivers/net/ethernet/freescale/fman/mac.h     |  2 --
+ 8 files changed, 32 insertions(+), 49 deletions(-)
 
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  4 +--
- .../ethernet/freescale/dpaa/dpaa_eth_sysfs.c  |  2 +-
- drivers/net/ethernet/freescale/fman/mac.c     | 35 +++++++------------
- drivers/net/ethernet/freescale/fman/mac.h     |  3 +-
- 4 files changed, 17 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index a548598b2e2d..d443d53c4504 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -218,8 +218,8 @@ static int dpaa_netdev_init(struct net_device *net_dev,
- 	net_dev->netdev_ops = dpaa_ops;
- 	mac_addr = priv->mac_dev->addr;
- 
--	net_dev->mem_start = priv->mac_dev->res->start;
--	net_dev->mem_end = priv->mac_dev->res->end;
-+	net_dev->mem_start = (unsigned long)priv->mac_dev->vaddr;
-+	net_dev->mem_end = (unsigned long)priv->mac_dev->vaddr_end;
- 
- 	net_dev->min_mtu = ETH_MIN_MTU;
- 	net_dev->max_mtu = dpaa_get_max_mtu();
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-index 4fee74c024bd..258eb6c8f4c0 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-@@ -18,7 +18,7 @@ static ssize_t dpaa_eth_show_addr(struct device *dev,
- 
- 	if (mac_dev)
- 		return sprintf(buf, "%llx",
--				(unsigned long long)mac_dev->res->start);
-+				(unsigned long long)mac_dev->vaddr);
- 	else
- 		return sprintf(buf, "none");
+diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.c b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
+index c2c4677451a9..9fabb2dfc972 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_dtsec.c
++++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
+@@ -1474,10 +1474,10 @@ static struct fman_mac *dtsec_config(struct fman_mac_params *params)
  }
+ 
+ int dtsec_initialization(struct mac_device *mac_dev,
+-			 struct device_node *mac_node)
++			 struct device_node *mac_node,
++			 struct fman_mac_params *params)
+ {
+ 	int			err;
+-	struct fman_mac_params	params;
+ 	struct fman_mac		*dtsec;
+ 	struct device_node	*phy_node;
+ 
+@@ -1495,11 +1495,7 @@ int dtsec_initialization(struct mac_device *mac_dev,
+ 	mac_dev->enable			= dtsec_enable;
+ 	mac_dev->disable		= dtsec_disable;
+ 
+-	err = set_fman_mac_params(mac_dev, &params);
+-	if (err)
+-		goto _return;
+-
+-	mac_dev->fman_mac = dtsec_config(&params);
++	mac_dev->fman_mac = dtsec_config(params);
+ 	if (!mac_dev->fman_mac) {
+ 		err = -EINVAL;
+ 		goto _return;
+diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.h b/drivers/net/ethernet/freescale/fman/fman_dtsec.h
+index cf3e683c089c..8c72d280c51a 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_dtsec.h
++++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.h
+@@ -11,6 +11,7 @@
+ struct mac_device;
+ 
+ int dtsec_initialization(struct mac_device *mac_dev,
+-			 struct device_node *mac_node);
++			 struct device_node *mac_node,
++			 struct fman_mac_params *params);
+ 
+ #endif /* __DTSEC_H */
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index 5c0b837ebcbc..7121be0f958b 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -1154,11 +1154,11 @@ static struct fman_mac *memac_config(struct fman_mac_params *params)
+ }
+ 
+ int memac_initialization(struct mac_device *mac_dev,
+-			 struct device_node *mac_node)
++			 struct device_node *mac_node,
++			 struct fman_mac_params *params)
+ {
+ 	int			 err;
+ 	struct device_node	*phy_node;
+-	struct fman_mac_params	 params;
+ 	struct fixed_phy_status *fixed_link;
+ 	struct fman_mac		*memac;
+ 
+@@ -1176,14 +1176,10 @@ int memac_initialization(struct mac_device *mac_dev,
+ 	mac_dev->enable			= memac_enable;
+ 	mac_dev->disable		= memac_disable;
+ 
+-	err = set_fman_mac_params(mac_dev, &params);
+-	if (err)
+-		goto _return;
++	if (params->max_speed == SPEED_10000)
++		params->phy_if = PHY_INTERFACE_MODE_XGMII;
+ 
+-	if (params.max_speed == SPEED_10000)
+-		params.phy_if = PHY_INTERFACE_MODE_XGMII;
+-
+-	mac_dev->fman_mac = memac_config(&params);
++	mac_dev->fman_mac = memac_config(params);
+ 	if (!mac_dev->fman_mac) {
+ 		err = -EINVAL;
+ 		goto _return;
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.h b/drivers/net/ethernet/freescale/fman/fman_memac.h
+index a58215a3b1d9..5a3a14f9684f 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.h
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.h
+@@ -14,6 +14,7 @@
+ struct mac_device;
+ 
+ int memac_initialization(struct mac_device *mac_dev,
+-			 struct device_node *mac_node);
++			 struct device_node *mac_node,
++			 struct fman_mac_params *params);
+ 
+ #endif /* __MEMAC_H */
+diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.c b/drivers/net/ethernet/freescale/fman/fman_tgec.c
+index 32ee1674ff2f..f34f89e46a6f 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_tgec.c
++++ b/drivers/net/ethernet/freescale/fman/fman_tgec.c
+@@ -783,10 +783,10 @@ static struct fman_mac *tgec_config(struct fman_mac_params *params)
+ }
+ 
+ int tgec_initialization(struct mac_device *mac_dev,
+-			struct device_node *mac_node)
++			struct device_node *mac_node,
++			struct fman_mac_params *params)
+ {
+ 	int err;
+-	struct fman_mac_params	params;
+ 	struct fman_mac		*tgec;
+ 
+ 	mac_dev->set_promisc		= tgec_set_promiscuous;
+@@ -803,11 +803,7 @@ int tgec_initialization(struct mac_device *mac_dev,
+ 	mac_dev->enable			= tgec_enable;
+ 	mac_dev->disable		= tgec_disable;
+ 
+-	err = set_fman_mac_params(mac_dev, &params);
+-	if (err)
+-		goto _return;
+-
+-	mac_dev->fman_mac = tgec_config(&params);
++	mac_dev->fman_mac = tgec_config(params);
+ 	if (!mac_dev->fman_mac) {
+ 		err = -EINVAL;
+ 		goto _return;
+diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.h b/drivers/net/ethernet/freescale/fman/fman_tgec.h
+index 2e45b9fea352..768b8d165e05 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_tgec.h
++++ b/drivers/net/ethernet/freescale/fman/fman_tgec.h
+@@ -11,6 +11,7 @@
+ struct mac_device;
+ 
+ int tgec_initialization(struct mac_device *mac_dev,
+-			struct device_node *mac_node);
++			struct device_node *mac_node,
++			struct fman_mac_params *params);
+ 
+ #endif /* __TGEC_H */
 diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 7afedd4995c9..62af81c0c942 100644
+index 62af81c0c942..fb04c1f9cd3e 100644
 --- a/drivers/net/ethernet/freescale/fman/mac.c
 +++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -28,7 +28,6 @@ MODULE_LICENSE("Dual BSD/GPL");
- MODULE_DESCRIPTION("FSL FMan MAC API based driver");
+@@ -57,25 +57,6 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
+ 		__func__, ex);
+ }
  
- struct mac_priv_s {
--	void __iomem			*vaddr;
- 	u8				cell_index;
- 	struct fman			*fman;
- 	/* List of multicast addresses */
-@@ -63,12 +62,7 @@ int set_fman_mac_params(struct mac_device *mac_dev,
- {
- 	struct mac_priv_s *priv = mac_dev->priv;
- 
--	params->base_addr = (typeof(params->base_addr))
--		devm_ioremap(mac_dev->dev, mac_dev->res->start,
--			     resource_size(mac_dev->res));
--	if (!params->base_addr)
--		return -ENOMEM;
+-int set_fman_mac_params(struct mac_device *mac_dev,
+-			struct fman_mac_params *params)
+-{
+-	struct mac_priv_s *priv = mac_dev->priv;
 -
-+	params->base_addr = mac_dev->vaddr;
- 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
- 	params->max_speed	= priv->max_speed;
- 	params->phy_if		= mac_dev->phy_if;
-@@ -305,7 +299,7 @@ static int mac_probe(struct platform_device *_of_dev)
+-	params->base_addr = mac_dev->vaddr;
+-	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
+-	params->max_speed	= priv->max_speed;
+-	params->phy_if		= mac_dev->phy_if;
+-	params->basex_if	= false;
+-	params->mac_id		= priv->cell_index;
+-	params->fm		= (void *)priv->fman;
+-	params->exception_cb	= mac_exception;
+-	params->event_cb	= mac_exception;
+-	params->dev_id		= mac_dev;
+-
+-	return 0;
+-}
+-
+ int fman_set_multi(struct net_device *net_dev, struct mac_device *mac_dev)
+ {
+ 	struct mac_priv_s	*priv;
+@@ -294,13 +275,15 @@ MODULE_DEVICE_TABLE(of, mac_match);
+ static int mac_probe(struct platform_device *_of_dev)
+ {
+ 	int			 err, i, nph;
+-	int (*init)(struct mac_device *mac_dev, struct device_node *mac_node);
++	int (*init)(struct mac_device *mac_dev, struct device_node *mac_node,
++		    struct fman_mac_params *params);
+ 	struct device		*dev;
  	struct device_node	*mac_node, *dev_node;
  	struct mac_device	*mac_dev;
  	struct platform_device	*of_dev;
--	struct resource		 res;
-+	struct resource		*res;
+ 	struct resource		*res;
  	struct mac_priv_s	*priv;
++	struct fman_mac_params	 params;
  	u32			 val;
  	u8			fman_id;
-@@ -368,30 +362,25 @@ static int mac_probe(struct platform_device *_of_dev)
- 	of_node_put(dev_node);
+ 	phy_interface_t          phy_if;
+@@ -474,7 +457,18 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	/* Get the rest of the PHY information */
+ 	mac_dev->phy_node = of_parse_phandle(mac_node, "phy-handle", 0);
  
- 	/* Get the address of the memory mapped registers */
--	err = of_address_to_resource(mac_node, 0, &res);
--	if (err < 0) {
--		dev_err(dev, "of_address_to_resource(%pOF) = %d\n",
--			mac_node, err);
--		goto _return_of_node_put;
-+	res = platform_get_mem_or_io(_of_dev, 0);
-+	if (!res) {
-+		dev_err(dev, "could not get registers\n");
-+		return -EINVAL;
- 	}
- 
--	mac_dev->res = __devm_request_region(dev,
--					     fman_get_mem_region(priv->fman),
--					     res.start, resource_size(&res),
--					     "mac");
--	if (!mac_dev->res) {
--		dev_err(dev, "__devm_request_mem_region(mac) failed\n");
--		err = -EBUSY;
-+	err = devm_request_resource(dev, fman_get_mem_region(priv->fman), res);
-+	if (err) {
-+		dev_err_probe(dev, err, "could not request resource\n");
- 		goto _return_of_node_put;
- 	}
- 
--	priv->vaddr = devm_ioremap(dev, mac_dev->res->start,
--				   resource_size(mac_dev->res));
--	if (!priv->vaddr) {
-+	mac_dev->vaddr = devm_ioremap(dev, res->start, resource_size(res));
-+	if (!mac_dev->vaddr) {
- 		dev_err(dev, "devm_ioremap() failed\n");
- 		err = -EIO;
- 		goto _return_of_node_put;
- 	}
-+	mac_dev->vaddr_end = mac_dev->vaddr + resource_size(res);
- 
- 	if (!of_device_is_available(mac_node)) {
- 		err = -ENODEV;
+-	err = init(mac_dev, mac_node);
++	params.base_addr = mac_dev->vaddr;
++	memcpy(&params.addr, mac_dev->addr, sizeof(mac_dev->addr));
++	params.max_speed	= priv->max_speed;
++	params.phy_if		= mac_dev->phy_if;
++	params.basex_if		= false;
++	params.mac_id		= priv->cell_index;
++	params.fm		= (void *)priv->fman;
++	params.exception_cb	= mac_exception;
++	params.event_cb		= mac_exception;
++	params.dev_id		= mac_dev;
++
++	err = init(mac_dev, mac_node, &params);
+ 	if (err < 0) {
+ 		dev_err(dev, "mac_dev->init() = %d\n", err);
+ 		of_node_put(mac_dev->phy_node);
 diff --git a/drivers/net/ethernet/freescale/fman/mac.h b/drivers/net/ethernet/freescale/fman/mac.h
-index da410a7d00c9..7aa71b05bd3e 100644
+index 7aa71b05bd3e..c5fb4d46210f 100644
 --- a/drivers/net/ethernet/freescale/fman/mac.h
 +++ b/drivers/net/ethernet/freescale/fman/mac.h
-@@ -19,8 +19,9 @@ struct fman_mac;
- struct mac_priv_s;
+@@ -72,8 +72,6 @@ int fman_set_mac_active_pause(struct mac_device *mac_dev, bool rx, bool tx);
  
- struct mac_device {
-+	void __iomem		*vaddr;
-+	void __iomem		*vaddr_end;
- 	struct device		*dev;
--	struct resource		*res;
- 	u8			 addr[ETH_ALEN];
- 	struct fman_port	*port[2];
- 	u32			 if_support;
+ void fman_get_pause_cfg(struct mac_device *mac_dev, bool *rx_pause,
+ 			bool *tx_pause);
+-int set_fman_mac_params(struct mac_device *mac_dev,
+-			struct fman_mac_params *params);
+ int fman_set_multi(struct net_device *net_dev, struct mac_device *mac_dev);
+ 
+ #endif	/* __MAC_H */
 -- 
 2.35.1.1320.gc452695387.dirty
 
