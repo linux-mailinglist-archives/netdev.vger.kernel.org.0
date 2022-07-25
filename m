@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0E15801FE
+	by mail.lfdr.de (Postfix) with ESMTP id EA00D5801FF
 	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 17:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235642AbiGYPhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 11:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
+        id S234400AbiGYPhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 11:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbiGYPht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:37:49 -0400
+        with ESMTP id S235462AbiGYPhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 11:37:50 -0400
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2053.outbound.protection.outlook.com [40.107.22.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D033DEF2;
-        Mon, 25 Jul 2022 08:37:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA57CDEF7;
+        Mon, 25 Jul 2022 08:37:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XihnsPN6TURuFr9hYY73kFr2YjfrxcsQVoeUker2NxdhbX5fTVijdLRdyOUUoD4MNErC9ip5OgymNsy9Y9FQcfakT7WVvytghqcbgFZ5517XW032eeczHGqz+J0sQhKht7yVJ454iJ3nMjAiM6Yxgo1w4X831pOaiWfbCqvy1ZZgcMvFdjqQSAg+pFH7fsAxdXTRqfjinOkWnhA120FMXWi7cvgasi3yUoWVYihsoDJOrN3gvIkh+qCfTcC5kG7lQ/jbOWf0aaCyalCOUyJIfPreSY8VFWYxCez7ZSGTlocsb8wM9Tcf0Xgj6MGYS3TeoaMjEFqPfxLePZbeyH8nVQ==
+ b=QGsXuTBcEmtc8sTrBVrj3sWGNI3PjbyyRB+dv4Jk2CiZwcG+b1AJ3u0TRHQdjLcLsObuV+l75AekiKQT46E0OAZs6v7n0lK7i13DL0POt7igGFww6EDZwtnFR22kWRXt+XO37Bwbx/BW5t6//Wcntsa2hWO/f90C0opyaY5Csoe6ZPdHGjioRAd5I/DxlX4RFXLZgl2F59OXeN8l0KMmPFJKHedT3/8wlEclbnmR4PrbFVozmJTP2pnYuC4far5EtUGlwMbNT6dyKPlZ7PmN/9yCJRh9WQFa623B8qehVhwIunBkyncajumUs/z8v4db69A+8+I+iEuwe2n4KsgZeA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u9vXb9is760/g8GXDINzfwto2ZlelCN8/EaE5pLRu2U=;
- b=Y5ClRNxM0F8fWO7D4+rq20Q6E4V2nofDcA55xYjg7X0vK7ZO1xOEoZTyvOITxi1OKXVfKiOcnhlCI8BRvN8hjTng9WtaUmU8YwFzHKZJttyJGhwm7zcXBL/USAbgk45Ucuzxp0v9nrRXJpz5Ywu1ghmej8ajyn57KpA6k/zRZ6FMmpXV6npMVu1XHEYbAZFcLVDT79uP4w/Mag2NvzWgBLN1yYvpDLh68qQoSMWpwKXX10Q4GmrwHcXnCSB/8TAuA7COupawSyn5HOP2gCs+vdIEJMjJT70jDwxcGPNeBfphHgC4ogC5Ulz7AEbBQI3BK+Hu7eDS57tWufE03ttlzQ==
+ bh=zVN3RE4YPj3naLmLY7q0GTywVhKdcECxcsV/A7K37bA=;
+ b=BrWSMp2Na05yQOP1GKY8SBzS5AIL9whL90yuyiFcCaksEbAPqZJK3SA0aMs7ZiDt+L9BL6D+BUpOD+oKHiknZru6RvDK6ZVHmaXj11Z19a4TuhbEJrHEhOmXodVkLaIwnxECfSaN5KJMBt/jGwyKqzDiuBGwP34QwQaMe8kgVZOenj6p7Mjn1VStH3jZ35mt9UK59UXI37Co6vcudagKZVKfsyLBaoyhgOx6dbVcqIYWZMqS6POiVkU19QcoHVnB0QfZ7qSvFbcNCJP3IHStkBZQzrNSrzY0qoaA2lL5zAllPheSmbu8L/OY1rH8Y+ZQCUbuNCw8ctRDh2IgMbefUQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u9vXb9is760/g8GXDINzfwto2ZlelCN8/EaE5pLRu2U=;
- b=bsiQDhPcSmOrlMqvwt/s1sH4d8IoTR1W+4T64GlayAF2bZJFubcCjx1NFnZQJ/XGjbXAQgOCH9fsv7w4KAzJX6mTClJdck8doQTeGzm4ozGJ+IGFM7qFPaw2Uly55z9ERkgopD7yiXj0BsKMbS171Ym+lYL7ZchosIripQNdphM7pX/TCsNbQac7dxB1QbaEOCUNJRxXkul7m+WMEPHJ2Ja5ZFIj+U9nwz0TES9vpnJrSx6S+QK2KZD1tKvcXytpD7hiCB1SNHwIp36RYITDRhf1deg2MakKJSQxabgqG5hfMCJAadss2y1u1L6SYy4yCdxSeqAmNSPFHale1BB0wA==
+ bh=zVN3RE4YPj3naLmLY7q0GTywVhKdcECxcsV/A7K37bA=;
+ b=SWZSpNZKNK2EZGLIg8oB4oa2c6a7slwwzEXsdQ9eOk5mQ6tk96GKqM6qrHrTchcjifBTUnnegahWfBL+o6qqExzNLSCBidqA6ipiuP4Dn6pyKDhBDMbipEeDrQ1s6EaP//BRWKk4KfYo2BuyjoccVMxuHkNJOZA5cPlMJ2ey9lcGU2Y5tM5LgJN372tTMESiqJdPtAlTwOZsd6v7eg8F2lRFgg6N+MDuyMTtLgYS+ZW4vBSzcYk/zb1e4iJbALoNZP19tqpk4e7ha0aQmBK8ThbiOSmJWsVPG7XwRGMTCZnhwv7Vdi/RrAMNLu9L59zNIVRAM97IMKRwkVBd515WXw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB7PR03MB4394.eurprd03.prod.outlook.com (2603:10a6:10:1b::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Mon, 25 Jul
- 2022 15:37:45 +0000
+ 2022 15:37:46 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:37:45 +0000
+ 15:37:46 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -49,13 +49,10 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Camelia Groza <camelia.groza@nxp.com>,
-        Bhadram Varka <vbhadram@nvidia.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [PATCH v3 01/11] net: dpaa: Fix <1G ethernet on LS1046ARDB
-Date:   Mon, 25 Jul 2022 11:37:19 -0400
-Message-Id: <20220725153730.2604096-2-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH v3 02/11] net: phy: Add 1000BASE-KX interface mode
+Date:   Mon, 25 Jul 2022 11:37:20 -0400
+Message-Id: <20220725153730.2604096-3-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220725153730.2604096-1-sean.anderson@seco.com>
 References: <20220725153730.2604096-1-sean.anderson@seco.com>
@@ -66,52 +63,52 @@ X-ClientProxiedBy: BLAPR03CA0137.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7b585de-f0ce-48c6-6261-08da6e539e99
+X-MS-Office365-Filtering-Correlation-Id: 3c9c816e-e990-4967-673b-08da6e539f85
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4394:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nlOEKkObY9Gm2ocWOgprsL1a9QfpFWFh4bHRPnDe8edHE4jv3/FIzYB4hdPJ4FmOopsvwziyX9I4KlXsgTvOCSSd+Gk/4Nvj/8yXmWL946cwIxMPkt5xT/VE9kW1IoKWh+3ScQjfg83FVEsnjdOf9fJBeP+at4aSRQTgiFYMcsCTTpuj1AGa/cVlQJ2oNFfhoRjvjkKN3NlgoRXzhCyPWHI7TPxAwp/Oh3LQkYMLdENatUsbVbL6HjFex7U7tca0K207Ji20FK5LKzEvBnZgg6Ws/qAdJJD8AL9zTBGknUTjEFeXiijb0BrcgDszhI7Ao6oNxFp8brhc7X+bsD4efVt86DGF/6tg26AXb/mUF+LI2VexkwT9GctSe/Jy3ZuZr2zu4CJ92XpeZgDxzBsawhdi0pglPI8Hnau3GVQ8Gd8kyn+ZoBmY5jIwbxbkIEEZwATIKgnT6okoCgTqMt5EpGdLBrmFmjZuIohthl68C7plEYX9vv+D97/xbVaowepJ9TqqpAoZrpDZ9+l9dAgYozrZS0FQfjfBI+IppVhxU9wfpMG5WWBYsv99PXhP6Jm6almnVBjLymAEzlYVMz419kxxk4VPOreviuEUmuCThnfNvlyvOlJkOGxrliuKTSFCzPEiJirri27A68eVgflVm0+D+kcBQj7ZNMWNGKWWKbSx2IGi+Ntv3KdrSEcv0bf/2/s/6kDx6YgKYdtjs65ipAo4wBOZkCF6GeGUJikM+/gmFe/yCkl+VQi2mR/LvYZsNSVAJc2K8MsctYKJghNVa6y8pCF9u4kkF3OiTQH5++8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(396003)(136003)(366004)(39850400004)(346002)(54906003)(110136005)(6486002)(4326008)(6506007)(83380400001)(41300700001)(2906002)(86362001)(478600001)(7416002)(52116002)(36756003)(6666004)(38350700002)(26005)(2616005)(38100700002)(6512007)(66946007)(1076003)(66476007)(8936002)(44832011)(5660300002)(66556008)(186003)(8676002)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zvaKVNZaa6fj4t0i0vcrio8Sdb6jcRj2thNfZtQsJquxne0HHASIfjueLP5J1XYULPFQstngxkXoWIWcypUAedG8lz4XYRkFg1zJMMIIm0gmGg5B70BYIP74mLwG8aEqMIKtVJRgrTrxW7+UkL9u2v08B2GkZYqWB2hDgz3xeGdjeim/GwcHz2/ci+vp0wR9sCFto6xMR63atAwF47oMc7kr0pzCJkdG69sAhinba5sjfTTsovhA+4F95ynETerd2IN/gz+dD4bYUNsyam1pMxIHfbH4aLr8XeWzUy5LPb+ZIDV56zQSo8598XJPmryr15x4NeXh1PNS0wq3zD9EMPPDnC1ZZ5l4RmGXvJamghmV1+CTPEZHIO2SOOeLSYHt7xMrLdFUWn9L0QF+mCW7GAzPwt8rUyC3UUIK45esThDHngCCEgZqVgfC747rKL9dQWyg/8X+iVecztPWT3u8ZBRofMi+FZSj/xZsAq4s6IT/pEJNH+nrh2H506JwW+bXgNrT7EbwCoDVgcifW5zbCj3Qz/aCxXAly/MrpHwPr2EtpEK7YCpulS0J04X3DWWmR6XeBoJVhGJvUAk9Hmiq2pXiFbbByh80+3iU+oL/FQocyXTG9Nei9pAV76hhcx6zmnV7ELqb06nQlxosQjo5G9bRxYO5U2PWnHlx4l5BYVSj4aeppTjDk0RM+k74cXPlAnkkmElSMNpkfMBJHTaouhjW+srtwNYq0vrMdKarjSRFg2KHivdZvrRA5k+CP25Icp0UFBHKsmyFgcf9DYOpfH7qnDIfXnw3BBk6xJVaS1g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(396003)(136003)(366004)(39850400004)(346002)(54906003)(110136005)(6486002)(4326008)(6506007)(41300700001)(2906002)(86362001)(478600001)(7416002)(52116002)(36756003)(6666004)(38350700002)(26005)(2616005)(38100700002)(6512007)(66946007)(1076003)(66476007)(8936002)(44832011)(5660300002)(107886003)(66556008)(186003)(8676002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E56MibVwWOwghkFwfdQhZjdhZwcZz0z5kmmvODRhlz/jpfzYag/bTc7Xn7XS?=
- =?us-ascii?Q?DQrEWv8uBu0T8F1lYHda8mAMH0u9BGW1EJCSJjwHFxFIl1GCVYlwcoSgkWiz?=
- =?us-ascii?Q?oDrypDCx5K0cjTN4li27LCzk/taZz+gfovvV0G4ljLZ+uv9UZOvFII89Uyj3?=
- =?us-ascii?Q?zjckXbTGnHZVNB9kEaKri3Tu1iuinvNO+UxGt/+SxGpD6VMz1NgzD2oajcNo?=
- =?us-ascii?Q?iOEIwkNruatJntbEW6lFxQgE9ht8C6TtzPfabUb/9/BKpyh7odNMwod2dwXI?=
- =?us-ascii?Q?EUAVKPhLsHF6TnueiRYJGG28p/fLfzIj0vA8nsHE3sl9L2XMjn6SFoawh1Q+?=
- =?us-ascii?Q?ammxUDT0p/0K14iv1Y9rzVKMi5N2liB3r+7g93/o8MV2kHJrfs8q+Py6cDh0?=
- =?us-ascii?Q?egYIgVhX+lIennNrqBIIQWMhmtardlzSXUhNgtVOv6e5QgkOebN4vZdgplfm?=
- =?us-ascii?Q?XFe0rEgliaFLim9oylHCqg67E/67wE1wPqd5VXvOHJxvYAD6A8IHC0KIivMl?=
- =?us-ascii?Q?6HaM2FSdv7sj/oej6zyu1xEmt97KEB4YtafAl/fZAGtsqgCu/exc7X4lWCps?=
- =?us-ascii?Q?ROo6AuROPMQ8t1IMHheOVusIeLjo3sccb9riy6Y8f1jIIw2G2II/4lkUQLw0?=
- =?us-ascii?Q?ggqbJF7nUgJEqzSlFYQ+d2tT7gnGxCFBm9ujPEmeUxEjUakV/cp1RGnSJfHz?=
- =?us-ascii?Q?MWg3igzvFD2bxQzbIyn7q6xKwAGuPOvIs+Y8jzZUjMe7Tj9rzsyOsAJlOZXR?=
- =?us-ascii?Q?PTwOGQ+7K+pTQPnz0U4cU10JuS24erZGL3PcFsVXtwMhr9BUB6oN0U0j1nkA?=
- =?us-ascii?Q?OUsjRlAqL79bz69zYYtItzaLnAw1fQiC9eD3cu4bIChDQXZWwowJk5AH6n4K?=
- =?us-ascii?Q?s0q5H8jQwtDt8HzPlRXCMheXlKmfghlR3jiE7cMTgfyCW6c170mTa2/Mfugn?=
- =?us-ascii?Q?zQyb1oPhOA194Ackrrc8fgGdNaHTQhf993PAqywPeNhuwWQPwYkyppYkYeRA?=
- =?us-ascii?Q?phPTKEMHUbeBdNWZFpQU/Sl3XPIQnjjk7QCDHaC4oCM0ETV8V/SWhY0i5/Hq?=
- =?us-ascii?Q?8YkZNeyukowAqoq+xkhEcheoiZ8BwiPz0hrcSgTH/VT5XvJHbd0DeX0GATOW?=
- =?us-ascii?Q?cmmNHusa8wflmmLhy94ksd6ZZhKua6zZMYKpi794peang/wV5viDkKvQ93xk?=
- =?us-ascii?Q?5Q+6O3C+z4mFSu0v9wValB++TntkFEv3zlvUZyFGaHY4g0lF/xQSniYJVdNy?=
- =?us-ascii?Q?j4uYlSJtYz8zmSOhmbUk30qjgzYpD0ByKybL86xhvAo89z92nx1SthjmEBg8?=
- =?us-ascii?Q?mN82VxAn4jVvWwDfHt/EM0irXP2bggshQEc1EiU8efE1bUoNzSSzO7IzhZwo?=
- =?us-ascii?Q?Bx4MS7S758lD2jTRSQDj7GsKaZ1lrnd/h2xmNOCvrh9HOfKYpKjHixIruQ/t?=
- =?us-ascii?Q?bOoFdQMkVFJIbM6/xIOpWFgS7nRc/4MdukBIoT+z3Bvw42VKmwLxQOq7vr2E?=
- =?us-ascii?Q?EdBWgjwo5rWtEE+l4KNZ3ZePRu/7rSc1Lg6AMMW4ZO4HXKvGxK7NrC5Nma01?=
- =?us-ascii?Q?VBvXGuowplGvv/FolMEpmhd2jNXPGJtYdPG976OST/seBrCqknP7ogA8oPHc?=
- =?us-ascii?Q?uA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?niCdWgx5Jhx/ZFUVR1/4AwQDURHUVsD6SNvdd8ZU49iozm7PYXBa50iUYPa0?=
+ =?us-ascii?Q?faQh5c6AANMiJbpLDpZzVQgZHVP/gJtOCzvMjtRaY9i6ba2qgQ7GmKKM+s91?=
+ =?us-ascii?Q?F8stEIg9/EyKjNY4LjR/sL7xPSVZzChsajSQDKRsqUUPNgOpm6PqLuJisdfB?=
+ =?us-ascii?Q?6qL+AP3iSWjxG9Ou6VlqCiotePAAUM3wTfSRjYzfKj8DEROJFfkQkSr4rpor?=
+ =?us-ascii?Q?UddB4raRzbdjfYGI1JMoDpCibJeJKiSGg/lMMvPwRM+eI8ZAr/7W4PxJnG1M?=
+ =?us-ascii?Q?lAF3hJRYmZzHUZSxoi87z0UjR1s9hEX4CvKFU6N79YgyRu+e3xgzxrAO9yuu?=
+ =?us-ascii?Q?ffBKP3vbziC/PVZVArtjsD9EcWpv4OyIX5movqziqsSEyrzWwi+zdgffdSdO?=
+ =?us-ascii?Q?R+HUUcfoMzwqDcxjgr/cTqVtjz5iqemi5Wfbd+4ZD3r5F7YGrjwQA5eh6HOh?=
+ =?us-ascii?Q?ZItDKrSVReoL61Nj71TtQBkEnZ1oG25fiJ0IHNc4rZI7d+wMHagw39KOLiUP?=
+ =?us-ascii?Q?XrZXlmSqInOue4SlQUnpelDF9YmMd8kLoWo4qzsbNkk2k9NoQSUi79oehC5L?=
+ =?us-ascii?Q?1b48PmeJJ+htTu7KMCO18TXEtFmF+hZ+D6RDMiFPoPZznIutsDhaRQsbxUio?=
+ =?us-ascii?Q?UIZQKuQcfQAD8bYKDXIz82KftKJPf9xXgm0K50GoDDkXK8h4wSAkWeHNer+T?=
+ =?us-ascii?Q?Xfq0HpIr01b0Ze9HO9hGJpjVT1As7y5AWC+h3egoudcacxJecQMBqo7U2XUk?=
+ =?us-ascii?Q?yvTOuGz+qTaeNapWOPicluxQEBOK7lg3LQtpyZvkBoKkBsuVNVzKIAP+TGPr?=
+ =?us-ascii?Q?wYHcRTX0Kx0HJgdDcHL7pkjsBNA+WcmvZ405HQyUkUaItn7wI7+PrDzWOkcW?=
+ =?us-ascii?Q?ltxs8vjfjUaeP0+dNRSZENCRi78d+qEe05BSMUqhyKxnx/A6qB5pFy01idJi?=
+ =?us-ascii?Q?jPq+ISZyQCmM2ZFgX92KHxyKXeETryok03x9sCVxVEDpZPqqKDSnqQqc1uST?=
+ =?us-ascii?Q?tLlpmLAj505/G9Jrx8OpWTKyjQq87SOT5ehGMh/+1jE29Z+4n8YxKIoFeQ+6?=
+ =?us-ascii?Q?d3IMw1J7c+zoq3x47uaUblXk8e9NGVKfhGm4UdUBxvp0yoWyAzN5VUhKofFI?=
+ =?us-ascii?Q?Y1TIFvG+zJZJPGOPPM9V38yOf/xL+JN8vEGo8eylzpeNSEew+b+FnVt3EcR8?=
+ =?us-ascii?Q?w1HE/9qcXpzDHEq4FlPSSgC+aWJi2AXmmZ8uN/ok3cVH3PqOfJUCFfA4ZTbr?=
+ =?us-ascii?Q?XK4qOXsqOWvKDDmtaWBhvlQ0D9pTUfICEWfJa33w0vKx8+2IFk1wLxBVV40e?=
+ =?us-ascii?Q?r3F7elDGu0t01h+2yibyk7oo1zDu5imcFI9fUcDv4v5x54GyqTfqkNP204PB?=
+ =?us-ascii?Q?9UKN1PXZB7EcfDY/+T1/3uQVePOVhESux29wPo8uqvwPtFeye+Ur2EpSBs0Q?=
+ =?us-ascii?Q?Frd6zQo5m2N2sGiZj5J4tfs1WdDBrDPr/rfwzOI7+Q9xh9aOHTtEZ6CpAUik?=
+ =?us-ascii?Q?0weOszKrTynzmQWt+A0yfDAeMedDtNeMDQMNpKBNlFObjp1FNiPrSKNH7Bpm?=
+ =?us-ascii?Q?LJe01pa9rbY7y9T4w0B/4Q4/skG3KBwo0yLBdjrbcOskg/uu8i3x3xdZutTb?=
+ =?us-ascii?Q?vw=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7b585de-f0ce-48c6-6261-08da6e539e99
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c9c816e-e990-4967-673b-08da6e539f85
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:37:45.0102
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:37:46.5882
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ezb2nrrt4A9UFVAXidxpFxy7wQhQfW9YkccMOgs8ra4c+xX0eHdUGBzLXNqqYmFthik/iWwIDhquJWJMLlEwgg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JRWdp1C8zPqOwPeHO5ApiBZfwLOHAwf/Nb+gnwlR1A3uvMLxxtXWb+vTAck4na6x/ekzW4aVoEOQK0M8ge4p8Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4394
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,57 +120,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As discussed in commit 73a21fa817f0 ("dpaa_eth: support all modes with
-rate adapting PHYs"), we must add a workaround for Aquantia phys with
-in-tree support in order to keep 1G support working. Update this
-workaround for the AQR113C phy found on revision C LS1046ARDB boards.
+Add 1000BASE-KX interface mode. This 1G backplane ethernet as described in
+clause 70. Clause 73 autonegotiation is mandatory, and only full duplex
+operation is supported.
 
-Fixes: 12cf1b89a668 ("net: phy: Add support for AQR113C EPHY")
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
 ---
-In a previous version of this commit, I referred to an AQR115, however
-on further inspection this appears to be an AQR113C. Confusingly, the
-higher-numbered phys support lower data rates.
 
 (no changes since v1)
 
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/phy/phylink.c | 1 +
+ include/linux/phy.h       | 4 ++++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index f643009cac5f..0a180d17121c 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2916,6 +2916,7 @@ static void dpaa_adjust_link(struct net_device *net_dev)
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 9bd69328dc4d..b08716fe22c1 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -344,6 +344,7 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 		caps |= MAC_1000HD;
+ 		fallthrough;
++	case PHY_INTERFACE_MODE_1000BASEKX:
+ 	case PHY_INTERFACE_MODE_TRGMII:
+ 		caps |= MAC_1000FD;
+ 		break;
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d844..81ce76c3e799 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -115,6 +115,7 @@ extern const int phy_10gbit_features_array[1];
+  * @PHY_INTERFACE_MODE_25GBASER: 25G BaseR
+  * @PHY_INTERFACE_MODE_USXGMII:  Universal Serial 10GE MII
+  * @PHY_INTERFACE_MODE_10GKR: 10GBASE-KR - with Clause 73 AN
++ * @PHY_INTERFACE_MODE_1000BASEKX: 1000Base-KX - with Clause 73 AN
+  * @PHY_INTERFACE_MODE_MAX: Book keeping
+  *
+  * Describes the interface between the MAC and PHY.
+@@ -152,6 +153,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_USXGMII,
+ 	/* 10GBASE-KR - with Clause 73 AN */
+ 	PHY_INTERFACE_MODE_10GKR,
++	PHY_INTERFACE_MODE_1000BASEKX,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
  
- /* The Aquantia PHYs are capable of performing rate adaptation */
- #define PHY_VEND_AQUANTIA	0x03a1b400
-+#define PHY_VEND_AQUANTIA2	0x31c31c00
- 
- static int dpaa_phy_init(struct net_device *net_dev)
- {
-@@ -2923,6 +2924,7 @@ static int dpaa_phy_init(struct net_device *net_dev)
- 	struct mac_device *mac_dev;
- 	struct phy_device *phy_dev;
- 	struct dpaa_priv *priv;
-+	u32 phy_vendor;
- 
- 	priv = netdev_priv(net_dev);
- 	mac_dev = priv->mac_dev;
-@@ -2935,9 +2937,11 @@ static int dpaa_phy_init(struct net_device *net_dev)
- 		return -ENODEV;
- 	}
- 
-+	phy_vendor = phy_dev->drv->phy_id & GENMASK(31, 10);
- 	/* Unless the PHY is capable of rate adaptation */
- 	if (mac_dev->phy_if != PHY_INTERFACE_MODE_XGMII ||
--	    ((phy_dev->drv->phy_id & GENMASK(31, 10)) != PHY_VEND_AQUANTIA)) {
-+	    (phy_vendor != PHY_VEND_AQUANTIA &&
-+	     phy_vendor != PHY_VEND_AQUANTIA2)) {
- 		/* remove any features not supported by the controller */
- 		ethtool_convert_legacy_u32_to_link_mode(mask,
- 							mac_dev->if_support);
+@@ -249,6 +251,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "trgmii";
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 		return "1000base-x";
++	case PHY_INTERFACE_MODE_1000BASEKX:
++		return "1000base-kx";
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+ 		return "2500base-x";
+ 	case PHY_INTERFACE_MODE_5GBASER:
 -- 
 2.35.1.1320.gc452695387.dirty
 
