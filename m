@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F22757FE7E
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 13:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E60057FEA1
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 13:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbiGYLkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 07:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40090 "EHLO
+        id S234780AbiGYLvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 07:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232646AbiGYLkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 07:40:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE93116D;
-        Mon, 25 Jul 2022 04:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3856B60FFF;
-        Mon, 25 Jul 2022 11:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6F30FC341D1;
-        Mon, 25 Jul 2022 11:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658749214;
-        bh=Gha+LpOvmMDP3UdXwDZnCmWtL1yMT7Hzwl/OO+WSrNc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Zu1y3DaeS4tOasBhdXquzlk6gfpaDf+1X6B6fKQYhNORDkcE5pAJnXMM86n4r24iH
-         iF4NPqAWFOYmOerv2RuqNr0yGPT8nGwYltkYo1Auzv/+O8p6255sO7Ut8PFUJP1k8J
-         xTUI8OMH/vO0A0Wi+YdDkM3od0cMS726tbVjTXPwfShNPAcbI8mALyji3UPGvrAkjG
-         A67rZj7YreNFsZf0F4Iq/wouRXy9yAsSuTU5zfjT5AhMsAWO6kNZ/WIVtLQ8XEVwsh
-         5zq0XNj+EDhifxdIK63JxezinDMBmRA41ye//r/2gLlsQEOdr0dSyoIKBOA9zWfjoH
-         nhOfHdQ/rlgcQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56B8DE450B3;
-        Mon, 25 Jul 2022 11:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/3] Add Versal compatible string to Macb driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165874921435.25231.10967093929015786905.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Jul 2022 11:40:14 +0000
-References: <20220722110330.13257-1-harini.katakam@xilinx.com>
-In-Reply-To: <20220722110330.13257-1-harini.katakam@xilinx.com>
-To:     Harini Katakam <harini.katakam@xilinx.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, michal.simek@xilinx.com,
-        harinikatakamlinux@gmail.com, harini.katakam@amd.com,
-        devicetree@vger.kernel.org, radhey.shyam.pandey@xilinx.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230246AbiGYLvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 07:51:08 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1554B6397;
+        Mon, 25 Jul 2022 04:51:06 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id C658EC025; Mon, 25 Jul 2022 13:51:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1658749864; bh=2NwYAYhbN3OZMacClbvfMK5THoNrkzTnbrqS2W8AjRM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F1EkmJq7oYZxD1SPqVkTKFxKzaoBVjIcqhtmGe7FxqT1OeYVmlJu6UDKFhAS8++oo
+         IL7dbF8QVzmCJQI0J1KP3n4xb78VDtmGMVtY5tOlagsjYAqKwo+Yd5/XDaXUU+ABUe
+         LV0ci89kTM3tZchfBw01mF6oopK+1N9G0oq6eUdPlfuP/h7PPoJw4GLCwzr5gI3S7P
+         qUH9jfcWNedEP/hWS80owdax9dsGJNTlpdsvll6kHdiUTdyDUHtSH79ZemOTU22F7p
+         UWLUG4j5cLc81MuR5rYRe6ST3nCVulBLICrmrZaqwtezUUB5Qq4bzEF3DXJcFzCcr2
+         aoVgcgLg3ZjMQ==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 2E204C009;
+        Mon, 25 Jul 2022 13:50:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1658749863; bh=2NwYAYhbN3OZMacClbvfMK5THoNrkzTnbrqS2W8AjRM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=riikSf24Vi05i2t4TF/OsIT9+NyLICgFe3t+4yLNy64GtLjskwd9PET5eKskZCBzq
+         t3BVRH68lt0s79gqe0qhoEjbSwd7Z58pZLikgA12Q8hJopHtHmb3DpvK+m5fxyZsKr
+         dzY8o7EPr8/Sdg0KhyTKVpB0pvp/3Q3bUwhLnX9kwyO3d4Ge64xox68paqN+d3XwEU
+         aDU0TVVHafhILld1a32Huhxs0GGtdYJ8FqS42cq4PeMEHa5CQ+yvNGQIC+AMGOsWIM
+         fw/h/MJpcu4sV5kmE7xIPNdUOz+AzcsXe6TGlag+CeVr8i6xeHyblOTCxW2mZ3TBVH
+         usjc4I1NdOrfg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 69b53e8f;
+        Mon, 25 Jul 2022 11:50:53 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 20:50:38 +0900
+From:   asmadeus@codewreck.org
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, davem@davemloft.net,
+        edumazet@google.com, elver@google.com, ericvh@gmail.com,
+        hdanton@sina.com, k.kahurani@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux_oss@crudebyte.com,
+        lucho@ionkov.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        rientjes@google.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+Message-ID: <Yt6DjrMdIhpQmm7V@codewreck.org>
+References: <000000000000e6917605e48ce2bf@google.com>
+ <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 22 Jul 2022 16:33:27 +0530 you wrote:
-> Add Versal device support.
+Vlastimil Babka wrote on Mon, Jul 25, 2022 at 12:15:24PM +0200:
+> On 7/24/22 15:17, syzbot wrote:
+> > syzbot has bisected this issue to:
+> > 
+> > commit 7302e91f39a81a9c2efcf4bc5749d18128366945
+> > Author: Marco Elver <elver@google.com>
+> > Date:   Fri Jan 14 22:03:58 2022 +0000
+> > 
+> >     mm/slab_common: use WARN() if cache still has objects on destroy
 > 
-> v2:
-> - Sort compatible strings alphabetically in DT bindings.
-> - Reorganize new config and CAPS order to be cleaner.
-> 
-> Harini Katakam (2):
->   net: macb: Sort CAPS flags by bit positions
->   net: macb: Update tsu clk usage in runtime suspend/resume for Versal
-> 
-> [...]
+> Just to state the obvious, bisection pointed to a commit that added the
+> warning, but the reason for the warning would be that p9 is destroying a
+> kmem_cache without freeing all the objects there first, and that would be
+> true even before the commit.
 
-Here is the summary with links:
-  - [v2,1/3] dt-bindings: net: cdns,macb: Add versal compatible string
-    https://git.kernel.org/netdev/net-next/c/f1fa61b04530
-  - [v2,2/3] net: macb: Sort CAPS flags by bit positions
-    https://git.kernel.org/netdev/net-next/c/1d3ded642535
-  - [v2,3/3] net: macb: Update tsu clk usage in runtime suspend/resume for Versal
-    https://git.kernel.org/netdev/net-next/c/8a1c9753f165
+Probably true from the moment that cache/idr was introduced... I've got
+a couple of fixes in next but given syzcaller claims that's the tree it
+was produced on I guess there can be more such leaks.
+(well, the lines it sent in the backtrace yesterday don't match next,
+but I wouldn't count on it)
 
-You are awesome, thank you!
+If someone wants to have a look please feel free, I would bet the
+problem is just that p9_fd_close() doesn't call or does something
+equivalent to p9_conn_cancel() and there just are some requests that
+haven't been sent yet when the mount is closed..
+But I don't have/can/want to take the time to check right now as I
+consider such a leak harmless enough, someone has to be root or
+equivalent to do 9p mounts in most cases.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Dominique
