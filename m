@@ -2,123 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 304B558000C
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 15:44:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADA0580078
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbiGYNnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 09:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S235113AbiGYOKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 10:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbiGYNnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 09:43:52 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E003C14087
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 06:43:50 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id n133so3352159oib.0
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 06:43:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=iyzaoWHc8KWQLTES8JxPtVNX05fcfDKMpVveMPJGYvo=;
-        b=ENQpnru/jvUA3RaavgEgezAQoTz2Yc4xoMn8vkvS/cGyuZI1TFqeX3Vy3M3IwZjFdw
-         YjVuTS73GB/RHojIFn0xSPRAhAjNHMcsPkJYpdEA76RCliIXrkoBDX9dQmYLkrGxB2Fn
-         pQnxAy2x6DvKLZISgrUeD2In8wg2Ywyxp1yu4338QV2dMp0eJj7EJAUsX3RgBDtYCKsn
-         yAUaXG1Cd52IbY2Kb9W+cT4e71/ZJjB56zhRrWn0DzrGu4BdXT+MrKjpGPdgNOXSbKf0
-         TjnGq5mheGXahuoWepzXFPPHR0pelatTAl8GbOHHfZN4gT1PAtENJFjZ2/X/Q6ozimWB
-         kyng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=iyzaoWHc8KWQLTES8JxPtVNX05fcfDKMpVveMPJGYvo=;
-        b=HoPejP8s8+IipzbGNFcyFSxx/bFtofkoVBkZtf7fNME0LaQUvwtkd1vSRSt8Sqgw6v
-         F01LTWwF4F1ikvT5eLE1ej+8Zb74I9ys2hBKXQV6TVGm7wdpQFJfQzYEZziq9BKZ4vZW
-         8S2jutXj9D/mPqLjZrAnieF8rRmW77ugVwX6aa5NVZI56H/ikJEZe/Lon+45wIK9dFjW
-         5CXMNEjcdbI0fq89jvcgZ6EEAGCkxsJV+RMQPKNPw2sRr1hZGK/Z9pHfEtBgwDxg3UN+
-         i+QmGdbJZjmmkE3j07KVj+h8elEctoWIT/MPLqtdmHZr+5I1MCAlJS8WqaqA24I12Igm
-         Mwmg==
-X-Gm-Message-State: AJIora9UorFEZVj5xaC+qI3KxPWX7/FOtGQ5jNmkJ3CzLswvGhg1QezX
-        uUEc9FA3fHD134gutOFI8kXSpwXVPjcE8PFbgj3NDg==
-X-Google-Smtp-Source: AGRyM1v51xKgyMMgL8ANE/+9VT2rP0/i1wDYjlc8L4QYIQzYQt4U56TRiIfdbPWLd7Q2INnCmQYplWWVz2FxkhxNlNk=
-X-Received: by 2002:a05:6808:4d7:b0:33a:9437:32d with SMTP id
- a23-20020a05680804d700b0033a9437032dmr5648691oie.97.1658756630079; Mon, 25
- Jul 2022 06:43:50 -0700 (PDT)
+        with ESMTP id S233550AbiGYOKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:10:18 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBD564E0;
+        Mon, 25 Jul 2022 07:10:17 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PDgQew018555;
+        Mon, 25 Jul 2022 14:10:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=mWmGgDpNjNyWQToF/Hzs2pCm0NpddwKbotywqddBLGU=;
+ b=T7RrLQabVJ5DEPSpddrYnXWbEioQfJEVNYfZ6o97wyy1tVg8M0ijrAr1nm9o3IYXoWo7
+ UggaO54i6TdB3Gou5rhb1i4mkTIepvrnPPtF9No7fFaPyACrB9ph72unUvEJMZeBj/n+
+ FO6V1a8qFVBVQCkuVng+p0QP9lpny+digF6SwSQufo+nIClhBT3lwqm2rkwLTYH5KCOa
+ eV9qDZJ2mT3Js2MC1iDwWiVEw0g10qlAHztvN3GT/gkqEWm6/4DlfPrQdvv9AJF3SqYA
+ mtmuTN2JRSYFwtSwtRPFypG2Osj6nmALyo9G9m824oukXXSnYmshgoT2V4a1mbply9uZ DQ== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hhv9ps3et-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jul 2022 14:10:14 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26PE75Uq031080;
+        Mon, 25 Jul 2022 14:10:11 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04fra.de.ibm.com with ESMTP id 3hg945hw3f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jul 2022 14:10:11 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26PEA7Wg21234018
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Jul 2022 14:10:07 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9758442045;
+        Mon, 25 Jul 2022 14:10:07 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5A49A4203F;
+        Mon, 25 Jul 2022 14:10:04 +0000 (GMT)
+Received: from MBP-von-Wenjia.fritz.box.com (unknown [9.211.136.94])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Jul 2022 14:10:04 +0000 (GMT)
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>
+Subject: [PATCH net-next 0/4] net/smc: updates 2022-7-25
+Date:   Mon, 25 Jul 2022 16:09:56 +0200
+Message-Id: <20220725141000.70347-1-wenjia@linux.ibm.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-References: <20220714010021.1786616-1-mw@semihalf.com> <20220724233807.bthah6ctjadl35by@skbuf>
- <CAPv3WKdFNOPRg45TiJuAVuxM0LjEnB0qZH70J1rMenJs7eBJzw@mail.gmail.com>
- <20220725122144.bdiup756mgquae3n@skbuf> <Yt6bcnnMr7UAUFPk@shell.armlinux.org.uk>
-In-Reply-To: <Yt6bcnnMr7UAUFPk@shell.armlinux.org.uk>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Mon, 25 Jul 2022 15:43:39 +0200
-Message-ID: <CAPv3WKfXi8eLsdnuix=gHWivfMigzaKDJMcD==1RjNOXPkwyqA@mail.gmail.com>
-Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: x4cqknbkTNkf8O4-t3gm4n2LPV2rnEFG
+X-Proofpoint-GUID: x4cqknbkTNkf8O4-t3gm4n2LPV2rnEFG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-25_09,2022-07-25_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ adultscore=0 clxscore=1015 malwarescore=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 impostorscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207250059
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 25 lip 2022 o 15:32 Russell King (Oracle)
-<linux@armlinux.org.uk> napisa=C5=82(a):
->
-> On Mon, Jul 25, 2022 at 03:21:44PM +0300, Vladimir Oltean wrote:
-> > On Mon, Jul 25, 2022 at 02:18:45AM +0200, Marcin Wojtas wrote:
-> > > I can of course apply both suggestions, however, I am wondering if I
-> > > should resend them at all, as Russell's series is still being
-> > > discussed. IMO it may be worth waiting whether it makes it before the
-> > > merge window - if not, I can resend this patch after v5.20-rc1,
-> > > targetting the net branch. What do you think?
-> >
-> > I just don't want a fix for a known regression to slip through the crac=
-ks.
-> > You can resend whenever you consider, but I believe that if you do so n=
-ow
-> > (today or in the following few days), you won't conflict with anybody's=
- work,
-> > considering that this has been said:
-> >
-> > On Fri, Jul 15, 2022 at 11:57:20PM +0100, Russell King (Oracle) wrote:
-> > > Well, at this point, I'm just going to give up with this kernel cycle=
-.
-> > > It seems impossible to get this sorted. It seems impossible to move
-> > > forward with the conversion of Marvell DSA to phylink_pcs.
->
-> That is correct - I'm not intending to submit it, because there's not
-> enough time to sort out the mess that has been created by comments
-> on the approach coming way too late.
->
-> And in fact, I'm now _scared_ to submit a revision of it. I don't want
-> to get into writing lots more replies that take hours to compose only
-> to have responses that require yet more multi-hour sessions to reply
-> to, which only then lead to the cycle repeating with no sign of an end
-> to it. Something is very wrong with email as a communication tool when
-> things get to that point.
->
-> So, I won't be working on this. Someone else can sort the problem.
->
+Hi Dave & Jakub,
 
-Thank you for the heads-up, I understand your concerns. I'll resubmit
-this patch then and rebase my 'fwnode_' v3 onto it.
+please apply the following patches to netdev's net-next tree.
 
-Best regards,
-Marcin
+These patches do some preparation to make ISM available for uses beyond
+SMC-D, and a bunch of cleanups.
+
+Thanks,
+Wenjia
+
+Heiko Carstens (1):
+  net/smc: Eliminate struct smc_ism_position
+
+Stefan Raspl (3):
+  s390/ism: Cleanups
+  net/smc: Pass on DMBE bit mask in IRQ handler
+  net/smc: Enable module load on netlink usage
+
+ drivers/s390/net/ism_drv.c | 15 ++++++++-------
+ include/net/smc.h          |  4 ++--
+ net/smc/af_smc.c           |  1 +
+ net/smc/smc_diag.c         |  1 +
+ net/smc/smc_ism.c          | 19 ++++---------------
+ net/smc/smc_ism.h          | 20 +++++++++++---------
+ net/smc/smc_tx.c           | 10 +++-------
+ 7 files changed, 30 insertions(+), 40 deletions(-)
+
+-- 
+2.35.2
+
