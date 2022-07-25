@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8A857FB5D
+	by mail.lfdr.de (Postfix) with ESMTP id 40FB057FB5C
 	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 10:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbiGYI3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 04:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
+        id S234012AbiGYI3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 04:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233944AbiGYI3q (ORCPT
+        with ESMTP id S233954AbiGYI3q (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 04:29:46 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0298F1401C
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA6713FB7
         for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:29:41 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id b11so19148744eju.10
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:29:40 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z22so12914677edd.6
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 01:29:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y0d6xIdSAlipEBv8dkiXH/59al98EBuG1h6b/37KGT4=;
-        b=f5UFaoNML68nAZTYIyOIuHiLiTqCNkzuNg9Vv5TJaGw/gu6cFFSYduYuwvh0Ff7PHI
-         ++My4gPjBhnVLBYHOYRB/FzVFJhe/JG1ruFgBoiEN/6DetzHwEKbD1PG+9t/GDqq9Uxh
-         cgAKn5sep0Dr13vHOJlUH4be8rg7Ooc2RDcwzuOcJjzMZyslKSK6neiBJw3q/zGv9QQ+
-         qkgqsUHx4vJz31y8NoNnj03rwrWza8bZPbgIcHhVsrZnrjhR1Lj37uk27Dj+Grg4Fs+f
-         E1PHczQt+ftXM5E29Mj8McqH9SNQ4w0I2WXQNjfPcZuQKGPndvtvW+8uAURrWtZEUGtO
-         VtMA==
+        bh=Z1Hg7HjmZ6euqMW03mV+nrZ2JPFeZgjBpGopdXphPeA=;
+        b=o2E38hyMc0CPfjH6nqoUKBdtdVR2gjTj/OvyiGncVMSg0f/VywZ9+aPJuc2n3lqaOQ
+         moN7RQqSK737GsxPOfuvuA9oDptDaj+MpBs5Jnsb9LGAItmfBMkhhosKz8Nw4VT3PtL1
+         3hFgo3rNjspix7xDkX91HN3M5cXNcXQ7QOJ+hNXBa9JrUq1n0JQ8GBdzLcmeFD0mhJWM
+         BXW8hqLY7vVx9o218ksSTHKGOBAa8Ei8aXVs41XX3IifTDAgPSBfyJmng+sxbY4q/BQQ
+         RyzT72ULNi2+/Lm151Ze5VXWCoYXer9pnNi/3qyvCwxjaG0BQtmENk73YSB1RGF7pqn6
+         Rf2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y0d6xIdSAlipEBv8dkiXH/59al98EBuG1h6b/37KGT4=;
-        b=VqANrCJ0zmXkIm+0q4ywawh+DPhzWQK4LSFT0QdyWNnuTPii5BxtZU0uEwTGHMWXdr
-         l3NPnKNXsaRzQcYHXNLa372CuvWxjJF5kv6Z+66FCOmBsU/jugV+svEw9XTTxGz2s/ha
-         wlX3c0khurW9kGtB0vq9ahjvdMqx3u/xv75Wh9g0wGzOp7PbLqivOIYyARdrXEl1drVf
-         H1VZ0Kzd9YyaYVMvWT9TRhXT2J62G+3UFeAS+kXLIwy5wqBcRVggWMh6cErWa/m/Aeby
-         a0pW2HtFI2qVga3qDpEMUcXyljvknJBRsuS4NGIT9zNcAmNcG0Xgv5BsIDBHjdEjn9SG
-         tzOg==
-X-Gm-Message-State: AJIora/P2bsGAcEVk2l/zaWXT3ffUd0RHc2L6Y9NBQF+px2MR7Td6t0A
-        6pcJBE4zHyK93SOxgsQkUjAJYF6MVrX01LI92zU=
-X-Google-Smtp-Source: AGRyM1sIpouOIyAtglLo37omjf6rqdnfMOLTKKmI78dFLNa75bqQr/8n0jq+H+svpPv1/hdYukGUbA==
-X-Received: by 2002:a17:907:2724:b0:72b:526f:6389 with SMTP id d4-20020a170907272400b0072b526f6389mr9294862ejl.289.1658737779275;
-        Mon, 25 Jul 2022 01:29:39 -0700 (PDT)
+        bh=Z1Hg7HjmZ6euqMW03mV+nrZ2JPFeZgjBpGopdXphPeA=;
+        b=ObrpyA/N4NTkm1LiZt5WZg/vim/2+NScR+7cyDGpHLqCCltQnBNJJil1/snj8MAlVg
+         J9GXuLfUPZHumfnmAvw5D+GBsRfWD0WtOqMoKSSmbATbT4vALnmCMiidRlsHQSi6ILUA
+         pS4dG+IrXWYTMhQjguCap20WSIBW1IcRPb5X67PJztvnzqdTEhAJm0eWHjBCwF2ViB7p
+         NRUNDLBlNZoQ82VrpObWQkvPV/GfE8Zktb5YWcfNQMTKHCTiHaPG1LnXol0OM/bW8VBD
+         +r5ymS3KyIfb+RLBzT8UcJxcJy8non3861R8Hlx7GrYHC52AtQVDhv/cRbtySbNqCjQ7
+         93tA==
+X-Gm-Message-State: AJIora84Sji94ep5jWFQw/0WRXzULK19hORGnWac2Q36vErMNZscIo5D
+        tUMagHdtIdBPJsIXGXX//MwTiu5U4MJxeJKd4eY=
+X-Google-Smtp-Source: AGRyM1t62X8x9NETZyssXe9uQnc9mPW6INOQI+YgTXCIq/Labz6xXJpCdfiKQ7hIjtRhI2m3aa3r2g==
+X-Received: by 2002:a05:6402:370:b0:43b:bb2e:a0c6 with SMTP id s16-20020a056402037000b0043bbb2ea0c6mr12077610edw.378.1658737780742;
+        Mon, 25 Jul 2022 01:29:40 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id en27-20020a056402529b00b0043a4de1d421sm6670856edb.84.2022.07.25.01.29.38
+        by smtp.gmail.com with ESMTPSA id u23-20020a1709060b1700b007263481a43fsm5015089ejg.81.2022.07.25.01.29.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 01:29:38 -0700 (PDT)
+        Mon, 25 Jul 2022 01:29:40 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
-Subject: [patch net-next v4 08/12] mlxsw: reg: Add Management DownStream Device Tunneling Register
-Date:   Mon, 25 Jul 2022 10:29:21 +0200
-Message-Id: <20220725082925.366455-9-jiri@resnulli.us>
+Subject: [patch net-next v4 09/12] mlxsw: core_linecards: Expose device PSID over device info
+Date:   Mon, 25 Jul 2022 10:29:22 +0200
+Message-Id: <20220725082925.366455-10-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220725082925.366455-1-jiri@resnulli.us>
 References: <20220725082925.366455-1-jiri@resnulli.us>
@@ -71,123 +71,116 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The MDDT register allows to deliver query and request messages (PRM
-registers, commands) to a DownStream device.
+Use tunneled MGIR to obtain PSID of line card device and extend
+device_info_get() op to fill up the info with that.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Example:
+
+$ devlink dev info auxiliary/mlxsw_core.lc.0
+auxiliary/mlxsw_core.lc.0:
+  versions:
+      fixed:
+        hw.revision 0
+        fw.psid MT_0000000749
+      running:
+        ini.version 4
+        fw 19.2010.1312
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>---
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 90 +++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+v3->v4:
+- added Ido's RVB tag
+v2->v3:
+- fixed s/Used/Use/ typo in patch description
+---
+ Documentation/networking/devlink/mlxsw.rst    |  3 ++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  1 +
+ .../ethernet/mellanox/mlxsw/core_linecards.c  | 31 +++++++++++++++++++
+ 3 files changed, 35 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 76caf06b17d6..e45df09df757 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -11276,6 +11276,95 @@ mlxsw_reg_mbct_unpack(const char *payload, u8 *p_slot_index,
- 		*p_fsm_state = mlxsw_reg_mbct_fsm_state_get(payload);
+diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
+index 65ceed98f94d..433962225bd4 100644
+--- a/Documentation/networking/devlink/mlxsw.rst
++++ b/Documentation/networking/devlink/mlxsw.rst
+@@ -75,6 +75,9 @@ The ``mlxsw`` driver reports the following versions for line card auxiliary devi
+    * - ``ini.version``
+      - running
+      - Version of line card INI loaded
++   * - ``fw.psid``
++     - fixed
++     - Line card device PSID
+    * - ``fw.version``
+      - running
+      - Three digit firmware version of line card device
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index e19860c05e75..a3246082219d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -568,6 +568,7 @@ struct mlxsw_linecard_device_info {
+ 	u16 fw_major;
+ 	u16 fw_minor;
+ 	u16 fw_sub_minor;
++	char psid[MLXSW_REG_MGIR_FW_INFO_PSID_SIZE];
+ };
+ 
+ struct mlxsw_linecard {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+index a9568d72ba1b..771a3e43b8bb 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+@@ -87,6 +87,27 @@ static const char *mlxsw_linecard_type_name(struct mlxsw_linecard *linecard)
+ 	return linecard->name;
  }
  
-+/* MDDT - Management DownStream Device Tunneling Register
-+ * ------------------------------------------------------
-+ * This register allows to deliver query and request messages (PRM registers,
-+ * commands) to a DownStream device.
-+ */
-+#define MLXSW_REG_MDDT_ID 0x9160
-+#define MLXSW_REG_MDDT_LEN 0x110
-+
-+MLXSW_REG_DEFINE(mddt, MLXSW_REG_MDDT_ID, MLXSW_REG_MDDT_LEN);
-+
-+/* reg_mddt_slot_index
-+ * Slot index.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, mddt, slot_index, 0x00, 8, 4);
-+
-+/* reg_mddt_device_index
-+ * Device index.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, mddt, device_index, 0x00, 0, 8);
-+
-+/* reg_mddt_read_size
-+ * Read size in D-Words.
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, mddt, read_size, 0x04, 24, 8);
-+
-+/* reg_mddt_write_size
-+ * Write size in D-Words.
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, mddt, write_size, 0x04, 16, 8);
-+
-+enum mlxsw_reg_mddt_status {
-+	MLXSW_REG_MDDT_STATUS_OK,
-+};
-+
-+/* reg_mddt_status
-+ * Return code of the Downstream Device to the register that was sent.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mddt, status, 0x0C, 24, 8);
-+
-+enum mlxsw_reg_mddt_method {
-+	MLXSW_REG_MDDT_METHOD_QUERY,
-+	MLXSW_REG_MDDT_METHOD_WRITE,
-+};
-+
-+/* reg_mddt_method
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, mddt, method, 0x0C, 22, 2);
-+
-+/* reg_mddt_register_id
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, mddt, register_id, 0x0C, 0, 16);
-+
-+#define MLXSW_REG_MDDT_PAYLOAD_OFFSET 0x0C
-+#define MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN 4
-+
-+static inline char *mlxsw_reg_mddt_inner_payload(char *payload)
++static int mlxsw_linecard_device_psid_get(struct mlxsw_linecard *linecard,
++					  u8 device_index, char *psid)
 +{
-+	return payload + MLXSW_REG_MDDT_PAYLOAD_OFFSET +
-+	       MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN;
++	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
++	char mddt_pl[MLXSW_REG_MDDT_LEN];
++	char *mgir_pl;
++	int err;
++
++	mlxsw_reg_mddt_pack(mddt_pl, linecard->slot_index, device_index,
++			    MLXSW_REG_MDDT_METHOD_QUERY,
++			    MLXSW_REG(mgir), &mgir_pl);
++
++	mlxsw_reg_mgir_pack(mgir_pl);
++	err = mlxsw_reg_query(mlxsw_core, MLXSW_REG(mddt), mddt_pl);
++	if (err)
++		return err;
++
++	mlxsw_reg_mgir_fw_info_psid_memcpy_from(mgir_pl, psid);
++	return 0;
 +}
 +
-+static inline void mlxsw_reg_mddt_pack(char *payload, u8 slot_index,
-+				       u8 device_index,
-+				       enum mlxsw_reg_mddt_method method,
-+				       const struct mlxsw_reg_info *reg,
-+				       char **inner_payload)
-+{
-+	int len = reg->len + MLXSW_REG_MDDT_PRM_REGISTER_HEADER_LEN;
+ static int mlxsw_linecard_device_info_update(struct mlxsw_linecard *linecard)
+ {
+ 	struct mlxsw_core *mlxsw_core = linecard->linecards->mlxsw_core;
+@@ -121,6 +142,12 @@ static int mlxsw_linecard_device_info_update(struct mlxsw_linecard *linecard)
+ 				      linecard->slot_index);
+ 			return 0;
+ 		}
 +
-+	if (WARN_ON(len + MLXSW_REG_MDDT_PAYLOAD_OFFSET > MLXSW_REG_MDDT_LEN))
-+		len = MLXSW_REG_MDDT_LEN - MLXSW_REG_MDDT_PAYLOAD_OFFSET;
++		err = mlxsw_linecard_device_psid_get(linecard, device_index,
++						     info.psid);
++		if (err)
++			return err;
 +
-+	MLXSW_REG_ZERO(mddt, payload);
-+	mlxsw_reg_mddt_slot_index_set(payload, slot_index);
-+	mlxsw_reg_mddt_device_index_set(payload, device_index);
-+	mlxsw_reg_mddt_method_set(payload, method);
-+	mlxsw_reg_mddt_register_id_set(payload, reg->id);
-+	mlxsw_reg_mddt_read_size_set(payload, len / 4);
-+	mlxsw_reg_mddt_write_size_set(payload, len / 4);
-+	*inner_payload = mlxsw_reg_mddt_inner_payload(payload);
-+}
+ 		linecard->device.info = info;
+ 		flashable_found = true;
+ 	} while (msg_seq);
+@@ -293,6 +320,10 @@ int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
+ 	if (linecard->active) {
+ 		struct mlxsw_linecard_device_info *info = &linecard->device.info;
+ 
++		err = devlink_info_version_fixed_put(req,
++						     DEVLINK_INFO_VERSION_GENERIC_FW_PSID,
++						     info->psid);
 +
- /* MDDQ - Management DownStream Device Query Register
-  * --------------------------------------------------
-  * This register allows to query the DownStream device properties. The desired
-@@ -12854,6 +12943,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(mfgd),
- 	MLXSW_REG(mgpir),
- 	MLXSW_REG(mbct),
-+	MLXSW_REG(mddt),
- 	MLXSW_REG(mddq),
- 	MLXSW_REG(mddc),
- 	MLXSW_REG(mfde),
+ 		sprintf(buf, "%u.%u.%u", info->fw_major, info->fw_minor,
+ 			info->fw_sub_minor);
+ 		err = devlink_info_version_running_put(req,
 -- 
 2.35.3
 
