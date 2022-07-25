@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 674CC5800C1
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5075800C5
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:32:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235545AbiGYOcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 10:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S235604AbiGYOcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 10:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235198AbiGYOcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:32:03 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984A5CE32
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 07:32:02 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id b26so16254522wrc.2
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 07:32:02 -0700 (PDT)
+        with ESMTP id S235587AbiGYOcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:32:20 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CD6CE32
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 07:32:19 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id d8so16174722wrp.6
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 07:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/kAJxldbrmsnL1tLj1jaIBuGNwFFERk4HzZ6Ldyv2Nk=;
-        b=jcF7mq68LW3Zo55ZInonw3SxO28xxzG6Nk3iAk2CwXITIkKG3s4Tq70ULDSFzZjOgj
-         uJ93S3Kt4aNbUaPBTYKpx7hb2EcYr/bDw7DFmMaNWeh4IbaF6zGfrmtwB6FOZR2UxJhK
-         dgX+abQ6SP/mGfyo/01yXloU+YzxknvHzDuQoVEKz43k+OZ1vtBkCk8mxdfrtaPYlR8t
-         WM0n9eIlBpB/TPlKJEnEWqDlTfXVTePtD2dNaygBTI6sh3rA2W/RdnpWg20HmtGsGK8X
-         VMEzQAiXZJn84R1g6dzV1oMcMJGFVrgJDKldBa7YK95Eu4BsYAzevzj3Zf9pmagXTE5+
-         YU/A==
+        bh=47FS747aKSVHMGN4K0Lm+GZNrHYtD3EonHeKad+pVjE=;
+        b=fSgPqjRtxxHT6FXrRf8MlvY8Qi4eaGJ63JQtrk+oFtu1zhCDwsItbCbkK5r/2YRYiy
+         6kchFdsQPAtVn4y/PFl3RebWETR4TFFY/QGWG3Tx7ttep+zZG+6ldEnT5Jx6EDmpyxgK
+         S2oPm0nj9d58EPmAhifsJVd5FD6GbOJBBeq81SNTVs3Xs/uVkPR3oTX9SLbegmxnLL9W
+         ehEJGM8v+ONkkIpHspXH71Z8oy7Y5nE52Z094GT0RIiRRbwMRKEnQ9csfNW+cSEVzDv7
+         j4JPUQCVfzC1OYsuam3O1LNFopF+iXCvrrXVtVWW98S80Y/z1MsOcelimPo93rtAKWlC
+         Pvag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=/kAJxldbrmsnL1tLj1jaIBuGNwFFERk4HzZ6Ldyv2Nk=;
-        b=A2HQNZIGTkUUBlmaVI+oUbY4QQj6pSSB+gTif5LPPy0mFGwUa1BWKZhuO+DuxNeqt6
-         QTSmhC0jBoC84zN2vpm0zX4ZqdYvFn0obBiUKfL+NyQG83Xt7mS4HrGXiMex4xka5att
-         qB92ufSkR4cewDkiSs2SpKEw5TofkKhmuVDrUSKDRvPsGUhB8s7JEDg2rNFR6yttf6ZC
-         b78AoxXv+n7SclIzaIR2nDhxGphzs1H/sh/qWUJ4q5D8mzr9ufTgzCj07shusUY5iP36
-         Ik2CI2/Py1H4guW5fXx4Dg1hAx6epeth8Kk+uoq0HxzR6hBXiSWS+XW0+9YKc8eBpPtY
-         I/Sw==
-X-Gm-Message-State: AJIora/UBeX/PmfuXEWgi5JKsNv1sINtuE67K0F/D54iGfPRte/5hsow
-        I+8DSyTNucpBab5RuPpE9e6P
-X-Google-Smtp-Source: AGRyM1tNTpI0TL5iWQyrhR4IyCetObr6eYaKTaSYBV4jG7xGS+smroXkJ9VPt0jBJAuVgTh/KNi2kQ==
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr7695910wry.206.1658759521203;
-        Mon, 25 Jul 2022 07:32:01 -0700 (PDT)
+        bh=47FS747aKSVHMGN4K0Lm+GZNrHYtD3EonHeKad+pVjE=;
+        b=h10s2KwQeN0+KIwu8XWoGgObpqyCKRmfuPgSr+d4vHlwEhK07ZM1z1mdtMlAPZTjg7
+         SXBwqBZSWkAW1fJJKLMZr7NMLSmD8qqdvUBHP3vXwnhgl0HGk69VYK46RTjk98PjutBC
+         VIdZ7E6gez6laTqslEaV5PdGjAFtSKnQKLcvhwKgDtUrtvmOzDEc0PZVGScQMH0wkbn0
+         cwe6PR13vQEDu8QjZcKIv0Qntcoo5lB6Y+jlYmNJZ4MsTkXSYa/9eXwGScCgrG8HzfxR
+         5j516d+Qsq8Uv9PMZNjgNje6qWVZ579KUQZEO+keoAt+oOm4dzphikltZdBeiSD7rTy/
+         CHfw==
+X-Gm-Message-State: AJIora9AfVPLGKk3c12e05JQrRcl+1XI690BIV5u6aUpsQHqqPbm+a0O
+        p7tsT8iFi0neHraZHBz4WnvD
+X-Google-Smtp-Source: AGRyM1t2/6Dsd3sC15jbmdPl45Mnr+p2VKHZz82Ki7Zb9V/jleCF7UjhBMeKZnNyh6zFGyGYjHJL2g==
+X-Received: by 2002:adf:f94b:0:b0:21e:46fe:bcdb with SMTP id q11-20020adff94b000000b0021e46febcdbmr7468891wrr.143.1658759538131;
+        Mon, 25 Jul 2022 07:32:18 -0700 (PDT)
 Received: from Mem (pop.92-184-116-22.mobile.abo.orange.fr. [92.184.116.22])
-        by smtp.gmail.com with ESMTPSA id c4-20020adffb04000000b0021db7b0162esm8172529wrr.105.2022.07.25.07.32.00
+        by smtp.gmail.com with ESMTPSA id o15-20020a05600c510f00b003a30fbde91dsm20469620wms.20.2022.07.25.07.32.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 07:32:00 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 16:31:58 +0200
+        Mon, 25 Jul 2022 07:32:17 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 16:32:15 +0200
 From:   Paul Chaignon <paul@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -58,9 +58,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Kaixi Fan <fankaixi.li@bytedance.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf-next v3 2/5] vxlan: Use ip_tunnel_key flow flags in route
- lookups
-Message-ID: <1ffc95c3d60182fd5ec0cf6602083f8f68afe98f.1658759380.git.paul@isovalent.com>
+Subject: [PATCH bpf-next v3 3/5] geneve: Use ip_tunnel_key flow flags in
+ route lookups
+Message-ID: <fcc2e0eea01e8ea465a180126366ec20596ba530.1658759380.git.paul@isovalent.com>
 References: <cover.1658759380.git.paul@isovalent.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -77,72 +77,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Use the new ip_tunnel_key field with the flow flags in the IPv4 route
 lookups for the encapsulated packet. This will be used by the
-bpf_skb_set_tunnel_key helper in a subsequent commit.
+bpf_skb_set_tunnel_key helper in the subsequent commit.
 
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 Signed-off-by: Paul Chaignon <paul@isovalent.com>
 ---
- drivers/net/vxlan/vxlan_core.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/geneve.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index 8b0710b576c2..90811ab851fd 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -2243,7 +2243,7 @@ static struct rtable *vxlan_get_route(struct vxlan_dev *vxlan, struct net_device
- 				      struct vxlan_sock *sock4,
- 				      struct sk_buff *skb, int oif, u8 tos,
- 				      __be32 daddr, __be32 *saddr, __be16 dport, __be16 sport,
--				      struct dst_cache *dst_cache,
-+				      __u8 flow_flags, struct dst_cache *dst_cache,
- 				      const struct ip_tunnel_info *info)
- {
- 	bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
-@@ -2270,6 +2270,7 @@ static struct rtable *vxlan_get_route(struct vxlan_dev *vxlan, struct net_device
- 	fl4.saddr = *saddr;
- 	fl4.fl4_dport = dport;
- 	fl4.fl4_sport = sport;
-+	fl4.flowi4_flags = flow_flags;
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 2495a5719e1c..018d365f9deb 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -815,6 +815,7 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 	fl4->saddr = info->key.u.ipv4.src;
+ 	fl4->fl4_dport = dport;
+ 	fl4->fl4_sport = sport;
++	fl4->flowi4_flags = info->key.flow_flags;
  
- 	rt = ip_route_output_key(vxlan->net, &fl4);
- 	if (!IS_ERR(rt)) {
-@@ -2459,7 +2460,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 	unsigned int pkt_len = skb->len;
- 	__be16 src_port = 0, dst_port;
- 	struct dst_entry *ndst = NULL;
--	__u8 tos, ttl;
-+	__u8 tos, ttl, flow_flags = 0;
- 	int ifindex;
- 	int err;
- 	u32 flags = vxlan->cfg.flags;
-@@ -2525,6 +2526,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		}
- 		dst = &remote_ip;
- 		dst_port = info->key.tp_dst ? : vxlan->cfg.dst_port;
-+		flow_flags = info->key.flow_flags;
- 		vni = tunnel_id_to_key32(info->key.tun_id);
- 		ifindex = 0;
- 		dst_cache = &info->dst_cache;
-@@ -2555,7 +2557,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		rt = vxlan_get_route(vxlan, dev, sock4, skb, ifindex, tos,
- 				     dst->sin.sin_addr.s_addr,
- 				     &local_ip.sin.sin_addr.s_addr,
--				     dst_port, src_port,
-+				     dst_port, src_port, flow_flags,
- 				     dst_cache, info);
- 		if (IS_ERR(rt)) {
- 			err = PTR_ERR(rt);
-@@ -3061,7 +3063,8 @@ static int vxlan_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
- 		rt = vxlan_get_route(vxlan, dev, sock4, skb, 0, info->key.tos,
- 				     info->key.u.ipv4.dst,
- 				     &info->key.u.ipv4.src, dport, sport,
--				     &info->dst_cache, info);
-+				     info->key.flow_flags, &info->dst_cache,
-+				     info);
- 		if (IS_ERR(rt))
- 			return PTR_ERR(rt);
- 		ip_rt_put(rt);
+ 	tos = info->key.tos;
+ 	if ((tos == 1) && !geneve->cfg.collect_md) {
 -- 
 2.25.1
 
