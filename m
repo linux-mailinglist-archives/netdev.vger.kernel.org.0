@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 818CE58007E
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54799580080
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 16:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235352AbiGYOK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 10:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
+        id S235417AbiGYOKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 10:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235346AbiGYOK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:10:27 -0400
+        with ESMTP id S235381AbiGYOKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 10:10:31 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1B91261C;
-        Mon, 25 Jul 2022 07:10:26 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PDkxnc005257;
-        Mon, 25 Jul 2022 14:10:24 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAACDF7F;
+        Mon, 25 Jul 2022 07:10:29 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PDktmg024174;
+        Mon, 25 Jul 2022 14:10:27 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=0CA5Em3e4TuuRQ8BiobOvhV7DP6kl3US2Hl7ipdNGDI=;
- b=dy09Qid3kdzuCi9c05OFEBhvrk3E4jyCiFeEH2/E60/dBa0sogf0TP5XTHqm9DbNDhdv
- BxvETpFK7WnRM1bUQr6GivUH0fE9C7s0cjlu8uezS66Ct6xE6HVw11jAPG3IWkUNIkIB
- XBHhCe6q10aIT685AAAXuo2DtHthkuSK36y770C7ip3JLvjWecK+8PjExjsqgGYjlcrl
- zzHKBTccGEsnvBWL6srj6cUvsPM1Kn//DuL4ZyLlVhFOb6jekwNDSONtCFP6dJacy1lU
- n+2dW/JSkdpOVpdYbcslxValB5C0KXhTV/Khk66pjwOp0+J49aVPjXrOeFu/XA3I3xMD Hw== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hhvc48y4h-1
+ bh=Z2DvxH+feuTeO10KiHwLusFC9eMJvag5kw4qQmoU2dY=;
+ b=nRd9yZ+0y3ojlSMTnKlMiBFC105zen864yBMOdeihFLAlXFeYhuA6y3Tt431WjSfeAYr
+ x6a3HyS8AO7WwGBKQkogX5LdJ8aXo5MMnbzP6d+ymxk4ZVldWbIMZVgFVgq/aY+sO1uu
+ 2dcWyo8Hm6mdtB/WPlvxuFX2RIj+JuL2J2MPJUsf7oICRs2ZxxiMDKePgCIkMdPAKXWi
+ SwDOGP4hHNmpfH2t2/N4cQ/Y6H7RXI4k4bXA8dInnmftTbzXY4ea1AHGd8hHaJK1NabM
+ LTkA/Nfcuk7+p5Px8/wPSGDNmAGcYtM98mL4jdi+pQhLUmTXvCzV/M70K0VXgNpKKYXn rg== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hhvc391em-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 14:10:23 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26PE73YK005757;
-        Mon, 25 Jul 2022 14:10:21 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3hg97taj52-1
+        Mon, 25 Jul 2022 14:10:27 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26PE5vQl023064;
+        Mon, 25 Jul 2022 14:10:25 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06fra.de.ibm.com with ESMTP id 3hg98fh0ey-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 14:10:21 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26PEAVvN25559382
+        Mon, 25 Jul 2022 14:10:24 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26PEALOE20971904
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Jul 2022 14:10:31 GMT
+        Mon, 25 Jul 2022 14:10:21 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 40CF84203F;
+        by IMSVA (Postfix) with ESMTP id A7D5142042;
+        Mon, 25 Jul 2022 14:10:21 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C05AE4203F;
         Mon, 25 Jul 2022 14:10:18 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 582E242045;
-        Mon, 25 Jul 2022 14:10:15 +0000 (GMT)
 Received: from MBP-von-Wenjia.fritz.box.com (unknown [9.211.136.94])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 14:10:15 +0000 (GMT)
+        Mon, 25 Jul 2022 14:10:18 +0000 (GMT)
 From:   Wenjia Zhang <wenjia@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -59,24 +59,24 @@ Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Alexandra Winter <wintera@linux.ibm.com>,
         Stefan Raspl <raspl@linux.ibm.com>,
         Wenjia Zhang <wenjia@linux.ibm.com>
-Subject: [PATCH net-next 3/4] net/smc: Pass on DMBE bit mask in IRQ handler
-Date:   Mon, 25 Jul 2022 16:09:59 +0200
-Message-Id: <20220725141000.70347-4-wenjia@linux.ibm.com>
+Subject: [PATCH net-next 4/4] net/smc: Enable module load on netlink usage
+Date:   Mon, 25 Jul 2022 16:10:00 +0200
+Message-Id: <20220725141000.70347-5-wenjia@linux.ibm.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220725141000.70347-1-wenjia@linux.ibm.com>
 References: <20220725141000.70347-1-wenjia@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: RfpdkOcK0pxvMU5J7SydLBKTpsv7WHev
-X-Proofpoint-GUID: RfpdkOcK0pxvMU5J7SydLBKTpsv7WHev
+X-Proofpoint-GUID: 09UH7VOr3W3sYg87-YVicofN0AQWXKdg
+X-Proofpoint-ORIG-GUID: 09UH7VOr3W3sYg87-YVicofN0AQWXKdg
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-25_09,2022-07-25_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=900 spamscore=0
- clxscore=1015 bulkscore=0 impostorscore=0 priorityscore=1501
- malwarescore=0 phishscore=0 adultscore=0 suspectscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ clxscore=1015 suspectscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
+ adultscore=0 mlxlogscore=999 priorityscore=1501 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2206140000 definitions=main-2207250059
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
@@ -89,73 +89,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Raspl <raspl@linux.ibm.com>
 
-Make the DMBE bits, which are passed on individually in ism_move() as
-parameter idx, available to the receiver.
+Previously, the smc and smc_diag modules were automatically loaded as
+dependencies of the ism module whenever an ISM device was present.
+With the pending rework of the ISM API, the smc module will no longer
+automatically be loaded in presence of an ISM device. Usage of an AF_SMC
+socket will still trigger loading of the smc modules, but usage of a
+netlink socket will not.
+This is addressed by setting the correct module aliases.
 
 Signed-off-by: Stefan Raspl <raspl@linux.ibm.com>
 Signed-off-by: Wenjia Zhang < wenjia@linux.ibm.com>
 ---
- drivers/s390/net/ism_drv.c | 4 +++-
- include/net/smc.h          | 2 +-
- net/smc/smc_ism.c          | 6 +++---
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ net/smc/af_smc.c   | 1 +
+ net/smc/smc_diag.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index 4665e9a0e048..d34bb6ec1490 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -443,6 +443,7 @@ static irqreturn_t ism_handle_irq(int irq, void *data)
- 	struct ism_dev *ism = data;
- 	unsigned long bit, end;
- 	unsigned long *bv;
-+	u16 dmbemask;
- 
- 	bv = (void *) &ism->sba->dmb_bits[ISM_DMB_WORD_OFFSET];
- 	end = sizeof(ism->sba->dmb_bits) * BITS_PER_BYTE - ISM_DMB_BIT_OFFSET;
-@@ -456,9 +457,10 @@ static irqreturn_t ism_handle_irq(int irq, void *data)
- 			break;
- 
- 		clear_bit_inv(bit, bv);
-+		dmbemask = ism->sba->dmbe_mask[bit + ISM_DMB_BIT_OFFSET];
- 		ism->sba->dmbe_mask[bit + ISM_DMB_BIT_OFFSET] = 0;
- 		barrier();
--		smcd_handle_irq(ism->smcd, bit + ISM_DMB_BIT_OFFSET);
-+		smcd_handle_irq(ism->smcd, bit + ISM_DMB_BIT_OFFSET, dmbemask);
- 	}
- 
- 	if (ism->sba->e) {
-diff --git a/include/net/smc.h b/include/net/smc.h
-index 1868a5014dea..c926d3313e05 100644
---- a/include/net/smc.h
-+++ b/include/net/smc.h
-@@ -101,5 +101,5 @@ int smcd_register_dev(struct smcd_dev *smcd);
- void smcd_unregister_dev(struct smcd_dev *smcd);
- void smcd_free_dev(struct smcd_dev *smcd);
- void smcd_handle_event(struct smcd_dev *dev, struct smcd_event *event);
--void smcd_handle_irq(struct smcd_dev *dev, unsigned int bit);
-+void smcd_handle_irq(struct smcd_dev *dev, unsigned int bit, u16 dmbemask);
- #endif	/* _SMC_H */
-diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
-index e51c0cdff8e0..911fe08bc54b 100644
---- a/net/smc/smc_ism.c
-+++ b/net/smc/smc_ism.c
-@@ -508,13 +508,13 @@ void smcd_handle_event(struct smcd_dev *smcd, struct smcd_event *event)
- EXPORT_SYMBOL_GPL(smcd_handle_event);
- 
- /* SMCD Device interrupt handler. Called from ISM device interrupt handler.
-- * Parameters are smcd device pointer and DMB number. Find the connection and
-- * schedule the tasklet for this connection.
-+ * Parameters are smcd device pointer, DMB number, and the DMBE bitmask.
-+ * Find the connection and schedule the tasklet for this connection.
-  *
-  * Context:
-  * - Function called in IRQ context from ISM device driver IRQ handler.
-  */
--void smcd_handle_irq(struct smcd_dev *smcd, unsigned int dmbno)
-+void smcd_handle_irq(struct smcd_dev *smcd, unsigned int dmbno, u16 dmbemask)
- {
- 	struct smc_connection *conn = NULL;
- 	unsigned long flags;
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 6e70d9c10b78..79c1318af1fe 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -3515,3 +3515,4 @@ MODULE_DESCRIPTION("smc socket address family");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS_NETPROTO(PF_SMC);
+ MODULE_ALIAS_TCP_ULP("smc");
++MODULE_ALIAS_GENL_FAMILY(SMC_GENL_FAMILY_NAME);
+diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
+index 1fca2f90a9c7..80ea7d954ece 100644
+--- a/net/smc/smc_diag.c
++++ b/net/smc/smc_diag.c
+@@ -268,3 +268,4 @@ module_init(smc_diag_init);
+ module_exit(smc_diag_exit);
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 43 /* AF_SMC */);
++MODULE_ALIAS_GENL_FAMILY(SMCR_GENL_FAMILY_NAME);
 -- 
 2.35.2
 
