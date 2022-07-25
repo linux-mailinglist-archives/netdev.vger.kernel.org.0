@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B72757F85D
-	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 04:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157F157F861
+	for <lists+netdev@lfdr.de>; Mon, 25 Jul 2022 04:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiGYCxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jul 2022 22:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
+        id S231524AbiGYCzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jul 2022 22:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiGYCxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 22:53:39 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EDF65C2;
-        Sun, 24 Jul 2022 19:53:38 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10dc6e9f500so7290013fac.4;
-        Sun, 24 Jul 2022 19:53:38 -0700 (PDT)
+        with ESMTP id S229600AbiGYCzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jul 2022 22:55:23 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B29E10FC4;
+        Sun, 24 Jul 2022 19:55:22 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-10d83692d5aso13269422fac.1;
+        Sun, 24 Jul 2022 19:55:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:subject:from:to:cc:date:content-transfer-encoding
          :user-agent:mime-version;
-        bh=/FGvAWWhwlwvbJYoIjTR3UrpkE88eUF/7lHFpGRrNv0=;
-        b=aO+ZpCm3AE//1qI/V9INeFeUbx1MJN7dxV9UPLeOh4sP4B32CZHJueDueg1hPu55jO
-         0nUo2ti/R/SoanQJPwAUPowFTX/p7ZHagfmfYX120GGybOGdXzMuqrztuxs7JN5B9Yah
-         ulU6q5KgLcmXm4OYXCeHw9ZTnAG9/01l8it2EcHJdBApvY6722bgVUFamvnSUBm6JVZ3
-         JXBVVPYUau0B5ZDFrT4WhruZV9ZjZu+NSyXIlWsdeS9u4LQ2fOC7yOvyD2eTBTFdD5T4
-         v6aveAm0GWSkh+ZghYXU67Kzr3gVmrcdWM4PKzgUSVzF7WjyD3KUvEke//Ewgf99MUbB
-         mM/w==
+        bh=K5w8/+hd7XS5EZe2/8Sgqzv2NIT7331GESZ1DksOBfY=;
+        b=m8GRjJvaMEYA3R1tCOHXFHQtnLN7z/K7r+uefEztXZ+xAsCLI7MsoK9KYsiDpH4evb
+         8JW5f036O9l/8DczunzqYiRkwLPvby1u4c0XFnYLOLGJhkFvoKOMPtvSL6yH7jgcPUn0
+         /XT9Eylyz8DYI32YeiqUV5kWX958zG90R4ArA3HYm27m0ZY5kCl5d6clgMv9yGruc4/b
+         Y0Ua/AUFpVg4xCAewZS9QcQRsI5Dw9uwnIFGMmrY7mXxCrC2GJuTWkNGpAsbHtsdUnP5
+         nFMgLOMinDcDu3Gb2iXBU4bY683gZmnnGlfBCRZqY8zdnk2SVw5nOeHKx2FNZfsKDrjN
+         gatg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date
          :content-transfer-encoding:user-agent:mime-version;
-        bh=/FGvAWWhwlwvbJYoIjTR3UrpkE88eUF/7lHFpGRrNv0=;
-        b=4c/Gz8qqGlk6ZLnRFSrcZQdp0hSYaHptIFV2ec1cLo0AzutWCL//yw+p3UAZ0BWwh1
-         sDrvsrDF3EpZdslCXGEY3EZMVBsFspWU/VcccNd1Bg6J8ji7xKM0PoDOjGvYDoOog1kF
-         gakDA1BnXXgZeyl5P6fbLlif3K8Oq7990zn9eguSv5m3czpDmd7UrTdpolY7wkxpMt3n
-         NXpW+Mb0dE4RjfIg0fe9rZLCKgZmOLS6is0PRi94jweIDU+VE9vxslEZbYFnBlqjldEl
-         m1acJqON7FnRc/SDGIPUX8oGrAFif7Q62MdCpbTDOIcsavH9lbnAdL2Ebp4gcc8BUYvm
-         iOUw==
-X-Gm-Message-State: AJIora8NHASH4ZcUFs8RHWPOOFTfYLCCzEQxklYKSpMNpEpn4QA8TSwF
-        1FLOz6PlAz+W7pFI8x+ekrUVMTdZ6me8/A==
-X-Google-Smtp-Source: AGRyM1vOh4ywO4BZnrcTPlntpWGz1IkAJZ/wtTon56Dk+r1k0g1jOqBbF+UxdCQD0I8XI+KGRgPyLQ==
-X-Received: by 2002:a05:6870:958e:b0:101:9ce4:1944 with SMTP id k14-20020a056870958e00b001019ce41944mr5441828oao.178.1658717617382;
-        Sun, 24 Jul 2022 19:53:37 -0700 (PDT)
+        bh=K5w8/+hd7XS5EZe2/8Sgqzv2NIT7331GESZ1DksOBfY=;
+        b=BJGGnfdrk2uNkCcHkSrwotFYMTwHMv2zPmuyKT7H/IyRylVil3KgAeJYnP0KopOznO
+         h/sp/E7DSUCW5S3mfyXui9lc+fnvxchGJ+0lOfDll0+Jx/jfuKTwv7iRFh7dOVEYV27c
+         rR8OtQ7gbc0ZX946jc7/Q5C0Cy00noGn4iUg3Vch2FmXpsCGzOWqNVGQDWKCwCxVqUQj
+         XF5LcZLu+P3zYZIO1DkPq4FllE47AEoBB+0AWyCtqrUc0LIZOuT8Jk/UmW6P7qP3eb5g
+         B73AlU1PqwgU1gVFUxa6nJ/Ua0KdWfabaO/dCM1A9r3XWi96eC1wfAqAqhaEJ4FWF+gm
+         u7tg==
+X-Gm-Message-State: AJIora/clgDRpNx3vwEvA0TKy1JKheTFzOWMwrFE37FOUlU7CkPzq/bS
+        3+flESeYqSoLupimyIunjSxpiJNgE+DjVw==
+X-Google-Smtp-Source: AGRyM1sWiQjseaMLAxvNgXFgGAlJREI+9Jtmvxi7XdHNEfwTyWqNKvkSdwjtz6ZPRfJpli9cWTHTCw==
+X-Received: by 2002:a05:6871:295:b0:10d:c587:d2c4 with SMTP id i21-20020a056871029500b0010dc587d2c4mr5369170oae.122.1658717721073;
+        Sun, 24 Jul 2022 19:55:21 -0700 (PDT)
 Received: from ?IPv6:2804:14c:71:96e6:64c:ef9b:3df0:9e8d? ([2804:14c:71:96e6:64c:ef9b:3df0:9e8d])
-        by smtp.gmail.com with ESMTPSA id l20-20020a9d6a94000000b0061c1a0b4677sm4552935otq.12.2022.07.24.19.53.35
+        by smtp.gmail.com with ESMTPSA id o124-20020acad782000000b0033ac7e40050sm2069069oig.52.2022.07.24.19.55.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 19:53:36 -0700 (PDT)
-Message-ID: <cecb8985fd66c9ffa8a59b7449be0198393aa89f.camel@gmail.com>
-Subject: Patch for 5.15 stable tree "net: usb: ax88179_178a needs
+        Sun, 24 Jul 2022 19:55:20 -0700 (PDT)
+Message-ID: <f0fad82e79d7794a73189582538c276a9dbb149c.camel@gmail.com>
+Subject: Patch for 5.10 stable tree "net: usb: ax88179_178a needs
  FLAG_SEND_ZLP"
 From:   Jose Alonso <joalonsof@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     stable <stable@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>
-Date:   Sun, 24 Jul 2022 23:53:34 -0300
+Date:   Sun, 24 Jul 2022 23:55:18 -0300
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
@@ -70,7 +70,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For 5.15 stable tree:
+For 5.10 stable tree:
 --------------------
 From 36a15e1cb134c0395261ba1940762703f778438c Mon Sep 17 00:00:00 2001
 From: Jose Alonso <joalonsof@gmail.com>
