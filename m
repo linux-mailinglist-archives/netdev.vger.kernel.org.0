@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78AA25814DB
+	by mail.lfdr.de (Postfix) with ESMTP id C50735814DC
 	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbiGZONR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 10:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        id S231237AbiGZONS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 10:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGZONQ (ORCPT
+        with ESMTP id S229836AbiGZONQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:13:16 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C08DF0E
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:13:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58FA13E87
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:13:15 -0700 (PDT)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q9fjhx011485;
-        Tue, 26 Jul 2022 07:13:03 -0700
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q9KXPT000696;
+        Tue, 26 Jul 2022 07:13:04 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=8u5WWHqHJ9nIBFFr9a7uZivdq9wIYCi+MwxTPJSTSCs=;
- b=PZBjUHcBs5d36uZQR8ADrc+BhlrtAxpNbapjEv7pDpW6dtsM2NmPhs0REKl7EMkZyCgc
- arGjzVUkB+x88dDE9M1RiWpeNoXD6CwPfI93/u3Biq5HKDSQhaWQaKNlkyDTeJhggbyN
- 9Kj6n3gpzL1RKpc6s9f4ICNLgRzP9sLf+aFty6JH5XTK+8+C5xyeB/jo+OZx/KzpPrmk
- OdmpLOuGA4ZUNt9SxajykQGU0P1aVl3UY5pRJ4sp3bzxxzazeC35h1X6/B9rADkQROBE
- blYGJqp+C0ioe+DrYrtisVlbFZfo8zFBfeVS4IsQQbulcNemM6a+93ft6zxmNoDbX8Lw yw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hgggnabdr-1
+ content-type; s=pfpt0220; bh=1C9O0lsTO8dhn8X1jMZYXacZbeeZlorwx3eKSQYFLQ0=;
+ b=eU5oW29sDqtShurTxOrKKMFpBujf6BvrXtl6HMacaa0soiRDbtjQCd9NqapceBXgPVYG
+ 8U+1Eg4VpSnvRWNecOLzFVuUa6GbnhvnBKiaopt0AhWpbx0pw/+bIT9bKVixAI7lpjF2
+ UKhJ6W7C0qt8WmFQ99x54MUHD+ApUMm267l0qgpORpP/Gcu0NB2FFYcYHOID6rOh0Fw8
+ IlDn9N40WprpvLFWkkBSTzddI3OUTK4L8u7Ne1a/SqvI/SAvAV+VHeP85LStueJxV3ni
+ /YjF7x2MCDeV1cr3hoR7nKXinwgrKJB6mK4HlKkBc1XLg3HKArl9FVjlrUb9g2U4PZrd mA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hgggnabdt-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jul 2022 07:13:02 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Jul
- 2022 07:13:01 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Jul 2022 07:13:00 -0700
+        Tue, 26 Jul 2022 07:13:04 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 26 Jul
+ 2022 07:13:02 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 26 Jul 2022 07:13:02 -0700
 Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id D36F66267DC;
-        Tue, 26 Jul 2022 07:11:26 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id C2A865B6976;
+        Tue, 26 Jul 2022 07:11:29 -0700 (PDT)
 From:   Subbaraya Sundeep <sbhatta@marvell.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <edumazet@google.com>, <sgoutham@marvell.com>,
         <netdev@vger.kernel.org>
-CC:     Stanislaw Kardach <skardach@marvell.com>,
+CC:     Harman Kalra <hkalra@marvell.com>,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net v2 PATCH 1/5] octeontx2-af: Apply tx nibble fixup always
-Date:   Tue, 26 Jul 2022 19:41:18 +0530
-Message-ID: <1658844682-12913-2-git-send-email-sbhatta@marvell.com>
+Subject: [net v2 PATCH 2/5] octeontx2-af: suppress external profile loading warning
+Date:   Tue, 26 Jul 2022 19:41:19 +0530
+Message-ID: <1658844682-12913-3-git-send-email-sbhatta@marvell.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1658844682-12913-1-git-send-email-sbhatta@marvell.com>
 References: <1658844682-12913-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: 9e2AlMdOSRe0WlcTLEUfkDq-oKqBy5-I
-X-Proofpoint-ORIG-GUID: 9e2AlMdOSRe0WlcTLEUfkDq-oKqBy5-I
+X-Proofpoint-GUID: g69ctuSs4Q_NIIhW1W2TdWzIUT3EPKZ6
+X-Proofpoint-ORIG-GUID: g69ctuSs4Q_NIIhW1W2TdWzIUT3EPKZ6
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-26_04,2022-07-26_01,2022-06-22_01
@@ -66,51 +66,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stanislaw Kardach <skardach@marvell.com>
+From: Harman Kalra <hkalra@marvell.com>
 
-NPC_PARSE_NIBBLE for TX interface has to be equal to the RX one for some
-silicon revisions. Mistakenly this fixup was only applied to the default
-MKEX profile while it should also be applied to any loaded profile.
+The packet parser profile supplied as firmware may not
+be present all the time and default profile is used mostly.
+Hence suppress firmware loading warning from kernel due to
+absence of firmware in kernel image.
 
-Fixes: 1c1935c9945d ("octeontx2-af: Add NIX1 interfaces to NPC")
-Signed-off-by: Stanislaw Kardach <skardach@marvell.com>
+Fixes: 3a7244152f9c ("octeontx2-af: add support for custom KPU entries")
+Signed-off-by: Harman Kalra <hkalra@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-index 3a31fb8..3d99cb9 100644
+index 3d99cb9..9404f86 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-@@ -1915,6 +1915,7 @@ static void rvu_npc_hw_init(struct rvu *rvu, int blkaddr)
- 
- static void rvu_npc_setup_interfaces(struct rvu *rvu, int blkaddr)
- {
-+	struct npc_mcam_kex *mkex = rvu->kpu.mkex;
- 	struct npc_mcam *mcam = &rvu->hw->mcam;
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	u64 nibble_ena, rx_kex, tx_kex;
-@@ -1927,15 +1928,15 @@ static void rvu_npc_setup_interfaces(struct rvu *rvu, int blkaddr)
- 	mcam->counters.max--;
- 	mcam->rx_miss_act_cntr = mcam->counters.max;
- 
--	rx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_RX];
--	tx_kex = npc_mkex_default.keyx_cfg[NIX_INTF_TX];
-+	rx_kex = mkex->keyx_cfg[NIX_INTF_RX];
-+	tx_kex = mkex->keyx_cfg[NIX_INTF_TX];
- 	nibble_ena = FIELD_GET(NPC_PARSE_NIBBLE, rx_kex);
- 
- 	nibble_ena = rvu_npc_get_tx_nibble_cfg(rvu, nibble_ena);
- 	if (nibble_ena) {
- 		tx_kex &= ~NPC_PARSE_NIBBLE;
- 		tx_kex |= FIELD_PREP(NPC_PARSE_NIBBLE, nibble_ena);
--		npc_mkex_default.keyx_cfg[NIX_INTF_TX] = tx_kex;
-+		mkex->keyx_cfg[NIX_INTF_TX] = tx_kex;
- 	}
- 
- 	/* Configure RX interfaces */
+@@ -1650,7 +1650,7 @@ static void npc_load_kpu_profile(struct rvu *rvu)
+ 	 * Firmware database method.
+ 	 * Default KPU profile.
+ 	 */
+-	if (!request_firmware(&fw, kpu_profile, rvu->dev)) {
++	if (!firmware_request_nowarn(&fw, kpu_profile, rvu->dev)) {
+ 		dev_info(rvu->dev, "Loading KPU profile from firmware: %s\n",
+ 			 kpu_profile);
+ 		rvu->kpu_fwdata = kzalloc(fw->size, GFP_KERNEL);
 -- 
 2.7.4
 
