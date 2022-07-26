@@ -2,123 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE1B581270
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 13:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC71581282
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 13:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbiGZL5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 07:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        id S238930AbiGZL7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 07:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233288AbiGZL5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 07:57:47 -0400
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4C223150
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 04:57:46 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id lp8-20020a056214590800b004744f4ad562so3076468qvb.2
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 04:57:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=HT9F7rr0NiVYksLQfowJ8+RtuFOKIsOoFuKR9JkgtVY=;
-        b=QtEeew02/Anj7rIbxK3gxlV2PkN8JncqWaMYP4Bc5vw+srAMB8ZdxnKRdVN0WG0LqP
-         onijB+tEUfXt3q+gqeIbzo+dzicENe3W0ufD6rNDhcuSo31XWhTXi2kLQ6gLjmmTFbV7
-         xYb9BvYTdwnaM6/YbBS/11rNyX1aKBX/LRnz5wrKVu74m3cJoDuDg4f+EkGE2Uco2Qvd
-         cNav36xSxjrCUMl9p5YMwemXY0Eca7eWdPnvTUc00fsYLFtSpmNqDwRXCp+QYnjbz++Y
-         CoGQsFyK1U/d9Rxa8wdNLJFZNepR5sopwitKXKmO0sVMvdsgf9lQWkwsQFUUzMdmELo1
-         OHlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=HT9F7rr0NiVYksLQfowJ8+RtuFOKIsOoFuKR9JkgtVY=;
-        b=koZK+74cCWRc4Nii7MLnNe0eIC4TgAaFtBRLpnuX1o7LOpjxBHcriis1vHNpxrrnQA
-         +9fn8GTFMWCgioXRD7XEjcmh7sZs3vx4Mi7aR8elXVIRMNjIRZGx/+80SVBuSYG+gYoH
-         LQ2tRAPbt2tXxlfusIhbU6ZFk3P4YLBI6D36CuzqIAjFnJiPROL45l8d6+rRWAwXsGOS
-         Lt3tlYlUVWU7nYrM+2ey2ww/ITPx9+6p1smfXrC3gGEvb7I70ILA3sDfm7Ro3qA/Ms6Q
-         L54KwASKmUISbcI4Qnh16GEaj37SfbtztXjJd1aPo3wzAhvTg2qTnvK2WklN6I+fd0gH
-         i4ug==
-X-Gm-Message-State: AJIora9DMRaa40OQjsFz19PQZ8MXGPpPhIoUR2d5ibl+gXXdl0kh8GoT
-        AFDrnWTy05q5XBC1vMOT14ZoYD7Xn1gPOg==
-X-Google-Smtp-Source: AGRyM1uyu4sAMcC+fHhCwqL/YFpkR1ZYx5g8B5rv8PMnE9IqqvIi/26c3OtvDcxdHS4AE000CUiEo6docmuC+Q==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:622a:49:b0:31f:27b7:ff54 with SMTP id
- y9-20020a05622a004900b0031f27b7ff54mr13775619qtw.602.1658836665606; Tue, 26
- Jul 2022 04:57:45 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 11:57:43 +0000
-Message-Id: <20220726115743.2759832-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH net] tcp: md5: fix IPv4-mapped support
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        with ESMTP id S238918AbiGZL7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 07:59:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA0F3335A
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 04:59:00 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oGJD6-0001C9-Dj; Tue, 26 Jul 2022 13:58:48 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B7658BAB69;
+        Tue, 26 Jul 2022 11:58:45 +0000 (UTC)
+Date:   Tue, 26 Jul 2022 13:58:45 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Max Staudt <max@enpas.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Dmitry Safonov <dima@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] can: slcan: remove legacy infrastructure
+Message-ID: <20220726115845.4ywgubfpqfbl7qa3@pengutronix.de>
+References: <20220725065419.3005015-1-dario.binacchi@amarulasolutions.com>
+ <20220725065419.3005015-3-dario.binacchi@amarulasolutions.com>
+ <20220725123804.ofqpq4j467qkbtzn@pengutronix.de>
+ <CABGWkvrBrTqWQPBWKuKzuwQzgvc-iuWJPXt2utb60MOfych09A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xy3wdhkpwrvkuzu6"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvrBrTqWQPBWKuKzuwQzgvc-iuWJPXt2utb60MOfych09A@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the blamed commit, IPv4 SYN packets handled
-by a dual stack IPv6 socket are dropped, even if
-perfectly valid.
 
-$ nstat | grep MD5
-TcpExtTCPMD5Failure             5                  0.0
+--xy3wdhkpwrvkuzu6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-For a dual stack listener, an incoming IPv4 SYN packet
-would call tcp_inbound_md5_hash() with @family == AF_INET,
-while tp->af_specific is pointing to tcp_sock_ipv6_specific.
+On 26.07.2022 12:11:33, Dario Binacchi wrote:
+> Hello Marc,
+>=20
+> On Mon, Jul 25, 2022 at 2:38 PM Marc Kleine-Budde <mkl@pengutronix.de> wr=
+ote:
+> >
+> > On 25.07.2022 08:54:15, Dario Binacchi wrote:
+> > > Taking inspiration from the drivers/net/can/can327.c driver and at the
+> > > suggestion of its author Max Staudt, I removed legacy stuff like
+> > > `SLCAN_MAGIC' and `slcan_devs' resulting in simplification of the code
+> > > and its maintainability.
+> > >
+> > > The use of slcan_devs is derived from a very old kernel, since slip.c
+> > > is about 30 years old, so today's kernel allows us to remove it.
+> > >
+> > > The .hangup() ldisc function, which only called the ldisc .close(), h=
+as
+> > > been removed since the ldisc layer calls .close() in a good place
+> > > anyway.
+> > >
+> > > The old slcanX name has been dropped in order to use the standard canX
+> > > interface naming. It has been assumed that this change does not break
+> > > the user space as the slcan driver provides an ioctl to resolve from =
+tty
+> > > fd to netdev name.
+> >
+> > Is there a man page that documents this iotcl? Please add it and/or the
+> > IOCTL name.
+>=20
+> I have not found documentation of the SIOCGIFNAME ioctl for the line disc=
+ipline,
+> but only for netdev (i. e.
+> https://man7.org/linux/man-pages/man7/netdevice.7.html),
 
-Only later when an IPv4-mapped child is created, tp->af_specific
-is changed to tcp_sock_ipv6_mapped_specific.
+Ok - What about:
 
-Fixes: 7bbb765b7349 ("net/tcp: Merge TCP-MD5 inbound callbacks")
-Reported-by: Brian Vazquez <brianvv@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Dmitry Safonov <dima@arista.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Leonard Crestez <cdleonard@gmail.com>
----
- net/ipv4/tcp.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+The old slcanX name has been dropped in order to use the standard canX
+interface naming. The ioctl SIOCGIFNAME can be used to query the name of
+the created interface. Further There are several ways to get stable
+interfaces names in user space, e.g. udev or systemd-networkd.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 002a4a04efbe076ba603d7d42eb85e60d9bf4fb8..766881775abb795c884d048d51c361e805b91989 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4459,9 +4459,18 @@ tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
- 		return SKB_DROP_REASON_TCP_MD5UNEXPECTED;
- 	}
- 
--	/* check the signature */
--	genhash = tp->af_specific->calc_md5_hash(newhash, hash_expected,
--						 NULL, skb);
-+	/* Check the signature.
-+	 * To support dual stack listeners, we need to handle
-+	 * IPv4-mapped case.
-+	 */
-+	if (family == AF_INET)
-+		genhash = tcp_v4_md5_hash_skb(newhash,
-+					      hash_expected,
-+					      NULL, skb);
-+	else
-+		genhash = tp->af_specific->calc_md5_hash(newhash,
-+							 hash_expected,
-+							 NULL, skb);
- 
- 	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
--- 
-2.37.1.359.gd136c6c3e2-goog
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--xy3wdhkpwrvkuzu6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLf1vIACgkQrX5LkNig
+011rngf9GVw2jclmH7AgQ2YMJ298ay62e8P8qgG9f8WGzHWFkxrwZaQF4shqgtS1
+yJ0ppY9R4Y5cNe4UxdfSGjaN3IahaWxlsuDmhx5K86dhtQf9e+FY6Cr4PQbH/aOc
++F8RD0Yq4uLLFTC3VMHxB8/0xLcQqkltMHZX24B+ikqyeWTYn/YeXlC0nOSXpepl
+X0OyGNOWGJmgkwVW1ZTgvzfer+ToWoMFslh4HAf6QdJU5sj2gdK55d0sL5RiDvAb
+fTCCS5DbOhDxoSG5uzMTe4pXPuVw1u0LvTrypoTm5PmMIdWOI+FAtEEaZ37Te0OA
+58JS72ONsO55drbB5JEydbJCzeeuNQ==
+=R+7A
+-----END PGP SIGNATURE-----
+
+--xy3wdhkpwrvkuzu6--
