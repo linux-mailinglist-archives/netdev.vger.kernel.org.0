@@ -2,137 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1164758133A
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 14:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E853A581340
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 14:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbiGZMj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 08:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
+        id S238232AbiGZMlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 08:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232310AbiGZMj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 08:39:57 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119AE2ED4E;
-        Tue, 26 Jul 2022 05:39:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658839167; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=UkfuxHVLOwO/vn5hQmBft+g6uXh5aUV1+rD/VBC9ql1x2s1rMdkRKWSULiAbebxfR/MSK+qdzn+OnOf7NMUnOHQ57oCU3HX3xhwMVDOQf9vIJGoBfgRxVp8aKGU7AVIpjLOSrw1PbOSXUYaDZSMEXO48ClWDs+Lfl4+WG0RO89c=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1658839167; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=UWd274VYR1WKzP/YgplPfzV3z+zLp7Z125urE755fUM=; 
-        b=QvZvg9dVjsKln67kWE0aija4i5+ghMJp5YfYaJk2KYHmUrfh8Kg9WksFSajUUOUZZziuDuHwnr8V9guDo3eVd7ycHdr8xbJf/CCp2vy5vnigA1qCU4i1lRuBIUa+h2uwBC7eR4tSl10hgATJPR+pagwAzDzA2CNUa7VA1Y3M+sw=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658839167;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=UWd274VYR1WKzP/YgplPfzV3z+zLp7Z125urE755fUM=;
-        b=LqDgFxJ4AeYBp4bkbR6w70NQ2bdc9fL3GxdkQIHkMTSd9yxCamFTE4AtO1bzE1Zu
-        NX7Tu4CmcOyQ2dTUYqyxAkbTkmY8bgd1ruIHZcOcZRQM/9JDcWw+y746el1eKOLYZry
-        5rQbUZEEZJv/9CMfr1eYdtCzNHHSusI33CNGf2Ag=
-Received: from localhost.localdomain (103.240.204.132 [103.240.204.132]) by mx.zoho.in
-        with SMTPS id 1658839166242252.82637890145338; Tue, 26 Jul 2022 18:09:26 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com,
-        syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com,
-        syzbot+9250865a55539d384347@syzkaller.appspotmail.com
-Message-ID: <20220726123921.29664-1-code@siddh.me>
-Subject: [PATCH v2] wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
-Date:   Tue, 26 Jul 2022 18:09:21 +0530
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S238516AbiGZMlM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 08:41:12 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF74DFC4
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 05:41:08 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id fy29so25813326ejc.12
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 05:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XJv+b+9T+82Xz8sZYU8vRW+BzA0fxoNw4nBNvukCJ2Y=;
+        b=0eVTBAL/qR1H7kgpu32sZNtvzsD5/UZAA/OOuh8tRfVj3YW2FOig3Ju3QQuT2OBOBn
+         +vJKhiyv9wsDb48oyb7zOYiCHUtvebzKOb4AbgL16ibhCKL78NA9IMOPUCk8BdPc6YtP
+         3ywwWZpq78543lI1/s4obEtlvFffL1tqa0Ws5b3kUbOl+/k7wJfV6S9oPSJfFNFc3NjZ
+         u0QInNZHOL57JuRAVUF7kN7Ns0ihtZRy8TRLzdl7yJHRX1/oag39DU78eCWBSfEEEHXZ
+         +JmaY4k4F+4nebvEXBqxE54hZFS/ZJ+oXizdu1cGSnRYLkSZ3tDJ9pNcHCIGJVrTLhaq
+         45eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XJv+b+9T+82Xz8sZYU8vRW+BzA0fxoNw4nBNvukCJ2Y=;
+        b=uCnFcoCyUGT9xEi0yr51O8xIrUdC060h1/IantO6Jfp7s/64Ye38MAWXc9sU9FpgaO
+         ERdxmVxtmPOshDAeSe/DQjs7ukcEu0vGJt3taW/ap5+oQK2qKAvwEi1dI+mFo3yWYssb
+         1y+5pbWWGsOrwDET3B+2B0rohsFwtE9nBRRHDxoZ8BTwOoG81RSJN9c11B+wNhTXwyyZ
+         Qjwknjcu2U1D/cIrNKAWH8JHn5/pkNlKujgGs8VtaDWgsbaukVEoY/rPYENfNEbH9gi9
+         oCYvuBmX2Q+ZuJKnMPZa0HJxWDrycN1PepxGWO83vuwutl0yFFPq9v0C3PAq9RGehYPv
+         0A6g==
+X-Gm-Message-State: AJIora8v+VXLVlLpxHGfwVCt5NQoTHWXatyPivtEmfjmNTca3nRh0lfQ
+        ZQu0V5hiSOp+bSaTo46lci8fqGUqifSu3jpdAq0=
+X-Google-Smtp-Source: AGRyM1v8U31tmxwfwhJoAgeBUKyT98B9ajLdbYcIN+Ic6SAcMEyzBh/Vth4137CkniRBcNh7ZsBTyA==
+X-Received: by 2002:a17:907:3fa0:b0:72f:aefd:621e with SMTP id hr32-20020a1709073fa000b0072faefd621emr14234651ejc.475.1658839267321;
+        Tue, 26 Jul 2022 05:41:07 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id b20-20020a170906195400b0072aa38d768esm6469403eje.64.2022.07.26.05.41.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 05:41:06 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com
+Subject: [patch net-next RFC] net: dsa: move port_setup/teardown to be called outside devlink port registered area
+Date:   Tue, 26 Jul 2022 14:41:05 +0200
+Message-Id: <20220726124105.495652-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee80211_scan_rx() tries to access scan_req->flags after a null check
-(see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
-kfree() on the scan_req (see line 991 of wireless/scan.c).
+From: Jiri Pirko <jiri@nvidia.com>
 
-This results in a UAF.
+Move port_setup() op to be called before devlink_port_register() and
+port_teardown() after devlink_port_unregister().
 
-ieee80211_scan_rx() is called inside a RCU read-critical section
-initiated by ieee80211_rx_napi() (see line 5044 of mac80211/rx.c).
+RFC note: I don't see why this would not work, but I have no way to
+test this does not break things. But I think it makes sense to move this
+alongside the rest of the devlink port code, the reinit() function
+also gets much nicer, as clearly the fact that
+port_setup()->devlink_port_region_create() was called in dsa_port_setup
+did not fit the flow.
 
-Thus, add an rcu_head to the scan_req struct, so that we can use
-kfree_rcu() instead of kfree() and thus not free during the critical
-section.
-
-We can clear the pointer before freeing here, since scan_req is
-accessed using rcu_dereference().
-
-Bug report (3): https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f2=
-25d
-Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
-Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
-
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
-Changes since v1 as requested:
-- Fixed commit heading and better commit message.
-- Clear pointer before freeing.
+ net/dsa/dsa2.c | 64 +++++++++++++++++---------------------------------
+ 1 file changed, 21 insertions(+), 43 deletions(-)
 
- include/net/cfg80211.h | 2 ++
- net/wireless/scan.c    | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 80f41446b1f0..7e0b448c4cdb 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -2368,6 +2368,7 @@ struct cfg80211_scan_6ghz_params {
-  * @n_6ghz_params: number of 6 GHz params
-  * @scan_6ghz_params: 6 GHz params
-  * @bssid: BSSID to scan for (most commonly, the wildcard BSSID)
-+ * @rcu_head: (internal) RCU head to use for freeing
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index cac48a741f27..a8b6c6434df2 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -451,19 +451,12 @@ static int dsa_port_setup(struct dsa_port *dp)
+ {
+ 	struct devlink_port *dlp = &dp->devlink_port;
+ 	bool dsa_port_link_registered = false;
+-	struct dsa_switch *ds = dp->ds;
+ 	bool dsa_port_enabled = false;
+ 	int err = 0;
+ 
+ 	if (dp->setup)
+ 		return 0;
+ 
+-	if (ds->ops->port_setup) {
+-		err = ds->ops->port_setup(ds, dp->index);
+-		if (err)
+-			return err;
+-	}
+-
+ 	switch (dp->type) {
+ 	case DSA_PORT_TYPE_UNUSED:
+ 		dsa_port_disable(dp);
+@@ -506,11 +499,6 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 		dsa_port_disable(dp);
+ 	if (err && dsa_port_link_registered)
+ 		dsa_port_link_unregister_of(dp);
+-	if (err) {
+-		if (ds->ops->port_teardown)
+-			ds->ops->port_teardown(ds, dp->index);
+-		return err;
+-	}
+ 
+ 	dp->setup = true;
+ 
+@@ -523,10 +511,17 @@ static int dsa_port_devlink_setup(struct dsa_port *dp)
+ 	struct dsa_switch_tree *dst = dp->ds->dst;
+ 	struct devlink_port_attrs attrs = {};
+ 	struct devlink *dl = dp->ds->devlink;
++	struct dsa_switch *ds = dp->ds;
+ 	const unsigned char *id;
+ 	unsigned char len;
+ 	int err;
+ 
++	if (ds->ops->port_setup) {
++		err = ds->ops->port_setup(ds, dp->index);
++		if (err)
++			return err;
++	}
++
+ 	id = (const unsigned char *)&dst->index;
+ 	len = sizeof(dst->index);
+ 
+@@ -552,24 +547,23 @@ static int dsa_port_devlink_setup(struct dsa_port *dp)
+ 
+ 	devlink_port_attrs_set(dlp, &attrs);
+ 	err = devlink_port_register(dl, dlp, dp->index);
++	if (err) {
++		if (ds->ops->port_teardown)
++			ds->ops->port_teardown(ds, dp->index);
++		return err;
++	}
++	dp->devlink_port_setup = true;
+ 
+-	if (!err)
+-		dp->devlink_port_setup = true;
+-
+-	return err;
++	return 0;
+ }
+ 
+ static void dsa_port_teardown(struct dsa_port *dp)
+ {
+ 	struct devlink_port *dlp = &dp->devlink_port;
+-	struct dsa_switch *ds = dp->ds;
+ 
+ 	if (!dp->setup)
+ 		return;
+ 
+-	if (ds->ops->port_teardown)
+-		ds->ops->port_teardown(ds, dp->index);
+-
+ 	devlink_port_type_clear(dlp);
+ 
+ 	switch (dp->type) {
+@@ -597,40 +591,24 @@ static void dsa_port_teardown(struct dsa_port *dp)
+ static void dsa_port_devlink_teardown(struct dsa_port *dp)
+ {
+ 	struct devlink_port *dlp = &dp->devlink_port;
++	struct dsa_switch *ds = dp->ds;
+ 
+-	if (dp->devlink_port_setup)
++	if (dp->devlink_port_setup) {
+ 		devlink_port_unregister(dlp);
++		if (ds->ops->port_teardown)
++			ds->ops->port_teardown(ds, dp->index);
++	}
+ 	dp->devlink_port_setup = false;
+ }
+ 
+ /* Destroy the current devlink port, and create a new one which has the UNUSED
+- * flavour. At this point, any call to ds->ops->port_setup has been already
+- * balanced out by a call to ds->ops->port_teardown, so we know that any
+- * devlink port regions the driver had are now unregistered. We then call its
+- * ds->ops->port_setup again, in order for the driver to re-create them on the
+- * new devlink port.
++ * flavour.
   */
- struct cfg80211_scan_request {
- =09struct cfg80211_ssid *ssids;
-@@ -2397,6 +2398,7 @@ struct cfg80211_scan_request {
- =09bool scan_6ghz;
- =09u32 n_6ghz_params;
- =09struct cfg80211_scan_6ghz_params *scan_6ghz_params;
-+=09struct rcu_head rcu_head;
-=20
- =09/* keep last */
- =09struct ieee80211_channel *channels[];
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index 6d82bd9eaf8c..6cf58fe6dea0 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -988,8 +988,8 @@ void ___cfg80211_scan_done(struct cfg80211_registered_d=
-evice *rdev,
- =09kfree(rdev->int_scan_req);
- =09rdev->int_scan_req =3D NULL;
-=20
--=09kfree(rdev->scan_req);
- =09rdev->scan_req =3D NULL;
-+=09kfree_rcu(rdev_req, rcu_head);
-=20
- =09if (!send_message)
- =09=09rdev->scan_msg =3D msg;
---=20
-2.35.1
-
+ static int dsa_port_reinit_as_unused(struct dsa_port *dp)
+ {
+-	struct dsa_switch *ds = dp->ds;
+-	int err;
+-
+ 	dsa_port_devlink_teardown(dp);
+ 	dp->type = DSA_PORT_TYPE_UNUSED;
+-	err = dsa_port_devlink_setup(dp);
+-	if (err)
+-		return err;
+-
+-	if (ds->ops->port_setup) {
+-		/* On error, leave the devlink port registered,
+-		 * dsa_switch_teardown will clean it up later.
+-		 */
+-		err = ds->ops->port_setup(ds, dp->index);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
++	return dsa_port_devlink_setup(dp);
+ }
+ 
+ static int dsa_devlink_info_get(struct devlink *dl,
+-- 
+2.35.3
 
