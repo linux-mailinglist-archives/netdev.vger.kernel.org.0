@@ -2,145 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D584A5810AA
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 12:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38ABF5810B0
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 12:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232468AbiGZKCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 06:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S232882AbiGZKD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 06:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiGZKCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 06:02:07 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FFD2CDCD;
-        Tue, 26 Jul 2022 03:02:05 -0700 (PDT)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LsXQ93YV7z6893p;
-        Tue, 26 Jul 2022 17:57:21 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 12:02:02 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Tue, 26 Jul 2022 12:02:02 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "Florian Westphal" <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: RE: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc args
- to be trusted
-Thread-Topic: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc
- args to be trusted
-Thread-Index: AQHYnQf5YGGK69PM90+FORw5bILjSq2O3aiggAFrZ4CAACjgMA==
-Date:   Tue, 26 Jul 2022 10:02:02 +0000
-Message-ID: <e612d596b547456797dfee98f23bbd62@huawei.com>
-References: <20220721134245.2450-1-memxor@gmail.com>
- <20220721134245.2450-5-memxor@gmail.com>
- <64f5b92546c14b69a20e9007bb31146b@huawei.com>
- <CAP01T7683DcToXdYPPZ5gQxiksuJRyrf_=k8PvQGtwNXt0+S-w@mail.gmail.com>
-In-Reply-To: <CAP01T7683DcToXdYPPZ5gQxiksuJRyrf_=k8PvQGtwNXt0+S-w@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S231492AbiGZKD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 06:03:56 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7DB31227;
+        Tue, 26 Jul 2022 03:03:55 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q9hnjD025224;
+        Tue, 26 Jul 2022 10:03:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=wH8zMEOIyQKVKtup09OnQsKPecF9QC29pS4D05IAdyw=;
+ b=V3PatpIcOfRUB/Nvve3zCaO8udPQY7tN1r8YOP/F9PtMxSixMst9Dz7bZuMHhakr4VkD
+ dm/jPpxeqalD0DffrfKSesyaO4QTs7+yO5sSSuxjxiyRw5hb7RV/JwWGiUNPfyvFRreU
+ 921Depk1qPhHktPdV8n7cblApz8+waLuY++40Ds0fTQMHPP22FHoKlc3CrgcVIK/Q/W0
+ ESx9a3Z3JRoLsvfY/l7JQKwTAkf9bdiIFhWQaBT9bjNpm0Qojt7VhzpDPmbFoPpijfqI
+ utYnScJEa+576XxzaWKi16MFvF9dD/WGdgrMDdq7r8SwEg23GzlZZrksqz4EJ2xSeo5K 4Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjdvx0hhc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 10:03:45 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26Q9vdIr019284;
+        Tue, 26 Jul 2022 10:03:45 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjdvx0hgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 10:03:44 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26Q9pnYf016283;
+        Tue, 26 Jul 2022 10:03:43 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3hg95yapy8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 10:03:43 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26QA1fuq17826074
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Jul 2022 10:01:41 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 063664C04E;
+        Tue, 26 Jul 2022 10:03:40 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6DBAB4C046;
+        Tue, 26 Jul 2022 10:03:36 +0000 (GMT)
+Received: from MBP-von-Wenjia.fritz.box.com (unknown [9.211.107.22])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 26 Jul 2022 10:03:36 +0000 (GMT)
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>
+Subject: [PATCH net-next v2 0/4] net/smc: updates 2022-07-25
+Date:   Tue, 26 Jul 2022 12:03:26 +0200
+Message-Id: <20220726100330.75191-1-wenjia@linux.ibm.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RjZUd4sjByo4BI5hRT2Ta6nCPuPPW2p7
+X-Proofpoint-ORIG-GUID: bq0bg116dlo55S1DZVZr6ewA_PaaffiZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_02,2022-07-25_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 mlxscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
+ spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207260035
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBLdW1hciBLYXJ0aWtleWEgRHdpdmVkaSBbbWFpbHRvOm1lbXhvckBnbWFpbC5jb21d
-DQo+IFNlbnQ6IFR1ZXNkYXksIEp1bHkgMjYsIDIwMjIgMTE6MzAgQU0NCj4gT24gTW9uLCAyNSBK
-dWwgMjAyMiBhdCAxMTo1MiwgUm9iZXJ0byBTYXNzdSA8cm9iZXJ0by5zYXNzdUBodWF3ZWkuY29t
-Pg0KPiB3cm90ZToNCj4gPg0KPiA+ID4gRnJvbTogS3VtYXIgS2FydGlrZXlhIER3aXZlZGkgW21h
-aWx0bzptZW14b3JAZ21haWwuY29tXQ0KPiA+ID4gU2VudDogVGh1cnNkYXksIEp1bHkgMjEsIDIw
-MjIgMzo0MyBQTQ0KPiA+ID4gVGVhY2ggdGhlIHZlcmlmaWVyIHRvIGRldGVjdCBhIG5ldyBLRl9U
-UlVTVEVEX0FSR1Mga2Z1bmMgZmxhZywgd2hpY2gNCj4gPiA+IG1lYW5zIGVhY2ggcG9pbnRlciBh
-cmd1bWVudCBtdXN0IGJlIHRydXN0ZWQsIHdoaWNoIHdlIGRlZmluZSBhcyBhDQo+ID4gPiBwb2lu
-dGVyIHRoYXQgaXMgcmVmZXJlbmNlZCAoaGFzIG5vbi16ZXJvIHJlZl9vYmpfaWQpIGFuZCBhbHNv
-IG5lZWRzIHRvDQo+ID4gPiBoYXZlIGl0cyBvZmZzZXQgdW5jaGFuZ2VkLCBzaW1pbGFyIHRvIGhv
-dyByZWxlYXNlIGZ1bmN0aW9ucyBleHBlY3QgdGhlaXINCj4gPiA+IGFyZ3VtZW50LiBUaGlzIGFs
-bG93cyBhIGtmdW5jIHRvIHJlY2VpdmUgcG9pbnRlciBhcmd1bWVudHMgdW5jaGFuZ2VkDQo+ID4g
-PiBmcm9tIHRoZSByZXN1bHQgb2YgdGhlIGFjcXVpcmUga2Z1bmMuDQo+ID4gPg0KPiA+ID4gVGhp
-cyBpcyByZXF1aXJlZCB0byBlbnN1cmUgdGhhdCBrZnVuYyB0aGF0IG9wZXJhdGUgb24gc29tZSBv
-YmplY3Qgb25seQ0KPiA+ID4gd29yayBvbiBhY3F1aXJlZCBwb2ludGVycyBhbmQgbm90IG5vcm1h
-bCBQVFJfVE9fQlRGX0lEIHdpdGggc2FtZSB0eXBlDQo+ID4gPiB3aGljaCBjYW4gYmUgb2J0YWlu
-ZWQgYnkgcG9pbnRlciB3YWxraW5nLiBUaGUgcmVzdHJpY3Rpb25zIGFwcGxpZWQgdG8NCj4gPiA+
-IHJlbGVhc2UgYXJndW1lbnRzIGFsc28gYXBwbHkgdG8gdHJ1c3RlZCBhcmd1bWVudHMuIFRoaXMg
-aW1wbGllcyB0aGF0DQo+ID4gPiBzdHJpY3QgdHlwZSBtYXRjaGluZyAobm90IGRlZHVjaW5nIHR5
-cGUgYnkgcmVjdXJzaXZlbHkgZm9sbG93aW5nIG1lbWJlcnMNCj4gPiA+IGF0IG9mZnNldCkgYW5k
-IE9CSl9SRUxFQVNFIG9mZnNldCBjaGVja3MgKGVuc3VyaW5nIHRoZXkgYXJlIHplcm8pIGFyZQ0K
-PiA+ID4gdXNlZCBmb3IgdHJ1c3RlZCBwb2ludGVyIGFyZ3VtZW50cy4NCj4gPiA+DQo+ID4gPiBT
-aWduZWQtb2ZmLWJ5OiBLdW1hciBLYXJ0aWtleWEgRHdpdmVkaSA8bWVteG9yQGdtYWlsLmNvbT4N
-Cj4gPiA+IC0tLQ0KPiA+ID4gIGluY2x1ZGUvbGludXgvYnRmLmggfCAzMiArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIGtlcm5lbC9icGYvYnRmLmMgICAgfCAxNyArKysr
-KysrKysrKysrKy0tLQ0KPiA+ID4gIG5ldC9icGYvdGVzdF9ydW4uYyAgfCAgNSArKysrKw0KPiA+
-ID4gIDMgZmlsZXMgY2hhbmdlZCwgNTEgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4g
-PiA+DQo+ID4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9idGYuaCBiL2luY2x1ZGUvbGlu
-dXgvYnRmLmgNCj4gPiA+IGluZGV4IDZkZmM2ZWFmN2Y4Yy4uY2I2M2FhNzFlODJmIDEwMDY0NA0K
-PiA+ID4gLS0tIGEvaW5jbHVkZS9saW51eC9idGYuaA0KPiA+ID4gKysrIGIvaW5jbHVkZS9saW51
-eC9idGYuaA0KPiA+ID4gQEAgLTE3LDYgKzE3LDM4IEBADQo+ID4gPiAgI2RlZmluZSBLRl9SRUxF
-QVNFICAgKDEgPDwgMSkgLyoga2Z1bmMgaXMgYSByZWxlYXNlIGZ1bmN0aW9uICovDQo+ID4gPiAg
-I2RlZmluZSBLRl9SRVRfTlVMTCAgKDEgPDwgMikgLyoga2Z1bmMgcmV0dXJucyBhIHBvaW50ZXIg
-dGhhdCBtYXkgYmUgTlVMTA0KPiAqLw0KPiA+ID4gICNkZWZpbmUgS0ZfS1BUUl9HRVQgICgxIDw8
-IDMpIC8qIGtmdW5jIHJldHVybnMgcmVmZXJlbmNlIHRvIGEga3B0ciAqLw0KPiA+ID4gKy8qIFRy
-dXN0ZWQgYXJndW1lbnRzIGFyZSB0aG9zZSB3aGljaCBhcmUgbWVhbnQgdG8gYmUgcmVmZXJlbmNl
-ZA0KPiBhcmd1bWVudHMNCj4gPiA+IHdpdGgNCj4gPiA+ICsgKiB1bmNoYW5nZWQgb2Zmc2V0LiBJ
-dCBpcyB1c2VkIHRvIGVuZm9yY2UgdGhhdCBwb2ludGVycyBvYnRhaW5lZCBmcm9tDQo+IGFjcXVp
-cmUNCj4gPiA+ICsgKiBrZnVuY3MgcmVtYWluIHVubW9kaWZpZWQgd2hlbiBiZWluZyBwYXNzZWQg
-dG8gaGVscGVycyB0YWtpbmcgdHJ1c3RlZA0KPiBhcmdzLg0KPiA+ID4gKyAqDQo+ID4gPiArICog
-Q29uc2lkZXINCj4gPiA+ICsgKiAgIHN0cnVjdCBmb28gew0KPiA+ID4gKyAqICAgICAgICAgICBp
-bnQgZGF0YTsNCj4gPiA+ICsgKiAgICAgICAgICAgc3RydWN0IGZvbyAqbmV4dDsNCj4gPiA+ICsg
-KiAgIH07DQo+ID4gPiArICoNCj4gPiA+ICsgKiAgIHN0cnVjdCBiYXIgew0KPiA+ID4gKyAqICAg
-ICAgICAgICBpbnQgZGF0YTsNCj4gPiA+ICsgKiAgICAgICAgICAgc3RydWN0IGZvbyBmOw0KPiA+
-ID4gKyAqICAgfTsNCj4gPiA+ICsgKg0KPiA+ID4gKyAqICAgc3RydWN0IGZvbyAqZiA9IGFsbG9j
-X2ZvbygpOyAvLyBBY3F1aXJlIGtmdW5jDQo+ID4gPiArICogICBzdHJ1Y3QgYmFyICpiID0gYWxs
-b2NfYmFyKCk7IC8vIEFjcXVpcmUga2Z1bmMNCj4gPiA+ICsgKg0KPiA+ID4gKyAqIElmIGEga2Z1
-bmMgc2V0X2Zvb19kYXRhKCkgd2FudHMgdG8gb3BlcmF0ZSBvbmx5IG9uIHRoZSBhbGxvY2F0ZWQg
-b2JqZWN0LA0KPiBpdA0KPiA+ID4gKyAqIHdpbGwgc2V0IHRoZSBLRl9UUlVTVEVEX0FSR1MgZmxh
-Zywgd2hpY2ggd2lsbCBwcmV2ZW50IHVuc2FmZSB1c2FnZSBsaWtlOg0KPiA+ID4gKyAqDQo+ID4g
-PiArICogICBzZXRfZm9vX2RhdGEoZiwgNDIpOyAgICAgICAvLyBBbGxvd2VkDQo+ID4gPiArICog
-ICBzZXRfZm9vX2RhdGEoZi0+bmV4dCwgNDIpOyAvLyBSZWplY3RlZCwgbm9uLXJlZmVyZW5jZWQg
-cG9pbnRlcg0KPiA+ID4gKyAqICAgc2V0X2Zvb19kYXRhKCZmLT5uZXh0LCA0Mik7Ly8gUmVqZWN0
-ZWQsIHJlZmVyZW5jZWQsIGJ1dCBiYWQgb2Zmc2V0DQo+ID4gPiArICogICBzZXRfZm9vX2RhdGEo
-JmItPmYsIDQyKTsgICAvLyBSZWplY3RlZCwgcmVmZXJlbmNlZCwgYnV0IHdyb25nIHR5cGUNCj4g
-PiA+ICsgKg0KPiA+ID4gKyAqIEluIHRoZSBmaW5hbCBjYXNlLCB1c3VhbGx5IGZvciB0aGUgcHVy
-cG9zZXMgb2YgdHlwZSBtYXRjaGluZywgaXQgaXMgZGVkdWNlZA0KPiA+ID4gKyAqIGJ5IGxvb2tp
-bmcgYXQgdGhlIHR5cGUgb2YgdGhlIG1lbWJlciBhdCB0aGUgb2Zmc2V0LCBidXQgZHVlIHRvIHRo
-ZQ0KPiA+ID4gKyAqIHJlcXVpcmVtZW50IG9mIHRydXN0ZWQgYXJndW1lbnQsIHRoaXMgZGVkdWN0
-aW9uIHdpbGwgYmUgc3RyaWN0IGFuZCBub3QNCj4gZG9uZQ0KPiA+ID4gKyAqIGZvciB0aGlzIGNh
-c2UuDQo+ID4gPiArICovDQo+ID4gPiArI2RlZmluZSBLRl9UUlVTVEVEX0FSR1MgKDEgPDwgNCkg
-Lyoga2Z1bmMgb25seSB0YWtlcyB0cnVzdGVkIHBvaW50ZXINCj4gPiA+IGFyZ3VtZW50cyAqLw0K
-PiA+DQo+ID4gSGkgS3VtYXINCj4gPg0KPiA+IHdvdWxkIGl0IG1ha2Ugc2Vuc2UgdG8gaW50cm9k
-dWNlIHBlci1wYXJhbWV0ZXIgZmxhZ3M/IEkgaGF2ZSBhIGZ1bmN0aW9uDQo+ID4gdGhhdCBoYXMg
-c2V2ZXJhbCBwYXJhbWV0ZXJzLCBidXQgb25seSBvbmUgaXMgcmVmZXJlbmNlZC4NCj4gPg0KPiAN
-Cj4gSSBoYXZlIGEgcGF0Y2ggZm9yIHRoYXQgaW4gbXkgbG9jYWwgYnJhbmNoLCBJIGNhbiBmaXgg
-aXQgdXAgYW5kIHBvc3QNCj4gaXQuIEJ1dCBmaXJzdCwgY2FuIHlvdSBnaXZlIGFuIGV4YW1wbGUg
-b2Ygd2hlcmUgeW91IHRoaW5rIHlvdSBuZWVkIGl0Pw0KDQpJIGhhdmUgcHVzaGVkIHRoZSBjb21w
-bGV0ZSBwYXRjaCBzZXQgaGVyZSwgZm9yIHRlc3Rpbmc6DQoNCmh0dHBzOi8vZ2l0aHViLmNvbS9y
-b2JlcnRvc2Fzc3Uvdm10ZXN0L3RyZWUvYnBmLXZlcmlmeS1zaWctdjkvdHJhdmlzLWNpL2RpZmZz
-DQoNCkkgcmViYXNlZCB0byBicGYtbmV4dC9tYXN0ZXIsIGFuZCBpbnRyb2R1Y2VkIEtGX1NMRUVQ
-QUJMRSAoc2ltaWxhcg0KZnVuY3Rpb25hbGl0eSBvZiAiIGJ0ZjogQWRkIGEgbmV3IGtmdW5jIHNl
-dCB3aGljaCBhbGxvd3MgdG8gbWFyaw0KYSBmdW5jdGlvbiB0byBiZSBzbGVlcGFibGUiIGZyb20g
-QmVuamFtaW4gVGlzc29pcmVzKS4NCg0KVGhlIHBhdGNoIHdoZXJlIEkgd291bGQgdXNlIHBlci1w
-YXJhbWV0ZXIgS0ZfVFJVU1RFRF9BUkdTIGlzDQpudW1iZXIgOC4gSSBhbHNvIHVzZWQgeW91ciBu
-ZXcgQVBJIGluIHBhdGNoIDcgYW5kIGl0IHdvcmtzIHdlbGwuDQoNCkkgZGlkbid0IHJlcG9zdCwg
-YXMgSSdtIHdhaXRpbmcgZm9yIGNvbW1lbnRzIG9uIHY4Lg0KDQpUaGFua3MNCg0KUm9iZXJ0bw0K
+Hi Dave & Jakub,
+
+please apply the following patches to netdev's net-next tree.
+
+These patches do some preparation to make ISM available for uses beyond
+SMC-D, and a bunch of cleanups.
+
+Thanks,
+Wenjia
+
+v2: add "Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>"
+
+
+Heiko Carstens (1):
+  net/smc: Eliminate struct smc_ism_position
+
+Stefan Raspl (3):
+  s390/ism: Cleanups
+  net/smc: Pass on DMBE bit mask in IRQ handler
+  net/smc: Enable module load on netlink usage
+
+ drivers/s390/net/ism_drv.c | 15 ++++++++-------
+ include/net/smc.h          |  4 ++--
+ net/smc/af_smc.c           |  1 +
+ net/smc/smc_diag.c         |  1 +
+ net/smc/smc_ism.c          | 19 ++++---------------
+ net/smc/smc_ism.h          | 20 +++++++++++---------
+ net/smc/smc_tx.c           | 10 +++-------
+ 7 files changed, 30 insertions(+), 40 deletions(-)
+
+-- 
+2.35.2
+
