@@ -2,46 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C441581C0B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 142F3581C1C
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239837AbiGZWPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 18:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        id S231301AbiGZWbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 18:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiGZWPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:15:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E2B33415;
-        Tue, 26 Jul 2022 15:15:44 -0700 (PDT)
+        with ESMTP id S229493AbiGZWbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:31:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A67B28E27;
+        Tue, 26 Jul 2022 15:31:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E03EFB81A07;
-        Tue, 26 Jul 2022 22:15:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CFFDC433C1;
-        Tue, 26 Jul 2022 22:15:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7947616CB;
+        Tue, 26 Jul 2022 22:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC0C3C433D6;
+        Tue, 26 Jul 2022 22:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658873741;
-        bh=bmiQF0RVND47QHxIIo+hHS/GnuvGDxTLF9Gi7HTKbW8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WpaAaR84+D1gzUnnANngZ6kd52hfmT3Tc63+il4DUGFDhBdznXqSD+BiGlQpPmWh5
-         s3YAb1s0QplDN08vLKYd1FhwrEOSCgsUUhLH+HCk+1PIJtWu4cntnn/J/KOlTXpg7y
-         tABqTq6hnvK/ubR5XM8579TAC/bvHOeCbCUH7v7d3EfM7/nmCHfm8NgZJ0y87jjrXP
-         mv7QG3WF3R85V0zeTHg0ybXSJjK5ndQ7VFiyQszC7jLO8oTaGZhAYU3U9LyzyOqG4n
-         5EPjWw9k/a8Snur0SIVJ9Uh+CQ7GwZLKlzgYdfA/kMdEt2s5FuT44tlyVkn4HvXo5s
-         5Lxm0wvKfa+lw==
+        s=k20201202; t=1658874702;
+        bh=d4H5gQrtMKIK9qlJr8zIiMTxRgr6ssFnpb1lfTELUk8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nuEVd8I8oMqDpp9sdm91IbUlGm2mQ4Xi0iWPuTGrynByvutuFjXH50bUTtlE9cN1F
+         qktPHml49KU8tWHuy+OddnLyTngU8IvAg7kZeSpSRjp3jvCa4SubthEIsXiizPJ4BA
+         NkXrzGD2Ubvs0zl+aOPvfVC9t1vfSfdzRQSJfCg8KDyRZbovrUHp9ojLLFusetUedb
+         XvzEz9QbhZqNOY2Ktp+8hfL+nL0SBgb3GDZbDKd1390+WNs5FjHZWaz33v9lUJQj3E
+         /wCQqmMb3gyR83yM/r4RN0yQXxKWAG8jlBm1EQa/laY/TLIV4K5SlJqzDbc0NLs9Rl
+         QmTPHZp0wLk/A==
+Date:   Tue, 26 Jul 2022 15:31:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     shuah@kernel.org
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        keescook@chromium.org, luto@amacapital.net, wad@chromium.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH] testing: kselftest_harness: add filtering and enumerating tests
-Date:   Tue, 26 Jul 2022 15:15:37 -0700
-Message-Id: <20220726221537.162521-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.1
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: pull request: bluetooth-next 2022-07-22
+Message-ID: <20220726153140.7fefd4b4@kernel.org>
+In-Reply-To: <CABBYNZ+74ndrzdx=4dGLE6oQbZ2w6SGnUGeS0OSqH6EnND4qJw@mail.gmail.com>
+References: <20220722205400.847019-1-luiz.dentz@gmail.com>
+        <20220722165510.191fad93@kernel.org>
+        <CABBYNZLj2z_81p=q0iSxEBgVW_L3dw8UKGwQKOEDj9fgDLYJ0g@mail.gmail.com>
+        <20220722171919.04493224@kernel.org>
+        <CABBYNZJ5-yPzxd0mo4E+wXuEwo1my+iaiW8YOwYP05Uhmtd98Q@mail.gmail.com>
+        <20220722175003.5d4ba0e0@kernel.org>
+        <CABBYNZ+74ndrzdx=4dGLE6oQbZ2w6SGnUGeS0OSqH6EnND4qJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -51,257 +59,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the number of test cases and length of execution grows it's
-useful to select only a subset of tests. In TLS for instance we
-have a matrix of variants for different crypto protocols and
-during development mostly care about testing a handful.
-This is quicker and makes reading output easier.
+On Tue, 26 Jul 2022 15:05:17 -0700 Luiz Augusto von Dentz wrote:
+> > > Ive just fixup the original patch that introduced it, btw how do you
+> > > run sparse to capture such errors?  
+> >
+> > We run builds with W=1 C=1 in the CI and then diff the outputs.
+> > That's pretty noisy so we have a regex which counts number of
+> > warnings per file, that makes it possible to locate the exact new
+> > warning. At least most of the time...  
+> 
+> Hmm, is there any way to trigger net CI, either that or we need to
+> duplicate the same test under our CI to avoid these last minute
+> findings when we are attempting to merge something.
 
-This patch adds argument parsing to kselftest_harness.
+The code is at:
 
-It supports a couple of ways to filter things, I could not come
-up with one way which will cover all cases.
+https://github.com/kuba-moo/nipa
 
-The first and simplest switch is -r which takes the name of
-a test to run (can be specified multiple times). For example:
+But it hardcodes net and bpf tree maching in places. You may want
+to steal just the build script, its in bash.
 
-  $ ./my_test -r some.test.name -r some.other.name
+> > > So we don't need to rebase?  
+> >
+> > No, not usually. After we pull from you, you should pull back from us
+> > (git pull --ff-only $net-or-net-next depending on the tree you
+> > targeted), and that's it. The only patches that go into your tree then
+> > are bluetooth patches, everything else is fed via pulling back from us.
+> >  
+> > > There were some patches already applied via bluetooth.git so at least
+> > > I do it to remove them  
+> >
+> > Normally you'd not apply bluetooth fixes to bluetooth-next, apply
+> > them to bluetooth and send us a PR. Then once a week we'll merge
+> > net (containing your fixes) into net-next, at which point you can
+> > send a bluetooth-next PR and get the fixes into bluetooth-next.
+> > FWIW from our perspective there's no limit on how often you send PRs.  
+> 
+> Are you saying we should be using merge commits instead of rebase then?
 
-will run tests some.test.name and some.other.name (where "some"
-is the fixture, "test" and "other" and "name is the test.)
+Not sure what merge commits would mean in this case.
 
-Then there is a handful of group filtering options. f/v/t for
-filtering by fixture/variant/test. They have both positive
-(match -> run) and negative versions (match -> skip).
-If user specifies any positive option we assume the default
-is not to run the tests. If only negative options are set
-we assume the tests are supposed to be run by default.
+> > Alternatively you could apply the fixes into bluetooth and then
+> > merge bluetooth into bluetooth-next. If you never rebase either tree,
+> > git will be able to figure out that it's the same commit hash even if
+> > it makes it to the tree twice (once thru direct merge and once via
+> > net). That said, I believe Linus does not like cross tree merges, i.e.
+> > merges which are not fast forwards to the downstream tree. So it's
+> > better to take the long road via bt ->  net -> net-next -> bt-next.  
+> 
+> Well I got the impression that merge commits shall be avoided, but
 
-  Usage: ./tools/testing/selftests/net/tls [-h|-l] [-t|-T|-v|-V|-f|-F|-r name]
-	-h       print help
-	-l       list all tests
+There's many schools of thought, but upstream there's very little
+rebasing of "official" branches (i.e. main/master branches, not 
+testing or other unstable branches) AFAIK.
 
-	-t name  include test
-	-T name  exclude test
-	-v name  include variant
-	-V name  exclude variant
-	-f name  include fixture
-	-F name  exclude fixture
-	-r name  run specified test
+> rebase overwrites the committer, so the two option seem to have
+> drawbacks, well we can just resign on rebase as well provided git
+> doesn't duplicate Signed-off-by if I use something like exec="git
+> commit -s --amend".
 
-  Test filter options can be specified multiple times. The filtering stops
-  at the first match. For example to include all tests from variant 'bla'
-  but not test 'foo' specify '-T foo -v bla'.
+Sure, be careful tho because I think it doesn't check the signoff
+history, IIRC just the most recent tag. So you may end up with multiple
+signoffs from yourself and Marcel.
 
-Here we can request for example all tests from fixture "foo" to run:
+> > > and any possible conflicts if there were
+> > > changes introduced to the bluetooth directories that can eventually
+> > > come from some other tree.  
+> >
+> > Conflicts are not a worry, just let us know in the PR description how
+> > to resolve them.  
+> 
+> Not really following, how can we anticipate a merge conflict if we
+> don't rebase?
 
- ./my_test -f foo
+If your trees are hooked up to linux-next (I presume not 'cause Stephen
+would probably scream at you for rebasing?) - Stephen will tell you
+there's a conflict within a day or two.
 
-or to skip variants var1 and var2:
+Obviously sometimes you'll notice right away when applying patches that
+two patches touch the same function.
 
- ./my_test -V var1 -V var2
+> With merge strategy it seem that the one pulling needs
+> to resolve the conflicts rather than the submitter which I think would
+> lead to bad interaction between subsystems, expect if we do a merge
+> [-> resolve conflict] -> pull request -> [resolve conflicts ->] merge
+> which sounds a little too complicated since we have to resolve
+> conflicts in both directions.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-v2:
- - use getopt()
+The pulling back should always be a fast-forward so there's no merge
+commit or conflicts (git pull --ff-only). Only the actual downstream
+tree (netdev) has to resolve conflicts, which is not all that bad
+thanks for Stephen's advanced notices.
 
-CC: keescook@chromium.org
-CC: luto@amacapital.net
-CC: wad@chromium.org
-CC: shuah@kernel.org
-CC: linux-kselftest@vger.kernel.org
----
- tools/testing/selftests/kselftest_harness.h | 142 +++++++++++++++++++-
- 1 file changed, 137 insertions(+), 5 deletions(-)
+> In my opinion rebase strategy is cleaner and is what we recommend for
+> possible clones of bluetooth-next and bluetooth trees including CI so
+> possible conflicts are fixed in place rather on the time the trees are
+> merged.
 
-diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index 25f4d54067c0..d8bff2005dfc 100644
---- a/tools/testing/selftests/kselftest_harness.h
-+++ b/tools/testing/selftests/kselftest_harness.h
-@@ -54,6 +54,7 @@
- #define _GNU_SOURCE
- #endif
- #include <asm/types.h>
-+#include <ctype.h>
- #include <errno.h>
- #include <stdbool.h>
- #include <stdint.h>
-@@ -985,6 +986,127 @@ void __wait_for_test(struct __test_metadata *t)
- 	}
- }
- 
-+static void test_harness_list_tests(void)
-+{
-+	struct __fixture_variant_metadata *v;
-+	struct __fixture_metadata *f;
-+	struct __test_metadata *t;
-+
-+	for (f = __fixture_list; f; f = f->next) {
-+		v = f->variant;
-+		t = f->tests;
-+
-+		if (f == __fixture_list)
-+			fprintf(stderr, "%-20s %-25s %s\n",
-+				"# FIXTURE", "VARIANT", "TEST");
-+		else
-+			fprintf(stderr, "--------------------------------------------------------------------------------\n");
-+
-+		do {
-+			fprintf(stderr, "%-20s %-25s %s\n",
-+				t == f->tests ? f->name : "",
-+				v ? v->name : "",
-+				t ? t->name : "");
-+
-+			v = v ? v->next : NULL;
-+			t = t ? t->next : NULL;
-+		} while (v || t);
-+	}
-+}
-+
-+static int test_harness_argv_check(int argc, char **argv)
-+{
-+	int opt;
-+
-+	while ((opt = getopt(argc, argv, "hlF:f:V:v:t:T:r:")) != -1) {
-+		switch (opt) {
-+		case 'f':
-+		case 'F':
-+		case 'v':
-+		case 'V':
-+		case 't':
-+		case 'T':
-+		case 'r':
-+			break;
-+		case 'l':
-+			test_harness_list_tests();
-+			return KSFT_SKIP;
-+		case 'h':
-+		default:
-+			fprintf(stderr,
-+				"Usage: %s [-h|-l] [-t|-T|-v|-V|-f|-F|-r name]\n"
-+				"\t-h       print help\n"
-+				"\t-l       list all tests\n"
-+				"\n"
-+				"\t-t name  include test\n"
-+				"\t-T name  exclude test\n"
-+				"\t-v name  include variant\n"
-+				"\t-V name  exclude variant\n"
-+				"\t-f name  include fixture\n"
-+				"\t-F name  exclude fixture\n"
-+				"\t-r name  run specified test\n"
-+				"\n"
-+				"Test filter options can be specified "
-+				"multiple times. The filtering stops\n"
-+				"at the first match. For example to "
-+				"include all tests from variant 'bla'\n"
-+				"but not test 'foo' specify '-T foo -v bla'.\n"
-+				"", argv[0]);
-+			return opt == 'h' ? KSFT_SKIP : KSFT_FAIL;
-+		}
-+	}
-+
-+	return KSFT_PASS;
-+}
-+
-+static bool test_enabled(int argc, char **argv,
-+			 struct __fixture_metadata *f,
-+			 struct __fixture_variant_metadata *v,
-+			 struct __test_metadata *t)
-+{
-+	unsigned int flen = 0, vlen = 0, tlen = 0;
-+	bool has_positive = false;
-+	int opt;
-+
-+	optind = 1;
-+	while ((opt = getopt(argc, argv, "F:f:V:v:t:T:r:")) != -1) {
-+		has_positive |= islower(opt);
-+
-+		switch (tolower(opt)) {
-+		case 't':
-+			if (!strcmp(t->name, optarg))
-+				return islower(opt);
-+			break;
-+		case 'f':
-+			if (!strcmp(f->name, optarg))
-+				return islower(opt);
-+			break;
-+		case 'v':
-+			if (!strcmp(v->name, optarg))
-+				return islower(opt);
-+			break;
-+		case 'r':
-+			if (!tlen) {
-+				flen = strlen(f->name);
-+				vlen = strlen(v->name);
-+				tlen = strlen(t->name);
-+			}
-+			if (strlen(optarg) == flen + 1 + vlen + !!vlen + tlen &&
-+			    !strncmp(f->name, &optarg[0], flen) &&
-+			    !strncmp(v->name, &optarg[flen + 1], vlen) &&
-+			    !strncmp(t->name, &optarg[flen + 1 + vlen + !!vlen], tlen))
-+				return true;
-+			break;
-+		}
-+	}
-+
-+	/*
-+	 * If there are no positive tests then we assume user just wants
-+	 * exclusions and everything else is a pass.
-+	 */
-+	return !has_positive;
-+}
-+
- void __run_test(struct __fixture_metadata *f,
- 		struct __fixture_variant_metadata *variant,
- 		struct __test_metadata *t)
-@@ -1032,24 +1154,32 @@ void __run_test(struct __fixture_metadata *f,
- 			f->name, variant->name[0] ? "." : "", variant->name, t->name);
- }
- 
--static int test_harness_run(int __attribute__((unused)) argc,
--			    char __attribute__((unused)) **argv)
-+static int test_harness_run(int argc, char **argv)
- {
- 	struct __fixture_variant_metadata no_variant = { .name = "", };
- 	struct __fixture_variant_metadata *v;
- 	struct __fixture_metadata *f;
- 	struct __test_results *results;
- 	struct __test_metadata *t;
--	int ret = 0;
-+	int ret;
- 	unsigned int case_count = 0, test_count = 0;
- 	unsigned int count = 0;
- 	unsigned int pass_count = 0;
- 
-+	ret = test_harness_argv_check(argc, argv);
-+	if (ret != KSFT_PASS)
-+		return ret;
-+
- 	for (f = __fixture_list; f; f = f->next) {
- 		for (v = f->variant ?: &no_variant; v; v = v->next) {
--			case_count++;
-+			unsigned int old_tests = test_count;
-+
- 			for (t = f->tests; t; t = t->next)
--				test_count++;
-+				if (test_enabled(argc, argv, f, v, t))
-+					test_count++;
-+
-+			if (old_tests != test_count)
-+				case_count++;
- 		}
- 	}
- 
-@@ -1063,6 +1193,8 @@ static int test_harness_run(int __attribute__((unused)) argc,
- 	for (f = __fixture_list; f; f = f->next) {
- 		for (v = f->variant ?: &no_variant; v; v = v->next) {
- 			for (t = f->tests; t; t = t->next) {
-+				if (!test_enabled(argc, argv, f, v, t))
-+					continue;
- 				count++;
- 				t->results = results;
- 				__run_test(f, v, t);
--- 
-2.37.1
-
+No strong preference here as long as we can keep the sign-offs etc in
+control. Note that I'm not aware of any other tree we pull rebasing, 
+tho, so you may run into unique issues.
