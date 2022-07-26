@@ -2,65 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A7B5814FD
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44D8581538
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235829AbiGZOUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 10:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        id S239149AbiGZO2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 10:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233721AbiGZOUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:20:32 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCA515FFC
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:20:31 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id mf4so26505118ejc.3
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:20:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ty4WZ0hiTfX9j0JdigQY7s+tCOEyHhDi3t7R7BVuqL4=;
-        b=PSARzHgTxGyGCI2C8glxXNMo7W66tZ5mT2Uy9zOvmGtyIilB7TukTZUN2RszeMxxZe
-         vQCqixSkeHWrWiawNSfzjxlOTte4L07gyT/m4PrjuDlJyK1Z3QW7KQ8HLlGs2Ti/Rff5
-         huFb4f+xtk8HFWXJtmwI98Sq+L6UOMu7e8hKIQR75I9wKoVKrKRxVb+q9S2WtDMtaL7d
-         OdBS3Ql8zbaGgbqugw7TZVBYenb3GJZXqjyc4TYM5LPSrGN5bpXl7dwJmGfa+cd7RkRe
-         WlJR+8wdSTo6XQwHSCcAHhYRs/N2dO34WNZUwdDYU7vf5YAk7bs9MruT6jv506m30PvX
-         759Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ty4WZ0hiTfX9j0JdigQY7s+tCOEyHhDi3t7R7BVuqL4=;
-        b=J9DreBawVIJx+j2UZsKnQ89kTcBp7/7St0Iftsc4q8coJAnSqR/9SOn+5yg11FaDak
-         VhDNsVWEJSniVo6ySbB3Nuk/Tr29/pN7teM/QY1lpjtLG1jPIHh/fcQI8moNHgSnswHW
-         mOkQkHwoz5ruETsOx0Wtuso9gSw2h+83vts/RZ4lWG3U6uvyft6MRA6xcuR5UMxbTIxz
-         wIgXQ7fcnWCcol/r5vd84clnXBFc71TL5foY/sG0VvlGdqZNOpGNbHCANM36/aElQZDz
-         znlq9P4T/mnC3C/jxg8JgB5X5oJbWxdwAvPGgZ1epXmgO4EvVlqjlB0P9Y+JaA9Ezt0v
-         sBwg==
-X-Gm-Message-State: AJIora8hbx1AeSDC0/AoSvWMNpOMx8u6Da+COlqr3QlqOd2ndYwe5GjF
-        o2g3uAdT3R1fqOe5r3Q014+7IsfZoMjtyM65BxbJjQ==
-X-Google-Smtp-Source: AGRyM1srFw1IVkp6YPgGpyvXP0iUbV4es2VsK2RbRJwDfj4fPhxhsqlxYGI96Vrn/mC3tvWQHxX+XmW9WSEKdy7gD+U=
-X-Received: by 2002:a17:907:a053:b0:72b:3051:b79b with SMTP id
- gz19-20020a170907a05300b0072b3051b79bmr13768319ejc.690.1658845229643; Tue, 26
- Jul 2022 07:20:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220725202957.2460420-1-linus.walleij@linaro.org> <20220726110228.eook6krfpnb7gtwj@skbuf>
-In-Reply-To: <20220726110228.eook6krfpnb7gtwj@skbuf>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 26 Jul 2022 16:20:18 +0200
-Message-ID: <CACRpkdbCUvE_AusQ5xN=8qLJRXKMTUDNBGTgL-n2u9nsf8xsjg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8366rb: Configure ports properly
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S233444AbiGZO2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:28:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6F0B9;
+        Tue, 26 Jul 2022 07:28:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D1D5B81644;
+        Tue, 26 Jul 2022 14:28:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0371CC433D6;
+        Tue, 26 Jul 2022 14:27:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658845680;
+        bh=tYGaxmOtEWct+hY2SoBnCZGzvOcL/UBUptCOL4UpjVI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=UE9AOoyfew0LRVvAXnX/z7P9HC5z/3chQoC4Y3lmgaPJCwuGsji/aJoMr8iVnCY6H
+         Ke9phrGkuaIY1ItJOKTkT5QCMPoPOJup8vfq98c6iGA2NjNjcvEWM/n9hPD1isbgD0
+         tUdeZL5JgERnrCU9lPl9xq1sclipC9cUyXJaxWowLkORPBX7LU929UR09F7gcUwS52
+         LkEmBiGr/9qR31PR8nL3EEqsQl4qbvu8aXnBsTP/1btUn2MFrDBVXYLGxIZ7ZvALsO
+         Kycmnr5E/RXL2MNzC8CEkGg+DcZKufVAFTM5Xv1k+R21EJTNk/CXqc/Bg+AclmEchj
+         2AlSfSXxwH3hg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     Gregory Greenman <gregory.greenman@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Avraham Stern <avraham.stern@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH] iwlwifi: mvm: fix clang -Wformat warnings
+References: <20220711222919.2043613-1-justinstitt@google.com>
+        <CAFhGd8qRfhQg2k8E7pUm5EYSLp+vmtSd5tZuqtpZUyKud6_Zag@mail.gmail.com>
+Date:   Tue, 26 Jul 2022 17:27:53 +0300
+In-Reply-To: <CAFhGd8qRfhQg2k8E7pUm5EYSLp+vmtSd5tZuqtpZUyKud6_Zag@mail.gmail.com>
+        (Justin Stitt's message of "Mon, 18 Jul 2022 10:37:05 -0700")
+Message-ID: <87sfmoq786.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,67 +66,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 1:02 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Jul 25, 2022 at 10:29:57PM +0200, Linus Walleij wrote:
+Justin Stitt <justinstitt@google.com> writes:
 
-> > Instead of just hammering the CPU port up at 1GBit at
-> > .phylink_mac_link_up calls for that specific port, support
-> > configuring any port: this works like a charm.
->
-> Could you clarify what is intended to be functionally improved with this
-> change, exactly?
+> Any chance a maintainer could take a look at this patch? I am trying
+> to get it through this cycle and we are so close to enabling the
+> -Wformat option for Clang. There's only a handful of patches remaining
+> until the patch enabling this warning can be sent!
 
-I can try, but as usual I am probably confused :)
+Gregory, can I take this directly to wireless-next? I assigned it to me
+in patchwork.
 
-> According to your phylink_get_caps() implementation, I see that all
-> ports are internal, so presumably the CPU ports too (and the user ports
-> are connected to internal PHYs).
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Correct, if by internal you mean there is no external, discrete PHY
-component. They all route out to the physical sockets, maybe with
-some small analog filter inbetween.
-
-> Is it just to act upon the phylink parameters rather than assuming the
-> CPU port is at gigabit? Can you actually set the CPU port at lower rates?
-
-I think you can, actually. The Realtek vendor mess does support it.
-
-Hm I should test to gear it down to 100Mbit and 10Mbit and see
-what happens.
-
-> As for the internal PHY ports, do they need their link speed to be
-> forced at 10/100, or did those previously work at those lower speeds,
-> just left unforced?
-
-They were left in "power-on"-state. Which I *guess* is
-autonegotiate. But haven't really tested.
-
-It leaves me a bit uneasy since these registers are never explicit
-set up to autonegotiate. Maybe I should do a separate patch
-to just set them explicitly in autonegotiation mode?
-
-I have a small 10MBit router, I will try to connect it and see what
-happens, if anything happens and can be detected.
-
-> > -static void
-> > -rtl8366rb_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-> > -                   phy_interface_t interface, struct phy_device *phydev,
-> > -                   int speed, int duplex, bool tx_pause, bool rx_pause)
-> > +static void rtl8366rb_link_get_caps(struct dsa_switch *ds, int port,
-> > +                                 struct phylink_config *config)
-> >  {
-> > -     struct realtek_priv *priv = ds->priv;
-> > -     int ret;
-> > +     /* The SYM and ASYM pause is RX and TX pause */
->
-> No, SYM and ASYM pause are not RX and TX pause, but rather they are
-> advertisement bits. After autoneg completes, the 4 SYM and ASYM pause
-> advertisement bits of you and your link partner get resolved independently
-> by you and your link partner according to the table described in
-> linkmode_resolve_pause(), and the result of that resolution is what RX
-> and TX pause are.
-
-I stand corrected. I'll reword or drop this.
-
-Yours,
-Linus Walleij
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
