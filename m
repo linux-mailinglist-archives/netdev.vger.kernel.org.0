@@ -2,176 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9EA580DC7
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:33:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF59580DBF
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237889AbiGZHdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 03:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        id S238533AbiGZHce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238492AbiGZHcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:32:16 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90C22A964;
-        Tue, 26 Jul 2022 00:28:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658820487; x=1690356487;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yfeBMpJQONyIZu7Rakc0/IyGerTlcG//iuvPj/kUfms=;
-  b=VRRp0b5Bq4Y30A2wqsT/vQqfEfy9aXzbvls8T4QwYCIp0doDu5IA+VAp
-   jZKuKArgjg2IGJ4yU2riIPtq6f8lS6w3MHgcTVKBL93dU+j8MAqgFHsJI
-   TeppIidCSOdVFZcevUcFI4+naMku+yzxrBGdroHe9Nk5FXM6dYGDvFO3d
-   VxPDjXBvTgd6ySaOomeeYT00Mp1CLnHAcX0r74RXzl/Q3SMCbUJJWQmy+
-   M4aVceuF2GIJEsbvOIN9wJ10PIInJMIJ2qbxKQ4S617qstKfpT1Un9gp6
-   sgtgCQ2tDPXvNgy9e4oONP5zJ8DOyFU+QdOwzLhTmuSbfXNttTPeVFGBM
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="274751533"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="274751533"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 00:27:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="776214725"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 26 Jul 2022 00:27:48 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oGEyp-0006BE-2z;
-        Tue, 26 Jul 2022 07:27:47 +0000
-Date:   Tue, 26 Jul 2022 15:27:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     alexandru.tachici@analog.com, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, gerhard@engleder-embedded.com,
-        geert+renesas@glider.be, joel@jms.id.au, stefan.wahren@i2se.com,
-        wellslutw@gmail.com, geert@linux-m68k.org, robh+dt@kernel.org,
-        d.michailidis@fungible.com, stephen@networkplumber.org,
-        l.stelmach@samsung.com, linux-kernel@vger.kernel.org
-Subject: Re: [net-next v2 2/3] net: ethernet: adi: Add ADIN1110 support
-Message-ID: <202207261549.2tRjhI43-lkp@intel.com>
-References: <20220725165312.59471-3-alexandru.tachici@analog.com>
+        with ESMTP id S237961AbiGZHcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:32:02 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61582ED78
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 00:28:02 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id n8so4496054yba.2
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 00:28:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VvOrjB34rm7PzOpcu5vN7H48T73Za5L36kUOrTOg6ZU=;
+        b=UYCAqLQdkCe++bxbvoqb8ja13KXFhIBaW0rC+YYqYq4gvHo+TFgKPF/GZuT91VmSB8
+         C1W+AZw4l9ok/cijI6EPFtIFecx9ElKI75nt3EZmXPMl0ME3rxCMtwt6FCqEcqAzlXgc
+         L7pKvLgAUNdI/gsvxXkfFlg5biXeIuPvgjq6OlZZ2cbEWC7jVJ6RmvIswJs0R1wPEInh
+         sNGMWt8YNJtmjzLBgsGVFMhf8MoqqCx0CeHLgs7fbxPF4hIut+LmlvHlIRh5UZesH3nX
+         o77xUb6eSknQa9/tZQ3BGK1QZOpg9ZmseIfEITeaJYNYQSmSvHlSqBbMN8jvoIXgWsY1
+         JjRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VvOrjB34rm7PzOpcu5vN7H48T73Za5L36kUOrTOg6ZU=;
+        b=15UFkKf1aHkHf8YKQgeR+/JAWz8nVkEuPyrLKaV735EVMw1rKDBJ3SdENn2r7JiREP
+         QCdb0BEw6QLhcjN/TCbWYPsmb36LWnvwseNjOQAnTgl18ll41zMNnqlY5TOvAT7dNI/m
+         MRDx2yw3Mv6yu1y8vWmBrocFSF+w+KzUi7uoo5hAabXlUEync+W5O+mxfWykbQ7qwbjg
+         GzuypSuGBkV2UZsQLcIiCEuxfT8KzgtvGhgHAK8tdj7SvjAIme8HqiFebDEgfnRw+CCv
+         TdTg9np5CcxP682KOdgcDy6V5up4pP/XRdcFTA/nd8P1OAUqgDb02GoAQI1cjcrKMUF1
+         FySg==
+X-Gm-Message-State: AJIora+vQuEbeXtfrQ3wsbdMaY0RBknsHN8055Mb0wAfFLBO2YDW6KHH
+        GtoWeQpZEk89l7IfZogWU8ZwYd0cqJa23JFBaMuClA==
+X-Google-Smtp-Source: AGRyM1uv33zE0Yb5is3EhxTK8li350eCyxt4TvCNmDbhnKmlwtoEaE5nifSRGC+74wymZu7Olm8dTCRPLhrYeL6/L+k=
+X-Received: by 2002:a25:13c8:0:b0:670:6a55:5fad with SMTP id
+ 191-20020a2513c8000000b006706a555fadmr12357687ybt.598.1658820477779; Tue, 26
+ Jul 2022 00:27:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220725165312.59471-3-alexandru.tachici@analog.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1658815925.git.cdleonard@gmail.com> <ad19d5c8a24054d48e1c35bb0ec92075b9f0dc6a.1658815925.git.cdleonard@gmail.com>
+ <CANn89i+ByJsdKLXi982jq0H3irYg_ANSEdmL2zwZ_7G-E_g2eg@mail.gmail.com>
+In-Reply-To: <CANn89i+ByJsdKLXi982jq0H3irYg_ANSEdmL2zwZ_7G-E_g2eg@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 26 Jul 2022 09:27:46 +0200
+Message-ID: <CANn89i+=LVDFx_zjDy6uK+QorR+fosdkb8jqNMO6syqOsS7ZqQ@mail.gmail.com>
+Subject: Re: [PATCH v6 21/26] selftests: net/fcnal: Initial tcp_authopt support
+To:     Leonard Crestez <cdleonard@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, Philip Paeps <philip@trouble.is>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Jul 26, 2022 at 9:06 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Jul 26, 2022 at 8:16 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+> >
+> > Tests are mostly copied from tcp_md5 with minor changes.
+> >
+> > It covers VRF support but only based on binding multiple servers: not
+> > multiple keys bound to different interfaces.
+> >
+> > Also add a specific -t tcp_authopt to run only these tests specifically.
+> >
+>
+> Thanks for the test.
+>
+> Could you amend the existing TCP MD5 test to make sure dual sockets
+> mode is working ?
+>
+> Apparently, if we have a dual stack listener socket (AF_INET6),
+> correct incoming IPV4 SYNs are dropped.
+>
+>  If this is the case, fixing MD5 should happen first ;)
+>
+> I think that we are very late in the cycle (linux-5.19 should be
+> released in 5 days), and your patch set should not be merged so late.
 
-I love your patch! Perhaps something to improve:
+I suspect bug was added in
 
-[auto build test WARNING on net-next/master]
+commit 7bbb765b73496699a165d505ecdce962f903b422
+Author: Dmitry Safonov <0x7f454c46@gmail.com>
+Date:   Wed Feb 23 17:57:40 2022 +0000
 
-url:    https://github.com/intel-lab-lkp/linux/commits/alexandru-tachici-analog-com/net-ethernet-adi-Add-ADIN1110-support/20220726-004159
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 086f8246ed621bcc91d07e867fdbfae9382c1fbd
-config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220726/202207261549.2tRjhI43-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/98b8eeb76eafcfa5bf3706812764e769004d9e32
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review alexandru-tachici-analog-com/net-ethernet-adi-Add-ADIN1110-support/20220726-004159
-        git checkout 98b8eeb76eafcfa5bf3706812764e769004d9e32
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/adi/
+    net/tcp: Merge TCP-MD5 inbound callbacks
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+a possible fix (also removing an indirect call for IPV4) could be:
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/ethernet/adi/adin1110.c:194:39: sparse: sparse: cast to restricted __le16
->> drivers/net/ethernet/adi/adin1110.c:194:39: sparse: sparse: restricted __le16 degrades to integer
->> drivers/net/ethernet/adi/adin1110.c:194:39: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:195:25: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:195:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:195:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:242:56: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:242:56: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:242:56: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:243:25: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:243:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:243:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:326:39: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:326:39: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:326:39: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:327:25: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:327:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:327:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:395:56: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:395:56: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:395:56: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:396:25: sparse: sparse: cast to restricted __le16
-   drivers/net/ethernet/adi/adin1110.c:396:25: sparse: sparse: restricted __le16 degrades to integer
-   drivers/net/ethernet/adi/adin1110.c:396:25: sparse: sparse: restricted __le16 degrades to integer
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index ba2bdc81137490bd1748cde95789f8d2bff3ab0f..66b883d1683ddf7de6a8959a2b4e025a74c830b1
+100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4534,8 +4534,14 @@ tcp_inbound_md5_hash(const struct sock *sk,
+const struct sk_buff *skb,
+        }
 
-vim +194 drivers/net/ethernet/adi/adin1110.c
+        /* check the signature */
+-       genhash = tp->af_specific->calc_md5_hash(newhash, hash_expected,
+-                                                NULL, skb);
++       if (family == AF_INET)
++               genhash = tcp_v4_md5_hash_skb(newhash,
++                                             hash_expected,
++                                             NULL, skb);
++       else
++               genhash = tp->af_specific->calc_md5_hash(newhash,
++                                                        hash_expected,
++                                                        NULL, skb);
 
-   185	
-   186	static int adin1110_read_reg(struct adin1110_priv *priv, u16 reg, u32 *val)
-   187	{
-   188		struct spi_transfer t[2] = {0};
-   189		__le16 __reg = cpu_to_le16(reg);
-   190		u32 header_len = ADIN1110_RD_HEADER_LEN;
-   191		u32 read_len = ADIN1110_REG_LEN;
-   192		int ret;
-   193	
- > 194		priv->data[0] = ADIN1110_CD | FIELD_GET(GENMASK(12, 8), __reg);
-   195		priv->data[1] = FIELD_GET(GENMASK(7, 0), __reg);
-   196		priv->data[2] = 0x00;
-   197	
-   198		if (priv->append_crc) {
-   199			priv->data[2] = adin1110_crc_data(&priv->data[0], 2);
-   200			priv->data[3] = 0x00;
-   201			header_len++;
-   202		}
-   203	
-   204		t[0].tx_buf = &priv->data[0];
-   205		t[0].len = header_len;
-   206	
-   207		if (priv->append_crc)
-   208			read_len++;
-   209	
-   210		memset(&priv->data[header_len], 0, read_len);
-   211		t[1].rx_buf = &priv->data[header_len];
-   212		t[1].len = read_len;
-   213	
-   214		ret = spi_sync_transfer(priv->spidev, t, 2);
-   215		if (ret)
-   216			return ret;
-   217	
-   218		if (priv->append_crc) {
-   219			u8 recv_crc;
-   220			u8 crc;
-   221	
-   222			crc = adin1110_crc_data(&priv->data[header_len], ADIN1110_REG_LEN);
-   223			recv_crc = priv->data[header_len + ADIN1110_REG_LEN];
-   224	
-   225			if (crc != recv_crc) {
-   226				dev_err_ratelimited(&priv->spidev->dev, "CRC error.");
-   227				return -EBADMSG;
-   228			}
-   229		}
-   230	
-   231		*val = get_unaligned_be32(&priv->data[header_len]);
-   232	
-   233		return ret;
-   234	}
-   235	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+        if (genhash || memcmp(hash_location, newhash, 16) != 0) {
+                NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
