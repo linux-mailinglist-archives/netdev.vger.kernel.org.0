@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4A9580D6E
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00305580D3A
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:26:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238415AbiGZHZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 03:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
+        id S238525AbiGZHZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238071AbiGZHYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:24:39 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82BB2B615;
-        Tue, 26 Jul 2022 00:23:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUN6yA_1658820221;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUN6yA_1658820221)
+        with ESMTP id S238264AbiGZHYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:24:41 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DA62C125;
+        Tue, 26 Jul 2022 00:23:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUB9Km_1658820223;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUB9Km_1658820223)
           by smtp.aliyun-inc.com;
-          Tue, 26 Jul 2022 15:23:42 +0800
+          Tue, 26 Jul 2022 15:23:44 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v13 40/42] virtio_net: support rx queue resize
-Date:   Tue, 26 Jul 2022 15:22:23 +0800
-Message-Id: <20220726072225.19884-41-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v13 41/42] virtio_net: support tx queue resize
+Date:   Tue, 26 Jul 2022 15:22:24 +0800
+Message-Id: <20220726072225.19884-42-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
 References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
@@ -72,50 +72,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements the resize function of the rx queues.
+This patch implements the resize function of the tx queues.
 Based on this function, it is possible to modify the ring num of the
 queue.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/net/virtio_net.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/net/virtio_net.c | 47 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index fe4dc43c05a1..1115a8b59a08 100644
+index 1115a8b59a08..d1e6940b46d8 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -278,6 +278,8 @@ struct padded_vnet_hdr {
- 	char padding[12];
+@@ -135,6 +135,9 @@ struct send_queue {
+ 	struct virtnet_sq_stats stats;
+ 
+ 	struct napi_struct napi;
++
++	/* Record whether sq is in reset state. */
++	bool reset;
  };
  
-+static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf);
-+
+ /* Internal representation of a receive virtqueue */
+@@ -279,6 +282,7 @@ struct padded_vnet_hdr {
+ };
+ 
+ static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf);
++static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf);
+ 
  static bool is_xdp_frame(void *ptr)
  {
- 	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-@@ -1846,6 +1848,26 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	return NETDEV_TX_OK;
+@@ -1603,6 +1607,11 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
+ 		return;
+ 
+ 	if (__netif_tx_trylock(txq)) {
++		if (sq->reset) {
++			__netif_tx_unlock(txq);
++			return;
++		}
++
+ 		do {
+ 			virtqueue_disable_cb(sq->vq);
+ 			free_old_xmit_skbs(sq, true);
+@@ -1868,6 +1877,44 @@ static int virtnet_rx_resize(struct virtnet_info *vi,
+ 	return err;
  }
  
-+static int virtnet_rx_resize(struct virtnet_info *vi,
-+			     struct receive_queue *rq, u32 ring_num)
++static int virtnet_tx_resize(struct virtnet_info *vi,
++			     struct send_queue *sq, u32 ring_num)
 +{
++	struct netdev_queue *txq;
 +	int err, qindex;
 +
-+	qindex = rq - vi->rq;
++	qindex = sq - vi->sq;
 +
-+	napi_disable(&rq->napi);
++	virtnet_napi_tx_disable(&sq->napi);
 +
-+	err = virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_unused_buf);
++	txq = netdev_get_tx_queue(vi->dev, qindex);
++
++	/* 1. wait all ximt complete
++	 * 2. fix the race of netif_stop_subqueue() vs netif_start_subqueue()
++	 */
++	__netif_tx_lock_bh(txq);
++
++	/* Prevent rx poll from accessing sq. */
++	sq->reset = true;
++
++	/* Prevent the upper layer from trying to send packets. */
++	netif_stop_subqueue(vi->dev, qindex);
++
++	__netif_tx_unlock_bh(txq);
++
++	err = virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf);
 +	if (err)
-+		netdev_err(vi->dev, "resize rx fail: rx queue index: %d err: %d\n", qindex, err);
++		netdev_err(vi->dev, "resize tx fail: tx queue index: %d err: %d\n", qindex, err);
 +
-+	if (!try_fill_recv(vi, rq, GFP_KERNEL))
-+		schedule_delayed_work(&vi->refill, 0);
++	__netif_tx_lock_bh(txq);
++	sq->reset = false;
++	netif_tx_wake_queue(txq);
++	__netif_tx_unlock_bh(txq);
 +
-+	virtnet_napi_enable(rq->vq, &rq->napi);
++	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
 +	return err;
 +}
 +
