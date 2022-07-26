@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14B1F581A37
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 21:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71717581A35
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 21:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiGZTVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 15:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        id S239785AbiGZTVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 15:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiGZTVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 15:21:36 -0400
+        with ESMTP id S239784AbiGZTVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 15:21:41 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656EC3343B
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 12:21:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9801033E39
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 12:21:39 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oGQ7Z-000816-UO; Tue, 26 Jul 2022 21:21:33 +0200
+        id 1oGQ7e-00081Q-20; Tue, 26 Jul 2022 21:21:38 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
@@ -24,9 +24,9 @@ Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Florian Westphal <fw@strlen.de>,
         Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH net 2/3] netfilter: nf_tables: add rescheduling points during loop detection walks
-Date:   Tue, 26 Jul 2022 21:20:55 +0200
-Message-Id: <20220726192056.13497-3-fw@strlen.de>
+Subject: [PATCH net 3/3] netfilter: nft_queue: only allow supported familes and hooks
+Date:   Tue, 26 Jul 2022 21:20:56 +0200
+Message-Id: <20220726192056.13497-4-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220726192056.13497-1-fw@strlen.de>
 References: <20220726192056.13497-1-fw@strlen.de>
@@ -41,45 +41,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add explicit rescheduling points during ruleset walk.
+Trying to use 'queue' statement in ingress (for example)
+triggers a splat on reinject:
 
-Switching to a faster algorithm is possible but this is a much
-smaller change, suitable for nf tree.
+WARNING: CPU: 3 PID: 1345 at net/netfilter/nf_queue.c:291
 
-Link: https://bugzilla.netfilter.org/show_bug.cgi?id=1460
+... because nf_reinject cannot find the ruleset head.
+
+The netdev family doesn't support async resume at the moment anyway,
+so disallow loading such rulesets with a more appropriate
+error message.
+
+v2: add 'validate' callback and also check hook points, v1 did
+allow ingress use in 'table inet', but that doesn't work either. (Pablo)
+
 Signed-off-by: Florian Westphal <fw@strlen.de>
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/netfilter/nft_queue.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 646d5fd53604..9f976b11d896 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3340,6 +3340,8 @@ int nft_chain_validate(const struct nft_ctx *ctx, const struct nft_chain *chain)
- 			if (err < 0)
- 				return err;
- 		}
-+
-+		cond_resched();
- 	}
+diff --git a/net/netfilter/nft_queue.c b/net/netfilter/nft_queue.c
+index 15e4b7640dc0..da29e92c03e2 100644
+--- a/net/netfilter/nft_queue.c
++++ b/net/netfilter/nft_queue.c
+@@ -68,6 +68,31 @@ static void nft_queue_sreg_eval(const struct nft_expr *expr,
+ 	regs->verdict.code = ret;
+ }
  
- 	return 0;
-@@ -9367,9 +9369,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
- 				break;
- 			}
- 		}
++static int nft_queue_validate(const struct nft_ctx *ctx,
++			      const struct nft_expr *expr,
++			      const struct nft_data **data)
++{
++	static const unsigned int supported_hooks = ((1 << NF_INET_PRE_ROUTING) |
++						     (1 << NF_INET_LOCAL_IN) |
++						     (1 << NF_INET_FORWARD) |
++						     (1 << NF_INET_LOCAL_OUT) |
++						     (1 << NF_INET_POST_ROUTING));
 +
-+		cond_resched();
- 	}
++	switch (ctx->family) {
++	case NFPROTO_IPV4:
++	case NFPROTO_IPV6:
++	case NFPROTO_INET:
++	case NFPROTO_BRIDGE:
++		break;
++	case NFPROTO_NETDEV: /* lacks okfn */
++		fallthrough;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return nft_chain_validate_hooks(ctx->chain, supported_hooks);
++}
++
+ static const struct nla_policy nft_queue_policy[NFTA_QUEUE_MAX + 1] = {
+ 	[NFTA_QUEUE_NUM]	= { .type = NLA_U16 },
+ 	[NFTA_QUEUE_TOTAL]	= { .type = NLA_U16 },
+@@ -164,6 +189,7 @@ static const struct nft_expr_ops nft_queue_ops = {
+ 	.eval		= nft_queue_eval,
+ 	.init		= nft_queue_init,
+ 	.dump		= nft_queue_dump,
++	.validate	= nft_queue_validate,
+ 	.reduce		= NFT_REDUCE_READONLY,
+ };
  
- 	list_for_each_entry(set, &ctx->table->sets, list) {
-+		cond_resched();
-+
- 		if (!nft_is_active_next(ctx->net, set))
- 			continue;
- 		if (!(set->flags & NFT_SET_MAP) ||
+@@ -173,6 +199,7 @@ static const struct nft_expr_ops nft_queue_sreg_ops = {
+ 	.eval		= nft_queue_sreg_eval,
+ 	.init		= nft_queue_sreg_init,
+ 	.dump		= nft_queue_sreg_dump,
++	.validate	= nft_queue_validate,
+ 	.reduce		= NFT_REDUCE_READONLY,
+ };
+ 
 -- 
 2.35.1
 
