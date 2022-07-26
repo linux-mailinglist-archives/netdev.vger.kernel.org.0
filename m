@@ -2,160 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 142F3581C1C
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C89581C23
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231301AbiGZWbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 18:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
+        id S230258AbiGZWmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 18:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiGZWbn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:31:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A67B28E27;
-        Tue, 26 Jul 2022 15:31:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7947616CB;
-        Tue, 26 Jul 2022 22:31:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC0C3C433D6;
-        Tue, 26 Jul 2022 22:31:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658874702;
-        bh=d4H5gQrtMKIK9qlJr8zIiMTxRgr6ssFnpb1lfTELUk8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nuEVd8I8oMqDpp9sdm91IbUlGm2mQ4Xi0iWPuTGrynByvutuFjXH50bUTtlE9cN1F
-         qktPHml49KU8tWHuy+OddnLyTngU8IvAg7kZeSpSRjp3jvCa4SubthEIsXiizPJ4BA
-         NkXrzGD2Ubvs0zl+aOPvfVC9t1vfSfdzRQSJfCg8KDyRZbovrUHp9ojLLFusetUedb
-         XvzEz9QbhZqNOY2Ktp+8hfL+nL0SBgb3GDZbDKd1390+WNs5FjHZWaz33v9lUJQj3E
-         /wCQqmMb3gyR83yM/r4RN0yQXxKWAG8jlBm1EQa/laY/TLIV4K5SlJqzDbc0NLs9Rl
-         QmTPHZp0wLk/A==
-Date:   Tue, 26 Jul 2022 15:31:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: pull request: bluetooth-next 2022-07-22
-Message-ID: <20220726153140.7fefd4b4@kernel.org>
-In-Reply-To: <CABBYNZ+74ndrzdx=4dGLE6oQbZ2w6SGnUGeS0OSqH6EnND4qJw@mail.gmail.com>
-References: <20220722205400.847019-1-luiz.dentz@gmail.com>
-        <20220722165510.191fad93@kernel.org>
-        <CABBYNZLj2z_81p=q0iSxEBgVW_L3dw8UKGwQKOEDj9fgDLYJ0g@mail.gmail.com>
-        <20220722171919.04493224@kernel.org>
-        <CABBYNZJ5-yPzxd0mo4E+wXuEwo1my+iaiW8YOwYP05Uhmtd98Q@mail.gmail.com>
-        <20220722175003.5d4ba0e0@kernel.org>
-        <CABBYNZ+74ndrzdx=4dGLE6oQbZ2w6SGnUGeS0OSqH6EnND4qJw@mail.gmail.com>
+        with ESMTP id S229493AbiGZWmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:42:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54D62248C7
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 15:42:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658875332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sDAwsVQbSAzmWkAITnnVnLl/3BbAkl6tpRMtqlMRgEQ=;
+        b=Sdqbd3IXBwG74VDcE4N05+KnKzCyJyWfpthN88oPA++IHC4axvl7zh4x1FqW4fI36iv0wO
+        tO9jyiHmr4kFx3P2FoA7Ib8uC5xfhsPuDWcuwXCe+/6e8i1ZH+rMmg8GX4SBB5b3cSLPn3
+        FEOcWyWaajd7/HSB5kVM6wF/M78kToY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-DezBf1UUOHGRANr-Xfqtwg-1; Tue, 26 Jul 2022 18:42:11 -0400
+X-MC-Unique: DezBf1UUOHGRANr-Xfqtwg-1
+Received: by mail-qk1-f200.google.com with SMTP id m17-20020a05620a291100b006b6590830feso6112897qkp.13
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 15:42:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sDAwsVQbSAzmWkAITnnVnLl/3BbAkl6tpRMtqlMRgEQ=;
+        b=IdATJ2RDAsQmV3sfVUvIk6SBl8tK0f/BhLs1QdBq3zFAQVgIGyHHYdAuuhKqMIK/TV
+         vulAEgyuWv5YyTeUUy+/m5EbEb2cQMinYlpu/Lnuz58u4peBVbkXSI4anOja1yRzbHcY
+         smj2zahuDhprGmXs2gkhd4d8NzoQejBqQ8mtNIkMt5EI4luSGWGObCM410RGDE5MdGlE
+         ePAGBtvDw7JEko0pESsb4ympor79R9OriLvp+NpOaOwqU+RvtvhqtmKka8Q/6gPWXaua
+         BVRvMeg+EYffx+2Y21vZN9NSUSQf16nAvEd451Adj+Q8NQNHhHGR4Qh6hu2BuSOSQ6oW
+         Aw2w==
+X-Gm-Message-State: AJIora+QkI8E1o1J9YQySf+5L6kvx0o7lGpbnHMBya4mxNQFQc/x7QlV
+        srgQOIVmzevM0e0uCRb3Zx3TZK+19Mt6Vl5oSsWotiIqy7IqgzNZvJABjhX8twdLF04jjE2/bUy
+        INBlKE5FOxzH3kkI1
+X-Received: by 2002:a05:622a:130a:b0:31f:450f:ac8e with SMTP id v10-20020a05622a130a00b0031f450fac8emr3159058qtk.498.1658875330839;
+        Tue, 26 Jul 2022 15:42:10 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uM26EC6KJaFiAwJ6GkqSfsxbzc020dldipuxBJxnu5hv3GD6krWz6DSGonxqZSNIR8MINX/A==
+X-Received: by 2002:a05:622a:130a:b0:31f:450f:ac8e with SMTP id v10-20020a05622a130a00b0031f450fac8emr3159046qtk.498.1658875330570;
+        Tue, 26 Jul 2022 15:42:10 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::49])
+        by smtp.gmail.com with ESMTPSA id f12-20020ac8014c000000b0031ef6dd9700sm10551841qtg.55.2022.07.26.15.42.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 15:42:10 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 15:42:06 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: Re: [PATCH v5 0/2] Upper bound kernel timers
+Message-ID: <20220726224206.kbcveqaw2fjar3el@treble>
+References: <87zgkwjtq2.ffs@tglx>
+ <20220505131811.3744503-1-asavkov@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220505131811.3744503-1-asavkov@redhat.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jul 2022 15:05:17 -0700 Luiz Augusto von Dentz wrote:
-> > > Ive just fixup the original patch that introduced it, btw how do you
-> > > run sparse to capture such errors?  
-> >
-> > We run builds with W=1 C=1 in the CI and then diff the outputs.
-> > That's pretty noisy so we have a regex which counts number of
-> > warnings per file, that makes it possible to locate the exact new
-> > warning. At least most of the time...  
+Hi Thomas,
+
+Ping?
+
+On Thu, May 05, 2022 at 03:18:09PM +0200, Artem Savkov wrote:
+> As previously discussed [1] we had a report of a regression in TCP keepalive
+> timer where timers were up to 4 minutes late resulting in disconnects.
 > 
-> Hmm, is there any way to trigger net CI, either that or we need to
-> duplicate the same test under our CI to avoid these last minute
-> findings when we are attempting to merge something.
-
-The code is at:
-
-https://github.com/kuba-moo/nipa
-
-But it hardcodes net and bpf tree maching in places. You may want
-to steal just the build script, its in bash.
-
-> > > So we don't need to rebase?  
-> >
-> > No, not usually. After we pull from you, you should pull back from us
-> > (git pull --ff-only $net-or-net-next depending on the tree you
-> > targeted), and that's it. The only patches that go into your tree then
-> > are bluetooth patches, everything else is fed via pulling back from us.
-> >  
-> > > There were some patches already applied via bluetooth.git so at least
-> > > I do it to remove them  
-> >
-> > Normally you'd not apply bluetooth fixes to bluetooth-next, apply
-> > them to bluetooth and send us a PR. Then once a week we'll merge
-> > net (containing your fixes) into net-next, at which point you can
-> > send a bluetooth-next PR and get the fixes into bluetooth-next.
-> > FWIW from our perspective there's no limit on how often you send PRs.  
+> This patchset tries to fix the problem by introducing upper bound kernel timers
+> and making tcp keepalive timer use those.
 > 
-> Are you saying we should be using merge commits instead of rebase then?
-
-Not sure what merge commits would mean in this case.
-
-> > Alternatively you could apply the fixes into bluetooth and then
-> > merge bluetooth into bluetooth-next. If you never rebase either tree,
-> > git will be able to figure out that it's the same commit hash even if
-> > it makes it to the tree twice (once thru direct merge and once via
-> > net). That said, I believe Linus does not like cross tree merges, i.e.
-> > merges which are not fast forwards to the downstream tree. So it's
-> > better to take the long road via bt ->  net -> net-next -> bt-next.  
+> [1] https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
 > 
-> Well I got the impression that merge commits shall be avoided, but
-
-There's many schools of thought, but upstream there's very little
-rebasing of "official" branches (i.e. main/master branches, not 
-testing or other unstable branches) AFAIK.
-
-> rebase overwrites the committer, so the two option seem to have
-> drawbacks, well we can just resign on rebase as well provided git
-> doesn't duplicate Signed-off-by if I use something like exec="git
-> commit -s --amend".
-
-Sure, be careful tho because I think it doesn't check the signoff
-history, IIRC just the most recent tag. So you may end up with multiple
-signoffs from yourself and Marcel.
-
-> > > and any possible conflicts if there were
-> > > changes introduced to the bluetooth directories that can eventually
-> > > come from some other tree.  
-> >
-> > Conflicts are not a worry, just let us know in the PR description how
-> > to resolve them.  
+> ---
+> Changes in v5:
+>   - The least intrusive and most straightforward approach. This avoids touching
+>     any of existing code. The timeout supplied is always reduced by a known
+>     timer wheel error margin of 12.5%.
+>   - Commit message adjustments.
 > 
-> Not really following, how can we anticipate a merge conflict if we
-> don't rebase?
+> Changes in v4:
+>   - Drop any attempts to be smart when calculating timer adjustment and always
+>     substract LVL_GRAN so that base clock lag won't be such a problem. This
+>     means that in some cases we will always be early, but all we want is not to
+>     be late.
+> 
+> Changes in v3:
+>   - A different approach: instead of introducing upper bound timers try to
+>     account for timer wheen granularity on timer (re)arming step.
+>   - Not sure whether moving lvl calculation into a separate function is worth
+>     it.
+>   - Had a hard time naming the upper_bount_timeout() function - any suggestions
+>     welcome.
+> 
+> Changes in v2:
+>   - TIMER_UPPER_BOUND flag description added as a comment in timer.h
+>   - Code style fixes
+>   - More elaborate commit message in timer commit
+> 
+> Artem Savkov (2):
+>   timer: add a function to adjust timeouts to be upper bound
+>   net: make tcp keepalive timer upper bound
+> 
+>  include/linux/timer.h           |  1 +
+>  kernel/time/timer.c             | 14 ++++++++++++++
+>  net/ipv4/inet_connection_sock.c |  2 +-
+>  3 files changed, 16 insertions(+), 1 deletion(-)
+> 
+> -- 
+> 2.34.1
+> 
 
-If your trees are hooked up to linux-next (I presume not 'cause Stephen
-would probably scream at you for rebasing?) - Stephen will tell you
-there's a conflict within a day or two.
+-- 
+Josh
 
-Obviously sometimes you'll notice right away when applying patches that
-two patches touch the same function.
-
-> With merge strategy it seem that the one pulling needs
-> to resolve the conflicts rather than the submitter which I think would
-> lead to bad interaction between subsystems, expect if we do a merge
-> [-> resolve conflict] -> pull request -> [resolve conflicts ->] merge
-> which sounds a little too complicated since we have to resolve
-> conflicts in both directions.
-
-The pulling back should always be a fast-forward so there's no merge
-commit or conflicts (git pull --ff-only). Only the actual downstream
-tree (netdev) has to resolve conflicts, which is not all that bad
-thanks for Stephen's advanced notices.
-
-> In my opinion rebase strategy is cleaner and is what we recommend for
-> possible clones of bluetooth-next and bluetooth trees including CI so
-> possible conflicts are fixed in place rather on the time the trees are
-> merged.
-
-No strong preference here as long as we can keep the sign-offs etc in
-control. Note that I'm not aware of any other tree we pull rebasing, 
-tho, so you may run into unique issues.
