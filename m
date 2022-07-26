@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CA5580C53
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AF7580C4B
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiGZHVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 03:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        id S230481AbiGZHUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238003AbiGZHUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:20:19 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2054.outbound.protection.outlook.com [40.107.244.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82662C15;
-        Tue, 26 Jul 2022 00:20:11 -0700 (PDT)
+        with ESMTP id S237992AbiGZHUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:20:12 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2047.outbound.protection.outlook.com [40.107.102.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF05C2AC67;
+        Tue, 26 Jul 2022 00:20:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZOD1UndmeTGTk9hgFyivuVF5S7Oe4keZXZQZZMkR0V2ccNKRL9C2VT+gmSh6RqZ3WgAayKwXAsjTweLSBmuyHpr/MPeAhcK9e7IhoA7BqdZD+TafEeC82PX8u504ILUG08wJSuQU7BLz/nVr3aW8qV/gi/E2QAHIV0OWoWcVAO5D11Fjc1QKxQXTmoTKchT1ndDAY1/Wd40DNMJZWX5ss/oxqjiUwcqP/+2ogSgyje4jK6snZ/xUXaddFQMCnzH3b9oddnNGSbNafxxzDmc5RJlRKmKgZYVC8r655PCFmzvsA5fpm8JlifljZQmnoAgyEzbHPFAXLdXsLdTKhLH2eQ==
+ b=h1y4q8PhH/oirM1Z8lUZ3jXbGGgBl6I3+/34oTULfmlj+tVH7o/3giUkq8MhweYqDSjSClZzkz9fzRZOQHn3YnS6hVqZLcEk29SCiCdwid9FcGbBcK4RsRTHBJJ3b9gWUykzJ5TioGo9A1rNb3/p8s39HpVc8/6oG/3ELrm+uuxyLR1cnEbKAYh9iDzf5LOXrXdmcAuhxEVqNhjdfnwrjpOJo3NC7tMM2Y3cCZNGsvtHEPzAOM/4jljtXlwQ5V/aY9o+N27mJ5/KvVUkcLYZn+pn0OdTNarTasnb6XlfjINQIVcPS9wujDM6uqwxVDhsjnIxTMKIHISyvh9Lt4V+Nw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mKP0PGsxWiAbe3Z++CSnEe39J+N4eERze7OVZ3qeGF0=;
- b=eqmFksHeUmBK29JppN/b7JOIxfrQjs79QPzZYBGUJNSauL/Udlu+O0obgsCkD7m3iY2HUsvxRltVgakcfa1qngLn7CdYCtC/TmpDpsWSTy+TCOFk/D2xEOC56eXBZZ1txLzlD/MGXbYNNURLmpVrsDQ2yQhmKfk5EIQ5NHQkEqvKWwflmbOAxRfbQTYQspjvPvwXYS62T2Y5zkSkZY/CdsagNPhOUBDD9QROyOX0enejhCQbhoMVedqjDRBumLw4x9MsUot89HkJtp+b48q3dRYal23qpaxL18f6M4wJAwIo4xdsLekM/uyrs+YcLddb1RaMth2q4ZvTa+fMHMyVGQ==
+ bh=1h/RM+U8dWqlmKglnuFcCperbDOZ3naKWbA2MLGkuF0=;
+ b=IFLQYr8HH5iYyplBQMOa2YI6ZcolkiNp7M+TusMIlO5A1/S+oty1JH67SBvSZicuND5GYFkKvV0mEbpVj9sveAE+QMOGV/b99sa5h2EVSvjEsSLyQ9iLvshGFMk4LNZJw8dvsGbmynbtiZWxpmHOmb1UbEoOPPRR8v3gxHTjA3MhvVmtkUabtH7rhvFmk9ixP09ZqL8W/m8ecyL4vjDiExpVyoCIggvkmCwVMkcJUvPFBV81Rc1G76XBjUp8qSYbylI1Ch92teH1JwF7zQ7YcTbVGzyIvc5cjuial7hw2q6nN/NSnDGcPmyd69DyzZmvewljqwkLS3iL/igr1G9OOg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mKP0PGsxWiAbe3Z++CSnEe39J+N4eERze7OVZ3qeGF0=;
- b=tZXPGRrrXpENeferl6o9Rtb9x2605tGcFEXvpPKe3ob2V95efy/natQmWnKP5GNrA3yLL91jVX/Qpgbt6aAlmVE/sH322G1JOs7MRHiUFlKYF2DVFUQ3N2h0xttgDYK4Wc1nTiL5joa1qYeggIVc1RizBkDOnuHGGd2Ga9C3H6rSntekcvOo5K9X4p8iHgbedQpO6fxZ0wy/xC2jCmsxmg9T464piXFWp9L0MYIqBBxfxK7AMMUQ0XjuaucSVsUi6Kfz6jaktRzNI3oC0yjCCbntoZX4IB4ymO4y7qr+bAAiMLc0+GBwGogsmbujuH/wFvmnoyWKPibweBCF/C+XtA==
-Received: from BN0PR07CA0007.namprd07.prod.outlook.com (2603:10b6:408:141::24)
- by MN2PR12MB3821.namprd12.prod.outlook.com (2603:10b6:208:16f::18) with
+ bh=1h/RM+U8dWqlmKglnuFcCperbDOZ3naKWbA2MLGkuF0=;
+ b=prh1hW3ffTJDDOhLNxotg6XuM8Y3TBqs7SWYfq2gaP2Yne0MUad/Levvf+Xz2BE+ctft68+s2JMzKfk3pZS7gkACAoftikMa4tWNxr+FreT1kYptp3ae0KrEIU8i3QOv48K8fMk871QGMo75qK6J7IyB84SdfSIK1KlOwg6X03YebasOyWxGEFRuWXR3NT9veQlQl8X6TMi9+T5AkwfbI/SgdAXGbi+ZoG1qvfEqEefE1QhL6Rup0AlldDEPRsFbOviJGCipjjfLLOXoZVFW87k+HRpi55JBfB/5ByndAEeLw1cXbOhN0SCIN7IDS+juFKfcZLnxumWRdkhm6SOthw==
+Received: from BN9PR03CA0389.namprd03.prod.outlook.com (2603:10b6:408:f7::34)
+ by MN2PR12MB3471.namprd12.prod.outlook.com (2603:10b6:208:c8::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Tue, 26 Jul
- 2022 07:20:09 +0000
-Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:141:cafe::11) by BN0PR07CA0007.outlook.office365.com
- (2603:10b6:408:141::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24; Tue, 26 Jul
+ 2022 07:20:00 +0000
+Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f7:cafe::da) by BN9PR03CA0389.outlook.office365.com
+ (2603:10b6:408:f7::34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19 via Frontend
- Transport; Tue, 26 Jul 2022 07:20:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ Transport; Tue, 26 Jul 2022 07:20:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5458.17 via Frontend Transport; Tue, 26 Jul 2022 07:20:09 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 26 Jul
- 2022 07:19:56 +0000
+ 15.20.5458.17 via Frontend Transport; Tue, 26 Jul 2022 07:20:00 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 26 Jul
+ 2022 07:19:59 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 26 Jul
- 2022 00:19:55 -0700
+ 2022 00:19:59 -0700
 Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
  with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Tue, 26 Jul
- 2022 00:19:53 -0700
+ 2022 00:19:56 -0700
 From:   Michael Guralnik <michaelgur@nvidia.com>
 To:     <jgg@nvidia.com>
 CC:     <leonro@nvidia.com>, <maorg@nvidia.com>,
         <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <netdev@vger.kernel.org>, <saeedm@nvidia.com>,
         Aharon Landau <aharonl@nvidia.com>
-Subject: [PATCH rdma-next v1 4/5] RDMA/mlx5: Store in the cache mkeys instead of mrs
-Date:   Tue, 26 Jul 2022 10:19:10 +0300
-Message-ID: <20220726071911.122765-5-michaelgur@nvidia.com>
+Subject: [PATCH rdma-next v1 5/5] RDMA/mlx5: Rename the mkey cache variables and functions
+Date:   Tue, 26 Jul 2022 10:19:11 +0300
+Message-ID: <20220726071911.122765-6-michaelgur@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220726071911.122765-1-michaelgur@nvidia.com>
 References: <20220726071911.122765-1-michaelgur@nvidia.com>
@@ -77,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3ad09110-44dd-47e6-bb14-08da6ed745c1
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3821:EE_
+X-MS-Office365-Filtering-Correlation-Id: b37967d8-72a5-4630-8b63-08da6ed74064
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3471:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gThhRpol5UUUV7EP0o1t1ORoI6jihP6UPYq4GMYVKtq9KbjrDTDwrY0TBzcn+P00rKKV7Ok6X6VNBPFkdkAc7jeR33JglqlV+bIpwhBG/3JP5bkW7ed63J4e7xt/pl1vhNAK5UplDgFsJhhu1RB5mqpMH/Z9m72jCR/FxuuQvlqnw/Qo2TCPAXxU6NqBHyX/cNeihk3r0fIlQ+CjQ5Ge+Jp1JGiWLyRMBppGPiIELo81HH2h+8aZEKG+Qcv9eVHdi7tdUYnTW2iDBfcMs4aQYyNSQI/mEe3ANqgC3Gxixc8N+aNelsP3TBwfXFG2lQw/5sL1KILNQsH+mVscsFnbruSM5tOKOyEXuOzas0T9nD7Om93qKdhJ8MF+/UBhKoCio2n9IInM3N7MIgLQIGvOCKkfZN4nE2s5NDVRVx4zs74g+L4YY8SP9xYlYTqwy6HLR74lHqVRa4MaphrSs83JwJjFCAVDAAipiXvtcE0Oz+cLsdVL2zAdPMgABRrBTs+yu4KnxkeKTkqsyUY59A7uNrHaBaAFZ5jhZy6hvv61Ns3tVb4n/rYlmIMUwBAX2PT2qZP+o/egzjYJJGStsZUaIRcot5nAZs+ahnu7dcUkdzyASlzUgtQWS/3zkHWlzrX+sTykQudoJLqlpYviltUmCTwOp+3WgS1xuirt5oFhQjQyMOR7B6pm+hBGwouTJgThSvGAZFtS+/VHeiRkdcZ4cGoRLyfnL6PYC03gl7LBBUUyrKu3kwRIh8qdBEb3Y/ORGdAtRoC84+A+iMmjRkCKchTSMsYfPgB2BJTBrwCDAafxvd19bTMfpaWjqnmjT8dyyKYM2DF1xs805BMTyjTiyg==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(136003)(376002)(36840700001)(40470700004)(46966006)(70586007)(186003)(2906002)(70206006)(41300700001)(356005)(82740400003)(4326008)(8676002)(30864003)(336012)(5660300002)(47076005)(40480700001)(83380400001)(426003)(6862004)(8936002)(478600001)(107886003)(86362001)(36756003)(2616005)(6636002)(54906003)(40460700003)(316002)(6666004)(81166007)(82310400005)(450100002)(26005)(1076003)(7696005)(36860700001)(37006003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: AYjr9LS3y9xrRz+USBjcD7J3UdjVBHf9yJK7XfWdIlkmIhuaOloYVoKCYMQzE8kbzDqsTI7lDXuUggNMoqW0E1DRUagGWQ7gOIkiPS6UY3ubrz58mcRPgqIbkqZyDm71Pnu8vIDBWfgrxd7D8+mKzYgFuG/LQHQZZgbo0ShKJMMWw/PfIs5OKWPFKNBcTrPSMwYysdAw6GXTCkm2EYuzLSjQ+0Ghw6SwiT243SZQsiluuZzf+WMMvxVskkR/aYMeuud4rN1ftM2bBLZZISlDhqIyEmy4Iz4G8VyZM0Ff1dZDeQAGvn3ut8NXh38D0UKJ6Aae573jurOk8rU0regaFCIq00UpLS9pYvj7FiG4IJA/O2UerP3a5VtxIohf5l/0UXrVZEBi2iGGYdnNaF/7yBfqTr+/uKNdejwbE2HyA1zkSKEHUvyzZ6NRC01tP+YirTmHganiTq3f8UvIV4dXCRjtMTB5jDj4nzf06UHE16Kq63DuR7YXYal+zfQHZLGdjiVgBD718A2KREEplhaDOPZ0OJ7SC4ky9XJDOpuxhXcdgFjDjA3jaQGq8tpO0UcMtZqsuBuhF3wqn5+/rI0zEwABN6ujiFD0240rQFR2t64AA5XmPpHgQt+/qoIjVYqVufsCCS8bEh8/4UbenSKBXy5/LHA2X+cEI3mExCrgirq5RnGrCID8Y++3IVczA9c0BC8FFKLketrkqFuqIPrs8dhQHmkVuzZnynSUCdfPcQM8l2VdhWrCMTxndbT5zypp4eCiIox4IxrvXsfUhJhtx3ScAjaAsKyZPIcBoMbeaXVdMi+tWeGaly32MS88htj65vB/IXCLsq3zYQpridjv1g==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(136003)(396003)(46966006)(36840700001)(40470700004)(70586007)(356005)(82740400003)(36860700001)(81166007)(426003)(86362001)(4326008)(8676002)(40460700003)(54906003)(450100002)(70206006)(316002)(37006003)(6636002)(2906002)(8936002)(83380400001)(7696005)(82310400005)(5660300002)(107886003)(2616005)(47076005)(26005)(1076003)(6862004)(30864003)(478600001)(6666004)(36756003)(41300700001)(186003)(40480700001)(336012)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 07:20:09.1351
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 07:20:00.2139
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ad09110-44dd-47e6-bb14-08da6ed745c1
+X-MS-Exchange-CrossTenant-Network-Message-Id: b37967d8-72a5-4630-8b63-08da6ed74064
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3821
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3471
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -106,494 +106,320 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aharon Landau <aharonl@nvidia.com>
 
-Currently, the driver stores mlx5_ib_mr struct in the cache entries,
-although the only use of the cached MR is the mkey. Store only the mkey
-in the cache.
+After replacing the MR cache with an Mkey cache, rename the variables
+and functions to fit the new meaning.
 
 Signed-off-by: Aharon Landau <aharonl@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/mlx5_ib.h |  26 ++--
- drivers/infiniband/hw/mlx5/mr.c      | 200 ++++++++++++---------------
- 2 files changed, 97 insertions(+), 129 deletions(-)
+ drivers/infiniband/hw/mlx5/main.c    |  4 +--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h | 14 ++++----
+ drivers/infiniband/hw/mlx5/mr.c      | 54 ++++++++++++++--------------
+ drivers/infiniband/hw/mlx5/odp.c     |  2 +-
+ include/linux/mlx5/driver.h          |  6 ++--
+ 5 files changed, 40 insertions(+), 40 deletions(-)
 
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index b68fddeac0f1..a174a0eee8dc 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -4002,7 +4002,7 @@ static void mlx5_ib_stage_pre_ib_reg_umr_cleanup(struct mlx5_ib_dev *dev)
+ {
+ 	int err;
+ 
+-	err = mlx5_mr_cache_cleanup(dev);
++	err = mlx5_mkey_cache_cleanup(dev);
+ 	if (err)
+ 		mlx5_ib_warn(dev, "mr cache cleanup failed\n");
+ 
+@@ -4022,7 +4022,7 @@ static int mlx5_ib_stage_post_ib_reg_umr_init(struct mlx5_ib_dev *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = mlx5_mr_cache_init(dev);
++	ret = mlx5_mkey_cache_init(dev);
+ 	if (ret) {
+ 		mlx5_ib_warn(dev, "mr cache init failed %d\n", ret);
+ 		mlx5r_umr_resource_cleanup(dev);
 diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index da9202f4b5f3..91f985cd7d90 100644
+index 91f985cd7d90..2e2ad3918385 100644
 --- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
 +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -619,6 +619,7 @@ struct mlx5_ib_mkey {
- 	unsigned int ndescs;
- 	struct wait_queue_head wait;
- 	refcount_t usecount;
-+	struct mlx5_cache_ent *cache_ent;
+@@ -764,9 +764,9 @@ struct mlx5r_async_create_mkey {
+ 	u32 mkey;
  };
  
- #define MLX5_IB_MTT_PRESENT (MLX5_IB_MTT_READ | MLX5_IB_MTT_WRITE)
-@@ -641,18 +642,9 @@ struct mlx5_ib_mr {
- 	struct ib_mr ibmr;
- 	struct mlx5_ib_mkey mmkey;
- 
--	/* User MR data */
--	struct mlx5_cache_ent *cache_ent;
--	/* Everything after cache_ent is zero'd when MR allocated */
- 	struct ib_umem *umem;
- 
- 	union {
--		/* Used only while the MR is in the cache */
--		struct {
--			u32 out[MLX5_ST_SZ_DW(create_mkey_out)];
--			struct mlx5_async_work cb_work;
--		};
--
- 		/* Used only by kernel MRs (umem == NULL) */
- 		struct {
- 			void *descs;
-@@ -692,12 +684,6 @@ struct mlx5_ib_mr {
- 	};
- };
- 
--/* Zero the fields in the mr that are variant depending on usage */
--static inline void mlx5_clear_mr(struct mlx5_ib_mr *mr)
--{
--	memset_after(mr, 0, cache_ent);
--}
--
- static inline bool is_odp_mr(struct mlx5_ib_mr *mr)
- {
- 	return IS_ENABLED(CONFIG_INFINIBAND_ON_DEMAND_PAGING) && mr->umem &&
-@@ -768,6 +754,16 @@ struct mlx5_cache_ent {
- 	struct delayed_work	dwork;
- };
- 
-+struct mlx5r_async_create_mkey {
-+	union {
-+		u32 in[MLX5_ST_SZ_BYTES(create_mkey_in)];
-+		u32 out[MLX5_ST_SZ_DW(create_mkey_out)];
-+	};
-+	struct mlx5_async_work cb_work;
-+	struct mlx5_cache_ent *ent;
-+	u32 mkey;
-+};
-+
- struct mlx5_mr_cache {
+-struct mlx5_mr_cache {
++struct mlx5_mkey_cache {
  	struct workqueue_struct *wq;
- 	struct mlx5_cache_ent	ent[MAX_MR_CACHE_ENTRIES];
+-	struct mlx5_cache_ent	ent[MAX_MR_CACHE_ENTRIES];
++	struct mlx5_cache_ent	ent[MAX_MKEY_CACHE_ENTRIES];
+ 	struct dentry		*root;
+ 	unsigned long		last_add;
+ };
+@@ -1065,7 +1065,7 @@ struct mlx5_ib_dev {
+ 	struct mlx5_ib_resources	devr;
+ 
+ 	atomic_t			mkey_var;
+-	struct mlx5_mr_cache		cache;
++	struct mlx5_mkey_cache		cache;
+ 	struct timer_list		delay_timer;
+ 	/* Prevents soft lock on massive reg MRs */
+ 	struct mutex			slow_path_mutex;
+@@ -1310,8 +1310,8 @@ void mlx5_ib_populate_pas(struct ib_umem *umem, size_t page_size, __be64 *pas,
+ 			  u64 access_flags);
+ void mlx5_ib_copy_pas(u64 *old, u64 *new, int step, int num);
+ int mlx5_ib_get_cqe_size(struct ib_cq *ibcq);
+-int mlx5_mr_cache_init(struct mlx5_ib_dev *dev);
+-int mlx5_mr_cache_cleanup(struct mlx5_ib_dev *dev);
++int mlx5_mkey_cache_init(struct mlx5_ib_dev *dev);
++int mlx5_mkey_cache_cleanup(struct mlx5_ib_dev *dev);
+ 
+ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
+ 				       struct mlx5_cache_ent *ent,
+@@ -1339,7 +1339,7 @@ int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev, struct mlx5_ib_pf_eq *eq);
+ void mlx5_ib_odp_cleanup_one(struct mlx5_ib_dev *ibdev);
+ int __init mlx5_ib_odp_init(void);
+ void mlx5_ib_odp_cleanup(void);
+-void mlx5_odp_init_mr_cache_entry(struct mlx5_cache_ent *ent);
++void mlx5_odp_init_mkey_cache_entry(struct mlx5_cache_ent *ent);
+ void mlx5_odp_populate_xlt(void *xlt, size_t idx, size_t nentries,
+ 			   struct mlx5_ib_mr *mr, int flags);
+ 
+@@ -1358,7 +1358,7 @@ static inline int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev,
+ static inline void mlx5_ib_odp_cleanup_one(struct mlx5_ib_dev *ibdev) {}
+ static inline int mlx5_ib_odp_init(void) { return 0; }
+ static inline void mlx5_ib_odp_cleanup(void)				    {}
+-static inline void mlx5_odp_init_mr_cache_entry(struct mlx5_cache_ent *ent) {}
++static inline void mlx5_odp_init_mkey_cache_entry(struct mlx5_cache_ent *ent) {}
+ static inline void mlx5_odp_populate_xlt(void *xlt, size_t idx, size_t nentries,
+ 					 struct mlx5_ib_mr *mr, int flags) {}
+ 
 diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 26bfdbba24b4..edbc2990d151 100644
+index edbc2990d151..129d531bd01b 100644
 --- a/drivers/infiniband/hw/mlx5/mr.c
 +++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -82,15 +82,14 @@ static void set_mkc_access_pd_addr_fields(void *mkc, int acc, u64 start_addr,
- 	MLX5_SET64(mkc, mkc, start_addr, start_addr);
+@@ -119,7 +119,7 @@ static int mlx5_ib_create_mkey_cb(struct mlx5r_async_create_mkey *async_create)
+ 				&async_create->cb_work);
  }
  
--static void assign_mkey_variant(struct mlx5_ib_dev *dev,
--				struct mlx5_ib_mkey *mkey, u32 *in)
-+static void assign_mkey_variant(struct mlx5_ib_dev *dev, u32 *mkey, u32 *in)
+-static int mr_cache_max_order(struct mlx5_ib_dev *dev);
++static int mkey_cache_max_order(struct mlx5_ib_dev *dev);
+ static void queue_adjust_cache_locked(struct mlx5_cache_ent *ent);
+ 
+ static int destroy_mkey(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
+@@ -515,11 +515,11 @@ static const struct file_operations limit_fops = {
+ 	.read	= limit_read,
+ };
+ 
+-static bool someone_adding(struct mlx5_mr_cache *cache)
++static bool someone_adding(struct mlx5_mkey_cache *cache)
  {
- 	u8 key = atomic_inc_return(&dev->mkey_var);
- 	void *mkc;
+ 	unsigned int i;
  
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	MLX5_SET(mkc, mkc, mkey_7_0, key);
--	mkey->key = key;
-+	*mkey = key;
- }
+-	for (i = 0; i < MAX_MR_CACHE_ENTRIES; i++) {
++	for (i = 0; i < MAX_MKEY_CACHE_ENTRIES; i++) {
+ 		struct mlx5_cache_ent *ent = &cache->ent[i];
+ 		bool ret;
  
- static int mlx5_ib_create_mkey(struct mlx5_ib_dev *dev,
-@@ -98,7 +97,7 @@ static int mlx5_ib_create_mkey(struct mlx5_ib_dev *dev,
+@@ -569,7 +569,7 @@ static void queue_adjust_cache_locked(struct mlx5_cache_ent *ent)
+ static void __cache_work_func(struct mlx5_cache_ent *ent)
  {
- 	int ret;
- 
--	assign_mkey_variant(dev, mkey, in);
-+	assign_mkey_variant(dev, &mkey->key, in);
- 	ret = mlx5_core_create_mkey(dev->mdev, &mkey->key, in, inlen);
- 	if (!ret)
- 		init_waitqueue_head(&mkey->wait);
-@@ -106,17 +105,18 @@ static int mlx5_ib_create_mkey(struct mlx5_ib_dev *dev,
- 	return ret;
- }
- 
--static int
--mlx5_ib_create_mkey_cb(struct mlx5_ib_dev *dev,
--		       struct mlx5_ib_mkey *mkey,
--		       struct mlx5_async_ctx *async_ctx,
--		       u32 *in, int inlen, u32 *out, int outlen,
--		       struct mlx5_async_work *context)
-+static int mlx5_ib_create_mkey_cb(struct mlx5r_async_create_mkey *async_create)
- {
--	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
--	assign_mkey_variant(dev, mkey, in);
--	return mlx5_cmd_exec_cb(async_ctx, in, inlen, out, outlen,
--				create_mkey_callback, context);
-+	struct mlx5_ib_dev *dev = async_create->ent->dev;
-+	size_t inlen = MLX5_ST_SZ_BYTES(create_mkey_in);
-+	size_t outlen = MLX5_ST_SZ_BYTES(create_mkey_out);
-+
-+	MLX5_SET(create_mkey_in, async_create->in, opcode,
-+		 MLX5_CMD_OP_CREATE_MKEY);
-+	assign_mkey_variant(dev, &async_create->mkey, async_create->in);
-+	return mlx5_cmd_exec_cb(&dev->async_ctx, async_create->in, inlen,
-+				async_create->out, outlen, create_mkey_callback,
-+				&async_create->cb_work);
- }
- 
- static int mr_cache_max_order(struct mlx5_ib_dev *dev);
-@@ -209,48 +209,47 @@ static void undo_push_reserve_mkey(struct mlx5_cache_ent *ent)
- 	WARN_ON(old);
- }
- 
--static void push_to_reserved(struct mlx5_cache_ent *ent, struct mlx5_ib_mr *mr)
-+static void push_to_reserved(struct mlx5_cache_ent *ent, u32 mkey)
- {
- 	void *old;
- 
--	old = __xa_store(&ent->mkeys, ent->stored, mr, 0);
-+	old = __xa_store(&ent->mkeys, ent->stored, xa_mk_value(mkey), 0);
- 	WARN_ON(old);
- 	ent->stored++;
- }
- 
--static struct mlx5_ib_mr *pop_stored_mkey(struct mlx5_cache_ent *ent)
-+static u32 pop_stored_mkey(struct mlx5_cache_ent *ent)
- {
--	struct mlx5_ib_mr *mr;
--	void *old;
-+	void *old, *xa_mkey;
- 
- 	ent->stored--;
- 	ent->reserved--;
- 
- 	if (ent->stored == ent->reserved) {
--		mr = __xa_erase(&ent->mkeys, ent->stored);
--		WARN_ON(!mr);
--		return mr;
-+		xa_mkey = __xa_erase(&ent->mkeys, ent->stored);
-+		WARN_ON(!xa_mkey);
-+		return (u32)xa_to_value(xa_mkey);
- 	}
- 
--	mr = __xa_store(&ent->mkeys, ent->stored, XA_ZERO_ENTRY,
--				GFP_KERNEL);
--	WARN_ON(!mr || xa_is_err(mr));
-+	xa_mkey = __xa_store(&ent->mkeys, ent->stored, XA_ZERO_ENTRY,
-+			     GFP_KERNEL);
-+	WARN_ON(!xa_mkey || xa_is_err(xa_mkey));
- 	old = __xa_erase(&ent->mkeys, ent->reserved);
- 	WARN_ON(old);
--	return mr;
-+	return (u32)xa_to_value(xa_mkey);
- }
- 
- static void create_mkey_callback(int status, struct mlx5_async_work *context)
- {
--	struct mlx5_ib_mr *mr =
--		container_of(context, struct mlx5_ib_mr, cb_work);
--	struct mlx5_cache_ent *ent = mr->cache_ent;
-+	struct mlx5r_async_create_mkey *mkey_out =
-+		container_of(context, struct mlx5r_async_create_mkey, cb_work);
-+	struct mlx5_cache_ent *ent = mkey_out->ent;
  	struct mlx5_ib_dev *dev = ent->dev;
- 	unsigned long flags;
+-	struct mlx5_mr_cache *cache = &dev->cache;
++	struct mlx5_mkey_cache *cache = &dev->cache;
+ 	int err;
  
- 	if (status) {
--		create_mkey_warn(dev, status, mr->out);
--		kfree(mr);
-+		create_mkey_warn(dev, status, mkey_out->out);
-+		kfree(mkey_out);
- 		xa_lock_irqsave(&ent->mkeys, flags);
- 		undo_push_reserve_mkey(ent);
- 		WRITE_ONCE(dev->fill_delay, 1);
-@@ -259,18 +258,16 @@ static void create_mkey_callback(int status, struct mlx5_async_work *context)
+ 	xa_lock_irq(&ent->mkeys);
+@@ -681,7 +681,7 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
+ 
+ static void clean_keys(struct mlx5_ib_dev *dev, int c)
+ {
+-	struct mlx5_mr_cache *cache = &dev->cache;
++	struct mlx5_mkey_cache *cache = &dev->cache;
+ 	struct mlx5_cache_ent *ent = &cache->ent[c];
+ 	u32 mkey;
+ 
+@@ -696,7 +696,7 @@ static void clean_keys(struct mlx5_ib_dev *dev, int c)
+ 	xa_unlock_irq(&ent->mkeys);
+ }
+ 
+-static void mlx5_mr_cache_debugfs_cleanup(struct mlx5_ib_dev *dev)
++static void mlx5_mkey_cache_debugfs_cleanup(struct mlx5_ib_dev *dev)
+ {
+ 	if (!mlx5_debugfs_root || dev->is_rep)
  		return;
- 	}
- 
--	mr->mmkey.type = MLX5_MKEY_MR;
--	mr->mmkey.key |= mlx5_idx_to_mkey(
--		MLX5_GET(create_mkey_out, mr->out, mkey_index));
--	init_waitqueue_head(&mr->mmkey.wait);
--
-+	mkey_out->mkey |= mlx5_idx_to_mkey(
-+		MLX5_GET(create_mkey_out, mkey_out->out, mkey_index));
- 	WRITE_ONCE(dev->cache.last_add, jiffies);
- 
- 	xa_lock_irqsave(&ent->mkeys, flags);
--	push_to_reserved(ent, mr);
-+	push_to_reserved(ent, mkey_out->mkey);
- 	/* If we are doing fill_to_high_water then keep going. */
- 	queue_adjust_cache_locked(ent);
- 	xa_unlock_irqrestore(&ent->mkeys, flags);
-+	kfree(mkey_out);
+@@ -705,9 +705,9 @@ static void mlx5_mr_cache_debugfs_cleanup(struct mlx5_ib_dev *dev)
+ 	dev->cache.root = NULL;
  }
  
- static int get_mkc_octo_size(unsigned int access_mode, unsigned int ndescs)
-@@ -292,15 +289,8 @@ static int get_mkc_octo_size(unsigned int access_mode, unsigned int ndescs)
- 	return ret;
- }
- 
--static struct mlx5_ib_mr *alloc_cache_mr(struct mlx5_cache_ent *ent, void *mkc)
-+static void set_cache_mkc(struct mlx5_cache_ent *ent, void *mkc)
+-static void mlx5_mr_cache_debugfs_init(struct mlx5_ib_dev *dev)
++static void mlx5_mkey_cache_debugfs_init(struct mlx5_ib_dev *dev)
  {
--	struct mlx5_ib_mr *mr;
--
--	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
--	if (!mr)
--		return NULL;
--	mr->cache_ent = ent;
--
- 	set_mkc_access_pd_addr_fields(mkc, 0, 0, ent->dev->umrc.pd);
- 	MLX5_SET(mkc, mkc, free, 1);
- 	MLX5_SET(mkc, mkc, umr_en, 1);
-@@ -310,106 +300,82 @@ static struct mlx5_ib_mr *alloc_cache_mr(struct mlx5_cache_ent *ent, void *mkc)
- 	MLX5_SET(mkc, mkc, translations_octword_size,
- 		 get_mkc_octo_size(ent->access_mode, ent->ndescs));
- 	MLX5_SET(mkc, mkc, log_page_size, ent->page);
--	return mr;
+-	struct mlx5_mr_cache *cache = &dev->cache;
++	struct mlx5_mkey_cache *cache = &dev->cache;
+ 	struct mlx5_cache_ent *ent;
+ 	struct dentry *dir;
+ 	int i;
+@@ -717,7 +717,7 @@ static void mlx5_mr_cache_debugfs_init(struct mlx5_ib_dev *dev)
+ 
+ 	cache->root = debugfs_create_dir("mr_cache", mlx5_debugfs_get_dev_root(dev->mdev));
+ 
+-	for (i = 0; i < MAX_MR_CACHE_ENTRIES; i++) {
++	for (i = 0; i < MAX_MKEY_CACHE_ENTRIES; i++) {
+ 		ent = &cache->ent[i];
+ 		sprintf(ent->name, "%d", ent->order);
+ 		dir = debugfs_create_dir(ent->name, cache->root);
+@@ -735,9 +735,9 @@ static void delay_time_func(struct timer_list *t)
+ 	WRITE_ONCE(dev->fill_delay, 0);
  }
  
- /* Asynchronously schedule new MRs to be populated in the cache. */
- static int add_keys(struct mlx5_cache_ent *ent, unsigned int num)
+-int mlx5_mr_cache_init(struct mlx5_ib_dev *dev)
++int mlx5_mkey_cache_init(struct mlx5_ib_dev *dev)
  {
--	size_t inlen = MLX5_ST_SZ_BYTES(create_mkey_in);
--	struct mlx5_ib_mr *mr;
-+	struct mlx5r_async_create_mkey *async_create;
- 	void *mkc;
--	u32 *in;
- 	int err = 0;
+-	struct mlx5_mr_cache *cache = &dev->cache;
++	struct mlx5_mkey_cache *cache = &dev->cache;
+ 	struct mlx5_cache_ent *ent;
  	int i;
  
--	in = kzalloc(inlen, GFP_KERNEL);
--	if (!in)
--		return -ENOMEM;
--
--	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	for (i = 0; i < num; i++) {
--		mr = alloc_cache_mr(ent, mkc);
--		if (!mr) {
--			err = -ENOMEM;
--			goto free_in;
--		}
-+		async_create = kzalloc(sizeof(struct mlx5r_async_create_mkey),
-+				       GFP_KERNEL);
-+		if (!async_create)
-+			return -ENOMEM;
-+		mkc = MLX5_ADDR_OF(create_mkey_in, async_create->in,
-+				   memory_key_mkey_entry);
-+		set_cache_mkc(ent, mkc);
-+		async_create->ent = ent;
+@@ -750,7 +750,7 @@ int mlx5_mr_cache_init(struct mlx5_ib_dev *dev)
  
- 		err = push_mkey(ent, true, NULL);
- 		if (err)
--			goto free_mr;
-+			goto free_async_create;
+ 	mlx5_cmd_init_async_ctx(dev->mdev, &dev->async_ctx);
+ 	timer_setup(&dev->delay_timer, delay_time_func, 0);
+-	for (i = 0; i < MAX_MR_CACHE_ENTRIES; i++) {
++	for (i = 0; i < MAX_MKEY_CACHE_ENTRIES; i++) {
+ 		ent = &cache->ent[i];
+ 		xa_init_flags(&ent->mkeys, XA_FLAGS_LOCK_IRQ);
+ 		ent->order = i + 2;
+@@ -759,12 +759,12 @@ int mlx5_mr_cache_init(struct mlx5_ib_dev *dev)
  
--		err = mlx5_ib_create_mkey_cb(ent->dev, &mr->mmkey,
--					     &ent->dev->async_ctx, in, inlen,
--					     mr->out, sizeof(mr->out),
--					     &mr->cb_work);
-+		err = mlx5_ib_create_mkey_cb(async_create);
- 		if (err) {
- 			mlx5_ib_warn(ent->dev, "create mkey failed %d\n", err);
- 			goto err_undo_reserve;
+ 		INIT_DELAYED_WORK(&ent->dwork, delayed_cache_work_func);
+ 
+-		if (i > MR_CACHE_LAST_STD_ENTRY) {
+-			mlx5_odp_init_mr_cache_entry(ent);
++		if (i > MKEY_CACHE_LAST_STD_ENTRY) {
++			mlx5_odp_init_mkey_cache_entry(ent);
+ 			continue;
  		}
+ 
+-		if (ent->order > mr_cache_max_order(dev))
++		if (ent->order > mkey_cache_max_order(dev))
+ 			continue;
+ 
+ 		ent->page = PAGE_SHIFT;
+@@ -781,19 +781,19 @@ int mlx5_mr_cache_init(struct mlx5_ib_dev *dev)
+ 		xa_unlock_irq(&ent->mkeys);
  	}
  
--	kfree(in);
- 	return 0;
+-	mlx5_mr_cache_debugfs_init(dev);
++	mlx5_mkey_cache_debugfs_init(dev);
  
- err_undo_reserve:
- 	xa_lock_irq(&ent->mkeys);
- 	undo_push_reserve_mkey(ent);
- 	xa_unlock_irq(&ent->mkeys);
--free_mr:
--	kfree(mr);
--free_in:
--	kfree(in);
-+free_async_create:
-+	kfree(async_create);
+ 	return 0;
+ }
+ 
+-int mlx5_mr_cache_cleanup(struct mlx5_ib_dev *dev)
++int mlx5_mkey_cache_cleanup(struct mlx5_ib_dev *dev)
+ {
+ 	unsigned int i;
+ 
+ 	if (!dev->cache.wq)
+ 		return 0;
+ 
+-	for (i = 0; i < MAX_MR_CACHE_ENTRIES; i++) {
++	for (i = 0; i < MAX_MKEY_CACHE_ENTRIES; i++) {
+ 		struct mlx5_cache_ent *ent = &dev->cache.ent[i];
+ 
+ 		xa_lock_irq(&ent->mkeys);
+@@ -802,10 +802,10 @@ int mlx5_mr_cache_cleanup(struct mlx5_ib_dev *dev)
+ 		cancel_delayed_work_sync(&ent->dwork);
+ 	}
+ 
+-	mlx5_mr_cache_debugfs_cleanup(dev);
++	mlx5_mkey_cache_debugfs_cleanup(dev);
+ 	mlx5_cmd_cleanup_async_ctx(&dev->async_ctx);
+ 
+-	for (i = 0; i < MAX_MR_CACHE_ENTRIES; i++)
++	for (i = 0; i < MAX_MKEY_CACHE_ENTRIES; i++)
+ 		clean_keys(dev, i);
+ 
+ 	destroy_workqueue(dev->cache.wq);
+@@ -872,22 +872,22 @@ static int get_octo_len(u64 addr, u64 len, int page_shift)
+ 	return (npages + 1) / 2;
+ }
+ 
+-static int mr_cache_max_order(struct mlx5_ib_dev *dev)
++static int mkey_cache_max_order(struct mlx5_ib_dev *dev)
+ {
+ 	if (MLX5_CAP_GEN(dev->mdev, umr_extended_translation_offset))
+-		return MR_CACHE_LAST_STD_ENTRY + 2;
++		return MKEY_CACHE_LAST_STD_ENTRY + 2;
+ 	return MLX5_MAX_UMR_SHIFT;
+ }
+ 
+-static struct mlx5_cache_ent *mr_cache_ent_from_order(struct mlx5_ib_dev *dev,
+-						      unsigned int order)
++static struct mlx5_cache_ent *mkey_cache_ent_from_order(struct mlx5_ib_dev *dev,
++							unsigned int order)
+ {
+-	struct mlx5_mr_cache *cache = &dev->cache;
++	struct mlx5_mkey_cache *cache = &dev->cache;
+ 
+ 	if (order < cache->ent[0].order)
+ 		return &cache->ent[0];
+ 	order = order - cache->ent[0].order;
+-	if (order > MR_CACHE_LAST_STD_ENTRY)
++	if (order > MKEY_CACHE_LAST_STD_ENTRY)
+ 		return NULL;
+ 	return &cache->ent[order];
+ }
+@@ -930,7 +930,7 @@ static struct mlx5_ib_mr *alloc_cacheable_mr(struct ib_pd *pd,
+ 						     0, iova);
+ 	if (WARN_ON(!page_size))
+ 		return ERR_PTR(-EINVAL);
+-	ent = mr_cache_ent_from_order(
++	ent = mkey_cache_ent_from_order(
+ 		dev, order_base_2(ib_umem_num_dma_blocks(umem, page_size)));
+ 	/*
+ 	 * Matches access in alloc_cache_mr(). If the MR can't come from the
+diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
+index 84da5674e1ab..e305bf1dc6c2 100644
+--- a/drivers/infiniband/hw/mlx5/odp.c
++++ b/drivers/infiniband/hw/mlx5/odp.c
+@@ -1588,7 +1588,7 @@ mlx5_ib_odp_destroy_eq(struct mlx5_ib_dev *dev, struct mlx5_ib_pf_eq *eq)
  	return err;
  }
  
- /* Synchronously create a MR in the cache */
--static struct mlx5_ib_mr *create_cache_mr(struct mlx5_cache_ent *ent)
-+static int create_cache_mkey(struct mlx5_cache_ent *ent, u32 *mkey)
+-void mlx5_odp_init_mr_cache_entry(struct mlx5_cache_ent *ent)
++void mlx5_odp_init_mkey_cache_entry(struct mlx5_cache_ent *ent)
  {
- 	size_t inlen = MLX5_ST_SZ_BYTES(create_mkey_in);
--	struct mlx5_ib_mr *mr;
- 	void *mkc;
- 	u32 *in;
- 	int err;
- 
- 	in = kzalloc(inlen, GFP_KERNEL);
- 	if (!in)
--		return ERR_PTR(-ENOMEM);
-+		return -ENOMEM;
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
-+	set_cache_mkc(ent, mkc);
- 
--	mr = alloc_cache_mr(ent, mkc);
--	if (!mr) {
--		err = -ENOMEM;
--		goto free_in;
--	}
--
--	err = mlx5_core_create_mkey(ent->dev->mdev, &mr->mmkey.key, in, inlen);
-+	err = mlx5_core_create_mkey(ent->dev->mdev, mkey, in, inlen);
- 	if (err)
--		goto free_mr;
-+		goto free_in;
- 
--	init_waitqueue_head(&mr->mmkey.wait);
--	mr->mmkey.type = MLX5_MKEY_MR;
- 	WRITE_ONCE(ent->dev->cache.last_add, jiffies);
--	kfree(in);
--	return mr;
--free_mr:
--	kfree(mr);
- free_in:
- 	kfree(in);
--	return ERR_PTR(err);
-+	return err;
- }
- 
- static void remove_cache_mr_locked(struct mlx5_cache_ent *ent)
- {
--	struct mlx5_ib_mr *mr;
-+	u32 mkey;
- 
- 	lockdep_assert_held(&ent->mkeys.xa_lock);
- 	if (!ent->stored)
+ 	if (!(ent->dev->odp_caps.general_caps & IB_ODP_SUPPORT_IMPLICIT))
  		return;
--	mr = pop_stored_mkey(ent);
-+	mkey = pop_stored_mkey(ent);
- 	xa_unlock_irq(&ent->mkeys);
--	mlx5_core_destroy_mkey(ent->dev->mdev, mr->mmkey.key);
--	kfree(mr);
-+	mlx5_core_destroy_mkey(ent->dev->mdev, mkey);
- 	xa_lock_irq(&ent->mkeys);
- }
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 76d7661e3e63..220597c2f436 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -728,10 +728,10 @@ enum {
+ };
  
-@@ -678,11 +644,15 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
- 				       int access_flags)
- {
- 	struct mlx5_ib_mr *mr;
-+	int err;
+ enum {
+-	MR_CACHE_LAST_STD_ENTRY = 20,
++	MKEY_CACHE_LAST_STD_ENTRY = 20,
+ 	MLX5_IMR_MTT_CACHE_ENTRY,
+ 	MLX5_IMR_KSM_CACHE_ENTRY,
+-	MAX_MR_CACHE_ENTRIES
++	MAX_MKEY_CACHE_ENTRIES
+ };
  
--	/* Matches access in alloc_cache_mr() */
- 	if (!mlx5r_umr_can_reconfig(dev, 0, access_flags))
- 		return ERR_PTR(-EOPNOTSUPP);
+ struct mlx5_profile {
+@@ -740,7 +740,7 @@ struct mlx5_profile {
+ 	struct {
+ 		int	size;
+ 		int	limit;
+-	} mr_cache[MAX_MR_CACHE_ENTRIES];
++	} mr_cache[MAX_MKEY_CACHE_ENTRIES];
+ };
  
-+	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
-+	if (!mr)
-+		return ERR_PTR(-ENOMEM);
-+
- 	xa_lock_irq(&ent->mkeys);
- 	ent->in_use++;
- 
-@@ -690,20 +660,22 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
- 		queue_adjust_cache_locked(ent);
- 		ent->miss++;
- 		xa_unlock_irq(&ent->mkeys);
--		mr = create_cache_mr(ent);
--		if (IS_ERR(mr)) {
-+		err = create_cache_mkey(ent, &mr->mmkey.key);
-+		if (err) {
- 			xa_lock_irq(&ent->mkeys);
- 			ent->in_use--;
- 			xa_unlock_irq(&ent->mkeys);
--			return mr;
-+			kfree(mr);
-+			return ERR_PTR(err);
- 		}
- 	} else {
--		mr = pop_stored_mkey(ent);
-+		mr->mmkey.key = pop_stored_mkey(ent);
- 		queue_adjust_cache_locked(ent);
- 		xa_unlock_irq(&ent->mkeys);
--
--		mlx5_clear_mr(mr);
- 	}
-+	mr->mmkey.cache_ent = ent;
-+	mr->mmkey.type = MLX5_MKEY_MR;
-+	init_waitqueue_head(&mr->mmkey.wait);
- 	return mr;
- }
- 
-@@ -711,15 +683,14 @@ static void clean_keys(struct mlx5_ib_dev *dev, int c)
- {
- 	struct mlx5_mr_cache *cache = &dev->cache;
- 	struct mlx5_cache_ent *ent = &cache->ent[c];
--	struct mlx5_ib_mr *mr;
-+	u32 mkey;
- 
- 	cancel_delayed_work(&ent->dwork);
- 	xa_lock_irq(&ent->mkeys);
- 	while (ent->stored) {
--		mr = pop_stored_mkey(ent);
-+		mkey = pop_stored_mkey(ent);
- 		xa_unlock_irq(&ent->mkeys);
--		mlx5_core_destroy_mkey(dev->mdev, mr->mmkey.key);
--		kfree(mr);
-+		mlx5_core_destroy_mkey(dev->mdev, mkey);
- 		xa_lock_irq(&ent->mkeys);
- 	}
- 	xa_unlock_irq(&ent->mkeys);
-@@ -1391,7 +1362,7 @@ static bool can_use_umr_rereg_pas(struct mlx5_ib_mr *mr,
- 	struct mlx5_ib_dev *dev = to_mdev(mr->ibmr.device);
- 
- 	/* We only track the allocated sizes of MRs from the cache */
--	if (!mr->cache_ent)
-+	if (!mr->mmkey.cache_ent)
- 		return false;
- 	if (!mlx5r_umr_can_load_pas(dev, new_umem->length))
- 		return false;
-@@ -1400,7 +1371,7 @@ static bool can_use_umr_rereg_pas(struct mlx5_ib_mr *mr,
- 		mlx5_umem_find_best_pgsz(new_umem, mkc, log_page_size, 0, iova);
- 	if (WARN_ON(!*page_size))
- 		return false;
--	return (1ULL << mr->cache_ent->order) >=
-+	return (1ULL << mr->mmkey.cache_ent->order) >=
- 	       ib_umem_num_dma_blocks(new_umem, *page_size);
- }
- 
-@@ -1641,16 +1612,17 @@ int mlx5_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
- 	}
- 
- 	/* Stop DMA */
--	if (mr->cache_ent) {
--		xa_lock_irq(&mr->cache_ent->mkeys);
--		mr->cache_ent->in_use--;
--		xa_unlock_irq(&mr->cache_ent->mkeys);
-+	if (mr->mmkey.cache_ent) {
-+		xa_lock_irq(&mr->mmkey.cache_ent->mkeys);
-+		mr->mmkey.cache_ent->in_use--;
-+		xa_unlock_irq(&mr->mmkey.cache_ent->mkeys);
- 
- 		if (mlx5r_umr_revoke_mr(mr) ||
--		    push_mkey(mr->cache_ent, false, mr))
--			mr->cache_ent = NULL;
-+		    push_mkey(mr->mmkey.cache_ent, false,
-+			      xa_mk_value(mr->mmkey.key)))
-+			mr->mmkey.cache_ent = NULL;
- 	}
--	if (!mr->cache_ent) {
-+	if (!mr->mmkey.cache_ent) {
- 		rc = destroy_mkey(to_mdev(mr->ibmr.device), mr);
- 		if (rc)
- 			return rc;
-@@ -1667,10 +1639,10 @@ int mlx5_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
- 			mlx5_ib_free_odp_mr(mr);
- 	}
- 
--	if (!mr->cache_ent) {
-+	if (!mr->mmkey.cache_ent)
- 		mlx5_free_priv_descs(mr);
--		kfree(mr);
--	}
-+
-+	kfree(mr);
- 	return 0;
- }
- 
+ struct mlx5_hca_cap {
 -- 
 2.17.2
 
