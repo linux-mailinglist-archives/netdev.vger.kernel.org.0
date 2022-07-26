@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49AB8580D8F
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8CD580D80
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238422AbiGZHYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 03:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
+        id S238438AbiGZHYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238257AbiGZHXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:23:46 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED942B25A;
-        Tue, 26 Jul 2022 00:23:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUB9.Z_1658820195;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUB9.Z_1658820195)
+        with ESMTP id S238294AbiGZHXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:23:54 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E882BB03;
+        Tue, 26 Jul 2022 00:23:32 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R941e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUOEzR_1658820197;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUOEzR_1658820197)
           by smtp.aliyun-inc.com;
-          Tue, 26 Jul 2022 15:23:16 +0800
+          Tue, 26 Jul 2022 15:23:18 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v13 26/42] virtio: allow to unbreak/break virtqueue individually
-Date:   Tue, 26 Jul 2022 15:22:09 +0800
-Message-Id: <20220726072225.19884-27-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v13 27/42] virtio: queue_reset: add VIRTIO_F_RING_RESET
+Date:   Tue, 26 Jul 2022 15:22:10 +0800
+Message-Id: <20220726072225.19884-28-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
 References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
@@ -72,66 +72,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows the new introduced
-__virtqueue_break()/__virtqueue_unbreak() to break/unbreak the
-virtqueue.
+Added VIRTIO_F_RING_RESET, it came from here
+
+https://github.com/oasis-tcs/virtio-spec/issues/124
+https://github.com/oasis-tcs/virtio-spec/issues/139
+
+This feature indicates that the driver can reset a queue individually.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/virtio_ring.c | 24 ++++++++++++++++++++++++
- include/linux/virtio.h       |  3 +++
- 2 files changed, 27 insertions(+)
+ include/uapi/linux/virtio_config.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 140b13693a98..a62e46df6865 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2723,6 +2723,30 @@ unsigned int virtqueue_get_vring_size(struct virtqueue *_vq)
- }
- EXPORT_SYMBOL_GPL(virtqueue_get_vring_size);
+diff --git a/include/uapi/linux/virtio_config.h b/include/uapi/linux/virtio_config.h
+index f0fb0ae021c0..3c05162bc988 100644
+--- a/include/uapi/linux/virtio_config.h
++++ b/include/uapi/linux/virtio_config.h
+@@ -52,7 +52,7 @@
+  * rest are per-device feature bits.
+  */
+ #define VIRTIO_TRANSPORT_F_START	28
+-#define VIRTIO_TRANSPORT_F_END		38
++#define VIRTIO_TRANSPORT_F_END		41
  
-+/*
-+ * This function should only be called by the core, not directly by the driver.
-+ */
-+void __virtqueue_break(struct virtqueue *_vq)
-+{
-+	struct vring_virtqueue *vq = to_vvq(_vq);
-+
-+	/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
-+	WRITE_ONCE(vq->broken, true);
-+}
-+EXPORT_SYMBOL_GPL(__virtqueue_break);
+ #ifndef VIRTIO_CONFIG_NO_LEGACY
+ /* Do we get callbacks when the ring is completely used, even if we've
+@@ -98,4 +98,9 @@
+  * Does the device support Single Root I/O Virtualization?
+  */
+ #define VIRTIO_F_SR_IOV			37
 +
 +/*
-+ * This function should only be called by the core, not directly by the driver.
++ * This feature indicates that the driver can reset a queue individually.
 + */
-+void __virtqueue_unbreak(struct virtqueue *_vq)
-+{
-+	struct vring_virtqueue *vq = to_vvq(_vq);
-+
-+	/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
-+	WRITE_ONCE(vq->broken, false);
-+}
-+EXPORT_SYMBOL_GPL(__virtqueue_unbreak);
-+
- bool virtqueue_is_broken(struct virtqueue *_vq)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index 62e31bca5602..d45ee82a4470 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -138,6 +138,9 @@ bool is_virtio_device(struct device *dev);
- void virtio_break_device(struct virtio_device *dev);
- void __virtio_unbreak_device(struct virtio_device *dev);
- 
-+void __virtqueue_break(struct virtqueue *_vq);
-+void __virtqueue_unbreak(struct virtqueue *_vq);
-+
- void virtio_config_changed(struct virtio_device *dev);
- #ifdef CONFIG_PM_SLEEP
- int virtio_device_freeze(struct virtio_device *dev);
++#define VIRTIO_F_RING_RESET		40
+ #endif /* _UAPI_LINUX_VIRTIO_CONFIG_H */
 -- 
 2.31.0
 
