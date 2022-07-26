@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDBC581B21
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 22:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CA5581B23
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 22:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239754AbiGZUfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 16:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S239834AbiGZUfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 16:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiGZUfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 16:35:11 -0400
+        with ESMTP id S239766AbiGZUfM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 16:35:12 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121D4F20
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 13:35:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AEF10CB
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 13:35:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658867710; x=1690403710;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nXPmbeHcZD4f9PxFrBmMfB2YGdacNjj8tbcGzYpMiwo=;
-  b=VV9Hdam8x4h0K+YfmG2oczPFG3D4995J8YxUS70MvkCKAW7nGY+gVRIA
-   jzZU6QpLBG4h0MydYoPN8Rwi5tCIXHDHfv+8esX6Lo5EsHAVIU4/0/BLX
-   r+0y4kY051KpUiBQBRCLSMFFfhxDxaXf9ibdy6o1bViwlAJBFb5aCTXS3
-   e3qyPnyG6e3/frrT9bvRJrTWqn4niNatLdYed85aBV6qMHtyZ3ZJ7GxXo
-   dulItMpKkWFD1i8FNk2+Bzl/4HYMNjrh1FZs750RMbgBXrAekHDcT03BM
-   9a2uaFPPbUJk4mtI4M5oY6P1YgjoLlF79So3/NHY5/TDZAtHWC88K9vYI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="274923295"
+  bh=5zQxFNaSMud0VYoF1ZJNn1hDTqvXVeCLIjUUlaO0N5w=;
+  b=FX6AxctX3KC5pPQDpVh++6MK6EWK731rfrw7C5YIgX0Ft3KBVLRlZF4u
+   dk0IavakbZnoeRxAQuT8EUWiGiB1coepHOn96NhpCvs7lP1i9Rk2CTdIi
+   gzQ8v2//EV8SsHIEmQNjIdCuaNoyx/EyUyBdMD8Mvjb1wbQRl9CkvhJTx
+   PvrrxXQ43BglQBUCnCKR3fC9bOF2QE0ZpXo/wsOPW3YOtFW4lMDLn33aI
+   VJ2G8L9nG9VMG3cp1OB7hDiXXnLLYOipKx7jGNFpslRT4G+WGUW/Nxv8m
+   Gq15h5BMuuG9gI6K2b+M1AYye6rPoZyhH7GyXNMUE5GQdfk4nXyb6IGRc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="274923298"
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="274923295"
+   d="scan'208";a="274923298"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 13:35:09 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 13:35:10 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="658854129"
+   d="scan'208";a="658854138"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Jul 2022 13:35:08 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 26 Jul 2022 13:35:09 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
@@ -50,9 +50,9 @@ Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
         michal.swiatkowski@linux.intel.com, alexandr.lobakin@intel.com,
         gnault@redhat.com, mostrows@speakeasy.net, paulus@samba.org,
         marcin.szycik@linux.intel.com
-Subject: [PATCH net-next 1/4] flow_dissector: Add PPPoE dissectors
-Date:   Tue, 26 Jul 2022 13:31:30 -0700
-Message-Id: <20220726203133.2171332-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 2/4] net/sched: flower: Add PPPoE filter
+Date:   Tue, 26 Jul 2022 13:31:31 -0700
+Message-Id: <20220726203133.2171332-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220726203133.2171332-1-anthony.l.nguyen@intel.com>
 References: <20220726203133.2171332-1-anthony.l.nguyen@intel.com>
@@ -70,170 +70,152 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-Allow to dissect PPPoE specific fields which are:
-- session ID (16 bits)
-- ppp protocol (16 bits)
-- type (16 bits) - this is PPPoE ethertype, for now only
-  ETH_P_PPP_SES is supported, possible ETH_P_PPP_DISC
-  in the future
+Add support for PPPoE specific fields for tc-flower.
+Those fields can be provided only when protocol was set
+to ETH_P_PPP_SES. Defines, dump, load and set are being done here.
 
-The goal is to make the following TC command possible:
-
-  # tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses \
-      flower \
-        pppoe_sid 12 \
-        ppp_proto ip \
-      action drop
-
-Note that only PPPoE Session is supported.
+Overwrite basic.n_proto only in case of PPP_IP and PPP_IPV6,
+otherwise leave it as ETH_P_PPP_SES.
 
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Acked-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- include/linux/ppp_defs.h     | 14 ++++++++++
- include/net/flow_dissector.h | 13 +++++++++
- net/core/flow_dissector.c    | 53 +++++++++++++++++++++++++++++++-----
- 3 files changed, 73 insertions(+), 7 deletions(-)
+ include/uapi/linux/pkt_cls.h |  3 ++
+ net/sched/cls_flower.c       | 64 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 67 insertions(+)
 
-diff --git a/include/linux/ppp_defs.h b/include/linux/ppp_defs.h
-index 9d2b388fae1a..b7e57fdbd413 100644
---- a/include/linux/ppp_defs.h
-+++ b/include/linux/ppp_defs.h
-@@ -11,4 +11,18 @@
- #include <uapi/linux/ppp_defs.h>
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 9a2ee1e39fad..c142c0f8ed8a 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -589,6 +589,9 @@ enum {
  
- #define PPP_FCS(fcs, c) crc_ccitt_byte(fcs, c)
+ 	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
+ 
++	TCA_FLOWER_KEY_PPPOE_SID,	/* be16 */
++	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
 +
-+/**
-+ * ppp_proto_is_valid - checks if PPP protocol is valid
-+ * @proto: PPP protocol
-+ *
-+ * Assumes proto is not compressed.
-+ * Protocol is valid if the value is odd and the least significant bit of the
-+ * most significant octet is 0 (see RFC 1661, section 2).
-+ */
-+static inline bool ppp_proto_is_valid(u16 proto)
-+{
-+	return !!((proto & 0x0101) == 0x0001);
-+}
-+
- #endif /* _PPP_DEFS_H_ */
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 0f9544a9bb9e..6c74812d64b2 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -277,6 +277,18 @@ struct flow_dissector_key_num_of_vlans {
- 	u8 num_of_vlans;
+ 	__TCA_FLOWER_MAX,
  };
  
-+/**
-+ * struct flow_dissector_key_pppoe:
-+ * @session_id: pppoe session id
-+ * @ppp_proto: ppp protocol
-+ * @type: pppoe eth type
-+ */
-+struct flow_dissector_key_pppoe {
-+	__be16 session_id;
-+	__be16 ppp_proto;
-+	__be16 type;
-+};
-+
- enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
- 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-@@ -307,6 +319,7 @@ enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_CT, /* struct flow_dissector_key_ct */
- 	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
- 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
-+	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 1a1e34480b7e..041d63ff809a 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -16,6 +16,7 @@
+ #include <linux/in6.h>
+ #include <linux/ip.h>
+ #include <linux/mpls.h>
++#include <linux/ppp_defs.h>
  
- 	FLOW_DISSECTOR_KEY_MAX,
+ #include <net/sch_generic.h>
+ #include <net/pkt_cls.h>
+@@ -67,6 +68,7 @@ struct fl_flow_key {
+ 	struct flow_dissector_key_ct ct;
+ 	struct flow_dissector_key_hash hash;
+ 	struct flow_dissector_key_num_of_vlans num_of_vlans;
++	struct flow_dissector_key_pppoe pppoe;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+ 
+ struct fl_flow_mask_range {
+@@ -708,6 +710,8 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_NUM_OF_VLANS]	= { .type = NLA_U8 },
++	[TCA_FLOWER_KEY_PPPOE_SID]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
+ 
  };
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 6aee04f75e3e..237d396b6e41 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -895,6 +895,11 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
- 	return result == BPF_OK;
+ 
+@@ -1035,6 +1039,50 @@ static void fl_set_key_vlan(struct nlattr **tb,
+ 	}
  }
  
-+static bool is_pppoe_ses_hdr_valid(struct pppoe_hdr hdr)
++static void fl_set_key_pppoe(struct nlattr **tb,
++			     struct flow_dissector_key_pppoe *key_val,
++			     struct flow_dissector_key_pppoe *key_mask,
++			     struct fl_flow_key *key,
++			     struct fl_flow_key *mask)
 +{
-+	return hdr.ver == 1 && hdr.type == 1 && hdr.code == 0;
++	/* key_val::type must be set to ETH_P_PPP_SES
++	 * because ETH_P_PPP_SES was stored in basic.n_proto
++	 * which might get overwritten by ppp_proto
++	 * or might be set to 0, the role of key_val::type
++	 * is simmilar to vlan_key::tpid
++	 */
++	key_val->type = htons(ETH_P_PPP_SES);
++	key_mask->type = cpu_to_be16(~0);
++
++	if (tb[TCA_FLOWER_KEY_PPPOE_SID]) {
++		key_val->session_id =
++			nla_get_be16(tb[TCA_FLOWER_KEY_PPPOE_SID]);
++		key_mask->session_id = cpu_to_be16(~0);
++	}
++	if (tb[TCA_FLOWER_KEY_PPP_PROTO]) {
++		key_val->ppp_proto =
++			nla_get_be16(tb[TCA_FLOWER_KEY_PPP_PROTO]);
++		key_mask->ppp_proto = cpu_to_be16(~0);
++
++		if (key_val->ppp_proto == htons(PPP_IP)) {
++			key->basic.n_proto = htons(ETH_P_IP);
++			mask->basic.n_proto = cpu_to_be16(~0);
++		} else if (key_val->ppp_proto == htons(PPP_IPV6)) {
++			key->basic.n_proto = htons(ETH_P_IPV6);
++			mask->basic.n_proto = cpu_to_be16(~0);
++		} else if (key_val->ppp_proto == htons(PPP_MPLS_UC)) {
++			key->basic.n_proto = htons(ETH_P_MPLS_UC);
++			mask->basic.n_proto = cpu_to_be16(~0);
++		} else if (key_val->ppp_proto == htons(PPP_MPLS_MC)) {
++			key->basic.n_proto = htons(ETH_P_MPLS_MC);
++			mask->basic.n_proto = cpu_to_be16(~0);
++		}
++	} else {
++		key->basic.n_proto = 0;
++		mask->basic.n_proto = cpu_to_be16(0);
++	}
 +}
 +
- /**
-  * __skb_flow_dissect - extract the flow_keys struct and return it
-  * @net: associated network namespace, derived from @skb if NULL
-@@ -1214,26 +1219,60 @@ bool __skb_flow_dissect(const struct net *net,
- 			struct pppoe_hdr hdr;
- 			__be16 proto;
- 		} *hdr, _hdr;
-+		u16 ppp_proto;
-+
- 		hdr = __skb_header_pointer(skb, nhoff, sizeof(_hdr), data, hlen, &_hdr);
- 		if (!hdr) {
- 			fdret = FLOW_DISSECT_RET_OUT_BAD;
- 			break;
+ static void fl_set_key_flag(u32 flower_key, u32 flower_mask,
+ 			    u32 *dissector_key, u32 *dissector_mask,
+ 			    u32 flower_flag_bit, u32 dissector_flag_bit)
+@@ -1645,6 +1693,9 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
  		}
- 
--		nhoff += PPPOE_SES_HLEN;
--		switch (hdr->proto) {
--		case htons(PPP_IP):
-+		if (!is_pppoe_ses_hdr_valid(hdr->hdr)) {
-+			fdret = FLOW_DISSECT_RET_OUT_BAD;
-+			break;
-+		}
-+
-+		/* least significant bit of the most significant octet
-+		 * indicates if protocol field was compressed
-+		 */
-+		ppp_proto = ntohs(hdr->proto);
-+		if (ppp_proto & 0x0100) {
-+			ppp_proto = ppp_proto >> 8;
-+			nhoff += PPPOE_SES_HLEN - 1;
-+		} else {
-+			nhoff += PPPOE_SES_HLEN;
-+		}
-+
-+		if (ppp_proto == PPP_IP) {
- 			proto = htons(ETH_P_IP);
- 			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
--			break;
--		case htons(PPP_IPV6):
-+		} else if (ppp_proto == PPP_IPV6) {
- 			proto = htons(ETH_P_IPV6);
- 			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
--			break;
--		default:
-+		} else if (ppp_proto == PPP_MPLS_UC) {
-+			proto = htons(ETH_P_MPLS_UC);
-+			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-+		} else if (ppp_proto == PPP_MPLS_MC) {
-+			proto = htons(ETH_P_MPLS_MC);
-+			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-+		} else if (ppp_proto_is_valid(ppp_proto)) {
-+			fdret = FLOW_DISSECT_RET_OUT_GOOD;
-+		} else {
- 			fdret = FLOW_DISSECT_RET_OUT_BAD;
- 			break;
- 		}
-+
-+		if (dissector_uses_key(flow_dissector,
-+				       FLOW_DISSECTOR_KEY_PPPOE)) {
-+			struct flow_dissector_key_pppoe *key_pppoe;
-+
-+			key_pppoe = skb_flow_dissector_target(flow_dissector,
-+							      FLOW_DISSECTOR_KEY_PPPOE,
-+							      target_container);
-+			key_pppoe->session_id = hdr->hdr.sid;
-+			key_pppoe->ppp_proto = htons(ppp_proto);
-+			key_pppoe->type = htons(ETH_P_PPP_SES);
-+		}
- 		break;
  	}
- 	case htons(ETH_P_TIPC): {
+ 
++	if (key->basic.n_proto == htons(ETH_P_PPP_SES))
++		fl_set_key_pppoe(tb, &key->pppoe, &mask->pppoe, key, mask);
++
+ 	if (key->basic.n_proto == htons(ETH_P_IP) ||
+ 	    key->basic.n_proto == htons(ETH_P_IPV6)) {
+ 		fl_set_key_val(tb, &key->basic.ip_proto, TCA_FLOWER_KEY_IP_PROTO,
+@@ -1917,6 +1968,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
+ 			     FLOW_DISSECTOR_KEY_HASH, hash);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+ 			     FLOW_DISSECTOR_KEY_NUM_OF_VLANS, num_of_vlans);
++	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_PPPOE, pppoe);
+ 
+ 	skb_flow_dissector_init(dissector, keys, cnt);
+ }
+@@ -3045,6 +3098,17 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
+ 	    fl_dump_key_ip(skb, false, &key->ip, &mask->ip)))
+ 		goto nla_put_failure;
+ 
++	if (mask->pppoe.session_id) {
++		if (nla_put_be16(skb, TCA_FLOWER_KEY_PPPOE_SID,
++				 key->pppoe.session_id))
++			goto nla_put_failure;
++	}
++	if (mask->basic.n_proto && mask->pppoe.ppp_proto) {
++		if (nla_put_be16(skb, TCA_FLOWER_KEY_PPP_PROTO,
++				 key->pppoe.ppp_proto))
++			goto nla_put_failure;
++	}
++
+ 	if (key->control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS &&
+ 	    (fl_dump_key_val(skb, &key->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC,
+ 			     &mask->ipv4.src, TCA_FLOWER_KEY_IPV4_SRC_MASK,
 -- 
 2.35.1
 
