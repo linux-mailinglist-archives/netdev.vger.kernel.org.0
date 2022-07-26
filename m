@@ -2,42 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C895E581251
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 13:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC6AF58126D
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 13:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233213AbiGZLug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 07:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S233265AbiGZL46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 07:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiGZLuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 07:50:35 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933D8286EE;
-        Tue, 26 Jul 2022 04:50:34 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LsZsS2H0Gz1M8LD;
-        Tue, 26 Jul 2022 19:47:40 +0800 (CST)
-Received: from ubuntu-82.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 19:50:31 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] ipv6/addrconf: fix a null-ptr-deref bug for ip6_ptr
-Date:   Tue, 26 Jul 2022 19:50:28 +0800
-Message-ID: <20220726115028.3055296-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233127AbiGZL44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 07:56:56 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F73723150
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 04:56:55 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id q7so794257ljp.13
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 04:56:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TAHEOLzaHMhB/R8obx1qh3L9mwNu890hdYFNO4ta0OM=;
+        b=yQK5s3GspTALLdHqa+rtwIEKYyWUu4dUa5ZeKNxiig3FJRe/0AhB8cU8JngZV6HsRv
+         Hulx+jPNzgQqJ6t3H8sdsjTn+KzZnHMOsDXGRtV8v2YyARZBoFyCdUhFWhWnzptmj2ts
+         dj8qJ5aaDvEoSWa0OfJPLl0rs+fzfL81qcaZE2dftDekbdV2SdlCZPFx0xOsxA6JWDZp
+         F4F9Bn7FCFCi8sXv46EebTNY4yOXt+KuoXrB8a1hto+Jk+2mPg1ENlSa9TLzG7XuGECS
+         le3xMvlBAbhrmot5l3aUC1zEztm1F8MlvAi/PnfXHXhjX7wun9j7PApC3RnY/hXXU2oF
+         1zSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TAHEOLzaHMhB/R8obx1qh3L9mwNu890hdYFNO4ta0OM=;
+        b=hgkO0OyXnE6lEySlRmEmrtOybaAk7iWpIHlJnCMkBMxbiNfLiaWBKzciWZrXlFGSr0
+         WYAoLLfsDYX/Z7WYiop9Lp+CQqgv1xyqU0MMPWilKz5h2mIuldRUQe721PipVveIbcQU
+         vJt47PzDq9CsjvT3McipPpVfaqgAehFWtZLPnSoX2xPyexUN/u+QajT/YGk15QxVZEmc
+         l4JO4zdu4IxZFKz69uxBI+k7Scqrnczk3WilUXjqbBroZy20nLaDpMbPDwWppQNWe8p1
+         lKLA/NtxxAz6tWwt0i4XkZvfX0yOBt83A8sVEyeNZ9qbay3Imi5lruktbn8909vrmRrf
+         hOcg==
+X-Gm-Message-State: AJIora/3/mS1CjEXzj2+DHbdkBtNi8Niev+BG0IlZPAphV5NEquSDvSW
+        2sfrhLHA9tfRKFs4vedRZEIhDw==
+X-Google-Smtp-Source: AGRyM1s4hyIhGMLZduwwn3bvD/SpcPD4uNToHpf0h42ygdzmQGaT1n+CNuLn/vzvcTRjLdzq2lxfdg==
+X-Received: by 2002:a2e:8706:0:b0:25e:1029:c6d9 with SMTP id m6-20020a2e8706000000b0025e1029c6d9mr1888294lji.502.1658836613650;
+        Tue, 26 Jul 2022 04:56:53 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id n20-20020a2ebd14000000b0025de9ff35b4sm2904862ljq.35.2022.07.26.04.56.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 04:56:52 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: net: hirschmann,hellcreek: use absolute path to other schema
+Date:   Tue, 26 Jul 2022 13:56:50 +0200
+Message-Id: <20220726115650.100726-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,99 +76,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change net device's MTU to smaller than IPV6_MIN_MTU or unregister
-device while matching route. That may trigger null-ptr-deref bug
-for ip6_ptr probability as following.
+Absolute path to other DT schema is preferred over relative one.
 
-=========================================================
-BUG: KASAN: null-ptr-deref in find_match.part.0+0x70/0x134
-Read of size 4 at addr 0000000000000308 by task ping6/263
-
-CPU: 2 PID: 263 Comm: ping6 Not tainted 5.19.0-rc7+ #14
-Call trace:
- dump_backtrace+0x1a8/0x230
- show_stack+0x20/0x70
- dump_stack_lvl+0x68/0x84
- print_report+0xc4/0x120
- kasan_report+0x84/0x120
- __asan_load4+0x94/0xd0
- find_match.part.0+0x70/0x134
- __find_rr_leaf+0x408/0x470
- fib6_table_lookup+0x264/0x540
- ip6_pol_route+0xf4/0x260
- ip6_pol_route_output+0x58/0x70
- fib6_rule_lookup+0x1a8/0x330
- ip6_route_output_flags_noref+0xd8/0x1a0
- ip6_route_output_flags+0x58/0x160
- ip6_dst_lookup_tail+0x5b4/0x85c
- ip6_dst_lookup_flow+0x98/0x120
- rawv6_sendmsg+0x49c/0xc70
- inet_sendmsg+0x68/0x94
-
-Reproducer as following:
-Firstly, prepare conditions:
-$ip netns add ns1
-$ip netns add ns2
-$ip link add veth1 type veth peer name veth2
-$ip link set veth1 netns ns1
-$ip link set veth2 netns ns2
-$ip netns exec ns1 ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1
-$ip netns exec ns2 ip -6 addr add 2001:0db8:0:f101::2/64 dev veth2
-$ip netns exec ns1 ifconfig veth1 up
-$ip netns exec ns2 ifconfig veth2 up
-$ip netns exec ns1 ip -6 route add 2000::/64 dev veth1 metric 1
-$ip netns exec ns2 ip -6 route add 2001::/64 dev veth2 metric 1
-
-Secondly, execute the following two commands in two ssh windows
-respectively:
-$ip netns exec ns1 sh
-$while true; do ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1; ip -6 route add 2000::/64 dev veth1 metric 1; ping6 2000::2; done
-
-$ip netns exec ns1 sh
-$while true; do ip link set veth1 mtu 1000; ip link set veth1 mtu 1500; sleep 5; done
-
-It is because ip6_ptr has been assigned to NULL in addrconf_ifdown() firstly,
-then ip6_ignore_linkdown() accesses ip6_ptr directly without NULL check.
-
-	cpu0			cpu1
-fib6_table_lookup
-__find_rr_leaf
-			addrconf_notify [ NETDEV_CHANGEMTU ]
-			addrconf_ifdown
-			RCU_INIT_POINTER(dev->ip6_ptr, NULL)
-find_match
-ip6_ignore_linkdown
-
-So we can add NULL check for ip6_ptr before using in ip6_ignore_linkdown() to
-fix the null-ptr-deref bug.
-
-Fixes: 6d3d07b45c86 ("ipv6: Refactor fib6_ignore_linkdown")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-v2:
-  - Use NULL check in ip6_ignore_linkdown() but synchronize_net() in
-    addrconf_ifdown()
-  - Add timing analysis of the problem
+ .../devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml       | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
----
- include/net/addrconf.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index f7506f08e505..c04f359655b8 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -405,6 +405,9 @@ static inline bool ip6_ignore_linkdown(const struct net_device *dev)
- {
- 	const struct inet6_dev *idev = __in6_dev_get(dev);
+diff --git a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+index 5592f58fa6f0..228683773151 100644
+--- a/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+@@ -48,7 +48,7 @@ properties:
+       "^led@[01]$":
+         type: object
+         description: Hellcreek leds
+-        $ref: ../../leds/common.yaml#
++        $ref: /schemas/leds/common.yaml#
  
-+	if (unlikely(!idev))
-+		return true;
-+
- 	return !!idev->cnf.ignore_routes_with_linkdown;
- }
- 
+         properties:
+           reg:
 -- 
-2.25.1
+2.34.1
 
