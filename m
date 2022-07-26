@@ -2,56 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884265808F4
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 03:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A2858092D
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 03:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiGZBNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jul 2022 21:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52014 "EHLO
+        id S231316AbiGZBru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jul 2022 21:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbiGZBNg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 21:13:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4A6286E7
-        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 18:13:35 -0700 (PDT)
+        with ESMTP id S230033AbiGZBrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jul 2022 21:47:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DCB28719
+        for <netdev@vger.kernel.org>; Mon, 25 Jul 2022 18:47:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 147E8B81160
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 01:13:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC46C341C6;
-        Tue, 26 Jul 2022 01:13:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7054DB81167
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 01:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE4DC341C6;
+        Tue, 26 Jul 2022 01:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658798012;
-        bh=rwpCRmP7FfLKLIsfpfQlfHQsczKVhxJ31+8+/Y4OiW0=;
+        s=k20201202; t=1658800066;
+        bh=cnZmXew4Y7QyRV3tolO7HHmTvcwRl8Oir8uQT46iIe0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bivC1TR5fKkKNXT9T5DsXO8eBs8NHmlUSvBIqpPpWRlv2g/OOt1vSoT9vNo5kJIKP
-         BMQ4saoaeG+rhm/bNc2hw4y2x10x4K68Yeghb3Co3RbU/9WMRld7WGqTCVQymE8bZ1
-         LlXtWXWkHO9EX1KqcMhkg9JWXeaT7NbXuIahcQfGJU2qKVhCYzr1ac0DcZnaskfsM3
-         RsavsVFo1zOT2UjBs8zmfBXKD9ATT2mIbExJfwH4b/0rN0+zh2Lv0tj7JFwxz9E6q4
-         PDsdvQ2iwy/VoYhCCJ7Z9L8xvohf8jNdzUWEJt2PH2qm0RUvEcOt5KvjTkZMHGoNaC
-         k97U9Iyr014fA==
-Date:   Mon, 25 Jul 2022 18:13:31 -0700
+        b=YHDpbJ8EkU+wDp0GP9CeYk36bm41rG0TuuK56zn77kHUZ+fKOoM8fdfVlL/7z9Wqb
+         u6CtvqsmQTfFxBVCm4XTwx4zxhPTosXX76cQ8kpZF4+Sp5s7yoezG/EiqljgIkkP8G
+         kMebTqICsfCseD/g6S9z5rAFItoRaS2vr6eWdlENiqprFBnhhZ1q9sEYIUWSn+GKlp
+         zdXxgv65wU539CSu7gEyLlPePXVb9cGr/aWh2neYzIAQmV+JMtwzNDRzHvTbjtipaH
+         qtfqgt8w5BNCQDicJGvTxF4MUNLptof3e3+9M9igxLpyqls8JH2OULs4UCgIT/4hb4
+         qYJ6fOzL5UNkw==
+Date:   Mon, 25 Jul 2022 18:47:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [net-next PATCH 1/2] devlink: add dry run attribute to flash
- update
-Message-ID: <20220725181331.2603bd26@kernel.org>
-In-Reply-To: <SA2PR11MB510047D98AFFDEE572B375E0D6959@SA2PR11MB5100.namprd11.prod.outlook.com>
-References: <20220720183433.2070122-1-jacob.e.keller@intel.com>
-        <20220720183433.2070122-2-jacob.e.keller@intel.com>
-        <YtjqJjIceW+fProb@nanopsycho>
-        <SA2PR11MB51001777DC391C7E2626E84AD6919@SA2PR11MB5100.namprd11.prod.outlook.com>
-        <YtpBR2ZnR2ieOg5E@nanopsycho>
-        <CO1PR11MB508957F06BB96DD765A7580FD6909@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <YtwW4aMU96JSXIPw@nanopsycho>
-        <SA2PR11MB5100E125B66263046B322DC1D6959@SA2PR11MB5100.namprd11.prod.outlook.com>
-        <20220725123917.78863f79@kernel.org>
-        <SA2PR11MB5100005E9FEB757A6364C2CFD6959@SA2PR11MB5100.namprd11.prod.outlook.com>
-        <20220725133246.251e51b9@kernel.org>
-        <SA2PR11MB510047D98AFFDEE572B375E0D6959@SA2PR11MB5100.namprd11.prod.outlook.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, snelson@pensando.io
+Subject: Re: [patch net-next v4 01/12] net: devlink: make sure that
+ devlink_try_get() works with valid pointer during xarray iteration
+Message-ID: <20220725184744.4e486fd6@kernel.org>
+In-Reply-To: <20220725082925.366455-2-jiri@resnulli.us>
+References: <20220725082925.366455-1-jiri@resnulli.us>
+        <20220725082925.366455-2-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,60 +55,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jul 2022 20:46:01 +0000 Keller, Jacob E wrote:
-> There are two problems, and only one of them is solved by strict
-> validation right now:
+On Mon, 25 Jul 2022 10:29:14 +0200 Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
 > 
-> 1) Does the kernel know this attribute?
+> Remove dependency on devlink_mutex during devlinks xarray iteration.
 > 
-> This is the question of whether the kernel is new enough to have the
-> attribute, i.e. does the DEVLINK_ATTR_DRY_RUN even exist in the
-> kernel's uapi yet.
+> The reason is that devlink_register/unregister() functions taking
+> devlink_mutex would deadlock during devlink reload operation of devlink
+> instance which registers/unregisters nested devlink instances.
 > 
-> This is straight forward, and usually good enough for most
-> attributes. This is what is solved by not setting
-> GENL_DONT_VALIDATE_STRICT.
+> The devlinks xarray consistency is ensured internally by xarray.
+> There is a reference taken when working with devlink using
+> devlink_try_get(). But there is no guarantee that devlink pointer
+> picked during xarray iteration is not freed before devlink_try_get()
+> is called.
 > 
-> However, consider what happens once we add  DEVLINK_ATTR_DRY_RUN and
-> support it in flash update, in version X. This leads us to the next
-> problem.
+> Make sure that devlink_try_get() works with valid pointer.
+> Achieve it by:
+> 1) Splitting devlink_put() so the completion is sent only
+>    after grace period. Completion unblocks the devlink_unregister()
+>    routine, which is followed-up by devlink_free()
+> 2) During devlinks xa_array iteration, get devlink pointer from xa_array
+>    holding RCU read lock and taking reference using devlink_try_get()
+>    before unlock.
 > 
-> 2) does the *command* recognize and support DEVLINK_ATTR_DRY_RUN
-> 
-> Since the kernel in this example already supports
-> DEVLINK_ATTR_DRY_RUN, it will be recognized and the current setup the
-> policy for attributes is the same for every command. Thus the kernel
-> will accept DEVLINK_ATTR_DRY_RUN for any command, strict or not.
-> 
-> But if the command itself doesn't honor DEVLINK_ATTR_DRY_RUN, it will
-> once again be silently ignored.
-> 
-> We currently use the same policy and the same attribute list for
-> every command, so we already silently ignore unexpected attributes,
-> even in strict validation, at least as far as I can tell when
-> analyzing the code. You could try to send an attribute for the wrong
-> command. Obviously existing iproute2 user space doesn't' do this..
-> but nothing stops it.
-> 
-> For some attributes, its not a problem. I.e. all flash update
-> attributes are only used for DEVLINK_CMD_FLASH_UPDATE, and passing
-> them to another command is meaningless and will likely stay
-> meaningless forever. Obviously I think we would prefer if the kernel
-> rejected the input anyways, but its at least not that surprising and
-> a smaller problem.
-> 
-> But for something generic like DRY_RUN, this is problematic because
-> we might want to add support for dry run in the future for other
-> commands. I didn't really analyze every existing command today to see
-> which ones make sense. We could minimize this problem for now by
-> checking DRY_RUN for every command that might want to support it in
-> the future...
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-Hm, yes. Don't invest too much effort into rendering per-cmd policies
-right now, tho. I've started working on putting the parsing policies 
-in YAML last Friday. This way we can auto-gen the policy for the kernel
-and user space can auto-gen the parser/nl TLV writer. Long story short
-we can kill two birds with one stone if you hold off until I have the
-format ironed out. For now maybe just fork the policies into two - 
-with and without dry run attr. We'll improve the granularity later 
-when doing the YAML conversion.
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
