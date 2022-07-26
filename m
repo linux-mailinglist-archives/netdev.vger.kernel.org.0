@@ -2,66 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4535813B2
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 14:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59FA55813B9
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 15:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233618AbiGZM6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 08:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54794 "EHLO
+        id S237972AbiGZNBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 09:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiGZM6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 08:58:37 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49DB25C78;
-        Tue, 26 Jul 2022 05:58:35 -0700 (PDT)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LscNv1f6hz6HHxp;
-        Tue, 26 Jul 2022 20:56:31 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 14:58:33 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Tue, 26 Jul 2022 14:58:33 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "Florian Westphal" <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: RE: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc args
- to be trusted
-Thread-Topic: [PATCH bpf-next v7 04/13] bpf: Add support for forcing kfunc
- args to be trusted
-Thread-Index: AQHYnQf5YGGK69PM90+FORw5bILjSq2O3aiggAFrZ4CAACjgMIAAEHYAgAAiMbA=
-Date:   Tue, 26 Jul 2022 12:58:33 +0000
-Message-ID: <afabc18be104482ba5464817ac4f8729@huawei.com>
-References: <20220721134245.2450-1-memxor@gmail.com>
- <20220721134245.2450-5-memxor@gmail.com>
- <64f5b92546c14b69a20e9007bb31146b@huawei.com>
- <CAP01T7683DcToXdYPPZ5gQxiksuJRyrf_=k8PvQGtwNXt0+S-w@mail.gmail.com>
- <e612d596b547456797dfee98f23bbd62@huawei.com>
- <CAP01T74s8E0-60ZtviLcTDR8sY3hUsAiTc2oTii_i4XeW3J2xw@mail.gmail.com>
-In-Reply-To: <CAP01T74s8E0-60ZtviLcTDR8sY3hUsAiTc2oTii_i4XeW3J2xw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        with ESMTP id S233038AbiGZNBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 09:01:16 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E6912AE8;
+        Tue, 26 Jul 2022 06:01:15 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id h8so20032309wrw.1;
+        Tue, 26 Jul 2022 06:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Tfl3I6SlGsCT++NoswqP98O05LISpyk4WYgSlpLXEdI=;
+        b=JEOMF9fXUySZudeoj0x/33aa3Pjb0Q7klWAhpeNeUFmKqCCzyZkeaMlGPN+mRpjFWi
+         0esyBA+S3WRwoREPnJdlRSZLM7o0ObGommnL8NbqNZPttYnoD4uHpip3NnAqPhnmt3zT
+         xAzF3orQ/IZvd5iJLJqqunzOaywHRQ491vE+RX3+rqPhQIxlGcs2UkXvAhjkMh+Bcewp
+         MkF7Nd9rRX6tAa/jeqKE1keEkVYWx8bRr2BoWlKRK4xUkFD7/mTFS7oXxD605YWhCKkc
+         PE9TBPuzabik1Vkx2gT0bDh1Q8J+e+NTQ3ntwe0f3c0SCCW6SRQnc1mdlIgHwUx51Y/E
+         Ji2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Tfl3I6SlGsCT++NoswqP98O05LISpyk4WYgSlpLXEdI=;
+        b=wtSg68LLrk/GEieuFXPe7+2d1OiNlDY9fwD4sTakSk9Q2XJ3iZi/fcmAJ1bH8yJXKM
+         2xWxXVHOFlNq6/0vUCz+Zt6nIocBmxv0nODJmhmSOj4w2EJlDlxxVHgiG5SYuE36xQ4w
+         KrUOH8wcqqyKalIaQkcfuE6/1IquGO1E8LjHJWKPX8Auh5bd87lDFrOJpxHmPuOqLJW6
+         1EoJ8TtSSNLldZ8lk2dhYxDI3leXQJZrJn/vElRomLcD9cDmlgZuRgcwuoxLvUQ3FJxN
+         fN80gSYkr17OvU7pKRat1/8KpjZ+J1BL1YJUofCw7iKzUuZbwRaJF0VgAdPE7WMcWy3P
+         1xZw==
+X-Gm-Message-State: AJIora8estcaVAl2AM7AoE0L+2JBj2xnkLLgVqrb9QElpTKduLZ3FRzi
+        ArUdJcMfLpiH6lnjtuCTbNs=
+X-Google-Smtp-Source: AGRyM1uMiOn0VKwRIQ3gICWUnZf3DWycc+4VmlwAF2XaWWeUR8P9DiPSwxuRKigS02tlLQHAKPQxmQ==
+X-Received: by 2002:adf:ed10:0:b0:21d:a9a1:3526 with SMTP id a16-20020adfed10000000b0021da9a13526mr10885027wro.403.1658840473574;
+        Tue, 26 Jul 2022 06:01:13 -0700 (PDT)
+Received: from felia.fritz.box (200116b8266ba800287bb26100a73554.dip.versatel-1u1.de. [2001:16b8:266b:a800:287b:b261:a7:3554])
+        by smtp.gmail.com with ESMTPSA id a20-20020a05600c225400b003a32167b8d4sm21327917wmm.13.2022.07.26.06.01.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 06:01:13 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Shuah Khan <shuah@kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] wireguard: selftests: update config fragments
+Date:   Tue, 26 Jul 2022 15:00:58 +0200
+Message-Id: <20220726130058.21833-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,94 +65,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBLdW1hciBLYXJ0aWtleWEgRHdpdmVkaSBbbWFpbHRvOm1lbXhvckBnbWFpbC5jb21d
-DQo+IFNlbnQ6IFR1ZXNkYXksIEp1bHkgMjYsIDIwMjIgMjo1NiBQTQ0KPiBPbiBUdWUsIDI2IEp1
-bCAyMDIyIGF0IDEyOjAyLCBSb2JlcnRvIFNhc3N1IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+
-DQo+IHdyb3RlOg0KPiA+DQo+ID4gPiBGcm9tOiBLdW1hciBLYXJ0aWtleWEgRHdpdmVkaSBbbWFp
-bHRvOm1lbXhvckBnbWFpbC5jb21dDQo+ID4gPiBTZW50OiBUdWVzZGF5LCBKdWx5IDI2LCAyMDIy
-IDExOjMwIEFNDQo+ID4gPiBPbiBNb24sIDI1IEp1bCAyMDIyIGF0IDExOjUyLCBSb2JlcnRvIFNh
-c3N1IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+DQo+ID4gPiB3cm90ZToNCj4gPiA+ID4NCj4g
-PiA+ID4gPiBGcm9tOiBLdW1hciBLYXJ0aWtleWEgRHdpdmVkaSBbbWFpbHRvOm1lbXhvckBnbWFp
-bC5jb21dDQo+ID4gPiA+ID4gU2VudDogVGh1cnNkYXksIEp1bHkgMjEsIDIwMjIgMzo0MyBQTQ0K
-PiA+ID4gPiA+IFRlYWNoIHRoZSB2ZXJpZmllciB0byBkZXRlY3QgYSBuZXcgS0ZfVFJVU1RFRF9B
-UkdTIGtmdW5jIGZsYWcsIHdoaWNoDQo+ID4gPiA+ID4gbWVhbnMgZWFjaCBwb2ludGVyIGFyZ3Vt
-ZW50IG11c3QgYmUgdHJ1c3RlZCwgd2hpY2ggd2UgZGVmaW5lIGFzIGENCj4gPiA+ID4gPiBwb2lu
-dGVyIHRoYXQgaXMgcmVmZXJlbmNlZCAoaGFzIG5vbi16ZXJvIHJlZl9vYmpfaWQpIGFuZCBhbHNv
-IG5lZWRzIHRvDQo+ID4gPiA+ID4gaGF2ZSBpdHMgb2Zmc2V0IHVuY2hhbmdlZCwgc2ltaWxhciB0
-byBob3cgcmVsZWFzZSBmdW5jdGlvbnMgZXhwZWN0IHRoZWlyDQo+ID4gPiA+ID4gYXJndW1lbnQu
-IFRoaXMgYWxsb3dzIGEga2Z1bmMgdG8gcmVjZWl2ZSBwb2ludGVyIGFyZ3VtZW50cyB1bmNoYW5n
-ZWQNCj4gPiA+ID4gPiBmcm9tIHRoZSByZXN1bHQgb2YgdGhlIGFjcXVpcmUga2Z1bmMuDQo+ID4g
-PiA+ID4NCj4gPiA+ID4gPiBUaGlzIGlzIHJlcXVpcmVkIHRvIGVuc3VyZSB0aGF0IGtmdW5jIHRo
-YXQgb3BlcmF0ZSBvbiBzb21lIG9iamVjdCBvbmx5DQo+ID4gPiA+ID4gd29yayBvbiBhY3F1aXJl
-ZCBwb2ludGVycyBhbmQgbm90IG5vcm1hbCBQVFJfVE9fQlRGX0lEIHdpdGggc2FtZQ0KPiB0eXBl
-DQo+ID4gPiA+ID4gd2hpY2ggY2FuIGJlIG9idGFpbmVkIGJ5IHBvaW50ZXIgd2Fsa2luZy4gVGhl
-IHJlc3RyaWN0aW9ucyBhcHBsaWVkIHRvDQo+ID4gPiA+ID4gcmVsZWFzZSBhcmd1bWVudHMgYWxz
-byBhcHBseSB0byB0cnVzdGVkIGFyZ3VtZW50cy4gVGhpcyBpbXBsaWVzIHRoYXQNCj4gPiA+ID4g
-PiBzdHJpY3QgdHlwZSBtYXRjaGluZyAobm90IGRlZHVjaW5nIHR5cGUgYnkgcmVjdXJzaXZlbHkg
-Zm9sbG93aW5nIG1lbWJlcnMNCj4gPiA+ID4gPiBhdCBvZmZzZXQpIGFuZCBPQkpfUkVMRUFTRSBv
-ZmZzZXQgY2hlY2tzIChlbnN1cmluZyB0aGV5IGFyZSB6ZXJvKSBhcmUNCj4gPiA+ID4gPiB1c2Vk
-IGZvciB0cnVzdGVkIHBvaW50ZXIgYXJndW1lbnRzLg0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gU2ln
-bmVkLW9mZi1ieTogS3VtYXIgS2FydGlrZXlhIER3aXZlZGkgPG1lbXhvckBnbWFpbC5jb20+DQo+
-ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gIGluY2x1ZGUvbGludXgvYnRmLmggfCAzMiArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ID4gPiA+ICBrZXJuZWwvYnBmL2J0Zi5jICAg
-IHwgMTcgKysrKysrKysrKysrKystLS0NCj4gPiA+ID4gPiAgbmV0L2JwZi90ZXN0X3J1bi5jICB8
-ICA1ICsrKysrDQo+ID4gPiA+ID4gIDMgZmlsZXMgY2hhbmdlZCwgNTEgaW5zZXJ0aW9ucygrKSwg
-MyBkZWxldGlvbnMoLSkNCj4gPiA+ID4gPg0KPiA+ID4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRl
-L2xpbnV4L2J0Zi5oIGIvaW5jbHVkZS9saW51eC9idGYuaA0KPiA+ID4gPiA+IGluZGV4IDZkZmM2
-ZWFmN2Y4Yy4uY2I2M2FhNzFlODJmIDEwMDY0NA0KPiA+ID4gPiA+IC0tLSBhL2luY2x1ZGUvbGlu
-dXgvYnRmLmgNCj4gPiA+ID4gPiArKysgYi9pbmNsdWRlL2xpbnV4L2J0Zi5oDQo+ID4gPiA+ID4g
-QEAgLTE3LDYgKzE3LDM4IEBADQo+ID4gPiA+ID4gICNkZWZpbmUgS0ZfUkVMRUFTRSAgICgxIDw8
-IDEpIC8qIGtmdW5jIGlzIGEgcmVsZWFzZSBmdW5jdGlvbiAqLw0KPiA+ID4gPiA+ICAjZGVmaW5l
-IEtGX1JFVF9OVUxMICAoMSA8PCAyKSAvKiBrZnVuYyByZXR1cm5zIGEgcG9pbnRlciB0aGF0IG1h
-eSBiZQ0KPiBOVUxMDQo+ID4gPiAqLw0KPiA+ID4gPiA+ICAjZGVmaW5lIEtGX0tQVFJfR0VUICAo
-MSA8PCAzKSAvKiBrZnVuYyByZXR1cm5zIHJlZmVyZW5jZSB0byBhIGtwdHIgKi8NCj4gPiA+ID4g
-PiArLyogVHJ1c3RlZCBhcmd1bWVudHMgYXJlIHRob3NlIHdoaWNoIGFyZSBtZWFudCB0byBiZSBy
-ZWZlcmVuY2VkDQo+ID4gPiBhcmd1bWVudHMNCj4gPiA+ID4gPiB3aXRoDQo+ID4gPiA+ID4gKyAq
-IHVuY2hhbmdlZCBvZmZzZXQuIEl0IGlzIHVzZWQgdG8gZW5mb3JjZSB0aGF0IHBvaW50ZXJzIG9i
-dGFpbmVkIGZyb20NCj4gPiA+IGFjcXVpcmUNCj4gPiA+ID4gPiArICoga2Z1bmNzIHJlbWFpbiB1
-bm1vZGlmaWVkIHdoZW4gYmVpbmcgcGFzc2VkIHRvIGhlbHBlcnMgdGFraW5nDQo+IHRydXN0ZWQN
-Cj4gPiA+IGFyZ3MuDQo+ID4gPiA+ID4gKyAqDQo+ID4gPiA+ID4gKyAqIENvbnNpZGVyDQo+ID4g
-PiA+ID4gKyAqICAgc3RydWN0IGZvbyB7DQo+ID4gPiA+ID4gKyAqICAgICAgICAgICBpbnQgZGF0
-YTsNCj4gPiA+ID4gPiArICogICAgICAgICAgIHN0cnVjdCBmb28gKm5leHQ7DQo+ID4gPiA+ID4g
-KyAqICAgfTsNCj4gPiA+ID4gPiArICoNCj4gPiA+ID4gPiArICogICBzdHJ1Y3QgYmFyIHsNCj4g
-PiA+ID4gPiArICogICAgICAgICAgIGludCBkYXRhOw0KPiA+ID4gPiA+ICsgKiAgICAgICAgICAg
-c3RydWN0IGZvbyBmOw0KPiA+ID4gPiA+ICsgKiAgIH07DQo+ID4gPiA+ID4gKyAqDQo+ID4gPiA+
-ID4gKyAqICAgc3RydWN0IGZvbyAqZiA9IGFsbG9jX2ZvbygpOyAvLyBBY3F1aXJlIGtmdW5jDQo+
-ID4gPiA+ID4gKyAqICAgc3RydWN0IGJhciAqYiA9IGFsbG9jX2JhcigpOyAvLyBBY3F1aXJlIGtm
-dW5jDQo+ID4gPiA+ID4gKyAqDQo+ID4gPiA+ID4gKyAqIElmIGEga2Z1bmMgc2V0X2Zvb19kYXRh
-KCkgd2FudHMgdG8gb3BlcmF0ZSBvbmx5IG9uIHRoZSBhbGxvY2F0ZWQNCj4gb2JqZWN0LA0KPiA+
-ID4gaXQNCj4gPiA+ID4gPiArICogd2lsbCBzZXQgdGhlIEtGX1RSVVNURURfQVJHUyBmbGFnLCB3
-aGljaCB3aWxsIHByZXZlbnQgdW5zYWZlIHVzYWdlDQo+IGxpa2U6DQo+ID4gPiA+ID4gKyAqDQo+
-ID4gPiA+ID4gKyAqICAgc2V0X2Zvb19kYXRhKGYsIDQyKTsgICAgICAgLy8gQWxsb3dlZA0KPiA+
-ID4gPiA+ICsgKiAgIHNldF9mb29fZGF0YShmLT5uZXh0LCA0Mik7IC8vIFJlamVjdGVkLCBub24t
-cmVmZXJlbmNlZCBwb2ludGVyDQo+ID4gPiA+ID4gKyAqICAgc2V0X2Zvb19kYXRhKCZmLT5uZXh0
-LCA0Mik7Ly8gUmVqZWN0ZWQsIHJlZmVyZW5jZWQsIGJ1dCBiYWQgb2Zmc2V0DQo+ID4gPiA+ID4g
-KyAqICAgc2V0X2Zvb19kYXRhKCZiLT5mLCA0Mik7ICAgLy8gUmVqZWN0ZWQsIHJlZmVyZW5jZWQs
-IGJ1dCB3cm9uZyB0eXBlDQo+ID4gPiA+ID4gKyAqDQo+ID4gPiA+ID4gKyAqIEluIHRoZSBmaW5h
-bCBjYXNlLCB1c3VhbGx5IGZvciB0aGUgcHVycG9zZXMgb2YgdHlwZSBtYXRjaGluZywgaXQgaXMN
-Cj4gZGVkdWNlZA0KPiA+ID4gPiA+ICsgKiBieSBsb29raW5nIGF0IHRoZSB0eXBlIG9mIHRoZSBt
-ZW1iZXIgYXQgdGhlIG9mZnNldCwgYnV0IGR1ZSB0byB0aGUNCj4gPiA+ID4gPiArICogcmVxdWly
-ZW1lbnQgb2YgdHJ1c3RlZCBhcmd1bWVudCwgdGhpcyBkZWR1Y3Rpb24gd2lsbCBiZSBzdHJpY3Qg
-YW5kIG5vdA0KPiA+ID4gZG9uZQ0KPiA+ID4gPiA+ICsgKiBmb3IgdGhpcyBjYXNlLg0KPiA+ID4g
-PiA+ICsgKi8NCj4gPiA+ID4gPiArI2RlZmluZSBLRl9UUlVTVEVEX0FSR1MgKDEgPDwgNCkgLyog
-a2Z1bmMgb25seSB0YWtlcyB0cnVzdGVkIHBvaW50ZXINCj4gPiA+ID4gPiBhcmd1bWVudHMgKi8N
-Cj4gPiA+ID4NCj4gPiA+ID4gSGkgS3VtYXINCj4gPiA+ID4NCj4gPiA+ID4gd291bGQgaXQgbWFr
-ZSBzZW5zZSB0byBpbnRyb2R1Y2UgcGVyLXBhcmFtZXRlciBmbGFncz8gSSBoYXZlIGEgZnVuY3Rp
-b24NCj4gPiA+ID4gdGhhdCBoYXMgc2V2ZXJhbCBwYXJhbWV0ZXJzLCBidXQgb25seSBvbmUgaXMg
-cmVmZXJlbmNlZC4NCj4gPiA+ID4NCj4gPiA+DQo+ID4gPiBJIGhhdmUgYSBwYXRjaCBmb3IgdGhh
-dCBpbiBteSBsb2NhbCBicmFuY2gsIEkgY2FuIGZpeCBpdCB1cCBhbmQgcG9zdA0KPiA+ID4gaXQu
-IEJ1dCBmaXJzdCwgY2FuIHlvdSBnaXZlIGFuIGV4YW1wbGUgb2Ygd2hlcmUgeW91IHRoaW5rIHlv
-dSBuZWVkIGl0Pw0KPiA+DQo+ID4gSSBoYXZlIHB1c2hlZCB0aGUgY29tcGxldGUgcGF0Y2ggc2V0
-IGhlcmUsIGZvciB0ZXN0aW5nOg0KPiA+DQo+ID4gaHR0cHM6Ly9naXRodWIuY29tL3JvYmVydG9z
-YXNzdS92bXRlc3QvdHJlZS9icGYtdmVyaWZ5LXNpZy12OS90cmF2aXMtY2kvZGlmZnMNCj4gPg0K
-PiA+IEkgcmViYXNlZCB0byBicGYtbmV4dC9tYXN0ZXIsIGFuZCBpbnRyb2R1Y2VkIEtGX1NMRUVQ
-QUJMRSAoc2ltaWxhcg0KPiA+IGZ1bmN0aW9uYWxpdHkgb2YgIiBidGY6IEFkZCBhIG5ldyBrZnVu
-YyBzZXQgd2hpY2ggYWxsb3dzIHRvIG1hcmsNCj4gPiBhIGZ1bmN0aW9uIHRvIGJlIHNsZWVwYWJs
-ZSIgZnJvbSBCZW5qYW1pbiBUaXNzb2lyZXMpLg0KPiA+DQo+ID4gVGhlIHBhdGNoIHdoZXJlIEkg
-d291bGQgdXNlIHBlci1wYXJhbWV0ZXIgS0ZfVFJVU1RFRF9BUkdTIGlzDQo+ID4gbnVtYmVyIDgu
-IEkgYWxzbyB1c2VkIHlvdXIgbmV3IEFQSSBpbiBwYXRjaCA3IGFuZCBpdCB3b3JrcyB3ZWxsLg0K
-PiA+DQo+IA0KPiBPaywgbG9va3MgbGlrZSB5b3UnbGwgbmVlZCBpdCBmb3IgdGhlIHN0cnVjdCBr
-ZXkgKiBhcmd1bWVudCBhcyB0aGVyZQ0KPiBhcmUgbXVsdGlwbGUgcG9pbnRlcnMgaW4gdGhlIGFy
-Z3VtZW50IGxpc3QgYW5kIG5vdCBhbGwgb2YgdGhlbSBuZWVkIHRvDQo+IGJlIHRydXN0ZWQuIEkg
-d2lsbCBjbGVhbiB1cCBhbmQgcG9zdCB0aGUgcGF0Y2ggd2l0aCBhIHRlc3QgbGF0ZXIgdG9kYXkN
-Cj4gdG8gdGhlIGxpc3QuDQoNClllcywgdGhhbmtzIGEgbG90IQ0KDQpSb2JlcnRvDQo=
+The kernel.config and debug.config fragments in wireguard selftests mention
+some config symbols that have been reworked:
+
+Commit c5665868183f ("mm: kmemleak: use the memory pool for early
+allocations") removes the config DEBUG_KMEMLEAK_EARLY_LOG_SIZE and since
+then, the config's feature is available without further configuration.
+
+Commit 4675ff05de2d ("kmemcheck: rip it out") removes kmemcheck and the
+corresponding arch config HAVE_ARCH_KMEMCHECK. There is no need for this
+config.
+
+Commit 3bf195ae6037 ("netfilter: nat: merge nf_nat_ipv4,6 into nat core")
+removes the config NF_NAT_IPV4 and since then, the config's feature is
+available without further configuration.
+
+Commit 41a2901e7d22 ("rcu: Remove SPARSE_RCU_POINTER Kconfig option")
+removes the config SPARSE_RCU_POINTER and since then, the config's feature
+is enabled by default.
+
+Commit dfb4357da6dd ("time: Remove CONFIG_TIMER_STATS") removes the feature
+and config CONFIG_TIMER_STATS without any replacement.
+
+Commit 3ca17b1f3628 ("lib/ubsan: remove null-pointer checks") removes the
+check and config UBSAN_NULL without any replacement.
+
+Adjust the config fragments to those changes in configs.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ tools/testing/selftests/wireguard/qemu/debug.config  | 5 -----
+ tools/testing/selftests/wireguard/qemu/kernel.config | 1 -
+ 2 files changed, 6 deletions(-)
+
+diff --git a/tools/testing/selftests/wireguard/qemu/debug.config b/tools/testing/selftests/wireguard/qemu/debug.config
+index 2b321b8a96cf..9d172210e2c6 100644
+--- a/tools/testing/selftests/wireguard/qemu/debug.config
++++ b/tools/testing/selftests/wireguard/qemu/debug.config
+@@ -18,15 +18,12 @@ CONFIG_DEBUG_VM=y
+ CONFIG_DEBUG_MEMORY_INIT=y
+ CONFIG_HAVE_DEBUG_STACKOVERFLOW=y
+ CONFIG_DEBUG_STACKOVERFLOW=y
+-CONFIG_HAVE_ARCH_KMEMCHECK=y
+ CONFIG_HAVE_ARCH_KASAN=y
+ CONFIG_KASAN=y
+ CONFIG_KASAN_INLINE=y
+ CONFIG_UBSAN=y
+ CONFIG_UBSAN_SANITIZE_ALL=y
+-CONFIG_UBSAN_NULL=y
+ CONFIG_DEBUG_KMEMLEAK=y
+-CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=8192
+ CONFIG_DEBUG_STACK_USAGE=y
+ CONFIG_DEBUG_SHIRQ=y
+ CONFIG_WQ_WATCHDOG=y
+@@ -35,7 +32,6 @@ CONFIG_SCHED_INFO=y
+ CONFIG_SCHEDSTATS=y
+ CONFIG_SCHED_STACK_END_CHECK=y
+ CONFIG_DEBUG_TIMEKEEPING=y
+-CONFIG_TIMER_STATS=y
+ CONFIG_DEBUG_PREEMPT=y
+ CONFIG_DEBUG_RT_MUTEXES=y
+ CONFIG_DEBUG_SPINLOCK=y
+@@ -49,7 +45,6 @@ CONFIG_DEBUG_BUGVERBOSE=y
+ CONFIG_DEBUG_LIST=y
+ CONFIG_DEBUG_PLIST=y
+ CONFIG_PROVE_RCU=y
+-CONFIG_SPARSE_RCU_POINTER=y
+ CONFIG_RCU_CPU_STALL_TIMEOUT=21
+ CONFIG_RCU_TRACE=y
+ CONFIG_RCU_EQS_DEBUG=y
+diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
+index e1858ce7003f..ce2a04717300 100644
+--- a/tools/testing/selftests/wireguard/qemu/kernel.config
++++ b/tools/testing/selftests/wireguard/qemu/kernel.config
+@@ -19,7 +19,6 @@ CONFIG_NETFILTER_XTABLES=y
+ CONFIG_NETFILTER_XT_NAT=y
+ CONFIG_NETFILTER_XT_MATCH_LENGTH=y
+ CONFIG_NETFILTER_XT_MARK=y
+-CONFIG_NF_NAT_IPV4=y
+ CONFIG_IP_NF_IPTABLES=y
+ CONFIG_IP_NF_FILTER=y
+ CONFIG_IP_NF_MANGLE=y
+-- 
+2.17.1
+
