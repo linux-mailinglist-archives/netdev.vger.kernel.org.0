@@ -2,209 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE08581461
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 15:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 523D95814B3
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:00:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239111AbiGZNox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 09:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S239088AbiGZN7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 09:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239117AbiGZNoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 09:44:46 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5B82AE12
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 06:44:40 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id 141so722172ybn.4
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 06:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yvftHv5S2CPX+wX4bNXzhRK6/q7KB8A8GqY7VENMb0E=;
-        b=oGu5QEUIDXbi9bXA+bsBGH18wXwdHIldQcXCxwozNvjE0NannU7jy7HUEeHvw8Q7v9
-         vtTDQPNGfZTyjn0R7Y9S5I8vzJ4MgNv/OWWub5/Z10egQ+O51Ps0QfCK+p2wFoklHl5N
-         D0wMDHmLcvTEArg88P26Ex8K1soHGCxu3COv/r6dMlX0/i2OU3VtRjPAU96/5VLXIY2/
-         nckM6oRUnTIgFUOtRn20qp1G3I9vhyiAdPND/plsSwlRHZ8u6NCM47IDNKPsC381iHGe
-         jM1Sts2DknBZm4N238HKeLTsJendspw3nt7fGZhFwcZFsCmRWtqnwTSzyYpyORRYB2gl
-         hgpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yvftHv5S2CPX+wX4bNXzhRK6/q7KB8A8GqY7VENMb0E=;
-        b=QmOMjQ7O3zAff0du7a4wcostFU4cLYgfoUNAKwYvFrZc6HdZnv76eQRQjYM4UrFN+o
-         ziGaeAhnYNOcgNw8UK9TnhxOYQcoj9AksdPzvVwqJ0ZwmY44veijLyn5mJ2kwnM2szHL
-         YHy6l2dFpvjGOvEZ05YZwi70d74INQXAf3IVGheWz94Ml8OSAGaDZqtT3ckntsM1aZMr
-         6AXDfsea1FTPJToxDnMil+Rdjh0ACmUUsKIW33izMcSkPvNQ5qMJFI9YIQ77AcV06IpE
-         +CuIlljYS9iiSzHtguHXBjko1a2y/HY/xErNnkEfzX2UdGvVlvaWWZqpsE7moSlXQkO8
-         Cy0w==
-X-Gm-Message-State: AJIora9cTV6CHUVnZgRGQkYJLw2CdfQFknGlJbxlkmMHeupDIcBJYJIn
-        QLWlOUS7Fe2bYfenwcCasLoGgS+KphXnL2/QHQE3Vw==
-X-Google-Smtp-Source: AGRyM1u3i9qwV0ASbN1lQC0BslXs74W5AdhtZxPELWNuy1R08nhmr2uchgmM0eRBH5ope0qZw/ILdRvpER5SepSCyuU=
-X-Received: by 2002:a25:2603:0:b0:66f:774d:e222 with SMTP id
- m3-20020a252603000000b0066f774de222mr13167407ybm.407.1658843079545; Tue, 26
- Jul 2022 06:44:39 -0700 (PDT)
+        with ESMTP id S238744AbiGZN7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 09:59:54 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2097.outbound.protection.outlook.com [40.107.22.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0031C25290
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 06:59:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hpyi5ibYVNVyBC29yI25hZIuIgHxHtiurr48q5ch339s8Qfs0HuqwevmcmaMNcTu0Dn+ANuvrzLZPh7FgsUcYh1kmQJrHkQ5Ix3WSa33Fv3cnTQHlKqxht+RKdiIA2jzdaDhNc09iDrIzUXNFjKEYAypdZRxch4+X4O9qtWhSCIVCzb60L9akyBpwGOu8zfOVgeE/YDbSqc31LiV+4tBo9bxhD9z4/r82AIvTdMcL3Z6bP+D1tlXxqk6MxuKDVXohyYLMZz+kjK68K4dBmGfoKFxOG7O+NlWxdlwHJjLxlSJARrhlRJlrLR9hc7LNGrRRbND5YOb1AzT6+p4ANyYNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lB4VFHLODOhYYHkrZhdVfR2lS17ryS5oe2aBn7nq7Oo=;
+ b=SVPc++ggth6lc+eaQ0//5v7utRCKAOUtFdLT3K1fTbpo9/fOSHzYNnWPHUvE7O+jDIG79IKpBCjYkbf+Xj1b7EiHtI1wc5gnKZcNUlS8laiP2qbSB7QuE23j+iSWHwOI4ZJgeJ4riHWZU3Ys1CIq98EgS2kKyemQXJZ9aFhXJzaPLn+BrYRec8qrcuaYpxy0mFPsuHV3jxOHkJO3ndj3xIUUoYNQsB9/OLYI4ioKFKGYVKwbryNWKY/AlZoXZHg31NrP0CY1H+4hwKCTM6uZ/K0g5zO0xt71YBQai0RXnTU+iTr80SNWh61O84kSM8+thzddtGTyBzF/z4WIiCzDaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kontron.com; dmarc=pass action=none header.from=kontron.com;
+ dkim=pass header.d=kontron.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
+ s=selector2-mysnt-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lB4VFHLODOhYYHkrZhdVfR2lS17ryS5oe2aBn7nq7Oo=;
+ b=cvpeYh/Q7EzTcNEL3BYkzpCEE45iTMr6A7DVaKeFs6nZx4iWJusrU2TF7lM3nt+oWk72usUA9M3IowPijh+fDAjlmN++/da1984+PrRIjWat6XgRGymFUZfcHKqaGKwaH6wgRSCzuJjEwy8DE9/m8OKE68iGOxd1s16fBzZm7ok=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kontron.com;
+Received: from DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3ef::11)
+ by PR3PR10MB4175.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:a3::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Tue, 26 Jul
+ 2022 13:59:50 +0000
+Received: from DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::112:efcf:6621:792c]) by DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::112:efcf:6621:792c%4]) with mapi id 15.20.5458.025; Tue, 26 Jul 2022
+ 13:59:50 +0000
+Subject: Re: Marvell 88E1512 PHY LED2 mode mismatch with Elkhartlake pin mode
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <3f6a37ab-c346-b53c-426c-133aa1ce76d7@kontron.com>
+ <YtcjpofgVhSRyo+t@lunn.ch>
+From:   Gilles BULOZ <gilles.buloz@kontron.com>
+Organization: Kontron Modular Computers SA
+Message-ID: <e6a883e4-0635-7683-cbfe-b4504c9da893@kontron.com>
+Date:   Tue, 26 Jul 2022 15:59:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+In-Reply-To: <YtcjpofgVhSRyo+t@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: PR3P191CA0010.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:102:54::15) To DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:10:3ef::11)
 MIME-Version: 1.0
-References: <CANn89i+-THx+jTzsLDxaX9diV4hz7z4mYqwn2CjtydFp+U4gow@mail.gmail.com>
- <de16c149-2d93-c5d5-3eda-6751c593d996@gmail.com>
-In-Reply-To: <de16c149-2d93-c5d5-3eda-6751c593d996@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 26 Jul 2022 15:44:28 +0200
-Message-ID: <CANn89i+Mvrpryyy_My0s3MXfY=a7bpsQwQX5M64xxxbB0yfFtA@mail.gmail.com>
-Subject: Re: [PATCH] net: rose: fix unregistered netdevice: waiting for rose0
- to become free
-To:     Bernard F6BVP <bernard.f6bvp@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Bernard f6bvp <f6bvp@free.fr>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2cb0e576-0359-4ce3-5ac4-08da6f0f1ba3
+X-MS-TrafficTypeDiagnostic: PR3PR10MB4175:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HJnWfxmiDLKkmcO3Y6i4dPYfbBZnj6mPQzaw7VNoNPJaN2s0qrfJXwG7aaFPnRywuMBWoQ7geZDIc1SPs6xeMeeSlSI9MBbApX1sjqPLH82cm0s3YjIIWhV+ayku6OhDNZi40jAt0h0CJ0YPr2zqXBGDnAkbCUrXctfNkOaodyGtuRVSDwD7vxGy7N7leB2BnXcMD7KRxR99nAAyrEMQZ0nXWRE1dBghEVIBn8AkoFJNUzc27ZCgcaHI9q24wNq53LxRkR9J4QQ65rSsCW6DHsbZut/xjVG52/vNkUcKKXINOAIQRYpRVYGSzrQFZ+FEbnekkZcoOernjuPBBLVy8ZcHNV5lR90p240KMkoPl43gjTT/P406Dv2658iKVJQuakYb6steN6I5KogjpBBqacoiW9csWLVKi1f/XJ9qXrortDHjomeoWXqlocIZNJh/cYzZu60EEB3UBLv7HmIpVBtgoiHgiox1G/OXzs/meuQERVjguRY42kGQEHRsmoF5UpXXYb4+wZvruCBHBvTL+vH6SHndRQg+wmAkj1eGrqJnJMKNAxjuNj8psCYuPUclROD+N5WG3qEHzLq1MouBh2BCdnuS4WM9irzKIHxSq4H3A7CGRIS/q8d27MNU4dwo+wP6Nsyqi4W7sEQxuSfmK35vD5aABmbYUy+b4BephRegBfVvxp/hiQzydMrfswX5zzU1j/vA9r0V7SeejcnBxCTTcyGVkSGrITsOtBBKP8cBzF+lY9WVuatEdBq1OJsJq/SLmNb1GLpXqrNBhzXKiBCfNNlwJBkY3EqspqPwBUq0n8EzJUlrlH4/HTc3aXn+j71DcZNfYeBVChW1FdsEi+afS7QJPzgWO+9h/LtxZiwcA8GzDJXwgZWPweVBbrNd
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(346002)(396003)(39860400002)(376002)(6916009)(6506007)(45080400002)(2616005)(316002)(26005)(31686004)(36756003)(38100700002)(83380400001)(2906002)(66574015)(36916002)(8936002)(478600001)(5660300002)(66476007)(66556008)(4326008)(8676002)(41300700001)(66946007)(31696002)(6512007)(6486002)(966005)(86362001)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TmlwM3lKUGZWZ0xYejF4TjhmMk9MZnlSd3ppSUtYbzdyeDJObkR4ZGZnVTVD?=
+ =?utf-8?B?bmdHU2h1TmJMcDNDdWlPQy9RajRWT2p5Y1hLRmhZU2owT1owVlZ0VEt1S21O?=
+ =?utf-8?B?RDhXZVBsVE1QaVpNQWQyM2QzdFFqWmxVOEdidmtTRjBsNFBCWXhLSVVSM05X?=
+ =?utf-8?B?bHBTTnVDQnhPUU1DanpoNmlnY2RXcE1NSm02UmdKZGdEZEU2bnJPNmlwUUow?=
+ =?utf-8?B?ZE02dDV3TmNUMVYvZjRSdWx3RERaMzFvRlVUQVZoaGxXL3BVODVwQ2RIeFY3?=
+ =?utf-8?B?aTl6ZWN6Z0lNR3ZXMTZoZGpZWjU1Y0VIUXJUOStucmoveVVqVzQrc3pQcVBu?=
+ =?utf-8?B?K2I0Y3NuWE82QVVOckNxK1ZWSmk1ZlVkL2V5UzYwQ3F1L2lqTUdDSEFYUlFw?=
+ =?utf-8?B?WkR0ZzVCUHA3OFptUFU4dkFTYTB2Z25IQjZ6UDZSWDZjQVVwdWE2UnpYWFF3?=
+ =?utf-8?B?N01kV0t5b2VGUklxYVZhc21sWmNtSVNSNElGa3VFWDIxclREeVpwcWFTalUv?=
+ =?utf-8?B?YkZMZVhDNEtjVWZuTlJ3eUs1OVB4cGorenhEWG9XK0FxMHJFZWU2NEdjMDBZ?=
+ =?utf-8?B?ajV2MnZYUWd4K01NZCtvS1pqRnFveGJudHZTNFNmNzB1WmlRQ2NEbnRmZEw0?=
+ =?utf-8?B?dE1vVkVuSTltVzgvVUNVQVpYZXcxOGVpWWtCMnNFWkh3aHI5bDFVdE9TRTdO?=
+ =?utf-8?B?bm5OOHhBMlhQUFZybXBLcnBDYlU4bU1qN1VhZ0lGRDl2cjMvTlBJc2YzbWRK?=
+ =?utf-8?B?eXdWV2VkeWNUV1VKdXFXVndVMjBQS1dHNzliR3RlREFjV0lWbkxUUDF2ZVB2?=
+ =?utf-8?B?a0hkS25CeEs0SVJkSHZiQ1Qxd2hnYXBSTGFGRDZSajYxdzE1eFR2eTRYL0Vu?=
+ =?utf-8?B?RWtmN2tpVXdMMlcxUWlaWHFZK3kwMnJRRyszNWFidnRLYlpxNENnQ2VsQXc5?=
+ =?utf-8?B?a3pqd2xnWGV0V2ZuY2pwZXJmdTFpbEJtNUNBUU5idWFDdStrUUxYeEJDd1NT?=
+ =?utf-8?B?aFA0VEdXTEVYbTVoZytpQnZNTWRWZjNadTB6YjYwR096R3lRaDRBK2gyOFZo?=
+ =?utf-8?B?YlJaY0tZQldra0ppV3N2bXd2YUtQWi9SNytTN3JEMnU5TzJTQ1V0Sm12UWJF?=
+ =?utf-8?B?ZU1rVEd6OFJsbVlFRGdLaXdDYWlFSi8rSWhwbFpDT2NmSVJrZUZZOU1Kdk9L?=
+ =?utf-8?B?YW5tbVNXTmsxemtLZ0dRb1BpQ1hHNmpPZDRvaGUyNlhkL0J6Y1I3THlXNlFz?=
+ =?utf-8?B?N0xQSm5IZXU1U0luMWZPdEVZRG84QU4rMStCUHV6QkxrM21aVkMzbXlMQnAz?=
+ =?utf-8?B?YklxOEpSTVFFVG9Ha3JpeXdPK2xUQm45Qk1FdUxzK3RTazJaT2ZGaTlGbG5I?=
+ =?utf-8?B?V3RFWDh6RGgxR3M0L3ZxM3V1UmxLT2FXem9pNjlhVWFONERMWjArbDVwUlAw?=
+ =?utf-8?B?bGtBUGpWSWlqSDFJSHF2NWtFL2pnNWF0SXg5bmxBSEdTVUJ1b0hENnR6aXdV?=
+ =?utf-8?B?bnpXTFBZU2tHdC8xYmFHbjl0T2w0TFZKZExlY1pYQnlkcy9wcnRvVTlOTWcr?=
+ =?utf-8?B?aDQyUC8zYWVlL2xjSWZiN1doMzRQcm5jZjNXTmdJRWNSTHhtZmd3UEYxYmJx?=
+ =?utf-8?B?akNENFNOemZKM1lwVE9raS81K08zY1Q0d2FkQWNxNEZ0V1hSTG95SDBVRjZx?=
+ =?utf-8?B?blo0Vkp5NEpSUjBVUnlRdE1yOVJFUm9PbWVEWVAxamN1bmJZVUc5cVBoY3lL?=
+ =?utf-8?B?emRtTU9SamRQd0RHVGpqWEhCSk5lTzV1dk85NUl3MHF1c1Uwb0lWM3hZeUxF?=
+ =?utf-8?B?RStxMTdxV2ljU0xOeGprOTd2ZWxQSnM3WFptQnRNeXdiQlpkejBxM3I0bHVN?=
+ =?utf-8?B?SXVWdTRaUXN3RVhpNmdPNXpObENoUE5NUzdOeUpzWW5pTUl5YUg3WEVJc1ov?=
+ =?utf-8?B?ODZXWUs3Rm9rRkt5MTRHZm1NNjZhMDNOZ2JEbUNXUi9ZK0xTL2IxMEU4TzRB?=
+ =?utf-8?B?VnNxNjVXTzlRck9rSUhGNkJwMGVlZzBVYjd3Wm90ZElXcWIrMjV1aUF0SE1z?=
+ =?utf-8?B?TEFIYWtNc05JOW5Lc0FURHNpZ0dVblI3TmNaM2JsUFl4enB4ZWE4L2UxMHhD?=
+ =?utf-8?B?bzRnR3B4bXk0YktBU3BCZ1dSclZ0VFAwbksrY3I0MUlaVU16WkV1TFE0Y0da?=
+ =?utf-8?B?V0E9PQ==?=
+X-OriginatorOrg: kontron.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cb0e576-0359-4ce3-5ac4-08da6f0f1ba3
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR10MB6252.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 13:59:50.6166
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VOX7Pd7JUGmFtMPtf0CM1cTAlSccvOUK/6RK4kxeJ2gt9N/hY4ZUyr0Jzl2qCneC7twTiGRwKD3FUQh5TsRQq0HUCsdBYCNSW7gTBPxfjGE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB4175
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 1:21 PM Bernard F6BVP <bernard.f6bvp@gmail.com> wrote:
+Le 19/07/2022 à 23:35, Andrew Lunn a écrit :
+> On Tue, Jul 19, 2022 at 06:36:20PM +0200, Gilles BULOZ wrote:
+>> Dear developers,
+>>
+>> On a custom Elkhartlake board based on the Intel CRB, it turns out I have
+>> the 88E1512 PHY configured in polled mode ("intel-eth-pci 0000:00:1e.4 eno1:
+>> PHY [stmmac-1:01] driver [Marvell 88E1510] (irq=POLL)" in dmesg) and the
+>> LED2/INT# pin is configured in LED2 mode by marvell_config_led() in
+>> drivers/net/phy/marvell.c (MII_88E1510_PHY_LED_DEF written to
+>> MII_PHY_LED_CTRL). This pin is connected as on the CRB to an Elkhartlake pin
+>> for a PHY interrupt but for some reason the interrupt is enabled on the
+>> Elkhartlake.
+>> So when I shutdown the system (S5), any activity on link makes LED2/INT# toggle and power the system back on.
+>>
+>> I tried to force  phydev->dev_flag to use
+>> MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE instead of MII_88E1510_PHY_LED_DEF but
+>> I've been unable to find how to force this flag. And I discovered that the
+>> value of MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE = 0x1040 is not OK for me
+>> because LED2 is set to "link status" so if I use this value the system is
+>> back "on" on link change (better than on activity but still not OK).
+>>
+>> As a final workaround I've patched drivers/net/phy/marvell.c at
+>> marvell_config_led() to have "LED0=link LED1=activity LED2=off" by writing
+>> 0x1840 to MII_PHY_LED_CTRL, but I know this is a ugly workaround.
+>>
+>> So I'm wondering if PHY "irq=POLL" is the expected operating mode ?
+>> In this case what should disable the interrupt on the Elkhartlake pin ?
+>> Is wake on Lan supported if PHY is set to "irq=POLL" ?
+> This sounds a bit like:
 >
+> https://eur04.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Flkml%2FYelxMFOiqnfIVmyy%40lunn.ch%2FT%2F&amp;data=05%7C01%7Cgilles.buloz%40kontron.com%7C3c6eef4b24214d5c7a8408da69ce9e4b%7C8c9d3c973fd941c8a2b1646f3942daf1%7C0%7C0%7C637938633398700195%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=%2FIM7eVVfMfpjNCDpJaMZTXejNWENIHZWKExGmSTz%2FFQ%3D&amp;reserved=0
 >
-> I modified .config according to
-> CONFIG_NET_DEV_REFCNT_TRACKER=y
-> then compiled moduled and ran my usual AX25 and ROSE applications.
+> If you comment out marvell_config_led(), and read back the registers,
+> does it look like the firmware has setup the LEDs to something
+> sensible?
+The value programmed by the BIOS to MII_PHY_LED_CTRL is 0x0030 meaning LED2=link, LED1=activity, and LED0=link (and reserved bit 12 
+is set to 0 instead of keeping it to its default 1). So this is also not something OK if the interrupt is enabled on the Elkartlake 
+side for LED2/INT#
 >
-> Attached is (I hope) relevant dmesg dump.
+> Is the IRQ described in ACPI?
+OK, I'm going to check for it
+> Maybe you could wire it up. Set
+> phydev->irq before connecting the PHY,
+OK do you do that (set phydev->irq) ?
+> and then phylib will use the
+> IRQ, not polling. That might also solve your wakeup problem, in that
+> when the interrupt is disabled at shutdown, it should disable it in
+> the PHY.
+Is the PHY interrupt needed to support WakeOnLan ?
+And is the PHY POLL mode what we have on the EHL CRB (I don't have the CRB here so I can't check that) ?
+Thanks
+Gilles
+>
+>      Andrew
+> .
 
-Thanks !
-
-There are a lot of problems really...
-
-FIrst one being in ax25:
-
-[  205.798723] reference already released.
-[  205.798732] allocated in:
-[  205.798734]  ax25_bind+0x1a2/0x230 [ax25]
-[  205.798747]  __sys_bind+0xea/0x110
-[  205.798753]  __x64_sys_bind+0x18/0x20
-[  205.798758]  do_syscall_64+0x5c/0x80
-[  205.798763]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.798768] freed in:
-[  205.798770]  ax25_release+0x115/0x370 [ax25]
-[  205.798778]  __sock_release+0x42/0xb0
-[  205.798782]  sock_close+0x15/0x20
-[  205.798785]  __fput+0x9f/0x260
-[  205.798789]  ____fput+0xe/0x10
-[  205.798792]  task_work_run+0x64/0xa0
-[  205.798798]  exit_to_user_mode_prepare+0x18b/0x190
-[  205.798804]  syscall_exit_to_user_mode+0x26/0x40
-[  205.798808]  do_syscall_64+0x69/0x80
-[  205.798812]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.798827] ------------[ cut here ]------------
-[  205.798829] WARNING: CPU: 2 PID: 2605 at lib/ref_tracker.c:136
-ref_tracker_free.cold+0x60/0x81
-[  205.798837] Modules linked in: rose netrom mkiss ax25 rfcomm cmac
-algif_hash algif_skcipher af_alg bnep snd_hda_codec_hdmi nls_iso8859_1
-i915 rtw88_8821ce rtw88_8821c x86_pkg_temp_thermal rtw88_pci
-intel_powerclamp rtw88_core snd_hda_codec_realtek
-snd_hda_codec_generic ledtrig_audio coretemp snd_hda_intel kvm_intel
-snd_intel_dspcfg mac80211 snd_hda_codec kvm i2c_algo_bit drm_buddy
-drm_dp_helper btusb drm_kms_helper snd_hwdep btrtl snd_hda_core btbcm
-joydev crct10dif_pclmul btintel crc32_pclmul ghash_clmulni_intel
-mei_hdcp btmtk intel_rapl_msr aesni_intel bluetooth input_leds snd_pcm
-crypto_simd syscopyarea processor_thermal_device_pci_legacy
-sysfillrect cryptd intel_soc_dts_iosf snd_seq sysimgblt ecdh_generic
-fb_sys_fops rapl libarc4 processor_thermal_device intel_cstate
-processor_thermal_rfim cec snd_timer ecc snd_seq_device cfg80211
-processor_thermal_mbox mei_me processor_thermal_rapl mei rc_core at24
-snd intel_pch_thermal intel_rapl_common ttm soundcore
-int340x_thermal_zone video
-[  205.798948]  mac_hid acpi_pad sch_fq_codel ipmi_devintf
-ipmi_msghandler drm msr parport_pc ppdev lp parport ramoops pstore_blk
-reed_solomon pstore_zone efi_pstore ip_tables x_tables autofs4
-hid_generic usbhid hid i2c_i801 i2c_smbus r8169 xhci_pci ahci libahci
-realtek lpc_ich xhci_pci_renesas [last unloaded: ax25]
-[  205.798992] CPU: 2 PID: 2605 Comm: ax25ipd Not tainted 5.18.11-F6BVP #3
-[  205.798996] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./CK3, BIOS 5.011 09/16/2020
-[  205.798999] RIP: 0010:ref_tracker_free.cold+0x60/0x81
-[  205.799005] Code: e8 d2 01 9b ff 83 7b 18 00 74 14 48 c7 c7 2f d7
-ff 98 e8 10 6e fc ff 8b 7b 18 e8 b8 01 9b ff 4c 89 ee 4c 89 e7 e8 5d
-fd 07 00 <0f> 0b b8 ea ff ff ff e9 30 05 9b ff 41 0f b6 f7 48 c7 c7 a0
-fa 4e
-[  205.799008] RSP: 0018:ffffaf5281073958 EFLAGS: 00010286
-[  205.799011] RAX: 0000000080000000 RBX: ffff9a0bd687ebe0 RCX: 0000000000000000
-[  205.799014] RDX: 0000000000000001 RSI: 0000000000000282 RDI: 00000000ffffffff
-[  205.799016] RBP: ffffaf5281073a10 R08: 0000000000000003 R09: fffffffffffd5618
-[  205.799019] R10: 0000000000ffff10 R11: 000000000000000f R12: ffff9a0bc53384d0
-[  205.799022] R13: 0000000000000282 R14: 00000000ae000001 R15: 0000000000000001
-[  205.799024] FS:  0000000000000000(0000) GS:ffff9a0d0f300000(0000)
-knlGS:0000000000000000
-[  205.799028] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  205.799031] CR2: 00007ff6b8311554 CR3: 000000001ac10004 CR4: 00000000001706e0
-[  205.799033] Call Trace:
-[  205.799035]  <TASK>
-[  205.799038]  ? ax25_dev_device_down+0xd9/0x1b0 [ax25]
-[  205.799047]  ? ax25_device_event+0x9f/0x270 [ax25]
-[  205.799055]  ? raw_notifier_call_chain+0x49/0x60
-[  205.799060]  ? call_netdevice_notifiers_info+0x52/0xa0
-[  205.799065]  ? dev_close_many+0xc8/0x120
-[  205.799070]  ? unregister_netdevice_many+0x13d/0x890
-[  205.799073]  ? unregister_netdevice_queue+0x90/0xe0
-[  205.799076]  ? unregister_netdev+0x1d/0x30
-[  205.799080]  ? mkiss_close+0x7c/0xc0 [mkiss]
-[  205.799084]  ? tty_ldisc_close+0x2e/0x40
-[  205.799089]  ? tty_ldisc_hangup+0x137/0x210
-[  205.799092]  ? __tty_hangup.part.0+0x208/0x350
-[  205.799098]  ? tty_vhangup+0x15/0x20
-[  205.799103]  ? pty_close+0x127/0x160
-[  205.799108]  ? tty_release+0x139/0x5e0
-[  205.799112]  ? __fput+0x9f/0x260
-[  205.799118]  ax25_dev_device_down+0xd9/0x1b0 [ax25]
-[  205.799126]  ax25_device_event+0x9f/0x270 [ax25]
-[  205.799135]  raw_notifier_call_chain+0x49/0x60
-[  205.799140]  call_netdevice_notifiers_info+0x52/0xa0
-[  205.799146]  dev_close_many+0xc8/0x120
-[  205.799152]  unregister_netdevice_many+0x13d/0x890
-[  205.799157]  unregister_netdevice_queue+0x90/0xe0
-[  205.799161]  unregister_netdev+0x1d/0x30
-[  205.799165]  mkiss_close+0x7c/0xc0 [mkiss]
-[  205.799170]  tty_ldisc_close+0x2e/0x40
-[  205.799173]  tty_ldisc_hangup+0x137/0x210
-[  205.799178]  __tty_hangup.part.0+0x208/0x350
-[  205.799184]  tty_vhangup+0x15/0x20
-[  205.799188]  pty_close+0x127/0x160
-[  205.799193]  tty_release+0x139/0x5e0
-[  205.799199]  __fput+0x9f/0x260
-[  205.799203]  ____fput+0xe/0x10
-[  205.799208]  task_work_run+0x64/0xa0
-[  205.799213]  do_exit+0x33b/0xab0
-[  205.799217]  ? __handle_mm_fault+0xc4f/0x15f0
-[  205.799224]  do_group_exit+0x35/0xa0
-[  205.799228]  __x64_sys_exit_group+0x18/0x20
-[  205.799232]  do_syscall_64+0x5c/0x80
-[  205.799238]  ? handle_mm_fault+0xba/0x290
-[  205.799242]  ? debug_smp_processor_id+0x17/0x20
-[  205.799246]  ? fpregs_assert_state_consistent+0x26/0x50
-[  205.799251]  ? exit_to_user_mode_prepare+0x49/0x190
-[  205.799256]  ? irqentry_exit_to_user_mode+0x9/0x20
-[  205.799260]  ? irqentry_exit+0x33/0x40
-[  205.799263]  ? exc_page_fault+0x87/0x170
-[  205.799268]  ? asm_exc_page_fault+0x8/0x30
-[  205.799273]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  205.799277] RIP: 0033:0x7ff6b80eaca1
-[  205.799281] Code: Unable to access opcode bytes at RIP 0x7ff6b80eac77.
-[  205.799283] RSP: 002b:00007fff6dfd4738 EFLAGS: 00000246 ORIG_RAX:
-00000000000000e7
-[  205.799287] RAX: ffffffffffffffda RBX: 00007ff6b8215a00 RCX: 00007ff6b80eaca1
-[  205.799290] RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000001
-[  205.799293] RBP: 0000000000000001 R08: ffffffffffffff80 R09: 0000000000000028
-[  205.799295] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff6b8215a00
-[  205.799298] R13: 0000000000000000 R14: 00007ff6b821aee8 R15: 00007ff6b821af00
-[  205.799304]  </TASK>
