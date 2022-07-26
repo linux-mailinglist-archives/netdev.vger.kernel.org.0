@@ -2,339 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9355581716
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 18:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A7B581774
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 18:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238939AbiGZQOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 12:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
+        id S239411AbiGZQak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 12:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239154AbiGZQOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 12:14:41 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE7023142;
-        Tue, 26 Jul 2022 09:14:39 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id u12so10807921qtk.0;
-        Tue, 26 Jul 2022 09:14:39 -0700 (PDT)
+        with ESMTP id S229804AbiGZQai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 12:30:38 -0400
+Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC835588;
+        Tue, 26 Jul 2022 09:30:36 -0700 (PDT)
+Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26QFxbZe030264;
+        Tue, 26 Jul 2022 18:30:07 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=message-id : date :
+ to : cc : references : from : subject : in-reply-to : content-type :
+ mime-version; s=12052020; bh=AzwTGYD5EzDrLqBysXdTWjCI5adOe6Jkaz/Uro3+RrY=;
+ b=6dRCuncLhqgh0NTEl3OOMT6RdOaMDTawIX/JqrpZxbgen4LRQPRWD219+c2qHGa5wYVZ
+ wB7E8myvnJrNsXPvYhHpvp/wPKFL1vnVdZXmIn/PoVkYjs5fXBLuEOk7uTMn7QVFbl4v
+ v1JPbC8QaqFr8TqC/UYTZS7FMjgybrnWOC/oiskhm7r/EynWCx1N34X4JvuWE7VRjsuV
+ IrpJr1XVonNy9lboHSdQ4LCnEM6i/B5QYJXLaV8lRB1+NBDiQhNy2M2w10R5ypetWU/K
+ jUJJuQPKx1SZWBuv1YNyNHUr8XB4aCXbDrihPmiGJ3Tg5bVMfD8TLIFPktYac9vt6+Mq 8A== 
+Received: from mail.beijerelectronics.com ([195.67.87.132])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3hg504b3vw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 18:30:07 +0200
+Received: from EX01GLOBAL.beijerelectronics.com (10.101.10.25) by
+ EX02GLOBAL.beijerelectronics.com (10.101.10.26) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Tue, 26 Jul 2022 18:30:06 +0200
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (104.47.18.113)
+ by EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17 via Frontend Transport; Tue, 26 Jul 2022 18:30:06 +0200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K2KG7mmOUKF2spQnKndiwljA+/s91FVcSWBnt6nMOGoojYdzTvBSe2K0Uqz+yhn9xA4saB08GYTHgOwlBQ8pxN2xuUDqrfjVETzqv1uTFQjaPMnOYVwge4k4rdbJecFclFkaKFbzP5o6CmPH+oaRIUApY2Le5qHS0p55AY7/WNzL8lvTdsckApsqUPdRFcnlB7QrG8I4tzj6oGScVxniCQwJD/K5etXGfYR+XTvVC0HisosdFwkrppejv6ra0T6E0r6eU4uUhRAedFZLE/xLtBDslJ6oF3PzxXp1dqCCPLp6TOioSOCtQayi/+C9zlIN9eq0LNqJ9yEGSm8C9vgLng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AzwTGYD5EzDrLqBysXdTWjCI5adOe6Jkaz/Uro3+RrY=;
+ b=HLr9ADRBcyHuhyPXToVpFu/F8DRDspzAJn5K8qzAh8+ryWWjBYIN95KZOkgZB6ytJDUPDRH/hZoAXUjCU8XID14GuvQjYLZZJtBJ1BuUwz8aEd5j6uzhw2EJe56a1B3kTU9nBy6PQf796Immg9onCOsYuuCr+zOf8pIJ1PR9N7F2y/o9fCZWzUldmjX091IRKrztAJDjPD/DcoWToPDv03LxmCq98VY4iHLa1cLtHKZxuo7bIqJG9dfPPSgg8aF8p08In/VpXo5LrHE1PsPN4dIPPh37WOIbeeR+FVX+r4Br2yBzqu2MS0SbBhN8MNlXqZ3wUF8Vj46/EXiD5RLUgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=westermo.com; dmarc=pass action=none header.from=westermo.com;
+ dkim=pass header.d=westermo.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=c+yM6Yo3OHw6+XkgHo8xAxLzzRRJ2W2w7UWe1wlaQ44=;
-        b=Kt/30SBDrZP4srF5BXOlbYus562EOlOyjuvPqLCQhsH6EtRaQ4lrW8zsR2d5fIZGVk
-         XQlKCkM1GSlUX0JSNfA8nw5JYELMtgosvPyESKtaVSYm5Txad1IJceinU3odCv4OOJeB
-         vRnX32Dv4Mw2qZT7giKjKnms0z5viMKRgFdwrfVV+kg9KaZow+lxWjVBJQadxNYqU268
-         7i3Mjpl4DXqqO0J7a1qoHJWol08nODP/8B65ifoXYyCQkx0aGpYs6aHAyFzoPkqUXV34
-         htt4itzo76GNYEh+yogKfaC0lzb/IeYa0ptB2yBH39TnXLAGP7C1cDUJ/1jfwzEs/RXn
-         51Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=c+yM6Yo3OHw6+XkgHo8xAxLzzRRJ2W2w7UWe1wlaQ44=;
-        b=wmIZTQRoQUmS3eq98eKGQpdUfw4KKdh+svu+U1pDoY3nz+i4TW7os2K4nrYvNRwJqr
-         UC27PeyeDAdHSA8+JOJmvlBABKAU3vFv8I957DocYOlL3sB/b5sgzb7SgxqjfwolNc+B
-         JqKs0rihRs6bnVqJXU74xRC1fGH3b/Tr9QLufSWobAy5fgP1sDmeaCHNEHQk4sJGgYGF
-         PAhQVp1gYnIY66nsBMoDwdLIW1xYfpy7e7Ftp8devMGBRo8eQ8zk4+xn8rpu80Ci93ZU
-         YU1uxCaBgkWL7UyXK8O4A24ohEqSValgNDbT/MGs8zLrPMz3Fo5Zic/Kkq39cWvoVKNz
-         Do2w==
-X-Gm-Message-State: AJIora/AzSUG/YU9wPJBdOC85nfmkOsO8woDUyFCzusA5++pNup5/PDK
-        8doDS5X69lZAMlppUR+4izE=
-X-Google-Smtp-Source: AGRyM1v/d/i5JtN3iXkr8jEnHT3FrTi7WomV2wQZgQ7XUu6vH6RyXqrBYwAHKbOgNcfAD/lHCxPhTg==
-X-Received: by 2002:a05:622a:201:b0:31e:e040:3754 with SMTP id b1-20020a05622a020100b0031ee0403754mr14950044qtx.538.1658852078314;
-        Tue, 26 Jul 2022 09:14:38 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:c1c0:4cc7:56a9:acf5])
-        by smtp.gmail.com with ESMTPSA id i4-20020a05620a248400b006b59ddb4bc5sm11305920qkn.84.2022.07.26.09.14.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 09:14:37 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 09:14:35 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [Patch bpf-next] tcp: fix sock skb accounting in tcp_read_skb()
-Message-ID: <YuAS69C22HEi87qD@pop-os.localdomain>
-References: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
- <CANn89iJSQh-5DAhEL4Fh5ZDrtY47y0Mo9YJbG-rnj17pdXqoXA@mail.gmail.com>
- <YtQ/Np8DZBJVFO3l@pop-os.localdomain>
- <CANn89iLLANJLHG+_uUu5Z+V64BMCsYHRgCHVHENhZiMOrVUtMw@mail.gmail.com>
- <Yt2IgGuqVi9BHc/g@pop-os.localdomain>
- <CANn89iLHg-D3q8jPFq_87mLFPh5L7arbaF2aNeY42s4VUv_D-Q@mail.gmail.com>
+ d=beijerelectronicsab.onmicrosoft.com;
+ s=selector1-beijerelectronicsab-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AzwTGYD5EzDrLqBysXdTWjCI5adOe6Jkaz/Uro3+RrY=;
+ b=zI4MHH1mzPBicJPX3rhC/COO5MKcl1QP+q24aofdsYTfUpFf6O239NJ93nADQwaC/H5+GT3KUMTiLCD1nU0gfrlEfad0nGIqy5IjlPElPuh45ifiVMbh38uvYvOZdmZSPDobl+Ir3sgAKdmEywKUc4tgmmp5Joijv3GBTBSUNMQ=
+Received: from DB9P192MB1388.EURP192.PROD.OUTLOOK.COM (2603:10a6:10:296::18)
+ by DU0P192MB1973.EURP192.PROD.OUTLOOK.COM (2603:10a6:10:40f::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.23; Tue, 26 Jul
+ 2022 16:30:00 +0000
+Received: from DB9P192MB1388.EURP192.PROD.OUTLOOK.COM
+ ([fe80::582f:a473:b276:fa7f]) by DB9P192MB1388.EURP192.PROD.OUTLOOK.COM
+ ([fe80::582f:a473:b276:fa7f%5]) with mapi id 15.20.5458.025; Tue, 26 Jul 2022
+ 16:30:00 +0000
+Message-ID: <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
+Date:   Tue, 26 Jul 2022 18:29:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     Guillaume Nault <gnault@redhat.com>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <nicolas.dichtel@6wind.com>, <eyal.birger@gmail.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20220724003741.57816-1-matthias.may@westermo.com>
+ <20220724003741.57816-3-matthias.may@westermo.com>
+ <20220725170519.GD18808@pc-4.home>
+From:   Matthias May <matthias.may@westermo.com>
+Subject: Re: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
+In-Reply-To: <20220725170519.GD18808@pc-4.home>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------BwkOzX69jPoeCCQltutzELfm"
+X-ClientProxiedBy: GV3P280CA0104.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:8::24) To DB9P192MB1388.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:10:296::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLHg-D3q8jPFq_87mLFPh5L7arbaF2aNeY42s4VUv_D-Q@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a07ef534-2e0c-4d05-f31e-08da6f2415b0
+X-MS-TrafficTypeDiagnostic: DU0P192MB1973:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VAKOvxQo10EjjensX+9woVIBYj1MNB93UU2gFlDqxLg+koJTofNsBhwdacAsG9RvnEBAY12k7laJYyCkfF+RdnjFrsyTXSv1TdhQfjL5IyVBSMsVado3YpcLONYvNoE7i3ZVfkHWCFN+a7zqrWK1OcGK1HiMqokCUsK8WFB8gO1oKKOtif7w0ay07YVFADA1A651ZWSoPfzaA06sNV59SyNeljyCRyOIIOdJC9Dn7kDMxtB/0yHMIZSYfvZKBGIdhaKKNaNlAbXbFcb57SHjuvTjm8eUj//OmGxpk9xLb9T3H0FdX7avTcs49Qs7l3INN/94r1gJOPwoN5jFEgxU+WKl6XURIQZ579Q08C/5kR2TMF6WfGermjwXF4mnjvy3eSUh60w1X9H1MgxuIsm1nmTT0AjxTVKtxaYIIXEAsIp48gLZOl0eF/Ex2ocTFAshmaXQgoy1KhDQoOxyj4eUX2/O5Vh2FocqtssTiokclxWu3+3Djk/j8G+eIXbEtwyKevAv4JFVBpWeyMS42taJtpJgpSIDwd9UN+p3AeNtpQG5ZYPRVaMnxC54ZkA5HxJtMh78Afz9rwOnb6s9wZxMYZXZeytiSbvQ/DPBrEmftK/uL/hwiIjH2GliEkAfQ9CSVldoPGpO5R3gpUjoJTgfNHR4+RrmQub7TRQ9hJ2zQN6XGXtrJuSWDGEtLUA4Ot8PWrAPkbz7wwnqvn6WmYL0Z5klhdkrElV1cjv+cuqPUdCn1pykrdXVqozpZvagcAk1Nm6xunsKtos6/DXb7AIGwRyTVZpo6V8ecMBx8nt8s8fxskpN0F3EmcZdR/WKATOM6tB1nSpoha6uTtCPjAcprjJjBw4kYGxbChiiGFm8hKM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9P192MB1388.EURP192.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(136003)(366004)(39850400004)(346002)(44832011)(7416002)(8936002)(38100700002)(6486002)(235185007)(86362001)(31696002)(5660300002)(6506007)(2616005)(478600001)(33964004)(186003)(36756003)(31686004)(38350700002)(52116002)(316002)(53546011)(2906002)(83380400001)(41300700001)(4326008)(8676002)(6916009)(66476007)(66946007)(66556008)(21480400003)(6666004)(26005)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VFlSYTVDOXlSSGdqWGI0aDE1OHN3RDZRclZ0UWtXMWxIQ2prM3RST1lIa25l?=
+ =?utf-8?B?cDBiVkN4b3A5eExlWUk1alJobUw2akRLWS9FWkJZaWdyLy94VWFMdWRlWUNs?=
+ =?utf-8?B?NWNXa3kwTGdERUsybUZpcG1mc2plMVJFc3VsdkNtcndacm5YZjhoT1FMbnJz?=
+ =?utf-8?B?TGZRN2c4SmlOYjhuUjF4Y3BNSURURXlXV3JySWV5V0R6OE9zSXhTckxlcmYx?=
+ =?utf-8?B?cDJyNmxsUmFINjFVaVIrelJXVTUvNzRsVjMwOHladWVaZzQrR3E5bEV4WVh1?=
+ =?utf-8?B?YXdSb3lNbllFR2RHd0NWVXdXWVdNcVZwRUZPWjEyRlBuSUhHbkxvYUVtNnc2?=
+ =?utf-8?B?SVZkQllyUDIrMnZ0UzNUL3k4S0JTa1pObDN4T0NtaXNXZUVUWndoZ0plSUhS?=
+ =?utf-8?B?SXhGUGJiWDg4QnQ2OTg1alVGcElULzRBeWFZMk80YkhLai91RkNpM1FNK0FJ?=
+ =?utf-8?B?c2doaStYZEx2Uk1GMVljMXg2b1dSTEpEMk03Z2Q5aDFVMHhSemhTMUJySkNZ?=
+ =?utf-8?B?aDZzeDZEY0I1RDJnUVBzU3dzL2VPVmViZS9xa2MxMzRvSFF3aTNDN3FIQ2ox?=
+ =?utf-8?B?WXFTd0llRmR5RnRtZkNzdHhlYU1kOG54b2QrRHZYTFFHWWVYUi9qTWN5U2No?=
+ =?utf-8?B?eVk3QTdEYXpGNkwzMFBPWGQ4ZnBJRGREcmhneDh5Y2xoZ0VwK1c4RkIzeGVB?=
+ =?utf-8?B?RGpEVGt3SmM0M2N5ZTUzcVVkL2RxUkkzaWExTjB6SzFhOFlyKzZYM2VvRkNr?=
+ =?utf-8?B?dWFVckM4Wi9CdXBTRXUxTlkxYVBVcnhoNVZ5Y3B3eFY0UkVYRE5uTnNrOC85?=
+ =?utf-8?B?OW02TytyekdkT2hRbEdOV0R5RHgwU1c4SmlzT09xblFySkdQMzZHQmRieFdn?=
+ =?utf-8?B?QnRFV29SOFQxdHpKdXB3amZ1RS9raUVsUzNzSTIwcG45Zm9RM1ZzL2dTZDFi?=
+ =?utf-8?B?TVZaeFZiVms2NUllSnFxN2g0WGg2b3c3NHpIY0ROc21GZTNtSTV6bTRyQVNL?=
+ =?utf-8?B?cUpxS2JPQ0gwTm5RSGhzbG4wSWdIRy9Qb0pyWit6YmFaOHUzZVRURXNIeERZ?=
+ =?utf-8?B?YVBQQUZpRFRXT1pBbmZ0ODM4WVdKem9OaStxdmNOUis2RXgvTVc4UTF6cko4?=
+ =?utf-8?B?Ty9UMWdKd040OE1BT1FIL3BMdWw2UTlwZTRRZEZvUFhnczI2Zk1xZ3dUVDZU?=
+ =?utf-8?B?RXRySWR2Z3MwSGxUU0pTcTBBVkxTa3ZnWEVBWVRxWHlIbHVneWNxQ0tTbXRX?=
+ =?utf-8?B?VUg3Q0ViRWZrR0srVUt6OGY5ZUl1Yjg0WFZ2T0xyeGVucFZnWmZBcXZVRkZq?=
+ =?utf-8?B?LzY4S0xCaDFNbEdlSTdhZm1HS0IyWWZQdEh1WG40d1BwUWdtM0w0cUVEM3dy?=
+ =?utf-8?B?RE9zVlZWU20vNnF0Y2dCMHVYNGpSRytTVXBueElaM2lLekJIaS9Wdm15WlFi?=
+ =?utf-8?B?cEhJZ2IrR0UzaUpHa1FOd0h3N1JvOVNTUHY4QUE2bVRTaXhwMkVlb1BmUzJI?=
+ =?utf-8?B?UWJJMFBaRVRzY2tvTm8zWTBSSVpBa1UvNU4wKy9PZGpsZWd2dGpaY2NtU05E?=
+ =?utf-8?B?a1lXSEloNWtOcUVIeWlSU0czcm81dVpLVGJMS09ZZXAvWXZ1bVJpOUFQckRT?=
+ =?utf-8?B?VmV4cS9PZURxVldOeVk0SGt4anFxM2xTZHBSSFMwWE1ZeWZ5bG8yS1VaaFc4?=
+ =?utf-8?B?dG04RFBVeERnQUNqdDArMGs2NlpITEtnTjh5L2kyV1EwbUUwdkVuYWFjMjQw?=
+ =?utf-8?B?NXRjcllNRDdibXFtT2tjY1NXdGJBREpqZm0xUnBQYkw0c25Ja2FTUDVEenR2?=
+ =?utf-8?B?MENXTDJuekRxY1NsUjVYUFBUalJkb0d0UXUzcWw1Wk9HLzU1NElHQVNMbEJM?=
+ =?utf-8?B?ekYvanozMDlrYjd0Y0ViRGcyMzRTQ21MTmJyT1RWMktFMVd1UXVmTlBvMS9D?=
+ =?utf-8?B?N2hyakoyZ2NHTVJtQkxRQlNPUytOWEkrS21EZExxSkI4cWdVRC9hTGV5MzVZ?=
+ =?utf-8?B?d1NJOVZEZkdrWXI2eWw2dEtNTE1wNHVoTDlBR29zblVma2JnT04yci9zdUFK?=
+ =?utf-8?B?T2ZaelRXai8xRWhybVNGWTV0MGUxR3ZoOXBpZ3RVeHgyNTBYN1ppcldldDJI?=
+ =?utf-8?Q?ZkyjB4vfC0EtmxvoYkflcxDS0?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a07ef534-2e0c-4d05-f31e-08da6f2415b0
+X-MS-Exchange-CrossTenant-AuthSource: DB9P192MB1388.EURP192.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 16:30:00.1176
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4b2e9b91-de77-4ca7-8130-c80faee67059
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BjV05d6aFPDUJ8ds4VZ1+22pn5+nUd5c05fD6Cq496dHw/4Pogj3j1DsP5al+6w/P/ZlM0gYirCWpjLD96UlzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0P192MB1973
+X-OrganizationHeadersPreserved: DU0P192MB1973.EURP192.PROD.OUTLOOK.COM
+X-CrossPremisesHeadersPromoted: EX01GLOBAL.beijerelectronics.com
+X-CrossPremisesHeadersFiltered: EX01GLOBAL.beijerelectronics.com
+X-OriginatorOrg: westermo.com
+X-Proofpoint-ORIG-GUID: EfoSeM9FDFlonhkMjKn34vOqUkM10VUH
+X-Proofpoint-GUID: EfoSeM9FDFlonhkMjKn34vOqUkM10VUH
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 10:45:56AM +0200, Eric Dumazet wrote:
-> On Sun, Jul 24, 2022 at 7:59 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Mon, Jul 18, 2022 at 09:26:29AM +0200, Eric Dumazet wrote:
-> > > On Sun, Jul 17, 2022 at 6:56 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jul 12, 2022 at 03:20:37PM +0200, Eric Dumazet wrote:
-> > > > > On Sun, Jul 10, 2022 at 12:20 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > > >
-> > > > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > > > >
-> > > > > > Before commit 965b57b469a5 ("net: Introduce a new proto_ops
-> > > > > > ->read_skb()"), skb was not dequeued from receive queue hence
-> > > > > > when we close TCP socket skb can be just flushed synchronously.
-> > > > > >
-> > > > > > After this commit, we have to uncharge skb immediately after being
-> > > > > > dequeued, otherwise it is still charged in the original sock. And we
-> > > > > > still need to retain skb->sk, as eBPF programs may extract sock
-> > > > > > information from skb->sk. Therefore, we have to call
-> > > > > > skb_set_owner_sk_safe() here.
-> > > > > >
-> > > > > > Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
-> > > > > > Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
-> > > > > > Tested-by: Stanislav Fomichev <sdf@google.com>
-> > > > > > Cc: Eric Dumazet <edumazet@google.com>
-> > > > > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > > > > ---
-> > > > > >  net/ipv4/tcp.c | 1 +
-> > > > > >  1 file changed, 1 insertion(+)
-> > > > > >
-> > > > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > > > > > index 9d2fd3ced21b..c6b1effb2afd 100644
-> > > > > > --- a/net/ipv4/tcp.c
-> > > > > > +++ b/net/ipv4/tcp.c
-> > > > > > @@ -1749,6 +1749,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
-> > > > > >                 int used;
-> > > > > >
-> > > > > >                 __skb_unlink(skb, &sk->sk_receive_queue);
-> > > > > > +               WARN_ON(!skb_set_owner_sk_safe(skb, sk));
-> > > > > >                 used = recv_actor(sk, skb);
-> > > > > >                 if (used <= 0) {
-> > > > > >                         if (!copied)
-> > > > > > --
-> > > > > > 2.34.1
-> > > > > >
-> > > > >
-> > > > > I am reading tcp_read_skb(),it seems to have other bugs.
-> > > > > I wonder why syzbot has not caught up yet.
-> > > >
-> > > > As you mentioned this here I assume you suggest I should fix all bugs in
-> > > > one patch? (I am fine either way in this case, only slightly prefer to fix
-> > > > one bug in each patch for readability.)
-> > >
-> > > I only wonder that after fixing all bugs, we might end up with  tcp_read_sk()
-> > > being a clone of tcp_read_sock() :/
-> >
-> > I really wish so, but unfortunately the partial read looks impossible to
-> > merged with full skb read.
-> >
-> >
-> > >
-> > > syzbot has a relevant report:
-> > >
-> >
-> > Please provide a reproducer if you have, I don't see this report
-> > anywhere (except here of course).
-> 
-> No repro yet.
-> 
-> I usually hold syzbot report until they have enough signal (repro, and
-> eventually bisection) in them to be considered.
-> 
-> >
-> > > ------------[ cut here ]------------
-> > > cleanup rbuf bug: copied 301B4426 seq 301B4426 rcvnxt 302142E8
-> > > WARNING: CPU: 0 PID: 3744 at net/ipv4/tcp.c:1567
-> > > tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
-> > > Modules linked in:
-> > > CPU: 0 PID: 3744 Comm: kworker/0:7 Not tainted
-> > > 5.19.0-rc5-syzkaller-01095-gedb2c3476db9 #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine,
-> > > BIOS Google 06/29/2022
-> > > Workqueue: events nsim_dev_trap_report_work
-> > > RIP: 0010:tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
-> > > Code: ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e d7 03 00 00 8b 8d 38
-> > > 08 00 00 44 89 e2 44 89 f6 48 c7 c7 20 82 df 8a e8 94 d8 58 01 <0f> 0b
-> > > e8 cc 84 a0 f9 48 8d bd 88 07 00 00 48 b8 00 00 00 00 00 fc
-> > > RSP: 0018:ffffc90000007700 EFLAGS: 00010282
-> > > RAX: 0000000000000000 RBX: 000000000004fef7 RCX: 0000000000000000
-> > > RDX: ffff8880201abb00 RSI: ffffffff8160d438 RDI: fffff52000000ed2
-> > > RBP: ffff888016819800 R08: 0000000000000005 R09: 0000000000000000
-> > > R10: 0000000000000103 R11: 0000000000000001 R12: 00000000301b4426
-> > > R13: 0000000000000000 R14: 00000000301b4426 R15: 00000000301b4426
-> > > FS: 0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> > > CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000000020c55000 CR3: 0000000075009000 CR4: 00000000003506f0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > > <IRQ>
-> > > tcp_read_skb+0x29e/0x430 net/ipv4/tcp.c:1775
-> > > sk_psock_verdict_data_ready+0x9d/0xc0 net/core/skmsg.c:1209
-> > > tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4985
-> > > tcp_data_queue+0x1bb2/0x4c60 net/ipv4/tcp_input.c:5059
-> > > tcp_rcv_established+0x82f/0x20e0 net/ipv4/tcp_input.c:5984
-> > > tcp_v4_do_rcv+0x66c/0x9b0 net/ipv4/tcp_ipv4.c:1661
-> > > tcp_v4_rcv+0x343b/0x3940 net/ipv4/tcp_ipv4.c:2078
-> > > ip_protocol_deliver_rcu+0xa3/0x7c0 net/ipv4/ip_input.c:205
-> > > ip_local_deliver_finish+0x2e8/0x4c0 net/ipv4/ip_input.c:233
-> > > NF_HOOK include/linux/netfilter.h:307 [inline]
-> > > NF_HOOK include/linux/netfilter.h:301 [inline]
-> > > ip_local_deliver+0x1aa/0x200 net/ipv4/ip_input.c:254
-> > > dst_input include/net/dst.h:461 [inline]
-> > > ip_rcv_finish+0x1cb/0x2f0 net/ipv4/ip_input.c:437
-> > > NF_HOOK include/linux/netfilter.h:307 [inline]
-> > > NF_HOOK include/linux/netfilter.h:301 [inline]
-> > > ip_rcv+0xaa/0xd0 net/ipv4/ip_input.c:557
-> > > __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5480
-> > > __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5594
-> > > process_backlog+0x3a0/0x7c0 net/core/dev.c:5922
-> > > __napi_poll+0xb3/0x6e0 net/core/dev.c:6506
-> > > napi_poll net/core/dev.c:6573 [inline]
-> > > net_rx_action+0x9c1/0xd90 net/core/dev.c:6684
-> > > __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
-> > > do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
-> > > </IRQ>
-> > > <TASK>
-> > > do_softirq kernel/softirq.c:464 [inline]
-> > > __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
-> > > spin_unlock_bh include/linux/spinlock.h:394 [inline]
-> > > nsim_dev_trap_report drivers/net/netdevsim/dev.c:814 [inline]
-> > > nsim_dev_trap_report_work+0x84d/0xba0 drivers/net/netdevsi
-> m/dev.c:840
-> > > process_one_work+0x996/0x1610 kernel/workqueue.c:2289
-> > > worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-> > > kthread+0x2e9/0x3a0 kernel/kthread.c:376
-> > > ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-> > > </TASK>------------[ cut here ]------------
-> > > cleanup rbuf bug: copied 301B4426 seq 301B4426 rcvnxt 302142E8
-> > > WARNING: CPU: 0 PID: 3744 at net/ipv4/tcp.c:1567
-> > > tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
-> > > Modules linked in:
-> > > CPU: 0 PID: 3744 Comm: kworker/0:7 Not tainted
-> > > 5.19.0-rc5-syzkaller-01095-gedb2c3476db9 #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine,
-> > > BIOS Google 06/29/2022
-> > > Workqueue: events nsim_dev_trap_report_work
-> > > RIP: 0010:tcp_cleanup_rbuf+0x11d/0x5b0 net/ipv4/tcp.c:1567
-> > > Code: ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e d7 03 00 00 8b 8d 38
-> > > 08 00 00 44 89 e2 44 89 f6 48 c7 c7 20 82 df 8a e8 94 d8 58 01 <0f> 0b
-> > > e8 cc 84 a0 f9 48 8d bd 88 07 00 00 48 b8 00 00 00 00 00 fc
-> > > RSP: 0018:ffffc90000007700 EFLAGS: 00010282
-> > > RAX: 0000000000000000 RBX: 000000000004fef7 RCX: 0000000000000000
-> > > RDX: ffff8880201abb00 RSI: ffffffff8160d438 RDI: fffff52000000ed2
-> > > RBP: ffff888016819800 R08: 0000000000000005 R09: 0000000000000000
-> > > R10: 0000000000000103 R11: 0000000000000001 R12: 00000000301b4426
-> > > R13: 0000000000000000 R14: 00000000301b4426 R15: 00000000301b4426
-> > > FS: 0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> > > CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000000020c55000 CR3: 0000000075009000 CR4: 00000000003506f0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > > <IRQ>
-> > > tcp_read_skb+0x29e/0x430 net/ipv4/tcp.c:1775
-> > > sk_psock_verdict_data_ready+0x9d/0xc0 net/core/skmsg.c:1209
-> > > tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4985
-> > > tcp_data_queue+0x1bb2/0x4c60 net/ipv4/tcp_input.c:5059
-> > > tcp_rcv_established+0x82f/0x20e0 net/ipv4/tcp_input.c:5984
-> > > tcp_v4_do_rcv+0x66c/0x9b0 net/ipv4/tcp_ipv4.c:1661
-> > > tcp_v4_rcv+0x343b/0x3940 net/ipv4/tcp_ipv4.c:2078
-> > > ip_protocol_deliver_rcu+0xa3/0x7c0 net/ipv4/ip_input.c:205
-> > > ip_local_deliver_finish+0x2e8/0x4c0 net/ipv4/ip_input.c:233
-> > > NF_HOOK include/linux/netfilter.h:307 [inline]
-> > > NF_HOOK include/linux/netfilter.h:301 [inline]
-> > > ip_local_deliver+0x1aa/0x200 net/ipv4/ip_input.c:254
-> > > dst_input include/net/dst.h:461 [inline]
-> > > ip_rcv_finish+0x1cb/0x2f0 net/ipv4/ip_input.c:437
-> > > NF_HOOK include/linux/netfilter.h:307 [inline]
-> > > NF_HOOK include/linux/netfilter.h:301 [inline]
-> > > ip_rcv+0xaa/0xd0 net/ipv4/ip_input.c:557
-> > > __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5480
-> > > __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5594
-> > > process_backlog+0x3a0/0x7c0 net/core/dev.c:5922
-> > > __napi_poll+0xb3/0x6e0 net/core/dev.c:6506
-> > > napi_poll net/core/dev.c:6573 [inline]
-> > > net_rx_action+0x9c1/0xd90 net/core/dev.c:6684
-> > > __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
-> > > do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
-> > > </IRQ>
-> > > <TASK>
-> > > do_softirq kernel/softirq.c:464 [inline]
-> > > __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
-> > > spin_unlock_bh include/linux/spinlock.h:394 [inline]
-> > > nsim_dev_trap_report drivers/net/netdevsim/dev.c:814 [inline]
-> > > nsim_dev_trap_report_work+0x84d/0xba0 drivers/net/netdevsim/dev.c:840
-> > > process_one_work+0x996/0x1610 kernel/workqueue.c:2289
-> > > worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-> > > kthread+0x2e9/0x3a0 kernel/kthread.c:376
-> > > ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-> > > </TASK>
-> > >
-> > > >
-> > > > >
-> > > > > It ignores the offset value from tcp_recv_skb(), this looks wrong to me.
-> > > > > The reason tcp_read_sock() passes a @len parameter is that is it not
-> > > > > skb->len, but (skb->len - offset)
-> > > >
-> > > > If I understand tcp_recv_skb() correctly it only returns an offset for a
-> > > > partial read of an skb. IOW, if we always read an entire skb at a time,
-> > > > offset makes no sense here, right?
-> > > >
-> > > > >
-> > > > > Also if recv_actor(sk, skb) returns 0, we probably still need to
-> > > > > advance tp->copied_seq,
-> > > > > for instance if skb had a pure FIN (and thus skb->len == 0), since you
-> > > > > removed the skb from sk_receive_queue ?
-> > > >
-> > > > Doesn't the following code handle this case?
-> > > >
-> > > >         if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
-> > > >                 consume_skb(skb);
-> > > >                 ++seq;
-> > > >                 break;
-> > > >         }
-> > > >
-> > > > which is copied from tcp_read_sock()...
-> > >
-> > > I do not think this is enough, because you can break from the loop
-> > > before doing this  check about TCPHDR_FIN,
-> >
-> > The logic is same for tcp_read_sock(). :)
-> >
-> >
-> > > after skb has been unlinked from sk_receive_queue. TCP won't be able
-> > > to catch FIN.
-> >
-> > So TCP does not process FIN before ->sk_data_ready()? I wonder how FIN
-> > (at least a pure FIN as you mentioned above) ends up being queued in
-> > ->sk_receive_queue anyway?
-> 
-> That's how TCP stores packets, including the final FIN.
-> 
-> (Because this skb can also contain payload anyway)
+--------------BwkOzX69jPoeCCQltutzELfm
+Content-Type: multipart/mixed; boundary="------------lorKvdLzVXT00j3ZWkodQVkI";
+ protected-headers="v1"
+From: Matthias May <matthias.may@westermo.com>
+To: Guillaume Nault <gnault@redhat.com>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+ dsahern@kernel.org, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+ nicolas.dichtel@6wind.com, eyal.birger@gmail.com,
+ linux-kernel@vger.kernel.org
+Message-ID: <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
+Subject: Re: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
+References: <20220724003741.57816-1-matthias.may@westermo.com>
+ <20220724003741.57816-3-matthias.may@westermo.com>
+ <20220725170519.GD18808@pc-4.home>
+In-Reply-To: <20220725170519.GD18808@pc-4.home>
 
-If TCP really wants to queue a FIN with skb->len==0, then we have to
-adjust the return value for recv_actor(), because we currently use 0 as
-an error too (meaning no data is consumed):
+--------------lorKvdLzVXT00j3ZWkodQVkI
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-        if (sk_psock_verdict_apply(psock, skb, ret) < 0)
-                len = 0;  // here!
-out:
-        rcu_read_unlock();
-        return len;
+T24gMjUvMDcvMjAyMiAxOTowNSwgR3VpbGxhdW1lIE5hdWx0IHdyb3RlOg0KPiBPbiBTdW4s
+IEp1bCAyNCwgMjAyMiBhdCAwMjozNzo0MUFNICswMjAwLCBNYXR0aGlhcyBNYXkgd3JvdGU6
+DQo+PiBUaGUgY3VycmVudCBjb2RlIHVzZXMgdGhlIFJUX1RPUyBtYWNybyB0byBjdXQgb2Zm
+IHRoZSA2IERTQ1ANCj4+IGJpdHMsIGRvd24gdG8gdGhlIG9yaWdpbmFsIDMgVE9TIGJpdHMu
+DQo+Pg0KPj4gRG8gbm90IHVzZSB0aGlzIG1hY3JvIHRvIGdldCB0aGUgcHJpbyBmb3IgaW5o
+ZXJpdGluZyBwdXJwb3Nlcy4NCj4gDQo+IEhvbmVzdGx5LCB0aGlzIHBhdGNoIGlzIGEgYnVn
+IGZpeCBhbmQgaXMgc3VpdGFibGUgZm9yIHRoZSBuZXQgdHJlZQ0KPiAod2l0aCBhcHByb3By
+aWF0ZSAnRml4ZXMnIHRhZykuDQo+IA0KPiBJZGVhbGx5LCB3ZSdkIGFsc28gZml4IGlwNl9k
+c3RfbG9va3VwX3R1bm5lbCgpICh1c2VkIGJ5IGJhcmV1ZHANCj4gdHVubmVscykgYW5kIHZ4
+bGFuNl9nZXRfcm91dGUoKS4NCj4gDQo+IEFsc28sIG1seDVlX3RjX3R1bl91cGRhdGVfaGVh
+ZGVyX2lwdjYoKSBhbmQNCj4gbWx4NWVfdGNfdHVuX2NyZWF0ZV9oZWFkZXJfaXB2NigpIGJv
+dGggY2FsbCBSVF9UT1MoKSBpbnNpZGUNCj4gaXA2X21ha2VfZmxvd2luZm8oKSBhbmQgY2Vy
+dGFpbmx5IG5lZWQgdG8gYmUgZml4ZWQgdG9vLg0KPiANCg0KSGkgR3VpbGxhdW1lDQpIb3cg
+d291bGQgaSBkbyB0aGF0Pw0KU2VuZCBhIHYyIHRvIG5ldCB3aXRoIHRoZSBmaXhlcyB0YWcg
+b24gOTVjYWY2ZjcxYTk5OT8NCk9yIGp1c3QgcmVzZW5kIHRvIG5ldCB3aXRoIHRoZSBmaXhl
+cyB0YWcgb24gOTVjYWY2ZjcxYTk5OT8NClNpbmNlIHRoZXJlIGFyZSBubyBhY3R1YWwgY2hh
+bmdlcyB0byB0aGUgcGF0Y2guDQpUaGlzIGtpbmQgb2YgY29udHJhZGljdHMgdGhlIHN0YXRl
+bWVudCB0aGF0IElQdjQgYW5kIElQdjYgc2hvdWxkIGJlaGF2ZSB0aGUgc2FtZS4NCi0tPiB2
+NiB3b3VsZCBiZSBmaXhlZCwgYnV0IHY0IG5vdC4NCg0KQlINCk1hdHRoaWFzDQo=
 
+--------------lorKvdLzVXT00j3ZWkodQVkI--
 
-BTW, what is wrong if we simply drop it before queueing to
-sk_receive_queue in TCP? Is it there just for collapse?
+--------------BwkOzX69jPoeCCQltutzELfm
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-Thanks.
+-----BEGIN PGP SIGNATURE-----
+
+wnsEABYIACMWIQR34wKNh4Jxr+4dJ/3fdrYEUzwNvgUCYuAWhAUDAAAAAAAKCRDfdrYEUzwNviM9
+AP0SYzX7AZIUsmRzq5uEEQthkqiUF5Nv92tRg6KCqn2K9AEA7pM8wjL7a3lFpRnkijbjObz3M6cl
+ZD4rgEACogd5/gc=
+=//wv
+-----END PGP SIGNATURE-----
+
+--------------BwkOzX69jPoeCCQltutzELfm--
