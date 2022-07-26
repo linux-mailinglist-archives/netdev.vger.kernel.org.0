@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E74C580B47
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 08:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C032C580B5C
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 08:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237827AbiGZGSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 02:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57520 "EHLO
+        id S237845AbiGZGSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 02:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237683AbiGZGQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 02:16:48 -0400
+        with ESMTP id S232052AbiGZGRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 02:17:08 -0400
 Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3ADDE9F;
-        Mon, 25 Jul 2022 23:16:00 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id c12so9136565ede.3;
-        Mon, 25 Jul 2022 23:16:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A52DF53;
+        Mon, 25 Jul 2022 23:16:02 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c72so13618789edf.8;
+        Mon, 25 Jul 2022 23:16:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EeDWES+RoYrIxklT3H3lpQ4X5nN+/sosK8cuqsDA2yw=;
-        b=RyqOObi3SSW1ZZ92fGEkZqfVHmKraSS5ULlPp+8EyxPMBjiDg4FcOJ9zl2Ua//j5ck
-         LQMDWWiuqwQ5Wn1qHsPRM2kM4aRuvxxhDIrrlZzhuyxoct5BCbwAOy8eB7EvD4HToiYw
-         GlwuZt2QWFZdY0K3g6SAo09646WRiNySu5Cq01PQQJdGVKLHphQCxWoJDaQ9IyZho7A3
-         Nlp2pcXEgFKjAuwemF+ZdQsNLnoAj7ZOj5k21p0ynGgCro3a0poMzWuSMJuw86mLWMzg
-         U0IjOOP7K08kN7NEp1M0i7B3SyvNQSMyNLVjA1tZQMq4EZimHd5llKUe8d0P44lTYC19
-         5OeA==
+        bh=KU59swmo/I3OH2xUFCnRP0du6LBX/Oj+pYHId7St1eI=;
+        b=TvgNbdMKyy86uZmXhxD01oYDxravCjoFmDy36Eoag5psvw/TWZBCbS+cuGqCsG5mEC
+         UztBZU8I1R1uuhEu9JL3f+/vV3aVmXRoQLsVRyVNAfE/ae4HRruecmMe4T9FwFJWNE0B
+         hlvrkfSNkdSNxRQx9TB/HsOrgW8N8g6rrNYPHlGFfpA7Cwic2Yogk2X/IZyRT2kLYTr5
+         niZD7rejUyuJSR2sdjnwNaQDynX6srEKb/BcGM8nkA3CEnW45Ewbm2kyJ9jVFAbrP2OO
+         ROyrQEAFY2KitMlG33DMM8sVCLGZwZziNutY7Q8+rRUYMHmPidkrIHoq+k1RYTEkFmC9
+         MIyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EeDWES+RoYrIxklT3H3lpQ4X5nN+/sosK8cuqsDA2yw=;
-        b=XRMAE4hOynUvhua1WxklYXt85m8JOqnK5mx/mrmcDaGIwMnZQs3gxsiXYTn/1JAB9Y
-         IeukiheQVys7h4tfC12AaFcRIwcNKOstbkis4Kp9m2xPQZz2GVJfGh9klWcLiAHMtWko
-         0XCbyel01/x1yOGXZ+r087V8zbD7vqAhc/ZdR5EdAm91YVVjN2FIzAr1VIGv53RYdTvO
-         ZrWR6Rvjhmhx8G6Vz+quqmjq9I8S/7jl5ZPrflDStNs2PpL3RpKsh6My8UpieLpRTahr
-         gp1p6jwCVoebhn9nWJPqKtB+oGF3Ems/h9mVpbQM2hCAbx5Gg+YARQIAjZtF0TmAMZRi
-         Jaqg==
-X-Gm-Message-State: AJIora+RkHwE2+hIt04NFX2inMr8RkPT6t/EcwyIX89VjsMzPrhSYOrm
-        1p4HUVqnnt+BdzNIb2zURgo=
-X-Google-Smtp-Source: AGRyM1sJaTr+yF7nZQ9o2b05WpCv43itL3sxicyVnK/r/zKBi66HtRCuISGpTPa/rsWjyeOSsH6cdA==
-X-Received: by 2002:a05:6402:4148:b0:43b:7f36:e25f with SMTP id x8-20020a056402414800b0043b7f36e25fmr16451483eda.407.1658816158871;
-        Mon, 25 Jul 2022 23:15:58 -0700 (PDT)
+        bh=KU59swmo/I3OH2xUFCnRP0du6LBX/Oj+pYHId7St1eI=;
+        b=LQpCf9v+Fkpm7GLx0yjuMAtEYmi7jmAARXbbNySo62vq8kHFReJomfP1be6OOAGBqc
+         26gpJVIXLC0aNnliPtOgHuUX4Kn7533ooltjdNI1HNvrUOpycRwQgw7Ze5RUYpKiUVmi
+         TY2Z1GCVeZwD3zyJ7EmZCnXpveiAyweMRrFsFsQ9oy5KpxCXSMMrsvfgMD3UDUpa7UP3
+         u61gnDKu3APQsuGNxVtwgiFnQyLDjvnYrrxTlwxbMvD52WnuG2pg8xcfXukfybBRly6o
+         +088fi2g+/fHSMDpJ7GcXrSewthlDCdERREV1OhnKQGvJLYDPQbSdLq75w0SZX0demcb
+         pQ7Q==
+X-Gm-Message-State: AJIora8bXoGDdnAC7yUaA1IZjj61BLm4cnZAtU97nb7OyDa5sPv/jRBn
+        V2BOEos8+H+NQvpLEs8W620=
+X-Google-Smtp-Source: AGRyM1tHvOiCGpHixXKtO7jIElB1KTcBaUlAUYCAn8mzNIr5txAx/Do/nLGuDDb06OlpfDGVIniSGg==
+X-Received: by 2002:a05:6402:909:b0:435:a8b:5232 with SMTP id g9-20020a056402090900b004350a8b5232mr16832230edz.240.1658816160782;
+        Mon, 25 Jul 2022 23:16:00 -0700 (PDT)
 Received: from localhost.localdomain ([2a04:241e:502:a080:2b68:36a:5a94:4ba1])
-        by smtp.gmail.com with ESMTPSA id l23-20020a056402345700b0043ba7df7a42sm8133067edc.26.2022.07.25.23.15.57
+        by smtp.gmail.com with ESMTPSA id l23-20020a056402345700b0043ba7df7a42sm8133067edc.26.2022.07.25.23.15.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 23:15:58 -0700 (PDT)
+        Mon, 25 Jul 2022 23:16:00 -0700 (PDT)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
@@ -67,9 +67,9 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v6 11/26] tcp: ipv6: Add AO signing for tcp_v6_send_response
-Date:   Tue, 26 Jul 2022 09:15:13 +0300
-Message-Id: <17ba6ae3168abc1d6c37dac479925adc0ed19017.1658815925.git.cdleonard@gmail.com>
+Subject: [PATCH v6 12/26] tcp: authopt: Add support for signing skb-less replies
+Date:   Tue, 26 Jul 2022 09:15:14 +0300
+Message-Id: <56095a3aeb4ce619736cbb25c93e32a99d063488.1658815925.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1658815925.git.cdleonard@gmail.com>
 References: <cover.1658815925.git.cdleonard@gmail.com>
@@ -85,154 +85,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a special code path for acks and resets outside of normal
-connection establishment and closing.
+This is required because tcp ipv4 sometimes sends replies without
+allocating a full skb that can be signed by tcp authopt.
+
+Handle this with additional code in tcp authopt.
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- net/ipv4/tcp_authopt.c |  2 ++
- net/ipv6/tcp_ipv6.c    | 60 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 62 insertions(+)
+ include/net/tcp_authopt.h |   7 ++
+ net/ipv4/tcp_authopt.c    | 144 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 151 insertions(+)
 
+diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
+index 1fa1b968c80c..9bc0f58a78cb 100644
+--- a/include/net/tcp_authopt.h
++++ b/include/net/tcp_authopt.h
+@@ -114,10 +114,17 @@ static inline struct tcp_authopt_key_info *tcp_authopt_select_key(
+ int tcp_authopt_hash(
+ 		char *hash_location,
+ 		struct tcp_authopt_key_info *key,
+ 		struct tcp_authopt_info *info,
+ 		struct sock *sk, struct sk_buff *skb);
++int tcp_v4_authopt_hash_reply(
++		char *hash_location,
++		struct tcp_authopt_info *info,
++		struct tcp_authopt_key_info *key,
++		__be32 saddr,
++		__be32 daddr,
++		struct tcphdr *th);
+ int __tcp_authopt_openreq(struct sock *newsk, const struct sock *oldsk, struct request_sock *req);
+ static inline int tcp_authopt_openreq(
+ 		struct sock *newsk,
+ 		const struct sock *oldsk,
+ 		struct request_sock *req)
 diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
-index e64b97db927e..2a216356d280 100644
+index 2a216356d280..2af6265041b4 100644
 --- a/net/ipv4/tcp_authopt.c
 +++ b/net/ipv4/tcp_authopt.c
-@@ -385,10 +385,11 @@ struct tcp_authopt_key_info *__tcp_authopt_select_key(const struct sock *sk,
- {
- 	struct netns_tcp_authopt *net = sock_net_tcp_authopt(sk);
- 
- 	return tcp_authopt_lookup_send(net, addr_sk, -1);
- }
-+EXPORT_SYMBOL(__tcp_authopt_select_key);
- 
- static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_authopt_info *info;
-@@ -1210,10 +1211,11 @@ int tcp_authopt_hash(char *hash_location,
- 	 * try to make it obvious inside the packet.
- 	 */
- 	memset(hash_location, 0, TCP_AUTHOPT_MACLEN);
+@@ -944,10 +944,72 @@ static int tcp_authopt_get_traffic_key(struct sock *sk,
+ out:
+ 	tcp_authopt_put_kdf_pool(key, pool);
  	return err;
  }
-+EXPORT_SYMBOL(tcp_authopt_hash);
+ 
++struct tcp_v4_authopt_context_data {
++	__be32 saddr;
++	__be32 daddr;
++	__be16 sport;
++	__be16 dport;
++	__be32 sisn;
++	__be32 disn;
++	__be16 digestbits;
++} __packed;
++
++static int tcp_v4_authopt_get_traffic_key_noskb(struct tcp_authopt_key_info *key,
++						__be32 saddr,
++						__be32 daddr,
++						__be16 sport,
++						__be16 dport,
++						__be32 sisn,
++						__be32 disn,
++						u8 *traffic_key)
++{
++	int err;
++	struct tcp_authopt_alg_pool *pool;
++	struct tcp_v4_authopt_context_data data;
++
++	BUILD_BUG_ON(sizeof(data) != 22);
++
++	pool = tcp_authopt_get_kdf_pool(key);
++	if (IS_ERR(pool))
++		return PTR_ERR(pool);
++
++	err = tcp_authopt_setkey(pool, key);
++	if (err)
++		goto out;
++	err = crypto_ahash_init(pool->req);
++	if (err)
++		goto out;
++
++	// RFC5926 section 3.1.1.1
++	// Separate to keep alignment semi-sane
++	err = crypto_ahash_buf(pool->req, "\x01TCP-AO", 7);
++	if (err)
++		return err;
++	data.saddr = saddr;
++	data.daddr = daddr;
++	data.sport = sport;
++	data.dport = dport;
++	data.sisn = sisn;
++	data.disn = disn;
++	data.digestbits = htons(crypto_ahash_digestsize(pool->tfm) * 8);
++
++	err = crypto_ahash_buf(pool->req, (u8 *)&data, sizeof(data));
++	if (err)
++		goto out;
++	ahash_request_set_crypt(pool->req, NULL, traffic_key, 0);
++	err = crypto_ahash_final(pool->req);
++	if (err)
++		goto out;
++
++out:
++	tcp_authopt_put_kdf_pool(key, pool);
++	return err;
++}
++
+ static int crypto_ahash_buf_zero(struct ahash_request *req, int len)
+ {
+ 	u8 zeros[TCP_AUTHOPT_MACLEN] = {0};
+ 	int buflen, err;
+ 
+@@ -1214,10 +1276,92 @@ int tcp_authopt_hash(char *hash_location,
+ 	return err;
+ }
+ EXPORT_SYMBOL(tcp_authopt_hash);
  
  /**
++ * tcp_v4_authopt_hash_reply - Hash tcp+ipv4 header without SKB
++ *
++ * @hash_location: output buffer
++ * @info: sending socket's tcp_authopt_info
++ * @key: signing key, from tcp_authopt_select_key.
++ * @saddr: source address
++ * @daddr: destination address
++ * @th: Pointer to TCP header and options
++ */
++int tcp_v4_authopt_hash_reply(char *hash_location,
++			      struct tcp_authopt_info *info,
++			      struct tcp_authopt_key_info *key,
++			      __be32 saddr,
++			      __be32 daddr,
++			      struct tcphdr *th)
++{
++	struct tcp_authopt_alg_pool *pool;
++	u8 macbuf[TCP_AUTHOPT_MAXMACBUF];
++	u8 traffic_key[TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN];
++	__be32 sne = 0;
++	int err;
++
++	/* Call special code path for computing traffic key without skb
++	 * This can be called from tcp_v4_reqsk_send_ack so caching would be
++	 * difficult here.
++	 */
++	err = tcp_v4_authopt_get_traffic_key_noskb(key, saddr, daddr,
++						   th->source, th->dest,
++						   htonl(info->src_isn), htonl(info->dst_isn),
++						   traffic_key);
++	if (err)
++		goto out_err_traffic_key;
++
++	/* Init mac shash */
++	pool = tcp_authopt_get_mac_pool(key);
++	if (IS_ERR(pool))
++		return PTR_ERR(pool);
++	err = crypto_ahash_setkey(pool->tfm, traffic_key, key->alg->traffic_key_len);
++	if (err)
++		goto out_err;
++	err = crypto_ahash_init(pool->req);
++	if (err)
++		return err;
++
++	err = crypto_ahash_buf(pool->req, (u8 *)&sne, 4);
++	if (err)
++		return err;
++
++	err = tcp_authopt_hash_tcp4_pseudoheader(pool, saddr, daddr, th->doff * 4);
++	if (err)
++		return err;
++
++	// TCP header with checksum set to zero. Caller ensures this.
++	if (WARN_ON_ONCE(th->check != 0))
++		goto out_err;
++	err = crypto_ahash_buf(pool->req, (u8 *)th, sizeof(*th));
++	if (err)
++		goto out_err;
++
++	// TCP options
++	err = tcp_authopt_hash_opts(pool, th, (struct tcphdr_authopt *)(hash_location - 4),
++				    !(key->flags & TCP_AUTHOPT_KEY_EXCLUDE_OPTS));
++	if (err)
++		goto out_err;
++
++	ahash_request_set_crypt(pool->req, NULL, macbuf, 0);
++	err = crypto_ahash_final(pool->req);
++	if (err)
++		goto out_err;
++	memcpy(hash_location, macbuf, TCP_AUTHOPT_MACLEN);
++
++	tcp_authopt_put_mac_pool(key, pool);
++	return 0;
++
++out_err:
++	tcp_authopt_put_mac_pool(key, pool);
++out_err_traffic_key:
++	memset(hash_location, 0, TCP_AUTHOPT_MACLEN);
++	return err;
++}
++
++/*
   * tcp_authopt_lookup_recv - lookup key for receive
   *
   * @sk: Receive socket
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 12f63ce66bcc..63fdbb181bb8 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -40,10 +40,11 @@
- #include <linux/icmpv6.h>
- #include <linux/random.h>
- #include <linux/indirect_call_wrapper.h>
- 
- #include <net/tcp.h>
-+#include <net/tcp_authopt.h>
- #include <net/ndisc.h>
- #include <net/inet6_hashtables.h>
- #include <net/inet6_connection_sock.h>
- #include <net/ipv6.h>
- #include <net/transp_v6.h>
-@@ -836,10 +837,48 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
- 	.init_seq	=	tcp_v6_init_seq,
- 	.init_ts_off	=	tcp_v6_init_ts_off,
- 	.send_synack	=	tcp_v6_send_synack,
- };
- 
-+#ifdef CONFIG_TCP_AUTHOPT
-+static int tcp_v6_send_response_init_authopt(const struct sock *sk,
-+					     struct tcp_authopt_info **info,
-+					     struct tcp_authopt_key_info **key,
-+					     u8 *rnextkeyid)
-+{
-+	/* Key lookup before SKB allocation */
-+	if (!(tcp_authopt_needed && sk))
-+		return 0;
-+	if (sk->sk_state == TCP_TIME_WAIT)
-+		*info = tcp_twsk(sk)->tw_authopt_info;
-+	else
-+		*info = rcu_dereference(tcp_sk(sk)->authopt_info);
-+	if (!*info)
-+		return 0;
-+	*key = __tcp_authopt_select_key(sk, *info, sk, rnextkeyid);
-+	if (*key)
-+		return TCPOLEN_AUTHOPT_OUTPUT;
-+	return 0;
-+}
-+
-+static void tcp_v6_send_response_sign_authopt(const struct sock *sk,
-+					      struct tcp_authopt_info *info,
-+					      struct tcp_authopt_key_info *key,
-+					      struct sk_buff *skb,
-+					      struct tcphdr_authopt *ptr,
-+					      u8 rnextkeyid)
-+{
-+	if (!(tcp_authopt_needed && key))
-+		return;
-+	ptr->num = TCPOPT_AUTHOPT;
-+	ptr->len = TCPOLEN_AUTHOPT_OUTPUT;
-+	ptr->keyid = key->send_id;
-+	ptr->rnextkeyid = rnextkeyid;
-+	tcp_authopt_hash(ptr->mac, key, info, (struct sock *)sk, skb);
-+}
-+#endif
-+
- static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32 seq,
- 				 u32 ack, u32 win, u32 tsval, u32 tsecr,
- 				 int oif, struct tcp_md5sig_key *key, int rst,
- 				 u8 tclass, __be32 label, u32 priority)
- {
-@@ -851,13 +890,30 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
- 	struct sock *ctl_sk = net->ipv6.tcp_sk;
- 	unsigned int tot_len = sizeof(struct tcphdr);
- 	__be32 mrst = 0, *topt;
- 	struct dst_entry *dst;
- 	__u32 mark = 0;
-+#ifdef CONFIG_TCP_AUTHOPT
-+	struct tcp_authopt_info *aoinfo;
-+	struct tcp_authopt_key_info *aokey;
-+	u8 aornextkeyid;
-+	int aolen;
-+#endif
- 
- 	if (tsecr)
- 		tot_len += TCPOLEN_TSTAMP_ALIGNED;
-+#ifdef CONFIG_TCP_AUTHOPT
-+	/* Key lookup before SKB allocation */
-+	aolen = tcp_v6_send_response_init_authopt(sk, &aoinfo, &aokey, &aornextkeyid);
-+	if (aolen) {
-+		tot_len += aolen;
-+#ifdef CONFIG_TCP_MD5SIG
-+		/* Don't use MD5 */
-+		key = NULL;
-+#endif
-+	}
-+#endif
- #ifdef CONFIG_TCP_MD5SIG
- 	if (key)
- 		tot_len += TCPOLEN_MD5SIG_ALIGNED;
- #endif
- 
-@@ -909,10 +965,14 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
- 		tcp_v6_md5_hash_hdr((__u8 *)topt, key,
- 				    &ipv6_hdr(skb)->saddr,
- 				    &ipv6_hdr(skb)->daddr, t1);
- 	}
- #endif
-+#ifdef CONFIG_TCP_AUTHOPT
-+	tcp_v6_send_response_sign_authopt(sk, aoinfo, aokey, buff,
-+					  (struct tcphdr_authopt *)topt, aornextkeyid);
-+#endif
- 
- 	memset(&fl6, 0, sizeof(fl6));
- 	fl6.daddr = ipv6_hdr(skb)->saddr;
- 	fl6.saddr = ipv6_hdr(skb)->daddr;
- 	fl6.flowlabel = label;
+  * @skb: Packet, used to compare addr and iface
+  * @net: Per-namespace information containing keys
 -- 
 2.25.1
 
