@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79091580D66
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B3B580D8B
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238430AbiGZHYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 03:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S238435AbiGZHYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238138AbiGZHXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:23:46 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596582AE2A;
-        Tue, 26 Jul 2022 00:23:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUNVKR_1658820201;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUNVKR_1658820201)
+        with ESMTP id S238263AbiGZHXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:23:48 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0967C2B248;
+        Tue, 26 Jul 2022 00:23:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VKUNVLU_1658820203;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKUNVLU_1658820203)
           by smtp.aliyun-inc.com;
-          Tue, 26 Jul 2022 15:23:22 +0800
+          Tue, 26 Jul 2022 15:23:24 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v13 29/42] virtio_pci: struct virtio_pci_common_cfg add queue_reset
-Date:   Tue, 26 Jul 2022 15:22:12 +0800
-Message-Id: <20220726072225.19884-30-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v13 30/42] virtio_pci: introduce helper to get/set queue reset
+Date:   Tue, 26 Jul 2022 15:22:13 +0800
+Message-Id: <20220726072225.19884-31-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
 References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
@@ -72,7 +72,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add queue_reset in virtio_pci_common_cfg.
+Introduce new helpers to implement queue reset and get queue reset
+status.
 
  https://github.com/oasis-tcs/virtio-spec/issues/124
  https://github.com/oasis-tcs/virtio-spec/issues/139
@@ -80,35 +81,78 @@ Add queue_reset in virtio_pci_common_cfg.
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- include/linux/virtio_pci_modern.h | 2 +-
- include/uapi/linux/virtio_pci.h   | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/virtio/virtio_pci_modern_dev.c | 39 ++++++++++++++++++++++++++
+ include/linux/virtio_pci_modern.h      |  2 ++
+ 2 files changed, 41 insertions(+)
 
+diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+index fa2a9445bb18..869cb46bef96 100644
+--- a/drivers/virtio/virtio_pci_modern_dev.c
++++ b/drivers/virtio/virtio_pci_modern_dev.c
+@@ -3,6 +3,7 @@
+ #include <linux/virtio_pci_modern.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/delay.h>
+ 
+ /*
+  * vp_modern_map_capability - map a part of virtio pci capability
+@@ -474,6 +475,44 @@ void vp_modern_set_status(struct virtio_pci_modern_device *mdev,
+ }
+ EXPORT_SYMBOL_GPL(vp_modern_set_status);
+ 
++/*
++ * vp_modern_get_queue_reset - get the queue reset status
++ * @mdev: the modern virtio-pci device
++ * @index: queue index
++ */
++int vp_modern_get_queue_reset(struct virtio_pci_modern_device *mdev, u16 index)
++{
++	struct virtio_pci_modern_common_cfg __iomem *cfg;
++
++	cfg = (struct virtio_pci_modern_common_cfg __iomem *)mdev->common;
++
++	vp_iowrite16(index, &cfg->cfg.queue_select);
++	return vp_ioread16(&cfg->queue_reset);
++}
++EXPORT_SYMBOL_GPL(vp_modern_get_queue_reset);
++
++/*
++ * vp_modern_set_queue_reset - reset the queue
++ * @mdev: the modern virtio-pci device
++ * @index: queue index
++ */
++void vp_modern_set_queue_reset(struct virtio_pci_modern_device *mdev, u16 index)
++{
++	struct virtio_pci_modern_common_cfg __iomem *cfg;
++
++	cfg = (struct virtio_pci_modern_common_cfg __iomem *)mdev->common;
++
++	vp_iowrite16(index, &cfg->cfg.queue_select);
++	vp_iowrite16(1, &cfg->queue_reset);
++
++	while (vp_ioread16(&cfg->queue_reset))
++		msleep(1);
++
++	while (vp_ioread16(&cfg->cfg.queue_enable))
++		msleep(1);
++}
++EXPORT_SYMBOL_GPL(vp_modern_set_queue_reset);
++
+ /*
+  * vp_modern_queue_vector - set the MSIX vector for a specific virtqueue
+  * @mdev: the modern virtio-pci device
 diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci_modern.h
-index 41f5a018bd94..05123b9a606f 100644
+index 05123b9a606f..c4eeb79b0139 100644
 --- a/include/linux/virtio_pci_modern.h
 +++ b/include/linux/virtio_pci_modern.h
-@@ -9,7 +9,7 @@ struct virtio_pci_modern_common_cfg {
- 	struct virtio_pci_common_cfg cfg;
- 
- 	__le16 queue_notify_data;	/* read-write */
--	__le16 padding;
-+	__le16 queue_reset;		/* read-write */
- };
- 
- struct virtio_pci_modern_device {
-diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
-index f5981a874481..f703afc7ad31 100644
---- a/include/uapi/linux/virtio_pci.h
-+++ b/include/uapi/linux/virtio_pci.h
-@@ -203,6 +203,7 @@ struct virtio_pci_cfg_cap {
- #define VIRTIO_PCI_COMMON_Q_USEDLO	48
- #define VIRTIO_PCI_COMMON_Q_USEDHI	52
- #define VIRTIO_PCI_COMMON_Q_NDATA	56
-+#define VIRTIO_PCI_COMMON_Q_RESET	58
- 
- #endif /* VIRTIO_PCI_NO_MODERN */
- 
+@@ -113,4 +113,6 @@ void __iomem * vp_modern_map_vq_notify(struct virtio_pci_modern_device *mdev,
+ 				       u16 index, resource_size_t *pa);
+ int vp_modern_probe(struct virtio_pci_modern_device *mdev);
+ void vp_modern_remove(struct virtio_pci_modern_device *mdev);
++int vp_modern_get_queue_reset(struct virtio_pci_modern_device *mdev, u16 index);
++void vp_modern_set_queue_reset(struct virtio_pci_modern_device *mdev, u16 index);
+ #endif
 -- 
 2.31.0
 
