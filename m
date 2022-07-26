@@ -2,47 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15799581BB0
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 23:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38888581BB4
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 23:38:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231343AbiGZVgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 17:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        id S232367AbiGZViL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 17:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiGZVgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 17:36:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AB41B78A;
-        Tue, 26 Jul 2022 14:36:11 -0700 (PDT)
+        with ESMTP id S229480AbiGZViK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 17:38:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2382225C5D;
+        Tue, 26 Jul 2022 14:38:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B975616CC;
-        Tue, 26 Jul 2022 21:36:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547FAC433D6;
-        Tue, 26 Jul 2022 21:36:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4701616CF;
+        Tue, 26 Jul 2022 21:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B398AC433D6;
+        Tue, 26 Jul 2022 21:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658871370;
-        bh=jvymIjL+qZO9QbVLb21Dh5GWSsyWsTxOb1BllQ1hc2s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=g+49nZlvS45uE55Bb2tfrsFcOJt45Kh2UoC5UTwYp6fMNQXmBm1U9YV5lfLlrA7Ul
-         CjRFc155zOTjK8vJE3GXEOFr/pKWMadKupsQIJ7VOprL3EbKd0CN6xjPTv40JLQlii
-         cHVs2kUaBqt6mUSsjbQPs0j8Xhxo+kCtjT14IyBD9da++nQDS74EMYNmz0RQHnuzAS
-         kpWYwBIwr8Es2fBjoyAz5Y3kxoRliz9dr4VVe5Aw5HK9qxJX9NsKfG7yTIftTPbxqn
-         SwrAn0wf1bCnmh8S/0bhtMoAF3wFpnN8KmO5TK/4lFLE34MAcMaEFQM1hSlolmqHr8
-         pl2gfL55dZpRA==
+        s=k20201202; t=1658871489;
+        bh=+xtfIv1kGqmxgTW+LGAtofVUOs/7JbrkD2Pk28Al1TM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r6kY9JDjzOyosI3o0sg8sEyAkQV08kN5h4gXCvFQzHujBx0Zf9/7FlQUz96ppc8Dc
+         /k8eAKm7lKFWxUbo7TpnDGr/HPGyZJKQlkUrRjdXfZpzif6B6OAaVKIP0PeG0NVsn7
+         tO4hPVP5oeV/Ia68cp/xI98ZNLmQN0RWuTrcArbR9vB1ZgzinUTLJcJgBsHVsrsDme
+         IRS2kRIOrFuX50juAR69tz3y3OVSgHaBf4f7LqnT1zxtHfuw4EKutuwgmqKuo9SlR2
+         7gq100k9pA75QE/f09Ij8TCNy2/bmZp3qrsiL5sdbDxg7knxxTlVoh5Mllj4b0q7PC
+         LwsLxp4ZiaGNw==
+Date:   Tue, 26 Jul 2022 14:38:07 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     daniel@iogearbox.net
-Cc:     bpf@vger.kernel.org, ast@kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
-Subject: [PATCH bpf] netdevsim: avoid allocation warnings triggered from user space
-Date:   Tue, 26 Jul 2022 14:36:05 -0700
-Message-Id: <20220726213605.154204-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.1
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] wifi: mac80211: do not abuse fq.lock in
+ ieee80211_do_stop()
+Message-ID: <20220726143807.68f46fb3@kernel.org>
+In-Reply-To: <df9efa23-e729-d1d0-b66f-248d7ae67c60@candelatech.com>
+References: <9cc9b81d-75a3-3925-b612-9d0ad3cab82b@I-love.SAKURA.ne.jp>
+        <165814567948.32602.9899358496438464723.kvalo@kernel.org>
+        <9487e319-7ab4-995a-ddfd-67c4c701680c@I-love.SAKURA.ne.jp>
+        <87o7xcq6qt.fsf@kernel.org>
+        <df9efa23-e729-d1d0-b66f-248d7ae67c60@candelatech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -52,45 +61,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need to suppress warnings from sily map sizes. Also switch
-from GFP_USER to GFP_KERNEL_ACCOUNT, I'm pretty sure I misunderstood
-the flags when writing this code.
+On Tue, 26 Jul 2022 08:05:12 -0700 Ben Greear wrote:
+> >> Since this patch fixes a regression introduced in 5.19-rc7, can this patch go to 5.19-final ?
+> >>
+> >> syzbot is failing to test linux.git for 12 days due to this regression.
+> >> syzbot will fail to bisect new bugs found in the upcoming merge window
+> >> if unable to test v5.19 due to this regression.  
+> > 
+> > I took this to wireless-next as I didn't think there's enough time to
+> > get this to v5.19 (and I only heard Linus' -rc8 plans after the fact).
+> > So this will be in v5.20-rc1 and I recommend pushing this to a v5.19
+> > stable release.  
+> 
+> Would it be worth reverting the patch that broke things until the first stable 5.19.x
+> tree then?  Seems lame to ship an official kernel with a known bug like this.
 
-Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
-Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/netdevsim/bpf.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
-index a43820212932..50854265864d 100644
---- a/drivers/net/netdevsim/bpf.c
-+++ b/drivers/net/netdevsim/bpf.c
-@@ -351,10 +351,12 @@ nsim_map_alloc_elem(struct bpf_offloaded_map *offmap, unsigned int idx)
- {
- 	struct nsim_bpf_bound_map *nmap = offmap->dev_priv;
- 
--	nmap->entry[idx].key = kmalloc(offmap->map.key_size, GFP_USER);
-+	nmap->entry[idx].key = kmalloc(offmap->map.key_size,
-+				       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].key)
- 		return -ENOMEM;
--	nmap->entry[idx].value = kmalloc(offmap->map.value_size, GFP_USER);
-+	nmap->entry[idx].value = kmalloc(offmap->map.value_size,
-+					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (!nmap->entry[idx].value) {
- 		kfree(nmap->entry[idx].key);
- 		nmap->entry[idx].key = NULL;
-@@ -496,7 +498,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
- 	if (offmap->map.map_flags)
- 		return -EINVAL;
- 
--	nmap = kzalloc(sizeof(*nmap), GFP_USER);
-+	nmap = kzalloc(sizeof(*nmap), GFP_KERNEL_ACCOUNT);
- 	if (!nmap)
- 		return -ENOMEM;
- 
--- 
-2.37.1
-
+I cherry-picked the fix across the trees after talking to Kalle and
+DaveM. Let's see how that goes...
