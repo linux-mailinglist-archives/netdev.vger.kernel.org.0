@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F46580BF9
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 08:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AFF580C13
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 09:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237672AbiGZGzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 02:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
+        id S229796AbiGZHC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 03:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232075AbiGZGzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 02:55:52 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22485275CD;
-        Mon, 25 Jul 2022 23:55:49 -0700 (PDT)
-Received: from fsav119.sakura.ne.jp (fsav119.sakura.ne.jp [27.133.134.246])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26Q6taPg088886;
-        Tue, 26 Jul 2022 15:55:36 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav119.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav119.sakura.ne.jp);
- Tue, 26 Jul 2022 15:55:36 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav119.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26Q6tZJX088883
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 26 Jul 2022 15:55:35 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <9487e319-7ab4-995a-ddfd-67c4c701680c@I-love.SAKURA.ne.jp>
-Date:   Tue, 26 Jul 2022 15:55:35 +0900
+        with ESMTP id S237705AbiGZHCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 03:02:55 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070DA27CDF
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 00:02:54 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id q7so81845ljp.13
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 00:02:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qs4nlbaptn4SS7lO1ed8i+LgqAJu8EVWyB5i90ueW/E=;
+        b=tlSLHw/IN9bA0kO8udFCAPyEUA4eOJRr1FILlTHUmyTKB5KXMIUjBUmK9mbqWd60kN
+         XLNVC7huPbCSdV6UHqEK1SWlSDdBIM6HRXNcFU/L7y5QgRWm8mS/3x9G0rQKvfkOM51N
+         6NaWIXa/V/71TTh91szc8Bpe9xGlA7GOXXVESEkS3nhzg31QZiJmmVvlPwTzrT99uuwq
+         3U6H5CwEBoAtj7RBdoBsTZKhtdoFl/hxR7fUpmqE50Mz3fbYRM9H8jFkfB4ZCwduwWfA
+         6JnbbWdsUpknt7fFQWx6ZYJtV01A1qVo9Rdi5zjGSlROt6YBw6cIQ4Akt+EClJspXWEf
+         TysQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qs4nlbaptn4SS7lO1ed8i+LgqAJu8EVWyB5i90ueW/E=;
+        b=qL/Mk9p+Qwl5c16P7kMqN4gJrxAkzulKg9ZzyBbK35001E5u6jbLA7WWA7lMuY9y+l
+         Ufz7TOcEKShMGe91hqKwQ8iDTmwXrdJyi9edDfIBCgt0YxPaRZqdEkhWhyMHWm7ympp/
+         a/orn+r/uQxmJ0F6/1WehTR4zM8RUIRZvXwX7aA2EIM4W32LWxX/VQcxXL43Dxqvtpdm
+         7OV6fQLqRvZJ4Q7PNaf1bWFDMBb2IJcxxT8jDVGMjX67kmwQL2eKWMClzT1kRRhNbYf9
+         MiyX/n3Qb/K4G5jLSsW/WVnbVZBLS83b5pxpyauNLGHEWMU00unaxxaLA1del58iZLlp
+         eq0Q==
+X-Gm-Message-State: AJIora85h8y5oc8XeWMRl/euKj8rX3dddKuPv4zuAVe0Own5XUFBXHBP
+        x60h8MVmQRYJAkcx7EJD2nbFEQ==
+X-Google-Smtp-Source: AGRyM1sJe4uT3uHa3v/TZDf1AKnRAIXlJoSP29UOCXzailKypi0Qi0KUx66LyoJuZ0Q+M/u7y1u/Yg==
+X-Received: by 2002:a2e:9b14:0:b0:25e:62:aad1 with SMTP id u20-20020a2e9b14000000b0025e0062aad1mr3787264lji.77.1658818972408;
+        Tue, 26 Jul 2022 00:02:52 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id a26-20020a2e88da000000b0025e00822532sm1297296ljk.92.2022.07.26.00.02.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jul 2022 00:02:51 -0700 (PDT)
+Message-ID: <2cc0c987-0509-5305-2c1b-5019785213fd@linaro.org>
+Date:   Tue, 26 Jul 2022 09:02:50 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] wifi: mac80211: do not abuse fq.lock in
- ieee80211_do_stop()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: cdns,macb: use correct xlnx prefix
+ for Xilinx
 Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <9cc9b81d-75a3-3925-b612-9d0ad3cab82b@I-love.SAKURA.ne.jp>
- <165814567948.32602.9899358496438464723.kvalo@kernel.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <165814567948.32602.9899358496438464723.kvalo@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+References: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
+ <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since this patch fixes a regression introduced in 5.19-rc7, can this patch go to 5.19-final ?
+On 26/07/2022 04:27, Rob Herring wrote:
+>>        - items:
+>>            - enum:
+>> -              - cdns,versal-gem       # Xilinx Versal
+>>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+>>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+>>            - const: cdns,gem           # Generic
+>> +        description: deprecated
+> 
+> You meant 'deprecated: true', right? With that,
 
-syzbot is failing to test linux.git for 12 days due to this regression.
-syzbot will fail to bisect new bugs found in the upcoming merge window
-if unable to test v5.19 due to this regression.
+Yes, I'll send a v2.
 
-On 2022/07/18 21:01, Kalle Valo wrote:
-> Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> wrote:
 > 
->> lockdep complains use of uninitialized spinlock at ieee80211_do_stop() [1],
->> for commit f856373e2f31ffd3 ("wifi: mac80211: do not wake queues on a vif
->> that is being stopped") guards clear_bit() using fq.lock even before
->> fq_init() from ieee80211_txq_setup_flows() initializes this spinlock.
->>
->> According to discussion [2], Toke was not happy with expanding usage of
->> fq.lock. Since __ieee80211_wake_txqs() is called under RCU read lock, we
->> can instead use synchronize_rcu() for flushing ieee80211_wake_txqs().
->>
->> Link: https://syzkaller.appspot.com/bug?extid=eceab52db7c4b961e9d6 [1]
->> Link: https://lkml.kernel.org/r/874k0zowh2.fsf@toke.dk [2]
->> Reported-by: syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com>
->> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->> Fixes: f856373e2f31ffd3 ("wifi: mac80211: do not wake queues on a vif that is being stopped")
->> Tested-by: syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com>
->> Acked-by: Toke Høiland-Jørgensen <toke@kernel.org>
-> 
-> Patch applied to wireless-next.git, thanks.
-> 
-> 3598cb6e1862 wifi: mac80211: do not abuse fq.lock in ieee80211_do_stop()
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > 
 
+
+Best regards,
+Krzysztof
