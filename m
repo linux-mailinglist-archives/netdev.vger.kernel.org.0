@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FD875819AD
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 20:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD84A5819B0
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 20:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238916AbiGZSZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 14:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        id S229849AbiGZS2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 14:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239372AbiGZSZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 14:25:31 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18F214021;
-        Tue, 26 Jul 2022 11:25:28 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id id17so9253274wmb.1;
-        Tue, 26 Jul 2022 11:25:28 -0700 (PDT)
+        with ESMTP id S229506AbiGZS2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 14:28:04 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEE414021
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 11:28:01 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id b11so27613408eju.10
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 11:28:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eL31OvkZUAyrlwyFeqU3KWReKbezeGtO4fmJhiZIKUA=;
-        b=DKgRAQAljMzRejI/Iqoga92jt8KLooDGUU6w8bP4NnAmJnWUunCKzdjPeIzvUD+z6H
-         cex/ymmOE78UU9o3QQYKjLKubtveotwoxyj2bU2AKsdvcQri4l/Z0v56/MycUMxhKRrc
-         aTR7mdaYI8TEttUhnB87s52+opS7LKPRsMQsiO4pxk3EAOqwMzQgabhiz0Du/woaK9ph
-         rpKIW7KFoo/hIFZukktgmGPiYllpv4MRIpcn0VAusqF7pahO4Hn/S0QbS/2d6xskm7Qq
-         d+7WXydc1INdzUNifqP/0wvAslRxpMFbtkgebTfmlCMQbafUsSRpZwDP1Ig2U7k2ZSob
-         NTDQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=chtoAOqBpiW8q4QQoa6M2B1ASOEVDGmzwfV6QbgV7Ic=;
+        b=kQSBBX1Gm/CxDR2eZJeOAvYLNvRXOk9giXqNlH1Q/W8pjSpxUoDDv8qM+omgHL2S1Y
+         1i04IlFKpdo/B5Sp1X7ntgucBaIHubIf0saCy754WkY38yR/n5TlhbfkxSU9qX1GIc08
+         07J9IK2HEjkAoqIvrOOGmDeUKsk2Pubac6nwldInG0Ix6BZ7RfozBmgY1EdzQUHxJe3h
+         kHgtmX6HSmx4Ai88GuDyPfVWV2hOi4oP6ERe5ZqFHlVfqcrN0micf/V9ZIkqau0raAp0
+         v0BmbIpyLzva/O47DtLn73VOahw9KXm44/qd3qiuuBFhxTF8M4SrwTa18TU5GmlF8dMz
+         3TSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=eL31OvkZUAyrlwyFeqU3KWReKbezeGtO4fmJhiZIKUA=;
-        b=PahFhkl+0X5KUlaV+T2q8k3Us+kGcWDyisJgQzTlx02KYTZ9lO+6gOoGX/i/qbfCSo
-         E+SC/RulZksXf58iJUg9rbi0Vt6+s3dOYOcgfX+kPIvsBnR0j3yUJyeOEAvQZu+Kjg5A
-         JJEvPIs3lJ5Gj6e4uvVEMzT9Ddhb0HHmEAg9IiaEjoLnRjdIez8XIUkb312QMx/19Z8h
-         Fl43oUG9cITAaiElcz2MxFCkvHDvQIxW9jLXkKzQZD4IBw+VVd5Q7205EG8KypByVAp9
-         /xRK9hWuF6nZms2C9GTk0r/HR8mPRUH0Czv3M9fhUFV2asJQ8tZSJIntwW7hwCb5JVHs
-         9UwA==
-X-Gm-Message-State: AJIora8kRbh+RW2OoJaWjilD/D5RbaQeoqdHg+mw1L0+7FLqPFj4yfBY
-        YRyvyc/sQBq77h0MLetLRG4=
-X-Google-Smtp-Source: AGRyM1s61eF6VPjOS/mNVSTCLaMz0eqjD3U+jUmS4DEhrWuGUCvhY/0xOhPgV4V9CZIXu3/gqGfKYA==
-X-Received: by 2002:a7b:c401:0:b0:3a2:ca58:85bc with SMTP id k1-20020a7bc401000000b003a2ca5885bcmr339502wmi.156.1658859927169;
-        Tue, 26 Jul 2022 11:25:27 -0700 (PDT)
-Received: from ubuntu-f6bvp.. (lfbn-idf1-1-596-24.w86-242.abo.wanadoo.fr. [86.242.59.24])
-        by smtp.gmail.com with ESMTPSA id o9-20020a05600c058900b0039c54bb28f2sm19768331wmd.36.2022.07.26.11.25.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=chtoAOqBpiW8q4QQoa6M2B1ASOEVDGmzwfV6QbgV7Ic=;
+        b=8HAzkBNDZw1sTsZh84Ub3G08yy7cXfdHuhCwphSfE33SCa5S824f+APwzbo43NDcTA
+         pEPKcxHDIXXqwVnODzQHnPcvIkYmojI77iqYmq8HsHb5arYA2ZhUJHEPig7UD3eG8h12
+         LwDLLWbuqwLEjmft6YHBcqvFmKR+Fz9C80+V2A8Nu7nrr3Hw8oQqvH2/OwqhMGDXaQH4
+         KYHzxRdmdFdlA28TonWo8lRA0YrskDmkW995sme0pH1jJ6ZZi3ApexuzBAL0Q2BoT6mR
+         sdjOmHCm0p4tnquOR7Zi3tU8j3oq7jixG0I8VrRr3VnjvFrstoCGZmMuUXZZJIPPhwDQ
+         MQDQ==
+X-Gm-Message-State: AJIora9WimJJgRQ8gKdR5VOAPKHOzGJ46P+P+rc2eoNxuxjAMoV8dW+3
+        7+/TyODYWQ2owfqrvr7vF7TZEw==
+X-Google-Smtp-Source: AGRyM1uj7BkcJNTOSpNAx+rpj1S4C+y28WBs6mfI8Q5I0Xi7cCyBoedoORylDA8s8nlMFGmz2NL1lA==
+X-Received: by 2002:a17:907:2c74:b0:72b:5ba7:d96f with SMTP id ib20-20020a1709072c7400b0072b5ba7d96fmr15561466ejc.33.1658860080275;
+        Tue, 26 Jul 2022 11:28:00 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id la16-20020a170907781000b0072b92daef1csm6815084ejc.146.2022.07.26.11.27.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 11:25:26 -0700 (PDT)
-Sender: Bernard Pidoux <bernard.f6bvp@gmail.com>
-From:   Bernard Pidoux <f6bvp@free.fr>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, duoming@zju.edu.cn, edumazet@google.com,
-        f6bvp@free.fr, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, ralf@linux-mips.org
-Subject: [PATCH 1/1] [PATCH] net: rose: fix unregistered netdevice: waiting for rose0 to become free
-Date:   Tue, 26 Jul 2022 20:25:18 +0200
-Message-Id: <20220726182518.47047-1-f6bvp@free.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220722103750.1938776d@kernel.org>
-References: <20220722103750.1938776d@kernel.org>
+        Tue, 26 Jul 2022 11:27:59 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 20:27:58 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com
+Subject: Re: [patch net-next RFC] net: dsa: move port_setup/teardown to be
+ called outside devlink port registered area
+Message-ID: <YuAyLkSa8R0/+BSu@nanopsycho>
+References: <20220726134309.qiloewsgtkojf6yq@skbuf>
+ <20220726124105.495652-1-jiri@resnulli.us>
+ <20220726134309.qiloewsgtkojf6yq@skbuf>
+ <Yt/+GKVZi+WtAftm@nanopsycho>
+ <Yt/+GKVZi+WtAftm@nanopsycho>
+ <20220726152059.bls6gn7ludfutamy@skbuf>
+ <YuAPBwaOjjQBTc6V@nanopsycho>
+ <YuASl48SzUq/IOrR@nanopsycho>
+ <YuASl48SzUq/IOrR@nanopsycho>
+ <20220726165520.due75djbddyz4uc4@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726165520.due75djbddyz4uc4@skbuf>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here is the context.
+Tue, Jul 26, 2022 at 06:55:20PM CEST, olteanv@gmail.com wrote:
+>On Tue, Jul 26, 2022 at 06:13:11PM +0200, Jiri Pirko wrote:
+>> Here it is:
+>
+>Thanks, this one does apply.
+>
+>We have the same problem, except now it's with port->region_list
+>(region_create does list_add_tail, port_register does INIT_LIST_HEAD).
+>
+>I don't think you need to see this anymore, but anyway, here it is.
 
-This patch adds dev_put(dev) in order to allow removal of rose module
-after use of AX25 and ROSE via rose0 device.
+Thanks, will fix this and send it to you off-list, to avoid spamming
+people, sorry.
 
-Otherwise when trying to remove rose module via rmmod rose an infinite
-loop message was displayed on all consoles with xx being a random number.
+Thanks!
 
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
-
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
-
-...
-
-With the patch it is ok to rmmod rose.
-
-This bug appeared with kernel 4.10 and has been only partially repaired by adding two dev_put(dev).
-
-Signed-off-by: Bernard Pidoux <f6bvp@free.fr>
-
----
- net/rose/af_rose.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index bf2d986a6bc3..4163171ce3a6 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -711,6 +711,8 @@ static int rose_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 	rose_insert_socket(sk);
- 
- 	sock_reset_flag(sk, SOCK_ZAPPED);
-+	
-+	dev_put(dev);
- 
- 	return 0;
- }
--- 
-2.34.1
-
-[master da21d19e920d] [PATCH] net: rose: fix unregistered netdevice: waiting for rose0 to become free
- Date: Mon Jul 18 16:23:54 2022 +0200
- 1 file changed, 2 insertions(+)
-
+>
+>[    4.949727] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+>[    5.020395] CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3397
+>[    5.047447] pc : devlink_port_region_create+0x6c/0x150
+>[    5.052587] lr : dsa_devlink_port_region_create+0x64/0x90
+>[    5.057983] sp : ffff80000c17b8b0
+>[    5.132669] Call trace:
+>[    5.135109]  devlink_port_region_create+0x6c/0x150
+>[    5.139899]  dsa_devlink_port_region_create+0x64/0x90
+>[    5.144946]  mv88e6xxx_setup_devlink_regions_port+0x30/0x60
+>[    5.150520]  mv88e6xxx_port_setup+0x10/0x20
+>[    5.154700]  dsa_port_devlink_setup+0x60/0x150
+>[    5.159141]  dsa_register_switch+0x938/0x119c
+>[    5.163496]  mv88e6xxx_probe+0x714/0x770
+>[    5.167416]  mdio_probe+0x34/0x70
