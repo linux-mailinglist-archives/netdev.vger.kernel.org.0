@@ -2,222 +2,350 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD07B58158F
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8345815A3
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239406AbiGZOlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 10:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
+        id S239345AbiGZOqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 10:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239277AbiGZOlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:41:15 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA6428E0E
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:41:12 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id e1so7312583ils.13
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:41:12 -0700 (PDT)
+        with ESMTP id S230391AbiGZOq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:46:29 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D24B19037
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:46:21 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so8323994wmo.0
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 07:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e1kweWPqCc/tBFU0OU9GCkOUijk7o0nT66eaI6NMorI=;
-        b=i61EPXgwER3DOjwmcIsQTQzv6gSQbEHyGanTbNrTyaPqEOsdVh42WvKJo/9pbpcpZS
-         BTrtxcRDQidX7WCwTs/AN4uafMp/23Jz13CdoBX6OeSg2TUuEucu4pPHOmzmvn8d3YhT
-         fiKHWsaxKkT05q2IbRx1A7J2J8WDIhwTitOZI=
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GgRFdXtV/6N0rgKqQftuiRSl5dwcrK5EGgkk62OocgE=;
+        b=xJNHfkKZZKLeQh6WWv18vK1D9dO6PWKiq3/xIdtiT7fEGsJql0OYJvXNV4RmMqaGiM
+         wnOlc3Kx5EuH0Otfmvp7lHLuf+4rNgyI+xhCPttbILSJr/IKYSXl8iPn1M30Dm4HydVd
+         vase6qpos0MzJvcZEphu9atbuGMXCcpNJaz56fgdcqxjCdehsEjfhYeVxKH8YWKDoMCM
+         TyM21ZNc2CYy69cKLcGS2riMIc0SCZrGaK7EX1WfEkZdNmYCg51lplsIWjhZUwahFtjZ
+         ZmJOdg8Y8xxiJOYEjB6c8L70Pw3OrPG2h2gbhXjSFkP6wvInxjY1vUTSa7ibT9cWfqvk
+         jWTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e1kweWPqCc/tBFU0OU9GCkOUijk7o0nT66eaI6NMorI=;
-        b=KZ98iRS82QOskxX2gypzsLVc3udamOEvPCxwZ+SSYj3DoAnwhmDNPJQbdTy0meB7/Z
-         Lj3DAfRk8o7HuqVEGJuiSq7RE8UQlfNNtCa9NJPQJF7V/+hXkIl/ft/CZM7LKjQh06Lp
-         T+ijlIxaw7BumL6h7ETBUOAyEQ0dwRME8pXTwbPRvgp0GXCV1lSdw01AnT8vNnV6gqw9
-         Vq/Oj2AjyugnSetsz1XvZv4bsqNupTdkfDvV2Gy/4YeK3gPOJBsl8E5Cu2IxKk5F3A6O
-         Rmra6hhQWhsHvjogQH/rEYBWgw/VcU6iBEm8nbWSYowhkXIcJHmEeEyich91fWSoYJk2
-         H2UQ==
-X-Gm-Message-State: AJIora9ioHCZRSr4OXhRBYwLHJWgGW38JognZhKZcWHIdR9jyYyVg9TV
-        GKkjxu5Ty0c7S7TctHXvLVqThXLGc+LLRnqehE6x3Q==
-X-Google-Smtp-Source: AGRyM1tkabEKEkDMdpDbQ7ttjjCuhMKuPirK9Ul1i0a8JzqLJs3vv8V82jWRnDnuYDU1b0QMTVvmq8M8FBJFf08ynDE=
-X-Received: by 2002:a05:6e02:148c:b0:2dd:a828:9382 with SMTP id
- n12-20020a056e02148c00b002dda8289382mr663795ilk.235.1658846472223; Tue, 26
- Jul 2022 07:41:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GgRFdXtV/6N0rgKqQftuiRSl5dwcrK5EGgkk62OocgE=;
+        b=TIayhKK7/Q3Co5jUTi75hNlvRpV41zbeHVF3uH5w8xQ6A78aNi+Ujx6cQns0atUcjG
+         IowgfuF7bHg/4h590DnSSvdjkZ5BT4HgqsrWqrihlWcZcSCFIgUUNexHcCFkjANUTNBz
+         brW70UM1Y4K1zS8vegp/TMvqbx0WgmdjPzYRjtICFZlseVmKYZxmz1kGbLcJwb0fhz2E
+         T710cf4AlyAWq1Ie7Q4y9kM4D1LuI+Rzw5EUn5eA0G5aTzj5zAxuiLwQUHyM5TuvcQkE
+         bDPcFNguSgpqDM+klYGoY72Jy5lSJRJPKUXb5/5aREmgdK7kPQysCdqzdOmFjtCh9Gf4
+         ylLA==
+X-Gm-Message-State: AJIora9aCOPKwVARqWYN62dlU21qSpKx7dqGxnNFmLmIuy7x6YkrA/Pq
+        8Yk2x7pnKlrVDDcMh3bZupYVj9ryUYtLgdS6Fps=
+X-Google-Smtp-Source: AGRyM1vDsGhcqIudn1hkJIvjGvNcSuYiGeV1dA9zeDsFt0qkBdbnUYkaw5WwGIXVZSHy4wvGJDV1IA==
+X-Received: by 2002:a05:600c:1c26:b0:3a3:2251:c3cb with SMTP id j38-20020a05600c1c2600b003a32251c3cbmr25148816wms.126.1658846779771;
+        Tue, 26 Jul 2022 07:46:19 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id bq23-20020a5d5a17000000b0021e57963c4asm8530359wrb.77.2022.07.26.07.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 07:46:07 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 16:45:44 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com
+Subject: Re: [patch net-next RFC] net: dsa: move port_setup/teardown to be
+ called outside devlink port registered area
+Message-ID: <Yt/+GKVZi+WtAftm@nanopsycho>
+References: <20220726124105.495652-1-jiri@resnulli.us>
+ <20220726134309.qiloewsgtkojf6yq@skbuf>
 MIME-Version: 1.0
-References: <20220721172808.585539-1-fred@cloudflare.com> <877d45kri4.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <877d45kri4.fsf@email.froward.int.ebiederm.org>
-From:   Ignat Korchagin <ignat@cloudflare.com>
-Date:   Tue, 26 Jul 2022 15:41:01 +0100
-Message-ID: <CALrw=nGT0kcHh4wyBwUF-Q8+v8DgnyEJM55vfmABwfU67EQn=g@mail.gmail.com>
-Subject: Re: [PATCH v3 0/4] Introduce security_create_user_ns()
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        Paul Moore <paul@paul-moore.com>,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, Christian Brauner <brauner@kernel.org>,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726134309.qiloewsgtkojf6yq@skbuf>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 6:05 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+Tue, Jul 26, 2022 at 03:43:09PM CEST, olteanv@gmail.com wrote:
+>Hi Jiri,
 >
-> Frederick Lawler <fred@cloudflare.com> writes:
+>On Tue, Jul 26, 2022 at 02:41:05PM +0200, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Move port_setup() op to be called before devlink_port_register() and
+>> port_teardown() after devlink_port_unregister().
+>> 
+>> RFC note: I don't see why this would not work, but I have no way to
+>> test this does not break things. But I think it makes sense to move this
+>> alongside the rest of the devlink port code, the reinit() function
+>> also gets much nicer, as clearly the fact that
+>> port_setup()->devlink_port_region_create() was called in dsa_port_setup
+>> did not fit the flow.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> ---
 >
-> > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > used the LSM cred_prepare hook because that is the closest hook to prevent
-> > a call to create_user_ns().
+>devlink_port->devlink isn't set (it's set in devl_port_register), so
+>when devlink_port_region_create() calls devl_lock(devlink), it blasts
+>right through that NULL pointer:
 >
-> That description is wrong.  Your goal his is not to limit access to
-> the user namespace.  Your goal is to reduce the attack surface of the
-> kernel by not allowing some processes access to a user namespace.
->
-> You have already said that you don't have concerns about the
-> fundamentals of the user namespace, and what it enables only that
-> it allows access to exploitable code.
->
-> Achieving the protection you seek requires talking and thinking clearly
-> about the goal.
->
->
->
->
-> I have a couple of deep and fundamental problems with this approach,
-> to limiting access to potentially exploitable code.
->
-> 1) The first is that unless there is a high probability (say 90%) that at
->    any time the only exploitable code in the kernel can only be accessed
->    by an unprivileged user with the help of user namespaces, attackers
->    will just route around this restriction and so it will achieve
->    nothing in practice, while at the same time incur an extra
->    maintenance burden.
->
-> 2) The second is that there is a long standing problem with code that
->    gets added to the kernel.  Many times new kernel code because it has
->    the potential to confuse suid root executables that code has been
->    made root only.  Over time that results in more and more code running
->    as root to be able to make use of the useful features of the linux
->    kernel.
->
->    One of the goals of the user namespace is to avoid more and more code
->    migrating to running as root.  To achieve that goal ordinary
->    application developers need to be able to assume that typically user
->    namespaces will be available on linux.
->
->    An assumption that ordinary applications like chromium make today.
->
->    Your intentions seem to be to place a capability check so that only
->    root can use user namespaces or something of the sort.  Thus breaking
->    the general availability of user namespaces for ordinary applications
->    on your systems.
+>[    4.966960] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000320
+>[    5.009201] [0000000000000320] user address but active_mm is swapper
+>[    5.015616] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+>[    5.024244] CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.19.0-rc7-07010-ga9b9500ffaac-dirty #3395
+>[    5.033281] Hardware name: CZ.NIC Turris Mox Board (DT)
+>[    5.038499] Workqueue: events_unbound deferred_probe_work_func
+>[    5.044342] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>[    5.051297] pc : __mutex_lock+0x5c/0x460
+>[    5.055220] lr : __mutex_lock+0x50/0x460
+>[    5.133818] Call trace:
+>[    5.136258]  __mutex_lock+0x5c/0x460
+>[    5.139831]  mutex_lock_nested+0x40/0x50
+>[    5.143750]  devlink_port_region_create+0x54/0x15c
+>[    5.148542]  dsa_devlink_port_region_create+0x64/0x90
+>[    5.153592]  mv88e6xxx_setup_devlink_regions_port+0x30/0x60
+>[    5.159165]  mv88e6xxx_port_setup+0x10/0x20
+>[    5.163345]  dsa_port_devlink_setup+0x60/0x150
+>[    5.167786]  dsa_register_switch+0x938/0x119c
+>[    5.172138]  mv88e6xxx_probe+0x714/0x770
+>[    5.176058]  mdio_probe+0x34/0x70
+>[    5.179370]  really_probe.part.0+0x9c/0x2ac
+>[    5.183550]  __driver_probe_device+0x98/0x144
+>[    5.187902]  driver_probe_device+0xac/0x14c
 
-I would like to comment here that our intention with the hook is quite
-the opposite:
-we do want to embrace user namespaces in our code and some of our workloads
-already depend on it. Hence we didn't agree to Debian's approach of just
-having a global sysctl. But there is "our code" and there is "third
-party" code, which
-might not even be open source due to various reasons. And while the path exists
-for that code to do something bad - we want to block it.
+Oh yes, could you please try together with following patch? (nevermind
+chicken-egg problem you may spot now)
 
-So in a way, I think this hook allows better adoption of user
-namespaces in the first
-place and gives distros and other system maintainers a reasonable
-alternative than
-just providing a global "kill" sysctl (which is de-facto is used by
-many, thus actually
-limiting userspace applications accessing the user namespace functionality)
+Subject: [patch net-next RFC] net: devlink: convert region creation/destroy()
+ to be forbidden on registered devlink/port
 
->
-> My apologies if this has been addressed somewhere in the conversation
-> already.  I don't see these issues addressed in the descriptions of your
-> patches.
->
-> Until these issues are firmly addressed and you are not proposing a
-> patch that can only cause regressions in userspace applications.
->
-> Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
->
-> >
-> > The calls look something like this:
-> >
-> >     cred = prepare_creds()
-> >         security_prepare_creds()
-> >             call_int_hook(cred_prepare, ...
-> >     if (cred)
-> >         create_user_ns(cred)
-> >
-> > We noticed that error codes were not propagated from this hook and
-> > introduced a patch [1] to propagate those errors.
-> >
-> > The discussion notes that security_prepare_creds()
-> > is not appropriate for MAC policies, and instead the hook is
-> > meant for LSM authors to prepare credentials for mutation. [2]
-> >
-> > Ultimately, we concluded that a better course of action is to introduce
-> > a new security hook for LSM authors. [3]
-> >
-> > This patch set first introduces a new security_create_user_ns() function
-> > and userns_create LSM hook, then marks the hook as sleepable in BPF.
-> >
-> > Links:
-> > 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
-> > 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
-> > 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
-> >
-> > Past discussions:
-> > V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
-> > V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
-> >
-> > Changes since v2:
-> > - Rename create_user_ns hook to userns_create
-> > - Use user_namespace as an object opposed to a generic namespace object
-> > - s/domB_t/domA_t in commit message
-> > Changes since v1:
-> > - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
-> > - Add selinux: Implement create_user_ns hook patch
-> > - Change function signature of security_create_user_ns() to only take
-> >   struct cred
-> > - Move security_create_user_ns() call after id mapping check in
-> >   create_user_ns()
-> > - Update documentation to reflect changes
-> >
-> > Frederick Lawler (4):
-> >   security, lsm: Introduce security_create_user_ns()
-> >   bpf-lsm: Make bpf_lsm_userns_create() sleepable
-> >   selftests/bpf: Add tests verifying bpf lsm userns_create hook
-> >   selinux: Implement userns_create hook
-> >
-> >  include/linux/lsm_hook_defs.h                 |  1 +
-> >  include/linux/lsm_hooks.h                     |  4 +
-> >  include/linux/security.h                      |  6 ++
-> >  kernel/bpf/bpf_lsm.c                          |  1 +
-> >  kernel/user_namespace.c                       |  5 ++
-> >  security/security.c                           |  5 ++
-> >  security/selinux/hooks.c                      |  9 ++
-> >  security/selinux/include/classmap.h           |  2 +
-> >  .../selftests/bpf/prog_tests/deny_namespace.c | 88 +++++++++++++++++++
-> >  .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
-> >  10 files changed, 160 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
-> >
-> > --
-> > 2.30.2
->
-> Eric
+No need to create or destroy region when devlink or devlink ports are
+registered. Limit the possibility to call the region create/destroy()
+only for non-registered devlink or devlink port. Benefit from that and
+avoid need to take devl_lock.
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+ drivers/net/netdevsim/dev.c |  8 ++--
+ include/net/devlink.h       |  5 ---
+ net/core/devlink.c          | 78 ++++++++-----------------------------
+ 3 files changed, 20 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 925dc8a5254d..3f0c19e30650 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -557,15 +557,15 @@ static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
+ 				      struct devlink *devlink)
+ {
+ 	nsim_dev->dummy_region =
+-		devl_region_create(devlink, &dummy_region_ops,
+-				   NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
+-				   NSIM_DEV_DUMMY_REGION_SIZE);
++		devlink_region_create(devlink, &dummy_region_ops,
++				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
++				      NSIM_DEV_DUMMY_REGION_SIZE);
+ 	return PTR_ERR_OR_ZERO(nsim_dev->dummy_region);
+ }
+ 
+ static void nsim_dev_dummy_region_exit(struct nsim_dev *nsim_dev)
+ {
+-	devl_region_destroy(nsim_dev->dummy_region);
++	devlink_region_destroy(nsim_dev->dummy_region);
+ }
+ 
+ static int
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 9edb4a28cf30..2416750e050d 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1666,10 +1666,6 @@ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value init_val);
+ void devlink_param_value_changed(struct devlink *devlink, u32 param_id);
+-struct devlink_region *devl_region_create(struct devlink *devlink,
+-					  const struct devlink_region_ops *ops,
+-					  u32 region_max_snapshots,
+-					  u64 region_size);
+ struct devlink_region *
+ devlink_region_create(struct devlink *devlink,
+ 		      const struct devlink_region_ops *ops,
+@@ -1678,7 +1674,6 @@ struct devlink_region *
+ devlink_port_region_create(struct devlink_port *port,
+ 			   const struct devlink_port_region_ops *ops,
+ 			   u32 region_max_snapshots, u64 region_size);
+-void devl_region_destroy(struct devlink_region *region);
+ void devlink_region_destroy(struct devlink_region *region);
+ void devlink_port_region_destroy(struct devlink_region *region);
+ 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 4e0c4f9265e8..15d28aba69fc 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -5701,8 +5701,7 @@ static void devlink_nl_region_notify(struct devlink_region *region,
+ 	struct sk_buff *msg;
+ 
+ 	WARN_ON(cmd != DEVLINK_CMD_REGION_NEW && cmd != DEVLINK_CMD_REGION_DEL);
+-	if (!xa_get_mark(&devlinks, devlink->index, DEVLINK_REGISTERED))
+-		return;
++	ASSERT_DEVLINK_REGISTERED(devlink);
+ 
+ 	msg = devlink_nl_region_notify_build(region, snapshot, cmd, 0, 0);
+ 	if (IS_ERR(msg))
+@@ -11131,21 +11130,22 @@ void devlink_param_value_changed(struct devlink *devlink, u32 param_id)
+ EXPORT_SYMBOL_GPL(devlink_param_value_changed);
+ 
+ /**
+- * devl_region_create - create a new address region
++ * devlink_region_create - create a new address region
+  *
+  * @devlink: devlink
+  * @ops: region operations and name
+  * @region_max_snapshots: Maximum supported number of snapshots for region
+  * @region_size: size of region
+  */
+-struct devlink_region *devl_region_create(struct devlink *devlink,
+-					  const struct devlink_region_ops *ops,
+-					  u32 region_max_snapshots,
+-					  u64 region_size)
++struct devlink_region *
++devlink_region_create(struct devlink *devlink,
++		      const struct devlink_region_ops *ops,
++		      u32 region_max_snapshots,
++		      u64 region_size)
+ {
+ 	struct devlink_region *region;
+ 
+-	devl_assert_locked(devlink);
++	ASSERT_DEVLINK_NOT_REGISTERED(devlink);
+ 
+ 	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
+ 		return ERR_PTR(-EINVAL);
+@@ -11164,35 +11164,9 @@ struct devlink_region *devl_region_create(struct devlink *devlink,
+ 	INIT_LIST_HEAD(&region->snapshot_list);
+ 	mutex_init(&region->snapshot_lock);
+ 	list_add_tail(&region->list, &devlink->region_list);
+-	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
+ 
+ 	return region;
+ }
+-EXPORT_SYMBOL_GPL(devl_region_create);
+-
+-/**
+- *	devlink_region_create - create a new address region
+- *
+- *	@devlink: devlink
+- *	@ops: region operations and name
+- *	@region_max_snapshots: Maximum supported number of snapshots for region
+- *	@region_size: size of region
+- *
+- *	Context: Takes and release devlink->lock <mutex>.
+- */
+-struct devlink_region *
+-devlink_region_create(struct devlink *devlink,
+-		      const struct devlink_region_ops *ops,
+-		      u32 region_max_snapshots, u64 region_size)
+-{
+-	struct devlink_region *region;
+-
+-	devl_lock(devlink);
+-	region = devl_region_create(devlink, ops, region_max_snapshots,
+-				    region_size);
+-	devl_unlock(devlink);
+-	return region;
+-}
+ EXPORT_SYMBOL_GPL(devlink_region_create);
+ 
+ /**
+@@ -11202,8 +11176,6 @@ EXPORT_SYMBOL_GPL(devlink_region_create);
+  *	@ops: region operations and name
+  *	@region_max_snapshots: Maximum supported number of snapshots for region
+  *	@region_size: size of region
+- *
+- *	Context: Takes and release devlink->lock <mutex>.
+  */
+ struct devlink_region *
+ devlink_port_region_create(struct devlink_port *port,
+@@ -11214,11 +11186,11 @@ devlink_port_region_create(struct devlink_port *port,
+ 	struct devlink_region *region;
+ 	int err = 0;
+ 
++	ASSERT_DEVLINK_PORT_NOT_REGISTERED(port);
++
+ 	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
+ 		return ERR_PTR(-EINVAL);
+ 
+-	devl_lock(devlink);
+-
+ 	if (devlink_port_region_get_by_name(port, ops->name)) {
+ 		err = -EEXIST;
+ 		goto unlock;
+@@ -11238,9 +11210,7 @@ devlink_port_region_create(struct devlink_port *port,
+ 	INIT_LIST_HEAD(&region->snapshot_list);
+ 	mutex_init(&region->snapshot_lock);
+ 	list_add_tail(&region->list, &port->region_list);
+-	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
+ 
+-	devl_unlock(devlink);
+ 	return region;
+ 
+ unlock:
+@@ -11250,16 +11220,18 @@ devlink_port_region_create(struct devlink_port *port,
+ EXPORT_SYMBOL_GPL(devlink_port_region_create);
+ 
+ /**
+- * devl_region_destroy - destroy address region
++ * devlink_region_destroy - destroy address region
+  *
+  * @region: devlink region to destroy
+  */
+-void devl_region_destroy(struct devlink_region *region)
++void devlink_region_destroy(struct devlink_region *region)
+ {
+-	struct devlink *devlink = region->devlink;
+ 	struct devlink_snapshot *snapshot, *ts;
+ 
+-	devl_assert_locked(devlink);
++	if (region->port)
++		ASSERT_DEVLINK_PORT_NOT_REGISTERED(region->port);
++	else
++		ASSERT_DEVLINK_NOT_REGISTERED(region->devlink);
+ 
+ 	/* Free all snapshots of region */
+ 	list_for_each_entry_safe(snapshot, ts, &region->snapshot_list, list)
+@@ -11268,26 +11240,8 @@ void devl_region_destroy(struct devlink_region *region)
+ 	list_del(&region->list);
+ 	mutex_destroy(&region->snapshot_lock);
+ 
+-	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_DEL);
+ 	kfree(region);
+ }
+-EXPORT_SYMBOL_GPL(devl_region_destroy);
+-
+-/**
+- *	devlink_region_destroy - destroy address region
+- *
+- *	@region: devlink region to destroy
+- *
+- *	Context: Takes and release devlink->lock <mutex>.
+- */
+-void devlink_region_destroy(struct devlink_region *region)
+-{
+-	struct devlink *devlink = region->devlink;
+-
+-	devl_lock(devlink);
+-	devl_region_destroy(region);
+-	devl_unlock(devlink);
+-}
+ EXPORT_SYMBOL_GPL(devlink_region_destroy);
+ 
+ /**
+-- 
+2.35.3
+
+
