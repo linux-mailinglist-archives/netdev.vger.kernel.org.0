@@ -2,150 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FA55813B9
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 15:01:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3A65813C2
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 15:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbiGZNBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 09:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        id S233735AbiGZNEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 09:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiGZNBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 09:01:16 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E6912AE8;
-        Tue, 26 Jul 2022 06:01:15 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h8so20032309wrw.1;
-        Tue, 26 Jul 2022 06:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=Tfl3I6SlGsCT++NoswqP98O05LISpyk4WYgSlpLXEdI=;
-        b=JEOMF9fXUySZudeoj0x/33aa3Pjb0Q7klWAhpeNeUFmKqCCzyZkeaMlGPN+mRpjFWi
-         0esyBA+S3WRwoREPnJdlRSZLM7o0ObGommnL8NbqNZPttYnoD4uHpip3NnAqPhnmt3zT
-         xAzF3orQ/IZvd5iJLJqqunzOaywHRQ491vE+RX3+rqPhQIxlGcs2UkXvAhjkMh+Bcewp
-         MkF7Nd9rRX6tAa/jeqKE1keEkVYWx8bRr2BoWlKRK4xUkFD7/mTFS7oXxD605YWhCKkc
-         PE9TBPuzabik1Vkx2gT0bDh1Q8J+e+NTQ3ntwe0f3c0SCCW6SRQnc1mdlIgHwUx51Y/E
-         Ji2A==
+        with ESMTP id S233343AbiGZNEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 09:04:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0E5015FF7
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 06:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658840678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ng3ARwb4GnfMbmjqa/1DrhGDO96AEC/0FfJ3u66wyT4=;
+        b=VjAn08eYUGoe6sM3SUVyKni2GCJlr5pz/DSDgAbSlfr9mA504/p181EZtAnclLYn8ceDO2
+        C0RBUw7+r5WV0Tn8u5s9sbjMxFaPKhfr2IpdYkYT0Ee0jCD3egc324Yn4ivZ3F1YAcyAEl
+        gQXIbde+OG2Www9boWYqB+DzyGDBHkw=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-f0imbdOuN1GT70qXfQ2aoA-1; Tue, 26 Jul 2022 09:04:37 -0400
+X-MC-Unique: f0imbdOuN1GT70qXfQ2aoA-1
+Received: by mail-qv1-f69.google.com with SMTP id od8-20020a0562142f0800b004744dccb0caso3341930qvb.16
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 06:04:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Tfl3I6SlGsCT++NoswqP98O05LISpyk4WYgSlpLXEdI=;
-        b=wtSg68LLrk/GEieuFXPe7+2d1OiNlDY9fwD4sTakSk9Q2XJ3iZi/fcmAJ1bH8yJXKM
-         2xWxXVHOFlNq6/0vUCz+Zt6nIocBmxv0nODJmhmSOj4w2EJlDlxxVHgiG5SYuE36xQ4w
-         KrUOH8wcqqyKalIaQkcfuE6/1IquGO1E8LjHJWKPX8Auh5bd87lDFrOJpxHmPuOqLJW6
-         1EoJ8TtSSNLldZ8lk2dhYxDI3leXQJZrJn/vElRomLcD9cDmlgZuRgcwuoxLvUQ3FJxN
-         fN80gSYkr17OvU7pKRat1/8KpjZ+J1BL1YJUofCw7iKzUuZbwRaJF0VgAdPE7WMcWy3P
-         1xZw==
-X-Gm-Message-State: AJIora8estcaVAl2AM7AoE0L+2JBj2xnkLLgVqrb9QElpTKduLZ3FRzi
-        ArUdJcMfLpiH6lnjtuCTbNs=
-X-Google-Smtp-Source: AGRyM1uMiOn0VKwRIQ3gICWUnZf3DWycc+4VmlwAF2XaWWeUR8P9DiPSwxuRKigS02tlLQHAKPQxmQ==
-X-Received: by 2002:adf:ed10:0:b0:21d:a9a1:3526 with SMTP id a16-20020adfed10000000b0021da9a13526mr10885027wro.403.1658840473574;
-        Tue, 26 Jul 2022 06:01:13 -0700 (PDT)
-Received: from felia.fritz.box (200116b8266ba800287bb26100a73554.dip.versatel-1u1.de. [2001:16b8:266b:a800:287b:b261:a7:3554])
-        by smtp.gmail.com with ESMTPSA id a20-20020a05600c225400b003a32167b8d4sm21327917wmm.13.2022.07.26.06.01.12
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=ng3ARwb4GnfMbmjqa/1DrhGDO96AEC/0FfJ3u66wyT4=;
+        b=fnSgNmolg0YtWiZ05404W0Q3z37MQRkb8OqfdrhaErS78KXtdmXFBxHjHSJKAlhU01
+         bAQtMgWy4JfZ7lniR/nwsr4I8hbVPYVJiQqv90lrUDMOCPHB9pFs9irV6qQcquWhlo7d
+         UmUZQkPeGDI8SXZdsZk7+x1+EsJaMcn+LLerwgPwJy6c0c7/u9q+kWibGpsY/OdD8SaC
+         F8ipM4qTJ/Kfz0Ye5pdwkgmwMDrfJ95hrqt3Bp/rAIcMj6OCZEfFuN1iAMZ1cDFS5lhr
+         MHXfI8K7YOTrXowOLcEvVAMwbwVNmWkVv/KPGjdftRBQpYf6kkO341dYgBb0IPn+q/Sj
+         iTLw==
+X-Gm-Message-State: AJIora9OXOKk5NaHDjJfOeetU+IbptR56+f/PKK6YQOL7BTQYBptiRVh
+        oSRUajJTQPGO1y4gYZ/BFTPwrc75NglFnvjpbNTkbd3OPsPtTMFyAmPHmYoMWpLwDAWL6tKb02/
+        qdtFYKWZDHgWo96Qc
+X-Received: by 2002:a05:620a:1907:b0:6a6:2fac:462f with SMTP id bj7-20020a05620a190700b006a62fac462fmr12150477qkb.213.1658840676698;
+        Tue, 26 Jul 2022 06:04:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tTrP1uKsJWFKd90WkpGe9ZZ9/mYpIYrTiq4unT5TQ1aRVZKHElDJkoR1OYPQf1E2hWMo1xrQ==
+X-Received: by 2002:a05:620a:1907:b0:6a6:2fac:462f with SMTP id bj7-20020a05620a190700b006a62fac462fmr12150408qkb.213.1658840676012;
+        Tue, 26 Jul 2022 06:04:36 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
+        by smtp.gmail.com with ESMTPSA id d21-20020ac85ad5000000b0031ea1ad6c5asm9637660qtd.75.2022.07.26.06.04.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 06:01:13 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Shuah Khan <shuah@kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] wireguard: selftests: update config fragments
-Date:   Tue, 26 Jul 2022 15:00:58 +0200
-Message-Id: <20220726130058.21833-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Tue, 26 Jul 2022 06:04:35 -0700 (PDT)
+Message-ID: <9fe0a59f83eaf63659cfd33600945f0886698c77.camel@redhat.com>
+Subject: Re: [net PATCH 1/2] octeontx2-pf: cn10k: Fix egress ratelimit
+ configuration
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>, davem@davemloft.net,
+        kuba@kernel.org, sgoutham@marvell.com, netdev@vger.kernel.org
+Date:   Tue, 26 Jul 2022 15:04:32 +0200
+In-Reply-To: <1658650874-16459-2-git-send-email-sbhatta@marvell.com>
+References: <1658650874-16459-1-git-send-email-sbhatta@marvell.com>
+         <1658650874-16459-2-git-send-email-sbhatta@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel.config and debug.config fragments in wireguard selftests mention
-some config symbols that have been reworked:
+Hello,
 
-Commit c5665868183f ("mm: kmemleak: use the memory pool for early
-allocations") removes the config DEBUG_KMEMLEAK_EARLY_LOG_SIZE and since
-then, the config's feature is available without further configuration.
+On Sun, 2022-07-24 at 13:51 +0530, Subbaraya Sundeep wrote:
+> From: Sunil Goutham <sgoutham@marvell.com>
+> 
+> NIX_AF_TLXX_PIR/CIR register format has changed from OcteonTx2
+> to CN10K. CN10K supports larger burst size. Fix burst exponent
+> and burst mantissa configuration for CN10K.
+> 
+> Also fixed 'maxrate' from u32 to u64 since 'police.rate_bytes_ps'
+> passed by stack is also u64.
+> 
+> Fixes: e638a83f167e ("octeontx2-pf: TC_MATCHALL egress ratelimiting offload")
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Commit 4675ff05de2d ("kmemcheck: rip it out") removes kmemcheck and the
-corresponding arch config HAVE_ARCH_KMEMCHECK. There is no need for this
-config.
+I wrongly applied this series to net-next due to PEBKAC here. I'm going
+to rever it and apply to net.
 
-Commit 3bf195ae6037 ("netfilter: nat: merge nf_nat_ipv4,6 into nat core")
-removes the config NF_NAT_IPV4 and since then, the config's feature is
-available without further configuration.
+I'm sorry for the confusion,
 
-Commit 41a2901e7d22 ("rcu: Remove SPARSE_RCU_POINTER Kconfig option")
-removes the config SPARSE_RCU_POINTER and since then, the config's feature
-is enabled by default.
-
-Commit dfb4357da6dd ("time: Remove CONFIG_TIMER_STATS") removes the feature
-and config CONFIG_TIMER_STATS without any replacement.
-
-Commit 3ca17b1f3628 ("lib/ubsan: remove null-pointer checks") removes the
-check and config UBSAN_NULL without any replacement.
-
-Adjust the config fragments to those changes in configs.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- tools/testing/selftests/wireguard/qemu/debug.config  | 5 -----
- tools/testing/selftests/wireguard/qemu/kernel.config | 1 -
- 2 files changed, 6 deletions(-)
-
-diff --git a/tools/testing/selftests/wireguard/qemu/debug.config b/tools/testing/selftests/wireguard/qemu/debug.config
-index 2b321b8a96cf..9d172210e2c6 100644
---- a/tools/testing/selftests/wireguard/qemu/debug.config
-+++ b/tools/testing/selftests/wireguard/qemu/debug.config
-@@ -18,15 +18,12 @@ CONFIG_DEBUG_VM=y
- CONFIG_DEBUG_MEMORY_INIT=y
- CONFIG_HAVE_DEBUG_STACKOVERFLOW=y
- CONFIG_DEBUG_STACKOVERFLOW=y
--CONFIG_HAVE_ARCH_KMEMCHECK=y
- CONFIG_HAVE_ARCH_KASAN=y
- CONFIG_KASAN=y
- CONFIG_KASAN_INLINE=y
- CONFIG_UBSAN=y
- CONFIG_UBSAN_SANITIZE_ALL=y
--CONFIG_UBSAN_NULL=y
- CONFIG_DEBUG_KMEMLEAK=y
--CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=8192
- CONFIG_DEBUG_STACK_USAGE=y
- CONFIG_DEBUG_SHIRQ=y
- CONFIG_WQ_WATCHDOG=y
-@@ -35,7 +32,6 @@ CONFIG_SCHED_INFO=y
- CONFIG_SCHEDSTATS=y
- CONFIG_SCHED_STACK_END_CHECK=y
- CONFIG_DEBUG_TIMEKEEPING=y
--CONFIG_TIMER_STATS=y
- CONFIG_DEBUG_PREEMPT=y
- CONFIG_DEBUG_RT_MUTEXES=y
- CONFIG_DEBUG_SPINLOCK=y
-@@ -49,7 +45,6 @@ CONFIG_DEBUG_BUGVERBOSE=y
- CONFIG_DEBUG_LIST=y
- CONFIG_DEBUG_PLIST=y
- CONFIG_PROVE_RCU=y
--CONFIG_SPARSE_RCU_POINTER=y
- CONFIG_RCU_CPU_STALL_TIMEOUT=21
- CONFIG_RCU_TRACE=y
- CONFIG_RCU_EQS_DEBUG=y
-diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
-index e1858ce7003f..ce2a04717300 100644
---- a/tools/testing/selftests/wireguard/qemu/kernel.config
-+++ b/tools/testing/selftests/wireguard/qemu/kernel.config
-@@ -19,7 +19,6 @@ CONFIG_NETFILTER_XTABLES=y
- CONFIG_NETFILTER_XT_NAT=y
- CONFIG_NETFILTER_XT_MATCH_LENGTH=y
- CONFIG_NETFILTER_XT_MARK=y
--CONFIG_NF_NAT_IPV4=y
- CONFIG_IP_NF_IPTABLES=y
- CONFIG_IP_NF_FILTER=y
- CONFIG_IP_NF_MANGLE=y
--- 
-2.17.1
+Paolo
 
