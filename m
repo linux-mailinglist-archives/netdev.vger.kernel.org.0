@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB59581581
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EAA3581585
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 16:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239296AbiGZOi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 10:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S239245AbiGZOkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 10:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiGZOi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:38:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919E020BD5;
-        Tue, 26 Jul 2022 07:38:25 -0700 (PDT)
+        with ESMTP id S229757AbiGZOkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 10:40:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245AC5FB3;
+        Tue, 26 Jul 2022 07:40:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39D3EB8167A;
-        Tue, 26 Jul 2022 14:38:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ABC5C433D6;
-        Tue, 26 Jul 2022 14:38:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1D3A61685;
+        Tue, 26 Jul 2022 14:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F126EC433D7;
+        Tue, 26 Jul 2022 14:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658846302;
-        bh=cgZg+rhtv9wr0MSR6nX51BTfEgBAgbyS5aVLOMUs23M=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=PJPxEPfEIFg2xolAKB7coxbpIv0p8AB8FcsczpwMwAwjd9r8AR/s56M2qIEtRDQv1
-         WsCWnBBIEL6Qo0dkC7pIxPucVrznY6KgQP1kTk4Nd+8E9OwFoDKtjQXtwVsFCRVBQJ
-         F0tsUicHtyk4aa32KenTIJRx7wirDOaMdrQxPV0FGdL3Bs7HxrVNrsy8K8I1FxVjVx
-         ik5c+Q9fCCwmAVELnqReWI5vdF5sDlR3Q3h+nqRG6Pmnmk9MlvuZBGXBIIThSaBlbe
-         S5V3BeYjc3xDGS0wJug/RG0O7FCIAdzgsBIOSylDPQYueuI8LSl15kVa9TeIzQQnPb
-         4mC9g3ZXvZorA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Toke =?utf-8?Q?H=C3=B8ilan?= =?utf-8?Q?d-J=C3=B8rgensen?= 
-        <toke@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] wifi: mac80211: do not abuse fq.lock in ieee80211_do_stop()
-References: <9cc9b81d-75a3-3925-b612-9d0ad3cab82b@I-love.SAKURA.ne.jp>
-        <165814567948.32602.9899358496438464723.kvalo@kernel.org>
-        <9487e319-7ab4-995a-ddfd-67c4c701680c@I-love.SAKURA.ne.jp>
-Date:   Tue, 26 Jul 2022 17:38:18 +0300
-In-Reply-To: <9487e319-7ab4-995a-ddfd-67c4c701680c@I-love.SAKURA.ne.jp>
-        (Tetsuo Handa's message of "Tue, 26 Jul 2022 15:55:35 +0900")
-Message-ID: <87o7xcq6qt.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1658846414;
+        bh=58nLY8A3acskXVMMHzm+L8+NW02xjgBW66So2sA/ZjU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AbCZP7JiXhx1B/Ri/IQtepSr28EzEOWCKzNJMfrHrNtrfwCEzkkJLpb08WSbiUa8p
+         GHPm0NKAt21o2q58bhaVQ4wm8HUVy42CpAR3l6MGUHopTBfJqOZEznn+L83xqU/QsX
+         lhB+j5KJ17mbXSCyjLtjt5ySv18tiqiXa2IgAjKXjRpGlQ9wKnSqbB2RZUAa3XfBJo
+         pwUEHY5FHB4MIfNYxy84rioif8+r8FlLYANlwn/qz4BSmUJ04TqSG0WAvnAFYbzH31
+         Mx8NrtZyLPWF3j5UJPD8ntIB7XB0Q6QoByuhutc93335cG2iPUoJGAHWBpijujnuTR
+         hELFKua2V7z0A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D789BC43143;
+        Tue, 26 Jul 2022 14:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf: devmap: compute proper xdp_frame len
+ redirecting frames
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165884641387.27442.17431202446790497710.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Jul 2022 14:40:13 +0000
+References: <894d99c01139e921bdb6868158ff8e67f661c072.1658596075.git.lorenzo@kernel.org>
+In-Reply-To: <894d99c01139e921bdb6868158ff8e67f661c072.1658596075.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        lorenzo.bianconi@redhat.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,53 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(please don't top post, I manually fixed that)
+Hello:
 
-Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> writes:
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-> On 2022/07/18 21:01, Kalle Valo wrote:
->> Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> wrote:
->>=20
->>> lockdep complains use of uninitialized spinlock at ieee80211_do_stop() =
-[1],
->>> for commit f856373e2f31ffd3 ("wifi: mac80211: do not wake queues on a v=
-if
->>> that is being stopped") guards clear_bit() using fq.lock even before
->>> fq_init() from ieee80211_txq_setup_flows() initializes this spinlock.
->>>
->>> According to discussion [2], Toke was not happy with expanding usage of
->>> fq.lock. Since __ieee80211_wake_txqs() is called under RCU read lock, we
->>> can instead use synchronize_rcu() for flushing ieee80211_wake_txqs().
->>>
->>> Link: https://syzkaller.appspot.com/bug?extid=3Deceab52db7c4b961e9d6 [1]
->>> Link: https://lkml.kernel.org/r/874k0zowh2.fsf@toke.dk [2]
->>> Reported-by: syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.=
-com>
->>> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->>> Fixes: f856373e2f31ffd3 ("wifi: mac80211: do not wake queues on a vif t=
-hat is being stopped")
->>> Tested-by: syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.co=
-m>
->>> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org>
->>=20
->> Patch applied to wireless-next.git, thanks.
->>=20
->> 3598cb6e1862 wifi: mac80211: do not abuse fq.lock in ieee80211_do_stop()
->
-> Since this patch fixes a regression introduced in 5.19-rc7, can this patc=
-h go to 5.19-final ?
->
-> syzbot is failing to test linux.git for 12 days due to this regression.
-> syzbot will fail to bisect new bugs found in the upcoming merge window
-> if unable to test v5.19 due to this regression.
+On Sat, 23 Jul 2022 19:17:10 +0200 you wrote:
+> Even if it is currently forbidden to XDP_REDIRECT a multi-frag xdp_frame
+> into a devmap, compute proper xdp_frame length in __xdp_enqueue and
+> is_valid_dst routines running xdp_get_frame_len().
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  kernel/bpf/devmap.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-I took this to wireless-next as I didn't think there's enough time to
-get this to v5.19 (and I only heard Linus' -rc8 plans after the fact).
-So this will be in v5.20-rc1 and I recommend pushing this to a v5.19
-stable release.
+Here is the summary with links:
+  - [bpf-next] bpf: devmap: compute proper xdp_frame len redirecting frames
+    https://git.kernel.org/bpf/bpf-next/c/bd82ea52f0ee
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+
