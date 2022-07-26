@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 270C9581133
-	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 12:33:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBC758115E
+	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 12:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238639AbiGZKd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 06:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60358 "EHLO
+        id S238754AbiGZKn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 06:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbiGZKd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 06:33:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1CCFA2C661
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 03:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658831604;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jECiOq0E3ywwe79d1zTfZoKz4jXt6DMQSmkfo1EKKqo=;
-        b=U/aNHSAdARjr7E5CEfk8uD/70n0LHGyQwugEGsXSdrPsm0304GINwFZtz+yJt9Ld3jPYMC
-        ypA2WdKfwULjYFZX4cHhtOrKzQBznW7CzlftQkPNzPuINy1W3lnz4CUkWkejf4AUOOoZMa
-        KrGA3/RlS34i3ryK2mRxbcdq/O1lOyA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-17-XCtDlUmYOIiHUa5gkuhWxw-1; Tue, 26 Jul 2022 06:33:23 -0400
-X-MC-Unique: XCtDlUmYOIiHUa5gkuhWxw-1
-Received: by mail-wm1-f72.google.com with SMTP id z20-20020a1c4c14000000b003a3020da654so5219705wmf.5
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 03:33:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=jECiOq0E3ywwe79d1zTfZoKz4jXt6DMQSmkfo1EKKqo=;
-        b=KfPVN6WbJqyi3/0mqehZnOajn5+lxBsZMyXbpKVaig9Ny2ebK9gmfPLqbyqU3sKWOc
-         hmZTinVBUHYKH6YXe5KdKqu55ncWNjQY9Mb7NkP6Pg8LRPzI7Zo3DJqI8oSCCv/aIl/D
-         e2hteXM64gAiRwLgV/Z7KB6d2OWFi2uem73/SaNVKcLibvCj6o90UgF+G0qJs5TKV2Ca
-         JJ3OcEpFEIk1SJ9cUHghvXKEsF/OpNX54fu2p0acEVfB162RzEXxl0n+pxoHBAHZ6gdI
-         sdeNWYJQd/xmmONeGyldr1367lA9dBoTxzeFF17P6FSIJA1RihhXfkpiY0XL9FHBJI12
-         leHQ==
-X-Gm-Message-State: AJIora+WKIcLGrvgbfUTbRqXJTW9tJtQcl6Xzva0gxWBJp3E/dhDX1Ay
-        L86syXMGDtouxoLfdwv1vOjVVPjtftmnt2ST5khWhmrI/1Sgy3aJ0HutYLzDj0BubZKWmLbLPMY
-        u00VdF/7k97D+10DL
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr10132064wry.206.1658831601867;
-        Tue, 26 Jul 2022 03:33:21 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tTQ/OcdsegKe5OGqBkLomcrzDjzWC9phkXjmP0MUcp3Qss3S4w5JJ0BWvgekckWmI9RvVtvw==
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr10132031wry.206.1658831601234;
-        Tue, 26 Jul 2022 03:33:21 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id r11-20020a0560001b8b00b0021e6baea4ffsm10137380wru.29.2022.07.26.03.33.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 03:33:20 -0700 (PDT)
-Message-ID: <9cdb7fadf35fc7b7c07d3f3f0fc036da9fd81277.camel@redhat.com>
-Subject: Re: [PATCH net-next v1 1/2] net: asix: ax88772: migrate to phylink
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        with ESMTP id S230198AbiGZKn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 06:43:27 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89DE1F2FC;
+        Tue, 26 Jul 2022 03:43:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658832206; x=1690368206;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lQiAilbEUppJcpJNbRqv8FIHJ4GJnsTYB+DqfHRxkjk=;
+  b=nC46ls+tJlDDjC1WppY/gENhN1tWgHYgqDxfsyRCxphiIakq87GUPtUB
+   kkVgMOZIaEww6DGIfJmIAfweH+ZfZVrVJPAjvtFK0Cg2iVy6Ci9Ehe3gY
+   lb8FxwygrC7iJZB8qvayrZeEPZbCsTZdhxjaq9XxiVH2GV4av24comNwP
+   ajlv6uhPLt8mooDG6B2/oC6nxWojkybpUf58Fy1yAgbohHDTcY7hPCERB
+   RiQwBpkAicFkm5jAKFU964gcQ5AdqG0gsGKb1C6CiI7+lS/DdMITNBsZK
+   +b8x782nUyjbQTr7l6xO8Urvqc3J3djIxQjh8lLVjixvhms40CJZNa4aJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="285471729"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="285471729"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 03:43:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="726495114"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 26 Jul 2022 03:43:23 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26QAhM9K023892;
+        Tue, 26 Jul 2022 11:43:22 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Russell King <linux@armlinux.org.uk>
-Date:   Tue, 26 Jul 2022 12:33:19 +0200
-In-Reply-To: <20220723174711.1539574-1-o.rempel@pengutronix.de>
-References: <20220723174711.1539574-1-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
+Date:   Tue, 26 Jul 2022 12:41:45 +0200
+Message-Id: <20220726104145.1857628-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220725115324.7a1ad2d6@kernel.org>
+References: <20220721155950.747251-1-alexandr.lobakin@intel.com> <20220721111318.1b180762@kernel.org> <20220722145514.767592-1-alexandr.lobakin@intel.com> <20220722111951.6a2fd39c@kernel.org> <20220725130255.3943438-1-alexandr.lobakin@intel.com> <20220725115324.7a1ad2d6@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,230 +70,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-07-23 at 19:47 +0200, Oleksij Rempel wrote:
-> There are some exotic ax88772 based devices which may require
-> functionality provide by the phylink framework. For example:
-> - US100A20SFP, USB 2.0 auf LWL Converter with SFP Cage
-> - AX88772B USB to 100Base-TX Ethernet (with RMII) demo board, where it
->   is possible to switch between internal PHY and external RMII based
->   connection.
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Mon, 25 Jul 2022 11:53:24 -0700
+
+> On Mon, 25 Jul 2022 15:02:55 +0200 Alexander Lobakin wrote:
+> > > Actually once a field crosses the biggest natural int size I was
+> > > thinking that the user would go to a bitmap.
+> > > 
+> > > So at the netlink level the field is bigint (LE, don't care about BE).
+> > > Kernel side API is:
+> > > 
+> > > 	nla_get_b8, nla_get_b16, nla_get_b32, nla_get_b64,
+> > > 	nla_get_bitmap
+> > > 	nla_put_b8, nla_put_b16 etc.
+> > > 
+> > > 	u16 my_flags_are_so_toight;
+> > > 
+> > > 	my_flags_are_so_toight = nla_get_b16(attr[BLAA_BLA_BLA_FLAGS]);
+> > > 
+> > > The point is - the representation can be more compact than u64 and will
+> > > therefore encourage anyone who doesn't have a strong reason to use
+> > > fixed size fields to switch to the bigint.  
+> > 
+> > Ahh looks like I got it! So you mean that at Netlink level we should
+> > exchange with bigint/u64arrs, but there should be an option to
+> > get/set only 16/32/64 bits from them to simplify (or keep simple)
+> > users?
 > 
-> So, convert this driver to phylink as soon as possible.
+> Not exactly. I'd prefer if the netlink level was in u32 increments.
+> u64 requires padding (so the nla_put..() calls will have more args).
+> Netlink requires platform alignment and rounds up to 4B, so u32 is much
+> more convenient than u64. Similarly - it doesn't make sense to represent
+> sizes smaller than 4B because of the rounding up, so nla_put_b8() can
+> be a define to nla_put_b32(). Ethool's choice of u32 is not without
+> merit.
 > 
-> Tested with:
-> - AX88772A + internal PHY
-> - AX88772B + external DP83TD510E T1L PHY
+> > Like, if we have `u16 uuid`, to not do
+> > 
+> > 	unsigned long uuid_bitmap;
+> > 
+> > 	nla_get_bitmap(attr[FLAGS], &uuid_bitmap, BITS_PER_TYPE(u16));
+> > 	uuid = (u16)uuid_bitmap;
+> > 
+> > but instead
+> > 
+> > 	uuid = nla_get_b16(attr[FLAGS]);
+> > 
+> > ?
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/usb/Kconfig        |   2 +-
->  drivers/net/usb/asix.h         |   3 +
->  drivers/net/usb/asix_devices.c | 123 ++++++++++++++++++++++++++++-----
->  3 files changed, 110 insertions(+), 18 deletions(-)
+> Yes.
 > 
-> diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
-> index e62fc4f2aee0..3d46b5f9287a 100644
-> --- a/drivers/net/usb/Kconfig
-> +++ b/drivers/net/usb/Kconfig
-> @@ -168,7 +168,7 @@ config USB_NET_AX8817X
->  	tristate "ASIX AX88xxx Based USB 2.0 Ethernet Adapters"
->  	depends on USB_USBNET
->  	select CRC32
-> -	select PHYLIB
-> +	select PHYLINK
->  	select AX88796B_PHY
->  	imply NET_SELFTESTS
->  	default y
-> diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-> index 21c1ca275cc4..74162190bccc 100644
-> --- a/drivers/net/usb/asix.h
-> +++ b/drivers/net/usb/asix.h
-> @@ -27,6 +27,7 @@
->  #include <linux/if_vlan.h>
->  #include <linux/phy.h>
->  #include <net/selftests.h>
-> +#include <linux/phylink.h>
->  
->  #define DRIVER_VERSION "22-Dec-2011"
->  #define DRIVER_NAME "asix"
-> @@ -185,6 +186,8 @@ struct asix_common_private {
->  	struct mii_bus *mdio;
->  	struct phy_device *phydev;
->  	struct phy_device *phydev_int;
-> +	struct phylink *phylink;
-> +	struct phylink_config phylink_config;
->  	u16 phy_addr;
->  	bool embd_phy;
->  	u8 chipcode;
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 5b5eb630c4b7..3f93bc46a7eb 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -327,6 +327,12 @@ static int ax88772_reset(struct usbnet *dev)
->  	struct asix_common_private *priv = dev->driver_priv;
->  	int ret;
->  
-> +	ret = phylink_connect_phy(priv->phylink, priv->phydev);
-> +	if (ret) {
-> +		netdev_err(dev->net, "Could not connect PHY\n");
-> +		return ret;
-> +	}
+> > > about being flexible when it comes to size, I guess, more than
+> > > bitmap in particular.  
+> > 
+> > Probably, but you also said above that for anything bigger than
+> > longs you'd go for bitmaps, didn't you? So I guess that series
+> > goes in the right direction, just needs a couple more inlines
+> > to be able to get/put u{32, 64; 8, 16 -- not sure about these two
+> > after reading your follow-up mail} as easy as nla_{get,put}<size>()
+> > and probably dropping Endianness stuff? Hope I got it right ._.
+> 
+> Modulo the fact that I do still want to pack to u32. Especially a
+> single u32 - perhaps once we cross 8B we can switch to requiring 8B
+> increments.
+> 
+> The nla_len is 16bit, which means that attrs nested inside other attrs
+> are quite tight for space (see the sad story of VF attrs in
+> RTM_GETLINK). If we don't represent u8/u16/u32 in a netlink-level
+> efficient manner we're back to people arguing for raw u32s rather than
+> using the new type.
 
-Don't you need to additionally call phylink_disconnect_phy() in later
-error paths? why?
+Ah, got it. I think you're right. The only thing that bothers me
+a bit is that we'll be converting arrays of u32s to unsigned longs
+each time, unlike u64s <--> longs which are 1:1 for 64 bits and LEs.
+But I guess it's better anyway than waste Netlink attrs for
+paddings?
 
-> +
->  	/* Rewrite MAC address */
->  	ether_addr_copy(data->mac_addr, dev->net->dev_addr);
->  	ret = asix_write_cmd(dev, AX_CMD_WRITE_NODE_ID, 0, 0,
-> @@ -343,7 +349,7 @@ static int ax88772_reset(struct usbnet *dev)
->  	if (ret < 0)
->  		goto out;
->  
-> -	phy_start(priv->phydev);
-> +	phylink_start(priv->phylink);
->  
->  	return 0;
->  
-> @@ -590,8 +596,11 @@ static void ax88772_suspend(struct usbnet *dev)
->  	struct asix_common_private *priv = dev->driver_priv;
->  	u16 medium;
->  
-> -	if (netif_running(dev->net))
-> -		phy_stop(priv->phydev);
-> +	if (netif_running(dev->net)) {
-> +		rtnl_lock();
-> +		phylink_suspend(priv->phylink, false);
-> +		rtnl_unlock();
-> +	}
->  
->  	/* Stop MAC operation */
->  	medium = asix_read_medium_status(dev, 1);
-> @@ -622,8 +631,11 @@ static void ax88772_resume(struct usbnet *dev)
->  		if (!priv->reset(dev, 1))
->  			break;
->  
-> -	if (netif_running(dev->net))
-> -		phy_start(priv->phydev);
-> +	if (netif_running(dev->net)) {
-> +		rtnl_lock();
-> +		phylink_resume(priv->phylink);
-> +		rtnl_unlock();
-> +	}
->  }
->  
->  static int asix_resume(struct usb_interface *intf)
-> @@ -659,7 +671,6 @@ static int ax88772_init_mdio(struct usbnet *dev)
->  static int ax88772_init_phy(struct usbnet *dev)
->  {
->  	struct asix_common_private *priv = dev->driver_priv;
-> -	int ret;
->  
->  	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
->  	if (!priv->phydev) {
-> @@ -667,13 +678,6 @@ static int ax88772_init_phy(struct usbnet *dev)
->  		return -ENODEV;
->  	}
->  
-> -	ret = phy_connect_direct(dev->net, priv->phydev, &asix_adjust_link,
-> -				 PHY_INTERFACE_MODE_INTERNAL);
-> -	if (ret) {
-> -		netdev_err(dev->net, "Could not connect PHY\n");
-> -		return ret;
-> -	}
-> -
->  	phy_suspend(priv->phydev);
->  	priv->phydev->mac_managed_pm = 1;
->  
-> @@ -698,6 +702,89 @@ static int ax88772_init_phy(struct usbnet *dev)
->  	return 0;
->  }
->  
-> +static void ax88772_mac_config(struct phylink_config *config, unsigned int mode,
-> +			      const struct phylink_link_state *state)
-> +{
-> +	/* Nothing to do */
-> +}
-> +
-> +static void ax88772_mac_link_down(struct phylink_config *config,
-> +				 unsigned int mode, phy_interface_t interface)
-> +{
-> +	struct usbnet *dev = netdev_priv(to_net_dev(config->dev));
-> +
-> +	asix_write_medium_mode(dev, 0, 0);
-> +	usbnet_link_change(dev, false, false);
-> +}
-> +
-> +static void ax88772_mac_link_up(struct phylink_config *config,
-> +			       struct phy_device *phy,
-> +			       unsigned int mode, phy_interface_t interface,
-> +			       int speed, int duplex,
-> +			       bool tx_pause, bool rx_pause)
-> +{
-> +	struct usbnet *dev = netdev_priv(to_net_dev(config->dev));
-> +	u16 m = AX_MEDIUM_AC | AX_MEDIUM_RE;
-> +
-> +	m |= duplex ? AX_MEDIUM_FD : 0;
-> +
-> +	switch (speed) {
-> +	case SPEED_100:
-> +		m |= AX_MEDIUM_PS;
-> +		break;
-> +	case SPEED_10:
-> +		break;
-> +	default:
-> +		return;
-> +	}
-> +
-> +	if (tx_pause)
-> +		m |= AX_MEDIUM_TFC;
-> +
-> +	if (rx_pause)
-> +		m |= AX_MEDIUM_RFC;
-> +
-> +	asix_write_medium_mode(dev, m, 0);
-> +	usbnet_link_change(dev, true, false);
-> +}
-> +
-> +static const struct phylink_mac_ops ax88772_phylink_mac_ops = {
-> +	.validate = phylink_generic_validate,
-> +	.mac_config = ax88772_mac_config,
-> +	.mac_link_down = ax88772_mac_link_down,
-> +	.mac_link_up = ax88772_mac_link_up,
-> +};
-> +
-> +static int ax88772_phylink_setup(struct usbnet *dev)
-> +{
-> +	struct asix_common_private *priv = dev->driver_priv;
-> +	phy_interface_t phy_if_mode;
-> +	struct phylink *phylink;
-> +
-> +	priv->phylink_config.dev = &dev->net->dev;
-> +	priv->phylink_config.type = PHYLINK_NETDEV;
-> +	priv->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
-> +		MAC_10 | MAC_100;
-> +
-> +	__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-> +		  priv->phylink_config.supported_interfaces);
-> +	__set_bit(PHY_INTERFACE_MODE_RMII,
-> +		  priv->phylink_config.supported_interfaces);
-> +
-> +	if (priv->embd_phy)
-> +		phy_if_mode = PHY_INTERFACE_MODE_INTERNAL;
-> +	else
-> +		phy_if_mode = PHY_INTERFACE_MODE_RMII;
-> +
-> +	phylink = phylink_create(&priv->phylink_config, dev->net->dev.fwnode,
-> +				 phy_if_mode, &ax88772_phylink_mac_ops);
-> +	if (IS_ERR(phylink))
-> +		return PTR_ERR(phylink);
-> +
-> +	priv->phylink = phylink;
+So I'd like to summarize for a v2:
 
-Who will call phylink_destroy() on priv->phylink? It looks like you are
-leaking it ?!?
+* represent as u32s, not u64s;
+* present it as "bigints", not bitmaps. It can carry bitmaps as
+  well, but also ->
+* add getters/setters for u8, 16, 32, 64s. Bitmaps are already here.
+  Probably u32 arrays as well? Just copy them directly. And maybe
+  u64 arrays, too (convert Netlink u32s to target u64s)?
+* should I drop Endianness stuff? With it still in place, it would
+  be easier to use this new API to exchange with e.g. __be64.
+* hope I didn't miss anything?
 
-Thanks!
+Thanks a lot, some great ideas here from your side :)
 
-Paolo
-
+Olek
