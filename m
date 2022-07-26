@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AC6581B52
+	by mail.lfdr.de (Postfix) with ESMTP id E2E7F581B53
 	for <lists+netdev@lfdr.de>; Tue, 26 Jul 2022 22:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239950AbiGZUtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 16:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
+        id S239955AbiGZUtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 16:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239717AbiGZUtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 16:49:50 -0400
+        with ESMTP id S239804AbiGZUtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 16:49:51 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F9C1D0F9
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 13:49:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71A1AD93
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 13:49:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658868589; x=1690404589;
+  t=1658868590; x=1690404590;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gd/mYX4fjVyuzpktHU1xlo9tczAIUc02CVv4BqcqYHs=;
-  b=f3oxeh6HBz/E4tUljvKTSAxCqzjbaUc4hM11h+WoixkM1ISJFMWDDXJ8
-   WVNzAAca287YCpdelBf0HCDt3aULrmobRhuVK2ka49EMLWnrUCgA6xJOF
-   dV45Yh7HBJck9I1yAeikaD21Ol8JmCdanoO2Sow17CsM/4vuJ9ON6q4BA
-   uwTWEytpRxm0ovYB8ed6BPJnIRt7lLOwrqAJXZVYroZARgplJPMfELUO/
-   AA2ZIqYLoN/9yfU3QZfXH3PY+mKVd79DuPknJwZsw5rScqVdL6BMIMLbq
-   K0iWAqr5oqva68B4Nxz2Au45d8gFsrNALAXTCXMXx6EVdqNFwD91wNvaY
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="268440954"
+  bh=ygwDtnd5naVVUtjFsTJxJkuNGWhVj2qBd0LwtAuSg7s=;
+  b=MEHKYM/I1RsDqet3NhcthgE+/5wMT6A9eJ51E0P0t/Shix93QE+YEgL8
+   MP06e0c5uqVa4tKLrsJeKevL8uEdqdCxiDvwK/UrgRIFNDzZzcTz7gGyR
+   mhh6l8UHdPp1ukre+nJVAW7sYBrRl5HX7I20Nuq/SkgFaBBUJwiYoX8NG
+   tJkxpPPu1ShvRSTJiQ4z1NgT03xLbZuZ6NTYksgwgTvXQOQ90spdTax4w
+   saQEtd0uzpFVf3CWk2V8TuerULWZQHfKs1BovgVarAoIxWNSTj5aPJd/q
+   EgA3lhDoASl6NPThjNNoCbzZ1hFT5DOMBVKy+iFWoLopFq4qhJwt34HEO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="268440955"
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="268440954"
+   d="scan'208";a="268440955"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 13:49:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="575654571"
+   d="scan'208";a="575654574"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 26 Jul 2022 13:49:48 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -42,11 +42,13 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        jdamato@fastly.com,
         Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net 1/5] ice: Fix max VLANs available for VF
-Date:   Tue, 26 Jul 2022 13:46:42 -0700
-Message-Id: <20220726204646.2171589-2-anthony.l.nguyen@intel.com>
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net 2/5] ice: Fix tunnel checksum offload with fragmented traffic
+Date:   Tue, 26 Jul 2022 13:46:43 -0700
+Message-Id: <20220726204646.2171589-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220726204646.2171589-1-anthony.l.nguyen@intel.com>
 References: <20220726204646.2171589-1-anthony.l.nguyen@intel.com>
@@ -63,37 +65,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-Legacy VLAN implementation allows for untrusted VF to have 8 VLAN
-filters, not counting VLAN 0 filters. Current VLAN_V2 implementation
-lowers available filters for VF, by counting in VLAN 0 filter for both
-TPIDs.
-Fix this by counting only non zero VLAN filters.
-Without this patch, untrusted VF would not be able to access 8 VLAN
-filters.
+Fix checksum offload on VXLAN tunnels.
+In case, when mpls protocol is not used, set l4 header to transport
+header of skb. This fixes case, when user tries to offload checksums
+of VXLAN tunneled traffic.
 
-Fixes: cc71de8fa133 ("ice: Add support for VIRTCHNL_VF_OFFLOAD_VLAN_V2")
+Steps for reproduction (requires link partner with tunnels):
+ip l s enp130s0f0 up
+ip a f enp130s0f0
+ip a a 10.10.110.2/24 dev enp130s0f0
+ip l s enp130s0f0 mtu 1600
+ip link add vxlan12_sut type vxlan id 12 group 238.168.100.100 dev enp130s0f0 dstport 4789
+ip l s vxlan12_sut up
+ip a a 20.10.110.2/24 dev vxlan12_sut
+iperf3 -c 20.10.110.1 #should connect
+
+Offload params: td_offset, cd_tunnel_params were
+corrupted, due to l4 header pointing wrong address. NIC would then drop
+those packets internally, due to incorrect TX descriptor data,
+which increased GLV_TEPC register.
+
+Fixes: 69e66c04c672 ("ice: Add mpls+tso support")
 Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 4547bc1f7cee..24188ec594d5 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -2948,7 +2948,8 @@ ice_vc_validate_add_vlan_filter_list(struct ice_vsi *vsi,
- 				     struct virtchnl_vlan_filtering_caps *vfc,
- 				     struct virtchnl_vlan_filter_list_v2 *vfl)
- {
--	u16 num_requested_filters = vsi->num_vlan + vfl->num_elements;
-+	u16 num_requested_filters = ice_vsi_num_non_zero_vlans(vsi) +
-+		vfl->num_elements;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 3f8b7274ed2f..836dce840712 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -1751,11 +1751,13 @@ int ice_tx_csum(struct ice_tx_buf *first, struct ice_tx_offload_params *off)
  
- 	if (num_requested_filters > vfc->max_filters)
- 		return false;
+ 	protocol = vlan_get_protocol(skb);
+ 
+-	if (eth_p_mpls(protocol))
++	if (eth_p_mpls(protocol)) {
+ 		ip.hdr = skb_inner_network_header(skb);
+-	else
++		l4.hdr = skb_checksum_start(skb);
++	} else {
+ 		ip.hdr = skb_network_header(skb);
+-	l4.hdr = skb_checksum_start(skb);
++		l4.hdr = skb_transport_header(skb);
++	}
+ 
+ 	/* compute outer L2 header size */
+ 	l2_len = ip.hdr - skb->data;
 -- 
 2.35.1
 
