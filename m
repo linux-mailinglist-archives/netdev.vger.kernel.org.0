@@ -2,96 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B227581BE3
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D585581BF4
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 00:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232348AbiGZWAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 18:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        id S239614AbiGZWFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 18:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiGZWAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:00:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD662BEA
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 15:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 427FCB81F01
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 22:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E7448C433D6;
-        Tue, 26 Jul 2022 22:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658872815;
-        bh=dB4qJIrzT+UVB3BgBJYRSrzoZu/K1HqP45H/gI7v4c8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VcGAIcS9PYxgN6GECTRTkpHxb41hqQhhF5p6f5Ze26rdMkAvOS/+y10c4Iims6ai4
-         kYdtXuS/sA8UOmbRvHtYATLRitj98XFnev6A3Z8IuH8YqI7braZZ1chnFfcp3BdJs4
-         tIy00zXnmHka6lJggjPHAEVmH+WNWdilwuATTIWzfQSN/k4szYSQymoZ9uGZDGjGQS
-         DV9n85V2utaBBUPJ1Qbh4lQfWBd1M7JuJguVlzI0Ye3RPETEwjXtYx0pQEL0MIOUT3
-         MkA4b4Nj0jtcFA2qOT2SqwSUWp6A5+JLC41dp+T+cpYbRi2Bjvi66tsMAW/y29ohAI
-         pZROd4QQxyiWQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C9007C43140;
-        Tue, 26 Jul 2022 22:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229550AbiGZWFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 18:05:35 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B688FD11A;
+        Tue, 26 Jul 2022 15:05:33 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id e15so19289646edj.2;
+        Tue, 26 Jul 2022 15:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eQt6/BLDfWWoSEvNSqGD+0elD2uRjzfpfOppU3TGo8Y=;
+        b=i/8GQGGCMNRAPffqp6/BlozDKMEpjmjhBbqc5gDRq4i/u14B83GmAsSqZ03F6mh8wI
+         uh5QOq8S2veK4Tf/0u4sl7xMXaSwZEz1XZSaVui+eVxvNtGOeF3H0dYhiJ4sbQnkY1JS
+         75VAknKS82mUkxDjBmqp1tS4vZKTw79Me9KoNs0DZo+IEyI3QdgB7INIhD+SrUH8Msv0
+         izxL2UJqsg9ibXzrvoyNLWijKlJmsvkSICy1Bdzjke5N8pqlipjBYMpvE6leVb53CEQc
+         NQj+XLMRpMXWYpbekaibZX07kV0RTHITPFJBHDTGkRJhUDnw6r6+zsS8A3DO0vWv4sC2
+         RLJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eQt6/BLDfWWoSEvNSqGD+0elD2uRjzfpfOppU3TGo8Y=;
+        b=b6RTAkAAkrOj0Fryia1VFg/TiEYuFnVBIf+7m8poG472HbZ2LUS44ucP4DctZCCjFp
+         TIVi5ZVFBJ0QGUb1LnHe12VChrGGruRIdjPZAZVxkGx2nZSnarO/znC0/G09Rh+2wP2h
+         eotjE9yU7Q3LdV8xmz2Jsbkv5mtQK0dPItmJJ3Ctgnt0pt7pK+WuSjhG82KjVsEZNZok
+         Fh6vk7UMfkZgm+cYMpEblIccRfueL9jIto6qeqtUhrwZiXfVAiw/Rt9iv5JOb3kFgdth
+         /sNNPTbN5zu14Y+S5EPcXYjkAGCxFiyq/WaDChnNAqhWT1u7KwRgKFMhE5AzlaHQMPnR
+         bwiA==
+X-Gm-Message-State: AJIora/WnCSMo4eAsR+/K5VpQtB7GHrVUb4oCtIkwHMCi7lv+lofb8jc
+        M7LHF3eBfuieM87F1+MKQRw9290w06HyrvJ0HGE=
+X-Google-Smtp-Source: AGRyM1sm7m7c6x9uLm36/c49v1qQ8S0NMAKm+pPDKtz5n0rkLowtN7RSJbgIthQckShS5A1Bgttwh+SbY7pngcYNb2I=
+X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id
+ ev18-20020a056402541200b004355997ccb5mr19303029edb.167.1658873130692; Tue, 26
+ Jul 2022 15:05:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/7] tls: rx: decrypt from the TCP queue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165887281481.18038.16801688552848755722.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Jul 2022 22:00:14 +0000
-References: <20220722235033.2594446-1-kuba@kernel.org>
-In-Reply-To: <20220722235033.2594446-1-kuba@kernel.org>
+References: <20220722205400.847019-1-luiz.dentz@gmail.com> <20220722165510.191fad93@kernel.org>
+ <CABBYNZLj2z_81p=q0iSxEBgVW_L3dw8UKGwQKOEDj9fgDLYJ0g@mail.gmail.com>
+ <20220722171919.04493224@kernel.org> <CABBYNZJ5-yPzxd0mo4E+wXuEwo1my+iaiW8YOwYP05Uhmtd98Q@mail.gmail.com>
+ <20220722175003.5d4ba0e0@kernel.org>
+In-Reply-To: <20220722175003.5d4ba0e0@kernel.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 26 Jul 2022 15:05:17 -0700
+Message-ID: <CABBYNZ+74ndrzdx=4dGLE6oQbZ2w6SGnUGeS0OSqH6EnND4qJw@mail.gmail.com>
+Subject: Re: pull request: bluetooth-next 2022-07-22
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, borisp@nvidia.com, john.fastabend@gmail.com,
-        maximmi@nvidia.com, tariqt@nvidia.com, vfedorenko@novek.ru
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Cc:     David Miller <davem@davemloft.net>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Jakub,
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On Fri, Jul 22, 2022 at 5:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 22 Jul 2022 17:25:57 -0700 Luiz Augusto von Dentz wrote:
+> > > > Crap, let me fix them.
+> > >
+> > > Do you mean i should hold off with pushing or you'll follow up?
+> >
+> > Ive just fixup the original patch that introduced it, btw how do you
+> > run sparse to capture such errors?
+>
+> We run builds with W=1 C=1 in the CI and then diff the outputs.
+> That's pretty noisy so we have a regex which counts number of
+> warnings per file, that makes it possible to locate the exact new
+> warning. At least most of the time...
 
-On Fri, 22 Jul 2022 16:50:26 -0700 you wrote:
-> This is the final part of my TLS Rx rework. It switches from
-> strparser to decrypting data from skbs queued in TCP. We don't
-> need the full strparser for TLS, its needs are very basic.
-> This set gives us a small but measurable (6%) performance
-> improvement (continuous stream).
-> 
-> v2: drop the __exit marking for the unroll path
-> v3: drop tcp_recv_skb() in patch 5
-> 
-> [...]
+Hmm, is there any way to trigger net CI, either that or we need to
+duplicate the same test under our CI to avoid these last minute
+findings when we are attempting to merge something.
 
-Here is the summary with links:
-  - [net-next,v3,1/7] tls: rx: wrap recv_pkt accesses in helpers
-    https://git.kernel.org/netdev/net-next/c/b92a13d488de
-  - [net-next,v3,2/7] tls: rx: factor SW handling out of tls_rx_one_record()
-    https://git.kernel.org/netdev/net-next/c/dd47ed3620e6
-  - [net-next,v3,3/7] tls: rx: don't free the output in case of zero-copy
-    https://git.kernel.org/netdev/net-next/c/b93f5700164d
-  - [net-next,v3,4/7] tls: rx: device: keep the zero copy status with offload
-    https://git.kernel.org/netdev/net-next/c/d4e5db645221
-  - [net-next,v3,5/7] tcp: allow tls to decrypt directly from the tcp rcv queue
-    https://git.kernel.org/netdev/net-next/c/3f92a64e44e5
-  - [net-next,v3,6/7] tls: rx: device: add input CoW helper
-    https://git.kernel.org/netdev/net-next/c/8b3c59a7a0be
-  - [net-next,v3,7/7] tls: rx: do not use the standard strparser
-    https://git.kernel.org/netdev/net-next/c/84c61fe1a75b
+> > > > Yep, that happens when I rebase on top of net-next so I would have to
+> > > > redo all the Signed-off-by lines if the patches were originally
+> > > > applied by Marcel, at least I don't know of any option to keep the
+> > > > original committer while rebasing?
+> > >
+> > > I think the most common way is to avoid rebasing. Do you rebase to get
+> > > rid of revised patches or such?
+> >
+> > So we don't need to rebase?
+>
+> No, not usually. After we pull from you, you should pull back from us
+> (git pull --ff-only $net-or-net-next depending on the tree you
+> targeted), and that's it. The only patches that go into your tree then
+> are bluetooth patches, everything else is fed via pulling back from us.
+>
+> > There were some patches already applied via bluetooth.git so at least
+> > I do it to remove them
+>
+> Normally you'd not apply bluetooth fixes to bluetooth-next, apply
+> them to bluetooth and send us a PR. Then once a week we'll merge
+> net (containing your fixes) into net-next, at which point you can
+> send a bluetooth-next PR and get the fixes into bluetooth-next.
+> FWIW from our perspective there's no limit on how often you send PRs.
 
-You are awesome, thank you!
+Are you saying we should be using merge commits instead of rebase then?
+
+> Alternatively you could apply the fixes into bluetooth and then
+> merge bluetooth into bluetooth-next. If you never rebase either tree,
+> git will be able to figure out that it's the same commit hash even if
+> it makes it to the tree twice (once thru direct merge and once via
+> net). That said, I believe Linus does not like cross tree merges, i.e.
+> merges which are not fast forwards to the downstream tree. So it's
+> better to take the long road via bt ->  net -> net-next -> bt-next.
+
+Well I got the impression that merge commits shall be avoided, but
+rebase overwrites the committer, so the two option seem to have
+drawbacks, well we can just resign on rebase as well provided git
+doesn't duplicate Signed-off-by if I use something like exec="git
+commit -s --amend".
+
+> > and any possible conflicts if there were
+> > changes introduced to the bluetooth directories that can eventually
+> > come from some other tree.
+>
+> Conflicts are not a worry, just let us know in the PR description how
+> to resolve them.
+
+Not really following, how can we anticipate a merge conflict if we
+don't rebase? With merge strategy it seem that the one pulling needs
+to resolve the conflicts rather than the submitter which I think would
+lead to bad interaction between subsystems, expect if we do a merge
+[-> resolve conflict] -> pull request -> [resolve conflicts ->] merge
+which sounds a little too complicated since we have to resolve
+conflicts in both directions.
+
+In my opinion rebase strategy is cleaner and is what we recommend for
+possible clones of bluetooth-next and bluetooth trees including CI so
+possible conflicts are fixed in place rather on the time the trees are
+merged.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Luiz Augusto von Dentz
