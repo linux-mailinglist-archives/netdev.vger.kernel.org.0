@@ -2,141 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC59758249E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 12:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B8725824A5
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 12:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiG0Kkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 06:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        id S231206AbiG0Klx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 06:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231892AbiG0Kkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 06:40:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEF132AEC
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658918432;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=82nv2SFGdqlZfGEwVZ1wVPV33YMz3X0zqGrGaNF2BiU=;
-        b=axAr28WRdTe+f9Phx52dzqfDUoDYYbIxOCgwnyrKUrB1A39DrcIma++MoUmK0GkoZyZ73N
-        CGGZJvOHfN3/XjLTS2mTXgvY95BgMPBNCHomtp6Xlpp+LHr0HVj+V5JdR9G3fseCe+HCxf
-        zvefjJIrf3vOZblB9ktm/OC4smWmCzI=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-ta9eS8w7OKCH8mso2QweGQ-1; Wed, 27 Jul 2022 06:40:32 -0400
-X-MC-Unique: ta9eS8w7OKCH8mso2QweGQ-1
-Received: by mail-lf1-f70.google.com with SMTP id 9-20020ac25f09000000b0048aae4b6e40so1107508lfq.20
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:40:31 -0700 (PDT)
+        with ESMTP id S230459AbiG0Klw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 06:41:52 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48B4BBD
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:41:51 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id q18so13172712wrx.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C3NUktwRjBAbIBvxFHwWcCMixWsyP7XViG7rd8WMaaQ=;
+        b=KDrZtmDfrCRxU7XODweFUsiX0rpqq1ezKwGO2qnMe9zrVkogfs1Gph6YC5b1bEJoLJ
+         FJ/SsRgZngrasAdsPpHDbgxQecl9cjV53C8XCRBPrOjxsFqU/seeotVI+HfZxczjuVpR
+         fhwPM1HQo4XthMlz7bIZrBCsDLE/P17aJlRcpeRan4rtMHXMtxmqou4CfA1slEWXt3H3
+         87s5rPJP+1AExIbT+f/RW6085cIOXdGe8x3Km+00SrrER3ZifZ4KYmClCEQ1jvaBNSE6
+         tdQ4nHSEhUu1WmAhLgJXHA8AlQfB9gEmFK8LRS9pzMDW9ZbHJgcIG8r70uZZJLjNA+tl
+         P/yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=82nv2SFGdqlZfGEwVZ1wVPV33YMz3X0zqGrGaNF2BiU=;
-        b=5ceNHVu3Kw3JdBhFV3QTI8e8TXf3CGvL3LpNyAzT8DB27dRG5wMN0lIcmlSFhiZY18
-         klsnMKlgqEY1SiFTapr0fOqw0l2ihY9Yv7JEcUidLAZ9ypP9x7Zigyfi2lLmDZThpXmH
-         xAGg7DquCIY+ZnJvJbkDGCV8glIO00R4zKjI8PX8rxomjUBhxiotH67CV+2eh436wkA5
-         mB54yoVn36wtDyrxN3+6W5rHdxiSQecGB74tkZyiP1Rmv5dtGLBsK++rJ2LZO2A5DtNF
-         sTS/qR8Z3bwNNUSjGj+3bnyCs59Dj5Hqecdt2o2EL0zVa/u7nrxkIRadha4slLqlQOOj
-         shiQ==
-X-Gm-Message-State: AJIora9kLeqIDp8ngp7YV07re733dDmB5q7Tx2Qa8B+0YsL1mBw0t4Lz
-        K+gko4EFRe2392+w2APqXA/qzcpdvcywlGFc2Zdqee3Y3L/j2WOE85IcZtXLK6HKoZBWJorrKJY
-        ESJ+ByMmjuMiRHcIq6T5V/0fS4Dc6mxLr
-X-Received: by 2002:a05:6512:39c2:b0:489:dca6:a23b with SMTP id k2-20020a05651239c200b00489dca6a23bmr8700902lfu.633.1658918429682;
-        Wed, 27 Jul 2022 03:40:29 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t8cpnuh34xtzOoYJZ0wWBPfGNdrm/i4++Be0JQ2rxv0YhEPB6aZBoRjNsNYjyzSbkaeX9vyykt1GzDFP0ELYc=
-X-Received: by 2002:a05:6512:39c2:b0:489:dca6:a23b with SMTP id
- k2-20020a05651239c200b00489dca6a23bmr8700889lfu.633.1658918429188; Wed, 27
- Jul 2022 03:40:29 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C3NUktwRjBAbIBvxFHwWcCMixWsyP7XViG7rd8WMaaQ=;
+        b=JBnZs9DDY93gtxmoBinpElxGQF0+qkyvbc2/x6O0SNTADZ3jCqnSpyAIa1470Ijiws
+         2OBHCBZ5e2oK6y+gWCaYVV/hFAAi9mxq+hwmI9tDat3gSDBgYlbJOYB7Yzz05T6+L/Xp
+         w8rtmJH/YKLEWSPo3+m3iOZtCkQmxR+sgukGFuw8yGpJbc76DsGV/TmPCYA0/zvjGGXL
+         JxdeKjZdBfsVnKEtQa3tpTeJqeUI0eGocCs22D/ZDwtzSxEqzuiw8lBhKaokDiqLlePJ
+         2iwyL64otP00KGnuQa38kQdtSs7wQDCt2G86vahlEvTuiEasEuqqxXGRx4pBRgDHv3bl
+         p6uw==
+X-Gm-Message-State: AJIora9l+zbYyxsYlwsuHJTiOEYFeA+6zJFiIA8ze2rhXaAHmSoUPR3u
+        5QKnqJ/0OsrVfGQ0MVhpU5xrjA==
+X-Google-Smtp-Source: AGRyM1so1lPt1QB16VUYUxms7cNmUGtmW38OfIx722tzIlDQZ/I0T5HJz46Xaq/4W88RsuW0gAYDkA==
+X-Received: by 2002:a5d:64a3:0:b0:21d:ad9e:afd7 with SMTP id m3-20020a5d64a3000000b0021dad9eafd7mr13312763wrp.524.1658918510332;
+        Wed, 27 Jul 2022 03:41:50 -0700 (PDT)
+Received: from [192.168.0.162] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
+        by smtp.gmail.com with ESMTPSA id w7-20020adfec47000000b0021e9fafa601sm4081449wrn.22.2022.07.27.03.41.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 03:41:49 -0700 (PDT)
+Message-ID: <582e56e7-87d1-e6b3-ac7a-00fe07a10a14@linaro.org>
+Date:   Wed, 27 Jul 2022 11:41:48 +0100
 MIME-Version: 1.0
-From:   Bruno Goncalves <bgoncalv@redhat.com>
-Date:   Wed, 27 Jul 2022 12:40:18 +0200
-Message-ID: <CA+QYu4qw6LecuxwAESLBvzEpj9Uv4LobX0rofDgVk_3YHjY7Fw@mail.gmail.com>
-Subject: [aarch64] pc : ftrace_set_filter_ip+0x24/0xa0 - lr : bpf_trampoline_update.constprop.0+0x428/0x4a0
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     CKI Project <cki-project@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 4/4] wcn36xx: Add debugfs entry to read firmware
+ feature strings
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     loic.poulain@linaro.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20220719143302.2071223-1-bryan.odonoghue@linaro.org>
+ <20220719143302.2071223-5-bryan.odonoghue@linaro.org>
+ <87k07yq230.fsf@kernel.org>
+From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+In-Reply-To: <87k07yq230.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 27/07/2022 11:31, Kalle Valo wrote:
+> Bryan O'Donoghue <bryan.odonoghue@linaro.org> writes:
 
-Recently we started to hit the following panic when testing the
-net-next tree on aarch64. The first commit that we hit this is
-"b3fce974d423".
+>> +static ssize_t read_file_firmware_feature_caps(struct file *file,
+>> +					       char __user *user_buf,
+>> +					       size_t count, loff_t *ppos)
+>> +{
+>> +	struct wcn36xx *wcn = file->private_data;
+>> +	unsigned long page = get_zeroed_page(GFP_KERNEL);
+>> +	char *p = (char *)page;
+>> +	int i;
+>> +	int ret;
+>> +
+>> +	if (!p)
+>> +		return -ENOMEM;
+>> +
+>> +	mutex_lock(&wcn->hal_mutex);
+>> +	for (i = 0; i < MAX_FEATURE_SUPPORTED; i++) {
+>> +		if (wcn36xx_firmware_get_feat_caps(wcn->fw_feat_caps, i)) {
+>> +			p += sprintf(p, "%s\n",
+>> +				     wcn36xx_firmware_get_cap_name(i));
+>> +		}
+>> +	}
+>> +	mutex_unlock(&wcn->hal_mutex);
+>> +
+>> +	ret = simple_read_from_buffer(user_buf, count, ppos, (char *)page,
+>> +				      (unsigned long)p - page);
+>> +
+>> +	free_page(page);
+>> +	return ret;
+>> +}
+> 
+> Why not use the normal use kzalloc() and kfree()? That way you would not
+> need a separate page variable. What's the benefit from
+> get_zeroed_page()?
 
-[   44.517109] audit: type=1334 audit(1658859870.268:59): prog-id=19 op=LOAD
-[   44.622031] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000010
-[   44.624321] Mem abort info:
-[   44.625049]   ESR = 0x0000000096000004
-[   44.625935]   EC = 0x25: DABT (current EL), IL = 32 bits
-[   44.627182]   SET = 0, FnV = 0
-[   44.627930]   EA = 0, S1PTW = 0
-[   44.628684]   FSC = 0x04: level 0 translation fault
-[   44.629788] Data abort info:
-[   44.630474]   ISV = 0, ISS = 0x00000004
-[   44.631362]   CM = 0, WnR = 0
-[   44.632041] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000100ab5000
-[   44.633494] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
-[   44.635202] Internal error: Oops: 96000004 [#1] SMP
-[   44.636452] Modules linked in: xfs crct10dif_ce ghash_ce virtio_blk
-virtio_console virtio_mmio qemu_fw_cfg
-[   44.638713] CPU: 2 PID: 1 Comm: systemd Not tainted 5.19.0-rc7 #1
-[   44.640164] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[   44.641799] pstate: 00400005 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   44.643404] pc : ftrace_set_filter_ip+0x24/0xa0
-[   44.644659] lr : bpf_trampoline_update.constprop.0+0x428/0x4a0
-[   44.646118] sp : ffff80000803b9f0
-[   44.646950] x29: ffff80000803b9f0 x28: ffff0b5d80364400 x27: ffff80000803bb48
-[   44.648721] x26: ffff8000085ad000 x25: ffff0b5d809d2400 x24: 0000000000000000
-[   44.650493] x23: 00000000ffffffed x22: ffff0b5dd7ea0900 x21: 0000000000000000
-[   44.652279] x20: 0000000000000000 x19: 0000000000000000 x18: ffffffffffffffff
-[   44.654067] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
-[   44.655787] x14: ffff0b5d809d2498 x13: ffff0b5d809d2432 x12: 0000000005f5e100
-[   44.657535] x11: abcc77118461cefd x10: 000000000000005f x9 : ffffa7219cb5b190
-[   44.659254] x8 : ffffa7219c8e0000 x7 : 0000000000000000 x6 : ffffa7219db075e0
-[   44.661066] x5 : ffffa7219d3130e0 x4 : ffffa7219cab9da0 x3 : 0000000000000000
-[   44.662837] x2 : 0000000000000000 x1 : ffffa7219cb7a5c0 x0 : 0000000000000000
-[   44.664675] Call trace:
-[   44.665274]  ftrace_set_filter_ip+0x24/0xa0
-[   44.666327]  bpf_trampoline_update.constprop.0+0x428/0x4a0
-[   44.667696]  __bpf_trampoline_link_prog+0xcc/0x1c0
-[   44.668834]  bpf_trampoline_link_prog+0x40/0x64
-[   44.669919]  bpf_tracing_prog_attach+0x120/0x490
-[   44.671011]  link_create+0xe0/0x2b0
-[   44.671869]  __sys_bpf+0x484/0xd30
-[   44.672706]  __arm64_sys_bpf+0x30/0x40
-[   44.673678]  invoke_syscall+0x78/0x100
-[   44.674623]  el0_svc_common.constprop.0+0x4c/0xf4
-[   44.675783]  do_el0_svc+0x38/0x4c
-[   44.676624]  el0_svc+0x34/0x100
-[   44.677429]  el0t_64_sync_handler+0x11c/0x150
-[   44.678532]  el0t_64_sync+0x190/0x194
-[   44.679439] Code: 2a0203f4 f90013f5 2a0303f5 f9001fe1 (f9400800)
-[   44.680959] ---[ end trace 0000000000000000 ]---
-[   44.682111] Kernel panic - not syncing: Oops: Fatal exception
-[   44.683488] SMP: stopping secondary CPUs
-[   44.684551] Kernel Offset: 0x2721948e0000 from 0xffff800008000000
-[   44.686095] PHYS_OFFSET: 0xfffff4a380000000
-[   44.687144] CPU features: 0x010,00022811,19001080
-[   44.688308] Memory Limit: none
-[   44.689082] ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
 
-more logs:
-https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/07/26/redhat:597047279/build_aarch64_redhat:597047279_aarch64/tests/1/results_0001/console.log/console.log
+TBH I did a copy/paste here from another driver... I forget which
+> 
+> Also I don't see any checks for a memory allocation failure.
+> 
 
-https://datawarehouse.cki-project.org/kcidb/tests/4529120
+its there
 
-CKI issue tracker: https://datawarehouse.cki-project.org/issue/1434
+char *p = (char*) page;
 
-Thanks,
-Bruno Goncalves
+if (!p)
+     return -ENOMEM;
 
+I can V2 this for kzalloc and kfree if you prefer though
+
+---
+bod
