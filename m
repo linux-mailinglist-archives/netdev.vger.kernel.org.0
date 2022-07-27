@@ -2,123 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F60D582266
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 10:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E61582268
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 10:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbiG0ItT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 04:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
+        id S231161AbiG0IuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 04:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiG0ItS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 04:49:18 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3405220CD;
-        Wed, 27 Jul 2022 01:49:17 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id oy13so30310033ejb.1;
-        Wed, 27 Jul 2022 01:49:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=d1lY+SbefORY1alUO5Ruoz9a82JcM7Nf8lJvnE9N4/c=;
-        b=OsRc2rKX4EZLzYrOOOwTb9hpk8Nplbpn5nOxGy5pzMQ7lLi/uDWWL3/IN3NB7JVlco
-         g/31tT6WzBZ/zZx5r3wO+xvUzuoiQkJFzEh2aLPIFjPQ8P24dHTPrGhpiIwvMIviola2
-         ZRWfYY4tQtlc2rvmjFHknsn0lnznuRl74ZeJ28EX59ssAwg+1G3eJUSkyeHp8wuwrKUL
-         BQMleBAJfNn6HH4e6GaOOzHLn3FYyvS319+/aVqCYpmWOQRgX4VBk6mneFHw0/qAMUnp
-         NuINY19JKHnEJMAFEilsKWrAvRLSl7litgjIvPlpk1Nba/8APkdwjhdQ22GOjhwIRgxX
-         ojew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=d1lY+SbefORY1alUO5Ruoz9a82JcM7Nf8lJvnE9N4/c=;
-        b=2JidxEgHiuejVl0nLBdhePtrH6zM7yh2d013Gmj4csAeqCbfSx86/UwOdYBoMXMLXb
-         qjL/reYMCKdGF0Ya90s0RVLbZP2FIoodi3ER2u+dVf1qFZp9cI4JZ+qtYZe28jnPZr7y
-         JnPkJIJF2WVzkgDJyEjGjLX/5g3v5TcauYQRvZKMHddcU9cz+f79KvzbHMGg8J1/aY20
-         vcI6LzVsdeyOQxGNHnOJYFL3/ytTMzPmeFPG09iuBy9kjhIZVu/HEeZsDFrq6lZTHXKu
-         NZOXghyIip+Ksl/JAwhFdh890i2+daPwnwuh5WJRuFDeIXnSj7ZipmNg6oDivhI0h3sH
-         bzPg==
-X-Gm-Message-State: AJIora8lX/efq4BUqQF9L5KgReSvQmUrpcsZ2llX/wBPSIIeEbOBPSIN
-        uAnFjGblLnzZz6Lse3o03N0=
-X-Google-Smtp-Source: AGRyM1uWpUx1FgjuBQNIMqcaqrzHL/wqJikJ3HOaiWwuoYUf1yR2fbDipYNhXfnD7h1UUVwuqv/XIw==
-X-Received: by 2002:a17:907:948e:b0:72f:b536:57 with SMTP id dm14-20020a170907948e00b0072fb5360057mr16005650ejc.491.1658911756389;
-        Wed, 27 Jul 2022 01:49:16 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:994d:5eac:a62d:7a76? ([2a04:241e:502:a09c:994d:5eac:a62d:7a76])
-        by smtp.gmail.com with ESMTPSA id kz22-20020a17090777d600b0072b16a57cdcsm7327975ejc.118.2022.07.27.01.49.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jul 2022 01:49:15 -0700 (PDT)
-Message-ID: <4a8ddb5b-e7bf-5a7d-48dc-72f62771c79e@gmail.com>
-Date:   Wed, 27 Jul 2022 11:49:13 +0300
+        with ESMTP id S229501AbiG0IuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 04:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB53FB02;
+        Wed, 27 Jul 2022 01:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 445B461700;
+        Wed, 27 Jul 2022 08:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7FA58C433D7;
+        Wed, 27 Jul 2022 08:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658911814;
+        bh=9JWubULy2o5aQ0yJzC/crkGrFFocSzrXJfV5jsG8sEY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=E0uumWP7ZdwwMgerf4FivXfFwhR+Oft/B5N8rz+APQmXp2xJhpj8Al93Z/OPdDC3R
+         fkfP1z9AThpAOo6n+D6gT/J1ssbyJgp9hroaHVvjUoGMwb/Gg8xVkJ8hr4sPqvMB90
+         PVDnb9941jTBBZ6v+x9D5nVZXtVxtcZ8gzAikqF487Njn4oetC17aP6g3yOjM0Qeus
+         snKuawj8wyFf+qDQEZDxxRTEc3JQjJH8acR5enSn6FDqITVM5M8uegTcYXKpfuRWe+
+         CY61g1juUf+MBu9VDiPjr8wqCMZe3oLxw0Ahn4dBIcidPcHzHzxAugLzyVmzsEPk9C
+         ELzlq06v9Xxlw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 68A92C43143;
+        Wed, 27 Jul 2022 08:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v6 02/26] tcp: authopt: Remove more unused noops
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Philip Paeps <philip@trouble.is>
-References: <cover.1658815925.git.cdleonard@gmail.com>
- <2e9007e2f536ef2b8e3dfdaa1dd44dcc6bfc125f.1658815925.git.cdleonard@gmail.com>
- <40928cfc-150c-8714-bb83-21d325ce93e5@kernel.org>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <40928cfc-150c-8714-bb83-21d325ce93e5@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for phylink
+ mac config and link up
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165891181442.26661.18313628308676884768.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Jul 2022 08:50:14 +0000
+References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+In-Reply-To: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/22 04:17, David Ahern wrote:
-> On 7/26/22 12:15 AM, Leonard Crestez wrote:
->> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
->> ---
->>   include/net/tcp_authopt.h | 4 ----
->>   1 file changed, 4 deletions(-)
->>
->> diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
->> index adf325c260d5..bc2cff82830d 100644
->> --- a/include/net/tcp_authopt.h
->> +++ b/include/net/tcp_authopt.h
->> @@ -60,14 +60,10 @@ DECLARE_STATIC_KEY_FALSE(tcp_authopt_needed_key);
->>   void tcp_authopt_clear(struct sock *sk);
->>   int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen);
->>   int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key);
->>   int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen);
->>   #else
->> -static inline int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key)
->> -{
->> -	return -ENOPROTOOPT;
->> -}
->>   static inline void tcp_authopt_clear(struct sock *sk)
->>   {
->>   }
->>   #endif
->>   
-> added in the previous patch, so this one should be folded into patch 1
-Yes this was intended for squashing but missed somehow; sorry!
+Hello:
 
---
-Regards,
-Leonard
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Sun, 24 Jul 2022 14:58:14 +0530 you wrote:
+> This patch series add support common phylink mac config and link up for the ksz
+> series switches. At present, ksz8795 and ksz9477 doesn't implement the phylink
+> mac config and link up. It configures the mac interface in the port setup hook.
+> ksz8830 series switch does not mac link configuration. For lan937x switches, in
+> the part support patch series has support only for MII and RMII configuration.
+> Some group of switches have some register address and bit fields common and
+> others are different. So, this patch aims to have common phylink implementation
+> which configures the register based on the chip id.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,1/9] net: dsa: microchip: add common gigabit set and get function
+    https://git.kernel.org/netdev/net-next/c/46f80fa8981b
+  - [net-next,v2,2/9] net: dsa: microchip: add common ksz port xmii speed selection function
+    https://git.kernel.org/netdev/net-next/c/aa5b8b73d4bd
+  - [net-next,v2,3/9] net: dsa: microchip: add common duplex and flow control function
+    https://git.kernel.org/netdev/net-next/c/8560664fd32a
+  - [net-next,v2,4/9] net: dsa: microchip: add support for common phylink mac link up
+    https://git.kernel.org/netdev/net-next/c/da8cd08520f3
+  - [net-next,v2,5/9] net: dsa: microchip: lan937x: add support for configuing xMII register
+    https://git.kernel.org/netdev/net-next/c/dc1c596edba5
+  - [net-next,v2,6/9] net: dsa: microchip: apply rgmii tx and rx delay in phylink mac config
+    https://git.kernel.org/netdev/net-next/c/b19ac41faa3f
+  - [net-next,v2,7/9] net: dsa: microchip: ksz9477: use common xmii function
+    https://git.kernel.org/netdev/net-next/c/0ab7f6bf1675
+  - [net-next,v2,8/9] net: dsa: microchip: ksz8795: use common xmii function
+    https://git.kernel.org/netdev/net-next/c/c476bede4b0f
+  - [net-next,v2,9/9] net: dsa: microchip: add support for phylink mac config
+    https://git.kernel.org/netdev/net-next/c/f3d890f5f90e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
