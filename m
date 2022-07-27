@@ -2,93 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CE85834D3
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 23:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855B25834DF
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 23:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233961AbiG0V1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 17:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        id S231964AbiG0VjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 17:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiG0V1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 17:27:34 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCD05C972;
-        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bp15so33736524ejb.6;
-        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
+        with ESMTP id S229508AbiG0VjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 17:39:06 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BF04F666
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 14:39:03 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id z19so148519plb.1
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 14:39:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
-        b=NUintwL8++PesHsw3v01wuUfAC4+ztcOw7Zb1LqLX3JL7NNi58TqpeHWbfZ7vVY4j6
-         HNweitKxjbV7snOL9vBxB09RXpcmFxl/ro1TGnC9vNHRrCn4Nzyip9vERGIvOBZE5Flg
-         HJc0tmAMEQyjG9JTsxhqWOJQ0IDLMc32g4xCTxn0jFuknDyCGSEprBTNokSfT6+J9d2g
-         Q0Viwkn3ckuATa0ywSJJ/tSp7lsedI1KyfuVlH0Z1iWifwYf44WRu0ZeM5cvs7NWfVfG
-         JCTueRN835o9aA1tfpzKaS9iZi6jNMqkyfPfLaxwn/tBpDbY3mrHfRPeYZS4II7ReX+x
-         dQqQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ItSF/+XU/6Bz4xr/gfqbEOOWPHTOiyfAroNPDdNsq4=;
+        b=qzphUGDnWH8nDzTpEAZ/31uJsqS8edbVHUP5fkIZwysfpcmIbc1A2VS2Dxg+Hk69mg
+         LjuLkIJMGsAJh+JQLuRxKJIEJ6JswgP8BM2zxIpHLaPwRBQ6E/cQ+R4tCGHKZPfWnP7O
+         j/+26CEuJGKORtvSBgXn+oCt6oejYyGrOvw/9If2djk4eIc2Vmj/4tUGacl0NoZZ6opN
+         qNeDgCLQARfQZ2/t64obuw1+Vz9qbawLM2yDswQwNDZcO1oyLvg5q03J0yKqWkks9gSi
+         TnMX6nUPH0Lj4NlXsgercxvHWWqIpORQmPCvSmnh/cSem8q32TR1/7dHZGtA/HOWaepu
+         4HOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
-        b=mB9Kgk6POtp+MfWGsQptycI2bKtsm7dh9Mr8h2YLfpUcF+lMk9QoKCfMeUDTdgO/FK
-         XCjss8w6MAExu7i6KSx+g/cWadIqK6Nkl7O8AHODRG8qS8hf3nv2rscWur+RThJjBRu3
-         4P4JrlJK8b3Y2RSfRVmGepnKhXdYUTozUlRCQXRLbxh0Y+059eNZqiJ5nNy/e1tUOpj4
-         eQnRAq4kUGeT+zuMJROguFhpj+D1I1zbOO2XgqsAyCsi7KzWCtjx/LMEeimt7KYuCGN3
-         mvFln38Ao9lsiBMpp+xvFOoXIBNUMogrEqnT2WyHPbVtbiIlOU5WnqcCfzkuYL2gkgzV
-         ouvw==
-X-Gm-Message-State: AJIora8TQBD8TMYP/mvuIz6fp4hzA5+IAUg4+YodT1q6zlLb+/zm/3PF
-        FgC5EnWxxAB2TkmfWLt4Twg=
-X-Google-Smtp-Source: AGRyM1tZTJ6VoFWUEsrjg8ZdZdjWjNpwMczEJ2oNxZ5eZgqUIFB015mHYH5m704ibrPyhECQdRAccg==
-X-Received: by 2002:a17:906:93e8:b0:72b:6923:a0b9 with SMTP id yl8-20020a17090693e800b0072b6923a0b9mr18572531ejb.244.1658957252154;
-        Wed, 27 Jul 2022 14:27:32 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id y3-20020aa7ccc3000000b0043577da51f1sm10888831edt.81.2022.07.27.14.27.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 14:27:31 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 00:27:28 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
- fwnode_find_net_device_by_node()
-Message-ID: <20220727212728.hgf7vbasmup4i2il@skbuf>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-7-mw@semihalf.com>
- <20220727143147.u6yd6wqslilspyhw@skbuf>
- <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
- <20220727163848.f4e2b263zz3vl2hc@skbuf>
- <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
- <20220727211112.kcpbxbql3tw5q5sx@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ItSF/+XU/6Bz4xr/gfqbEOOWPHTOiyfAroNPDdNsq4=;
+        b=iUYXJTx+5p22VB7J8ODGcCFphF1YJfC9K29Kx8Eb3lVtQ/6Rqv0BeZesfxlUbzpVla
+         ytJl15KG9MvwtQSf4jugFaP8lDtrxyoPGL9A+Y2cfl/tn+vS00er/nXmCgzQEjO4td1Q
+         luQmdaDe86uEFZPYQkvLcVNQgZP3lkfClJ3834DVfgD4QXTRwGOemu+lQjqSiUFt9sm7
+         ZbuA46Yv3fcz46duF+DvtP0wDLmCkAV1Z9AZMP9DRyIcsCf92Sx/R+nuq70yG69qTi6k
+         yoGmlP9HqK1gXzM6e5l8kKaVk3UychKelWIHsY14XJ+3jjx2zG43FlRuTfsoRmxK+zSV
+         9xiQ==
+X-Gm-Message-State: AJIora8uPqg3czlOxOFbsEeZ0dJQznybCbJHaieNzY0VKPJi+6aM8++E
+        ZE5IJV90CmX2bVzwFD9nRy10EXsyl7AEziU7u5Qu6g==
+X-Google-Smtp-Source: AGRyM1twDGQt0oLLpkSM8uhOCWJzANIOAfI41nA6tUFrjIYn5gYgEn97phFN0nr6JP5vwLwD3jc1N+WDL4F1iEkA+2s=
+X-Received: by 2002:a17:90b:3887:b0:1f2:bc1f:64d7 with SMTP id
+ mu7-20020a17090b388700b001f2bc1f64d7mr6902465pjb.31.1658957943150; Wed, 27
+ Jul 2022 14:39:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727211112.kcpbxbql3tw5q5sx@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20220727060856.2370358-1-kafai@fb.com> <20220727060909.2371812-1-kafai@fb.com>
+ <YuFsHaTIu7dTzotG@google.com> <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
+ <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com> <20220727212133.3uvpew67rzha6rzp@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220727212133.3uvpew67rzha6rzp@kafai-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 27 Jul 2022 14:38:51 -0700
+Message-ID: <CAKH8qBs3jp_0gRiHyzm29HaW53ZYpGYpWbmLhwi87xWKi9g=UA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,17 +75,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 12:11:12AM +0300, Vladimir Oltean wrote:
-> The 'label' property of a port was optional, you've made it mandatory by accident.
-> It is used only by DSA drivers that register using platform data.
+On Wed, Jul 27, 2022 at 2:21 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Jul 27, 2022 at 01:39:08PM -0700, Stanislav Fomichev wrote:
+> > On Wed, Jul 27, 2022 at 11:37 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Wed, Jul 27, 2022 at 09:47:25AM -0700, sdf@google.com wrote:
+> > > > On 07/26, Martin KaFai Lau wrote:
+> > > > > Most of the codes in bpf_setsockopt(SOL_SOCKET) are duplicated from
+> > > > > the sock_setsockopt().  The number of supported options are
+> > > > > increasing ever and so as the duplicated codes.
+> > > >
+> > > > > One issue in reusing sock_setsockopt() is that the bpf prog
+> > > > > has already acquired the sk lock.  sockptr_t is useful to handle this.
+> > > > > sockptr_t already has a bit 'is_kernel' to handle the kernel-or-user
+> > > > > memory copy.  This patch adds a 'is_bpf' bit to tell if sk locking
+> > > > > has already been ensured by the bpf prog.
+> > > >
+> > > > Why not explicitly call it is_locked/is_unlocked? I'm assuming, at some
+> > > > point,
+> > > is_locked was my initial attempt.  The bpf_setsockopt() also skips
+> > > the ns_capable() check, like in patch 3.  I ended up using
+> > > one is_bpf bit here to do both.
+> >
+> > Yeah, sorry, I haven't read the whole series before I sent my first
+> > reply. Let's discuss it here.
+> >
+> > This reminds me of ns_capable in __inet_bind where we also had to add
+> > special handling.
+> >
+> > In general, not specific to the series, I wonder if we want some new
+> > in_bpf() context indication and bypass ns_capable() from those
+> > contexts?
+> > Then we can do things like:
+> >
+> >   if (sk->sk_bound_dev_if && !in_bpf() && !ns_capable(net->user_ns,
+> > CAP_NET_RAW))
+> >     return ...;
+> Don't see a way to implement in_bpf() after some thoughts.
+> Do you have idea ?
 
-I didn't mean to say exactly this, the second phrase was an addition
-through which I tried to make it clear that the "cpu" label *is* used,
-but only by the drivers using platform data. With OF it's not, neither
-that nor label = "dsa". We have other means of recognizing a CPU or DSA
-port, by the 'ethernet' and/or 'dsa' phandles.
+I wonder if we can cheat a bit with the following:
 
-Additionally, the label is optional even for user port. One can have
-udev rules that assign names to Ethernet ports. I think that is even
-encouraged; some of the things in DSA predate the establishment of some
-best practices.
+bool setsockopt_capable(struct user_namespace *ns, int cap)
+{
+       if (!in_task()) {
+             /* Running in irq/softirq -> setsockopt invoked by bpf program.
+              * [not sure, is it safe to assume no regular path leads
+to setsockopt from sirq?]
+              */
+             return true;
+       }
+
+       /* Running in process context, task has bpf_ctx set -> invoked
+by bpf program. */
+       if (current->bpf_ctx != NULL)
+             return true;
+
+       return ns_capable(ns, cap);
+}
+
+And then do /ns_capable/setsockopt_capable/ in net/core/sock.c
+
+But that might be more fragile than passing the flag, idk.
+
+> > Or would it make things more confusing?
+> >
+> >
+> >
+> > > > we can have code paths in bpf where the socket has been already locked by
+> > > > the stack?
+> > > hmm... You meant the opposite, like the bpf hook does not have the
+> > > lock pre-acquired before the bpf prog gets run and sock_setsockopt()
+> > > should do lock_sock() as usual?
+> > >
+> > > I was thinking a likely situation is a bpf 'sleepable' hook does not
+> > > have the lock pre-acquired.  In that case, the bpf_setsockopt() could
+> > > always acquire the lock first but it may turn out to be too
+> > > pessmissitic for the future bpf_[G]etsockopt() refactoring.
+> > >
+> > > or we could do this 'bit' break up (into one is_locked bit
+> > > for locked and one is_bpf to skip-capable-check).  I was waiting until a real
+> > > need comes up instead of having both bits always true now.  I don't mind to
+> > > add is_locked now since the bpf_lsm_cgroup may come to sleepable soon.
+> > > I can do this in the next spin.
