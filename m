@@ -2,127 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0686582DE2
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 19:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CCF5582E60
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 19:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiG0REr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 13:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
+        id S241411AbiG0RMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 13:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241309AbiG0REC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 13:04:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A9E6E2DB;
-        Wed, 27 Jul 2022 09:38:55 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id va17so32548539ejb.0;
-        Wed, 27 Jul 2022 09:38:54 -0700 (PDT)
+        with ESMTP id S231814AbiG0RLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 13:11:38 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3473A5071E
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:41:40 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id b21so13424775ljk.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:41:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ipHXah2drN1ztV/qFRrJg6iGYe+5yo1q7EilyB1MV54=;
-        b=oscMZj9/5l585E43z0ceX2e56hA2FeFafLwYq+rT+Ga/38O31b7pw7AGdOgnlZCp3K
-         KVeQTolwwmIlNdtz4GHcfpJjZKw/4iO5bdg5qeelrYcx/gMCt6iIxx8D1u0ero2+UL1t
-         0tLlPdNQqlhzabFWy+a36q0lF5Dy0Kl2cmhyPwiB9ECqMitHRnP0/GaIF1DuOf17JhfP
-         ddSeKX6lSCBtYqbW4BLqH714Ag6yJJ4h00CzNdX+MTtbHyQBHSW9kgiPLuWsh0L5ASre
-         pdZkE1eiS6EZefEJsJDmVZ54HEB6Z6Qu21b0QFEGFuL7cltLcEtySNnQgTN7ik0XHurF
-         OmZA==
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EjrmIY6br0JwMML5I5IsH4l21ubS3Zd2UVsxfz0zrWQ=;
+        b=jMMOnDuOyvT5MjTFryYduQK/RY48LBB89wkU1nKr3g22oGREE8Wlw5ovuddGmk1777
+         C5oyCsNSgVwjzgaMVV3lrx/A9RSJXDUlw/6oRB6h95ewv0MRYNZ7JaiAXafHdi/AaMoR
+         gwFiup9G4e394tdCjmRY8aQCKVjQndYSllXn3/tYsHVyAWsURSC+28LRzBtd1L9bG7tW
+         YcSv/hu6PKMNjl/xVP/hN/HMu56kKFibCPKwO7n4NY8kpwTbTHQWwmbX1/BKLClzbw6G
+         yiXqWnuj7YDnyDJ+zjd+XmiqP+SZbgUPMDOKgb7mr1M6reSluGSe2P2BR3fy+KXy9Km8
+         e9bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ipHXah2drN1ztV/qFRrJg6iGYe+5yo1q7EilyB1MV54=;
-        b=k4eZ3w8QbwZx0zTJrSFZ7VwCT/qSzO1+iYL1xH3hkopJ4zTE3zjatKAQcFvyUqscz+
-         ux0N9Re626F2JnAQeLkqA88bF5/9Cy+4xWilWe6QJZUM/E+z/IDuaxjBIs5So29p3Wja
-         r/FBlAUyMcqQIPIIGacrhy2qEutWe/uMFZ9jLJJLiANN45VWs9LGhPD9qiij+hz3wyLn
-         olvs2RVzQ557j06+JTX6ojKecQfwVV655tOpbMQ7TERn/KPuIMPTRUOUS9q3/LjqlWzs
-         MGtEc/73hA/G8PnP8il1mmbrjWruhaIq91yFCsuq1P6JpJpdELjkjZdH9lCLN+r/Uv+p
-         MdlA==
-X-Gm-Message-State: AJIora8CQl2Ds7umt5c5sC0hwz124Ee1xHs3Jkh34otMLDtzfxcMzGVs
-        Xe8r9QMLPCrglQLPGoCmGd4=
-X-Google-Smtp-Source: AGRyM1uDjvm2zAG/PSoErEmq90918CkkiQuU0zpUrVSOeP2VeZuH8ZgY0NMtTfmAPNs8g2BkXZVpyw==
-X-Received: by 2002:a17:907:a40b:b0:72b:64e3:4c5e with SMTP id sg11-20020a170907a40b00b0072b64e34c5emr18516200ejc.612.1658939932706;
-        Wed, 27 Jul 2022 09:38:52 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id fu3-20020a170907b00300b0072f47838640sm7803355ejc.71.2022.07.27.09.38.50
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EjrmIY6br0JwMML5I5IsH4l21ubS3Zd2UVsxfz0zrWQ=;
+        b=x6zeO52I4dtMQUt2r2cqNJ8W9aV/88vD9lWXxHzsSSd3fMwowHav330o6iCPzY245i
+         idkUOrkaeOuWFXFmnFJYm+6jWzn1rs6sst/R+wyd0GgzyyIjZI7+oz95BM2c4YYNExJK
+         gB0CMtEnqldePVE1rNlfBX79euXhu8D40gW4OTOeeKU/dkgkoAX+pAfXOn/tu/qn3u2k
+         DysRkxO1xAXeDolH1oXwIGAbAyJRREtuAwF4fdxBFju4Cuf6Esc/bwyQaO7FBKP5ttef
+         VBIdr0j4LMtGxNz4C2r22QCVQDatyg/efbnHKKbMJDJhgeWz187DezYCZYhw8j0nW3Zf
+         5c2A==
+X-Gm-Message-State: AJIora9GSLpZas152YTPBnq+G/HJGPC+8FaZ2oYFHhdQocbJXnrZaPeQ
+        XSkdegPxCsbGg0WdolOwhCX2Jg==
+X-Google-Smtp-Source: AGRyM1tbxmt+m0wPQaDPBmSI4ZOiMzOv0P2lpYBxlI5htHP/NbFnJvzztwcBcIVithfgzBx/B6J3Aw==
+X-Received: by 2002:a05:651c:1587:b0:25d:7844:5910 with SMTP id h7-20020a05651c158700b0025d78445910mr8508285ljq.325.1658940093266;
+        Wed, 27 Jul 2022 09:41:33 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id i17-20020a2ea231000000b0025a67779931sm3872519ljm.57.2022.07.27.09.41.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:38:51 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 19:38:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Wed, 27 Jul 2022 09:41:32 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
- fwnode_find_net_device_by_node()
-Message-ID: <20220727163848.f4e2b263zz3vl2hc@skbuf>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-7-mw@semihalf.com>
- <20220727143147.u6yd6wqslilspyhw@skbuf>
- <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Tony Lindgren <tony@atomide.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: nfc: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:41:29 +0200
+Message-Id: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 05:18:16PM +0200, Marcin Wojtas wrote:
-> Do you mean a situation analogous to what I addressed in:
-> [net-next: PATCH v3 4/8] net: mvpp2: initialize port fwnode pointer
-> ?
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-Not sure if "analogous" is the right word. My estimation is that the
-overwhelmingly vast majority of DSA masters can be found by DSA simply
-due to the SET_NETDEV_DEV() call that the Ethernet drivers need to make
-anyway.  I see that mvpp2 also needed commit c4053ef32208 ("net: mvpp2:
-initialize port of_node pointer"), but that isn't needed in general, and
-I can't tell you exactly why it is needed there, I don't know enough
-about the mvpp2 driver.
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-> I found indeed a couple of drivers that may require a similar change
-> (e.g. dpaa2).
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-There I can tell you why the dpaa2-mac code mangles with net_dev->dev.of_node,
-but I'd rather not go into an explanation that essentially doesn't matter.
-The point is that you'd be mistaken to think that only the drivers which
-touch the net device's ->dev->of_node are the ones that need updating
-for your series to not cause regressions.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> IMO we have 2 options:
-> - update these drivers
-> - add some kind of fallback? If yes, I am wondering about an elegant
-> solution - maybe add an extra check inside
-> fwnode_find_parent_dev_match?
-> 
-> What would you suggest?
+---
 
-Fixing fwnode_find_parent_dev_match(), of course. This change broke DSA
-on my LS1028A system (master in drivers/net/ethernet/freescale/enetc/)
-and LS1021A (master in drivers/net/ethernet/freescale/gianfar.c).
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml | 4 ++--
+ Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml   | 5 ++---
+ Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml   | 7 ++++---
+ Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml | 7 ++++---
+ 4 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
+index 1bcaf6ba822c..a191a04e681c 100644
+--- a/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
+@@ -58,7 +58,6 @@ properties:
+ 
+   spi-cpha: true
+   spi-cpol: true
+-  spi-max-frequency: true
+ 
+ required:
+   - compatible
+@@ -85,6 +84,7 @@ allOf:
+           contains:
+             const: marvell,nfc-spi
+     then:
++      $ref: /schemas/spi/spi-peripheral-props.yaml#
+       properties:
+         break-control: false
+         flow-control: false
+@@ -108,7 +108,7 @@ allOf:
+         spi-max-frequency: false
+         reg: false
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml b/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
+index ef1155038a2f..1dcbddbc5a74 100644
+--- a/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
+@@ -30,8 +30,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+   uicc-present:
+     type: boolean
+     description: |
+@@ -55,10 +53,11 @@ then:
+   properties:
+     spi-max-frequency: false
+ else:
++  $ref: /schemas/spi/spi-peripheral-props.yaml#
+   required:
+     - spi-max-frequency
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+index 963d9531a856..647569051ed8 100644
+--- a/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+@@ -25,8 +25,6 @@ properties:
+   st95hfvin-supply:
+     description: ST95HF transceiver's Vin regulator supply
+ 
+-  spi-max-frequency: true
+-
+ required:
+   - compatible
+   - enable-gpio
+@@ -34,7 +32,10 @@ required:
+   - reg
+   - spi-max-frequency
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml b/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
+index 404c8df99364..9cc236ec42f2 100644
+--- a/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
+@@ -40,8 +40,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+   ti,enable-gpios:
+     minItems: 1
+     maxItems: 2
+@@ -65,7 +63,10 @@ required:
+   - ti,enable-gpios
+   - vin-supply
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+-- 
+2.34.1
+
