@@ -2,59 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 379F4583420
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D57583427
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiG0UhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 16:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S233713AbiG0UjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 16:39:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbiG0UhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:37:10 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F62140C3
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:37:06 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id r3so206083ybr.6
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:37:06 -0700 (PDT)
+        with ESMTP id S233728AbiG0UjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:39:22 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F6E5C97D
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:39:20 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id w205so129646pfc.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=ARmpeeI8y85ixXpXRkbTb10UvWHcLuIMX1V5GvbqZfk=;
-        b=bvqbVvt7d0e0MA8ES3EHcdD2cyE18/kQnEV+B0hWMLGdMu8C6iwGHtA0jyS222IkO9
-         26cpMlwqjgqEu3gOzdsO93kQ+Qxx4rqKpIJ5PZstZh6mG1ELxRz1FrXagITz/11kP4zY
-         F5FJpZ6EMabHUX5J9R+MRYYBvzdAKVTm4hkXiW2EGFhrOc/c99aV3G+rb6gIufZ/Vg/5
-         e+LvnA6chbQmzYUR5rvjx7L8FnnAh5tnOuzNKLjFwdQvsGoX4UfAgOUBCYb6G2LN7HBL
-         KTBTRsq55P443eX579jiBVSc6O2X+9PzsGBou4HI5EA3GTrQQY0qlPsQt/XrmPmnQMQc
-         YE/A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AqDJFMVyy+ZPy4OKfJDKdS0bxDg1ZZcxkSxs6/xipuE=;
+        b=eR9B63r9PTWSRQRF4HENp+yCDJjP2BGnz+MyZ/kgON/3k+qX2doDACf3cO1hikDbM5
+         9p8fCSdVeWWJ4XaNzkcZl8za3dxYTcUzrdnEoxikqeA12Ia+duEBwWO0hQmnOYIh4fec
+         g0i/7nfYPxhXmP/RgrvkZAlVO42et6bbMpTNY8+7miwWjiUA8+TZCVsnRD9S7rCAP4Bb
+         r5FlFYWZMFCgN5UJ55E5GB1ITrs/IQ7ZWVVITFaBGRRFKwdx0UClC8FPoq57F5WDwYXU
+         AYN5FUedyz3JaR3oxRw2CoyjOhJ1iBC8w/nVfJwnMiNWOYkrvf2FCcFpfnRVr6ajE7Id
+         B4UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=ARmpeeI8y85ixXpXRkbTb10UvWHcLuIMX1V5GvbqZfk=;
-        b=o8nQ+6X38AEj1lndVGCVf5BR5nJQEQNWBCg1iHAsmMNv7pWsX5SAvUka/enTsnJr+F
-         xDiDN9Kef3lgFjGbdg55bFyQ0UxRHRQMCvXnA2Rix4jf35yI1UqiHPNdQkzgdCuuUEMo
-         uUq/XxCfextRibOlIyy/ULXjemrLvsKqTYc0zgc4vPyefRYyhc148jYtdF0/4NAj7/Rw
-         jtUPzuiU6BzVcETGmkn0u3Uxz80I+hXyT80LJzhRjg8wH+bE27kPvLr674txKy4HMaug
-         YzDppo28+GPzblNKlaqBmtWQapn3G+winQnWeRiaK7fN5BEKgomqJ0gMRXdVaf9Y73Fv
-         4t6g==
-X-Gm-Message-State: AJIora/8JWik3+CJ9EsIZAXs1qRncy5JyxaWOAslVlPhatrG8S5lYNaR
-        gVV3m7QouHAYHMIENys4yU0ReEY0zr8dkMYU+xHwzPtv40s=
-X-Google-Smtp-Source: AGRyM1u4momlO/1UfbcBuK33RwqWL274J6h3JVdqqaWl3BgA+C44JIDylDuQkI/W+Xv1j78BuJcmwQwCZRCLBvC9CO0=
-X-Received: by 2002:a25:9f05:0:b0:671:5aca:b0c4 with SMTP id
- n5-20020a259f05000000b006715acab0c4mr10479881ybq.29.1658954225721; Wed, 27
- Jul 2022 13:37:05 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AqDJFMVyy+ZPy4OKfJDKdS0bxDg1ZZcxkSxs6/xipuE=;
+        b=fl5yOVbb8FHW0qHa9YH+kFYwJ44OH7FH6tt6HNJuYZ/jowU210ANZlXm4gDt7Zdq2R
+         8Q8QMre/ZGdSNlHKNPs8paAelffKVuxvKXl8pY+m2h/BNRIetyZH6scqC7+Xd6D8dFVV
+         5W3XNdIju+cMVemC1uLuRkvYdQgMWp0PA2ASdKGdFjF5Wq6Jyxm5jsopF/vs8oJltE+f
+         H7En5JtzWRt+VQsBxCr0Qq/H/zL6waYhe8V3sVBne+7cwiaFrpQ/5TdmIUMmm/HvFtPe
+         gZmZGBXgJtmSo5r6g/JNWqBD/pzxPVZw19087w0zmilVrZIRUCiNU4Dosjso0d6/oN8a
+         13Cg==
+X-Gm-Message-State: AJIora/kgYiwPe6HmLylxv1j6xYUyF6DinKWNSL6qp/UTZKf+pWB/tZP
+        PurI7pew4FQ2N3CfPDWAozJ1LBOsf/QzO3BPUcpLFuCqQ1gBpg==
+X-Google-Smtp-Source: AGRyM1u+B2OnfrqZ49Q8hgnhE5RUUMQb4XCxVLk91YgtsKVCjcPudRH6gqvN1joBMHtNi3Gu0IzXbrXrEyMIMurgWIE=
+X-Received: by 2002:a65:4c0b:0:b0:415:d3a4:44d1 with SMTP id
+ u11-20020a654c0b000000b00415d3a444d1mr20575176pgq.191.1658954359746; Wed, 27
+ Jul 2022 13:39:19 -0700 (PDT)
 MIME-Version: 1.0
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 27 Jul 2022 22:36:55 +0200
-Message-ID: <CAFBinCDX5XRyMyOd-+c_Zkn6dawtBpQ9DaPkA4FDC5agL-t8CA@mail.gmail.com>
-Subject: net: dsa: lantiq_gswip: getting the first selftests to pass
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
-        Hauke Mehrtens <hauke@hauke-m.de>, f.fainelli@gmail.com,
-        Aleksander Jan Bajkowski <olek2@wp.pl>
+References: <20220727060856.2370358-1-kafai@fb.com> <20220727060909.2371812-1-kafai@fb.com>
+ <YuFsHaTIu7dTzotG@google.com> <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 27 Jul 2022 13:39:08 -0700
+Message-ID: <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,83 +74,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Jul 27, 2022 at 11:37 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Jul 27, 2022 at 09:47:25AM -0700, sdf@google.com wrote:
+> > On 07/26, Martin KaFai Lau wrote:
+> > > Most of the codes in bpf_setsockopt(SOL_SOCKET) are duplicated from
+> > > the sock_setsockopt().  The number of supported options are
+> > > increasing ever and so as the duplicated codes.
+> >
+> > > One issue in reusing sock_setsockopt() is that the bpf prog
+> > > has already acquired the sk lock.  sockptr_t is useful to handle this.
+> > > sockptr_t already has a bit 'is_kernel' to handle the kernel-or-user
+> > > memory copy.  This patch adds a 'is_bpf' bit to tell if sk locking
+> > > has already been ensured by the bpf prog.
+> >
+> > Why not explicitly call it is_locked/is_unlocked? I'm assuming, at some
+> > point,
+> is_locked was my initial attempt.  The bpf_setsockopt() also skips
+> the ns_capable() check, like in patch 3.  I ended up using
+> one is_bpf bit here to do both.
 
-there are some pending issues with the Lantiq GSWIP driver.
-Vladimir suggested to get the kernel selftests to pass in a first step.
-I am starting with
-tools/testing/selftests/drivers/net/dsa/local_termination.sh as my
-understanding is that this contains the most basic tests and should be
-the first step.
+Yeah, sorry, I haven't read the whole series before I sent my first
+reply. Let's discuss it here.
 
-The good news is that not all tests are broken!
-There are eight tests which are not passing. Those eight can be split
-into two groups of four, because it's the same four tests that are
-failing for "standalone" and "bridge" interfaces:
-- Unicast IPv4 to unknown MAC address
-- Unicast IPv4 to unknown MAC address, allmulti
-- Multicast IPv4 to unknown group
-- Multicast IPv6 to unknown group
+This reminds me of ns_capable in __inet_bind where we also had to add
+special handling.
 
-What they all have in common is the fact that we're expecting that no
-packets are received. But in reality packets are received. I manually
-confirmed this by examining the tcpdump file which is generated by the
-selftests.
+In general, not specific to the series, I wonder if we want some new
+in_bpf() context indication and bypass ns_capable() from those
+contexts?
+Then we can do things like:
 
-Vladimir suggested in [0]:
-> [...] we'll need to make smaller steps, like disable address
-> learning on standalone ports, isolate FDBs, maybe offload the bridge TX
-> forwarding process (in order to populate the "Force no learning" bit in
-> tag_gswip.c properly), and only then will the local_termination test
-> also pass [...]
+  if (sk->sk_bound_dev_if && !in_bpf() && !ns_capable(net->user_ns,
+CAP_NET_RAW))
+    return ...;
 
-Based on the failing tests I am wondering which step would be a good
-one to start with.
-Is this problem that the selftests are seeing a flooding issue? In
-that case I suspect that the "interesting behavior" (of the GSWIP's
-flooding behavior) that Vladimir described in [1] would be a starting
-point.
-
-Full local_termination.sh selftest output:
-TEST: lan2: Unicast IPv4 to primary MAC address                 [ OK ]
-TEST: lan2: Unicast IPv4 to macvlan MAC address                 [ OK ]
-TEST: lan2: Unicast IPv4 to unknown MAC address                 [FAIL]
-        reception succeeded, but should have failed
-TEST: lan2: Unicast IPv4 to unknown MAC address, promisc        [ OK ]
-TEST: lan2: Unicast IPv4 to unknown MAC address, allmulti       [FAIL]
-        reception succeeded, but should have failed
-TEST: lan2: Multicast IPv4 to joined group                      [ OK ]
-TEST: lan2: Multicast IPv4 to unknown group                     [FAIL]
-        reception succeeded, but should have failed
-TEST: lan2: Multicast IPv4 to unknown group, promisc            [ OK ]
-TEST: lan2: Multicast IPv4 to unknown group, allmulti           [ OK ]
-TEST: lan2: Multicast IPv6 to joined group                      [ OK ]
-TEST: lan2: Multicast IPv6 to unknown group                     [FAIL]
-        reception succeeded, but should have failed
-TEST: lan2: Multicast IPv6 to unknown group, promisc            [ OK ]
-TEST: lan2: Multicast IPv6 to unknown group, allmulti           [ OK ]
-TEST: br0: Unicast IPv4 to primary MAC address                  [ OK ]
-TEST: br0: Unicast IPv4 to macvlan MAC address                  [ OK ]
-TEST: br0: Unicast IPv4 to unknown MAC address                  [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Unicast IPv4 to unknown MAC address, promisc         [ OK ]
-TEST: br0: Unicast IPv4 to unknown MAC address, allmulti        [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv4 to joined group                       [ OK ]
-TEST: br0: Multicast IPv4 to unknown group                      [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv4 to unknown group, promisc             [ OK ]
-TEST: br0: Multicast IPv4 to unknown group, allmulti            [ OK ]
-TEST: br0: Multicast IPv6 to joined group                       [ OK ]
-TEST: br0: Multicast IPv6 to unknown group                      [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv6 to unknown group, promisc             [ OK ]
-TEST: br0: Multicast IPv6 to unknown group, allmulti            [ OK ]
+Or would it make things more confusing?
 
 
-Thank you!
-Best regards,
-Martin
 
-[0] https://lore.kernel.org/netdev/20220706210651.ozvjcwwp2hquzmhn@skbuf/
-[1] https://lore.kernel.org/netdev/20220702185652.dpzrxuitacqp6m3t@skbuf/
+> > we can have code paths in bpf where the socket has been already locked by
+> > the stack?
+> hmm... You meant the opposite, like the bpf hook does not have the
+> lock pre-acquired before the bpf prog gets run and sock_setsockopt()
+> should do lock_sock() as usual?
+>
+> I was thinking a likely situation is a bpf 'sleepable' hook does not
+> have the lock pre-acquired.  In that case, the bpf_setsockopt() could
+> always acquire the lock first but it may turn out to be too
+> pessmissitic for the future bpf_[G]etsockopt() refactoring.
+>
+> or we could do this 'bit' break up (into one is_locked bit
+> for locked and one is_bpf to skip-capable-check).  I was waiting until a real
+> need comes up instead of having both bits always true now.  I don't mind to
+> add is_locked now since the bpf_lsm_cgroup may come to sleepable soon.
+> I can do this in the next spin.
