@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B92D582529
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD92582543
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbiG0LIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 07:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        id S231858AbiG0LSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 07:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiG0LIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:08:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B556167C9;
-        Wed, 27 Jul 2022 04:08:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA2F8618DE;
-        Wed, 27 Jul 2022 11:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A79C433D6;
-        Wed, 27 Jul 2022 11:08:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658920117;
-        bh=MpfBFstRnLCcTbNPcgHdxdONCKngkXjqk2XPLKKlK5w=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=gU1sgJccFVQAnbthWfVWg92AR7Hibl6jYG1GS8p4gZ+mdEZpJWFw+OlwXAWK2Fr6T
-         WPtmsCpcGJoIa1MMAUevkKnPghXzT+LxqPiMqqF+rJy3V6oC/oRotldpf83zTfeJr6
-         ixXhSiVV3J5Z/obaUUfxhZQREJy0iCCHydbNKaUGH19IgcFx1LuqJuLC3P3XJ2TCgO
-         kln6aKd79e5zZ23TF5/jo1Pz2tdNDFjauGWuBRPfmKBRIwT/Dp26sCCyEOQXTv7UX+
-         EGKGKOgiJv/n97W2UAUxk6aUVhfwueXqRykw5fdZqjq362BKQC4Lr0LHxWMOP232Yf
-         a5Azq04A5GB/g==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Cc:     loic.poulain@linaro.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] wcn36xx: Add debugfs entry to read firmware feature strings
-References: <20220719143302.2071223-1-bryan.odonoghue@linaro.org>
-        <20220719143302.2071223-5-bryan.odonoghue@linaro.org>
-        <87k07yq230.fsf@kernel.org>
-        <582e56e7-87d1-e6b3-ac7a-00fe07a10a14@linaro.org>
-Date:   Wed, 27 Jul 2022 14:08:30 +0300
-In-Reply-To: <582e56e7-87d1-e6b3-ac7a-00fe07a10a14@linaro.org> (Bryan
-        O'Donoghue's message of "Wed, 27 Jul 2022 11:41:48 +0100")
-Message-ID: <877d3yq0cx.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229475AbiG0LSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:18:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1BD7B7CE
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 04:18:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658920706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=7k3HVTGSRUsrBZNnvZlAI9Am+2qyRQXYx0CQhkFznuM=;
+        b=h3Hel3y0hTrIcP1FpTZiKJ7SNS3GEeDdtU0+2drxB+8Tc0NlDfChIkPJX6qqudvLenxPub
+        IwJa/2CT2hrsao/OC9015QiWPtavDywUPGOJwXl9WU0rD2SgE1RsvHPo+iwH+ruJ98oVNA
+        HPAqs5CHvKujPMH9KbWupYsOE477/u0=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-B6wVptHMNsG0uD2P1yWSXg-1; Wed, 27 Jul 2022 07:18:25 -0400
+X-MC-Unique: B6wVptHMNsG0uD2P1yWSXg-1
+Received: by mail-wm1-f70.google.com with SMTP id az39-20020a05600c602700b003a321d33238so8947789wmb.1
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 04:18:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=7k3HVTGSRUsrBZNnvZlAI9Am+2qyRQXYx0CQhkFznuM=;
+        b=zf46Wb7eRIwKLmF18p4OB9LiOdB4qmpejq86zGtRYBmNrkUwyL6UYXKkE0R04ciJ8g
+         Vbj1wOCboobeBd54kgKMApfgetbDS73SAzwpJfXorYcWwbs6PihFzlSU5HxgsaDKMLGI
+         VwF/ZM5eb87ntl5qeB39nLiip9YN4gYayJvjxa+eR0sx+5g52IhsH6lzqdTF/0LUYIZV
+         ltOSmrwXARvgYSHRABuxolt5DySBJJ4PzyH4NkeHuuAswoz8iFkSQTzY0Rl6LEWtstF8
+         wc04NSjUNMHGhAstSaw98L2oJSV+tq1TeiWVrygAv8LZXJDbQo+0NVSzi5swEOvMWDeX
+         MdPw==
+X-Gm-Message-State: AJIora/gqPK/9iY/bAdkBymC9a7BRHuKEh3mhb8yr+R7KHdqrpGRSPKQ
+        udBIMEiqEhfC3QdaWfiZ3blCOdAI29vdVrfOsAsu7z1wOCp/ljsJjsSOH9MKQVsok4fc0TqAaiH
+        WRpe/s/tlwyzxiXpJ
+X-Received: by 2002:adf:d1c6:0:b0:21e:4f40:9029 with SMTP id b6-20020adfd1c6000000b0021e4f409029mr14239253wrd.719.1658920704517;
+        Wed, 27 Jul 2022 04:18:24 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sa2gsQ6BbGLQeaNowdO7UHKQMe23+XbkAKMQ7BtzS25GGP9sppnD4ZAGn8edtOiIsqQs3wjA==
+X-Received: by 2002:adf:d1c6:0:b0:21e:4f40:9029 with SMTP id b6-20020adfd1c6000000b0021e4f409029mr14239232wrd.719.1658920704190;
+        Wed, 27 Jul 2022 04:18:24 -0700 (PDT)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id z18-20020a05600c0a1200b003a03185231bsm2137499wmp.31.2022.07.27.04.18.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 04:18:23 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 13:18:21 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org
+Subject: [PATCH net-next] Documentation: Describe net.ipv4.tcp_reflect_tos.
+Message-ID: <4376126910096258f0a9da93ec53cad99a072afc.1658920560.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bryan O'Donoghue <bryan.odonoghue@linaro.org> writes:
+The tcp_reflect_tos option was introduced in Linux 5.10 but was still
+undocumented.
 
-> On 27/07/2022 11:31, Kalle Valo wrote:
->> Bryan O'Donoghue <bryan.odonoghue@linaro.org> writes:
->
->>> +static ssize_t read_file_firmware_feature_caps(struct file *file,
->>> +					       char __user *user_buf,
->>> +					       size_t count, loff_t *ppos)
->>> +{
->>> +	struct wcn36xx *wcn = file->private_data;
->>> +	unsigned long page = get_zeroed_page(GFP_KERNEL);
->>> +	char *p = (char *)page;
->>> +	int i;
->>> +	int ret;
->>> +
->>> +	if (!p)
->>> +		return -ENOMEM;
->>> +
->>> +	mutex_lock(&wcn->hal_mutex);
->>> +	for (i = 0; i < MAX_FEATURE_SUPPORTED; i++) {
->>> +		if (wcn36xx_firmware_get_feat_caps(wcn->fw_feat_caps, i)) {
->>> +			p += sprintf(p, "%s\n",
->>> +				     wcn36xx_firmware_get_cap_name(i));
->>> +		}
->>> +	}
->>> +	mutex_unlock(&wcn->hal_mutex);
->>> +
->>> +	ret = simple_read_from_buffer(user_buf, count, ppos, (char *)page,
->>> +				      (unsigned long)p - page);
->>> +
->>> +	free_page(page);
->>> +	return ret;
->>> +}
->>
->> Why not use the normal use kzalloc() and kfree()? That way you would not
->> need a separate page variable. What's the benefit from
->> get_zeroed_page()?
->
->
-> TBH I did a copy/paste here from another driver... I forget which
->>
->> Also I don't see any checks for a memory allocation failure.
->>
->
-> its there
->
-> char *p = (char*) page;
->
-> if (!p)
->     return -ENOMEM;
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ Documentation/networking/ip-sysctl.rst | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Ah, it's pretty evil to have the error handling so far away from the
-actual call :)
-
-> I can V2 this for kzalloc and kfree if you prefer though
-
-Yes, please do that. We should use standard infrastructure as much as
-possible.
-
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 5879ef3bc2cb..70f009f75e74 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -636,6 +636,16 @@ tcp_recovery - INTEGER
+ 
+ 	Default: 0x1
+ 
++tcp_reflect_tos - BOOLEAN
++	For listening sockets, reuse the DSCP value of the initial SYN message
++	for outgoing packets. This allows to have both directions of a TCP
++	stream to use the same DSCP value, assuming DSCP remains unchanged for
++	the lifetime of the connection.
++
++	This options affects both IPv4 and IPv6.
++
++	Default: 0 (disabled)
++
+ tcp_reordering - INTEGER
+ 	Initial reordering level of packets in a TCP stream.
+ 	TCP stack can then dynamically adjust flow reordering level
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.21.3
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
