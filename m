@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6219F582008
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8C758200A
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiG0GYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 02:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39878 "EHLO
+        id S229949AbiG0GZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 02:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiG0GYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:24:46 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2085.outbound.protection.outlook.com [40.107.93.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1190840BD5
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:24:45 -0700 (PDT)
+        with ESMTP id S229628AbiG0GY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:24:59 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2065.outbound.protection.outlook.com [40.107.220.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419D7402F3
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:24:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OCwHa7pQsk6tQEFuKiqQ0FaAKVLlt9rBLjeYLgqMc1Hp65yLdlluZEQAaKx8CqdhFDhDq6sqTWCFYGKDmHWZVtPcKZAe48RMuJDTRxaurynrZby60EaxIhTPsUCbBoNI5cqA+Mg+RByjezOojJY74fFpOVVcDx5Or1Y/mT/Ap13F3iqWgSQ93fdRAmvDfBNeAbfxrVbl9BisvpOLBuSXn+PWD5j4Q/yobQuggHwrQ7OyJ+tRFaUrKat9hIf5MJFIiHNRBT2zzOEwuexhblxwe36dGDTnAc3dCBQFVvbLpfvd0JmbZ0fwSQ39aSPfg7u41HFgGpcmBsailFhSvBSa3Q==
+ b=GI0YMFOn/GkmCa5ahnT4G+x2lENVguq2eJ7fabFAUoYDiXDsYKCYk+xAUqijxLP1f6kbeTSzZ6PhKAjKKrNFIsFJBqqtsJ69DYoQRLfLe0wl8v7W+fk4yM9ccYuiyZSbogVWxAA6nFdefAz0hry6OdfGIUUZxN0k0vTmQmPeRzw5uCxaUHHnjoPWhiuDLjySPvwbGHCTUWgEyX6UNIFT3/IoqGh5jcmL2HcPdyi68j5tBKzqPxF5PfT+Q3EeOq84KSfrAwJfSJcs5g2mSbb3ghFLsJBdFdQeNBYkVmOz2fTMraDAu8Q4GAgSgnwgiosSFtIExikkf+LbwKshY+cJPg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=opFERt03y/dRntIgwS2z0XCQovelbX2irYu/G/ErXmc=;
- b=fPOCrgFVWj5C+46gKDve2kAwGIASVS+J2TL/OCr3eGkgf+zAjgA4Xf7MKbHL0xXSigiHgxLpONGgQVDz+/O22miNwSE9nMdHnCaSud8QwH55+1+IeuppUg5mWN0VGGU5xzseSU+FauyPs3rm0QAocP3k6PXe/vFljzm53GxJWAP1s9RqJAQTAryYpBOtGOmyCNqKxEuVXmSJEUD9S5OtSQFzOzQZQs3TL2EX8wgo65GQ4i2jXicFZGhoM376gMMc2+xz8uWRODO66u+XtnUz6sKI2UN+KDlrogsNNHcH/YkIuv332OHTE5+ZFOLEg8hUZikw5yx6wZ4fibCPdYj9Hg==
+ bh=7SBrGsn0NGG0lATcIyz5J7ZwRkCp/XJwGm9IDNBB6wk=;
+ b=GGJl/3s8042SG6LtXb80SBpSebB4j/PiAvklpwPZ5u6BYvRgQ6fUP60513J9Whu+g3MsycG1N7hyfOwpIGvo/8KMc3/h84kF/Gxs/jBJ4oAI5KENuR5q39X+Rk/pi5P5z+r891aXTna4zruoJF5mU0G9e5Ny+7N6lX3HFkQ0QcvU/p6Aivpo77RzZLX1Ek5zHWEGvKUtpTld4USW77MeRlJP21oTskX2MI9KSwjYe3eiSAwEbDh/3DJ1O6j1VRUbylGD7a9qwOL+wLFoR3K6ipB/7R9ThxwLU3y2oVHB3Eua+4Bb+q1KuSeRr/WsOrhAzAN+70Yc4QTI5eO8v+D5Og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=opFERt03y/dRntIgwS2z0XCQovelbX2irYu/G/ErXmc=;
- b=Zo5auAgGAlTkL+ckMSVWoVibfX+mE9KpOTjRH/KbYje1Us0jXrFj8Ty6+EHdq0dkCJ+7d68KdkdHS5NYiGULpXiP3DFfAJFS91vVeEkonxBfpZQ8N5oq/1/wvy6BqNoRPbPitM/D5yzPTD9uBnS220CpvJ0caZ3ukECrPSYAk4vgKNc7N8Y2FriPlxKgy0fMfgzekJKJ60wvWB9O/CgCLJg6syJLokDFvI/Y+F5ywxW85Q+H2Z/660PzYkUzs/1OC7n5ihw+zKszpEY7S7/9vPOGs+hFSp3fUAeKd2OsLihw9Z9ohKNzPneoirLvhKyVVDawoEiJTYqCz4XT0loCyg==
+ bh=7SBrGsn0NGG0lATcIyz5J7ZwRkCp/XJwGm9IDNBB6wk=;
+ b=gk6cybr3M5WHvrQ5XaX6egTVceTyEeRKsXYUt0YUco5H6Y4oKuS39pG9hVZeUsskPiqKxnGSwdJWEW502mv8P83Dpw+Jols1CiGgqqvRKzlencNv4+yuEGVi1yqlx/BJv3+tde/+DyG0TpjP++QWWglTaeJG7lvzxiec9Qqr9QmeRCdKvp9lkBFMRq2wJYyi7YErXMIuKHYeUT6K1NkaxyYLwmgjlmgzdz4ifT85qz12SeXy628y/BvbEeMyqeIieObFbGJS5i/wkrhMBqcDMdYOiGAEegBlK7+ZAtrh2DFqE3jRumqH7qlTBE0KQsiI7Y6hWBNmdA3Vk1ipDVt7kA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by BN8PR12MB3347.namprd12.prod.outlook.com (2603:10b6:408:43::32) with
+ by BN6PR12MB1697.namprd12.prod.outlook.com (2603:10b6:404:105::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Wed, 27 Jul
- 2022 06:24:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Wed, 27 Jul
+ 2022 06:24:50 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5458.025; Wed, 27 Jul 2022
- 06:24:43 +0000
+ 06:24:49 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, richardcochran@gmail.com, petrm@nvidia.com,
         amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 7/9] mlxsw: spectrum: Support time stamping on Spectrum-2
-Date:   Wed, 27 Jul 2022 09:23:26 +0300
-Message-Id: <20220727062328.3134613-8-idosch@nvidia.com>
+Subject: [PATCH net-next 8/9] mlxsw: spectrum_ptp: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls
+Date:   Wed, 27 Jul 2022 09:23:27 +0300
+Message-Id: <20220727062328.3134613-9-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220727062328.3134613-1-idosch@nvidia.com>
 References: <20220727062328.3134613-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0124.eurprd08.prod.outlook.com
- (2603:10a6:800:d4::26) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR08CA0264.eurprd08.prod.outlook.com
+ (2603:10a6:803:dc::37) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6884158a-a442-4552-e257-08da6f98b15f
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3347:EE_
+X-MS-Office365-Filtering-Correlation-Id: f03eb09a-e782-47c7-8d2a-08da6f98b576
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1697:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 92NsvA9VcG0drD85rMxNcDMrkSuQ4Kip45OdD1xC/uFk521UmwPZRFd8IHHpNgbe2e2w8TKqzmfViw0njkj+nYK8e2bb+VG9ZAKF2hpGnP56ElAW75LfKW/HyyFsQPYxlrC/OWfvmdFTcnpI1qKoRE0boxMdTlw0iB1HR0rAfNo8G7XmE+wamEHRRDl6+ofy1n2jsC2SNz1Ryr5GGoF3hXAyw19TXp4ai8fmwfafG9suOo62VoqqzjmzGP7o/i7xkLayRD4Yv1sksqhwQDA8bSVhqtOBiP+83ix8fWOS/RYdulnkFU1s+eKWCxtUqYD/C7+Ctpf07Zjo+XEUYkuBbNWPjEWPrMB2loru5+AjOto6LumT4KcBjdPQ/7tfYtzW6zDQdne9Mynv1vC5A7lqnnRoB9sLjCHZtLEUYnV+8/2Tpx3IaWluP/tY93Bu2fPN1SYXjR5qydENcjwuCqusbWbN1m958LAYxkuoANNDWAQdecYYCznXrbK+QIouvjRDtPXLh4cV16iipaE/+sfv4zxZcvrMcfTdmZOCAUWxG5+XQswIa3x7t2IL/+7nzQLQSTVjHqkWhJTUgRkb/aR1O/dEPfG1xqtNRrW2LFPra7NL7yD7tO5dijNAgMDC3W5SAmz3QOSFooJHQPi12eGYaTyG7BTBGMM1JiilVDyVyurk0s/qAIFqAau4gTkrSAhLACjbY6qjZWe1G3EYFlXEv94/ymJ+KigN2fkgkRouM3t+S5rKFrnysJIt4Yqti95J
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(1076003)(38100700002)(186003)(86362001)(6512007)(83380400001)(6486002)(6666004)(107886003)(6916009)(2616005)(36756003)(478600001)(8676002)(4326008)(66946007)(26005)(316002)(8936002)(5660300002)(6506007)(66556008)(41300700001)(66476007)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pXn/lGwcTdhAqqulbzH8wM/1sPR3QGVUfkdxhbdzgfzp426d5soNdoC4xlI+iADWJSEFaTsVJPFOQEsV9NpsGbL4etUbnj9K5bGViD1WS5s5c179wGLM1wfb7nJ0tzxQIOCqT3uT8NmvnOIvuygKNJ6RvpspRVm7iVHsULc2syx5JeoY5AtjAGUCkXFUr5HX5LC/RnRaFE84YT/Q1GC0KI9lGEwThFzAuyRSTuv6XVA9LAFTqYLdKrOTOUOcAoktqG+R3zj9iq4QuifC0fg1oQwMbHSs3pyFCBPh5YKL+PeOq4/e8dWdI5mdLBHFOOE0JEQ3/yG4/mLWvul///i/U3sqygLTLRX4F5kArT2tfGDt+PDArAlSyTUZ37INoqNenXkW4Ujr1/LZ6fa497bpnmQ+aVAs1NxiW7mNIMJHcujLTNJGjx766WkWsROhpHFilLtH+wjK3CGU2L5Jwa9GHb89E398dWrubjSyZkfTqc9H8+wduQwxOlg+jE65lyiClLt5MhTWiVMKUbSI3e5rGsY5PeJgha9nn/9c3O0ARS5oYCLWmBJXti62plQZtaU2TgNHTt1u/HzeuIxuA8r3NEGy85F2Q5t2wR86ZS6cL7FbeJmxoZJWGxwt0BSVH8Qwp8v6SwxnJnrNjXwm0EWK72GO+16ugz2ZMYyVwtRht1VMCeCNPt9EbDTgEzz8JZGz7cQV+zI+zY7hL3NSwru9yR0DvlONg8wGMVrJPP0SL1rZAspS1V/8WrDiPDhtijBq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(136003)(346002)(366004)(39860400002)(8936002)(5660300002)(30864003)(36756003)(66556008)(8676002)(66476007)(4326008)(316002)(6916009)(478600001)(6486002)(2906002)(6506007)(38100700002)(41300700001)(6666004)(86362001)(6512007)(26005)(83380400001)(186003)(66946007)(1076003)(2616005)(107886003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EqQ+vqR/Eh3aSd+5IzPqJT5QUaU2sMM3EFLFL0bGw7zWMQNClI1RRPw3U6ub?=
- =?us-ascii?Q?077NAlDmsL2nCAR/VVsog+PTCP2BO0rULEyQeuJzVnW/4aCXn3Nq2hbkNSu6?=
- =?us-ascii?Q?NHZ3KXD/tenYu0/ZKm0ipzJQk1jbgZnvtpDasOP7SjSu60q0bkCX97Uq9LOx?=
- =?us-ascii?Q?lQOSK3vZO2/5DDt1a7lNmgpyb6TQRnCpqM0Vl7W1ICmo/mnpqEb3j6DBrzhZ?=
- =?us-ascii?Q?LS7EKKLMwugppNhT7KKwy1qnW/1yKkuVFdLg0SgKQRR/xNAXTQ3tl/8nD6iy?=
- =?us-ascii?Q?2r6cI/SaJ4zH9KdgAtNW2KQ+uPaiYNDlm1EFfmXRcNZg2zkJr9w34mdISDHO?=
- =?us-ascii?Q?+YFKl5eCWo0qCrQNG441z90ITLa9YUY938SfiqK77YLMS3H9wn0wruwzyflU?=
- =?us-ascii?Q?CJPq0VthQ4t3JsncN105z9CcaMVEH+L5Q3nfFb9VAEkT1g76PQVNfLJmVXMO?=
- =?us-ascii?Q?phVipFjvMHh8lOCOKyGLkzEVvlpthK0SaXie5O+7Vsa5mmRXE64trZGuqGYP?=
- =?us-ascii?Q?/6yutxXGMLSP/nqOmGaHgarwXC5Vt+enuAoNcEVJOdN6h1ewpG9sAaImWFCV?=
- =?us-ascii?Q?Yqn7v6gk3oMgC6EtSbwieV8+T0eYx5GYJYeDKT7o9SHdXWBzOcEmxhZtWTuS?=
- =?us-ascii?Q?ji8kuBOSVnea85R+f2JUp5oGeYlg9Pabe5DRaBx21jnsiGC6PHNIjTsub6uq?=
- =?us-ascii?Q?1r6Yvx1Xh6aAEE7ZmfFqVBwz36bMQojaSAX31jOlmCNEn8cZ2vVSTyg9HbGu?=
- =?us-ascii?Q?vJYcg6pW6oEdLy9rJ+g/j8TuSSp8UFVdecj63znKnERdNO2woK2WntNwQglq?=
- =?us-ascii?Q?3pESpbZcrlROqoozOPMbz0RxFUdV2w3jERJvd8GAb1z1igXgfOey0D2PIBEO?=
- =?us-ascii?Q?8ZSSf0ia4zrt1VHSQZNWFuIpIqUlFBJRIeiJdyLB5miSHda7XRq1RQoglkPN?=
- =?us-ascii?Q?Ng6F2nksHDR1B0/RuxhmbgS5mQdgQTPCuYlYzJLCIquJrX4KLRGrRLem8TUF?=
- =?us-ascii?Q?r8RQGQE3JUdEmOVjxZCjGs3eVPO+elTuSMA2bUsuC/CkUlEydpSO64TLuCUK?=
- =?us-ascii?Q?WI4p54h/gXXkJvppDfKUJTNlSB5DxrAz0LJfvdweqTPT4IQJidZoLBC5Mdlq?=
- =?us-ascii?Q?lJIgH4uVFMj6ukvIRSX1DUIDoEQ5qNbiNcgSw3f2n1Dp47G6A8chaAk9k7Zu?=
- =?us-ascii?Q?uGSOu1p0+/wzUWTncYmIuhUeBe8VceW0bNsU22xA78wXkm1UW2SCT7NCUUhj?=
- =?us-ascii?Q?0fZ/enIpYrawQObTDKk414sx9nQyZRR7nsTJG5EmCSpVJiM4u/keYf3dBFvZ?=
- =?us-ascii?Q?mTVCVmXpw5b6sV/p41F7xsjpHnWQEDZS+vtD3kgnBt0RpXd2IHytmDMjCb/e?=
- =?us-ascii?Q?iyhuIoPKWyS9x45U6W4lM2TGsj3NzldbTSi26xBWbU6mG056bFQ5AFwNLcPZ?=
- =?us-ascii?Q?ITdJi4k8s5cdq0Q1WPar50QgliBQxdpd8MbHjuNZEOJrjInrH50VgsxAGUy+?=
- =?us-ascii?Q?dCq4h0mGN0c6nPCKipapA+3MaWeqJjY4SoPI493jjQChkprjo7udX8ByxOfE?=
- =?us-ascii?Q?t5VKM+CAJU/VddCWCpALprbecrQXA6AzDhMmBkOt?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jcTrRwSmj2/X1oWkq5d7XShOnrfMFogGoHu2S7BfI5uTbs8ZjAqm5LC0PpFZ?=
+ =?us-ascii?Q?nU6L7GkIGdx5oX9AHZg3PGLHozA4JfkMkv72ep8WNJstO5hjRcHXzHmGYoGv?=
+ =?us-ascii?Q?toK3QO/oFICLkkB/8OnYAOo6TB/uSyvbYRUf51cPB78bJeVO7PFnMhSUqtLH?=
+ =?us-ascii?Q?5MTtCyu85wSjp1oeqfnokvyvXSpDvV0Niv2Qp8GZIB3kYiLatyKaVuLr2a9C?=
+ =?us-ascii?Q?TY9HQLm9GjvzDeR5ssoT9yEvslr/4w21TBIKTT2JcTwfUfpQZ+ED8bJYvQ3d?=
+ =?us-ascii?Q?STcMG7ssr+wW4tGEMW1/CxDcw9GhEtv7JPlGABOKRnipDcTVmTGa2OrKo6z3?=
+ =?us-ascii?Q?ttxB5lcc+uDlWTuX+IuhPzUjFQGunO8Xy4eS5JEjeegz4ADIMzTfSI3NgsLO?=
+ =?us-ascii?Q?0/26oz1KTROV/VSeRoWjkMBNXa8ayfJo2CzlTcyDz+TJrAC3yBki5E7+0fRx?=
+ =?us-ascii?Q?joS6hIXK0PxF+rTl58TqrgGmuVz44Snw00CrT7Tqo4ac71Rgs0iZa1W2sfHN?=
+ =?us-ascii?Q?oGFHDcO3JkiwrCj6vX3FvzFXQDRpjEEZXIFmekqAG6slOqPB1RGt73s7/yoa?=
+ =?us-ascii?Q?31lXX3k3iVnzJMaUH6x7rWWqewhOAcN5nLCqQeFIsmBeS7H0WitLjxvUNvTi?=
+ =?us-ascii?Q?ysRkmkR0PvhKRH3Mv9SYUjVYhqIbU4b/PBuA/6JYiDLzz3UgeAi7hA0qLXHj?=
+ =?us-ascii?Q?1cfNgdheTs6ekB2LUOwrEzYw/9FBTkxEJMLHTCz4aojjhQP8RPPenFa3i49o?=
+ =?us-ascii?Q?724HHrBVfzzio4ZJo+/2NMaVj/Ld7QpK79JCCSF26doHJIJYEMWCQH4DA9Xi?=
+ =?us-ascii?Q?+VYDdbLdOWMH77q5Xsf8nbXP/9MLQb1NQh3h/i9+NX7rU0AskNquSi0m3iLq?=
+ =?us-ascii?Q?7s+ANwf/di9CEeHg333rcXAzaksJo9Yac/O51rxrMZcJ7irAhpSxhSXUQLuG?=
+ =?us-ascii?Q?MXhA7KVrEvhreoPAS7Sb9mamxqnIeNZk0frpu6LfWV6FzJmpWQde6t2ofZfJ?=
+ =?us-ascii?Q?QlqQOL250LmdCoMQCfvpp0f5sirj0ZNVbPQJkY+y2gA2qFdrStdGaLYrqiAw?=
+ =?us-ascii?Q?AHG6I1Su0zo2+nkyFEC0F4LqoPLXo6mBsTlb723i+SaUd2mc2dH4rdY83e2x?=
+ =?us-ascii?Q?S3B8XDXEnZ9DNKM6rV7+9FsLjzNPB6DodLw7afnZKtA0ZF4PRYMy4oFYP772?=
+ =?us-ascii?Q?HAcHdJyPLGh4VwvcZK5h2yo8tfuH/oFhgAmYFNy/79d9MAf7BTUjiUE0iYIE?=
+ =?us-ascii?Q?z74gNzsWMjYYyz0R0VzOkOT026yPf+kJu/libTh549KGhfcQoTqONi/3GO+x?=
+ =?us-ascii?Q?zU0nx9v86KnPmphowMGEAOSngbVPrN9Y41DT7ZCFGqdMDIridyCvZ2AwZ3ZQ?=
+ =?us-ascii?Q?0m2Hmeudbq64Ht6cOV4l157GJoHyFWim1/Zz8ij4CntUplKzI84USBVdJ741?=
+ =?us-ascii?Q?fnNF9ABC924gQX0ZIrfVXIRb8goIt5PfeUSiq+ZjjGIEWCr1DUrQBdoxeKB3?=
+ =?us-ascii?Q?mTXVq3lDEVoEQFaBVrgMSbs5XhYAqlTGuZJVED2xAaYj9AE9OkCVAz3bU/O+?=
+ =?us-ascii?Q?Uuzl8lENbgvx6ZKP+j8K5A/+DrTTNqgWGvZYjho8?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6884158a-a442-4552-e257-08da6f98b15f
+X-MS-Exchange-CrossTenant-Network-Message-Id: f03eb09a-e782-47c7-8d2a-08da6f98b576
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 06:24:43.0565
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 06:24:49.8848
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F9tny49q7+3rpyJt1WGUwaSEZGVU2yEP4NNutisaLUUxBbTD7FJHKlWY2+a3IYL1gkVRLp7vnhbUW0jIR4IFlg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3347
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fo9lQkj4Ym9kmjbCncstUpn53WpQHkl2fFzeKmHrsQ3oSeYY87GTDKN7iRXbjpEthHuDPn7K3R3DSYHiPjzpuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1697
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -117,204 +117,316 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@nvidia.com>
 
-As opposed to Spectrum-1, in which time stamps arrive through a pair of
-dedicated events into a queue and later are being matched to the
-corresponding packets, in Spectrum-2 we are reading the time stamps
-directly from the CQE. Software can get the time stamp in UTC format
-using CQEv2.
+The SIOCSHWTSTAMP ioctl configures HW timestamping on a given port. In
+Spectrum-2 and above, each packet gets time stamp by default, but in
+order to provide an accurate time stamp, software should configure to
+update the correction field. In addition, the PTP traps are not enabled
+by default, software should enable it per port or for all ports.
 
-Add a time stamp field to 'struct mlxsw_skb_cb'. In
-mlxsw_pci_cqe_{rdq,sdq}_handle() extract the time stamp from the CQE into
-the new time stamp field. Note that the time stamp in the CQE is
-represented by 38 bits, which is a short representation of UTC time.
-Software should create the full time stamp using the global UTC clock.
-Read UTC clock from hardware only for PTP packets which were trapped to CPU
-with PTP0 trap ID (event packets).
+The switch behaves like a transparent clock between CPU port and each
+front panel port. If ingress correction is set on a port for a given packet
+type, then when such a packet is received via the port, the current time
+stamp is subtracted from the correction field. If egress correction is set
+on a port for a given packet type, then when such a packet is transmitted
+via the port, the current time stamp is added to the correction field.
 
-Use the time stamp from the SKB when packet is received or transmitted.
+The result is that as the packet ingresses through a port with ingress
+correction enabled, and egresses through a port with egress correction
+enabled, the PTP correction field is updated to reflect the time that the
+packet spent in the ASIC.
+
+This can be used to update the correction field of trapped packets by
+enabling ingress correction on a port where time stamping was enabled,
+and egress correction on the CPU port. Similarly, for packets transmitted
+from the host, ingress correction should be enabled on the CPU port, and
+egress correction on a front-panel port.
+
+However, since the correction fields will be updated for all PTP packets
+crossing the CPU port, in order not to mangle the correction field, the
+front panel port involved in the packet transfer must have the
+corresponding correction enabled as well.
+
+Therefore, when HW timestamping is enabled on at least one port, we have
+to configure hardware to update the correction field and trap PTP event
+packets on all ports.
+
+Add reference count as part of 'struct mlxsw_sp_ptp_state', to maintain
+how many ports use HW timestamping. Handle the correction field
+configuration only when the first port enables time stamping and when the
+last port disables time stamping. Store the configuration as part of
+'struct mlxsw_sp_ptp_state', as it is global for all ports.
+
+The SIOCGHWTSTAMP ioctl is a getter for the current configuration,
+implement it and use the global configuration.
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  6 ++
- drivers/net/ethernet/mellanox/mlxsw/pci.c     | 22 ++++++-
- .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 62 +++++++++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_ptp.h    | 24 ++++---
- 4 files changed, 104 insertions(+), 10 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 208 ++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.h    |  24 +-
+ 2 files changed, 223 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index cfc365b65c1c..02d9cc2ef0c8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -558,11 +558,17 @@ enum mlxsw_devlink_param_id {
- 	MLXSW_DEVLINK_PARAM_ID_ACL_REGION_REHASH_INTERVAL,
- };
- 
-+struct mlxsw_cqe_ts {
-+	u8 sec;
-+	u32 nsec;
-+};
-+
- struct mlxsw_skb_cb {
- 	union {
- 		struct mlxsw_tx_info tx_info;
- 		struct mlxsw_rx_md_info rx_md_info;
- 	};
-+	struct mlxsw_cqe_ts cqe_ts;
- };
- 
- static inline struct mlxsw_skb_cb *mlxsw_skb_cb(struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 0e4bd6315ea5..50527adc5b5a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -513,9 +513,26 @@ static unsigned int mlxsw_pci_read32_off(struct mlxsw_pci *mlxsw_pci,
- 	return ioread32be(mlxsw_pci->hw_addr + off);
- }
- 
-+static void mlxsw_pci_skb_cb_ts_set(struct mlxsw_pci *mlxsw_pci,
-+				    struct sk_buff *skb,
-+				    enum mlxsw_pci_cqe_v cqe_v, char *cqe)
-+{
-+	if (cqe_v != MLXSW_PCI_CQE_V2)
-+		return;
-+
-+	if (mlxsw_pci_cqe2_time_stamp_type_get(cqe) !=
-+	    MLXSW_PCI_CQE_TIME_STAMP_TYPE_UTC)
-+		return;
-+
-+	mlxsw_skb_cb(skb)->cqe_ts.sec = mlxsw_pci_cqe2_time_stamp_sec_get(cqe);
-+	mlxsw_skb_cb(skb)->cqe_ts.nsec =
-+		mlxsw_pci_cqe2_time_stamp_nsec_get(cqe);
-+}
-+
- static void mlxsw_pci_cqe_sdq_handle(struct mlxsw_pci *mlxsw_pci,
- 				     struct mlxsw_pci_queue *q,
- 				     u16 consumer_counter_limit,
-+				     enum mlxsw_pci_cqe_v cqe_v,
- 				     char *cqe)
- {
- 	struct pci_dev *pdev = mlxsw_pci->pdev;
-@@ -535,6 +552,7 @@ static void mlxsw_pci_cqe_sdq_handle(struct mlxsw_pci *mlxsw_pci,
- 
- 	if (unlikely(!tx_info.is_emad &&
- 		     skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
-+		mlxsw_pci_skb_cb_ts_set(mlxsw_pci, skb, cqe_v, cqe);
- 		mlxsw_core_ptp_transmitted(mlxsw_pci->core, skb,
- 					   tx_info.local_port);
- 		skb = NULL;
-@@ -655,6 +673,8 @@ static void mlxsw_pci_cqe_rdq_handle(struct mlxsw_pci *mlxsw_pci,
- 		mlxsw_pci_cqe_rdq_md_tx_port_init(skb, cqe);
- 	}
- 
-+	mlxsw_pci_skb_cb_ts_set(mlxsw_pci, skb, cqe_v, cqe);
-+
- 	byte_count = mlxsw_pci_cqe_byte_count_get(cqe);
- 	if (mlxsw_pci_cqe_crc_get(cqe_v, cqe))
- 		byte_count -= ETH_FCS_LEN;
-@@ -706,7 +726,7 @@ static void mlxsw_pci_cq_tasklet(struct tasklet_struct *t)
- 
- 			sdq = mlxsw_pci_sdq_get(mlxsw_pci, dqn);
- 			mlxsw_pci_cqe_sdq_handle(mlxsw_pci, sdq,
--						 wqe_counter, ncqe);
-+						 wqe_counter, q->u.cq.v, ncqe);
- 			q->u.cq.comp_sdq_count++;
- 		} else {
- 			struct mlxsw_pci_queue *rdq;
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 25d96bedf243..5bf772ceb1e0 100644
+index 5bf772ceb1e0..774db250fc37 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -1386,6 +1386,68 @@ void mlxsw_sp2_ptp_fini(struct mlxsw_sp_ptp_state *ptp_state_common)
- 	kfree(ptp_state);
+@@ -11,6 +11,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/if_vlan.h>
+ #include <linux/net_tstamp.h>
++#include <linux/refcount.h>
+ 
+ #include "spectrum.h"
+ #include "spectrum_ptp.h"
+@@ -41,6 +42,10 @@ struct mlxsw_sp1_ptp_state {
+ 
+ struct mlxsw_sp2_ptp_state {
+ 	struct mlxsw_sp_ptp_state common;
++	refcount_t ptp_port_enabled_ref; /* Number of ports with time stamping
++					  * enabled.
++					  */
++	struct hwtstamp_config config;
+ };
+ 
+ struct mlxsw_sp1_ptp_key {
+@@ -1368,6 +1373,7 @@ struct mlxsw_sp_ptp_state *mlxsw_sp2_ptp_init(struct mlxsw_sp *mlxsw_sp)
+ 	if (err)
+ 		goto err_ptp_traps_set;
+ 
++	refcount_set(&ptp_state->ptp_port_enabled_ref, 0);
+ 	return &ptp_state->common;
+ 
+ err_ptp_traps_set:
+@@ -1448,6 +1454,208 @@ void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
+ 	dev_kfree_skb_any(skb);
  }
  
-+static u32 mlxsw_ptp_utc_time_stamp_sec_get(struct mlxsw_core *mlxsw_core,
-+					    u8 cqe_ts_sec)
++int mlxsw_sp2_ptp_hwtstamp_get(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct hwtstamp_config *config)
 +{
-+	u32 utc_sec = mlxsw_core_read_utc_sec(mlxsw_core);
++	struct mlxsw_sp2_ptp_state *ptp_state;
 +
-+	if (cqe_ts_sec > (utc_sec & 0xff))
-+		/* Time stamp above the last bits of UTC (UTC & 0xff) means the
-+		 * latter has wrapped after the time stamp was collected.
++	ptp_state = mlxsw_sp2_ptp_state(mlxsw_sp_port->mlxsw_sp);
++
++	*config = ptp_state->config;
++	return 0;
++}
++
++static int
++mlxsw_sp2_ptp_get_message_types(const struct hwtstamp_config *config,
++				u16 *p_ing_types, u16 *p_egr_types,
++				enum hwtstamp_rx_filters *p_rx_filter)
++{
++	enum hwtstamp_rx_filters rx_filter = config->rx_filter;
++	enum hwtstamp_tx_types tx_type = config->tx_type;
++	u16 ing_types = 0x00;
++	u16 egr_types = 0x00;
++
++	*p_rx_filter = rx_filter;
++
++	switch (rx_filter) {
++	case HWTSTAMP_FILTER_NONE:
++		ing_types = 0x00;
++		break;
++	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V2_SYNC:
++	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
++	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_EVENT:
++		/* In Spectrum-2 and above, all packets get time stamp by
++		 * default and the driver fill the time stamp only for event
++		 * packets. Return all event types even if only specific types
++		 * were required.
 +		 */
-+		utc_sec -= 256;
++		ing_types = 0x0f;
++		*p_rx_filter = HWTSTAMP_FILTER_SOME;
++		break;
++	case HWTSTAMP_FILTER_ALL:
++	case HWTSTAMP_FILTER_SOME:
++	case HWTSTAMP_FILTER_NTP_ALL:
++		return -ERANGE;
++	default:
++		return -EINVAL;
++	}
 +
-+	utc_sec &= ~0xff;
-+	utc_sec |= cqe_ts_sec;
++	switch (tx_type) {
++	case HWTSTAMP_TX_OFF:
++		egr_types = 0x00;
++		break;
++	case HWTSTAMP_TX_ON:
++		egr_types = 0x0f;
++		break;
++	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
++		return -ERANGE;
++	default:
++		return -EINVAL;
++	}
 +
-+	return utc_sec;
++	*p_ing_types = ing_types;
++	*p_egr_types = egr_types;
++	return 0;
 +}
 +
-+static void mlxsw_sp2_ptp_hwtstamp_fill(struct mlxsw_core *mlxsw_core,
-+					const struct mlxsw_skb_cb *cb,
-+					struct skb_shared_hwtstamps *hwtstamps)
++static int mlxsw_sp2_ptp_mtpcpc_set(struct mlxsw_sp *mlxsw_sp, bool ptp_trap_en,
++				    u16 ing_types, u16 egr_types)
 +{
-+	u64 ts_sec, ts_nsec, nsec;
++	char mtpcpc_pl[MLXSW_REG_MTPCPC_LEN];
 +
-+	WARN_ON_ONCE(!cb->cqe_ts.sec && !cb->cqe_ts.nsec);
-+
-+	/* The time stamp in the CQE is represented by 38 bits, which is a short
-+	 * representation of UTC time. Software should create the full time
-+	 * stamp using the global UTC clock. The seconds have only 8 bits in the
-+	 * CQE, to create the full time stamp, use the current UTC time and fix
-+	 * the seconds according to the relation between UTC seconds and CQE
-+	 * seconds.
-+	 */
-+	ts_sec = mlxsw_ptp_utc_time_stamp_sec_get(mlxsw_core, cb->cqe_ts.sec);
-+	ts_nsec = cb->cqe_ts.nsec;
-+
-+	nsec = ts_sec * NSEC_PER_SEC + ts_nsec;
-+
-+	hwtstamps->hwtstamp = ns_to_ktime(nsec);
++	mlxsw_reg_mtpcpc_pack(mtpcpc_pl, false, 0, ptp_trap_en, ing_types,
++			      egr_types);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(mtpcpc), mtpcpc_pl);
 +}
 +
-+void mlxsw_sp2_ptp_receive(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-+			   u16 local_port)
++static int mlxsw_sp2_ptp_enable(struct mlxsw_sp *mlxsw_sp, u16 ing_types,
++				u16 egr_types,
++				struct hwtstamp_config new_config)
 +{
-+	struct skb_shared_hwtstamps hwtstamps;
++	struct mlxsw_sp2_ptp_state *ptp_state = mlxsw_sp2_ptp_state(mlxsw_sp);
++	int err;
 +
-+	mlxsw_sp2_ptp_hwtstamp_fill(mlxsw_sp->core, mlxsw_skb_cb(skb),
-+				    &hwtstamps);
-+	*skb_hwtstamps(skb) = hwtstamps;
-+	mlxsw_sp_rx_listener_no_mark_func(skb, local_port, mlxsw_sp);
++	err = mlxsw_sp2_ptp_mtpcpc_set(mlxsw_sp, true, ing_types, egr_types);
++	if (err)
++		return err;
++
++	ptp_state->config = new_config;
++	return 0;
 +}
 +
-+void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
-+			       struct sk_buff *skb, u16 local_port)
++static int mlxsw_sp2_ptp_disable(struct mlxsw_sp *mlxsw_sp,
++				 struct hwtstamp_config new_config)
 +{
-+	struct skb_shared_hwtstamps hwtstamps;
++	struct mlxsw_sp2_ptp_state *ptp_state = mlxsw_sp2_ptp_state(mlxsw_sp);
++	int err;
 +
-+	mlxsw_sp2_ptp_hwtstamp_fill(mlxsw_sp->core, mlxsw_skb_cb(skb),
-+				    &hwtstamps);
-+	skb_tstamp_tx(skb, &hwtstamps);
-+	dev_kfree_skb_any(skb);
++	err = mlxsw_sp2_ptp_mtpcpc_set(mlxsw_sp, false, 0, 0);
++	if (err)
++		return err;
++
++	ptp_state->config = new_config;
++	return 0;
++}
++
++static int mlxsw_sp2_ptp_configure_port(struct mlxsw_sp_port *mlxsw_sp_port,
++					u16 ing_types, u16 egr_types,
++					struct hwtstamp_config new_config)
++{
++	struct mlxsw_sp2_ptp_state *ptp_state;
++	int err;
++
++	ASSERT_RTNL();
++
++	ptp_state = mlxsw_sp2_ptp_state(mlxsw_sp_port->mlxsw_sp);
++
++	if (refcount_inc_not_zero(&ptp_state->ptp_port_enabled_ref))
++		return 0;
++
++	err = mlxsw_sp2_ptp_enable(mlxsw_sp_port->mlxsw_sp, ing_types,
++				   egr_types, new_config);
++	if (err)
++		return err;
++
++	refcount_set(&ptp_state->ptp_port_enabled_ref, 1);
++
++	return 0;
++}
++
++static int mlxsw_sp2_ptp_deconfigure_port(struct mlxsw_sp_port *mlxsw_sp_port,
++					  struct hwtstamp_config new_config)
++{
++	struct mlxsw_sp2_ptp_state *ptp_state;
++	int err;
++
++	ASSERT_RTNL();
++
++	ptp_state = mlxsw_sp2_ptp_state(mlxsw_sp_port->mlxsw_sp);
++
++	if (!refcount_dec_and_test(&ptp_state->ptp_port_enabled_ref))
++		return 0;
++
++	err = mlxsw_sp2_ptp_disable(mlxsw_sp_port->mlxsw_sp, new_config);
++	if (err)
++		goto err_ptp_disable;
++
++	return 0;
++
++err_ptp_disable:
++	refcount_set(&ptp_state->ptp_port_enabled_ref, 1);
++	return err;
++}
++
++int mlxsw_sp2_ptp_hwtstamp_set(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct hwtstamp_config *config)
++{
++	enum hwtstamp_rx_filters rx_filter;
++	struct hwtstamp_config new_config;
++	u16 new_ing_types, new_egr_types;
++	bool ptp_enabled;
++	int err;
++
++	err = mlxsw_sp2_ptp_get_message_types(config, &new_ing_types,
++					      &new_egr_types, &rx_filter);
++	if (err)
++		return err;
++
++	new_config.flags = config->flags;
++	new_config.tx_type = config->tx_type;
++	new_config.rx_filter = rx_filter;
++
++	ptp_enabled = mlxsw_sp_port->ptp.ing_types ||
++		      mlxsw_sp_port->ptp.egr_types;
++
++	if ((new_ing_types || new_egr_types) && !ptp_enabled) {
++		err = mlxsw_sp2_ptp_configure_port(mlxsw_sp_port, new_ing_types,
++						   new_egr_types, new_config);
++		if (err)
++			return err;
++	} else if (!new_ing_types && !new_egr_types && ptp_enabled) {
++		err = mlxsw_sp2_ptp_deconfigure_port(mlxsw_sp_port, new_config);
++		if (err)
++			return err;
++	}
++
++	mlxsw_sp_port->ptp.ing_types = new_ing_types;
++	mlxsw_sp_port->ptp.egr_types = new_egr_types;
++
++	/* Notify the ioctl caller what we are actually timestamping. */
++	config->rx_filter = rx_filter;
++
++	return 0;
 +}
 +
  int mlxsw_sp_ptp_txhdr_construct(struct mlxsw_core *mlxsw_core,
  				 struct mlxsw_sp_port *mlxsw_sp_port,
  				 struct sk_buff *skb,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h
-index affc9930c5f9..26dda940789a 100644
+index 26dda940789a..fbe88ac44bcd 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h
-@@ -71,6 +71,12 @@ struct mlxsw_sp_ptp_state *mlxsw_sp2_ptp_init(struct mlxsw_sp *mlxsw_sp);
+@@ -77,6 +77,12 @@ void mlxsw_sp2_ptp_receive(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
+ void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
+ 			       struct sk_buff *skb, u16 local_port);
  
- void mlxsw_sp2_ptp_fini(struct mlxsw_sp_ptp_state *ptp_state);
- 
-+void mlxsw_sp2_ptp_receive(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-+			   u16 local_port);
++int mlxsw_sp2_ptp_hwtstamp_get(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct hwtstamp_config *config);
 +
-+void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
-+			       struct sk_buff *skb, u16 local_port);
++int mlxsw_sp2_ptp_hwtstamp_set(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct hwtstamp_config *config);
 +
  int mlxsw_sp2_ptp_txhdr_construct(struct mlxsw_core *mlxsw_core,
  				  struct mlxsw_sp_port *mlxsw_sp_port,
  				  struct sk_buff *skb,
-@@ -184,15 +190,6 @@ static inline void mlxsw_sp2_ptp_fini(struct mlxsw_sp_ptp_state *ptp_state)
- {
+@@ -202,15 +208,6 @@ static inline void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
+ 	dev_kfree_skb_any(skb);
  }
  
 -int mlxsw_sp2_ptp_txhdr_construct(struct mlxsw_core *mlxsw_core,
@@ -326,11 +438,11 @@ index affc9930c5f9..26dda940789a 100644
 -}
 -#endif
 -
- static inline void mlxsw_sp2_ptp_receive(struct mlxsw_sp *mlxsw_sp,
- 					 struct sk_buff *skb, u16 local_port)
- {
-@@ -205,6 +202,15 @@ static inline void mlxsw_sp2_ptp_transmitted(struct mlxsw_sp *mlxsw_sp,
- 	dev_kfree_skb_any(skb);
+ static inline int
+ mlxsw_sp2_ptp_hwtstamp_get(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			   struct hwtstamp_config *config)
+@@ -225,6 +222,15 @@ mlxsw_sp2_ptp_hwtstamp_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return -EOPNOTSUPP;
  }
  
 +int mlxsw_sp2_ptp_txhdr_construct(struct mlxsw_core *mlxsw_core,
@@ -342,9 +454,9 @@ index affc9930c5f9..26dda940789a 100644
 +}
 +#endif
 +
- static inline int
- mlxsw_sp2_ptp_hwtstamp_get(struct mlxsw_sp_port *mlxsw_sp_port,
- 			   struct hwtstamp_config *config)
+ static inline void mlxsw_sp2_ptp_shaper_work(struct work_struct *work)
+ {
+ }
 -- 
 2.36.1
 
