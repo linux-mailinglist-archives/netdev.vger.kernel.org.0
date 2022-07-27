@@ -2,138 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1323582448
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 12:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CAB3582450
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 12:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiG0K2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 06:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        id S231635AbiG0K3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 06:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiG0K2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 06:28:44 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB0843332;
-        Wed, 27 Jul 2022 03:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658917723; x=1690453723;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RrV1tcJSu8Z7rFc6jziP1hGDQZbJGn8+5xabDMaGm1I=;
-  b=Zx58KOKcnSK5uglwKp0vdA3HOfPf5sF9lGuh3dHORhG7FCTcCOAh95tq
-   Qw/pfM8gdsetcK4TYFwErH2eyT5V/6YUQraJZw6gkCeiCCMnstsYIHZVd
-   1TzcWHv4uzISzL+IhJKXkrvPSi8VHKdrjPfK02tmxm2PHuaooNpxgkdZH
-   k1SBTKtfACs6fyiw/3f/yJbOAgbvHVqy1TigCPoqvMkm1RQnvwkY3V0g3
-   0sTaQinwDm+B0v7MTPD/lZTMajcSMqar3p8ARDTP11lca0bJMnmuTm8DW
-   2D/Sfy8N0h/O2sTdoKtxrvshJZZs0G5Jo91kXkwHnnkOkX2koFhfWs7Zw
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="289392832"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="289392832"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 03:28:43 -0700
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="742603318"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 03:28:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oGeHK-001cRI-0x;
-        Wed, 27 Jul 2022 13:28:34 +0300
-Date:   Wed, 27 Jul 2022 13:28:34 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 2/8] net: mdio: switch fixed-link PHYs API
- to fwnode_
-Message-ID: <YuETUjgDzKjvM6lb@smile.fi.intel.com>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-3-mw@semihalf.com>
+        with ESMTP id S229698AbiG0K3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 06:29:53 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793C846D85
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:29:52 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id m12so25376660lfj.4
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:29:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C8/pL5RbrbSs+hHHBvRwGZbpYLdGvRQCLQtimUHaY/Y=;
+        b=aEvVN8nlbsucKUUCJ/wUHJHSxHoLOa1riYAfbTUcji+KGxjKo9NUlmDFicJ8ogDpCl
+         hMkK48WPOyIp8xI0oAvv3I8h3IrytxEr39XHdhKL/7ZUUG+/y5f2OxlKay0DfkAGdRQp
+         N2nMntakv/nGUJlAmGxgOyUqTcPt03uwToXKvUh8SoNvTUIG7NPtBuFsExp66abTwW2V
+         xdLYEHHweN3rL1XAL3L0kt/DdUkYeAdk/uySuf+B76Mu3lnzxHQAAfXvLCYxu/uAD4SB
+         zcecCzzrdvFntUwwFrbRfekPUx5p6IWlfgTs0n3WGY6lrL4dWKOok5/Y/BbPpN5wHjAQ
+         NkAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C8/pL5RbrbSs+hHHBvRwGZbpYLdGvRQCLQtimUHaY/Y=;
+        b=gwmdjg6Pd8jYgV1B5ku/C5DM7SAiUlNVHCD+tAgFMeIBOuGxCu0EHvLV3ch+IeK1nU
+         rfWMMgipw6WHOof65GOPEg4yjExu3G8/nlQniFKwwL7n8wl0swg7FHNxTLXqMfd9TIxm
+         s6Ea06L1eR++GT/r7AXltmBB9MOsteRob8e57pd3lzN61cPi1JqKGnAB/Nb5HL/Hb0A9
+         5UyjSy1aYxQx99Tad1Nu3BYXOF5TEYAJDPXGuNK0ZIeySCGF6krocv3adXOTS2axigXO
+         MM+h7K91q/S0vcoxsz1+8iLlOR6CB08V2m1ewh1Jds8OVqZnYpMor+mo2ULXakCxwsIi
+         AE5A==
+X-Gm-Message-State: AJIora/eIrr28Waby1nc6ZiR0ugYSs6xslqxUuSHwiRazl+Mh39ysLD2
+        POxw4V89JyQAhKZYon+eOPBncA==
+X-Google-Smtp-Source: AGRyM1v6ECH8DolGJTGZAMrGuB6MutvHtE6E/y7iHHFanSZqIcdESQaJ1Av1+9ir3yDaNGXwjrHh/A==
+X-Received: by 2002:a05:6512:22c8:b0:488:e69b:9311 with SMTP id g8-20020a05651222c800b00488e69b9311mr7492057lfu.564.1658917790652;
+        Wed, 27 Jul 2022 03:29:50 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id q12-20020a0565123a8c00b0048a854462a4sm2119726lfu.214.2022.07.27.03.29.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 03:29:50 -0700 (PDT)
+Message-ID: <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
+Date:   Wed, 27 Jul 2022 12:29:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727064321.2953971-3-mw@semihalf.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220726122406.31043-1-arinc.unal@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220726122406.31043-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 08:43:15AM +0200, Marcin Wojtas wrote:
-> fixed-link PHYs API is used by DSA and a number of drivers
-> and was depending on of_. Switch to fwnode_ so to make it
-> hardware description agnostic and allow to be used in ACPI
-> world as well.
+On 26/07/2022 14:24, Arınç ÜNAL wrote:
+> Completely rework the binding for MediaTek MT7530 and MT7531 switches.
 
-...
+Rules are the same for schema as for driver - one patch, one thing. You
+mix here trivial style changes (removal of quotes) with functional stuff.
 
-> +	/* Old binding */
-> +	len = fwnode_property_count_u32(fwnode, "fixed-link");
-> +	if (len == 5)
-> +		return true;
-> +
-> +	return false;
-
-Can be
-
-	return len == 5;
-
-or
-
-	return fwnode_...(...) == 5;
-
-Original also good, so up to you,
-
-...
-
-> +		if (fwnode_property_read_u32(fixed_link_node, "speed",
-> +					     &status.speed)) {
-> +			fwnode_handle_put(fixed_link_node);
-> +			return -EINVAL;
-> +		}
-
-Why shadowing actual error code?
-
-Either
-
-	ret = fwnode_...(...);
-	if (ret) {
-		...
-		return ret;
-	}
-
-or add a comment explaining the above magic transformations.
-
-...
-
-> +	/* Old binding */
-> +	if (fwnode_property_read_u32_array(fwnode, "fixed-link", fixed_link_prop,
-> +					   ARRAY_SIZE(fixed_link_prop)) == 0) {
-> +		status.link = 1;
-> +		status.duplex = fixed_link_prop[1];
-> +		status.speed  = fixed_link_prop[2];
-> +		status.pause  = fixed_link_prop[3];
-> +		status.asym_pause = fixed_link_prop[4];
-> +		goto register_phy;
-> +	}
-> +
-> +	return -ENODEV;
-
-Ditto.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Patch is unreviewable, so it must be split.
 
 
+Best regards,
+Krzysztof
