@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D03A582137
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 09:36:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D711582164
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 09:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbiG0Hgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 03:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        id S230435AbiG0HoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 03:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiG0Hgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 03:36:54 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454B82A94C;
-        Wed, 27 Jul 2022 00:36:50 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VKZmDNB_1658907402;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKZmDNB_1658907402)
+        with ESMTP id S231279AbiG0HoJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 03:44:09 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0E73FA0F;
+        Wed, 27 Jul 2022 00:44:06 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VKZx5Pm_1658907838;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKZx5Pm_1658907838)
           by smtp.aliyun-inc.com;
-          Wed, 27 Jul 2022 15:36:43 +0800
-Message-ID: <1658907340.34387-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v13 07/42] virtio_ring: split: stop __vring_new_virtqueue as export symbol
-Date:   Wed, 27 Jul 2022 15:35:40 +0800
+          Wed, 27 Jul 2022 15:43:59 +0800
+Message-ID: <1658907413.1860468-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v13 16/42] virtio_ring: split: introduce virtqueue_resize_split()
+Date:   Wed, 27 Jul 2022 15:36:53 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -56,9 +56,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         kangjie.xu@linux.alibaba.com,
         virtualization@lists.linux-foundation.org
 References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
- <20220726072225.19884-8-xuanzhuo@linux.alibaba.com>
- <a5449e49-ba38-9760-ac07-cfad048bc602@redhat.com>
-In-Reply-To: <a5449e49-ba38-9760-ac07-cfad048bc602@redhat.com>
+ <20220726072225.19884-17-xuanzhuo@linux.alibaba.com>
+ <15aa26f2-f8af-5dbd-f2b2-9270ad873412@redhat.com>
+In-Reply-To: <15aa26f2-f8af-5dbd-f2b2-9270ad873412@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -71,126 +71,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 10:58:05 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Wed, 27 Jul 2022 11:12:19 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
 > =E5=9C=A8 2022/7/26 15:21, Xuan Zhuo =E5=86=99=E9=81=93:
-> > There is currently only one place to reference __vring_new_virtqueue()
-> > directly from the outside of virtio core. And here vring_new_virtqueue()
-> > can be used instead.
+> > virtio ring split supports resize.
 > >
-> > Subsequent patches will modify __vring_new_virtqueue, so stop it as an
-> > export symbol for now.
+> > Only after the new vring is successfully allocated based on the new num,
+> > we will release the old vring. In any case, an error is returned,
+> > indicating that the vring still points to the old vring.
+> >
+> > In the case of an error, re-initialize(virtqueue_reinit_split()) the
+> > virtqueue to ensure that the vring can be used.
 > >
 > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Acked-by: Jason Wang <jasowang@redhat.com>
 > > ---
-> >   drivers/virtio/virtio_ring.c | 25 ++++++++++++++++---------
-> >   include/linux/virtio_ring.h  | 10 ----------
-> >   tools/virtio/virtio_test.c   |  4 ++--
-> >   3 files changed, 18 insertions(+), 21 deletions(-)
+> >   drivers/virtio/virtio_ring.c | 34 ++++++++++++++++++++++++++++++++++
+> >   1 file changed, 34 insertions(+)
 > >
 > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index 0ad35eca0d39..4e54ed7ee7fb 100644
+> > index b6fda91c8059..58355e1ac7d7 100644
 > > --- a/drivers/virtio/virtio_ring.c
 > > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -204,6 +204,14 @@ struct vring_virtqueue {
-> >   #endif
-> >   };
-> >
-> > +static struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > +					       struct vring vring,
-> > +					       struct virtio_device *vdev,
-> > +					       bool weak_barriers,
-> > +					       bool context,
-> > +					       bool (*notify)(struct virtqueue *),
-> > +					       void (*callback)(struct virtqueue *),
-> > +					       const char *name);
+> > @@ -220,6 +220,7 @@ static struct virtqueue *__vring_new_virtqueue(unsi=
+gned int index,
+> >   					       void (*callback)(struct virtqueue *),
+> >   					       const char *name);
+> >   static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int n=
+um);
+> > +static void vring_free(struct virtqueue *_vq);
 > >
 > >   /*
 > >    * Helpers.
-> > @@ -2197,14 +2205,14 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
-> >   EXPORT_SYMBOL_GPL(vring_interrupt);
-> >
-> >   /* Only available for split ring */
-> > -struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > -					struct vring vring,
-> > -					struct virtio_device *vdev,
-> > -					bool weak_barriers,
-> > -					bool context,
-> > -					bool (*notify)(struct virtqueue *),
-> > -					void (*callback)(struct virtqueue *),
-> > -					const char *name)
-> > +static struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > +					       struct vring vring,
-> > +					       struct virtio_device *vdev,
-> > +					       bool weak_barriers,
-> > +					       bool context,
-> > +					       bool (*notify)(struct virtqueue *),
-> > +					       void (*callback)(struct virtqueue *),
-> > +					       const char *name)
-> >   {
-> >   	struct vring_virtqueue *vq;
-> >
-> > @@ -2272,7 +2280,6 @@ struct virtqueue *__vring_new_virtqueue(unsigned =
-int index,
-> >   	kfree(vq);
-> >   	return NULL;
+> > @@ -1117,6 +1118,39 @@ static struct virtqueue *vring_create_virtqueue_=
+split(
+> >   	return vq;
 > >   }
-> > -EXPORT_SYMBOL_GPL(__vring_new_virtqueue);
 > >
-> >   struct virtqueue *vring_create_virtqueue(
-> >   	unsigned int index,
-> > diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
-> > index b485b13fa50b..8b8af1a38991 100644
-> > --- a/include/linux/virtio_ring.h
-> > +++ b/include/linux/virtio_ring.h
-> > @@ -76,16 +76,6 @@ struct virtqueue *vring_create_virtqueue(unsigned in=
-t index,
-> >   					 void (*callback)(struct virtqueue *vq),
-> >   					 const char *name);
-> >
-> > -/* Creates a virtqueue with a custom layout. */
-> > -struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > -					struct vring vring,
-> > -					struct virtio_device *vdev,
-> > -					bool weak_barriers,
-> > -					bool ctx,
-> > -					bool (*notify)(struct virtqueue *),
-> > -					void (*callback)(struct virtqueue *),
-> > -					const char *name);
-> > -
-> >   /*
-> >    * Creates a virtqueue with a standard layout but a caller-allocated
-> >    * ring.
-> > diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
-> > index 23f142af544a..86a410ddcedd 100644
-> > --- a/tools/virtio/virtio_test.c
-> > +++ b/tools/virtio/virtio_test.c
-> > @@ -102,8 +102,8 @@ static void vq_reset(struct vq_info *info, int num,=
- struct virtio_device *vdev)
-> >
-> >   	memset(info->ring, 0, vring_size(num, 4096));
-> >   	vring_init(&info->vring, num, info->ring, 4096);
+> > +static int virtqueue_resize_split(struct virtqueue *_vq, u32 num)
+> > +{
+> > +	struct vring_virtqueue_split vring_split =3D {};
+> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > +	struct virtio_device *vdev =3D _vq->vdev;
+> > +	int err;
+> > +
+> > +	err =3D vring_alloc_queue_split(&vring_split, vdev, num,
+> > +				      vq->split.vring_align,
+> > +				      vq->split.may_reduce_num);
+> > +	if (err)
+> > +		goto err;
 >
 >
-> Let's remove the duplicated vring_init() here.
->
-> With this removed:
+> I think we don't need to do anything here?
 
-The reason I didn't delete this vring_init() is because info->vring is used
-elsewhere. So it can't be deleted directly.
+Am I missing something?
+
+>
+>
+> > +
+> > +	err =3D vring_alloc_state_extra_split(&vring_split);
+> > +	if (err) {
+> > +		vring_free_split(&vring_split, vdev);
+> > +		goto err;
+>
+>
+> I suggest to move vring_free_split() into a dedicated error label.
+
+Will change.
 
 Thanks.
 
+
 >
-> Acked-by: Jason Wang <jasowang@redhat.com>
+> Thanks
 >
 >
-> > -	info->vq =3D __vring_new_virtqueue(info->idx, info->vring, vdev, true,
-> > -					 false, vq_notify, vq_callback, "test");
-> > +	info->vq =3D vring_new_virtqueue(info->idx, num, 4096, vdev, true, fa=
-lse,
-> > +				       info->ring, vq_notify, vq_callback, "test");
-> >   	assert(info->vq);
-> >   	info->vq->priv =3D info;
-> >   }
+> > +	}
+> > +
+> > +	vring_free(&vq->vq);
+> > +
+> > +	virtqueue_vring_init_split(&vring_split, vq);
+> > +
+> > +	virtqueue_init(vq, vring_split.vring.num);
+> > +	virtqueue_vring_attach_split(vq, &vring_split);
+> > +
+> > +	return 0;
+> > +
+> > +err:
+> > +	virtqueue_reinit_split(vq);
+> > +	return -ENOMEM;
+> > +}
+> > +
+> >
+> >   /*
+> >    * Packed ring specific functions - *_packed().
 >
