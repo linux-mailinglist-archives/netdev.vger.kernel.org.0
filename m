@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B75581FEB
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40B1581FE9
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbiG0GKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 02:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
+        id S230158AbiG0GKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 02:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231266AbiG0GK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:10:26 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DE51035
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:25 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26QND3GB005118
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:25 -0700
+        with ESMTP id S230262AbiG0GKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:10:31 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58322258
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:30 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 26QND3lT001087
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:29 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=L7/Ct8dJb4Le+DgrGi94W6ApfbmILzSfMfxX97vXqrM=;
- b=JhQx8Lfuwy/DcJ4IW6R/ApwLIkdzdQ5mcnnrRsdPmLDQn4Wiav87/2wFJ1LIlIt1xtMD
- 8Li/cX1MCRMXU76CDAiH9O0XdrlDcb+IkXyGRknh8SBya6Zy6Ex/wi5DGanA1RHR5cgr
- +n9LNnMln7aNdzGUZpraVPTB+emHsLXOELY= 
+ bh=qCB9pTHH9Z78sg6zce++NMce/xeti5pluLE82LZEVDs=;
+ b=P+CzyG+kAqr9d9oN7WID9JN30YC4wknvaphTLVA4t/DZCLwrDvVLiBAFqRK3QUWPATlS
+ yp1BPt4ajCaql+pGrh3srOkeNfN4FwMxBzbUH3/AvSETJQcKHxJ4x29HG+WHNldRTBKE
+ /N6RigwtSTdRsyBLO+G1jQe0gaqSnCSSDeg= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hjhxaw36v-1
+        by m0089730.ppops.net (PPS) with ESMTPS id 3hjj4e4whk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:25 -0700
-Received: from twshared5413.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:10:29 -0700
+Received: from twshared30313.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 26 Jul 2022 23:10:23 -0700
+ 15.1.2375.28; Tue, 26 Jul 2022 23:10:28 -0700
 Received: by devbig933.frc1.facebook.com (Postfix, from userid 6611)
-        id 6F99C757CFB0; Tue, 26 Jul 2022 23:10:12 -0700 (PDT)
+        id CF3E4757CFBE; Tue, 26 Jul 2022 23:10:18 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
@@ -43,9 +43,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH bpf-next 12/14] bpf: Change bpf_setsockopt(SOL_IPV6) to reuse do_ipv6_setsockopt()
-Date:   Tue, 26 Jul 2022 23:10:12 -0700
-Message-ID: <20220727061012.2380506-1-kafai@fb.com>
+Subject: [PATCH bpf-next 13/14] bpf: Add a few optnames to bpf_setsockopt
+Date:   Tue, 26 Jul 2022 23:10:18 -0700
+Message-ID: <20220727061018.2380664-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220727060856.2370358-1-kafai@fb.com>
 References: <20220727060856.2370358-1-kafai@fb.com>
@@ -53,8 +53,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: UUXVjjQpUp_EOqFCoUiSKz_QLw4_ufAe
-X-Proofpoint-GUID: UUXVjjQpUp_EOqFCoUiSKz_QLw4_ufAe
+X-Proofpoint-ORIG-GUID: H_xsR9bgfn2xtvQVgdYkiRwhLi8AqnJm
+X-Proofpoint-GUID: H_xsR9bgfn2xtvQVgdYkiRwhLi8AqnJm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
@@ -68,168 +68,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the prep work in the previous patches,
-this patch removes the dup code from bpf_setsockopt(SOL_IPV6)
-and reuses the implementation in do_ipv6_setsockopt().
+This patch adds a few optnames for bpf_setsockopt:
+SO_REUSEADDR, IPV6_AUTOFLOWLABEL, TCP_MAXSEG, TCP_NODELAY,
+and TCP_THIN_LINEAR_TIMEOUTS.
 
-ipv6 could be compiled as a module.  Like how other codes solved it
-with stubs in ipv6_stubs.h, this patch adds the do_ipv6_setsockopt
-to the ipv6_bpf_stub.
+Thanks to the previous patches of this set, all additions can reuse
+the sock_setsockopt(), do_ipv6_setsockopt(), and do_tcp_setsockopt().
+The only change here is to allow them in bpf_setsockopt.
 
-The current bpf_setsockopt(IPV6_TCLASS) does not take the
-INET_ECN_MASK into the account for tcp.  The
-do_ipv6_setsockopt(IPV6_TCLASS) will handle it correctly.
+The bpf prog has been able to read all members of a sk by
+using PTR_TO_BTF_ID of a sk.  The optname additions here can also be
+read by the same approach.  Meaning there is a way to read
+the values back.
 
-The existing optname white-list is refactored into a new
-function sol_ipv6_setsockopt().
-
-After this last SOL_IPV6 dup code removal, the __bpf_setsockopt()
-is simplified enough that the extra "{ }" around the if statement
-can be removed.
+These optnames can also be added to bpf_getsockopt() later with
+another patch set that makes the bpf_getsockopt() to reuse
+the sock_getsockopt(), tcp_getsockopt(), and ip[v6]_getsockopt().
+Thus, this patch does not add more duplicated codes to
+bpf_getsockopt() now.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/net/ipv6.h       |  2 ++
- include/net/ipv6_stubs.h |  2 ++
- net/core/filter.c        | 57 +++++++++++++++++++---------------------
- net/ipv6/af_inet6.c      |  1 +
- net/ipv6/ipv6_sockglue.c |  4 +--
- 5 files changed, 34 insertions(+), 32 deletions(-)
+ net/core/filter.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index de9dcc5652c4..c110d9032083 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1156,6 +1156,8 @@ struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
-  */
- DECLARE_STATIC_KEY_FALSE(ip6_min_hopcount);
-=20
-+int do_ipv6_setsockopt(struct sock *sk, int level, int optname, sockptr_=
-t optval,
-+		       unsigned int optlen);
- int ipv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t o=
-ptval,
- 		    unsigned int optlen);
- int ipv6_getsockopt(struct sock *sk, int level, int optname,
-diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index 45e0339be6fa..8692698b01cf 100644
---- a/include/net/ipv6_stubs.h
-+++ b/include/net/ipv6_stubs.h
-@@ -81,6 +81,8 @@ struct ipv6_bpf_stub {
- 				     const struct in6_addr *daddr, __be16 dport,
- 				     int dif, int sdif, struct udp_table *tbl,
- 				     struct sk_buff *skb);
-+	int (*ipv6_setsockopt)(struct sock *sk, int level, int optname,
-+			       sockptr_t optval, unsigned int optlen);
- };
- extern const struct ipv6_bpf_stub *ipv6_bpf_stub __read_mostly;
-=20
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 67c87d7acb23..7b510e009bb3 100644
+index 7b510e009bb3..899ee7b4a04a 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -5142,45 +5142,42 @@ static int sol_ip_setsockopt(struct sock *sk, int=
- optname,
- 				KERNEL_SOCKPTR_BPF(optval), optlen);
- }
-=20
-+static int sol_ipv6_setsockopt(struct sock *sk, int optname,
-+			       char *optval, int optlen)
-+{
-+	if (sk->sk_family !=3D AF_INET6)
-+		return -EINVAL;
-+
-+	switch (optname) {
-+	case IPV6_TCLASS:
-+		if (optlen !=3D sizeof(int))
-+			return -EINVAL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ipv6_bpf_stub->ipv6_setsockopt(sk, SOL_IPV6, optname,
-+					      KERNEL_SOCKPTR_BPF(optval),
-+					      optlen);
-+}
-+
- static int __bpf_setsockopt(struct sock *sk, int level, int optname,
- 			    char *optval, int optlen)
+@@ -5017,6 +5017,7 @@ static int sol_socket_setsockopt(struct sock *sk, i=
+nt optname,
+ 				 char *optval, int optlen)
  {
--	int val, ret =3D 0;
--
- 	if (!sk_fullsock(sk))
+ 	switch (optname) {
++	case SO_REUSEADDR:
+ 	case SO_SNDBUF:
+ 	case SO_RCVBUF:
+ 	case SO_KEEPALIVE:
+@@ -5102,11 +5103,14 @@ static int sol_tcp_setsockopt(struct sock *sk, in=
+t optname,
  		return -EINVAL;
 =20
--	if (level =3D=3D SOL_SOCKET) {
-+	if (level =3D=3D SOL_SOCKET)
- 		return sol_socket_setsockopt(sk, optname, optval, optlen);
--	} else if (IS_ENABLED(CONFIG_INET) && level =3D=3D SOL_IP) {
-+	else if (IS_ENABLED(CONFIG_INET) && level =3D=3D SOL_IP)
- 		return sol_ip_setsockopt(sk, optname, optval, optlen);
--	} else if (IS_ENABLED(CONFIG_IPV6) && level =3D=3D SOL_IPV6) {
--		if (optlen !=3D sizeof(int) || sk->sk_family !=3D AF_INET6)
--			return -EINVAL;
--
--		val =3D *((int *)optval);
--		/* Only some options are supported */
--		switch (optname) {
--		case IPV6_TCLASS:
--			if (val < -1 || val > 0xff) {
--				ret =3D -EINVAL;
--			} else {
--				struct ipv6_pinfo *np =3D inet6_sk(sk);
--
--				if (val =3D=3D -1)
--					val =3D 0;
--				np->tclass =3D val;
--			}
--			break;
--		default:
--			ret =3D -EINVAL;
--		}
--	} else if (IS_ENABLED(CONFIG_INET) && level =3D=3D SOL_TCP) {
-+	else if (IS_ENABLED(CONFIG_IPV6) && level =3D=3D SOL_IPV6)
-+		return sol_ipv6_setsockopt(sk, optname, optval, optlen);
-+	else if (IS_ENABLED(CONFIG_INET) && level =3D=3D SOL_TCP)
- 		return sol_tcp_setsockopt(sk, optname, optval, optlen);
--	} else {
--		ret =3D -EINVAL;
--	}
--	return ret;
-+
-+	return -EINVAL;
- }
+ 	switch (optname) {
++	case TCP_NODELAY:
++	case TCP_MAXSEG:
+ 	case TCP_KEEPIDLE:
+ 	case TCP_KEEPINTVL:
+ 	case TCP_KEEPCNT:
+ 	case TCP_SYNCNT:
+ 	case TCP_WINDOW_CLAMP:
++	case TCP_THIN_LINEAR_TIMEOUTS:
+ 	case TCP_USER_TIMEOUT:
+ 	case TCP_NOTSENT_LOWAT:
+ 	case TCP_SAVE_SYN:
+@@ -5150,6 +5154,7 @@ static int sol_ipv6_setsockopt(struct sock *sk, int=
+ optname,
 =20
- static int _bpf_setsockopt(struct sock *sk, int level, int optname,
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 2ce0c44d0081..cadc97852787 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -1057,6 +1057,7 @@ static const struct ipv6_stub ipv6_stub_impl =3D {
- static const struct ipv6_bpf_stub ipv6_bpf_stub_impl =3D {
- 	.inet6_bind =3D __inet6_bind,
- 	.udp6_lib_lookup =3D __udp6_lib_lookup,
-+	.ipv6_setsockopt =3D do_ipv6_setsockopt,
- };
-=20
- static int __init inet6_init(void)
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index 4559f02ab4a8..0eef5a11dc3c 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -391,8 +391,8 @@ static int ipv6_set_opt_hdr(struct sock *sk, int optn=
-ame, sockptr_t optval,
- 	return err;
- }
-=20
--static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
--		   sockptr_t optval, unsigned int optlen)
-+int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
-+		       sockptr_t optval, unsigned int optlen)
- {
- 	struct ipv6_pinfo *np =3D inet6_sk(sk);
- 	struct net *net =3D sock_net(sk);
+ 	switch (optname) {
+ 	case IPV6_TCLASS:
++	case IPV6_AUTOFLOWLABEL:
+ 		if (optlen !=3D sizeof(int))
+ 			return -EINVAL;
+ 		break;
 --=20
 2.30.2
 
