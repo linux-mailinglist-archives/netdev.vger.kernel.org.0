@@ -2,109 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED45581E9F
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 06:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD9A581EB4
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 06:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240344AbiG0EYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 00:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        id S240330AbiG0EZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 00:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240325AbiG0EYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 00:24:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FBCB3B96B
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 21:24:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658895879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Yok+W8J1zKJN3VSngD/6A5xyt1kdGDnR3MRcZGx2JdM=;
-        b=dzN2FaZzAD18rNfQ4q1EPf9Pt9zBy8VltRB+9Jrt/kFYLtrKydYzYeKOAkkElMS24+o9Nq
-        7FaJrJMqFKOra3rBXGlS9aSHIgG34CHXOhlIOBU+F46J6vIEVFT+CK53q0+NqILtjRKHMW
-        N3Lw5fq86bYHmFQSG0eY60sFWPyiWts=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-359-Xh74FuFJN6OMh9gmJK9bEQ-1; Wed, 27 Jul 2022 00:24:37 -0400
-X-MC-Unique: Xh74FuFJN6OMh9gmJK9bEQ-1
-Received: by mail-pj1-f70.google.com with SMTP id v12-20020a17090a088c00b001f3019a9cf2so544685pjc.0
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 21:24:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Yok+W8J1zKJN3VSngD/6A5xyt1kdGDnR3MRcZGx2JdM=;
-        b=l1oyHpA39A94Z+updfHVB+VBhrv/xiajseLhrKLh8SCsciDG/CruhYFKFJ3RrB52AW
-         FV1XhfCbHHOUf7ZMYFwgZxY7o5mO+5GHmUz7VuGYraDWcl60mKxhlSphdSREAPE7CEXz
-         J5cCZazOasIjdnoXB3swJXK4Vy6mURj8jICD8lSMM8EKsOcRIPY56V45elGXl+8KKGQF
-         1uqjBwhXtX/aYmPJ8VClySHGPsyHy/gJmE1ciEwIuItEjLak28MBsItDtUT8IzNr+0rw
-         F3D7SI2aoMGf9uc2/RXNo180V8QujffCbwkQ3Ribvs/m5rSAd42dy3E/bNfK5jSUEpeC
-         gkxA==
-X-Gm-Message-State: AJIora/tXTjTbXaZeR+HfCf0QUAIJN8KxUOfhXRLEYxQ25hHmoL6pHTO
-        pNYMIu/JNGrAeEJNGoY+uu+DJYD3yhPvay2GiKrzjigNjeuDCqnC8mX500K/PIw6Pz7moM7fr0c
-        hbMJd+jOS/HhjHVy9
-X-Received: by 2002:a17:90a:ea90:b0:1f2:81cd:1948 with SMTP id h16-20020a17090aea9000b001f281cd1948mr2513884pjz.172.1658895875896;
-        Tue, 26 Jul 2022 21:24:35 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1shgnF0FTkAghWAebt2dLxHjIMnalV8dd87lEKXX5Ir9vcvUUz2DeWLC6lS50voh4OTJ1rbZA==
-X-Received: by 2002:a17:90a:ea90:b0:1f2:81cd:1948 with SMTP id h16-20020a17090aea9000b001f281cd1948mr2513861pjz.172.1658895875684;
-        Tue, 26 Jul 2022 21:24:35 -0700 (PDT)
-Received: from [10.72.12.96] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id ik1-20020a170902ab0100b0016c48c52ce4sm12556176plb.204.2022.07.26.21.24.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 21:24:33 -0700 (PDT)
-Message-ID: <113b77e4-ccc5-7a92-60db-26c25c184e20@redhat.com>
-Date:   Wed, 27 Jul 2022 12:24:21 +0800
+        with ESMTP id S240355AbiG0EZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 00:25:02 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8718D3CBE1
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 21:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658895901; x=1690431901;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ykXuGN9tXfR1GYX24SXU1dIc//I/xeev2072U9Lh8e0=;
+  b=dhhIXJuhyjf7GuvMmduDJEJ6MEbPUBGrJu9XUu1M0UW53QG+Pm+FtFvR
+   fg/zGsbxfeMofjGlPjt9BVyA8hUl5e16A494Kf+a9a9s2VaVV08zyDMzz
+   8rl7E/v2q5do+KD6Pzhj3C8af5bT+1XKOILk4OpI2fS7slEMf/Vi6E0n6
+   8qWQVECJEmykgHcnhCQYxO3QowoFGmciuuCEwfF0mVaSq/BUU4EJj2xJ7
+   jfEoMe2T0a84VxP484aolOvwb5RDlvm5/5pmFZ+mzMaiz0uJdSTfifNrI
+   vbPFqRRYs6eHb25hJeFLewOpHLn6zq7wxbgQJ9NhSoGkt1TIUf+Ij2ugl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="267907752"
+X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
+   d="scan'208";a="267907752"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:25:00 -0700
+X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
+   d="scan'208";a="659017249"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.171.153]) ([10.249.171.153])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:24:58 -0700
+Message-ID: <5518a485-1ced-ec8f-9817-4303b0117f80@intel.com>
+Date:   Wed, 27 Jul 2022 12:24:56 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v13 17/42] virtio_ring: packed: introduce
- vring_free_packed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
+ when VIRTIO_NET_F_MQ == 0
 Content-Language: en-US
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        kangjie.xu@linux.alibaba.com
-References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
- <20220726072225.19884-18-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220726072225.19884-18-xuanzhuo@linux.alibaba.com>
+To:     Parav Pandit <parav@nvidia.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-6-lingshan.zhu@intel.com>
+ <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <ef1c42e8-2350-dd9c-c6c0-2e9bbe85adb4@intel.com>
+ <PH0PR12MB5481FF0AE64F3BB24FF8A869DC829@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <00c1f5e8-e58d-5af7-cc6b-b29398e17c8b@intel.com>
+ <PH0PR12MB54817863E7BA89D6BB5A5F8CDC869@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <c7c8f49c-484f-f5b3-39e6-0d17f396cca7@intel.com>
+ <PH0PR12MB5481E65037E0B4F6F583193BDC899@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1246d2f1-2822-0edb-cd57-efc4015f05a2@intel.com>
+ <PH0PR12MB54815985C202E81122459DFFDC949@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <19681358-fc81-be5b-c20b-7394a549f0be@intel.com>
+ <PH0PR12MB54818158D4F7F9F556022857DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <e98fc062-021b-848b-5cf4-15bd63a11c5c@intel.com>
+ <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -113,52 +82,58 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2022/7/26 15:22, Xuan Zhuo 写道:
-> Free the structure struct vring_vritqueue_packed.
+
+On 7/27/2022 11:47 AM, Parav Pandit wrote:
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Tuesday, July 26, 2022 10:53 PM
+>>
+>> On 7/27/2022 10:17 AM, Parav Pandit wrote:
+>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Tuesday, July 26, 2022 10:15 PM
+>>>>
+>>>> On 7/26/2022 11:56 PM, Parav Pandit wrote:
+>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>>>> Sent: Tuesday, July 12, 2022 11:46 PM
+>>>>>>> When the user space which invokes netlink commands, detects that
+>>>> _MQ
+>>>>>> is not supported, hence it takes max_queue_pair = 1 by itself.
+>>>>>> I think the kernel module have all necessary information and it is
+>>>>>> the only one which have precise information of a device, so it
+>>>>>> should answer precisely than let the user space guess. The kernel
+>>>>>> module should be reliable than stay silent, leave the question to
+>>>>>> the user space
+>>>> tool.
+>>>>> Kernel is reliable. It doesn’t expose a config space field if the
+>>>>> field doesn’t
+>>>> exist regardless of field should have default or no default.
+>>>> so when you know it is one queue pair, you should answer one, not try
+>>>> to guess.
+>>>>> User space should not guess either. User space gets to see if _MQ
+>>>> present/not present. If _MQ present than get reliable data from kernel.
+>>>>> If _MQ not present, it means this device has one VQ pair.
+>>>> it is still a guess, right? And all user space tools implemented this
+>>>> feature need to guess
+>>> No. it is not a guess.
+>>> It is explicitly checking the _MQ feature and deriving the value.
+>>> The code you proposed will be present in the user space.
+>>> It will be uniform for _MQ and 10 other features that are present now and
+>> in the future.
+>> MQ and other features like RSS are different. If there is no _RSS_XX, there
+>> are no attributes like max_rss_key_size, and there is not a default value.
+>> But for MQ, we know it has to be 1 wihtout _MQ.
+> "we" = user space.
+> To keep the consistency among all the config space fields.
+The user space tools asks for the number of vq pairs, not whether the 
+device has _MQ.
+_MQ and _RSS are not the same kind of concepts, as we have discussed above.
+You have pointed out the logic: If there is _MQ, kernel answers 
+max_vq_paris, if no _MQ, num_vq_paris=1.
+
+So as MST pointed out, implementing this in kernel space can make our 
+life easier, once for all.
 >
-> Subsequent patches require it.
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   drivers/virtio/virtio_ring.c | 22 ++++++++++++++++++++++
->   1 file changed, 22 insertions(+)
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 58355e1ac7d7..891900b31c3d 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -1835,6 +1835,28 @@ static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int num)
->   	return desc_extra;
->   }
->   
-> +static void vring_free_packed(struct vring_virtqueue_packed *vring_packed,
-> +			      struct virtio_device *vdev)
-> +{
-> +	if (vring_packed->vring.desc)
-> +		vring_free_queue(vdev, vring_packed->ring_size_in_bytes,
-> +				 vring_packed->vring.desc,
-> +				 vring_packed->ring_dma_addr);
-> +
-> +	if (vring_packed->vring.driver)
-> +		vring_free_queue(vdev, vring_packed->event_size_in_bytes,
-> +				 vring_packed->vring.driver,
-> +				 vring_packed->driver_event_dma_addr);
-> +
-> +	if (vring_packed->vring.device)
-> +		vring_free_queue(vdev, vring_packed->event_size_in_bytes,
-> +				 vring_packed->vring.device,
-> +				 vring_packed->device_event_dma_addr);
-> +
-> +	kfree(vring_packed->desc_state);
-> +	kfree(vring_packed->desc_extra);
-> +}
-> +
->   static struct virtqueue *vring_create_virtqueue_packed(
->   	unsigned int index,
->   	unsigned int num,
+>>> For feature X, kernel reports default and for feature Y, kernel skip
+>> reporting it, because there is no default. <- This is what we are trying to
+>> avoid here.
+>> Kernel reports one queue pair because there is actually one.
 
