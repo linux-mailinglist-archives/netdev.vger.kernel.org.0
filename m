@@ -2,173 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E50BE581FB5
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C06581FD7
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbiG0GCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 02:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
+        id S229827AbiG0GJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 02:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiG0GCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:02:44 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A452A735
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:02:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658901763; x=1690437763;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=anNk6jyB5Zf8QIKWeNRLIowoJFxjttqszIprTqeBi3M=;
-  b=jto/DCSe9o7m1VzabJHv812sKwj1jT2w7671+tqXAfjzm11Px3eGDJQ6
-   6aWgYrpaGqRPat+0U7L2szxZ7ME3S2bK1QzKxm6YBnJeKBZrqtWrNQ3+E
-   ZPgOdUzGnTCFMRKK6X4BXKZ5nyelPHMldEyE2x3G+jdoDhelBCVzHxJOH
-   m5rOfJo/vgfAEhYYOlnLAY2dom+IteQxMXAezZHgJnJmW4zXkEJDwZzHt
-   x532w+psJ1VfCFt4OqaHNPA378bHNh18VOcIXfRBv+HSQ9SOMVhfybDTq
-   dJ8fUy0gPLS8qUfFQopHK1Y9nTRvM1wlWaU62lNxaQCzCyp20nd256Q4H
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="374452994"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="374452994"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 23:02:29 -0700
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="659050038"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.171.153]) ([10.249.171.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 23:02:27 -0700
-Message-ID: <9e27b28c-f88b-87c4-d869-d4984ece2066@intel.com>
-Date:   Wed, 27 Jul 2022 14:02:25 +0800
+        with ESMTP id S230010AbiG0GJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:09:06 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAD73FA11
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:09:05 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26QND7JV029477
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:09:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=/sS9tLVy0y93k2xzF9fh/c4ifa2Z9xGz3jqt21SgAxI=;
+ b=MJsJYZUdSXOfmEU0j6gJ+N++Le91AIGtLCEQH3C9Heb9EOqys3+2yibUEdvUS0vdjiZa
+ Gq3CGzcTWz/iSafSUMo00Vzyg3F+yBz7aDEDWVK0lgNpareCmHrQbIdV8sVUUQCKHSCz
+ vIB2jzzuj58GbdLWNfQX0lGF1d6/H8T3lQw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hj1ust31h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:09:05 -0700
+Received: from twshared5413.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 26 Jul 2022 23:09:03 -0700
+Received: by devbig933.frc1.facebook.com (Postfix, from userid 6611)
+        id 4B993757CB36; Tue, 26 Jul 2022 23:08:56 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH bpf-next 00/14] bpf: net: Remove duplicated codes from bpf_setsockopt()
+Date:   Tue, 26 Jul 2022 23:08:56 -0700
+Message-ID: <20220727060856.2370358-1-kafai@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V4 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Content-Language: en-US
-To:     Parav Pandit <parav@nvidia.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-References: <20220722115309.82746-1-lingshan.zhu@intel.com>
- <20220722115309.82746-4-lingshan.zhu@intel.com>
- <PH0PR12MB548193156AFCA04F58B01A3CDC909@PH0PR12MB5481.namprd12.prod.outlook.com>
- <6dc2229c-f2f3-017f-16fa-4611e53c774e@intel.com>
- <PH0PR12MB5481D9BBC9C249840E4CDF7EDC929@PH0PR12MB5481.namprd12.prod.outlook.com>
- <9d9d6022-5d49-6f6e-a1ff-562d088ad03c@intel.com>
- <PH0PR12MB548133788748EF91F959C143DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB548133788748EF91F959C143DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: 7yz-Ze6Bg6FQ3vVbNqzBb47oRq5EkwcH
+X-Proofpoint-ORIG-GUID: 7yz-Ze6Bg6FQ3vVbNqzBb47oRq5EkwcH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The codes in bpf_setsockopt() is mostly a copy-and-paste from
+the sock_setsockopt(), do_tcp_setsockopt(), do_ipv6_setsockopt(),
+and do_ip_setsockopt().  As the allowed optnames in bpf_setsockopt()
+grows, so are the duplicated codes.  The codes between the copies
+also slowly drifted.
 
+This set is an effort to clean this up and reuse the existing
+{sock,do_tcp,do_ipv6,do_ip}_setsockopt() as much as possible.
 
-On 7/26/2022 7:06 PM, Parav Pandit wrote:
->> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->> Sent: Tuesday, July 26, 2022 7:03 AM
->>
->> On 7/24/2022 11:21 PM, Parav Pandit wrote:
->>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->>>> Sent: Saturday, July 23, 2022 7:24 AM
->>>>
->>>>
->>>> On 7/22/2022 9:12 PM, Parav Pandit wrote:
->>>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>> Sent: Friday, July 22, 2022 7:53 AM
->>>>>>
->>>>>> This commit adds a new vDPA netlink attribution
->>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can
->> query
->>>> features
->>>>>> of vDPA devices through this new attr.
->>>>>>
->>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>> ---
->>>>>>     drivers/vdpa/vdpa.c       | 13 +++++++++----
->>>>>>     include/uapi/linux/vdpa.h |  1 +
->>>>>>     2 files changed, 10 insertions(+), 4 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
->>>>>> ebf2f363fbe7..9b0e39b2f022 100644
->>>>>> --- a/drivers/vdpa/vdpa.c
->>>>>> +++ b/drivers/vdpa/vdpa.c
->>>>>> @@ -815,7 +815,7 @@ static int vdpa_dev_net_mq_config_fill(struct
->>>>>> vdpa_device *vdev,  static int vdpa_dev_net_config_fill(struct
->>>>>> vdpa_device *vdev, struct sk_buff *msg)  {
->>>>>>     	struct virtio_net_config config = {};
->>>>>> -	u64 features;
->>>>>> +	u64 features_device, features_driver;
->>>>>>     	u16 val_u16;
->>>>>>
->>>>>>     	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config)); @@
->>>>>> -
->>>>>> 832,12 +832,17 @@ static int vdpa_dev_net_config_fill(struct
->>>>>> vdpa_device *vdev, struct sk_buff *ms
->>>>>>     	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->>>>>>     		return -EMSGSIZE;
->>>>>>
->>>>>> -	features = vdev->config->get_driver_features(vdev);
->>>>>> -	if (nla_put_u64_64bit(msg,
->>>>>> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
->>>>>> +	features_driver = vdev->config->get_driver_features(vdev);
->>>>>> +	if (nla_put_u64_64bit(msg,
->>>>>> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
->>>>>> +			      VDPA_ATTR_PAD))
->>>>>> +		return -EMSGSIZE;
->>>>>> +
->>>>>> +	features_device = vdev->config->get_device_features(vdev);
->>>>>> +	if (nla_put_u64_64bit(msg,
->>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
->>>>>> +features_device,
->>>>>>     			      VDPA_ATTR_PAD))
->>>>>>     		return -EMSGSIZE;
->>>>>>
->>>>>> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
->>>>>> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
->>>>>> +&config);
->>>>>>     }
->>>>>>
->>>>>>     static int
->>>>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
->>>>>> index
->>>>>> 25c55cab3d7c..39f1c3d7c112 100644
->>>>>> --- a/include/uapi/linux/vdpa.h
->>>>>> +++ b/include/uapi/linux/vdpa.h
->>>>>> @@ -47,6 +47,7 @@ enum vdpa_attr {
->>>>>>     	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
->>>>>>     	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
->>>>>>     	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
->>>>>> +	VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,	/* u64 */
->>>>>>
->>>>> I have answered in previous emails.
->>>>> I disagree with the change.
->>>>> Please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES.
->>>> I believe we have already discussed this before in the V3 thread.
->>>> I have told you that reusing this attr will lead to a new race condition.
->>>>
->>> Returning attribute cannot lead to any race condition.
->> Please refer to our discussion in the V3 series, I have explained if re-use this
->> attr, it will be a multiple consumers and multiple produces model, it is a
->> typical racing condition.
-> I read the emails with subject = " Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA device"
-> I couldn’t find multiple consumers multiple producers working on same nla message.
-If this attr is reused, then there can be multiple iproute2 instances or 
-other applications querying feature bits of the management device and 
-the vDPA device simultaneously,
-and both kernel side management feature bits filler function and vDPA 
-device feature bits filler function can write the NLA message at the 
-same time. That's the multiple
-consumers and producers, and no locks
+After the clean up, this set also adds a few allowed optnames
+that we need to the bpf_setsockopt().
+
+The initial attempt was to clean up both bpf_setsockopt() and
+bpf_getsockopt() together.  However, the patch set was getting
+too long.  It is beneficial to leave the bpf_getsockopt()
+out for another patch set.  Thus, this set is focusing
+on the bpf_setsockopt().
+
+Martin KaFai Lau (14):
+  net: Change sock_setsockopt from taking sock ptr to sk ptr
+  bpf: net: Avoid sock_setsockopt() taking sk lock when called from bpf
+  bpf: net: Consider optval.is_bpf before capable check in
+    sock_setsockopt()
+  bpf: net: Avoid do_tcp_setsockopt() taking sk lock when called from
+    bpf
+  bpf: net: Avoid do_ip_setsockopt() taking sk lock when called from bpf
+  bpf: net: Avoid do_ipv6_setsockopt() taking sk lock when called from
+    bpf
+  bpf: Embed kernel CONFIG check into the if statement in bpf_setsockopt
+  bpf: Change bpf_setsockopt(SOL_SOCKET) to reuse sock_setsockopt()
+  bpf: Refactor bpf specific tcp optnames to a new function
+  bpf: Change bpf_setsockopt(SOL_TCP) to reuse do_tcp_setsockopt()
+  bpf: Change bpf_setsockopt(SOL_IP) to reuse do_ip_setsockopt()
+  bpf: Change bpf_setsockopt(SOL_IPV6) to reuse do_ipv6_setsockopt()
+  bpf: Add a few optnames to bpf_setsockopt
+  selftests/bpf: bpf_setsockopt tests
+
+ drivers/nvme/host/tcp.c                       |   2 +-
+ fs/ksmbd/transport_tcp.c                      |   2 +-
+ include/linux/sockptr.h                       |   8 +-
+ include/net/ip.h                              |   2 +
+ include/net/ipv6.h                            |   2 +
+ include/net/ipv6_stubs.h                      |   2 +
+ include/net/sock.h                            |  14 +-
+ include/net/tcp.h                             |   2 +
+ net/core/filter.c                             | 378 +++++-------
+ net/core/sock.c                               |  25 +-
+ net/ipv4/ip_sockglue.c                        |  10 +-
+ net/ipv4/tcp.c                                |  21 +-
+ net/ipv6/af_inet6.c                           |   1 +
+ net/ipv6/ipv6_sockglue.c                      |  10 +-
+ net/mptcp/sockopt.c                           |  12 +-
+ net/socket.c                                  |   2 +-
+ .../selftests/bpf/prog_tests/setget_sockopt.c | 125 ++++
+ .../selftests/bpf/progs/setget_sockopt.c      | 538 ++++++++++++++++++
+ 18 files changed, 890 insertions(+), 266 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/setget_sockopt=
+.c
+ create mode 100644 tools/testing/selftests/bpf/progs/setget_sockopt.c
+
+--=20
+2.30.2
 
