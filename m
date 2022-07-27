@@ -2,49 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5D258250D
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 12:59:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94BE8582514
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:03:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbiG0K7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 06:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S230108AbiG0LDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 07:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiG0K7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 06:59:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F2648EB3;
-        Wed, 27 Jul 2022 03:59:44 -0700 (PDT)
+        with ESMTP id S229475AbiG0LDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:03:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FE712B;
+        Wed, 27 Jul 2022 04:03:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06215618B0;
-        Wed, 27 Jul 2022 10:59:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC7EC433D6;
-        Wed, 27 Jul 2022 10:59:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5047DCE2129;
+        Wed, 27 Jul 2022 11:03:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54A5AC433D6;
+        Wed, 27 Jul 2022 11:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658919583;
-        bh=NOf+i5b0V5kj2gY1TJAm6ix8SLfEutiO/HMAUH9vsT0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Tx+WlyRGkKOUZnNsFwqrp+FbMmR/M3t5wxcAdHoJqYiL0POSRCScaO6zKlRHkTClp
-         NVmqQMJge1lJM2CDDJ5LOn4MtYOvGUXEsft3smWC98RJWlKmFbCBIZ7V0u8wz54lf/
-         rBAe6ISQzEMFW2+YWRYiNzDrA7JBP3YIeMjwpU5AwGUBmuv9RiW1j1nMxb42l+wnkx
-         WzP1H5jzm5OyTihFgf8v0RcggjfJ15cL8JBCyU1nnHI00Ahfy/+yFkwsm1PbrHczxH
-         XbmHxs3eHbSi14sUS7pY/4rQ8ehU47HyvEi9N7astW4iY36oXm0nIs+tzO7p6j7SH4
-         jktCndQaYVsNQ==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: wifi: wl1251: Fix typo 'the the' in comment
+        s=k20201202; t=1658919787;
+        bh=kVtK6cEEIUx9djaWlrGOAd/br/S94h7B+jN+ap+guJQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ZThkWWho4qterDmPWAGiSavf8g5Q+0iUbKfYE7CCyBpwfDJohTFgcAs8zNYHThnTo
+         b/mrPBS9hjFMNQbwCKtxk6EUMM25BsUYVWXf/2Ue1kA8gnzWszNiefr0Zk2ulnjMxA
+         u7lDEA5DRYVBX3XFBWUBtPZsSiHq+LUojmO2KR9uUmo9XSDLljc5gxqEc10Dqb/zci
+         EkO+L9Gwtcj43wkUe1sTI2YEMlnYoIpJt1l0BMv+VR27U0JMAt+Yp/tPsuGuTkaUQH
+         QM33/BiV6YQ7X1eaRvzjB45CV2A86c+Ps5NkOV0uHTr7+Trqlws7dSkMKSgNhJeXZP
+         goYhl5Hj6lbWw==
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220722084833.76159-1-slark_xiao@163.com>
-References: <20220722084833.76159-1-slark_xiao@163.com>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165891957995.17998.769866736095602356.kvalo@kernel.org>
-Date:   Wed, 27 Jul 2022 10:59:41 +0000 (UTC)
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: wifi: brcmfmac: sdio: Fix typo in comment
+References: <20220618131305.13101-1-wangxiang@cdjrlc.com>
+        <165891947499.17998.10174395154988805110.kvalo@kernel.org>
+Date:   Wed, 27 Jul 2022 14:03:00 +0300
+In-Reply-To: <165891947499.17998.10174395154988805110.kvalo@kernel.org> (Kalle
+        Valo's message of "Wed, 27 Jul 2022 10:57:56 +0000 (UTC)")
+Message-ID: <874jz2lswr.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,18 +59,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Slark Xiao <slark_xiao@163.com> wrote:
+Kalle Valo <kvalo@kernel.org> writes:
 
-> Replace 'the the' with 'the' in the comment.
-> 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> Xiang wangx <wangxiang@cdjrlc.com> wrote:
+>
+>> Delete the redundant word 'and'.
+>> 
+>> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+>
+> Patch applied to wireless-next.git, thanks.
+>
+> 3f368ed80201 wifi: mwl8k: use time_after to replace "jiffies > a"
 
-Patch applied to wireless-next.git, thanks.
-
-08df8fbeb241 wifi: mwifiex: Fix comment typo
+Oh man, my patchwork script doesn't detect if a similar patch has been
+already applied and it just silently accepts the patch. That's why mwl8k
+is showing here and in other typo fixes.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220722084833.76159-1-slark_xiao@163.com/
+https://patchwork.kernel.org/project/linux-wireless/list/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
