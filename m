@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ECBD5822B9
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91D65822DF
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbiG0JHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 05:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        id S230201AbiG0JOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 05:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231480AbiG0JGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:06:32 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8652647BAE
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:06:20 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id j195so9868813ybj.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:06:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2JA3LAcWFrVgyNzQ7tMzU8nSe9RRNefwId5LqLUrTHQ=;
-        b=ezdrOVHkkyEdsd/J8XDbRmdIHm7C5TePfztuPZ1+9R7RYYYgX8fx2sv6pD+0jpkAk9
-         ZU83e2CNY86ab90uImfbz3u4zZJtrKiTbuFTIGpX30JX1N1Is1ROn//mtf3OkPZRz6Yx
-         1EarM9/uzIFwgKeGKawqXUYQde8F03mRUiEbrAdhxaWFH1chCR2ZuZsyAAS6mKnMJuRu
-         5UMMEZIQz5Wy7DumqXoVGKwamiiMPK6l+6BJhvC42yylB4tRqobUhEPvVdTSA5um1TI5
-         R7oGn4o+d1XL0SmX/RbVpAkHuMISzLyjNIJwwPmCsBUjYYyzEU92leesROlpH54OjX5c
-         LBeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2JA3LAcWFrVgyNzQ7tMzU8nSe9RRNefwId5LqLUrTHQ=;
-        b=RWySU6eRwW/zzxLBYywaqG+z7BGsqZKmprn63Wv6DDKEXcCqyDBWPDVdcDNoWykj46
-         NXubO8v3j+hFKwE8023BuxlENblztuffvpnZ3QWfKU6xo/9qOfEn2PIp1ta+xNE5RJ6d
-         CngdoU8o7Z7yTr2U1mZHF41J0rSVOzntdpD0t1SAdhCNfqH5N6Fsej7q8JQfa+pRPFww
-         HW9xmD8d90eqJYcV68G4N5On/QYRO+Bt7jjkstP7Sub6FCqrwX8xLvWEc844u2u3jMV6
-         WTVFGmxI3Al2JTNK5t7hC2e5Su3pKevdndMIssvGOQtH65/ZVcyrHIRrGm3S58g8SmY+
-         jkBA==
-X-Gm-Message-State: AJIora/V1ao55OY06fnyTJisecup8i1HgY6bzR9aOBDGVi0xcezu90u2
-        QGdDVbTM2cjNDlCGO+/Sznxex5Wjg2PK6kGuJlXsJwlY3DbPtg==
-X-Google-Smtp-Source: AGRyM1utHHIu+akhBwjmIFnrGj314eH11OJTAANegqIGBEFMt8iP4Tg/0hGy+lcXERizu/7pX03O+x/wsBmharnvQRw=
-X-Received: by 2002:a25:e752:0:b0:671:cdb7:90fd with SMTP id
- e79-20020a25e752000000b00671cdb790fdmr485491ybh.407.1658912779195; Wed, 27
- Jul 2022 02:06:19 -0700 (PDT)
+        with ESMTP id S231767AbiG0JN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:13:59 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F78474E2;
+        Wed, 27 Jul 2022 02:11:18 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lt7K923Syz9sv0;
+        Wed, 27 Jul 2022 17:10:05 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 17:11:15 +0800
+Subject: Re: [PATCH net v2] ipv6/addrconf: fix a null-ptr-deref bug for
+ ip6_ptr
+To:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220726115028.3055296-1-william.xuanziyang@huawei.com>
+ <CANn89iJNHhq9zbmL2DF-up_hBRHuwkPiNUpMS+LHoumy5ohQZA@mail.gmail.com>
+ <48fd2345-ef86-da0d-c471-c576aa93d9f5@kernel.org>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <b63eeb55-df38-618a-d7af-91b18f1d6f0f@huawei.com>
+Date:   Wed, 27 Jul 2022 17:11:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20220722103750.1938776d@kernel.org> <20220726182518.47047-1-f6bvp@free.fr>
-In-Reply-To: <20220726182518.47047-1-f6bvp@free.fr>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 27 Jul 2022 11:06:08 +0200
-Message-ID: <CANn89i+FBa-KLJz5xPvk3jO3Miww4Vs+qw4nPf_9SPwiWpyTWw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] [PATCH] net: rose: fix unregistered netdevice:
- waiting for rose0 to become free
-To:     Bernard Pidoux <f6bvp@free.fr>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+In-Reply-To: <48fd2345-ef86-da0d-c471-c576aa93d9f5@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,138 +57,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 8:25 PM Bernard Pidoux <f6bvp@free.fr> wrote:
->
-> Here is the context.
->
-> This patch adds dev_put(dev) in order to allow removal of rose module
-> after use of AX25 and ROSE via rose0 device.
->
-> Otherwise when trying to remove rose module via rmmod rose an infinite
-> loop message was displayed on all consoles with xx being a random number.
->
-> unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
->
-> unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
->
-> ...
->
-> With the patch it is ok to rmmod rose.
+> On 7/26/22 6:13 AM, Eric Dumazet wrote:
+>> On Tue, Jul 26, 2022 at 1:50 PM Ziyang Xuan
+>> <william.xuanziyang@huawei.com> wrote:
+>>>
+>>> Change net device's MTU to smaller than IPV6_MIN_MTU or unregister
+>>> device while matching route. That may trigger null-ptr-deref bug
+>>> for ip6_ptr probability as following.
+>>>
+>>> =========================================================
+>>> BUG: KASAN: null-ptr-deref in find_match.part.0+0x70/0x134
+>>> Read of size 4 at addr 0000000000000308 by task ping6/263
+>>>
+>>> CPU: 2 PID: 263 Comm: ping6 Not tainted 5.19.0-rc7+ #14
+>>> Call trace:
+>>>  dump_backtrace+0x1a8/0x230
+>>>  show_stack+0x20/0x70
+>>>  dump_stack_lvl+0x68/0x84
+>>>  print_report+0xc4/0x120
+>>>  kasan_report+0x84/0x120
+>>>  __asan_load4+0x94/0xd0
+>>>  find_match.part.0+0x70/0x134
+>>>  __find_rr_leaf+0x408/0x470
+>>>  fib6_table_lookup+0x264/0x540
+>>>  ip6_pol_route+0xf4/0x260
+>>>  ip6_pol_route_output+0x58/0x70
+>>>  fib6_rule_lookup+0x1a8/0x330
+>>>  ip6_route_output_flags_noref+0xd8/0x1a0
+>>>  ip6_route_output_flags+0x58/0x160
+>>>  ip6_dst_lookup_tail+0x5b4/0x85c
+>>>  ip6_dst_lookup_flow+0x98/0x120
+>>>  rawv6_sendmsg+0x49c/0xc70
+>>>  inet_sendmsg+0x68/0x94
+>>>
+>>> Reproducer as following:
+>>> Firstly, prepare conditions:
+>>> $ip netns add ns1
+>>> $ip netns add ns2
+>>> $ip link add veth1 type veth peer name veth2
+>>> $ip link set veth1 netns ns1
+>>> $ip link set veth2 netns ns2
+>>> $ip netns exec ns1 ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1
+>>> $ip netns exec ns2 ip -6 addr add 2001:0db8:0:f101::2/64 dev veth2
+>>> $ip netns exec ns1 ifconfig veth1 up
+>>> $ip netns exec ns2 ifconfig veth2 up
+>>> $ip netns exec ns1 ip -6 route add 2000::/64 dev veth1 metric 1
+>>> $ip netns exec ns2 ip -6 route add 2001::/64 dev veth2 metric 1
+>>>
+>>> Secondly, execute the following two commands in two ssh windows
+>>> respectively:
+>>> $ip netns exec ns1 sh
+>>> $while true; do ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1; ip -6 route add 2000::/64 dev veth1 metric 1; ping6 2000::2; done
+>>>
+>>> $ip netns exec ns1 sh
+>>> $while true; do ip link set veth1 mtu 1000; ip link set veth1 mtu 1500; sleep 5; done
+>>>
+>>> It is because ip6_ptr has been assigned to NULL in addrconf_ifdown() firstly,
+>>> then ip6_ignore_linkdown() accesses ip6_ptr directly without NULL check.
+>>>
+>>>         cpu0                    cpu1
+>>> fib6_table_lookup
+>>> __find_rr_leaf
+>>>                         addrconf_notify [ NETDEV_CHANGEMTU ]
+>>>                         addrconf_ifdown
+>>>                         RCU_INIT_POINTER(dev->ip6_ptr, NULL)
+>>> find_match
+>>> ip6_ignore_linkdown
+>>>
+>>> So we can add NULL check for ip6_ptr before using in ip6_ignore_linkdown() to
+>>> fix the null-ptr-deref bug.
+>>>
+>>> Fixes: 6d3d07b45c86 ("ipv6: Refactor fib6_ignore_linkdown")
+>>
+>> If we need to backport, I guess dcd1f572954f ("net/ipv6: Remove fib6_idev")
+>> already had the bug.
+> 
+> Yes, that is the right Fixes commit.
 
-But removing a net device will leave a dangling pointer, leading to UAF.
+OK
 
-We must keep a reference and remove it when the socket is dismantled.
+> 
+>>
+>>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>>>
+>>> ---
+>>> v2:
+>>>   - Use NULL check in ip6_ignore_linkdown() but synchronize_net() in
+>>>     addrconf_ifdown()
+>>>   - Add timing analysis of the problem
+>>>
+>>> ---
+>>>  include/net/addrconf.h | 3 +++
+>>>  1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+>>> index f7506f08e505..c04f359655b8 100644
+>>> --- a/include/net/addrconf.h
+>>> +++ b/include/net/addrconf.h
+>>> @@ -405,6 +405,9 @@ static inline bool ip6_ignore_linkdown(const struct net_device *dev)
+>>>  {
+>>>         const struct inet6_dev *idev = __in6_dev_get(dev);
+>>>
+>>> +       if (unlikely(!idev))
+>>> +               return true;
+>>> +
+> 
+> Reviewed-by: David Ahern <dsahern@kernel.org>
+> 
+>>
+>> Note that we might read a non NULL pointer here, but read it again
+>> later in rt6_score_route(),
+>> since another thread could switch the pointer under us ?
+>>
 
-Also rose_dev_first() is buggy, because it leaves the rcu section
-without taking first a reference on the found device.
+Yes, this patch just cover the problem I'm having.
+I have checked the codes in kernel, there are some scenarios using __in6_dev_get()
+without NULL check and rtnl_lock. There is a possibility of null-ptr-deref bug.
+I will give a patch to fix them later.
 
-Here is a probably not complete patch, can you give it a try ?
-
-(Also enable CONFIG_NET_DEV_REFCNT_TRACKER=y in your .config to ease debugging)
-
-(I can send you privately the patch, just ask me, I include it inline
-here for clarity only)
-
-Thanks.
-
-diff --git a/include/net/rose.h b/include/net/rose.h
-index 0f0a4ce0fee7cc5e125507a8fc3cfb8cb826be73..64f808eed0e15a2482e8ce010d712eef1e0b9d85
-100644
---- a/include/net/rose.h
-+++ b/include/net/rose.h
-@@ -131,7 +131,8 @@ struct rose_sock {
-        ax25_address            source_digis[ROSE_MAX_DIGIS];
-        ax25_address            dest_digis[ROSE_MAX_DIGIS];
-        struct rose_neigh       *neighbour;
--       struct net_device               *device;
-+       struct net_device       *device;
-+       netdevice_tracker       dev_tracker;
-        unsigned int            lci, rand;
-        unsigned char           state, condition, qbitincl, defer;
-        unsigned char           cause, diagnostic;
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index bf2d986a6bc392a9d830b1dfa7fbaa3bca969aa3..520a48999f1bf8a41d66e8a4f86606b66f2b9408
-100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -192,6 +192,7 @@ static void rose_kill_by_device(struct net_device *dev)
-                        rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
-                        if (rose->neighbour)
-                                rose->neighbour->use--;
-+                       dev_put_track(rose->device, &rose->dev_tracker);
-                        rose->device = NULL;
-                }
-        }
-@@ -592,6 +593,8 @@ static struct sock *rose_make_new(struct sock *osk)
-        rose->idle      = orose->idle;
-        rose->defer     = orose->defer;
-        rose->device    = orose->device;
-+       if (rose->device)
-+               dev_hold_track(rose->device, &rose->dev_tracker, GFP_ATOMIC);
-        rose->qbitincl  = orose->qbitincl;
-
-        return sk;
-@@ -695,7 +698,11 @@ static int rose_bind(struct socket *sock, struct
-sockaddr *uaddr, int addr_len)
-        }
-
-        rose->source_addr   = addr->srose_addr;
-+       // TODO: should probably hold socket lock at this point ?
-+       WARN_ON_ONCE(rose->device);
-        rose->device        = dev;
-+       netdev_tracker_alloc(rose->device, &rose->dev_tracker, GFP_KERNEL);
-+
-        rose->source_ndigis = addr->srose_ndigis;
-
-        if (addr_len == sizeof(struct full_sockaddr_rose)) {
-@@ -721,7 +728,6 @@ static int rose_connect(struct socket *sock,
-struct sockaddr *uaddr, int addr_le
-        struct rose_sock *rose = rose_sk(sk);
-        struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
-        unsigned char cause, diagnostic;
--       struct net_device *dev;
-        ax25_uid_assoc *user;
-        int n, err = 0;
-
-@@ -778,9 +784,12 @@ static int rose_connect(struct socket *sock,
-struct sockaddr *uaddr, int addr_le
-        }
-
-        if (sock_flag(sk, SOCK_ZAPPED)) {       /* Must bind first -
-autobinding in this may or may not work */
-+               struct net_device *dev;
-+
-                sock_reset_flag(sk, SOCK_ZAPPED);
-
--               if ((dev = rose_dev_first()) == NULL) {
-+               dev = rose_dev_first();
-+               if (!dev) {
-                        err = -ENETUNREACH;
-                        goto out_release;
-                }
-@@ -788,12 +797,15 @@ static int rose_connect(struct socket *sock,
-struct sockaddr *uaddr, int addr_le
-                user = ax25_findbyuid(current_euid());
-                if (!user) {
-                        err = -EINVAL;
-+                       dev_put(dev);
-                        goto out_release;
-                }
-
-                memcpy(&rose->source_addr, dev->dev_addr, ROSE_ADDR_LEN);
-                rose->source_call = user->call;
-                rose->device      = dev;
-+               netdev_tracker_alloc(rose->device, &rose->dev_tracker,
-+                                    GFP_KERNEL);
-                ax25_uid_put(user);
-
-                rose_insert_socket(sk);         /* Finish the bind */
-@@ -1017,6 +1029,7 @@ int rose_rx_call_request(struct sk_buff *skb,
-struct net_device *dev, struct ros
-                make_rose->source_digis[n] = facilities.source_digis[n];
-        make_rose->neighbour     = neigh;
-        make_rose->device        = dev;
-+       dev_hold_track(make_rose->device, &make_rose->dev_tracker, GFP_ATOMIC);
-        make_rose->facilities    = facilities;
-
-        make_rose->neighbour->use++;
+> 
+> for silly MTU games yes, that could happen.
+> .
+> 
