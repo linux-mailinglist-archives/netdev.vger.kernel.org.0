@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 751D5581E10
+	by mail.lfdr.de (Postfix) with ESMTP id C1472581E11
 	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 05:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240261AbiG0DPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 23:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
+        id S240269AbiG0DPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 23:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240249AbiG0DPe (ORCPT
+        with ESMTP id S240250AbiG0DPe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 23:15:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9291F618;
-        Tue, 26 Jul 2022 20:15:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FE620F57
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 20:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8DAE6179E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56471617A4
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D97DC43140;
         Wed, 27 Jul 2022 03:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC23C43470;
-        Wed, 27 Jul 2022 03:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658891728;
-        bh=98m1MP/BsUSS1HT5ZOJ6sMn10injMVph2ZMCGFuPrsc=;
+        bh=VPtOcUvdiHWkg4sltjX6PQZy8GnDVhv4g62dFSjc5qU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oIBybeH8Vv+ALbEwqhddGczxN/v8jvBikvgOkDwKuiil0kPdiGk94TnuV4sZxKecY
-         y3nP9COxHmObRFf97kr4k6ZoEmW/T5UEgTzOUfIeIQePXJwOEBVZsrs0DQG1Ql3FOh
-         4/c6gHvBNRb191C8p9xTFKXOe1Mdj6OVu66EPsqA/7dbLdIkWMepLWuarkm+gFYa78
-         URhKcDWPKGh1/WhjSSrLFizYTJN/repVz8wlzLJ5eUlY+0lpf0UxUHw9bVr1nNO7Z6
-         v5qEZfE72B9NiyzhXJUHxHobLYOlJHy+xdG/PlN2w31fbPG50DmP4bWZ743Mvg0ThR
-         uKnp6uSW9iVaQ==
+        b=lTkCBrGExyj9b6nuwQneQEyaQu6R7ILZ8/CD0qbT4eMol84lku41Z+eSoeP+Kfz+T
+         NspVDMPG0Q686rNoxxbxDl/72MqgbVQGGLsStEyAsVnvYpRSOUa70ENpVUxV/mTCDE
+         Bgyq1I38Vtunr/NgfHs5AN3D3Hn+dbAm6Njn0zKUS7wRkucpgYjwQPg3cyJOknPx8Q
+         hJxF7cU7z6ctifCPdIRFeTlJr6oG+Qs1EbwtKcmP6rB34by798r18+m8+OZP/0Bfyf
+         ehR1vK4fCiTSpx+PNm6MSTwJtOR8FtLsLJIzVc5y0yEg8ooXz4lE/xTLZIUc5iQG91
+         IObib3MZuzBMA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
-        Jakub Kicinski <kuba@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next 1/4] selftests: tls: handful of memrnd() and length checks
-Date:   Tue, 26 Jul 2022 20:15:21 -0700
-Message-Id: <20220727031524.358216-2-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 2/4] tls: rx: don't consider sock_rcvtimeo() cumulative
+Date:   Tue, 26 Jul 2022 20:15:22 -0700
+Message-Id: <20220727031524.358216-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727031524.358216-1-kuba@kernel.org>
 References: <20220727031524.358216-1-kuba@kernel.org>
@@ -55,89 +54,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a handful of memory randomizations and precise length checks.
-Nothing is really broken here, I did this to increase confidence
-when debugging. It does fix a GCC warning, tho. Apparently GCC
-recognizes that memory needs to be initialized for send() but
-does not recognize that for write().
+Eric indicates that restarting rcvtimeo on every wait may be fine.
+I thought that we should consider it cumulative, and made
+tls_rx_reader_lock() return the remaining timeo after acquiring
+the reader lock.
 
+tls_rx_rec_wait() gets its timeout passed in by value so it
+does not keep track of time previously spent.
+
+Make the lock waiting consistent with tls_rx_rec_wait() - don't
+keep track of time spent.
+
+Read the timeo fresh in tls_rx_rec_wait().
+It's unclear to me why callers are supposed to cache the value.
+
+Link: https://lore.kernel.org/all/CANn89iKcmSfWgvZjzNGbsrndmCch2HC_EPZ7qmGboDNaWoviNQ@mail.gmail.com/
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: shuah@kernel.org
-CC: linux-kselftest@vger.kernel.org
----
- tools/testing/selftests/net/tls.c | 26 +++++++++++++++++---------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ net/tls/tls_sw.c | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 4ecbac197c46..2cbb12736596 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -644,12 +644,14 @@ TEST_F(tls, splice_from_pipe2)
- 	int p2[2];
- 	int p[2];
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 0fc24a5ce208..8bac7ea2c264 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1283,11 +1283,14 @@ int tls_sw_sendpage(struct sock *sk, struct page *page,
  
-+	memrnd(mem_send, sizeof(mem_send));
+ static int
+ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+-		bool released, long timeo)
++		bool released)
+ {
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+ 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
++	long timeo;
 +
- 	ASSERT_GE(pipe(p), 0);
- 	ASSERT_GE(pipe(p2), 0);
--	EXPECT_GE(write(p[1], mem_send, 8000), 0);
--	EXPECT_GE(splice(p[0], NULL, self->fd, NULL, 8000, 0), 0);
--	EXPECT_GE(write(p2[1], mem_send + 8000, 8000), 0);
--	EXPECT_GE(splice(p2[0], NULL, self->fd, NULL, 8000, 0), 0);
-+	EXPECT_EQ(write(p[1], mem_send, 8000), 8000);
-+	EXPECT_EQ(splice(p[0], NULL, self->fd, NULL, 8000, 0), 8000);
-+	EXPECT_EQ(write(p2[1], mem_send + 8000, 8000), 8000);
-+	EXPECT_EQ(splice(p2[0], NULL, self->fd, NULL, 8000, 0), 8000);
- 	EXPECT_EQ(recv(self->cfd, mem_recv, send_len, MSG_WAITALL), send_len);
- 	EXPECT_EQ(memcmp(mem_send, mem_recv, send_len), 0);
- }
-@@ -683,10 +685,12 @@ TEST_F(tls, splice_to_pipe)
- 	char mem_recv[TLS_PAYLOAD_MAX_LEN];
- 	int p[2];
++	timeo = sock_rcvtimeo(sk, nonblock);
  
-+	memrnd(mem_send, sizeof(mem_send));
-+
- 	ASSERT_GE(pipe(p), 0);
--	EXPECT_GE(send(self->fd, mem_send, send_len, 0), 0);
--	EXPECT_GE(splice(self->cfd, NULL, p[1], NULL, send_len, 0), 0);
--	EXPECT_GE(read(p[0], mem_recv, send_len), 0);
-+	EXPECT_EQ(send(self->fd, mem_send, send_len, 0), send_len);
-+	EXPECT_EQ(splice(self->cfd, NULL, p[1], NULL, send_len, 0), send_len);
-+	EXPECT_EQ(read(p[0], mem_recv, send_len), send_len);
- 	EXPECT_EQ(memcmp(mem_send, mem_recv, send_len), 0);
+ 	while (!tls_strp_msg_ready(ctx)) {
+ 		if (!sk_psock_queue_empty(psock))
+@@ -1308,7 +1311,7 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+ 		if (sock_flag(sk, SOCK_DONE))
+ 			return 0;
+ 
+-		if (nonblock || !timeo)
++		if (!timeo)
+ 			return -EAGAIN;
+ 
+ 		released = true;
+@@ -1842,8 +1845,8 @@ tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
+ 	return sk_flush_backlog(sk);
  }
  
-@@ -875,6 +879,8 @@ TEST_F(tls, multiple_send_single_recv)
- 	char recv_mem[2 * 10];
- 	char send_mem[10];
+-static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
+-			       bool nonblock)
++static int tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
++			      bool nonblock)
+ {
+ 	long timeo;
+ 	int err;
+@@ -1874,7 +1877,7 @@ static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
  
-+	memrnd(send_mem, sizeof(send_mem));
-+
- 	EXPECT_GE(send(self->fd, send_mem, send_len, 0), 0);
- 	EXPECT_GE(send(self->fd, send_mem, send_len, 0), 0);
- 	memset(recv_mem, 0, total_len);
-@@ -891,6 +897,8 @@ TEST_F(tls, single_send_multiple_recv_non_align)
- 	char recv_mem[recv_len * 2];
- 	char send_mem[total_len];
+ 	WRITE_ONCE(ctx->reader_present, 1);
  
-+	memrnd(send_mem, sizeof(send_mem));
-+
- 	EXPECT_GE(send(self->fd, send_mem, total_len, 0), 0);
- 	memset(recv_mem, 0, total_len);
+-	return timeo;
++	return 0;
  
-@@ -936,10 +944,10 @@ TEST_F(tls, recv_peek)
- 	char buf[15];
+ err_unlock:
+ 	release_sock(sk);
+@@ -1913,8 +1916,7 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	struct tls_msg *tlm;
+ 	ssize_t copied = 0;
+ 	bool async = false;
+-	int target, err = 0;
+-	long timeo;
++	int target, err;
+ 	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
+ 	bool is_peek = flags & MSG_PEEK;
+ 	bool released = true;
+@@ -1925,9 +1927,9 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		return sock_recv_errqueue(sk, msg, len, SOL_IP, IP_RECVERR);
  
- 	EXPECT_EQ(send(self->fd, test_str, send_len, 0), send_len);
--	EXPECT_NE(recv(self->cfd, buf, send_len, MSG_PEEK), -1);
-+	EXPECT_EQ(recv(self->cfd, buf, send_len, MSG_PEEK), send_len);
- 	EXPECT_EQ(memcmp(test_str, buf, send_len), 0);
- 	memset(buf, 0, sizeof(buf));
--	EXPECT_NE(recv(self->cfd, buf, send_len, 0), -1);
-+	EXPECT_EQ(recv(self->cfd, buf, send_len, 0), send_len);
- 	EXPECT_EQ(memcmp(test_str, buf, send_len), 0);
- }
+ 	psock = sk_psock_get(sk);
+-	timeo = tls_rx_reader_lock(sk, ctx, flags & MSG_DONTWAIT);
+-	if (timeo < 0)
+-		return timeo;
++	err = tls_rx_reader_lock(sk, ctx, flags & MSG_DONTWAIT);
++	if (err < 0)
++		return err;
+ 	bpf_strp_enabled = sk_psock_strp_enabled(psock);
+ 
+ 	/* If crypto failed the connection is broken */
+@@ -1954,8 +1956,8 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		struct tls_decrypt_arg darg;
+ 		int to_decrypt, chunk;
+ 
+-		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, released,
+-				      timeo);
++		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT,
++				      released);
+ 		if (err <= 0) {
+ 			if (psock) {
+ 				chunk = sk_msg_recvmsg(sk, psock, msg, len,
+@@ -2131,13 +2133,12 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+ 	struct tls_msg *tlm;
+ 	struct sk_buff *skb;
+ 	ssize_t copied = 0;
+-	int err = 0;
+-	long timeo;
+ 	int chunk;
++	int err;
+ 
+-	timeo = tls_rx_reader_lock(sk, ctx, flags & SPLICE_F_NONBLOCK);
+-	if (timeo < 0)
+-		return timeo;
++	err = tls_rx_reader_lock(sk, ctx, flags & SPLICE_F_NONBLOCK);
++	if (err < 0)
++		return err;
+ 
+ 	if (!skb_queue_empty(&ctx->rx_list)) {
+ 		skb = __skb_dequeue(&ctx->rx_list);
+@@ -2145,7 +2146,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+ 		struct tls_decrypt_arg darg;
+ 
+ 		err = tls_rx_rec_wait(sk, NULL, flags & SPLICE_F_NONBLOCK,
+-				      true, timeo);
++				      true);
+ 		if (err <= 0)
+ 			goto splice_read_end;
  
 -- 
 2.37.1
