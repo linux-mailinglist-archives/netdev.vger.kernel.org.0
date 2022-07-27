@@ -2,189 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4159F5826C5
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 14:37:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BED9A5826F8
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 14:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbiG0MhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 08:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
+        id S233321AbiG0MsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 08:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233242AbiG0MhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 08:37:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5408632D9D
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 05:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658925438;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4LWH5gfewkP2m9y0QehAONnCxfwoC2hdUW6P/cyixj4=;
-        b=MpFDnMIn5YsixoYMfxydyZGmBOrW4acAfgOaEv/w7cUB4HilrTkHDxInljKQG+KzbfnDg1
-        mcPVOi91/ny6hRF/ehyVt/wbI2zy9Mdhx4jptMbCscUIrUgw60D4w3wmjWqtTaVee1vrNL
-        qqeV07Zg2Prh3xrEROr6oXTEjaAq/ME=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-l7HIVSKKPzaquBRTxSSJlQ-1; Wed, 27 Jul 2022 08:37:17 -0400
-X-MC-Unique: l7HIVSKKPzaquBRTxSSJlQ-1
-Received: by mail-wr1-f71.google.com with SMTP id u17-20020adfa191000000b0021ed2209fccso322081wru.16
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 05:37:17 -0700 (PDT)
+        with ESMTP id S232392AbiG0MsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 08:48:19 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45A11D31D
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 05:48:17 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id bn9so13128823wrb.9
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 05:48:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=lTFRk3XR7YDLUaylorcu/dUFbXd/UNcCq4by2GHb65Y=;
+        b=eSqDT0KE3ZmVNeBOsT72LeMAQqSYAeUJxsz6wzuXOZkQ84VHqeCEzEcV2Bvz7V63fZ
+         0g95CKKyZeN/ArBj0cosd3vhfpsIXwoLkak11Gxlr7qxHGhOhn9ipCM3GnwoPG9Bdito
+         waIcIRGrTvbsjWEcFhy2aA/IoG3hOacwhvXYUjRR52iHvDfbl2HJ5vX9qhunPjnLIgGX
+         Q6X8LudGy5V5c5GZF1SjQzKE+jty704GIFZ4GxA+55adZpz1i7LgpFkHSDWwUKMGrJY4
+         G52iqQm+j3ETsaBnU5KGJ1HBxb3+veIU/booUo588HpPrguuthJH2Jh5SfLBQ/035Y0j
+         bIDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4LWH5gfewkP2m9y0QehAONnCxfwoC2hdUW6P/cyixj4=;
-        b=fTSavFzWnhA2YBUST+GWA5bMokxWOgnBmOCH8Fce2PoGQJxiCfMsT3osJFiRlF23zb
-         3jSrzbYEaf2gdGorPDpdE6yF3ItRk3wmLtiGZl8iIJb0wWgkLEK68iwfRY3XVaW1d0ZE
-         L7cDHWz/Ng1HZ/DqfMPUAIvYO89JPU+E/QC+ekVD5C9qxi1ZusXuJOg0wmRbBGZCtoXg
-         EGmJg9Y0NL8HSKgKLQnnnPuHj7+nA3f/uIXGJQxa0jUGGO/BMFgNAtjIAv5qrWpECNlx
-         A0pWyyO9mPmGeVWtwVV/YlD+2V8Y1jwjXkAKD5EDv6Wv/Xd2C9KZAw+Py/k94/nvpqP3
-         R/zA==
-X-Gm-Message-State: AJIora+Uu8ncS0TK1QS5/YOL0SMMFg7Kf+Wum0CMO2rdcB3a7aGQaK1V
-        eRFKVz3C5yjhXMNzlYYBLAcgxh945f7reXzh28pSIQ4UZGUdSbF5JI7XO8UhGjKV17whAB/cNFN
-        RUtUI05aGSv1JhU2M
-X-Received: by 2002:adf:d1e8:0:b0:21d:ac9c:983d with SMTP id g8-20020adfd1e8000000b0021dac9c983dmr13770276wrd.629.1658925436043;
-        Wed, 27 Jul 2022 05:37:16 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vJrWqBiaq6uBMB03xiUMkRFhOPCI0fFvUqiEuTuZWyTbuHIhoAAyTdDFMM07jJhUESZdjGNg==
-X-Received: by 2002:adf:d1e8:0:b0:21d:ac9c:983d with SMTP id g8-20020adfd1e8000000b0021dac9c983dmr13770264wrd.629.1658925435819;
-        Wed, 27 Jul 2022 05:37:15 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id u9-20020adff889000000b0020fcaba73bcsm16755266wrp.104.2022.07.27.05.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 05:37:15 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 14:37:10 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
-Message-ID: <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
-References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=lTFRk3XR7YDLUaylorcu/dUFbXd/UNcCq4by2GHb65Y=;
+        b=ErVpo75XFuSWoQed3xasSJ8d8r7dOZrGEGYtBVVyXQlCU18JlfTAT5827PLN/E9kGb
+         Iizy0I57QlFbRo+ijlLUnAIa26yTCzjE35y650Dxbx4t940JOb9NCQvU26bmm5rUq1f8
+         RgeEGxa9Ilf85QXmg/k5qH+SYY5K1PMwCeuyaxJGOC12yyLGOUuImlafAe0ukIcVMQ44
+         6c0VEeQvgL9zVVfSDYjlTsqssMIBb9x8jG5TaNHO6jGiQAQdxJJpa/hpwUQSdIQoRDQa
+         gClQJszBmYOjielELXm0J7kGMIQc15oN5QQHPxj8b/FMSz8UKpLA9MuL1wuWEZFGxw3e
+         qQIA==
+X-Gm-Message-State: AJIora+iDijzog/uBs0sKqtRmyuVqc7P+pX/aCelWGwZH5ptyxuUxxrz
+        ounT29ZcDLbZS12IrX0x5vRu1CdIq3pG74UvecAnJ6r0h2Y=
+X-Google-Smtp-Source: AGRyM1u9fW/WoaOqxNScbRdaXhMc8+WYHzSQpGPPHXCe1+8RV1tMy7+xE0iDCnZvTjovhvv2G5Y6Muw+x3Y6ZE/1Xjk=
+X-Received: by 2002:a5d:648c:0:b0:21e:9872:5a38 with SMTP id
+ o12-20020a5d648c000000b0021e98725a38mr6916093wri.556.1658926095758; Wed, 27
+ Jul 2022 05:48:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <CAFZh4h-JVWt80CrQWkFji7tZJahMfOToUJQgKS5s0_=9zzpvYQ@mail.gmail.com>
+ <fd16ebb3-2435-ef01-d9f1-b873c9c0b389@gmail.com>
+In-Reply-To: <fd16ebb3-2435-ef01-d9f1-b873c9c0b389@gmail.com>
+From:   Brian Hutchinson <b.hutchman@gmail.com>
+Date:   Wed, 27 Jul 2022 08:48:04 -0400
+Message-ID: <CAFZh4h9e6pY43oLMj4_Z-eiA_tA-e2mE=NpeZqat66b8TeukAw@mail.gmail.com>
+Subject: Re: Bonded multicast traffic causing packet loss when using DSA with
+ Microchip KSZ9567 switch
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arseniy,
+On Mon, Jul 25, 2022 at 5:35 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+.
+.
+.
+> This is a red herring, we cannot tell the network stack without much special casing that the DSA network device must only transport tagged traffic to/from the switch, so the IPv6 stack still happily generates a link local address for your adapter.
+>
+> Any chance of getting the outputs of ethtool -S for lan1 and lan2, and eth0 so we could possibly glean something from the hardware maintained statistics?
+>
+As requested, statistics below:
 
-On Mon, Jul 25, 2022 at 07:54:05AM +0000, Arseniy Krasnov wrote:
->Hello,
->
->This patchset includes some updates for SO_RCVLOWAT:
->
->1) af_vsock:
->   During my experiments with zerocopy receive, i found, that in some
->   cases, poll() implementation violates POSIX: when socket has non-
->   default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
->   POLLRDNORM bits in 'revents' even number of bytes available to read
->   on socket is smaller than SO_RCVLOWAT value. In this case,user sees
->   POLLIN flag and then tries to read data(for example using  'read()'
->   call), but read call will be blocked, because  SO_RCVLOWAT logic is
->   supported in dequeue loop in af_vsock.c. But the same time,  POSIX
->   requires that:
->
->   "POLLIN     Data other than high-priority data may be read without
->               blocking.
->    POLLRDNORM Normal data may be read without blocking."
->
->   See https://www.open-std.org/jtc1/sc22/open/n4217.pdf, page 293.
->
->   So, we have, that poll() syscall returns POLLIN, but read call will
->   be blocked.
->
->   Also in man page socket(7) i found that:
->
->   "Since Linux 2.6.28, select(2), poll(2), and epoll(7) indicate a
->   socket as readable only if at least SO_RCVLOWAT bytes are available."
->
->   I checked TCP callback for poll()(net/ipv4/tcp.c, tcp_poll()), it
->   uses SO_RCVLOWAT value to set POLLIN bit, also i've tested TCP with
->   this case for TCP socket, it works as POSIX required.
->
->   I've added some fixes to af_vsock.c and virtio_transport_common.c,
->   test is also implemented.
->
->2) virtio/vsock:
->   It adds some optimization to wake ups, when new data arrived. Now,
->   SO_RCVLOWAT is considered before wake up sleepers who wait new data.
->   There is no sense, to kick waiter, when number of available bytes
->   in socket's queue < SO_RCVLOWAT, because if we wake up reader in
->   this case, it will wait for SO_RCVLOWAT data anyway during dequeue,
->   or in poll() case, POLLIN/POLLRDNORM bits won't be set, so such
->   exit from poll() will be "spurious". This logic is also used in TCP
->   sockets.
+I power cycled my board, ran my script to setup active-backup bond and
+repeated the iperf test to obtain requested statistics.
 
-Nice, it looks good!
+Bond setup script basically does:
 
->
->3) vmci/vsock:
->   Same as 2), but i'm not sure about this changes. Will be very good,
->   to get comments from someone who knows this code.
+# Load bonding kernel module
+modprobe bonding
 
-I CCed VMCI maintainers to the patch and also to this cover, maybe 
-better to keep them in the loop for next versions.
+# Bring up CPU interface (cpu to switch port 7 - the RGMII link)
+ip link set eth0 up
 
-(Jorgen's and Rajesh's emails bounced back, so I'm CCing here only 
-Bryan, Vishnu, and pv-drivers@vmware.com)
+# Create a bond
+echo +bond1 > /sys/class/net/bonding_masters
 
->
->4) Hyper-V:
->   As Dexuan Cui mentioned, for Hyper-V transport it is difficult to
->   support SO_RCVLOWAT, so he suggested to disable this feature for
->   Hyper-V.
+# Set mode to active-backup (redundancy failover)
+echo active-backup > /sys/class/net/bond1/bonding/mode
 
-I left a couple of comments in some patches, but it seems to me to be in 
-a good state :-)
+# Set time it takes (in ms) for slave to move when a link goes down
+echo 1000 > /sys/class/net/bond1/bonding/miimon
 
-I would just suggest a bit of a re-organization of the series (the 
-patches are fine, just the order):
-   - introduce vsock_set_rcvlowat()
-   - disabling it for hv_sock
-   - use 'target' in virtio transports
-   - use 'target' in vmci transports
-   - use sock_rcvlowat in vsock_poll()
-     I think is better to pass sock_rcvlowat() as 'target' when the
-     transports are already able to use it
-   - add vsock_data_ready()
-   - use vsock_data_ready() in virtio transports
-   - use vsock_data_ready() in vmci transports
-   - tests
+# Add slaves to bond
 
-What do you think?
+echo +lan1 > /sys/class/net/bond1/bonding/slaves
+echo +lan2 > /sys/class/net/bond1/bonding/slaves
 
-Thanks,
-Stefano
+# Set IP and netmask of the bond
+ip addr add 192.168.1.6/24 dev bond1
 
+# And bring bond up.  Pings and network connectivity should work now
+ip link set bond1 up
+
+Things I noticed in the data:
+
+1.  I'm getting rx_discards which in Microchip data sheet are called
+RxDropPackets which are defined as "RX packets dropped due to lack of
+resources."  I don't know what that means or how to fix it.
+2. ifconfig stats show dropped counts for bond1 and lan2 interface.
+3. lan1 was active interface during the test.
+
+On PC I run iperf -s -u -B 239.0.0.67%enp4s0 -i 1
+On my board I run iperf -B 192.168.1.6 -c 239.0.0.67 -u --ttl 3000 -t
+30 -b 1M -i 1 (didn't let it run the full time, stopped it with
+ctrl-c)
+
+Ping from PC to board while iperf is running on my board shows packet loss:
+
+ping 192.168.1.6
+PING 192.168.1.6 (192.168.1.6) 56(84) bytes of data.
+64 bytes from 192.168.1.6: icmp_seq=9 ttl=64 time=2.33 ms
+64 bytes from 192.168.1.6: icmp_seq=35 ttl=64 time=4.53 ms
+64 bytes from 192.168.1.6: icmp_seq=36 ttl=64 time=2.03 ms
+64 bytes from 192.168.1.6: icmp_seq=37 ttl=64 time=2.01 ms
+64 bytes from 192.168.1.6: icmp_seq=38 ttl=64 time=1.99 ms
+64 bytes from 192.168.1.6: icmp_seq=39 ttl=64 time=2.00 ms
+64 bytes from 192.168.1.6: icmp_seq=40 ttl=64 time=1.29 ms
+64 bytes from 192.168.1.6: icmp_seq=41 ttl=64 time=2.05 ms
+64 bytes from 192.168.1.6: icmp_seq=42 ttl=64 time=1.98 ms
+64 bytes from 192.168.1.6: icmp_seq=43 ttl=64 time=1.98 ms
+64 bytes from 192.168.1.6: icmp_seq=44 ttl=64 time=1.95 ms
+64 bytes from 192.168.1.6: icmp_seq=45 ttl=64 time=2.00 ms
+64 bytes from 192.168.1.6: icmp_seq=46 ttl=64 time=2.03 ms
+64 bytes from 192.168.1.6: icmp_seq=47 ttl=64 time=1.95 ms
+64 bytes from 192.168.1.6: icmp_seq=48 ttl=64 time=1.95 ms
+64 bytes from 192.168.1.6: icmp_seq=49 ttl=64 time=1.96 ms
+64 bytes from 192.168.1.6: icmp_seq=50 ttl=64 time=2.00 ms
+64 bytes from 192.168.1.6: icmp_seq=51 ttl=64 time=2.00 ms
+64 bytes from 192.168.1.6: icmp_seq=52 ttl=64 time=1.97 ms
+64 bytes from 192.168.1.6: icmp_seq=53 ttl=64 time=1.96 ms
+64 bytes from 192.168.1.6: icmp_seq=54 ttl=64 time=1.97 ms
+64 bytes from 192.168.1.6: icmp_seq=55 ttl=64 time=2.03 ms
+64 bytes from 192.168.1.6: icmp_seq=56 ttl=64 time=1.29 ms
+64 bytes from 192.168.1.6: icmp_seq=57 ttl=64 time=2.04 ms
+^C
+--- 192.168.1.6 ping statistics ---
+57 packets transmitted, 24 received, 57.8947% packet loss, time 56807ms
+rtt min/avg/max/mdev = 1.285/2.054/4.532/0.558 ms
+
+Board stats for eth0, lan1 and lan2:
+
+# ethtool -S eth0 | grep -v ': 0'
+NIC statistics:
+    tx_packets: 2382
+    tx_broadcast: 4
+    tx_multicast: 2269
+    tx_65to127byte: 156
+    tx_128to255byte: 30
+    tx_1024to2047byte: 2196
+    tx_octets: 3354271
+    IEEE_tx_frame_ok: 2382
+    IEEE_tx_octets_ok: 3354271
+    rx_packets: 2435
+    rx_broadcast: 76
+    rx_multicast: 2250
+    rx_65to127byte: 222
+    rx_128to255byte: 17
+    rx_1024to2047byte: 2196
+    rx_octets: 3354319
+    IEEE_rx_frame_ok: 2435
+    IEEE_rx_octets_ok: 3354319
+    p06_rx_bcast: 4
+    p06_rx_mcast: 2269
+    p06_rx_ucast: 109
+    p06_rx_65_127: 156
+    p06_rx_128_255: 30
+    p06_rx_1024_1522: 2196
+    p06_tx_bcast: 76
+    p06_tx_mcast: 2250
+    p06_tx_ucast: 109
+    p06_rx_total: 3354271
+    p06_tx_total: 3354319
+
+# ethtool -S lan1 | grep -v ': 0'
+NIC statistics:
+    tx_packets: 2326
+    tx_bytes: 3334064
+    rx_packets: 138
+    rx_bytes: 10592
+    rx_bcast: 63
+    rx_mcast: 31
+    rx_ucast: 133
+    rx_64_or_less: 75
+    rx_65_127: 139
+    rx_128_255: 13
+    tx_bcast: 4
+    tx_mcast: 2245
+    tx_ucast: 77
+    rx_total: 21324
+    tx_total: 3343572
+    rx_discards: 89
+
+
+# ethtool -S lan2 | grep -v ': 0'
+NIC statistics:
+    rx_packets: 2241
+    rx_bytes: 3293222
+    rx_bcast: 27
+    rx_mcast: 2214
+    rx_64_or_less: 26
+    rx_65_127: 11
+    rx_128_255: 8
+    rx_1024_1522: 2196
+    rx_total: 3333560
+
+ifconfig stats:
+
+# ifconfig
+bond1: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500  metric 1
+       inet 192.168.1.6  netmask 255.255.255.0  broadcast 0.0.0.0
+       inet6 fd1c:a799:6054:0:60e2:5ff:fe75:6716  prefixlen 64
+scopeid 0x0<global>
+       inet6 fe80::60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x20<link>
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 2557  bytes 3317974 (3.1 MiB)
+       RX errors 0  dropped 2  overruns 0  frame 0
+       TX packets 2370  bytes 3338160 (3.1 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1506  metric 1
+       inet6 fe80::f21f:afff:fe6b:b218  prefixlen 64  scopeid 0x20<link>
+       ether f0:1f:af:6b:b2:18  txqueuelen 1000  (Ethernet)
+       RX packets 2557  bytes 3371671 (3.2 MiB)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 2394  bytes 3345891 (3.1 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lan1: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 248  bytes 19384 (18.9 KiB)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 2370  bytes 3338160 (3.1 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lan2: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 2309  bytes 3298590 (3.1 MiB)
+       RX errors 0  dropped 1  overruns 0  frame 0
+       TX packets 0  bytes 0 (0.0 B)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536  metric 1
+       inet 127.0.0.1  netmask 255.0.0.0
+       inet6 ::1  prefixlen 128  scopeid 0x10<host>
+       loop  txqueuelen 1000  (Local Loopback)
+       RX packets 1  bytes 112 (112.0 B)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 1  bytes 112 (112.0 B)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+# cat /proc/net/bonding/bond1
+Ethernet Channel Bonding Driver: v5.10.69-g472c99a84cb6-dirty
+
+Bonding Mode: fault-tolerance (active-backup)
+Primary Slave: None
+Currently Active Slave: lan1
+MII Status: up
+MII Polling Interval (ms): 1000
+Up Delay (ms): 0
+Down Delay (ms): 0
+Peer Notification Delay (ms): 0
+
+Slave Interface: lan1
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: f0:1f:af:6b:b2:18
+Slave queue ID: 0
+
+Slave Interface: lan2
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: f0:1f:af:6b:b2:18
+Slave queue ID: 0
