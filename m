@@ -2,466 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E98F5581E75
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 05:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 790DC581E95
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 06:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240080AbiG0D6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 23:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        id S240089AbiG0EXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 00:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232878AbiG0D6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 23:58:45 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021F7108
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 20:58:44 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id o1so12477249qkg.9
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 20:58:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=71rX20FP4G5nlL1yOuKhTD1XIHulz38D6gFBUoA+IgI=;
-        b=i2vP06Kz0PaFprvY1urViUzFq/7z26kXA7rf1R2900TmqhUFJyp5RBIUhFWab9arNa
-         5OfIm/Jumum40FswKg2QrmjhcqHhQURzH0GgooPLItPySq5nC5Bu8jrJnRNQ/HlEnBZj
-         houFcjHPwyOBG1c8eZY/QOYZOY86QD/pKXRbXr+7NkNrVzfOmH9FeAShyEzYwZd0G+NF
-         HQlVeUA8pz4Rg0NDr9VtOPee5uQk5n2R1S68t8Z+8/LAaCBcGcu2dIvk9zYwxGAtoZDR
-         t1YmByoV2U3i853uQcxiQ6PGJ5YkgnhWa8+ZSMWq0trRty4TXQOt8mIfEPrBcJM6DGfx
-         E8cg==
+        with ESMTP id S230008AbiG0EXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 00:23:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB93D3B948
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 21:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658895818;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OdTyBXQ12zt36fi5CylDMDbBOh0jOOAI9MK/TOtCnDo=;
+        b=clAt6ZQlfO6k5BBPjFBr6dhCEzvXxQ8Ir9UNp/mr+DFPERty9ete6vvC/JQcEm5tuhX2zc
+        obIOZzlqkRhXxk5IUprFdKPPkPeDkEMBIY6twXcFVvXrn+uLeAPV+H0P9cpgJQoTrporPc
+        C3S/CHs1yZn8vM6G1U7eQ1Bg1acxU7I=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-324-oBD-9mneO2mxEccrktIpew-1; Wed, 27 Jul 2022 00:23:37 -0400
+X-MC-Unique: oBD-9mneO2mxEccrktIpew-1
+Received: by mail-pg1-f198.google.com with SMTP id f128-20020a636a86000000b0041a4b07b039so7210888pgc.5
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 21:23:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=71rX20FP4G5nlL1yOuKhTD1XIHulz38D6gFBUoA+IgI=;
-        b=f7GXgFB6rFrefnePix67yydMVvaDK9l7UUaqXix03DPnYwG7Jzf785YJHlJAJYi91E
-         O4G9tXlLcZcD3QeCM2VWzvMvXAiOP5FDLJr0FUAk7CoRdfXEl85/OJzuAfqyWRXoqbAg
-         jUCwIlpQc6lR04yx/dxycQfrKonpVL1DNfAHLo/TaWqsPDLKDNDz/FLSreqWuSTRGG9X
-         RsuGNJDSQhI7QkL4L0p7nl1hitMPt4WK+Q1Tfm8vdXPqIN7dPi1eY1p7DrXGms49p2PC
-         4JN+j7NQvA7f+NvRzWATIWc+tqpKrPnA2gOQ1cuEf6sfyCx48SLqsBV77rq7RVZPTdJX
-         tWJw==
-X-Gm-Message-State: AJIora+36fjSGZEngrFT6blwhMlM/dqBvfHotX559mlRPcNhwm1AcTCh
-        FYfKI306z8YyPImRDUDjLLtGNHEsQ1M=
-X-Google-Smtp-Source: AGRyM1vK6f9QtAKZbJcxIoPmjAtLhgvL22/BctSgVt6JZW/qOTsU2JJ1luiinvuBQuny7A1kBNLsGA==
-X-Received: by 2002:a37:b147:0:b0:6b5:fa14:ac00 with SMTP id a68-20020a37b147000000b006b5fa14ac00mr15469012qkf.606.1658894322903;
-        Tue, 26 Jul 2022 20:58:42 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac841d1000000b0031bf484079esm10298832qtm.18.2022.07.26.20.58.41
+        bh=OdTyBXQ12zt36fi5CylDMDbBOh0jOOAI9MK/TOtCnDo=;
+        b=7DGQ1vnMLKZTJEeV0s32PhJ7W4l4MkjqRUzR3Ip/rbfFVHuenOa1dfmFBWOfcoYHqK
+         vviDAsfh7cSgHRneFF7O6XlVh4Z/VMooJ5qBuy897yZc7c8p5Rc4zkSfJ1v34lAbyQmD
+         Vw+22GB9JCltl0M/aK6PF8eX6hPGJk7M0khZsbRYml/2wMiD/CwbIcWRdH90+GLHj08L
+         R930ilxzIPi/CAKPD8ZbgCsxr3lUDQRTXJUU2vN02SA4wu6ZtLAJlNBRncbvLju4hN+N
+         fXqa3a5/oMz/NcD/yu993+qGHr9X0I72wolxghm59GV+heqwzfwO2inWClWPabWwBQNu
+         KL3A==
+X-Gm-Message-State: AJIora/qyrahRdQ5SN4ODnWvPwclppomFrDpCYMX4qkUhBrFWIRCeBx9
+        IyK0bvxzfDmQWKmslkNJSEgTVmPGABqeSyRrvVXZsWgxT7fQ6dkIg9bqZdLewomrw7LaymDSqSy
+        EjXycStJ8K4Tshf9v
+X-Received: by 2002:a17:903:24e:b0:16b:9fa2:41e5 with SMTP id j14-20020a170903024e00b0016b9fa241e5mr20227878plh.127.1658895816030;
+        Tue, 26 Jul 2022 21:23:36 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tFVrN7XGfUjMTUPwELy3bIdBt3XT5BzzLiiLmTtkRh2koWjrFFsrQ3JLmbIc4/6H4P5/I5Jg==
+X-Received: by 2002:a17:903:24e:b0:16b:9fa2:41e5 with SMTP id j14-20020a170903024e00b0016b9fa241e5mr20227852plh.127.1658895815745;
+        Tue, 26 Jul 2022 21:23:35 -0700 (PDT)
+Received: from [10.72.12.96] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l28-20020a635b5c000000b0041a411823d4sm10950578pgm.22.2022.07.26.21.23.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 20:58:42 -0700 (PDT)
-Subject: Re: [PATCH 4/x] sunhme: switch to devres
-From:   Sean Anderson <seanga2@gmail.com>
-To:     Rolf Eike Beer <eike-kernel@sf-tec.de>, netdev@vger.kernel.org
-References: <4686583.GXAFRqVoOG@eto.sf-tec.de>
- <11922663.O9o76ZdvQC@eto.sf-tec.de>
- <00f00bdf-1a76-693f-5c8f-9b4ceaf76b91@gmail.com>
-Message-ID: <7685c7df-83ed-a3a0-6e61-42bd48713dc9@gmail.com>
-Date:   Tue, 26 Jul 2022 23:58:41 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        Tue, 26 Jul 2022 21:23:34 -0700 (PDT)
+Message-ID: <1a5fa20c-c8f2-2537-2b3b-675a40e113ac@redhat.com>
+Date:   Wed, 27 Jul 2022 12:23:21 +0800
 MIME-Version: 1.0
-In-Reply-To: <00f00bdf-1a76-693f-5c8f-9b4ceaf76b91@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v13 11/42] virtio_ring: split: extract the logic of alloc
+ state and extra
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com
+References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
+ <20220726072225.19884-12-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220726072225.19884-12-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/26/22 11:49 PM, Sean Anderson wrote:
-> On 2/14/22 1:31 PM, Rolf Eike Beer wrote:
->> This not only removes a lot of code, it also fixes the memleak of the =
-DMA
->> memory when register_netdev() fails.
->>
->> Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
->> ---
->> =C2=A0 drivers/net/ethernet/sun/sunhme.c | 55 +++++++++---------------=
--------
->> =C2=A0 1 file changed, 16 insertions(+), 39 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/=
-sun/sunhme.c
->> index 980a936ce8d1..ec78f43f75c9 100644
->> --- a/drivers/net/ethernet/sun/sunhme.c
->> +++ b/drivers/net/ethernet/sun/sunhme.c
->> @@ -2952,7 +2952,6 @@ static int happy_meal_pci_probe(struct pci_dev *=
-pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct happy_meal *hp;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct net_device *dev;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 void __iomem *hpreg_base;
->> -=C2=A0=C2=A0=C2=A0 unsigned long hpreg_res;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int i, qfe_slot =3D -1;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 char prom_name[64];
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u8 addr[ETH_ALEN];
->> @@ -2969,7 +2968,7 @@ static int happy_meal_pci_probe(struct pci_dev *=
-pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 strcpy(prom_nam=
-e, "SUNW,hme");
->> =C2=A0 #endif
->> -=C2=A0=C2=A0=C2=A0 err =3D pci_enable_device(pdev);
->> +=C2=A0=C2=A0=C2=A0 err =3D pcim_enable_device(pdev);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (err)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out;
->> @@ -2987,10 +2986,11 @@ static int happy_meal_pci_probe(struct pci_dev=
- *pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 goto err_out;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 dev =3D alloc_etherdev(sizeof(struct happy_meal));=
 
->> -=C2=A0=C2=A0=C2=A0 err =3D -ENOMEM;
->> -=C2=A0=C2=A0=C2=A0 if (!dev)
->> +=C2=A0=C2=A0=C2=A0 dev =3D devm_alloc_etherdev(&pdev->dev, sizeof(str=
-uct happy_meal));
->> +=C2=A0=C2=A0=C2=A0 if (!dev) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D -ENOMEM;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out;
->> +=C2=A0=C2=A0=C2=A0 }
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 SET_NETDEV_DEV(dev, &pdev->dev);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (hme_version_printed++ =3D=3D 0)
->> @@ -3009,21 +3009,23 @@ static int happy_meal_pci_probe(struct pci_dev=
- *pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 qp->happy_meals=
-[qfe_slot] =3D dev;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 hpreg_res =3D pci_resource_start(pdev, 0);
->> -=C2=A0=C2=A0=C2=A0 err =3D -ENODEV;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if ((pci_resource_flags(pdev, 0) & IORE=
-SOURCE_IO) !=3D 0) {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR=
- "happymeal(PCI): Cannot find proper PCI device base address.\n");
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_cl=
-ear_quattro;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 if (pci_request_regions(pdev, DRV_NAME)) {
->> +
->> +=C2=A0=C2=A0=C2=A0 if (!devm_request_region(&pdev->dev, pci_resource_=
-start(pdev, 0),
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pci_resource_len(pdev, 0),
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 DRV_NAME)) {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR=
- "happymeal(PCI): Cannot obtain PCI resources, "
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 "aborting.\n");
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_cl=
-ear_quattro;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 if ((hpreg_base =3D ioremap(hpreg_res, 0x8000)) =3D=
-=3D NULL) {
->> +=C2=A0=C2=A0=C2=A0 hpreg_base =3D pcim_iomap(pdev, 0, 0x8000);
->> +=C2=A0=C2=A0=C2=A0 if (!hpreg_base) {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR=
- "happymeal(PCI): Unable to remap card memory.\n");
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_free_res;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro=
-;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for (i =3D 0; i < 6; i++) {
->> @@ -3089,11 +3091,10 @@ static int happy_meal_pci_probe(struct pci_dev=
- *pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hp->happy_bursts =3D DMA_BURSTBITS;
->> =C2=A0 #endif
->> -=C2=A0=C2=A0=C2=A0 hp->happy_block =3D dma_alloc_coherent(&pdev->dev,=
- PAGE_SIZE,
->> +=C2=A0=C2=A0=C2=A0 hp->happy_block =3D dmam_alloc_coherent(&pdev->dev=
-, PAGE_SIZE,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 &hp->hblock_dvma, GFP_KERNEL);
->> -=C2=A0=C2=A0=C2=A0 err =3D -ENODEV;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!hp->happy_block)
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_iounmap;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro=
-;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hp->linkcheck =3D 0;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hp->timer_state =3D asleep;
->> @@ -3127,11 +3128,11 @@ static int happy_meal_pci_probe(struct pci_dev=
- *pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 happy_meal_set_initial_advertisement(hp=
-);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irq(&hp->happy_lock);
->> -=C2=A0=C2=A0=C2=A0 err =3D register_netdev(hp->dev);
->> +=C2=A0=C2=A0=C2=A0 err =3D devm_register_netdev(&pdev->dev, dev);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (err) {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR=
- "happymeal(PCI): Cannot register net device, "
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 "aborting.\n");
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_iounmap;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro=
-;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pci_set_drvdata(pdev, hp);
->> @@ -3164,37 +3165,14 @@ static int happy_meal_pci_probe(struct pci_dev=
- *pdev,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
->> -err_out_iounmap:
->> -=C2=A0=C2=A0=C2=A0 iounmap(hp->gregs);
->> -
->> -err_out_free_res:
->> -=C2=A0=C2=A0=C2=A0 pci_release_regions(pdev);
->> -
->> =C2=A0 err_out_clear_quattro:
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (qp !=3D NULL)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 qp->happy_meals=
-[qfe_slot] =3D NULL;
->> -=C2=A0=C2=A0=C2=A0 free_netdev(dev);
->> -
->> =C2=A0 err_out:
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return err;
->> =C2=A0 }
->> -static void happy_meal_pci_remove(struct pci_dev *pdev)
->> -{
->> -=C2=A0=C2=A0=C2=A0 struct happy_meal *hp =3D pci_get_drvdata(pdev);
->> -=C2=A0=C2=A0=C2=A0 struct net_device *net_dev =3D hp->dev;
->> -
->> -=C2=A0=C2=A0=C2=A0 unregister_netdev(net_dev);
->> -
->> -=C2=A0=C2=A0=C2=A0 dma_free_coherent(hp->dma_dev, PAGE_SIZE,
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 hp->happy_block, hp->hblock_dvma);
->> -=C2=A0=C2=A0=C2=A0 iounmap(hp->gregs);
->> -=C2=A0=C2=A0=C2=A0 pci_release_regions(hp->happy_dev);
->> -
->> -=C2=A0=C2=A0=C2=A0 free_netdev(net_dev);
->> -}
->> -
->> =C2=A0 static const struct pci_device_id happymeal_pci_ids[] =3D {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 { PCI_DEVICE(PCI_VENDOR_ID_SUN, PCI_DEV=
-ICE_ID_SUN_HAPPYMEAL) },
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 { }=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Terminating entry */
->> @@ -3206,7 +3184,6 @@ static struct pci_driver hme_pci_driver =3D {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .name=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 =3D "hme",
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .id_table=C2=A0=C2=A0=C2=A0 =3D happyme=
-al_pci_ids,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .probe=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 =3D happy_meal_pci_probe,
->> -=C2=A0=C2=A0=C2=A0 .remove=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-=3D happy_meal_pci_remove,
->> =C2=A0 };
->> =C2=A0 static int __init happy_meal_pci_init(void)
->>
->=20
-> This looks good, but doesn't apply cleanly. I rebased it as follows:
->=20
->  From 5acfa13935277e312361c5630b49aea02399b8b8 Mon Sep 17 00:00:00 2001=
+在 2022/7/26 15:21, Xuan Zhuo 写道:
+> Separate the logic of creating desc_state, desc_extra, and subsequent
+> patches will call it independently.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-> From: Rolf Eike Beer <eike-kernel@sf-tec.de>
-> Date: Mon, 14 Feb 2022 19:31:09 +0100
-> Subject: [PATCH] sunhme: switch to devres
->=20
-> This not only removes a lot of code, it also fixes the memleak of the D=
-MA
-> memory when register_netdev() fails.
->=20
-> Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
-> [ rebased onto net-next/master ]
-> Signed-off-by: Sean Anderson <seanga2@gmail.com>
-> Reviewed-by: Sean Anderson <seanga2@gmail.com>
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
 > ---
->  =C2=A0drivers/net/ethernet/sun/sunhme.c | 59 +++++++++----------------=
-------
->  =C2=A01 file changed, 16 insertions(+), 43 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/s=
-un/sunhme.c
-> index eebe8c5f480c..e83774ffaa7a 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -2933,7 +2933,6 @@ static int happy_meal_pci_probe(struct pci_dev *p=
-dev,
->  =C2=A0=C2=A0=C2=A0=C2=A0 struct happy_meal *hp;
->  =C2=A0=C2=A0=C2=A0=C2=A0 struct net_device *dev;
->  =C2=A0=C2=A0=C2=A0=C2=A0 void __iomem *hpreg_base;
-> -=C2=A0=C2=A0=C2=A0 unsigned long hpreg_res;
->  =C2=A0=C2=A0=C2=A0=C2=A0 int i, qfe_slot =3D -1;
->  =C2=A0=C2=A0=C2=A0=C2=A0 char prom_name[64];
->  =C2=A0=C2=A0=C2=A0=C2=A0 u8 addr[ETH_ALEN];
-> @@ -2950,7 +2949,7 @@ static int happy_meal_pci_probe(struct pci_dev *p=
-dev,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 strcpy(prom_name, "SU=
-NW,hme");
->  =C2=A0#endif
->=20
-> -=C2=A0=C2=A0=C2=A0 err =3D pci_enable_device(pdev);
-> +=C2=A0=C2=A0=C2=A0 err =3D pcim_enable_device(pdev);
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 if (err)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out;
-> @@ -2968,10 +2967,11 @@ static int happy_meal_pci_probe(struct pci_dev =
-*pdev,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- goto err_out;
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
->=20
-> -=C2=A0=C2=A0=C2=A0 dev =3D alloc_etherdev(sizeof(struct happy_meal));
-> -=C2=A0=C2=A0=C2=A0 err =3D -ENOMEM;
-> -=C2=A0=C2=A0=C2=A0 if (!dev)
-> +=C2=A0=C2=A0=C2=A0 dev =3D devm_alloc_etherdev(&pdev->dev, sizeof(stru=
-ct happy_meal));
-> +=C2=A0=C2=A0=C2=A0 if (!dev) {
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D -ENOMEM;
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out;
-> +=C2=A0=C2=A0=C2=A0 }
->  =C2=A0=C2=A0=C2=A0=C2=A0 SET_NETDEV_DEV(dev, &pdev->dev);
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 if (hme_version_printed++ =3D=3D 0)
-> @@ -2990,21 +2990,23 @@ static int happy_meal_pci_probe(struct pci_dev =
-*pdev,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 qp->happy_meals[qfe_s=
-lot] =3D dev;
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
->=20
-> -=C2=A0=C2=A0=C2=A0 hpreg_res =3D pci_resource_start(pdev, 0);
-> -=C2=A0=C2=A0=C2=A0 err =3D -ENODEV;
->  =C2=A0=C2=A0=C2=A0=C2=A0 if ((pci_resource_flags(pdev, 0) & IORESOURCE=
-_IO) !=3D 0) {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR "happ=
-ymeal(PCI): Cannot find proper PCI device base address.\n");
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_qu=
-attro;
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
-> -=C2=A0=C2=A0=C2=A0 if (pci_request_regions(pdev, DRV_NAME)) {
+>   drivers/virtio/virtio_ring.c | 51 +++++++++++++++++++++++++-----------
+>   1 file changed, 35 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 3817520371ee..6c24b33ea186 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -212,6 +212,7 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>   					       bool (*notify)(struct virtqueue *),
+>   					       void (*callback)(struct virtqueue *),
+>   					       const char *name);
+> +static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int num);
+>   
+>   /*
+>    * Helpers.
+> @@ -947,6 +948,32 @@ static void *virtqueue_detach_unused_buf_split(struct virtqueue *_vq)
+>   	return NULL;
+>   }
+>   
+> +static int vring_alloc_state_extra_split(struct vring_virtqueue_split *vring_split)
+> +{
+> +	struct vring_desc_state_split *state;
+> +	struct vring_desc_extra *extra;
+> +	u32 num = vring_split->vring.num;
 > +
-> +=C2=A0=C2=A0=C2=A0 if (!devm_request_region(&pdev->dev, pci_resource_s=
-tart(pdev, 0),
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pci_resource_len(pdev, 0),
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 DRV_NAME)) {
-
-Actually, it looks like you are failing to set err from these *m calls, l=
-ike what
-you fixed in patch 3. Can you address this for v2?
-
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR "happ=
-ymeal(PCI): Cannot obtain PCI resources, "
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 "aborting.\n");
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_qu=
-attro;
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
->=20
-> -=C2=A0=C2=A0=C2=A0 if ((hpreg_base =3D ioremap(hpreg_res, 0x8000)) =3D=
-=3D NULL) {
-> +=C2=A0=C2=A0=C2=A0 hpreg_base =3D pcim_iomap(pdev, 0, 0x8000);
-> +=C2=A0=C2=A0=C2=A0 if (!hpreg_base) {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR "happ=
-ymeal(PCI): Unable to remap card memory.\n");
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_free_res;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro;=
-
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 for (i =3D 0; i < 6; i++) {
-> @@ -3070,11 +3072,10 @@ static int happy_meal_pci_probe(struct pci_dev =
-*pdev,
->  =C2=A0=C2=A0=C2=A0=C2=A0 hp->happy_bursts =3D DMA_BURSTBITS;
->  =C2=A0#endif
->=20
-> -=C2=A0=C2=A0=C2=A0 hp->happy_block =3D dma_alloc_coherent(&pdev->dev, =
-PAGE_SIZE,
-> +=C2=A0=C2=A0=C2=A0 hp->happy_block =3D dmam_alloc_coherent(&pdev->dev,=
- PAGE_SIZE,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 &hp->hblock_dvma, GFP_KERNEL);
-> -=C2=A0=C2=A0=C2=A0 err =3D -ENODEV;
->  =C2=A0=C2=A0=C2=A0=C2=A0 if (!hp->happy_block)
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_iounmap;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro;=
-
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 hp->linkcheck =3D 0;
->  =C2=A0=C2=A0=C2=A0=C2=A0 hp->timer_state =3D asleep;
-> @@ -3108,11 +3109,11 @@ static int happy_meal_pci_probe(struct pci_dev =
-*pdev,
->  =C2=A0=C2=A0=C2=A0=C2=A0 happy_meal_set_initial_advertisement(hp);
->  =C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irq(&hp->happy_lock);
->=20
-> -=C2=A0=C2=A0=C2=A0 err =3D register_netdev(hp->dev);
-> +=C2=A0=C2=A0=C2=A0 err =3D devm_register_netdev(&pdev->dev, dev);
->  =C2=A0=C2=A0=C2=A0=C2=A0 if (err) {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 printk(KERN_ERR "happ=
-ymeal(PCI): Cannot register net device, "
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 "aborting.\n");
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_free_coherent;=
-
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_out_clear_quattro;=
-
->  =C2=A0=C2=A0=C2=A0=C2=A0 }
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 pci_set_drvdata(pdev, hp);
-> @@ -3145,41 +3146,14 @@ static int happy_meal_pci_probe(struct pci_dev =
-*pdev,
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0 return 0;
->=20
-> -err_out_free_coherent:
-> -=C2=A0=C2=A0=C2=A0 dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 hp->happy_block, hp->hblock_dvma);
+> +	state = kmalloc_array(num, sizeof(struct vring_desc_state_split), GFP_KERNEL);
+> +	if (!state)
+> +		goto err_state;
+> +
+> +	extra = vring_alloc_desc_extra(num);
+> +	if (!extra)
+> +		goto err_extra;
+> +
+> +	memset(state, 0, num * sizeof(struct vring_desc_state_split));
+> +
+> +	vring_split->desc_state = state;
+> +	vring_split->desc_extra = extra;
+> +	return 0;
+> +
+> +err_extra:
+> +	kfree(state);
+> +err_state:
+> +	return -ENOMEM;
+> +}
+> +
+>   static void vring_free_split(struct vring_virtqueue_split *vring_split,
+>   			     struct virtio_device *vdev)
+>   {
+> @@ -2242,6 +2269,7 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>   					       const char *name)
+>   {
+>   	struct vring_virtqueue *vq;
+> +	int err;
+>   
+>   	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED))
+>   		return NULL;
+> @@ -2282,17 +2310,14 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>   					vq->split.avail_flags_shadow);
+>   	}
+>   
+> -	vq->split.desc_state = kmalloc_array(vring_split->vring.num,
+> -			sizeof(struct vring_desc_state_split), GFP_KERNEL);
+> -	if (!vq->split.desc_state)
+> -		goto err_state;
 > -
-> -err_out_iounmap:
-> -=C2=A0=C2=A0=C2=A0 iounmap(hp->gregs);
+> -	vq->split.desc_extra = vring_alloc_desc_extra(vring_split->vring.num);
+> -	if (!vq->split.desc_extra)
+> -		goto err_extra;
+> +	err = vring_alloc_state_extra_split(vring_split);
+> +	if (err) {
+> +		kfree(vq);
+> +		return NULL;
+> +	}
+>   
+> -	memset(vq->split.desc_state, 0, vring_split->vring.num *
+> -			sizeof(struct vring_desc_state_split));
+> +	vq->split.desc_state = vring_split->desc_state;
+> +	vq->split.desc_extra = vring_split->desc_extra;
+>   
+>   	virtqueue_init(vq, vring_split->vring.num);
+>   
+> @@ -2300,12 +2325,6 @@ static struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>   	list_add_tail(&vq->vq.list, &vdev->vqs);
+>   	spin_unlock(&vdev->vqs_list_lock);
+>   	return &vq->vq;
 > -
-> -err_out_free_res:
-> -=C2=A0=C2=A0=C2=A0 pci_release_regions(pdev);
-> -
->  =C2=A0err_out_clear_quattro:
->  =C2=A0=C2=A0=C2=A0=C2=A0 if (qp !=3D NULL)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 qp->happy_meals[qfe_s=
-lot] =3D NULL;
->=20
-> -=C2=A0=C2=A0=C2=A0 free_netdev(dev);
-> -
->  =C2=A0err_out:
->  =C2=A0=C2=A0=C2=A0=C2=A0 return err;
->  =C2=A0}
->=20
-> -static void happy_meal_pci_remove(struct pci_dev *pdev)
-> -{
-> -=C2=A0=C2=A0=C2=A0 struct happy_meal *hp =3D pci_get_drvdata(pdev);
-> -=C2=A0=C2=A0=C2=A0 struct net_device *net_dev =3D hp->dev;
-> -
-> -=C2=A0=C2=A0=C2=A0 unregister_netdev(net_dev);
-> -
-> -=C2=A0=C2=A0=C2=A0 dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 hp->happy_block, hp->hblock_dvma);
-> -=C2=A0=C2=A0=C2=A0 iounmap(hp->gregs);
-> -=C2=A0=C2=A0=C2=A0 pci_release_regions(hp->happy_dev);
-> -
-> -=C2=A0=C2=A0=C2=A0 free_netdev(net_dev);
-> -}
-> -
->  =C2=A0static const struct pci_device_id happymeal_pci_ids[] =3D {
->  =C2=A0=C2=A0=C2=A0=C2=A0 { PCI_DEVICE(PCI_VENDOR_ID_SUN, PCI_DEVICE_ID=
-_SUN_HAPPYMEAL) },
->  =C2=A0=C2=A0=C2=A0=C2=A0 { }=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 /* Terminating entry */
-> @@ -3191,7 +3165,6 @@ static struct pci_driver hme_pci_driver =3D {
->  =C2=A0=C2=A0=C2=A0=C2=A0 .name=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- =3D "hme",
->  =C2=A0=C2=A0=C2=A0=C2=A0 .id_table=C2=A0=C2=A0=C2=A0 =3D happymeal_pci=
-_ids,
->  =C2=A0=C2=A0=C2=A0=C2=A0 .probe=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 =3D happy_meal_pci_probe,
-> -=C2=A0=C2=A0=C2=A0 .remove=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D=
- happy_meal_pci_remove,
->  =C2=A0};
->=20
->  =C2=A0static int __init happy_meal_pci_init(void)
-
+> -err_extra:
+> -	kfree(vq->split.desc_state);
+> -err_state:
+> -	kfree(vq);
+> -	return NULL;
+>   }
+>   
+>   struct virtqueue *vring_create_virtqueue(
 
