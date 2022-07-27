@@ -2,50 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF3E58340C
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78036583419
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbiG0U0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 16:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
+        id S233000AbiG0UcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 16:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiG0U0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:26:19 -0400
-Received: from smtp-42ac.mail.infomaniak.ch (smtp-42ac.mail.infomaniak.ch [IPv6:2001:1600:4:17::42ac])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDAB4504B
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:26:18 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LtQKP2DcxzMqR8X;
-        Wed, 27 Jul 2022 22:26:17 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LtQKN5kMNzlqV0d;
-        Wed, 27 Jul 2022 22:26:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1658953577;
-        bh=hLCaudxmTLn46TzdaaEDyaJ1LW+mZoCAbGYIV24EY24=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=BrVNFm3AcZPEr7U7GUUVSRzgny1p6Xmv13vAfms1zeANQ833+rFqI4pHRBS/ZQI+v
-         2i/EFqXJsrTWeu56U4mX3TjGQBcvXBWxpdW5L8H3Lzh3k5KMzlMRduz287SLWgcRdq
-         SfAInsit0fLrzUWeMvDac007zsjyMBBFCV7UDxjU=
-Message-ID: <78b7cd69-46d2-2868-8c9c-f4f29958a679@digikod.net>
-Date:   Wed, 27 Jul 2022 22:26:16 +0200
+        with ESMTP id S229696AbiG0UcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:32:05 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476E251A2E;
+        Wed, 27 Jul 2022 13:32:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1658953873;
+        bh=6cegGklwMN8G/EK3L6ajLxFxmA8JR/v85vtwkffWMww=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=CwJ4xHtVxy9J5c/slCbc9JvCrWKYAsKvdZfBoF9xVxfJxj0VMlfB6xAXS7YxRmsUM
+         PDumPMvlaNqzvx2q5jf4RkdrCeLG1OM+tnGB4oEqOF/tlMnAgq2sPf2ACTmsNBRywB
+         blcMv8DJDxJWcg/sN4Lfg7hCBLeABDqjk9tqpvaY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.155.189] ([217.61.155.189]) by web-mail.gmx.net
+ (3c-app-gmx-bs42.server.lan [172.19.170.94]) (via HTTP); Wed, 27 Jul 2022
+ 22:31:13 +0200
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <20220621082313.3330667-18-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v6 17/17] samples/landlock: adds network demo
-In-Reply-To: <20220621082313.3330667-18-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Message-ID: <trinity-96b64414-7b29-4886-b309-48fc9f108959-1658953872981@3c-app-gmx-bs42>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: Aw: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 27 Jul 2022 22:31:13 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220726122406.31043-1-arinc.unal@arinc9.com>
+References: <20220726122406.31043-1-arinc.unal@arinc9.com>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:2SCSIFa9qDIxiGlO6/J12e1r5kj8WpzZq8CaGp3EH1FDBTB/Zd42SDKO7cKqmHqOw4L9d
+ tUQCJxaAASNxBfcLOB9WuFIH7h316jwbh7nsC3aMNtjgQb4AertNWPW8mMveK3gOWDh7l5oIeEmH
+ p15ux5hOX+BSmAUo95QOtlvr/d0pmMjeZ4ZG7uTkJfDCrO+NNpdVvNFde23ax6hmXuyIERN0D1zD
+ aIokREl3zb1PurqUsXvf0HJb8wM6/vFgPfhJGYie4gWZe8X63g/eeHjiGHRt++gqsF1xxnudgup3
+ Ts=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5q6bngrjAHQ=:h2eOVPO5MfSejV/TG/wNgV
+ hGp99wen7FNY6GZ1t/so1OQBm8rIRbIDc9wDNrYt+yfw65+YQQ5tW2xQWP8sTVmo57DvpH//k
+ d7jbo+5q0XNWqp6gG9YDL/WJgQ32f/Z9ufUNxXZQsOraoMfXc+IZvVtb3wawktWk6vYZknPwm
+ opSrJ9dvygiWjp/evzApHuKNRdhdaxbo690MgJ9azVXCoKk9vDwRpPK6DMl9teJL7SwejaWOr
+ 9SQUuq5iB9eydFT9vFNK2kZpAtTEHZ5YI7YLOYlkunoyfUXOFftsL1L9BrnZXn9pS+8N8l5V3
+ kUa+4hgzVB9zfijMYrAFzhQgJI8ANSbW70JBwTZOEyNm/YzXc9atNPYPouUybe15xEg+axL2+
+ BSqRmpVC+1H0e9h4RRS04MMQKyljErAasx4CglvrO+p+Olgzqywq8TmOtAhtB9PRrltkyWH52
+ 8U6eolvfNl7QT8esur9ILdj5sZXOayoPUBnYXNroku6RmcLNWo78YGT1K/5YfGdrVohpDnp6x
+ HFwjQe8QHaQdKoQDvGW/CMJc1KJ2TineNxzDH3yGuj9TNoaSe+KnJMqSemZHqL50/S63BYC18
+ O0m722erANOhEy6/XiCeBlVUzL01HAEQiNuiFjaPbJclC/4I5XMQ+55lm62Osgko/DHO0wplT
+ W6Mp9wRL3cHbgvw//8i22BMJaxIDBVGoNtxLstz1amdpQJPwK9vw05UzrPB900uOt2DXeDEl2
+ fIDyg7Q4FWCq8EBtLZJu5UcncMOhOwkQG9TogufLtQpnxVcdRnUpO1xFhtkGsWHn6BPvhEndI
+ NhgtWGX
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,85 +91,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 21/06/2022 10:23, Konstantin Meskhidze wrote:
-> This commit adds network demo. It's possible to
-> allow a sandoxer to bind/connect to a list of
-> particular ports restricting networks actions to
-> the rest of ports.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
-> 
-> Changes since v5:
-> * Makes network ports sandboxing optional.
-> * Fixes some logic errors.
-> * Formats code with clang-format-14.
-> 
-> Changes since v4:
-> * Adds ENV_TCP_BIND_NAME "LL_TCP_BIND" and
-> ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT" variables
-> to insert TCP ports.
-> * Renames populate_ruleset() to populate_ruleset_fs().
-> * Adds populate_ruleset_net() and parse_port_num() helpers.
-> * Refactors main() to support network sandboxing.
-> 
-> ---
->   samples/landlock/sandboxer.c | 118 +++++++++++++++++++++++++++++++----
->   1 file changed, 107 insertions(+), 11 deletions(-)
-> 
-> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
-> index 3e404e51ec64..0606c676fded 100644
-> --- a/samples/landlock/sandboxer.c
-> +++ b/samples/landlock/sandboxer.c
+> Gesendet: Dienstag, 26=2E Juli 2022 um 14:24 Uhr
+> Von: "Ar=C4=B1n=C3=A7 =C3=9CNAL" <arinc=2Eunal@arinc9=2Ecom>
 
+Hi,=20
 
-[...]
+> To Frank:
+> Let me know if MII bindings for port 5 and 6 on MT7531 are okay=2E
 
-> @@ -232,16 +308,36 @@ int main(const int argc, char *const argv[], char *const *const envp)
->   		access_fs_rw &= ~ACCESS_ABI_2;
+I ack krzysztof, that the change is really huge and it is hard to understa=
+nd what exactly is changed and why=2E So please split=2E I have converted=
+=20
+it to yaml, but not have changed the logic itself=2E I guess you know the =
+switch better than me=2E
 
-We need to check the ABI to make this sample work without a kernel 
-supporting Landlock network access rights, and error out if the user 
-explicitely asked for it anyway (with the environement variable).
+> Does your recent patch for MT7531 make it possible to set any port for C=
+PU,
+> including user ports? For now, I put a rule to restrict CPU ports to 5 a=
+nd
+> 6, as described on the description of dsa port reg property=2E
 
+i only know that port 5 and 6 are possible, not about the other ports=2E A=
+fair there was a check if port 5 or 6 (followed by available modes
+like rgmii, trgmii or sgmii) and then allow cpu-port-mode else allow only =
+user-port mode=2E Had not changed this, so currently only these 2
+ports can be used as CPU=2E
 
->   	}
-> 
-> +	/* Adds optionally network bind() support. */
-> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
-> +	if (env_port_name) {
-> +		access_net_tcp |= LANDLOCK_ACCESS_NET_BIND_TCP;
-> +	}
-> +	/* Adds optionally network connect() support. */
-> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
-> +	if (env_port_name) {
-> +		access_net_tcp |= LANDLOCK_ACCESS_NET_CONNECT_TCP;
-> +	}
-> +	ruleset_attr.handled_access_net = access_net_tcp;
-> +
->   	ruleset_fd =
->   		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
->   	if (ruleset_fd < 0) {
->   		perror("Failed to create a ruleset");
->   		return 1;
->   	}
-> -	if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
-> +	if (populate_ruleset_fs(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
-> +		goto err_close_ruleset;
-> +	}
-> +	if (populate_ruleset_fs(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw)) {
-> +		goto err_close_ruleset;
-> +	}
-> +	if (populate_ruleset_net(ENV_TCP_BIND_NAME, ruleset_fd,
-> +				 LANDLOCK_ACCESS_NET_BIND_TCP)) {
->   		goto err_close_ruleset;
->   	}
-> -	if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw)) {
-> +	if (populate_ruleset_net(ENV_TCP_CONNECT_NAME, ruleset_fd,
-> +				 LANDLOCK_ACCESS_NET_CONNECT_TCP)) {
->   		goto err_close_ruleset;
->   	}
->   	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
-> --
-> 2.25.1
-> 
+> I suppose your patch does not bring support for using MT7530's port 5 as
+> CPU port=2E We could try this on a BPI-R2=2E Device schematics show that
+> MT7530's GMII pins are wired to GMAC1 of MT7623NI to work as RGMII=2E
+
+my patches (and the version from Vladimir that was merged) only solves the=
+ Problem that CPU-Port was fixed to 6 before=2E I tested Patches on r2=20
+(mt7530) and r64 too (mt7531) that they do not break anything=2E But i hav=
+e not disabled port 6 (maybe i had to do so for a port5-only mode), only
+enabled port 5 too and run iperf3 over a vlan-aware bridge between wan-por=
+t and port 5=2E
+
+> Ar=C4=B1n=C3=A7
+
+regards Frank
