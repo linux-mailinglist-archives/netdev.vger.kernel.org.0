@@ -2,220 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E675822B1
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ECBD5822B9
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiG0JFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 05:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
+        id S231463AbiG0JHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 05:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiG0JFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:05:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC8CE4331A
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658912746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/VD2gv6Dn4KXXGjihjcL4YQf94dggu8ChImRGCTJ+EA=;
-        b=YoOvJzLR/0Waorys1iIosAyXhemCctmaE1Qus0t5KB1EogD5tmICTPj700DdxZsUP/Ch8/
-        ENfrAlfnsNXvgGVMVA5GzY99vVCd+D+EvkU0hvsWNCZT6AS/PHnG+G5LgR1Z6dxBhcD58U
-        YaRbMKfu+VgqSxddwZ3QNGlK3lx16uk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-118-P2V3sTHaO8KFaDbJTMN1TA-1; Wed, 27 Jul 2022 05:05:44 -0400
-X-MC-Unique: P2V3sTHaO8KFaDbJTMN1TA-1
-Received: by mail-wm1-f71.google.com with SMTP id 189-20020a1c02c6000000b003a2d01897e4so8791781wmc.9
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:05:44 -0700 (PDT)
+        with ESMTP id S231480AbiG0JGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:06:32 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8652647BAE
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:06:20 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id j195so9868813ybj.11
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 02:06:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2JA3LAcWFrVgyNzQ7tMzU8nSe9RRNefwId5LqLUrTHQ=;
+        b=ezdrOVHkkyEdsd/J8XDbRmdIHm7C5TePfztuPZ1+9R7RYYYgX8fx2sv6pD+0jpkAk9
+         ZU83e2CNY86ab90uImfbz3u4zZJtrKiTbuFTIGpX30JX1N1Is1ROn//mtf3OkPZRz6Yx
+         1EarM9/uzIFwgKeGKawqXUYQde8F03mRUiEbrAdhxaWFH1chCR2ZuZsyAAS6mKnMJuRu
+         5UMMEZIQz5Wy7DumqXoVGKwamiiMPK6l+6BJhvC42yylB4tRqobUhEPvVdTSA5um1TI5
+         R7oGn4o+d1XL0SmX/RbVpAkHuMISzLyjNIJwwPmCsBUjYYyzEU92leesROlpH54OjX5c
+         LBeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=/VD2gv6Dn4KXXGjihjcL4YQf94dggu8ChImRGCTJ+EA=;
-        b=n4kRNWKX4AZbi1N7tTBt1+1U6r5PxxpFPlJ8/G6m2ADkOXhBEWBHZ9yBFxqKlGAJg6
-         3pzGLT9+tvOoFleTdlSgYGcKCTBUBRcj/ccMSr9CM6D2FgKvAeelIsNSVeOBqLdIzGTU
-         p2jPRJhHrF8nwtlZIvJXyt66Lj7HmB7fctSWVHvEiTHmT+r7bNxtMevYdwYWBB6HJbZN
-         bsIAU0gae2Q0W7bSSzBPVJoZCAdUzvamLf5/mOorfyGHvY5+BvUupz6LwGTHjofq/j74
-         /8OT4RLc4BS94zBwOG1JNDYF5Ic1n0cyI+zvs53e6ZPeuuVhCbiFk0ITqrEQ4MqUSmL+
-         v0hQ==
-X-Gm-Message-State: AJIora+OmeEjutSj4OPCJ3WNSzS4FAHJ+lDq1lZYRYhEVjeWTXcAlgi0
-        yRob0Mj1Nr5s59amwtAX67ft8xF6yotzgi4YBtrcgN/udkHpCOMPCBgt5Wvap+6KrlKIRGTSfM9
-        M4v+Ly+32GupCyAuN
-X-Received: by 2002:a05:6000:144d:b0:21d:8109:701d with SMTP id v13-20020a056000144d00b0021d8109701dmr12896130wrx.443.1658912743285;
-        Wed, 27 Jul 2022 02:05:43 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vFKCXGo7+tmPkeoN5oTHI8IVd+EWSmGixxPDJeK0M/yGU8GSgKKeLGqKrvSu3ZcnK2nIFrYA==
-X-Received: by 2002:a05:6000:144d:b0:21d:8109:701d with SMTP id v13-20020a056000144d00b0021d8109701dmr12896092wrx.443.1658912742634;
-        Wed, 27 Jul 2022 02:05:42 -0700 (PDT)
-Received: from redhat.com ([2a06:c701:7424:0:3d16:86dc:de54:5671])
-        by smtp.gmail.com with ESMTPSA id b12-20020a5d550c000000b0021e4fd8e10bsm9990696wrv.11.2022.07.27.02.05.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 02:05:42 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 05:05:39 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        Parav Pandit <parav@nvidia.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Message-ID: <20220727050342-mutt-send-email-mst@kernel.org>
-References: <PH0PR12MB5481E65037E0B4F6F583193BDC899@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1246d2f1-2822-0edb-cd57-efc4015f05a2@intel.com>
- <PH0PR12MB54815985C202E81122459DFFDC949@PH0PR12MB5481.namprd12.prod.outlook.com>
- <19681358-fc81-be5b-c20b-7394a549f0be@intel.com>
- <PH0PR12MB54818158D4F7F9F556022857DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e98fc062-021b-848b-5cf4-15bd63a11c5c@intel.com>
- <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220727015626-mutt-send-email-mst@kernel.org>
- <4925d1db-51d1-148a-72e0-2347b20e82f4@intel.com>
- <CACGkMEsXLhhLhyfPwc=Sif=iy1wE3zm6sKWQxvO3cyuM547+zw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2JA3LAcWFrVgyNzQ7tMzU8nSe9RRNefwId5LqLUrTHQ=;
+        b=RWySU6eRwW/zzxLBYywaqG+z7BGsqZKmprn63Wv6DDKEXcCqyDBWPDVdcDNoWykj46
+         NXubO8v3j+hFKwE8023BuxlENblztuffvpnZ3QWfKU6xo/9qOfEn2PIp1ta+xNE5RJ6d
+         CngdoU8o7Z7yTr2U1mZHF41J0rSVOzntdpD0t1SAdhCNfqH5N6Fsej7q8JQfa+pRPFww
+         HW9xmD8d90eqJYcV68G4N5On/QYRO+Bt7jjkstP7Sub6FCqrwX8xLvWEc844u2u3jMV6
+         WTVFGmxI3Al2JTNK5t7hC2e5Su3pKevdndMIssvGOQtH65/ZVcyrHIRrGm3S58g8SmY+
+         jkBA==
+X-Gm-Message-State: AJIora/V1ao55OY06fnyTJisecup8i1HgY6bzR9aOBDGVi0xcezu90u2
+        QGdDVbTM2cjNDlCGO+/Sznxex5Wjg2PK6kGuJlXsJwlY3DbPtg==
+X-Google-Smtp-Source: AGRyM1utHHIu+akhBwjmIFnrGj314eH11OJTAANegqIGBEFMt8iP4Tg/0hGy+lcXERizu/7pX03O+x/wsBmharnvQRw=
+X-Received: by 2002:a25:e752:0:b0:671:cdb7:90fd with SMTP id
+ e79-20020a25e752000000b00671cdb790fdmr485491ybh.407.1658912779195; Wed, 27
+ Jul 2022 02:06:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEsXLhhLhyfPwc=Sif=iy1wE3zm6sKWQxvO3cyuM547+zw@mail.gmail.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220722103750.1938776d@kernel.org> <20220726182518.47047-1-f6bvp@free.fr>
+In-Reply-To: <20220726182518.47047-1-f6bvp@free.fr>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Jul 2022 11:06:08 +0200
+Message-ID: <CANn89i+FBa-KLJz5xPvk3jO3Miww4Vs+qw4nPf_9SPwiWpyTWw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] [PATCH] net: rose: fix unregistered netdevice:
+ waiting for rose0 to become free
+To:     Bernard Pidoux <f6bvp@free.fr>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Ralf Baechle <ralf@linux-mips.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 02:56:20PM +0800, Jason Wang wrote:
-> On Wed, Jul 27, 2022 at 2:26 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
-> >
-> >
-> >
-> > On 7/27/2022 2:01 PM, Michael S. Tsirkin wrote:
-> > > On Wed, Jul 27, 2022 at 03:47:35AM +0000, Parav Pandit wrote:
-> > >>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > >>> Sent: Tuesday, July 26, 2022 10:53 PM
-> > >>>
-> > >>> On 7/27/2022 10:17 AM, Parav Pandit wrote:
-> > >>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > >>>>> Sent: Tuesday, July 26, 2022 10:15 PM
-> > >>>>>
-> > >>>>> On 7/26/2022 11:56 PM, Parav Pandit wrote:
-> > >>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > >>>>>>> Sent: Tuesday, July 12, 2022 11:46 PM
-> > >>>>>>>> When the user space which invokes netlink commands, detects that
-> > >>>>> _MQ
-> > >>>>>>> is not supported, hence it takes max_queue_pair = 1 by itself.
-> > >>>>>>> I think the kernel module have all necessary information and it is
-> > >>>>>>> the only one which have precise information of a device, so it
-> > >>>>>>> should answer precisely than let the user space guess. The kernel
-> > >>>>>>> module should be reliable than stay silent, leave the question to
-> > >>>>>>> the user space
-> > >>>>> tool.
-> > >>>>>> Kernel is reliable. It doesn’t expose a config space field if the
-> > >>>>>> field doesn’t
-> > >>>>> exist regardless of field should have default or no default.
-> > >>>>> so when you know it is one queue pair, you should answer one, not try
-> > >>>>> to guess.
-> > >>>>>> User space should not guess either. User space gets to see if _MQ
-> > >>>>> present/not present. If _MQ present than get reliable data from kernel.
-> > >>>>>> If _MQ not present, it means this device has one VQ pair.
-> > >>>>> it is still a guess, right? And all user space tools implemented this
-> > >>>>> feature need to guess
-> > >>>> No. it is not a guess.
-> > >>>> It is explicitly checking the _MQ feature and deriving the value.
-> > >>>> The code you proposed will be present in the user space.
-> > >>>> It will be uniform for _MQ and 10 other features that are present now and
-> > >>> in the future.
-> > >>> MQ and other features like RSS are different. If there is no _RSS_XX, there
-> > >>> are no attributes like max_rss_key_size, and there is not a default value.
-> > >>> But for MQ, we know it has to be 1 wihtout _MQ.
-> > >> "we" = user space.
-> > >> To keep the consistency among all the config space fields.
-> > > Actually I looked and the code some more and I'm puzzled:
-> > I can submit a fix in my next version patch for these issue.
-> > >
-> > >
-> > >       struct virtio_net_config config = {};
-> > >       u64 features;
-> > >       u16 val_u16;
-> > >
-> > >       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
-> > >
-> > >       if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
-> > >                   config.mac))
-> > >               return -EMSGSIZE;
-> > >
-> > >
-> > > Mac returned even without VIRTIO_NET_F_MAC
-> > if no VIRTIO_NET_F_MAC, we should not nla_put
-> > VDPA_ATTR_DEV_NET_CFG_MAC_ADDR, the spec says the driver should generate
-> > a random mac.
-> 
-> It's probably too late to do this.
+On Tue, Jul 26, 2022 at 8:25 PM Bernard Pidoux <f6bvp@free.fr> wrote:
+>
+> Here is the context.
+>
+> This patch adds dev_put(dev) in order to allow removal of rose module
+> after use of AX25 and ROSE via rose0 device.
+>
+> Otherwise when trying to remove rose module via rmmod rose an infinite
+> loop message was displayed on all consoles with xx being a random number.
+>
+> unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
+>
+> unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
+>
+> ...
+>
+> With the patch it is ok to rmmod rose.
 
-Not sure why.
+But removing a net device will leave a dangling pointer, leading to UAF.
 
-> Most of the parents have this
-> feature support, so probably not a real issue.
+We must keep a reference and remove it when the socket is dismantled.
 
-I guess not reporting MTU is not worse than failing initialization.
+Also rose_dev_first() is buggy, because it leaves the rcu section
+without taking first a reference on the found device.
 
-> > >
-> > >
-> > >       val_u16 = le16_to_cpu(config.status);
-> > >       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
-> > >               return -EMSGSIZE;
-> > >
-> > >
-> > > status returned even without VIRTIO_NET_F_STATUS
-> > if no VIRTIO_NET_F_STATUS, we should not nla_put
-> > VDPA_ATTR_DEV_NET_STATUS, the spec says the driver should assume the
-> > link is active.
-> 
-> Somehow similar to F_MAC. But we can report if F_MAC is not negotiated.
-> 
-> 
-> > >
-> > >       val_u16 = le16_to_cpu(config.mtu);
-> > >       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
-> > >               return -EMSGSIZE;
-> > >
-> > >
-> > > MTU returned even without VIRTIO_NET_F_MTU
-> > same as above, the spec says config.mtu depends on VIRTIO_NET_F_MTU, so
-> > without this feature bit, we should not return MTU to the userspace.
-> 
-> Not a big issue, we just need to make sure the parent can report a
-> correct MTU here.
-> 
-> Thanks
-> 
-> >
-> > Does these fix look good to you?
-> >
-> > And I think we may need your adjudication for the two issues:
-> > (1) Shall we answer max_vq_paris = 1 when _MQ not exist, I know you have
-> > agreed on this in a previous thread, its nice to clarify
-> > (2) I think we should not re-use the netlink attr to report feature bits
-> > of both the management device and the vDPA device,
-> > this can lead to a new race condition, there are no locks(especially
-> > distributed locks for kernel_space and user_space) in the nla_put
-> > functions. Re-using the attr is some kind of breaking the netlink
-> > lockless design.
-> >
-> > Thanks,
-> > Zhu Lingshan
-> > >
-> > >
-> > > What's going on here?
-> > >
-> > >
-> >
+Here is a probably not complete patch, can you give it a try ?
 
+(Also enable CONFIG_NET_DEV_REFCNT_TRACKER=y in your .config to ease debugging)
+
+(I can send you privately the patch, just ask me, I include it inline
+here for clarity only)
+
+Thanks.
+
+diff --git a/include/net/rose.h b/include/net/rose.h
+index 0f0a4ce0fee7cc5e125507a8fc3cfb8cb826be73..64f808eed0e15a2482e8ce010d712eef1e0b9d85
+100644
+--- a/include/net/rose.h
++++ b/include/net/rose.h
+@@ -131,7 +131,8 @@ struct rose_sock {
+        ax25_address            source_digis[ROSE_MAX_DIGIS];
+        ax25_address            dest_digis[ROSE_MAX_DIGIS];
+        struct rose_neigh       *neighbour;
+-       struct net_device               *device;
++       struct net_device       *device;
++       netdevice_tracker       dev_tracker;
+        unsigned int            lci, rand;
+        unsigned char           state, condition, qbitincl, defer;
+        unsigned char           cause, diagnostic;
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index bf2d986a6bc392a9d830b1dfa7fbaa3bca969aa3..520a48999f1bf8a41d66e8a4f86606b66f2b9408
+100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -192,6 +192,7 @@ static void rose_kill_by_device(struct net_device *dev)
+                        rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+                        if (rose->neighbour)
+                                rose->neighbour->use--;
++                       dev_put_track(rose->device, &rose->dev_tracker);
+                        rose->device = NULL;
+                }
+        }
+@@ -592,6 +593,8 @@ static struct sock *rose_make_new(struct sock *osk)
+        rose->idle      = orose->idle;
+        rose->defer     = orose->defer;
+        rose->device    = orose->device;
++       if (rose->device)
++               dev_hold_track(rose->device, &rose->dev_tracker, GFP_ATOMIC);
+        rose->qbitincl  = orose->qbitincl;
+
+        return sk;
+@@ -695,7 +698,11 @@ static int rose_bind(struct socket *sock, struct
+sockaddr *uaddr, int addr_len)
+        }
+
+        rose->source_addr   = addr->srose_addr;
++       // TODO: should probably hold socket lock at this point ?
++       WARN_ON_ONCE(rose->device);
+        rose->device        = dev;
++       netdev_tracker_alloc(rose->device, &rose->dev_tracker, GFP_KERNEL);
++
+        rose->source_ndigis = addr->srose_ndigis;
+
+        if (addr_len == sizeof(struct full_sockaddr_rose)) {
+@@ -721,7 +728,6 @@ static int rose_connect(struct socket *sock,
+struct sockaddr *uaddr, int addr_le
+        struct rose_sock *rose = rose_sk(sk);
+        struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
+        unsigned char cause, diagnostic;
+-       struct net_device *dev;
+        ax25_uid_assoc *user;
+        int n, err = 0;
+
+@@ -778,9 +784,12 @@ static int rose_connect(struct socket *sock,
+struct sockaddr *uaddr, int addr_le
+        }
+
+        if (sock_flag(sk, SOCK_ZAPPED)) {       /* Must bind first -
+autobinding in this may or may not work */
++               struct net_device *dev;
++
+                sock_reset_flag(sk, SOCK_ZAPPED);
+
+-               if ((dev = rose_dev_first()) == NULL) {
++               dev = rose_dev_first();
++               if (!dev) {
+                        err = -ENETUNREACH;
+                        goto out_release;
+                }
+@@ -788,12 +797,15 @@ static int rose_connect(struct socket *sock,
+struct sockaddr *uaddr, int addr_le
+                user = ax25_findbyuid(current_euid());
+                if (!user) {
+                        err = -EINVAL;
++                       dev_put(dev);
+                        goto out_release;
+                }
+
+                memcpy(&rose->source_addr, dev->dev_addr, ROSE_ADDR_LEN);
+                rose->source_call = user->call;
+                rose->device      = dev;
++               netdev_tracker_alloc(rose->device, &rose->dev_tracker,
++                                    GFP_KERNEL);
+                ax25_uid_put(user);
+
+                rose_insert_socket(sk);         /* Finish the bind */
+@@ -1017,6 +1029,7 @@ int rose_rx_call_request(struct sk_buff *skb,
+struct net_device *dev, struct ros
+                make_rose->source_digis[n] = facilities.source_digis[n];
+        make_rose->neighbour     = neigh;
+        make_rose->device        = dev;
++       dev_hold_track(make_rose->device, &make_rose->dev_tracker, GFP_ATOMIC);
+        make_rose->facilities    = facilities;
+
+        make_rose->neighbour->use++;
