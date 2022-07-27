@@ -2,235 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F8D3582E66
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 19:12:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0987D582FCA
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 19:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbiG0RMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 13:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
+        id S242012AbiG0RaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 13:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241237AbiG0RLk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 13:11:40 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BED51417
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:41:42 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id w15so19883991lft.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:41:41 -0700 (PDT)
+        with ESMTP id S242224AbiG0R25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 13:28:57 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B831F7F53B
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:47:33 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 196-20020a6301cd000000b0041b0f053fd1so3416925pgb.6
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 09:47:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
-        b=EvaFQ0LZE/erLTRglemqXFQcs3XLxjLrE10420FuIJORcU8P0nkjppHqEchtCoTdrV
-         QP3EHReO5Zj5phUAfO0cxLHKN2bfz0WwIlTvjKlOSHBNTX60u8ZOyI3BJ6DA74rpJkT0
-         8GE21IktCR/UbYLecNeeifL6SJcsv1OCP0KnhjoJWpm9vTJmfsOkimnmmVNmiKXSCjrq
-         PCIvFb2Z/9iLYQZjt4s1MFE4W9GqIdaCKe3Bj9niregePX3wluJt/DkX3AeE/2dJiwmo
-         OUqGp5MF42tU4cR9HJcR08KOXhPf/hL38/GwuPr2abMfrRWfMEMzEVdqiblUcsKeSAsU
-         1shQ==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=OnWRNaHrGqPJJEV9KnSzhKrkN7MNE4sHya6nsNPvuHM=;
+        b=U9gMVUiTWQ++4VoX0PfT/VwR2wcR1niVUjVsWMqRWcRGvGSkV34had4xJKOGcA4EoD
+         bX28+fNFMAy9EkbBhZfV4y/HDp/bLYEJj8pfEZdSsZ9yNP/dOoxx1M8kCQ3iZjV/6FAJ
+         Evu2TOMJKIbLkuesq+YQC+WGD6XrauCqC8g/tHyIAdTB1/AK0UhQQ1cFG94JtF8Q2v5C
+         tWWhqZsg/EW0Yg3Hbquk3bnL8KJ7gtbo5B1/pdlrqKKn3DWR3mO2CkiyNylQwtVW+NZ9
+         U6qo9H8j/1Lq4KHcrF35vvTngdEIB2XE8ZlQB+eYWIRlzvm2hkGXxh0oRne7e6zGp/Gs
+         QfkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
-        b=2r/jgJOWpA0fopiFSDc2g0GbLpbU7dtDPsgy8+He8ggegZEoJs4B1EbliAFUBZNy2I
-         LsAZC/JcUdjBiaXWNnpaHhFKClZqgT2NHqT2ZHBLzQ1K2X8H8vPvIw15LJ1zrFivEWpe
-         Ci3jp+pFzPvn56+/s5oj5Qy7vg9b6IWge7p3H08K7IoAZh3pz5pnStUwTmepGT/UfuQy
-         hQsD5QbPJF1RwaZmwNvPdzmeaNp9HwWcOPUTj65HgIeI3zPxCLUCV9pO4bXD5YVdtFBm
-         ujxI4fS4wz67+rKtULq8PVwpmTOztYntmYG3HEJOchodR2tmqpNdHTQ/SelzARa/3oMk
-         ZwQQ==
-X-Gm-Message-State: AJIora+XlpDvsJu6jALCnIZaWftglmpC+kwldy+M55Fikk5InPQqO4tw
-        RC4h85MOBCZXeWZcM30IrY3zxQ==
-X-Google-Smtp-Source: AGRyM1vOxShQJVI2IuMwmQBmBYBiblwWa0oXL7CXsC4l1qkEdcyTkrYB2g5dMB9y4tgZP27svG3sNw==
-X-Received: by 2002:a05:6512:1107:b0:48a:87db:7d24 with SMTP id l7-20020a056512110700b0048a87db7d24mr6539653lfg.58.1658940094944;
-        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id i17-20020a2ea231000000b0025a67779931sm3872519ljm.57.2022.07.27.09.41.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=OnWRNaHrGqPJJEV9KnSzhKrkN7MNE4sHya6nsNPvuHM=;
+        b=qslkdLB+s7qxzi6XgdyIvTzDfKBR9kIajw1nRtJWrSHJPS/XsvZYvf9omE9lwMVy0r
+         8dqfNZqf8L9SU0DXopFWBdVeDkCNGNq///QRh/Cp76C54lQ+mBydFVmR3GbG4NYl1vMs
+         qJOXvdTu/TQJDkMcuuV0bESJYytbHIq5Xf4B6a+d5y6+k82r+FcNxNLyk+RSm7wwRgYp
+         SQeRKQ7L41fnq2ztZ+TMM6eIvFwdlHxUPPXFRrH4wFYT6LKtJlXvmHerfg3hm7iL2RRy
+         KxNCuwa+44GXIiMk/YvC5Qkdd2bpC4GNXWfJHUrCkLLqkJ4XE0hNlqkDLjHKMsaEc3qt
+         qNeg==
+X-Gm-Message-State: AJIora95VNEzgzapp2wZ2rTKJ9kRZ15F8XAHqV7kHB62o8gPvQ+u59Lq
+        SQ1xomlzKFqyTJMnKnnRqwzPguo=
+X-Google-Smtp-Source: AGRyM1uytZyQgfv5KYDPrPMdtfmiRVb7kacPaIe8VF8v8YRN7gY2kBaXjIY8loAT6ufaEZY5oTELROg=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:d642:b0:16b:d5b7:1117 with SMTP id
+ y2-20020a170902d64200b0016bd5b71117mr21096618plh.167.1658940446949; Wed, 27
+ Jul 2022 09:47:26 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 09:47:25 -0700
+In-Reply-To: <20220727060909.2371812-1-kafai@fb.com>
+Message-Id: <YuFsHaTIu7dTzotG@google.com>
+Mime-Version: 1.0
+References: <20220727060856.2370358-1-kafai@fb.com> <20220727060909.2371812-1-kafai@fb.com>
+Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Adham Abozaeid <adham.abozaeid@microchip.com>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Tony Lindgren <tony@atomide.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: wireless: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:41:30 +0200
-Message-Id: <20220727164130.385411-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+On 07/26, Martin KaFai Lau wrote:
+> Most of the codes in bpf_setsockopt(SOL_SOCKET) are duplicated from
+> the sock_setsockopt().  The number of supported options are
+> increasing ever and so as the duplicated codes.
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+> One issue in reusing sock_setsockopt() is that the bpf prog
+> has already acquired the sk lock.  sockptr_t is useful to handle this.
+> sockptr_t already has a bit 'is_kernel' to handle the kernel-or-user
+> memory copy.  This patch adds a 'is_bpf' bit to tell if sk locking
+> has already been ensured by the bpf prog.
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
----
-
-Technically, this depends on [1] merged to SPI tree, if we want to
-preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-schemas in this patch.
-
-If this patch comes independently via different tree, the SPI CPHA and
-CPOL will be allowed for brief period of time, before [1] is merged.
-This will not have negative impact, just DT schema checks will be
-loosened for that period.
-
-[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
----
- .../net/wireless/microchip,wilc1000.yaml      |  7 ++--
- .../bindings/net/wireless/silabs,wfx.yaml     | 15 +++------
- .../bindings/net/wireless/ti,wlcore.yaml      | 32 +++++++++----------
- 3 files changed, 25 insertions(+), 29 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-index 60de78f1bc7b..b3405f284580 100644
---- a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-@@ -20,8 +20,6 @@ properties:
- 
-   reg: true
- 
--  spi-max-frequency: true
--
-   interrupts:
-     maxItems: 1
- 
-@@ -51,7 +49,10 @@ required:
-   - compatible
-   - interrupts
- 
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-index 76199a67d628..b35d2f3ad1ad 100644
---- a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-@@ -29,12 +29,6 @@ description: >
-     Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml for more
-     information.
- 
--  For SPI:
--
--    In add of the properties below, please consult
--    Documentation/devicetree/bindings/spi/spi-controller.yaml for optional SPI
--    related properties.
--
- properties:
-   compatible:
-     items:
-@@ -52,8 +46,6 @@ properties:
-       bindings.
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   interrupts:
-     description: The interrupt line. Should be IRQ_TYPE_EDGE_RISING. When SPI is
-       used, this property is required. When SDIO is used, the "in-band"
-@@ -84,12 +76,15 @@ properties:
- 
-   mac-address: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-diff --git a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-index d68bb2ec1f7e..e31456730e9f 100644
---- a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-@@ -36,8 +36,6 @@ properties:
-       This is required when connected via SPI, and optional when connected via
-       SDIO.
- 
--  spi-max-frequency: true
--
-   interrupts:
-     minItems: 1
-     maxItems: 2
-@@ -69,20 +67,22 @@ required:
-   - compatible
-   - interrupts
- 
--if:
--  properties:
--    compatible:
--      contains:
--        enum:
--          - ti,wl1271
--          - ti,wl1273
--          - ti,wl1281
--          - ti,wl1283
--then:
--  required:
--    - ref-clock-frequency
--
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - ti,wl1271
-+              - ti,wl1273
-+              - ti,wl1281
-+              - ti,wl1283
-+    then:
-+      required:
-+        - ref-clock-frequency
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
--- 
-2.34.1
-
+Why not explicitly call it is_locked/is_unlocked? I'm assuming, at some  
+point,
+we can have code paths in bpf where the socket has been already locked by
+the stack?
