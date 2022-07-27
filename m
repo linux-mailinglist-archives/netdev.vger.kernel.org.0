@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D91CD5829D4
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:41:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E2AF5829D5
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:41:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233964AbiG0PlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 11:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
+        id S233811AbiG0Plj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 11:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiG0PlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:41:06 -0400
+        with ESMTP id S229441AbiG0Pli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:41:38 -0400
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04B725E7
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:41:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE0C15712
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:41:37 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 760FC20538;
-        Wed, 27 Jul 2022 17:41:04 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id DB26D2052D;
+        Wed, 27 Jul 2022 17:41:35 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XG4WmNveIjr5; Wed, 27 Jul 2022 17:41:04 +0200 (CEST)
+        with ESMTP id R_JZ01wVAxgf; Wed, 27 Jul 2022 17:41:35 +0200 (CEST)
 Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id F2EE0201AA;
-        Wed, 27 Jul 2022 17:41:03 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 5ECB1201AA;
+        Wed, 27 Jul 2022 17:41:35 +0200 (CEST)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id E3DFC80004A;
-        Wed, 27 Jul 2022 17:41:03 +0200 (CEST)
+        by mailout2.secunet.com (Postfix) with ESMTP id 4D34380004A;
+        Wed, 27 Jul 2022 17:41:35 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 17:41:03 +0200
+ 15.1.2375.24; Wed, 27 Jul 2022 17:41:35 +0200
 Received: from moon.secunet.de (172.18.149.1) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
- 2022 17:41:01 +0200
-Date:   Wed, 27 Jul 2022 17:40:53 +0200
+ 2022 17:41:33 +0200
+Date:   Wed, 27 Jul 2022 17:41:22 +0200
 From:   Antony Antony <antony.antony@secunet.com>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Antony Antony <antony.antony@secunet.com>
-CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>
-Subject: [PATCH ipsec 2/3] xfrm: fix XFRMA_LASTUSED comment
-Message-ID: <f13d56af7b5846bac7549988e1c699ac2c17926a.1658936270.git.antony.antony@secunet.com>
+        Herbert Xu <herbert@gondor.apana.org.au>
+CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>,
+        "Antony Antony" <antony.antony@secunet.com>
+Subject: [PATCH ipsec 3/3] xfrm: clone missing x->lastused in xfrm_do_migrate
+Message-ID: <a7180935b3550668e2194d5afc2afc46e7e6bbef.1658936270.git.antony.antony@secunet.com>
 Reply-To: <antony.antony@secunet.com>
 References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
 MIME-Version: 1.0
@@ -63,27 +63,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is a __u64, internally time64_t.
+x->lastused was not cloned in xfrm_do_migrate. Add it to clone during
+migrate.
 
-Fixes: bf825f81b454 ("xfrm: introduce basic mark infrastructure")
+Fixes: 80c9abaabf42 ("[XFRM]: Extension for dynamic update of endpoint address(es)")
 Signed-off-by: Antony Antony <antony.antony@secunet.com>
 ---
- include/uapi/linux/xfrm.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_state.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 65e13a099b1a..a9f5d884560a 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -296,7 +296,7 @@ enum xfrm_attr_type_t {
- 	XFRMA_ETIMER_THRESH,
- 	XFRMA_SRCADDR,		/* xfrm_address_t */
- 	XFRMA_COADDR,		/* xfrm_address_t */
--	XFRMA_LASTUSED,		/* unsigned long  */
-+	XFRMA_LASTUSED,		/* __u64 */
- 	XFRMA_POLICY_TYPE,	/* struct xfrm_userpolicy_type */
- 	XFRMA_MIGRATE,
- 	XFRMA_ALG_AEAD,		/* struct xfrm_algo_aead */
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index ccfb172eb5b8..11d89af9cb55 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1592,6 +1592,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+ 	x->replay = orig->replay;
+ 	x->preplay = orig->preplay;
+ 	x->mapping_maxage = orig->mapping_maxage;
++	x->lastused = orig->lastused;
+ 	x->new_mapping = 0;
+ 	x->new_mapping_sport = 0;
+
 --
 2.30.2
 
