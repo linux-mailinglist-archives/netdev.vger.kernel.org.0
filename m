@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B6D58269E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 14:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E5AB5826A1
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 14:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233276AbiG0Ma6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 08:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S233327AbiG0MbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 08:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbiG0Mav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 08:30:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72895DF84;
-        Wed, 27 Jul 2022 05:30:15 -0700 (PDT)
+        with ESMTP id S233217AbiG0Max (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 08:30:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1E9DED8;
+        Wed, 27 Jul 2022 05:30:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C94160FDD;
-        Wed, 27 Jul 2022 12:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E186EC43142;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28979B82079;
+        Wed, 27 Jul 2022 12:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D6F86C43141;
         Wed, 27 Jul 2022 12:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658925014;
-        bh=z4+X3/lE4RQYWxQzTpVOq75PHGIQ/VULfH5YuSo1yb8=;
+        bh=f5AJxP6vd3oTSMKZOl9+kEqsHXwzsoOifz5qBPWfD6g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QjKg2SrSKsl3acZmURejReBkmneEup1gxkCb+S5jMLw1+zNcfHtUcRL7cF+Ae9Zif
-         gYq8/xtkon5sqfZX1n/C2/OyNCqiV04sqWUdq25I5BOdaFPsRL3VMUbFdvVByj4wUX
-         R6BYwPSP5t8v1zn2mteC/cH+HsmQ/dvlnzl8TBdpBryHAGKRPjFyy8c0AiDbD3fUcW
-         49+W5RHB7DD/TFnUVR4rcfcahv0nN7N1ZnM9D89+MUuEQIfxjlKrUCWxKdtb7nszOI
-         h+DZzlIZgQdXauHgBmbiP7XyD+2PHNLYz1jMLw6ZwR7uj3eVOIFhcKctBS+4EUbWu6
-         yPvdWJ8XTD2pA==
+        b=MQ6DajxM+o3xZuNlbsi4rXGCEO7sXnCWCuRqoSFvARa+tMw2bspiwIilAZWUpuF57
+         iIy9379M9frHKYuqRfFdgehcLn88ivpZBb/7recb4OIX9J3160PkIRTbS+4vSW5kHB
+         Hxk/CY6i2DUpf2oJvrV9b0ZaPWEYfI6pw8gHehOKB914KBdgM2B9J+8UDWjrtR9133
+         gsMNeY8fD2tJ+pM131T37ELzznJrD7sZhiEZzef9VfB5dHZTOC5SwW7ClSGhRFhIAj
+         9QRKiogO6ZwocTevfnwKrfUL7hEnmbeMl2oSS57Q8Dcz5e8cv58UA8Sv/sdr4Vpcgj
+         fw8C9Iu2seLdw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB9F7C43144;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3208C43143;
         Wed, 27 Jul 2022 12:30:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] net/smc: updates 2022-07-25
+Subject: Re: [PATCH net-next 0/4] net/smc: updates 2022-7-25
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165892501483.3549.12934641923205057607.git-patchwork-notify@kernel.org>
+Message-Id: <165892501479.3549.10641686148790679354.git-patchwork-notify@kernel.org>
 Date:   Wed, 27 Jul 2022 12:30:14 +0000
-References: <20220726100330.75191-1-wenjia@linux.ibm.com>
-In-Reply-To: <20220726100330.75191-1-wenjia@linux.ibm.com>
+References: <20220725141000.70347-1-wenjia@linux.ibm.com>
+In-Reply-To: <20220725141000.70347-1-wenjia@linux.ibm.com>
 To:     Wenjia Zhang <wenjia@linux.ibm.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, hca@linux.ibm.com,
-        kgraul@linux.ibm.com, raspl@linux.ibm.com, wintera@linux.ibm.com,
-        tonylu@linux.alibaba.com
+        kgraul@linux.ibm.com, wintera@linux.ibm.com, raspl@linux.ibm.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,7 +61,7 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 26 Jul 2022 12:03:26 +0200 you wrote:
+On Mon, 25 Jul 2022 16:09:56 +0200 you wrote:
 > Hi Dave & Jakub,
 > 
 > please apply the following patches to netdev's net-next tree.
@@ -73,13 +72,13 @@ On Tue, 26 Jul 2022 12:03:26 +0200 you wrote:
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/4] net/smc: Eliminate struct smc_ism_position
+  - [net-next,1/4] net/smc: Eliminate struct smc_ism_position
     https://git.kernel.org/netdev/net-next/c/eb481b02bd18
-  - [net-next,v2,2/4] s390/ism: Cleanups
+  - [net-next,2/4] s390/ism: Cleanups
     https://git.kernel.org/netdev/net-next/c/0a2f4f9893c8
-  - [net-next,v2,3/4] net/smc: Pass on DMBE bit mask in IRQ handler
+  - [net-next,3/4] net/smc: Pass on DMBE bit mask in IRQ handler
     https://git.kernel.org/netdev/net-next/c/8b2fed8e2712
-  - [net-next,v2,4/4] net/smc: Enable module load on netlink usage
+  - [net-next,4/4] net/smc: Enable module load on netlink usage
     https://git.kernel.org/netdev/net-next/c/28ec53f3a830
 
 You are awesome, thank you!
