@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F00583332
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 21:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F4C8583334
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 21:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236787AbiG0TMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 15:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S236459AbiG0TMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 15:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236428AbiG0TL4 (ORCPT
+        with ESMTP id S233329AbiG0TL4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 15:11:56 -0400
 Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E90165D60;
-        Wed, 27 Jul 2022 11:55:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EAC65D63;
+        Wed, 27 Jul 2022 11:55:24 -0700 (PDT)
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 26RIsnCG027831
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 26RIsnCH027831
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Wed, 27 Jul 2022 20:54:51 +0200
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -32,9 +32,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next v5 3/4] selftests: seg6: add selftest for SRv6 H.Encaps.Red behavior
-Date:   Wed, 27 Jul 2022 20:54:07 +0200
-Message-Id: <20220727185408.7077-4-andrea.mayer@uniroma2.it>
+Subject: [net-next v5 4/4] selftests: seg6: add selftest for SRv6 H.L2Encaps.Red behavior
+Date:   Wed, 27 Jul 2022 20:54:08 +0200
+Message-Id: <20220727185408.7077-5-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220727185408.7077-1-andrea.mayer@uniroma2.it>
 References: <20220727185408.7077-1-andrea.mayer@uniroma2.it>
@@ -51,13 +51,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This selftest is designed for testing the H.Encaps.Red behavior. It
+This selftest is designed for testing the H.L2Encaps.Red behavior. It
 instantiates a virtual network composed of several nodes: hosts and SRv6
 routers. Each node is realized using a network namespace that is
 properly interconnected to others through veth pairs.
-The test considers SRv6 routers implementing L3 VPNs leveraged by hosts
+The test considers SRv6 routers implementing a L2 VPN leveraged by hosts
 for communicating with each other. Such routers make use of the SRv6
-H.Encaps.Red behavior for applying SRv6 policies to L3 traffic coming
+H.L2Encaps.Red behavior for applying SRv6 policies to L2 traffic coming
 from hosts.
 
 The correct execution of the behavior is verified through reachability
@@ -66,60 +66,59 @@ tests carried out between hosts belonging to the same VPN.
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
  tools/testing/selftests/net/Makefile          |   1 +
- .../net/srv6_hencap_red_l3vpn_test.sh         | 879 ++++++++++++++++++
- 2 files changed, 880 insertions(+)
- create mode 100755 tools/testing/selftests/net/srv6_hencap_red_l3vpn_test.sh
+ .../net/srv6_hl2encap_red_l2vpn_test.sh       | 821 ++++++++++++++++++
+ 2 files changed, 822 insertions(+)
+ create mode 100755 tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh
 
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 80628bf8413a..7ac6ff3748ed 100644
+index 7ac6ff3748ed..cd86d37146cc 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
-@@ -35,6 +35,7 @@ TEST_PROGS += cmsg_time.sh cmsg_ipv6.sh
- TEST_PROGS += srv6_end_dt46_l3vpn_test.sh
+@@ -36,6 +36,7 @@ TEST_PROGS += srv6_end_dt46_l3vpn_test.sh
  TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
  TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
-+TEST_PROGS += srv6_hencap_red_l3vpn_test.sh
+ TEST_PROGS += srv6_hencap_red_l3vpn_test.sh
++TEST_PROGS += srv6_hl2encap_red_l2vpn_test.sh
  TEST_PROGS += vrf_strict_mode_test.sh
  TEST_PROGS += arp_ndisc_evict_nocarrier.sh
  TEST_PROGS += ndisc_unsolicited_na_test.sh
-diff --git a/tools/testing/selftests/net/srv6_hencap_red_l3vpn_test.sh b/tools/testing/selftests/net/srv6_hencap_red_l3vpn_test.sh
+diff --git a/tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh b/tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh
 new file mode 100755
-index 000000000000..28a775654b92
+index 000000000000..cb4177d41b21
 --- /dev/null
-+++ b/tools/testing/selftests/net/srv6_hencap_red_l3vpn_test.sh
-@@ -0,0 +1,879 @@
++++ b/tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh
+@@ -0,0 +1,821 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
 +# author: Andrea Mayer <andrea.mayer@uniroma2.it>
 +#
-+# This script is designed for testing the SRv6 H.Encaps.Red behavior.
++# This script is designed for testing the SRv6 H.L2Encaps.Red behavior.
 +#
-+# Below is depicted the IPv6 network of an operator which offers advanced
-+# IPv4/IPv6 VPN services to hosts, enabling them to communicate with each
-+# other.
-+# In this example, hosts hs-1 and hs-2 are connected through an IPv4/IPv6 VPN
-+# service, while hs-3 and hs-4 are connected using an IPv6 only VPN.
++# Below is depicted the IPv6 network of an operator which offers L2 VPN
++# services to hosts, enabling them to communicate with each other.
++# In this example, hosts hs-1 and hs-2 are connected through an L2 VPN service.
++# Currently, the SRv6 subsystem in Linux allows hosts hs-1 and hs-2 to exchange
++# full L2 frames as long as they carry IPv4/IPv6.
 +#
-+# Routers rt-1,rt-2,rt-3 and rt-4 implement IPv4/IPv6 L3 VPN services
++# Routers rt-1,rt-2,rt-3 and rt-4 implement L2 VPN services
 +# leveraging the SRv6 architecture. The key components for such VPNs are:
 +#
-+#   i) The SRv6 H.Encaps.Red behavior applies SRv6 Policies on traffic received
-+#      by connected hosts, initiating the VPN tunnel. Such a behavior is an
-+#      optimization of the SRv6 H.Encap aiming to reduce the length of the SID
-+#      List carried in the pushed SRH. Specifically, the H.Encaps.Red removes
-+#      the first SID contained in the SID List (i.e. SRv6 Policy) by storing it
-+#      into the IPv6 Destination Address. When a SRv6 Policy is made of only one
-+#      SID, the SRv6 H.Encaps.Red behavior omits the SRH at all and pushes that
-+#      SID directly into the IPv6 DA;
++#   i) The SRv6 H.L2Encaps.Red behavior applies SRv6 Policies on traffic
++#      received by connected hosts, initiating the VPN tunnel. Such a behavior
++#      is an optimization of the SRv6 H.L2Encap aiming to reduce the
++#      length of the SID List carried in the pushed SRH. Specifically, the
++#      H.L2Encaps.Red removes the first SID contained in the SID List (i.e. SRv6
++#      Policy) by storing it into the IPv6 Destination Address. When a SRv6
++#      Policy is made of only one SID, the SRv6 H.L2Encaps.Red behavior omits
++#      the SRH at all and pushes that SID directly into the IPv6 DA;
 +#
-+#  ii) The SRv6 End behavior advances the active SID in the SID List carried by
-+#      the SRH;
++#  ii) The SRv6 End behavior advances the active SID in the SID List
++#      carried by the SRH;
 +#
-+# iii) The SRv6 End.DT46 behavior is used for removing the SRv6 Policy and,
-+#      thus, it terminates the VPN tunnel. Such a behavior is capable of
-+#      handling, at the same time, both tunneled IPv4 and IPv6 traffic.
-+#
++# iii) The SRv6 End.DX2 behavior is used for removing the SRv6 Policy
++#      and, thus, it terminates the VPN tunnel. The decapsulated L2 frame is
++#      sent over the interface connected with the destination host.
 +#
 +#               cafe::1                      cafe::2
 +#              10.0.0.1                     10.0.0.2
@@ -149,15 +148,6 @@ index 000000000000..28a775654b92
 +#             |  rt-4  +-------------------+  rt-3  |
 +#             |        |  fcf0:0:3:4::/64  |        |
 +#             +---+----+                   +----+---+
-+#    cafe::/64    |                             |      cafe::/64
-+#  10.0.0.0/24    |                             |    10.0.0.0/24
-+#             +---+----+                   +--- +---+
-+#             |        |                   |        |
-+#             |  hs-4  |                   |  hs-3  |
-+#             |        |                   |        |
-+#             +--------+                   +--------+
-+#               cafe::4                      cafe::3
-+#              10.0.0.4                     10.0.0.3
 +#
 +#
 +# Every fcf0:0:x:y::/64 network interconnects the SRv6 routers rt-x with rt-y
@@ -173,103 +163,64 @@ index 000000000000..28a775654b92
 +#   Local SID table for SRv6 router rt-x
 +#   +----------------------------------------------------------+
 +#   |fcff:x::e is associated with the SRv6 End behavior        |
-+#   |fcff:x::d46 is associated with the SRv6 End.DT46 behavior |
++#   |fcff:x::d2 is associated with the SRv6 End.DX2 behavior   |
 +#   +----------------------------------------------------------+
 +#
 +# The fcff::/16 prefix is reserved by the operator for implementing SRv6 VPN
 +# services. Reachability of SIDs is ensured by proper configuration of the IPv6
 +# operator's network and SRv6 routers.
 +#
-+# # SRv6 Policies
-+# ===============
++# SRv6 Policies
++# =============
 +#
 +# An SRv6 ingress router applies SRv6 policies to the traffic received from a
 +# connected host. SRv6 policy enforcement consists of encapsulating the
 +# received traffic into a new IPv6 packet with a given SID List contained in
 +# the SRH.
 +#
-+# IPv4/IPv6 VPN between hs-1 and hs-2
-+# -----------------------------------
++# L2 VPN between hs-1 and hs-2
++# ----------------------------
 +#
-+# Hosts hs-1 and hs-2 are connected using dedicated IPv4/IPv6 VPNs.
++# Hosts hs-1 and hs-2 are connected using a dedicated L2 VPN.
 +# Specifically, packets generated from hs-1 and directed towards hs-2 are
 +# handled by rt-1 which applies the following SRv6 Policies:
 +#
-+#   i.a) IPv6 traffic, SID List=fcff:3::e,fcff:4::e,fcff:2::d46
-+#  ii.a) IPv4 traffic, SID List=fcff:2::d46
++#   i.a) L2 traffic, SID List=fcff:2::d2
 +#
-+# Policy (i.a) steers tunneled IPv6 traffic through SRv6 routers
-+# rt-3,rt-4,rt-2. Instead, Policy (ii.a) steers tunneled IPv4 traffic through
-+# rt-2.
-+# The H.Encaps.Red reduces the SID List (i.a) carried in SRH by removing the
-+# first SID (fcff:3::e) and pushing it into the IPv6 DA. In case of IPv4
-+# traffic, the H.Encaps.Red omits the presence of SRH at all, since the SID
-+# List (ii.a) consists of only one SID that can be stored directly in the IPv6
++# Policy (i.a) steers tunneled L2 traffic through SRv6 router rt-2.
++# The H.L2Encaps.Red omits the presence of SRH at all, since the SID List
++# consists of only one SID (fcff:2::d2) that can be stored directly in the IPv6
 +# DA.
 +#
 +# On the reverse path (i.e. from hs-2 to hs-1), rt-2 applies the following
 +# policies:
 +#
-+#   i.b) IPv6 traffic, SID List=fcff:1::d46
-+#  ii.b) IPv4 traffic, SID List=fcff:4::e,fcff:3::e,fcff:1::d46
++#   i.b) L2 traffic, SID List=fcff:4::e,fcff:3::e,fcff:1::d2
 +#
-+# Policy (i.b) steers tunneled IPv6 traffic through the SRv6 router rt-1.
-+# Conversely, Policy (ii.b) steers tunneled IPv4 traffic through SRv6 routers
-+# rt-4,rt-3,rt-1.
-+# The H.Encaps.Red omits the SRH at all in case of (i.b) by pushing the single
-+# SID (fcff::1::d46) inside the IPv6 DA.
-+# The H.Encaps.Red reduces the SID List (ii.b) in the SRH by removing the first
-+# SID (fcff:4::e) and pushing it into the IPv6 DA.
++# Policy (i.b) steers tunneled L2 traffic through the SRv6 routers
++# rt-4,rt-3,rt2. The H.L2Encaps.Red reduces the SID List in the SRH by removing
++# the first SID (fcff:4::e) and pushing it into the IPv6 DA.
 +#
 +# In summary:
-+#  hs-1->hs-2 |IPv6 DA=fcff:3::e|SRH SIDs=fcff:4::e,fcff:2::d46|IPv6|...| (i.a)
-+#  hs-1->hs-2 |IPv6 DA=fcff:2::d46|IPv4|...|                              (ii.a)
-+#
-+#  hs-2->hs-1 |IPv6 DA=fcff:1::d46|IPv6|...|                              (i.b)
-+#  hs-2->hs-1 |IPv6 DA=fcff:4::e|SRH SIDs=fcff:3::e,fcff:1::d46|IPv4|...| (ii.b)
-+#
-+#
-+# IPv6 VPN between hs-3 and hs-4
-+# ------------------------------
-+#
-+# Hosts hs-3 and hs-4 are connected using a dedicated IPv6 only VPN.
-+# Specifically, packets generated from hs-3 and directed towards hs-4 are
-+# handled by rt-3 which applies the following SRv6 Policy:
-+#
-+#  i.c) IPv6 traffic, SID List=fcff:2::e,fcff:4::d46
-+#
-+# Policy (i.c) steers tunneled IPv6 traffic through SRv6 routers rt-2,rt-4.
-+# The H.Encaps.Red reduces the SID List (i.c) carried in SRH by pushing the
-+# first SID (fcff:2::e) in the IPv6 DA.
-+#
-+# On the reverse path (i.e. from hs-4 to hs-3) the router rt-4 applies the
-+# following SRv6 Policy:
-+#
-+#  i.d) IPv6 traffic, SID List=fcff:1::e,fcff:3::d46.
-+#
-+# Policy (i.d) steers tunneled IPv6 traffic through SRv6 routers rt-1,rt-3.
-+# The H.Encaps.Red reduces the SID List (i.d) carried in SRH by pushing the
-+# first SID (fcff:1::e) in the IPv6 DA.
-+#
-+# In summary:
-+#  hs-3->hs-4 |IPv6 DA=fcff:2::e|SRH SIDs=fcff:4::d46|IPv6|...| (i.c)
-+#  hs-4->hs-3 |IPv6 DA=fcff:1::e|SRH SIDs=fcff:3::d46|IPv6|...| (i.d)
++#  hs-1->hs-2 |IPv6 DA=fcff:2::d2|eth|...|                              (i.a)
++#  hs-2->hs-1 |IPv6 DA=fcff:4::e|SRH SIDs=fcff:3::e,fcff:1::d2|eth|...| (i.b)
 +#
 +
 +# Kselftest framework requirement - SKIP code is 4.
 +readonly ksft_skip=4
 +
 +readonly RDMSUFF="$(mktemp -u XXXXXXXX)"
-+readonly VRF_TID=100
-+readonly VRF_DEVNAME="vrf-${VRF_TID}"
-+readonly RT2HS_DEVNAME="veth-t${VRF_TID}"
++readonly DUMMY_DEVNAME="dum0"
++readonly RT2HS_DEVNAME="veth-hs"
++readonly HS_VETH_NAME="veth0"
 +readonly LOCALSID_TABLE_ID=90
 +readonly IPv6_RT_NETWORK=fcf0:0
 +readonly IPv6_HS_NETWORK=cafe
 +readonly IPv4_HS_NETWORK=10.0.0
 +readonly VPN_LOCATOR_SERVICE=fcff
++readonly MAC_PREFIX=00:00:00:c0:01
 +readonly END_FUNC=000e
-+readonly DT46_FUNC=0d46
++readonly DX2_FUNC=00d2
 +
 +PING_TIMEOUT_SEC=4
 +PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
@@ -472,6 +423,9 @@ index 000000000000..28a775654b92
 +		ip -netns "${nsname}" link set "${devname}" up
 +	done
 +
++	ip -netns "${nsname}" link add "${DUMMY_DEVNAME}" type dummy
++
++	ip -netns "${nsname}" link set "${DUMMY_DEVNAME}" up
 +	ip -netns "${nsname}" link set lo up
 +
 +	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
@@ -507,35 +461,19 @@ index 000000000000..28a775654b92
 +			via "${net_prefix}::${neigh}" dev "${devname}"
 +	done
 +
-+	# Local End behavior (note that "dev" is dummy and the VRF is chosen
-+	# for the sake of simplicity).
++	# Local End behavior (note that dev "${DUMMY_DEVNAME}" is a dummy
++	# interface)
 +	ip -netns "${nsname}" -6 route \
 +		add "${VPN_LOCATOR_SERVICE}:${rt}::${END_FUNC}" \
 +		table "${LOCALSID_TABLE_ID}" \
-+		encap seg6local action End dev "${VRF_DEVNAME}"
-+
-+	# Local End.DT46 behavior
-+	ip -netns "${nsname}" -6 route \
-+		add "${VPN_LOCATOR_SERVICE}:${rt}::${DT46_FUNC}" \
-+		table "${LOCALSID_TABLE_ID}" \
-+		encap seg6local action End.DT46 vrftable "${VRF_TID}" \
-+		dev "${VRF_DEVNAME}"
++		encap seg6local action End dev "${DUMMY_DEVNAME}"
 +
 +	# all SIDs for VPNs start with a common locator. Routes and SRv6
-+	# Endpoint behavior instaces are grouped together in the 'localsid'
++	# Endpoint behaviors instaces are grouped together in the 'localsid'
 +	# table.
-+	ip -netns "${nsname}" -6 rule \
-+		add to "${VPN_LOCATOR_SERVICE}::/16" \
++	ip -netns "${nsname}" -6 rule add \
++		to "${VPN_LOCATOR_SERVICE}::/16" \
 +		lookup "${LOCALSID_TABLE_ID}" prio 999
-+
-+	# set default routes to unreachable for both ipv4 and ipv6
-+	ip -netns "${nsname}" -6 route \
-+		add unreachable default metric 4278198272 \
-+		vrf "${VRF_DEVNAME}"
-+
-+	ip -netns "${nsname}" -4 route \
-+		add unreachable default metric 4278198272 \
-+		vrf "${VRF_DEVNAME}"
 +}
 +
 +# build and install the SRv6 policy into the ingress SRv6 router.
@@ -565,25 +503,19 @@ index 000000000000..28a775654b92
 +		policy="${policy}${VPN_LOCATOR_SERVICE}:${n}::${END_FUNC},"
 +	done
 +
-+	policy="${policy}${VPN_LOCATOR_SERVICE}:${dec_rt}::${DT46_FUNC}"
++	policy="${policy}${VPN_LOCATOR_SERVICE}:${dec_rt}::${DX2_FUNC}"
 +
 +	# add SRv6 policy to incoming traffic sent by connected hosts
 +	if [ "${traffic}" -eq 6 ]; then
 +		ip -netns "${nsname}" -6 route \
-+			add "${IPv6_HS_NETWORK}::${dst}" vrf "${VRF_DEVNAME}" \
++			add "${IPv6_HS_NETWORK}::${dst}" \
 +			encap seg6 mode "${mode}" segs "${policy}" \
-+			dev "${VRF_DEVNAME}"
-+
-+		ip -netns "${nsname}" -6 neigh \
-+			add proxy "${IPv6_HS_NETWORK}::${dst}" \
-+			dev "${RT2HS_DEVNAME}"
++			dev dum0
 +	else
-+		# "dev" must be different from the one where the packet is
-+		# received, otherwise the proxy arp does not work.
 +		ip -netns "${nsname}" -4 route \
-+			add "${IPv4_HS_NETWORK}.${dst}" vrf "${VRF_DEVNAME}" \
++			add "${IPv4_HS_NETWORK}.${dst}" \
 +			encap seg6 mode "${mode}" segs "${policy}" \
-+			dev "${VRF_DEVNAME}"
++			dev dum0
 +	fi
 +}
 +
@@ -599,6 +531,21 @@ index 000000000000..28a775654b92
 +	__setup_rt_policy "$1" "$2" "$3" "$4" "$5" 4
 +}
 +
++setup_decap()
++{
++	local rt="$1"
++	local nsname
++
++	nsname="$(get_rtname "${rt}")"
++
++	# Local End.DX2 behavior
++	ip -netns "${nsname}" -6 route \
++		add "${VPN_LOCATOR_SERVICE}:${rt}::${DX2_FUNC}" \
++		table "${LOCALSID_TABLE_ID}" \
++		encap seg6local action End.DX2 oif "${RT2HS_DEVNAME}" \
++		dev "${RT2HS_DEVNAME}"
++}
++
 +setup_hs()
 +{
 +	local hs="$1"
@@ -612,45 +559,117 @@ index 000000000000..28a775654b92
 +	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
 +	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.default.accept_dad=0
 +
-+	ip -netns "${hsname}" link add veth0 type veth \
++	ip -netns "${hsname}" link add "${HS_VETH_NAME}" type veth \
 +		peer name "${RT2HS_DEVNAME}" netns "${rtname}"
 +
-+	ip -netns "${hsname}" addr \
-+		add "${IPv6_HS_NETWORK}::${hs}/64" dev veth0 nodad
-+	ip -netns "${hsname}" addr add "${IPv4_HS_NETWORK}.${hs}/24" dev veth0
++	ip -netns "${hsname}" addr add "${IPv6_HS_NETWORK}::${hs}/64" \
++		dev "${HS_VETH_NAME}" nodad
++	ip -netns "${hsname}" addr add "${IPv4_HS_NETWORK}.${hs}/24" \
++		dev "${HS_VETH_NAME}"
 +
-+	ip -netns "${hsname}" link set veth0 up
++	ip -netns "${hsname}" link set "${HS_VETH_NAME}" up
 +	ip -netns "${hsname}" link set lo up
 +
-+	# configure the VRF on the router which is directly connected to the
-+	# source host.
-+	ip -netns "${rtname}" link \
-+		add "${VRF_DEVNAME}" type vrf table "${VRF_TID}"
-+	ip -netns "${rtname}" link set "${VRF_DEVNAME}" up
-+
-+	# enslave the veth interface connecting the router with the host to the
-+	# VRF in the access router
-+	ip -netns "${rtname}" link \
-+		set "${RT2HS_DEVNAME}" master "${VRF_DEVNAME}"
-+
-+	ip -netns "${rtname}" addr \
-+		add "${IPv6_HS_NETWORK}::254/64" dev "${RT2HS_DEVNAME}" nodad
++	ip -netns "${rtname}" addr add "${IPv6_HS_NETWORK}::254/64" \
++		dev "${RT2HS_DEVNAME}" nodad
 +	ip -netns "${rtname}" addr \
 +		add "${IPv4_HS_NETWORK}.254/24" dev "${RT2HS_DEVNAME}"
 +
 +	ip -netns "${rtname}" link set "${RT2HS_DEVNAME}" up
 +
-+	ip netns exec "${rtname}" \
-+		sysctl -wq net.ipv6.conf."${RT2HS_DEVNAME}".proxy_ndp=1
-+	ip netns exec "${rtname}" \
-+		sysctl -wq net.ipv4.conf."${RT2HS_DEVNAME}".proxy_arp=1
-+
 +	# disable the rp_filter otherwise the kernel gets confused about how
 +	# to route decap ipv4 packets.
 +	ip netns exec "${rtname}" \
 +		sysctl -wq net.ipv4.conf."${RT2HS_DEVNAME}".rp_filter=0
++}
 +
-+	ip netns exec "${rtname}" sh -c "echo 1 > /proc/sys/net/vrf/strict_mode"
++# set an auto-generated mac address
++# args:
++#  $1 - name of the node (e.g.: hs-1, rt-3, etc)
++#  $2 - id of the node (e.g.: 1 for hs-1, 3 for rt-3, etc)
++#  $3 - host part of the IPv6 network address
++#  $4 - name of the network interface to which the generated mac address must
++#       be set.
++set_mac_address()
++{
++	local nodename="$1"
++	local nodeid="$2"
++	local host="$3"
++	local ifname="$4"
++	local nsname
++
++	nsname=$(get_nodename "${nodename}")
++
++	ip -netns "${nsname}" link set dev "${ifname}" down
++
++	ip -netns "${nsname}" link set address "${MAC_PREFIX}:${nodeid}" \
++		dev "${ifname}"
++
++	# the IPv6 address must be set once again after the MAC address has
++	# been changed.
++	ip -netns "${nsname}" addr add "${IPv6_HS_NETWORK}::${host}/64" \
++		dev "${ifname}" nodad
++
++	ip -netns "${nsname}" link set dev "${ifname}" up
++}
++
++set_host_l2peer()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++	local ipprefix="$3"
++	local proto="$4"
++	local hssrc_name
++	local ipaddr
++
++	hssrc_name="$(get_hsname "${hssrc}")"
++
++	if [ "${proto}" -eq 6 ]; then
++		ipaddr="${ipprefix}::${hsdst}"
++	else
++		ipaddr="${ipprefix}.${hsdst}"
++	fi
++
++	ip -netns "${hssrc_name}" route add "${ipaddr}" dev "${HS_VETH_NAME}"
++
++	ip -netns "${hssrc_name}" neigh \
++		add "${ipaddr}" lladdr "${MAC_PREFIX}:${hsdst}" \
++		dev "${HS_VETH_NAME}"
++}
++
++# setup an SRv6 L2 VPN between host hs-x and hs-y (currently, the SRv6
++# subsystem only supports L2 frames whose layer-3 is IPv4/IPv6).
++# args:
++#  $1 - source host
++#  $2 - SRv6 routers configured for steering tunneled traffic
++#  $3 - destination host
++setup_l2vpn()
++{
++	local hssrc="$1"
++	local end_rts="$2"
++	local hsdst="$3"
++	local rtsrc="${hssrc}"
++	local rtdst="${hsdst}"
++
++	# set fixed mac for source node and the neigh MAC address
++	set_mac_address "hs-${hssrc}" "${hssrc}" "${hssrc}" "${HS_VETH_NAME}"
++	set_host_l2peer "${hssrc}" "${hsdst}" "${IPv6_HS_NETWORK}" 6
++	set_host_l2peer "${hssrc}" "${hsdst}" "${IPv4_HS_NETWORK}" 4
++
++	# we have to set the mac address of the veth-host (on ingress router)
++	# to the mac address of the remote peer (L2 VPN destination host).
++	# Otherwise, traffic coming from the source host is dropped at the
++	# ingress router.
++	set_mac_address "rt-${rtsrc}" "${hsdst}" 254 "${RT2HS_DEVNAME}"
++
++	# set the SRv6 Policies at the ingress router
++	setup_rt_policy_ipv6 "${hsdst}" "${rtsrc}" "${end_rts}" "${rtdst}" \
++		l2encap.red 6
++	setup_rt_policy_ipv4 "${hsdst}" "${rtsrc}" "${end_rts}" "${rtdst}" \
++		l2encap.red 4
++
++	# set the decap behavior
++	setup_decap "${rtsrc}"
 +}
 +
 +setup()
@@ -664,7 +683,7 @@ index 000000000000..28a775654b92
 +	done
 +
 +	# create hosts
-+	HOSTS="1 2 3 4"; readonly HOSTS
++	HOSTS="1 2"; readonly HOSTS
 +	for i in ${HOSTS}; do
 +		create_host "${i}"
 +	done
@@ -684,56 +703,28 @@ index 000000000000..28a775654b92
 +	# set up the hosts connected to routers
 +	setup_hs 1 1
 +	setup_hs 2 2
-+	setup_hs 3 3
-+	setup_hs 4 4
 +
-+	# set up default SRv6 Endpoints (i.e. SRv6 End and SRv6 End.DT46)
++	# set up default SRv6 Endpoints (i.e. SRv6 End and SRv6 End.DX2)
 +	setup_rt_local_sids 1 "2 3 4"
 +	setup_rt_local_sids 2 "1 3 4"
 +	setup_rt_local_sids 3 "1 2 4"
 +	setup_rt_local_sids 4 "1 2 3"
 +
-+	# set up SRv6 policies
-+
-+	# create an IPv6 VPN between hosts hs-1 and hs-2.
++	# create a L2 VPN between hs-1 and hs-2.
++	# NB: currently, H.L2Encap* enables tunneling of L2 frames whose
++	# layer-3 is IPv4/IPv6.
++	#
 +	# the network path between hs-1 and hs-2 traverses several routers
 +	# depending on the direction of traffic.
 +	#
-+	# Direction hs-1 -> hs-2 (H.Encaps.Red)
-+	#  - rt-3,rt-4 (SRv6 End behaviors)
-+	#  - rt-2 (SRv6 End.DT46 behavior)
++	# Direction hs-1 -> hs-2 (H.L2Encaps.Red)
++	# - rt-2 (SRv6 End.DX2 behavior)
 +	#
-+	# Direction hs-2 -> hs-1 (H.Encaps.Red)
-+	#  - rt-1 (SRv6 End.DT46 behavior)
-+	setup_rt_policy_ipv6 2 1 "3 4" 2 encap.red
-+	setup_rt_policy_ipv6 1 2 "" 1 encap.red
-+
-+	# create an IPv4 VPN between hosts hs-1 and hs-2
-+	# the network path between hs-1 and hs-2 traverses several routers
-+	# depending on the direction of traffic.
-+	#
-+	# Direction hs-1 -> hs-2 (H.Encaps.Red)
-+	# - rt-2 (SRv6 End.DT46 behavior)
-+	#
-+	# Direction hs-2 -> hs-1 (H.Encaps.Red)
++	# Direction hs-2 -> hs-1 (H.L2Encaps.Red)
 +	#  - rt-4,rt-3 (SRv6 End behaviors)
-+	#  - rt-1 (SRv6 End.DT46 behavior)
-+	setup_rt_policy_ipv4 2 1 "" 2 encap.red
-+	setup_rt_policy_ipv4 1 2 "4 3" 1 encap.red
-+
-+	# create an IPv6 VPN between hosts hs-3 and hs-4
-+	# the network path between hs-3 and hs-4 traverses several routers
-+	# depending on the direction of traffic.
-+	#
-+	# Direction hs-3 -> hs-4 (H.Encaps.Red)
-+	# - rt-2 (SRv6 End Behavior)
-+	# - rt-4 (SRv6 End.DT46 behavior)
-+	#
-+	# Direction hs-4 -> hs-3 (H.Encaps.Red)
-+	#  - rt-1 (SRv6 End behavior)
-+	#  - rt-3 (SRv6 End.DT46 behavior)
-+	setup_rt_policy_ipv6 4 3 "2" 4 encap.red
-+	setup_rt_policy_ipv6 3 4 "1" 3 encap.red
++	#  - rt-1 (SRv6 End.DX2 behavior)
++	setup_l2vpn 1 "" 2
++	setup_l2vpn 2 "4 3" 1
 +
 +	# testing environment was set up successfully
 +	SETUP_ERR=0
@@ -825,35 +816,6 @@ index 000000000000..28a775654b92
 +	check_and_log_hs_ipv6_connectivity "${hssrc}" "${hsdst}"
 +}
 +
-+check_and_log_hs_ipv6_isolation()
-+{
-+	local hssrc="$1"
-+	local hsdst="$2"
-+
-+	# in this case, the connectivity test must fail
-+	check_hs_ipv6_connectivity "${hssrc}" "${hsdst}"
-+	log_test $? 1 "IPv6 Hosts isolation: hs-${hssrc} -X-> hs-${hsdst}"
-+}
-+
-+check_and_log_hs_ipv4_isolation()
-+{
-+	local hssrc="$1"
-+	local hsdst="$2"
-+
-+	# in this case, the connectivity test must fail
-+	check_hs_ipv4_connectivity "${hssrc}" "${hsdst}"
-+	log_test $? 1 "IPv4 Hosts isolation: hs-${hssrc} -X-> hs-${hsdst}"
-+}
-+
-+check_and_log_hs_isolation()
-+{
-+	local hssrc="$1"
-+	local hsdst="$2"
-+
-+	check_and_log_hs_ipv6_isolation "${hssrc}" "${hsdst}"
-+	check_and_log_hs_ipv4_isolation "${hssrc}" "${hsdst}"
-+}
-+
 +router_tests()
 +{
 +	local i
@@ -885,58 +847,39 @@ index 000000000000..28a775654b92
 +
 +host_vpn_tests()
 +{
-+	log_section "SRv6 VPN connectivity test hosts (h1 <-> h2, IPv4/IPv6)"
++	log_section "SRv6 L2 VPN connectivity test hosts (h1 <-> h2)"
 +
 +	check_and_log_hs_connectivity 1 2
 +	check_and_log_hs_connectivity 2 1
-+
-+	log_section "SRv6 VPN connectivity test hosts (h3 <-> h4, IPv6 only)"
-+
-+	check_and_log_hs_ipv6_connectivity 3 4
-+	check_and_log_hs_ipv6_connectivity 4 3
 +}
 +
-+host_vpn_isolation_tests()
++test_dummy_dev_or_ksft_skip()
 +{
-+	local l1="1 2"
-+	local l2="3 4"
-+	local tmp
-+	local i
-+	local j
-+	local k
++	local test_netns
 +
-+	log_section "SRv6 VPN isolation test among hosts"
++	test_netns="dummy-$(mktemp -u XXXXXXXX)"
 +
-+	for k in 0 1; do
-+		for i in ${l1}; do
-+			for j in ${l2}; do
-+				check_and_log_hs_isolation "${i}" "${j}"
-+			done
-+		done
++	if ! ip netns add "${test_netns}"; then
++		echo "SKIP: Cannot set up netns for testing dummy dev support"
++		exit "${ksft_skip}"
++	fi
 +
-+		# let us test the reverse path
-+		tmp="${l1}"; l1="${l2}"; l2="${tmp}"
-+	done
++	modprobe dummy &>/dev/null || true
++	if ! ip -netns "${test_netns}" link \
++		add "${DUMMY_DEVNAME}" type dummy; then
++		echo "SKIP: dummy dev not supported"
 +
-+	log_section "SRv6 VPN isolation test among hosts (h2 <-> h4, IPv4 only)"
++		ip netns del "${test_netns}"
++		exit "${ksft_skip}"
++	fi
 +
-+	check_and_log_hs_ipv4_isolation 2 4
-+	check_and_log_hs_ipv4_isolation 4 2
++	ip netns del "${test_netns}"
 +}
 +
 +test_iproute2_supp_or_ksft_skip()
 +{
-+	if ! ip route help 2>&1 | grep -qo "encap.red"; then
-+		echo "SKIP: Missing SRv6 encap.red support in iproute2"
-+		exit "${ksft_skip}"
-+	fi
-+}
-+
-+test_vrf_or_ksft_skip()
-+{
-+	modprobe vrf &>/dev/null || true
-+	if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
-+		echo "SKIP: vrf sysctl does not exist"
++	if ! ip route help 2>&1 | grep -qo "l2encap.red"; then
++		echo "SKIP: Missing SRv6 l2encap.red support in iproute2"
 +		exit "${ksft_skip}"
 +	fi
 +}
@@ -953,7 +896,7 @@ index 000000000000..28a775654b92
 +test_command_or_ksft_skip grep
 +
 +test_iproute2_supp_or_ksft_skip
-+test_vrf_or_ksft_skip
++test_dummy_dev_or_ksft_skip
 +
 +set -e
 +trap cleanup EXIT
@@ -964,7 +907,6 @@ index 000000000000..28a775654b92
 +router_tests
 +host2gateway_tests
 +host_vpn_tests
-+host_vpn_isolation_tests
 +
 +print_log_test_results
 -- 
