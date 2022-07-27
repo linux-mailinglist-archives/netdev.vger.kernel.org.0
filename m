@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9105828FB
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:50:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768EB582901
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233613AbiG0Ouw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 10:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S234281AbiG0Ovb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 10:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiG0Ouv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:50:51 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798383E755;
-        Wed, 27 Jul 2022 07:50:50 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id l23so31931578ejr.5;
-        Wed, 27 Jul 2022 07:50:50 -0700 (PDT)
+        with ESMTP id S234238AbiG0OvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:51:25 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A87E4330B;
+        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id z23so31661241eju.8;
+        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=isWnztje5tstM7edgrduRx0RaEbKQwk8/oOOQONRCl8=;
-        b=gfRgHcn1q+DgnbXdYQJcrPcRc9rkVJ051UGzvx0ESR8n09eLyoxuZu+IGcFN17ILFl
-         UUWiRBIgqesBe50nYgHnKPNGbwvHFwxfd5mm5cjQw68kdvqJYJJBPwmj0LKzYBndxKKK
-         kOulPg6hKNXqjBo0zhydMFhc0rsKd/hWzqKiDmRgy8sHcb83v2M5SuNYdshhW1T6D9u7
-         ck5Nly/0NnOx8X2hkFJSW4K7HXMHkkAzI6+XsBBicEsWTw7i5CQWclFxvpVhEOCDTvjO
-         hLoO+quVPfmZbWau4QA11cWzoLcHDyZ+pQZymevxmS/AD0c5n1wthOdVbPsG8+5QKdo2
-         wC/g==
+        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
+        b=aIlAHoCIkpUuoFHze+Z/HfYl16wa//iWgR50y4BIOQG12KxZNheuNuPx4QaMsPcHqm
+         mnZTKT30y4hERKheVcKgOWuc9ILKvw4bvMHYTknr/uVZW9ct0Ca6BFmzjcfx3DyePj7n
+         HAYQ76lfQFgdfuGwema7jPQu6LQk2DhfWdQ+oPd0fihedkj3mLKCQblU5z98ZVBTHIge
+         fh3OjF7BjuZxDumYWnhc6u6sn5U4IOAsTsRUuxARtB96zK69iLbRdwMg2dskRxnAox0s
+         zLu1DF5KshQ0UR0ZaWhIoIktCXouEHktxJT3w+9LNU1l51A511dTlxH59oI4qZkxWCf1
+         P9UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=isWnztje5tstM7edgrduRx0RaEbKQwk8/oOOQONRCl8=;
-        b=IAoICt8y3mtbReqKOq0iHM78uGWfGMuhga/Z8DbivCWbuTq5+pdyqcpwyn2uVH34I/
-         oawHm7dP9jsdDHsnLhkt23gttbzITzlsphzW2ca51eiio8KYLJYA8FrIfmRU4ydff3HD
-         Bg2Uvy2hDnpft37gZB3Y8zecK+VQRVFfJMh80p9JJctydPWWRBfISG3EAW/dzQ5yAGGg
-         TVQcknOoFN0Jd1ThONsuiupcIPmON8oLtxaBrK7N4KPVCCQfCOiOJZJFel7xf5bFmIS7
-         ZAlmhVguAcs52Tfk2n3i6REaQGabYJ4G6Em/DcqDTmDqy+2TI7QgSUIrlMgW9jZNr648
-         bIbQ==
-X-Gm-Message-State: AJIora9aouxG39DXK0A+TVbnFn5N8SI1beZN0GNKDdvKeb+5Ez7dXPl4
-        yCRtGxj4VGae50ZDwE95yxk=
-X-Google-Smtp-Source: AGRyM1tH3fyxkralipHbCpBky6s6tIdvaJuupLWwSVu3JnFx7PEsv5qyNhwjlDNVizJZNnb0GNj14w==
-X-Received: by 2002:a17:907:1b1c:b0:72f:9aac:ee41 with SMTP id mp28-20020a1709071b1c00b0072f9aacee41mr17902078ejc.56.1658933448933;
-        Wed, 27 Jul 2022 07:50:48 -0700 (PDT)
+        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
+        b=H8CP0P7uX3xoDSnLDDnBQ+6g4o+tt6oznWODDswGy2UXsKxWzBMDH0E5gT5rIBH6ct
+         2FsC56XejELVFUp/moitUYtkbLllUwUxj2EPouYK0OzvBJN0K3/UWN1CNFjxiNf9+yiO
+         nPylJLcZ5cJ6ChWaRjuMgqhcmZlpRIC3U4t3krhoMAAfPVUSgmqkj1izNxtVlS+L357I
+         7nelT7NDKOtjRHbELu85US9jgJ92PQOsjaCfltvAllMj+SZQ1gdVMXjNPUCkLGQ6cJjl
+         dLCIAFfPobZXPz3fbmdJnq1m4c5QFrL3HYH/Ur4KDy3mBXLxPpmOsXwMvobtEAt1jcRt
+         NtJQ==
+X-Gm-Message-State: AJIora8h7igH6mkcL5He9rgfFZXV9eDbj38s7jZEqdJE1CJ3pNgb+ljL
+        SVnkoqA7h4QphF7GqfDFIJ8=
+X-Google-Smtp-Source: AGRyM1s+7nwMGXZmSD9whtEJSdR5QkrRdiRbcb5I4XYYYpgtg2Y/shyvcZjjk5AcViB/yqWvzIj8OQ==
+X-Received: by 2002:a17:907:7f1c:b0:72b:6e63:1798 with SMTP id qf28-20020a1709077f1c00b0072b6e631798mr17622362ejc.538.1658933482763;
+        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
 Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id w8-20020a17090649c800b0072b2378027csm7696512ejv.26.2022.07.27.07.50.47
+        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0072b592ee073sm7808216ejb.147.2022.07.27.07.51.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:50:48 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 17:50:45 +0300
+        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 17:51:19 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -60,18 +60,18 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v5 02/14] net: dsa: qca8k: make mib autocast
- feature optional
-Message-ID: <20220727145045.s545bzwk4zcu6ggj@skbuf>
+Subject: Re: [net-next PATCH v5 06/14] net: dsa: qca8k: move mib init
+ function to common code
+Message-ID: <20220727145119.cruovluea4go7yl7@skbuf>
 References: <20220727113523.19742-1-ansuelsmth@gmail.com>
  <20220727113523.19742-1-ansuelsmth@gmail.com>
- <20220727113523.19742-3-ansuelsmth@gmail.com>
- <20220727113523.19742-3-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727113523.19742-3-ansuelsmth@gmail.com>
- <20220727113523.19742-3-ansuelsmth@gmail.com>
+In-Reply-To: <20220727113523.19742-7-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -82,11 +82,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 01:35:11PM +0200, Christian Marangi wrote:
-> Some switch may not support mib autocast feature and require the legacy
-> way of reading the regs directly.
-> Make the mib autocast feature optional and permit to declare support for
-> it using match_data struct in a dedicated qca8k_info_ops struct.
+On Wed, Jul 27, 2022 at 01:35:15PM +0200, Christian Marangi wrote:
+> The same mib function is used by drivers based on qca8k family switch.
+> Move it to common code to make it accessible also by other drivers.
 > 
 > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
