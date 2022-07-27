@@ -2,133 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4775828DC
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAA95828ED
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbiG0Op4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 10:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
+        id S234171AbiG0Oss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 10:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiG0Opz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:45:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36586B1D0
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:45:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658933153;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UPwTphlEofW1gzVyQij5B8duPZwdaVcNitr1RayVqqU=;
-        b=IcX5LYesOJLmKfbHOMjFsABILoaZw4n710JmahF7dySwZENvZCyobsOPGIajqNEA6m6YpY
-        0TEQ/SSjnnCGcdIuTJ/rCtR50K6aWP51YJ1kPNWU50XN0aYH5uqqKPCMpTV5aP357U4xTn
-        l8EJMcFqzCtJxSdTwSuoH8Ah6QYVQIo=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-75-naKc7L-OPTCXptNwGx5UXw-1; Wed, 27 Jul 2022 10:45:52 -0400
-X-MC-Unique: naKc7L-OPTCXptNwGx5UXw-1
-Received: by mail-wr1-f71.google.com with SMTP id s24-20020adf9798000000b0021ed3f3dd75so522109wrb.15
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:45:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UPwTphlEofW1gzVyQij5B8duPZwdaVcNitr1RayVqqU=;
-        b=QFaBTYneolGZrFYv2i85x9W2YjMLGkc0hDng8IHDzqav6kcKpMf0XOMeppSe0GL1Iy
-         MpHVTUEOXhCn4FKfbrB0zYz7i+n+hA7axxuv/+RTg+mcOWZm9wWLBb1fnadSGzxTu2zq
-         KRkcRhWHvNHgdyOK2Jfw5fxEYyPV7OFDPShdry8HB1C644iUa9K+gNegUedezXzanRx6
-         pRS5g4jPhBoK7bf+HLgbrE4xIqetCc7KXf8T8kW5dY8UT/yRxh4H1BEugD6UMsrPsee/
-         g/56LBp02osBjtDHDHwtUtcbBwKN+8sVQodGwqc+BplmUeiK2nRkdgESG/oYLbWOoWzz
-         dDVQ==
-X-Gm-Message-State: AJIora9r+fdGor9ds4RHukfX9KyR9o5P4ktPqfrgrwpkBApgmxDeha74
-        YJOdAsIizcRfFXyHMyFe3DVpO5sc07IfSBSi9NeYNhCXZANEsitF/Pi9R4DgPZ6AI6CWNC/3Biu
-        OsTNYIPynLdUp8UgG
-X-Received: by 2002:a05:600c:3ac4:b0:3a3:19c5:7cb2 with SMTP id d4-20020a05600c3ac400b003a319c57cb2mr3399336wms.63.1658933150780;
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s6EJaKWyltBC+mMZ+ewmsTuEWGKm93G14zzMdF0IwF3w4YCkILjcZ/BxC2B1sq/Pb8+8Hg6Q==
-X-Received: by 2002:a05:600c:3ac4:b0:3a3:19c5:7cb2 with SMTP id d4-20020a05600c3ac400b003a319c57cb2mr3399327wms.63.1658933150598;
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id h18-20020a05600c351200b003a31df6af2esm2693291wmq.1.2022.07.27.07.45.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 16:45:48 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nicolas.dichtel@6wind.com,
-        eyal.birger@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
-Message-ID: <20220727144548.GB31646@pc-4.home>
-References: <20220724003741.57816-1-matthias.may@westermo.com>
- <20220724003741.57816-3-matthias.may@westermo.com>
- <20220725170519.GD18808@pc-4.home>
- <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
-MIME-Version: 1.0
+        with ESMTP id S234212AbiG0Osp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:48:45 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2064.outbound.protection.outlook.com [40.107.102.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7950F3FA16
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:48:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JGogrPzR94spL2U++cJSQ26g4LdM6GHvbcrzzhmJzaCIpkoEQct70U0VTpBBpkpyUQr+PQHPuFB9vxGn57e49pvh36zxymZZH5YC4U3VJlFW+cUbGHbtbe4E/qTyRB9PjDuywaAJoKZ4oKDl5WC1ODS22c5/cLVjleTHBKTfXfEIuO1x7vbbZEjr0vYLUsL6bE2xRYRJ9pWsg+sfnbWmkSE3Zbza/gYLdVw2TJfXTQQB0n5vBf6rd562CV+3RXhTqAm3TGPG+iazhWVTDEBdtUWDUKT7W7/P+23maGMYzPFqo9hxefH+VjtTqGfwUEzJ/eZmKYntgB2/FiGMAmSnkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7x8Ocj6ghZkiJ6vr+dSJPTFEOf/9LVxKMf1CVaCqV/w=;
+ b=MJsU2CeFHfkVYQP6YGU/osMVSRsvBK3cntpacVF1pnOcqYXxxwJeBlewBz8KiJuj75pV5qbETNw81gDwUQgQFJNwb+wyDBE2x6SkGja5djWN90d2/2nMw9nJTRJAgUixMlrDAmVtLehpQHkreBzeONPBv9/TvRpOGDrk4cshZTLvG8CQ6zkKZ7n8uJfjE+ZomxOXFwSYwB38dLV9+1PfpMZAGe6YGfgU28As27RTEfaCR8OgXntsLINYzVb6rXdI/Elq1jOLqL4V1xIGgMu07ArDjeBYDlfCET8v35kosJtC5YcMyxMuSYt0Wnt/dzuXcOv2LC60M/ag7MC+QjgwUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7x8Ocj6ghZkiJ6vr+dSJPTFEOf/9LVxKMf1CVaCqV/w=;
+ b=ZxZDMK3XYwdZhaooGosjnYdpz172JHrUOgm6vTtLFwwU5rCuFdbxuRt1M0GAGNKK5oY+6GcjCrLLCK6Y/mnHIzwRRzVbRXlwax76WWjOYos9E+p2cnlxBdJwjrS45qL6obKzUSUCmKkh9pxniNQ5z59aSkDHJ7XJI+BxGXLX/ue7Dj1xObgVblANn+z4W7i/gW8zMVVo6O08AY2YCXoS2vvX9VqvM5EzeC9m/bwUOKkp7vGSqHHOkI2/uj0wCzDIXc8gXgdJMEQcbr0LJBvvqKUKmPa4XHZx6kGLj4UhKnCb0xf3YWUFZzGMJQ39qep+mlwEWlPxuFdlpb4imk8VFw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by CY4PR12MB1879.namprd12.prod.outlook.com (2603:10b6:903:125::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20; Wed, 27 Jul
+ 2022 14:48:43 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::a525:8fcf:95ec:f7ad%9]) with mapi id 15.20.5458.025; Wed, 27 Jul 2022
+ 14:48:43 +0000
+Date:   Wed, 27 Jul 2022 17:48:36 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 0/9] mlxsw: Add PTP support for Spectrum-2 and
+ newer ASICs
+Message-ID: <YuFQRKIy9AxLcSz8@shredder>
+References: <20220727062328.3134613-1-idosch@nvidia.com>
+ <YuFGN/WBzVgae/cf@hoboy.vegasvil.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YuFGN/WBzVgae/cf@hoboy.vegasvil.org>
+X-ClientProxiedBy: VI1PR08CA0264.eurprd08.prod.outlook.com
+ (2603:10a6:803:dc::37) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e9559c0b-e4c7-4221-3f11-08da6fdf19e0
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1879:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: epxWb9ChgRfLiKEuooQ3tx5YOR7Wxb6jAykmZRFGxwnwjMXz3bPXyCJ4W4BMeEuTPUujaoHfHUinaXsAMHlGVeVJLAV5hPPvlrPG7LKAP8S2xkFEvL3nE14tdOoOGkSiOGj3h/rzZk+VnsFKT6/A0CVhlT6JDUIrCxN8xFLQSMIX1SeZWsrE1no6MVcQFPqZsPVbtHiVP62Rky7mSR4dox+XQYLz4emtlOB/MQr4Y5fGPoRJztSher3gaEDXxS1NYGbTOSTInFkIDfTmmc56jldJ0FEzcgPKhWLTenJ9017/BbOIhouatKiyd+AVRKxtfSpXHfsYVwFurNES5T84gF75LFCvhC2EZpqSIS+XZJE2jJqKhssYB9DzyRyPlVz8a9+2urMAftukzIDRm5nYpjd92LhKO73GHmVQ+cFXtG36rv8DapQDN17vCOnS6UBpFMisd2T0dvwOCRD/Vk2O31Vvco7aH1OZeQWEhhz5vmCI3rLOE9KSe7oDRfHmyiV676UtXAfQ7q+oY/0gTMx1wnonmrO6FF6yMiYSd5/G65qiqdEgA9bJlh3mwnYmGV66OxCLgUUkLdJ9VaUbdwGf7O2COoV1W0QZUtsli4Sr8mZCbGzUq0tTKWocUIjARVw6vXwYyxy1LjlbHKYT0ZI67tFB91dDbnEro+C1sUvp7FHEfddfgsRKJBWz1m0MZnnqYd9D1ghRONMP+M9/jbDPvgYgtalwOt1CP7n0BAx9+62VLhOOafsRxNmEcWBzSClm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(4744005)(8676002)(6916009)(66476007)(66556008)(6486002)(66946007)(107886003)(478600001)(6666004)(4326008)(26005)(9686003)(2906002)(6512007)(316002)(33716001)(8936002)(6506007)(83380400001)(5660300002)(186003)(86362001)(38100700002)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GomZV/afG7cBZzl5ydRYHIdzCaCimoG/20zAJF7BQvFBTSaMPrwAL9svNapk?=
+ =?us-ascii?Q?vBKoPn+3O8shLedeQGA+p5YdAIpNa756PAa+3a/wqBdkwO2tO233MoEw6xAX?=
+ =?us-ascii?Q?CA++m4BOqo9AZLBTKBb2HOnEMuTIoJP/SC5jy89ElDYwCL9QQb0K5in1lqva?=
+ =?us-ascii?Q?tsYHLumqpbykwrOkRdDfwRIPR7BWHjv9OVUrDLXX3WQpRpHa99WrM6ZJmKA3?=
+ =?us-ascii?Q?6KbjpJnM4XRmiIylCwm4A2rbWAv5/FKZk/uKpZS1lpDyI5vMOkSt3ThpUgk+?=
+ =?us-ascii?Q?hexLUADXqLLLT2LNwaIp9yzLTvrku0BmTEUOlrjypuvJYTNkV+/XbHnY/QIy?=
+ =?us-ascii?Q?GnUUPNC7bpXwqTUeZM7rgtlqs7phmXNJWst0/c5knFh1xanLVtGta7G01x++?=
+ =?us-ascii?Q?zUXpqRtNxt9mkw+KUtMnCN5RoIJjGso3MgVFzXzRnTuy/2q5l1wfxKdkeGP9?=
+ =?us-ascii?Q?qAG34xZj6RKD6WJJSFDjk0TYBYZWNmsnc5RnMuMYefaPizQliF/a5URsjIpD?=
+ =?us-ascii?Q?HpGj68+Tcz0fQbXSvmC5r4QhO70Jiie6c0HzEL0QqEr6hkhAbeb9wcAfUTwY?=
+ =?us-ascii?Q?TW7BRH50OqPFcXhFK+8ptxCngFoOkRTR5JQkOQMnohmyzggdvTwZmk+U/m9K?=
+ =?us-ascii?Q?yMqCG/Pql89F1U/EaPF0+ZmUfTi0L2N3Nhaqk5ZAtEqIR6akPaHTQ/Yf1Mac?=
+ =?us-ascii?Q?ldY+GViM2wU4rIaTu+5FO8HvMSrlrJf+3FvrxGbgw62/y9SW4UMXa2gqTWuz?=
+ =?us-ascii?Q?WlRFbnXV04OxYvwnJ0N8fWbgQfvTO99IeA179wNu4xQax2HEA1f7SVV+C+x8?=
+ =?us-ascii?Q?92v9oGByiJVBGzQHLJ3ZUELj18ZzYnQBckivHhJIXtTPI6uZlYEGRAnUdZfj?=
+ =?us-ascii?Q?5185PWuP+4nK7YTwQxqEV7RcPD+CqMx5iMauq5RKVwpKxv4SRsgHKvPlaFOy?=
+ =?us-ascii?Q?cY0qciK2ExZHzO1yjcFOx7bCyopD+I53PIo1JduKC4mNbYepuyPp0alsMFnm?=
+ =?us-ascii?Q?03k26+oJms9vUld/Fiv7ksYJHWCPAsHKSP+LFLIp8ljTjD9Gc29LpefuSey+?=
+ =?us-ascii?Q?On9s7c7YelcA1XduMsE/p0fT7GESwsaFpbrjf15ndRkwz3jvfHu6WiHy2pyQ?=
+ =?us-ascii?Q?ycZRc1DQ/R26wPrt1glESNKbq88VDjGwLWhDV03HrY1TZG2kPZcoju+JuOck?=
+ =?us-ascii?Q?X4vhi2BF6bBxcf8uKGQ/Iwd0SfVb20QrVHm0KT+z/CExk0U7GovYXmVGSbkj?=
+ =?us-ascii?Q?s5USrQyNdzqSo6/BPMGrfs+hFuADtX7Vxp51LQj5P9t8jaN0T9goCdGi00el?=
+ =?us-ascii?Q?Uzr2SioXyQc3Pt/stkcVr7EHoP9IGFnHJpVR9M5l1EQPjmVyCgcYQeoAU/M4?=
+ =?us-ascii?Q?DsHCBE6h+Gc9BgrBvntLhv3bltsLC1YEqn5XktoToH6ojs3yc08sj3u9eoPX?=
+ =?us-ascii?Q?24gG9tEg7IRRH85oTRPr9Y7J4s7NINeZZ5huQdbyC8V4CLkeUFnILLbNvsw+?=
+ =?us-ascii?Q?UW2eSq5MPGIGUN10yjz5ucomlvCmEwNvLmgfYzBhUGZUDHEWVfaboChQbyib?=
+ =?us-ascii?Q?38Pbwt5IAjXOMDQAPwjbOaw7tMflZrOeGYeAKQQU?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9559c0b-e4c7-4221-3f11-08da6fdf19e0
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 14:48:42.9956
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sutWye0tcYa2s+14Ph2wYkRXLIxtBDvM+H9R5v30zDL6DKMWhGSK8QHGcTXv/vvqelzPEZQD62KkNeYIlY4tfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1879
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 06:29:56PM +0200, Matthias May wrote:
-> On 25/07/2022 19:05, Guillaume Nault wrote:
-> > On Sun, Jul 24, 2022 at 02:37:41AM +0200, Matthias May wrote:
-> > > The current code uses the RT_TOS macro to cut off the 6 DSCP
-> > > bits, down to the original 3 TOS bits.
-> > > 
-> > > Do not use this macro to get the prio for inheriting purposes.
-> > 
-> > Honestly, this patch is a bug fix and is suitable for the net tree
-> > (with appropriate 'Fixes' tag).
-> > 
-> > Ideally, we'd also fix ip6_dst_lookup_tunnel() (used by bareudp
-> > tunnels) and vxlan6_get_route().
-> > 
-> > Also, mlx5e_tc_tun_update_header_ipv6() and
-> > mlx5e_tc_tun_create_header_ipv6() both call RT_TOS() inside
-> > ip6_make_flowinfo() and certainly need to be fixed too.
-> > 
+On Wed, Jul 27, 2022 at 07:05:43AM -0700, Richard Cochran wrote:
+> On Wed, Jul 27, 2022 at 09:23:19AM +0300, Ido Schimmel wrote:
 > 
-> Hi Guillaume
-> How would i do that?
-> Send a v2 to net with the fixes tag on 95caf6f71a999?
-> Or just resend to net with the fixes tag on 95caf6f71a999?
-> Since there are no actual changes to the patch.
+> > Spectrum-2 and newer ASICs essentially implement a transparent clock
+> > between all the switch ports, including the CPU port. The hardware will
+> > generate the UTC time stamp for transmitted / received packets at the
+> 
+> The PTP time scale is TAI, not UTC.
+> 
+> > CPU port, but will compensate for forwarding delays in the ASIC by
+> > adjusting the correction field in the PTP header (for PTP events) at the
+> > ingress and egress ports.
+> 
+> If the switch adjusts this automatcally, then the time scale in use is
+> not relevant.
 
-Hi Matthias,
-
-Ideally, send a patch series to net that'd removes RT_TOS() from the
-ip6_make_flowinfo() calls in geneve, vxlan and bareudp (one patch for
-each protocol, with the appropriate Fixes tag). You can add the IPv4
-patch in that series or send it separately, as you see fit.
-
-Alternatively you can just repost this series to net, with a proper
-Fixes tag for each patch (and I'll take care of vxlan and bareudp in
-a future series).
-
-> This kind of contradicts the statement that IPv4 and IPv6 should behave the same.
-> --> v6 would be fixed, but v4 not.
-
-I personally consider the current IPv4 behaviour for TOS inherit option
-to be a bug, so, in this case, we can have both IPv4 and IPv6 fixed in
-the same tree.
-
-But generally speaking, we have some divergence in how IPv4 and IPv6
-treat tos/dsfield. That's because of some historical reasons and it's
-not easy to reconciliate both implementations (because of backward
-compatibility).
-
-> BR
-> Matthias
-
-
-
+It is adjusted automatically by hardware. Software only needs to enable
+it.
