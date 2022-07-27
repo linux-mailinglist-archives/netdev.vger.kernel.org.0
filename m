@@ -2,65 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F173458285B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61B5C5828B6
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbiG0OQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 10:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
+        id S234056AbiG0Obz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 10:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232194AbiG0OQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:16:35 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ED71135
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:16:34 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d7so16221870plr.9
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:16:34 -0700 (PDT)
+        with ESMTP id S234031AbiG0Oby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:31:54 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83C524BC8;
+        Wed, 27 Jul 2022 07:31:52 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id b11so31739389eju.10;
+        Wed, 27 Jul 2022 07:31:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=xuOlvkQBLrdWUBYkNNFfJ9Knn9FBvjzl9wYpptd3E84=;
-        b=FQw8QhbhOBfBcMdWUQDwGYDiQKDXcismfmjxH5gIylEJZ743NImDdaZwGjJYGR5tpd
-         yIEq8vtRLDUw4reJWYtvMgVDGD5cY+ZpUmKW8o20gLtZVkaU0NQkem0UfSqP0vClUqGG
-         DvtdAJmZZeRMUTK51Hh9UwYS0GsvbnYM6m0GoBRvUP4gn1A3WKksTojtw832wjISR34t
-         CgjtH1WCYX6Z8N3hhB0K/j75B1fgAecsi0qBdK5QwCN0u/3lMS32tJx5lB8DStWpk8E6
-         EAw9PGSqMK0NBss6fAuh/QRheE5V0xV3W1UD6ZXqhrYwYW7Wv4BSisrs4VczEIjqXeHH
-         VDGw==
+        bh=ap2eOkNnEPkf5/x99641AFOqaHS8ihdhKYCdB+pyA0c=;
+        b=VJ8XpEXQu3r41ZiOBg9RbWnUXGkhz90J7R9Bc74mS+5ok1CeXC8r7qa9/dBjSs6gPm
+         LQllETS4TIPRt9xeaAgNTTCPSk/Q1T94ciu9UfSoBUVkNlwOD0fUBHo5IO7Kn0oBmZcJ
+         w1h5jS2bsOY/IVijKYAVbj+UD4lcj9yMC6+kU66picS0VpSuaF3l3fh6lEe0t7g9kTYz
+         kl/u+53lSW2Dma6OWsMg85lFs6KQix9OAs/tmyuK4qNdMSGKYk3gxpM3Oxsj/7PA5hnb
+         82J11tPUHHlkJNZRe1B3+BcQ0yTiaGSurhOrPHsvrDJvI+1oGUYFReO8z1Hka7jnzOCe
+         1NOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=xuOlvkQBLrdWUBYkNNFfJ9Knn9FBvjzl9wYpptd3E84=;
-        b=jgf86bFEzI+mHqgJ6TXwR4Y0KU4pAUTlggRkY94bqPsnSIw5XEgN/a0wES6fjaO+7M
-         NtkZ3vfj61t28yBqU4ZCDalhTtvVb+pRf3xDwU5+w7qME3dLH1bPC+OX0Mf9wxbZfnzU
-         HpmlrR0nEVH1XZzfKydPepgnjN+Zq7FzBlsFHTphYmLCUz1qaqsPM00SDFvDg80fwfSm
-         HQ6nNXgbjn3C/nw/JsCQo4GocQaxkg+OunjseyXLsWsu+MH6tkqhmRIzCLypvTxh4i51
-         ZMTsNB0BH9sNlP23VG5GEitHcuH9vNActMXrSBqKoNYChpWpFH7FxuNUIIQ3bgj0mrPH
-         WRRw==
-X-Gm-Message-State: AJIora84Yhya8gecnDpr2cyJZoc60tqf3Kzi8dvuorD967FL1DX8Oly0
-        gaFh/Ex3wDurr2NoAp9DMmqL+ZSMw7A=
-X-Google-Smtp-Source: AGRyM1s4TMU/fu68gYA+gkefpVsbm67S+o7EXO1kdwuRBPxVgcGqb3zJ4nU2Bg/g5ihVWJZc+hN6fQ==
-X-Received: by 2002:a17:90b:4b0a:b0:1f2:a904:8af7 with SMTP id lx10-20020a17090b4b0a00b001f2a9048af7mr4946189pjb.76.1658931394081;
-        Wed, 27 Jul 2022 07:16:34 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id k4-20020a170902ce0400b0016d42244886sm11415369plg.94.2022.07.27.07.16.32
+        bh=ap2eOkNnEPkf5/x99641AFOqaHS8ihdhKYCdB+pyA0c=;
+        b=JXMZMICZ8t8cG1WF/FiN0IJ44FjLyPBx6FN4jkpaveCBYdGJtqV9fe6GDoCQy/GfWI
+         H/rfHTbDW+AljMIPsWoKCZ9bU+6JVTxbI0abqXg72UnZrn9I+KeztUeufEv0/9tRnd6x
+         STIWknNL9s5PWRUjzKQnuZIJ8DpkDS71iEB0zW16EZZBXD+lLbptfVFn4WgKB834ZF/4
+         Lw3ZrjRAaJle6psIVa+E2DRv2OBNzA8JiPwZQw1fQLcGGNQQ9iVc4R1NPF2dM1jty7jt
+         g24rKtaJAFXqskpNfqaCNUWeAwtZ1BFPIOJduggL6XKtzOuKLqGlAqUdS/UXgWd7KOFs
+         5yMg==
+X-Gm-Message-State: AJIora9MnP8o3WMeidTgLp6EYXqtQzZWkUIXrqqgZndLlztyzZ/U0hat
+        wWLXmKZxIAfippzskZeWTfY=
+X-Google-Smtp-Source: AGRyM1vAqpsxV5ozYrFXI7H1S3ukpzm6F54jEsTbvfKpUxjlDXmMtVouLVcjMSlQI9v9ZEoC+/ZC2A==
+X-Received: by 2002:a17:907:94ca:b0:72b:8f3e:3be0 with SMTP id dn10-20020a17090794ca00b0072b8f3e3be0mr17944032ejc.462.1658932311180;
+        Wed, 27 Jul 2022 07:31:51 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id eg47-20020a05640228af00b0043bbcd94ee4sm10311614edb.51.2022.07.27.07.31.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:16:33 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 07:16:31 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
-        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 0/9] mlxsw: Add PTP support for Spectrum-2 and
- newer ASICs
-Message-ID: <YuFIvxvB2AxKt9PV@hoboy.vegasvil.org>
-References: <20220727062328.3134613-1-idosch@nvidia.com>
+        Wed, 27 Jul 2022 07:31:50 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 17:31:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org,
+        andriy.shevchenko@linux.intel.com, sean.wang@mediatek.com,
+        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
+        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
+ fwnode_find_net_device_by_node()
+Message-ID: <20220727143147.u6yd6wqslilspyhw@skbuf>
+References: <20220727064321.2953971-1-mw@semihalf.com>
+ <20220727064321.2953971-7-mw@semihalf.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727062328.3134613-1-idosch@nvidia.com>
+In-Reply-To: <20220727064321.2953971-7-mw@semihalf.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,24 +78,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 09:23:19AM +0300, Ido Schimmel wrote:
+On Wed, Jul 27, 2022 at 08:43:19AM +0200, Marcin Wojtas wrote:
+> A helper function which allows getting the struct net_device pointer
+> associated with a given device tree node can be more generic and
+> also support alternative hardware description. Switch to fwnode_
+> and update the only existing caller in DSA subsystem.
+> For that purpose use newly added fwnode_dev_node_match helper routine.
+> 
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> ---
+> -struct net_device *of_find_net_device_by_node(struct device_node *np)
+> +struct net_device *fwnode_find_net_device_by_node(struct fwnode_handle *fwnode)
+>  {
+>  	struct device *dev;
+>  
+> -	dev = class_find_device(&net_class, NULL, np, of_dev_node_match);
+> +	dev = class_find_device(&net_class, NULL, fwnode, fwnode_find_parent_dev_match);
 
-> Specifically, the hardware will subtract the current time stamp from the
-> correction field at the ingress port and will add the current time stamp
-> to the correction field at the egress port.
+This needs to maintain compatibility with DSA masters that have
+dev->of_node but don't have dev->fwnode populated.
 
-Doing this in pure HW TC mode, the time scale of the switch's clock
-does not matter at all.  It can be a free running counter.
-
-> For the purpose of an
-> ordinary or boundary clock (this patchset), the correction field will
-> always be adjusted between the CPU port and one of the front panel
-> ports, but never between two front panel ports.
-
-To clarify, the only reason why you say "never between two front panel
-ports" is because the switch will configured not to forward PTP frames
-over the front panel ports, for BC mode.  For TC operation, the switch
-will apply the correction, right?
-
-Thanks,
-Richard
+>  	if (!dev)
+>  		return NULL;
+>  
+>  	return to_net_dev(dev);
+>  }
+> -EXPORT_SYMBOL(of_find_net_device_by_node);
+> -#endif
+> +EXPORT_SYMBOL(fwnode_find_net_device_by_node);
