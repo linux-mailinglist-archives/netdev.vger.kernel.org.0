@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3214A5829C9
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91CD5829D4
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:41:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiG0Piv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 11:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
+        id S233964AbiG0PlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 11:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiG0Piu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:38:50 -0400
+        with ESMTP id S229441AbiG0PlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:41:06 -0400
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74C62A728
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:38:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04B725E7
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:41:05 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id C55B32053D;
-        Wed, 27 Jul 2022 17:38:46 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 760FC20538;
+        Wed, 27 Jul 2022 17:41:04 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fQ-Etb6-yi8H; Wed, 27 Jul 2022 17:38:46 +0200 (CEST)
+        with ESMTP id XG4WmNveIjr5; Wed, 27 Jul 2022 17:41:04 +0200 (CEST)
 Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 43851201AA;
-        Wed, 27 Jul 2022 17:38:46 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id F2EE0201AA;
+        Wed, 27 Jul 2022 17:41:03 +0200 (CEST)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 3233E80004A;
-        Wed, 27 Jul 2022 17:38:46 +0200 (CEST)
+        by mailout2.secunet.com (Postfix) with ESMTP id E3DFC80004A;
+        Wed, 27 Jul 2022 17:41:03 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 17:38:46 +0200
+ 15.1.2375.24; Wed, 27 Jul 2022 17:41:03 +0200
 Received: from moon.secunet.de (172.18.149.1) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
- 2022 17:38:44 +0200
-Date:   Wed, 27 Jul 2022 17:38:35 +0200
+ 2022 17:41:01 +0200
+Date:   Wed, 27 Jul 2022 17:40:53 +0200
 From:   Antony Antony <antony.antony@secunet.com>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        <0002-xfrm-fix-XFRMA_LASTUSED-comment.patch@moon.secunet.de>,
-        <0003-xfrm-clone-missing-x-lastused-in-xfrm_do_migrate.patch@moon.secunet.de>
+        Antony Antony <antony.antony@secunet.com>
 CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>
-Subject: [PATCH ipsec 1/3] Revert "xfrm: update SA curlft.use_time"
-Message-ID: <e66a68873492c0b3e02f8459e88cedabe255e3b6.1658936270.git.antony.antony@secunet.com>
+Subject: [PATCH ipsec 2/3] xfrm: fix XFRMA_LASTUSED comment
+Message-ID: <f13d56af7b5846bac7549988e1c699ac2c17926a.1658936270.git.antony.antony@secunet.com>
 Reply-To: <antony.antony@secunet.com>
 References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
 MIME-Version: 1.0
@@ -64,50 +63,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit af734a26a1a95a9fda51f2abb0c22a7efcafd5ca.
+It is a __u64, internally time64_t.
 
-The abvoce commit is a regression according RFC 2367. A better fix would be
-use x->lastused. Which will be propsed later.
-
-according to RFC 2367 use_time == sadb_lifetime_usetime.
-
-"sadb_lifetime_usetime
-                   For CURRENT, the time, in seconds, when association
-                   was first used. For HARD and SOFT, the number of
-                   seconds after the first use of the association until
-                   it expires."
-
-Fixes: af734a26a1a9 ("xfrm: update SA curlft.use_time")
+Fixes: bf825f81b454 ("xfrm: introduce basic mark infrastructure")
 Signed-off-by: Antony Antony <antony.antony@secunet.com>
 ---
- net/xfrm/xfrm_input.c  | 1 -
- net/xfrm/xfrm_output.c | 1 -
- 2 files changed, 2 deletions(-)
+ include/uapi/linux/xfrm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 144238a50f3d..70a8c36f0ba6 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -669,7 +669,6 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
--		x->curlft.use_time = ktime_get_real_seconds();
- 
- 		spin_unlock(&x->lock);
- 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 555ab35cd119..9a5e79a38c67 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -534,7 +534,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
--		x->curlft.use_time = ktime_get_real_seconds();
- 
- 		spin_unlock_bh(&x->lock);
- 
--- 
+diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
+index 65e13a099b1a..a9f5d884560a 100644
+--- a/include/uapi/linux/xfrm.h
++++ b/include/uapi/linux/xfrm.h
+@@ -296,7 +296,7 @@ enum xfrm_attr_type_t {
+ 	XFRMA_ETIMER_THRESH,
+ 	XFRMA_SRCADDR,		/* xfrm_address_t */
+ 	XFRMA_COADDR,		/* xfrm_address_t */
+-	XFRMA_LASTUSED,		/* unsigned long  */
++	XFRMA_LASTUSED,		/* __u64 */
+ 	XFRMA_POLICY_TYPE,	/* struct xfrm_userpolicy_type */
+ 	XFRMA_MIGRATE,
+ 	XFRMA_ALG_AEAD,		/* struct xfrm_algo_aead */
+--
 2.30.2
 
