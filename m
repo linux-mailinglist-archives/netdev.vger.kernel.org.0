@@ -2,76 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85452581F7A
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 07:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37CD7581FAD
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 07:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240240AbiG0F2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 01:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
+        id S229452AbiG0F7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 01:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiG0F2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 01:28:18 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63563DBC3;
-        Tue, 26 Jul 2022 22:28:17 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id fy29so29495735ejc.12;
-        Tue, 26 Jul 2022 22:28:17 -0700 (PDT)
+        with ESMTP id S229554AbiG0F7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 01:59:17 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5993DBD8
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 22:59:16 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id z23so29438476eju.8
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 22:59:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=p53et6f2dSmIm5ec786uki7wKg6LtXZdHNVeRvOXgf4=;
-        b=Bx9ibcauQHdAh8mnDX2ZONhdqudEQzoZ+TptnTG+nnM2zHCMVVaw0jfYOeJc4E7h3j
-         Mxm5B0okv8EQTgPTJ6Vm/JY0dwdzVamjSOpWXpol2axCXL/vhHzj6rPPkGTfFD9SWORG
-         ntPzOs3mqwyxDBm4q2JvmsaTbYWxn25dxzUDBj5VfI9tLDOzDf1qA3iyE2oONVniE4/i
-         BwpawF9Kit27R5Dky1oZe9/WjIJh2eDsy3F2VegIdZBkrRxc2fEASZq43rc/aCB/1UUh
-         uuEqo1dYMIljCviiM8d1azxgKLtt4/LBznzSt6WM0jVV73TCqJx9WOVzUMwuQNEJEJfD
-         LsyA==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fTqLYZN2GXd6VPSaDwBAOjju+ToRG+StdzLB1bw7R2c=;
+        b=o2WTRIyNiQ2g9gfFHx8Id/RYHna+CqTEk64RbIk3+0U83i7+uGlEPEAZHEs9oGQNQQ
+         HOzYd84l1hUHXgymojXPd2XGjhaCV5bo5I0t4hFWkSwvnr+KaBJxFPbagEKJJoXsFlHM
+         asbj+b78VisW24yDzmJ/p/8WjckKX5TSPrmKVEt9BBR7GQpwxL9KztjsodZupXneWAZc
+         yX5fdJXZejOsgovPrshbyb0QCDHjWxSdsiWLbDM5SkU1Y1GlNAbe9jRDNa1+I7nQ0xAQ
+         rtm5Hk0UmIZ967PNB2O1D694eaEoES2LpPvAeYcudbiFFbmm9yw6MZ7ggZjHV/AAcYcO
+         h1Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=p53et6f2dSmIm5ec786uki7wKg6LtXZdHNVeRvOXgf4=;
-        b=4e7l9Iu8UvOlabGFekDu5y6bWMYoN3XCEU6rtNe44HBHBu362ILyz4WSah8qjNJ2Ub
-         Et4tgRSnua6SRrXoC2mp0c5MQzdaNgD1Zy56OzKL8t/Qn4zJEJT/i6iHja3ydcZffVGh
-         CU3v5eDakvpqS46NghwZWa8RdzzNogfwb4zMsbA0586XBfwR4zwz3RFOacO90POZwFAa
-         AeYytEm+93+tMi6bxtYZTYdXX2Y3bdA4fm8kzOVFhQ94NVXbV4GZVsy6Jfh4wlY57V/F
-         RtMEgTFWaYC+9dvw4lK6mOn0DYgkH+9a8eHyfejEQKivsXtasbHHxyrP2V9sf51LaweU
-         O6pA==
-X-Gm-Message-State: AJIora/mxb/H5h44Fj9JevoeVkGpd9iD37l4t5vuPuw/URltaXrsiUYk
-        Ol9XkEZHi6FbCEd/S2I9Fnk=
-X-Google-Smtp-Source: AGRyM1sSHlf3YckWfx5CdyTV7NzC8bClsvf5K0hnK6dRbclggQ3vlYwBp3vXw3zvogTZn1GiVO6IfQ==
-X-Received: by 2002:a17:906:5d0b:b0:72f:b107:c09f with SMTP id g11-20020a1709065d0b00b0072fb107c09fmr16311964ejt.639.1658899696090;
-        Tue, 26 Jul 2022 22:28:16 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056402064e00b0043c8d7d94besm1281806edx.5.2022.07.26.22.28.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 22:28:15 -0700 (PDT)
-Message-ID: <23d40f8c-ad5b-c908-4081-24f882514ad7@gmail.com>
-Date:   Wed, 27 Jul 2022 08:28:13 +0300
+        bh=fTqLYZN2GXd6VPSaDwBAOjju+ToRG+StdzLB1bw7R2c=;
+        b=ruwpm3E15lOr50k3RcGybKcWm5N+NL3BPyR8rx9GtSuWgLpjzdR//AGbF9fbNFhJMQ
+         Yf0Xh0pQsevXxRq34A+y6VtN6EM5+Cd4TfwcSGNq84L0tGlxmwUN0o+WXPrlWQ1gSusx
+         GMMkfEevD9N4OUkcoHSqd7API1BrYJLsR5M8w61f/p4ALeBxtmrtoLNoP4x7GBP8YIxb
+         ZrfYlo+lvfMwEpQ6sAPzH268Fy6mWZGa0yxqCOShEHxkjDbjMfoVWFnoHyfBEdQFdCk9
+         Nal6y0wAsNKC2yDkRsHO7h9NUlC79ipZ/Q7yea98otjt+FruF0apv2t6owopocFH1oVG
+         e9KQ==
+X-Gm-Message-State: AJIora/Y2LrYb4DzwDE9z3ikCvDMUK1oAJLjgOX0Vpiwv1gohbWZ3fQz
+        lV3X1y2xKaF3mauEWfc1RXcLNXZToWRBD40ZpMg=
+X-Google-Smtp-Source: AGRyM1u8xfNIQPjK+UK7LJEdIe1bTrj5T/HeZFzo8PNGMSL1naH0z6MdXyk44N3vTXVZ7lr7YpGdZg==
+X-Received: by 2002:a17:907:270b:b0:72b:1418:f3dc with SMTP id w11-20020a170907270b00b0072b1418f3dcmr16758548ejk.748.1658901554246;
+        Tue, 26 Jul 2022 22:59:14 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id qc3-20020a170906d8a300b0072b36cbcdaasm7134326ejb.92.2022.07.26.22.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 22:59:13 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Subject: [patch net-next] net: devlink: remove redundant net_eq() check from sb_pool_get_dumpit()
+Date:   Wed, 27 Jul 2022 07:59:12 +0200
+Message-Id: <20220727055912.568391-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [net-next PATCH] octeontx2-pf: Use only non-isolated cpus in irq
- affinity
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>
-References: <20220725094402.21203-1-gakula@marvell.com>
- <20220726200804.72deb465@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220726200804.72deb465@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,27 +66,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Pirko <jiri@nvidia.com>
 
+The net_eq() check is already performed inside
+devlinks_xa_for_each_registered_get() helper, so remove the redundant
+appearance.
 
-On 7/27/2022 6:08 AM, Jakub Kicinski wrote:
-> On Mon, 25 Jul 2022 15:14:02 +0530 Geetha sowjanya wrote:
->> This patch excludes the isolates cpus from the cpus list
->> while setting up TX/RX queue interrupts affinity
->>
->> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
->> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> 
-> Hm, housekeeping_cpumask() looks barely used by drivers,
-> do you have any references to discussions indicated drivers
-> are expected to pay attention to it? Really seems like something
-> that the core should take care of.
-> 
-> Tariq, thoughts?
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+ net/core/devlink.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I agree.
-IMO this logic best fits inside the new sched API I proposed last week 
-(pending Ack...), transparent to driver.
-
-Find here:
-https://lore.kernel.org/all/20220719162339.23865-2-tariqt@nvidia.com/
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 698b2d6e0ec7..ca4c9939d569 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2642,8 +2642,7 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
+ 
+ 	mutex_lock(&devlink_mutex);
+ 	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
+-		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)) ||
+-		    !devlink->ops->sb_pool_get)
++		if (!devlink->ops->sb_pool_get)
+ 			goto retry;
+ 
+ 		devl_lock(devlink);
+-- 
+2.35.3
 
