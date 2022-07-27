@@ -2,173 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36225581FB2
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E50BE581FB5
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 08:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiG0GB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 02:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
+        id S229751AbiG0GCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 02:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiG0GBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:01:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08FD8B499
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658901684;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8xtXdluvgXBSpfS+jXxthX445YwgzUazMcxwBGlNiPo=;
-        b=Gnddv+waQTykhZpK65Qiyv44AaxsodPt0eERf78FbvXMxKHr47gVYMMG20WDwfqrbqOs6Q
-        9RDp2XMquhryfdggWOb0mGETM1O6N4q5qPdwrCkPZjRomwbKcPxRgSIdxam7pd5yQKbSzJ
-        bl6l6q0EnE6tEr7Ms8sEmLxOq5CAUto=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-F33YBDDeO9-2Tb1-NqHljg-1; Wed, 27 Jul 2022 02:01:22 -0400
-X-MC-Unique: F33YBDDeO9-2Tb1-NqHljg-1
-Received: by mail-wm1-f70.google.com with SMTP id r82-20020a1c4455000000b003a300020352so8608568wma.5
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:01:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=8xtXdluvgXBSpfS+jXxthX445YwgzUazMcxwBGlNiPo=;
-        b=k4rHvM2ovKVVPPii55K2bxTEqV4n0tHvg+9um4pcnizxG12fGn0IJP6rhfL2ohC4dN
-         sv9ESod6OFtK9D3GWvvSCIbmZCkg25N6XgzlHSOo3w3faCanAekOsS+yRupMfUkutBNP
-         xdwXJ5on9JCjJ2g/fSZYkFXDcIr9DF45TPk85+M44BDflXgwRAoOD7fh5OEtR/Zd+h4O
-         4/kN8uqGg5ovSlsba4Nl/zng1bw8l0UfdCBQfJwIhtCz8rjceYjqMuaeACvVJJzIAXUI
-         ePVCtZOcw0WL6Mle+QS3KwmxUp5AlsNcVb5UVJf1We26UYOUwNRS5qKVumLtj5NmlWpi
-         mdEQ==
-X-Gm-Message-State: AJIora9Dk+gfaozT8akqhbZsYS1Y4fm+kU0vPBqNOT9R/PfGmIsocC+V
-        IkxHsxc1u1SpK4OgD/5jCaIENQDQYCDNFoFZWskDQx7w9lFWSWMcTyiz07g25BnnmxlJncfpWzU
-        O3vozeqxaZOk13WwU
-X-Received: by 2002:a5d:4650:0:b0:21e:9ddc:12c with SMTP id j16-20020a5d4650000000b0021e9ddc012cmr4689277wrs.596.1658901681370;
-        Tue, 26 Jul 2022 23:01:21 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vOTbqWpRU/40fypnlbnuUalUXC628tK3i1DrsZNBw0v1zxLs5MSuXJ/M5aG8OlYITs8NAf9w==
-X-Received: by 2002:a5d:4650:0:b0:21e:9ddc:12c with SMTP id j16-20020a5d4650000000b0021e9ddc012cmr4689262wrs.596.1658901681084;
-        Tue, 26 Jul 2022 23:01:21 -0700 (PDT)
-Received: from redhat.com ([2a06:c701:7424:0:3d16:86dc:de54:5671])
-        by smtp.gmail.com with ESMTPSA id q2-20020adff502000000b0021ece43e1besm690698wro.114.2022.07.26.23.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 23:01:20 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 02:01:17 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        with ESMTP id S229499AbiG0GCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 02:02:44 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A452A735
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 23:02:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658901763; x=1690437763;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=anNk6jyB5Zf8QIKWeNRLIowoJFxjttqszIprTqeBi3M=;
+  b=jto/DCSe9o7m1VzabJHv812sKwj1jT2w7671+tqXAfjzm11Px3eGDJQ6
+   6aWgYrpaGqRPat+0U7L2szxZ7ME3S2bK1QzKxm6YBnJeKBZrqtWrNQ3+E
+   ZPgOdUzGnTCFMRKK6X4BXKZ5nyelPHMldEyE2x3G+jdoDhelBCVzHxJOH
+   m5rOfJo/vgfAEhYYOlnLAY2dom+IteQxMXAezZHgJnJmW4zXkEJDwZzHt
+   x532w+psJ1VfCFt4OqaHNPA378bHNh18VOcIXfRBv+HSQ9SOMVhfybDTq
+   dJ8fUy0gPLS8qUfFQopHK1Y9nTRvM1wlWaU62lNxaQCzCyp20nd256Q4H
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="374452994"
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="374452994"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 23:02:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="659050038"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.171.153]) ([10.249.171.153])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 23:02:27 -0700
+Message-ID: <9e27b28c-f88b-87c4-d869-d4984ece2066@intel.com>
+Date:   Wed, 27 Jul 2022 14:02:25 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V4 3/6] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Parav Pandit <parav@nvidia.com>,
         "jasowang@redhat.com" <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
         "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Message-ID: <20220727015626-mutt-send-email-mst@kernel.org>
-References: <00c1f5e8-e58d-5af7-cc6b-b29398e17c8b@intel.com>
- <PH0PR12MB54817863E7BA89D6BB5A5F8CDC869@PH0PR12MB5481.namprd12.prod.outlook.com>
- <c7c8f49c-484f-f5b3-39e6-0d17f396cca7@intel.com>
- <PH0PR12MB5481E65037E0B4F6F583193BDC899@PH0PR12MB5481.namprd12.prod.outlook.com>
- <1246d2f1-2822-0edb-cd57-efc4015f05a2@intel.com>
- <PH0PR12MB54815985C202E81122459DFFDC949@PH0PR12MB5481.namprd12.prod.outlook.com>
- <19681358-fc81-be5b-c20b-7394a549f0be@intel.com>
- <PH0PR12MB54818158D4F7F9F556022857DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e98fc062-021b-848b-5cf4-15bd63a11c5c@intel.com>
- <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20220722115309.82746-1-lingshan.zhu@intel.com>
+ <20220722115309.82746-4-lingshan.zhu@intel.com>
+ <PH0PR12MB548193156AFCA04F58B01A3CDC909@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <6dc2229c-f2f3-017f-16fa-4611e53c774e@intel.com>
+ <PH0PR12MB5481D9BBC9C249840E4CDF7EDC929@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <9d9d6022-5d49-6f6e-a1ff-562d088ad03c@intel.com>
+ <PH0PR12MB548133788748EF91F959C143DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB548133788748EF91F959C143DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 03:47:35AM +0000, Parav Pandit wrote:
-> 
-> > From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > Sent: Tuesday, July 26, 2022 10:53 PM
-> > 
-> > On 7/27/2022 10:17 AM, Parav Pandit wrote:
-> > >> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > >> Sent: Tuesday, July 26, 2022 10:15 PM
-> > >>
-> > >> On 7/26/2022 11:56 PM, Parav Pandit wrote:
-> > >>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > >>>> Sent: Tuesday, July 12, 2022 11:46 PM
-> > >>>>> When the user space which invokes netlink commands, detects that
-> > >> _MQ
-> > >>>> is not supported, hence it takes max_queue_pair = 1 by itself.
-> > >>>> I think the kernel module have all necessary information and it is
-> > >>>> the only one which have precise information of a device, so it
-> > >>>> should answer precisely than let the user space guess. The kernel
-> > >>>> module should be reliable than stay silent, leave the question to
-> > >>>> the user space
-> > >> tool.
-> > >>> Kernel is reliable. It doesn’t expose a config space field if the
-> > >>> field doesn’t
-> > >> exist regardless of field should have default or no default.
-> > >> so when you know it is one queue pair, you should answer one, not try
-> > >> to guess.
-> > >>> User space should not guess either. User space gets to see if _MQ
-> > >> present/not present. If _MQ present than get reliable data from kernel.
-> > >>> If _MQ not present, it means this device has one VQ pair.
-> > >> it is still a guess, right? And all user space tools implemented this
-> > >> feature need to guess
-> > > No. it is not a guess.
-> > > It is explicitly checking the _MQ feature and deriving the value.
-> > > The code you proposed will be present in the user space.
-> > > It will be uniform for _MQ and 10 other features that are present now and
-> > in the future.
-> > MQ and other features like RSS are different. If there is no _RSS_XX, there
-> > are no attributes like max_rss_key_size, and there is not a default value.
-> > But for MQ, we know it has to be 1 wihtout _MQ.
-> "we" = user space.
-> To keep the consistency among all the config space fields.
-
-Actually I looked and the code some more and I'm puzzled:
 
 
-	struct virtio_net_config config = {};
-	u64 features;
-	u16 val_u16;
-
-	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
-
-	if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
-		    config.mac))
-		return -EMSGSIZE;
-
-
-Mac returned even without VIRTIO_NET_F_MAC
-
-
-	val_u16 = le16_to_cpu(config.status);
-	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
-		return -EMSGSIZE;
-
-
-status returned even without VIRTIO_NET_F_STATUS
-
-	val_u16 = le16_to_cpu(config.mtu);
-	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
-		return -EMSGSIZE;
-
-
-MTU returned even without VIRTIO_NET_F_MTU
-
-
-What's going on here?
-
-
--- 
-MST
+On 7/26/2022 7:06 PM, Parav Pandit wrote:
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Tuesday, July 26, 2022 7:03 AM
+>>
+>> On 7/24/2022 11:21 PM, Parav Pandit wrote:
+>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Saturday, July 23, 2022 7:24 AM
+>>>>
+>>>>
+>>>> On 7/22/2022 9:12 PM, Parav Pandit wrote:
+>>>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> Sent: Friday, July 22, 2022 7:53 AM
+>>>>>>
+>>>>>> This commit adds a new vDPA netlink attribution
+>>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can
+>> query
+>>>> features
+>>>>>> of vDPA devices through this new attr.
+>>>>>>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> ---
+>>>>>>     drivers/vdpa/vdpa.c       | 13 +++++++++----
+>>>>>>     include/uapi/linux/vdpa.h |  1 +
+>>>>>>     2 files changed, 10 insertions(+), 4 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
+>>>>>> ebf2f363fbe7..9b0e39b2f022 100644
+>>>>>> --- a/drivers/vdpa/vdpa.c
+>>>>>> +++ b/drivers/vdpa/vdpa.c
+>>>>>> @@ -815,7 +815,7 @@ static int vdpa_dev_net_mq_config_fill(struct
+>>>>>> vdpa_device *vdev,  static int vdpa_dev_net_config_fill(struct
+>>>>>> vdpa_device *vdev, struct sk_buff *msg)  {
+>>>>>>     	struct virtio_net_config config = {};
+>>>>>> -	u64 features;
+>>>>>> +	u64 features_device, features_driver;
+>>>>>>     	u16 val_u16;
+>>>>>>
+>>>>>>     	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config)); @@
+>>>>>> -
+>>>>>> 832,12 +832,17 @@ static int vdpa_dev_net_config_fill(struct
+>>>>>> vdpa_device *vdev, struct sk_buff *ms
+>>>>>>     	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>>>>>     		return -EMSGSIZE;
+>>>>>>
+>>>>>> -	features = vdev->config->get_driver_features(vdev);
+>>>>>> -	if (nla_put_u64_64bit(msg,
+>>>>>> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+>>>>>> +	features_driver = vdev->config->get_driver_features(vdev);
+>>>>>> +	if (nla_put_u64_64bit(msg,
+>>>>>> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+>>>>>> +			      VDPA_ATTR_PAD))
+>>>>>> +		return -EMSGSIZE;
+>>>>>> +
+>>>>>> +	features_device = vdev->config->get_device_features(vdev);
+>>>>>> +	if (nla_put_u64_64bit(msg,
+>>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
+>>>>>> +features_device,
+>>>>>>     			      VDPA_ATTR_PAD))
+>>>>>>     		return -EMSGSIZE;
+>>>>>>
+>>>>>> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
+>>>>>> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
+>>>>>> +&config);
+>>>>>>     }
+>>>>>>
+>>>>>>     static int
+>>>>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+>>>>>> index
+>>>>>> 25c55cab3d7c..39f1c3d7c112 100644
+>>>>>> --- a/include/uapi/linux/vdpa.h
+>>>>>> +++ b/include/uapi/linux/vdpa.h
+>>>>>> @@ -47,6 +47,7 @@ enum vdpa_attr {
+>>>>>>     	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
+>>>>>>     	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
+>>>>>>     	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
+>>>>>> +	VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,	/* u64 */
+>>>>>>
+>>>>> I have answered in previous emails.
+>>>>> I disagree with the change.
+>>>>> Please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES.
+>>>> I believe we have already discussed this before in the V3 thread.
+>>>> I have told you that reusing this attr will lead to a new race condition.
+>>>>
+>>> Returning attribute cannot lead to any race condition.
+>> Please refer to our discussion in the V3 series, I have explained if re-use this
+>> attr, it will be a multiple consumers and multiple produces model, it is a
+>> typical racing condition.
+> I read the emails with subject = " Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA device"
+> I couldn’t find multiple consumers multiple producers working on same nla message.
+If this attr is reused, then there can be multiple iproute2 instances or 
+other applications querying feature bits of the management device and 
+the vDPA device simultaneously,
+and both kernel side management feature bits filler function and vDPA 
+device feature bits filler function can write the NLA message at the 
+same time. That's the multiple
+consumers and producers, and no locks
 
