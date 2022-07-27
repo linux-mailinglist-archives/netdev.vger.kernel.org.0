@@ -2,128 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C325827D0
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 15:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4D05827D6
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 15:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233423AbiG0Nha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 09:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S232322AbiG0Nic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 09:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231892AbiG0Nh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 09:37:29 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920BD165A4;
-        Wed, 27 Jul 2022 06:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658929048; x=1690465048;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6h6fbl/fcUw8hVmup+Sa8ghAZqz2tmJ91kwrtvsGaRg=;
-  b=MX+4QzeTBMp8vwC640sWvEFn+lUWdOqb75X+k29Gt5/BSxnppTv/t68X
-   D07a9Ecah2HZ/ClJ3p5RGqoqP86d2TgsOQAhcRnldzryMDEqmAbGpsLbF
-   91zTsFAfTTVu8kqnE7ZrBKsTts7JssRdyrR+61B5dWM4hxBKVSZV9JRla
-   QVUqTfzH9YAgQGgJlC+k0HL8qFy3s7ONovvPsolHRl5ieWywQVWDHYYcb
-   22eetKcFAe/2T0j43+TJKsj1iujoIszH6hv0gvhKkpdnKahPw4Nr1D0Vq
-   odu4KGaqKQ84AvJMaHDgF+dXVCFRRaPKSGGkSWETKOr8vAkPZpSaQOt3R
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="374532498"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="374532498"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:37:27 -0700
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="846270199"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:37:22 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oGhDz-001cc7-0Y;
-        Wed, 27 Jul 2022 16:37:19 +0300
-Date:   Wed, 27 Jul 2022 16:37:18 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 8/8] net: dsa: mv88e6xxx: switch to
- device_/fwnode_ APIs
-Message-ID: <YuE/jsHMgDcKKEff@smile.fi.intel.com>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-9-mw@semihalf.com>
+        with ESMTP id S230410AbiG0Nia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 09:38:30 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E1519029;
+        Wed, 27 Jul 2022 06:38:29 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z22so21421362edd.6;
+        Wed, 27 Jul 2022 06:38:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=N+Kho1tTDYMy+feUtLoUrIepxnc5e58P8cS7A/7gF+U=;
+        b=qxLOalOnGgYaNSBiFh7kG611YZYBypvahjLD7H1hwxpmxyssGZ1k2CisnikXq7XsLG
+         N41BKOmt4wK76lryxMWoSpzMK9BIrvFX6nrrtTzZw2RXKMbsilE6/ilIrKSMVCsl1tAQ
+         FULDxEcIGAbvZhrcbK3bBczD45KB0mtMiun56LjdTtQkFdFX1fzK+J3AI9a1NQmpszvm
+         3WsI4DSQ+t9EU7CL2uEUHduuk8Bh8uo5GUXNKE6CSKxrbTivW2tZHoJ9FRPYFH3Uv86b
+         SIdJY6L+UQegZ4uyqiqNtGPsd7ovg44+S/QfRCqOkLDhmznl/9GZu21QGsaGbTOO33Jm
+         OFeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=N+Kho1tTDYMy+feUtLoUrIepxnc5e58P8cS7A/7gF+U=;
+        b=vQpSgDBrxCPBWn+DJ0KCHze18myczUDDEIJy0VMM/DsDld8BOq81txzaHo+4rnGXXM
+         gbadsSMkXapkMzByuHriJtP28p+R6lI7VfbFVEw70zgpkWHXY15ehcSTyOmyO08ZIqGA
+         iuku+SYAL6wSF0x5lwH+bcUQHnHgUHRjf31zJZVAzrNTiQgyQ+8Y2dxFnYTRfC8J8BE1
+         mGqU5gvpPC/pCVWs/6DdlLCgaH3tuUoELckoolKyfDgMiA6awkBaDsiG5wTsOIkkKQF3
+         FamU4th5gZH5356rR8R+If97X91CZcfeW174x8wfMJyW04qq+loPspAqZDiUNbmJjSh7
+         eTYQ==
+X-Gm-Message-State: AJIora/fi1YCHjH62td51+0XF2tZV3pRV4I0l2GxuuNpDfHQPlg/oSHl
+        12//Wpo8a5CFIG5gI3A3Kp0=
+X-Google-Smtp-Source: AGRyM1tZdX7DcKsI0OH23LMM8bUt8j1r6SKxeLv0A5Vc723Jp1Ef5b9L3U3LBQ7vPjvnF4yyq0Tmdw==
+X-Received: by 2002:a05:6402:3282:b0:43b:e650:4352 with SMTP id f2-20020a056402328200b0043be6504352mr18381276eda.376.1658929108106;
+        Wed, 27 Jul 2022 06:38:28 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id g21-20020aa7c855000000b0043bd753174esm7940248edt.27.2022.07.27.06.38.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 06:38:27 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 16:38:24 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH net-next 0/6] net: dsa: always use phylink
+Message-ID: <20220727133824.ymedhfhrggietmpj@skbuf>
+References: <YtGPO5SkMZfN8b/s@shell.armlinux.org.uk>
+ <20220727110051.2df82bf6@dellmb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220727064321.2953971-9-mw@semihalf.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220727110051.2df82bf6@dellmb>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 08:43:21AM +0200, Marcin Wojtas wrote:
-> In order to support both DT and ACPI in future, modify the
-> mv88e6xx driver  code to use device_/fwnode_ equivalent routines.
-> No functional change is introduced by this patch.
+Hello Marek,
 
-...
+On Wed, Jul 27, 2022 at 11:00:51AM +0200, Marek Behún wrote:
+> Dear Vladimir,
+> 
+> am I understanding correctly that your main objection to this series is
+> that it may break other drivers?
 
->  static int mv88e6xxx_probe(struct mdio_device *mdiodev)
->  {
->  	struct dsa_mv88e6xxx_pdata *pdata = mdiodev->dev.platform_data;
+Yes, but I'm not saying this in a way that tries to make it impossible
+to make progress. But rather, I've identified 8 drivers which may lack
+complete device tree descriptions:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220723164635.1621911-1-vladimir.oltean@nxp.com/
 
-> +	struct fwnode_handle *fwnode = dev_fwnode(&mdiodev->dev);
+Simply put, I have no indication that the changes presented here are a
+step in the right direction for the remaining 7 drivers. Each and every
+single one of them needs to be studied and discussed separately; the
+discussion has already started for some.
 
-Move this...
+> Do you think it would be okay if I changed it so that only mv88e6xxx
+> driver would ask for phylink for CPU/DSA ports?
 
->  	const struct mv88e6xxx_info *compat_info = NULL;
->  	struct device *dev = &mdiodev->dev;
-> -	struct device_node *np = dev->of_node;
+It would be a good start, yes. What I could do is I could move my
+validation logic from the patch linked above into dsa_port_link_register_of().
+Running that logic would let DSA know which properties are missing.
+Then, for drivers that don't enforce validation, we could add new
+dsa_switch_ops that separately ask the driver what phy-mode to use
+(if missing) and what speed/duplex to use (if missing). Drivers can use
+whatever heuristic is appropriate for their deployments to respond to this.
+If the phy-mode and speed/duplex are finally resolved, DSA can create a
+software_node and register with phylink that way. Otherwise, DSA will
+continue to do what it does today, i.e. skip phylink registration.
 
-...here as
-
-	struct fwnode_handle *fwnode = dev_fwnode(dev);
-
->  	struct mv88e6xxx_chip *chip;
->  	int port;
->  	int err;
-
-> +	if (fwnode)
-
-Redundant check.
-
-> +		compat_info = device_get_match_data(dev);
-> +	else if (pdata) {
->  		compat_info = pdata_device_get_match_data(dev);
-
-	compat_info - device_get_match_data(dev);
-	if (!compat_info && pdata)
-		compat_info = pdata_device_get_match_data(dev);
-
-...
-
-> +		if (fwnode)
-> +			device_property_read_u32(dev, "eeprom-length",
-> +						 &chip->eeprom_len);
->  		else
->  			chip->eeprom_len = pdata->eeprom_len;
-
-Can be done w/o conditional
-
-		chip->eeprom_len = pdata->eeprom_len;
-		device_property_read_u32(dev, "eeprom-length", &chip->eeprom_len);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+How does that sound?
