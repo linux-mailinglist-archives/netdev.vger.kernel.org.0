@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37771581D5D
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 03:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF99E581D75
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 04:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239916AbiG0B4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 21:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        id S240019AbiG0CLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 22:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiG0B4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 21:56:09 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4670101F8
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 18:56:07 -0700 (PDT)
+        with ESMTP id S233013AbiG0CLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 22:11:10 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5774B14095
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 19:11:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658886967; x=1690422967;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MIEHBiASYXLGENaJG3oskK+gRIPXftMG9Znz/M3tFB4=;
-  b=YdLXNCUnGLrBMv08f9iyGEY44KpZye/QqpwTsd+Ywy+t/rmgNMsaVOXi
-   BIOTsWWkFmQbYEu8mRlzB28mGspxnFIEB+4CdxzbwFiDv8sUDyCxx3Ejl
-   f4ja72xLUS1dxUdqVn8T4TkDGiAGvf9zpumDnRoHqhP3Qjj4HtwYhRcr3
-   4ltHUw7uESgdtYtlCqDDP5OlT4Ia5OwDn93HAQsZqTf52sYMqQUsy/JGB
-   bGipE/w0Pgb6K4ETXv3jYUjj7Bxkc5LlsX9pJ8IS7ihFpUwVAG8caULl4
-   l7ZhZbpVSG5YL7l35Tj/TBAYDrUt51HDdkOvGK2zdblLK/JG74oSzaz8g
+  t=1658887869; x=1690423869;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=NCmiFrdOSQ46tRdX3nL/ucpEu+vuJ+eyPi5G8iCz84Q=;
+  b=WywBDHMdASqCALhGRoVnzs2blrp2VO6enCzmv0o25LgYB0jp6PjwYOJN
+   rQxstdJ9CUiItLBBiLXVCa9sCKQDp+AePAKiWbjt0dF4tuIeRRQKvuXXh
+   IJtoi2tlAE5RQ+s4l2eY1IeYxgkJM7iJR5WATJerlAHwZuK+B6Lbmq+Hx
+   j8yEikv5qr5sR32290J2iWrVa9/nOq8ByptcmubqyV9/PvMw62DfOhb2O
+   3mumWv6r53Fn4+v4T05sNyLuvWdGnV0yoyBiZnrU/YhjOmAo0GRd1XYVd
+   3R863auyZ/q7gSvkau0djYlj9msuHXfvS4jD8pQXmRDFzBFkeRpWYMkA/
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="285669049"
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="313898618"
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="285669049"
+   d="scan'208";a="313898618"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 18:56:07 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 19:11:08 -0700
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="658973352"
+   d="scan'208";a="658978219"
 Received: from zhigaoch-mobl1.ccr.corp.intel.com (HELO [10.249.171.153]) ([10.249.171.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 18:56:05 -0700
-Message-ID: <5a3b5fff-371a-840f-e2fb-260353c426f9@intel.com>
-Date:   Wed, 27 Jul 2022 09:56:03 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 19:11:05 -0700
+Message-ID: <4cdfe0b5-2fca-0189-237c-e598d8368d33@intel.com>
+Date:   Wed, 27 Jul 2022 10:11:02 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.11.0
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
 Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
  when VIRTIO_NET_F_MQ == 0
-Content-Language: en-US
 To:     Parav Pandit <parav@nvidia.com>,
         "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
@@ -59,14 +59,14 @@ References: <20220701132826.8132-1-lingshan.zhu@intel.com>
  <PH0PR12MB5481BE59EDF381F5C0849C08DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
  <20220726154704-mutt-send-email-mst@kernel.org>
  <PH0PR12MB54811EB71F4D9C32DA2D6F02DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Content-Language: en-US
 In-Reply-To: <PH0PR12MB54811EB71F4D9C32DA2D6F02DC949@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -76,16 +76,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 7/27/2022 4:53 AM, Parav Pandit wrote:
->> From: Michael S. Tsirkin <mst@redhat.com>
+>> From: Michael S. Tsirkin<mst@redhat.com>
 >> Sent: Tuesday, July 26, 2022 3:49 PM
 >>
 >> On Tue, Jul 26, 2022 at 03:54:06PM +0000, Parav Pandit wrote:
->>>> From: Michael S. Tsirkin <mst@redhat.com>
+>>>> From: Michael S. Tsirkin<mst@redhat.com>
 >>>> Sent: Wednesday, July 13, 2022 1:27 AM
 >>>>
 >>>> On Fri, Jul 01, 2022 at 10:07:59PM +0000, Parav Pandit wrote:
->>>>>
->>>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> From: Zhu Lingshan<lingshan.zhu@intel.com>
 >>>>>> Sent: Friday, July 1, 2022 9:28 AM If VIRTIO_NET_F_MQ == 0, the
 >>>>>> virtio device should have one queue pair, so when userspace
 >>>>>> querying queue pair numbers, it should return mq=1 than zero.
@@ -137,9 +136,9 @@ On 7/27/2022 4:53 AM, Parav Pandit wrote:
 > rss_max_key_size exists only if VIRTIO_NET_F_RSS exists.
 That's different cases from the MQ case.
 
-There are no default values for speed and rss_max_key_size. And 
-processing speed without VIRTIO_NET_F_SPEED_DUPLEX, or rss_max_key_size 
-exists without VIRTIO_NET_F_RSS are meaningless.
+There are no default values for speed and rss_max_key_size. And talking 
+on speed without VIRTIO_NET_F_SEPPD_DUPLEX or rss_max_key_size without 
+VIRTIO_NET_F_RSS are meaningless.
 But for MQ, if without MQ, we know it has to be 1 queue pair to be a 
-functional virtio-net, and only one queue pair. This is meaningful.
+functional virtio-net, and this is meaningful.
 
