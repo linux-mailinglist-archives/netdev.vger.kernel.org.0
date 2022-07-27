@@ -2,96 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B09F6582928
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B51582941
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiG0O6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 10:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        id S233438AbiG0PEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 11:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232416AbiG0O6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:58:08 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A592DA8C;
-        Wed, 27 Jul 2022 07:58:07 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id oy13so31946133ejb.1;
-        Wed, 27 Jul 2022 07:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D18WvZPkj6n5WDrANeJHZXATHlFFUi8vr9qfbamAa1U=;
-        b=F2s6ehi+ivSVnhU0Vuq7fanzF56aZwNxtOFwgZ9zfDnz/7lCeWXx3SahXL8Ro6KVxc
-         UJtMSK92OEISrck8zag9qqZhOs5IxnkCkc32dwNBls+rNjS06jzJ47xlB67/5EJHm0u2
-         FbaE5U2iNomQXv8gG9aM6XzQLLsIM0VhWBqcfW33lv9cdNYDDC/caovvSpy2khDhTy7K
-         +NK5nLxUfo/Kbf0V2Y7tF3qS2EIjarbaqQGbCXXdEvm9qu0UUfKp6uQlxJO/n94H/sVS
-         HONR39G9abzkTBlT+PLoIM7R8oiXI1l7Z8vbjh0AwCSy31t5DYmPqd0SbQCwbJC6O+Zw
-         VDNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D18WvZPkj6n5WDrANeJHZXATHlFFUi8vr9qfbamAa1U=;
-        b=hngRyt48KJw9rQzC4m5spvwPmSCrMDYjK6GwxsufLaMzb2PV4nBtO3sRe4iSZ3G5pS
-         /hERg9iv3aDeiYo06FfwPt84ZdbOJtW1J/g4S9l5m4WJ1Z3+NCUMoeGgkP/pLRh41SjP
-         hmMwgzbWfOjHdxvO2bBVIyRujS173HKDH0fc0h8SFL5VKjB2A2/Ph7RUHUvUrhqnGmQW
-         +2FZdKtBA00L3IW2qCup/a/0JIktHw2MLQZwA8ru/cX/2yWRXmlO0AI2pfe2U5oXLEEG
-         m6+u9FUPSy9huYJ4vnTLBIIQBh/gS1llSspPMdEUzvpl3Voxm/+K63t2KNScrt70kLKS
-         XiTg==
-X-Gm-Message-State: AJIora/K0k0xr6JDbcP1cISgDl8AHB+wX7orxPxM/GO2oHATJKv5n8ha
-        gUSPjTE26WCErDK4na1SRm8=
-X-Google-Smtp-Source: AGRyM1t+4p6cdyGJ/g+qZ7OFSbM1kuluFIuSZnvurPe8vvvMAhV83NXQscQe7grfGgfB4LAHDT6fGA==
-X-Received: by 2002:a17:907:3f12:b0:72f:b537:4a0 with SMTP id hq18-20020a1709073f1200b0072fb53704a0mr17590644ejc.40.1658933886021;
-        Wed, 27 Jul 2022 07:58:06 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id n2-20020a056402060200b0043a87e6196esm10289198edv.6.2022.07.27.07.58.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:58:05 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 17:58:02 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, jaz@semihalf.com,
-        tn@semihalf.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v2] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-Message-ID: <20220727145802.is7teuybcgzwpbvg@skbuf>
-References: <20220726230918.2772378-1-mw@semihalf.com>
- <20220726230918.2772378-1-mw@semihalf.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726230918.2772378-1-mw@semihalf.com>
- <20220726230918.2772378-1-mw@semihalf.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232807AbiG0PEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:04:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0219345F53;
+        Wed, 27 Jul 2022 08:04:49 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id CE0871E80D89;
+        Wed, 27 Jul 2022 23:04:56 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Ijy2gFPFcoVt; Wed, 27 Jul 2022 23:04:54 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 6E2401E80D54;
+        Wed, 27 Jul 2022 23:04:53 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        yuzhe@nfschina.com, renyu@nfschina.com, jiaming@nfschina.com,
+        Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH] net/rds: Use PTR_ERR instead of IS_ERR for rdsdebug()
+Date:   Wed, 27 Jul 2022 23:03:41 +0800
+Message-Id: <20220727150341.23746-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 01:09:18AM +0200, Marcin Wojtas wrote:
-> Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> stopped relying on SPEED_MAX constant and hardcoded speed settings
-> for the switch ports and rely on phylink configuration.
-> 
-> It turned out, however, that when the relevant code is called,
-> the mac_capabilites of CPU/DSA port remain unset.
-> mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
-> dsa_tree_setup_switches(), which precedes setting the caps in
-> phylink_get_caps down in the chain of dsa_tree_setup_ports().
-> 
-> As a result the mac_capabilites are 0 and the default speed for CPU/DSA
-> port is 10M at the start. To fix that, execute mv88e6xxx_get_caps()
-> and obtain the capabilities driectly.
-> 
-> Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> ---
+If 'local_odp_mr->r_trans_private' is a error code,
+it is better to print the error code than to print
+the value of IS_ERR().
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+ net/rds/rdma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index 6f1a50d50d06..fba82d36593a 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -742,7 +742,7 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
+ 					NULL, 0, rs, &local_odp_mr->r_key, NULL,
+ 					iov->addr, iov->bytes, ODP_VIRTUAL);
+ 			if (IS_ERR(local_odp_mr->r_trans_private)) {
+-				ret = IS_ERR(local_odp_mr->r_trans_private);
++				ret = PTR_ERR(local_odp_mr->r_trans_private);
+ 				rdsdebug("get_mr ret %d %p\"", ret,
+ 					 local_odp_mr->r_trans_private);
+ 				kfree(local_odp_mr);
+-- 
+2.11.0
+
