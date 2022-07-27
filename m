@@ -2,148 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E6575831E1
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 20:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F150583204
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 20:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbiG0SW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 14:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S241718AbiG0S3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 14:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233708AbiG0SWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 14:22:05 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D453F1D91
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 10:21:27 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oGkiX-0007R4-EQ; Wed, 27 Jul 2022 19:21:05 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1F27FBC4BE;
-        Wed, 27 Jul 2022 17:21:02 +0000 (UTC)
-Date:   Wed, 27 Jul 2022 19:21:01 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        netdev@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Max Staudt <max@enpas.org>
-Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
- register (btr)
-Message-ID: <20220727172101.iw3yiynni6feft4v@pengutronix.de>
-References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
- <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
- <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
- <CABGWkvrmbQcCHdZ_ANb+_196d9HsAxAHc4QS94R19v5STHcbiA@mail.gmail.com>
+        with ESMTP id S233217AbiG0S3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 14:29:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C146C60519;
+        Wed, 27 Jul 2022 10:27:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B983B821D9;
+        Wed, 27 Jul 2022 17:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B573BC433C1;
+        Wed, 27 Jul 2022 17:27:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658942844;
+        bh=vClSK2mvCZQ5GtNM6iQVH5ucgKecXyuy7dqqAj7XCdQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GFRs41heO/Z7Amxlsa5ylML9UfcZ0MZbqE1MV+PBLegBddBu+6BPcjBw6EeIuT4n2
+         WThm/ZLeHWqHzA5C7jOzaJugqSJXxKUicdXBuFSEECgAbz4cCEt/0UitT9ix0rB/2S
+         +Z7bSVAwhxW07gnzynooadhFLNAOAwxMJ8KsJ0rfzrFMQzwDaEo8PT3HHXNS98kLBj
+         1bCGfqUWCYPJzMnxoHH68AYsxJKGs7UhyuytFubyAUkWOyc1MB8ho5yFbXkGW/S4Dq
+         aQk2he13vBhwVMA2cfq9Mx2TOTCvv342FN9rn1kLety6IEmKnqwoacyUpxJDhqcS+b
+         HTXgQYUY8gxbw==
+Date:   Wed, 27 Jul 2022 10:27:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hristo Venev <hristo@venev.name>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net v2] be2net: Fix uninitialized variable
+Message-ID: <20220727102722.722e324f@kernel.org>
+In-Reply-To: <20220726165454.123991-1-hristo@venev.name>
+References: <20220722214205.5e384dbb@kernel.org>
+        <20220726165454.123991-1-hristo@venev.name>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qb4zgbo6zcj7rdiz"
-Content-Disposition: inline
-In-Reply-To: <CABGWkvrmbQcCHdZ_ANb+_196d9HsAxAHc4QS94R19v5STHcbiA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 26 Jul 2022 19:54:54 +0300 Hristo Venev wrote:
+> The following error is reported by Smatch:
+> 
+>     drivers/net/ethernet/emulex/benet/be_ethtool.c:1392 be_get_module_eeprom()
+>     error: uninitialized symbol 'status'.
+> 
+> When `eeprom->len == 0` and `eeprom->begin == PAGE_DATA_LEN`, we end
+> up with neither of the pages being read, so `status` is left
+> uninitialized.
+> 
+> While it appears that no caller will actually give `get_module_eeprom`
+> a zero length, fixing this issue is trivial.
 
---qb4zgbo6zcj7rdiz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If there is no caller that can trigger this - it's not a fix. Fixes are
+for bugs which can be triggered. Please repost against net-next without
+the Fixes tag. Please don't post the v3 in reply to v2, just add a
+changelog under the --- marker and make a fresh thread.
 
-On 27.07.2022 17:55:10, Dario Binacchi wrote:
-> Hello Marc,
->=20
-> On Wed, Jul 27, 2022 at 1:31 PM Marc Kleine-Budde <mkl@pengutronix.de> wr=
-ote:
-> >
-> > On 26.07.2022 23:02:16, Dario Binacchi wrote:
-> > > It allows to set the bit time register with tunable values.
-> > > The setting can only be changed if the interface is down:
-> > >
-> > > ip link set dev can0 down
-> > > ethtool --set-tunable can0 can-btr 0x31c
-> > > ip link set dev can0 up
-> >
-> > As far as I understand, setting the btr is an alternative way to set the
-> > bitrate, right?
->=20
-> I thought of a non-standard bitrate or, in addition to the bitrate, the
-> possibility of enabling some specific CAN controller options. Maybe Oliver
-> could help us come up with the right answer.
->=20
-> This is the the slcan source code:
-> https://github.com/linux-can/can-utils/blob/cad1cecf1ca19277b5f5db39f8ef6=
-f8ae426191d/slcand.c#L331
-> btr case cames after speed but they don't seem to be considered alternati=
-ve.
->=20
-> > I don't like the idea of poking arbitrary values into a
-> > hardware from user space.
->=20
-> However this is already possible through the slcand and slcan_attach
-> applications.
-> Furthermore, the driver implements the LAWICEL ASCII protocol for CAN
-> frame transport over serial lines,
-> and this is one of the supported commands.
->=20
-> >
-> > Do you have a use case for this?
->=20
-> I use the applications slcand and slcan_attach as a reference, I try to m=
-ake the
-> driver independent from them for what concerns the CAN setup. And the bit=
- time
-> register setting is the last dependency.
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: d7241f679a59 ("be2net: Fix buffer overflow in be_get_module_eeprom")
+> Signed-off-by: Hristo Venev <hristo@venev.name>
+> ---
+>  drivers/net/ethernet/emulex/benet/be_ethtool.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+> index bd0df189d871..2145882d00cc 100644
+> --- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
+> +++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+> @@ -1361,7 +1361,7 @@ static int be_get_module_eeprom(struct net_device *netdev,
+>  				struct ethtool_eeprom *eeprom, u8 *data)
+>  {
+>  	struct be_adapter *adapter = netdev_priv(netdev);
+> -	int status;
+> +	int status = 0;
+>  	u32 begin, end;
+>  
+>  	if (!check_privilege(adapter, MAX_PRIVILEGES))
 
-Ok - We avoided writing bit timing registers from user space into the
-hardware for all existing drivers. If there isn't a specific use case,
-let's skip this patch. If someone comes up with a use case we can think
-of a proper solution.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---qb4zgbo6zcj7rdiz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLhc/oACgkQrX5LkNig
-013Q0wf+OetFqVIdpnKJrgEcaRpfWuVRTy1mYAAfQqf4fWGUm34tGLcMabzW4wzi
-Fgv2S2BILslBLV588C1qtPNMPDP3aGZuUWR6e1NTRHKpHanNT9iVt4GZg7vphc4S
-LMk8hlAIVWYCMe8ORjCAmFx7bMR8X3n8S9LupuSFBXncD2PaCkMd3EMs2H5bAGis
-VwYwL063/10IcfSPgG59l7zQxz104wphrYoK4qDC9LH9ebfXTkuBuwkqjmSvykXM
-EuMsoy3KW7NLKe2tEfl31DEiPaET29Gbpo9K/NsGpPRPj/BvRRo5E9eFsybDKY+M
-J0/bsEjYG/WOaxmx9GjfCDA4LXlxdQ==
-=Yfkr
------END PGP SIGNATURE-----
-
---qb4zgbo6zcj7rdiz--
