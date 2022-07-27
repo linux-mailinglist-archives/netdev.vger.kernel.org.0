@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE94F5834D6
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 23:28:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3CE85834D3
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 23:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237164AbiG0V2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 17:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52528 "EHLO
+        id S233961AbiG0V1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 17:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiG0V2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 17:28:13 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76695C9E1;
-        Wed, 27 Jul 2022 14:28:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1658957243;
-        bh=8WOt+MYJ3RGaGTSXP0En/MlzifF8rqzSSeHA0bFuetk=;
-        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
-         References;
-        b=DjRfw7fds+VkeaO2dOWU3xPCs3MpDFt7ZxgTassG2qCHwsipN7zmPw+wmOWmRv6vM
-         MK+mUT8HADAVcm3gGdeGmGqygrlOceqtjMkiviPSeZJWjjYX9i8U2GXaPNX3/2wCq+
-         oQbXjVS6WXP/skDdnBpMuflFu/cCl0XdBnpP0eAE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [127.0.0.1] ([80.187.106.185]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M4axq-1oISir0mHe-001eeL; Wed, 27
- Jul 2022 23:27:23 +0200
-Date:   Wed, 27 Jul 2022 23:26:21 +0200
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229543AbiG0V1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 17:27:34 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCD05C972;
+        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bp15so33736524ejb.6;
+        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
+        b=NUintwL8++PesHsw3v01wuUfAC4+ztcOw7Zb1LqLX3JL7NNi58TqpeHWbfZ7vVY4j6
+         HNweitKxjbV7snOL9vBxB09RXpcmFxl/ro1TGnC9vNHRrCn4Nzyip9vERGIvOBZE5Flg
+         HJc0tmAMEQyjG9JTsxhqWOJQ0IDLMc32g4xCTxn0jFuknDyCGSEprBTNokSfT6+J9d2g
+         Q0Viwkn3ckuATa0ywSJJ/tSp7lsedI1KyfuVlH0Z1iWifwYf44WRu0ZeM5cvs7NWfVfG
+         JCTueRN835o9aA1tfpzKaS9iZi6jNMqkyfPfLaxwn/tBpDbY3mrHfRPeYZS4II7ReX+x
+         dQqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
+        b=mB9Kgk6POtp+MfWGsQptycI2bKtsm7dh9Mr8h2YLfpUcF+lMk9QoKCfMeUDTdgO/FK
+         XCjss8w6MAExu7i6KSx+g/cWadIqK6Nkl7O8AHODRG8qS8hf3nv2rscWur+RThJjBRu3
+         4P4JrlJK8b3Y2RSfRVmGepnKhXdYUTozUlRCQXRLbxh0Y+059eNZqiJ5nNy/e1tUOpj4
+         eQnRAq4kUGeT+zuMJROguFhpj+D1I1zbOO2XgqsAyCsi7KzWCtjx/LMEeimt7KYuCGN3
+         mvFln38Ao9lsiBMpp+xvFOoXIBNUMogrEqnT2WyHPbVtbiIlOU5WnqcCfzkuYL2gkgzV
+         ouvw==
+X-Gm-Message-State: AJIora8TQBD8TMYP/mvuIz6fp4hzA5+IAUg4+YodT1q6zlLb+/zm/3PF
+        FgC5EnWxxAB2TkmfWLt4Twg=
+X-Google-Smtp-Source: AGRyM1tZTJ6VoFWUEsrjg8ZdZdjWjNpwMczEJ2oNxZ5eZgqUIFB015mHYH5m704ibrPyhECQdRAccg==
+X-Received: by 2002:a17:906:93e8:b0:72b:6923:a0b9 with SMTP id yl8-20020a17090693e800b0072b6923a0b9mr18572531ejb.244.1658957252154;
+        Wed, 27 Jul 2022 14:27:32 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa7ccc3000000b0043577da51f1sm10888831edt.81.2022.07.27.14.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 14:27:31 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 00:27:28 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_Aw=3A_=5BRFC_PATCH_net-next=5D_dt-bindings=3A_net=3A_?= =?US-ASCII?Q?dsa=3A_mediatek=2Cmt7530=3A_completely_rework_binding?=
-User-Agent: K-9 Mail for Android
-Reply-to: frank-w@public-files.de
-In-Reply-To: <f8ccb632-4bca-486b-a8a4-65b6b90de751@arinc9.com>
-References: <20220726122406.31043-1-arinc.unal@arinc9.com> <trinity-96b64414-7b29-4886-b309-48fc9f108959-1658953872981@3c-app-gmx-bs42> <f8ccb632-4bca-486b-a8a4-65b6b90de751@arinc9.com>
-Message-ID: <0426AFB2-55B6-48E6-998F-8DA09D0BDC29@public-files.de>
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
+ fwnode_find_net_device_by_node()
+Message-ID: <20220727212728.hgf7vbasmup4i2il@skbuf>
+References: <20220727064321.2953971-1-mw@semihalf.com>
+ <20220727064321.2953971-7-mw@semihalf.com>
+ <20220727143147.u6yd6wqslilspyhw@skbuf>
+ <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+ <20220727163848.f4e2b263zz3vl2hc@skbuf>
+ <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
+ <20220727211112.kcpbxbql3tw5q5sx@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:M7TIcaKGplOm/U/51BEaDo9eQd6CP5ebaIhOTpjSvBoqjZn1Laa
- hoyLDsYoLH0uFojZMwEapLh+7Osyu7N1VjOx61ECfn6j/g8wMyOQiImlf4c1M6j3qw6Agpx
- PXMn/65C6WAjx0GlxDQp8CERVPouu37r4dBuGBBtGZlJJBcDs7Ef8tXxtk78rEnZ7J3clvq
- tdokMFGLJwxv5WSoqXqHg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1JyOrsDr/ZQ=:yeW1+6p3Q2s1CRpLbyBJCf
- rbetOwGIj+xndrmaoJToSLcglGQKgUuGaAyczAWlIJ3n8/72JtzZSSHwEapDg54JQM8HS8DbR
- nUB0bqfaCR0J7S+PuNGZwTyEn29dVL/Djk2W6QeG5PzCKwi3fBdKDPUYq6CFNE3IiaEBcQ9Dy
- +GYiXcWzU33B0jOY436RbYX6wbLcVTTvSvHoYVmCE5UP68ElJTJzRe8u+1mLJLd/+B7g1nSFz
- Zj8Pr7kdq3/0Ri6HYsVzR3IjF1wikUL0g4vfxzRdCAnkRA15CHaIv0iz5WIisjg/noddcnsia
- ZuHNtjAlFS4bTF2FtThB37JQ2NinJBTY9pwKLvLEopjixYhVKgdVSEb6Qig7eSrP0yFP8FY3i
- 7zoOJEZ+eTvWJtup5A4QoMRSo4FbEcPuwaG38QJ2DKfkn8WymUy8jjwKzVaxOC6rw0bh78wWA
- 5CvUn8a2WixSn+5OPqP3R8TiNDse9Oarn/5scJBWhaceb43JmNaZD6yZMjtUzLTibJp6UBPJo
- rvRFZnLOQ+FRVutm0OMTmuPwrOzLckyMbQTyAhx1zJs1M1fYvBX52Dp/j5aggAE+Um9eqE75x
- pFm2uKTlGIYVUhcKNr6ylqbthCQP78c4efPipggdUYBQZ/oA2pWPw9OKnwlo6rju5OUIcSOcR
- /RwqhKAisAkLNw6UZGi2UMZW8v/Bs1EQ/kQ1ez4cNUtiBbkGRI9QPrx+16ma11REA+/GC9/Lq
- 0tQEr8fRpl8x2YIPB7HeX4dplHup0EWCokhidXGfL4aiYhalhiPdAyzD+S1aK2Ly1V8BGWxBo
- RmvvfoMG9bVZZFEp0j3MynIcwEALQH1tbw5/X6PZPRlHcJ2TpIu31TQcDOe7sn4SM/9PW31SO
- S2qMdwCJfbhOWgucRwFO85cJPTwdh2KNW0xPOM8120S6VncuMNmiB2Yb6gJiFJREQOGBmKJ+S
- KOGmy/YgLFVEKOSW2bR6cdQPZ49xNG1dLsJ2saH1nHRIWmI5C4mzYIxm1jLQ0eIwRbDkxufev
- +nhvMVAuXtYypve/9N3kd1s6b4+jzHHKdWP6DFZCUxFzDRKWubgP2MAkC4nFKI0PR8VcGn4cR
- d0yd4ueDIJffwXMw35Ze0hs/VL4s5wFw+LCgYBSY8Z/5aDlxw3RAMZpNQ==
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727211112.kcpbxbql3tw5q5sx@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 27=2E Juli 2022 22:59:16 MESZ schrieb "Ar=C4=B1n=C3=A7 =C3=9CNAL" <arinc=
-=2Eunal@arinc9=2Ecom>:
->On 27=2E07=2E2022 23:31, Frank Wunderlich wrote:
->>=20
+On Thu, Jul 28, 2022 at 12:11:12AM +0300, Vladimir Oltean wrote:
+> The 'label' property of a port was optional, you've made it mandatory by accident.
+> It is used only by DSA drivers that register using platform data.
 
->I've seen this under mt7530_setup():
->The bit for MHWTRAP_P6_DIS is cleared to enable port 6 with the comment "=
-Enable Port 6 only; P5 as GMAC5 which currently is not supported"=2E
->
->https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/netdev/net-next=2Egit=
-/tree/drivers/net/dsa/mt7530=2Ec#n2189
+I didn't mean to say exactly this, the second phrase was an addition
+through which I tried to make it clear that the "cpu" label *is* used,
+but only by the drivers using platform data. With OF it's not, neither
+that nor label = "dsa". We have other means of recognizing a CPU or DSA
+port, by the 'ethernet' and/or 'dsa' phandles.
 
-Later in same function it looks comment is obsolete=2E
-
-https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/netdev/net-next=2Egit/=
-tree/drivers/net/dsa/mt7530=2Ec#n2234
-
- I know that rene added p5 support while phylink conversion,but not sure i=
-t was complete=2E
-
-regards Frank
+Additionally, the label is optional even for user port. One can have
+udev rules that assign names to Ethernet ports. I think that is even
+encouraged; some of the things in DSA predate the establishment of some
+best practices.
