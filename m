@@ -2,86 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C8D582575
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC9D458259A
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231937AbiG0Ldm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 07:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
+        id S231418AbiG0Lfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 07:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiG0Ldk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:33:40 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043F1491F2;
-        Wed, 27 Jul 2022 04:33:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658921620; x=1690457620;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IeBX7LmCL0VI09++8r3L+Vz4FW+/T20asT8Sfkt+BSw=;
-  b=MQFPmWLjeYweqpxtQuNaf63Gg9Mt8Lqka1yL/GAc504ex4tcTGGdLbPj
-   IHrp8M5urAG1wsb3Vl+yE3flE6L9X7j8Il1bI3+JB+90CN/Bp5EcBHrj/
-   abK+I4CU4OGhX/U5GyChurGK9h5h1pkf+yqVRdWczHXX0y2rbMjap9UDX
-   DS27QoVX8/Ep3G3Ena9HA1LcTV2Db6XxklfDdEMPMhKwRBfIwzf5G8hUE
-   d4kATzIDlUQK/eKEDh4iBytuatZn2u3VisiQ2skt58PPT5XIWgHbG9Iia
-   nAFUbzlZ69hZ5OR+mjO+eYuoBL/JvccRFxsLcacuAcy9McKrU22dgMyRO
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="374509802"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="374509802"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 04:33:39 -0700
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="689838477"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 04:33:34 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oGfIB-001cWH-0m;
-        Wed, 27 Jul 2022 14:33:31 +0300
-Date:   Wed, 27 Jul 2022 14:33:30 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 5/8] device property: introduce
- fwnode_find_parent_dev_match
-Message-ID: <YuEiipCihzWbQkmO@smile.fi.intel.com>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-6-mw@semihalf.com>
+        with ESMTP id S229604AbiG0Lfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:35:41 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C675922BF6;
+        Wed, 27 Jul 2022 04:35:40 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id l23so31000022ejr.5;
+        Wed, 27 Jul 2022 04:35:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UV/mMyTMs0eKuU5zSJfJOR5cXJNS19F5GWColL/C+9o=;
+        b=gbMyepVIxYkgJ6C4UkAOdEEtHLTBRzIPPmGouJ8T8x1U9KfoFU0G1V/3SNvlShjWuq
+         iGFfLmQAMFaUmrhZ3Ufg7SH0dyy/Xq5CL9VKQnLKraKN+6QGqaFyyah6jC/wWMKjgcYT
+         UnLnRqUyJnjBfU+g+lwDHg7ffT3rjoFPKBWPuGYLRTjjCPUsiL1bjLOsxM6w1vyat43R
+         c6mDDXe/ql/JqwDk2cBZkVT049VW/dLBG3sMChsek785R7DYOMuQRX89+T+wJjtFGJP6
+         ISrTMAoZ6wSjOuEZqS0iLewdkrmuo13XhC4G5kxrQ/XWffuPzsZM8ICMx+uhYJL9HQZt
+         yjUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UV/mMyTMs0eKuU5zSJfJOR5cXJNS19F5GWColL/C+9o=;
+        b=1jhF5ONMmF3Jsl5bAY5Lxls/bT0pqnAqQJlxMFNwMwb7Ozv0vuUODyXYrxVdH+UbgM
+         GNOEysvmE8K5sIecqbGklPnxHRPiDmIwegNIngRXzothZlwNOmZbAyKdPBFND30Ou73/
+         +ATTc8+sfpne6iNH72I+7Pk9ehtkvQRukwAllM5COAJM8iXQtHqCpmzxcRRqIL1tIchO
+         IR4RbmPS2sz6qJWLZGB3DDbLjlpAcGbf6RR+TKFLkdfpUEcLyvF98zVbk4gbJQoLJty4
+         9124K/bSvTe+L90IT2oFNt4h9Sbub7X8uNEMZ0Bd1VHiUUwhOFp86M5B4vmzKt/Q8QqO
+         w87w==
+X-Gm-Message-State: AJIora/SLRQ88QRVPAyqCOMta0heVYuLdJqEHi+j/R80Id+hROwBLi/y
+        8p/x2Y/o5SOrXg6RjZVgVYQ=
+X-Google-Smtp-Source: AGRyM1skdVt9k7L0FeivBtuBGMtWwmFlYQTx/jfTpqCOcfXcp1YUv+dYPqTXd2t6WKiXFf3hJym6NQ==
+X-Received: by 2002:a17:907:7da6:b0:72f:136d:dba4 with SMTP id oz38-20020a1709077da600b0072f136ddba4mr17325350ejc.472.1658921738962;
+        Wed, 27 Jul 2022 04:35:38 -0700 (PDT)
+Received: from localhost.localdomain (c105-182.i13-27.melita.com. [94.17.105.182])
+        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 04:35:38 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next PATCH v5 00/14] net: dsa: qca8k: code split for qca8k
+Date:   Wed, 27 Jul 2022 13:35:09 +0200
+Message-Id: <20220727113523.19742-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727064321.2953971-6-mw@semihalf.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 08:43:18AM +0200, Marcin Wojtas wrote:
-> This patch adds a new generic routine fwnode_find_parent_dev_match
+This is needed ad ipq4019 SoC have an internal switch that is
+based on qca8k with very minor changes. The general function is equal.
 
-"This patch..."
+Because of this we split the driver to common and specific code.
 
-> that can be used e.g. as a callback for class_find_device().
-> It searches for the struct device corresponding to a
-> struct fwnode_handle by iterating over device and
-> its parents.
+As the common function needs to be moved to a different file to be
+reused, we had to convert every remaining user of qca8k_read/write/rmw
+to regmap variant.
+We had also to generilized the special handling for the ethtool_stats
+function that makes use of the autocast mib. (ipq4019 will have a
+different tagger and use mmio so it could be quicker to use mmio instead
+of automib feature)
+And we had to convert the regmap read/write to bulk implementation to
+drop the special function that makes use of it. This will be compatible
+with ipq4019 and at the same time permits normal switch to use the eth
+mgmt way to send the entire ATU table read/write in one go.
+
+v5:
+- Wrap function to single line/80 char
+- Cache match data even for read_switch function
+- Add additional review tag
+v4:
+- Fix compilation error with clang compiler reported by kernel
+  test bot
+v3:
+- Squash more patch to skip even more "migration patch"
+- Add new patch to cache match data in priv struct
+- Fix extra space
+- Drop unnecessary cast to qca8k_priv from void pointers
+v2:
+- Rework patch to drop dependency with bulk regmap (will be
+  converted later)
+- Split the split patch to additional patch
+- Rework autocast_mib function and move it to match data
+
+Christian Marangi (14):
+  net: dsa: qca8k: cache match data to speed up access
+  net: dsa: qca8k: make mib autocast feature optional
+  net: dsa: qca8k: move mib struct to common code
+  net: dsa: qca8k: move qca8k read/write/rmw and reg table to common
+    code
+  net: dsa: qca8k: move qca8k bulk read/write helper to common code
+  net: dsa: qca8k: move mib init function to common code
+  net: dsa: qca8k: move port set status/eee/ethtool stats function to
+    common code
+  net: dsa: qca8k: move bridge functions to common code
+  net: dsa: qca8k: move set age/MTU/port enable/disable functions to
+    common code
+  net: dsa: qca8k: move port FDB/MDB function to common code
+  net: dsa: qca8k: move port mirror functions to common code
+  net: dsa: qca8k: move port VLAN functions to common code
+  net: dsa: qca8k: move port LAG functions to common code
+  net: dsa: qca8k: move read_switch_id function to common code
+
+ drivers/net/dsa/qca/Makefile                  |    1 +
+ drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} | 1711 +++--------------
+ drivers/net/dsa/qca/qca8k-common.c            | 1210 ++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  100 +
+ 4 files changed, 1549 insertions(+), 1473 deletions(-)
+ rename drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} (63%)
+ create mode 100644 drivers/net/dsa/qca/qca8k-common.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
