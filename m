@@ -2,123 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33074582A02
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3FE582A0B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbiG0Pwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 11:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        id S234313AbiG0Pz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 11:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232850AbiG0Pwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:52:32 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A7349B7C;
-        Wed, 27 Jul 2022 08:52:31 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id i13so12828466edj.11;
-        Wed, 27 Jul 2022 08:52:31 -0700 (PDT)
+        with ESMTP id S233528AbiG0PzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:55:24 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923F2BC81
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:55:23 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id q7so4856828ljp.13
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sCiIbne8ijwxYERRgWmKwN6VqmxC0psTKJdz1VQXbvI=;
-        b=CPyK0OvuJ25Cp/X56lhMJFw/HcqGnRwWjTnIEipGqnnhjaMCyRed/L43d82BCzlDOy
-         PP0dL0w6z0N6064je/4MjYzHVvrzOaZOpMAbOBSEaT5/LkZpKg05Z4wmcIrBU0N5XqZc
-         OvaqNnS+O/THezH2K3YV3+pdd6vNJ8RKo4W+nta/N/khWX3C/vEsQwrGkXmnSol1/8Qj
-         qeZa6hyP/zvcsnc/DSKgYe7Xd0cjIaP3rVnsnIM7K1xBahOGIb2mZvKvaszEgJI/OTT0
-         AEvZ23vcC/narjoLqyNJqQT3nLwpMs/mlbVhzW2D01rxQHZiljyUKNN7tELenJoWjGEN
-         pKjA==
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PDTQ/RetiQxlbrzdC/imK9gPXTNVvINSs59kGAbwqGA=;
+        b=hty/Yt/Hyu+c6keBAAiJoeEScAVrdl5lEZUVOyAcZs3U05jftsT/6KIrtVxTBoheWd
+         Vp0uy3qOoIjFeXi/OXvpiHtJ6gjOq7f9Sx2ELlFrvgXjc8XtFm5COtYpTqCQEA6SJlRw
+         8Aqjx3X/X9FVm0cF1QeCzGAa1wan2VdtjUTGw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sCiIbne8ijwxYERRgWmKwN6VqmxC0psTKJdz1VQXbvI=;
-        b=eytcIG1bDzCt0n+43QHGiYKIovsfFMTh9AZHVOedsR1RFrT8f58iw70IX0kxu+O3v1
-         at/HjoJ5Qtxg9Q3HbWNJ3LEcRZjKE8MuuzcRLvV2+SE3CWcYgnO+flW17P706injSZTj
-         FGuUxwgWsMUFB7DRqmGqKZU6G8vJE/41KhD9IL2Y2pQhkjL+WhgEPCvNqPGq9WAC1hqe
-         ulBnrEjCkrDuTo0MGvqbPsHPSjg1Atg1pLtTZo2z773skWsylF1640fg5TpYfy2HjRGd
-         3W01rEvSxKoPcdBFHA6e4ksdz8EDSBxn/86wqvwH2tTH1Uq++8+KVE0b1Lv36ulPXBWg
-         0whQ==
-X-Gm-Message-State: AJIora8bsUk6aj4bLCQsYcU/msJ1KyQsjT5SUz189BxAlq/iqitOicZi
-        H5j0ZzZ+VySfuUkfnhnj5e0=
-X-Google-Smtp-Source: AGRyM1vO98nO6kDOdEHUpaoV1DgveBsqp+R6esVhO9kfIWL8XEmB3Qxg/xn0FPdBMHzrRB4QH5ScWQ==
-X-Received: by 2002:a05:6402:f12:b0:43c:a70d:ee6 with SMTP id i18-20020a0564020f1200b0043ca70d0ee6mr4771269eda.316.1658937149598;
-        Wed, 27 Jul 2022 08:52:29 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:994d:5eac:a62d:7a76? ([2a04:241e:502:a09c:994d:5eac:a62d:7a76])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906201200b0072fe6408526sm2914413ejo.9.2022.07.27.08.52.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jul 2022 08:52:29 -0700 (PDT)
-Message-ID: <5b88eea6-1d84-8c16-36f4-358053e247f2@gmail.com>
-Date:   Wed, 27 Jul 2022 18:52:27 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PDTQ/RetiQxlbrzdC/imK9gPXTNVvINSs59kGAbwqGA=;
+        b=lw0mIZ+etvjGuUjL1iyjI7/gu+/JSOnu31Ze4eDSkHpDDutWk9n/7HL81cJ+Jcu/Io
+         3mGwlVOzJMtNsCr2EmG9D2ssZFzo+nLTD79KGcLjMb9zcgDLVBQilaTzToGCxubbEhap
+         RkNqKL5zQr5VV7x5oi0QH+TUCh0ECSZSrDkEiPhZ1F810nN3f/7a1uY64BwzLy+0bz0t
+         wdwGf6L+21O8QFjxiT6mNDeD58R6BpvIfgE0Pl4Vy6NPWE5/B9jqqNO7DIVtX85wIQLV
+         jziVoc4kEQMrcWpqv1G1zOkQF9X7wXm7C29kb48ECHYHYH4WxpeV48+3ZkJTs3VmUNsW
+         GUZg==
+X-Gm-Message-State: AJIora8u/g74HvXNFJNIzyEUBUDlFATkd5VRrSV8FcPbF/ySjYEYpEtj
+        G9fLuhfb903nay7nEQ4YIJUBSViXnANhg+ghLNBFLg==
+X-Google-Smtp-Source: AGRyM1ucm+uRRXzwVzVwdaFYHGcn8TvNPfNzyYXzc6R+fFlfR+szaSzVATcLy/6WiziVDqVKxpAFa44tdcg1HxtF1X0=
+X-Received: by 2002:a05:651c:907:b0:25e:1db5:fc5d with SMTP id
+ e7-20020a05651c090700b0025e1db5fc5dmr2577617ljq.237.1658937321931; Wed, 27
+ Jul 2022 08:55:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/6] net/crypto: Introduce crypto_pool
-Content-Language: en-US
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
+References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
+ <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com> <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
+In-Reply-To: <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Wed, 27 Jul 2022 17:55:10 +0200
+Message-ID: <CABGWkvrmbQcCHdZ_ANb+_196d9HsAxAHc4QS94R19v5STHcbiA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
+ register (btr)
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-References: <20220726201600.1715505-1-dima@arista.com>
- <YuCEN7LKcVLL0zBn@gondor.apana.org.au>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <YuCEN7LKcVLL0zBn@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wolfgang Grandegger <wg@grandegger.com>,
+        netdev@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Max Staudt <max@enpas.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/22 03:17, Herbert Xu wrote:
-> On Tue, Jul 26, 2022 at 09:15:54PM +0100, Dmitry Safonov wrote:
->> Add crypto_pool - an API for allocating per-CPU array of crypto requests
->> on slow-path (in sleep'able context) and to use them on a fast-path,
->> which is RX/TX for net/ users (or in any other bh-disabled users).
->> The design is based on the current implementations of md5sig_pool.
->>
->> Previously, I've suggested to add such API on TCP-AO patch submission [1],
->> where Herbert kindly suggested to help with introducing new crypto API.
-> 
-> What I was suggesting is modifying the actual ahash interface so
-> that the tfm can be shared between different key users by moving
-> the key into the request object.
+Hello Marc,
 
-The fact that setkey is implemented at the crypto_ahash instead of the 
-ahash_request level is baked into all algorithm implementations 
-(including many hardware-specific ones). Changing this seems extremely 
-difficult.
+On Wed, Jul 27, 2022 at 1:31 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 26.07.2022 23:02:16, Dario Binacchi wrote:
+> > It allows to set the bit time register with tunable values.
+> > The setting can only be changed if the interface is down:
+> >
+> > ip link set dev can0 down
+> > ethtool --set-tunable can0 can-btr 0x31c
+> > ip link set dev can0 up
+>
+> As far as I understand, setting the btr is an alternative way to set the
+> bitrate, right?
 
-Supporting setkey at the tfm level could be achieved by making it an 
-optional capability on a per-algorithm basis, then something like 
-crypto_pool could detect this scenario and avoid allocating a per-cpu 
-tfm. This would also require a crypto_pool_setkey wrapper.
+I thought of a non-standard bitrate or, in addition to the bitrate, the
+possibility of enabling some specific CAN controller options. Maybe Oliver
+could help us come up with the right answer.
 
-As it stands right now multiple crypto-api users needs to duplicate 
-logic for allocating a percpu array of transforms so adding this "pool" 
-API is an useful step forward.
+This is the the slcan source code:
+https://github.com/linux-can/can-utils/blob/cad1cecf1ca19277b5f5db39f8ef6f8ae426191d/slcand.c#L331
+btr case cames after speed but they don't seem to be considered alternative.
 
-As far as I remember the requirement for a per-cpu scratch buffer is 
-based on weird architectures having limitations on what kind of memory 
-can be passed to crypto api so this will have to remain.
+> I don't like the idea of poking arbitrary values into a
+> hardware from user space.
 
---
-Regards,
-Leonard
+However this is already possible through the slcand and slcan_attach
+applications.
+Furthermore, the driver implements the LAWICEL ASCII protocol for CAN
+frame transport over serial lines,
+and this is one of the supported commands.
+
+>
+> Do you have a use case for this?
+
+I use the applications slcand and slcan_attach as a reference, I try to make the
+driver independent from them for what concerns the CAN setup. And the bit time
+register setting is the last dependency.
+
+Thanks and regards,
+Dario
+
+>
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+
+-- 
+
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
