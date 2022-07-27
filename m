@@ -2,83 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44010581CF4
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 03:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C49581CFD
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 03:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240113AbiG0BMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 21:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
+        id S240128AbiG0BRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 21:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiG0BMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 21:12:37 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6382CDE8
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 18:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=DewYU1MMcgcaZ5TkOP0OAdg0HlHDI4mOJqLv+jp1qp0=; b=eH33iKMrlQnnw6bo+dwzEL86wb
-        0kVusBBdPsS66gcjikNBJTG0yaVstYNSfRDnPqkPDkCe0OLddc2SgiJ/UJrv0KPgMzE51LU7eNwLT
-        rJF/2IVgFFT15wxJntk1aRv5+epAjwFFl/Gh47M38GDoq5lIp/WPos5Tl6HWaT3hNgCsMfOCMY8k7
-        RF7Tpyyz71QUbYTv4HQagQ2x4M/R73byHVOyQtDb9eDBFNtlBgnby6n8Zq+/FsybhdvvNdEafbnG3
-        wq9/sz9jNdF46kcTBNPZdAu1GDOu8GlVTtjeKeb3BAySZmio01VSeZ/zme3Q1bf++wHEQI0a2cV5x
-        jMr29jKA==;
-Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oGVb4-002UbV-Fa; Wed, 27 Jul 2022 01:12:24 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Vadim Fedorenko <vadfed@fb.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] ptp: ocp: select CRC16 to fix build error
-Date:   Tue, 26 Jul 2022 18:12:13 -0700
-Message-Id: <20220727011213.24274-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.37.1
+        with ESMTP id S229484AbiG0BRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 21:17:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88132A261;
+        Tue, 26 Jul 2022 18:17:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85F5D616D4;
+        Wed, 27 Jul 2022 01:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95DAC433D7;
+        Wed, 27 Jul 2022 01:17:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658884653;
+        bh=yHdFI7UZExa1GxsmSAJPPFlPx1kKFocZoTBH3mG9NMo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mdshVMdvfzhti6LRuDN6H7FqRhIPEHgJQTuekQbRk/mzcXXE8ynF8tli3utiZLp5O
+         QxJiEvHmZWAdKm0SYEtppBgNd1fXBwwgNxA1xN/58n6z/5G0fZLq1uX8wd9Gu+Ny9s
+         3BZFdmz9bgUxy7tc8D9OXGQTNnxX+AolldBOTMuoHbo/jeOpa7QOB7GpQQczyvNU5w
+         Mb6G9CKihsYC/NAcfU+R9sFAv01z9O5gFdLey2i/K+Dz7mddR0bFAiv8OXIQMYhtc1
+         +saf5fv4mak89IDZ4Wam0A9XfwnyABJR6qN7sfsaT3/bqbqGI+zbkKoRM2ZPP2tLqf
+         rmhz8+MSk3NtQ==
+Message-ID: <40928cfc-150c-8714-bb83-21d325ce93e5@kernel.org>
+Date:   Tue, 26 Jul 2022 19:17:30 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v6 02/26] tcp: authopt: Remove more unused noops
+Content-Language: en-US
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Philip Paeps <philip@trouble.is>
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1658815925.git.cdleonard@gmail.com>
+ <2e9007e2f536ef2b8e3dfdaa1dd44dcc6bfc125f.1658815925.git.cdleonard@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <2e9007e2f536ef2b8e3dfdaa1dd44dcc6bfc125f.1658815925.git.cdleonard@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ptp_ocp.c uses crc16(), so it should select CRC16 to
-prevent a build error:
-
-ERROR: modpost: "crc16" [drivers/ptp/ptp_ocp.ko] undefined!
-
-Fixes: 3c3673bde50c ("ptp: ocp: Add firmware header checks")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Vadim Fedorenko <vadfed@fb.com>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
----
- drivers/ptp/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -176,6 +176,7 @@ config PTP_1588_CLOCK_OCP
- 	depends on !S390
- 	depends on COMMON_CLK
- 	select NET_DEVLINK
-+	select CRC16
- 	help
- 	  This driver adds support for an OpenCompute time card.
- 
+On 7/26/22 12:15 AM, Leonard Crestez wrote:
+> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> ---
+>  include/net/tcp_authopt.h | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
+> diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
+> index adf325c260d5..bc2cff82830d 100644
+> --- a/include/net/tcp_authopt.h
+> +++ b/include/net/tcp_authopt.h
+> @@ -60,14 +60,10 @@ DECLARE_STATIC_KEY_FALSE(tcp_authopt_needed_key);
+>  void tcp_authopt_clear(struct sock *sk);
+>  int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen);
+>  int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key);
+>  int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen);
+>  #else
+> -static inline int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key)
+> -{
+> -	return -ENOPROTOOPT;
+> -}
+>  static inline void tcp_authopt_clear(struct sock *sk)
+>  {
+>  }
+>  #endif
+>  
+added in the previous patch, so this one should be folded into patch 1
