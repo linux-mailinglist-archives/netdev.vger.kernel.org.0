@@ -2,158 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1F45833D8
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 21:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB5F5833EC
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229898AbiG0TzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 15:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
+        id S233779AbiG0UFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 16:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbiG0Ty7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 15:54:59 -0400
-Received: from smtp-bc0c.mail.infomaniak.ch (smtp-bc0c.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C5256BBD
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 12:54:57 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LtPdB18x9zMqMfb;
-        Wed, 27 Jul 2022 21:54:54 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4LtPd94vGmzln8VM;
-        Wed, 27 Jul 2022 21:54:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1658951694;
-        bh=4vCIXI/5V3E0JoYph3HCIwV+ywjIiRGEiTJoYTbvjqU=;
-        h=Date:From:To:Cc:References:Subject:In-Reply-To:From;
-        b=JLd6rI6QFfGKUYvO4L//xHwQ8B+HcmzFAMiLSZeXtx8kqBbP4EIV8HqrjIe4IDYRH
-         q8hUmmzO2vfdwXSJBaky84TvrgNPe8ppj0BrilJuQ6quZNrKV/j9n1EoBuVH8H1wxE
-         MEFHY+JouSLlPOBQAEJVRxpI3DV3HDTKnubrcZRo=
-Message-ID: <6691d91f-c03b-30fa-2fa0-d062b3b234b9@digikod.net>
-Date:   Wed, 27 Jul 2022 21:54:52 +0200
+        with ESMTP id S229938AbiG0UFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:05:35 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA25A3E2;
+        Wed, 27 Jul 2022 13:05:34 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RICq5B018772;
+        Wed, 27 Jul 2022 13:05:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=mYCirhdMA9BbZ6zRfi0kVTT4tAUdN2vFI2fNlCx2C/M=;
+ b=ai5sV5xd/DQlsd/gyKC7dVHf4Rj3F91L8MEbBjzUVyOmi4INRj3sVWpApHrqG0bNylXn
+ d9S1R3egVMP05nznmHrSXa/Hy93Q2qljHGdFJUtgzR9hQAJKXiXJPccreqNlrY6ggjbJ
+ wB7C7/6Q/IpR7FIvSX4k/Z3r5Agzb/NP3WE= 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hk3ck4kng-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 13:05:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kGrDgxlqK1SxWFiPWiU4iZnQEGpoxmypE5IEqFNH22fKycO9+WNJJL/wOMO55CcN2Rfhd4FiWrKoXgXVhTOMFDg1xYz9NlH2d1wjm2zEzj5hd4Bt+7uKRky/O1r2pXO6exI9NpUAWUy47wNTk6Z7QGxWE+/YAlT+YNtKiSoW+IsT85VCATujURLFBQ34AyfeSqR+sD6o129ODoRk4Y3iZ0HVXS0BJFocjiKALtPD5d6uDo1kpQFeiQPDwVlIxbhGqcVh2if4ZxspQ/fLxiQaoNs2cML/akmHawBRd63vUF6aNFembfrELsZgDkNF/3EKMf047BudyieLe2t4lDdiQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mYCirhdMA9BbZ6zRfi0kVTT4tAUdN2vFI2fNlCx2C/M=;
+ b=Dht4qsOAfiYC7cVENvGSeNlJtKRR4Mx63d4L2fwrV7GGxRz/6QswtcD2g16qH7b5uLJClUkK4+wXosVZgKuwsPHfMZ1EVz4QWQBqG1H3xhGr/+v5hbrdiHqfqBMU1CtvUzM/5/sgKfICE/6Oo3S+ZjLtKlw5Wr3cMvQWvALCmfvIsck63VnWkZ1HZcrHsvdXP+pFS41yrA3f4icS0QO2ha9f+7E1ZZW+sAWK3PHlTPFxljF8XxXmQ4Rd5rwdMinQXDijd9n+G1Ck8B3xAPgaVXOyvH3Gwg/03kd+aV4Kbyic70MXSXeAADjjkQpQDwCiBS6ZtjVVxv6S0Fokb3ZJlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by DM6PR15MB3097.namprd15.prod.outlook.com (2603:10b6:5:13d::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.25; Wed, 27 Jul
+ 2022 20:05:07 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::4428:3a1e:4625:3a7a]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::4428:3a1e:4625:3a7a%6]) with mapi id 15.20.5482.010; Wed, 27 Jul 2022
+ 20:05:07 +0000
+Date:   Wed, 27 Jul 2022 13:05:05 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+Message-ID: <20220727200505.nzt7bxuc7yckjdcj@kafai-mbp.dhcp.thefacebook.com>
+References: <20220727060856.2370358-1-kafai@fb.com>
+ <20220727060909.2371812-1-kafai@fb.com>
+ <381439a429b54e8e8dda848e1d3d306f@AcuMS.aculab.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <381439a429b54e8e8dda848e1d3d306f@AcuMS.aculab.com>
+X-ClientProxiedBy: SJ0PR03CA0344.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c::19) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
-Subject: Re: [PATCH v6 00/17] Network support for Landlock
-In-Reply-To: <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c7990a40-dbff-4d2f-14a8-08da700b4d63
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3097:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RxWBEje1PwvDA5pH3FmFbl/Q5JN9Ik7PqqohlbEW+9Wr20Q/7WVlFoTBOBzHU/tvbITJUX7Rvf7YenhkBye62dCVmIARzY0X8Fzr82XTLhSxxw9eGxkzofT2tEyivdGqEHCtQMQvXzON5+wSx+y1aBnOxaHLy0heQSY69WD49aat7YAJLePF1oBTxYqOxWNmECZdZMx9Y0deNIxfY8okJL/MjO3lRMi4qktVo+cnPVdRbTxvCVC7iRR4MOKe73hJXPLJeK40xjabWuu1NuaWHGNCGPNnBtjzzx1ki/qln7CXkr/5vLMuv8oSv7ZUB8yU83Gmupvhs9lJ0Y8LYXk+qOCuEpPbUNYlFSWi1XNsWJzUJ3oIpVe2mxqxT0jdNwCqvn6kAWZ0Lk2MZw431jCIOWZcfNGOzNsxzCzkAAbvjIvNFqzC4BlkWTWcjP+o8n+7j1Ol9hfq3BOaoo7G5IQCz2scBREigYDRFutgrbg71848P8v5NOVr+arCJYim8OKw6UJhVaPDMU3sGwq4SFu2yYe3Eb5hvbJQ0wCwC6ZIka7vKuMZvx3MBleVnqj1yCOJYc/xmGJKhZuGGogS9c7BUMXRKTcl8daamGgk2zTRf57MFZCCG+hldJUGDo7tdyOImcsyKElUXzXSpbtO3QRa8UO4wFj2P+W9TEy0b/BMcke4DLHZKcwS752t4Umna++8DaSFoLy5d17ycgMj+lRXdxjFC95YbRlDtvbqSC0tHNs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(186003)(1076003)(66476007)(8676002)(66556008)(52116002)(83380400001)(66946007)(6486002)(2906002)(41300700001)(6916009)(6506007)(54906003)(4326008)(6512007)(9686003)(5660300002)(478600001)(38100700002)(4744005)(7416002)(86362001)(316002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pvoz/7a9i7o4EAOIHuDrn843JPeaETdeFxP9vezMkTFG15AHe0MrxKWjHAgy?=
+ =?us-ascii?Q?G5ARB5qCxqU/8hfnOqHWzMJRNy1UReC4dSiEpJ3VItaW8wesBILOFkhDIiMj?=
+ =?us-ascii?Q?M0q/e8Esl9M7MP4wM9h0yKCicXg63rCT1djMrnkfJG1y+BTwwoX5M8EmtnUo?=
+ =?us-ascii?Q?vged0LjFpVNHqdCCz4mQdV3JSswtnrfZic3FKm9ik85T8Y1YTbISz8JGyOjl?=
+ =?us-ascii?Q?4ck7aj5x/+CJcjaTaqMP5MQPGjL6DJjG2XeCd1iqdknCJNstCZbba/0Jm7Kw?=
+ =?us-ascii?Q?UzZcxutkAy0rCsUIsfta38SgnOY578js/jRgqUszPgBY8Js/bK2vCpTI+9oW?=
+ =?us-ascii?Q?k3+0VKc5y9uhRr+tadS4wa5W+5pHA67j7BcY9olrvDOwrejsz95GgQkUAvru?=
+ =?us-ascii?Q?677W/e+/Pb5o3+ggOEEVfFHGBd0RqhtUas6rX5csT/wCXn5eK1QdTUSQ91Co?=
+ =?us-ascii?Q?g6Dhfi3fIG3/znxvW3BIQ1lJCN1b+/0e8HEBcYYVo2eaOB482WWKo8LIGYVs?=
+ =?us-ascii?Q?KwbgA2Ch2v0tC/8pqlVyhQ219MNXg+qkN9P7sJuk/Jn6R4VsBgGUFH0Xg/Sy?=
+ =?us-ascii?Q?mj9rzEV61xsKlUOgDyaFF16WRDHkuEf+1nWmAmTOFRrIaOtCCN2NdWCyHkfY?=
+ =?us-ascii?Q?E7CLUnzDsLPO+VMz/nl2FYpp5JU3GVPVlZYZU8wHwjxV7EG8IWcWYOpUZvMU?=
+ =?us-ascii?Q?9N/MoZKG6P4N0+Rf3EklPHWyhPM0H0T2OiaycaC10tP1nyOxPORPgpsKT41P?=
+ =?us-ascii?Q?n5U5foRFYUJCi/cOT0ANlsyhXhhdVF1QqInQM6iVaRDmYgkLL0mGTjux79by?=
+ =?us-ascii?Q?ygveFwJTf3GpM3RmTAoXR/G7KjoOG9eJ23Pk0OqNoypo1B71dvZUoTxeWlJs?=
+ =?us-ascii?Q?6MVkBBdtkhBv4CPxbxtFpw6ac9EMsjRBbKjHBrg+BoOBYQnfbrWxivUIMWLv?=
+ =?us-ascii?Q?5brfH3LugiHrIUWyH5VmeZgjRJzAw1Unj6AxjNwBZfI6Z342bJ+J63RIru0u?=
+ =?us-ascii?Q?lx+9rw7+BC0oDbzW47lgCwJptLiWVezLnmPYUTHygeMlpyquXoSrusMNSU31?=
+ =?us-ascii?Q?tu/62OXCM9Dy8QVodfQ6XBgiMUbVu96mz+AZMjUzALLrpttMsU9BQB3VT2tX?=
+ =?us-ascii?Q?NrBGojCZUPJtTfvJNyZZA7x5CyG+63pI8ToTmx/et5f/8OmBWT3B5WPCz4E3?=
+ =?us-ascii?Q?zzL851aaU6kyhuI60oWNaTTwyLjswrrQROTiU49qvsRgAQOgdFOTM2dsphvh?=
+ =?us-ascii?Q?kf12aXTHmQTw3g1+7+CdTnpRqZCTCQKXiCfn+mqeERyw+whAoaXkcctHRoET?=
+ =?us-ascii?Q?9Rp5nXe+fONZjIyB2UnFEr5hS+L4OfSTm++VMpVAFywNHtXum5xw9bN9LnnM?=
+ =?us-ascii?Q?hi91EfEtWBxVDs76pj9LOacngOjiCUUEqzogHNPenZ57S1sjGv71ymmCM63S?=
+ =?us-ascii?Q?bGEMwgBaRwWYA1k7yTFP5nZFIkGTFkZHQK14hkCSDRjv7qqS76VgBM/sk5fz?=
+ =?us-ascii?Q?rxpf/giYbMgpAXM1Fj6pFNmTkbTM504ouqNCGxvMqWABlq59D99WpqLydcqo?=
+ =?us-ascii?Q?nVh4MAGPBy7zm7ze6N4k6eBFMUTa2MPo8bt50CE+CdnbBwrv8wshirRGN+wg?=
+ =?us-ascii?Q?kw=3D=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7990a40-dbff-4d2f-14a8-08da700b4d63
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 20:05:07.3511
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SiaCDldT35KgZ2xZTDoF3gFvLjgXwpjQk3le+mqdw3TY8nzcGb38imIB4D+jibKv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3097
+X-Proofpoint-ORIG-GUID: ZUtzZleaQJ9eDG_Q8YEEF2TU7K2Tk-Rh
+X-Proofpoint-GUID: ZUtzZleaQJ9eDG_Q8YEEF2TU7K2Tk-Rh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_08,2022-07-27_01,2022-06-22_01
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 26/07/2022 19:43, Mickaël Salaün wrote:
+On Wed, Jul 27, 2022 at 08:36:18AM +0000, David Laight wrote:
+> From: Martin KaFai Lau
+> > Sent: 27 July 2022 07:09
+> > 
+> > Most of the codes in bpf_setsockopt(SOL_SOCKET) are duplicated from
+> > the sock_setsockopt().  The number of supported options are
+> > increasing ever and so as the duplicated codes.
+> > 
+> > One issue in reusing sock_setsockopt() is that the bpf prog
+> > has already acquired the sk lock.  sockptr_t is useful to handle this.
+> > sockptr_t already has a bit 'is_kernel' to handle the kernel-or-user
+> > memory copy.  This patch adds a 'is_bpf' bit to tell if sk locking
+> > has already been ensured by the bpf prog.
 > 
-> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->> Hi,
->> This is a new V6 patch related to Landlock LSM network confinement.
->> It is based on the latest landlock-wip branch on top of v5.19-rc2:
->> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=landlock-wip
->>
->> It brings refactoring of previous patch version V5:
->>      - Fixes some logic errors and typos.
->>      - Adds additional FIXTURE_VARIANT and FIXTURE_VARIANT_ADD helpers
->>      to support both ip4 and ip6 families and shorten seltests' code.
->>      - Makes TCP sockets confinement support optional in sandboxer demo.
->>      - Formats the code with clang-format-14
->>
->> All test were run in QEMU evironment and compiled with
->>   -static flag.
->>   1. network_test: 18/18 tests passed.
->>   2. base_test: 7/7 tests passed.
->>   3. fs_test: 59/59 tests passed.
->>   4. ptrace_test: 8/8 tests passed.
->>
->> Still have issue with base_test were compiled without -static flag
->> (landlock-wip branch without network support)
->> 1. base_test: 6/7 tests passed.
->>   Error:
->>   #  RUN           global.inconsistent_attr ...
->>   # base_test.c:54:inconsistent_attr:Expected ENOMSG (42) == errno (22)
->>   # inconsistent_attr: Test terminated by assertion
->>   #          FAIL  global.inconsistent_attr
->> not ok 1 global.inconsistent_attr
->>
->> LCOV - code coverage report:
->>              Hit  Total  Coverage
->> Lines:      952  1010    94.3 %
->> Functions:  79   82      96.3 %
->>
->> Previous versions:
->> v5: 
->> https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->> v4: 
->> https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->> v3: 
->> https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->> v2: 
->> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->> v1: 
->> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->>
->> Konstantin Meskhidze (17):
->>    landlock: renames access mask
->>    landlock: refactors landlock_find/insert_rule
->>    landlock: refactors merge and inherit functions
->>    landlock: moves helper functions
->>    landlock: refactors helper functions
->>    landlock: refactors landlock_add_rule syscall
->>    landlock: user space API network support
->>    landlock: adds support network rules
->>    landlock: implements TCP network hooks
->>    seltests/landlock: moves helper function
->>    seltests/landlock: adds tests for bind() hooks
->>    seltests/landlock: adds tests for connect() hooks
->>    seltests/landlock: adds AF_UNSPEC family test
->>    seltests/landlock: adds rules overlapping test
->>    seltests/landlock: adds ruleset expanding test
->>    seltests/landlock: adds invalid input data test
->>    samples/landlock: adds network demo
->>
->>   include/uapi/linux/landlock.h               |  49 ++
->>   samples/landlock/sandboxer.c                | 118 ++-
->>   security/landlock/Kconfig                   |   1 +
->>   security/landlock/Makefile                  |   2 +
->>   security/landlock/fs.c                      | 162 +---
->>   security/landlock/limits.h                  |   8 +-
->>   security/landlock/net.c                     | 155 ++++
->>   security/landlock/net.h                     |  26 +
->>   security/landlock/ruleset.c                 | 448 +++++++++--
->>   security/landlock/ruleset.h                 |  91 ++-
->>   security/landlock/setup.c                   |   2 +
->>   security/landlock/syscalls.c                | 168 +++--
->>   tools/testing/selftests/landlock/common.h   |  10 +
->>   tools/testing/selftests/landlock/config     |   4 +
->>   tools/testing/selftests/landlock/fs_test.c  |  10 -
->>   tools/testing/selftests/landlock/net_test.c | 774 ++++++++++++++++++++
->>   16 files changed, 1737 insertions(+), 291 deletions(-)
->>   create mode 100644 security/landlock/net.c
->>   create mode 100644 security/landlock/net.h
->>   create mode 100644 tools/testing/selftests/landlock/net_test.c
->>
->> -- 
->> 2.25.1
->>
+> That is a really horrid place to hide an 'is locked' bit.
 > 
-> I did a thorough review of all the code. I found that the main issue 
-> with this version is that we stick to the layers limit whereas it is 
-> only relevant for filesystem hierarchies. You'll find in the following 
-> patch miscellaneous fixes and improvement, with some TODOs to get rid of 
-> this layer limit. We'll need a test to check that too. You'll need to 
-> integrate this diff into your patches though.
-
-You can find the related patch here: 
-https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
+> You'd be better off splitting sock_setsockopt() to add a function
+> that is called with sk_lock held and the value read.
+> That would also save the churn of all the callers.
+There is no churn to the callers after this patch, so quite
+the opposite.
