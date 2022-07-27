@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564A9581E13
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 05:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62950581E0D
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 05:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240271AbiG0DPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jul 2022 23:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        id S240228AbiG0DPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jul 2022 23:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240254AbiG0DPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 23:15:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166E7DF04
-        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 20:15:31 -0700 (PDT)
+        with ESMTP id S240233AbiG0DPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jul 2022 23:15:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7531F2CA
+        for <netdev@vger.kernel.org>; Tue, 26 Jul 2022 20:15:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9030DB81F4F
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:15:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FCBC43142;
-        Wed, 27 Jul 2022 03:15:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3E0617A9
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 03:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F911C433D7;
+        Wed, 27 Jul 2022 03:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658891729;
-        bh=sna5E5sG3oBAOlbVSdT6jMHgsjMQhZFKpv2LSh4jnGk=;
+        bh=AW+Sap8ycYjiZrtDINHqc4G+mA1E+2LpjtoTBYUdA4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFL4Zufjfxxj3Kv23X7ci1tcjUd6DEh/yJp7MGVR8w0qzToH8vxPvv4rHR48JlTNc
-         wp3FO9itiq6QIh9p07ZCt0hGaJmcZPrcmUp6psuROlv+Nr158f4zEMoxvFa9CFqVau
-         KwqREU4+5CIu/0qGloxEtzm40YXn4AU9UB+e+vmDmjfiDVrfezAlYX8aJXJSYzGgQE
-         /l4Baptj1LXAHC4DzMC6jdwdSZcUG3q6qHJ/Sc2bxMOrRm7j0KOjxkZ/bDqYMfc5pJ
-         PYjcdCO8Rg/S/d0RU1tA9INSFizpLElTCLtDUeNiHwFqEGYyYngY+7DQ2QbXtdM+kF
-         650ANy87UEtDA==
+        b=qwN9GAljFGcYCtgt7SfDE8mEkT7Fi8Th7QWYdkyOms6LZqpryL8TfyjRH3H6Feo0L
+         o+2SOlKQ8dJTM3J/YmqV6aebykhx1leitdlEkOxC27W28Wal+37NDGmMAfU7jyVSND
+         Ddet6yNKTgZjkDOykJWZ3Dgj7rp8gwo5+J5Uj5uJX7AwFyDRYOVyYoQ71NG39/VSQd
+         T2zRgJfc3v3JDGoGmcxMoy3eVlJbSOVfbvPzHACSBmipHng9Fa3cKxFEc61BDWO0ua
+         hSxeplUJ+9R69+r67mjZQGD+Z72I/EhcUtIeYntI7WDB08Ys2DYVC6Yh4zSGXVg9EH
+         HhWIVGbjr3FHA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/4] tls: strp: rename and multithread the workqueue
-Date:   Tue, 26 Jul 2022 20:15:23 -0700
-Message-Id: <20220727031524.358216-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/4] tls: rx: fix the false positive warning
+Date:   Tue, 26 Jul 2022 20:15:24 -0700
+Message-Id: <20220727031524.358216-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727031524.358216-1-kuba@kernel.org>
 References: <20220727031524.358216-1-kuba@kernel.org>
@@ -54,32 +54,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo points out that there seems to be no strong reason strparser
-users a single threaded workqueue. Perhaps there were some performance
-or pinning considerations? Since we don't know (and it's the slow path)
-let's default to the most natural, multi-threaded choice.
+I went too far in the accessor conversion, we can't use tls_strp_msg()
+after decryption because the message may not be ready. What we care
+about on this path is that the output skb is detached, i.e. we didn't
+somehow just turn around and used the input skb with its TCP data
+still attached. So look at the anchor directly.
 
-Also rename the workqueue to "tls-".
-
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_strp.c | 2 +-
+ net/tls/tls_sw.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index b945288c312e..3f1ec42a5923 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -480,7 +480,7 @@ void tls_strp_done(struct tls_strparser *strp)
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 8bac7ea2c264..17db8c8811fa 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -2026,7 +2026,7 @@ int tls_sw_recvmsg(struct sock *sk,
+ 			bool partially_consumed = chunk > len;
+ 			struct sk_buff *skb = darg.skb;
  
- int __init tls_strp_dev_init(void)
- {
--	tls_strp_wq = create_singlethread_workqueue("kstrp");
-+	tls_strp_wq = create_workqueue("tls-strp");
- 	if (unlikely(!tls_strp_wq))
- 		return -ENOMEM;
+-			DEBUG_NET_WARN_ON_ONCE(darg.skb == tls_strp_msg(ctx));
++			DEBUG_NET_WARN_ON_ONCE(darg.skb == ctx->strp.anchor);
  
+ 			if (async) {
+ 				/* TLS 1.2-only, to_decrypt must be text len */
 -- 
 2.37.1
 
