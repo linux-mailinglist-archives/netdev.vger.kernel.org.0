@@ -2,97 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC735829E3
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B395829E7
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 17:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbiG0PoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 11:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
+        id S229671AbiG0PpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 11:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232536AbiG0PoO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:44:14 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C15148C9A
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:44:13 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id mf4so32226984ejc.3
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/3b25UFEUGgtIkGSiZ+/VFPsXw+QryVykEE0VNj8qps=;
-        b=ZPM5MoHyakB9Ragxd74gjThkBAaYTvP/zeS76wOmXXDM5oRmLGaUiidf1imBdPFfVR
-         WLDmr314MGfbuDGyS3HMypQ8WqGHOCAZxf9j3x2WDWuDGQimjSLgaHr96Z7zB44gsAzB
-         ohAasKM7PCNi9o+uRsg08GLEPmFpQB7Nzv8SEUg0BoXbmtTzLMrfPILYlNWUx84/V1GJ
-         LHeen/TTCkMcXtn10ge/t0Pm7KT+Cs4lEM/vHgIKE6BcO3nsy8bLL3KzbmIxkda93S/T
-         AxhTPQu8pHqZK06hOezfOx4a9owD9X8EUIIpAuvtVE0RAc2YGkKSUxi9KCu61VjTnLyc
-         gb7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/3b25UFEUGgtIkGSiZ+/VFPsXw+QryVykEE0VNj8qps=;
-        b=ch6OMY6jkM3WhSxz1meylG+fot4UzLuuDRGdilTumo3ZMI829BOuApmzlhDB7T8tvr
-         jClRJX+GlvkZ1vcSCskhDKkhSIcZeQzHNuRXpwLO3e3Gas6QkprMkrELcxjpV4k4y7jS
-         SdTHHUm6dg6k76U8bcSUOsEN9+tApKqdlE49kuS54UkfDaZBUiBsKLEdehfyr45CPBh6
-         N56zblfSiJWF7oz8t+G6rCVpOdmzTlvURMHQzKbi9JstFmPSHjfQnWoiJLLidJEk1NIk
-         47Ln3KLEte6rvG0iX+Ywz5GAhm35v3qNPMbCB+30if73FIK7svlWXJ0OuPjFfhlc+tfD
-         i/HQ==
-X-Gm-Message-State: AJIora9uYT0UMJc5zSs6b4fe1BYHMNg/O9qDwCtS2JzPdlOqX3bO1LzS
-        i4C5S0hx3HOPO+3EL+6Efu3cDQ==
-X-Google-Smtp-Source: AGRyM1suDl8y6YxHHY+v4BZFPVGCW60LY9ipe+ux4yBQBWdEFzdHJMcwBcS5HZ1yj5yEezG7iIhHCw==
-X-Received: by 2002:a17:907:1608:b0:72e:e254:7baa with SMTP id hb8-20020a170907160800b0072ee2547baamr18799355ejc.672.1658936651857;
-        Wed, 27 Jul 2022 08:44:11 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id e20-20020a170906315400b0072fa1571c9asm7091715eje.104.2022.07.27.08.44.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 08:44:11 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 08:44:04 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Brian Hutchinson <b.hutchman@gmail.com>
-Subject: Re: [PATCH v2 net] net/sched: make dev_trans_start() have a better
- chance of working with stacked interfaces
-Message-ID: <20220727084404.34ebf5e6@hermes.local>
-In-Reply-To: <20220727152000.3616086-1-vladimir.oltean@nxp.com>
-References: <20220727152000.3616086-1-vladimir.oltean@nxp.com>
+        with ESMTP id S232845AbiG0PpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 11:45:20 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E285A647C
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 08:45:17 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B240820538;
+        Wed, 27 Jul 2022 17:45:14 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id EcQHw2FgO4Pa; Wed, 27 Jul 2022 17:45:14 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 2F86A201AA;
+        Wed, 27 Jul 2022 17:45:14 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 2179180004A;
+        Wed, 27 Jul 2022 17:45:14 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 17:45:13 +0200
+Received: from moon.secunet.de (172.18.149.1) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
+ 2022 17:45:12 +0200
+Date:   Wed, 27 Jul 2022 17:45:02 +0200
+From:   Antony Antony <antony.antony@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>,
+        "Antony Antony" <antony.antony@secunet.com>
+Subject: [PATCH ipsec 1/3] Revert "xfrm: update SA curlft.use_time"
+Message-ID: <e66a68873492c0b3e02f8459e88cedabe255e3b6.1658936270.git.antony.antony@secunet.com>
+Reply-To: <antony.antony@secunet.com>
+References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
+Organization: secunet
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 18:20:00 +0300
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+This reverts commit af734a26a1a95a9fda51f2abb0c22a7efcafd5ca.
 
-> +	do {
-> +		have_lowers = false;
-> +
-> +		netdev_for_each_lower_dev(dev, lower, iter) {
-> +			have_lowers = true;
-> +			dev = lower;
-> +			break;
-> +		}
-> +	} while (have_lower
+The abvoce commit is a regression according RFC 2367. A better fix would be
+use x->lastused. Which will be propsed later.
 
-Would be clearer if this was a helper function.
-Something like dev_leaf_device?
+according to RFC 2367 use_time == sadb_lifetime_usetime.
+
+"sadb_lifetime_usetime
+                   For CURRENT, the time, in seconds, when association
+                   was first used. For HARD and SOFT, the number of
+                   seconds after the first use of the association until
+                   it expires."
+
+Fixes: af734a26a1a9 ("xfrm: update SA curlft.use_time")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+---
+ net/xfrm/xfrm_input.c  | 1 -
+ net/xfrm/xfrm_output.c | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 144238a50f3d..70a8c36f0ba6 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -669,7 +669,6 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 
+ 		x->curlft.bytes += skb->len;
+ 		x->curlft.packets++;
+-		x->curlft.use_time = ktime_get_real_seconds();
+ 
+ 		spin_unlock(&x->lock);
+ 
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 555ab35cd119..9a5e79a38c67 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -534,7 +534,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+ 
+ 		x->curlft.bytes += skb->len;
+ 		x->curlft.packets++;
+-		x->curlft.use_time = ktime_get_real_seconds();
+ 
+ 		spin_unlock_bh(&x->lock);
+ 
+-- 
+2.30.2
+
