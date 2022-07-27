@@ -2,75 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5772C5825B6
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF885825BD
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbiG0LhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 07:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54346 "EHLO
+        id S232228AbiG0Ljd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 07:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232390AbiG0Lgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:36:39 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103244AD56;
-        Wed, 27 Jul 2022 04:36:01 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id va17so31026803ejb.0;
-        Wed, 27 Jul 2022 04:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=VQSHx8GgcQmMd+AXBHE02GOQHiSvUP8WAJUnL9ocUio=;
-        b=mhk1h2uJZTlyGcOzrIpB2D5oT+iA5R8TkMmRYlcsXA6caVLNYJq7G+ZoJWUJA+C0Jo
-         N91TkTPT6I2nm3v7JISL7BsrQS992myNakALbwb53lYzx0emlf7CDtAcBt07ZUUfOyNl
-         SxX6Xn5z/CUlaRFb9VMbwtERgUYKT/N5HjzQpaSD7C9MlxcDebZepb4mdkJxVTmMjldz
-         ovgWe2/vaCzUHLnnSheoFbF0dHwgcT8ODTWI5TG20gDc2p9xG5royM4RFsIMqC9ckFeh
-         zil5vh5Oh/OoU4rFO2jWWuQcdEH4eEwyqGksCnm30iskVz/njWA58Q4bQ7H3U876yz3w
-         clYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VQSHx8GgcQmMd+AXBHE02GOQHiSvUP8WAJUnL9ocUio=;
-        b=5tZlMiqqWC67aDqYQRno7izNgS2AQMUXpxmLLWnJmJzVpLjYykOqMBPHuJgEcTSrxG
-         PJf+S0ax0sH+jmj5NaKJp/Gb/OPFVKSlqJvAAU4PX+nnKEMr8QIDek7MQ2G2aEH/qutK
-         GaG2nM/1bYf1Bu/9DRyezlthtNxPYyEBV8CxCM9AukoaGAlCTEsrT750J0F7OQOAzaLa
-         Ew+XAxZeu9IAv0UxG3xmNEPA3EfX8Jiwr5hPwTLknZLBEAQQRC5Nqt2BgXWHZ2IU9Z3R
-         U95NLCFL+fBoHO8wxqxuQmZEMKbiksB/zs9P1EdWCB+NpqqF4afZhDYnx3E6+I+p9iwo
-         P2rw==
-X-Gm-Message-State: AJIora9UIhgYA2w0PWao419i9vgUh56cMAlrVziE2Ez3RLI+Mzs3hg9V
-        WKnvGnDoTChHluYfpY1W460=
-X-Google-Smtp-Source: AGRyM1uUycM1SKpDmZ+nnw7DJYgP8fA+MsFQMpzc+KtJIYKSaIiSvpsXa4+ky7jTZxMRpyaav9a64g==
-X-Received: by 2002:a17:907:6295:b0:703:92b8:e113 with SMTP id nd21-20020a170907629500b0070392b8e113mr17629609ejc.594.1658921761353;
-        Wed, 27 Jul 2022 04:36:01 -0700 (PDT)
-Received: from localhost.localdomain (c105-182.i13-27.melita.com. [94.17.105.182])
-        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 04:36:00 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v5 14/14] net: dsa: qca8k: move read_switch_id function to common code
-Date:   Wed, 27 Jul 2022 13:35:23 +0200
-Message-Id: <20220727113523.19742-15-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220727113523.19742-1-ansuelsmth@gmail.com>
-References: <20220727113523.19742-1-ansuelsmth@gmail.com>
+        with ESMTP id S232429AbiG0LjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:39:16 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7816A4BD38
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 04:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658921924; x=1690457924;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=BSm103/QDk8tIiaBbkJPkpOn+jK/0oZwmCPurYt2EMg=;
+  b=AUe4P/Ufllv053WMfjUrcGzCZg9N1xbtb+nxyanXONgXeqElG2OfTuWB
+   DBa9/0w6+1CEPYme28s1ge6YG1bN3aeQ/yHSV4o7ZzBcYOrPqgv63QkyB
+   OPRtRwvqAOn3XUtmggGqMKU3BVUXR4xgEbROcxND8hcLrqrlyy2Jc3Opg
+   EozRI3zczBtyqAk61hZTpaSdo5/6Jbtjnl8Fg18yuM1zifHGz9hDQpe6B
+   S+aB8AUIcaI5pZtpqj8Lo2L0sY1Emjqa5HQs4ib+noGuxz0ZRkLHY+PvS
+   7toVbv9RmJm/ImCfJwegsM1Zt7JYYCfazwVYp5x7M+SUJ+8sMSdPE66Ps
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="288221522"
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="288221522"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 04:38:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="659161351"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.171.153]) ([10.249.171.153])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 04:38:29 -0700
+Message-ID: <35d6c4e1-6d04-7e77-9060-bf7256a5b60d@intel.com>
+Date:   Wed, 27 Jul 2022 19:38:27 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-4-lingshan.zhu@intel.com>
+ <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <e8479441-78d2-8b39-c5ad-6729b79a2f35@redhat.com>
+ <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <1e1e5f8c-d20e-4e54-5fc0-e12a7ba818a3@intel.com>
+ <PH0PR12MB5481862D47DCD61F89835B01DC819@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <a1bb599c-63be-a85e-5cff-6eed28abd347@oracle.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <a1bb599c-63be-a85e-5cff-6eed28abd347@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,106 +75,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same function to read the switch id is used by drivers based on
-qca8k family switch. Move them to common code to make them accessible
-also by other drivers.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c   | 29 -----------------------------
- drivers/net/dsa/qca/qca8k-common.c | 29 +++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  1 +
- 3 files changed, 30 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 4d6ea47a4469..1d3e7782a71f 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1876,35 +1876,6 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.connect_tag_protocol	= qca8k_connect_tag_protocol,
- };
- 
--static int qca8k_read_switch_id(struct qca8k_priv *priv)
--{
--	u32 val;
--	u8 id;
--	int ret;
--
--	if (!priv->info)
--		return -ENODEV;
--
--	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
--	if (ret < 0)
--		return -ENODEV;
--
--	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
--	if (id != priv->info->id) {
--		dev_err(priv->dev,
--			"Switch id detected %x but expected %x",
--			id, priv->info->id);
--		return -ENODEV;
--	}
--
--	priv->switch_id = id;
--
--	/* Save revision to communicate to the internal PHY driver */
--	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
--
--	return 0;
--}
--
- static int
- qca8k_sw_probe(struct mdio_device *mdiodev)
- {
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index c881a95441dd..bba95613e218 100644
---- a/drivers/net/dsa/qca/qca8k-common.c
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -1179,3 +1179,32 @@ int qca8k_port_lag_leave(struct dsa_switch *ds, int port,
- {
- 	return qca8k_lag_refresh_portmap(ds, port, lag, true);
- }
-+
-+int qca8k_read_switch_id(struct qca8k_priv *priv)
-+{
-+	u32 val;
-+	u8 id;
-+	int ret;
-+
-+	if (!priv->info)
-+		return -ENODEV;
-+
-+	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
-+	if (ret < 0)
-+		return -ENODEV;
-+
-+	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
-+	if (id != priv->info->id) {
-+		dev_err(priv->dev,
-+			"Switch id detected %x but expected %x",
-+			id, priv->info->id);
-+		return -ENODEV;
-+	}
-+
-+	priv->switch_id = id;
-+
-+	/* Save revision to communicate to the internal PHY driver */
-+	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index e87bfee837c1..e36ecc9777f4 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -432,6 +432,7 @@ extern const struct qca8k_mib_desc ar8327_mib[];
- extern const struct regmap_access_table qca8k_readable_table;
- int qca8k_mib_init(struct qca8k_priv *priv);
- void qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable);
-+int qca8k_read_switch_id(struct qca8k_priv *priv);
- 
- /* Common read/write/rmw function */
- int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
--- 
-2.36.1
+On 7/27/2022 4:15 PM, Si-Wei Liu wrote:
+>
+>
+> On 7/5/2022 4:56 AM, Parav Pandit via Virtualization wrote:
+>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>>> Sent: Tuesday, July 5, 2022 3:59 AM
+>>>
+>>>
+>>> On 7/4/2022 8:53 PM, Parav Pandit wrote:
+>>>>> From: Jason Wang <jasowang@redhat.com>
+>>>>> Sent: Monday, July 4, 2022 12:47 AM
+>>>>>
+>>>>>
+>>>>> 在 2022/7/2 06:02, Parav Pandit 写道:
+>>>>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>>> Sent: Friday, July 1, 2022 9:28 AM
+>>>>>>>
+>>>>>>> This commit adds a new vDPA netlink attribution
+>>>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>>>>> features
+>>>>>>> of vDPA devices through this new attr.
+>>>>>>>
+>>>>>>> Fixes: a64917bc2e9b vdpa: (Provide interface to read driver
+>>>>>>> feature)
+>>>>>> Missing the "" in the line.
+>>>>>> I reviewed the patches again.
+>>>>>>
+>>>>>> However, this is not the fix.
+>>>>>> A fix cannot add a new UAPI.
+>>>>>>
+>>>>>> Code is already considering negotiated driver features to return the
+>>>>>> device
+>>>>> config space.
+>>>>>> Hence it is fine.
+>>>>>>
+>>>>>> This patch intents to provide device features to user space.
+>>>>>> First what vdpa device are capable of, are already returned by
+>>>>>> features
+>>>>> attribute on the management device.
+>>>>>> This is done in commit [1].
+>>>>>>
+>>>>>> The only reason to have it is, when one management device indicates
+>>>>>> that
+>>>>> feature is supported, but device may end up not supporting this
+>>>>> feature if such feature is shared with other devices on same 
+>>>>> physical device.
+>>>>>> For example all VFs may not be symmetric after large number of them
+>>>>>> are
+>>>>> in use. In such case features bit of management device can differ
+>>>>> (more
+>>>>> features) than the vdpa device of this VF.
+>>>>>> Hence, showing on the device is useful.
+>>>>>>
+>>>>>> As mentioned before in V2, commit [1] has wrongly named the
+>>>>>> attribute to
+>>>>> VDPA_ATTR_DEV_SUPPORTED_FEATURES.
+>>>>>> It should have been,
+>>>>> VDPA_ATTR_DEV_MGMTDEV_SUPPORTED_FEATURES.
+>>>>>> Because it is in UAPI, and since we don't want to break compilation
+>>>>>> of iproute2, It cannot be renamed anymore.
+>>>>>>
+>>>>>> Given that, we do not want to start trend of naming device
+>>>>>> attributes with
+>>>>> additional _VDPA_ to it as done in this patch.
+>>>>>> Error in commit [1] was exception.
+>>>>>>
+>>>>>> Hence, please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES to return
+>>>>> for device features too.
+>>>>>
+>>>>>
+>>>>> This will probably break or confuse the existing userspace?
+>>>>>
+>>>> It shouldn't break, because its new attribute on the device.
+>>>> All attributes are per command, so old one will not be confused 
+>>>> either.
+>>> A netlink attr should has its own and unique purpose, that's why we 
+>>> don't need
+>>> locks for the attrs, only one consumer and only one producer.
+>>> I am afraid re-using (for both management device and the vDPA 
+>>> device) the attr
+>>> VDPA_ATTR_DEV_SUPPORTED_FEATURES would lead to new race condition.
+>>> E.g., There are possibilities of querying FEATURES of a management 
+>>> device and
+>>> a vDPA device simultaneously, or can there be a syncing issue in a 
+>>> tick?
+>> Both can be queried simultaneously. Each will return their own 
+>> feature bits using same attribute.
+>> It wont lead to the race.
+> Agreed. Multiple userspace callers would do recv() calls on different 
+> netlink sockets. Looks to me shouldn't involve any race.
+oh yes, thanks for pointing this out, they are on different sockets 
+belonging to different userspace programs.
+>>
+>>> IMHO, I don't see any advantages of re-using this attr.
+>> We don’t want to continue this mess of VDPA_DEV prefix for new 
+>> attributes due to previous wrong naming.
+> Well, you can say it's a mess but since the attr name can be reused 
+> for different command,  I didn't care that much while reviewing this. 
+> Actually, it was initially named this way to show the device features 
+> in "vdpa dev config ..." output, but later on it had been moved to 
+> mgmtdev to show parent's capability.
+yes there is a buggy commit, but we can not change it now, because we 
+are not expected to break current uapi, so I think it is better to add a 
+new attr, no benefits to reuse another attr.
+>
+> -Siwei
+>> _______________________________________________
+>> Virtualization mailing list
+>> Virtualization@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+>
 
