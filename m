@@ -2,70 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E95C5821FA
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 10:22:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02A6A582225
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 10:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229915AbiG0IWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 04:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
+        id S230099AbiG0I35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 04:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiG0IWn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 04:22:43 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF2F42ADE
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 01:22:42 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id f15so12007693edc.4
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 01:22:42 -0700 (PDT)
+        with ESMTP id S229619AbiG0I34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 04:29:56 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F8945067;
+        Wed, 27 Jul 2022 01:29:55 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id os14so30272224ejb.4;
+        Wed, 27 Jul 2022 01:29:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Y/222Cm84RV0Lulq/WSSuQXjmvUtsc6p2rHarENgd2E=;
-        b=Hl1hMvUb0P9tjF6MqfciHbbCGbPJIzHoXYcWSXxHos3jaP9nxeRl/XIAz3QwDHCoFs
-         tFeBdlUoD/0IuISLBc+Ojl6A5YRei8t5orjUIl8CIpkDpsVgve58Ks/NpWjx9AIm1IVU
-         mhKruHs2ai98++YWxgzbsDjMUo6FY89V1NlCkzx8B7H3EB8RzsmFjFGaODUEVM+X+ONX
-         H4+UmUBnD9CVxr2cU8vQCm3uI1HKAkRPDDXZsJabgQzMHtvWe8hv4ZT8ao3a1K8Jef9H
-         TUgPwcBOpxpx6Ack+FObgNgaf2IfHCwerQlRV2SMCQH0GCBpsbAmpEfBS9kZWUKz1WpI
-         8z+A==
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=90LqK0tDYlhW8mw1jbLiJzHeD5M9TR6TiTXrmORdnOs=;
+        b=okISiEP+PtJfYiUEirmWFvT+EiyVBemKOhG0cra6EYc8SxjT6Ld3XWVhGH6wE3YjPL
+         //MTk2EVguBKcVkcycxLcPMH61oynJ0HMIwEbw0TsEil4E2v4xOfS59ZE6gdsjL4P8Z6
+         XaGofnStM4r5xp6TDYrpSsVACdx2sqU764VOWnhoaSiSKWpbTKioQvXAgx9Ck2iGuQa/
+         80ARrTVPno0j3cJGGOeRyhoDc0wegUJO0o/dhdTOLjLjO5yjeoUKTj+rIXnXfJ8uRhqM
+         /8TlWcua1ktW5LHvMoIXoYaxsHieUoGt6ZuBa3Le7S3E72k6iaYaa73r+U6c+JVoD6VI
+         hfpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
          :content-transfer-encoding;
-        bh=Y/222Cm84RV0Lulq/WSSuQXjmvUtsc6p2rHarENgd2E=;
-        b=dCXJxhWNtR0flMRyIjUA+tXWIciUCTJ2e7bEEoqdoGm9Iz+tRbLoCZSwqgs0mWTbHS
-         cZgfGBqIPQTQkeZ0ikNwBdRuT8bl+o+Rb5awoD0VgsK1/a0GTxY7d8Yka9ozjCW5ydIH
-         rfSaXrigs1Ss07h/jNBnVehCaq7+8Ss2HdjeYFznxmlEDOqcjY9VU0mGwCdDxG1EHHYK
-         ILJF1Roondquv0nBKflHKJAQHU9anadoxtkydoq2y5z4VU/S+9gIKf3FRdUNFIjJEalO
-         4wm3Hrt0IkBGVDbEVjo3HNPXi3sJZjiPMBc84biRjq6C5PLKL/DCPD9lnXiEaYixOkjR
-         Xw4A==
-X-Gm-Message-State: AJIora+uFteBV8aKz9HuLOM304hLvilsWnEpEwyQ3/o4a2/CJybm+Alj
-        TSXC1nGb8bJyOjN8YcOl4Rg=
-X-Google-Smtp-Source: AGRyM1us6tedWtLk/M4BsvvCdwFCUzmDvXXM+aIjyIzh8O271mzm4JptUckteey8gWQ0v4JPKiIkqg==
-X-Received: by 2002:a05:6402:13c1:b0:43b:e330:9bbf with SMTP id a1-20020a05640213c100b0043be3309bbfmr18879998edx.417.1658910160910;
-        Wed, 27 Jul 2022 01:22:40 -0700 (PDT)
+        bh=90LqK0tDYlhW8mw1jbLiJzHeD5M9TR6TiTXrmORdnOs=;
+        b=HfFz6eWNGQjeA7QK57Rxoa9JTZrgQmhriuz8+EFWYkFC5eUH0TrdrW9f8WS1rMNPaL
+         whVqyFMSX6tZbztm5Z18++Xt1o5BlmxHVXffwiMl49CyGGh2d2hlTpqxZdPJ28eHz4g+
+         adGuQVOeFUprnBAcQNzlLsKB01fSDhQAqSNQTPjkN+EN4g7MF5Q46LDIVzx0fhLrx6Ol
+         XZODk8UcjptNMVecUs2bNFc+Ut8UXJxVhf0vsp6+N6fgKkKTMHw+DgtPsuhPh3hkZMay
+         lQm10jMOF8KS5yCr4nYfBh20x97PN1/Vilq6TiX6q8UDln+TVvzjgctVjy4o0xzvmzjs
+         ASiw==
+X-Gm-Message-State: AJIora8sohxfAazqlcmcMWVOzaGa83yHDEHpTKj6RDkPtB+sq1+jV8MF
+        aXzR99+ZRtQqB3ZP9IoVVTc=
+X-Google-Smtp-Source: AGRyM1sNTzVUPxdy7HWTJlsYBjJH63nKjJstW2gmAH/G15DWwbey+3gZVLzL1sYPMK+Wgys7gik6iA==
+X-Received: by 2002:a17:906:5d04:b0:722:f46c:b891 with SMTP id g4-20020a1709065d0400b00722f46cb891mr17290342ejt.4.1658910593479;
+        Wed, 27 Jul 2022 01:29:53 -0700 (PDT)
 Received: from ?IPV6:2a04:241e:502:a09c:994d:5eac:a62d:7a76? ([2a04:241e:502:a09c:994d:5eac:a62d:7a76])
-        by smtp.gmail.com with ESMTPSA id kx20-20020a170907775400b0072aa014e852sm7251506ejc.87.2022.07.27.01.22.39
+        by smtp.gmail.com with ESMTPSA id u2-20020a1709061da200b0072f42ca2934sm7375578ejh.148.2022.07.27.01.29.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jul 2022 01:22:40 -0700 (PDT)
-Message-ID: <e09f6bc5-b5c4-5ab6-16c3-029b45810530@gmail.com>
-Date:   Wed, 27 Jul 2022 11:22:38 +0300
+        Wed, 27 Jul 2022 01:29:53 -0700 (PDT)
+Message-ID: <dd2ca85e-ab29-2973-f129-9afafb405851@gmail.com>
+Date:   Wed, 27 Jul 2022 11:29:50 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH net] tcp: md5: fix IPv4-mapped support
-Content-Language: en-US
+From:   Leonard Crestez <cdleonard@gmail.com>
+Subject: Re: [PATCH v6 21/26] selftests: net/fcnal: Initial tcp_authopt
+ support
 To:     Eric Dumazet <edumazet@google.com>,
         David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Brian Vazquez <brianvv@google.com>,
-        Dmitry Safonov <dima@arista.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+Cc:     Philip Paeps <philip@trouble.is>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20220726115743.2759832-1-edumazet@google.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <20220726115743.2759832-1-edumazet@google.com>
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <cover.1658815925.git.cdleonard@gmail.com>
+ <ad19d5c8a24054d48e1c35bb0ec92075b9f0dc6a.1658815925.git.cdleonard@gmail.com>
+ <CANn89i+ByJsdKLXi982jq0H3irYg_ANSEdmL2zwZ_7G-E_g2eg@mail.gmail.com>
+ <CANn89i+=LVDFx_zjDy6uK+QorR+fosdkb8jqNMO6syqOsS7ZqQ@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CANn89i+=LVDFx_zjDy6uK+QorR+fosdkb8jqNMO6syqOsS7ZqQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,67 +98,55 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 7/26/22 10:27, Eric Dumazet wrote:
+> On Tue, Jul 26, 2022 at 9:06 AM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Tue, Jul 26, 2022 at 8:16 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+>>>
+>>> Tests are mostly copied from tcp_md5 with minor changes.
+>>>
+>>> It covers VRF support but only based on binding multiple servers: not
+>>> multiple keys bound to different interfaces.
+>>>
+>>> Also add a specific -t tcp_authopt to run only these tests specifically.
+>>>
+>>
+>> Thanks for the test.
+>>
+>> Could you amend the existing TCP MD5 test to make sure dual sockets
+>> mode is working ?
+>>
+>> Apparently, if we have a dual stack listener socket (AF_INET6),
+>> correct incoming IPV4 SYNs are dropped.
 
-On 7/26/22 14:57, Eric Dumazet wrote:
-> After the blamed commit, IPv4 SYN packets handled
-> by a dual stack IPv6 socket are dropped, even if
-> perfectly valid.
-> 
-> $ nstat | grep MD5
-> TcpExtTCPMD5Failure             5                  0.0
-> 
-> For a dual stack listener, an incoming IPv4 SYN packet
-> would call tcp_inbound_md5_hash() with @family == AF_INET,
-> while tp->af_specific is pointing to tcp_sock_ipv6_specific.
-> 
-> Only later when an IPv4-mapped child is created, tp->af_specific
-> is changed to tcp_sock_ipv6_mapped_specific.
-> 
-> Fixes: 7bbb765b7349 ("net/tcp: Merge TCP-MD5 inbound callbacks")
-> Reported-by: Brian Vazquez <brianvv@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Dmitry Safonov <dima@arista.com>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Leonard Crestez <cdleonard@gmail.com>
+>>   If this is the case, fixing MD5 should happen first ;
 
-I had a test in this area for AO and MD5 but it was incorrect (it did 
-not actually use an ipv4-mapped-ipv6 address for the ipv6 socket, it 
-used an ipv6 wildcard address).
+I remember looking into this and my conclusion was that ipv4-mapped-ipv6 
+is not worth supporting for AO, at least not in the initial version.
 
-After fixing the test I can confirm that this patch does in fact fix 
-something.
+Instead I just wrote a test to check that ipv4-mapped-ipv6 fails for AO:
+https://github.com/cdleonard/tcp-authopt-test/blob/main/tcp_authopt_test/test_verify_capture.py#L191
 
-https://github.com/cdleonard/tcp-authopt-test/commit/662a6a7e1a818f4581fc0055e821bc1b4c8d04e8
+On a closer look it does appear that support existed for 
+ipv4-mapped-ipv6 in TCP-MD5 but my test didn't actually exercise it 
+correctly so the test had to be fixed.
 
-Tested-by: Leonard Crestez <cdleonard@gmail.com>
 
-> ---
->   net/ipv4/tcp.c | 15 ++++++++++++---
->   1 file changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 002a4a04efbe076ba603d7d42eb85e60d9bf4fb8..766881775abb795c884d048d51c361e805b91989 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4459,9 +4459,18 @@ tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
->   		return SKB_DROP_REASON_TCP_MD5UNEXPECTED;
->   	}
->   
-> -	/* check the signature */
-> -	genhash = tp->af_specific->calc_md5_hash(newhash, hash_expected,
-> -						 NULL, skb);
-> +	/* Check the signature.
-> +	 * To support dual stack listeners, we need to handle
-> +	 * IPv4-mapped case.
-> +	 */
-> +	if (family == AF_INET)
-> +		genhash = tcp_v4_md5_hash_skb(newhash,
-> +					      hash_expected,
-> +					      NULL, skb);
-> +	else
-> +		genhash = tp->af_specific->calc_md5_hash(newhash,
-> +							 hash_expected,
-> +							 NULL, skb);
->   
->   	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
->   		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+Do you think it makes sense to add support for ipv4-mapped-ipv6 for AO? 
+It's not particularly difficult to test, it was skipped due to a lack of 
+application use case and to keep the initial series smaller.
+
+Adding support for this later as a separate commit should be fine. Since 
+ivp4-mapped-ipv6 addresses shouldn't appear on the wire giving them 
+special treatment "later" should raise no compatibility concerns.
+
+
+>> I think that we are very late in the cycle (linux-5.19 should be
+>> released in 5 days), and your patch set should not be merged so late.
+
+This was posted in order to get code reviews, I'm not actually expecting 
+inclusion.
+
+--
+Regards,
+Leonard
