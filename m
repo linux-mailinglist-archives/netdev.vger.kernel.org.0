@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86591582833
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7D858283B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233067AbiG0OFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 10:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        id S233228AbiG0OIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 10:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbiG0OFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:05:48 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F31CDED3
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:05:47 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id o14-20020a17090a4b4e00b001f2f2b61be5so2221128pjl.4
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:05:47 -0700 (PDT)
+        with ESMTP id S233182AbiG0OIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 10:08:02 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D77F3D5A1
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:08:00 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id s9so2311187edd.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 07:08:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=5QpkZo7bMURdJaAczFVda56NOl19v0PL506fYfIlKCE=;
-        b=IdM0wPuF0cHXmOK9yNblwUoBNCNNv9Hb+s1EM2KCS1ajWF02Nj+QqgxuyznlI4TEq1
-         d/zWujrduGZF8hD8m+SL8kkValc+AzuICi8Kgz7Qzjq9OVG43Ilwwo/Cr4uxG3xtukiY
-         5cnxlEQfisK6kh24Y2oL8RTgAb3LDU82Fd3o3G86K4oWItPNQti4GBs1FWJ/oWj1cmSg
-         AJi43ZOSPd8gLvzYlnHhWNAhqQsssdZN0ksRNI17zCLe07MQx9GfmT1aH5KYXkRK7VpG
-         2SxESm1LM3nqxi4Ch4Zb9LiS8LriiVhLoOtEBC9/7VvQK6YOVK/oGZdLsxoVKRSZlYQk
-         8jEQ==
+        bh=Ckwq9+RZ25t6TxI3G7wvQ/YAFBxZcLYCgHMh/h9lYXk=;
+        b=VUv9YXMMbV60UXuXTAV/O0FSo9WU79aQzTxLele+AgncteS2/p+3sWQguAroOJHa5x
+         icCTysrxmQkJ5gTMgoKTadmp0O0dfnDu09BJ2hEPaDjpYuNjdLYK4KsfgkP4kPYMTWlj
+         4tKwB2fLlnUdGYDwKzGmEyeuAYEvgkKA5J1Xjmr+TUfAT82gbk9R/edyBfQVDXQ5WXxD
+         bNA2i12HzNS9RAlII7PQUoFReIoMdfieIagDs5KL0rqHqHvEOb0/x/2/eGUv6qLjP3Xv
+         2jl/DDe4adZK27lbHRW1SD9EqcP/HCEO6Ue2pOAzR6XeaTEigxeIXwFt4cAS3NE/p/Xa
+         F2OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=5QpkZo7bMURdJaAczFVda56NOl19v0PL506fYfIlKCE=;
-        b=LKV34OtMWazbka40wchK5tqXglo/ZTbflFmc0mvDMnzMmKgO7DEmaO8KkHyy3Z5/Ni
-         JYSCBbwVp0Ise+vpOcHQsaa0VlRHXR6KpFh8g3eFtvzT3qHhXAWL0UpUQP5doSubBUTe
-         UEAFoYqw4uNargf6qOHl/a9W5uzNaKZpbL6B1gT/LT1IZvAiowUvfWTXQnGXJp0CFeZL
-         CUy3RotU4uWzYd/eIULd6mzjQSnP5hSakd/wFGaGRgFIg9DXfWY/cjfyACuEfjnWPFhF
-         MmD/U+AOVDOE94FNFM6aYXXRRWiIy0rQTgQ2dWParu3lVEoDHlEOpqHI+PLBjnXvY0Ha
-         gxRw==
-X-Gm-Message-State: AJIora9HSHvFB/mN8yViEtn2AbeppzZXJKmTsLKEXg5+sowCzqA7xUr1
-        SyldKk4g4oxfLl+5icz3a3F9WGKDUOM=
-X-Google-Smtp-Source: AGRyM1v+V4iMl5tOU+kjya/U+sPvQ82BqbZ22bXl1DKaiaZ9IUZDwpnUNMNeswQvhmGMdjuhKhKnDw==
-X-Received: by 2002:a17:902:d54c:b0:16d:9d52:2cb1 with SMTP id z12-20020a170902d54c00b0016d9d522cb1mr7857652plf.29.1658930746766;
-        Wed, 27 Jul 2022 07:05:46 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id u3-20020a626003000000b005289eafbd08sm14401778pfb.18.2022.07.27.07.05.45
+        bh=Ckwq9+RZ25t6TxI3G7wvQ/YAFBxZcLYCgHMh/h9lYXk=;
+        b=dqWQLWjuBL6aY1Ettul91mhdHfRtP3hABeVQH7nnVUkDQhBhF/3PXtzTDDZrXTsjif
+         fVIzQvb0NYyzSskjB+SM3/O6aiY4Tpx1LX9JdE7S8qlSSB4aVk8NFZZmUJHJ9Vg/1Iz4
+         SQWmISPPETWIaSOD+VZefZfk75jLBaDI/lON0jwOenc7qLZTqF/EtGUnNa8qavBrwHH+
+         OTtjqLi//6EEGmiF0Gw/Rgm1VK2GjCv2QFy4UnbvO+u05iFFfCOtZiXn7hcAI8IPO5KJ
+         PeAv1X7MfWLHFodgQA+jTst35mmFVhFiiED9vX0c+IP1dPuzZk+LFJxPBg59SYxYJyzK
+         G+jg==
+X-Gm-Message-State: AJIora/yFf9xGvwp9Ok6MLavNb9n6ZEHMrw85581Ddgw9oFuQKxibqPj
+        VSM+QoCsYNrz1nPifJOx3t2kPiCPbcy2jA==
+X-Google-Smtp-Source: AGRyM1v71UdMOlAIbWLzWiX9NjJRs4epgXVlDfSiOhRCmU37JH6mwHjmJ16BGzwhEgbYSDNcZZ6AeA==
+X-Received: by 2002:aa7:cd0a:0:b0:43b:c49d:22b6 with SMTP id b10-20020aa7cd0a000000b0043bc49d22b6mr22691414edw.155.1658930879017;
+        Wed, 27 Jul 2022 07:07:59 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id q1-20020a1709060e4100b0072aac7446easm7653198eji.47.2022.07.27.07.07.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:05:46 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 07:05:43 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
-        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 0/9] mlxsw: Add PTP support for Spectrum-2 and
- newer ASICs
-Message-ID: <YuFGN/WBzVgae/cf@hoboy.vegasvil.org>
-References: <20220727062328.3134613-1-idosch@nvidia.com>
+        Wed, 27 Jul 2022 07:07:58 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 17:07:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Subject: Re: [PATCH net-next] net: dsa: realtek: rtl8366rb: Configure ports
+ properly
+Message-ID: <20220727140756.ds6yl6lpw57gar37@skbuf>
+References: <20220725202957.2460420-1-linus.walleij@linaro.org>
+ <20220726110228.eook6krfpnb7gtwj@skbuf>
+ <CACRpkdbCUvE_AusQ5xN=8qLJRXKMTUDNBGTgL-n2u9nsf8xsjg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727062328.3134613-1-idosch@nvidia.com>
+In-Reply-To: <CACRpkdbCUvE_AusQ5xN=8qLJRXKMTUDNBGTgL-n2u9nsf8xsjg@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,21 +76,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 09:23:19AM +0300, Ido Schimmel wrote:
+Hi Linus,
 
-> Spectrum-2 and newer ASICs essentially implement a transparent clock
-> between all the switch ports, including the CPU port. The hardware will
-> generate the UTC time stamp for transmitted / received packets at the
+On Tue, Jul 26, 2022 at 04:20:18PM +0200, Linus Walleij wrote:
+> > According to your phylink_get_caps() implementation, I see that all
+> > ports are internal, so presumably the CPU ports too (and the user ports
+> > are connected to internal PHYs).
+> 
+> Correct, if by internal you mean there is no external, discrete PHY
+> component. They all route out to the physical sockets, maybe with
+> some small analog filter inbetween.
 
-The PTP time scale is TAI, not UTC.
+Yes, I mean that if there are RJ-45 ports, they are all driven by PHYs
+which are internal to the switch chip, and if there is no internal PHY,
+those ports are also internal to the chip, like in the case of the CPU
+port.
 
-> CPU port, but will compensate for forwarding delays in the ASIC by
-> adjusting the correction field in the PTP header (for PTP events) at the
-> ingress and egress ports.
+> > Is it just to act upon the phylink parameters rather than assuming the
+> > CPU port is at gigabit? Can you actually set the CPU port at lower rates?
+> 
+> I think you can, actually. The Realtek vendor mess does support it.
+> 
+> Hm I should test to gear it down to 100Mbit and 10Mbit and see
+> what happens.
 
-If the switch adjusts this automatcally, then the time scale in use is
-not relevant.
+So the change wasn't intended for the CPU port, this is good to know.
 
-Thanks,
-Richard
+> > As for the internal PHY ports, do they need their link speed to be
+> > forced at 10/100, or did those previously work at those lower speeds,
+> > just left unforced?
+> 
+> They were left in "power-on"-state. Which I *guess* is
+> autonegotiate. But haven't really tested.
+> 
+> It leaves me a bit uneasy since these registers are never explicit
+> set up to autonegotiate. Maybe I should do a separate patch
+> to just set them explicitly in autonegotiation mode?
 
+I am confused as to what you are describing when you are using the
+"autonegotiation" word. "Port" is too generic, every user port will have
+a MAC and a PHY. The PHY is what deals with autonegotiation; also, the
+PHY is what the DSA driver does *not* control (it uses either a dedicated
+or a generic driver from drivers/net/phy).
+
+Between the internal MAC and the internal PHY, what's going on isn't
+called autonegotiation, but doesn't have a specific name either, as far
+as I know. Rather, because the 2 components are part of the same die,
+the hardware designers may have added logic that automatically adapts
+the speed in the MAC according to the speed that the PHY negotiated for
+(or was forced at).
+
+Your change (or at least the way in which I understand it) essentially
+always forces the internal MAC to the same speed as the PHY. This is not
+wrong per se, but I'm not clear if it's necessary either, considering
+that there might be hardware logic to do this automatically.
+
+> I have a small 10MBit router, I will try to connect it and see what
+> happens, if anything happens and can be detected.
+
+You don't need a dedicated 10BASE-T device to test this, you can run
+"ethtool -s eth0 advertise 0x2" on any gigabit-capable device, and this
+will limit the advertisement in its PHY to just 10BASE-T.
