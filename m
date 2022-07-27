@@ -2,130 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D57583427
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D47B158342E
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 22:42:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233713AbiG0UjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 16:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39688 "EHLO
+        id S233865AbiG0Umm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 16:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233728AbiG0UjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:39:22 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F6E5C97D
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:39:20 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id w205so129646pfc.8
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 13:39:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AqDJFMVyy+ZPy4OKfJDKdS0bxDg1ZZcxkSxs6/xipuE=;
-        b=eR9B63r9PTWSRQRF4HENp+yCDJjP2BGnz+MyZ/kgON/3k+qX2doDACf3cO1hikDbM5
-         9p8fCSdVeWWJ4XaNzkcZl8za3dxYTcUzrdnEoxikqeA12Ia+duEBwWO0hQmnOYIh4fec
-         g0i/7nfYPxhXmP/RgrvkZAlVO42et6bbMpTNY8+7miwWjiUA8+TZCVsnRD9S7rCAP4Bb
-         r5FlFYWZMFCgN5UJ55E5GB1ITrs/IQ7ZWVVITFaBGRRFKwdx0UClC8FPoq57F5WDwYXU
-         AYN5FUedyz3JaR3oxRw2CoyjOhJ1iBC8w/nVfJwnMiNWOYkrvf2FCcFpfnRVr6ajE7Id
-         B4UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AqDJFMVyy+ZPy4OKfJDKdS0bxDg1ZZcxkSxs6/xipuE=;
-        b=fl5yOVbb8FHW0qHa9YH+kFYwJ44OH7FH6tt6HNJuYZ/jowU210ANZlXm4gDt7Zdq2R
-         8Q8QMre/ZGdSNlHKNPs8paAelffKVuxvKXl8pY+m2h/BNRIetyZH6scqC7+Xd6D8dFVV
-         5W3XNdIju+cMVemC1uLuRkvYdQgMWp0PA2ASdKGdFjF5Wq6Jyxm5jsopF/vs8oJltE+f
-         H7En5JtzWRt+VQsBxCr0Qq/H/zL6waYhe8V3sVBne+7cwiaFrpQ/5TdmIUMmm/HvFtPe
-         gZmZGBXgJtmSo5r6g/JNWqBD/pzxPVZw19087w0zmilVrZIRUCiNU4Dosjso0d6/oN8a
-         13Cg==
-X-Gm-Message-State: AJIora/kgYiwPe6HmLylxv1j6xYUyF6DinKWNSL6qp/UTZKf+pWB/tZP
-        PurI7pew4FQ2N3CfPDWAozJ1LBOsf/QzO3BPUcpLFuCqQ1gBpg==
-X-Google-Smtp-Source: AGRyM1u+B2OnfrqZ49Q8hgnhE5RUUMQb4XCxVLk91YgtsKVCjcPudRH6gqvN1joBMHtNi3Gu0IzXbrXrEyMIMurgWIE=
-X-Received: by 2002:a65:4c0b:0:b0:415:d3a4:44d1 with SMTP id
- u11-20020a654c0b000000b00415d3a444d1mr20575176pgq.191.1658954359746; Wed, 27
- Jul 2022 13:39:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220727060856.2370358-1-kafai@fb.com> <20220727060909.2371812-1-kafai@fb.com>
- <YuFsHaTIu7dTzotG@google.com> <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 27 Jul 2022 13:39:08 -0700
-Message-ID: <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
- sk lock when called from bpf
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S229924AbiG0Umk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 16:42:40 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C3250057;
+        Wed, 27 Jul 2022 13:42:40 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RFBmp7019410;
+        Wed, 27 Jul 2022 13:42:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=p1LukDoioqAOEZrRqXtv8B1zdZ2tCdYyYi5JHceByO0=;
+ b=p23YyEIuLlG8lwuoDbryVQ5ulxsEMM4WynlyLlfxllhEh683zF6mDjYl2qro1nw5/A0k
+ f/v+thKY9M6XbaTeGH7Cphmr/HdapGUhCYx4bozvqoxdByYcC+NVrQdoDcQq0dMfpt2j
+ ZrdloDOk0jMvnXmTMCH7kuIxbeVK6JDBrsk= 
+Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2048.outbound.protection.outlook.com [104.47.74.48])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hhxbx1rn0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 13:42:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mGA2Im1mda/MrbkXdkSj9TxIUvZAMRx+HvvhDi7MRLQZO25fupgz38KiVIliCp6ABP1ZlVaFtFFab/Ezou1sL2mK+9U+/hlOYBZmFg4YLJhoRDgawvrTKuBZjKSvqLXQQojKeo1V8Y7JzsDvxAqqvahZD3YX3q7OZjkRHBhOmIatdfrl67queHi59JI45PdCq7EL/jIdwORiloEkAUjRxaeqI0nDLE9xFLYmpHcwVMFDwoPFTBj0al3L3iNa2oJQ9RMygjUU9QCOx+io7/NYyHUrfoiGwjmKouCmr+QcgXpPKFpRZ5qxebGyL0Vmhvyc4J5lmnCiKxlaZsua5pPTOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p1LukDoioqAOEZrRqXtv8B1zdZ2tCdYyYi5JHceByO0=;
+ b=SJxmdaXjLu8WcqdVIOq9Jq78dIfpix1ODu+vIQpnSxYvN7rVMd/+swyn+xyVqQlco+6T8GdS/GM98jexKNLUWbck2vCwjhJV77O38uWYWIb9lYX/LKQIRlme/QavjhCIHFRk2M83oKH5tpYNV9XpbkcpO+IuZyr2X+KFezYbPIYl61a5W+tv19QasHk4knN8VLzXuDgx+c76CmPupKaGXzJbdjN8Ko4vUMhIwLz9ftz9jAiQ9g2tTtDYvpMGJPVA2e29M0+RkP+qItDjWdnvQcDIapyeIUw3EpK+ftKiQj+KVJg+naPSRRpY1n7feNGzbW8cNctPRG90ftVs1kuzkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by DM6PR15MB3289.namprd15.prod.outlook.com (2603:10b6:5:165::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.25; Wed, 27 Jul
+ 2022 20:42:14 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::4428:3a1e:4625:3a7a]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::4428:3a1e:4625:3a7a%6]) with mapi id 15.20.5482.010; Wed, 27 Jul 2022
+ 20:42:14 +0000
+Date:   Wed, 27 Jul 2022 13:42:06 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
         Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next 01/14] net: Change sock_setsockopt from taking
+ sock ptr to sk ptr
+Message-ID: <20220727204206.fhiamb66c3sljhg4@kafai-mbp.dhcp.thefacebook.com>
+References: <20220727060856.2370358-1-kafai@fb.com>
+ <20220727060902.2370689-1-kafai@fb.com>
+ <a9a3e00db4764ffcaf3324046d736b76@AcuMS.aculab.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a9a3e00db4764ffcaf3324046d736b76@AcuMS.aculab.com>
+X-ClientProxiedBy: BYAPR06CA0036.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::49) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 37c31a37-2291-4052-f6af-08da70107caf
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3289:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ke7iC0odGg6lFpMhiqHFl23a/WAMkEQ1Z3Gc+evl+BRK3iB3QMGu4dhhqKot2Yy6JR4mW61IHKkMU9TBejrQSt2hVlxDkhmy8qvlT6N6Kv+2MjYZv5EikNnX7JlrbdHuXF4PfWToCuFYC0oingGFMVVfgg6ZEVaiUr35DrzYvhtZDKUxFc9s/FwnTRCgxP8Bf6LjF67o8iSrQpsLJnWsYYTQJLQdDaiilP7PRRSJEYzskFd0VT8Ez784+NjwNkoZaXTWdiIk+qsv5BBxmKYiyeHBpVtxktUScFGW1a9kBNG5WZMcgP2Rt6/jJ16PUvTcf33jltSNydGmQkEU9DET3ciosi3QK4b+Jt+q5Ztko9OrxN9BfM68GjL3Kkagc9wPr/pUBL5IR1//PY6DRAwq4Z9evZr6T8VcyU2qTy3nVjNvv6cGx2JjcEX2TafeHZ+ytVowFHT4bweWxRDMLYozx1ONp0T1Ah6q9Uj8tCvwq+Mx/L1sa6dgUNHH38HXmmmauR/xJVRulUAgshQrix49NaV26Cf6TUkU6s6b7D/FXsg+7CWSEXipP/Q9HZgNacpp5g5oT4dvyBBmqMEk0U8nBELR/xJEiBsT9aitnEgQGdzlZfvwziOXGml7oGGdEXlSD5qtwGknLjksT0iYX88RYP9rZpOq0vYXj+FOk3s3a8f7Kh+1ohzvpA6WmdUWUlzE0Qh0QXJhWSq2wUPHfH90jD16o0I3+r+nHd3GAAiyDCK1ZFfN1uLuK6XgHwijZK93
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(39860400002)(396003)(136003)(346002)(6916009)(2906002)(54906003)(41300700001)(86362001)(1076003)(316002)(6666004)(5660300002)(66476007)(478600001)(6506007)(38100700002)(6486002)(7416002)(8936002)(6512007)(4326008)(8676002)(66946007)(83380400001)(186003)(9686003)(52116002)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WlMvcVM6oJNC+/6sJiaweLMhzSJqFrvzn4rRyeHs1RMvoUhP+gJzSXfsNRie?=
+ =?us-ascii?Q?z+AcGC31ryCT1CU96OONpMcYQCGsD1NkJnaiswjvJ+9WDXoIJavQr6tDvFlQ?=
+ =?us-ascii?Q?bF4W0KvIg6q6RKLINxeKzfCAXkKn7lvU1nYRZU5N3202vQNqmbREiBKDZv5K?=
+ =?us-ascii?Q?qso50revpLqZjX7w6n4WP/k26bgC3U/GmJLxT0os4rET92ZVbHMM+a378i0B?=
+ =?us-ascii?Q?m0qYnJUXt5CZrCGh2stfz6E4t1+x/mXLAYkkCavAPzHMV0x7E+Dld57Md/Ta?=
+ =?us-ascii?Q?/LuFGC3Om1dSEtVGaNuw2Oqbm5xTc++n7tW/1UQlW7v1nSAUzz79GYIJo7bK?=
+ =?us-ascii?Q?7erp6v3ypXvaTv9bd3LOXnlc1En9Sub/1wQJgo85/nowf1M65zSFSjBa0b0N?=
+ =?us-ascii?Q?eJqP/ABWIns5LVRHhEFF9nCXe8+HEfHp55FDumdQ37PDIhtSTzMV32yccgbn?=
+ =?us-ascii?Q?XOONfVENFWoddUA2pmH/Am2RX42SEi3842IUYbZdMSemJijmNHpBgCX1LKpc?=
+ =?us-ascii?Q?hzdllJfWmmkfdKCbluthPoeti2b9ILYhLPcvANDky0u3RB9l/ctkYj9RW6QK?=
+ =?us-ascii?Q?pHPDes9uMBqRgQvc80tepcDsMhR4s9wOPlNG3BDQTAcP2KAE5Lx1de2IcpH3?=
+ =?us-ascii?Q?4AEnHbsUTCFVRkuii+ObfjPYsS9wECF7OTxnTFdtgCuAlEhcs3OFk3ZdvVz9?=
+ =?us-ascii?Q?mrWJf9R4QJvma5XkgWQZUzxFdcWbjxTP2FZxNl6KGRQBNUyLdtn0hlV75eAq?=
+ =?us-ascii?Q?bwzBXNeu1r4pV20yaMs33mYJwazvbge7BHnbVyJ4C9em4BIFbRp312yN880F?=
+ =?us-ascii?Q?RF0Y04epDJcVS4nS3Npwi9KiyVQ7swY2z2epoJYTMu5bg1hpw6fGs5l6wUvr?=
+ =?us-ascii?Q?9sObcQflUa8f0poY3YsJhqRVgNAeEhdRgf5wJYUHcKelP0NUpyERx6MO0Q9V?=
+ =?us-ascii?Q?LmHJ+uXrN+errCUNQfCbSsXD0DCvDprJ28eeCm0BRbY8c6fGmRqKO+JuznGm?=
+ =?us-ascii?Q?Hq+9L3uMttcEIv6mejVrpyriDkkeW9MTKb396QK/1OOym+bwBmiyzctuxFdd?=
+ =?us-ascii?Q?8SA3GgKfTlxpI9go8m+DEyRblresqKDu8ge0jy0YKYE889tMAYDYI8nejyD2?=
+ =?us-ascii?Q?vlbAv6+v9O345Dckz2VtSnTHOEh9veRHgIDl9cj8mY0qT6yWKNDC5GX/IZ6x?=
+ =?us-ascii?Q?tmMIAuubv6X9Vo/VOp0X387/cpzzhLzknGfVye14nCdyXjA2KnklrZpshZdh?=
+ =?us-ascii?Q?N+ylPwfly9zVl3TnB51kMrOsqZkc+4U6sFsJwZZ9wWSsTgTTGIgrI2iMdSwS?=
+ =?us-ascii?Q?oR9SjlRVvY0Mlb2ZMQuwQo9rV4/hN6zMPBrFDF8MRZ9jrznSCCsRDl+FXYp4?=
+ =?us-ascii?Q?Fi4k+/2raFtmqUaqt5JyZ2Zy4LNIw9m6XvtAzPRDtTKU6lJJZeejDQDJaRtn?=
+ =?us-ascii?Q?Aowyhli2PGBoYhwf/Fvl3hY2lshZPJwLzidHc/BQBLB/i4M3XtanYFwj1s8Y?=
+ =?us-ascii?Q?07RzqApRuxX6Be9OOQ6jjrdztpBDFlWYOvSExu8LJ7dEKFKJ9yWPETtj7Q6p?=
+ =?us-ascii?Q?KHVJnBah52dplQ/WysRSayK3AAGQaObkfK+kfGNTxoO5YFYHEJGT6s8AR8Gx?=
+ =?us-ascii?Q?KQ=3D=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37c31a37-2291-4052-f6af-08da70107caf
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 20:42:14.1759
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 250yqghVKYw+zZPpo5zpq2rA25bPngfM5ekC/6OJjT86rncWDXRMiLF4otdOvZOo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3289
+X-Proofpoint-GUID: g6fMU2UO_R3AA5DI9LlOEvAc4aMoDEsw
+X-Proofpoint-ORIG-GUID: g6fMU2UO_R3AA5DI9LlOEvAc4aMoDEsw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_08,2022-07-27_01,2022-06-22_01
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 11:37 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Wed, Jul 27, 2022 at 09:47:25AM -0700, sdf@google.com wrote:
-> > On 07/26, Martin KaFai Lau wrote:
-> > > Most of the codes in bpf_setsockopt(SOL_SOCKET) are duplicated from
-> > > the sock_setsockopt().  The number of supported options are
-> > > increasing ever and so as the duplicated codes.
-> >
-> > > One issue in reusing sock_setsockopt() is that the bpf prog
-> > > has already acquired the sk lock.  sockptr_t is useful to handle this.
-> > > sockptr_t already has a bit 'is_kernel' to handle the kernel-or-user
-> > > memory copy.  This patch adds a 'is_bpf' bit to tell if sk locking
-> > > has already been ensured by the bpf prog.
-> >
-> > Why not explicitly call it is_locked/is_unlocked? I'm assuming, at some
-> > point,
-> is_locked was my initial attempt.  The bpf_setsockopt() also skips
-> the ns_capable() check, like in patch 3.  I ended up using
-> one is_bpf bit here to do both.
+On Wed, Jul 27, 2022 at 08:11:26AM +0000, David Laight wrote:
+> From: Martin KaFai Lau
+> > Sent: 27 July 2022 07:09
+> > 
+> > A latter patch refactors bpf_setsockopt(SOL_SOCKET) with the
+> > sock_setsockopt() to avoid code duplication and code
+> > drift between the two duplicates.
+> > 
+> > The current sock_setsockopt() takes sock ptr as the argument.
+> > The very first thing of this function is to get back the sk ptr
+> > by 'sk = sock->sk'.
+> > 
+> > bpf_setsockopt() could be called when the sk does not have
+> > a userspace owner.  Meaning sk->sk_socket is NULL.  For example,
+> > when a passive tcp connection has just been established.  Thus,
+> > it cannot use the sock_setsockopt(sk->sk_socket) or else it will
+> > pass a NULL sock ptr.
+> 
+> I'm intrigued, I've some code that uses sock_create_kern() to create
+> sockets without a userspace owner - I'd have though bpf is doing
+> much the same.
+> 
+> I end up doing:
+>         if (level == SOL_SOCKET)
+>                 err = sock_setsockopt(sock, level, optname, koptval, optlen);
+>         else
+>                 err = sock->ops->setsockopt(sock, level, optname, koptval,
+>                                             optlen);
+> to set options.
+> (This code used to use kern_setsockopt() - but that got removed.)
+> 
+> I'd have though bpf would need similar code??
+By no userspace owner, I was referring a sk has not been accept()-ed by
+the userspace yet instead of a 'struct socket *sock' created for
+the kernel internal use.  After another thought, that tcp_sock
+is sort of owned by the listen sk,  I will rephrase the commit
+message to avoid the confusion.
 
-Yeah, sorry, I haven't read the whole series before I sent my first
-reply. Let's discuss it here.
-
-This reminds me of ns_capable in __inet_bind where we also had to add
-special handling.
-
-In general, not specific to the series, I wonder if we want some new
-in_bpf() context indication and bypass ns_capable() from those
-contexts?
-Then we can do things like:
-
-  if (sk->sk_bound_dev_if && !in_bpf() && !ns_capable(net->user_ns,
-CAP_NET_RAW))
-    return ...;
-
-Or would it make things more confusing?
-
-
-
-> > we can have code paths in bpf where the socket has been already locked by
-> > the stack?
-> hmm... You meant the opposite, like the bpf hook does not have the
-> lock pre-acquired before the bpf prog gets run and sock_setsockopt()
-> should do lock_sock() as usual?
->
-> I was thinking a likely situation is a bpf 'sleepable' hook does not
-> have the lock pre-acquired.  In that case, the bpf_setsockopt() could
-> always acquire the lock first but it may turn out to be too
-> pessmissitic for the future bpf_[G]etsockopt() refactoring.
->
-> or we could do this 'bit' break up (into one is_locked bit
-> for locked and one is_bpf to skip-capable-check).  I was waiting until a real
-> need comes up instead of having both bits always true now.  I don't mind to
-> add is_locked now since the bpf_lsm_cgroup may come to sleepable soon.
-> I can do this in the next spin.
+bpf prog does not have a 'sock' ptr because the sock
+has not been created yet.
