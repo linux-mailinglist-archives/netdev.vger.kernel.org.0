@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADEB15825AA
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75BF95825AD
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 13:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbiG0Lgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 07:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
+        id S232410AbiG0Lgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 07:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbiG0LgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:36:05 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26CB4A80B;
-        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id oy13so30979846ejb.1;
-        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
+        with ESMTP id S232289AbiG0LgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 07:36:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B184A819;
+        Wed, 27 Jul 2022 04:35:55 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ez10so30827138ejc.13;
+        Wed, 27 Jul 2022 04:35:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=n3uP0n8WEVP/ZpEVjoeqf0ElYkVUtFFVT2Yra7D28lI=;
-        b=kqcJLz/9hF1qtx2ihYL5eO6o9LHFvGgT0acTr+bXc+uZGdhFG2guI60/3CJ8i1Womk
-         OmIz/05W67SCxNjxPF/vAS79GBfQ1/9Is8qeJooxcQj7jrbTcmxwblgh6aoiPdXGM7gt
-         FS4DVk/SIdfFXqKiPcu51Ffv6ncM97uU3LDwq9neR01+Uy8QpHb6P+59bZL4Q0DZ1o6H
-         VfKoqxq/f9JdH7+e5ZHMZIkCoP49P9n2e0MKWcQFd1lw/kcFEs0X9gpJ7SgQ9MYKP1wf
-         5rKXbc/gQUMNM+EWue7eIP6aR9wngXmlPHjFth8IPn4oCrLg532FAkoiOP7oGdCIfmAf
-         cwEA==
+        bh=4YypBtO7DBxDIqaV2gvYUg5aIwcrwgavrc6e5GQ6Kf8=;
+        b=ql+C+HwjAJjtdveNobuTAyDgyj2jIkqv31cLrtYSK4FAdcOgyS2bXKs8Q/npqKfKxg
+         1nVbjZV2MIxC9NlwouxavMPZjw5huhWE6EPeKTwNbck9xfQPECVPQ5jREKVb6lOUVO1z
+         1pf+4KpfmerMbGTeqlPVJPNihRIMV2XG5PYxcsqWHh/5appqK3oOkbzgEWnR724JqzuN
+         /2rtHrLsGpHYAClP4isEr7UIaEQEL4KqXCcVvxv1cyo+GHr4iVoNK/KHBsZfpJgkRvvI
+         +pOnWeqnxfiHHDEHF+q3OSxfCgYQTWqbDb0DFCCb/T+lLuYwE7IWui+T0gkSJ1rHsSBZ
+         6jJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=n3uP0n8WEVP/ZpEVjoeqf0ElYkVUtFFVT2Yra7D28lI=;
-        b=f/vax0LiVPqzq4nrEBjgmGMnXkI0gviGpyBZJ7Cvw/ZBQ/csdvteSbVcXxX/lnRPiZ
-         XCY/NIbMb5+84BGn+6xCIuii+Lon4wh9w5Q4OTgMDZl0EwVabmbWKPfHtEN940+SW+y6
-         yh7IT886oSTqxVtvG3aEvdseJBWW2KF6Q9IjVpAVzxL/DkfKKYp3XghklW83nUqZUssO
-         evGavSLs1bZX+g1lJ83WcUBd04CnfvfLIAKQcJahGc4vafI0x+Qz6wqH9RaoEuxJf+6I
-         PZlfvFusm7NSmvlCja1KIghQaTL4G2L5jRfUvzGSdNZCD30YPzO6oJyviDfr774FzjPr
-         Th3Q==
-X-Gm-Message-State: AJIora8ZCAkeHaAPxSAdCeFF3fIRt6CE/Adw2SRj63nBr7j1HRUAFoVG
-        9P7Bsb/WoyTMRNLrGblPx1k=
-X-Google-Smtp-Source: AGRyM1vuVo2xh2ZLfeu7unwdr9ab0YNqyl8RO9XMXCBu0B604K18Ir4b53V5jKkd9bBlB2fGUWT2Qg==
-X-Received: by 2002:a17:907:7394:b0:72b:44ff:5cec with SMTP id er20-20020a170907739400b0072b44ff5cecmr17721686ejc.670.1658921751950;
-        Wed, 27 Jul 2022 04:35:51 -0700 (PDT)
+        bh=4YypBtO7DBxDIqaV2gvYUg5aIwcrwgavrc6e5GQ6Kf8=;
+        b=jvw1EuKYFU6RUttXI1ybaij3xR4TYX7sd1xwgj6ZOVsmIUJQtwWQJDRRMR7UDIUV81
+         pfA/Rg7uqPK6aBegA24tzDWbxPrk31B5k3gac2SQUKdFNAWX123M8urzHEdaG4yo0wzN
+         AUEPMq37v3VxgBu+7n6oa9o14RQoGGgcQ6/kzKm7O5lrM3vI91rEEooq0enJMi9qv+yA
+         7LQApauCmofnMISFXNwhIWePSn7OVqzXJnRmudrIqROrWqJX0z9+BtVlPpYNqTQT3Mw7
+         RrFbuHv6ph6OeMVgFM4FxtDgNKaLRfcr/2jexuejyMvCMNxYrBYV/zf7JQuAKUJ1BG1t
+         o1JA==
+X-Gm-Message-State: AJIora98busP56r8HxlrkT9O3n6eooiJ6h7EhXVDk6Gb3W5xZC/dy83F
+        vuBbuSAz47FTLrGJGlSyeXjOB5yKbUEGok63
+X-Google-Smtp-Source: AGRyM1uGkbcW1tPhlVZArEULqYo1sYQarQDmCTFaj8cfhQy5263gBZbUg0ledRuq964m2YyZOWpKxw==
+X-Received: by 2002:a17:907:a218:b0:72b:8aae:3f8c with SMTP id qp24-20020a170907a21800b0072b8aae3f8cmr17708077ejc.191.1658921753402;
+        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
 Received: from localhost.localdomain (c105-182.i13-27.melita.com. [94.17.105.182])
-        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.50
+        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 04:35:51 -0700 (PDT)
+        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -60,9 +60,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v5 08/14] net: dsa: qca8k: move bridge functions to common code
-Date:   Wed, 27 Jul 2022 13:35:17 +0200
-Message-Id: <20220727113523.19742-9-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v5 09/14] net: dsa: qca8k: move set age/MTU/port enable/disable functions to common code
+Date:   Wed, 27 Jul 2022 13:35:18 +0200
+Message-Id: <20220727113523.19742-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220727113523.19742-1-ansuelsmth@gmail.com>
 References: <20220727113523.19742-1-ansuelsmth@gmail.com>
@@ -78,247 +78,229 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The same bridge functions are used by drivers based on qca8k family
-switch. Move them to common code to make them accessible also by other
-drivers.
+The same set age, MTU and port enable/disable function are used by
+driver based on qca8k family switch.
+Move them to common code to make them accessible also by other drivers.
 While at it also drop unnecessary qca8k_priv cast for void pointers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c   | 93 ------------------------------
- drivers/net/dsa/qca/qca8k-common.c | 93 ++++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  9 +++
- 3 files changed, 102 insertions(+), 93 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 88 ------------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 85 +++++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        | 12 ++++
+ 3 files changed, 97 insertions(+), 88 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 9729aabbd83d..11d3116733af 100644
+index 11d3116733af..1815863502c9 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1898,99 +1898,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
- 	return ret;
+@@ -1908,94 +1908,6 @@ qca8k_port_fast_age(struct dsa_switch *ds, int port)
+ 	mutex_unlock(&priv->reg_mutex);
  }
  
--static void
--qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+-static int
+-qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
 -{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	u32 stp_state;
+-	struct qca8k_priv *priv = ds->priv;
+-	unsigned int secs = msecs / 1000;
+-	u32 val;
 -
--	switch (state) {
--	case BR_STATE_DISABLED:
--		stp_state = QCA8K_PORT_LOOKUP_STATE_DISABLED;
--		break;
--	case BR_STATE_BLOCKING:
--		stp_state = QCA8K_PORT_LOOKUP_STATE_BLOCKING;
--		break;
--	case BR_STATE_LISTENING:
--		stp_state = QCA8K_PORT_LOOKUP_STATE_LISTENING;
--		break;
--	case BR_STATE_LEARNING:
--		stp_state = QCA8K_PORT_LOOKUP_STATE_LEARNING;
--		break;
--	case BR_STATE_FORWARDING:
--	default:
--		stp_state = QCA8K_PORT_LOOKUP_STATE_FORWARD;
--		break;
--	}
+-	/* AGE_TIME reg is set in 7s step */
+-	val = secs / 7;
 -
--	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
--		  QCA8K_PORT_LOOKUP_STATE_MASK, stp_state);
+-	/* Handle case with 0 as val to NOT disable
+-	 * learning
+-	 */
+-	if (!val)
+-		val = 1;
+-
+-	return regmap_update_bits(priv->regmap, QCA8K_REG_ATU_CTRL, QCA8K_ATU_AGE_TIME_MASK,
+-				  QCA8K_ATU_AGE_TIME(val));
 -}
 -
--static int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
--				  struct dsa_bridge bridge,
--				  bool *tx_fwd_offload,
--				  struct netlink_ext_ack *extack)
+-static int
+-qca8k_port_enable(struct dsa_switch *ds, int port,
+-		  struct phy_device *phy)
 -{
 -	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	int port_mask, cpu_port;
--	int i, ret;
 -
--	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
--	port_mask = BIT(cpu_port);
+-	qca8k_port_set_status(priv, port, 1);
+-	priv->port_enabled_map |= BIT(port);
 -
--	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
--		if (dsa_is_cpu_port(ds, i))
--			continue;
--		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
--			continue;
--		/* Add this port to the portvlan mask of the other ports
--		 * in the bridge
--		 */
--		ret = regmap_set_bits(priv->regmap,
--				      QCA8K_PORT_LOOKUP_CTRL(i),
--				      BIT(port));
--		if (ret)
--			return ret;
--		if (i != port)
--			port_mask |= BIT(i);
--	}
+-	if (dsa_is_user_port(ds, port))
+-		phy_support_asym_pause(phy);
 -
--	/* Add all other ports to this ports portvlan mask */
--	ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
--			QCA8K_PORT_LOOKUP_MEMBER, port_mask);
+-	return 0;
+-}
+-
+-static void
+-qca8k_port_disable(struct dsa_switch *ds, int port)
+-{
+-	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+-
+-	qca8k_port_set_status(priv, port, 0);
+-	priv->port_enabled_map &= ~BIT(port);
+-}
+-
+-static int
+-qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+-{
+-	struct qca8k_priv *priv = ds->priv;
+-	int ret;
+-
+-	/* We have only have a general MTU setting.
+-	 * DSA always set the CPU port's MTU to the largest MTU of the slave
+-	 * ports.
+-	 * Setting MTU just for the CPU port is sufficient to correctly set a
+-	 * value for every port.
+-	 */
+-	if (!dsa_is_cpu_port(ds, port))
+-		return 0;
+-
+-	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
+-	 * the switch panics.
+-	 * Turn off both cpu ports before applying the new value to prevent
+-	 * this.
+-	 */
+-	if (priv->port_enabled_map & BIT(0))
+-		qca8k_port_set_status(priv, 0, 0);
+-
+-	if (priv->port_enabled_map & BIT(6))
+-		qca8k_port_set_status(priv, 6, 0);
+-
+-	/* Include L2 header / FCS length */
+-	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu + ETH_HLEN + ETH_FCS_LEN);
+-
+-	if (priv->port_enabled_map & BIT(0))
+-		qca8k_port_set_status(priv, 0, 1);
+-
+-	if (priv->port_enabled_map & BIT(6))
+-		qca8k_port_set_status(priv, 6, 1);
 -
 -	return ret;
 -}
 -
--static void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
--				    struct dsa_bridge bridge)
+-static int
+-qca8k_port_max_mtu(struct dsa_switch *ds, int port)
 -{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	int cpu_port, i;
--
--	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
--
--	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
--		if (dsa_is_cpu_port(ds, i))
--			continue;
--		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
--			continue;
--		/* Remove this port to the portvlan mask of the other ports
--		 * in the bridge
--		 */
--		regmap_clear_bits(priv->regmap,
--				  QCA8K_PORT_LOOKUP_CTRL(i),
--				  BIT(port));
--	}
--
--	/* Set the cpu port to be the only one in the portvlan mask of
--	 * this port
--	 */
--	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
--		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
+-	return QCA8K_MAX_MTU;
 -}
 -
- static void
- qca8k_port_fast_age(struct dsa_switch *ds, int port)
- {
+ static int
+ qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
+ 		      u16 port_mask, u16 vid)
 diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index c662fdbae51f..13069c9ba3e6 100644
+index 13069c9ba3e6..e25df4b23b9a 100644
 --- a/drivers/net/dsa/qca/qca8k-common.c
 +++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/netdevice.h>
- #include <net/dsa.h>
-+#include <linux/if_bridge.h>
- 
- #include "qca8k.h"
- 
-@@ -275,3 +276,95 @@ int qca8k_get_mac_eee(struct dsa_switch *ds, int port,
- 	/* Nothing to do on the port's MAC */
- 	return 0;
+@@ -368,3 +368,88 @@ void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
+ 	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
+ 		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
  }
 +
-+void qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
++int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
 +{
 +	struct qca8k_priv *priv = ds->priv;
-+	u32 stp_state;
++	unsigned int secs = msecs / 1000;
++	u32 val;
 +
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+		stp_state = QCA8K_PORT_LOOKUP_STATE_DISABLED;
-+		break;
-+	case BR_STATE_BLOCKING:
-+		stp_state = QCA8K_PORT_LOOKUP_STATE_BLOCKING;
-+		break;
-+	case BR_STATE_LISTENING:
-+		stp_state = QCA8K_PORT_LOOKUP_STATE_LISTENING;
-+		break;
-+	case BR_STATE_LEARNING:
-+		stp_state = QCA8K_PORT_LOOKUP_STATE_LEARNING;
-+		break;
-+	case BR_STATE_FORWARDING:
-+	default:
-+		stp_state = QCA8K_PORT_LOOKUP_STATE_FORWARD;
-+		break;
-+	}
++	/* AGE_TIME reg is set in 7s step */
++	val = secs / 7;
 +
-+	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-+		  QCA8K_PORT_LOOKUP_STATE_MASK, stp_state);
++	/* Handle case with 0 as val to NOT disable
++	 * learning
++	 */
++	if (!val)
++		val = 1;
++
++	return regmap_update_bits(priv->regmap, QCA8K_REG_ATU_CTRL,
++				  QCA8K_ATU_AGE_TIME_MASK,
++				  QCA8K_ATU_AGE_TIME(val));
 +}
 +
-+int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
-+			   struct dsa_bridge bridge,
-+			   bool *tx_fwd_offload,
-+			   struct netlink_ext_ack *extack)
++int qca8k_port_enable(struct dsa_switch *ds, int port,
++		      struct phy_device *phy)
 +{
 +	struct qca8k_priv *priv = ds->priv;
-+	int port_mask, cpu_port;
-+	int i, ret;
 +
-+	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
-+	port_mask = BIT(cpu_port);
++	qca8k_port_set_status(priv, port, 1);
++	priv->port_enabled_map |= BIT(port);
 +
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
-+		if (dsa_is_cpu_port(ds, i))
-+			continue;
-+		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
-+			continue;
-+		/* Add this port to the portvlan mask of the other ports
-+		 * in the bridge
-+		 */
-+		ret = regmap_set_bits(priv->regmap,
-+				      QCA8K_PORT_LOOKUP_CTRL(i),
-+				      BIT(port));
-+		if (ret)
-+			return ret;
-+		if (i != port)
-+			port_mask |= BIT(i);
-+	}
++	if (dsa_is_user_port(ds, port))
++		phy_support_asym_pause(phy);
 +
-+	/* Add all other ports to this ports portvlan mask */
-+	ret = qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-+			QCA8K_PORT_LOOKUP_MEMBER, port_mask);
++	return 0;
++}
++
++void qca8k_port_disable(struct dsa_switch *ds, int port)
++{
++	struct qca8k_priv *priv = ds->priv;
++
++	qca8k_port_set_status(priv, port, 0);
++	priv->port_enabled_map &= ~BIT(port);
++}
++
++int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++{
++	struct qca8k_priv *priv = ds->priv;
++	int ret;
++
++	/* We have only have a general MTU setting.
++	 * DSA always set the CPU port's MTU to the largest MTU of the slave
++	 * ports.
++	 * Setting MTU just for the CPU port is sufficient to correctly set a
++	 * value for every port.
++	 */
++	if (!dsa_is_cpu_port(ds, port))
++		return 0;
++
++	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
++	 * the switch panics.
++	 * Turn off both cpu ports before applying the new value to prevent
++	 * this.
++	 */
++	if (priv->port_enabled_map & BIT(0))
++		qca8k_port_set_status(priv, 0, 0);
++
++	if (priv->port_enabled_map & BIT(6))
++		qca8k_port_set_status(priv, 6, 0);
++
++	/* Include L2 header / FCS length */
++	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu +
++			  ETH_HLEN + ETH_FCS_LEN);
++
++	if (priv->port_enabled_map & BIT(0))
++		qca8k_port_set_status(priv, 0, 1);
++
++	if (priv->port_enabled_map & BIT(6))
++		qca8k_port_set_status(priv, 6, 1);
 +
 +	return ret;
 +}
 +
-+void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
-+			     struct dsa_bridge bridge)
++int qca8k_port_max_mtu(struct dsa_switch *ds, int port)
 +{
-+	struct qca8k_priv *priv = ds->priv;
-+	int cpu_port, i;
-+
-+	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
-+
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
-+		if (dsa_is_cpu_port(ds, i))
-+			continue;
-+		if (!dsa_port_offloads_bridge(dsa_to_port(ds, i), &bridge))
-+			continue;
-+		/* Remove this port to the portvlan mask of the other ports
-+		 * in the bridge
-+		 */
-+		regmap_clear_bits(priv->regmap,
-+				  QCA8K_PORT_LOOKUP_CTRL(i),
-+				  BIT(port));
-+	}
-+
-+	/* Set the cpu port to be the only one in the portvlan mask of
-+	 * this port
-+	 */
-+	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
-+		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
++	return QCA8K_MAX_MTU;
 +}
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index c73cbdfc6ac6..edb2b23a02b9 100644
+index edb2b23a02b9..e7d4df253b8c 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -454,4 +454,13 @@ int qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset);
- int qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee);
- int qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
+@@ -463,4 +463,16 @@ int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
+ void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			     struct dsa_bridge bridge);
  
-+/* Common bridge function */
-+void qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
-+int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
-+			   struct dsa_bridge bridge,
-+			   bool *tx_fwd_offload,
-+			   struct netlink_ext_ack *extack);
-+void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
-+			     struct dsa_bridge bridge);
++/* Common port enable/disable function */
++int qca8k_port_enable(struct dsa_switch *ds, int port,
++		      struct phy_device *phy);
++void qca8k_port_disable(struct dsa_switch *ds, int port);
++
++/* Common MTU function */
++int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu);
++int qca8k_port_max_mtu(struct dsa_switch *ds, int port);
++
++/* Common fast age function */
++int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs);
 +
  #endif /* __QCA8K_H */
 -- 
