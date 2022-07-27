@@ -2,54 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D91D65822DF
-	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A23325822EF
+	for <lists+netdev@lfdr.de>; Wed, 27 Jul 2022 11:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230201AbiG0JOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 05:14:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S231599AbiG0JUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 05:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbiG0JN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:13:59 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F78474E2;
-        Wed, 27 Jul 2022 02:11:18 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lt7K923Syz9sv0;
-        Wed, 27 Jul 2022 17:10:05 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 17:11:15 +0800
-Subject: Re: [PATCH net v2] ipv6/addrconf: fix a null-ptr-deref bug for
- ip6_ptr
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220726115028.3055296-1-william.xuanziyang@huawei.com>
- <CANn89iJNHhq9zbmL2DF-up_hBRHuwkPiNUpMS+LHoumy5ohQZA@mail.gmail.com>
- <48fd2345-ef86-da0d-c471-c576aa93d9f5@kernel.org>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <b63eeb55-df38-618a-d7af-91b18f1d6f0f@huawei.com>
-Date:   Wed, 27 Jul 2022 17:11:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S230521AbiG0JUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 05:20:05 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08D937FB7;
+        Wed, 27 Jul 2022 02:20:04 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id h8so23307133wrw.1;
+        Wed, 27 Jul 2022 02:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6GV9r+xMhkzrix1zVwuoFAT+2lz1nxuiG9jX5dFRLKs=;
+        b=jBli6wkJvQPrlTu9I8L+7p+WAj9MTjQl4w5ECDX5sx3eT2wtgzR6bvLDoHk0lyZdCt
+         gonJKGM73VpyIANTBCwXOcgi7mT1+Y6P2CkLcessQmvcQYdW2V3HB4d/rX/MSYStA5i1
+         snT/HQWrN8Ep6AR+ITz8QEd2DP6uuEmblbehyVhnxwFb0p0iolZiKLtVzJexu7xvRLxA
+         vdI5B6RoEFwOl5TaBfcmhMk7phrzjekKTjPkyaHE8lizwcSYTUJMhzizGoKXpuWAqPLf
+         2lgDlMaQeYLxq63+shVdWeKAfaamT9G47fztwMlDbz41Y+RUIUXqznkc01t6W/WrpHTk
+         u7Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6GV9r+xMhkzrix1zVwuoFAT+2lz1nxuiG9jX5dFRLKs=;
+        b=smaTSizG3aGUHe3fRagmbG++XVboZ1MCTN+k/WLXrq4njd6Q4EcrcdklHlBT8ctSzG
+         8xv09dSaTLCJR9EtYkXiXe2nVrISVa4i2LTJDCfaavDcZAJyIdIUOh/QnMsuWGABrDBl
+         WBeuPTo1b0ML59AUmIjNV3oWyzcWZqQR/AXb0yO0t4UPcGYQzN524WUDxvjIkF3p14Kn
+         5ywTInEg6n95PJHbGdEECkrWR077383XGDSn1XfT0CwV4hYxjnhTEq+/mEPjr5MHQHqL
+         FllUAHQkeUlnKcWFf78V28Y9iQwALE8QoECVKuq+107g3lk0hqRQBKGgMLYAMUprhUVC
+         DfDA==
+X-Gm-Message-State: AJIora9AsCPmzlqwq3ROeDZ/BttIobBJuxnidSgW9HxidDmSp0zRlV8Y
+        nAkPTSY8Lb6WAo4+cETNrRg=
+X-Google-Smtp-Source: AGRyM1thbs/2gKvh2iI5ibtm/dj3VoLVCC5dmvTSrymmc9mjWk+zXeucjYFrY4JIWFWw8/FbSV05zA==
+X-Received: by 2002:a5d:64ec:0:b0:21e:92fe:ac77 with SMTP id g12-20020a5d64ec000000b0021e92feac77mr7032343wri.24.1658913602956;
+        Wed, 27 Jul 2022 02:20:02 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:5b44])
+        by smtp.gmail.com with ESMTPSA id bi26-20020a05600c3d9a00b003a2eacc8179sm1740076wmb.27.2022.07.27.02.20.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 02:20:02 -0700 (PDT)
+Message-ID: <e4f4c89c-cdc5-2a37-c087-1c356a2a425a@gmail.com>
+Date:   Wed, 27 Jul 2022 10:18:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <48fd2345-ef86-da0d-c471-c576aa93d9f5@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v5 27/27] selftests/io_uring: test zerocopy send
 Content-Language: en-US
+To:     dust.li@linux.alibaba.com, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
+        kernel-team@fb.com
+References: <cover.1657643355.git.asml.silence@gmail.com>
+ <03d5ec78061cf52db420f88ed0b48eb8f47ce9f7.1657643355.git.asml.silence@gmail.com>
+ <20220727080101.GA14576@linux.alibaba.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <20220727080101.GA14576@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,125 +80,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 7/26/22 6:13 AM, Eric Dumazet wrote:
->> On Tue, Jul 26, 2022 at 1:50 PM Ziyang Xuan
->> <william.xuanziyang@huawei.com> wrote:
->>>
->>> Change net device's MTU to smaller than IPV6_MIN_MTU or unregister
->>> device while matching route. That may trigger null-ptr-deref bug
->>> for ip6_ptr probability as following.
->>>
->>> =========================================================
->>> BUG: KASAN: null-ptr-deref in find_match.part.0+0x70/0x134
->>> Read of size 4 at addr 0000000000000308 by task ping6/263
->>>
->>> CPU: 2 PID: 263 Comm: ping6 Not tainted 5.19.0-rc7+ #14
->>> Call trace:
->>>  dump_backtrace+0x1a8/0x230
->>>  show_stack+0x20/0x70
->>>  dump_stack_lvl+0x68/0x84
->>>  print_report+0xc4/0x120
->>>  kasan_report+0x84/0x120
->>>  __asan_load4+0x94/0xd0
->>>  find_match.part.0+0x70/0x134
->>>  __find_rr_leaf+0x408/0x470
->>>  fib6_table_lookup+0x264/0x540
->>>  ip6_pol_route+0xf4/0x260
->>>  ip6_pol_route_output+0x58/0x70
->>>  fib6_rule_lookup+0x1a8/0x330
->>>  ip6_route_output_flags_noref+0xd8/0x1a0
->>>  ip6_route_output_flags+0x58/0x160
->>>  ip6_dst_lookup_tail+0x5b4/0x85c
->>>  ip6_dst_lookup_flow+0x98/0x120
->>>  rawv6_sendmsg+0x49c/0xc70
->>>  inet_sendmsg+0x68/0x94
->>>
->>> Reproducer as following:
->>> Firstly, prepare conditions:
->>> $ip netns add ns1
->>> $ip netns add ns2
->>> $ip link add veth1 type veth peer name veth2
->>> $ip link set veth1 netns ns1
->>> $ip link set veth2 netns ns2
->>> $ip netns exec ns1 ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1
->>> $ip netns exec ns2 ip -6 addr add 2001:0db8:0:f101::2/64 dev veth2
->>> $ip netns exec ns1 ifconfig veth1 up
->>> $ip netns exec ns2 ifconfig veth2 up
->>> $ip netns exec ns1 ip -6 route add 2000::/64 dev veth1 metric 1
->>> $ip netns exec ns2 ip -6 route add 2001::/64 dev veth2 metric 1
->>>
->>> Secondly, execute the following two commands in two ssh windows
->>> respectively:
->>> $ip netns exec ns1 sh
->>> $while true; do ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1; ip -6 route add 2000::/64 dev veth1 metric 1; ping6 2000::2; done
->>>
->>> $ip netns exec ns1 sh
->>> $while true; do ip link set veth1 mtu 1000; ip link set veth1 mtu 1500; sleep 5; done
->>>
->>> It is because ip6_ptr has been assigned to NULL in addrconf_ifdown() firstly,
->>> then ip6_ignore_linkdown() accesses ip6_ptr directly without NULL check.
->>>
->>>         cpu0                    cpu1
->>> fib6_table_lookup
->>> __find_rr_leaf
->>>                         addrconf_notify [ NETDEV_CHANGEMTU ]
->>>                         addrconf_ifdown
->>>                         RCU_INIT_POINTER(dev->ip6_ptr, NULL)
->>> find_match
->>> ip6_ignore_linkdown
->>>
->>> So we can add NULL check for ip6_ptr before using in ip6_ignore_linkdown() to
->>> fix the null-ptr-deref bug.
->>>
->>> Fixes: 6d3d07b45c86 ("ipv6: Refactor fib6_ignore_linkdown")
->>
->> If we need to backport, I guess dcd1f572954f ("net/ipv6: Remove fib6_idev")
->> already had the bug.
-> 
-> Yes, that is the right Fixes commit.
+On 7/27/22 09:01, dust.li wrote:
 
-OK
+>> +static void do_test(int domain, int type, int protocol)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < IP_MAXPACKET; i++)
+>> +		payload[i] = 'a' + (i % 26);
+>> +	do_tx(domain, type, protocol);
+>> +}
+>> +
+>> +static void usage(const char *filepath)
+>> +{
+>> +	error(1, 0, "Usage: %s [-f] [-n<N>] [-z0] [-s<payload size>] "
+>> +		    "(-4|-6) [-t<time s>] -D<dst_ip> udp", filepath);
+> 
+> A small flaw, the usage here doesn't match the real options in parse_opts().
 
-> 
->>
->>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>>
->>> ---
->>> v2:
->>>   - Use NULL check in ip6_ignore_linkdown() but synchronize_net() in
->>>     addrconf_ifdown()
->>>   - Add timing analysis of the problem
->>>
->>> ---
->>>  include/net/addrconf.h | 3 +++
->>>  1 file changed, 3 insertions(+)
->>>
->>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
->>> index f7506f08e505..c04f359655b8 100644
->>> --- a/include/net/addrconf.h
->>> +++ b/include/net/addrconf.h
->>> @@ -405,6 +405,9 @@ static inline bool ip6_ignore_linkdown(const struct net_device *dev)
->>>  {
->>>         const struct inet6_dev *idev = __in6_dev_get(dev);
->>>
->>> +       if (unlikely(!idev))
->>> +               return true;
->>> +
-> 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
-> 
->>
->> Note that we might read a non NULL pointer here, but read it again
->> later in rt6_score_route(),
->> since another thread could switch the pointer under us ?
->>
+Indeed. I'll adjust it, thanks!
 
-Yes, this patch just cover the problem I'm having.
-I have checked the codes in kernel, there are some scenarios using __in6_dev_get()
-without NULL check and rtnl_lock. There is a possibility of null-ptr-deref bug.
-I will give a patch to fix them later.
-
-> 
-> for silly MTU games yes, that could happen.
-> .
-> 
+-- 
+Pavel Begunkov
