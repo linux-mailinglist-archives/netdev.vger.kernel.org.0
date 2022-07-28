@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D50A8583B17
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6BFF583B1E
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234943AbiG1JTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 05:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57004 "EHLO
+        id S235461AbiG1JUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 05:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234427AbiG1JTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:19:46 -0400
+        with ESMTP id S234989AbiG1JUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:20:36 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3392961B3A;
-        Thu, 28 Jul 2022 02:19:45 -0700 (PDT)
-Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LtlRM2QHWz687qT;
-        Thu, 28 Jul 2022 17:17:35 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701D84B0F1;
+        Thu, 28 Jul 2022 02:20:35 -0700 (PDT)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LtlQL6Fwfz67Hm8;
+        Thu, 28 Jul 2022 17:16:42 +0800 (CST)
 Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 28 Jul 2022 11:19:42 +0200
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Jul 2022 11:20:33 +0200
 Received: from [10.122.132.241] (10.122.132.241) by
  lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 10:19:41 +0100
-Message-ID: <3d3b683d-8dfe-1b45-c7ee-a4dadeb4c1c5@huawei.com>
-Date:   Thu, 28 Jul 2022 12:19:40 +0300
+ 15.1.2375.24; Thu, 28 Jul 2022 10:20:32 +0100
+Message-ID: <63e587ae-bd91-5448-60b6-2ef1eed10be7@huawei.com>
+Date:   Thu, 28 Jul 2022 12:20:31 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
@@ -39,9 +39,9 @@ CC:     <willemdebruijn.kernel@gmail.com>,
         <anton.sirazetdinov@huawei.com>
 References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
  <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
- <6691d91f-c03b-30fa-2fa0-d062b3b234b9@digikod.net>
+ <75c66214-5735-36d8-b237-32dd9af48a4f@digikod.net>
 From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <6691d91f-c03b-30fa-2fa0-d062b3b234b9@digikod.net>
+In-Reply-To: <75c66214-5735-36d8-b237-32dd9af48a4f@digikod.net>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.122.132.241]
@@ -59,8 +59,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-7/27/2022 10:54 PM, Mickaël Salaün пишет:
-> 
+7/27/2022 11:21 PM, Mickaël Salaün пишет:
 > 
 > On 26/07/2022 19:43, Mickaël Salaün wrote:
 >> 
@@ -161,10 +160,66 @@ X-Mailing-List: netdev@vger.kernel.org
 >> patch miscellaneous fixes and improvement, with some TODOs to get rid of 
 >> this layer limit. We'll need a test to check that too. You'll need to 
 >> integrate this diff into your patches though.
+>> 
+>> 
 > 
-> You can find the related patch here:
-> https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
-
-  Ok. Thank you.
-  I will split your patch among my next V7 version.
+> [...]
+> 
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index 469811a77675..e7555b16069a 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+> 
+> [...]
+> 
+>> @@ -719,15 +679,43 @@ bool unmask_layers(const struct landlock_rule 
+>> *const rule,
+>>       return false;
+>>   }
+>> 
+>> +typedef access_mask_t
+>> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
+>> +          const u16 layer_level);
+>> +
+>> +/*
+>> + * @layer_masks must contain LANDLOCK_NUM_ACCESS_FS or 
+>> LANDLOCK_NUM_ACCESS_NET
+>> + * elements according to @key_type.
+>> + */
+>>   access_mask_t init_layer_masks(const struct landlock_ruleset *const 
+>> domain,
+>>                      const access_mask_t access_request,
+>>                      layer_mask_t (*const layer_masks)[],
+>> -                   size_t masks_size, u16 rule_type)
+>> +                   const enum landlock_key_type key_type)
+>>   {
+>>       access_mask_t handled_accesses = 0;
+>> -    size_t layer_level;
+>> +    size_t layer_level, num_access;
+>> +    get_access_mask_t *get_access_mask;
+>> +
+>> +    switch (key_type) {
+>> +    case LANDLOCK_KEY_INODE:
+>> +        // XXX: landlock_get_fs_access_mask() should not be removed
+> 
+> There is an extra "not", it should be: "landlock_get_fs_access_mask()
+> and landlock_get_net_access_mask() should be removed".
+> 
+   I got it. Will be fixed.
+   Thank you!
+> 
+>> +        // once we use ruleset->net_access_mask, and we can then
+>> +        // replace the @key_type argument with num_access to make the
+>> +        // code simpler.
+>> +        get_access_mask = landlock_get_fs_access_mask;
+>> +        num_access = LANDLOCK_NUM_ACCESS_FS;
+>> +        break;
+>> +    case LANDLOCK_KEY_NET_PORT:
+>> +        get_access_mask = landlock_get_net_access_mask;
+>> +        num_access = LANDLOCK_NUM_ACCESS_NET;
+>> +        break;
+>> +    default:
+>> +        WARN_ON_ONCE(1);
+>> +        return 0;
+>> +    }
 > .
