@@ -2,99 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B55584378
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD3E5843A1
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiG1Prl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 11:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
+        id S231845AbiG1Pyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 11:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiG1Prk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:47:40 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC6B683FE
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:39 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id z23so3846110eju.8
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=LrtyfCU3pvrjGLvaQqW5zSHnkkaGZdjNAl8nsiisi1U=;
-        b=kjeK/KLmo2EP8Bu7k+RYSpZ1sZWuq2XEgJJpKjkAdYLZIb5pzwcWtbZFyIoKs/+kh3
-         Tnv+d0+EpODVv65Pg2od/yyMiRMM1G2ALB0B1k8FIAytsJzgxai4Y3hhGtZSUXbOC05D
-         vp3f1tscSHPrBTKL94n9Hd8UDqnDBruATg6DgaOgO7rdUZz0AKQ+/c0m3QVaKdWAI511
-         EJuu0YgdNbVDCBrqD99Q8qgaZJ0YrK667capZJF7tv2D7iwsKBc23f9ix4x8vITsbkI9
-         lSstev2F3DYZ+zuQumb0YzmCzt2VXyr1A1VmRyp0czPTSxrUvu119lseuxIMDsDigxvK
-         oEFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=LrtyfCU3pvrjGLvaQqW5zSHnkkaGZdjNAl8nsiisi1U=;
-        b=MwqshKFcig1Zzkpww+Pssv+vMo4cAN74dyXOmSFDK1CFbSVTzb+v+L8oUjyDlkZ8a3
-         KYnjCaHoYt5H0Pa9jNMjAMSgtf9a0lSKJcXEXgs9zrSLhJHRpTSsjyIRNRBDAI0CNR/6
-         2zU4ur9M0kAXPmdV7vwboG/WmPlA6L//B0rNg/0Q1d97CwMdLjT0Xsa02QyaQXiqG5sU
-         ZsyXANNTiBQ7fONMXfcC6k3M2c3OH4F4yTcfm/R9k62eNxtC7/ChWiQborZug+Z/UxI6
-         peXN4yEbJr151nFAZte2nucsP0U+DOfCYhf5wp9E2Npd6zpvm9U7gCoL43+c4vMjH6d0
-         bIPg==
-X-Gm-Message-State: AJIora/pXbDKhPRETBvjM41KKTZeRkzhe57XAj12evtPnrKbskYdzHtm
-        i4XuX0niouCitAock43pc/140d+CzdQ=
-X-Google-Smtp-Source: AGRyM1svNBPmCsAwnzGMMAzGlfB2RHuKbvUpAiHr8WCPZthX+Nk9BkfovNBSZ6atyEc6ydft+3ZOGA==
-X-Received: by 2002:a17:906:974c:b0:72b:8cea:95c2 with SMTP id o12-20020a170906974c00b0072b8cea95c2mr21882945ejy.65.1659023258162;
-        Thu, 28 Jul 2022 08:47:38 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b0072faa221b3asm531003ejc.151.2022.07.28.08.47.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 08:47:37 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
- representor
-To:     Jakub Kicinski <kuba@kernel.org>, ecree@xilinx.com
-Cc:     davem@davemloft.net, pabeni@redhat.com, linux-net-drivers@amd.com,
-        netdev@vger.kernel.org
-References: <cover.1658943677.git.ecree.xilinx@gmail.com>
- <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
- <20220727201034.3a9d7c64@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
-Date:   Thu, 28 Jul 2022 16:47:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S230344AbiG1Pyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:54:31 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB4C6BD6E
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:54:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nsq1pviJJVSB7D1KKSGEYUzHsKeirNAYHicldjG28x1+RKzpVIbhqqN/9HQXKq95o3WRqR9HPyh2DqQHxIUC1+2xXhsI6F+HlaE3xys2k7Y0Wx4ntOZebB57ba75pL8TrXx+dwr03KPbgogUO8mJml4wS+lKLTJHw6ar6qCw+tJBzslO4YQQJbW6SKQfqY0oec+pUFAbkS90/q/0WQOgcB+PIG5BNdscdAmKKbwyBtoYTvXs4Nkg1zh1/A510aNemx3uGo4zzM5jbZ7R0UifBatmDWLvgqs+Bz5X/ZyaD3tR70xOwjlzdjx9N0FYTsraNY9sgr1H7Ryi6Rs6kgAz0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GRkaKhwSFn7V7fhjd2tOFSMr+g62GrRYxCIRtk8q7aQ=;
+ b=KRBtNMp2vSBZyDvLTKC/DwW6P35D35UHctNTl5yUeI5pUTzzt7M78VtJtO9wVSKlkb+/jCVOqxTrQl8LLgGT5WruQUo74TRT13m3G/i02iZdppSGLo0zyewTtQ3dDorT7pIKDPN3OiS3MDMPbaxWSB+XiiFSfaZojcMunwNmHLQdUgBqj358DHxSLPzqX0T78s1648Nc2YbK6YUe3fHSV3W6SbijkRYspBO+xcWRufde5uQ2fLfFE3AVMIUAJC1Z4sOkLQqneRa8fMM1Dzjvi11nre00l+0Ixh2WvRTzTtH/HSsOxXEx+lSrUhUjPpo2Ot4KwTlbWx5o9nqEuOetUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GRkaKhwSFn7V7fhjd2tOFSMr+g62GrRYxCIRtk8q7aQ=;
+ b=MS+WeshW5cB585ce+3jwTy14QdBLRWA+/Chm5TJkNtvkrQvlKw/eRmaGBhJyvT+XA8FqRMOjm1LyM4hQj56RnM017Ad07yppszBdfwXjmVKMJ8UJHk/beE7fqw6vkrw8UJ3i+WA+L7ZWWQW28woqgeoLOacCSiG+Fklj0eSpccXojG4OqQETrOVgmHU4CSr20VzqbpuhoHixunz549L7k9gPbUa16oUkPjeGcfB1SEmGsK889d5YJIXODn+cTWbGIEW0JcJhHi1GdYXPwEJXcMh5z1tsxR9RBk3KsBZUgztB7Id8RSQQQsoS4Ic6NZupJT+sXWiJitdE2HU+6nexHw==
+Received: from BN0PR04CA0157.namprd04.prod.outlook.com (2603:10b6:408:eb::12)
+ by SA0PR12MB4367.namprd12.prod.outlook.com (2603:10b6:806:94::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Thu, 28 Jul
+ 2022 15:54:28 +0000
+Received: from BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:eb:cafe::e6) by BN0PR04CA0157.outlook.office365.com
+ (2603:10b6:408:eb::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11 via Frontend
+ Transport; Thu, 28 Jul 2022 15:54:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT032.mail.protection.outlook.com (10.13.177.88) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 15:54:27 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 28 Jul 2022 15:54:21 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Thu, 28 Jul 2022 08:54:20 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Thu, 28 Jul 2022 08:54:18 -0700
+From:   Moshe Shemesh <moshe@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Tariq Toukan" <tariqt@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Jiri Pirko <jiri@nvidia.com>, <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH net-next v2 0/9] Take devlink lock on mlx4 and mlx5 callbacks
+Date:   Thu, 28 Jul 2022 18:53:41 +0300
+Message-ID: <1659023630-32006-1-git-send-email-moshe@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-In-Reply-To: <20220727201034.3a9d7c64@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 10fc5eb1-aaff-4d3c-5f90-08da70b173a4
+X-MS-TrafficTypeDiagnostic: SA0PR12MB4367:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nLHOovMp3FTbXiM6QQ7w6/NYGamcC6jAiXZmeWYDoxlmOyOMJBQMwFnFnP+547jpOdnJHSNXG6e4ycwGaKQgNqNznsE6EBgBjf8QhaL80Kl/JiOP9qo7FMD8laJ+uNPLfmcUQUZaf2SjzCPxdGU6CG7u5v5hP7lo0nHo/6gi+3b6pjhfrxf0fqmzD7yjYpYzz/45Krczukj1amTVdNva7lxrFrz1OAzHvpxXAsnBqO6kYfYYnrORoDh7Zm58h19X16ERxksa/IcNQp/0avmGC0ir7nBxa4VeEYagzaefTxzYw7OI5s/+0vDE+CfX7GHoE/mxB5GSHdCearuJpCVzB7Sp2C8ErMuwGg5sgHs6R92YrPUXtZBiEnkyMbCAH+S/v/quhxjygtwvICFImuVSYEx86wq9aklnTNqSbGz5rbQb2tSRRw6K3rsfi4gQE3/wma0IMUxL/W3C+Y6Q9ns8CZ9a6kLtgnyEzLEKE6WAJwXKsy9NQuVDq+QXzvhK0uZEH1vgPLtsYOIyJgQ5MdHrMFCIriWAhEFOQR6ECiPa97GCIxZpdRL7NTkR05S9y8yEOlRYE2BAuxo+7RwVOQ/UrM06XW8cTeUwgTIQwT/HFwY2sckBfwx9xtvvOwHXcOF4BE/AaYP+7wWBC1JVRGKNTkLUmMiPqYNFVRacnkffaDD8p2V7j2yw+6gK4WVTO4mhdZh1Ti1RjgKq//FNCTxF3l9x3eRiUyqZtU9MRkDd5Km06Qf+eWmZXkeiMKVTR1yiOJd3xM/l4pqpxhAs7nTeAmKbm8VY/pPLiTkYui2LVsANwzVx/kMFCj9mN2lzdDZ8ATjumdz5HQNLIwWw9EGGZQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(396003)(346002)(39860400002)(36840700001)(40470700004)(46966006)(54906003)(316002)(70206006)(110136005)(356005)(81166007)(82310400005)(2616005)(107886003)(70586007)(82740400003)(36756003)(26005)(83380400001)(36860700001)(40480700001)(478600001)(8936002)(8676002)(336012)(7696005)(4326008)(5660300002)(47076005)(186003)(426003)(2906002)(40460700003)(6666004)(86362001)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 15:54:27.6146
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10fc5eb1-aaff-4d3c-5f90-08da70b173a4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4367
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/07/2022 04:10, Jakub Kicinski wrote:
-> On Wed, 27 Jul 2022 18:46:02 +0100 ecree@xilinx.com wrote:
->> From: Edward Cree <ecree.xilinx@gmail.com>
->>
->> When setting the VF rep's MAC address, set the provisioned MAC address
->>  for the VF through MC_CMD_SET_CLIENT_MAC_ADDRESSES.
-> 
-> Wait.. hm? The VF rep is not the VF. It's the other side of the wire.
-> Are you passing the VF rep's MAC on the VF? Ethernet packets between
-> the hypervisor and the VF would have the same SA and DA.
-> 
+Prepare mlx4 and mlx5 drivers to have all devlink callbacks called with
+devlink instance locked. Change mlx4 driver to use devl_ API where
+needed to have devlink reload callbacks locked. Change mlx5 driver to
+use devl_ API where needed to have devlink reload and devlink health
+callbacks locked.
 
-Yes (but only if there's an IP stack on the repr; I think it's fine if
- the repr is plugged straight into a bridge so any ARP picks up a
- different DA?).
-I thought that was weird but I also thought that was 'how it's done'
- with reps — properties of the VF are set by applying them to the rep.
-Is there some other way to configure VF MAC?  (Are we supposed to still
- be using the legacy SR-IOV interface, .ndo_set_vf_mac()?  I thought
- that was deprecated in favour of more switchdev-flavoured stuff…)
+As mlx5 is the only driver which needed changes to enable calling health
+callbacks with devlink instance locked, this patchset also removes
+DEVLINK_NL_FLAG_NO_LOCK flag from devlink health callbacks.
 
--ed
+This patchset will be followed by a patchset that will remove
+DEVLINK_NL_FLAG_NO_LOCK flag from devlink and will remove devlink_mutex.
+
+Jiri Pirko (2):
+  net: devlink: remove region snapshot ID tracking dependency on
+    devlink->lock
+  net: devlink: remove region snapshots list dependency on devlink->lock
+
+Moshe Shemesh (7):
+  net/mlx5: Move fw reset unload to mlx5_fw_reset_complete_reload
+  net/mlx5: Lock mlx5 devlink reload callbacks
+  net/mlx4: Use devl_ API for devlink region create / destroy
+  net/mlx4: Use devl_ API for devlink port register / unregister
+  net/mlx4: Lock mlx4 devlink reload callback
+  net/mlx5: Lock mlx5 devlink health recovery callback
+  devlink: Hold the instance lock in health callbacks
+
+ drivers/net/ethernet/mellanox/mlx4/catas.c    |   5 +
+ drivers/net/ethernet/mellanox/mlx4/crdump.c   |  20 +--
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  44 +++++-
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c |  19 +--
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  59 +++++---
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  18 +--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  10 +-
+ .../net/ethernet/mellanox/mlx5/core/health.c  |   4 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  38 ++++-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |   6 +
+ net/core/devlink.c                            | 135 ++++++++++--------
+ 12 files changed, 227 insertions(+), 133 deletions(-)
+
+-- 
+2.18.2
+
