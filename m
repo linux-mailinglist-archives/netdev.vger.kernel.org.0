@@ -2,109 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87B0058405A
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A11C584069
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiG1NuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 09:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        id S229961AbiG1NyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 09:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiG1NuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:50:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 405F95F8F
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659016209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tChXGzkEDaadDZsPCQA7MY+3fJ18aNxtVhxEUhg4NK0=;
-        b=EabyEsXw4W6QKlQFBcdeeah7KmKHtOxa47ffTMypzRH06/8X/w4EnQb1pmu2zpcNLnf8oc
-        d6iIAi9I+jch8hAi4a2JUboZ4b5WLiDnFqyN+NHqPb43WrBsoygwiMCwGExIBzLVGkwsqu
-        uRtb2NwctoxpHWI/VEU4of7Zu+6zDVE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-9-beVfU-BGNaqnvKVfWrGJqA-1; Thu, 28 Jul 2022 09:50:08 -0400
-X-MC-Unique: beVfU-BGNaqnvKVfWrGJqA-1
-Received: by mail-wm1-f69.google.com with SMTP id c17-20020a7bc011000000b003a2bfaf8d3dso980083wmb.0
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:50:07 -0700 (PDT)
+        with ESMTP id S229754AbiG1NyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:54:15 -0400
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3966481E9
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:54:13 -0700 (PDT)
+Received: by mail-vk1-xa31.google.com with SMTP id q125so869565vka.11
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EfelAleCItbP5SFIzGAFXMrQgk8BNU5F+/f0P4mObFw=;
+        b=BoqIi5INSsFOhYmLKg7dsNBE2EAJRSskw3eN4R8pUco0jn5mSLBi9ZSkFeDDG+MBlS
+         1tWScGMPzwGI5RmhsQGdA9I3K9YZfLt7R02n2jTwhhKmLjktIevnYfiBfF2BpbXxr8k7
+         eMTaKrslgA5ZA3aVYEV9e1LE3+IhvW0LICNT+xVhDMqTDM3ovnM2Dh+N6eBGRNc/dHGS
+         k0mYjeT2t6aTuKul3YVY43p8qMljMDPj+5E5QUKWt0J35+YOYDDuL8ZlGcEoL3I/cfrn
+         ZA6adsYNPuTZamLrnMXqC7AIdPTcbaox8kbkUCA9+Ql9w4QW92yM0bkFK4RahprTVi8V
+         uQVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=tChXGzkEDaadDZsPCQA7MY+3fJ18aNxtVhxEUhg4NK0=;
-        b=p52bPDF/l5ZAbkNMEm6APe3CO97bluq+RBaNGmP8R10Z5pUzz3s5ZdycPbRTp8dceL
-         QRMyiUUNRHafLy7DfJSdVYIhyUw0BlBTB21q2NDXMFZai3gWSOKCb/CueivjGPIheKGY
-         PhGdf73HBrYvyCGhMp7jazamyrSNqqJK8AGXxwlb4JMMGIaqJ+C/S3vNcSzCjDgxR3cg
-         TD6b++Qi9/RwGU9HQ7wjxIof4bwnPFxp9lHSLFYP7OSAxK2tc8wL4S16Spp52v+jEvF7
-         64XMEh3Sq7FGbw1pF9p1Ee6fAyoOsDeyzhv6PZe+vFMrL8wozmn1iCZidkWuSfAOZXyC
-         4CMw==
-X-Gm-Message-State: AJIora9kU5dDa160ZyaMuPYJ1oRhus7vs245MRIfo5hocPfm9roudiaP
-        rdKXTBD2c3PKpdDiI168LD4+F8zmUpTst1rwuBtu94srAD+68Qpt8XyRkr323lkvlDytb66fmZZ
-        StF5ncH5xQKuZALZC
-X-Received: by 2002:a05:600c:3593:b0:3a3:3a49:41a3 with SMTP id p19-20020a05600c359300b003a33a4941a3mr6740012wmq.166.1659016206950;
-        Thu, 28 Jul 2022 06:50:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ufWT771heg6CQnGhJYT28ksPuBvz3PaqMy3L541vtCGNuZ60YxsqNnjk7nz3tcnaF9Nt9H7Q==
-X-Received: by 2002:a05:600c:3593:b0:3a3:3a49:41a3 with SMTP id p19-20020a05600c359300b003a33a4941a3mr6739990wmq.166.1659016206656;
-        Thu, 28 Jul 2022 06:50:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id u1-20020adfdd41000000b0021d80f53324sm1101257wrm.7.2022.07.28.06.50.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 06:50:05 -0700 (PDT)
-Message-ID: <e70b924a0a2ef69c4744a23862258ebb23b60907.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/4] tls: rx: don't consider sock_rcvtimeo()
- cumulative
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, borisp@nvidia.com,
-        john.fastabend@gmail.com, maximmi@nvidia.com, tariqt@nvidia.com,
-        vfedorenko@novek.ru
-Date:   Thu, 28 Jul 2022 15:50:03 +0200
-In-Reply-To: <20220727031524.358216-3-kuba@kernel.org>
-References: <20220727031524.358216-1-kuba@kernel.org>
-         <20220727031524.358216-3-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EfelAleCItbP5SFIzGAFXMrQgk8BNU5F+/f0P4mObFw=;
+        b=k9Pyi9cKl2xddtR/hvtheKtTLVbNk9G8/72lfVPF+6TG3XmOlodEsnwpJMZX6IM5by
+         eh5i/x353+//lOqK4Y+ZmCtT57HrogJ4RPIqH2aqVvPkyZQsgUG+JgkI/0OcaaNq9M1w
+         uX0ZgIsYVRbRPJQZn3VB6HVcJA/65ZehFnZ3yH7QMOIzCqvO5fXVXahyjycDjJVOAs82
+         FfJd6Rr1DY+7NDGuNaTu+3CUWc37b17zXw1+VvKQ/zJ99zy5I2qXZ12aeGO3gC/DqmMf
+         uEZyOg2VpalPx2tstuHQDNDp+RNkKUsOq+CW+UTCVFJhEBIVJtHh1o/40cUiNCL3213c
+         z3PQ==
+X-Gm-Message-State: AJIora/34LlMsm6e19yi7vYxlj6N1Zl2DAZx1EjCxV5twd2BGFBIEkQh
+        6qK1i4oUmiViNWuhvAsZCXxpXYroGZKqwAwUSD8=
+X-Google-Smtp-Source: AGRyM1tg5nFgeQt6mGa2oRDbCUcIiNmVVphPqSoUmkGBWF5hwPv4lN+tlybv63fnhASPn4TKXkLWGf+Py6a4GDHiS94=
+X-Received: by 2002:a1f:ab85:0:b0:376:caf7:97a2 with SMTP id
+ u127-20020a1fab85000000b00376caf797a2mr2304674vke.14.1659016452905; Thu, 28
+ Jul 2022 06:54:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <CAJGXZLi_QCZ+4dHv8qtGeyEjdkP3wjoXge_b-zTZ0sgUcEZ8zw@mail.gmail.com>
+ <20220622171929.77078c4d@kernel.org> <CAJGXZLiNo=G=5889sPyiCZVjRf65Ygov3=DWFgKmay+Dy3wCYw@mail.gmail.com>
+ <20220623202602.650ed2e6@kernel.org> <CAJGXZLg9Z3O8w_bTLhyU1m7Oemfx561X0ji0MdYRZG8XKmxBpg@mail.gmail.com>
+ <20220624101743.78d0ece7@kernel.org> <CAJGXZLhJd4xYQhvhb8r0QYhjSjNUCe6nmvi5TA_Ma6LO992KYw@mail.gmail.com>
+ <20220701183151.1d623693@kernel.org> <20220701184222.34b75a77@kernel.org>
+ <CAJGXZLj2pMki+88OO_fDf-KO1jehEKWg2m5yKTeB0K4yKuMmmg@mail.gmail.com> <20220707162319.49c25e90@kernel.org>
+In-Reply-To: <20220707162319.49c25e90@kernel.org>
+From:   Aleksey Shumnik <ashumnik9@gmail.com>
+Date:   Thu, 28 Jul 2022 16:54:01 +0300
+Message-ID: <CAJGXZLgtLLMGsgn4EXO1VNiO0KvVah_jPHCmYU_zNM-_XnEOOA@mail.gmail.com>
+Subject: Re: [PATCH] net/ipv4/ip_gre.c net/ipv6/ip6_gre.c: ip and gre header
+ are recorded twice
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>, kuznet@ms2.inr.ac.ru,
+        xeb@mail.ru
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-07-26 at 20:15 -0700, Jakub Kicinski wrote:
-> Eric indicates that restarting rcvtimeo on every wait may be fine.
-> I thought that we should consider it cumulative, and made
-> tls_rx_reader_lock() return the remaining timeo after acquiring
-> the reader lock.
-> 
-> tls_rx_rec_wait() gets its timeout passed in by value so it
-> does not keep track of time previously spent.
-> 
-> Make the lock waiting consistent with tls_rx_rec_wait() - don't
-> keep track of time spent.
-> 
-> Read the timeo fresh in tls_rx_rec_wait().
-> It's unclear to me why callers are supposed to cache the value.
-> 
-> Link: https://lore.kernel.org/all/CANn89iKcmSfWgvZjzNGbsrndmCch2HC_EPZ7qmGboDNaWoviNQ@mail.gmail.com/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Fri, Jul 8, 2022 at 2:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Thu, 7 Jul 2022 19:41:23 +0300 Aleksey Shumnik wrote:
+>
+> Yeah, I've added the neigh entries (although the v6 addresses had to
+> be massaged a little for ip neigh to take them, the commands from the
+> email don't work cause iproute2 doesn't support :: in lladdr, AFAICT).
+>
+> What I've seen in tracing was that I hit:
+>
+> ip6gre_tunnel_xmit() -> ip6_tnl_xmit_ctl() -> ip6_tnl_get_cap()
+>
+> that returns IP6_TNL_F_CAP_PER_PACKET
+>
+> so back to ip6gre_tunnel_xmit() -> goto tx_err -> error, drop
+>
+> packet never leaves the interface.
 
-I have a possibly dumb question: this patch seems to introduce a change
-of behavior (timeo re-arming after every progress vs a comulative one),
-while re-reading the thread linked above it I (mis?)understand that the
-timeo re-arming is the current behavior?
+I skipped this check so that the packets wouldn't drop.
+I compared the implementations of ip_gre.c and ip6_gre.c and I
+concluded that in ip6_tnl_xmit_ctl() instead of tunnel params
+(&ip6_tnl->parms.laddr and &ip6_tnl->parms.raddr) it is better to use
+skb network header (ipv6_hdr(skb)->saddr and ipv6_hdr(skb)->daddr).
+It is illogical to use the tunnel parameters, because if we have an
+NBMA connection, the addresses will not be set in the tunnel
+parameters and packets will always drop on ip6_tnl_xmit_ctl().
 
-Could you please clarify/help me understand this better?
+> Hm, so you did get v6 to repro? Not sure what I'm doing wrong, I'm
+> trying to repro with a net namespace over veth but that can't be it...
 
-Thanks!
-
-Paolo
-
+Yes, just skip ip6_tnl_xmit_ctl().
