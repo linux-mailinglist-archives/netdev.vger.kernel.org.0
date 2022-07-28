@@ -2,179 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B039A5838AA
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 08:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A945838D8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 08:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbiG1GT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 02:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59758 "EHLO
+        id S233104AbiG1GhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 02:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234165AbiG1GT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 02:19:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229AC5E337;
-        Wed, 27 Jul 2022 23:19:22 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LtgQk4nnWzkY8v;
-        Thu, 28 Jul 2022 14:16:46 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 14:19:20 +0800
-Message-ID: <4e655ad1-4ff0-b163-1c22-0276ecf69fec@huawei.com>
-Date:   Thu, 28 Jul 2022 14:19:19 +0800
+        with ESMTP id S229682AbiG1Gg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 02:36:59 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2044.outbound.protection.outlook.com [40.107.96.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BBB4D143;
+        Wed, 27 Jul 2022 23:36:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c9rMsnD2QtmH2lttWS3sXUds8bN0CTeHMD9zFkXuTmAU4RDLWSmTLQGmJso1nlJOblj929SZiuU/SnXyX1V4Y3K84JqjDsum41Kjy9/cw3Skp/OPqyQZN26QAUN0t6tpOhT90ghLX6Tno5z/XQrO5oKo+nSTc8nNWcC2Sy/PEwMVng2yI0VYVEPG+OCA5wxU5Hq+Hi3e0xZODnTsB4AsmUCHfLsSd3CAwaRiFbBxuZJONF0GD9M6PNaesd2GrIiGHQiGLw5i8vfO9loUzyqMkFBgk+9MWDMyaLVLhFAbo0oSGrpxTfruGkrcZLm7vajVIw5EfxpYw4nZ39c+8qBPAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LQlo73x8gVYUlxkI5upNzuQWREeqbWiTVB5sL1QZs2g=;
+ b=Wqv9tp6W8tcjs30TinCHw65RO/8N3XJlrCoPqurW/g3N3y76Rq4Av5/GGlbdnaI/aHcdKamEJMaVg1oWRBe7/8BPjxv8Tfi3ILOErQVWNOmYl2wTKCVAO02xvgjks17e82Mb3Np6KZtjvX3OER/VLrbF7wbsVxnhjznd5vq4cfAkfwFA82ysTibBlwkCd3v+kIxoo/3H+r7TTjm4vvYSJQV6KzSI9ARwW3CSC2wyNZ+e5DbC0R7UE8O9P4beVqdMNVPYJzCnQyDUAR71Z38dn5QYKlrBfW6nz6ZZkTJuviiF5cT0h21CGD9923ndA966gz5GtHf20q6U6DSPnrbuJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LQlo73x8gVYUlxkI5upNzuQWREeqbWiTVB5sL1QZs2g=;
+ b=OOCvMMs/Kwvx2jnI9aKuhPQNvqKqhF7XX7hZiBFA4iDBQXK333PuqRdGJtg5UcuHMZds6UQGDH7ATIez3Hmg1XPqXV3b2Mr6bt7l0XWIuLtuzW0xymR9hPS+tGTO5moBfJVRhKtvVOP9QrhN2/AmyWpFckYoMAHq8D4ZxSzh6ykDARICj44gimkeWkFdhQtg3JQfdF9vu2fUtVAjrRmYQN/UVhCJvgHID6kGZCvjka8fB3kFDDs8+dzTLoppcImgafj1gzaBczcV648vuXOnKFN6+KZ7Qjz/59hEDrSaX20HujSwUapkc08JabDSOfXWI4dj6DMwVyjoKKTF5vZx6g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by MWHPR1201MB0222.namprd12.prod.outlook.com (2603:10b6:301:54::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 28 Jul
+ 2022 06:36:55 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::2d48:7610:5ec2:2d62]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::2d48:7610:5ec2:2d62%4]) with mapi id 15.20.5482.011; Thu, 28 Jul 2022
+ 06:36:55 +0000
+Date:   Thu, 28 Jul 2022 09:36:49 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     petrm@nvidia.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] mlxsw: core_linecards: Remove duplicated include
+ in core_linecard_dev.c
+Message-ID: <YuIugZUYq1VL1Rud@shredder>
+References: <20220727233801.23781-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727233801.23781-1-yang.lee@linux.alibaba.com>
+X-ClientProxiedBy: VI1PR09CA0177.eurprd09.prod.outlook.com
+ (2603:10a6:800:120::31) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [aarch64] pc : ftrace_set_filter_ip+0x24/0xa0 - lr :
- bpf_trampoline_update.constprop.0+0x428/0x4a0
-Content-Language: en-US
-To:     Song Liu <song@kernel.org>, Xu Kuohai <xukuohai@huaweicloud.com>
-CC:     Bruno Goncalves <bgoncalv@redhat.com>,
-        CKI Project <cki-project@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <CA+QYu4qw6LecuxwAESLBvzEpj9Uv4LobX0rofDgVk_3YHjY7Fw@mail.gmail.com>
- <0051a5c0-aa9f-423e-bba3-6d5732402692@huaweicloud.com>
- <CAPhsuW63ms5bULxcyQroLcRABxwx=6Q0ps189S1AH5jizyzZNA@mail.gmail.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <CAPhsuW63ms5bULxcyQroLcRABxwx=6Q0ps189S1AH5jizyzZNA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 73725d85-ae03-4924-1f6c-08da70639056
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0222:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WAFTsWX4UKgfuQU57T1cA20ut7vD+oLdPElKbDmh4PX8zcJQ5wc+T0b7EGmY5Oqwif4F81ul+tLo7RNDgzrOxM8dJwCrMGy0/jXxuRZwNKSgZ2eMBl1SH9Tc8i5xIrXBCCbBxMwF1YEEWbVzAz17riq0w0Mp9US5lxH2m3WTq8x0hRy3L1lR31BvsrJHJMN1MXmLW7Q0W5dV9272FIYf/Z3Q0drd6pqh1GzsWhj0v6k1JDVm+8G/62hGDKoFQMNNeBMTSKy1bViQbL2EdNqMEtKj6+wVFWE4OLVZbV4pSUPD4L6Eb/CU8dd79HoICZ/hGUpqRnybKGZu+69iog7LFz1sY86ytKWBEBTU7KWb7eJr3ykdgiA5e0FYb6AG6q/TCm8S0Ng/Xmdne/FvvcFc5u4uUYSjMaPfOyDfbA8gRsIdoZyQO9lfdUakXQH69IxeO9k8H13EGwojatxNUyz84BfKYB4RfXBy3U3IJDWwqAOlGkRVYVfHWrzi2fWWPoMiLPCA3RzwgLHLVLhf5alg7jy85m0QS8YQsveNivyNbB4xC78JZNX6UGvseOZMaEzIc0UM/PybOB/V9o8uRzuFfCyxdiq9LU8L6amGHUib0vo9oi5knkjgUKd7Drantqgz8ge3jGWerlIJkL7EQVNCxNzHYYRP8G6WkIy+FvZ2vI9MjvrZeqAcksVxvWkBrs0TVFhnJFaVlDfqYqwrx6BZZHWQkAMPeeXLpxmoOltpDSZvhquzFSESdnbinhFegE/T
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(396003)(376002)(39860400002)(346002)(366004)(4744005)(186003)(2906002)(5660300002)(316002)(86362001)(6916009)(33716001)(9686003)(6666004)(6506007)(6512007)(26005)(41300700001)(38100700002)(6486002)(83380400001)(8936002)(4326008)(8676002)(66476007)(66556008)(66946007)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+csSAF4otDEMCGPG3mxCrn61ABJ9fTZ4SpY9QRgwSUU6lhNjmH+Eic2lzWlu?=
+ =?us-ascii?Q?WqxgiPuD9E1M2BVZ/tKnVYUe3SoiJJk9r2fOIqMyLQe9HVoXpoc/OxKcm1rt?=
+ =?us-ascii?Q?O0v8yOgqXJQeTtv6zDRhprfGnMrOwCBpPWGJZSHHTZDX6taYz7zUlXJp9BVS?=
+ =?us-ascii?Q?SiA0AU0g4bjtGgg3ABUiiIxdc9Gc1qr5VmUyYKHkDlidnMI4yWEGlr2T9J8k?=
+ =?us-ascii?Q?3IS1bdrpGt4HXC4UJBibffgiGEiQ1T2iMD4bS+AnEsh6g6Uid364aR8BCAKi?=
+ =?us-ascii?Q?mPYdkblQRlvGeGuYE+WsmuJJnqOPTqpHEiuKmYs8IoyYmWo0ci0qCJwuymhR?=
+ =?us-ascii?Q?RyQtepDkOgSRkClwEKIJ//pKdDhMwUPr7Xw8YZ0GOKGuL0+GyXe3KJO3R89N?=
+ =?us-ascii?Q?rw9r0FKkNfdkYS/CZoJg8NDMrEvqmab5TS5ttfCbn1wwDTY/8uuaD9LucYky?=
+ =?us-ascii?Q?BycVgC2HKraafKfq3mFYT+D8K0mwnAmx1wajg4OiNJ0kAXt5Ec4CWAaG+/et?=
+ =?us-ascii?Q?I8PqmxEvPWJcVus3ui93Fr/qB577LoBhNBwpK8hqZjqdbqQ5WAv/wGhx8K5R?=
+ =?us-ascii?Q?kyzx+ZnvdC0nFaUsn+wy+0T+bz1NF+itGEu4uiZRIZHnX2V2cL/PrclwHqoE?=
+ =?us-ascii?Q?NSzP+651WY6nvT82K0qhf8wqYkWKCLsL6TsHw5jlwJ1hBwm/uEdTmC7SRf+N?=
+ =?us-ascii?Q?cwNfUBs+1T4WtqeB8NzGFskM9QqqN2NXSygn971mc8GQf6Xu4LtZ7uhQt/tR?=
+ =?us-ascii?Q?11NES4k1oZweKbcgzxJn5NA+uQqlkYBNBbtkdTmznSsw3xpDCyZQF7jXy/PA?=
+ =?us-ascii?Q?RWBWsjMGz2DXYcV6Gd+hnl6M/tlhdH2HGQV/VUrhXCJ1RDo4iPRMW6ypC8hS?=
+ =?us-ascii?Q?4/H21xeGr9+WinDb258HZmh3Kt66MOZNjrlNmbqhNdzMzv4N+sCl3O39oeLE?=
+ =?us-ascii?Q?40w05NMvKULYR2TkTsci89cPjMrRfWjb+/2NWcowX6Fvox/6YGUQacXD/6ow?=
+ =?us-ascii?Q?CGIN4y8fNArqmMT9VWtdVQ862Z04O3e+JYsiNgevTgCS4ixTMXWOQGVIUUbk?=
+ =?us-ascii?Q?MzxGapbtasrOy/0JmCZcSF70HibpEql4JzwAlSn+IzhHEVgub2nPaUxoNLhe?=
+ =?us-ascii?Q?U7D+EgNTF3uo5Rwejh7lqP3shEATzblkktm4LppbrBIkqpBEicIekhx7nyV3?=
+ =?us-ascii?Q?BNRR9Uq8OAafdvSGiTQJJ7BUFbireBsRyGEBnd3lRsktjaccumgAKBTflKsG?=
+ =?us-ascii?Q?KWBi4bFMET+DhALP9vqv7MohHnGWcTEn8rGCm78UMPUmE4qMUCrMIiLoGsjs?=
+ =?us-ascii?Q?THkcEnPAO+thnFk87n0OhMa/RBoUXo4B8fbRcdjxElGgUcN9Xsy3DjFpKu4h?=
+ =?us-ascii?Q?z02ZKp6nDdftpuKTFEVpYJPRB6UKQW210cQVSCq63Rs33LBAqpnJj7SgoIsc?=
+ =?us-ascii?Q?NyPIXaUsYXcx9P5+CCM+2nvcxtr2pw8lNIhSEWSnyTMagrkOToK13zVuquke?=
+ =?us-ascii?Q?SqhezXbvas0H3ZnPmFnw/eNpJwZc+SdrWZ5udvDwU762odQDNWyk5Kc2w8Dr?=
+ =?us-ascii?Q?1ESz1XG46xy7D/akVXE2jsQlumWBBklS6Ap+P0A8?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73725d85-ae03-4924-1f6c-08da70639056
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 06:36:55.3544
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: imnexYHkBLzwvVLjiGS9XzAHCRq/7o0ulxVYomd3fq0z717cA7CTBJ6vHdFT3dv42BBuVIIp76isSx70sSEp2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0222
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/2022 11:54 AM, Song Liu wrote:
-> On Wed, Jul 27, 2022 at 8:18 PM Xu Kuohai <xukuohai@huaweicloud.com> wrote:
->>
->> On 7/27/2022 6:40 PM, Bruno Goncalves wrote:
->>> Hello,
->>>
->>> Recently we started to hit the following panic when testing the
->>> net-next tree on aarch64. The first commit that we hit this is
->>> "b3fce974d423".
->>>
->>> [   44.517109] audit: type=1334 audit(1658859870.268:59): prog-id=19 op=LOAD
->>> [   44.622031] Unable to handle kernel NULL pointer dereference at
->>> virtual address 0000000000000010
->>> [   44.624321] Mem abort info:
->>> [   44.625049]   ESR = 0x0000000096000004
->>> [   44.625935]   EC = 0x25: DABT (current EL), IL = 32 bits
->>> [   44.627182]   SET = 0, FnV = 0
->>> [   44.627930]   EA = 0, S1PTW = 0
->>> [   44.628684]   FSC = 0x04: level 0 translation fault
->>> [   44.629788] Data abort info:
->>> [   44.630474]   ISV = 0, ISS = 0x00000004
->>> [   44.631362]   CM = 0, WnR = 0
->>> [   44.632041] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000100ab5000
->>> [   44.633494] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
->>> [   44.635202] Internal error: Oops: 96000004 [#1] SMP
->>> [   44.636452] Modules linked in: xfs crct10dif_ce ghash_ce virtio_blk
->>> virtio_console virtio_mmio qemu_fw_cfg
->>> [   44.638713] CPU: 2 PID: 1 Comm: systemd Not tainted 5.19.0-rc7 #1
->>> [   44.640164] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
->>> [   44.641799] pstate: 00400005 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>> [   44.643404] pc : ftrace_set_filter_ip+0x24/0xa0
->>> [   44.644659] lr : bpf_trampoline_update.constprop.0+0x428/0x4a0
->>> [   44.646118] sp : ffff80000803b9f0
->>> [   44.646950] x29: ffff80000803b9f0 x28: ffff0b5d80364400 x27: ffff80000803bb48
->>> [   44.648721] x26: ffff8000085ad000 x25: ffff0b5d809d2400 x24: 0000000000000000
->>> [   44.650493] x23: 00000000ffffffed x22: ffff0b5dd7ea0900 x21: 0000000000000000
->>> [   44.652279] x20: 0000000000000000 x19: 0000000000000000 x18: ffffffffffffffff
->>> [   44.654067] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
->>> [   44.655787] x14: ffff0b5d809d2498 x13: ffff0b5d809d2432 x12: 0000000005f5e100
->>> [   44.657535] x11: abcc77118461cefd x10: 000000000000005f x9 : ffffa7219cb5b190
->>> [   44.659254] x8 : ffffa7219c8e0000 x7 : 0000000000000000 x6 : ffffa7219db075e0
->>> [   44.661066] x5 : ffffa7219d3130e0 x4 : ffffa7219cab9da0 x3 : 0000000000000000
->>> [   44.662837] x2 : 0000000000000000 x1 : ffffa7219cb7a5c0 x0 : 0000000000000000
->>> [   44.664675] Call trace:
->>> [   44.665274]  ftrace_set_filter_ip+0x24/0xa0
->>> [   44.666327]  bpf_trampoline_update.constprop.0+0x428/0x4a0
->>> [   44.667696]  __bpf_trampoline_link_prog+0xcc/0x1c0
->>> [   44.668834]  bpf_trampoline_link_prog+0x40/0x64
->>> [   44.669919]  bpf_tracing_prog_attach+0x120/0x490
->>> [   44.671011]  link_create+0xe0/0x2b0
->>> [   44.671869]  __sys_bpf+0x484/0xd30
->>> [   44.672706]  __arm64_sys_bpf+0x30/0x40
->>> [   44.673678]  invoke_syscall+0x78/0x100
->>> [   44.674623]  el0_svc_common.constprop.0+0x4c/0xf4
->>> [   44.675783]  do_el0_svc+0x38/0x4c
->>> [   44.676624]  el0_svc+0x34/0x100
->>> [   44.677429]  el0t_64_sync_handler+0x11c/0x150
->>> [   44.678532]  el0t_64_sync+0x190/0x194
->>> [   44.679439] Code: 2a0203f4 f90013f5 2a0303f5 f9001fe1 (f9400800)
->>> [   44.680959] ---[ end trace 0000000000000000 ]---
->>> [   44.682111] Kernel panic - not syncing: Oops: Fatal exception
->>> [   44.683488] SMP: stopping secondary CPUs
->>> [   44.684551] Kernel Offset: 0x2721948e0000 from 0xffff800008000000
->>> [   44.686095] PHYS_OFFSET: 0xfffff4a380000000
->>> [   44.687144] CPU features: 0x010,00022811,19001080
->>> [   44.688308] Memory Limit: none
->>> [   44.689082] ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
->>>
->>> more logs:
->>> https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/07/26/redhat:597047279/build_aarch64_redhat:597047279_aarch64/tests/1/results_0001/console.log/console.log
->>>
->>> https://datawarehouse.cki-project.org/kcidb/tests/4529120
->>>
->>> CKI issue tracker: https://datawarehouse.cki-project.org/issue/1434
->>>
+On Thu, Jul 28, 2022 at 07:38:01AM +0800, Yang Li wrote:
+> Fix following includecheck warning:
+> ./drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c: linux/err.h is included more than once.
 > 
-> Thanks for the report. I assume the build doesn't have
-> CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS.Does the tracker have
-> a link to the config file?
-> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-There is no direct call on arm64 yet, so the macro can't be enabled.
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
->>
->> Hello,
->>
->> It's caused by a NULL tr->fops passed to ftrace_set_filter_ip:
->>
->> if (tr->func.ftrace_managed) {
->>           ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
->>           ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
->> }
->>
->> Could you test it with the following patch?
->>
->> --- a/kernel/bpf/trampoline.c
->> +++ b/kernel/bpf/trampoline.c
->> @@ -255,8 +255,15 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
->>                   return -ENOENT;
->>
->>           if (tr->func.ftrace_managed) {
->> -               ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
->> -               ret = register_ftrace_direct_multi(tr->fops,(long)new_addr);
->> +               if (tr->fops)
->> +                       ret = ftrace_set_filter_ip(tr->fops, (unsigned long)ip,
->> +                                                  0, 0);
->> +               else
->> +                       ret = -ENOTSUPP;
->> +
->> +               if (!ret)
->> +                       ret = register_ftrace_direct_multi(tr->fops,
->> +                                                          (long)new_addr);
->>           } else {
->>                   ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
->>           }
->>
->> Thanks.
-> 
-> The fix looks good to me. Thanks!
-> Acked-by: Song Liu <songliubraving@fb.com>
-> 
-> Song
-> .
+BTW, next time, please use "net-next" instead of "-next".
 
+Thanks
