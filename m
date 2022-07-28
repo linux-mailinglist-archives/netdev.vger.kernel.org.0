@@ -2,53 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80B98583B96
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 848FF583B9C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:59:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235709AbiG1J5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 05:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        id S235722AbiG1J67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 05:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235034AbiG1J5m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:57:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A536390D;
-        Thu, 28 Jul 2022 02:57:41 -0700 (PDT)
+        with ESMTP id S234937AbiG1J65 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:58:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13A96390D;
+        Thu, 28 Jul 2022 02:58:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09D04B82393;
-        Thu, 28 Jul 2022 09:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE1FC433C1;
-        Thu, 28 Jul 2022 09:57:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EBED614A0;
+        Thu, 28 Jul 2022 09:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DD5C433D7;
+        Thu, 28 Jul 2022 09:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659002258;
-        bh=pzgNl7GHZa2hl9UPO39duiMSklaGM6oa/uofX+is3PE=;
+        s=k20201202; t=1659002335;
+        bh=fo7cx7+jR998x+sKT6+q+pmbkV1soLLQX3aSXJvv9OY=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=tQFi3+7aGm02mP0NWlBfgPD8D2Cl5Cicsw0GLPtCFCJ8vY5s9Vu+4Kr3m4JlEGLG6
-         3OQZLDfSRp+caucGWLumOJuqcP1VSyeXJRoktA0qWfUaxeuHp1/94fG+IvC3LtHpYg
-         TPtfegQ4jaDBv8LWkrhSzyr2+Mj9d2hdPvPNqDLi5u24uDacXikafuiAZesHgT3ZZs
-         pPOr5ZhzxkSOFMgBq7xmJh+1qJnlhPDuBCi2NITUTSbhioFlzCPLZsQVmC9EWvecuE
-         7gmeYprDyknjAglV9vSu8Tq+BTVCTpEDdWpCv07O+kOGutZoiVUDmP7Fk7gA3K6+Yk
-         W+VysNOjb9mbg==
+        b=trQaffMXdMhMxovHwhDRg+/L2fNETbnE3A3TNC7nkAT+awdDCkDzWS+OtmE+3DLJC
+         WxVIz6duubf65lN96GN+8pLldwbUvTrR7xlWEXKgb7Wp4JAoMZ9pqn1YJ6rsMsS0k9
+         aJNVCeZFHzjBpYTKyGd5L+3bWt1R1oq5xFSLA9da3QsI0ozDCRub+YGnysYMrV5xyA
+         mfhgZ9RMrsYByv2CQOkV8oV8Wa3w/yIZRj2H/c8emdn00iQif7OWvbySMh3qLaVa2H
+         SuZtWFz+bTEeVBeJ7DLws1dWxYtmhf/gOcTs+BJBnKlBNLE+aR0u3JZ37eR5xg5i5R
+         ltfgw+wo0Bgfg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [v3] wifi: brcmfmac: Remove #ifdef guards for PM related
- functions
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/2] dt-bindings: bcm4329-fmac: add optional
+ brcm,ccode-map-trivial
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220627193701.31074-1-paul@crapouillou.net>
-References: <20220627193701.31074-1-paul@crapouillou.net>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
+In-Reply-To: <20220711123005.3055300-2-alvin@pqrs.dk>
+References: <20220711123005.3055300-2-alvin@pqrs.dk>
+To:     =?utf-8?q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
-        linux-wireless@vger.kernel.org,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        van Spriel <arend@broadcom.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        =?utf-8?q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+        SHA-cyfmac-dev-list@infineon.com
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165900225429.25113.8345553765798520539.kvalo@kernel.org>
-Date:   Thu, 28 Jul 2022 09:57:36 +0000 (UTC)
+Message-ID: <165900233004.25113.10282302027538037167.kvalo@kernel.org>
+Date:   Thu, 28 Jul 2022 09:58:51 +0000 (UTC)
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,31 +68,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Cercueil <paul@crapouillou.net> wrote:
+Alvin Šipraga <alvin@pqrs.dk> wrote:
 
-> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-> handle the .suspend/.resume callbacks.
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> These macros allow the suspend and resume functions to be automatically
-> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-> to use #ifdef guards.
+> The bindings already offer a brcm,ccode-map property to describe the
+> mapping between the kernel's ISO3166 alpha 2 country code string and the
+> firmware's country code string and revision number. This is a
+> board-specific property and determined by the CLM blob firmware provided
+> by the hardware vendor.
 > 
-> Some other functions not directly called by the .suspend/.resume
-> callbacks, but still related to PM were also taken outside #ifdef
-> guards.
+> However, in some cases the firmware will also use ISO3166 country codes
+> internally, and the revision will always be zero. This implies a trivial
+> mapping: cc -> { cc, 0 }.
 > 
-> The advantage is then that these functions are now always compiled
-> independently of any Kconfig option, and thanks to that bugs and
-> regressions are easier to catch.
+> For such cases, add an optional property brcm,ccode-map-trivial which
+> obviates the need to describe every trivial country code mapping in the
+> device tree with the existing brcm,ccode-map property. The new property
+> is subordinate to the more explicit brcm,ccode-map property.
 > 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Patch applied to wireless-next.git, thanks.
+2 patches applied to wireless-next.git, thanks.
 
-02a186f1e96b wifi: brcmfmac: Remove #ifdef guards for PM related functions
+8406993a891f dt-bindings: bcm4329-fmac: add optional brcm,ccode-map-trivial
+5c54ab24377b wifi: brcmfmac: support brcm,ccode-map-trivial DT property
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220627193701.31074-1-paul@crapouillou.net/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220711123005.3055300-2-alvin@pqrs.dk/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
