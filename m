@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 397B2583FB9
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D3D9583FC6
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237450AbiG1NPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 09:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S236653AbiG1NRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 09:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236581AbiG1NPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:15:30 -0400
-Received: from smtp105.ord1c.emailsrvr.com (smtp105.ord1c.emailsrvr.com [108.166.43.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398581D30C
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:15:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
-        s=20170822-45nk5nwl; t=1659014127;
-        bh=nVyncxBbFfBP0UJB18/l9WTFsKwCNL1U/OTwv2Q77DA=;
-        h=Date:Subject:To:From:From;
-        b=nsk3DOmjPBZ1GglZRpyKS0n6v0e4IpPjB4XLKnTSIoO29+qoPnsuhsa2CvXbOxSCT
-         LwBjFbO4injAnqKuWEQMnVwE7+fs/M+RoocwPqzbeI/u8N2d7fAJ7eU5/jAi83Lyf3
-         UwhkTLUop5fYyqoZr8wq3jWQA8nnn5//XCQXxWOU=
-X-Auth-ID: antonio@openvpn.net
-Received: by smtp14.relay.ord1c.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id C6016C0100;
-        Thu, 28 Jul 2022 09:15:26 -0400 (EDT)
-Message-ID: <52b9d7c9-9f7c-788e-2327-33af63b9c748@openvpn.net>
-Date:   Thu, 28 Jul 2022 15:16:10 +0200
+        with ESMTP id S232335AbiG1NRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:17:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86BE123153
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:17:45 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OL-0004rS-Ts; Thu, 28 Jul 2022 15:17:29 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OJ-000Jl3-Pg; Thu, 28 Jul 2022 15:17:27 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OI-000AYl-Vm; Thu, 28 Jul 2022 15:17:26 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net v1 1/1] net: dsa: microchip: don't try do read Gbit registers on non Gbit chips
+Date:   Thu, 28 Jul 2022 15:17:25 +0200
+Message-Id: <20220728131725.40492-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <20220719014704.21346-1-antonio@openvpn.net>
- <20220719014704.21346-2-antonio@openvpn.net> <YtbNBUZ0Kz7pgmWK@lunn.ch>
- <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net> <YuKKJxSFOgOL836y@lunn.ch>
-From:   Antonio Quartulli <antonio@openvpn.net>
-Organization: OpenVPN Inc.
-In-Reply-To: <YuKKJxSFOgOL836y@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: b21c8d6c-fc14-4b0b-8f33-28a996a66e1f-1-1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Do not try to read not existing or wrong register on chips without
+GBIT_SUPPORT.
 
-On 28/07/2022 15:07, Andrew Lunn wrote:
-> Also, using a mainline driver out of tree is not easy. The code will
-> make use of the latest APIs, and internal APIs are not stable, making
-> it hard to use in older kernels. So you end up with out of tree
-> wrapper code for whatever version of out of tree Linux you decide to
-> support. Take a look at
-> 
-> https://github.com/open-mesh-mirror/batman-adv
+Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz9477.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Yeah, this is exactly what we are already doing.
-We're just trying to keep is as simple as possible for now:
-
-https://github.com/OpenVPN/ovpn-dco/blob/master/linux-compat.h
-
-Thanks for the pointer anyway (I am already deeply inspired by 
-batman-adv, as you may imagine ;-)),
-
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index c73bb6d383ad..f6bbd9646c85 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -316,7 +316,13 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ 			break;
+ 		}
+ 	} else {
+-		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
++		/* No gigabit support.  Do not read wrong registers. */
++		if (!(dev->features & GBIT_SUPPORT) &&
++		    (reg == MII_CTRL1000 || reg == MII_ESTATUS ||
++		     reg == MII_STAT1000))
++			val = 0;
++		else
++			ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
+ 	}
+ 
+ 	*data = val;
 -- 
-Antonio Quartulli
-OpenVPN Inc.
+2.30.2
+
