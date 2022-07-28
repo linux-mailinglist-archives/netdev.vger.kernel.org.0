@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0E3583A89
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B292B583A8D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbiG1Iqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 04:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
+        id S234661AbiG1Iqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 04:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234548AbiG1Iqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:46:36 -0400
+        with ESMTP id S234314AbiG1Iqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:46:37 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843832A94A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:46:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D39613D29
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:46:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658997995; x=1690533995;
+  t=1658997996; x=1690533996;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vHudSdfbzLoWz2xvjVWL3GUMNljbDeXqmvmF+Vn4YBg=;
-  b=JkB9kvFSzm/nQMvGCwa/Z8ut6CHVxUDf9qLQ2q6YI5NUi+IS8JgcWL/T
-   yYDpupSan5NBHUeBfB+g8z6Kt81aJMyNe+LyC+vxfXRCQ1IjDiDCTbJv7
-   eyPy28fyE4/Tg4keW5Ketg4btKKJChJYIQMULmSeN+6YxD24JeUfVRUP3
-   D7mCSNRshgSN0UJhYfUYIg0xK18WBfVVLNff5LDBNlPVqYQC9dDlKygdT
-   hPnSbIROLLfHrNUK1j2gkJHTfb0/h1DOl330C4OyWkZbRhCHJmePEVerd
-   eCBFAQ0gCO0dlGfRrhbN51O9CfdEvBLVzFqqoUZzF9y4KeajZEa3X1HFt
+  bh=AZ7qrY7cRaLsiPaTA8LRce0h72ENGcOx67Z+mdbV/qA=;
+  b=PLVkUFmif/Un+yc7VVcY7BuZsYYmLWY9W2fDVAtnkp3vfVs3CDsKONpD
+   OCM06qosaskUQtypmzNpXnCIvhmdbX40DqrFvyih4w+8nFFuHhU2QIwaL
+   m3IxFsd733jPUz2T9geaHapopK0W6hrgtu0rhvMtR9fy/QXumetpOF1r2
+   SJvogcbqbbUTbtms+QQyGd9TJyhHX7PY/vW1pTOe9B4lmbsfO8OdUOF0o
+   DR4L8qEogFERMY16MYgZLKjrpX0G1b8xeg76wsfPs09eWD/npuIEwJUPc
+   YKv5hLjonS7+W7sqC79zxaLEUBS8uo+7hvUhPvaqfsJiQ2m/XXAx+tTJ6
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="271500177"
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="271500180"
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="271500177"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+   d="scan'208";a="271500180"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 01:46:35 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="846617284"
+   d="scan'208";a="576367760"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Jul 2022 01:46:33 -0700
+  by orsmga006.jf.intel.com with ESMTP; 28 Jul 2022 01:46:34 -0700
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26S8kWS2008698;
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26S8kWS3008698;
         Thu, 28 Jul 2022 09:46:33 +0100
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, stephen@networkplumber.org
-Subject: [PATCH iproute-next v2 2/3] lib: Introduce ppp protocols
-Date:   Thu, 28 Jul 2022 10:44:36 +0200
-Message-Id: <20220728084437.486187-3-wojciech.drewek@intel.com>
+Subject: [PATCH iproute-next v2 3/3] f_flower: Introduce PPPoE support
+Date:   Thu, 28 Jul 2022 10:44:37 +0200
+Message-Id: <20220728084437.486187-4-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220728084437.486187-1-wojciech.drewek@intel.com>
 References: <20220728084437.486187-1-wojciech.drewek@intel.com>
@@ -60,151 +60,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PPP protocol field uses different values than ethertype. Introduce
-utilities for translating PPP protocols from strings to values
-and vice versa. Use generic API from utils in order to get
-proto id and name.
+Introduce PPPoE specific fields in tc-flower:
+- session id (16 bits)
+- ppp protocol (16 bits)
+Those fields can be provided only when protocol was set to
+ETH_P_PPP_SES. ppp_proto works similar to vlan_ethtype, i.e.
+ppp_proto overwrites eth_type. Thanks to that, fields from
+encapsulated protocols (such as src_ip) can be specified.
+
+e.g.
+  # tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses \
+      flower \
+        pppoe_sid 1234 \
+        ppp_proto ip \
+        dst_ip 127.0.0.1 \
+        src_ip 127.0.0.2 \
+      action drop
+
+Vlan and cvlan is also supported, in this case cvlan_ethtype
+or vlan_ethtype has to be set to ETH_P_PPP_SES.
+
+e.g.
+  # tc filter add dev ens6f0 ingress prio 1 protocol 802.1Q \
+      flower \
+        vlan_id 2 \
+        vlan_ethtype ppp_ses \
+        pppoe_sid 1234 \
+        ppp_proto ip \
+        dst_ip 127.0.0.1 \
+        src_ip 127.0.0.2 \
+      action drop
 
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
-v2: Helper functions moved to separate commit
+v2: add pppoe fields to explain
 ---
- include/rt_names.h            |  3 ++
- include/uapi/linux/ppp_defs.h | 37 +++++++++++++++++++++++++
- lib/Makefile                  |  2 +-
- lib/ppp_proto.c               | 52 +++++++++++++++++++++++++++++++++++
- 4 files changed, 93 insertions(+), 1 deletion(-)
- create mode 100644 include/uapi/linux/ppp_defs.h
- create mode 100644 lib/ppp_proto.c
+ include/uapi/linux/pkt_cls.h |  3 ++
+ man/man8/tc-flower.8         | 17 ++++++++++-
+ tc/f_flower.c                | 58 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 77 insertions(+), 1 deletion(-)
 
-diff --git a/include/rt_names.h b/include/rt_names.h
-index 1835f3be2bed..6358650db404 100644
---- a/include/rt_names.h
-+++ b/include/rt_names.h
-@@ -31,6 +31,9 @@ int ll_addr_a2n(char *lladdr, int len, const char *arg);
- const char * ll_proto_n2a(unsigned short id, char *buf, int len);
- int ll_proto_a2n(unsigned short *id, const char *buf);
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 9a2ee1e39fad..a67dcd8294c9 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -589,6 +589,9 @@ enum {
  
-+const char *ppp_proto_n2a(unsigned short id, char *buf, int len);
-+int ppp_proto_a2n(unsigned short *id, const char *buf);
+ 	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
+ 
++	TCA_FLOWER_KEY_PPPOE_SID,	/* u16 */
++	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
 +
- const char *nl_proto_n2a(int id, char *buf, int len);
- int nl_proto_a2n(__u32 *id, const char *arg);
+ 	__TCA_FLOWER_MAX,
+ };
  
-diff --git a/include/uapi/linux/ppp_defs.h b/include/uapi/linux/ppp_defs.h
-new file mode 100644
-index 000000000000..0013dc77e3b9
---- /dev/null
-+++ b/include/uapi/linux/ppp_defs.h
-@@ -0,0 +1,37 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * ppp_defs.h - PPP definitions.
-+ *
-+ * Copyright 1994-2000 Paul Mackerras.
-+ *
-+ *  This program is free software; you can redistribute it and/or
-+ *  modify it under the terms of the GNU General Public License
-+ *  version 2 as published by the Free Software Foundation.
-+ */
-+
-+/*
-+ * Protocol field values.
-+ */
-+#define PPP_IP		0x21	/* Internet Protocol */
-+#define PPP_AT		0x29	/* AppleTalk Protocol */
-+#define PPP_IPX		0x2b	/* IPX protocol */
-+#define	PPP_VJC_COMP	0x2d	/* VJ compressed TCP */
-+#define	PPP_VJC_UNCOMP	0x2f	/* VJ uncompressed TCP */
-+#define PPP_MP		0x3d	/* Multilink protocol */
-+#define PPP_IPV6	0x57	/* Internet Protocol Version 6 */
-+#define PPP_COMPFRAG	0xfb	/* fragment compressed below bundle */
-+#define PPP_COMP	0xfd	/* compressed packet */
-+#define PPP_MPLS_UC	0x0281	/* Multi Protocol Label Switching - Unicast */
-+#define PPP_MPLS_MC	0x0283	/* Multi Protocol Label Switching - Multicast */
-+#define PPP_IPCP	0x8021	/* IP Control Protocol */
-+#define PPP_ATCP	0x8029	/* AppleTalk Control Protocol */
-+#define PPP_IPXCP	0x802b	/* IPX Control Protocol */
-+#define PPP_IPV6CP	0x8057	/* IPv6 Control Protocol */
-+#define PPP_CCPFRAG	0x80fb	/* CCP at link level (below MP bundle) */
-+#define PPP_CCP		0x80fd	/* Compression Control Protocol */
-+#define PPP_MPLSCP	0x80fd	/* MPLS Control Protocol */
-+#define PPP_LCP		0xc021	/* Link Control Protocol */
-+#define PPP_PAP		0xc023	/* Password Authentication Protocol */
-+#define PPP_LQR		0xc025	/* Link Quality Report protocol */
-+#define PPP_CHAP	0xc223	/* Cryptographic Handshake Auth. Protocol */
-+#define PPP_CBCP	0xc029	/* Callback Control Protocol */
-diff --git a/lib/Makefile b/lib/Makefile
-index 6c98f9a61fdb..ddedd37feb32 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -5,7 +5,7 @@ CFLAGS += -fPIC
- 
- UTILOBJ = utils.o utils_math.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
- 	inet_proto.o namespace.o json_writer.o json_print.o json_print_math.o \
--	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o
-+	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o ppp_proto.o
- 
- ifeq ($(HAVE_ELF),y)
- ifeq ($(HAVE_LIBBPF),y)
-diff --git a/lib/ppp_proto.c b/lib/ppp_proto.c
-new file mode 100644
-index 000000000000..a63466432888
---- /dev/null
-+++ b/lib/ppp_proto.c
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Utilities for translating PPP protocols from strings
-+ * and vice versa.
-+ *
-+ * Authors:     Wojciech Drewek <wojciech.drewek@intel.com>
-+ */
-+
+diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
+index 523935242ccf..5e486ea31d37 100644
+--- a/man/man8/tc-flower.8
++++ b/man/man8/tc-flower.8
+@@ -40,6 +40,10 @@ flower \- flow based traffic control filter
+ .IR PRIORITY " | "
+ .BR cvlan_ethtype " { " ipv4 " | " ipv6 " | "
+ .IR ETH_TYPE " } | "
++.B pppoe_sid
++.IR PSID " | "
++.BR ppp_proto " { " ip " | " ipv6 " | " mpls_uc " | " mpls_mc " | "
++.IR PPP_PROTO " } | "
+ .B mpls
+ .IR LSE_LIST " | "
+ .B mpls_label
+@@ -202,7 +206,18 @@ Match on QinQ layer three protocol.
+ may be either
+ .BR ipv4 ", " ipv6
+ or an unsigned 16bit value in hexadecimal format.
+-
++.TP
++.BI pppoe_sid " PSID"
++Match on PPPoE session id.
++.I PSID
++is an unsigned 16bit value in decimal format.
++.TP
++.BI ppp_proto " PPP_PROTO"
++Match on PPP layer three protocol.
++.I PPP_PROTO
++may be either
++.BR ip ", " ipv6 ", " mpls_uc ", " mpls_mc
++or an unsigned 16bit value in hexadecimal format.
+ .TP
+ .BI mpls " LSE_LIST"
+ Match on the MPLS label stack.
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 622ec321f310..c95320328b20 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -20,6 +20,7 @@
+ #include <linux/ip.h>
+ #include <linux/tc_act/tc_vlan.h>
+ #include <linux/mpls.h>
 +#include <linux/ppp_defs.h>
-+#include <linux/if_ether.h>
-+#include "utils.h"
-+#include "rt_names.h"
+ 
+ #include "utils.h"
+ #include "tc_util.h"
+@@ -55,6 +56,8 @@ static void explain(void)
+ 		"			cvlan_id VID |\n"
+ 		"			cvlan_prio PRIORITY |\n"
+ 		"			cvlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
++		"			pppoe_sid PSID |\n"
++		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
+ 		"			dst_mac MASKED-LLADDR |\n"
+ 		"			src_mac MASKED-LLADDR |\n"
+ 		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | IP-PROTO ] |\n"
+@@ -1887,6 +1890,43 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 				fprintf(stderr, "Illegal \"arp_sha\"\n");
+ 				return -1;
+ 			}
 +
-+static const struct proto ppp_proto_names[] = {
-+	{PPP_IP, "ip"},
-+	{PPP_AT, "at"},
-+	{PPP_IPX, "ipx"},
-+	{PPP_VJC_COMP, "vjc_comp"},
-+	{PPP_VJC_UNCOMP, "vjc_uncomp"},
-+	{PPP_MP, "mp"},
-+	{PPP_IPV6, "ipv6"},
-+	{PPP_COMPFRAG, "compfrag"},
-+	{PPP_COMP, "comp"},
-+	{PPP_MPLS_UC, "mpls_uc"},
-+	{PPP_MPLS_MC, "mpls_mc"},
-+	{PPP_IPCP, "ipcp"},
-+	{PPP_ATCP, "atcp"},
-+	{PPP_IPXCP, "ipxcp"},
-+	{PPP_IPV6CP, "ipv6cp"},
-+	{PPP_CCPFRAG, "ccpfrag"},
-+	{PPP_CCP, "ccp"},
-+	{PPP_MPLSCP, "mplscp"},
-+	{PPP_LCP, "lcp"},
-+	{PPP_PAP, "pap"},
-+	{PPP_LQR, "lqr"},
-+	{PPP_CHAP, "chap"},
-+	{PPP_CBCP, "cbcp"},
-+};
++		} else if (!strcmp(*argv, "pppoe_sid")) {
++			__be16 sid;
 +
-+const char *ppp_proto_n2a(unsigned short id, char *buf, int len)
-+{
-+	size_t len_tb = ARRAY_SIZE(ppp_proto_names);
++			NEXT_ARG();
++			if (eth_type != htons(ETH_P_PPP_SES)) {
++				fprintf(stderr,
++					"Can't set \"pppoe_sid\" if ethertype isn't PPPoE session\n");
++				return -1;
++			}
++			ret = get_be16(&sid, *argv, 10);
++			if (ret < 0 || sid == 0xffff) {
++				fprintf(stderr, "Illegal \"pppoe_sid\"\n");
++				return -1;
++			}
++			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPPOE_SID, sid);
++		} else if (!strcmp(*argv, "ppp_proto")) {
++			__be16 proto;
 +
-+	return proto_n2a(id, buf, len, ppp_proto_names, len_tb);
-+}
++			NEXT_ARG();
++			if (eth_type != htons(ETH_P_PPP_SES)) {
++				fprintf(stderr,
++					"Can't set \"ppp_proto\" if ethertype isn't PPPoE session\n");
++				return -1;
++			}
++			if (ppp_proto_a2n(&proto, *argv))
++				invarg("invalid ppp_proto", *argv);
++			/* get new ethtype for later parsing  */
++			if (proto == htons(PPP_IP))
++				eth_type = htons(ETH_P_IP);
++			else if (proto == htons(PPP_IPV6))
++				eth_type = htons(ETH_P_IPV6);
++			else if (proto == htons(PPP_MPLS_UC))
++				eth_type = htons(ETH_P_MPLS_UC);
++			else if (proto == htons(PPP_MPLS_MC))
++				eth_type = htons(ETH_P_MPLS_MC);
++			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPP_PROTO, proto);
+ 		} else if (matches(*argv, "enc_dst_ip") == 0) {
+ 			NEXT_ARG();
+ 			ret = flower_parse_ip_addr(*argv, 0,
+@@ -2851,6 +2891,24 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
+ 	flower_print_eth_addr("arp_tha", tb[TCA_FLOWER_KEY_ARP_THA],
+ 			      tb[TCA_FLOWER_KEY_ARP_THA_MASK]);
+ 
++	if (tb[TCA_FLOWER_KEY_PPPOE_SID]) {
++		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPPOE_SID];
 +
-+int ppp_proto_a2n(unsigned short *id, const char *buf)
-+{
-+	size_t len_tb = ARRAY_SIZE(ppp_proto_names);
++		print_nl();
++		print_uint(PRINT_ANY, "pppoe_sid", "  pppoe_sid %u",
++			   rta_getattr_be16(attr));
++	}
 +
-+	return proto_a2n(id, buf, ppp_proto_names, len_tb);
-+}
++	if (tb[TCA_FLOWER_KEY_PPP_PROTO]) {
++		SPRINT_BUF(buf);
++		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPP_PROTO];
++
++		print_nl();
++		print_string(PRINT_ANY, "ppp_proto", "  ppp_proto %s",
++			     ppp_proto_n2a(rta_getattr_u16(attr),
++			     buf, sizeof(buf)));
++	}
++
+ 	flower_print_ip_addr("enc_dst_ip",
+ 			     tb[TCA_FLOWER_KEY_ENC_IPV4_DST_MASK] ?
+ 			     htons(ETH_P_IP) : htons(ETH_P_IPV6),
 -- 
 2.31.1
 
