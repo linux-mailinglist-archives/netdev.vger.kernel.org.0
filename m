@@ -2,348 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07425583D61
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59593583BDB
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 12:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236133AbiG1L1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 07:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S231260AbiG1KMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 06:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235485AbiG1L1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:27:45 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9DF294;
-        Thu, 28 Jul 2022 04:27:42 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VKfSKFm_1659007656;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKfSKFm_1659007656)
-          by smtp.aliyun-inc.com;
-          Thu, 28 Jul 2022 19:27:37 +0800
-Message-ID: <1659001321.5738833-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v13 16/42] virtio_ring: split: introduce virtqueue_resize_split()
-Date:   Thu, 28 Jul 2022 17:42:01 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        Kangjie Xu <kangjie.xu@linux.alibaba.com>,
-        virtualization <virtualization@lists.linux-foundation.org>
-References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
- <20220726072225.19884-17-xuanzhuo@linux.alibaba.com>
- <15aa26f2-f8af-5dbd-f2b2-9270ad873412@redhat.com>
- <1658907413.1860468-2-xuanzhuo@linux.alibaba.com>
- <CACGkMEvxsOfiiaWWAR8P68GY1yfwgTvaAbHk1JF7pTw-o2k25w@mail.gmail.com>
- <1658992162.584327-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEv-KYieHKXY_Qn0nfcnLMOSF=TowF5PwLKOxESL3KQ40Q@mail.gmail.com>
- <1658995783.1026692-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEv6Ptn4zj_F-ww3Nay-VPmCNrXLaf5U98PvupAvo44FpA@mail.gmail.com>
-In-Reply-To: <CACGkMEv6Ptn4zj_F-ww3Nay-VPmCNrXLaf5U98PvupAvo44FpA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234681AbiG1KMr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 06:12:47 -0400
+Received: from smtp-42aa.mail.infomaniak.ch (smtp-42aa.mail.infomaniak.ch [IPv6:2001:1600:4:17::42aa])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1794E65545;
+        Thu, 28 Jul 2022 03:12:44 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Ltmfz1TykzMqZgs;
+        Thu, 28 Jul 2022 12:12:43 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Ltmfy4FBqzln8Vn;
+        Thu, 28 Jul 2022 12:12:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1659003163;
+        bh=86kTHghWAkjF6FizwalX3OjPsXiqgzxG0Gy8ziz1wRs=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=0m+UoQtW0DLZYRerKFN3sLdSgs+R09NgjzMDtkI4rR6lKLWNM45zQ2w8L7wLnAEZz
+         pw748JbdtUs8xq7FffwWeR4MV/PKQkiOVdpSYJjCJ10vT+KQkLa3jXGDlrbzusjCqw
+         8X1EF7xFKCvo6gV2QoveAQUXEmRPOmEAh3kBCqD4=
+Message-ID: <83796b1f-d2c0-06f9-c5fd-eb81d51a1a95@digikod.net>
+Date:   Thu, 28 Jul 2022 12:12:41 +0200
+MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
+ <6691d91f-c03b-30fa-2fa0-d062b3b234b9@digikod.net>
+ <38fa02c6-a8d1-892b-3f30-4a2d6b38efe5@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v6 00/17] Network support for Landlock
+In-Reply-To: <38fa02c6-a8d1-892b-3f30-4a2d6b38efe5@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jul 2022 17:04:36 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Thu, Jul 28, 2022 at 4:18 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
-ote:
-> >
-> > On Thu, 28 Jul 2022 15:42:50 +0800, Jason Wang <jasowang@redhat.com> wr=
-ote:
-> > > On Thu, Jul 28, 2022 at 3:24 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com=
-> wrote:
-> > > >
-> > > > On Thu, 28 Jul 2022 10:38:51 +0800, Jason Wang <jasowang@redhat.com=
-> wrote:
-> > > > > On Wed, Jul 27, 2022 at 3:44 PM Xuan Zhuo <xuanzhuo@linux.alibaba=
-.com> wrote:
-> > > > > >
-> > > > > > On Wed, 27 Jul 2022 11:12:19 +0800, Jason Wang <jasowang@redhat=
-.com> wrote:
-> > > > > > >
-> > > > > > > =E5=9C=A8 2022/7/26 15:21, Xuan Zhuo =E5=86=99=E9=81=93:
-> > > > > > > > virtio ring split supports resize.
-> > > > > > > >
-> > > > > > > > Only after the new vring is successfully allocated based on=
- the new num,
-> > > > > > > > we will release the old vring. In any case, an error is ret=
-urned,
-> > > > > > > > indicating that the vring still points to the old vring.
-> > > > > > > >
-> > > > > > > > In the case of an error, re-initialize(virtqueue_reinit_spl=
-it()) the
-> > > > > > > > virtqueue to ensure that the vring can be used.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > > ---
-> > > > > > > >   drivers/virtio/virtio_ring.c | 34 +++++++++++++++++++++++=
-+++++++++++
-> > > > > > > >   1 file changed, 34 insertions(+)
-> > > > > > > >
-> > > > > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/=
-virtio_ring.c
-> > > > > > > > index b6fda91c8059..58355e1ac7d7 100644
-> > > > > > > > --- a/drivers/virtio/virtio_ring.c
-> > > > > > > > +++ b/drivers/virtio/virtio_ring.c
-> > > > > > > > @@ -220,6 +220,7 @@ static struct virtqueue *__vring_new_vi=
-rtqueue(unsigned int index,
-> > > > > > > >                                            void (*callback)=
-(struct virtqueue *),
-> > > > > > > >                                            const char *name=
-);
-> > > > > > > >   static struct vring_desc_extra *vring_alloc_desc_extra(un=
-signed int num);
-> > > > > > > > +static void vring_free(struct virtqueue *_vq);
-> > > > > > > >
-> > > > > > > >   /*
-> > > > > > > >    * Helpers.
-> > > > > > > > @@ -1117,6 +1118,39 @@ static struct virtqueue *vring_creat=
-e_virtqueue_split(
-> > > > > > > >     return vq;
-> > > > > > > >   }
-> > > > > > > >
-> > > > > > > > +static int virtqueue_resize_split(struct virtqueue *_vq, u=
-32 num)
-> > > > > > > > +{
-> > > > > > > > +   struct vring_virtqueue_split vring_split =3D {};
-> > > > > > > > +   struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > > > > > > > +   struct virtio_device *vdev =3D _vq->vdev;
-> > > > > > > > +   int err;
-> > > > > > > > +
-> > > > > > > > +   err =3D vring_alloc_queue_split(&vring_split, vdev, num,
-> > > > > > > > +                                 vq->split.vring_align,
-> > > > > > > > +                                 vq->split.may_reduce_num);
-> > > > > > > > +   if (err)
-> > > > > > > > +           goto err;
-> > > > > > >
-> > > > > > >
-> > > > > > > I think we don't need to do anything here?
-> > > > > >
-> > > > > > Am I missing something?
-> > > > >
-> > > > > I meant it looks to me most of the virtqueue_reinit() is unnecess=
-ary.
-> > > > > We probably only need to reinit avail/used idx there.
-> > > >
-> > > >
-> > > > In this function, we can indeed remove some code.
-> > > >
-> > > > >       static void virtqueue_reinit_split(struct vring_virtqueue *=
-vq)
-> > > > >       {
-> > > > >               int size, i;
-> > > > >
-> > > > >               memset(vq->split.vring.desc, 0, vq->split.queue_siz=
-e_in_bytes);
-> > > > >
-> > > > >               size =3D sizeof(struct vring_desc_state_split) * vq=
-->split.vring.num;
-> > > > >               memset(vq->split.desc_state, 0, size);
-> > > > >
-> > > > >               size =3D sizeof(struct vring_desc_extra) * vq->spli=
-t.vring.num;
-> > > > >               memset(vq->split.desc_extra, 0, size);
-> > > >
-> > > > These memsets can be removed, and theoretically it will not cause a=
-ny
-> > > > exceptions.
-> > >
-> > > Yes, otherwise we have bugs in detach_buf().
-> > >
-> > > >
-> > > > >
-> > > > >
-> > > > >
-> > > > >               for (i =3D 0; i < vq->split.vring.num - 1; i++)
-> > > > >                       vq->split.desc_extra[i].next =3D i + 1;
-> > > >
-> > > > This can also be removed, but we need to record free_head that will=
- been update
-> > > > inside virtqueue_init().
-> > >
-> > > We can simply keep free_head unchanged? Otherwise it's a bug somewher=
-e I guess.
-> > >
-> > >
-> > > >
-> > > > >
-> > > > >               virtqueue_init(vq, vq->split.vring.num);
-> > > >
-> > > > There are some operations in this, which can also be skipped, such =
-as setting
-> > > > use_dma_api. But I think calling this function directly will be mor=
-e convenient
-> > > > for maintenance.
-> > >
-> > > I don't see anything that is necessary here.
-> >
-> > These three are currently inside virtqueue_init()
-> >
-> > vq->last_used_idx =3D 0;
-> > vq->event_triggered =3D false;
-> > vq->num_added =3D 0;
->
-> Right. Let's keep it there.
->
-> (Though it's kind of strange that the last_used_idx is not initialized
-> at the same place with avail_idx/flags_shadow, we can optimize it on
-> top).
-
-I put free_head =3D 0 in the attach function, it is only necessary to set
-free_head =3D 0 when a new state/extra is attached.
-
-In this way, when we call virtqueue_init(), we don't have to worry about
-free_head being modified.
-
-Rethinking this problem, I think virtqueue_init() can be rewritten and some
-variables that will not change are removed from it. (use_dma_api, event,
-weak_barriers)
-
-+static void virtqueue_init(struct vring_virtqueue *vq, u32 num)
-+{
-+       vq->vq.num_free =3D num;
-+
-+       if (vq->packed_ring)
-+               vq->last_used_idx =3D 0 | (1 << VRING_PACKED_EVENT_F_WRAP_C=
-TR);
-+       else
-+               vq->last_used_idx =3D 0;
-+
-+       vq->event_triggered =3D false;
-+       vq->num_added =3D 0;
-+
-+#ifdef DEBUG
-+       vq->in_use =3D false;
-+       vq->last_add_time_valid =3D false;
-+#endif
-+}
-+
-
-Thanks.
 
 
->
-> Thanks
->
-> >
-> > Thanks.
-> >
-> >
-> > >
-> > > >
-> > > >
-> > > > >               virtqueue_vring_init_split(&vq->split, vq);
-> > > >
-> > > > virtqueue_vring_init_split() is necessary.
-> > >
-> > > Right.
-> > >
-> > > >
-> > > > >       }
-> > > >
-> > > > Another method, we can take out all the variables to be reinitializ=
-ed
-> > > > separately, and repackage them into a new function. I don=E2=80=99t=
- think it=E2=80=99s worth
-> > > > it, because this path will only be reached if the memory allocation=
- fails, which
-> > > > is a rare occurrence. In this case, doing so will increase the cost=
- of
-> > > > maintenance. If you think so also, I will remove the above memset i=
-n the next
-> > > > version.
-> > >
-> > > I agree.
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > Thanks.
-> > > >
-> > > >
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > > +
-> > > > > > > > +   err =3D vring_alloc_state_extra_split(&vring_split);
-> > > > > > > > +   if (err) {
-> > > > > > > > +           vring_free_split(&vring_split, vdev);
-> > > > > > > > +           goto err;
-> > > > > > >
-> > > > > > >
-> > > > > > > I suggest to move vring_free_split() into a dedicated error l=
-abel.
-> > > > > >
-> > > > > > Will change.
-> > > > > >
-> > > > > > Thanks.
-> > > > > >
-> > > > > >
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > >
-> > > > > > >
-> > > > > > > > +   }
-> > > > > > > > +
-> > > > > > > > +   vring_free(&vq->vq);
-> > > > > > > > +
-> > > > > > > > +   virtqueue_vring_init_split(&vring_split, vq);
-> > > > > > > > +
-> > > > > > > > +   virtqueue_init(vq, vring_split.vring.num);
-> > > > > > > > +   virtqueue_vring_attach_split(vq, &vring_split);
-> > > > > > > > +
-> > > > > > > > +   return 0;
-> > > > > > > > +
-> > > > > > > > +err:
-> > > > > > > > +   virtqueue_reinit_split(vq);
-> > > > > > > > +   return -ENOMEM;
-> > > > > > > > +}
-> > > > > > > > +
-> > > > > > > >
-> > > > > > > >   /*
-> > > > > > > >    * Packed ring specific functions - *_packed().
-> > > > > > >
-> > > > > >
-> > > > >
-> > > >
-> > >
-> >
->
+On 28/07/2022 11:25, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 7/27/2022 10:54 PM, Mickaël Salaün пишет:
+>>
+>>
+>> On 26/07/2022 19:43, Mickaël Salaün wrote:
+>>>
+>>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
+>>>> Hi,
+>>>> This is a new V6 patch related to Landlock LSM network confinement.
+>>>> It is based on the latest landlock-wip branch on top of v5.19-rc2:
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=landlock-wip
+>>>>
+>>>> It brings refactoring of previous patch version V5:
+>>>>      - Fixes some logic errors and typos.
+>>>>      - Adds additional FIXTURE_VARIANT and FIXTURE_VARIANT_ADD helpers
+>>>>      to support both ip4 and ip6 families and shorten seltests' code.
+>>>>      - Makes TCP sockets confinement support optional in sandboxer 
+>>>> demo.
+>>>>      - Formats the code with clang-format-14
+>>>>
+>>>> All test were run in QEMU evironment and compiled with
+>>>>   -static flag.
+>>>>   1. network_test: 18/18 tests passed.
+>>>>   2. base_test: 7/7 tests passed.
+>>>>   3. fs_test: 59/59 tests passed.
+>>>>   4. ptrace_test: 8/8 tests passed.
+>>>>
+>>>> Still have issue with base_test were compiled without -static flag
+>>>> (landlock-wip branch without network support)
+>>>> 1. base_test: 6/7 tests passed.
+>>>>   Error:
+>>>>   #  RUN           global.inconsistent_attr ...
+>>>>   # base_test.c:54:inconsistent_attr:Expected ENOMSG (42) == errno (22)
+>>>>   # inconsistent_attr: Test terminated by assertion
+>>>>   #          FAIL  global.inconsistent_attr
+>>>> not ok 1 global.inconsistent_attr
+>>>>
+>>>> LCOV - code coverage report:
+>>>>              Hit  Total  Coverage
+>>>> Lines:      952  1010    94.3 %
+>>>> Functions:  79   82      96.3 %
+>>>>
+>>>> Previous versions:
+>>>> v5: 
+>>>> https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
+>>>> v4: 
+>>>> https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
+>>>> v3: 
+>>>> https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+>>>> v2: 
+>>>> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+>>>> v1: 
+>>>> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+>>>>
+>>>> Konstantin Meskhidze (17):
+>>>>    landlock: renames access mask
+>>>>    landlock: refactors landlock_find/insert_rule
+>>>>    landlock: refactors merge and inherit functions
+>>>>    landlock: moves helper functions
+>>>>    landlock: refactors helper functions
+>>>>    landlock: refactors landlock_add_rule syscall
+>>>>    landlock: user space API network support
+>>>>    landlock: adds support network rules
+>>>>    landlock: implements TCP network hooks
+>>>>    seltests/landlock: moves helper function
+>>>>    seltests/landlock: adds tests for bind() hooks
+>>>>    seltests/landlock: adds tests for connect() hooks
+>>>>    seltests/landlock: adds AF_UNSPEC family test
+>>>>    seltests/landlock: adds rules overlapping test
+>>>>    seltests/landlock: adds ruleset expanding test
+>>>>    seltests/landlock: adds invalid input data test
+>>>>    samples/landlock: adds network demo
+>>>>
+>>>>   include/uapi/linux/landlock.h               |  49 ++
+>>>>   samples/landlock/sandboxer.c                | 118 ++-
+>>>>   security/landlock/Kconfig                   |   1 +
+>>>>   security/landlock/Makefile                  |   2 +
+>>>>   security/landlock/fs.c                      | 162 +---
+>>>>   security/landlock/limits.h                  |   8 +-
+>>>>   security/landlock/net.c                     | 155 ++++
+>>>>   security/landlock/net.h                     |  26 +
+>>>>   security/landlock/ruleset.c                 | 448 +++++++++--
+>>>>   security/landlock/ruleset.h                 |  91 ++-
+>>>>   security/landlock/setup.c                   |   2 +
+>>>>   security/landlock/syscalls.c                | 168 +++--
+>>>>   tools/testing/selftests/landlock/common.h   |  10 +
+>>>>   tools/testing/selftests/landlock/config     |   4 +
+>>>>   tools/testing/selftests/landlock/fs_test.c  |  10 -
+>>>>   tools/testing/selftests/landlock/net_test.c | 774 
+>>>> ++++++++++++++++++++
+>>>>   16 files changed, 1737 insertions(+), 291 deletions(-)
+>>>>   create mode 100644 security/landlock/net.c
+>>>>   create mode 100644 security/landlock/net.h
+>>>>   create mode 100644 tools/testing/selftests/landlock/net_test.c
+>>>>
+>>>> -- 
+>>>> 2.25.1
+>>>>
+>>>
+>>> I did a thorough review of all the code. I found that the main issue 
+>>> with this version is that we stick to the layers limit whereas it is 
+>>> only relevant for filesystem hierarchies. You'll find in the 
+>>> following patch miscellaneous fixes and improvement, with some TODOs 
+>>> to get rid of this layer limit. We'll need a test to check that too. 
+>>> You'll need to integrate this diff into your patches though.
+>>
+>> You can find the related patch here:
+>> https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
+> 
+>   Is this patch based on your updated landlock-wip branch or it's still 
+> on Linux 5.19-rc2 version?
+
+It's based on v5.19-rc2 but it doesn't really matter. I removed the 
+landlock-wip branch, which is not needed anymore. You can base your 
+patches on Linus' master branch.
