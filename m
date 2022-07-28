@@ -2,166 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19478584673
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F61C58468D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbiG1TNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
+        id S232721AbiG1TOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233093AbiG1TMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:12:30 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9256691D9;
-        Thu, 28 Jul 2022 12:12:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VQMx+vnzV740+n741jCMuyAmjmgNeMyYicnMG70cVu1N4dY4T1StWhGvKpCpPHsWkT1zKsZu+xqxJvGzwkt8dzdbQNqoxHi/Gr34VehoLfGA/NyXNVsCusBgKB6oyO1GYt/sFr7frb0UFqLDarKIBUEoVlcFgBW4uwegflRw9Zu0crdwaFmxEWRtvRT2VU9FdJyJY2fedwjcTniqZCP1Tu+Xdt+xwLCHfpOaqlN0SDdMUq6AATiGI8nBnlrpz5YQh9reecovSVJxPyl6UtY5mtgYgTmBqX/8aJxHG5cLb7ySkuvzgkQHleoi+Q9qR1FxDCTT3StzrkSkCy4oflKLAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/cLQU7+nU5eOwT7QayClX4EbG5c4mI67Su2od66AifM=;
- b=Q/ZSItYddwfNergPPb9Jv0V3UdpD/Y7eq1HZvEzUaa+cJ6CxjhRoIQrPnW9pDV1ZxnEDlR9eYAYGLOjImqqKyN1ynaZji6INaYvMv32fZd39NmZ2DNPjP6qptZoQeSq74miyBeuxsxHIQHdpPAdAq1OoolulfhQwP6sRl03Byf8nEa72kSrnY8sxVjcVGA9CfUcvFBYWZbAp1MoUMpEj3Q8f0Beei0JLhXf7BDPaE99b3wZvYp2CC3O/IuP98hC6jBeCkAEkN7jR1SRd13LnTrsXuJe/3IZPH09KfnXF/OQVP3R6FzlSBNNot6wwJIQ7ntRN/OueeaVPnCHuhlbHfg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/cLQU7+nU5eOwT7QayClX4EbG5c4mI67Su2od66AifM=;
- b=fqNXsp2zLNaeyBC71MuRnxaBQnvBtKx5PCeYYKJiEkUum9/JXpekt5GeuLpwTByo0bB/IaXS5V24SwSb2mlHXNXJofWgp2QgeSAZI3zUF9nbsBq+G8/WIuEnnZMhxDMqOu5mo26CaY9pEzXLZU1BYKcERxn4Z8Yd3M32ZaP0dbK32+SjhppL15J8GVWFx3nGTzSeiYBT3vj2YcCLTIk7XAJChZQ8QlVZb+D53vYh4/+9PFCjJHASw+rSwbQkQKMW96dD+3hMDpb47vznEv4aBORbvQHOGTQIaYKqwQPAGimOw+C2OzgHl/QGAT4Fc6q6EMvXWcYogZg+TkpeO60Waw==
-Received: from MW4PR04CA0188.namprd04.prod.outlook.com (2603:10b6:303:86::13)
- by BYAPR12MB2936.namprd12.prod.outlook.com (2603:10b6:a03:12f::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 28 Jul
- 2022 19:12:28 +0000
-Received: from CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:86:cafe::a1) by MW4PR04CA0188.outlook.office365.com
- (2603:10b6:303:86::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19 via Frontend
- Transport; Thu, 28 Jul 2022 19:12:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT039.mail.protection.outlook.com (10.13.174.110) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 19:12:27 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 28 Jul
- 2022 19:12:27 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 28 Jul
- 2022 12:12:26 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Thu, 28 Jul
- 2022 12:12:22 -0700
-From:   Tariq Toukan <tariqt@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        <linux-kernel@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        "Govindarajulu Varadarajan" <_govind@gmx.com>
-Subject: [PATCH net-next V4 3/3] enic: Use NUMA distances logic when setting affinity hints
-Date:   Thu, 28 Jul 2022 22:12:03 +0300
-Message-ID: <20220728191203.4055-4-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220728191203.4055-1-tariqt@nvidia.com>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
+        with ESMTP id S232465AbiG1TOb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:14:31 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A5691E2
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:14:30 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id o2so2099902iof.8
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:14:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mijN5A0yD2VsRSwGSCB3FzYP/zwj3UuehxyGWBcXqx0=;
+        b=JjmKe3AcZDVVNKE58RN9cL7SZ5UO+cMl4+w/SsXrlnfqY37/r4Pw0CNad00DqM/LZU
+         0ISXL5kCAl6WfyXoyJ2AQfLNhp+emxnlH2nKgkWw5qKozTyzPnoHmbEnOQMPsEGinF2H
+         9Kq999MVGUz5ZMD1loJ5Vt2zZIjaMHdgF5MqVqY6cYCryHhsR/2A7cOo3jp6aQ1oDi5e
+         7LcyCgadwCMbYbKMKAvfCI+4buAB95hg3moPH1wvXiqgHUV8eBTVS0Ueng6m+r1Gk6lz
+         wlvCqO1un6Fe1rN1x9kLRXfT4taq7i8ljBNp5kWkAHnfDcQSkPwlDcSj/YwEzmCLEk33
+         MTEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mijN5A0yD2VsRSwGSCB3FzYP/zwj3UuehxyGWBcXqx0=;
+        b=dQ34u3w/qCciUb6ZJLyTMxL17pA+lyGPCTHDDDqvoXA3aAYortUKAA8MZCo/K0YZW2
+         UiZ6lXxTrcAl5hw8cOEVyVAqQdB+qpZ1V3v6NYUxb9Lyi1YCWesLkIF+SZCaReRSN0W2
+         v5FwzZ6zFDAGyO3hEXYM8oXCeqilycX+5WQhXt/XJd+kAQXmiFBfJFpmdFVJIftZvaGT
+         vpt6o8np1rFAGXyhtw6Dc6KtvRpjd6Qxous65fBz1H9aUqHzA2MRGOgeJTTHO1PlYzTN
+         2KqHRp8c3Qf5/7R38BskNmtGPV5pUzEeze5/Kq+H2OInDyuTb/6yZ/aUKoRPYhTx1tEV
+         CunA==
+X-Gm-Message-State: AJIora+kqWL3qfLSr5bd8O/S9YrMpuX/5BnUBZsPsG9NcbElehq7ydA2
+        122mjm2w1kV6aNbNRxHlexekEd0al6qJl9midV8=
+X-Google-Smtp-Source: AGRyM1ucBJvX3MhYA8CgnElSRJNqDjfsmqDCQmyt/D2zqAq+gL2jwkkyLfrisgWfU1MFXUEedqJSBHJC/TckXo7wlcw=
+X-Received: by 2002:a05:6638:2a9:b0:33f:2d29:7546 with SMTP id
+ d9-20020a05663802a900b0033f2d297546mr104189jaq.27.1659035669033; Thu, 28 Jul
+ 2022 12:14:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 02a8e346-f723-4146-b995-08da70cd1cac
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2936:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mpCrbIfFHpXW1Qu/BDNW1/pHQV5xeJy/5uJFbDqNVNXON8FPmFIvRULxAEE+zhXt2JJPIAztXaEmY5Aixf/hO2GU3TK59bOurMBQjkgKTjlXy9Ks/yyCR9/Q+tF0b4qyqqczi4yZWFo2thhjoSe+yD17cCArbhkWL0UwfMdky2gjaKba8wobPfFERMe6UiLC7VwzopUFlPJMxbFj8WVJSjYwil5vgc0NKdiO5m/ApdJlSsGf5+zxyF9P6naU+siuqp8TjRXG7HJiPf1xjd/ydTOMoyiqWrVn8STkP3LysLKhtjIN9/FrClUsY9yrLos2BURL8ZkyjAiKwXBm4g7HZvx1zO8kxSlzFKwd50nbMeS8F5vVO8bt5zwGycgR68wnBusEmWxtNiMJcBozAJBccKWN/oaySpWOCrFP05I1dYAzo8jE1Vq8TD+g1OuNCQR+PRYHgo5CVt9VieZ0iCewn6yjC1XIUi4IEBapApWpiHO1TRv+Ksrcttc6zN2G1C9gc4IRH5J+PleuS0YIVJKjihRkUrXftW3ZGxw7DyZUOk3/FdPzhwVF8MnIjxvZLNsCuKhohA6c7WAEf1BfOh2F9VwB/AFf62ZjvglruyfGyt45L9z7rGxAPgoRGlYQOp/AZpneI8Cr1KMUVMvcGiHB8IG/0z2pMRcQLoJC54pK/d75pWGq/P7OG7rmxqHGyAmQG6QyF3x2yKC1oioZbOyvst83jds/Pw3d+t3s19+PssqD1w8Mu57w4iqyvJHm7V70qeNGCMgZAB+eOovNefisbOEaVjgrlQL8ZePNy+W8vo6OOIuhJ6G45tQgqEyJbDCFf1frGgh0gsA4XHiKPHEYW0IRKcdiRtJL+EMrW3Oxgkk=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(136003)(346002)(396003)(36840700001)(46966006)(40470700004)(478600001)(36860700001)(40460700003)(70206006)(5660300002)(54906003)(82740400003)(8676002)(8936002)(7416002)(4326008)(316002)(36756003)(186003)(110136005)(2616005)(86362001)(70586007)(426003)(82310400005)(7696005)(40480700001)(6666004)(1076003)(2906002)(356005)(41300700001)(47076005)(26005)(81166007)(83380400001)(336012)(518174003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 19:12:27.6784
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02a8e346-f723-4146-b995-08da70cd1cac
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2936
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <CAFZh4h-JVWt80CrQWkFji7tZJahMfOToUJQgKS5s0_=9zzpvYQ@mail.gmail.com>
+ <fd16ebb3-2435-ef01-d9f1-b873c9c0b389@gmail.com> <CAFZh4h-FJHha_uo--jHQU3w4AWh2k3+D6Lrz=ce5sbu3=BmTTw@mail.gmail.com>
+ <20220727233249.fpn7gyivnkdg5uhe@skbuf> <CAFZh4h-w739Xq6x13PpFvCFX=dCD571k1bdMyfk1Wvtkk_vvCw@mail.gmail.com>
+In-Reply-To: <CAFZh4h-w739Xq6x13PpFvCFX=dCD571k1bdMyfk1Wvtkk_vvCw@mail.gmail.com>
+From:   Brian Hutchinson <b.hutchman@gmail.com>
+Date:   Thu, 28 Jul 2022 15:14:17 -0400
+Message-ID: <CAFZh4h-3AaoQwJcaQoYc_e=yrR7a6d7Qr77R8o56mtbFye_0cw@mail.gmail.com>
+Subject: Re: Bonded multicast traffic causing packet loss when using DSA with
+ Microchip KSZ9567 switch
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        andrew@lunn.ch, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new CPU spread API to sort cpus preference of remote NUMA nodes
-according to their distance.
+Hello netdev,
 
-Cc: Christian Benvenuti <benve@cisco.com>
-Cc: Govindarajulu Varadarajan <_govind@gmx.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
----
- drivers/net/ethernet/cisco/enic/enic_main.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+On Thu, Jul 28, 2022 at 10:45 AM Brian Hutchinson <b.hutchman@gmail.com> wrote:
+>
+> Hi Vladimir,
+>
+> On Wed, Jul 27, 2022 at 7:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> > > bond1: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500  metric 1
+> > >        inet 192.168.1.6  netmask 255.255.255.0  broadcast 0.0.0.0
+> > >        inet6 fd1c:a799:6054:0:60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x0<global>
+> > >        inet6 fe80::60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x20<link>
+> > >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+> >
+> > I see bond1, lan1 and lan2 all have the same MAC address (62:e2:05:75:67:16).
+> > Does this happen even when they are all different?
+>
+> So I have (when bond is setup using Systemd) assigned unique MAC
+> addresses for eth0, lan1 and lan2 ... but default action of bonding is
+> to assign the bond (bond1) and the slaves (lan1, lan2) a MAC that is
+> all the same among all the interfaces.  There are settings (controlled
+> by fail_over_mac) to specify which MAC is chosen to seed the MAC of
+> the other interfaces but bottom line is bonding makes both the bond
+> and active slave at a minimum the same MAC.
+>
+> >
+> > >        RX packets 2557  bytes 3317974 (3.1 MiB)
+> > >        RX errors 0  dropped 2  overruns 0  frame 0
+> > >        TX packets 2370  bytes 3338160 (3.1 MiB)
+> > >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> > >
+> > > eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1506  metric 1
+> > >        inet6 fe80::f21f:afff:fe6b:b218  prefixlen 64  scopeid 0x20<link>
+> > >        ether f0:1f:af:6b:b2:18  txqueuelen 1000  (Ethernet)
+> > >        RX packets 2557  bytes 3371671 (3.2 MiB)
+> > >        RX errors 0  dropped 0  overruns 0  frame 0
+> > >        TX packets 2394  bytes 3345891 (3.1 MiB)
+> > >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> > >
+> > > lan1: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+> > >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+> > >        RX packets 248  bytes 19384 (18.9 KiB)
+> > >        RX errors 0  dropped 0  overruns 0  frame 0
+> > >        TX packets 2370  bytes 3338160 (3.1 MiB)
+> > >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> > >
+> > > lan2: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+> > >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+> > >        RX packets 2309  bytes 3298590 (3.1 MiB)
+> > >        RX errors 0  dropped 1  overruns 0  frame 0
+> >
+> > I find this extremely strange. AFAIK, ifconfig reads stats from /proc/net/dev,
+> > which in turn takes them from the driver using dev_get_stats():
+> > https://elixir.bootlin.com/linux/v5.10.69/source/net/core/net-procfs.c#L78
+> >
+> > But DSA didn't even report the "dropped" count via ndo_get_stats64 in 5.10...
+> > https://elixir.bootlin.com/linux/v5.10.69/source/net/dsa/slave.c#L1257
+> >
+> > I have no idea why this shows 1. I'll have to ignore this information
+> > for now.
+> >
+> .
+> .
+> .
+> >
+> > Would you mind trying to test the exact same scenario again with the
+> > patch attached? (also pasted below in plain text) Still the same MAC
+> > address for all interfaces for now.
+>
+> No problem at all.  I'm stumped too and welcome ideas to figure out
+> what is going on.
+>
+> >
+> > From 033e3a8650a498de73cd202375b2e3f843e9a376 Mon Sep 17 00:00:00 2001
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Date: Thu, 28 Jul 2022 02:07:08 +0300
+> > Subject: [PATCH] ksz9477: force-disable address learning
+> >
+> > I suspect that what Brian Hutchinson experiences with the rx_discards
+> > counter incrementing is due to his setup, where 2 external switches
+> > connect together 2 bonded KSZ9567 switch ports, in such a way that one
+> > KSZ port is able to see packets sent by the other (this is probably
+> > aggravated by the multicast sent at a high data rate, which is treated
+> > as broadcast by the external switches and flooded).
+>
+> So I mentioned in a recent PM that I was looking at other vendor DSA
+> drivers and I see code that smells like some of the concerns you have.
+>
+> I did some grepping on /drivers/net/dsa and while I get hits for
+> things like 'flood', 'multicast', 'igmp' etc. in marvel and broadcom
+> drivers ... I get nothing on microchip.  Hardware documentation has
+> whole section on ingress and egress rate limiting and shaping but
+> doesn't look like drivers use any of it.
+>
+> Example:
+>
+> /drivers/net/dsa/mv88e6xxx$ grep -i multicast *.c
+> chip.c: { "in_multicasts",              4, 0x07, STATS_TYPE_BANK0, },
+> chip.c: { "out_multicasts",             4, 0x12, STATS_TYPE_BANK0, },
+> chip.c:                  is_multicast_ether_addr(addr))
+> chip.c: /* Upstream ports flood frames with unknown unicast or multicast DA */
+> chip.c:  * forwarding of unknown unicasts and multicasts.
+> chip.c:         dev_err(ds->dev, "p%d: failed to load multicast MAC address\n",
+> chip.c:                                  bool unicast, bool multicast)
+> chip.c:                                                       multicast);
+> global2.c:      /* Consider the frames with reserved multicast destination
+> global2.c:      /* Consider the frames with reserved multicast destination
+> port.c:                              bool unicast, bool multicast)
+> port.c: if (unicast && multicast)
+> port.c: else if (multicast)
+> port.c:                                       int port, bool multicast)
+> port.c: if (multicast)
+> port.c:                              bool unicast, bool multicast)
+> port.c: return mv88e6185_port_set_default_for
+> ward(chip, port, multicast);
+>
+> Wondering if some needed support is missing.
+>
+> Will try your patch and report back.
 
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
-index 372fb7b3a282..9de3c3ffa1e3 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -44,6 +44,7 @@
- #include <linux/cpu_rmap.h>
- #endif
- #include <linux/crash_dump.h>
-+#include <linux/sched/topology.h>
- #include <net/busy_poll.h>
- #include <net/vxlan.h>
- 
-@@ -114,8 +115,14 @@ static struct enic_intr_mod_range mod_range[ENIC_MAX_LINK_SPEEDS] = {
- static void enic_init_affinity_hint(struct enic *enic)
- {
- 	int numa_node = dev_to_node(&enic->pdev->dev);
-+	u16 *cpus;
- 	int i;
- 
-+	cpus = kcalloc(enic->intr_count, sizeof(*cpus), GFP_KERNEL);
-+	if (!cpus)
-+		return;
-+
-+	sched_cpus_set_spread(numa_node, cpus, enic->intr_count);
- 	for (i = 0; i < enic->intr_count; i++) {
- 		if (enic_is_err_intr(enic, i) || enic_is_notify_intr(enic, i) ||
- 		    (cpumask_available(enic->msix[i].affinity_mask) &&
-@@ -123,9 +130,10 @@ static void enic_init_affinity_hint(struct enic *enic)
- 			continue;
- 		if (zalloc_cpumask_var(&enic->msix[i].affinity_mask,
- 				       GFP_KERNEL))
--			cpumask_set_cpu(cpumask_local_spread(i, numa_node),
-+			cpumask_set_cpu(cpus[i],
- 					enic->msix[i].affinity_mask);
- 	}
-+	kfree(cpus);
- }
- 
- static void enic_free_affinity_hint(struct enic *enic)
--- 
-2.21.0
+I applied Vladimir's patch (had to edit it to change ksz9477.c to
+ksz9477_main.c) ;)
 
+I did the same steps as before but ran multicast iperf a bit longer as
+I wasn't noticing packet loss this time.  I also fat fingered options
+on first iperf run so if you focus on the number of datagrams iperf
+sent below, the RX counts won't match that.
+
+On PC ran: iperf -s -u -B 239.0.0.67%enp4s0 -i 1
+On my board I ran: iperf -B 192.168.1.6 -c 239.0.0.67 -u --ttl 5 -t
+3600 -b 1M -i 1 (I noticed I had a copy/paste error in previous email
+... no I didn't use a -ttl of 3000!!!).  Again I didn't let iperf run
+for 3600 sec., ctrl-c it early.
+
+Pings from external PC to board while iperf multicast test was going
+on resulted in zero dropped packets.
+
+.
+.
+.
+64 bytes from 192.168.1.6: icmp_seq=98 ttl=64 time=1.94 ms
+64 bytes from 192.168.1.6: icmp_seq=99 ttl=64 time=1.91 ms
+64 bytes from 192.168.1.6: icmp_seq=100 ttl=64 time=0.713 ms
+64 bytes from 192.168.1.6: icmp_seq=101 ttl=64 time=1.95 ms
+64 bytes from 192.168.1.6: icmp_seq=102 ttl=64 time=1.26 ms
+^C
+--- 192.168.1.6 ping statistics ---
+102 packets transmitted, 102 received, 0% packet loss, time 101265ms
+rtt min/avg/max/mdev = 0.253/1.451/2.372/0.414 ms
+
+... I also noticed that the board's ping time greatly improved too.
+I've noticed ping times are usually over 2ms and I'm not sure why or
+what to do about it.
+
+iperf on board sent 9901 datagrams:
+
+.
+.
+.
+[  3] 108.0-109.0 sec   128 KBytes  1.05 Mbits/sec
+[  3] 109.0-110.0 sec   129 KBytes  1.06 Mbits/sec
+[  3] 110.0-111.0 sec   128 KBytes  1.05 Mbits/sec
+^C[  3]  0.0-111.0 sec  13.9 MBytes  1.05 Mbits/sec
+[  3] Sent 9901 datagrams
+
+ethtool statistics:
+
+ethtool -S eth0 | grep -v ': 0'
+NIC statistics:
+    tx_packets: 32713
+    tx_broadcast: 2
+    tx_multicast: 32041
+    tx_65to127byte: 719
+    tx_128to255byte: 30
+    tx_1024to2047byte: 31964
+    tx_octets: 48598874
+    IEEE_tx_frame_ok: 32713
+    IEEE_tx_octets_ok: 48598874
+    rx_packets: 33260
+    rx_broadcast: 378
+    rx_multicast: 32209
+    rx_65to127byte: 1140
+    rx_128to255byte: 136
+    rx_256to511byte: 20
+    rx_1024to2047byte: 31964
+    rx_octets: 48624055
+    IEEE_rx_frame_ok: 33260
+    IEEE_rx_octets_ok: 48624055
+    p06_rx_bcast: 2
+    p06_rx_mcast: 32041
+    p06_rx_ucast: 670
+    p06_rx_65_127: 719
+    p06_rx_128_255: 30
+    p06_rx_1024_1522: 31964
+    p06_tx_bcast: 378
+    p06_tx_mcast: 32209
+    p06_tx_ucast: 673
+    p06_rx_total: 48598874
+    p06_tx_total: 48624055
+
+# ethtool -S lan1 | grep -v ': 0'
+NIC statistics:
+    tx_packets: 32711
+    tx_bytes: 48401459
+    rx_packets: 1011
+    rx_bytes: 84159
+    rx_bcast: 207
+    rx_mcast: 111
+    rx_ucast: 697
+    rx_64_or_less: 234
+    rx_65_127: 699
+    rx_128_255: 70
+    rx_256_511: 12
+    tx_bcast: 2
+    tx_mcast: 32015
+    tx_ucast: 694
+    rx_total: 103241
+    tx_total: 48532849
+    rx_discards: 4
+
+# ethtool -S lan2 | grep -v ': 0'
+NIC statistics:
+    rx_packets: 32325
+    rx_bytes: 47915110
+    rx_bcast: 209
+    rx_mcast: 32120
+    rx_64_or_less: 212
+    rx_65_127: 55
+    rx_128_255: 86
+    rx_256_511: 12
+    rx_1024_1522: 31964
+    rx_total: 48497844
+    rx_discards: 4
+
+ifconfig stats: (2 dropped packets on lan2.  Last time lan1 and lan2
+about roughly same RX counts, this time lan1 significantly less)
+
+# ifconfig
+bond1: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500  metric 1
+       inet 192.168.1.6  netmask 255.255.255.0  broadcast 0.0.0.0
+       inet6 fd1c:a799:6054:0:60e2:5ff:fe75:6716  prefixlen 64
+scopeid 0x0<global>
+       inet6 fe80::60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x20<link>
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 33392  bytes 48003505 (45.7 MiB)
+       RX errors 0  dropped 4  overruns 0  frame 0
+       TX packets 32723  bytes 48402583 (46.1 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1506  metric 1
+       inet6 fe80::f21f:afff:fe6b:b218  prefixlen 64  scopeid 0x20<link>
+       ether f0:1f:af:6b:b2:18  txqueuelen 1000  (Ethernet)
+       RX packets 33392  bytes 48704737 (46.4 MiB)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 32749  bytes 48471466 (46.2 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lan1: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 1045  bytes 86755 (84.7 KiB)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 32723  bytes 48402583 (46.1 MiB)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lan2: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+       ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+       RX packets 32347  bytes 47916750 (45.6 MiB)
+       RX errors 0  dropped 2  overruns 0  frame 0
+       TX packets 0  bytes 0 (0.0 B)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536  metric 1
+       inet 127.0.0.1  netmask 255.0.0.0
+       inet6 ::1  prefixlen 128  scopeid 0x10<host>
+       loop  txqueuelen 1000  (Local Loopback)
+       RX packets 0  bytes 0 (0.0 B)
+       RX errors 0  dropped 0  overruns 0  frame 0
+       TX packets 0  bytes 0 (0.0 B)
+       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+
+# cat /proc/net/bonding/bond1
+Ethernet Channel Bonding Driver: v5.10.69-g472c99a84cb6-dirty
+
+Bonding Mode: fault-tolerance (active-backup)
+Primary Slave: None
+Currently Active Slave: lan1
+MII Status: up
+MII Polling Interval (ms): 1000
+Up Delay (ms): 0
+Down Delay (ms): 0
+Peer Notification Delay (ms): 0
+
+Slave Interface: lan1
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: f0:1f:af:6b:b2:18
+Slave queue ID: 0
+
+Slave Interface: lan2
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 1
+Permanent HW addr: f0:1f:af:6b:b2:18
+Slave queue ID: 0
+
+*Note:  I did unplug lan2 interface before I ran test which is why
+lan2 Link Failure Count is 1.
+
+Regards,
+
+Brian
