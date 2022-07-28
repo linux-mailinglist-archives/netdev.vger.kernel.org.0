@@ -2,248 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50214583DF4
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07DD1583E18
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235933AbiG1Lqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 07:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51082 "EHLO
+        id S234966AbiG1Lwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 07:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237247AbiG1Lqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:46:30 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761F068DF8
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:46:25 -0700 (PDT)
+        with ESMTP id S229725AbiG1Lwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:52:49 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506F119C3C;
+        Thu, 28 Jul 2022 04:52:48 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26S9IaS6029957;
+        Thu, 28 Jul 2022 11:52:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
+ bh=92dvWQU7qVjNm45myX9ijIeQn691L1h3oTie0tmpV5Y=;
+ b=gRqqm0T/7ZTESIcCUaARsmYI1ll8jd0V7fST790SfQqSpPXfCVmHFnaGpRAAExgRhpbf
+ 8VN2oXvVtkVSJqpQT9JkedlJ9xRgbninlCcrsegXwobzNd82E5g3BnRNfexUDR8wUCCV
+ Q9okHorPpDrUMoN+4SrSM0kvZPIWo5Cwuu05ZBKpgFb3zb0ksnlDUrJ7VLb2sb2NWyRe
+ YUV7D78VQSHePcUL6gYDp7ww4fN+XiT4n9Gt0+BzTXRH4H4Cjo2ntsvjCw/O+/OxEvkF
+ JYR/KcB5YhIOGQUuo3w3PwvROm8+1v5e1F5aINt+MOLUpaVO1EEF14vZ/zET6Y8yLvlt WQ== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hg9ap3w3n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Jul 2022 11:52:26 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26SA6LfW019834;
+        Thu, 28 Jul 2022 11:52:24 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2104.outbound.protection.outlook.com [104.47.70.104])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hh63af3sd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Jul 2022 11:52:24 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JclFOPidqS5j+pwSkp/vjTknaSRB0DfD2MB2S/wNza40SqQelOXugBNG++07eyiCeIW9OLgOzd4grI2sju+wXMkmSJ/0X1emqbU7rQHT+fQsnmcyZQQiwS6s5SCJfa7f9NlVZK6TDaMUr4xAnAyZmMlHTxIO6yHdVBZSTJTOGbrNqM6nHQo6tvquj8+0Zq52WWlvkqEiBpPOvpaCM266/mFFXAjb7NYaWtFfAevV5IWBIZ9tbjo5IJUAA7de0O6vjiIG1p4DMd1kYPGJJxjNuNqVqSqbssBB2Q5AoAGzar9Ycwhnr/BWzhGTrEiyXFbFtsdS67bGg60Ne7zS9j155A==
+ b=T+CbpOIeoxrVlMq0STJX3ZtSOb3J3LnQrZBBSbJe9Vtoyixfxqu8q0mNPB/Zpy+VFHyyNGUWQ6OPvgwz5OzJxpxpc1Pm937503VOoiTDxg4Orgr9/SDvzJMqm0z4IZ5+WGB0IpXkddM06kLBu6fCgwoSsPW78vnUVLOtjutBUeU/ep2d1GqS+xoelEAFWSfP3HB4ItiQFR4wY0So+gBKVwwQywUMG1W2i2HfnbRphGEhuw6rRkexO/g70Hlrr/HMu3OPMz00kXLtkIcT+vFfCQMMqSHzq6wWTQ9QQjcTGGS9p7JMyPZ6yJEglnajVd1Bh9q959TzxZGIlBTJTJ2Hug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IXIgk0I62gwNLvi8OygpYe1ZVtguYy8clhWXw9hMydY=;
- b=g1kljXdATyD6Rvwv8nJCEqzhIzzwrfFfqlKxTv2DS9TOoAITRrRaC8u9l3p1hLEI/WWKFsl+0tyb1Nll0xif0GKS5ayUhSMB9eJWjMU9NVEztDHYJgD4nRZ8z9JT+cMVsYsZBW6ag1JXDNd6KNGopBwV/3wgk1I8t9J6C591omsq4lC21DUBpk8nUW9dVBl7GNw3xX7CwaInbi+zsU1+Dk8yPchb6kVS7CngIQfJsY6MSruI8V1mjvOiqCr7ZI2ow30nxn2oTCMtvXkhunoQMYtvV3lGeM7viPr0OyQMHGrvhhtAzJoIxspRk6m3/yZeZFHLyuQghoRMDlX8VIwtFg==
+ bh=92dvWQU7qVjNm45myX9ijIeQn691L1h3oTie0tmpV5Y=;
+ b=ndK3EMtKg5qEc+6LKwYToYSNyjLs7ktupSb4hTG1Qp/OOVHUo/3xj+yjS/V+nfVz6fi7tzcielPECDAYpFYV5o6cJFkuydG3rA+FcSfYtfXgSIKONQgNwE129bH5B7LG1bbktgJqiotIeWe89B+NfTXT4FpUXHEwOz+Zsb/bzLbALyE3g69JflMHrkgq3f08DsmK9Qc/EZSnM5foj0L3pUbtMaXTeWzhwLjdTcyzlyC0kUQHLxxsqEl2KMce2sUVpo4GSHmen8BiBQ4RCl3RIh4n7KtrjddBLToqeq7RERkNp0wA9abCUmCFVZMCjEc4CefywQU4ph2j2fsumJiKDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IXIgk0I62gwNLvi8OygpYe1ZVtguYy8clhWXw9hMydY=;
- b=DXPdWnvIFOWXDI4Et5PLw2Z/LZdm5g1/z/8y2KmRE83FklNr1uqJwXoaTxPd5F9+qmT9kgcbKk0ITIqd+QCIMNH6qs9JmJWr3LiM+4MpHoLBXNFqFP2tB1vRhTIYRBgxevU1v3+QB6zo6F1NsX6hutE/VAXWydus5nUp9sBtJOTu6IZJcvwIsz+dW3r6EfBGXxCTDPCtRmQmppdU4uHHxuMrjAFfz8YRtY/ZdIOntFGjDPfvfdToDM4MrRhw4OI3xvA7dht2ydeGQcUX1k9RhegSolzPVhfIH3PICOQIoZXUvwsIuOweRrehp6V2xgsUnWoduwsGgDdC5Wm2+C/Ntg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by MW3PR12MB4505.namprd12.prod.outlook.com (2603:10b6:303:5a::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 28 Jul
- 2022 11:46:23 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::2d48:7610:5ec2:2d62]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::2d48:7610:5ec2:2d62%4]) with mapi id 15.20.5482.011; Thu, 28 Jul 2022
- 11:46:23 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, amcohen@nvidia.com, dsahern@gmail.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 3/3] selftests: netdevsim: Add test cases for route deletion failure
-Date:   Thu, 28 Jul 2022 14:45:35 +0300
-Message-Id: <20220728114535.3318119-4-idosch@nvidia.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220728114535.3318119-1-idosch@nvidia.com>
-References: <20220728114535.3318119-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR06CA0087.eurprd06.prod.outlook.com
- (2603:10a6:803:8c::16) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+ bh=92dvWQU7qVjNm45myX9ijIeQn691L1h3oTie0tmpV5Y=;
+ b=AypwxurWbPan9NrIMd2WFZRbnwg+ruEOMzseTzEMRC3ORpACkUnV/KQ87D/ngnOkjCjnf7WOHlk5zdSgbZuBjpoKsL59pazTHtQF7ugY3xSxYXJfZ7S8VVx3A6XHHee3YhG84mZpX1IdxWs6gNgFo4nkIuRSEIrVyemzZGOYBDA=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BL0PR10MB3443.namprd10.prod.outlook.com
+ (2603:10b6:208:74::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.21; Thu, 28 Jul
+ 2022 11:52:23 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5482.011; Thu, 28 Jul 2022
+ 11:52:22 +0000
+Date:   Thu, 28 Jul 2022 14:52:09 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Biao Huang <biao.huang@mediatek.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-mediatek@lists.infradead.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] stmmac: dwmac-mediatek: fix resource leak in probe
+Message-ID: <YuJ4aZyMUlG6yGGa@kili>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-ClientProxiedBy: ZR0P278CA0121.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:20::18) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3de647c2-5479-4f11-642e-08da708ecbe1
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4505:EE_
+X-MS-Office365-Filtering-Correlation-Id: a6269f19-16fa-4039-7217-08da708fa1bb
+X-MS-TrafficTypeDiagnostic: BL0PR10MB3443:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: baX6KIElrRU6W4M4uAOyUbiVI6BcTYQz3kdUDWaIdH6WBrLZ7IGblFk68ArG9UKE40UUrAS4glhrYvz3rQiR2aKWSLb3gSV5TJt+pJnO9acqLMYs1VIEkfH4BUYCeM6aO9d+HJ13txq1PC2T8vk88KVJxfT+W2rNHSuQh3JibGSAyQ5YqKkTMzF2OP5YPE6pPhREMYVNzVz5OTuxgBTffejOToajFiFySiHI21Sl4oC8iOGi0BcNqF7fkVajKlpnJDmNSicFAiidJxxwv1tUEbO+4W0+HcMzmjtEf5tkxXNTTqEZUqsa3N4jCfzoTtQxmgpyz4cMONUjEz11H46KSvj0aeimGGfqm1XXG4jXyuLoNHJaEZxHt0qaOMDP9vTlJ/zcBGPqWDMuBPI4yByu8B7aebZda61MLaOj3TttTWFxUP8eHqjFpF6znyK/6LwirpinhZ2EkjLNuB3XtxXddVrFS6XtZnaKgiA8DOEkRx++Ncg8p9Hi6kE3gpMs/h0pfKTnACgtl9XYKU+KKDy6u617RWpwOusg6IKAC0x/t7HI/7KLeONJWQ8lcIaDzi3gwh0mxGO6cssaRaxLY5mBS7SmWj1ei3U6apx1kpTglkUKeHncu2RM1bRYw5qwMS245w24ExT9dLJ1VtcxBTIx10HeygBid9+Yk9pYM6NtG+1LEKCsFDEcgqiLiDsJ7mHvicbgP4p/Eyj+YkZLquOjZr+5TdacKh1BVBUdL3O3jjzI69Sphiy9iEyKrpS0WvKz
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(6512007)(41300700001)(186003)(83380400001)(6506007)(6666004)(8936002)(2906002)(66476007)(478600001)(6486002)(38100700002)(6916009)(5660300002)(107886003)(36756003)(4326008)(316002)(1076003)(26005)(86362001)(66946007)(8676002)(66556008)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yrJflPu8lklee8RinzGYPHTQgsesGL3zEv2Cyun46ZjkkPHT1LS229g8VeO7hleqR8QQ+ioe5NgZiQWqqCFnzLWigKq0TI8JqVkhhaEfuZUH/I4jGEv//+BPiMG4/PJD5Sw6bzsCjk9XYFMKC95ih6+GKaUZJlFZi2Sne9ZJ+/bzjru5rC3q/5gNgFkF8NNt5AkQ6qtmSpWDXvhA1NKV+dMprHhG19yoTXSuOzy7uOeTZjkNZjtOTiTzjjfPlwsN1WR34XoKmR2PU7tP47/V5/7Uhf66Nj7xYHFONCHQioMd3IbVLjDicY4ixWh6XT0s6NjyvzwL2EkxWEBv0Jv04SB6Mmk610xHTt1HqFcY4jmN8Bas/+tWvdoLMnPGmBr+Gu3tsojgm3Yf2Vm5hQYowTJ1q2kK1HdOyG1brd+LIiaYINDZYlXnWwvF4O5Fx51TkNaPsn1yQ/PWnrFb7LKYwzkIi29zck8zU8xZkIlxgPOUzl50knUphOlYubnctB5H8wptXwq1u8Cdsk1qKKpz2kBmhiuPyUoGucePUBqoIlmqKxGdWcvJxJ6cM1fqy0SeaOFHxJQL9/sa0J05XRiLIEo6Z/4YRuH01/xuXMNZRn9FXiBTszBQTASMfsBLIQH7SwCvNiLKaEut0/OdgGMaO1t+hWHkq7Jl2GtQ9+geRRWkUe/WpdeSpKx3rWwZNel0amPyKiYiMwDjehaJOVI3/CLZgsWD2/1GjxYwQNtWyTeNUqV6up87fLFsaOO+WB79JO9XMwFMhQJTyLpMvkjSvS4k06D4zPK0AYZvL/FyJwQaKX+6duCwXbgi1ClI+VFe
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(346002)(376002)(366004)(39860400002)(136003)(8676002)(4326008)(66476007)(66556008)(66946007)(33716001)(52116002)(83380400001)(2906002)(6666004)(86362001)(6506007)(41300700001)(44832011)(478600001)(7416002)(9686003)(316002)(5660300002)(26005)(8936002)(6512007)(38100700002)(6486002)(38350700002)(186003)(110136005)(54906003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N1u6qM2A9Zk5Mn4niYvrWbaHwWdt1ewsstiETLRnQtWxZFjvNqvaXUnr770V?=
- =?us-ascii?Q?nVNASqR45qgo0DeVxilRoAXWAbEiegUSgPpCnjU/kG+4YLGoh3uqBAAELt8q?=
- =?us-ascii?Q?CH3EsaweP2azJpLeOW46+OJJowQZl3/hg9CQdQYkwHwsJe9cjr8pX2oSz3Bi?=
- =?us-ascii?Q?9GyYJ7t2vFxdCTAha8/G11XbdVcvNXH7f53ZsIneu/ARHE9oNWv/DC5bO7jc?=
- =?us-ascii?Q?U0gDX2+Q2ZVXrjc1GYxz/V++PczmrLr0kpeMyYEsTpkuAwvO1LfXTC92m1vX?=
- =?us-ascii?Q?vhqGUrEPIt+G4n4Fy8a1BrNx7jbdVKx0Kx9qO1IZF2SD6ZG7q7BrTgq29BNr?=
- =?us-ascii?Q?lqptkXThGnPbIxee2S4YfpW+Zn00MCMNHu52k9GWfbt3Azdyhrhd87T4sMlt?=
- =?us-ascii?Q?u35UY0uzqukQHtctk2NRYWk4TGg+rGTl1ZL+Nx6EoSQCvvKGsjz1ZtOyznCx?=
- =?us-ascii?Q?JqRzs1r0MamQ/qeO6/e8wZazdQnr/iHmRJ0peksqdqfuqSnGOLDWKFepe6RM?=
- =?us-ascii?Q?PoAzbUC6KVH0DfpXXFupusdDibKXWoWat9/j7jXx1FH4oso48hwKkUlhQ6nD?=
- =?us-ascii?Q?0m2LjFBIkJsh1TSbg7ya7BgqFGI21vsUJuVM2g2SCHXp/kZhG5dSOL1AtP6d?=
- =?us-ascii?Q?xMxJUWkUgylqqwX/WEU8tQmeFPZx+/PV0shyBKcBJYAxUlx/uAzqQTZb8QF4?=
- =?us-ascii?Q?yLhy6F9uyL46KDD36X3KK+1WMuFCbuMalxfu6JcVK4IhQMiu5pOCQ9Hy1smH?=
- =?us-ascii?Q?nGxWvIBtqmanRgGoBiClGfqo3HW7tbxDLobrKn0kiEwblyScoNy4WVfQYIY9?=
- =?us-ascii?Q?z4kJKRLv5G9ICT3qieaW51gKKy2CWTlm26mRacRw3B2SIgiCodT7xbZJZfu2?=
- =?us-ascii?Q?ZFp740SgiezkCB3HC2sDHu0nza4sYw2DpLKAKC9jfVCySy3CAT3YAdbXTQuq?=
- =?us-ascii?Q?78VgVa3i91vYFnNVCu8xNecz6SW5JSlvsyPt+v5Rxfg06AotgWzQCa/jjEC0?=
- =?us-ascii?Q?oxfNHC5d5yyA2L9TC48HL5bF1Qk6eJuRYI0XKDkIWWsEuDzI4T13VUEtPgZb?=
- =?us-ascii?Q?TTVR8IO0fFOcadMpLBVEz8cK+7jB1JPLMrK6WFxtShTz7kRbxm1kFMYSoPjv?=
- =?us-ascii?Q?f6xYb1XAHPb9qaeOdl3rCYUIUPxA4Oud0eWcqVYWYKQTF4uKC5puf3mMAuuq?=
- =?us-ascii?Q?PXMPTGzjt8O9EpaoAFIAbYJoJcweATQKpQJDeGAby+fLqA9BGGZpFwIogWIq?=
- =?us-ascii?Q?55u+LzcOhml3ri5lPDH/5BzsVEpY7oW25DV1rNdyERVQFCcg0x/3tPCoyyCB?=
- =?us-ascii?Q?7qupwQ97ObyfqLZhnFiYg9jI0jRC2toJCVFtPS9yUxJTO55VSRIKIR2+H41I?=
- =?us-ascii?Q?2v3Bgf8aAtv3U9ei4J46dHmwgqy2xzPRA2AAnACjo6a28o+pSyEjFf4Wtv8v?=
- =?us-ascii?Q?tgY1xfZ9EyEaAtTLMyMlJ1Jo6qIOCxosBt0tzPSK531BNrQj5UV656KiLbLB?=
- =?us-ascii?Q?9fquTVZ+t7p3vg+OHoSZninNFL3T/KoraOeBICVkAtajHRoP8cZi3w8FJ2Vo?=
- =?us-ascii?Q?JBPo9xSoDNXjeLqmkaFqZ1rQLmtDAhpBXj8GQm1u?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3de647c2-5479-4f11-642e-08da708ecbe1
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VStV/7OvUbpzG+PmppTUcAICeXsybFPmaKs61XtMVxc9xaDBn6oZ7m+LSpQR?=
+ =?us-ascii?Q?uylFlrF4gA7j45wspeHGPFStw2/vZ5J6jkuDhPTxhHnptJxbTMTNlqifIUFc?=
+ =?us-ascii?Q?Q3ZQ+Sbf3lvrGn19Oo73SnU0RmncGSkCxLHf9dEuc24kzUNbHJIKe1N9BSEi?=
+ =?us-ascii?Q?F/BFccnWS8YO1PQnP3RtZuzZIXojmaww3qoX0yBAIGtw04UJOuVjzopAdZ/q?=
+ =?us-ascii?Q?RL4RuZWzH2kYIjVH2NlJYnT0XV8mqPMoZCjvKwiN7OOukuPJeH+5a1Uidnw9?=
+ =?us-ascii?Q?svX4gh5AC573OmMPVWaNlpkdJc3z4nCHXK6dz2fJId93A4Bnm/vnGDtMdvXA?=
+ =?us-ascii?Q?IJZz2ZBcYhGbqPrvIEGxGWZxXq9M4zAynsg4KwJ95w6Qhq7RpvYTXwOiyyyw?=
+ =?us-ascii?Q?MdPvTMOc5sV+6U/Vc/3jF5e/fNXsCvr3MIIw8LNhxXaZhOsPEgNTCEuG0Mmb?=
+ =?us-ascii?Q?gO3rBwaimt6K1+JcY1KaB2xTUUmnGM0QK7f7EI4bQGV8i+Pgf0XdBV+VjLu7?=
+ =?us-ascii?Q?L8+rb64+8adEx+dtudp9do7XpuWwGwd5UEwgYqzNBYfqV+FzbiEOG3883Vic?=
+ =?us-ascii?Q?6YzC2nF9eoLQjJzLcoZxewvoRwZ326MNsJWgUIV+PAvgNi+a+on7Hh8u592t?=
+ =?us-ascii?Q?Tm6BYfpkwcKALQOvkOft1l/kMEy9ZedHQG3Ka6am+ld+jfcpwIGXsXaUconh?=
+ =?us-ascii?Q?LF/ZVPua8tHoo2zfpZjVHFZAP7x/jpuUrCyJOwp62QQM7Z5Z/SKnATkSjw1H?=
+ =?us-ascii?Q?tTcLtyPSHMNb2WVvgNsV/C/kflhXF+eI8PxxqsW/xgNKyUulJnGtu3Zi+z5s?=
+ =?us-ascii?Q?AYvLPrcr2B369jdz3CR2Kq6I9Vo4zimEer+GgPLmlNdmI9zSDA97vnBJ5XT/?=
+ =?us-ascii?Q?/7Fa12mDZRDzwrN8tjrf/ckLn5wJz8cRHmgGFBZ3hdjhCiHobydEYhkkZsur?=
+ =?us-ascii?Q?2/NJb2BWPXJurg+TvUfJDadO/WHssknPMm1ApXOKiyIAm9g3E+Zw7BnXwVGy?=
+ =?us-ascii?Q?1Rv1APzDCha7Dte9/d/XZPAdTvq5PHmGTpRZ8cBgYzdMZ9d2FVng4lJ2hi1b?=
+ =?us-ascii?Q?mF1OD6sYFQmm2NTinM3oJVZObcurdJS3m8KAincXA3eJs0WPnrdzjrajzNOX?=
+ =?us-ascii?Q?UEnjRh/j5Z45T1RTvxTo43kdhB8P1e7YBsevk5UycJ4PwFUn8FjqLhM/rdxy?=
+ =?us-ascii?Q?LKc1NFma3+s1fihAVkbXLQCxirgfqLpPXJJlMNVWeRg+BgTG4iFbzEJL5hYg?=
+ =?us-ascii?Q?xG+QwVzlIs4FAZPA4zWTG1y/selnQRA4u6EAP+mCP1TuVyJpDi3UbPk4e4b7?=
+ =?us-ascii?Q?hCiamcqDD3ROp6+qSu1m+eDvY0RRoSGzmxe/wI6x1eu3Epec0IOxukDhUSbN?=
+ =?us-ascii?Q?Iyp0yjIhqZNNRM1SN1fTjTybTff0nN/N/IAKXwlT3WCuN9lJn7dqtx4c4tt0?=
+ =?us-ascii?Q?i3pr0G94GLRdAxV3k99pt1c5OrokC5MJEyuv/UmLB8/GRYsIbYKkG82aALNd?=
+ =?us-ascii?Q?z9FH1jMfrak8XL5F1giXdxUjEcU30OlbheFbR3W5/1TwySbNFEAU1EPNHUpO?=
+ =?us-ascii?Q?l+KOTh4bkOlnjziI1I8oPuv/cqhQtz5/OmMigEhBEovrGhJeTjzC6l/0MvmC?=
+ =?us-ascii?Q?KA=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6269f19-16fa-4039-7217-08da708fa1bb
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 11:46:23.5496
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 11:52:22.7240
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2Q6ky1MuaboFqVMYm/qPopFRyZbW2MmrQ07NbM2z3fKNHDSJsOXPNG74U7dDKZEPZrWfrEtwPLQ+RHIc6IK6Ww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4505
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: sBS9b2TWIwV2dQuZ1Rp1uNdMKx/rOUuIKwnTj8/NF/zlZI0o0FjjBfW82w+lArzIlgjgnqIlWkugTC+3Pko9qn3EwD3+Tjj2/iExoWPpAsY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR10MB3443
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-28_04,2022-07-28_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
+ suspectscore=0 mlxscore=0 bulkscore=0 adultscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207280052
+X-Proofpoint-ORIG-GUID: E3pkD6gBG0vANG5fMR_SVmNmqFyLtZFU
+X-Proofpoint-GUID: E3pkD6gBG0vANG5fMR_SVmNmqFyLtZFU
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add IPv4 and IPv6 test cases that ensure that we are not leaking a
-reference on the nexthop device when we are unable to delete its
-associated route.
+If mediatek_dwmac_clks_config() fails, then call stmmac_remove_config_dt()
+before returning.  Otherwise it is a resource leak.
 
-Without the fix in a previous patch ("netdevsim: fib: Fix reference
-count leak on route deletion failure") both test cases get stuck,
-waiting for the reference to be released from the dummy device [1][2].
-
-[1]
-unregister_netdevice: waiting for dummy1 to become free. Usage count = 5
-leaked reference.
- fib_check_nh+0x275/0x620
- fib_create_info+0x237c/0x4d30
- fib_table_insert+0x1dd/0x1d20
- inet_rtm_newroute+0x11b/0x200
- rtnetlink_rcv_msg+0x43b/0xd20
- netlink_rcv_skb+0x15e/0x430
- netlink_unicast+0x53b/0x800
- netlink_sendmsg+0x945/0xe40
- ____sys_sendmsg+0x747/0x960
- ___sys_sendmsg+0x11d/0x190
- __sys_sendmsg+0x118/0x1e0
- do_syscall_64+0x34/0x80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-[2]
-unregister_netdevice: waiting for dummy1 to become free. Usage count = 5
-leaked reference.
- fib6_nh_init+0xc46/0x1ca0
- ip6_route_info_create+0x1167/0x19a0
- ip6_route_add+0x27/0x150
- inet6_rtm_newroute+0x161/0x170
- rtnetlink_rcv_msg+0x43b/0xd20
- netlink_rcv_skb+0x15e/0x430
- netlink_unicast+0x53b/0x800
- netlink_sendmsg+0x945/0xe40
- ____sys_sendmsg+0x747/0x960
- ___sys_sendmsg+0x11d/0x190
- __sys_sendmsg+0x118/0x1e0
- do_syscall_64+0x34/0x80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Fixes: fa4b3ca60e80 ("stmmac: dwmac-mediatek: fix clock issue")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- .../selftests/drivers/net/netdevsim/fib.sh    | 45 +++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/fib.sh b/tools/testing/selftests/drivers/net/netdevsim/fib.sh
-index fc794cd30389..6800de816e8b 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/fib.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/fib.sh
-@@ -16,6 +16,7 @@ ALL_TESTS="
- 	ipv4_replay
- 	ipv4_flush
- 	ipv4_error_path
-+	ipv4_delete_fail
- 	ipv6_add
- 	ipv6_metric
- 	ipv6_append_single
-@@ -29,11 +30,13 @@ ALL_TESTS="
- 	ipv6_replay_single
- 	ipv6_replay_multipath
- 	ipv6_error_path
-+	ipv6_delete_fail
- "
- NETDEVSIM_PATH=/sys/bus/netdevsim/
- DEV_ADDR=1337
- DEV=netdevsim${DEV_ADDR}
- SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV/net/
-+DEBUGFS_DIR=/sys/kernel/debug/netdevsim/$DEV/
- NUM_NETIFS=0
- source $lib_dir/lib.sh
- source $lib_dir/fib_offload_lib.sh
-@@ -157,6 +160,27 @@ ipv4_error_path()
- 	ipv4_error_path_replay
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+index ca8ab290013c..d42e1afb6521 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+@@ -688,18 +688,19 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+ 
+ 	ret = mediatek_dwmac_clks_config(priv_plat, true);
+ 	if (ret)
+-		return ret;
++		goto err_remove_config_dt;
+ 
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+-	if (ret) {
+-		stmmac_remove_config_dt(pdev, plat_dat);
++	if (ret)
+ 		goto err_drv_probe;
+-	}
+ 
+ 	return 0;
+ 
+ err_drv_probe:
+ 	mediatek_dwmac_clks_config(priv_plat, false);
++err_remove_config_dt:
++	stmmac_remove_config_dt(pdev, plat_dat);
++
+ 	return ret;
  }
  
-+ipv4_delete_fail()
-+{
-+	RET=0
-+
-+	echo "y" > $DEBUGFS_DIR/fib/fail_route_delete
-+
-+	ip -n testns1 link add name dummy1 type dummy
-+	ip -n testns1 link set dev dummy1 up
-+
-+	ip -n testns1 route add 192.0.2.0/24 dev dummy1
-+	ip -n testns1 route del 192.0.2.0/24 dev dummy1 &> /dev/null
-+
-+	# We should not be able to delete the netdev if we are leaking a
-+	# reference.
-+	ip -n testns1 link del dev dummy1
-+
-+	log_test "IPv4 route delete failure"
-+
-+	echo "n" > $DEBUGFS_DIR/fib/fail_route_delete
-+}
-+
- ipv6_add()
- {
- 	fib_ipv6_add_test "testns1"
-@@ -304,6 +328,27 @@ ipv6_error_path()
- 	ipv6_error_path_replay
- }
- 
-+ipv6_delete_fail()
-+{
-+	RET=0
-+
-+	echo "y" > $DEBUGFS_DIR/fib/fail_route_delete
-+
-+	ip -n testns1 link add name dummy1 type dummy
-+	ip -n testns1 link set dev dummy1 up
-+
-+	ip -n testns1 route add 2001:db8:1::/64 dev dummy1
-+	ip -n testns1 route del 2001:db8:1::/64 dev dummy1 &> /dev/null
-+
-+	# We should not be able to delete the netdev if we are leaking a
-+	# reference.
-+	ip -n testns1 link del dev dummy1
-+
-+	log_test "IPv6 route delete failure"
-+
-+	echo "n" > $DEBUGFS_DIR/fib/fail_route_delete
-+}
-+
- fib_notify_on_flag_change_set()
- {
- 	local notify=$1; shift
 -- 
-2.36.1
+2.35.1
 
