@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3247584379
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B55584378
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbiG1Pru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 11:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        id S229761AbiG1Prl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 11:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiG1Prt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:47:49 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8926A9FD
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:48 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-31bf3656517so23558137b3.12
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:48 -0700 (PDT)
+        with ESMTP id S229483AbiG1Prk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:47:40 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC6B683FE
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:39 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id z23so3846110eju.8
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:47:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eIW+Gt62BFoUQ5JzgAMQpOCY6T9OYOeQnOKq/wLHShY=;
-        b=jtFR45QjXBLWZztW8Z4ZXEX+t08zPSlpQRpXg/KS40AWmAukZIClsNGhu+HLxQGbsO
-         dDbCwq0Psw+a5cWOEFr6AGfsN5OddCxVt4VH58y8Na1OvExUL58wC8AosENIdm/h8TTs
-         RUwNc46PlJ+bwJa4qI2UwaMLnUahkpRxOVpSEuQb0Jq5HRSqVRVbtgBrfdwdWQ/7Aixs
-         BAT3HU0+E3QDoF8ZAwoFOKOSuictnDiaWbHOTVpRjXmkVxJY4K7IQk+aLjwY7MlWSCkR
-         ovxsneuri0SrilohwCI7dnpWIT88ciHqOtgQayKTlPgWsdB7MnCg4BWDQRgQYqj331BT
-         0aVw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=LrtyfCU3pvrjGLvaQqW5zSHnkkaGZdjNAl8nsiisi1U=;
+        b=kjeK/KLmo2EP8Bu7k+RYSpZ1sZWuq2XEgJJpKjkAdYLZIb5pzwcWtbZFyIoKs/+kh3
+         Tnv+d0+EpODVv65Pg2od/yyMiRMM1G2ALB0B1k8FIAytsJzgxai4Y3hhGtZSUXbOC05D
+         vp3f1tscSHPrBTKL94n9Hd8UDqnDBruATg6DgaOgO7rdUZz0AKQ+/c0m3QVaKdWAI511
+         EJuu0YgdNbVDCBrqD99Q8qgaZJ0YrK667capZJF7tv2D7iwsKBc23f9ix4x8vITsbkI9
+         lSstev2F3DYZ+zuQumb0YzmCzt2VXyr1A1VmRyp0czPTSxrUvu119lseuxIMDsDigxvK
+         oEFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eIW+Gt62BFoUQ5JzgAMQpOCY6T9OYOeQnOKq/wLHShY=;
-        b=H7zfZ9Hx/kZjnWurcQpNiqvvxIfHlxFw8Fa/YMY6nfPYzyzH/lmbCCXhBV+DAAp5os
-         VSEPMQ2e3zQ8TU/HGb0tDO3aC/aUjEJuvIzIkR31TghqTcGoSjQOzYO8PVxxb7Iw6D58
-         BljDiF5R+kg761OsFI2jfnxinJHkxJh4uqUg8HsmQNFbRowMrgEUP3Fl0jXNDRgMSaYe
-         7FGCoBRTY6eM/kwTHy65ruxpLxEyRfZbRSgt9uI+y68nSlDWjC9xwSBUaJhKgtBRzM/v
-         qnOw9S1WuM7JR9KOf2kBvsKmkvtfoPwxTeEOtopFIuCE33alitSvYMynIJLHTqHtriNl
-         X6dg==
-X-Gm-Message-State: AJIora9h73ucES0TB+MeqWqLJlujuDgDYzUaMcE9h2iQ8Qvbxc82J2jK
-        HW3YUblbT6xCAmBIG0GSTgk5gPnD/ohrbCQhobHitw==
-X-Google-Smtp-Source: AGRyM1uFld3Lpoxqx+i2tBdAsxUKElPnTMVrF+spMW6jRFQCukNK8QIyE1bTYhvMu/7fv2Q9tYWh8DSy9Puf2pqz47M=
-X-Received: by 2002:a05:690c:831:b0:322:1402:d950 with SMTP id
- by17-20020a05690c083100b003221402d950mr4622827ywb.255.1659023267363; Thu, 28
- Jul 2022 08:47:47 -0700 (PDT)
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=LrtyfCU3pvrjGLvaQqW5zSHnkkaGZdjNAl8nsiisi1U=;
+        b=MwqshKFcig1Zzkpww+Pssv+vMo4cAN74dyXOmSFDK1CFbSVTzb+v+L8oUjyDlkZ8a3
+         KYnjCaHoYt5H0Pa9jNMjAMSgtf9a0lSKJcXEXgs9zrSLhJHRpTSsjyIRNRBDAI0CNR/6
+         2zU4ur9M0kAXPmdV7vwboG/WmPlA6L//B0rNg/0Q1d97CwMdLjT0Xsa02QyaQXiqG5sU
+         ZsyXANNTiBQ7fONMXfcC6k3M2c3OH4F4yTcfm/R9k62eNxtC7/ChWiQborZug+Z/UxI6
+         peXN4yEbJr151nFAZte2nucsP0U+DOfCYhf5wp9E2Npd6zpvm9U7gCoL43+c4vMjH6d0
+         bIPg==
+X-Gm-Message-State: AJIora/pXbDKhPRETBvjM41KKTZeRkzhe57XAj12evtPnrKbskYdzHtm
+        i4XuX0niouCitAock43pc/140d+CzdQ=
+X-Google-Smtp-Source: AGRyM1svNBPmCsAwnzGMMAzGlfB2RHuKbvUpAiHr8WCPZthX+Nk9BkfovNBSZ6atyEc6ydft+3ZOGA==
+X-Received: by 2002:a17:906:974c:b0:72b:8cea:95c2 with SMTP id o12-20020a170906974c00b0072b8cea95c2mr21882945ejy.65.1659023258162;
+        Thu, 28 Jul 2022 08:47:38 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b0072faa221b3asm531003ejc.151.2022.07.28.08.47.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 08:47:37 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
+ representor
+To:     Jakub Kicinski <kuba@kernel.org>, ecree@xilinx.com
+Cc:     davem@davemloft.net, pabeni@redhat.com, linux-net-drivers@amd.com,
+        netdev@vger.kernel.org
+References: <cover.1658943677.git.ecree.xilinx@gmail.com>
+ <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
+ <20220727201034.3a9d7c64@kernel.org>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
+Date:   Thu, 28 Jul 2022 16:47:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220727031524.358216-1-kuba@kernel.org> <20220727031524.358216-3-kuba@kernel.org>
- <e70b924a0a2ef69c4744a23862258ebb23b60907.camel@redhat.com> <20220728084244.7c654a6e@kernel.org>
-In-Reply-To: <20220728084244.7c654a6e@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 28 Jul 2022 17:47:36 +0200
-Message-ID: <CANn89i+vOXgKw+2ahJuhtu3-1MDSK4uDdCrK5CQ432QOhVn-PQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] tls: rx: don't consider sock_rcvtimeo() cumulative
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>, vfedorenko@novek.ru
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+In-Reply-To: <20220727201034.3a9d7c64@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,24 +76,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 5:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 28 Jul 2022 15:50:03 +0200 Paolo Abeni wrote:
-> > I have a possibly dumb question: this patch seems to introduce a change
-> > of behavior (timeo re-arming after every progress vs a comulative one),
-> > while re-reading the thread linked above it I (mis?)understand that the
-> > timeo re-arming is the current behavior?
-> >
-> > Could you please clarify/help me understand this better?
->
-> There're two places we use timeo - waiting for the exclusive reader
-> lock and waiting for data. Currently (net-next as of now) we behave
-> cumulatively in the former and re-arm in the latter.
->
-> That's to say if we have a timeo of 50ms, and spend 10ms on the lock,
-> the wait for each new data record must be shorter than 40ms.
+On 28/07/2022 04:10, Jakub Kicinski wrote:
+> On Wed, 27 Jul 2022 18:46:02 +0100 ecree@xilinx.com wrote:
+>> From: Edward Cree <ecree.xilinx@gmail.com>
+>>
+>> When setting the VF rep's MAC address, set the provisioned MAC address
+>>  for the VF through MC_CMD_SET_CLIENT_MAC_ADDRESSES.
+> 
+> Wait.. hm? The VF rep is not the VF. It's the other side of the wire.
+> Are you passing the VF rep's MAC on the VF? Ethernet packets between
+> the hypervisor and the VF would have the same SA and DA.
+> 
 
-s/must/could/    because timers can expire later than expected.
+Yes (but only if there's an IP stack on the repr; I think it's fine if
+ the repr is plugged straight into a bridge so any ARP picks up a
+ different DA?).
+I thought that was weird but I also thought that was 'how it's done'
+ with reps — properties of the VF are set by applying them to the rep.
+Is there some other way to configure VF MAC?  (Are we supposed to still
+ be using the legacy SR-IOV interface, .ndo_set_vf_mac()?  I thought
+ that was deprecated in favour of more switchdev-flavoured stuff…)
 
->
-> Does that make more sense?
+-ed
