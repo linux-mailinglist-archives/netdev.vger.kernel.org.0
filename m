@@ -2,191 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E71584214
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 16:45:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 124A1584227
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 16:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbiG1OpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 10:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
+        id S229472AbiG1OtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 10:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiG1OpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 10:45:16 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6DAF05
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 07:45:14 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id n138so1540560iod.4
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 07:45:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gcyZrD41WVmZL+M0duphde7MAmJcRr0cSttFggdiwxY=;
-        b=b/CEO7IqYeTQ9QzVCWitr8QpUBO316wbQg1T6Nry3tEYtE7CL80UsVwnpkEBo+HCQr
-         xGZKSoGwiOYWl5JPJT5pRxvNBJ2ic4RiCGyEr1lWflulBlD1taVWLpJrw+lWB1NsW5uq
-         oPn7NT7tFF98uvZEnaWfZBctq/8NBZVyPiv5WTX4cpxMAc/Jken/pG2GzTC6QtMKmZAT
-         PiGqfVrJ0EN3vq0cReIqnQuocZj3IAb8Xkecvfg/Hql6RC6JDpZa7Ts+dwb8hfra3GWZ
-         e3DUHon1AWUkxFoBaTBNMGgIjk4QWaerJcem4Ctl0qlFXhH04Q1gDOMnYklFoiSunhUg
-         INSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gcyZrD41WVmZL+M0duphde7MAmJcRr0cSttFggdiwxY=;
-        b=511+576tbO3dCTA3wOit96L52Hcym2vm2MsGE9r15JJ8bwzAep9LeWep6Zyk9e2eni
-         HOmnZpeWqS6w0s5fwyENgUaqB97RUTeDgNvOlt8TB8dU7MkD2x+oXORyILzTgmHCrv/L
-         n4KiaN95lUyJBEdrbKB2DaW5Rb8CBGcGp1Ekw9I2y8cmEVmnAAeR3VphLjVWd80+Takz
-         9kSb3aGJwiZw5y+TIqXj21UI7RAPEp+KJnBTsfysdCAKo3pByyko9m5iA2kXcf82F4kb
-         /6z+XnlDNg/1blFMPn4Hytjz6RYuXs9ia7YmFTpIL7eQhW2NQ37rN9GAsvRagAPByFaT
-         8x1w==
-X-Gm-Message-State: AJIora/Qgk8Bye3z+iaIZITsPvDErGwcbptTMJC8yecpeNNthh9aMWk7
-        NMzwmdZOtyUGI+iB1qAyNKhj87n3d5lL29cR9PCyR5KM2EU=
-X-Google-Smtp-Source: AGRyM1sOGuuRJVY3QjWMJGNLX2I++qh0kl7GBkhuC4fi/bYbIFz0o0rOoNRlGrrJBj1XaBJt1ko2HyRIgHj+/gFR6TE=
-X-Received: by 2002:a05:6638:1394:b0:341:4d18:3d41 with SMTP id
- w20-20020a056638139400b003414d183d41mr11403482jad.90.1659019513390; Thu, 28
- Jul 2022 07:45:13 -0700 (PDT)
+        with ESMTP id S229550AbiG1OtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 10:49:03 -0400
+Received: from smtp-190c.mail.infomaniak.ch (smtp-190c.mail.infomaniak.ch [IPv6:2001:1600:4:17::190c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F744B4AE
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 07:49:02 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Lttnk72LXzMq6g7;
+        Thu, 28 Jul 2022 16:48:58 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Lttnk2R1wzlqws1;
+        Thu, 28 Jul 2022 16:48:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1659019738;
+        bh=1KSzps2FiDNUEsMo4bn2QdGV/JFCQrKWqavbNdoEi9w=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=zICIAE8Whjm7YrvVrMDcOP9hhl0wYVp13iBOnuMoEFyNfH22Ply5FauIHhQ/PIVmT
+         gDr1zsnMaiVSnOvnrP0YHoBnTNrfZipziaXBQouRSqYQ6eko5VIFPilR6sj9yOEt4I
+         N/t1uWCzkKWh/Cje8NtU7X7eKybf4gAj1FxHzR0E=
+Message-ID: <e0ee8ddd-e34d-eb4d-1258-09c70753c294@digikod.net>
+Date:   Thu, 28 Jul 2022 16:48:57 +0200
 MIME-Version: 1.0
-References: <CAFZh4h-JVWt80CrQWkFji7tZJahMfOToUJQgKS5s0_=9zzpvYQ@mail.gmail.com>
- <fd16ebb3-2435-ef01-d9f1-b873c9c0b389@gmail.com> <CAFZh4h-FJHha_uo--jHQU3w4AWh2k3+D6Lrz=ce5sbu3=BmTTw@mail.gmail.com>
- <20220727233249.fpn7gyivnkdg5uhe@skbuf>
-In-Reply-To: <20220727233249.fpn7gyivnkdg5uhe@skbuf>
-From:   Brian Hutchinson <b.hutchman@gmail.com>
-Date:   Thu, 28 Jul 2022 10:45:02 -0400
-Message-ID: <CAFZh4h-w739Xq6x13PpFvCFX=dCD571k1bdMyfk1Wvtkk_vvCw@mail.gmail.com>
-Subject: Re: Bonded multicast traffic causing packet loss when using DSA with
- Microchip KSZ9567 switch
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        andrew@lunn.ch, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: 
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
+ <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
+ <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
+ <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+ <6ee7e769-ce91-a6cc-378b-f206e04d112a@huawei.com>
+ <582f8ace-1f95-16a6-fa9e-4014ddd8b7f2@digikod.net>
+ <223e6a19-058e-439e-ef29-a53d086838d9@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
+In-Reply-To: <223e6a19-058e-439e-ef29-a53d086838d9@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
 
-On Wed, Jul 27, 2022 at 7:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+On 11/07/2022 16:05, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 7/8/2022 5:35 PM, Mickaël Salaün пишет:
+>>
+>> On 08/07/2022 16:14, Konstantin Meskhidze (A) wrote:
+>>>
+>>>
+>>> 7/8/2022 4:59 PM, Mickaël Salaün пишет:
+>>>>
+>>>> On 08/07/2022 15:10, Konstantin Meskhidze (A) wrote:
+>>>>>
+>>>>>
+>>>>> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
+>>>>>>
+>>>>>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
+>>>>>>> Adds a new object union to support a socket port
+>>>>>>> rule type. Refactors landlock_insert_rule() and
+>>>>>>> landlock_find_rule() to support coming network
+>>>>>>> modifications. Now adding or searching a rule
+>>>>>>> in a ruleset depends on a rule_type argument
+>>>>>>> provided in refactored functions mentioned above.
+>>>>>>>
+>>>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>>>> ---
+>>>>>>>
+>>>>>>> Changes since v5:
+>>>>>>> * Formats code with clang-format-14.
+>>>>>>>
+>>>>>>> Changes since v4:
+>>>>>>> * Refactors insert_rule() and create_rule() functions by deleting
+>>>>>>> rule_type from their arguments list, it helps to reduce useless code.
+>>>>>>>
+>>>>>>> Changes since v3:
+>>>>>>> * Splits commit.
+>>>>>>> * Refactors landlock_insert_rule and landlock_find_rule functions.
+>>>>>>> * Rename new_ruleset->root_inode.
+>>>>>>>
+>>>>>>> ---
+>>>>>>>    security/landlock/fs.c      |   7 ++-
+>>>>>>>    security/landlock/ruleset.c | 105
+>>>>>>> ++++++++++++++++++++++++++----------
+>>>>>>>    security/landlock/ruleset.h |  27 +++++-----
+>>>>>>>    3 files changed, 96 insertions(+), 43 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>>>>>> index e6da08ed99d1..46aedc2a05a8 100644
+>>>>>>> --- a/security/landlock/fs.c
+>>>>>>> +++ b/security/landlock/fs.c
+>>>>>>> @@ -173,7 +173,8 @@ int landlock_append_fs_rule(struct
+>>>>>>> landlock_ruleset *const ruleset,
+>>>>>>>        if (IS_ERR(object))
+>>>>>>>            return PTR_ERR(object);
+>>>>>>>        mutex_lock(&ruleset->lock);
+>>>>>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
+>>>>>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights,
+>>>>>>> +                   LANDLOCK_RULE_PATH_BENEATH);
+>>>>>>>        mutex_unlock(&ruleset->lock);
+>>>>>>>        /*
+>>>>>>>         * No need to check for an error because landlock_insert_rule()
+>>>>>>> @@ -204,7 +205,9 @@ find_rule(const struct landlock_ruleset *const
+>>>>>>> domain,
+>>>>>>>        inode = d_backing_inode(dentry);
+>>>>>>>        rcu_read_lock();
+>>>>>>>        rule = landlock_find_rule(
+>>>>>>> -        domain, rcu_dereference(landlock_inode(inode)->object));
+>>>>>>> +        domain,
+>>>>>>> +        (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
+>>>>>>> +        LANDLOCK_RULE_PATH_BENEATH);
+>>>>>>>        rcu_read_unlock();
+>>>>>>>        return rule;
+>>>>>>>    }
+>>>>>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>>>>>> index a3fd58d01f09..5f13f8a12aee 100644
+>>>>>>> --- a/security/landlock/ruleset.c
+>>>>>>> +++ b/security/landlock/ruleset.c
+>>>>>>> @@ -35,7 +35,7 @@ static struct landlock_ruleset
+>>>>>>> *create_ruleset(const u32 num_layers)
+>>>>>>>            return ERR_PTR(-ENOMEM);
+>>>>>>>        refcount_set(&new_ruleset->usage, 1);
+>>>>>>>        mutex_init(&new_ruleset->lock);
+>>>>>>> -    new_ruleset->root = RB_ROOT;
+>>>>>>> +    new_ruleset->root_inode = RB_ROOT;
+>>>>>>>        new_ruleset->num_layers = num_layers;
+>>>>>>>        /*
+>>>>>>>         * hierarchy = NULL
+>>>>>>> @@ -69,7 +69,8 @@ static void build_check_rule(void)
+>>>>>>>    }
+>>>>>>>
+>>>>>>>    static struct landlock_rule *
+>>>>>>> -create_rule(struct landlock_object *const object,
+>>>>>>> +create_rule(struct landlock_object *const object_ptr,
+>>>>>>> +        const uintptr_t object_data,
+>>>>>>>            const struct landlock_layer (*const layers)[], const u32
+>>>>>>> num_layers,
+>>>>>>>            const struct landlock_layer *const new_layer)
+>>>>>>>    {
+>>>>>>> @@ -90,8 +91,15 @@ create_rule(struct landlock_object *const object,
+>>>>>>>        if (!new_rule)
+>>>>>>>            return ERR_PTR(-ENOMEM);
+>>>>>>>        RB_CLEAR_NODE(&new_rule->node);
+>>>>>>> -    landlock_get_object(object);
+>>>>>>> -    new_rule->object = object;
+>>>>>>> +
+>>>>>>> +    if (object_ptr) {
+>>>>>>> +        landlock_get_object(object_ptr);
+>>>>>>> +        new_rule->object.ptr = object_ptr;
+>>>>>>> +    } else if (object_ptr && object_data) {
+>>>>>>
+>>>>>> Something is wrong with this second check: else + object_ptr?
+>>>>>
+>>>>>    Sorry. Do you mean logical error here? I got your point.
+>>>>>    You are right!
+>>>>>
+>>>>>    I think it must be refactored like this:
+>>>>>
+>>>>>       if (object_ptr && !object_data) {
+>>>>>           landlock_get_object(object_ptr);
+>>>>>           new_rule->object.ptr = object_ptr;
+>>>>>       } else if (object_ptr && object_data) {
+>>>>>           ...
+>>>>>       }
+>>>>
+>>>> There is indeed a logical error but this doesn't fix everything. Please
+>>>> include my previous suggestion instead.
+>>>>
+>>>      By the way, in the next commits I have fixed this logic error.
+>>> Anyway I will refactor this one also. Thanks.
+>>>>
+>>>>> Plus, I will add a test for this case.
+>>>>
+>>>> That would be great but I don't think this code is reachable from user
+>>>> space. I think that would require kunit but I may be missing something.
+>>>> How would you test this?
+>>>
+>>> You are correct. I checked it. It's impossible to reach this line from
+>>> userpace (insert both object_ptr and object_data). But create_rule()
+>>> must be used carefuly by other developers (if any in future). Do you
+>>> think if its possible to have some internal kernel tests that could
+>>> handle this issue?
+>>
+>> We can use kunit tests for such kernel functions, but in this case I'm
+>> not sure what could be tested. I started working on bringing kunit tests
+>> to Landlock but it's not ready yet. Please list all non-userspace tests
+>> you can think about.
+> 
+>    I'm thinking about ones that we can't reach from the userspace.
 
-> > bond1: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500  metric 1
-> >        inet 192.168.1.6  netmask 255.255.255.0  broadcast 0.0.0.0
-> >        inet6 fd1c:a799:6054:0:60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x0<global>
-> >        inet6 fe80::60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x20<link>
-> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
->
-> I see bond1, lan1 and lan2 all have the same MAC address (62:e2:05:75:67:16).
-> Does this happen even when they are all different?
+Right, some lines cannot be reached by user space because they are logically
+not possible but safety checks in case of unexpected kernel code modification
+(which, unfortunately, cannot be done at build time).
 
-So I have (when bond is setup using Systemd) assigned unique MAC
-addresses for eth0, lan1 and lan2 ... but default action of bonding is
-to assign the bond (bond1) and the slaves (lan1, lan2) a MAC that is
-all the same among all the interfaces.  There are settings (controlled
-by fail_over_mac) to specify which MAC is chosen to seed the MAC of
-the other interfaces but bottom line is bonding makes both the bond
-and active slave at a minimum the same MAC.
 
->
-> >        RX packets 2557  bytes 3317974 (3.1 MiB)
-> >        RX errors 0  dropped 2  overruns 0  frame 0
-> >        TX packets 2370  bytes 3338160 (3.1 MiB)
-> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-> >
-> > eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1506  metric 1
-> >        inet6 fe80::f21f:afff:fe6b:b218  prefixlen 64  scopeid 0x20<link>
-> >        ether f0:1f:af:6b:b2:18  txqueuelen 1000  (Ethernet)
-> >        RX packets 2557  bytes 3371671 (3.2 MiB)
-> >        RX errors 0  dropped 0  overruns 0  frame 0
-> >        TX packets 2394  bytes 3345891 (3.1 MiB)
-> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-> >
-> > lan1: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
-> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
-> >        RX packets 248  bytes 19384 (18.9 KiB)
-> >        RX errors 0  dropped 0  overruns 0  frame 0
-> >        TX packets 2370  bytes 3338160 (3.1 MiB)
-> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-> >
-> > lan2: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
-> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
-> >        RX packets 2309  bytes 3298590 (3.1 MiB)
-> >        RX errors 0  dropped 1  overruns 0  frame 0
->
-> I find this extremely strange. AFAIK, ifconfig reads stats from /proc/net/dev,
-> which in turn takes them from the driver using dev_get_stats():
-> https://elixir.bootlin.com/linux/v5.10.69/source/net/core/net-procfs.c#L78
->
-> But DSA didn't even report the "dropped" count via ndo_get_stats64 in 5.10...
-> https://elixir.bootlin.com/linux/v5.10.69/source/net/dsa/slave.c#L1257
->
-> I have no idea why this shows 1. I'll have to ignore this information
-> for now.
->
-.
-.
-.
->
-> Would you mind trying to test the exact same scenario again with the
-> patch attached? (also pasted below in plain text) Still the same MAC
-> address for all interfaces for now.
+>    I analyzed test coverage logs finding lines that are untouched by the
+> userspace tests.
+>    Let's discus this list:
+> 
+> 	1. create_rule():  - insert both  object_ptr and object_data.
 
-No problem at all.  I'm stumped too and welcome ideas to figure out
-what is going on.
+This check is gone with my last patch.
 
->
-> From 033e3a8650a498de73cd202375b2e3f843e9a376 Mon Sep 17 00:00:00 2001
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date: Thu, 28 Jul 2022 02:07:08 +0300
-> Subject: [PATCH] ksz9477: force-disable address learning
->
-> I suspect that what Brian Hutchinson experiences with the rx_discards
-> counter incrementing is due to his setup, where 2 external switches
-> connect together 2 bonded KSZ9567 switch ports, in such a way that one
-> KSZ port is able to see packets sent by the other (this is probably
-> aggravated by the multicast sent at a high data rate, which is treated
-> as broadcast by the external switches and flooded).
+> 
+> 	2. insert_rule():  - insert both  object_ptr and object_data.
 
-So I mentioned in a recent PM that I was looking at other vendor DSA
-drivers and I see code that smells like some of the concerns you have.
+This check is gone with my last patch.
 
-I did some grepping on /drivers/net/dsa and while I get hits for
-things like 'flood', 'multicast', 'igmp' etc. in marvel and broadcom
-drivers ... I get nothing on microchip.  Hardware documentation has
-whole section on ingress and egress rate limiting and shaping but
-doesn't look like drivers use any of it.
 
-Example:
+> 			   - insert NULL (*const layers).
+> 			   - insert layers[0].level != 0.
+> 			   - insert num_layers != 1.
+> 			   - insert default rule_type.
+> 	
+> 	3. tree_merge():   - insert default rule_type.
+> 			   - insert walker_rule->num_layers != 1.
+> 			   - insert walker_rule->layers[0].level != 0.
+> 	
+> 	4. tree_copy():    - insert default rule_type.
+> 	
+> 	5. merge_ruleset:  - insert !dst || !dst->hierarchy.
+> 			   - insert src->num_layers != 1 ||
+>                                       dst->num_layers < 1.
+> 
+> 	6. inherit_ruleset(): - insert child->num_layers <=
+> 				   parent->num_layers.
+>    			      - insert parent->hierarchy = NULL.
+> 
+> 	7. landlock_merge_ruleset(): - insert ruleset = NULL.
+> 				     - insert parent = ruleset
+> 
+> 	8. landlock_find_rule(): - insert default rule_type.
+> 
+>    Please your opinion?
 
-/drivers/net/dsa/mv88e6xxx$ grep -i multicast *.c
-chip.c: { "in_multicasts",              4, 0x07, STATS_TYPE_BANK0, },
-chip.c: { "out_multicasts",             4, 0x12, STATS_TYPE_BANK0, },
-chip.c:                  is_multicast_ether_addr(addr))
-chip.c: /* Upstream ports flood frames with unknown unicast or multicast DA */
-chip.c:  * forwarding of unknown unicasts and multicasts.
-chip.c:         dev_err(ds->dev, "p%d: failed to load multicast MAC address\n",
-chip.c:                                  bool unicast, bool multicast)
-chip.c:                                                       multicast);
-global2.c:      /* Consider the frames with reserved multicast destination
-global2.c:      /* Consider the frames with reserved multicast destination
-port.c:                              bool unicast, bool multicast)
-port.c: if (unicast && multicast)
-port.c: else if (multicast)
-port.c:                                       int port, bool multicast)
-port.c: if (multicast)
-port.c:                              bool unicast, bool multicast)
-port.c: return mv88e6185_port_set_default_for
-ward(chip, port, multicast);
-
-Wondering if some needed support is missing.
-
-Will try your patch and report back.
-
-Regards,
-
-Brian
+All these checks are enclosed with WARN_ON_ONCE(). I'm not sure it will help
+to add kunit tests for them. It could be interesting to add kunit test to
+check the behavior of standalone helpers though, e.g. managing rulesets or
+trees.
