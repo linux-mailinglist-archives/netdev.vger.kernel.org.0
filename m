@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE18F583697
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DBE58369C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 04:02:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiG1B64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 21:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        id S234096AbiG1CCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 22:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232834AbiG1B6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:58:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1665358B52
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 18:58:55 -0700 (PDT)
+        with ESMTP id S232834AbiG1CCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 22:02:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C284F659
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 19:02:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B804BB822CC
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6A1C433D6;
-        Thu, 28 Jul 2022 01:58:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2767C61778
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A46C433C1;
+        Thu, 28 Jul 2022 02:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658973532;
-        bh=hOD4are79SZr/8GppXqI7riucXDu9cv3lqEdzNrO87w=;
+        s=k20201202; t=1658973719;
+        bh=EfJz1vcpphpsoRZAn1+7akAOc3dvfPp8wwBpNZjcFVk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dufUTz+fijINejJUEOYTShBovPa1FZqCXNfSMe8/o3240TFUXgov/dQxGh3iyEqTB
-         S5t42uxSzAbgD8F641bKwameKsCxoUxR2R5PFjFTAO/UvFjHbH/lRFCZEi6ydWLJZP
-         f6v6ooyoIHfvRA8ahieVjBUCLbGq13TlwLKqe/upZfXp8XmFn6Ahm4wh5irBTG5vch
-         kcagx/p6SupcEOdb0WmiUUZLWR3rh/NOF7H7qOV6C6NDH6v3xt7h3vZf2k+Zmmyxs3
-         46HiNL/zwE3uffr4QeW4lNgs9nMPGDRorSVB9fKBZqFeE/ZdEm2JqAuXEhKdq/UjGe
-         tkIaoGFq9aRBw==
-Date:   Wed, 27 Jul 2022 18:58:51 -0700
+        b=shZLWsQASs6CF+h5T/nkTWLuRy8RE5bolO1GU1ywC6vm84+XrD/J//Hgrne8jK6Sx
+         2z1ovP+0PReJhm5PfciURYpxvprACgEqXzakl2/Nu3gt0VbH5ZwWoowNgPDDomuTu6
+         HROQ8ZzzjrDXIH53Vb1aKLQBxW5IhEvhtar9387PfiuqX63/aL5qRrdnPTKhYjh/Ca
+         Rp5vYEnzk0mDqZL5OclhJc++NNFV8MTf1eyyiSOOCEs53PhOSzP4Npfy8cCjb88Vnb
+         Py74uJj04aKKAswALvFR7kDHH7UW8/aHQzGaVd1Kjyzkn2A6RoCMlyYM/Z+Z48pPsm
+         tx0aUWZ84ViUQ==
+Date:   Wed, 27 Jul 2022 19:01:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Moshe Shemesh <moshe@nvidia.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -41,12 +41,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
         <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/9] net: devlink: remove region snapshot ID
- tracking dependency on devlink->lock
-Message-ID: <20220727185851.22ee74aa@kernel.org>
-In-Reply-To: <1658941416-74393-2-git-send-email-moshe@nvidia.com>
+Subject: Re: [PATCH net-next 2/9] net: devlink: remove region snapshots list
+ dependency on devlink->lock
+Message-ID: <20220727190156.0ec856ae@kernel.org>
+In-Reply-To: <1658941416-74393-3-git-send-email-moshe@nvidia.com>
 References: <1658941416-74393-1-git-send-email-moshe@nvidia.com>
-        <1658941416-74393-2-git-send-email-moshe@nvidia.com>
+        <1658941416-74393-3-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,9 +59,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 20:03:28 +0300 Moshe Shemesh wrote:
-> So resolve this by removing dependency on devlink->lock for region
-> snapshot ID tracking by using internal xa_lock() to maintain
-> shapshot_ids xa_array consistency.
+On Wed, 27 Jul 2022 20:03:29 +0300 Moshe Shemesh wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> After mlx4 driver is converted to do locked reload,
+> devlink_region_snapshot_create() may be called from both locked and
+> unlocked context.
 
-xa_lock() is a spin lock, right?  s/GFP_KERNEL/GFP_ATOMIC/
+You need to explain why, tho. What makes region snapshots special? 
+
+> So resolve this by removing dependency on devlink->lock for region
+> snapshots list consistency and introduce new mutex to ensure it.
+
+I was hoping to avoid per-subobject locks. What prevents us from
+depending on the instance lock here (once the driver is converted)?
