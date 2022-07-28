@@ -2,116 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 389605846C6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2B45846E6
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiG1UEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 16:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
+        id S231881AbiG1USo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 16:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiG1UEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:04:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 612397647A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659038659;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RQLnq+worBZxlDN3OYzyNr7eSx33Wdw0DnSni4EUIHo=;
-        b=dwvFc3COBUtYwEWE+/nOTBT7p+b4VykqUmTeqxZXrWSF3m8KZbk/SW+Nvx6YfWh0aD+UNa
-        or/uVA4QEyoZBTPBfISoDU6W6P9VzhNDxfMhnVeuAbbQgPQ+20/Ce8PzYXGHw8PFcGh/eZ
-        3ncwxbkcYatwRNxtIXaqX8WOyUTlmTM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-0dLkJxe1Nce_qBPrVWwGGg-1; Thu, 28 Jul 2022 16:04:17 -0400
-X-MC-Unique: 0dLkJxe1Nce_qBPrVWwGGg-1
-Received: by mail-wm1-f71.google.com with SMTP id ay19-20020a05600c1e1300b003a315c2c1c0so2905967wmb.7
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:04:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=RQLnq+worBZxlDN3OYzyNr7eSx33Wdw0DnSni4EUIHo=;
-        b=yYX6ex+XEvbXEZwB4/bCadvwnGYSsnRQVHjDa6Zny0YusEsNcXOCbI2+Tw5hE43iqL
-         oljIOIGukN98lVpnyN8IPOWitMABs2c3hSeCKDeT6wEHVyYHXXxtoyZumGXOVqsxjIBx
-         Bmypxi1mKtF9KdMKRnCC4dM7WkrAiPTiFKeumsH/RE7vF9z00GG3e9M3UCJePX9fa4Ix
-         pY1IVm8EBMq5adK/DkutjakX51BAU6IlnFL/yzAWejKt0iK8x5o1BBOl1zCNl219h+lV
-         6GpMYI2irKjGLDEJhFyJy51F3l1wlsF6lFn/kLJyl3FUlndrvpLMSCErwak+e40kEg/H
-         n4Cg==
-X-Gm-Message-State: AJIora+04VKJwRUjAfBmnLZQE4ITW280MPoG7HMJeXZ/+l6B0ULhp+Hh
-        pS4FpDfe8wgo5NolCLCToPyKDjg4FUhPHV30TrcU/MUe/lrKPXyeEhGOLD4iN7pvpnnHihA9O+2
-        OeKxlf0ygKfiv1A6h
-X-Received: by 2002:a1c:7c0d:0:b0:3a3:5e3f:497e with SMTP id x13-20020a1c7c0d000000b003a35e3f497emr610226wmc.135.1659038656244;
-        Thu, 28 Jul 2022 13:04:16 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vBs0yJGIS/HtA02tBgvXgZfProACwicE3Eh+ZcOHa3n3b0v1Bp2c7t4LrMXHM7ltY6q6o7tQ==
-X-Received: by 2002:a1c:7c0d:0:b0:3a3:5e3f:497e with SMTP id x13-20020a1c7c0d000000b003a35e3f497emr610208wmc.135.1659038655931;
-        Thu, 28 Jul 2022 13:04:15 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id f4-20020a1c6a04000000b0039c96b97359sm2121189wmc.37.2022.07.28.13.04.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 13:04:15 -0700 (PDT)
-Message-ID: <0daf062cb59776a19b142eeb48b46db0878cc353.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/4] tls: rx: don't consider sock_rcvtimeo()
- cumulative
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
-        tariqt@nvidia.com, vfedorenko@novek.ru
-Date:   Thu, 28 Jul 2022 22:04:13 +0200
-In-Reply-To: <20220728084244.7c654a6e@kernel.org>
-References: <20220727031524.358216-1-kuba@kernel.org>
-         <20220727031524.358216-3-kuba@kernel.org>
-         <e70b924a0a2ef69c4744a23862258ebb23b60907.camel@redhat.com>
-         <20220728084244.7c654a6e@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229728AbiG1USi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:18:38 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA0C77550;
+        Thu, 28 Jul 2022 13:18:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=jyimSRaAw9wxhi7YQujJr9tMl4SkrhmCEF1+wkpWhGk=; b=0Litq/Fsb43jdyPHkycZ41xn9y
+        by3rUO5zmjLF+BaGMgqWbx8M4Jgzcb7fWzAtB0LdW5TtVOhcO2D3GUN1Jo6Byx6E26HE2wYf7QNYs
+        TP+L4CW8fPyqhA8+4DrKnAarhukfo+sn/eshpluE/E+o3bSleYvSnA+gg/G/K58VyN/Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oH9xl-00Bq2D-PA; Thu, 28 Jul 2022 22:18:29 +0200
+Date:   Thu, 28 Jul 2022 22:18:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
+ fwnode_find_net_device_by_node()
+Message-ID: <YuLvFQiZP6qmWcME@lunn.ch>
+References: <20220727064321.2953971-1-mw@semihalf.com>
+ <20220727064321.2953971-7-mw@semihalf.com>
+ <20220727143147.u6yd6wqslilspyhw@skbuf>
+ <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+ <20220727163848.f4e2b263zz3vl2hc@skbuf>
+ <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
+ <20220727211112.kcpbxbql3tw5q5sx@skbuf>
+ <CAPv3WKcc2i6HsraP3OSrFY0YiBOAHwBPxJUErg_0p7mpGjn3Ug@mail.gmail.com>
+ <20220728195607.co75o3k2ggjlszlw@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220728195607.co75o3k2ggjlszlw@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-07-28 at 08:42 -0700, Jakub Kicinski wrote:
-> On Thu, 28 Jul 2022 15:50:03 +0200 Paolo Abeni wrote:
-> > I have a possibly dumb question: this patch seems to introduce a change
-> > of behavior (timeo re-arming after every progress vs a comulative one),
-> > while re-reading the thread linked above it I (mis?)understand that the
-> > timeo re-arming is the current behavior?
-> > 
-> > Could you please clarify/help me understand this better?
-> 
-> There're two places we use timeo - waiting for the exclusive reader 
-> lock and waiting for data. Currently (net-next as of now) we behave
-> cumulatively in the former and re-arm in the latter.
+> The 'label' thing is actually one of the things that I'm seriously
+> considering skipping parsing if this is an ACPI system, simply because
+> best practices are different today than they were when the OF bindings
+> were created.
 
-I see it now, thanks for the pointers.
-> 
-> That's to say if we have a timeo of 50ms, and spend 10ms on the lock,
-> the wait for each new data record must be shorter than 40ms.
-> 
-> Does that make more sense?
+Agreed. We want the ACPI binding to learn from what has worked and not
+worked in DT. We should clean up some of the historical mess. And
+enforce things we don't in DT simply because there is too much
+history.
 
-Yes.
+So a straight one to one conversion is not going to happen.
 
-For the records, I feared a change of behavior that could break
-existing user-space applications expecting/dependending on blocking
-recvmsg() completing in ~timeo (yep, modulo timer precision - which is
-reasonably good for "short" timers), but it looks like there is no
-actual overall behaviour change.
+> It can be debated what exactly is at fault there, although one
+> interpretation can be that the DT bindings themselves are to blame,
+> for describing a circular dependency between a parent and a child.
 
-So I'm fine with this patch.
+DT describes hardware. I'm not sure hardware can have a circular
+dependency. It is more about how software make use of that hardware
+description that ends up in circular dependencies.
 
-Thanks!
-
-Paolo
-
+	    Andrew
