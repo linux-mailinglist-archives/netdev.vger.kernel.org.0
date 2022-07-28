@@ -2,232 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC2D5837C6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 06:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D539458381D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 07:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234862AbiG1EF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 00:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S229637AbiG1FS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 01:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234241AbiG1EFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 00:05:25 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D139B51407;
-        Wed, 27 Jul 2022 21:05:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658981123; x=1690517123;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=wYa6z7XlX3TWLKNNoJ1v6Qilc+/lgtZiuUV5IAb7qT8=;
-  b=mV4HAW3EYEQbQSDB7PQaoEwQu1O3Sx4PT2/LS7Q1HF7wpXR3gaKidrSz
-   HnJjALuIB2Mzntp17fvHUH7ewwjqKNC5BrJlyJeDAVXdOOakLE73yWYzg
-   mp65vo4uRYPvF21PaDkomkl8g/JSir/X2DIuCPlm7rwdVzmbpEvacCBva
-   +qQz4GtMd9GNsoXFnCZ6ioi7vjJbI9kW72bya7ciNGAmo+s+V2spCAszP
-   2rQNp7FQ+gdMJxQ0I97D8tzW4wfbpyOQSwJvSazQIOZ3YTQkvogJuGCUs
-   4bOPRN2AURBbjko+Ax8q5XscxP1SrxpYqyovGrPZtSOVMjtzzLVsqYGYC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="350120377"
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="350120377"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 21:05:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="628681414"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga008.jf.intel.com with ESMTP; 27 Jul 2022 21:05:07 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 27 Jul 2022 21:05:07 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 27 Jul 2022 21:05:06 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Wed, 27 Jul 2022 21:05:06 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Wed, 27 Jul 2022 21:05:06 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=idhqANQ98di3TLk+tt3FIrse96z/sz3EBXirurpj32yDlOrsaJS1bZS9unhycXW2hqPHi6EWosAzLgWOjbdGfYS9LMbbCg7lZMsQGVoUG2+qKZ5YNr3XCVlKwgoOimfUNFW+fU+PZq6dbZmvOuQ5dSbCY+hO6BaR4HfM+Q14CCoqpciKGGo9+FFE3dqHNHtTMKlFuAFjHJeeIB+uFM9jEbjYylNa7PIbabYstznIGby9DdmKQzB/V3IJ2ps8Vz0CCIhU2/8lvnrqUpfMLPINLQXnsY3BAQWCyEpjDIEXuH/BZF5iutIjmf9PQtaIG0TY8icPKUWYYTK5XBfY0v5seA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NjwK8vfY5DTwPb/SpwWirBLJ2RoKigVb13EE+letqB0=;
- b=CzRMmasvOZeKUUYL31gd5Lr1uGQjzcJJpMvPcnuH6BwhKppkSJ9CTUnyTAgziSyaxI2waBXd+M48zgJl/y6jGfyekGioKy378Qsn6+R/R/Us928UKgRGCAJds4l2At1vABZjGX62TiT9ija+kZddnPa1x1InOKMtvsOPVIG9gYsI8YNF0Bxi/ssynEUE9Mx9e9S0FoCoogaC4fWWAyp+WTrVnLGeSkdqCQf2Axfwv/VxXJSChwSqjO6ptzzVHh8ChVSLp6NTzNk4JX8Z5HLD+C/Uc5tAJjOHyp9/ymB1b4CxpZ/BuL43O+0+/IJrOg52G62FQ2R2VSMAoT2ymD71dQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL1PR11MB5496.namprd11.prod.outlook.com (2603:10b6:208:314::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Thu, 28 Jul
- 2022 04:05:04 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5458.025; Thu, 28 Jul 2022
- 04:05:04 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-CC:     Yishai Hadas <yishaih@nvidia.com>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Martins, Joao" <joao.m.martins@oracle.com>,
-        "leonro@nvidia.com" <leonro@nvidia.com>,
-        "maorg@nvidia.com" <maorg@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>
-Subject: RE: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
-Thread-Topic: [PATCH V2 vfio 03/11] vfio: Introduce DMA logging uAPIs
-Thread-Index: AQHYl1nJKS3L4jvyo020+ZxRKt+bu62IiPNggAAsCgCABgpRoIABp/gAgABa8gCAABExAIACXSyQ
-Date:   Thu, 28 Jul 2022 04:05:04 +0000
-Message-ID: <BN9PR11MB52766B673C70439A78E16B518C969@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220714081251.240584-1-yishaih@nvidia.com>
- <20220714081251.240584-4-yishaih@nvidia.com>
- <BN9PR11MB5276B26F76F409BE27E593758C919@BN9PR11MB5276.namprd11.prod.outlook.com>
- <56bd06d3-944c-18da-86ed-ae14ce5940b7@nvidia.com>
- <BN9PR11MB5276BEDFBBD53A44C1525A118C959@BN9PR11MB5276.namprd11.prod.outlook.com>
- <eab568ea-f39e-5399-6af6-0518832dfc91@nvidia.com>
- <20220726080320.798129d5.alex.williamson@redhat.com>
- <20220726150452.GE4438@nvidia.com>
-In-Reply-To: <20220726150452.GE4438@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6b9fd56a-5c7a-441f-469e-08da704e59cd
-x-ms-traffictypediagnostic: BL1PR11MB5496:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8rxAckKGX3MNAuGPxfAnEjEkfOEOUIQUcqHtHntOcHfKApGeXr7bVdPnTZani2QX0Ds2bJg609zoQqUBaREKIOcTLVfvNpA3SJm1UFnSrTF1iJWIVuQvg8Fz8zcbEvzSAvSYQLQVyxkc1ID/b3grXBCJJdjaEsKWxN6IBX3shEznDB/JrO9Q2pvzxeB+n3AWJmUlZLwN4zhBhBoXmi0OGlI5o88K9SkGpo26EWev3dzWzWOEQi5ns1VUPmhjRlp+LW6H7spZZZD7uLrUuqddvp0t+XO7DI7wBrjirqKzviDcRz8p6CawkLIMd60G5WflrVc8O/YitHNl9dSqtGghkL5TFSmPCgVPbT/5dfelOe0mLU0NGcmtvJJ5BReqVjyXCD26KBlfGt07941E9HSFdTf3y615Uvc2DnakjakPutY+/2jl4bjU0onCj1sSX+2kCSrDH9Zg3WeLKfuF2a3JDnsYcDKfZtHKCYbn9f/2bKzpf4J0RDCdCerKD3eERlWNSYMv5ezkjKQUCDi36XYNCaDjc/xYlCVgyy+VwsiVWcEnAMTIZ/55Sg0a7O+ubV5VCYddqkv/EbLUUMubEsDjqYH0NmosN0lGcmWhYhaQkCgvyelbVXwSpdqDszXkEF43e9IZzYkwZyeJcO89EHN3CE8hk1U/tzGX/AFXxVJjrOWC20ECBtMvqzk2BWHNf/wEXbRW41XsIwdUBT07273y3acvil46MDUb89osKz4+gmjkSKW+RiGY5J1VZwxEGGqicj9rSDDY5S8riLcolQzI6KuRz5ukY/viLket5ZSg6iSbQurhIFtAne8hBywzLTOQ
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(396003)(136003)(376002)(366004)(39860400002)(33656002)(52536014)(55016003)(2906002)(5660300002)(66476007)(8676002)(38070700005)(122000001)(64756008)(8936002)(66446008)(66946007)(4326008)(7416002)(86362001)(76116006)(66556008)(110136005)(316002)(7696005)(478600001)(6506007)(9686003)(71200400001)(41300700001)(54906003)(186003)(26005)(83380400001)(82960400001)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?htGZsenzF9k5+xAgIJ9KNprikvdjdjtIzIO9FbPGDsIGdj6iMwM0zvGWjPPV?=
- =?us-ascii?Q?Vzd0x/d0VrNcW6He7RqRMQUO+jifgi55xc0UysA8EzFh0SX/u11Fo/QRu5n9?=
- =?us-ascii?Q?49K46aEePdWfIqzWZGLTKGzs9+T8xRnV7GkWXVx1vAgWBqV9FJJlxpyPou9H?=
- =?us-ascii?Q?rC9wpD3KY4elnM545NAPZjDHQauQkikf99FTwAl+WFjQ29XPkAcFRnuC43X9?=
- =?us-ascii?Q?4+Og3pCcmuphq4+O1eIrfPoOvkxpCKKJb8wKNaFLreD7uxeJaVG875UouN58?=
- =?us-ascii?Q?JsA+K1ekx9tiOgB2CANtzY2M3Zip8UieexV6ButJ1bOz83Et2/Db1iVznVPV?=
- =?us-ascii?Q?rs5DiMH9z6eakyOSczsPs556yhmQxsz+RgQ1oaIhJIfJsaxIoF1pTZeR6YS+?=
- =?us-ascii?Q?BbmGRYize1HTx/KA3nIr11upneFt/E8td8zgMc5tbPEzxmuST8tbH9DiqYMv?=
- =?us-ascii?Q?49zEMAILhavBOAdhHaNdo33/1YWRlAJoPf86blCx0/gxziQFO4toCzPWYNzs?=
- =?us-ascii?Q?YBDhaq//rLvcufTqzzvmen7BvTK3nYdkedJ3UQszYCr1leD+UXFi444NWEiQ?=
- =?us-ascii?Q?tzqFHUk6ppCG3sEbi3e5g9jELm9kXBnrXzOO+UwcG1ZtTf8ALyEv9kufa8pc?=
- =?us-ascii?Q?u8b+fa74rrCiIiJj/O7FSUHIlbfn3FhHnqDMm0BOWzHiJbA1liPDjNLTvE4S?=
- =?us-ascii?Q?xRs72UwJrE8PEWQZyLqDIV9HLK7E6Ju8X9P4As6Y2NXei1KbhxCUA6EpgNgs?=
- =?us-ascii?Q?GefwA5MFdEcH9aBW/C2mkB/IsD1ERgJxcsDlP7gx8XLF9LKSuAOopamhhQqb?=
- =?us-ascii?Q?o4NSNVgretHkzEvHvIcYwkoSVB5qpmL8L9AY/EdfIEMLsgA86wExLG7elKNM?=
- =?us-ascii?Q?SNjyLuOwf/0zDKYijRLv2yiEHqejSm8Dr0aSCHt7A1lHIIT/X5BTHQQ/t88J?=
- =?us-ascii?Q?QE/8we8F7S3sgd4sOD6M9R8mgtifePd7tb9vomCsxShA+k7qIXUWISYc49cw?=
- =?us-ascii?Q?lFwVpiTps2wiQVBL4nlZ6yjRkjR1RZgAsOS4Li5I/Ux5FFLXazbDg253EECX?=
- =?us-ascii?Q?hy0zxviTVKnbB6uBgJHltfNQfjaV8/MaOH81xJTVlloYvJxEcT8LGbYOMPuc?=
- =?us-ascii?Q?HZA9CwtFAxzZveUszqtGIUS49XZCTqsl08yKAbH4mMVARsWT9GcaE84OvI/s?=
- =?us-ascii?Q?veBGS+q5oYS5Jijb/1LUK2s6XNrouHuwd8VcqWe4+B3uOdCpb/vQczvERtcO?=
- =?us-ascii?Q?wSerJ75OiKjF7mZ4VO6C5fZvtbPu/62G9FeBhGKFMfCEWz756Oy+wrTUOOna?=
- =?us-ascii?Q?HfQjEYYBn+a6agEad7dwbyZPdYH8Ets6Tqi8WwgQw7QpQBLK45vptTBHUj3V?=
- =?us-ascii?Q?9mtCFfFLAGpC8tmT7luoFJ7ib32oKkaMD5tNK9AUpRF4fp0ybFTi5dl/M3mC?=
- =?us-ascii?Q?pvyf9KLLz4vUZb3VJ58+aOEZuMl/+E7vv4vs6lwsGC1pjNIyouqh0uP9l++y?=
- =?us-ascii?Q?/tCaTrfaG6vKF+NLI499xcuKsZRhLTwSVvLN6NK5Ez++8lgg9oqmoobud97I?=
- =?us-ascii?Q?CoBZz+UT6eSWRLsi0ZA3GNaC8Wr8ApH/w3Tlamn9?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229538AbiG1FS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 01:18:28 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45A254640
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 22:18:26 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id r186so680350pgr.2
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 22:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MbS7C6lIsWpQ9YGd7QeQx4tGgdPrNNJq0taM0gH1RMw=;
+        b=kUxUoiPAIcZP6CY0ww8G/TsZVrfgHRlYkTqzc5UPuC6XYgQrDPJFk2NOu6wvRR6cRd
+         u+li/DlK3f/sEe2qcyNpRpS4CrOE2xrYEHJQbCYjKzgpCaVhj74oFswEtktm+Mw5LwOJ
+         UWummxtKVFqq1cqcqOHxEG6fEIOMDNqrJhJ+wE7FjKeDNtz86Ly4vNGFbUMsvh6+b1ie
+         HpR/t8xLEB4W1BpD6pGZu449SGRPSZpRLTNdA8Qepy/ou5YseQsImXW3KCr/ovtYHzKt
+         /jqJnlWAYiYeOwaN6ZBSMPAH51F7ulnIDzx5j/n7BVIeeR0uHnjHtX4KETsysv6SmULr
+         DqQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MbS7C6lIsWpQ9YGd7QeQx4tGgdPrNNJq0taM0gH1RMw=;
+        b=Ijz3LrvDYBedlbVTdUl3FAVRq6KsgjHVkygDiwjla7gsWMQhjcWOHmJ78BBis+U5L/
+         BNAv39lVPNmoPTYU1S/ibyqqX2TtoM0AdOB6B8WH1hklCUHbEYg+BFaKmnXOEjUNY6YA
+         AvJgblvRYCpA9iBrHFlvfZ3RWQqehhgDJrxoQd3KcYn86bl+hBQ64NDD7fN40uswMjmY
+         f8zejqe9gCDVV/oUANCJGuCxgZQs08323OYHLbFDGfj+5IbJ+un9JWkpH3EKs+0WuNT6
+         7EcA+BHnGAII5lQ3nXQPzSMMDB3BSJ0+k5xdwZF8UoksoUPB+TDjZpB9y9yGdFi2nzFD
+         huVA==
+X-Gm-Message-State: AJIora908pyA1w2URxHeZ8JtisJ8vTLSzsHtKzIts39jxrPxZ+KJE0tw
+        LA3rY4+BWa3JJast9dOQ4Gs=
+X-Google-Smtp-Source: AGRyM1s3XW7N01PpS0JMWi5bezoTbpWbCNtqbko3rAkcFYCeT25rQtSONVSNdKn7J9BkWzz2880HXw==
+X-Received: by 2002:a05:6a00:b4d:b0:52b:1eb1:218e with SMTP id p13-20020a056a000b4d00b0052b1eb1218emr25290612pfo.33.1658985506172;
+        Wed, 27 Jul 2022 22:18:26 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6152:4c29:6d5a:e635])
+        by smtp.gmail.com with ESMTPSA id jf2-20020a170903268200b0016d6420691asm36865plb.207.2022.07.27.22.18.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 22:18:25 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Bernard F6BVP <f6bvp@free.fr>,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] ax25: fix incorrect dev_tracker usage
+Date:   Wed, 27 Jul 2022 22:18:21 -0700
+Message-Id: <20220728051821.3160118-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b9fd56a-5c7a-441f-469e-08da704e59cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2022 04:05:04.2575
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: P6SqXkjLsSwq3EjLFWQ1kuNFDUrFbXuso4JMJs0RzIofNPI4E/MrsLZR5G3R/w5bTKcjulHmnik292Y+4iNe2g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5496
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, July 26, 2022 11:05 PM
->=20
-> On Tue, Jul 26, 2022 at 08:03:20AM -0600, Alex Williamson wrote:
->=20
-> > I raised the same concern myself, the reason for having a limit is
-> > clear, but focusing on a single use case and creating an arbitrary
-> > "good enough" limit that isn't exposed to userspace makes this an
-> > implementation detail that can subtly break userspace.  For instance,
-> > what if userspace comes to expect the limit is 1000 and we decide to be
-> > even more strict?  If only a few 10s of entries are used, why isn't 100
-> > more than sufficient?
->=20
-> So lets use the number of elements that will fit in PAGE_SIZE as the
-> guideline. It means the kernel can memdup the userspace array into a
-> single kernel page of memory to process it, which seems reasonably
-> future proof in that we won't need to make it lower. Thus we can
-> promise we won't make it smaller.
->=20
-> However, remember, this isn't even the real device limit - this is
-> just the limit that the core kernel code will accept to marshal the
-> data to pass internally the driver.
->=20
-> I fully expect that the driver will still refuse ranges in certain
-> configurations even if they can be marshaled.
->=20
-> This is primarily why I don't think it make sense to expose some
-> internal limit that is not even the real "will the call succeed"
-> parameters.
->=20
-> The API is specifically designed as 'try and fail' to allow the
-> drivers flexibility it how they map the requested ranges to their
-> internal operations.
->=20
-> > We change it, we break userspace.  OTOH, if we simply make use of
-> > that reserved field to expose the limit, now we have a contract with
-> > userspace and we can change our implementation because that detail
-> > of the implementation is visible to userspace.  Thanks,
->=20
-> I think this is not correct, just because we made it discoverable does
-> not absolve the kernel of compatibility. If we change the limit, eg to
-> 1, and a real userspace stops working then we still broke userspace.
+From: Eric Dumazet <edumazet@google.com>
 
-iiuc Alex's suggestion doesn't conflict with the 'try and fail' model.
-By using the reserved field of vfio_device_feature_dma_logging_control
-to return the limit of the specified page_size from a given tracker,=20
-the user can quickly retry and adapt to that limit if workable.
+While investigating a separate rose issue [1], and enabling
+CONFIG_NET_DEV_REFCNT_TRACKER=3Dy, Bernard reported an orthogonal ax25 issu=
+e [2]
 
-Otherwise what would be an efficient policy for user to retry after
-a failure? Say initially user requests 100 ranges with 4K page size
-but the tracker can only support 10 ranges. w/o a hint returned
-from the tracker then the user just blindly try 100, 90, 80, ... or=20
-using a bisect algorithm?
+An ax25_dev can be used by one (or many) struct ax25_cb.
+We thus need different dev_tracker, one per struct ax25_cb.
 
->=20
-> Complaining that userspace does not check the discoverable limit
-> doesn't help matters - I seem to remember Linus has written about this
-> in recent times even.
->=20
-> So, it is ultimately not different from 'try and fail', unless we
-> implement some algorithm in qemu - an algorithm that would duplicate
-> the one we already have in the kernel :\
->=20
-> Jason
+After this patch is applied, we are able to focus on rose.
+
+[1] https://lore.kernel.org/netdev/fb7544a1-f42e-9254-18cc-c9b071f4ca70@fre=
+e.fr/
+
+[2]
+[  205.798723] reference already released.
+[  205.798732] allocated in:
+[  205.798734]  ax25_bind+0x1a2/0x230 [ax25]
+[  205.798747]  __sys_bind+0xea/0x110
+[  205.798753]  __x64_sys_bind+0x18/0x20
+[  205.798758]  do_syscall_64+0x5c/0x80
+[  205.798763]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.798768] freed in:
+[  205.798770]  ax25_release+0x115/0x370 [ax25]
+[  205.798778]  __sock_release+0x42/0xb0
+[  205.798782]  sock_close+0x15/0x20
+[  205.798785]  __fput+0x9f/0x260
+[  205.798789]  ____fput+0xe/0x10
+[  205.798792]  task_work_run+0x64/0xa0
+[  205.798798]  exit_to_user_mode_prepare+0x18b/0x190
+[  205.798804]  syscall_exit_to_user_mode+0x26/0x40
+[  205.798808]  do_syscall_64+0x69/0x80
+[  205.798812]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.798827] ------------[ cut here ]------------
+[  205.798829] WARNING: CPU: 2 PID: 2605 at lib/ref_tracker.c:136 ref_track=
+er_free.cold+0x60/0x81
+[  205.798837] Modules linked in: rose netrom mkiss ax25 rfcomm cmac algif_=
+hash algif_skcipher af_alg bnep snd_hda_codec_hdmi nls_iso8859_1 i915 rtw88=
+_8821ce rtw88_8821c x86_pkg_temp_thermal rtw88_pci intel_powerclamp rtw88_c=
+ore snd_hda_codec_realtek snd_hda_codec_generic ledtrig_audio coretemp snd_=
+hda_intel kvm_intel snd_intel_dspcfg mac80211 snd_hda_codec kvm i2c_algo_bi=
+t drm_buddy drm_dp_helper btusb drm_kms_helper snd_hwdep btrtl snd_hda_core=
+ btbcm joydev crct10dif_pclmul btintel crc32_pclmul ghash_clmulni_intel mei=
+_hdcp btmtk intel_rapl_msr aesni_intel bluetooth input_leds snd_pcm crypto_=
+simd syscopyarea processor_thermal_device_pci_legacy sysfillrect cryptd int=
+el_soc_dts_iosf snd_seq sysimgblt ecdh_generic fb_sys_fops rapl libarc4 pro=
+cessor_thermal_device intel_cstate processor_thermal_rfim cec snd_timer ecc=
+ snd_seq_device cfg80211 processor_thermal_mbox mei_me processor_thermal_ra=
+pl mei rc_core at24 snd intel_pch_thermal intel_rapl_common ttm soundcore i=
+nt340x_thermal_zone video
+[  205.798948]  mac_hid acpi_pad sch_fq_codel ipmi_devintf ipmi_msghandler =
+drm msr parport_pc ppdev lp parport ramoops pstore_blk reed_solomon pstore_=
+zone efi_pstore ip_tables x_tables autofs4 hid_generic usbhid hid i2c_i801 =
+i2c_smbus r8169 xhci_pci ahci libahci realtek lpc_ich xhci_pci_renesas [las=
+t unloaded: ax25]
+[  205.798992] CPU: 2 PID: 2605 Comm: ax25ipd Not tainted 5.18.11-F6BVP #3
+[  205.798996] Hardware name: To be filled by O.E.M. To be filled by O.E.M.=
+/CK3, BIOS 5.011 09/16/2020
+[  205.798999] RIP: 0010:ref_tracker_free.cold+0x60/0x81
+[  205.799005] Code: e8 d2 01 9b ff 83 7b 18 00 74 14 48 c7 c7 2f d7 ff 98 =
+e8 10 6e fc ff 8b 7b 18 e8 b8 01 9b ff 4c 89 ee 4c 89 e7 e8 5d fd 07 00 <0f=
+> 0b b8 ea ff ff ff e9 30 05 9b ff 41 0f b6 f7 48 c7 c7 a0 fa 4e
+[  205.799008] RSP: 0018:ffffaf5281073958 EFLAGS: 00010286
+[  205.799011] RAX: 0000000080000000 RBX: ffff9a0bd687ebe0 RCX: 00000000000=
+00000
+[  205.799014] RDX: 0000000000000001 RSI: 0000000000000282 RDI: 00000000fff=
+fffff
+[  205.799016] RBP: ffffaf5281073a10 R08: 0000000000000003 R09: fffffffffff=
+d5618
+[  205.799019] R10: 0000000000ffff10 R11: 000000000000000f R12: ffff9a0bc53=
+384d0
+[  205.799022] R13: 0000000000000282 R14: 00000000ae000001 R15: 00000000000=
+00001
+[  205.799024] FS:  0000000000000000(0000) GS:ffff9a0d0f300000(0000) knlGS:=
+0000000000000000
+[  205.799028] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  205.799031] CR2: 00007ff6b8311554 CR3: 000000001ac10004 CR4: 00000000001=
+706e0
+[  205.799033] Call Trace:
+[  205.799035]  <TASK>
+[  205.799038]  ? ax25_dev_device_down+0xd9/0x1b0 [ax25]
+[  205.799047]  ? ax25_device_event+0x9f/0x270 [ax25]
+[  205.799055]  ? raw_notifier_call_chain+0x49/0x60
+[  205.799060]  ? call_netdevice_notifiers_info+0x52/0xa0
+[  205.799065]  ? dev_close_many+0xc8/0x120
+[  205.799070]  ? unregister_netdevice_many+0x13d/0x890
+[  205.799073]  ? unregister_netdevice_queue+0x90/0xe0
+[  205.799076]  ? unregister_netdev+0x1d/0x30
+[  205.799080]  ? mkiss_close+0x7c/0xc0 [mkiss]
+[  205.799084]  ? tty_ldisc_close+0x2e/0x40
+[  205.799089]  ? tty_ldisc_hangup+0x137/0x210
+[  205.799092]  ? __tty_hangup.part.0+0x208/0x350
+[  205.799098]  ? tty_vhangup+0x15/0x20
+[  205.799103]  ? pty_close+0x127/0x160
+[  205.799108]  ? tty_release+0x139/0x5e0
+[  205.799112]  ? __fput+0x9f/0x260
+[  205.799118]  ax25_dev_device_down+0xd9/0x1b0 [ax25]
+[  205.799126]  ax25_device_event+0x9f/0x270 [ax25]
+[  205.799135]  raw_notifier_call_chain+0x49/0x60
+[  205.799140]  call_netdevice_notifiers_info+0x52/0xa0
+[  205.799146]  dev_close_many+0xc8/0x120
+[  205.799152]  unregister_netdevice_many+0x13d/0x890
+[  205.799157]  unregister_netdevice_queue+0x90/0xe0
+[  205.799161]  unregister_netdev+0x1d/0x30
+[  205.799165]  mkiss_close+0x7c/0xc0 [mkiss]
+[  205.799170]  tty_ldisc_close+0x2e/0x40
+[  205.799173]  tty_ldisc_hangup+0x137/0x210
+[  205.799178]  __tty_hangup.part.0+0x208/0x350
+[  205.799184]  tty_vhangup+0x15/0x20
+[  205.799188]  pty_close+0x127/0x160
+[  205.799193]  tty_release+0x139/0x5e0
+[  205.799199]  __fput+0x9f/0x260
+[  205.799203]  ____fput+0xe/0x10
+[  205.799208]  task_work_run+0x64/0xa0
+[  205.799213]  do_exit+0x33b/0xab0
+[  205.799217]  ? __handle_mm_fault+0xc4f/0x15f0
+[  205.799224]  do_group_exit+0x35/0xa0
+[  205.799228]  __x64_sys_exit_group+0x18/0x20
+[  205.799232]  do_syscall_64+0x5c/0x80
+[  205.799238]  ? handle_mm_fault+0xba/0x290
+[  205.799242]  ? debug_smp_processor_id+0x17/0x20
+[  205.799246]  ? fpregs_assert_state_consistent+0x26/0x50
+[  205.799251]  ? exit_to_user_mode_prepare+0x49/0x190
+[  205.799256]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  205.799260]  ? irqentry_exit+0x33/0x40
+[  205.799263]  ? exc_page_fault+0x87/0x170
+[  205.799268]  ? asm_exc_page_fault+0x8/0x30
+[  205.799273]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.799277] RIP: 0033:0x7ff6b80eaca1
+[  205.799281] Code: Unable to access opcode bytes at RIP 0x7ff6b80eac77.
+[  205.799283] RSP: 002b:00007fff6dfd4738 EFLAGS: 00000246 ORIG_RAX: 000000=
+00000000e7
+[  205.799287] RAX: ffffffffffffffda RBX: 00007ff6b8215a00 RCX: 00007ff6b80=
+eaca1
+[  205.799290] RDX: 000000000000003c RSI: 00000000000000e7 RDI: 00000000000=
+00001
+[  205.799293] RBP: 0000000000000001 R08: ffffffffffffff80 R09: 00000000000=
+00028
+[  205.799295] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff6b82=
+15a00
+[  205.799298] R13: 0000000000000000 R14: 00007ff6b821aee8 R15: 00007ff6b82=
+1af00
+[  205.799304]  </TASK>
+
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding =
+operation")
+Reported-by: Bernard F6BVP <f6bvp@free.fr>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Duoming Zhou <duoming@zju.edu.cn>
+---
+ include/net/ax25.h | 1 +
+ net/ax25/af_ax25.c | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/ax25.h b/include/net/ax25.h
+index a427a05672e2aab158efd44381fe2190d9cb8969..f8cf3629a41934f96f33e5d70ad=
+90cc8ae796d38 100644
+--- a/include/net/ax25.h
++++ b/include/net/ax25.h
+@@ -236,6 +236,7 @@ typedef struct ax25_cb {
+ 	ax25_address		source_addr, dest_addr;
+ 	ax25_digi		*digipeat;
+ 	ax25_dev		*ax25_dev;
++	netdevice_tracker	dev_tracker;
+ 	unsigned char		iamdigi;
+ 	unsigned char		state, modulus, pidincl;
+ 	unsigned short		vs, vr, va;
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 4c7030ed8d3319448f6cb158417c650308e341b8..5b5363c99ed50c2b8baad246d3e=
+c1757e0afd0d9 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1065,7 +1065,7 @@ static int ax25_release(struct socket *sock)
+ 			del_timer_sync(&ax25->t3timer);
+ 			del_timer_sync(&ax25->idletimer);
+ 		}
+-		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++		dev_put_track(ax25_dev->dev, &ax25->dev_tracker);
+ 		ax25_dev_put(ax25_dev);
+ 	}
+=20
+@@ -1146,7 +1146,7 @@ static int ax25_bind(struct socket *sock, struct sock=
+addr *uaddr, int addr_len)
+=20
+ 	if (ax25_dev) {
+ 		ax25_fillin_cb(ax25, ax25_dev);
+-		dev_hold_track(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
++		dev_hold_track(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+ 	}
+=20
+ done:
+--=20
+2.37.1.359.gd136c6c3e2-goog
+
