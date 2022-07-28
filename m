@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9DC584590
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D105845BE
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbiG1SV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S232733AbiG1SV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiG1SVr (ORCPT
+        with ESMTP id S232686AbiG1SVr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:47 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272B05A8B3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842AC5B04A
         for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659032506; x=1690568506;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EC1vBxIw1aMgBKjNtWeZVrvt937ohUlA5kpQBOchppA=;
-  b=W3inHWSLnQCdkkB1OGpZ1eSZAmoO0R7VlijRBo9ob2YnjfRvpJfNeUAv
-   Qxqt5nICTZ9IHDm5wtA9sqlSO+xuyxTh121OaeLchHLq5ZGUbPBbnQAi9
-   dcfOgfKcfEoQ56i/tCHJiigHcVk8m+ojmmdMC1PsAE3Xi8Wxisvt193QL
-   CFOfxipvUGPx20x6Q/Mz9/uVqzcTimk58zMclhnnbCOogT1iWk+grvxsI
-   BY/G84j77p8aqADGD0WGJHzewoAHkZ435C+E1hvi9udKgIIyP7ne62Ms7
-   578Ak/U57a68HElquLdIW/GhIP3WKsZVS0VmeoomV8Tw+no4rnuS6PTBV
+  bh=aPygiN/ynTeH9RKFMfk0NTGLVRG2NKRJlxbUQ2bA+pk=;
+  b=XwyunQaGm17uBAWr7xox2q3gHi4FI94iqr45QjApyEoPU6BjCT/X56V+
+   tldYTfrWSWbQIQdauW80+G47A8yPhgwBYzWCa6dMBDcwETxA5RV7yoH3j
+   2VoQzpaRgs8nAC1Dz4c2ap1pemYKq+hEZWgweWKWLnbiODENNrzuEd0e8
+   ef2wTgHyMSUgZXwdAf+9B2T65H3zOD6XrXzVWmIbJHOerPrRjgWSFSar6
+   z4/4l8AXuY+ZcPrCaUcOnkGAhs3aRswIAH6rReOgA79zXkuPzMGzBY7yO
+   Affp6fJu37z1/SooVpFeqv7Ezd7VfnJ4llJvfwkQLs2VSQK3Ur4H83Kic
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348913"
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348915"
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="268348913"
+   d="scan'208";a="268348915"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 11:21:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="727456627"
+   d="scan'208";a="727456630"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 28 Jul 2022 11:21:41 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -43,9 +43,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
         Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 5/7] i40e: convert .adjfreq to .adjfine
-Date:   Thu, 28 Jul 2022 11:18:34 -0700
-Message-Id: <20220728181836.3387862-6-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 6/7] ixgbe: convert .adjfreq to .adjfine
+Date:   Thu, 28 Jul 2022 11:18:35 -0700
+Message-Id: <20220728181836.3387862-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
 References: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
@@ -62,53 +62,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The i40e driver currently implements the .adjfreq handler for frequency
-adjustments. This takes the adjustment parameter in parts per billion. The
-PTP core supports .adjfine which provides an adjustment in scaled parts per
-million. This has a higher resolution and can result in more precise
-adjustments for small corrections.
+Convert the ixgbe PTP frequency adjustment implementations from .adjfreq to
+.adjfine. This allows using the scaled parts per million adjustment from
+the PTP core and results in a more precise adjustment for small
+corrections.
 
-Convert the existing .adjfreq implementation to the newer .adjfine
-implementation. This is trivial since it just requires changing the divisor
-from 1000000000ULL to (1000000ULL << 16) in the mul_u64_u64_div_u64 call.
+To avoid overflow, use mul_u64_u64_div_u64 to perform the calculation. On
+X86 platforms, this will use instructions that perform the operations with
+128bit intermediate values. For other architectures, the implementation
+will limit the loss of precision as much as possible.
 
-This improves the precision of the adjustments and gets us one driver
-closer to removing the old .adjfreq support from the kernel.
+This change slightly improves the precision of frequency adjustments for
+all ixgbe based devices, and gets us one driver closer to being able to
+remove the older .adjfreq implementation from the kernel.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_ptp.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 73 +++++++++++---------
+ 1 file changed, 40 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ptp.c b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-index 15de918abc41..2d3533f38d7b 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
-@@ -334,29 +334,31 @@ static void i40e_ptp_convert_to_hwtstamp(struct skb_shared_hwtstamps *hwtstamps,
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+index 27a71fa26d3c..9f06896a049b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+@@ -113,12 +113,16 @@
+  * the sign bit. This register enables software to calculate frequency
+  * adjustments and apply them directly to the clock rate.
+  *
+- * The math for converting ppb into TIMINCA values is fairly straightforward.
+- *   TIMINCA value = ( Base_Frequency * ppb ) / 1000000000ULL
++ * The math for converting scaled_ppm into TIMINCA values is fairly
++ * straightforward.
+  *
+- * This assumes that ppb is never high enough to create a value bigger than
+- * TIMINCA's 31 bits can store. This is ensured by the stack. Calculating this
+- * value is also simple.
++ *   TIMINCA value = ( Base_Frequency * scaled_ppm ) / 1000000ULL << 16
++ *
++ * To avoid overflow, we simply use mul_u64_u64_div_u64.
++ *
++ * This assumes that scaled_ppm is never high enough to create a value bigger
++ * than TIMINCA's 31 bits can store. This is ensured by the stack, and is
++ * measured in parts per billion. Calculating this value is also simple.
+  *   Max ppb = ( Max Adjustment / Base Frequency ) / 1000000000ULL
+  *
+  * For the X550, the Max adjustment is +/- 0.5 ns, and the base frequency is
+@@ -433,45 +437,45 @@ static void ixgbe_ptp_convert_to_hwtstamp(struct ixgbe_adapter *adapter,
  }
  
  /**
-- * i40e_ptp_adjfreq - Adjust the PHC frequency
-+ * i40e_ptp_adjfine - Adjust the PHC frequency
-  * @ptp: The PTP clock structure
-- * @ppb: Parts per billion adjustment from the base
-+ * @scaled_ppm: Scaled parts per million adjustment from base
-  *
-- * Adjust the frequency of the PHC by the indicated parts per billion from the
-- * base frequency.
-+ * Adjust the frequency of the PHC by the indicated delta from the base
-+ * frequency.
+- * ixgbe_ptp_adjfreq_82599
++ * ixgbe_ptp_adjfine_82599
+  * @ptp: the ptp clock structure
+- * @ppb: parts per billion adjustment from base
++ * @scaled_ppm: scaled parts per million adjustment from base
 + *
-+ * Scaled parts per million is ppm with a 16 bit binary fractional field.
-  **/
--static int i40e_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
-+static int i40e_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
++ * Adjust the frequency of the ptp cycle counter by the
++ * indicated scaled_ppm from the base frequency.
+  *
+- * adjust the frequency of the ptp cycle counter by the
+- * indicated ppb from the base frequency.
++ * Scaled parts per million is ppm with a 16-bit binary fractional field.
+  */
+-static int ixgbe_ptp_adjfreq_82599(struct ptp_clock_info *ptp, s32 ppb)
++static int ixgbe_ptp_adjfine_82599(struct ptp_clock_info *ptp, long scaled_ppm)
  {
- 	struct i40e_pf *pf = container_of(ptp, struct i40e_pf, ptp_caps);
- 	struct i40e_hw *hw = &pf->hw;
- 	u64 adj, freq, diff;
+ 	struct ixgbe_adapter *adapter =
+ 		container_of(ptp, struct ixgbe_adapter, ptp_caps);
+ 	struct ixgbe_hw *hw = &adapter->hw;
+-	u64 freq, incval;
+-	u32 diff;
++	u64 incval, diff;
  	int neg_adj = 0;
  
 -	if (ppb < 0) {
@@ -118,24 +144,105 @@ index 15de918abc41..2d3533f38d7b 100644
 +		scaled_ppm = -scaled_ppm;
  	}
  
- 	smp_mb(); /* Force any pending update before accessing. */
- 	freq = I40E_PTP_40GB_INCVAL * READ_ONCE(pf->ptp_adj_mult);
--	diff = mul_u64_u64_div_u64(freq, (u64)ppb,
--				   1000000000ULL);
-+	diff = mul_u64_u64_div_u64(freq, (u64)scaled_ppm,
+ 	smp_mb();
+ 	incval = READ_ONCE(adapter->base_incval);
+ 
+-	freq = incval;
+-	freq *= ppb;
+-	diff = div_u64(freq, 1000000000ULL);
++	diff = mul_u64_u64_div_u64(incval, scaled_ppm,
 +				   1000000ULL << 16);
  
+ 	incval = neg_adj ? (incval - diff) : (incval + diff);
+ 
+ 	switch (hw->mac.type) {
+ 	case ixgbe_mac_X540:
+ 		if (incval > 0xFFFFFFFFULL)
+-			e_dev_warn("PTP ppb adjusted SYSTIME rate overflowed!\n");
++			e_dev_warn("PTP scaled_ppm adjusted SYSTIME rate overflowed!\n");
+ 		IXGBE_WRITE_REG(hw, IXGBE_TIMINCA, (u32)incval);
+ 		break;
+ 	case ixgbe_mac_82599EB:
+ 		if (incval > 0x00FFFFFFULL)
+-			e_dev_warn("PTP ppb adjusted SYSTIME rate overflowed!\n");
++			e_dev_warn("PTP scaled_ppm adjusted SYSTIME rate overflowed!\n");
+ 		IXGBE_WRITE_REG(hw, IXGBE_TIMINCA,
+ 				BIT(IXGBE_INCPER_SHIFT_82599) |
+ 				((u32)incval & 0x00FFFFFFUL));
+@@ -484,32 +488,35 @@ static int ixgbe_ptp_adjfreq_82599(struct ptp_clock_info *ptp, s32 ppb)
+ }
+ 
+ /**
+- * ixgbe_ptp_adjfreq_X550
++ * ixgbe_ptp_adjfine_X550
+  * @ptp: the ptp clock structure
+- * @ppb: parts per billion adjustment from base
++ * @scaled_ppm: scaled parts per million adjustment from base
+  *
+- * adjust the frequency of the SYSTIME registers by the indicated ppb from base
+- * frequency
++ * Adjust the frequency of the SYSTIME registers by the indicated scaled_ppm
++ * from base frequency.
++ *
++ * Scaled parts per million is ppm with a 16-bit binary fractional field.
+  */
+-static int ixgbe_ptp_adjfreq_X550(struct ptp_clock_info *ptp, s32 ppb)
++static int ixgbe_ptp_adjfine_X550(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct ixgbe_adapter *adapter =
+ 			container_of(ptp, struct ixgbe_adapter, ptp_caps);
+ 	struct ixgbe_hw *hw = &adapter->hw;
+ 	int neg_adj = 0;
+-	u64 rate = IXGBE_X550_BASE_PERIOD;
++	u64 rate;
+ 	u32 inca;
+ 
+-	if (ppb < 0) {
++	if (scaled_ppm < 0) {
+ 		neg_adj = 1;
+-		ppb = -ppb;
++		scaled_ppm = -scaled_ppm;
+ 	}
+-	rate *= ppb;
+-	rate = div_u64(rate, 1000000000ULL);
++
++	rate = mul_u64_u64_div_u64(IXGBE_X550_BASE_PERIOD, scaled_ppm,
++				   1000000ULL << 16);
+ 
+ 	/* warn if rate is too large */
+ 	if (rate >= INCVALUE_MASK)
+-		e_dev_warn("PTP ppb adjusted SYSTIME rate overflowed!\n");
++		e_dev_warn("PTP scaled_ppm adjusted SYSTIME rate overflowed!\n");
+ 
+ 	inca = rate & INCVALUE_MASK;
  	if (neg_adj)
- 		adj = I40E_PTP_40GB_INCVAL - diff;
-@@ -1392,7 +1394,7 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
- 		sizeof(pf->ptp_caps.name) - 1);
- 	pf->ptp_caps.owner = THIS_MODULE;
- 	pf->ptp_caps.max_adj = 999999999;
--	pf->ptp_caps.adjfreq = i40e_ptp_adjfreq;
-+	pf->ptp_caps.adjfine = i40e_ptp_adjfine;
- 	pf->ptp_caps.adjtime = i40e_ptp_adjtime;
- 	pf->ptp_caps.gettimex64 = i40e_ptp_gettimex;
- 	pf->ptp_caps.settime64 = i40e_ptp_settime;
+@@ -1355,7 +1362,7 @@ static long ixgbe_ptp_create_clock(struct ixgbe_adapter *adapter)
+ 		adapter->ptp_caps.n_ext_ts = 0;
+ 		adapter->ptp_caps.n_per_out = 0;
+ 		adapter->ptp_caps.pps = 1;
+-		adapter->ptp_caps.adjfreq = ixgbe_ptp_adjfreq_82599;
++		adapter->ptp_caps.adjfine = ixgbe_ptp_adjfine_82599;
+ 		adapter->ptp_caps.adjtime = ixgbe_ptp_adjtime;
+ 		adapter->ptp_caps.gettimex64 = ixgbe_ptp_gettimex;
+ 		adapter->ptp_caps.settime64 = ixgbe_ptp_settime;
+@@ -1372,7 +1379,7 @@ static long ixgbe_ptp_create_clock(struct ixgbe_adapter *adapter)
+ 		adapter->ptp_caps.n_ext_ts = 0;
+ 		adapter->ptp_caps.n_per_out = 0;
+ 		adapter->ptp_caps.pps = 0;
+-		adapter->ptp_caps.adjfreq = ixgbe_ptp_adjfreq_82599;
++		adapter->ptp_caps.adjfine = ixgbe_ptp_adjfine_82599;
+ 		adapter->ptp_caps.adjtime = ixgbe_ptp_adjtime;
+ 		adapter->ptp_caps.gettimex64 = ixgbe_ptp_gettimex;
+ 		adapter->ptp_caps.settime64 = ixgbe_ptp_settime;
+@@ -1388,7 +1395,7 @@ static long ixgbe_ptp_create_clock(struct ixgbe_adapter *adapter)
+ 		adapter->ptp_caps.n_ext_ts = 0;
+ 		adapter->ptp_caps.n_per_out = 0;
+ 		adapter->ptp_caps.pps = 1;
+-		adapter->ptp_caps.adjfreq = ixgbe_ptp_adjfreq_X550;
++		adapter->ptp_caps.adjfine = ixgbe_ptp_adjfine_X550;
+ 		adapter->ptp_caps.adjtime = ixgbe_ptp_adjtime;
+ 		adapter->ptp_caps.gettimex64 = ixgbe_ptp_gettimex;
+ 		adapter->ptp_caps.settime64 = ixgbe_ptp_settime;
 -- 
 2.35.1
 
