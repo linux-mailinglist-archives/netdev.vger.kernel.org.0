@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D770583680
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B04583682
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiG1BtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 21:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57528 "EHLO
+        id S233117AbiG1BuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 21:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiG1BtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:49:09 -0400
+        with ESMTP id S231587AbiG1BuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:50:17 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F3F56B99;
-        Wed, 27 Jul 2022 18:49:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8531928D;
+        Wed, 27 Jul 2022 18:50:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 93F91CE241D;
-        Thu, 28 Jul 2022 01:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD6BC433D6;
-        Thu, 28 Jul 2022 01:49:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F1E80CE241C;
+        Thu, 28 Jul 2022 01:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 37175C433D7;
+        Thu, 28 Jul 2022 01:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658972944;
-        bh=kqJ7Up1AG9Xmd3Cy2OO0yg7W2hC6LWNyn0GIY6GiW/A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bFuYAMuYqYShYxH1P6tj7IU52gNJurgNdhWUnb2awTUfr3UMDkFIqB4YHRc4MN1sd
-         9EpJq6ZGywvmsHVOAo3qS2pcm73uOpvI0UhzR9RsKMwa5HhZOkWZQqjtd6XWLbaz2C
-         FXDp14iJHEOGs8ZujuI0BljRfMT49VySzT8M4gxjxv4/9uZEChff+VwN77iTovBfhg
-         4rzG8dGqG6pXTCu+XLr8b9fJ3uFlSFlaIU8KcyCbWMawyktQ6tm5lJjiFoXSjClHO1
-         Ez5svDCpkc76j+x3q/vcXEkJewJy/DQOJ05CMjeyrBVLDQqJ0czwvMRM+iftu+BFZw
-         kD/OAlOU6FHww==
-Date:   Wed, 27 Jul 2022 18:49:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, kernel-team@fb.com,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
- sk lock when called from bpf
-Message-ID: <20220727184903.4d24a00a@kernel.org>
-In-Reply-To: <20220728004546.6n42isdvyg65vuke@kafai-mbp.dhcp.thefacebook.com>
-References: <20220727060856.2370358-1-kafai@fb.com>
-        <20220727060909.2371812-1-kafai@fb.com>
-        <YuFsHaTIu7dTzotG@google.com>
-        <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
-        <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com>
-        <20220727212133.3uvpew67rzha6rzp@kafai-mbp.dhcp.thefacebook.com>
-        <CAKH8qBs3jp_0gRiHyzm29HaW53ZYpGYpWbmLhwi87xWKi9g=UA@mail.gmail.com>
-        <20220728004546.6n42isdvyg65vuke@kafai-mbp.dhcp.thefacebook.com>
+        s=k20201202; t=1658973013;
+        bh=TPPEGMm0hdNBEom2DUfGcgh/59bArrwqfsc9IJBgQgE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u343eWu0xEhKDDgyyzA0aDlzjCxhuFTq8b5F0ujVM5pbpfqmSeIqqZ2QnhgPW2Kb0
+         BTp3tzXgaZMWva8aX9gC8NI04CeQ/13GbpiVbIeE0ZzCTZPtaTqU3KqOpwSOXyBQGy
+         x86YtGqcxKJfgn1nGuHzaKNnOp10V99P0H4JDGZzmEyArNOxPF1U5gT/4CKzb06pdD
+         x1ZBcYzBp4537mqwmCgqwO00+/LVhbzHGmV02uHWWEyY3+FrmM1uKS5/E1tFcPGln4
+         bAqLX2aVRezRuViKhjczCEF1pDtSlVO2DWRDWxZEChprNmi3JFIUzea5ey+VEptGVD
+         eOT9STVb4O9mQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1AD49C43143;
+        Thu, 28 Jul 2022 01:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] dt-bindings: net: hirschmann,hellcreek: use absolute path to
+ other schema
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165897301310.12814.15652986557134762426.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jul 2022 01:50:13 +0000
+References: <20220726115650.100726-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220726115650.100726-1-krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     kurt@linutronix.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -65,38 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 17:45:46 -0700 Martin KaFai Lau wrote:
-> > bool setsockopt_capable(struct user_namespace *ns, int cap)
-> > {
-> >        if (!in_task()) {
-> >              /* Running in irq/softirq -> setsockopt invoked by bpf program.
-> >               * [not sure, is it safe to assume no regular path leads
-> > to setsockopt from sirq?]
-> >               */
-> >              return true;
-> >        }
-> > 
-> >        /* Running in process context, task has bpf_ctx set -> invoked
-> > by bpf program. */
-> >        if (current->bpf_ctx != NULL)
-> >              return true;
-> > 
-> >        return ns_capable(ns, cap);
-> > }
-> > 
-> > And then do /ns_capable/setsockopt_capable/ in net/core/sock.c
-> > 
-> > But that might be more fragile than passing the flag, idk.  
-> I think it should work.  From a quick look, all bpf_setsockopt usage has
-> bpf_ctx.  The one from bpf_tcp_ca (struct_ops) and bpf_iter is trampoline
-> which also has bpf_ctx.  Not sure about the future use cases.
-> 
-> To be honest, I am not sure if I have missed cases and also have similar questions
-> your have in the above sample code.  This may deserve a separate patch
-> set for discussion.  Using a bit in sockptr is mostly free now.
-> WDYT ?
+Hello:
 
-Sorry to chime in but I vote against @in_bpf. I had to search the git
-history recently to figure out what SK_USER_DATA_BPF means. It's not
-going to be obvious to a networking person what semantics to attribute
-to "in bpf".
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 26 Jul 2022 13:56:50 +0200 you wrote:
+> Absolute path to other DT schema is preferred over relative one.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml       | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - dt-bindings: net: hirschmann,hellcreek: use absolute path to other schema
+    https://git.kernel.org/netdev/net-next/c/a683dc5c148a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
