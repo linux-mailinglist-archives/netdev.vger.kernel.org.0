@@ -2,93 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF270584647
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0817D58465D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232538AbiG1TWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S232233AbiG1TZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiG1TWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:22:20 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DBA1A05E;
-        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 6so2256476pgb.13;
-        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
+        with ESMTP id S229482AbiG1TZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:25:14 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473A9E0F8;
+        Thu, 28 Jul 2022 12:25:13 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id sz17so4769829ejc.9;
+        Thu, 28 Jul 2022 12:25:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
-        b=lB+pWhhlv93nZ1uF9MlIOnX5O59BjNqfBlzyuwaJ9IcEqZIikDytWL8FxK9mRR7bGC
-         CP0N3vcVC4GRQyBqp/aXDsHM+Rp/kL+AcBtbGgawHiyB0n2SQ/S9YTLhVKYgLJzYvnfa
-         DRgHjFYGggf4djkLYGpyCKIAfFc4nCcIoEjsFfGVMZ1/sB2/Jgb8jz20AGsMwpQd4Rhb
-         5lHHgqgPkKGl66JAg/+e1Wkvj9UiHeRANwaOr3+bwehcQ5WJ52Rwi+bf7sjW1dQxqAEB
-         0wInCPsCu9FBE5kiqsjVn81pQZUQnEayOJ4Rp+zGMKxlzT+3V1MGecumxQBkOPnllvzK
-         p+iw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+nd3xWw/+xpI7ARgc/j2G7d8IiJiJdGQQa3VBgVmZns=;
+        b=F66GekNEaaXlRQyZmd6KX5IWAU1BmC9GMwIdl94kDExbkN4t7sc0Tux8F3ZeBKUJia
+         Di0bsnewus0VWoPR/z0t7XCLHyqFAl6b55UAufrFTSgDDbD3wI4HBpvM8luLPjQWJ0pa
+         AKeDoJkHdbvtVwHFGodm8h2USGYqWS2SBFOKiviwi3lnlLrFfYYs5ke6ZqFV5jGcqVAN
+         2Ir1A7zvq4JIZZLszwqHG/vRvjzLGKoRlRxT5mCK2EEq9I1U9yUT+bkjBJ6vh363xax1
+         mZzQxzw9IrAy+vhu2lFW7F5hWvtaUK9vFZ1WN8aXzwp8RrRoRNd+KNYC10LYRDOQ3KD4
+         TNBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
-        b=irglV27uulHB7xGlavq7wJq+OWG1Pi6Aw9k9FKOFJIio3ETkwpBw5qFVt7bbmNwKOw
-         TH/ON1/OYg+Us/xaO0vhBaIxyfbP7BpbGTIAL0qZTDHb2xBEeUj7E40VDt7T5T52W0Vy
-         u+tbtfA9XkbkCiL5nWaXAIoyzmwAtdDWPl+xvQrlHOB1cjN+xVaRxVoMpW9iw3oP5bDx
-         0UZvB2cVuzafW0Uuf6UxC5LKRROo/pujw6NV4LKVFu4dz4WJMfxIqezIrV2g24OVcstg
-         9U2NPvkEQmS/YHSetnMDgOGEZ1juTFEhSBCYR9VGI1DyWjZ+EgkFYiiEg6ItedX4RV1G
-         aOhA==
-X-Gm-Message-State: AJIora8+ABlM6yjJXM2FAwHDWGyDzeLeYqPgJAiXgl2znlIaaqu8Dml8
-        juVaIkI+9S2i0adDs/H8kY0=
-X-Google-Smtp-Source: AGRyM1tj9cuz/W4LAd9BMq4WIOZkxkrW2UJLCS/AeNw+AhegYlhfdsgfmykyQIPR9LbFViQAWRDZ3w==
-X-Received: by 2002:a63:ce0f:0:b0:41a:f0ee:c28e with SMTP id y15-20020a63ce0f000000b0041af0eec28emr190116pgf.43.1659036138925;
-        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m8-20020a654c88000000b0040cfb5151fcsm1282985pgt.74.2022.07.28.12.22.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
-Message-ID: <db9560c1-7fc7-405e-bee1-3827a943b712@gmail.com>
-Date:   Thu, 28 Jul 2022 12:22:12 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+nd3xWw/+xpI7ARgc/j2G7d8IiJiJdGQQa3VBgVmZns=;
+        b=NZLhKeiF/WvQsC8C/fqrJyFWDRvsSv9IcZwEdU2isFdpJIg3FGc7s78FaZQJovsRb2
+         3alvcNEZkd2a27KEqM8oVOVYeWLMCGL+MayI6u6s2Uf4OYBumKB0e0ivaaa1FEAN6h6J
+         yyljIzLhbYNagKh1y6iwJx4AnasF0j2jiEr/zTwJvAMqSaOkT1iJTNsfApoto2/yQiBA
+         tDsOYKOPzr+P70G8WRCJpwziPucIXIYB53Kt+fwiKhGP1QZL/rv2tlTHBeDwfwXmGi3s
+         mVoMTlRv/XRDYE2AktZBiPXn5a4qJE+EUpTYNveVnz1rWw0bfzg7I+Buy0xCQ87ak4PS
+         iZAQ==
+X-Gm-Message-State: AJIora/rylBQQp4A2LJA3a2Ls5E0AbpYRV+vVPMWx3pc7NYV3X65A4pP
+        YEU4/Oi0OHvfVgoxHfX+dTq1BlI7qdsY+6AIstA=
+X-Google-Smtp-Source: AGRyM1vfB2WR2rUqrfFCsddh+QvpH9yzIki2IHTu9uyZcvpDsdZlbfoqc9fPBtk/wCJG2jH7aPmYJffGvF6Min/lQME=
+X-Received: by 2002:a17:907:97d6:b0:72f:97d9:978d with SMTP id
+ js22-20020a17090797d600b0072f97d9978dmr287285ejc.684.1659036311369; Thu, 28
+ Jul 2022 12:25:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, krzysztof.kozlowski@linaro.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <20220725055402.6013-1-william.zhang@broadcom.com>
- <20220725055402.6013-7-william.zhang@broadcom.com>
- <63797827553783061a0ad5e897ed6538@milecki.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <63797827553783061a0ad5e897ed6538@milecki.pl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CANX2M5Yphi3JcCsMf3HgPPkk9XCfOKO85gyMdxQf3_O74yc1Hg@mail.gmail.com>
+ <Ytzy9IjGXziLaVV0@kroah.com> <CANX2M5bxA5FF2Z8PFFc2p-OxkhOJQ8y=8PGF1kdLsJo+C92_gQ@mail.gmail.com>
+ <Yt1MX1Z6z0y82i1I@kroah.com>
+In-Reply-To: <Yt1MX1Z6z0y82i1I@kroah.com>
+From:   Dipanjan Das <mail.dipanjan.das@gmail.com>
+Date:   Thu, 28 Jul 2022 12:24:59 -0700
+Message-ID: <CANX2M5aX=JnKD-8kPyAN0Q64HvLoSO+3LvNvuaxkexCgeDWZHA@mail.gmail.com>
+Subject: Re: general protection fault in sock_def_error_report
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        sashal@kernel.org, edumazet@google.com,
+        steffen.klassert@secunet.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        syzkaller@googlegroups.com, fleischermarius@googlemail.com,
+        its.priyanka.bose@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -97,29 +72,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/22 05:31, Rafał Miłecki wrote:
-> On 2022-07-25 07:53, William Zhang wrote:
->> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
->> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
->> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
->>
->> Signed-off-by: William Zhang <william.zhang@broadcom.com>
->> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
->> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
-> 
-> I still think it may be a bad idea for all below drivers. Please see my
-> previous e-mail:
-> Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
-> https://lore.kernel.org/linux-arm-kernel/eee8c85652e6dac69420a876d03f67c4@milecki.pl/
-> 
-> I think we should:
-> 1. Keep ARCH_BCM4908 for 4908 specific drivers (e.g. mtd, pinctrl, net)
-> 2. Use ARCH_BCMBCA for more generic drivers (e.g. I2C, PCI,serial, WD)
+On Sun, Jul 24, 2022 at 6:43 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> It is worth the effort if the problem is still in the latest kernel
+> release as that is the only place that new development happens.
 
-IMHO here is no point in keeping an ARCH_BCM4908 anymore when the whole point of the patch series is to do a broad conversion of ARCH_BCM4908 into ARCH_BCMBCA. Even if some of the drivers are considered or thought to be 4908-specific, this is not going to be an issue in practice because there ought to be appropriate compatible strings such that even if you built a 4908-specific driver into a generic ARCH_BCMCA kernel, the actual probing would only happen on 4908.
+The problem does not exist in the latest release.
 
-Now let us flip it the other way round, let's say we keep ARCH_BCM4908 as a sub-arch of ARCH_BCMBCA, then this sets a precedent for adding more and more of those ARCH_BCM4906, ARCH_BCM4912 etc. etc to future kernels under the same reasons that we might want to gate certain drivers to certain sub-arches. But what good does that do?
+> If the issue is not reproducible on Linus's current releases, then finding the
+> change that solved the problem is also good so that we can then backport
+> it to the stable/long term kernel release for everyone to benefit from.
 
-At some point we got to make it simple for the users, and the simplest way is to have ARCH_BCMBCA only and let DT dictate the device specific probing.
+The change that solved the issue in the mainline is this:
+341adeec9adad0874f29a0a1af35638207352a39
+
+Here is one additional piece of information that you may find useful.
+Though we originally reported the bug for the longterm release
+v5.4.206, we noticed that the same issue exists in another longterm
+release v5.10.131, too. We manually bisected the commits in those two
+longterm branches to find the bug-introducing commits. We observe that
+the commits d6e981ec9491be5ec46d838b1151e7edefe607f5 and
+ff6eeb627898c179aac421af5d6515d3f50b84df introduced the bug in 5.4.y
+and 5.10.y branches, respectively.
+
 -- 
-Florian
+Thanks and Regards,
+
+Dipanjan
