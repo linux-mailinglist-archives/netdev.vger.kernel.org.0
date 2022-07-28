@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFB85847AE
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 23:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A587C5847B7
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 23:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233301AbiG1VYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 17:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
+        id S232769AbiG1Vcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 17:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233209AbiG1VYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 17:24:07 -0400
+        with ESMTP id S229570AbiG1Vcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 17:32:42 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C567695D;
-        Thu, 28 Jul 2022 14:24:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A09C683FB;
+        Thu, 28 Jul 2022 14:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CVSiwENoDSyrPHB5qMmXbGM8p18BOOMXfI8y4AIXaQQ=; b=L+na748tjlUEOrXQS0TYM1wmHM
-        WXLWBe3Aj3HX3oe0p/vIH0TI21XR/Tmsxr9M9e5i+EYrmafpHkIjiRwX+2rTJUIZHMxzhllkE4Sgp
-        99Gy2EooIhtK1tFC8Jeb21bsEZI2sefTKLRnw6WAWkD2O+WAxO7qI5qD8FTB5x3ajUcE=;
+        bh=dJwqq4OXPlmsjE2fwTHp8d7oWFSLWghbqXfczdjRCXA=; b=OesYrilz3qQq6gIUCpIbQECUFa
+        HUlSbdRLoxJAX6ZztEq1m3qgUdfHiDfP2RGg9lEcNVQz7f/r2X3+Hu1ThbhFX9THpEs+gINiizIUa
+        XIayyfOgK3ohOjZJ6o+pazb1MMM3cTw0ISgmCXod1c8BlrofpUOAMAt/PrI5YwAijY14=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oHAz9-00BqKO-Ny; Thu, 28 Jul 2022 23:23:59 +0200
-Date:   Thu, 28 Jul 2022 23:23:59 +0200
+        id 1oHB7U-00BqMl-BN; Thu, 28 Jul 2022 23:32:36 +0200
+Date:   Thu, 28 Jul 2022 23:32:36 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
 Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
@@ -36,37 +36,80 @@ Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
         Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 1/4] net: phy: Introduce QUSGMII PHY mode
-Message-ID: <YuL+b47YHw61bnoG@lunn.ch>
+Subject: Re: [PATCH net-next 3/4] net: phy: Add helper to derive the number
+ of ports from a phy mode
+Message-ID: <YuMAdACnRKsL8/xD@lunn.ch>
 References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
- <20220728145252.439201-2-maxime.chevallier@bootlin.com>
+ <20220728145252.439201-4-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220728145252.439201-2-maxime.chevallier@bootlin.com>
+In-Reply-To: <20220728145252.439201-4-maxime.chevallier@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 87638c55d844..6b96b810a4d8 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -152,6 +152,7 @@ typedef enum {
->  	PHY_INTERFACE_MODE_USXGMII,
->  	/* 10GBASE-KR - with Clause 73 AN */
->  	PHY_INTERFACE_MODE_10GKR,
-> +	PHY_INTERFACE_MODE_QUSGMII,
->  	PHY_INTERFACE_MODE_MAX,
->  } phy_interface_t;
+> +int phy_interface_num_ports(phy_interface_t interface)
+> +{
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_NA:
+> +	case PHY_INTERFACE_MODE_INTERNAL:
+> +		return 0;
 
-I _think_ this will give you a kerneldoc warning about
-PHY_INTERFACE_MODE_QUSGMII not having any documentation?
+I've not yet looked at how this is used. Returning 0 could have
+interesting effects i guess? INTERNAL clearly does have some sort of
+path between the MAC and the PHY, so i think 1 would be a better
+value. NA is less clear, it generally means Don't touch. But again,
+there still needs to be a path between the MAC and PHY, otherwise
+there would not be any to touch.
 
-	   Andrew
+Why did you pick 0?
 
+> +
+> +	case PHY_INTERFACE_MODE_MII:
+> +	case PHY_INTERFACE_MODE_GMII:
+> +	case PHY_INTERFACE_MODE_TBI:
+> +	case PHY_INTERFACE_MODE_REVMII:
+> +	case PHY_INTERFACE_MODE_RMII:
+> +	case PHY_INTERFACE_MODE_REVRMII:
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +	case PHY_INTERFACE_MODE_RTBI:
+> +	case PHY_INTERFACE_MODE_XGMII:
+> +	case PHY_INTERFACE_MODE_XLGMII:
+> +	case PHY_INTERFACE_MODE_MOCA:
+> +	case PHY_INTERFACE_MODE_TRGMII:
+> +	case PHY_INTERFACE_MODE_USXGMII:
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +	case PHY_INTERFACE_MODE_SMII:
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +	case PHY_INTERFACE_MODE_5GBASER:
+> +	case PHY_INTERFACE_MODE_10GBASER:
+> +	case PHY_INTERFACE_MODE_25GBASER:
+> +	case PHY_INTERFACE_MODE_10GKR:
+> +	case PHY_INTERFACE_MODE_100BASEX:
+> +	case PHY_INTERFACE_MODE_RXAUI:
+> +	case PHY_INTERFACE_MODE_XAUI:
+> +		return 1;
+> +	case PHY_INTERFACE_MODE_QSGMII:
+> +	case PHY_INTERFACE_MODE_QUSGMII:
+> +		return 4;
+> +
+> +	default:
+> +		return 0;
+> +	}
+> +}
+
+Have you tried without a default: ? I _think_ gcc will then warn about
+missing enum values, which will help future developers when they add
+further values to the enum.
+
+	Andrew
