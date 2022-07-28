@@ -2,73 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F3A5846B0
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A59485846C5
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233357AbiG1Tyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37832 "EHLO
+        id S232118AbiG1T7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiG1Tyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:54:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83D86E2ED;
-        Thu, 28 Jul 2022 12:54:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6406B61DFA;
-        Thu, 28 Jul 2022 19:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B9A53C433C1;
-        Thu, 28 Jul 2022 19:54:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659038081;
-        bh=6twOAmxmh/muG7ET6+1EfXfqla8lNrqvJpZpzAlHDXM=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=YGFyWe3Yb3OejgWnMWJC3cNxh7FTf8Cqq/pyFHZdwJ/zaGE85LBT9oZFFv3+ZCBeS
-         YqlxU7nYBmHR9Ku61aj+507Vt0FOpKgFu9GSCmhAJrRsCcf12wr2CM5zAurVIsRAGX
-         bBgCFhGRBiRGytPdU448z2g5eo7zLtGkwEKKdRG8acDhgZXAW6sMTr2WoUC3yXab8M
-         6y/RFF04a8EEGFhYhB0QTofEFWiBDl84gVULtesZmHRt2acBNu08AoeoUEF77aZH0U
-         uR68Je3LjkGKTph9SnIBX8y1s0zDJ0lIhXQqU7AQmfzIbzHwvFQfYIdN2WaONZ3bLS
-         nt17gPWzlZlxQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A7877C43142;
-        Thu, 28 Jul 2022 19:54:41 +0000 (UTC)
-Subject: Re: [PULL] Networking for 5.19-final
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220728184007.1642187-1-kuba@kernel.org>
-References: <20220728184007.1642187-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220728184007.1642187-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-final
-X-PR-Tracked-Commit-Id: 4d3d3a1b244fd54629a6b7047f39a7bbc8d11910
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 33ea1340bafe1f394e5bf96fceef73e9771d066b
-Message-Id: <165903808167.27063.2870648876969539037.pr-tracker-bot@kernel.org>
-Date:   Thu, 28 Jul 2022 19:54:41 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231301AbiG1T7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:59:38 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 12:59:35 PDT
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D5A6FA0E
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:59:34 -0700 (PDT)
+Received: (qmail 21331 invoked from network); 28 Jul 2022 19:52:15 -0000
+Received: from mail.sf-mail.de ([2a01:4f8:1c17:6fae:616d:6c69:616d:6c69]:50732 HELO webmail.sf-mail.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <seanga2@gmail.com>; Thu, 28 Jul 2022 21:52:15 +0200
+MIME-Version: 1.0
+Date:   Thu, 28 Jul 2022 21:52:15 +0200
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     Sean Anderson <seanga2@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 4/x] sunhme: switch to devres
+In-Reply-To: <7685c7df-83ed-a3a0-6e61-42bd48713dc9@gmail.com>
+References: <4686583.GXAFRqVoOG@eto.sf-tec.de>
+ <11922663.O9o76ZdvQC@eto.sf-tec.de>
+ <00f00bdf-1a76-693f-5c8f-9b4ceaf76b91@gmail.com>
+ <7685c7df-83ed-a3a0-6e61-42bd48713dc9@gmail.com>
+Message-ID: <8005d74d1e4ff2bdd75f8fefe70561a0@sf-tec.de>
+X-Sender: eike-kernel@sf-tec.de
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 28 Jul 2022 11:40:07 -0700:
+Am 2022-07-27 05:58, schrieb Sean Anderson:
+> On 7/26/22 11:49 PM, Sean Anderson wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-final
+>> This looks good, but doesn't apply cleanly. I rebased it as follows:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/33ea1340bafe1f394e5bf96fceef73e9771d066b
+Looks like what my local rebase has also produced.
 
-Thank you!
+The sentence about the leak from the commitmessage can be dropped then,
+as this leak has already been fixed.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+>> diff --git a/drivers/net/ethernet/sun/sunhme.c 
+>> b/drivers/net/ethernet/sun/sunhme.c
+>> index eebe8c5f480c..e83774ffaa7a 100644
+>> --- a/drivers/net/ethernet/sun/sunhme.c
+>> +++ b/drivers/net/ethernet/sun/sunhme.c
+>> @@ -2990,21 +2990,23 @@ static int happy_meal_pci_probe(struct pci_dev 
+>> *pdev,
+>>           qp->happy_meals[qfe_slot] = dev;
+>>       }
+>> 
+>> -    hpreg_res = pci_resource_start(pdev, 0);
+>> -    err = -ENODEV;
+>>       if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
+>>           printk(KERN_ERR "happymeal(PCI): Cannot find proper PCI 
+>> device base address.\n");
+>>           goto err_out_clear_quattro;
+>>       }
+>> -    if (pci_request_regions(pdev, DRV_NAME)) {
+>> +
+>> +    if (!devm_request_region(&pdev->dev, pci_resource_start(pdev, 0),
+>> +                  pci_resource_len(pdev, 0),
+>> +                  DRV_NAME)) {
+> 
+> Actually, it looks like you are failing to set err from these *m
+> calls, like what
+> you fixed in patch 3. Can you address this for v2?
+
+It returns NULL on error, there is no error code I can set.
+
+Regards,
+
+Eike
