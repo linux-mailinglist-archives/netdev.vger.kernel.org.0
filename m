@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E42C55846BC
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2EC15846CE
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbiG1T6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        id S231590AbiG1T6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiG1T6k (ORCPT
+        with ESMTP id S230007AbiG1T6k (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:58:40 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9DD6FA00
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:58:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4034F1EAF8
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:58:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659038318; x=1690574318;
+  t=1659038319; x=1690574319;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=iweleOm6+BIhfeXpBZs/L7L7/wRGUKMx3761b+NhmrA=;
-  b=iRPVT7VPpa/KRvAWeSEIVA2WfdCeV09pV73vtKGAKbMEW5yBshiLdgMD
-   zkGq6jColp7oD38hcSaorOhwvc/0H0Y0dviuFMkazf2KH9bwAy4qT2FCN
-   8AxpPnwf1HNCrJK+qgnnSBl+xKX/wbiTQuMef+I3ZpA0BQ6jfIiCv/u6m
-   8tIBzVeLJs7KUzd92p7cSqX9HzprmtsF6XqH9Vh7HeRkj7klNGsEcHsGK
-   AkU2GvmxIkaXcR3LK8k5M9igPFJXqGUliyx0lB/qChGoGVr0f07R8pwiV
-   h9IaO5YMHLPHHIv1qC61sN+TqNzfK2gkIBtEnjB2Fk1JcQCgmk1Gw3c0N
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="350310070"
+  bh=iXL9Ly7t7YgkgLNQ9yCwI7p6yWK2XILNbbemNukn+8c=;
+  b=gzFA50srNR8AieoHnFJSJzUVXbVIzDTDuJN68UYxBA0ijHwKwXCzk+tE
+   9SB7QNbbribiPPm3GOvFYfQ3wFbSplWt6UyBwKLqYNTW2LlT6AD0Ll3OO
+   t4ohfnT0+Udg6TYhh063MG5aZCeofKkXKhXUPKuDb5hG4TcFZ5jr5trvG
+   gGHrEJDpKiIDFwM5YrcGk/OkVMv9veXHLKJa3194WbjwxR4W8DhxzKFfw
+   StfS1W5ta5Vwj7MZiHaevEgK+Wm7fSioRBuZUP4Gz+88LHgtrUKZ4Xl9A
+   5r01qus+1mg28HNHs/meTy25L4UDlHW3LK2zAW6Lb66fTtSSpBQHmteOc
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="350310072"
 X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="350310070"
+   d="scan'208";a="350310072"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 12:58:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="928453954"
+   d="scan'208";a="928453965"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2022 12:58:37 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -43,9 +43,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
 Cc:     Michal Wilczynski <michal.wilczynski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 1/4] ice: Introduce enabling promiscuous mode on multiple VF's
-Date:   Thu, 28 Jul 2022 12:55:35 -0700
-Message-Id: <20220728195538.3391360-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 2/4] ice: Fix promiscuous mode not turning off
+Date:   Thu, 28 Jul 2022 12:55:36 -0700
+Message-Id: <20220728195538.3391360-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220728195538.3391360-1-anthony.l.nguyen@intel.com>
 References: <20220728195538.3391360-1-anthony.l.nguyen@intel.com>
@@ -62,718 +62,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Michal Wilczynski <michal.wilczynski@intel.com>
 
-In current implementation default VSI switch filter is only able to
-forward traffic to a single VSI. This limits promiscuous mode with
-private flag 'vf-true-promisc-support' to a single VF. Enabling it on
-the second VF won't work. Also allmulticast support doesn't seem to be
-properly implemented when vf-true-promisc-support is true.
+When trust is turned off for the VF, the expectation is that promiscuous
+and allmulticast filters are removed. Currently default VSI filter is not
+getting cleared in this flow.
 
-Use standard ice_add_rule_internal() function that already implements
-forwarding to multiple VSI's instead of constructing AQ call manually.
+Example:
 
-Add switch filter for allmulticast mode when vf-true-promisc-support is
-enabled. The same filter is added regardless of the flag - it doesn't
-matter for this case.
+ip link set enp236s0f0 vf 0 trust on
+ip link set enp236s0f0v0 promisc on
+ip link set enp236s0f0 vf 0 trust off
+/* promiscuous mode is still enabled on VF0 */
 
-Remove unnecessary fields in switch structure. From now on book keeping
-will be done by ice_add_rule_internal().
-
-Refactor unnecessarily passed function arguments.
-
-To test:
-1) Create 2 VM's, and two VF's. Attach VF's to VM's.
-2) Enable promiscuous mode on both of them and check if
-   traffic is seen on both of them.
+Remove switch filters for both cases.
+This commit fixes above behavior by removing default VSI filters and
+allmulticast filters when vf-true-promisc-support is OFF.
 
 Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
 Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   2 -
- drivers/net/ethernet/intel/ice/ice_eswitch.c  |   8 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   2 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |  67 ++++-----
- drivers/net/ethernet/intel/ice/ice_lib.h      |  11 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |  14 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   | 136 +++++++++---------
- drivers/net/ethernet/intel/ice/ice_switch.h   |   8 +-
- drivers/net/ethernet/intel/ice/ice_type.h     |   4 -
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   |  10 +-
- drivers/net/ethernet/intel/ice/ice_vf_lib.h   |   4 +-
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  58 ++++----
- 12 files changed, 155 insertions(+), 169 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 79 ++++++++++++++++---
+ drivers/net/ethernet/intel/ice/ice_vf_lib.h   |  3 +
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c |  9 +--
+ 3 files changed, 72 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 36b440b1aaff..cc5b85afd437 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -248,8 +248,6 @@ struct ice_sw {
- 	struct ice_pf *pf;
- 	u16 sw_id;		/* switch ID for this switch */
- 	u16 bridge_mode;	/* VEB/VEPA/Port Virtualizer */
--	struct ice_vsi *dflt_vsi;	/* default VSI for this switch */
--	u8 dflt_vsi_ena:1;	/* true if above dflt_vsi is enabled */
- };
- 
- enum ice_pf_state {
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 6a463b242c7d..e35371e61e07 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -133,8 +133,8 @@ static int ice_eswitch_setup_env(struct ice_pf *pf)
- 	if (ice_vsi_add_vlan_zero(uplink_vsi))
- 		goto err_def_rx;
- 
--	if (!ice_is_dflt_vsi_in_use(uplink_vsi->vsw)) {
--		if (ice_set_dflt_vsi(uplink_vsi->vsw, uplink_vsi))
-+	if (!ice_is_dflt_vsi_in_use(uplink_vsi->port_info)) {
-+		if (ice_set_dflt_vsi(uplink_vsi))
- 			goto err_def_rx;
- 		rule_added = true;
- 	}
-@@ -151,7 +151,7 @@ static int ice_eswitch_setup_env(struct ice_pf *pf)
- 	ice_vsi_update_security(uplink_vsi, ice_vsi_ctx_clear_allow_override);
- err_override_uplink:
- 	if (rule_added)
--		ice_clear_dflt_vsi(uplink_vsi->vsw);
-+		ice_clear_dflt_vsi(uplink_vsi);
- err_def_rx:
- 	ice_fltr_add_mac_and_broadcast(uplink_vsi,
- 				       uplink_vsi->port_info->mac.perm_addr,
-@@ -411,7 +411,7 @@ static void ice_eswitch_release_env(struct ice_pf *pf)
- 
- 	ice_vsi_update_security(ctrl_vsi, ice_vsi_ctx_clear_allow_override);
- 	ice_vsi_update_security(uplink_vsi, ice_vsi_ctx_clear_allow_override);
--	ice_clear_dflt_vsi(uplink_vsi->vsw);
-+	ice_clear_dflt_vsi(uplink_vsi);
- 	ice_fltr_add_mac_and_broadcast(uplink_vsi,
- 				       uplink_vsi->port_info->mac.perm_addr,
- 				       ICE_FWD_TO_VSI);
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 70335f6e8524..340dc5a0832c 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1292,7 +1292,7 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 	 * promiscuous mode because it's not supported
- 	 */
- 	if (test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, change_flags) &&
--	    ice_is_any_vf_in_promisc(pf)) {
-+	    ice_is_any_vf_in_unicast_promisc(pf)) {
- 		dev_err(dev, "Changing vf-true-promisc-support flag while VF(s) are in promiscuous mode not supported\n");
- 		/* toggle bit back to previous state */
- 		change_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags);
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index bc357dfae306..a830f7f9aed0 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3006,8 +3006,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		}
- 	}
- 
--	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
--		ice_clear_dflt_vsi(pf->first_sw);
-+	if (ice_is_vsi_dflt_vsi(vsi))
-+		ice_clear_dflt_vsi(vsi);
- 	ice_fltr_remove_all(vsi);
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
- 	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
-@@ -3690,116 +3690,97 @@ void ice_update_rx_ring_stats(struct ice_rx_ring *rx_ring, u64 pkts, u64 bytes)
- 
- /**
-  * ice_is_dflt_vsi_in_use - check if the default forwarding VSI is being used
-- * @sw: switch to check if its default forwarding VSI is free
-+ * @pi: port info of the switch with default VSI
-  *
-- * Return true if the default forwarding VSI is already being used, else returns
-- * false signalling that it's available to use.
-+ * Return true if the there is a single VSI in default forwarding VSI list
-  */
--bool ice_is_dflt_vsi_in_use(struct ice_sw *sw)
-+bool ice_is_dflt_vsi_in_use(struct ice_port_info *pi)
- {
--	return (sw->dflt_vsi && sw->dflt_vsi_ena);
-+	bool exists = false;
-+
-+	ice_check_if_dflt_vsi(pi, 0, &exists);
-+	return exists;
- }
- 
- /**
-  * ice_is_vsi_dflt_vsi - check if the VSI passed in is the default VSI
-- * @sw: switch for the default forwarding VSI to compare against
-  * @vsi: VSI to compare against default forwarding VSI
-  *
-  * If this VSI passed in is the default forwarding VSI then return true, else
-  * return false
-  */
--bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi)
-+bool ice_is_vsi_dflt_vsi(struct ice_vsi *vsi)
- {
--	return (sw->dflt_vsi == vsi && sw->dflt_vsi_ena);
-+	return ice_check_if_dflt_vsi(vsi->port_info, vsi->idx, NULL);
- }
- 
- /**
-  * ice_set_dflt_vsi - set the default forwarding VSI
-- * @sw: switch used to assign the default forwarding VSI
-  * @vsi: VSI getting set as the default forwarding VSI on the switch
-  *
-  * If the VSI passed in is already the default VSI and it's enabled just return
-  * success.
-  *
-- * If there is already a default VSI on the switch and it's enabled then return
-- * -EEXIST since there can only be one default VSI per switch.
-- *
-- *  Otherwise try to set the VSI passed in as the switch's default VSI and
-- *  return the result.
-+ * Otherwise try to set the VSI passed in as the switch's default VSI and
-+ * return the result.
-  */
--int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi)
-+int ice_set_dflt_vsi(struct ice_vsi *vsi)
- {
- 	struct device *dev;
- 	int status;
- 
--	if (!sw || !vsi)
-+	if (!vsi)
- 		return -EINVAL;
- 
- 	dev = ice_pf_to_dev(vsi->back);
- 
- 	/* the VSI passed in is already the default VSI */
--	if (ice_is_vsi_dflt_vsi(sw, vsi)) {
-+	if (ice_is_vsi_dflt_vsi(vsi)) {
- 		dev_dbg(dev, "VSI %d passed in is already the default forwarding VSI, nothing to do\n",
- 			vsi->vsi_num);
- 		return 0;
- 	}
- 
--	/* another VSI is already the default VSI for this switch */
--	if (ice_is_dflt_vsi_in_use(sw)) {
--		dev_err(dev, "Default forwarding VSI %d already in use, disable it and try again\n",
--			sw->dflt_vsi->vsi_num);
--		return -EEXIST;
--	}
--
--	status = ice_cfg_dflt_vsi(&vsi->back->hw, vsi->idx, true, ICE_FLTR_RX);
-+	status = ice_cfg_dflt_vsi(vsi->port_info, vsi->idx, true, ICE_FLTR_RX);
- 	if (status) {
- 		dev_err(dev, "Failed to set VSI %d as the default forwarding VSI, error %d\n",
- 			vsi->vsi_num, status);
- 		return status;
- 	}
- 
--	sw->dflt_vsi = vsi;
--	sw->dflt_vsi_ena = true;
--
- 	return 0;
- }
- 
- /**
-  * ice_clear_dflt_vsi - clear the default forwarding VSI
-- * @sw: switch used to clear the default VSI
-+ * @vsi: VSI to remove from filter list
-  *
-  * If the switch has no default VSI or it's not enabled then return error.
-  *
-  * Otherwise try to clear the default VSI and return the result.
-  */
--int ice_clear_dflt_vsi(struct ice_sw *sw)
-+int ice_clear_dflt_vsi(struct ice_vsi *vsi)
- {
--	struct ice_vsi *dflt_vsi;
- 	struct device *dev;
- 	int status;
- 
--	if (!sw)
-+	if (!vsi)
- 		return -EINVAL;
- 
--	dev = ice_pf_to_dev(sw->pf);
--
--	dflt_vsi = sw->dflt_vsi;
-+	dev = ice_pf_to_dev(vsi->back);
- 
- 	/* there is no default VSI configured */
--	if (!ice_is_dflt_vsi_in_use(sw))
-+	if (!ice_is_dflt_vsi_in_use(vsi->port_info))
- 		return -ENODEV;
- 
--	status = ice_cfg_dflt_vsi(&dflt_vsi->back->hw, dflt_vsi->idx, false,
-+	status = ice_cfg_dflt_vsi(vsi->port_info, vsi->idx, false,
- 				  ICE_FLTR_RX);
- 	if (status) {
- 		dev_err(dev, "Failed to clear the default forwarding VSI %d, error %d\n",
--			dflt_vsi->vsi_num, status);
-+			vsi->vsi_num, status);
- 		return -EIO;
- 	}
- 
--	sw->dflt_vsi = NULL;
--	sw->dflt_vsi_ena = false;
--
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 0095329949d4..8712b1d2ceec 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -102,13 +102,10 @@ int ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
- 
- bool ice_is_safe_mode(struct ice_pf *pf);
- bool ice_is_rdma_ena(struct ice_pf *pf);
--bool ice_is_dflt_vsi_in_use(struct ice_sw *sw);
--
--bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
--
--int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
--
--int ice_clear_dflt_vsi(struct ice_sw *sw);
-+bool ice_is_dflt_vsi_in_use(struct ice_port_info *pi);
-+bool ice_is_vsi_dflt_vsi(struct ice_vsi *vsi);
-+int ice_set_dflt_vsi(struct ice_vsi *vsi);
-+int ice_clear_dflt_vsi(struct ice_vsi *vsi);
- int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate);
- int ice_set_max_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate);
- int ice_get_link_speed_kbps(struct ice_vsi *vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 313716615e98..e56f72ff3117 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -410,8 +410,8 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 		clear_bit(ICE_VSI_PROMISC_CHANGED, vsi->state);
- 		if (vsi->current_netdev_flags & IFF_PROMISC) {
- 			/* Apply Rx filter rule to get traffic from wire */
--			if (!ice_is_dflt_vsi_in_use(pf->first_sw)) {
--				err = ice_set_dflt_vsi(pf->first_sw, vsi);
-+			if (!ice_is_dflt_vsi_in_use(vsi->port_info)) {
-+				err = ice_set_dflt_vsi(vsi);
- 				if (err && err != -EEXIST) {
- 					netdev_err(netdev, "Error %d setting default VSI %i Rx rule\n",
- 						   err, vsi->vsi_num);
-@@ -424,8 +424,8 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 			}
- 		} else {
- 			/* Clear Rx filter to remove traffic from wire */
--			if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi)) {
--				err = ice_clear_dflt_vsi(pf->first_sw);
-+			if (ice_is_vsi_dflt_vsi(vsi)) {
-+				err = ice_clear_dflt_vsi(vsi);
- 				if (err) {
- 					netdev_err(netdev, "Error %d clearing default VSI %i Rx rule\n",
- 						   err, vsi->vsi_num);
-@@ -6990,12 +6990,6 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 		goto err_init_ctrlq;
- 	}
- 
--	if (pf->first_sw->dflt_vsi_ena)
--		dev_info(dev, "Clearing default VSI, re-enable after reset completes\n");
--	/* clear the default VSI configuration if it exists */
--	pf->first_sw->dflt_vsi = NULL;
--	pf->first_sw->dflt_vsi_ena = false;
--
- 	ice_clear_pxe_mode(hw);
- 
- 	err = ice_init_nvm(hw);
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 4a6a8334a0e0..fce204693dbb 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -1762,7 +1762,8 @@ ice_aq_alloc_free_vsi_list(struct ice_hw *hw, u16 *vsi_list_id,
- 	    lkup_type == ICE_SW_LKUP_ETHERTYPE ||
- 	    lkup_type == ICE_SW_LKUP_ETHERTYPE_MAC ||
- 	    lkup_type == ICE_SW_LKUP_PROMISC ||
--	    lkup_type == ICE_SW_LKUP_PROMISC_VLAN) {
-+	    lkup_type == ICE_SW_LKUP_PROMISC_VLAN ||
-+	    lkup_type == ICE_SW_LKUP_DFLT) {
- 		sw_buf->res_type = cpu_to_le16(ICE_AQC_RES_TYPE_VSI_LIST_REP);
- 	} else if (lkup_type == ICE_SW_LKUP_VLAN) {
- 		sw_buf->res_type =
-@@ -2255,8 +2256,6 @@ ice_init_port_info(struct ice_port_info *pi, u16 vsi_port_num, u8 type,
- 		pi->sw_id = swid;
- 		pi->pf_vf_num = pf_vf_num;
- 		pi->is_vf = is_vf;
--		pi->dflt_tx_vsi_num = ICE_DFLT_VSI_INVAL;
--		pi->dflt_rx_vsi_num = ICE_DFLT_VSI_INVAL;
- 		break;
- 	default:
- 		ice_debug(pi->hw, ICE_DBG_SW, "incorrect VSI/port type received\n");
-@@ -2691,7 +2690,8 @@ ice_update_vsi_list_rule(struct ice_hw *hw, u16 *vsi_handle_arr, u16 num_vsi,
- 	    lkup_type == ICE_SW_LKUP_ETHERTYPE ||
- 	    lkup_type == ICE_SW_LKUP_ETHERTYPE_MAC ||
- 	    lkup_type == ICE_SW_LKUP_PROMISC ||
--	    lkup_type == ICE_SW_LKUP_PROMISC_VLAN)
-+	    lkup_type == ICE_SW_LKUP_PROMISC_VLAN ||
-+	    lkup_type == ICE_SW_LKUP_DFLT)
- 		rule_type = remove ? ICE_AQC_SW_RULES_T_VSI_LIST_CLEAR :
- 			ICE_AQC_SW_RULES_T_VSI_LIST_SET;
- 	else if (lkup_type == ICE_SW_LKUP_VLAN)
-@@ -3873,7 +3873,7 @@ ice_rem_adv_rule_info(struct ice_hw *hw, struct list_head *rule_head)
- 
- /**
-  * ice_cfg_dflt_vsi - change state of VSI to set/clear default
-- * @hw: pointer to the hardware structure
-+ * @pi: pointer to the port_info structure
-  * @vsi_handle: VSI handle to set as default
-  * @set: true to add the above mentioned switch rule, false to remove it
-  * @direction: ICE_FLTR_RX or ICE_FLTR_TX
-@@ -3881,25 +3881,20 @@ ice_rem_adv_rule_info(struct ice_hw *hw, struct list_head *rule_head)
-  * add filter rule to set/unset given VSI as default VSI for the switch
-  * (represented by swid)
-  */
--int ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction)
-+int
-+ice_cfg_dflt_vsi(struct ice_port_info *pi, u16 vsi_handle, bool set,
-+		 u8 direction)
- {
--	struct ice_sw_rule_lkup_rx_tx *s_rule;
-+	struct ice_fltr_list_entry f_list_entry;
- 	struct ice_fltr_info f_info;
--	enum ice_adminq_opc opcode;
--	u16 s_rule_size;
-+	struct ice_hw *hw = pi->hw;
- 	u16 hw_vsi_id;
- 	int status;
- 
- 	if (!ice_is_vsi_valid(hw, vsi_handle))
- 		return -EINVAL;
--	hw_vsi_id = ice_get_hw_vsi_num(hw, vsi_handle);
--
--	s_rule_size = set ? ICE_SW_RULE_RX_TX_ETH_HDR_SIZE(s_rule) :
--			    ICE_SW_RULE_RX_TX_NO_HDR_SIZE(s_rule);
- 
--	s_rule = devm_kzalloc(ice_hw_to_dev(hw), s_rule_size, GFP_KERNEL);
--	if (!s_rule)
--		return -ENOMEM;
-+	hw_vsi_id = ice_get_hw_vsi_num(hw, vsi_handle);
- 
- 	memset(&f_info, 0, sizeof(f_info));
- 
-@@ -3907,54 +3902,80 @@ int ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction)
- 	f_info.flag = direction;
- 	f_info.fltr_act = ICE_FWD_TO_VSI;
- 	f_info.fwd_id.hw_vsi_id = hw_vsi_id;
-+	f_info.vsi_handle = vsi_handle;
- 
- 	if (f_info.flag & ICE_FLTR_RX) {
- 		f_info.src = hw->port_info->lport;
- 		f_info.src_id = ICE_SRC_ID_LPORT;
--		if (!set)
--			f_info.fltr_rule_id =
--				hw->port_info->dflt_rx_vsi_rule_id;
- 	} else if (f_info.flag & ICE_FLTR_TX) {
- 		f_info.src_id = ICE_SRC_ID_VSI;
- 		f_info.src = hw_vsi_id;
--		if (!set)
--			f_info.fltr_rule_id =
--				hw->port_info->dflt_tx_vsi_rule_id;
- 	}
-+	f_list_entry.fltr_info = f_info;
- 
- 	if (set)
--		opcode = ice_aqc_opc_add_sw_rules;
-+		status = ice_add_rule_internal(hw, ICE_SW_LKUP_DFLT,
-+					       &f_list_entry);
- 	else
--		opcode = ice_aqc_opc_remove_sw_rules;
--
--	ice_fill_sw_rule(hw, &f_info, s_rule, opcode);
--
--	status = ice_aq_sw_rules(hw, s_rule, s_rule_size, 1, opcode, NULL);
--	if (status || !(f_info.flag & ICE_FLTR_TX_RX))
--		goto out;
--	if (set) {
--		u16 index = le16_to_cpu(s_rule->index);
--
--		if (f_info.flag & ICE_FLTR_TX) {
--			hw->port_info->dflt_tx_vsi_num = hw_vsi_id;
--			hw->port_info->dflt_tx_vsi_rule_id = index;
--		} else if (f_info.flag & ICE_FLTR_RX) {
--			hw->port_info->dflt_rx_vsi_num = hw_vsi_id;
--			hw->port_info->dflt_rx_vsi_rule_id = index;
--		}
--	} else {
--		if (f_info.flag & ICE_FLTR_TX) {
--			hw->port_info->dflt_tx_vsi_num = ICE_DFLT_VSI_INVAL;
--			hw->port_info->dflt_tx_vsi_rule_id = ICE_INVAL_ACT;
--		} else if (f_info.flag & ICE_FLTR_RX) {
--			hw->port_info->dflt_rx_vsi_num = ICE_DFLT_VSI_INVAL;
--			hw->port_info->dflt_rx_vsi_rule_id = ICE_INVAL_ACT;
-+		status = ice_remove_rule_internal(hw, ICE_SW_LKUP_DFLT,
-+						  &f_list_entry);
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_vsi_uses_fltr - Determine if given VSI uses specified filter
-+ * @fm_entry: filter entry to inspect
-+ * @vsi_handle: VSI handle to compare with filter info
-+ */
-+static bool
-+ice_vsi_uses_fltr(struct ice_fltr_mgmt_list_entry *fm_entry, u16 vsi_handle)
-+{
-+	return ((fm_entry->fltr_info.fltr_act == ICE_FWD_TO_VSI &&
-+		 fm_entry->fltr_info.vsi_handle == vsi_handle) ||
-+		(fm_entry->fltr_info.fltr_act == ICE_FWD_TO_VSI_LIST &&
-+		 fm_entry->vsi_list_info &&
-+		 (test_bit(vsi_handle, fm_entry->vsi_list_info->vsi_map))));
-+}
-+
-+/**
-+ * ice_check_if_dflt_vsi - check if VSI is default VSI
-+ * @pi: pointer to the port_info structure
-+ * @vsi_handle: vsi handle to check for in filter list
-+ * @rule_exists: indicates if there are any VSI's in the rule list
-+ *
-+ * checks if the VSI is in a default VSI list, and also indicates
-+ * if the default VSI list is empty
-+ */
-+bool
-+ice_check_if_dflt_vsi(struct ice_port_info *pi, u16 vsi_handle,
-+		      bool *rule_exists)
-+{
-+	struct ice_fltr_mgmt_list_entry *fm_entry;
-+	struct ice_sw_recipe *recp_list;
-+	struct list_head *rule_head;
-+	struct mutex *rule_lock; /* Lock to protect filter rule list */
-+	bool ret = false;
-+
-+	recp_list = &pi->hw->switch_info->recp_list[ICE_SW_LKUP_DFLT];
-+	rule_lock = &recp_list->filt_rule_lock;
-+	rule_head = &recp_list->filt_rules;
-+
-+	mutex_lock(rule_lock);
-+
-+	if (rule_exists && !list_empty(rule_head))
-+		*rule_exists = true;
-+
-+	list_for_each_entry(fm_entry, rule_head, list_entry) {
-+		if (ice_vsi_uses_fltr(fm_entry, vsi_handle)) {
-+			ret = true;
-+			break;
- 		}
- 	}
- 
--out:
--	devm_kfree(ice_hw_to_dev(hw), s_rule);
--	return status;
-+	mutex_unlock(rule_lock);
-+
-+	return ret;
- }
- 
- /**
-@@ -4073,21 +4094,6 @@ int ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list)
- 	return 0;
- }
- 
--/**
-- * ice_vsi_uses_fltr - Determine if given VSI uses specified filter
-- * @fm_entry: filter entry to inspect
-- * @vsi_handle: VSI handle to compare with filter info
-- */
--static bool
--ice_vsi_uses_fltr(struct ice_fltr_mgmt_list_entry *fm_entry, u16 vsi_handle)
--{
--	return ((fm_entry->fltr_info.fltr_act == ICE_FWD_TO_VSI &&
--		 fm_entry->fltr_info.vsi_handle == vsi_handle) ||
--		(fm_entry->fltr_info.fltr_act == ICE_FWD_TO_VSI_LIST &&
--		 fm_entry->vsi_list_info &&
--		 (test_bit(vsi_handle, fm_entry->vsi_list_info->vsi_map))));
--}
--
- /**
-  * ice_add_entry_to_vsi_fltr_list - Add copy of fltr_list_entry to remove list
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 59488e3e9d6a..68d8e8a6a189 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -359,7 +359,13 @@ int ice_cfg_rdma_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
- void ice_remove_vsi_fltr(struct ice_hw *hw, u16 vsi_handle);
- 
- /* Promisc/defport setup for VSIs */
--int ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction);
-+int
-+ice_cfg_dflt_vsi(struct ice_port_info *pi, u16 vsi_handle, bool set,
-+		 u8 direction);
-+bool
-+ice_check_if_dflt_vsi(struct ice_port_info *pi, u16 vsi_handle,
-+		      bool *rule_exists);
-+
- int
- ice_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
- 		    u16 vid);
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index f2a518a1fd94..861b64322959 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -693,10 +693,6 @@ struct ice_port_info {
- #define ICE_SCHED_PORT_STATE_READY	0x1
- 	u8 lport;
- #define ICE_LPORT_MASK			0xff
--	u16 dflt_tx_vsi_rule_id;
--	u16 dflt_tx_vsi_num;
--	u16 dflt_rx_vsi_rule_id;
--	u16 dflt_rx_vsi_num;
- 	struct ice_fc_info fc;
- 	struct ice_mac_info mac;
- 	struct ice_phy_info phy;
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 7adf9ddf129e..9038d2687ba6 100644
+index 9038d2687ba6..8fd7c3e37f5e 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -271,13 +271,14 @@ static int ice_vf_rebuild_vsi(struct ice_vf *vf)
+@@ -297,6 +297,73 @@ bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf)
+ 	return is_vf_promisc;
  }
  
++/**
++ * ice_vf_get_promisc_masks - Calculate masks for promiscuous modes
++ * @vf: the VF pointer
++ * @vsi: the VSI to configure
++ * @ucast_m: promiscuous mask to apply to unicast
++ * @mcast_m: promiscuous mask to apply to multicast
++ *
++ * Decide which mask should be used for unicast and multicast filter,
++ * based on presence of VLANs
++ */
++void
++ice_vf_get_promisc_masks(struct ice_vf *vf, struct ice_vsi *vsi,
++			 u8 *ucast_m, u8 *mcast_m)
++{
++	if (ice_vf_is_port_vlan_ena(vf) ||
++	    ice_vsi_has_non_zero_vlans(vsi)) {
++		*mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
++		*ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
++	} else {
++		*mcast_m = ICE_MCAST_PROMISC_BITS;
++		*ucast_m = ICE_UCAST_PROMISC_BITS;
++	}
++}
++
++/**
++ * ice_vf_clear_all_promisc_modes - Clear promisc/allmulticast on VF VSI
++ * @vf: the VF pointer
++ * @vsi: the VSI to configure
++ *
++ * Clear all promiscuous/allmulticast filters for a VF
++ */
++static int
++ice_vf_clear_all_promisc_modes(struct ice_vf *vf, struct ice_vsi *vsi)
++{
++	struct ice_pf *pf = vf->pf;
++	u8 ucast_m, mcast_m;
++	int ret = 0;
++
++	ice_vf_get_promisc_masks(vf, vsi, &ucast_m, &mcast_m);
++	if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states)) {
++		if (!test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags)) {
++			if (ice_is_dflt_vsi_in_use(vsi->port_info))
++				ret = ice_clear_dflt_vsi(vsi);
++		} else {
++			ret = ice_vf_clear_vsi_promisc(vf, vsi, ucast_m);
++		}
++
++		if (ret) {
++			dev_err(ice_pf_to_dev(vf->pf), "Disabling promiscuous mode failed\n");
++		} else {
++			clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
++			dev_info(ice_pf_to_dev(vf->pf), "Disabling promiscuous mode succeeded\n");
++		}
++	}
++
++	if (test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) {
++		ret = ice_vf_clear_vsi_promisc(vf, vsi, mcast_m);
++		if (ret) {
++			dev_err(ice_pf_to_dev(vf->pf), "Disabling allmulticast mode failed\n");
++		} else {
++			clear_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states);
++			dev_info(ice_pf_to_dev(vf->pf), "Disabling allmulticast mode succeeded\n");
++		}
++	}
++	return ret;
++}
++
  /**
-- * ice_is_any_vf_in_promisc - check if any VF(s) are in promiscuous mode
-+ * ice_is_any_vf_in_unicast_promisc - check if any VF(s)
-+ * are in unicast promiscuous mode
-  * @pf: PF structure for accessing VF(s)
-  *
-- * Return false if no VF(s) are in unicast and/or multicast promiscuous mode,
-+ * Return false if no VF(s) are in unicast promiscuous mode,
-  * else return true
-  */
--bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
-+bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf)
- {
- 	bool is_vf_promisc = false;
- 	struct ice_vf *vf;
-@@ -286,8 +287,7 @@ bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
- 	rcu_read_lock();
- 	ice_for_each_vf_rcu(pf, bkt, vf) {
- 		/* found a VF that has promiscuous mode configured */
--		if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
--		    test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) {
-+		if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states)) {
- 			is_vf_promisc = true;
- 			break;
- 		}
+  * ice_vf_set_vsi_promisc - Enable promiscuous mode for a VF VSI
+  * @vf: the VF to configure
+@@ -487,7 +554,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ 	struct ice_vsi *vsi;
+ 	struct device *dev;
+ 	struct ice_hw *hw;
+-	u8 promisc_m;
+ 	int err = 0;
+ 	bool rsd;
+ 
+@@ -554,16 +620,7 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ 	/* disable promiscuous modes in case they were enabled
+ 	 * ignore any error if disabling process failed
+ 	 */
+-	if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
+-	    test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) {
+-		if (ice_vf_is_port_vlan_ena(vf) || vsi->num_vlan)
+-			promisc_m = ICE_UCAST_VLAN_PROMISC_BITS;
+-		else
+-			promisc_m = ICE_UCAST_PROMISC_BITS;
+-
+-		if (ice_vf_clear_vsi_promisc(vf, vsi, promisc_m))
+-			dev_err(dev, "disabling promiscuous mode failed\n");
+-	}
++	ice_vf_clear_all_promisc_modes(vf, vsi);
+ 
+ 	ice_eswitch_del_vf_mac_rule(vf);
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.h b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-index 1b4380d6d949..1acb35c9ff01 100644
+index 1acb35c9ff01..52bd9a3816bf 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_lib.h
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-@@ -214,7 +214,7 @@ struct ice_vsi *ice_get_vf_vsi(struct ice_vf *vf);
- bool ice_is_vf_disabled(struct ice_vf *vf);
+@@ -215,6 +215,9 @@ bool ice_is_vf_disabled(struct ice_vf *vf);
  int ice_check_vf_ready_for_cfg(struct ice_vf *vf);
  void ice_set_vf_state_qs_dis(struct ice_vf *vf);
--bool ice_is_any_vf_in_promisc(struct ice_pf *pf);
-+bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf);
+ bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf);
++void
++ice_vf_get_promisc_masks(struct ice_vf *vf, struct ice_vsi *vsi,
++			 u8 *ucast_m, u8 *mcast_m);
  int
  ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
  int
-@@ -260,7 +260,7 @@ static inline void ice_set_vf_state_qs_dis(struct ice_vf *vf)
- {
- }
- 
--static inline bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
-+static inline bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf)
- {
- 	return false;
- }
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index b2b5d2ee83a5..47ce713274cf 100644
+index 47ce713274cf..d46786cdc162 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -999,6 +999,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 	int mcast_err = 0, ucast_err = 0;
- 	struct ice_pf *pf = vf->pf;
- 	struct ice_vsi *vsi;
-+	u8 mcast_m, ucast_m;
- 	struct device *dev;
- 	int ret = 0;
- 
-@@ -1045,39 +1046,40 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+@@ -1046,14 +1046,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
  		goto error_param;
  	}
  
-+	if (ice_vf_is_port_vlan_ena(vf) ||
-+	    ice_vsi_has_non_zero_vlans(vsi)) {
-+		mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
-+		ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
-+	} else {
-+		mcast_m = ICE_MCAST_PROMISC_BITS;
-+		ucast_m = ICE_UCAST_PROMISC_BITS;
-+	}
-+
+-	if (ice_vf_is_port_vlan_ena(vf) ||
+-	    ice_vsi_has_non_zero_vlans(vsi)) {
+-		mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
+-		ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
+-	} else {
+-		mcast_m = ICE_MCAST_PROMISC_BITS;
+-		ucast_m = ICE_UCAST_PROMISC_BITS;
+-	}
++	ice_vf_get_promisc_masks(vf, vsi, &ucast_m, &mcast_m);
+ 
  	if (!test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags)) {
--		bool set_dflt_vsi = alluni || allmulti;
-+		if (alluni) {
-+			/* in this case we're turning on promiscuous mode */
-+			ret = ice_set_dflt_vsi(vsi);
-+		} else {
-+			/* in this case we're turning off promiscuous mode */
-+			if (ice_is_dflt_vsi_in_use(vsi->port_info))
-+				ret = ice_clear_dflt_vsi(vsi);
-+		}
- 
--		if (set_dflt_vsi && !ice_is_dflt_vsi_in_use(pf->first_sw))
--			/* only attempt to set the default forwarding VSI if
--			 * it's not currently set
--			 */
--			ret = ice_set_dflt_vsi(pf->first_sw, vsi);
--		else if (!set_dflt_vsi &&
--			 ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
--			/* only attempt to free the default forwarding VSI if we
--			 * are the owner
--			 */
--			ret = ice_clear_dflt_vsi(pf->first_sw);
-+		/* in this case we're turning on/off only
-+		 * allmulticast
-+		 */
-+		if (allmulti)
-+			mcast_err = ice_vf_set_vsi_promisc(vf, vsi, mcast_m);
-+		else
-+			mcast_err = ice_vf_clear_vsi_promisc(vf, vsi, mcast_m);
- 
- 		if (ret) {
--			dev_err(dev, "%sable VF %d as the default VSI failed, error %d\n",
--				set_dflt_vsi ? "en" : "dis", vf->vf_id, ret);
-+			dev_err(dev, "Turning on/off promiscuous mode for VF %d failed, error: %d\n",
-+				vf->vf_id, ret);
- 			v_ret = VIRTCHNL_STATUS_ERR_ADMIN_QUEUE_ERROR;
- 			goto error_param;
- 		}
- 	} else {
--		u8 mcast_m, ucast_m;
--
--		if (ice_vf_is_port_vlan_ena(vf) ||
--		    ice_vsi_has_non_zero_vlans(vsi)) {
--			mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
--			ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
--		} else {
--			mcast_m = ICE_MCAST_PROMISC_BITS;
--			ucast_m = ICE_UCAST_PROMISC_BITS;
--		}
--
- 		if (alluni)
- 			ucast_err = ice_vf_set_vsi_promisc(vf, vsi, ucast_m);
- 		else
-@@ -1102,6 +1104,9 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 					    vf->vf_states))
- 			dev_info(dev, "VF %u successfully unset multicast promiscuous mode\n",
- 				 vf->vf_id);
-+	} else {
-+		dev_err(dev, "Error while modifying multicast promiscuous mode for VF %u, error: %d\n",
-+			vf->vf_id, mcast_err);
- 	}
- 
- 	if (!ucast_err) {
-@@ -1114,6 +1119,9 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 					    vf->vf_states))
- 			dev_info(dev, "VF %u successfully unset unicast promiscuous mode\n",
- 				 vf->vf_id);
-+	} else {
-+		dev_err(dev, "Error while modifying unicast promiscuous mode for VF %u, error: %d\n",
-+			vf->vf_id, ucast_err);
- 	}
- 
- error_param:
+ 		if (alluni) {
 -- 
 2.35.1
 
