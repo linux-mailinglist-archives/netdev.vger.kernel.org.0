@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BEC8584680
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:34:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7CF58466E
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbiG1S7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S231610AbiG1S7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232681AbiG1S67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:58:59 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2052.outbound.protection.outlook.com [40.107.94.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F547645D
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:58:52 -0700 (PDT)
+        with ESMTP id S232332AbiG1S64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:58:56 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2D27646E
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:58:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P1LzbYlAhsEiD1Kz7ipAVRvkCVNYwDpcfTAS/cAweg6QpbGfxmYbn8E/zeeeknJLMGM7EPibe5SLZfSLQV9D5gyCKty5u9vCPwIa4jnPGsN7W5ZWWloJNJgwUObgIwWrtzqPfpZhbVDzUKmHGCfZoW2ipfNfUxEQ2F/vSUM57COGQPVKhZktw0X49rangqHDlHrjnVPfOw9ba/J2WBzmY0fMpG0YwIE06hhmg32APGO2GIgQ+XAW+6enCSxFl2UHYaBa5OJGG3rQp9+YtHEBec/+7bwY2qntFxVBQGx3zehHTLY/T6zpmgMnEA98ySQ+PsHvEpWHzW7oD/GAGvtJww==
+ b=Obxew2N7ashHVPce8P3pLgXsvCsSkjLRjlerAAKYAZao1fulPWU4ROr8VEsFa6ma3BZnOE/eImgKpk2yNRA1kJm49B3Ar6knogLeRmgvVxRIxKIfNWx1gRMi10F1FM8dOrqDSf4E7VD02zG5Tc3gNz68oYzDxGP7hOXZp9r6I4Sx0TAy7xXXkguwsbXJ+ITRpYu/PmaBgwAGhyz5FxV/1IgztclU0I1PNVsH4ihQVly2gCO5PfHKKFGtjC4aN1pEzhN+Vg/YjWvvfeHIBBNPlb8YKaCRoDA52PF2ihggiDc/rFgX+wH2GF4hHAkc4DPCurtzi634rLVLmaSmgAk46Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nh1OfmGAQFZNa3emMqCs8K34bnNisgd/RXB3eEa2bV4=;
- b=RxQQfWYDwpyVn9uQQH4z8uNIH+ewvz2Fp7DeJw3HzAHgPQkUXbD6vPYejG33hN5c5UK3ak8gIovSMgbvPuddThnZrmrR4WAqgxRiyMmGnhHEcj8aT9P38hYP7IBNcJqvBV+MdkWIPCNGbTBkMFIKkq3nJoJeLwJtE7rrvwmaJzrVc3B/eBQMzpfigO1uPYcnZ2W4mnYTYuW9jJlOzVamPzmpH+0FcMRWUNmXuWHK6SyouZKTn5VR0WotS/vWXI6nDwSkaBtzdUc1N1NNDSEGgaBtTSph1mfT9IvrsK/uz+zKC+ohGfj516t1lZfn9jxNqdEWN1LZIvvg0UXiW/mvhg==
+ bh=t4W+4odoY71AQ9d30OzFH807MgvxUuKYI8TjDvPkgYY=;
+ b=DCebOCwEEe9KbS7YzWEaxZk4MbhaPve7XZL7vtzHQqWa5pQTugMAzYOM9NO5avXx8tgooYSJDr5FihfjnfERYMcX5hIowCCYqwLxa1rPqa+Zw4nEvhTKRPvlOC0pdnJXoVV+hPXIP/mVCQdIAQz21fySZBhmmiYUqSG0qGayDLLgvQxMlJdGMLxcYNOAkdJOXKKO071JvOf0u8QyMvvzy/UuYQQVi9dYB2AeEqNi92PUkLZ6N6ipaVzaJp3KVtBURYUkpoMpBOB7LxCQl7bm9YFbjHe8Y+TARzYY8qjayvYT8fsVnTvdV87zKLh93KQewQf7dPJcq4GmGHHkN2YVrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -28,47 +28,47 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nh1OfmGAQFZNa3emMqCs8K34bnNisgd/RXB3eEa2bV4=;
- b=v8P7WGDG5OUjxynWTwtz1k2XmUplEj9rtDwpdKGudDa6VRfMiA4FPSA0OhZUT4/cY/O06fuy6k1QSCmZoeNT8QjQveDkkjP8RVVpL0mL8CzW9LcpwUeIhxp+VSV/DeIxlVLfa4GMEzPJN6BDpfwENKQqBYrOgxXOdHmv/vNYoeKMCh0ureiR/4bhrQI4vncX6IDdXrSVkQu8DVIRAmvkEjxjKQ/7Or1g7jFbgXI+noVIn+jWpSV4jjqSGGWvubfx0PB4bRPDE4B54YZWxok43aUwTi0fflp3fMCxKQfFPRNPX1+Oo2LcV/ryXHEu/wzvrcFz0QTQlBkSEZuMmOyUxQ==
-Received: from BN9PR03CA0428.namprd03.prod.outlook.com (2603:10b6:408:113::13)
- by MW4PR12MB5603.namprd12.prod.outlook.com (2603:10b6:303:16a::17) with
+ bh=t4W+4odoY71AQ9d30OzFH807MgvxUuKYI8TjDvPkgYY=;
+ b=B5QKO/w/hJyjK9U4oaBunNEdIH3JVu1tv8ST4G1bpsnmiMONJLayJfag1Ys+TBM4wgabd6jtGNxxpQU69lTgzSsBDtk0/g3H+FxTxh6kEUwFVhC6QjporUlS4R8v37s1IbbAXSQ5UYZ3YSS0TPzBfsxD5dTwIgYNr3ClSYgxyl6mzDM3M6dRKIgsAw+G6hAg/XJe68WIBgLkHb/vS6jiQctkIHsMFK4BHDnkTjyJOZnd+tSxiPwVsUFS0/61pqi0M0UqSeyS6aXQrAlXr20tE1DvG2RjRAzKB9xQn8B4ju9j7KuluiHfWI29j07/hvVOvsO8uQjjsEDyEod/5cxbfw==
+Received: from BN8PR04CA0038.namprd04.prod.outlook.com (2603:10b6:408:d4::12)
+ by PH8PR12MB6964.namprd12.prod.outlook.com (2603:10b6:510:1bf::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.25; Thu, 28 Jul
  2022 18:58:48 +0000
-Received: from BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:113:cafe::19) by BN9PR03CA0428.outlook.office365.com
- (2603:10b6:408:113::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.24 via Frontend
+Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:d4:cafe::59) by BN8PR04CA0038.outlook.office365.com
+ (2603:10b6:408:d4::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
  Transport; Thu, 28 Jul 2022 18:58:48 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT065.mail.protection.outlook.com (10.13.177.63) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 18:58:47 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 18:58:48 +0000
+Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 28 Jul
- 2022 13:58:46 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 13:58:47 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
+ (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 28 Jul
- 2022 11:58:45 -0700
+ 2022 11:58:47 -0700
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Thu, 28 Jul 2022 13:58:44 -0500
+ Transport; Thu, 28 Jul 2022 13:58:46 -0500
 From:   <ecree@xilinx.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <linux-net-drivers@amd.com>
 CC:     <netdev@vger.kernel.org>, Edward Cree <ecree.xilinx@gmail.com>
-Subject: [PATCH net-next v3 07/10] sfc: insert default MAE rules to connect VFs to representors
-Date:   Thu, 28 Jul 2022 19:57:49 +0100
-Message-ID: <c8ef4569f3b109371c5e68791c591f0ca3c7a52a.1659034549.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next v3 08/10] sfc: move table locking into filter_table_{probe,remove} methods
+Date:   Thu, 28 Jul 2022 19:57:50 +0100
+Message-ID: <68c21e41ad5193b60939ce1cf40faa6b97bd04b2.1659034549.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1659034549.git.ecree.xilinx@gmail.com>
 References: <cover.1659034549.git.ecree.xilinx@gmail.com>
@@ -77,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 64f52c55-d3f0-41cc-9390-08da70cb3399
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5603:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62cdf517-2c62-4dea-fee3-08da70cb341f
+X-MS-TrafficTypeDiagnostic: PH8PR12MB6964:EE_
 X-MS-Exchange-SenderADCheck: 0
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j35g4/W96uA6udpj5v8s2bn09RaWHgcHx81yDkLUJPZIG1eJqDViioPFAeZHyiHs03qH2+bnY2kYLqoCiFIQWu/IOemHHVSnYONHM8FKTutoNLxYsnd0yeN4+eSIh8nfBfeUAvHWH3N8YyE4NT915HrFGBhOKPweynLM0h8A6afzWpGaEoYjGWemCuEgiJKYvNlqOSoaBM+7b+xluXxiXlsGRYYoPnTgDIjOQgHYYmjcOW+QnCMY6xJRGMdDYaojmUW0DWNA4uespALaKSik5zFE++DKK3uhw3MlHgBTuNC3GH5EfJN8C3Q7trCAs+l0ZW6UxLPg61meb0yv0GELum+AT/EMKzb5JCHbANsbXQ80BVlpXT/0Wbi/kK/VkDCRCI+miyL8eP6gDRRNxVyHKSxIe8j600WKQqnjFkU8fgLE7J8fXI7XXTk00PzCfZIAPSGa1jfCH56xxqqn2THCal6SE1X+JspkAMLwlZ75csOQZAyDy9MlMQs1WA6nh0HHcd0vz1zmg0mqolv5AzZ4S7/lc1Q39rNcZfVzfAgKBCq0s8kfjfm2/rHiqp0QG45nu5ijF5q4Rf/txzP/mXoJe0hogY7AYhkQAmTFAot9MES8E27nt/RqUcPfjwiDgb/TAuspZ1xoSm11buVwwjJkQ3fxhc+QPqfCgw/4aa3Gg4zUclvifnHzc3MlL82EVmkak7139+2tm1vm4YvxT1CWphwZJWMqC04Md36kBxPJrjymo619kZn+PUxDsZdH9/pc8PtZXBS31Kq8Jl15nDJc0gd2ZGBUT0LOgbxKKPEq1acqeAAKRjeQ5gB4ZA0FS7dmDyb+H0F1QxQSxgtBQLFAtGF0Bt99N8P2fn1WqMuKR28=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(136003)(396003)(36840700001)(40470700004)(46966006)(186003)(336012)(54906003)(110136005)(356005)(9686003)(30864003)(41300700001)(47076005)(26005)(42882007)(2906002)(2876002)(83380400001)(55446002)(36756003)(70206006)(40480700001)(5660300002)(83170400001)(316002)(478600001)(82310400005)(82740400003)(8676002)(81166007)(70586007)(40460700003)(4326008)(8936002)(36860700001)(2004002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Lqtw6HIVqiiZi6DMq0AULIKc6koe+hvYVNfQCx4QLgf04xRefi506/CuZ3xWZNb56c3AGDIrPQ2oBKA7UcQme3kMqTomrJvlqzAZ+HAYpzRf+Q76QSDB3L1lA6oagwP4qTOa6WVGbkEElIdq5Dkayvl2tbNdy/WMfUcdGZ8hxg3Eyfd+nKt9u9nPB/egh5xaPHBoeetnRnP5ExC/wPEH3ubv5BFZfyjqm9lDOwPU5pf5oILai5HyE2mrQcupNFrTeSJ50OA7EBzA8p1IK8ZOc6s4r5NAT8XFCQBtB2GodtVmoLmCbuAw1u0gnRmZhrB1fpM2GMu5xXzlP9Z4aXOSQxYa/dEaXn6D/8JQcwLxWJIlJzySWbhhrv6JnyElcizyqgQ3eJ/ECv/SS9lBiHHXBN/ZBVUuVWthL2+KJZ2A08lrA6T2tBxitNz3NqO4WJ3sTPbBlhL9zZl8kOSp/04LBwBMH/FFcuz7sGVvwi1lBzvNGt/JX/A6j8uT8JAcgD/QP1cggayLyWP+u2xQtxA4yaEZ6GLaTLL/DNpO3xDu2uELEDmndHiDJeLxq8oB/jYTm2+xGF7sQ3xwVnSqgwWJVjOiOELy0c8OUl/lKCFfhTMownqGLOMTATZsqZnJdMZ/nfZgXoXUEMXknafLTj1ZE4p7+jH7JPKb4/5bCV0pBrogir1ffGCBFKiibH+LJwyq9JWgSZshSLUBOIqORiba4gy/sYVCLVQma89bhKCmqBYApda8n4yJR9bqrBtoilSHSbeMOpKZ/gdfJg9jE/bf8GBadJjkZHDm5g7Ey2QgWqj8KQh6+6SPKWzEEioVZKGjvwGpgWb8q9SKs7WvLkWOKA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(136003)(346002)(40470700004)(46966006)(36840700001)(41300700001)(70586007)(70206006)(82310400005)(40460700003)(478600001)(8676002)(6666004)(81166007)(5660300002)(82740400003)(356005)(4326008)(8936002)(83170400001)(2876002)(110136005)(36756003)(2906002)(47076005)(55446002)(186003)(83380400001)(36860700001)(42882007)(316002)(26005)(9686003)(54906003)(40480700001)(336012)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 18:58:47.2096
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 18:58:48.0436
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64f52c55-d3f0-41cc-9390-08da70cb3399
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62cdf517-2c62-4dea-fee3-08da70cb341f
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5603
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6964
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
@@ -106,861 +106,254 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-Default rules are low-priority switching rules which the hardware uses
- in the absence of higher-priority rules.  Each representor requires a
- corresponding rule matching traffic from its representee VF and
- delivering to the PF (where a check on INGRESS_MPORT in
- __ef100_rx_packet() will direct it to the representor).  No rule is
- required in the reverse direction, because representor TX uses a TX
- override descriptor to bypass the MAE and deliver directly to the VF.
-Since inserting any rule into the MAE disables the firmware's own
- default rules, also insert a pair of rules to connect the PF to the
- physical network port and vice-versa.
+We need to be able to drop the efx->filter_sem in ef100_filter_table_up()
+ so that we can call functions that insert filters (and thus take that
+ rwsem for read), which means the efx->type->filter_table_probe method
+ needs to be responsible for taking the lock in the first place.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/Makefile        |   3 +-
- drivers/net/ethernet/sfc/ef100.c         |   3 +
- drivers/net/ethernet/sfc/ef100_netdev.c  |   4 +
- drivers/net/ethernet/sfc/ef100_nic.c     |  17 ++
- drivers/net/ethernet/sfc/ef100_rep.c     |  20 +-
- drivers/net/ethernet/sfc/ef100_rep.h     |   3 +
- drivers/net/ethernet/sfc/mae.c           | 257 ++++++++++++++++++++++-
- drivers/net/ethernet/sfc/mae.h           |  16 ++
- drivers/net/ethernet/sfc/mcdi.h          |   4 +
- drivers/net/ethernet/sfc/mcdi_pcol_mae.h |  24 +++
- drivers/net/ethernet/sfc/net_driver.h    |   2 +
- drivers/net/ethernet/sfc/tc.c            | 183 ++++++++++++++++
- drivers/net/ethernet/sfc/tc.h            |  76 +++++++
- 13 files changed, 606 insertions(+), 6 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/mcdi_pcol_mae.h
- create mode 100644 drivers/net/ethernet/sfc/tc.c
- create mode 100644 drivers/net/ethernet/sfc/tc.h
+ drivers/net/ethernet/sfc/ef10.c         | 26 ++++++++++++++-----------
+ drivers/net/ethernet/sfc/ef100_nic.c    | 22 +++++++++++++--------
+ drivers/net/ethernet/sfc/ef10_sriov.c   | 16 +++------------
+ drivers/net/ethernet/sfc/mcdi_filters.h |  1 +
+ drivers/net/ethernet/sfc/rx_common.c    |  4 ----
+ 5 files changed, 33 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-index 4c759488fc77..bb06fa228367 100644
---- a/drivers/net/ethernet/sfc/Makefile
-+++ b/drivers/net/ethernet/sfc/Makefile
-@@ -8,7 +8,8 @@ sfc-y			+= efx.o efx_common.o efx_channels.o nic.o \
- 			   ef100.o ef100_nic.o ef100_netdev.o \
- 			   ef100_ethtool.o ef100_rx.o ef100_tx.o
- sfc-$(CONFIG_SFC_MTD)	+= mtd.o
--sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o mae.o
-+sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \
-+                           mae.o tc.o
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index ab979fd11133..ee734b69150f 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2538,23 +2538,33 @@ static int efx_ef10_filter_table_probe(struct efx_nic *efx)
  
- obj-$(CONFIG_SFC)	+= sfc.o
+ 	if (rc)
+ 		return rc;
++	down_write(&efx->filter_sem);
+ 	rc = efx_mcdi_filter_table_probe(efx, nic_data->workaround_26807);
  
-diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index 425017fbcb25..71aab3d0480f 100644
---- a/drivers/net/ethernet/sfc/ef100.c
-+++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -431,6 +431,9 @@ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ 	if (rc)
+-		return rc;
++		goto out_unlock;
  
- 	probe_data = container_of(efx, struct efx_probe_data, efx);
- 	ef100_remove_netdev(probe_data);
-+#ifdef CONFIG_SFC_SRIOV
-+	efx_fini_struct_tc(efx);
-+#endif
- 
- 	ef100_remove(efx);
- 	efx_fini_io(efx);
-diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-index 9e65de1ab889..17b9d37218cb 100644
---- a/drivers/net/ethernet/sfc/ef100_netdev.c
-+++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-@@ -329,6 +329,10 @@ void ef100_remove_netdev(struct efx_probe_data *probe_data)
- 
- 	ef100_unregister_netdev(efx);
- 
-+#ifdef CONFIG_SFC_SRIOV
-+	efx_fini_tc(efx);
-+#endif
-+
- 	down_write(&efx->filter_sem);
- 	efx_mcdi_filter_table_remove(efx);
- 	up_write(&efx->filter_sem);
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 393d6ca4525c..25cd43e3fcf7 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -1094,12 +1094,29 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
- 		return 0;
- 
- #ifdef CONFIG_SFC_SRIOV
-+	rc = efx_init_struct_tc(efx);
-+	if (rc)
-+		return rc;
-+
- 	rc = efx_ef100_get_base_mport(efx);
- 	if (rc) {
- 		netif_warn(efx, probe, net_dev,
- 			   "Failed to probe base mport rc %d; representors will not function\n",
- 			   rc);
+ 	list_for_each_entry(vlan, &nic_data->vlan_list, list) {
+ 		rc = efx_mcdi_filter_add_vlan(efx, vlan->vid);
+ 		if (rc)
+ 			goto fail_add_vlan;
  	}
-+
-+	rc = efx_init_tc(efx);
-+	if (rc) {
-+		/* Either we don't have an MAE at all (i.e. legacy v-switching),
-+		 * or we do but we failed to probe it.  In the latter case, we
-+		 * may not have set up default rules, in which case we won't be
-+		 * able to pass any traffic.  However, we don't fail the probe,
-+		 * because the user might need to use the netdevice to apply
-+		 * configuration changes to fix whatever's wrong with the MAE.
-+		 */
-+		netif_warn(efx, probe, net_dev, "Failed to probe MAE rc %d\n",
-+			   rc);
-+	}
- #endif
- 	return 0;
- 
-diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
-index c0bc12b9e348..eac932710c63 100644
---- a/drivers/net/ethernet/sfc/ef100_rep.c
-+++ b/drivers/net/ethernet/sfc/ef100_rep.c
-@@ -27,6 +27,8 @@ static int efx_ef100_rep_init_struct(struct efx_nic *efx, struct efx_rep *efv,
- 	efv->parent = efx;
- 	efv->idx = i;
- 	INIT_LIST_HEAD(&efv->list);
-+	efv->dflt.fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
-+	INIT_LIST_HEAD(&efv->dflt.acts.list);
- 	INIT_LIST_HEAD(&efv->rx_list);
- 	spin_lock_init(&efv->rx_lock);
- 	efv->msg_enable = NETIF_MSG_DRV | NETIF_MSG_PROBE |
-@@ -212,7 +214,14 @@ static int efx_ef100_configure_rep(struct efx_rep *efv)
- 	/* mport label should fit in 16 bits */
- 	WARN_ON(efv->mport >> 16);
- 
 -	return 0;
-+	return efx_tc_configure_default_rule_rep(efv);
-+}
-+
-+static void efx_ef100_deconfigure_rep(struct efx_rep *efv)
-+{
-+	struct efx_nic *efx = efv->parent;
-+
-+	efx_tc_deconfigure_default_rule(efx, &efv->dflt);
- }
++	goto out_unlock;
  
- static void efx_ef100_rep_destroy_netdev(struct efx_rep *efv)
-@@ -246,19 +255,21 @@ int efx_ef100_vfrep_create(struct efx_nic *efx, unsigned int i)
- 		pci_err(efx->pci_dev,
- 			"Failed to configure representor for VF %d, rc %d\n",
- 			i, rc);
--		goto fail;
-+		goto fail1;
- 	}
- 	rc = register_netdev(efv->net_dev);
- 	if (rc) {
- 		pci_err(efx->pci_dev,
- 			"Failed to register representor for VF %d, rc %d\n",
- 			i, rc);
--		goto fail;
-+		goto fail2;
- 	}
- 	pci_dbg(efx->pci_dev, "Representor for VF %d is %s\n", i,
- 		efv->net_dev->name);
- 	return 0;
--fail:
-+fail2:
-+	efx_ef100_deconfigure_rep(efv);
-+fail1:
- 	efx_ef100_rep_destroy_netdev(efv);
+ fail_add_vlan:
+ 	efx_mcdi_filter_table_remove(efx);
++out_unlock:
++	up_write(&efx->filter_sem);
  	return rc;
  }
-@@ -272,6 +283,7 @@ void efx_ef100_vfrep_destroy(struct efx_nic *efx, struct efx_rep *efv)
- 		return;
- 	netif_dbg(efx, drv, rep_dev, "Removing VF representor\n");
- 	unregister_netdev(rep_dev);
-+	efx_ef100_deconfigure_rep(efv);
- 	efx_ef100_rep_destroy_netdev(efv);
- }
  
-diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
-index f3787133f793..070f700893c1 100644
---- a/drivers/net/ethernet/sfc/ef100_rep.h
-+++ b/drivers/net/ethernet/sfc/ef100_rep.h
-@@ -14,6 +14,7 @@
- #define EF100_REP_H
- 
- #include "net_driver.h"
-+#include "tc.h"
- 
- struct efx_rep_sw_stats {
- 	atomic64_t rx_packets, tx_packets;
-@@ -32,6 +33,7 @@ struct efx_rep_sw_stats {
-  * @write_index: number of packets enqueued to @rx_list
-  * @read_index: number of packets consumed from @rx_list
-  * @rx_pring_size: max length of RX list
-+ * @dflt: default-rule for MAE switching
-  * @list: entry on efx->vf_reps
-  * @rx_list: list of SKBs queued for receive in NAPI poll
-  * @rx_lock: protects @rx_list
-@@ -46,6 +48,7 @@ struct efx_rep {
- 	unsigned int idx;
- 	unsigned int write_index, read_index;
- 	unsigned int rx_pring_size;
-+	struct efx_tc_flow_rule dflt;
- 	struct list_head list;
- 	struct list_head rx_list;
- 	spinlock_t rx_lock;
-diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-index 0cbcadde6677..ea87ec83e618 100644
---- a/drivers/net/ethernet/sfc/mae.c
-+++ b/drivers/net/ethernet/sfc/mae.c
-@@ -11,7 +11,7 @@
- 
- #include "mae.h"
- #include "mcdi.h"
--#include "mcdi_pcol.h"
-+#include "mcdi_pcol_mae.h"
- 
- void efx_mae_mport_wire(struct efx_nic *efx, u32 *out)
- {
-@@ -23,6 +23,17 @@ void efx_mae_mport_wire(struct efx_nic *efx, u32 *out)
- 	*out = EFX_DWORD_VAL(mport);
- }
- 
-+void efx_mae_mport_uplink(struct efx_nic *efx __always_unused, u32 *out)
++static void efx_ef10_filter_table_remove(struct efx_nic *efx)
 +{
-+	efx_dword_t mport;
-+
-+	EFX_POPULATE_DWORD_3(mport,
-+			     MAE_MPORT_SELECTOR_TYPE, MAE_MPORT_SELECTOR_TYPE_FUNC,
-+			     MAE_MPORT_SELECTOR_FUNC_PF_ID, MAE_MPORT_SELECTOR_FUNC_PF_ID_CALLER,
-+			     MAE_MPORT_SELECTOR_FUNC_VF_ID, MAE_MPORT_SELECTOR_FUNC_VF_ID_NULL);
-+	*out = EFX_DWORD_VAL(mport);
++	down_write(&efx->filter_sem);
++	efx_mcdi_filter_table_remove(efx);
++	up_write(&efx->filter_sem);
 +}
 +
- void efx_mae_mport_vf(struct efx_nic *efx __always_unused, u32 vf_id, u32 *out)
- {
- 	efx_dword_t mport;
-@@ -34,6 +45,17 @@ void efx_mae_mport_vf(struct efx_nic *efx __always_unused, u32 vf_id, u32 *out)
- 	*out = EFX_DWORD_VAL(mport);
- }
+ /* This creates an entry in the RX descriptor queue */
+ static inline void
+ efx_ef10_build_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
+@@ -3211,9 +3221,7 @@ static int efx_ef10_vport_set_mac_address(struct efx_nic *efx)
  
-+/* Constructs an mport selector from an mport ID, because they're not the same */
-+void efx_mae_mport_mport(struct efx_nic *efx __always_unused, u32 mport_id, u32 *out)
-+{
-+	efx_dword_t mport;
-+
-+	EFX_POPULATE_DWORD_2(mport,
-+			     MAE_MPORT_SELECTOR_TYPE, MAE_MPORT_SELECTOR_TYPE_MPORT_ID,
-+			     MAE_MPORT_SELECTOR_MPORT_ID, mport_id);
-+	*out = EFX_DWORD_VAL(mport);
-+}
-+
- /* id is really only 24 bits wide */
- int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id)
+ 	efx_device_detach_sync(efx);
+ 	efx_net_stop(efx->net_dev);
+-	down_write(&efx->filter_sem);
+-	efx_mcdi_filter_table_remove(efx);
+-	up_write(&efx->filter_sem);
++	efx_ef10_filter_table_remove(efx);
+ 
+ 	rc = efx_ef10_vadaptor_free(efx, efx->vport_id);
+ 	if (rc)
+@@ -3243,9 +3251,7 @@ static int efx_ef10_vport_set_mac_address(struct efx_nic *efx)
+ 	if (rc2)
+ 		goto reset_nic;
+ restore_filters:
+-	down_write(&efx->filter_sem);
+ 	rc2 = efx_ef10_filter_table_probe(efx);
+-	up_write(&efx->filter_sem);
+ 	if (rc2)
+ 		goto reset_nic;
+ 
+@@ -3275,8 +3281,7 @@ static int efx_ef10_set_mac_address(struct efx_nic *efx)
+ 	efx_net_stop(efx->net_dev);
+ 
+ 	mutex_lock(&efx->mac_lock);
+-	down_write(&efx->filter_sem);
+-	efx_mcdi_filter_table_remove(efx);
++	efx_ef10_filter_table_remove(efx);
+ 
+ 	ether_addr_copy(MCDI_PTR(inbuf, VADAPTOR_SET_MAC_IN_MACADDR),
+ 			efx->net_dev->dev_addr);
+@@ -3286,7 +3291,6 @@ static int efx_ef10_set_mac_address(struct efx_nic *efx)
+ 				sizeof(inbuf), NULL, 0, NULL);
+ 
+ 	efx_ef10_filter_table_probe(efx);
+-	up_write(&efx->filter_sem);
+ 	mutex_unlock(&efx->mac_lock);
+ 
+ 	if (was_enabled)
+@@ -4092,7 +4096,7 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
+ 	.ev_test_generate = efx_ef10_ev_test_generate,
+ 	.filter_table_probe = efx_ef10_filter_table_probe,
+ 	.filter_table_restore = efx_mcdi_filter_table_restore,
+-	.filter_table_remove = efx_mcdi_filter_table_remove,
++	.filter_table_remove = efx_ef10_filter_table_remove,
+ 	.filter_update_rx_scatter = efx_mcdi_update_rx_scatter,
+ 	.filter_insert = efx_mcdi_filter_insert,
+ 	.filter_remove_safe = efx_mcdi_filter_remove_safe,
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 25cd43e3fcf7..5fe18b383e20 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -375,26 +375,32 @@ static int ef100_filter_table_up(struct efx_nic *efx)
  {
-@@ -52,3 +74,236 @@ int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id)
- 	*id = MCDI_DWORD(outbuf, MAE_MPORT_LOOKUP_OUT_MPORT_ID);
- 	return 0;
- }
-+
-+static bool efx_mae_asl_id(u32 id)
-+{
-+	return !!(id & BIT(31));
-+}
-+
-+int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_ALLOC_OUT_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_SET_ALLOC_IN_LEN);
-+	size_t outlen;
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_SRC_MAC_ID,
-+		       MC_CMD_MAE_MAC_ADDR_ALLOC_OUT_MAC_ID_NULL);
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_DST_MAC_ID,
-+		       MC_CMD_MAE_MAC_ADDR_ALLOC_OUT_MAC_ID_NULL);
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_COUNTER_ID,
-+		       MC_CMD_MAE_COUNTER_ALLOC_OUT_COUNTER_ID_NULL);
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_COUNTER_LIST_ID,
-+		       MC_CMD_MAE_COUNTER_LIST_ALLOC_OUT_COUNTER_LIST_ID_NULL);
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_ENCAP_HEADER_ID,
-+		       MC_CMD_MAE_ENCAP_HEADER_ALLOC_OUT_ENCAP_HEADER_ID_NULL);
-+	if (act->deliver)
-+		MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_DELIVER,
-+			       act->dest_mport);
-+	BUILD_BUG_ON(MAE_MPORT_SELECTOR_NULL);
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_SET_ALLOC, inbuf, sizeof(inbuf),
-+			  outbuf, sizeof(outbuf), &outlen);
+ 	int rc;
+ 
++	down_write(&efx->filter_sem);
+ 	rc = efx_mcdi_filter_add_vlan(efx, EFX_FILTER_VID_UNSPEC);
+-	if (rc) {
+-		efx_mcdi_filter_table_down(efx);
+-		return rc;
+-	}
 +	if (rc)
-+		return rc;
-+	if (outlen < sizeof(outbuf))
-+		return -EIO;
-+	act->fw_id = MCDI_DWORD(outbuf, MAE_ACTION_SET_ALLOC_OUT_AS_ID);
-+	/* We rely on the high bit of AS IDs always being clear.
-+	 * The firmware API guarantees this, but let's check it ourselves.
-+	 */
-+	if (WARN_ON_ONCE(efx_mae_asl_id(act->fw_id))) {
-+		efx_mae_free_action_set(efx, act->fw_id);
-+		return -EIO;
-+	}
++		goto fail_unspec;
+ 
+ 	rc = efx_mcdi_filter_add_vlan(efx, 0);
+-	if (rc) {
+-		efx_mcdi_filter_del_vlan(efx, EFX_FILTER_VID_UNSPEC);
+-		efx_mcdi_filter_table_down(efx);
+-	}
++	if (rc)
++		goto fail_vlan0;
++	up_write(&efx->filter_sem);
 +	return 0;
-+}
-+
-+int efx_mae_free_action_set(struct efx_nic *efx, u32 fw_id)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_FREE_OUT_LEN(1));
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_SET_FREE_IN_LEN(1));
-+	size_t outlen;
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_FREE_IN_AS_ID, fw_id);
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_SET_FREE, inbuf, sizeof(inbuf),
-+			  outbuf, sizeof(outbuf), &outlen);
-+	if (rc)
-+		return rc;
-+	if (outlen < sizeof(outbuf))
-+		return -EIO;
-+	/* FW freed a different ID than we asked for, should never happen.
-+	 * Warn because it means we've now got a different idea to the FW of
-+	 * what action-sets exist, which could cause mayhem later.
-+	 */
-+	if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_SET_FREE_OUT_FREED_AS_ID) != fw_id))
-+		return -EIO;
-+	return 0;
-+}
-+
-+int efx_mae_alloc_action_set_list(struct efx_nic *efx,
-+				  struct efx_tc_action_set_list *acts)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_LEN);
-+	struct efx_tc_action_set *act;
-+	size_t inlen, outlen, i = 0;
-+	efx_dword_t *inbuf;
-+	int rc;
-+
-+	list_for_each_entry(act, &acts->list, list)
-+		i++;
-+	if (i == 0)
-+		return -EINVAL;
-+	if (i == 1) {
-+		/* Don't wrap an ASL around a single AS, just use the AS_ID
-+		 * directly.  ASLs are a more limited resource.
-+		 */
-+		act = list_first_entry(&acts->list, struct efx_tc_action_set, list);
-+		acts->fw_id = act->fw_id;
-+		return 0;
-+	}
-+	if (i > MC_CMD_MAE_ACTION_SET_LIST_ALLOC_IN_AS_IDS_MAXNUM_MCDI2)
-+		return -EOPNOTSUPP; /* Too many actions */
-+	inlen = MC_CMD_MAE_ACTION_SET_LIST_ALLOC_IN_LEN(i);
-+	inbuf = kzalloc(inlen, GFP_KERNEL);
-+	if (!inbuf)
-+		return -ENOMEM;
-+	i = 0;
-+	list_for_each_entry(act, &acts->list, list) {
-+		MCDI_SET_ARRAY_DWORD(inbuf, MAE_ACTION_SET_LIST_ALLOC_IN_AS_IDS,
-+				     i, act->fw_id);
-+		i++;
-+	}
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_LIST_ALLOC_IN_COUNT, i);
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_SET_LIST_ALLOC, inbuf, inlen,
-+			  outbuf, sizeof(outbuf), &outlen);
-+	if (rc)
-+		goto out_free;
-+	if (outlen < sizeof(outbuf)) {
-+		rc = -EIO;
-+		goto out_free;
-+	}
-+	acts->fw_id = MCDI_DWORD(outbuf, MAE_ACTION_SET_LIST_ALLOC_OUT_ASL_ID);
-+	/* We rely on the high bit of ASL IDs always being set.
-+	 * The firmware API guarantees this, but let's check it ourselves.
-+	 */
-+	if (WARN_ON_ONCE(!efx_mae_asl_id(acts->fw_id))) {
-+		efx_mae_free_action_set_list(efx, acts);
-+		rc = -EIO;
-+	}
-+out_free:
-+	kfree(inbuf);
-+	return rc;
-+}
-+
-+int efx_mae_free_action_set_list(struct efx_nic *efx,
-+				 struct efx_tc_action_set_list *acts)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_LIST_FREE_OUT_LEN(1));
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_SET_LIST_FREE_IN_LEN(1));
-+	size_t outlen;
-+	int rc;
-+
-+	/* If this is just an AS_ID with no ASL wrapper, then there is
-+	 * nothing for us to free.  (The AS will be freed later.)
-+	 */
-+	if (efx_mae_asl_id(acts->fw_id)) {
-+		MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_LIST_FREE_IN_ASL_ID,
-+			       acts->fw_id);
-+		rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_SET_LIST_FREE, inbuf,
-+				  sizeof(inbuf), outbuf, sizeof(outbuf), &outlen);
+ 
++fail_vlan0:
++	efx_mcdi_filter_del_vlan(efx, EFX_FILTER_VID_UNSPEC);
++fail_unspec:
++	efx_mcdi_filter_table_down(efx);
++	up_write(&efx->filter_sem);
+ 	return rc;
+ }
+ 
+ static void ef100_filter_table_down(struct efx_nic *efx)
+ {
++	down_write(&efx->filter_sem);
+ 	efx_mcdi_filter_del_vlan(efx, 0);
+ 	efx_mcdi_filter_del_vlan(efx, EFX_FILTER_VID_UNSPEC);
+ 	efx_mcdi_filter_table_down(efx);
++	up_write(&efx->filter_sem);
+ }
+ 
+ /*	Other
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 92550c7e85ce..9aae0d8b713f 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -501,14 +501,11 @@ int efx_ef10_sriov_set_vf_mac(struct efx_nic *efx, int vf_i, const u8 *mac)
+ 		efx_device_detach_sync(vf->efx);
+ 		efx_net_stop(vf->efx->net_dev);
+ 
+-		down_write(&vf->efx->filter_sem);
+ 		vf->efx->type->filter_table_remove(vf->efx);
+ 
+ 		rc = efx_ef10_vadaptor_free(vf->efx, EVB_PORT_ID_ASSIGNED);
+-		if (rc) {
+-			up_write(&vf->efx->filter_sem);
 +		if (rc)
-+			return rc;
-+		if (outlen < sizeof(outbuf))
-+			return -EIO;
-+		/* FW freed a different ID than we asked for, should never happen.
-+		 * Warn because it means we've now got a different idea to the FW of
-+		 * what action-set-lists exist, which could cause mayhem later.
-+		 */
-+		if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_SET_LIST_FREE_OUT_FREED_ASL_ID) != acts->fw_id))
-+			return -EIO;
-+	}
-+	/* We're probably about to free @acts, but let's just make sure its
-+	 * fw_id is blatted so that it won't look valid if it leaks out.
-+	 */
-+	acts->fw_id = MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_ACTION_SET_LIST_ID_NULL;
-+	return 0;
-+}
-+
-+static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
-+					   const struct efx_tc_match *match)
-+{
-+	if (match->mask.ingress_port) {
-+		if (~match->mask.ingress_port)
-+			return -EOPNOTSUPP;
-+		MCDI_STRUCT_SET_DWORD(match_crit,
-+				      MAE_FIELD_MASK_VALUE_PAIRS_V2_INGRESS_MPORT_SELECTOR,
-+				      match->value.ingress_port);
-+	}
-+	MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_INGRESS_MPORT_SELECTOR_MASK,
-+			      match->mask.ingress_port);
-+	return 0;
-+}
-+
-+int efx_mae_insert_rule(struct efx_nic *efx, const struct efx_tc_match *match,
-+			u32 prio, u32 acts_id, u32 *id)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_RULE_INSERT_IN_LEN(MAE_FIELD_MASK_VALUE_PAIRS_V2_LEN));
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_RULE_INSERT_OUT_LEN);
-+	MCDI_DECLARE_STRUCT_PTR(match_crit);
-+	MCDI_DECLARE_STRUCT_PTR(response);
-+	size_t outlen;
-+	int rc;
-+
-+	if (!id)
-+		return -EINVAL;
-+
-+	match_crit = _MCDI_DWORD(inbuf, MAE_ACTION_RULE_INSERT_IN_MATCH_CRITERIA);
-+	response = _MCDI_DWORD(inbuf, MAE_ACTION_RULE_INSERT_IN_RESPONSE);
-+	if (efx_mae_asl_id(acts_id)) {
-+		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_ASL_ID, acts_id);
-+		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID,
-+				      MC_CMD_MAE_ACTION_SET_ALLOC_OUT_ACTION_SET_ID_NULL);
-+	} else {
-+		/* We only had one AS, so we didn't wrap it in an ASL */
-+		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_ASL_ID,
-+				      MC_CMD_MAE_ACTION_SET_LIST_ALLOC_OUT_ACTION_SET_LIST_ID_NULL);
-+		MCDI_STRUCT_SET_DWORD(response, MAE_ACTION_RULE_RESPONSE_AS_ID, acts_id);
-+	}
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_RULE_INSERT_IN_PRIO, prio);
-+	rc = efx_mae_populate_match_criteria(match_crit, match);
-+	if (rc)
-+		return rc;
-+
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_RULE_INSERT, inbuf, sizeof(inbuf),
-+			  outbuf, sizeof(outbuf), &outlen);
-+	if (rc)
-+		return rc;
-+	if (outlen < sizeof(outbuf))
-+		return -EIO;
-+	*id = MCDI_DWORD(outbuf, MAE_ACTION_RULE_INSERT_OUT_AR_ID);
-+	return 0;
-+}
-+
-+int efx_mae_delete_rule(struct efx_nic *efx, u32 id)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_RULE_DELETE_OUT_LEN(1));
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_RULE_DELETE_IN_LEN(1));
-+	size_t outlen;
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, MAE_ACTION_RULE_DELETE_IN_AR_ID, id);
-+	rc = efx_mcdi_rpc(efx, MC_CMD_MAE_ACTION_RULE_DELETE, inbuf, sizeof(inbuf),
-+			  outbuf, sizeof(outbuf), &outlen);
-+	if (rc)
-+		return rc;
-+	if (outlen < sizeof(outbuf))
-+		return -EIO;
-+	/* FW freed a different ID than we asked for, should also never happen.
-+	 * Warn because it means we've now got a different idea to the FW of
-+	 * what rules exist, which could cause mayhem later.
-+	 */
-+	if (WARN_ON(MCDI_DWORD(outbuf, MAE_ACTION_RULE_DELETE_OUT_DELETED_AR_ID) != id))
-+		return -EIO;
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/sfc/mae.h b/drivers/net/ethernet/sfc/mae.h
-index 25c2fd94e158..e9651f611750 100644
---- a/drivers/net/ethernet/sfc/mae.h
-+++ b/drivers/net/ethernet/sfc/mae.h
-@@ -14,10 +14,26 @@
- /* MCDI interface for the ef100 Match-Action Engine */
+ 			return rc;
+-		}
+ 	}
  
- #include "net_driver.h"
-+#include "tc.h"
-+#include "mcdi_pcol.h" /* needed for various MC_CMD_MAE_*_NULL defines */
+ 	rc = efx_ef10_evb_port_assign(efx, EVB_PORT_ID_NULL, vf_i);
+@@ -539,12 +536,9 @@ int efx_ef10_sriov_set_vf_mac(struct efx_nic *efx, int vf_i, const u8 *mac)
+ 	if (vf->efx) {
+ 		/* VF cannot use the vport_id that the PF created */
+ 		rc = efx_ef10_vadaptor_alloc(vf->efx, EVB_PORT_ID_ASSIGNED);
+-		if (rc) {
+-			up_write(&vf->efx->filter_sem);
++		if (rc)
+ 			return rc;
+-		}
+ 		vf->efx->type->filter_table_probe(vf->efx);
+-		up_write(&vf->efx->filter_sem);
+ 		efx_net_open(vf->efx->net_dev);
+ 		efx_device_attach_if_not_resetting(vf->efx);
+ 	}
+@@ -580,7 +574,6 @@ int efx_ef10_sriov_set_vf_vlan(struct efx_nic *efx, int vf_i, u16 vlan,
+ 		efx_net_stop(vf->efx->net_dev);
  
- void efx_mae_mport_wire(struct efx_nic *efx, u32 *out);
-+void efx_mae_mport_uplink(struct efx_nic *efx, u32 *out);
- void efx_mae_mport_vf(struct efx_nic *efx, u32 vf_id, u32 *out);
-+void efx_mae_mport_mport(struct efx_nic *efx, u32 mport_id, u32 *out);
+ 		mutex_lock(&vf->efx->mac_lock);
+-		down_write(&vf->efx->filter_sem);
+ 		vf->efx->type->filter_table_remove(vf->efx);
  
- int efx_mae_lookup_mport(struct efx_nic *efx, u32 selector, u32 *id);
+ 		rc = efx_ef10_vadaptor_free(vf->efx, EVB_PORT_ID_ASSIGNED);
+@@ -654,7 +647,6 @@ int efx_ef10_sriov_set_vf_vlan(struct efx_nic *efx, int vf_i, u16 vlan,
+ 		if (rc2)
+ 			goto reset_nic_up_write;
  
-+int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act);
-+int efx_mae_free_action_set(struct efx_nic *efx, u32 fw_id);
-+
-+int efx_mae_alloc_action_set_list(struct efx_nic *efx,
-+				  struct efx_tc_action_set_list *acts);
-+int efx_mae_free_action_set_list(struct efx_nic *efx,
-+				 struct efx_tc_action_set_list *acts);
-+
-+int efx_mae_insert_rule(struct efx_nic *efx, const struct efx_tc_match *match,
-+			u32 prio, u32 acts_id, u32 *id);
-+int efx_mae_delete_rule(struct efx_nic *efx, u32 id);
-+
- #endif /* EF100_MAE_H */
-diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-index f74f6ce8b27d..26bc69f76801 100644
---- a/drivers/net/ethernet/sfc/mcdi.h
-+++ b/drivers/net/ethernet/sfc/mcdi.h
-@@ -205,6 +205,8 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
- 	((_ofst) + BUILD_BUG_ON_ZERO((_ofst) & (_align - 1)))
- #define _MCDI_DWORD(_buf, _field)					\
- 	((_buf) + (_MCDI_CHECK_ALIGN(MC_CMD_ ## _field ## _OFST, 4) >> 2))
-+#define _MCDI_STRUCT_DWORD(_buf, _field)				\
-+	((_buf) + (_MCDI_CHECK_ALIGN(_field ## _OFST, 4) >> 2))
+-		up_write(&vf->efx->filter_sem);
+ 		mutex_unlock(&vf->efx->mac_lock);
  
- #define MCDI_BYTE(_buf, _field)						\
- 	((void)BUILD_BUG_ON_ZERO(MC_CMD_ ## _field ## _LEN != 1),	\
-@@ -214,6 +216,8 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
- 	 le16_to_cpu(*(__force const __le16 *)MCDI_PTR(_buf, _field)))
- #define MCDI_SET_DWORD(_buf, _field, _value)				\
- 	EFX_POPULATE_DWORD_1(*_MCDI_DWORD(_buf, _field), EFX_DWORD_0, _value)
-+#define MCDI_STRUCT_SET_DWORD(_buf, _field, _value)			\
-+	EFX_POPULATE_DWORD_1(*_MCDI_STRUCT_DWORD(_buf, _field), EFX_DWORD_0, _value)
- #define MCDI_DWORD(_buf, _field)					\
- 	EFX_DWORD_FIELD(*_MCDI_DWORD(_buf, _field), EFX_DWORD_0)
- #define MCDI_POPULATE_DWORD_1(_buf, _field, _name1, _value1)		\
-diff --git a/drivers/net/ethernet/sfc/mcdi_pcol_mae.h b/drivers/net/ethernet/sfc/mcdi_pcol_mae.h
-new file mode 100644
-index 000000000000..ff6d80c8e486
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/mcdi_pcol_mae.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/****************************************************************************
-+ * Driver for Solarflare network controllers and boards
-+ * Copyright 2019 Solarflare Communications Inc.
-+ * Copyright 2019-2022 Xilinx, Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
-+
-+#ifndef MCDI_PCOL_MAE_H
-+#define MCDI_PCOL_MAE_H
-+/* MCDI definitions for Match-Action Engine functionality, that are
-+ * missing from the main mcdi_pcol.h
-+ */
-+
-+/* MC_CMD_MAE_COUNTER_LIST_ALLOC is not (yet) a released API, but the
-+ * following value is needed as an argument to MC_CMD_MAE_ACTION_SET_ALLOC.
-+ */
-+/* enum: A counter ID that is guaranteed never to represent a real counter */
-+#define          MC_CMD_MAE_COUNTER_LIST_ALLOC_OUT_COUNTER_LIST_ID_NULL 0xffffffff
-+
-+#endif /* MCDI_PCOL_MAE_H */
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 6b64ba3a7d36..7ef823d7a89a 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -978,6 +978,7 @@ enum efx_xdp_tx_queues_mode {
-  * @xdp_rxq_info_failed: Have any of the rx queues failed to initialise their
-  *      xdp_rxq_info structures?
-  * @netdev_notifier: Netdevice notifier.
-+ * @tc: state for TC offload (EF100).
-  * @mem_bar: The BAR that is mapped into membase.
-  * @reg_base: Offset from the start of the bar to the function control window.
-  * @monitor_work: Hardware monitor workitem
-@@ -1161,6 +1162,7 @@ struct efx_nic {
- 	bool xdp_rxq_info_failed;
+ 		rc2 = efx_net_open(vf->efx->net_dev);
+@@ -666,10 +658,8 @@ int efx_ef10_sriov_set_vf_vlan(struct efx_nic *efx, int vf_i, u16 vlan,
+ 	return rc;
  
- 	struct notifier_block netdev_notifier;
-+	struct efx_tc_state *tc;
+ reset_nic_up_write:
+-	if (vf->efx) {
+-		up_write(&vf->efx->filter_sem);
++	if (vf->efx)
+ 		mutex_unlock(&vf->efx->mac_lock);
+-	}
+ reset_nic:
+ 	if (vf->efx) {
+ 		netif_err(efx, drv, efx->net_dev,
+diff --git a/drivers/net/ethernet/sfc/mcdi_filters.h b/drivers/net/ethernet/sfc/mcdi_filters.h
+index 06426aa9f2f3..c0d6558b9fd2 100644
+--- a/drivers/net/ethernet/sfc/mcdi_filters.h
++++ b/drivers/net/ethernet/sfc/mcdi_filters.h
+@@ -89,6 +89,7 @@ struct efx_mcdi_filter_table {
+ 	 */
+ 	bool mc_chaining;
+ 	bool vlan_filter;
++	/* Entries on the vlan_list are added/removed under filter_sem */
+ 	struct list_head vlan_list;
+ };
  
- 	unsigned int mem_bar;
- 	u32 reg_base;
-diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-new file mode 100644
-index 000000000000..0fb01f73c56e
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/tc.c
-@@ -0,0 +1,183 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/****************************************************************************
-+ * Driver for Solarflare network controllers and boards
-+ * Copyright 2019 Solarflare Communications Inc.
-+ * Copyright 2020-2022 Xilinx Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
-+
-+#include "tc.h"
-+#include "mae.h"
-+#include "ef100_rep.h"
-+
-+static void efx_tc_free_action_set(struct efx_nic *efx,
-+				   struct efx_tc_action_set *act, bool in_hw)
-+{
-+	/* Failure paths calling this on the 'running action' set in_hw=false,
-+	 * because if the alloc had succeeded we'd've put it in acts.list and
-+	 * not still have it in act.
-+	 */
-+	if (in_hw) {
-+		efx_mae_free_action_set(efx, act->fw_id);
-+		/* in_hw is true iff we are on an acts.list; make sure to
-+		 * remove ourselves from that list before we are freed.
-+		 */
-+		list_del(&act->list);
-+	}
-+	kfree(act);
-+}
-+
-+static void efx_tc_free_action_set_list(struct efx_nic *efx,
-+					struct efx_tc_action_set_list *acts,
-+					bool in_hw)
-+{
-+	struct efx_tc_action_set *act, *next;
-+
-+	/* Failure paths set in_hw=false, because usually the acts didn't get
-+	 * to efx_mae_alloc_action_set_list(); if they did, the failure tree
-+	 * has a separate efx_mae_free_action_set_list() before calling us.
-+	 */
-+	if (in_hw)
-+		efx_mae_free_action_set_list(efx, acts);
-+	/* Any act that's on the list will be in_hw even if the list isn't */
-+	list_for_each_entry_safe(act, next, &acts->list, list)
-+		efx_tc_free_action_set(efx, act, true);
-+	/* Don't kfree, as acts is embedded inside a struct efx_tc_flow_rule */
-+}
-+
-+static void efx_tc_delete_rule(struct efx_nic *efx, struct efx_tc_flow_rule *rule)
-+{
-+	efx_mae_delete_rule(efx, rule->fw_id);
-+
-+	/* Release entries in subsidiary tables */
-+	efx_tc_free_action_set_list(efx, &rule->acts, true);
-+	rule->fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
-+}
-+
-+static int efx_tc_configure_default_rule(struct efx_nic *efx, u32 ing_port,
-+					 u32 eg_port, struct efx_tc_flow_rule *rule)
-+{
-+	struct efx_tc_action_set_list *acts = &rule->acts;
-+	struct efx_tc_match *match = &rule->match;
-+	struct efx_tc_action_set *act;
-+	int rc;
-+
-+	match->value.ingress_port = ing_port;
-+	match->mask.ingress_port = ~0;
-+	act = kzalloc(sizeof(*act), GFP_KERNEL);
-+	if (!act)
-+		return -ENOMEM;
-+	act->deliver = 1;
-+	act->dest_mport = eg_port;
-+	rc = efx_mae_alloc_action_set(efx, act);
-+	if (rc)
-+		goto fail1;
-+	EFX_WARN_ON_PARANOID(!list_empty(&acts->list));
-+	list_add_tail(&act->list, &acts->list);
-+	rc = efx_mae_alloc_action_set_list(efx, acts);
-+	if (rc)
-+		goto fail2;
-+	rc = efx_mae_insert_rule(efx, match, EFX_TC_PRIO_DFLT,
-+				 acts->fw_id, &rule->fw_id);
-+	if (rc)
-+		goto fail3;
-+	return 0;
-+fail3:
-+	efx_mae_free_action_set_list(efx, acts);
-+fail2:
-+	list_del(&act->list);
-+	efx_mae_free_action_set(efx, act->fw_id);
-+fail1:
-+	kfree(act);
-+	return rc;
-+}
-+
-+static int efx_tc_configure_default_rule_pf(struct efx_nic *efx)
-+{
-+	struct efx_tc_flow_rule *rule = &efx->tc->dflt.pf;
-+	u32 ing_port, eg_port;
-+
-+	efx_mae_mport_uplink(efx, &ing_port);
-+	efx_mae_mport_wire(efx, &eg_port);
-+	return efx_tc_configure_default_rule(efx, ing_port, eg_port, rule);
-+}
-+
-+static int efx_tc_configure_default_rule_wire(struct efx_nic *efx)
-+{
-+	struct efx_tc_flow_rule *rule = &efx->tc->dflt.wire;
-+	u32 ing_port, eg_port;
-+
-+	efx_mae_mport_wire(efx, &ing_port);
-+	efx_mae_mport_uplink(efx, &eg_port);
-+	return efx_tc_configure_default_rule(efx, ing_port, eg_port, rule);
-+}
-+
-+int efx_tc_configure_default_rule_rep(struct efx_rep *efv)
-+{
-+	struct efx_tc_flow_rule *rule = &efv->dflt;
-+	struct efx_nic *efx = efv->parent;
-+	u32 ing_port, eg_port;
-+
-+	efx_mae_mport_mport(efx, efv->mport, &ing_port);
-+	efx_mae_mport_uplink(efx, &eg_port);
-+	return efx_tc_configure_default_rule(efx, ing_port, eg_port, rule);
-+}
-+
-+void efx_tc_deconfigure_default_rule(struct efx_nic *efx,
-+				     struct efx_tc_flow_rule *rule)
-+{
-+	if (rule->fw_id != MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL)
-+		efx_tc_delete_rule(efx, rule);
-+	rule->fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
-+}
-+
-+int efx_init_tc(struct efx_nic *efx)
-+{
-+	int rc;
-+
-+	rc = efx_tc_configure_default_rule_pf(efx);
-+	if (rc)
-+		return rc;
-+	return efx_tc_configure_default_rule_wire(efx);
-+}
-+
-+void efx_fini_tc(struct efx_nic *efx)
-+{
-+	/* We can get called even if efx_init_struct_tc() failed */
-+	if (!efx->tc)
-+		return;
-+	efx_tc_deconfigure_default_rule(efx, &efx->tc->dflt.pf);
-+	efx_tc_deconfigure_default_rule(efx, &efx->tc->dflt.wire);
-+}
-+
-+int efx_init_struct_tc(struct efx_nic *efx)
-+{
-+	if (efx->type->is_vf)
-+		return 0;
-+
-+	efx->tc = kzalloc(sizeof(*efx->tc), GFP_KERNEL);
-+	if (!efx->tc)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&efx->tc->dflt.pf.acts.list);
-+	efx->tc->dflt.pf.fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
-+	INIT_LIST_HEAD(&efx->tc->dflt.wire.acts.list);
-+	efx->tc->dflt.wire.fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
-+	return 0;
-+}
-+
-+void efx_fini_struct_tc(struct efx_nic *efx)
-+{
-+	if (!efx->tc)
-+		return;
-+
-+	EFX_WARN_ON_PARANOID(efx->tc->dflt.pf.fw_id !=
-+			     MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL);
-+	EFX_WARN_ON_PARANOID(efx->tc->dflt.wire.fw_id !=
-+			     MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL);
-+	kfree(efx->tc);
-+	efx->tc = NULL;
-+}
-diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-new file mode 100644
-index 000000000000..46c5101eaa8d
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/tc.h
-@@ -0,0 +1,76 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/****************************************************************************
-+ * Driver for Solarflare network controllers and boards
-+ * Copyright 2019 Solarflare Communications Inc.
-+ * Copyright 2020-2022 Xilinx Inc.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published
-+ * by the Free Software Foundation, incorporated herein by reference.
-+ */
-+
-+#ifndef EFX_TC_H
-+#define EFX_TC_H
-+#include "net_driver.h"
-+
-+struct efx_tc_action_set {
-+	u16 deliver:1;
-+	u32 dest_mport;
-+	u32 fw_id; /* index of this entry in firmware actions table */
-+	struct list_head list;
-+};
-+
-+struct efx_tc_match_fields {
-+	/* L1 */
-+	u32 ingress_port;
-+};
-+
-+struct efx_tc_match {
-+	struct efx_tc_match_fields value;
-+	struct efx_tc_match_fields mask;
-+};
-+
-+struct efx_tc_action_set_list {
-+	struct list_head list;
-+	u32 fw_id;
-+};
-+
-+struct efx_tc_flow_rule {
-+	struct efx_tc_match match;
-+	struct efx_tc_action_set_list acts;
-+	u32 fw_id;
-+};
-+
-+enum efx_tc_rule_prios {
-+	EFX_TC_PRIO_DFLT, /* Default switch rule; one of efx_tc_default_rules */
-+	EFX_TC_PRIO__NUM
-+};
-+
-+/**
-+ * struct efx_tc_state - control plane data for TC offload
-+ *
-+ * @dflt: Match-action rules for default switching; at priority
-+ *	%EFX_TC_PRIO_DFLT.  Named by *ingress* port
-+ * @dflt.pf: rule for traffic ingressing from PF (egresses to wire)
-+ * @dflt.wire: rule for traffic ingressing from wire (egresses to PF)
-+ */
-+struct efx_tc_state {
-+	struct {
-+		struct efx_tc_flow_rule pf;
-+		struct efx_tc_flow_rule wire;
-+	} dflt;
-+};
-+
-+struct efx_rep;
-+
-+int efx_tc_configure_default_rule_rep(struct efx_rep *efv);
-+void efx_tc_deconfigure_default_rule(struct efx_nic *efx,
-+				     struct efx_tc_flow_rule *rule);
-+
-+int efx_init_tc(struct efx_nic *efx);
-+void efx_fini_tc(struct efx_nic *efx);
-+
-+int efx_init_struct_tc(struct efx_nic *efx);
-+void efx_fini_struct_tc(struct efx_nic *efx);
-+
-+#endif /* EFX_TC_H */
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index bd21d6ac778a..4826e6a7e4ce 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -793,7 +793,6 @@ int efx_probe_filters(struct efx_nic *efx)
+ 	int rc;
+ 
+ 	mutex_lock(&efx->mac_lock);
+-	down_write(&efx->filter_sem);
+ 	rc = efx->type->filter_table_probe(efx);
+ 	if (rc)
+ 		goto out_unlock;
+@@ -830,7 +829,6 @@ int efx_probe_filters(struct efx_nic *efx)
+ 	}
+ #endif
+ out_unlock:
+-	up_write(&efx->filter_sem);
+ 	mutex_unlock(&efx->mac_lock);
+ 	return rc;
+ }
+@@ -846,9 +844,7 @@ void efx_remove_filters(struct efx_nic *efx)
+ 		channel->rps_flow_id = NULL;
+ 	}
+ #endif
+-	down_write(&efx->filter_sem);
+ 	efx->type->filter_table_remove(efx);
+-	up_write(&efx->filter_sem);
+ }
+ 
+ #ifdef CONFIG_RFS_ACCEL
