@@ -2,84 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF619583FD4
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C36C583FE3
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 15:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236646AbiG1NTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 09:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        id S236096AbiG1NYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 09:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiG1NTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:19:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89793558D7
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:19:05 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH3Pi-00053L-Uf; Thu, 28 Jul 2022 15:18:54 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH3Pi-000JlO-4s; Thu, 28 Jul 2022 15:18:54 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH3Ph-000Aof-EP; Thu, 28 Jul 2022 15:18:53 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net v1 1/1] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
-Date:   Thu, 28 Jul 2022 15:18:52 +0200
-Message-Id: <20220728131852.41518-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229648AbiG1NYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 09:24:40 -0400
+Received: from smtp-bc0b.mail.infomaniak.ch (smtp-bc0b.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254EE5073D
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 06:24:39 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LtrwN52BQzMqNMF;
+        Thu, 28 Jul 2022 15:24:36 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LtrwN1XcBzlqwwk;
+        Thu, 28 Jul 2022 15:24:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1659014676;
+        bh=RAweEF+huCI4AjPNTonqz95NxOvYJYl24mF2cUDIipo=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=OPgJqbWri/qJZotQKZQvql1WiQZIiEksauuDKbSxuFE1Qrhe5ONPLebh/8ehusQr2
+         815uADrpa9sH6gaMVEJZnO346PhC4t4ApLtI1G1L9ko7tLXmrVKEjSd87A7dICogOz
+         RB7yab6zG7n2UHkuhJim4rHAo7jfUyvIzPpXjajE=
+Message-ID: <16ce6dc2-6b9c-da02-5737-eb9d26865590@digikod.net>
+Date:   Thu, 28 Jul 2022 15:24:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <20220621082313.3330667-12-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v6 11/17] seltests/landlock: adds tests for bind() hooks
+In-Reply-To: <20220621082313.3330667-12-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
-So, avoid writing to it.
 
-Fixes: 462d525018f0 ("net: dsa: microchip: move ksz_chip_data to ksz_common")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz9477.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On 21/06/2022 10:23, Konstantin Meskhidze wrote:
+> Adds selftests for bind() socket action.
+> The first is with no landlock restrictions:
+>      - bind without restrictions for ip4;
+>      - bind without restrictions for ip6;
+> The second ones is with mixed landlock rules:
+>      - bind with restrictions for ip4;
+>      - bind with restrictions for ip6;
+> 
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
+> 
+> Changes since v5:
+> * Splits commit.
+> * Adds local address 127.0.0.1.
+> * Adds FIXTURE_VARIANT and FIXTURE_VARIANT_ADD
+> helpers to support both ip4 and ip6 family tests and
+> shorten the code.
+> * Adds create_socket_variant() and bind_variant() helpers.
+> * Gets rid of reuse_addr variable in create_socket_variant.
+> * Formats code with clang-format-14.
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 5dff6c3279bb..c73bb6d383ad 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -198,6 +198,10 @@ int ksz9477_reset_switch(struct ksz_device *dev)
- 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
- 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
- 
-+	/* KSZ9893 compatible chips do not support refclk configuration */
-+	if (dev->chip_id == KSZ9893_CHIP_ID)
-+		return 0;
-+
- 	data8 = SW_ENABLE_REFCLKO;
- 	if (dev->synclko_disable)
- 		data8 = 0;
--- 
-2.30.2
-
+It seems that a formatting pass is missing for FIXTURE_VARIANT().
