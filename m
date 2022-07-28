@@ -2,86 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A59485846C5
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8175846C8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiG1T7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S230299AbiG1T6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231301AbiG1T7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:59:38 -0400
-X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 12:59:35 PDT
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D5A6FA0E
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:59:34 -0700 (PDT)
-Received: (qmail 21331 invoked from network); 28 Jul 2022 19:52:15 -0000
-Received: from mail.sf-mail.de ([2a01:4f8:1c17:6fae:616d:6c69:616d:6c69]:50732 HELO webmail.sf-mail.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <seanga2@gmail.com>; Thu, 28 Jul 2022 21:52:15 +0200
+        with ESMTP id S229471AbiG1T6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:58:38 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5131EAF8
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:58:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659038318; x=1690574318;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JiD2zr0fmX+0LYltP/Dzi5jU5X6HVbI+iMtVWfFaLtY=;
+  b=Dcd1fIuMoK9S08MCa5VrWOThrN9HfopO2mShwhM1TVSGUzIxghu6oSIo
+   v5jr1ljBtMfOc7vPIbMQxqteuIFXCcH0VaCRuhi9jE133jN5KoQllfPX7
+   VJfyNR73/B+vH1KPklIfwdZ3/l/xW+rqO+nWtlOYiq+Cw4dyyTDp9Jv9I
+   jw98gEUMoD+J9zGKp/mmJ3I6QFAX51SG3K7CwdxBy3EW3FEFDzE/rloW6
+   E6TnP+8rfeh4PLsntML7mJaPVMwbYQ7PKOPkrlurmuHRFufEgw2PGwuAv
+   EM+OsYefW+Pzp/eQIwP9cGGJ4v+LOJdUkqe2LOKcm+eZC82Fx+yqvQFW8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="350310067"
+X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
+   d="scan'208";a="350310067"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 12:58:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
+   d="scan'208";a="928453947"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2022 12:58:37 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/4][pull request] 100GbE Intel Wired LAN Driver Updates 2022-07-28
+Date:   Thu, 28 Jul 2022 12:55:34 -0700
+Message-Id: <20220728195538.3391360-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Date:   Thu, 28 Jul 2022 21:52:15 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Sean Anderson <seanga2@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 4/x] sunhme: switch to devres
-In-Reply-To: <7685c7df-83ed-a3a0-6e61-42bd48713dc9@gmail.com>
-References: <4686583.GXAFRqVoOG@eto.sf-tec.de>
- <11922663.O9o76ZdvQC@eto.sf-tec.de>
- <00f00bdf-1a76-693f-5c8f-9b4ceaf76b91@gmail.com>
- <7685c7df-83ed-a3a0-6e61-42bd48713dc9@gmail.com>
-Message-ID: <8005d74d1e4ff2bdd75f8fefe70561a0@sf-tec.de>
-X-Sender: eike-kernel@sf-tec.de
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-07-27 05:58, schrieb Sean Anderson:
-> On 7/26/22 11:49 PM, Sean Anderson wrote:
+This series contains updates to ice driver only.
 
->> This looks good, but doesn't apply cleanly. I rebased it as follows:
+Michal allows for VF true promiscuous mode to be set for multiple VFs
+and adds clearing of promiscuous filters when VF trust is removed.
 
-Looks like what my local rebase has also produced.
+Maciej refactors ice_set_features() to track/check changed features
+instead of constantly checking against netdev features and adds support for
+NETIF_F_LOOPBACK.
 
-The sentence about the leak from the commitmessage can be dropped then,
-as this leak has already been fixed.
+The following are changes since commit 623cd87006983935de6c2ad8e2d50e68f1b7d6e7:
+  net: cdns,macb: use correct xlnx prefix for Xilinx
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 
->> diff --git a/drivers/net/ethernet/sun/sunhme.c 
->> b/drivers/net/ethernet/sun/sunhme.c
->> index eebe8c5f480c..e83774ffaa7a 100644
->> --- a/drivers/net/ethernet/sun/sunhme.c
->> +++ b/drivers/net/ethernet/sun/sunhme.c
->> @@ -2990,21 +2990,23 @@ static int happy_meal_pci_probe(struct pci_dev 
->> *pdev,
->>           qp->happy_meals[qfe_slot] = dev;
->>       }
->> 
->> -    hpreg_res = pci_resource_start(pdev, 0);
->> -    err = -ENODEV;
->>       if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
->>           printk(KERN_ERR "happymeal(PCI): Cannot find proper PCI 
->> device base address.\n");
->>           goto err_out_clear_quattro;
->>       }
->> -    if (pci_request_regions(pdev, DRV_NAME)) {
->> +
->> +    if (!devm_request_region(&pdev->dev, pci_resource_start(pdev, 0),
->> +                  pci_resource_len(pdev, 0),
->> +                  DRV_NAME)) {
-> 
-> Actually, it looks like you are failing to set err from these *m
-> calls, like what
-> you fixed in patch 3. Can you address this for v2?
+Maciej Fijalkowski (2):
+  ice: compress branches in ice_set_features()
+  ice: allow toggling loopback mode via ndo_set_features callback
 
-It returns NULL on error, there is no error code I can set.
+Michal Wilczynski (2):
+  ice: Introduce enabling promiscuous mode on multiple VF's
+  ice: Fix promiscuous mode not turning off
 
-Regards,
+ drivers/net/ethernet/intel/ice/ice.h          |   2 -
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |   8 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   2 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  67 ++++-----
+ drivers/net/ethernet/intel/ice/ice_lib.h      |  11 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  86 ++++++-----
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 136 +++++++++---------
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   8 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   4 -
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c   |  89 +++++++++---
+ drivers/net/ethernet/intel/ice/ice_vf_lib.h   |   7 +-
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c |  51 +++----
+ 12 files changed, 269 insertions(+), 202 deletions(-)
 
-Eike
+-- 
+2.35.1
+
