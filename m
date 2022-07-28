@@ -2,95 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8879D5843E6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F45B5843E8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232753AbiG1QNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        id S233003AbiG1QOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232814AbiG1QNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:13:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F00E96E880
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:13:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659024797;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VmJ2+f+Z2K0SCbonE5IauSW1u7akCNc40dQ7K7wfDHA=;
-        b=LcQfhq1Mh6pBzDHTuFoEcx6iwpEn0/sCvAWQ/gvRPSlUQGXeFBMevp+sfXzIlzo1syhv6a
-        sCSGKzKYkqlSmZHtrqrrMj5opNRGI/EVYLmh0pyadavKknz6CTFkXJoZcMCXgaihYs1G5g
-        e/ltIlLWhDlHyMQ+Ain6XAZMnGTQFNI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-201-4pt9ZUUYOKK0kLNFC70acw-1; Thu, 28 Jul 2022 12:13:11 -0400
-X-MC-Unique: 4pt9ZUUYOKK0kLNFC70acw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S232997AbiG1QN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:13:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEF66F7FB
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:13:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2E75A185A7B2;
-        Thu, 28 Jul 2022 16:13:11 +0000 (UTC)
-Received: from mpattric.remote.csb (unknown [10.22.33.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 722062166B26;
-        Thu, 28 Jul 2022 16:13:10 +0000 (UTC)
-From:   Mike Pattrick <mkp@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     pvalerio@redhat.com, Mike Pattrick <mkp@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C98F61C61
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:13:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6950CC433C1;
+        Thu, 28 Jul 2022 16:13:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659024834;
+        bh=qQutBS72eiffF4P4V4Os6GY17cXXD43YWpoFdyGcBN8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gdIlltz6pYIGz2Z89Yz6HHdUTDR9kou6hkAOm+9B5WpRVSMAy3sTsLcoiDnyXEzSj
+         in2Ipm2GCMXmgZ0fmV76/Fd5eHtReDFJluiwEm/FCPUKJf9/R6Cboc2y7i3zMnGExy
+         sum3Q9PVw931hXEQmYwzKdeHn/3CLfMzD/hSEFjX1c/HrhYA3tABagLRTYzZ7OFYuV
+         FwG8ofD4Fhy2PsXMkd/yfcKEkBjjx9rewRxh91ab5Q2sS2qP2cBXpXknNcetKFC1gN
+         akOTZF473eCLj6h35nrXZfY171NcJRqw2T5LL7jeH7jRQxjbYmfIPyA7Al+4ARbmvC
+         WGp93OUhJ1l9w==
+Message-ID: <8fca8bc2-d8a8-eb41-9649-f96b5801f72c@kernel.org>
+Date:   Thu, 28 Jul 2022 10:13:52 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 net] net: ping6: Fix memleak in ipv6_renew_options().
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Thu, 28 Jul 2022 12:12:59 -0400
-Message-Id: <20220728161259.1088662-2-mkp@redhat.com>
-In-Reply-To: <20220728161259.1088662-1-mkp@redhat.com>
-References: <20220728161259.1088662-1-mkp@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Lorenzo Colitti <lorenzo@google.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Ayushman Dutta <ayudutta@amazon.com>, netdev@vger.kernel.org,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+References: <20220728012220.46918-1-kuniyu@amazon.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220728012220.46918-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This patch will
-consume the skbs instead.
+On 7/27/22 7:22 PM, Kuniyuki Iwashima wrote:
+> When we close ping6 sockets, some resources are left unfreed because
+> pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+> syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
+> 
+>     struct ipv6_sr_hdr *hdr;
+>     char data[24] = {0};
+>     int fd;
+> 
+>     hdr = (struct ipv6_sr_hdr *)data;
+>     hdr->hdrlen = 2;
+>     hdr->type = IPV6_SRCRT_TYPE_4;
+> 
+>     fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
+>     setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
+>     close(fd);
+> 
+> To fix memory leaks, let's add a destroy function.
+> 
+> Note the socket() syscall checks if the GID is within the range of
+> net.ipv4.ping_group_range.  The default value is [1, 0] so that no
+> GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
+> not succeed until we change the default value.  However, at least
+> Ubuntu/Fedora/RHEL loosen it.
+> 
+>     $ cat /usr/lib/sysctl.d/50-default.conf
+>     ...
+>     -net.ipv4.ping_group_range = 0 2147483647
+> 
+> Also, there could be another path reported with these options, and
+> some of them require CAP_NET_RAW.
+> 
+>   setsockopt
+>       IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
+>       IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
+>       IPV6_HOPOPTS (inet6_sk(sk)->opt)
+>       IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
+>       IPV6_RTHDR (inet6_sk(sk)->opt)
+>       IPV6_DSTOPTS (inet6_sk(sk)->opt)
+>       IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
+> 
+>   getsockopt
+>       IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
+> 
+> For the record, I left a different splat with syzbot's one.
+> 
+>   unreferenced object 0xffff888006270c60 (size 96):
+>     comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
+>     hex dump (first 32 bytes):
+>       01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
+>       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     backtrace:
+>       [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
+>       [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
+>       [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
+>       [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
+>       [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
+>       [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+>       [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+> 
+> [0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+> 
+> Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+> Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+> Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+> v2:
+>   - Remove ip6_flush_pending_frames() (Jakub Kicinski)
+> 
+> v1: offlist
+> ---
+>  net/ipv6/ping.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
 
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
----
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 029f9c3e1c28..3eee4b0a2005 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -561,8 +561,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
- }
- 
--- 
-2.31.1
 
