@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1090C5845CB
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:25:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE375584594
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiG1SVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        id S230419AbiG1SVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232448AbiG1SVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:45 -0400
+        with ESMTP id S232507AbiG1SVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:46 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69985B04A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908445A89B
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659032504; x=1690568504;
+  t=1659032505; x=1690568505;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VU6yJzAMwkE8cLBH0Kte88iVbDqy0D3QzOowswpXrl8=;
-  b=Zc29CtS+i3Ig79A1thLBwHbojbTvGgGBSeiQBQc6QDZgiWqeX2aYgVI5
-   pvKNhr8LVHdnmU3uiXafkZD96C64EssGlR6BMlgrI+HEgBKbVu6LBu1wi
-   zPys1XaBqm8nHNbvj6PBDdtEzRiKLZmEjkxe/pKZ8a/jaToxojBSR/adk
-   kFBXu2M8OxR6vCQBny6qs4+f5pdkUz5Ihx2Q8RTJeHPBG2ilkttFaXfiw
-   XMIiM17lLU6bltevcClSt1fhfAf5Bx/Rk24lMuHhDKELfIyl/UUvSyLx2
-   7Q/6WGlDhDxpIjdnPrUV7ILIUT0J2uBj2exiyjvcRtAwXPjD+P40/j2ro
+  bh=WYpmmMghzvDOuF6rDJHcJjeU0PAsC5W+aVKvcxOmf0Y=;
+  b=TgOFNbmPoh98TZ5niF+lYoUqE4dv2DAb3NlMG+ouVwyxZrM+bYWhBTpl
+   0EAQwXXzACmN5LQ/Li3xJuElELiIMgc1+RuNdXIUy4xpcxJDOCxkeIf7Y
+   6ViXVuC9v7C+xrVGYpBQrARnBHMvhYCjJep+ZPGTF+pcs+GiOgQZ1+nZn
+   z5XPXPfr1hqdWC/ylTwtIbm+iW4b2t7vNZZu1P5TnVtrLBEVJbgupvgNw
+   pQBZGh5VTnNkYyi4ZECgDdme1jChJTC/5m4StskDqyKb9BTg4tNyhvait
+   TYo9kvMtyDhVFy4sF7YGYVS37WtkmlJj+Q+1vKHoH2oXZvIe8e8HYQ/OX
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348908"
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348910"
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="268348908"
+   d="scan'208";a="268348910"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 11:21:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="727456621"
+   d="scan'208";a="727456624"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 28 Jul 2022 11:21:41 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -42,10 +42,10 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
-        Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net-next 3/7] e1000e: convert .adjfreq to .adjfine
-Date:   Thu, 28 Jul 2022 11:18:32 -0700
-Message-Id: <20220728181836.3387862-4-anthony.l.nguyen@intel.com>
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 4/7] i40e: use mul_u64_u64_div_u64 for PTP frequency calculation
+Date:   Thu, 28 Jul 2022 11:18:33 -0700
+Message-Id: <20220728181836.3387862-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
 References: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
@@ -62,99 +62,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The PTP implementation for the e1000e driver uses the older .adjfreq
-method. This method takes an adjustment in parts per billion. The newer
-.adjfine implementation uses scaled_ppm. The use of scaled_ppm allows for
-finer grained adjustments and is preferred over using the older
-implementation.
+The i40e device has a different clock rate depending on the current link
+speed. This requires using a different increment rate for the PTP clock
+registers. For slower link speeds, the base increment value is larger.
+Directly multiplying the larger increment value by the parts per billion
+adjustment might overflow.
 
-Make use of mul_u64_u64_div_u64 in order to handle possible overflow of the
-multiplication used to calculate the desired adjustment to the hardware
-increment value.
+To avoid this, the i40e implementation defaults to using the lower
+increment value and then multiplying the adjustment afterwards. This causes
+a loss of precision for lower link speeds.
+
+We can fix this by using mul_u64_u64_div_u64 instead of performing the
+multiplications using standard C operations. On X86, this will use special
+instructions that perform the multiplication and division with 128bit
+intermediate values. For other architectures, the fallback implementation
+will limit the loss of precision for large values. Small adjustments don't
+overflow anyways and won't lose precision at all.
+
+This allows first multiplying the base increment value and then performing
+the adjustment calculation, since we no longer fear overflowing. It also
+makes it easier to convert to the even more precise .adjfine implementation
+in a following change.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/e1000e/e1000.h  |  2 +-
- drivers/net/ethernet/intel/e1000e/netdev.c |  4 ++--
- drivers/net/ethernet/intel/e1000e/ptp.c    | 15 ++++++++-------
- 3 files changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
-index 8d06c9d8ff8b..e8a9a9610ac6 100644
---- a/drivers/net/ethernet/intel/e1000e/e1000.h
-+++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-@@ -329,7 +329,7 @@ struct e1000_adapter {
- 	struct ptp_clock *ptp_clock;
- 	struct ptp_clock_info ptp_clock_info;
- 	struct pm_qos_request pm_qos_req;
--	s32 ptp_delta;
-+	long ptp_delta;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ptp.c b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+index 57a71fa17ed5..15de918abc41 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ptp.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+@@ -353,25 +353,16 @@ static int i40e_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
+ 		ppb = -ppb;
+ 	}
  
- 	u16 eee_advert;
- };
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 70d933f52e93..321f2a95ae3a 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -3922,9 +3922,9 @@ static void e1000e_systim_reset(struct e1000_adapter *adapter)
- 	if (!(adapter->flags & FLAG_HAS_HW_TIMESTAMP))
- 		return;
+-	freq = I40E_PTP_40GB_INCVAL;
+-	freq *= ppb;
+-	diff = div_u64(freq, 1000000000ULL);
++	smp_mb(); /* Force any pending update before accessing. */
++	freq = I40E_PTP_40GB_INCVAL * READ_ONCE(pf->ptp_adj_mult);
++	diff = mul_u64_u64_div_u64(freq, (u64)ppb,
++				   1000000000ULL);
  
--	if (info->adjfreq) {
-+	if (info->adjfine) {
- 		/* restore the previous ptp frequency delta */
--		ret_val = info->adjfreq(info, adapter->ptp_delta);
-+		ret_val = info->adjfine(info, adapter->ptp_delta);
- 	} else {
- 		/* set the default base frequency if no adjustment possible */
- 		ret_val = e1000e_get_base_timinca(adapter, &timinca);
-diff --git a/drivers/net/ethernet/intel/e1000e/ptp.c b/drivers/net/ethernet/intel/e1000e/ptp.c
-index 432e04ce8c4e..0e488e4fa5c1 100644
---- a/drivers/net/ethernet/intel/e1000e/ptp.c
-+++ b/drivers/net/ethernet/intel/e1000e/ptp.c
-@@ -15,14 +15,16 @@
- #endif
+ 	if (neg_adj)
+ 		adj = I40E_PTP_40GB_INCVAL - diff;
+ 	else
+ 		adj = I40E_PTP_40GB_INCVAL + diff;
  
- /**
-- * e1000e_phc_adjfreq - adjust the frequency of the hardware clock
-+ * e1000e_phc_adjfine - adjust the frequency of the hardware clock
-  * @ptp: ptp clock structure
-- * @delta: Desired frequency change in parts per billion
-+ * @delta: Desired frequency chance in scaled parts per million
-  *
-  * Adjust the frequency of the PHC cycle counter by the indicated delta from
-  * the base frequency.
-+ *
-+ * Scaled parts per million is ppm but with a 16 bit binary fractional field.
-  **/
--static int e1000e_phc_adjfreq(struct ptp_clock_info *ptp, s32 delta)
-+static int e1000e_phc_adjfine(struct ptp_clock_info *ptp, long delta)
- {
- 	struct e1000_adapter *adapter = container_of(ptp, struct e1000_adapter,
- 						     ptp_clock_info);
-@@ -47,9 +49,8 @@ static int e1000e_phc_adjfreq(struct ptp_clock_info *ptp, s32 delta)
+-	/* At some link speeds, the base incval is so large that directly
+-	 * multiplying by ppb would result in arithmetic overflow even when
+-	 * using a u64. Avoid this by instead calculating the new incval
+-	 * always in terms of the 40GbE clock rate and then multiplying by the
+-	 * link speed factor afterwards. This does result in slightly lower
+-	 * precision at lower link speeds, but it is fairly minor.
+-	 */
+-	smp_mb(); /* Force any pending update before accessing. */
+-	adj *= READ_ONCE(pf->ptp_adj_mult);
+-
+ 	wr32(hw, I40E_PRTTSYN_INC_L, adj & 0xFFFFFFFF);
+ 	wr32(hw, I40E_PRTTSYN_INC_H, adj >> 32);
  
- 	incvalue = timinca & E1000_TIMINCA_INCVALUE_MASK;
- 
--	adjustment = incvalue;
--	adjustment *= delta;
--	adjustment = div_u64(adjustment, 1000000000);
-+	adjustment = mul_u64_u64_div_u64(incvalue, (u64)delta,
-+					 1000000ULL << 16);
- 
- 	incvalue = neg_adj ? (incvalue - adjustment) : (incvalue + adjustment);
- 
-@@ -257,7 +258,7 @@ static const struct ptp_clock_info e1000e_ptp_clock_info = {
- 	.n_per_out	= 0,
- 	.n_pins		= 0,
- 	.pps		= 0,
--	.adjfreq	= e1000e_phc_adjfreq,
-+	.adjfine	= e1000e_phc_adjfine,
- 	.adjtime	= e1000e_phc_adjtime,
- 	.gettimex64	= e1000e_phc_gettimex,
- 	.settime64	= e1000e_phc_settime,
 -- 
 2.35.1
 
