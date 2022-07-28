@@ -2,113 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9114D584484
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A565844A5
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 19:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbiG1Q6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        id S229814AbiG1RKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 13:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbiG1Q6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:58:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEDB5FAC2
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:58:45 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH6qG-00082K-1X; Thu, 28 Jul 2022 18:58:32 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH6qC-0001DX-8P; Thu, 28 Jul 2022 18:58:28 +0200
-Date:   Thu, 28 Jul 2022 18:58:28 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Bastian Stender <bst@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Subject: Re: [PATCH] can: j1939: Replace WARN_ON_ONCE with pr_warn_once() in
- j1939_sk_queue_activate_next_locked()
-Message-ID: <20220728165828.GB30201@pengutronix.de>
-References: <7ea40c0e-e696-3537-c2a4-a8eccf4695d0@ispras.ru>
- <20220728163429.214758-1-pchelkin@ispras.ru>
+        with ESMTP id S229600AbiG1RKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 13:10:42 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619C25B789;
+        Thu, 28 Jul 2022 10:10:41 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SAkOLQ005425;
+        Thu, 28 Jul 2022 10:10:35 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=TpQCp4iaOzI5J2JDwEntBLH654zx8KeMuZaAIPissfo=;
+ b=RZ5Eef7JtEFzmB1ZRpnPqW9AA/LYams89oGfR3mZ4KeFdBfuHDV36wv7FkHgwkemAS/3
+ 1ILonyhQnRlr5g+ftatHoxEyLnCUxYe9RNzSNlu3PrUAJ6cwUDgcsAQQde5t6V/ciVK4
+ Mjx4qVwsvRPRkEZX+gmjrDR9teNefiZ4IItR1UbBt1iCQYOrEMthVu0XVpGTLv9Ug9uc
+ DZQaQKm0vzCSzw/Gx4LZPfOxQZ47bpGl6qsNQR4pJ7PgUYcDgU1StEhlYCefwW3NKtSM
+ x5PACoDJursYv545owrIJHTz8E5gQQ49+C2gvHePF3rvACA3VYI4EPY1JxaOt+AEZ0/F zA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hjyn8ps0j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jul 2022 10:10:34 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 28 Jul
+ 2022 10:10:32 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 28 Jul 2022 10:10:32 -0700
+Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
+        by maili.marvell.com (Postfix) with ESMTP id 7B5B53F706A;
+        Thu, 28 Jul 2022 10:10:30 -0700 (PDT)
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
+CC:     Naveen Mamindlapalli <naveenm@marvell.com>
+Subject: [net PATCH] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
+Date:   Thu, 28 Jul 2022 22:40:26 +0530
+Message-ID: <20220728171026.22699-1-naveenm@marvell.com>
+X-Mailer: git-send-email 2.16.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220728163429.214758-1-pchelkin@ispras.ru>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: yBsM_FHfYFE-AQ5BxiriR-8cSJoZm9qr
+X-Proofpoint-GUID: yBsM_FHfYFE-AQ5BxiriR-8cSJoZm9qr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-28_06,2022-07-28_02,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fedor,
+This patch configures the NIX_AF_TL3_TL2X_LINKX_CFG register
+based on NIX_AF_PSE_CHANNEL_LEVEL BP_LEVEL value.
 
-thank you for your patch.
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 19 ++++++++++++++-----
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.h  |  1 +
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
-On Thu, Jul 28, 2022 at 07:34:29PM +0300, Fedor Pchelkin wrote:
-> We should warn user-space that it is doing something wrong when trying to
-> activate sessions with identical parameters but WARN_ON_ONCE macro can not
-> be used here as it serves a different purpose.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> ---
->  net/can/j1939/socket.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-> index f5ecfdcf57b2..67e8b50b8bc1 100644
-> --- a/net/can/j1939/socket.c
-> +++ b/net/can/j1939/socket.c
-> @@ -178,7 +178,8 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
->  	if (!first)
->  		return;
->  
-> -	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-> +	if (j1939_session_activate(first)) {
-> +		pr_warn_once("can: j1939: Identical session is already activated.\n");
-
-please use netdev_warn_once().
-Otherwise looks good.
-
->  		first->err = -EBUSY;
->  		goto activate_next;
->  	} else {
-> -- 
-> 2.25.1
-> 
-> 
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index fb8db5888d2f..d686c7b6252f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -632,6 +632,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->num_regs++;
+ 		req->reg[1] = NIX_AF_TL3X_SCHEDULE(schq);
+ 		req->regval[1] = dwrr_val;
++		if (lvl == hw->txschq_link_cfg_lvl) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
++			/* Enable this queue and backpressure */
++			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL2) {
+ 		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
+ 		req->reg[0] = NIX_AF_TL2X_PARENT(schq);
+@@ -641,11 +647,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->reg[1] = NIX_AF_TL2X_SCHEDULE(schq);
+ 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+ 
+-		req->num_regs++;
+-		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
+-		/* Enable this queue and backpressure */
+-		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
+-
++		if (lvl == hw->txschq_link_cfg_lvl) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
++			/* Enable this queue and backpressure */
++			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
+ 		/* Default config for TL1.
+ 		 * For VF this is always ignored.
+@@ -1591,6 +1598,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
+ 		for (schq = 0; schq < rsp->schq[lvl]; schq++)
+ 			pf->hw.txschq_list[lvl][schq] =
+ 				rsp->schq_list[lvl][schq];
++
++	pf->hw.txschq_link_cfg_lvl = rsp->link_cfg_lvl;
+ }
+ EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index ce2766317c0b..f9c0d2f08e87 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -195,6 +195,7 @@ struct otx2_hw {
+ 	u16			sqb_size;
+ 
+ 	/* NIX */
++	u8			txschq_link_cfg_lvl;
+ 	u16		txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
+ 	u16			matchall_ipolicer;
+ 	u32			dwrr_mtu;
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.16.5
+
