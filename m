@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE3A584762
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4D0584764
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:58:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233180AbiG1U5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 16:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56120 "EHLO
+        id S233508AbiG1U6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 16:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233178AbiG1U5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:57:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69A478211
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:57:36 -0700 (PDT)
+        with ESMTP id S233370AbiG1U5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:57:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF13E78234
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:57:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77007B82595
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF2FC433D7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EBA6B82593
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:57:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DFDC43470;
         Thu, 28 Jul 2022 20:57:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659041855;
-        bh=Rt5QGOmc9TQ0O9kCUFoHWIha3SbUMlR3QgISUCfNI5c=;
+        s=k20201202; t=1659041856;
+        bh=GoKzKKne9I2jzT5tXRq/i9UNx+rO7MlWNOUw7aCpV3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJIUcoxvUJDx84B0LjRjHriTP12tQgYPJiHkindNQ6kimWnwXycfw3b7iIeFz487A
-         Sqcdso9u57r/RCNpYGgoDnkb89RVZZhcpryLBuPzZn4Ns7h0BgvQL5kw5tY4LYWccV
-         nwLjv7jA2rzOHKRGcGu5vFKCn93PO9I5sc61BOL5REGjr2OZguuzHWaHmsf4DUJz+j
-         mSMcSgceqbEvDiGCYqhTmVGHfXO9NpjkudNqfBIbHJ3WvgCiFet9gA8YlqHFvEqYCL
-         +Diz+Gc2s5bBu5c85TGl5qVn3ueFIwac9p1aqvH+QgxaIPM8Pu+S/XUUj9GL0yXUvm
-         rZFItw5+5vW3A==
+        b=AmxGScpeh7gKVh342Khmg8sZUixZH62laEn7IkvLyGBG49nys7ISh0wDlSTjbX0Fc
+         rWnCHpLFSUBUfEEkKNziESnii1j3Dmy5fdOutixNQeo2FYip6PFj2HnGtb8pCBe+ld
+         OZpjJzpxWBd6QDw3UntNJn5tv0YfaG30/rT5oEHzB4s+IZHYppHf0iQp0Q82POfxac
+         YOgUBr3LmNSZdCBNMec6DAoUFh1HQVWNJbYAkGSPvGFy6O/CN/mp677uQvxuIzL7/H
+         HUdUFD6iuw1uZq0YmkUn9BC/PK4+ji358M/o6U0UsllptjA6kVUSSnmh2gDtoA8TFu
+         BSZkBXjr87QSw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Jianbo Liu <jianbol@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>
-Subject: [net-next 05/15] net/mlx5e: TC, Separate get/update/replace meter functions
-Date:   Thu, 28 Jul 2022 13:57:18 -0700
-Message-Id: <20220728205728.143074-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5e: TC, Support tc action api for police
+Date:   Thu, 28 Jul 2022 13:57:19 -0700
+Message-Id: <20220728205728.143074-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728205728.143074-1-saeed@kernel.org>
 References: <20220728205728.143074-1-saeed@kernel.org>
@@ -58,229 +58,350 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-mlx5e_tc_meter_get() to get an existing meter.
-mlx5e_tc_meter_update() to update an existing meter without refcount.
-mlx5e_tc_meter_replace() to get/create a meter and update if needed.
+Add support for tc action api for police.
+Offloading standalone police action without
+a tc rule and reporting stats.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c | 132 ++++++++++++++----
- .../ethernet/mellanox/mlx5/core/en/tc/meter.h |   5 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
- 3 files changed, 112 insertions(+), 27 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 117 +++++++++++++++++-
+ .../mellanox/mlx5/core/en/tc/act/act.h        |  10 ++
+ .../mellanox/mlx5/core/en/tc/act/police.c     | 100 +++++++++++++--
+ .../ethernet/mellanox/mlx5/core/en/tc/meter.c |  16 +++
+ .../ethernet/mellanox/mlx5/core/en/tc/meter.h |   4 +
+ 5 files changed, 239 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index 6409e4fa16a1..17529cc07ff4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -344,69 +344,149 @@ __mlx5e_flow_meter_free(struct mlx5e_flow_meter_handle *meter)
- 	kfree(meter);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 86fa0bdbee36..fac7e3ff2674 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -21,6 +21,7 @@
+ #include "en/tc/sample.h"
+ #include "en_accel/ipsec_rxtx.h"
+ #include "en/tc/int_port.h"
++#include "en/tc/act/act.h"
+ 
+ struct mlx5e_rep_indr_block_priv {
+ 	struct net_device *netdev;
+@@ -511,6 +512,120 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev, struct Qdisc *sch,
+ 	return 0;
  }
  
-+static struct mlx5e_flow_meter_handle *
-+__mlx5e_tc_meter_get(struct mlx5e_flow_meters *flow_meters, u32 index)
++static int
++mlx5e_rep_indr_replace_act(struct mlx5e_rep_priv *rpriv,
++			   struct flow_offload_action *fl_act)
++
 +{
-+	struct mlx5e_flow_meter_handle *meter;
++	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
++	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
++	enum mlx5_flow_namespace_type ns_type;
++	struct flow_action_entry *action;
++	struct mlx5e_tc_act *act;
++	bool add = false;
++	int i;
 +
-+	hash_for_each_possible(flow_meters->hashtbl, meter, hlist, index)
-+		if (meter->params.index == index)
-+			goto add_ref;
++	/* There is no use case currently for more than one action (e.g. pedit).
++	 * when there will be, need to handle cleaning multiple actions on err.
++	 */
++	if (!flow_offload_has_one_action(&fl_act->action))
++		return -EOPNOTSUPP;
 +
-+	return ERR_PTR(-ENOENT);
++	if (esw && esw->mode == MLX5_ESWITCH_OFFLOADS)
++		ns_type = MLX5_FLOW_NAMESPACE_FDB;
++	else
++		ns_type = MLX5_FLOW_NAMESPACE_KERNEL;
 +
-+add_ref:
-+	meter->refcnt++;
++	flow_action_for_each(i, action, &fl_act->action) {
++		act = mlx5e_tc_act_get(action->id, ns_type);
++		if (!act)
++			continue;
 +
-+	return meter;
-+}
++		if (!act->offload_action)
++			continue;
 +
- struct mlx5e_flow_meter_handle *
- mlx5e_tc_meter_get(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params)
- {
- 	struct mlx5e_flow_meters *flow_meters;
- 	struct mlx5e_flow_meter_handle *meter;
--	int err;
- 
- 	flow_meters = mlx5e_get_flow_meters(mdev);
- 	if (!flow_meters)
- 		return ERR_PTR(-EOPNOTSUPP);
- 
- 	mutex_lock(&flow_meters->sync_lock);
--	hash_for_each_possible(flow_meters->hashtbl, meter, hlist, params->index)
--		if (meter->params.index == params->index)
--			goto add_ref;
-+	meter = __mlx5e_tc_meter_get(flow_meters, params->index);
-+	mutex_unlock(&flow_meters->sync_lock);
- 
--	meter = __mlx5e_flow_meter_alloc(flow_meters);
--	if (IS_ERR(meter)) {
--		err = PTR_ERR(meter);
--		goto err_alloc;
-+	return meter;
-+}
++		if (!act->offload_action(priv, fl_act, action))
++			add = true;
++	}
 +
-+static void
-+__mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter)
-+{
-+	if (--meter->refcnt == 0) {
-+		hash_del(&meter->hlist);
-+		__mlx5e_flow_meter_free(meter);
- 	}
-+}
-+
-+void
-+mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter)
-+{
-+	struct mlx5e_flow_meters *flow_meters = meter->flow_meters;
-+
-+	mutex_lock(&flow_meters->sync_lock);
-+	__mlx5e_tc_meter_put(meter);
-+	mutex_unlock(&flow_meters->sync_lock);
-+}
-+
-+static struct mlx5e_flow_meter_handle *
-+mlx5e_tc_meter_alloc(struct mlx5e_flow_meters *flow_meters,
-+		     struct mlx5e_flow_meter_params *params)
-+{
-+	struct mlx5e_flow_meter_handle *meter;
-+
-+	meter = __mlx5e_flow_meter_alloc(flow_meters);
-+	if (IS_ERR(meter))
-+		return meter;
- 
- 	hash_add(flow_meters->hashtbl, &meter->hlist, params->index);
- 	meter->params.index = params->index;
--
--add_ref:
- 	meter->refcnt++;
- 
-+	return meter;
++	return add ? 0 : -EOPNOTSUPP;
 +}
 +
 +static int
-+__mlx5e_tc_meter_update(struct mlx5e_flow_meter_handle *meter,
-+			struct mlx5e_flow_meter_params *params)
++mlx5e_rep_indr_destroy_act(struct mlx5e_rep_priv *rpriv,
++			   struct flow_offload_action *fl_act)
 +{
-+	struct mlx5_core_dev *mdev = meter->flow_meters->mdev;
-+	int err = 0;
++	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
++	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
++	enum mlx5_flow_namespace_type ns_type;
++	struct mlx5e_tc_act *act;
 +
- 	if (meter->params.mode != params->mode || meter->params.rate != params->rate ||
- 	    meter->params.burst != params->burst) {
- 		err = mlx5e_tc_meter_modify(mdev, meter, params);
- 		if (err)
--			goto err_update;
-+			goto out;
- 
- 		meter->params.mode = params->mode;
- 		meter->params.rate = params->rate;
- 		meter->params.burst = params->burst;
- 	}
- 
--	mutex_unlock(&flow_meters->sync_lock);
--	return meter;
-+out:
-+	return err;
-+}
- 
--err_update:
--	if (--meter->refcnt == 0) {
--		hash_del(&meter->hlist);
--		__mlx5e_flow_meter_free(meter);
--	}
--err_alloc:
-+int
-+mlx5e_tc_meter_update(struct mlx5e_flow_meter_handle *meter,
-+		      struct mlx5e_flow_meter_params *params)
-+{
-+	struct mlx5_core_dev *mdev = meter->flow_meters->mdev;
-+	struct mlx5e_flow_meters *flow_meters;
-+	int err;
++	if (esw && esw->mode == MLX5_ESWITCH_OFFLOADS)
++		ns_type = MLX5_FLOW_NAMESPACE_FDB;
++	else
++		ns_type = MLX5_FLOW_NAMESPACE_KERNEL;
 +
-+	flow_meters = mlx5e_get_flow_meters(mdev);
-+	if (!flow_meters)
++	act = mlx5e_tc_act_get(fl_act->id, ns_type);
++	if (!act || !act->destroy_action)
 +		return -EOPNOTSUPP;
 +
-+	mutex_lock(&flow_meters->sync_lock);
-+	err = __mlx5e_tc_meter_update(meter, params);
- 	mutex_unlock(&flow_meters->sync_lock);
--	return ERR_PTR(err);
-+	return err;
++	return act->destroy_action(priv, fl_act);
++}
++
++static int
++mlx5e_rep_indr_stats_act(struct mlx5e_rep_priv *rpriv,
++			 struct flow_offload_action *fl_act)
++
++{
++	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
++	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
++	enum mlx5_flow_namespace_type ns_type;
++	struct mlx5e_tc_act *act;
++
++	if (esw && esw->mode == MLX5_ESWITCH_OFFLOADS)
++		ns_type = MLX5_FLOW_NAMESPACE_FDB;
++	else
++		ns_type = MLX5_FLOW_NAMESPACE_KERNEL;
++
++	act = mlx5e_tc_act_get(fl_act->id, ns_type);
++	if (!act || !act->stats_action)
++		return -EOPNOTSUPP;
++
++	return act->stats_action(priv, fl_act);
++}
++
++static int
++mlx5e_rep_indr_setup_act(struct mlx5e_rep_priv *rpriv,
++			 struct flow_offload_action *fl_act)
++{
++	switch (fl_act->command) {
++	case FLOW_ACT_REPLACE:
++		return mlx5e_rep_indr_replace_act(rpriv, fl_act);
++	case FLOW_ACT_DESTROY:
++		return mlx5e_rep_indr_destroy_act(rpriv, fl_act);
++	case FLOW_ACT_STATS:
++		return mlx5e_rep_indr_stats_act(rpriv, fl_act);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int
++mlx5e_rep_indr_no_dev_setup(struct mlx5e_rep_priv *rpriv,
++			    enum tc_setup_type type,
++			    void *data)
++{
++	if (!data)
++		return -EOPNOTSUPP;
++
++	switch (type) {
++	case TC_SETUP_ACT:
++		return mlx5e_rep_indr_setup_act(rpriv, data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static
+ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, struct Qdisc *sch, void *cb_priv,
+ 			    enum tc_setup_type type, void *type_data,
+@@ -518,7 +633,7 @@ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, struct Qdisc *sch, void *
+ 			    void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	if (!netdev)
+-		return -EOPNOTSUPP;
++		return mlx5e_rep_indr_no_dev_setup(cb_priv, type, data);
+ 
+ 	switch (type) {
+ 	case TC_SETUP_BLOCK:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+index 095ff8ef80e2..e1570ff056ae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+@@ -50,6 +50,16 @@ struct mlx5e_tc_act {
+ 	bool (*is_multi_table_act)(struct mlx5e_priv *priv,
+ 				   const struct flow_action_entry *act,
+ 				   struct mlx5_flow_attr *attr);
++
++	int (*offload_action)(struct mlx5e_priv *priv,
++			      struct flow_offload_action *fl_act,
++			      struct flow_action_entry *act);
++
++	int (*destroy_action)(struct mlx5e_priv *priv,
++			      struct flow_offload_action *fl_act);
++
++	int (*stats_action)(struct mlx5e_priv *priv,
++			    struct flow_offload_action *fl_act);
+ };
+ 
+ struct mlx5e_tc_flow_action {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
+index 4bd9c04a49e3..37522352e4b2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
+@@ -24,14 +24,9 @@ tc_act_can_offload_police(struct mlx5e_tc_act_parse_state *parse_state,
  }
  
--void
--mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter)
-+struct mlx5e_flow_meter_handle *
-+mlx5e_tc_meter_replace(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params)
+ static int
+-tc_act_parse_police(struct mlx5e_tc_act_parse_state *parse_state,
+-		    const struct flow_action_entry *act,
+-		    struct mlx5e_priv *priv,
+-		    struct mlx5_flow_attr *attr)
++fill_meter_params_from_act(const struct flow_action_entry *act,
++			   struct mlx5e_flow_meter_params *params)
  {
--	struct mlx5e_flow_meters *flow_meters = meter->flow_meters;
-+	struct mlx5e_flow_meters *flow_meters;
-+	struct mlx5e_flow_meter_handle *meter;
+-	struct mlx5e_flow_meter_params *params;
+-
+-	params = &attr->meter_attr.params;
+ 	params->index = act->hw_index;
+ 	if (act->police.rate_bytes_ps) {
+ 		params->mode = MLX5_RATE_LIMIT_BPS;
+@@ -46,6 +41,21 @@ tc_act_parse_police(struct mlx5e_tc_act_parse_state *parse_state,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	return 0;
++}
++
++static int
++tc_act_parse_police(struct mlx5e_tc_act_parse_state *parse_state,
++		    const struct flow_action_entry *act,
++		    struct mlx5e_priv *priv,
++		    struct mlx5_flow_attr *attr)
++{
 +	int err;
 +
-+	flow_meters = mlx5e_get_flow_meters(mdev);
-+	if (!flow_meters)
-+		return ERR_PTR(-EOPNOTSUPP);
- 
- 	mutex_lock(&flow_meters->sync_lock);
--	if (--meter->refcnt == 0) {
--		hash_del(&meter->hlist);
--		__mlx5e_flow_meter_free(meter);
-+	meter = __mlx5e_tc_meter_get(flow_meters, params->index);
-+	if (IS_ERR(meter)) {
-+		meter = mlx5e_tc_meter_alloc(flow_meters, params);
-+		if (IS_ERR(meter)) {
-+			err = PTR_ERR(meter);
-+			goto err_get;
-+		}
- 	}
-+
-+	err = __mlx5e_tc_meter_update(meter, params);
++	err = fill_meter_params_from_act(act, &attr->meter_attr.params);
 +	if (err)
-+		goto err_update;
++		return err;
 +
- 	mutex_unlock(&flow_meters->sync_lock);
-+	return meter;
-+
-+err_update:
-+	__mlx5e_tc_meter_put(meter);
-+err_get:
-+	mutex_unlock(&flow_meters->sync_lock);
-+	return ERR_PTR(err);
+ 	attr->action |= MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO;
+ 	attr->exe_aso_type = MLX5_EXE_ASO_FLOW_METER;
+ 
+@@ -60,8 +70,84 @@ tc_act_is_multi_table_act_police(struct mlx5e_priv *priv,
+ 	return true;
  }
  
- enum mlx5_flow_namespace_type
++static int
++tc_act_police_offload(struct mlx5e_priv *priv,
++		      struct flow_offload_action *fl_act,
++		      struct flow_action_entry *act)
++{
++	struct mlx5e_flow_meter_params params = {};
++	struct mlx5e_flow_meter_handle *meter;
++	int err = 0;
++
++	err = fill_meter_params_from_act(act, &params);
++	if (err)
++		return err;
++
++	meter = mlx5e_tc_meter_get(priv->mdev, &params);
++	if (IS_ERR(meter) && PTR_ERR(meter) == -ENOENT) {
++		meter = mlx5e_tc_meter_replace(priv->mdev, &params);
++	} else if (!IS_ERR(meter)) {
++		err = mlx5e_tc_meter_update(meter, &params);
++		mlx5e_tc_meter_put(meter);
++	}
++
++	if (IS_ERR(meter)) {
++		NL_SET_ERR_MSG_MOD(fl_act->extack, "Failed to get flow meter");
++		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
++		err = PTR_ERR(meter);
++	}
++
++	return err;
++}
++
++static int
++tc_act_police_destroy(struct mlx5e_priv *priv,
++		      struct flow_offload_action *fl_act)
++{
++	struct mlx5e_flow_meter_params params = {};
++	struct mlx5e_flow_meter_handle *meter;
++
++	params.index = fl_act->index;
++	meter = mlx5e_tc_meter_get(priv->mdev, &params);
++	if (IS_ERR(meter)) {
++		NL_SET_ERR_MSG_MOD(fl_act->extack, "Failed to get flow meter");
++		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
++		return PTR_ERR(meter);
++	}
++	/* first put for the get and second for cleanup */
++	mlx5e_tc_meter_put(meter);
++	mlx5e_tc_meter_put(meter);
++	return 0;
++}
++
++static int
++tc_act_police_stats(struct mlx5e_priv *priv,
++		    struct flow_offload_action *fl_act)
++{
++	struct mlx5e_flow_meter_params params = {};
++	struct mlx5e_flow_meter_handle *meter;
++	u64 bytes, packets, drops, lastuse;
++
++	params.index = fl_act->index;
++	meter = mlx5e_tc_meter_get(priv->mdev, &params);
++	if (IS_ERR(meter)) {
++		NL_SET_ERR_MSG_MOD(fl_act->extack, "Failed to get flow meter");
++		mlx5_core_err(priv->mdev, "Failed to get flow meter %d\n", params.index);
++		return PTR_ERR(meter);
++	}
++
++	mlx5e_tc_meter_get_stats(meter, &bytes, &packets, &drops, &lastuse);
++	flow_stats_update(&fl_act->stats, bytes, packets, drops, lastuse,
++			  FLOW_ACTION_HW_STATS_DELAYED);
++	mlx5e_tc_meter_put(meter);
++	return 0;
++}
++
+ struct mlx5e_tc_act mlx5e_tc_act_police = {
+ 	.can_offload = tc_act_can_offload_police,
+ 	.parse_action = tc_act_parse_police,
+ 	.is_multi_table_act = tc_act_is_multi_table_act_police,
++	.offload_action = tc_act_police_offload,
++	.destroy_action = tc_act_police_destroy,
++	.stats_action = tc_act_police_stats,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+index 17529cc07ff4..a53e205f4a89 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+@@ -561,3 +561,19 @@ mlx5e_flow_meters_cleanup(struct mlx5e_flow_meters *flow_meters)
+ 	mlx5_core_dealloc_pd(flow_meters->mdev, flow_meters->pdn);
+ 	kfree(flow_meters);
+ }
++
++void
++mlx5e_tc_meter_get_stats(struct mlx5e_flow_meter_handle *meter,
++			 u64 *bytes, u64 *packets, u64 *drops, u64 *lastuse)
++{
++	u64 bytes1, packets1, lastuse1;
++	u64 bytes2, packets2, lastuse2;
++
++	mlx5_fc_query_cached(meter->green_counter, &bytes1, &packets1, &lastuse1);
++	mlx5_fc_query_cached(meter->red_counter, &bytes2, &packets2, &lastuse2);
++
++	*bytes = bytes1 + bytes2;
++	*packets = packets1 + packets2;
++	*drops = packets2;
++	*lastuse = max_t(u64, lastuse1, lastuse2);
++}
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-index a73ebf94ad17..71ffa86e8965 100644
+index 71ffa86e8965..6de6e8a16327 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-@@ -51,6 +51,11 @@ struct mlx5e_flow_meter_handle *
- mlx5e_tc_meter_get(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params);
+@@ -67,4 +67,8 @@ mlx5e_flow_meters_init(struct mlx5e_priv *priv,
  void
- mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter);
-+int
-+mlx5e_tc_meter_update(struct mlx5e_flow_meter_handle *meter,
-+		      struct mlx5e_flow_meter_params *params);
-+struct mlx5e_flow_meter_handle *
-+mlx5e_tc_meter_replace(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params);
+ mlx5e_flow_meters_cleanup(struct mlx5e_flow_meters *flow_meters);
  
- enum mlx5_flow_namespace_type
- mlx5e_tc_meter_get_namespace(struct mlx5e_flow_meters *flow_meters);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index a38e1505bace..c3ec23f883cd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -361,7 +361,7 @@ mlx5e_tc_add_flow_meter(struct mlx5e_priv *priv,
- 	enum mlx5_flow_namespace_type ns_type;
- 	struct mlx5e_flow_meter_handle *meter;
- 
--	meter = mlx5e_tc_meter_get(priv->mdev, &attr->meter_attr.params);
-+	meter = mlx5e_tc_meter_replace(priv->mdev, &attr->meter_attr.params);
- 	if (IS_ERR(meter)) {
- 		mlx5_core_err(priv->mdev, "Failed to get flow meter\n");
- 		return PTR_ERR(meter);
++void
++mlx5e_tc_meter_get_stats(struct mlx5e_flow_meter_handle *meter,
++			 u64 *bytes, u64 *packets, u64 *drops, u64 *lastuse);
++
+ #endif /* __MLX5_EN_FLOW_METER_H__ */
 -- 
 2.37.1
 
