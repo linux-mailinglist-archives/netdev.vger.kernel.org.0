@@ -2,46 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD5A58366A
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:37:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5B6583670
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234932AbiG1Bg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 21:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50988 "EHLO
+        id S235685AbiG1BiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 21:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiG1Bgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:36:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664194D81C;
-        Wed, 27 Jul 2022 18:36:51 -0700 (PDT)
+        with ESMTP id S229446AbiG1BiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:38:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265FE4E63F;
+        Wed, 27 Jul 2022 18:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06813B8224E;
-        Thu, 28 Jul 2022 01:36:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AD37C433C1;
-        Thu, 28 Jul 2022 01:36:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D81E3B8224E;
+        Thu, 28 Jul 2022 01:38:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36CF9C433C1;
+        Thu, 28 Jul 2022 01:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658972208;
-        bh=DnonMiuWXIiuzZDXL8pNnHlEBP04K89tqhUudaTWyW4=;
+        s=k20201202; t=1658972293;
+        bh=6ld4FOwEHnEforzdyOfL83UeKKCu+vXhy3+jLfQFDBA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dNCsZuXFlDoDjpOHeM3xi6E8xS9DNsogbnl15CBPmj7ogMT7BmE0UR54KlN6yJ6EX
-         GhEB/jVRpViOcoVlRVjkNgyK03DeMJ87yZxrLPbCcIpPkKnBqN2D/wreTzQVd8e0MO
-         cmV7Q3EzBCLPzZT6zI/3ghxQkEsH4xwRuk8+40sRDs3n5Aux2FkoNH/4nPvQyqDyRP
-         1Mi8kCO7CinKNrt6zeRYs0zluWjr1q5YUwG0/SeuY6O8W6duObF5l67FhXLKlURpPJ
-         myGZC29GJ+ZTLhUJJeIBj0U6hCE8OPwEAYSxUEsl3V9miv2dGnNUktfMJIqP8ibyM+
-         JdeacHjPn9qtQ==
-Date:   Wed, 27 Jul 2022 18:36:47 -0700
+        b=YKdVja3l1daftWBAT/9ZLiv6KliRX1NrbryeA3vT3X+9GARH6uOu4CsSGDvHi2/8P
+         NIpfTw1oWSqpCOPch/tSVurILN2haq0jjmz0+zOtATwRtpQecT/WBfjw90Wmpjyjar
+         +/FHD5SL+sumvHoh3zkyp8/ElQvQ1xivXWTzan9MAmNRI6zxrVuho2cn+whLNHZx9F
+         j+wNM7hKBxpYcfOwOQqwKAmJamHbfX8rZgxctaUeIKrK70fESee+v+Ho19oPzsbCO3
+         V01HNJ/KUfLhUAK/FU7rRsSNJtQi2kIY4v8fxdHir+064/fdTSvwnBoRvLVG2b2Wuq
+         ouvZ4xubu6LYg==
+Date:   Wed, 27 Jul 2022 18:38:12 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2] netrom: fix sleep in atomic context bugs in
- timer handlers
-Message-ID: <20220727183647.23ae46f8@kernel.org>
-In-Reply-To: <20220726032420.5516-1-duoming@zju.edu.cn>
-References: <20220726032420.5516-1-duoming@zju.edu.cn>
+To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] ipv6/addrconf: fix a null-ptr-deref bug for
+ ip6_ptr
+Message-ID: <20220727183812.5a448126@kernel.org>
+In-Reply-To: <b63eeb55-df38-618a-d7af-91b18f1d6f0f@huawei.com>
+References: <20220726115028.3055296-1-william.xuanziyang@huawei.com>
+        <CANn89iJNHhq9zbmL2DF-up_hBRHuwkPiNUpMS+LHoumy5ohQZA@mail.gmail.com>
+        <48fd2345-ef86-da0d-c471-c576aa93d9f5@kernel.org>
+        <b63eeb55-df38-618a-d7af-91b18f1d6f0f@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,25 +61,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jul 2022 11:24:20 +0800 Duoming Zhou wrote:
-> nr_heartbeat_expiry
->   nr_write_internal
->     nr_transmit_buffer
+On Wed, 27 Jul 2022 17:11:14 +0800 Ziyang Xuan (William) wrote:
+> > Yes, that is the right Fixes commit.  
+> 
+> OK
 
-void nr_transmit_buffer(struct sock *sk, struct sk_buff *skb)
-{
-[...]
-	if (!nr_route_frame(skb, NULL)) {
-
->       nr_route_frame
-
-int nr_route_frame(struct sk_buff *skb, ax25_cb *ax25)
-{
-[...]
-	if (ax25 != NULL) {
-		ret = nr_add_node(nr_src, "", &ax25->dest_addr, ax25->digipeat,
-
-ax25 must be NULL on this path AFAICT.
-
->         nr_add_node
->           kmemdup(..,GFP_KERNEL) //may sleep
+Please repost with that changed.
