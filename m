@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFEE0583B84
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B98583B96
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiG1JuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 05:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
+        id S235709AbiG1J5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 05:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235357AbiG1JuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:50:16 -0400
+        with ESMTP id S235034AbiG1J5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:57:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2753ED75
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:50:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A536390D;
+        Thu, 28 Jul 2022 02:57:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8964AB82396
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C9E2C433C1;
-        Thu, 28 Jul 2022 09:50:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09D04B82393;
+        Thu, 28 Jul 2022 09:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE1FC433C1;
+        Thu, 28 Jul 2022 09:57:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659001813;
-        bh=uyamihGJPYpb+1UKyEZlh23ZP/yq8vuvWLYPDQDmWrM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mS/QBFZ/2FvwFdFCLNnovUq28fmJQ8MwA9VacyHCoalfP0aDTSuEPO4wZPAfULfGj
-         jkbaMj/d0DDoLdQZ3GBPk2qPX4qhBSAtGIxopU7c6N6879bz+kOb7Bmgq19D9zbGYi
-         W8ULARzOp2AzfllC0PkNgFDhOijm0hRodELyVpCHU9CEqMF4SvIfHbJJcmgsuHmiDF
-         mUEOxEtV8nuOOvOvD8NLKznPr4cINUY5y+Db3hGu/sLxGpygOcSTImX+rT+xMg/8Fn
-         uiAD11A0KzSOLhsIErvp83Bcsv4MLaHE+zktFLGaa+AVMPyyL1SGOvpHcEXvP1xa0n
-         rFgndWEzFFRkg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 12C61C43143;
-        Thu, 28 Jul 2022 09:50:13 +0000 (UTC)
+        s=k20201202; t=1659002258;
+        bh=pzgNl7GHZa2hl9UPO39duiMSklaGM6oa/uofX+is3PE=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=tQFi3+7aGm02mP0NWlBfgPD8D2Cl5Cicsw0GLPtCFCJ8vY5s9Vu+4Kr3m4JlEGLG6
+         3OQZLDfSRp+caucGWLumOJuqcP1VSyeXJRoktA0qWfUaxeuHp1/94fG+IvC3LtHpYg
+         TPtfegQ4jaDBv8LWkrhSzyr2+Mj9d2hdPvPNqDLi5u24uDacXikafuiAZesHgT3ZZs
+         pPOr5ZhzxkSOFMgBq7xmJh+1qJnlhPDuBCi2NITUTSbhioFlzCPLZsQVmC9EWvecuE
+         7gmeYprDyknjAglV9vSu8Tq+BTVCTpEDdWpCv07O+kOGutZoiVUDmP7Fk7gA3K6+Yk
+         W+VysNOjb9mbg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] add missing includes and forward declarations to
- networking includes under linux/
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165900181307.10387.10913900759777322330.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Jul 2022 09:50:13 +0000
-References: <20220726215652.158167-1-kuba@kernel.org>
-In-Reply-To: <20220726215652.158167-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com
+Content-Transfer-Encoding: 7bit
+Subject: Re: [v3] wifi: brcmfmac: Remove #ifdef guards for PM related
+ functions
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220627193701.31074-1-paul@crapouillou.net>
+References: <20220627193701.31074-1-paul@crapouillou.net>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165900225429.25113.8345553765798520539.kvalo@kernel.org>
+Date:   Thu, 28 Jul 2022 09:57:36 +0000 (UTC)
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,29 +58,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 26 Jul 2022 14:56:52 -0700 you wrote:
-> Similarly to a recent include/net/ cleanup, this patch adds
-> missing includes to networking headers under include/linux.
-> All these problems are currently masked by the existing users
-> including the missing dependency before the broken header.
+> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+> handle the .suspend/.resume callbacks.
 > 
-> Link: https://lore.kernel.org/all/20220723045755.2676857-1-kuba@kernel.org/ v1
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> These macros allow the suspend and resume functions to be automatically
+> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+> to use #ifdef guards.
 > 
-> [...]
+> Some other functions not directly called by the .suspend/.resume
+> callbacks, but still related to PM were also taken outside #ifdef
+> guards.
+> 
+> The advantage is then that these functions are now always compiled
+> independently of any Kconfig option, and thanks to that bugs and
+> regressions are easier to catch.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-Here is the summary with links:
-  - [net-next,v2] add missing includes and forward declarations to networking includes under linux/
-    https://git.kernel.org/netdev/net-next/c/5f10376b6bc1
+Patch applied to wireless-next.git, thanks.
 
-You are awesome, thank you!
+02a186f1e96b wifi: brcmfmac: Remove #ifdef guards for PM related functions
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://patchwork.kernel.org/project/linux-wireless/patch/20220627193701.31074-1-paul@crapouillou.net/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
