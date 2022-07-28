@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 094C658372F
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 04:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F4073583730
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 04:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234759AbiG1CvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 22:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
+        id S234905AbiG1Cvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 22:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232484AbiG1CvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 22:51:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8655072A
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 19:51:08 -0700 (PDT)
+        with ESMTP id S232484AbiG1Cvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 22:51:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2486E52FCE
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 19:51:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E988061961
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE03C433C1;
-        Thu, 28 Jul 2022 02:51:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0C8F61957
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:51:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E011CC433C1;
+        Thu, 28 Jul 2022 02:51:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658976667;
-        bh=841ZhDSXz+kiQxrPbP8gtmlQU0L762nWHfS1y4eMdYU=;
+        s=k20201202; t=1658976690;
+        bh=8CM6gHjjRz6JK5sh4S1FIuPuoM5wGf1lcREqsAHnRM4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yald9G+OLhoa4hOuGZG+B6KvzBrFRLTquez/KJp5oW7JuQUUkEQzuTEIeaB3XdPpX
-         8njjisZgNe1ovpqFm+s1kA+URB6dqz0aQEu4ZJhFJuEn1u9KOhOuGO2P46iqwrSJP+
-         Y6y+UPpdA2vUIcMs4NWiaz4Rl61PimjLjFM/By8xV+liJBLonLYrUqEbC+gJD4fM3t
-         wl8jcy+o28hZE9NAnElkJE0WYjHVn5jpunWhKvV3eSds+hskpGl+8xpESiwxrelcwe
-         uwZAhI+7xQ/v5pPJieNB67IkHU7YErMzsQnPLMKMm0j4jRbpBJUXV3XE9klyuGVSIq
-         UpRvQqA6BMvWg==
-Date:   Wed, 27 Jul 2022 19:51:06 -0700
+        b=ZILHO+dH60xX6+clrPYwlaDqq8P8zBfnwP4s60sDq/0LZymV8v85E1HbVNc8hyysT
+         UwztbZiA4IrUJB5jJI5qohC8n0kot7glNXj6e99SSmpCpSFwgijbVEfUm+Yb1txB0j
+         J9RkdmfThRjCgrgsaojAKksm0X3q+6Q6Gtq8JzkETo6Em8GxVKuCDODoT31UFOnI+O
+         CR4L2TrYLYJEnBimsy4QSML8109k4xX7uCUaB4A3S3mt5m39NbRnSmQ/mrjSeKX1p/
+         xFkvpqETau0GjZHqAOc7Q/6qiaHoaLjiU3gyJeAQyZpfUOOQgJo9EAzS4EGUvv+GA0
+         NVgWunEAWqGVw==
+Date:   Wed, 27 Jul 2022 19:51:28 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Subbaraya Sundeep <sbhatta@marvell.com>
 Cc:     <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
         <sgoutham@marvell.com>, <netdev@vger.kernel.org>,
-        Suman Ghosh <sumang@marvell.com>
-Subject: Re: [net v2 PATCH 3/5] octeontx2-af: Allow mkex profiles without
- dmac.
-Message-ID: <20220727195106.44100254@kernel.org>
-In-Reply-To: <1658844682-12913-4-git-send-email-sbhatta@marvell.com>
+        Harman Kalra <hkalra@marvell.com>
+Subject: Re: [net v2 PATCH 2/5] octeontx2-af: suppress external profile
+ loading warning
+Message-ID: <20220727195128.3a5b4297@kernel.org>
+In-Reply-To: <20220727194120.62af8ee7@kernel.org>
 References: <1658844682-12913-1-git-send-email-sbhatta@marvell.com>
-        <1658844682-12913-4-git-send-email-sbhatta@marvell.com>
+        <1658844682-12913-3-git-send-email-sbhatta@marvell.com>
+        <20220727194120.62af8ee7@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,61 +56,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jul 2022 19:41:20 +0530 Subbaraya Sundeep wrote:
-> From: Suman Ghosh <sumang@marvell.com>
+On Wed, 27 Jul 2022 19:41:20 -0700 Jakub Kicinski wrote:
+> On Tue, 26 Jul 2022 19:41:19 +0530 Subbaraya Sundeep wrote:
+> > -	if (!request_firmware(&fw, kpu_profile, rvu->dev)) {
+> > +	if (!firmware_request_nowarn(&fw, kpu_profile, rvu->dev)) {  
 > 
-> It is possible to have custom mkex profiles which do not extract
-> DMAC into the key to free up space in the key and use it for L3
-> or L4 packet fields. Current code bails out if DMAC extraction is
-> not present in the key. This patch fixes it by allowing profiles
-> without DMAC and also supports installing rules based on L2MB bit
-> set by hardware for multicast and broadcast packets.
+> Consider switching to request_firmware_direct() in net-next.
+> I doubt you need the sysfs fallback, I think udev dropped 
+> the support for it.
 
-This sounds half way between a feature and a fix. Can you make it
-clearer why it's a fix and not an optimization?
-
-> This patch also adds debugging prints needed to identify profiles
-> with wrong configuration.
-
-All those prints make the patch even less acceptable as a fix.
-We merge fixes into net-next every week, you can send a minimal
-fix and extend the code in net-next soon after that.
-
-> Fixes: 9b179a960a96 ("octeontx2-af: Generate key field bit mask from KEX profile")
-
-> +	/* If DMAC is not extracted in MKEX, rules installed by AF
-> +	 * can rely on L2MB bit set by hardware protocol checker for
-> +	 * broadcast and multicast addresses.
-> +	 */
-> +	if (npc_check_field(rvu, blkaddr, NPC_DMAC, req->intf))
-> +		goto process_flow;
-
-Merge this condition with the condition below, goto should be avoided
-but for error paths.
-
-> +	if (is_pffunc_af(req->hdr.pcifunc) &&
-> +	    req->features & BIT_ULL(NPC_DMAC)) {
-> +		if (is_unicast_ether_addr(req->packet.dmac)) {
-> +			dev_err(rvu->dev,
-> +				"%s: mkex profile does not support ucast flow\n",
-> +				__func__);
-> +			return NPC_FLOW_NOT_SUPPORTED;
-> +		}
-> +
-> +		if (!npc_is_field_present(rvu, NPC_LXMB, req->intf)) {
-> +			dev_err(rvu->dev,
-> +				"%s: mkex profile does not support bcast/mcast flow",
-> +				__func__);
-> +			return NPC_FLOW_NOT_SUPPORTED;
-> +		}
-> +
-> +		/* Modify feature to use LXMB instead of DMAC */
-> +		req->features &= ~BIT_ULL(NPC_DMAC);
-> +		req->features |= BIT_ULL(NPC_LXMB);
-> +	}
-> +
-> +process_flow:
->  	if (from_vf && req->default_rule)
->  		return NPC_FLOW_VF_PERM_DENIED;
->  
-
+Well, the next patch needs work, so perhaps do it in v3?
