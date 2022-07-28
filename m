@@ -2,97 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2B45846E6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB1905846FF
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbiG1USo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 16:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S230007AbiG1UX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 16:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiG1USi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:18:38 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA0C77550;
-        Thu, 28 Jul 2022 13:18:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jyimSRaAw9wxhi7YQujJr9tMl4SkrhmCEF1+wkpWhGk=; b=0Litq/Fsb43jdyPHkycZ41xn9y
-        by3rUO5zmjLF+BaGMgqWbx8M4Jgzcb7fWzAtB0LdW5TtVOhcO2D3GUN1Jo6Byx6E26HE2wYf7QNYs
-        TP+L4CW8fPyqhA8+4DrKnAarhukfo+sn/eshpluE/E+o3bSleYvSnA+gg/G/K58VyN/Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oH9xl-00Bq2D-PA; Thu, 28 Jul 2022 22:18:29 +0200
-Date:   Thu, 28 Jul 2022 22:18:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Marcin Wojtas <mw@semihalf.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
- fwnode_find_net_device_by_node()
-Message-ID: <YuLvFQiZP6qmWcME@lunn.ch>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-7-mw@semihalf.com>
- <20220727143147.u6yd6wqslilspyhw@skbuf>
- <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
- <20220727163848.f4e2b263zz3vl2hc@skbuf>
- <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
- <20220727211112.kcpbxbql3tw5q5sx@skbuf>
- <CAPv3WKcc2i6HsraP3OSrFY0YiBOAHwBPxJUErg_0p7mpGjn3Ug@mail.gmail.com>
- <20220728195607.co75o3k2ggjlszlw@skbuf>
+        with ESMTP id S229456AbiG1UX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:23:27 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C2D77549
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:23:26 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id mf4so5036934ejc.3
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:23:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=Wp82btTC3PL7NSiKCBjHHemMNI0RT/bNjGO0+oWv6z0=;
+        b=e6eiJLD+dbExoXzDcaAe80GHR3RfVrRj+NyDOsosrD/pILLx8yT98x/R0zErNtrIyw
+         R6G5wc2CVuTYdf0YkT0zqBBua0+/f7wn35RHsb0BMkSujojpxs/sqe8gSjohVRPcyD/Y
+         DQCGSxm7VwmRuo98Z3YPQmleBmpasr59Fb1GBuQAyMac5C9Ll6ZND+kEA2SoQqylkMUe
+         nsOajds10XPlictOtFM/cHzdNcsOrKOyd8Dzfix8ykJDddBrfExG8dS9WheAJOEzzi5f
+         /gFJBh2TmVuXYPS7zlvMygU3TUbJ2DplvY/BkFRx+Dy5MdsIWYTl0Tl3htTssVbL9/HU
+         Ta1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=Wp82btTC3PL7NSiKCBjHHemMNI0RT/bNjGO0+oWv6z0=;
+        b=VeMK+QfN5wXfbgqawwK6/+ySGyK3HZPKqte+flle/6lSPbuhbJMh3aMG22RysjQcqG
+         /GwZpQwNCMarmjqfX1CfrX7/zUPTF8RjUlJrYL/vJpXsm/fIEDQL3K3N7IOCgnzgOHa8
+         vg35nf5520sejF6sfAZfvupApibah+YrxksXhDj8rtnSxThASe/oSSHuOq2zPabYqa9l
+         SXzLm7UD+JJVBkUZXmrWkHLY671IFG1NUPyLS/WRK9XwWo+WFxCPBjgibGmvkGVYAyaL
+         Q4NUTFrwJpgr/IbMpJQolel9VRViT97+5x0m7yIoWLufnvFKgSeZBYMFV+OgedJO7OwE
+         acew==
+X-Gm-Message-State: AJIora/0q0JwO8VI9dV1vfDXMJ/0OkLqGBVjovlVYipYML/iXZPsS6OT
+        p3tlLHW1C5Lsh2OUyvZxunC/nPx69mA=
+X-Google-Smtp-Source: AGRyM1umuKrljW4BkP3ZhmMqW25yRP3IUOOywy+wmDk3TfJSjMqShA+cFGCZPaVzo7rzRJCX769p2w==
+X-Received: by 2002:a17:907:b0c:b0:72b:2e30:5d4 with SMTP id h12-20020a1709070b0c00b0072b2e3005d4mr445141ejl.604.1659039804685;
+        Thu, 28 Jul 2022 13:23:24 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id fh22-20020a1709073a9600b0072fdb26bd9dsm779626ejc.173.2022.07.28.13.23.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 13:23:24 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
+ representor
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     ecree@xilinx.com, davem@davemloft.net, pabeni@redhat.com,
+        linux-net-drivers@amd.com, netdev@vger.kernel.org
+References: <cover.1658943677.git.ecree.xilinx@gmail.com>
+ <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
+ <20220727201034.3a9d7c64@kernel.org>
+ <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
+ <20220728092008.2117846e@kernel.org>
+ <8bfec647-1516-c738-5977-059448e35619@gmail.com>
+ <20220728113231.26fdfab0@kernel.org>
+ <bfc03b98-53ce-077a-4627-6c8d51a29e08@gmail.com>
+ <20220728122745.4cf0f860@kernel.org>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <5a4d22f2-e315-b6f4-5fb5-31134960c430@gmail.com>
+Date:   Thu, 28 Jul 2022 21:23:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220728195607.co75o3k2ggjlszlw@skbuf>
+In-Reply-To: <20220728122745.4cf0f860@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The 'label' thing is actually one of the things that I'm seriously
-> considering skipping parsing if this is an ACPI system, simply because
-> best practices are different today than they were when the OF bindings
-> were created.
+On 28/07/2022 20:27, Jakub Kicinski wrote:
+> On Thu, 28 Jul 2022 19:54:21 +0100 Edward Cree wrote:
+>> The user determines which repr corresponds to which VF by looking in
+>>  /sys/class/net/$VFREP/phys_port_name (e.g. "p0pf0vf0").
+> 
+> .. and that would also most likely be what the devlink port ID would be.
+AFAICT the devlink port index is just an integer.  The example in the
+ man page is
+    devlink port function set pci/0000:01:00.0/1 hw_addr 00:00:00:11:22:33
+Moreover, struct devlink_port has `unsigned int index`.
+Though it does also have `struct devlink_port_attrs` which appears to
+ encode the PF and VF numbers; I think those can be read with `devlink
+ port show`.
+But the whole devlink port abstraction is unnecessary when we already
+ *have* an object to represent the port.
 
-Agreed. We want the ACPI binding to learn from what has worked and not
-worked in DT. We should clean up some of the historical mess. And
-enforce things we don't in DT simply because there is too much
-history.
+>> Indeed.  I agree that .ndo_set_mac_address() is the wrong interface.
+>> But the interface I have in mind would be something like
+>>     int (*ndo_set_partner_mac_address)(struct net_device *, void *);
+>>  and would only be implemented by representor netdevs.
+>> Idk what the uAPI/UI for that would be; probably a new `ip link set`
+>>  parameter.
+> 
+> Yup... If only you were there during the fight over this uAPI.
+> Now it's the devlink "port function" thing.
+Sadly I was too busy with EF100 bring-up, and naïvely assumed that I
+ could safely ignore devlink port stuff as it was so obviously going
+ to be a classic Mellanox design: tasteless, overweight, and not
+ cleanly mappable onto any other vendor.  Which seems to have been
+ true but they've managed to make it the standard anyway by virtue
+ of being there first, as usual :'(
+(Yeah, I probably shouldn't publicly say things like that about
+ another vendor's devs.  But I'm getting frustrated at this recurring
+ pattern.)
 
-So a straight one to one conversion is not going to happen.
+Devlink port function *would* be useful for administering functions
+ that don't have a representor.  I just can't see any good reason
+ why such things should ever exist.
+Maybe it's not too late to introduce my API to exist alongside it…
+ though I have no idea how much work it would take to teach the
+ orchestration frameworks to use it :/
 
-> It can be debated what exactly is at fault there, although one
-> interpretation can be that the DT bindings themselves are to blame,
-> for describing a circular dependency between a parent and a child.
-
-DT describes hardware. I'm not sure hardware can have a circular
-dependency. It is more about how software make use of that hardware
-description that ends up in circular dependencies.
-
-	    Andrew
+-ed
