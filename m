@@ -2,84 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 711CE58440C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAAF158440D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbiG1QUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
+        id S229997AbiG1QWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233042AbiG1QUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:20:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F265595
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:20:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 914F9B8232A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08970C433D6;
-        Thu, 28 Jul 2022 16:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659025209;
-        bh=f1GgTqHFECXge2LsMkF+w1GghD4hVdo9F9A3R2pt0wE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ny6z1SnhyM2jRZnB3H/PVyGrAlFcFo0d+6G6HpPzxMDJT0YtZBTk7byBdeVzvW1hq
-         umjwMUl5nqkfhmuIW+IWicPKChFcYOCRPrNX+iVtWhRSuLbyB/+v0eJkdipFRok5NL
-         fQj/HGRfPnBOpMyE51+GoS4bwHSz2S/QiCHd//No1aTBGoEawxhzTu7ZRLJiSAprjL
-         +RkgdaaNFofRO9b4Hc6y9dsI8nM8OO3h/jcYwBcZ6WjSHNe4VkG5DuQZYDu9YC1Z8p
-         H1pk6mObupBMYUmKlp9i/kaYlK0QJi5qtjFD3Blzw2mAJpa0l/MkFjNWEKsjJqleRF
-         Qh+14pPdTP/yA==
-Date:   Thu, 28 Jul 2022 09:20:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     ecree@xilinx.com, davem@davemloft.net, pabeni@redhat.com,
-        linux-net-drivers@amd.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
- representor
-Message-ID: <20220728092008.2117846e@kernel.org>
-In-Reply-To: <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
-References: <cover.1658943677.git.ecree.xilinx@gmail.com>
-        <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
-        <20220727201034.3a9d7c64@kernel.org>
-        <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
+        with ESMTP id S229631AbiG1QWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:22:19 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA81C6FA3C;
+        Thu, 28 Jul 2022 09:22:17 -0700 (PDT)
+Received: from localhost.localdomain (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 1074140755C7;
+        Thu, 28 Jul 2022 16:22:16 +0000 (UTC)
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Sujith Manoharan <Sujith.Manoharan@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] ath9k: hif_usb: Fix use-after-free in ath9k_hif_usb_reg_in_cb()
+Date:   Thu, 28 Jul 2022 19:21:49 +0300
+Message-Id: <20220728162149.212306-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jul 2022 16:47:36 +0100 Edward Cree wrote:
-> On 28/07/2022 04:10, Jakub Kicinski wrote:
-> > On Wed, 27 Jul 2022 18:46:02 +0100 ecree@xilinx.com wrote: =20
-> >> When setting the VF rep's MAC address, set the provisioned MAC address
-> >>  for the VF through MC_CMD_SET_CLIENT_MAC_ADDRESSES. =20
-> >=20
-> > Wait.. hm? The VF rep is not the VF. It's the other side of the wire.
-> > Are you passing the VF rep's MAC on the VF? Ethernet packets between
-> > the hypervisor and the VF would have the same SA and DA.
->=20
-> Yes (but only if there's an IP stack on the repr; I think it's fine if
->  the repr is plugged straight into a bridge so any ARP picks up a
->  different DA?).
-> I thought that was weird but I also thought that was 'how it's done'
->  with reps =E2=80=94 properties of the VF are set by applying them to the=
- rep.
-> Is there some other way to configure VF MAC?  (Are we supposed to still
->  be using the legacy SR-IOV interface, .ndo_set_vf_mac()?  I thought
->  that was deprecated in favour of more switchdev-flavoured stuff=E2=80=A6)
+It is possible that skb is freed in ath9k_htc_rx_msg(), then
+usb_submit_urb() fails and we try to free skb again. It causes
+use-after-free bug. Moreover, if alloc_skb() fails, urb->context becomes
+NULL but rx_buf is not freed and there can be a memory leak.
 
-It's set thru
+The patch removes unnecessary nskb and makes skb processing more clear: it
+is supposed that ath9k_htc_rx_msg() either frees old skb or passes its
+managing to another callback function.
 
- devlink port function set DEV/PORT_INDEX hw_addr ADDR
+Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
-"port functions" is a weird object representing something=20
-in Mellanox FW. Hopefully it makes more sense to you than
-it does to me.
+Fixes: 3deff76095c4 ("ath9k_htc: Increase URB count for REG_IN pipe")
+Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 518deb5098a2..b70128d1594d 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -708,14 +708,13 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+ 	struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
+ 	struct hif_device_usb *hif_dev = rx_buf->hif_dev;
+ 	struct sk_buff *skb = rx_buf->skb;
+-	struct sk_buff *nskb;
+ 	int ret;
+ 
+ 	if (!skb)
+ 		return;
+ 
+ 	if (!hif_dev)
+-		goto free;
++		goto free_skb;
+ 
+ 	switch (urb->status) {
+ 	case 0:
+@@ -724,7 +723,7 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+ 	case -ECONNRESET:
+ 	case -ENODEV:
+ 	case -ESHUTDOWN:
+-		goto free;
++		goto free_skb;
+ 	default:
+ 		skb_reset_tail_pointer(skb);
+ 		skb_trim(skb, 0);
+@@ -740,20 +739,19 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+ 				 skb->len, USB_REG_IN_PIPE);
+ 
+ 
+-		nskb = alloc_skb(MAX_REG_IN_BUF_SIZE, GFP_ATOMIC);
+-		if (!nskb) {
++		skb = alloc_skb(MAX_REG_IN_BUF_SIZE, GFP_ATOMIC);
++		if (!skb) {
+ 			dev_err(&hif_dev->udev->dev,
+ 				"ath9k_htc: REG_IN memory allocation failure\n");
+-			urb->context = NULL;
+-			return;
++			goto free_rx_buf;
+ 		}
+ 
+-		rx_buf->skb = nskb;
++		rx_buf->skb = skb;
+ 
+ 		usb_fill_int_urb(urb, hif_dev->udev,
+ 				 usb_rcvintpipe(hif_dev->udev,
+ 						 USB_REG_IN_PIPE),
+-				 nskb->data, MAX_REG_IN_BUF_SIZE,
++				 skb->data, MAX_REG_IN_BUF_SIZE,
+ 				 ath9k_hif_usb_reg_in_cb, rx_buf, 1);
+ 	}
+ 
+@@ -762,12 +760,13 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+ 	ret = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (ret) {
+ 		usb_unanchor_urb(urb);
+-		goto free;
++		goto free_skb;
+ 	}
+ 
+ 	return;
+-free:
++free_skb:
+ 	kfree_skb(skb);
++free_rx_buf:
+ 	kfree(rx_buf);
+ 	urb->context = NULL;
+ }
+-- 
+2.25.1
+
