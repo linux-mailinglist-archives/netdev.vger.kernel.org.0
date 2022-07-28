@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2EC15846CE
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F9F15846BD
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:06:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbiG1T6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        id S232514AbiG1T6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiG1T6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:58:40 -0400
+        with ESMTP id S231301AbiG1T6l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:58:41 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4034F1EAF8
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:58:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D9E6FA0E
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659038319; x=1690574319;
+  t=1659038320; x=1690574320;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=iXL9Ly7t7YgkgLNQ9yCwI7p6yWK2XILNbbemNukn+8c=;
-  b=gzFA50srNR8AieoHnFJSJzUVXbVIzDTDuJN68UYxBA0ijHwKwXCzk+tE
-   9SB7QNbbribiPPm3GOvFYfQ3wFbSplWt6UyBwKLqYNTW2LlT6AD0Ll3OO
-   t4ohfnT0+Udg6TYhh063MG5aZCeofKkXKhXUPKuDb5hG4TcFZ5jr5trvG
-   gGHrEJDpKiIDFwM5YrcGk/OkVMv9veXHLKJa3194WbjwxR4W8DhxzKFfw
-   StfS1W5ta5Vwj7MZiHaevEgK+Wm7fSioRBuZUP4Gz+88LHgtrUKZ4Xl9A
-   5r01qus+1mg28HNHs/meTy25L4UDlHW3LK2zAW6Lb66fTtSSpBQHmteOc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="350310072"
+  bh=ifdfiA8JD6m+CoxrBFcm5gTyQ9mppM95u8MvaCvSGaA=;
+  b=dpxYUsQI9ArDLhL49oBvCJK2Wmdutwl+3ykgVZ5nL/CRzIhTu2yZTZve
+   tL4wq5rKsmg+Q6FprQWSuP4NS0kyNAnTxzt2jWzoPurnatBr5Cu0pU7sz
+   /414UqZR8dwFPiBgzGgFHCm++SX6xt7mA523pDt9yWDrEJ5gxNPi2e+mY
+   l82gep6T+7lP9NEfj+4tFKslnMA2r9U+8b+cxJPHhCxzBREkFgdHGvPuw
+   RlGUMsxBXW3Oj0oKC3b6yb5BZiLHpfcYg32ImgCg57Ij2L91zpqSKJtfW
+   tVYElXtAsS+y9Ifg0FOujn3AcKzNmx8EYEdPBYn4Qt0S4lU43+2iMAhAR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="350310075"
 X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="350310072"
+   d="scan'208";a="350310075"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 12:58:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="928453965"
+   d="scan'208";a="928453971"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2022 12:58:37 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2022 12:58:38 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Michal Wilczynski <michal.wilczynski@intel.com>,
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 2/4] ice: Fix promiscuous mode not turning off
-Date:   Thu, 28 Jul 2022 12:55:36 -0700
-Message-Id: <20220728195538.3391360-3-anthony.l.nguyen@intel.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Subject: [PATCH net-next 3/4] ice: compress branches in ice_set_features()
+Date:   Thu, 28 Jul 2022 12:55:37 -0700
+Message-Id: <20220728195538.3391360-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220728195538.3391360-1-anthony.l.nguyen@intel.com>
 References: <20220728195538.3391360-1-anthony.l.nguyen@intel.com>
@@ -60,170 +61,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Wilczynski <michal.wilczynski@intel.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-When trust is turned off for the VF, the expectation is that promiscuous
-and allmulticast filters are removed. Currently default VSI filter is not
-getting cleared in this flow.
+Instead of rather verbose comparison of current netdev->features bits vs
+the incoming ones from user, let us compress them by a helper features
+set that will be the result of netdev->features XOR features. This way,
+current, extensive branches:
 
-Example:
+	if (features & NETIF_F_BIT && !(netdev->features & NETIF_F_BIT))
+		set_feature(true);
+	else if (!(features & NETIF_F_BIT) && netdev->features & NETIF_F_BIT)
+		set_feature(false);
 
-ip link set enp236s0f0 vf 0 trust on
-ip link set enp236s0f0v0 promisc on
-ip link set enp236s0f0 vf 0 trust off
-/* promiscuous mode is still enabled on VF0 */
+can become:
 
-Remove switch filters for both cases.
-This commit fixes above behavior by removing default VSI filters and
-allmulticast filters when vf-true-promisc-support is OFF.
+	netdev_features_t changed = netdev->features ^ features;
 
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+	if (changed & NETIF_F_BIT)
+		set_feature(!!(features & NETIF_F_BIT));
+
+This is nothing new as currently several other drivers use this
+approach, which I find much more convenient.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 79 ++++++++++++++++---
- drivers/net/ethernet/intel/ice/ice_vf_lib.h   |  3 +
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  9 +--
- 3 files changed, 72 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 40 +++++++++++------------
+ 1 file changed, 19 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 9038d2687ba6..8fd7c3e37f5e 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -297,6 +297,73 @@ bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf)
- 	return is_vf_promisc;
- }
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index e56f72ff3117..4d2804877aa2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5918,44 +5918,41 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+ static int
+ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ {
++	netdev_features_t changed = netdev->features ^ features;
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+ 	int ret = 0;
  
-+/**
-+ * ice_vf_get_promisc_masks - Calculate masks for promiscuous modes
-+ * @vf: the VF pointer
-+ * @vsi: the VSI to configure
-+ * @ucast_m: promiscuous mask to apply to unicast
-+ * @mcast_m: promiscuous mask to apply to multicast
-+ *
-+ * Decide which mask should be used for unicast and multicast filter,
-+ * based on presence of VLANs
-+ */
-+void
-+ice_vf_get_promisc_masks(struct ice_vf *vf, struct ice_vsi *vsi,
-+			 u8 *ucast_m, u8 *mcast_m)
-+{
-+	if (ice_vf_is_port_vlan_ena(vf) ||
-+	    ice_vsi_has_non_zero_vlans(vsi)) {
-+		*mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
-+		*ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
-+	} else {
-+		*mcast_m = ICE_MCAST_PROMISC_BITS;
-+		*ucast_m = ICE_UCAST_PROMISC_BITS;
-+	}
-+}
-+
-+/**
-+ * ice_vf_clear_all_promisc_modes - Clear promisc/allmulticast on VF VSI
-+ * @vf: the VF pointer
-+ * @vsi: the VSI to configure
-+ *
-+ * Clear all promiscuous/allmulticast filters for a VF
-+ */
-+static int
-+ice_vf_clear_all_promisc_modes(struct ice_vf *vf, struct ice_vsi *vsi)
-+{
-+	struct ice_pf *pf = vf->pf;
-+	u8 ucast_m, mcast_m;
-+	int ret = 0;
-+
-+	ice_vf_get_promisc_masks(vf, vsi, &ucast_m, &mcast_m);
-+	if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states)) {
-+		if (!test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags)) {
-+			if (ice_is_dflt_vsi_in_use(vsi->port_info))
-+				ret = ice_clear_dflt_vsi(vsi);
-+		} else {
-+			ret = ice_vf_clear_vsi_promisc(vf, vsi, ucast_m);
-+		}
-+
-+		if (ret) {
-+			dev_err(ice_pf_to_dev(vf->pf), "Disabling promiscuous mode failed\n");
-+		} else {
-+			clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
-+			dev_info(ice_pf_to_dev(vf->pf), "Disabling promiscuous mode succeeded\n");
-+		}
-+	}
-+
-+	if (test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) {
-+		ret = ice_vf_clear_vsi_promisc(vf, vsi, mcast_m);
-+		if (ret) {
-+			dev_err(ice_pf_to_dev(vf->pf), "Disabling allmulticast mode failed\n");
-+		} else {
-+			clear_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states);
-+			dev_info(ice_pf_to_dev(vf->pf), "Disabling allmulticast mode succeeded\n");
-+		}
-+	}
-+	return ret;
-+}
-+
- /**
-  * ice_vf_set_vsi_promisc - Enable promiscuous mode for a VF VSI
-  * @vf: the VF to configure
-@@ -487,7 +554,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 	struct ice_vsi *vsi;
- 	struct device *dev;
- 	struct ice_hw *hw;
--	u8 promisc_m;
- 	int err = 0;
- 	bool rsd;
- 
-@@ -554,16 +620,7 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 	/* disable promiscuous modes in case they were enabled
- 	 * ignore any error if disabling process failed
- 	 */
--	if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
--	    test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states)) {
--		if (ice_vf_is_port_vlan_ena(vf) || vsi->num_vlan)
--			promisc_m = ICE_UCAST_VLAN_PROMISC_BITS;
--		else
--			promisc_m = ICE_UCAST_PROMISC_BITS;
--
--		if (ice_vf_clear_vsi_promisc(vf, vsi, promisc_m))
--			dev_err(dev, "disabling promiscuous mode failed\n");
--	}
-+	ice_vf_clear_all_promisc_modes(vf, vsi);
- 
- 	ice_eswitch_del_vf_mac_rule(vf);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.h b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-index 1acb35c9ff01..52bd9a3816bf 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-@@ -215,6 +215,9 @@ bool ice_is_vf_disabled(struct ice_vf *vf);
- int ice_check_vf_ready_for_cfg(struct ice_vf *vf);
- void ice_set_vf_state_qs_dis(struct ice_vf *vf);
- bool ice_is_any_vf_in_unicast_promisc(struct ice_pf *pf);
-+void
-+ice_vf_get_promisc_masks(struct ice_vf *vf, struct ice_vsi *vsi,
-+			 u8 *ucast_m, u8 *mcast_m);
- int
- ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
- int
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 47ce713274cf..d46786cdc162 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -1046,14 +1046,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 		goto error_param;
+ 	/* Don't set any netdev advanced features with device in Safe Mode */
+-	if (ice_is_safe_mode(vsi->back)) {
+-		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
++	if (ice_is_safe_mode(pf)) {
++		dev_err(ice_pf_to_dev(pf),
++			"Device is in Safe Mode - not enabling advanced netdev features\n");
+ 		return ret;
  	}
  
--	if (ice_vf_is_port_vlan_ena(vf) ||
--	    ice_vsi_has_non_zero_vlans(vsi)) {
--		mcast_m = ICE_MCAST_VLAN_PROMISC_BITS;
--		ucast_m = ICE_UCAST_VLAN_PROMISC_BITS;
--	} else {
--		mcast_m = ICE_MCAST_PROMISC_BITS;
--		ucast_m = ICE_UCAST_PROMISC_BITS;
--	}
-+	ice_vf_get_promisc_masks(vf, vsi, &ucast_m, &mcast_m);
+ 	/* Do not change setting during reset */
+ 	if (ice_is_reset_in_progress(pf->state)) {
+-		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
++		dev_err(ice_pf_to_dev(pf),
++			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+ 		return -EBUSY;
+ 	}
  
- 	if (!test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags)) {
- 		if (alluni) {
+ 	/* Multiple features can be changed in one call so keep features in
+ 	 * separate if/else statements to guarantee each feature is checked
+ 	 */
+-	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
+-		ice_vsi_manage_rss_lut(vsi, true);
+-	else if (!(features & NETIF_F_RXHASH) &&
+-		 netdev->features & NETIF_F_RXHASH)
+-		ice_vsi_manage_rss_lut(vsi, false);
++	if (changed & NETIF_F_RXHASH)
++		ice_vsi_manage_rss_lut(vsi, !!(features & NETIF_F_RXHASH));
+ 
+ 	ret = ice_set_vlan_features(netdev, features);
+ 	if (ret)
+ 		return ret;
+ 
+-	if ((features & NETIF_F_NTUPLE) &&
+-	    !(netdev->features & NETIF_F_NTUPLE)) {
+-		ice_vsi_manage_fdir(vsi, true);
+-		ice_init_arfs(vsi);
+-	} else if (!(features & NETIF_F_NTUPLE) &&
+-		 (netdev->features & NETIF_F_NTUPLE)) {
+-		ice_vsi_manage_fdir(vsi, false);
+-		ice_clear_arfs(vsi);
++	if (changed & NETIF_F_NTUPLE) {
++		bool ena = !!(features & NETIF_F_NTUPLE);
++
++		ice_vsi_manage_fdir(vsi, ena);
++		ena ? ice_init_arfs(vsi) : ice_clear_arfs(vsi);
+ 	}
+ 
+ 	/* don't turn off hw_tc_offload when ADQ is already enabled */
+@@ -5964,11 +5961,12 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 		return -EACCES;
+ 	}
+ 
+-	if ((features & NETIF_F_HW_TC) &&
+-	    !(netdev->features & NETIF_F_HW_TC))
+-		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+-	else
+-		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
++	if (changed & NETIF_F_HW_TC) {
++		bool ena = !!(features & NETIF_F_HW_TC);
++
++		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
++		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
