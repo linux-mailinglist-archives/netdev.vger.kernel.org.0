@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB33583673
+	by mail.lfdr.de (Postfix) with ESMTP id A9058583674
 	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 03:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234004AbiG1BkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 21:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
+        id S235951AbiG1BkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 21:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiG1BkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:40:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC33711A2F;
-        Wed, 27 Jul 2022 18:40:14 -0700 (PDT)
+        with ESMTP id S234289AbiG1BkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 21:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E131BEA;
+        Wed, 27 Jul 2022 18:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B23456185C;
-        Thu, 28 Jul 2022 01:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 17A0CC433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4558B822CD;
+        Thu, 28 Jul 2022 01:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 53513C43140;
         Thu, 28 Jul 2022 01:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658972413;
-        bh=GUi7ZyFyozK9eXXzAOnqX72WWxHg2DqUeftrjPIzGfE=;
+        bh=GvhLFpdZlbOT+6kq93Jkhi3Dp0hQr97wL4NsiUM5/WI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=etch3J2LOV45+ihycHLt4mZNxVk945WcrRvi/ARVD3ggyj5vIoob1k68IHJohhDzK
-         ncjYoBHOlA2BHKVnPayAZhUVhX5zsPwBSs8mpU7leHatxQ3jMnip2mznYNybedVpK+
-         G5r+8FUnGcXLAFeLl8jzmPOYbF764NbRNkk3yNYF8XlVLUvJBZS7CmRpb1flCD/N9B
-         jS2zambUrm6hhw5DbTq20WVnWpSqcfQCpwEkEfilu1EDB43TxhNkbbFakcrpK/PR9X
-         XIvJnVcQgBKbC6JOZJDqlqBBGz46kr3MK9vfaBLNK1Lp7Asq/6PogN+2/wGUgYJt1L
-         NHamjSHnapZPw==
+        b=KXZdWiUCcP/BzXNo8xFUcjqs+UY8NqxwEFe3sp7tbwHoEJRRwqgBh+z2g8v7w0zW3
+         aN5aiOPZJa+xaUOhYnI9hQ0ttRyArfIWdO0vpli3/s7YFYBUNVi3gyZxxNzmZ0DIgU
+         QwFNRn+cwq3MwFF6qNTB7lBGrOFfeOmtJ/OBrMHUyZSsVDLavXtlY7TXVfaTImuftW
+         S1k/NmP5QGCThkB40+xL4e/I6r9uBM0VaDYCXoFJ7/wHLb+q2IrEzG0tO6Bf99HxNW
+         eRZ1Cfp+o/ZN3H4Ek70j2dJ6dEAeiIINHAif1bJ1UOJ69AHjAmcLWw4x3XGnp1i1TT
+         PnX84rkhLWPjQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F0636C43143;
-        Thu, 28 Jul 2022 01:40:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D6EFC43140;
+        Thu, 28 Jul 2022 01:40:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] sctp: leave the err path free in sctp_stream_init to
- sctp_stream_free
+Subject: Re: [PATCH net-next] net/sched: sch_cbq: change the type of cbq_set_lss
+ to void
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165897241298.6801.11007831047781840248.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Jul 2022 01:40:12 +0000
-References: <831a3dc100c4908ff76e5bcc363be97f2778bc0b.1658787066.git.lucien.xin@gmail.com>
-In-Reply-To: <831a3dc100c4908ff76e5bcc363be97f2778bc0b.1658787066.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, marcelo.leitner@gmail.com
+Message-Id: <165897241324.6801.12413372106833294210.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jul 2022 01:40:13 +0000
+References: <20220726030748.243505-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220726030748.243505-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, weiyongjun1@huawei.com, yuehaibing@huawei.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,29 +60,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 25 Jul 2022 18:11:06 -0400 you wrote:
-> A NULL pointer dereference was reported by Wei Chen:
+On Tue, 26 Jul 2022 11:07:48 +0800 you wrote:
+> Change the type of cbq_set_lss to void.
 > 
->   BUG: kernel NULL pointer dereference, address: 0000000000000000
->   RIP: 0010:__list_del_entry_valid+0x26/0x80
->   Call Trace:
->    <TASK>
->    sctp_sched_dequeue_common+0x1c/0x90
->    sctp_sched_prio_dequeue+0x67/0x80
->    __sctp_outq_teardown+0x299/0x380
->    sctp_outq_free+0x15/0x20
->    sctp_association_free+0xc3/0x440
->    sctp_do_sm+0x1ca7/0x2210
->    sctp_assoc_bh_rcv+0x1f6/0x340
-> 
-> [...]
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/sched/sch_cbq.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
 Here is the summary with links:
-  - [net] sctp: leave the err path free in sctp_stream_init to sctp_stream_free
-    https://git.kernel.org/netdev/net/c/181d8d2066c0
+  - [net-next] net/sched: sch_cbq: change the type of cbq_set_lss to void
+    https://git.kernel.org/netdev/net-next/c/a482d47d33ac
 
 You are awesome, thank you!
 -- 
