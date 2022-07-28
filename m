@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92040583EFF
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 14:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3537583F56
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 14:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238727AbiG1Mi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 08:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
+        id S237038AbiG1M4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 08:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238100AbiG1Mi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 08:38:28 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8356B26F;
-        Thu, 28 Jul 2022 05:38:26 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SA1B2m017495;
-        Thu, 28 Jul 2022 05:38:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=2sQdxStA3QWW1aB1U5UjG5US9bN5e+V57BQhpz6KBfg=;
- b=Da5s7EbfEENcj58BgipV6q2dRx4hNC+0DWTeBPJakDoRS+vKm2BZO1xja9L4VFk4rtlW
- pzvjXpn6gPVlHDLZFz85p5dSELjr7a8oQMSLVqLkr+y5eVlfKRq5D6seLqrganyVQcIT
- Y5GoyOoq2mqt/X80WqVKqpfb3iI3dgqdbgvvjlC8t0/l8Ag5/cNNyUNlrmQaxjC3Sb4V
- 4ipUHxjKfoInwSwdSiH5wzPKBXkg11PmteR327I+ksexEjbKx/LYoi5ElTVY5mEenDiB
- /za2C790cbKjx4HV63UpqmugLZM3oNAC2dv0U09THcZjY3DN8+kZ4agAeOtW2j3rv0Sa oQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3hk2fyd81u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 05:38:20 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 28 Jul
- 2022 05:38:18 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 28 Jul 2022 05:38:18 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id 674503F707E;
-        Thu, 28 Jul 2022 05:38:15 -0700 (PDT)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC:     Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net PATCH] octeontx2-pf: Reduce minimum mtu size to 60
-Date:   Thu, 28 Jul 2022 18:08:12 +0530
-Message-ID: <20220728123812.21974-1-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
+        with ESMTP id S236063AbiG1M4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 08:56:34 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF373474D8;
+        Thu, 28 Jul 2022 05:56:31 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LtrGX59TzzKFHZ;
+        Thu, 28 Jul 2022 20:55:16 +0800 (CST)
+Received: from [10.67.111.192] (unknown [10.67.111.192])
+        by APP3 (Coremail) with SMTP id _Ch0CgAHD2t7h+JiChAqBQ--.32279S2;
+        Thu, 28 Jul 2022 20:56:29 +0800 (CST)
+Message-ID: <9170060c-8727-68d6-7be2-8aa75e30c6e6@huaweicloud.com>
+Date:   Thu, 28 Jul 2022 20:56:27 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: ij0PEEoWAndal1sKskURdSnKHJiKUy1g
-X-Proofpoint-GUID: ij0PEEoWAndal1sKskURdSnKHJiKUy1g
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-28_05,2022-07-28_02,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next] bpf: Fix NULL pointer dereference when
+ registering bpf trampoline
+Content-Language: en-US
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Bruno Goncalves <bgoncalv@redhat.com>,
+        Song Liu <song@kernel.org>
+References: <20220728114048.3540461-1-xukuohai@huaweicloud.com>
+ <YuKAlk+p/ABzfUQ+@krava>
+From:   Xu Kuohai <xukuohai@huaweicloud.com>
+In-Reply-To: <YuKAlk+p/ABzfUQ+@krava>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: _Ch0CgAHD2t7h+JiChAqBQ--.32279S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFyxtF45Zr15XF1fAFWfuFg_yoW8uw43pF
+        yrG3ZxCFWjqFW8ur9Fg3WUXF15J3ykJr17WF42kay09Fn8Grn5JF42gwnrta4Dtr45ur1F
+        yFs0vF9093WUu3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
+        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0E
+        wIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
+        80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0
+        I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04
+        k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY
+        1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU1CPfJUUUUU==
+X-CM-SenderInfo: 50xn30hkdlqx5xdzvxpfor3voofrz/
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,34 +64,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+On 7/28/2022 8:27 PM, Jiri Olsa wrote:
+> On Thu, Jul 28, 2022 at 07:40:48AM -0400, Xu Kuohai wrote:
+>> From: Xu Kuohai <xukuohai@huawei.com>
+> 
+> SNIP
+> 
+>>
+>> It's caused by a NULL tr->fops passed to ftrace_set_filter_ip(). tr->fops
+>> is initialized to NULL and is assigned to an allocated memory address if
+>> CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS is enabled. Since there is no
+>> direct call on arm64 yet, the config can't be enabled.
+>>
+>> To fix it, call ftrace_set_filter_ip() only if tr->fops is not NULL.
+>>
+>> Fixes: 00963a2e75a8 ("bpf: Support bpf_trampoline on functions with IPMODIFY (e.g. livepatch)")
+>> Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>> Tested-by: Bruno Goncalves <bgoncalv@redhat.com>
+>> Acked-by: Song Liu <songliubraving@fb.com>
+>> ---
+>>   kernel/bpf/trampoline.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+>> index 42e387a12694..0d5a9e0b9a7b 100644
+>> --- a/kernel/bpf/trampoline.c
+>> +++ b/kernel/bpf/trampoline.c
+>> @@ -255,8 +255,15 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+>>   		return -ENOENT;
+>>   
+>>   	if (tr->func.ftrace_managed) {
+>> -		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
+>> -		ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
+>> +		if (tr->fops)
+>> +			ret = ftrace_set_filter_ip(tr->fops, (unsigned long)ip,
+>> +						   0, 0);
+>> +		else
+>> +			ret = -ENOTSUPP;
+>> +
+>> +		if (!ret)
+>> +			ret = register_ftrace_direct_multi(tr->fops,
+>> +							   (long)new_addr);
+>>   	} else {
+>>   		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
+>>   	}
+> 
+> do we need to do the same also in unregister_fentry and modify_fentry ?
+> 
 
-PTP messages like SYNC, FOLLOW_UP, DELAY_REQ are of size 58 bytes.
-Using a minimum packet length as 64 makes NIX to pad 6 bytes of
-zeroes while transmission. This is causing latest ptp4l application to
-emit errors since length in PTP header and received packet are not same.
-Padding upto 3 bytes is fine but more than that makes ptp4l to assume
-the pad bytes as a TLV. Hence reduce the size to 60 from 64.
+No need for now, this is the only place where we call ftrace_set_filter_ip().
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+tr->fops is passed to ftrace_set_filter_ip() and *ftrace_direct_multi()
+functions, and when CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS is not enabled,
+the *ftrace_direct_multi()s do nothing except returning an error code, so
+it's safe to pass NULL to them.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index c88e8a436029..fbe62bbfb789 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -21,7 +21,7 @@
- #define OTX2_HEAD_ROOM		OTX2_ALIGN
- 
- #define	OTX2_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN)
--#define	OTX2_MIN_MTU		64
-+#define	OTX2_MIN_MTU		60
- 
- #define OTX2_MAX_GSO_SEGS	255
- #define OTX2_MAX_FRAGS_IN_SQE	9
--- 
-2.16.5
+> jirka
 
