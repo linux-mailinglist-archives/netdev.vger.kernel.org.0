@@ -2,175 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59593583BDB
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 12:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D03E1583BF5
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 12:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231260AbiG1KMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 06:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
+        id S235885AbiG1KXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 06:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234681AbiG1KMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 06:12:47 -0400
-Received: from smtp-42aa.mail.infomaniak.ch (smtp-42aa.mail.infomaniak.ch [IPv6:2001:1600:4:17::42aa])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1794E65545;
-        Thu, 28 Jul 2022 03:12:44 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Ltmfz1TykzMqZgs;
-        Thu, 28 Jul 2022 12:12:43 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Ltmfy4FBqzln8Vn;
-        Thu, 28 Jul 2022 12:12:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1659003163;
-        bh=86kTHghWAkjF6FizwalX3OjPsXiqgzxG0Gy8ziz1wRs=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=0m+UoQtW0DLZYRerKFN3sLdSgs+R09NgjzMDtkI4rR6lKLWNM45zQ2w8L7wLnAEZz
-         pw748JbdtUs8xq7FffwWeR4MV/PKQkiOVdpSYJjCJ10vT+KQkLa3jXGDlrbzusjCqw
-         8X1EF7xFKCvo6gV2QoveAQUXEmRPOmEAh3kBCqD4=
-Message-ID: <83796b1f-d2c0-06f9-c5fd-eb81d51a1a95@digikod.net>
-Date:   Thu, 28 Jul 2022 12:12:41 +0200
+        with ESMTP id S234619AbiG1KXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 06:23:18 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF854F65C
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:23:17 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id d17so2133594lfa.12
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:23:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yMZGifoUNXOtUdS4KlzIsHVx4WHyBaSbYfIRmilRvlA=;
+        b=mjgVxSDm+fYEWn4vCVM3rACA/ySjzsyesKlU1sEiDPEb9FYZBRorT+TMhNwxwuhKIW
+         CSNkjDmJbYMmb/lLMqtIDa2jThXlXg7KDzoXuaRObv4+WFye8Azufk5jXHm48pcpSvaV
+         s03fHw+ZpdF7H+pryOufOwPzrTI0qXNXv/LVg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yMZGifoUNXOtUdS4KlzIsHVx4WHyBaSbYfIRmilRvlA=;
+        b=MDORdmBOVgIfMZVxXBNlV4Du3MN9Tb+G2NRSjnG+PkKzFMX18i2KBSeg1jgKMplR5G
+         EckNTCGCsV2+rcIdqu+XN0Ue/GllyYlfBcs6XO5sV5g+TLIFj//NsItCqYImZt33XKE0
+         Wk5F85H9voDZ92yMMUYfSdWgXx0zShHQE3rfEmmyy9yPhkddClcyXISd7yCtN3S3veGj
+         gs682qaP2hxYBVi0LutLogTuU598dGM2FvIcch99F+dDfBebSDHOfD2Q9S/zvzk0aU3y
+         O/wRQLw2tDxWkWpEimxY5GdyTS6xjgVG/5/8wBwTxFX71W2gbREydJIEWX2wbuv8Va+d
+         iLlQ==
+X-Gm-Message-State: AJIora/RUAg+dFefNhiVIYVyzV8mZClew4Z0sGnsq+82sofThN/NJHcC
+        BUZGGSmCOFVXWGQ0IQ+zmiL6PzzJpt5o0nRy3r1WHw==
+X-Google-Smtp-Source: AGRyM1sQ94bkl3cSe4sS2qJv4YReX+VPVipCTj//NNAY/XHi3A7GR63/Gi8RtDRY2/sI20zjM0OWhcOQDqWq/QV+9qM=
+X-Received: by 2002:a05:6512:3503:b0:48a:6060:5ebb with SMTP id
+ h3-20020a056512350300b0048a60605ebbmr8980945lfs.429.1659003795334; Thu, 28
+ Jul 2022 03:23:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
- <6691d91f-c03b-30fa-2fa0-d062b3b234b9@digikod.net>
- <38fa02c6-a8d1-892b-3f30-4a2d6b38efe5@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v6 00/17] Network support for Landlock
-In-Reply-To: <38fa02c6-a8d1-892b-3f30-4a2d6b38efe5@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
+ <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
+ <20220727113054.ffcckzlcipcxer2c@pengutronix.de> <20220727192839.707a3453.max@enpas.org>
+ <20220727182414.3mysdeam7mtnqyfx@pengutronix.de> <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
+ <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de>
+In-Reply-To: <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Thu, 28 Jul 2022 12:23:04 +0200
+Message-ID: <CABGWkvoYR67MMmqZ6bRLuL3szhVb-gMwuAy6Z4YMkaG0yw6Sdg@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
+ register (btr)
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Max Staudt <max@enpas.org>, linux-kernel@vger.kernel.org,
+        linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jul 28, 2022 at 11:02 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 28.07.2022 09:36:21, Dario Binacchi wrote:
+> > > Most of the other CAN drivers write the BTR values into the register of
+> > > the hardware. How are these BTR values transported into the driver?
+> > >
+> > > There are 2 ways:
+> > >
+> > > 1) - user space configures a bitrate
+> > >    - the kernel calculates with the "struct can_bittiming_const" [1] given
+> > >      by driver and the CAN clock rate the low level timing parameters.
+> > >
+> > >      [1] https://elixir.bootlin.com/linux/v5.18/source/include/uapi/linux/can/netlink.h#L47
+> > >
+> > > 2) - user space configures low level bit timing parameter
+> > >      (Sample point in one-tenth of a percent, Time quanta (TQ) in
+> > >       nanoseconds, Propagation segment in TQs, Phase buffer segment 1 in
+> > >       TQs, Phase buffer segment 2 in TQs, Synchronisation jump width in
+> > >       TQs)
+> > >     - the kernel calculates the Bit-rate prescaler from the given TQ and
+> > >       CAN clock rate
+> > >
+> > > Both ways result in a fully calculated "struct can_bittiming" [2]. The
+> > > driver translates this into the hardware specific BTR values and writes
+> > > the into the registers.
+> > >
+> > > If you know the CAN clock and the bit timing const parameters of the
+> > > slcan's BTR register you can make use of the automatic BTR calculation,
+> > > too. Maybe the framework needs some tweaking if the driver supports both
+> > > fixed CAN bit rate _and_ "struct can_bittiming_const".
+> >
+> > Does it make sense to use the device tree
+>
+> The driver doesn't support DT and DT only works for static serial
+> interfaces.
+>
+> > to provide the driver with those
+> > parameters required for the automatic calculation of the BTR (clock rate,
+> > struct can_bittiming_const, ...) that depend on the connected
+> > controller?
+>
+> The device tree usually says it's a CAN controller compatible to X and
+> the following clock(s) are connected. The driver for CAN controller X
+> knows the bit timing const. Some USB CAN drivers query the bit timing
+> const from the USB device.
+>
+> > In this way the solution should be generic and therefore scalable. I
+> > think we should also add some properties to map the calculated BTR
+> > value on the physical register of the controller.
+>
+> The driver knows how to map the "struct can_bittiming" to the BTR
+> register values of the hardware.
+>
+> What does the serial protocol say to the BTR values? Are these standard
+> SJA1000 layout with 8 MHz CAN clock or are those adapter specific?
+
+I think they are adapter specific.
+This is  what the can232_ver3_Manual.pdf reports:
+
+sxxyy[CR]         Setup with BTR0/BTR1 CAN bit-rates where xx and yy is a hex
+                         value. This command is only active if the CAN
+channel is closed.
+
+xx     BTR0 value in hex
+yy     BTR1 value in hex
+
+Example:            s031C[CR]
+                           Setup CAN with BTR0=0x03 & BTR1=0x1C
+                           which equals to 125Kbit.
+
+But I think the example is misleading because IMHO it depends on the
+adapter's controller (0x31C -> 125Kbit).
+
+>
+> > Or, use the device tree to extend the bittates supported by the controller
+> > to the fixed ones (struct can_priv::bitrate_const)?
+>
+> The serial protocol defines fixed bit rates, no need to describe them in
+> the DT:
+>
+> |           0            10 Kbit/s
+> |           1            20 Kbit/s
+> |           2            50 Kbit/s
+> |           3           100 Kbit/s
+> |           4           125 Kbit/s
+> |           5           250 Kbit/s
+> |           6           500 Kbit/s
+> |           7           800 Kbit/s
+> |           8          1000 Kbit/s
+>
+> Are there more bit rates?
+
+No, the manual can232_ver3_Manual.pdf does not contain any others.
+
+What about defining a device tree node for the slcan (foo adapter):
+
+slcan {
+    compatible = "can,slcan";
+                                     /* bit rate btr0btr1 */
+    additional-bitrates = < 33333  0x0123
+                                        80000  0x4567
+                                        83333  0x89ab
+                                      150000 0xcd10
+                                      175000 0x2345
+                                      200000 0x6789>
+};
+
+So that the can_priv::bitrate_cons array (dynamically created) will
+contain the bitrates
+           10000,
+           20000,
+           50000,
+         100000,
+         125000,
+         250000,
+         500000,
+         800000,
+        1000000 /* end of standards bitrates,  use S command */
+           33333,  /* use s command, btr 0x0123 */
+           80000,  /* use s command, btr 0x4567 */
+           83333,  /* use s command, btr 0x89ab */
+         150000,  /* use s command, btr 0xcd10 */
+         175000, /* use s command, btr 0x2345 */
+         200000  /* use s command, btr 0x6789 */
+};
+
+So if a standard bitrate is requested, the S command is used,
+otherwise the s command with the associated btr.
+
+Thanks and regards,
+Dario
+
+>
+> regards,
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+--
+
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
 
 
-On 28/07/2022 11:25, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 7/27/2022 10:54 PM, Mickaël Salaün пишет:
->>
->>
->> On 26/07/2022 19:43, Mickaël Salaün wrote:
->>>
->>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->>>> Hi,
->>>> This is a new V6 patch related to Landlock LSM network confinement.
->>>> It is based on the latest landlock-wip branch on top of v5.19-rc2:
->>>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=landlock-wip
->>>>
->>>> It brings refactoring of previous patch version V5:
->>>>      - Fixes some logic errors and typos.
->>>>      - Adds additional FIXTURE_VARIANT and FIXTURE_VARIANT_ADD helpers
->>>>      to support both ip4 and ip6 families and shorten seltests' code.
->>>>      - Makes TCP sockets confinement support optional in sandboxer 
->>>> demo.
->>>>      - Formats the code with clang-format-14
->>>>
->>>> All test were run in QEMU evironment and compiled with
->>>>   -static flag.
->>>>   1. network_test: 18/18 tests passed.
->>>>   2. base_test: 7/7 tests passed.
->>>>   3. fs_test: 59/59 tests passed.
->>>>   4. ptrace_test: 8/8 tests passed.
->>>>
->>>> Still have issue with base_test were compiled without -static flag
->>>> (landlock-wip branch without network support)
->>>> 1. base_test: 6/7 tests passed.
->>>>   Error:
->>>>   #  RUN           global.inconsistent_attr ...
->>>>   # base_test.c:54:inconsistent_attr:Expected ENOMSG (42) == errno (22)
->>>>   # inconsistent_attr: Test terminated by assertion
->>>>   #          FAIL  global.inconsistent_attr
->>>> not ok 1 global.inconsistent_attr
->>>>
->>>> LCOV - code coverage report:
->>>>              Hit  Total  Coverage
->>>> Lines:      952  1010    94.3 %
->>>> Functions:  79   82      96.3 %
->>>>
->>>> Previous versions:
->>>> v5: 
->>>> https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->>>> v4: 
->>>> https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->>>> v3: 
->>>> https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->>>> v2: 
->>>> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->>>> v1: 
->>>> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->>>>
->>>> Konstantin Meskhidze (17):
->>>>    landlock: renames access mask
->>>>    landlock: refactors landlock_find/insert_rule
->>>>    landlock: refactors merge and inherit functions
->>>>    landlock: moves helper functions
->>>>    landlock: refactors helper functions
->>>>    landlock: refactors landlock_add_rule syscall
->>>>    landlock: user space API network support
->>>>    landlock: adds support network rules
->>>>    landlock: implements TCP network hooks
->>>>    seltests/landlock: moves helper function
->>>>    seltests/landlock: adds tests for bind() hooks
->>>>    seltests/landlock: adds tests for connect() hooks
->>>>    seltests/landlock: adds AF_UNSPEC family test
->>>>    seltests/landlock: adds rules overlapping test
->>>>    seltests/landlock: adds ruleset expanding test
->>>>    seltests/landlock: adds invalid input data test
->>>>    samples/landlock: adds network demo
->>>>
->>>>   include/uapi/linux/landlock.h               |  49 ++
->>>>   samples/landlock/sandboxer.c                | 118 ++-
->>>>   security/landlock/Kconfig                   |   1 +
->>>>   security/landlock/Makefile                  |   2 +
->>>>   security/landlock/fs.c                      | 162 +---
->>>>   security/landlock/limits.h                  |   8 +-
->>>>   security/landlock/net.c                     | 155 ++++
->>>>   security/landlock/net.h                     |  26 +
->>>>   security/landlock/ruleset.c                 | 448 +++++++++--
->>>>   security/landlock/ruleset.h                 |  91 ++-
->>>>   security/landlock/setup.c                   |   2 +
->>>>   security/landlock/syscalls.c                | 168 +++--
->>>>   tools/testing/selftests/landlock/common.h   |  10 +
->>>>   tools/testing/selftests/landlock/config     |   4 +
->>>>   tools/testing/selftests/landlock/fs_test.c  |  10 -
->>>>   tools/testing/selftests/landlock/net_test.c | 774 
->>>> ++++++++++++++++++++
->>>>   16 files changed, 1737 insertions(+), 291 deletions(-)
->>>>   create mode 100644 security/landlock/net.c
->>>>   create mode 100644 security/landlock/net.h
->>>>   create mode 100644 tools/testing/selftests/landlock/net_test.c
->>>>
->>>> -- 
->>>> 2.25.1
->>>>
->>>
->>> I did a thorough review of all the code. I found that the main issue 
->>> with this version is that we stick to the layers limit whereas it is 
->>> only relevant for filesystem hierarchies. You'll find in the 
->>> following patch miscellaneous fixes and improvement, with some TODOs 
->>> to get rid of this layer limit. We'll need a test to check that too. 
->>> You'll need to integrate this diff into your patches though.
->>
->> You can find the related patch here:
->> https://git.kernel.org/mic/c/8f4104b3dc59e7f110c9b83cdf034d010a2d006f
-> 
->   Is this patch based on your updated landlock-wip branch or it's still 
-> on Linux 5.19-rc2 version?
+Amarula Solutions SRL
 
-It's based on v5.19-rc2 but it doesn't really matter. I removed the 
-landlock-wip branch, which is not needed anymore. You can base your 
-patches on Linus' master branch.
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
