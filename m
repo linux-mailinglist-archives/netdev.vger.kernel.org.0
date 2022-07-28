@@ -2,67 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6735D584459
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:48:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B5258445D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbiG1QsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60578 "EHLO
+        id S229940AbiG1QuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232113AbiG1QsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:48:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF5874781
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:47:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10B7861CDA
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:47:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CFB2C433C1;
-        Thu, 28 Jul 2022 16:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659026878;
-        bh=/W0I2oNAxnR5wUQ80CzH7yL5fgJvveKje5Tzrrirxvc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U+xBsbXlDkXiv7eQaS+HZw021NEDBdJjp5jdhlCw6925kVV/sqPX7MUAAy4MC3tC2
-         AjCjxAlPcxVJ3FL00ajmyR0aJsSJtqFQ1DcajXn98E27KbXjOKthhF29uTgTveQ4yn
-         5axMOC3uhgR73JKnK1lBXhCg06EgRWQiam6Ls6s6q0hLuhCHQcLXuvzhz3c5MW4rTJ
-         XGGzYNRQoN9BYfAUKlOXiLHowaTpldqpiZ25YS2WSg9Q32L05wrTsn0DLx6/52/JpV
-         T7gX6uKMweED6XagR2ErbZnqP6fYHeq7V0i/ou6IWKUrS1fB4IIJcB6wS6JxT0Xr7H
-         ATpimfS4lozsQ==
-Date:   Thu, 28 Jul 2022 09:47:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Liang He <windhl@126.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linmq006@gmail.com
-Subject: Re: [PATCH] of: mdio: Add of_node_put() when breaking out of
- for_each_xx
-Message-ID: <20220728094756.51d304ed@kernel.org>
-In-Reply-To: <20220727074409.1323592-1-windhl@126.com>
-References: <20220727074409.1323592-1-windhl@126.com>
+        with ESMTP id S229498AbiG1QuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:50:15 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A082B12AB1
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:50:13 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31f443e276fso25863547b3.1
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mPytlbJJGMaQF78YCynLHt6AjHItpBAvAqieRoTXM5Q=;
+        b=T6PAGuINvD6CjTjJlBIpH0owhZZWCZomjM/7pcnf3eapDdfzYsHG6KJyLb4Efg2HD9
+         Mwg0tN1naghn9Xg2ij5dQG7CK1jidBRBqkhpN7qqXkpGLuEY8x7k1B4lmIHqxsWcKAtm
+         3wZipPBDG0nNeDOoBhb6WHJemQNOADEqXUDUmtbEwYyqkm62PVYVYctobr5nFkBaWfZW
+         DW1HS4Tc66HaZJsk4cPQCJcDdFibB3yo6XAB/fvVwu69NgklByLvx8U2nFYFNTHd+geE
+         8gCtxAOJ3fhYGo9azYwLAxlxgYQMZn14ImcWFLlOrbdAKjt3tu+HzwQWVBkLV8mFqkff
+         9UYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mPytlbJJGMaQF78YCynLHt6AjHItpBAvAqieRoTXM5Q=;
+        b=z9/pRQEZnd3qlj4rexvY6wHU/5H9U5bzbPiepRhc+h9k+qT9965ZXzgVbl3MGfSOuC
+         4fr8j6yTt77II93pT5UNV1BlEV6u+oWs4W9Pj2pWGSaRzTRvs43x31LbYHj/OepDIEOu
+         E6UZDzcZ35vAjaJ9LH1Zx8rMgARZj7dj4t+5qSRe53W6ZpDBVVP3D57FZN/V4yvDz55v
+         dpbODxCPqRNMBz5hHkN/0azn9MEW39PzphRDDOYf8Jcy4fpqyXuh6E3UrxwSN/PKNRSE
+         0e9Fn8UI6viSZdkRPm9ZMUGmQ2oN7H8I9P9ilmkZNGJio4TM0XW0kjVYkMHJRbhkBwxz
+         klyg==
+X-Gm-Message-State: AJIora/ULT6Z8Tli8hrxpNQQh8zsI+Gg8scS2/9qsbPqfr6Gwo2EG6sT
+        NXdITXuEWemUqXOIE6nuOOFg/mU4aZqDHxu67ckOmg==
+X-Google-Smtp-Source: AGRyM1vJh00SJhFnRK/3Rb/7ZpKryt98GzfVMvVIdrvaNw8lTqcHlZmzdjfQerBmyaaGShvyTB/OhCXV+RO33cg41QY=
+X-Received: by 2002:a05:690c:831:b0:322:1402:d950 with SMTP id
+ by17-20020a05690c083100b003221402d950mr4874291ywb.255.1659027012625; Thu, 28
+ Jul 2022 09:50:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220728012220.46918-1-kuniyu@amazon.com>
+In-Reply-To: <20220728012220.46918-1-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 28 Jul 2022 18:50:01 +0200
+Message-ID: <CANn89i+fRjiD91PZ1cXkhUingdr8p6nXdkTS=NVXSRK3zqjDxw@mail.gmail.com>
+Subject: Re: [PATCH v2 net] net: ping6: Fix memleak in ipv6_renew_options().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 15:44:09 +0800 Liang He wrote:
-> In of_mdiobus_register(), we should call of_node_put() for 'child'
-> escaped out of for_each_available_child_of_node().
-> 
-> Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
-> Co-authored-by: Miaoqian Lin <linmq006@gmail.com>
+On Thu, Jul 28, 2022 at 3:22 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> When we close ping6 sockets, some resources are left unfreed because
+> pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+> syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
+>
 
-The standard tag is Co-developed-by, and the other developer must also
-provide their sign-off. When reposting please make sure to CC the
-author of the patch under Fixes.
+>
+> Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+> Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+> Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+> v2:
+>   - Remove ip6_flush_pending_frames() (Jakub Kicinski)
 
-> Signed-off-by: Liang He <windhl@126.com>
+Nice catch, thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
