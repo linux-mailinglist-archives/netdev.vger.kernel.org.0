@@ -2,109 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DAD584469
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E79D584476
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbiG1QwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
+        id S231809AbiG1Q4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiG1QwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:52:01 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEFC70E53;
-        Thu, 28 Jul 2022 09:52:00 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id y15so2269833plp.10;
-        Thu, 28 Jul 2022 09:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=fUVrK6g6lEQcJgvUhuFR+4LVGwptL3CDZhDO7VRmNOg=;
-        b=TOhl89jKQ+CkKM87tj1vWT5uQe8ni61gDVjTKzKPd+UpFyilcZ9zwRWS+IPM5TGXaU
-         u4OZN8NerzC0JJFwL/LMrixY61CQxOavVDHVnFiRXhWoqiKIS84crWtf2ADSbsopoDx9
-         CqQVo0FPvxJzSOYl/kChHOYJRiYCXURZQu8o9ZpkYt7W9Jc0yqedeTqfNgiIUSdvNoKH
-         2xPMnNg3Z1+5kPRZ2bfAL3VxeSVJUXCxZbwDO0jc3uxzGND46zHX0Q20Wi38L9P+V6EH
-         CfgH6pPNiN77F64BMbn4ufnL8wVhgVcbTodO/fXy6GyeF4xIHvXyxZkVykVSklWTTq82
-         5KGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=fUVrK6g6lEQcJgvUhuFR+4LVGwptL3CDZhDO7VRmNOg=;
-        b=MLoXuuj5D/rYPDff1wjOE18+tMr8vUPZu5hlC4sOn+wceMfVQcxwtUPGEUA5yLBAux
-         DeACz+xo+zValXWeNDSwdcV9EpPNe+9b0esL5fs72YZ900WMa2iuYbywCt6Mo7xtiduR
-         U+ZJUOcfOqtPCkuYmD3s076I1lnRNgmlvnCKK9wDU3Lk6rLYO6gY8o4IU9PlUzMv6+dB
-         X+OfYW1ttV4S4T9IYFLmv0aXt9Y6zkukISR3lOeCgxDcESRx7udywd5uESxAHpGT3Ecb
-         yUtmMNECoejh/P2GLFS8nHox07dRg1lf9mb+kp2lcrDutgoy4LDXvec+wlaGp1gq0Cd9
-         Qx4w==
-X-Gm-Message-State: AJIora9Y6iL3/sTPi7700+45CrUaud5WwAoZWb3uacFcvwu2lLOicUFm
-        xUPvYqX0PXrQDgFn+gFp5E8=
-X-Google-Smtp-Source: AGRyM1slV7f42a9r0z9ic0zdKmN0qYm12B5tomXz+oZofoxBS+pi5Tzha7NWrt/S4nWycAi7IgtjjA==
-X-Received: by 2002:a17:902:e84e:b0:16b:f773:4692 with SMTP id t14-20020a170902e84e00b0016bf7734692mr27142961plg.19.1659027119804;
-        Thu, 28 Jul 2022 09:51:59 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id m13-20020a170902f64d00b0016bf2a4598asm1478509plg.229.2022.07.28.09.51.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 09:51:59 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 28 Jul 2022 06:51:57 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        with ESMTP id S229747AbiG1Q4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:56:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83748550A5;
+        Thu, 28 Jul 2022 09:56:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BFC461D07;
+        Thu, 28 Jul 2022 16:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 043B2C433C1;
+        Thu, 28 Jul 2022 16:56:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659027391;
+        bh=B6rUCeLnh3zKa/C/9iHbOCyopE6kIGU1JVaQFJIIV2k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cNkUW/MYkRnq+bDo3SzeItVJ8q+nei5gfKhFR2AfkiEyU1Pg+CtqykDMWYBZQpn5u
+         D7TnN/vRrk6lHZ+oot7krwjx8tRjgVg8tdbrX2RJuNfYsCmU9z2ZoL43Pqmf8RADQJ
+         y3DCN7IsaTMhVE3Npcu7PQpEEYPwlNPbOlfM4VoalWBhJgaizosly5mbky2slyX4Z/
+         yB8b/Oh4NQPnCFg5GH+uZxnkRuJF/OzEiav5KeJGQ9WEilROqzzdVcgQ/V8QW43IC/
+         7GVebDSvqWye3fqVI2mYUHUtQesI7/eOqFYg+vexlLuF+T0CmbaxtHzAOFpWx+wA3v
+         LfgN+DSB5THFQ==
+Date:   Thu, 28 Jul 2022 09:56:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Stanislav Fomichev <sdf@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 6/8] cgroup: bpf: enable bpf programs to
- integrate with rstat
-Message-ID: <YuK+rbZXg7CYjLhE@slm.duckdns.org>
-References: <20220722174829.3422466-1-yosryahmed@google.com>
- <20220722174829.3422466-7-yosryahmed@google.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+Message-ID: <20220728095629.6109f78c@kernel.org>
+In-Reply-To: <20220728163104.usdkmsxjyqwaitxu@kafai-mbp.dhcp.thefacebook.com>
+References: <20220727060856.2370358-1-kafai@fb.com>
+        <20220727060909.2371812-1-kafai@fb.com>
+        <YuFsHaTIu7dTzotG@google.com>
+        <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
+        <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com>
+        <20220727212133.3uvpew67rzha6rzp@kafai-mbp.dhcp.thefacebook.com>
+        <CAKH8qBs3jp_0gRiHyzm29HaW53ZYpGYpWbmLhwi87xWKi9g=UA@mail.gmail.com>
+        <20220728004546.6n42isdvyg65vuke@kafai-mbp.dhcp.thefacebook.com>
+        <20220727184903.4d24a00a@kernel.org>
+        <20220728163104.usdkmsxjyqwaitxu@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722174829.3422466-7-yosryahmed@google.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 05:48:27PM +0000, Yosry Ahmed wrote:
-> Enable bpf programs to make use of rstat to collect cgroup hierarchical
-> stats efficiently:
-> - Add cgroup_rstat_updated() kfunc, for bpf progs that collect stats.
-> - Add cgroup_rstat_flush() sleepable kfunc, for bpf progs that read stats.
-> - Add an empty bpf_rstat_flush() hook that is called during rstat
->   flushing, for bpf progs that flush stats to attach to. Attaching a bpf
->   prog to this hook effectively registers it as a flush callback.
+On Thu, 28 Jul 2022 09:31:04 -0700 Martin KaFai Lau wrote:
+> If I understand the concern correctly, it may not be straight forward to
+> grip the reason behind the testings at in_bpf() [ the in_task() and
+> the current->bpf_ctx test ] ?  Yes, it is a valid point.
 > 
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> The optval.is_bpf bit can be directly traced back to the bpf_setsockopt
+> helper and should be easier to reason about.
 
-Acked-by: Tejun Heo <tj@kernel.org>
+I think we're saying the opposite thing. in_bpf() the context checking
+function is fine. There is a clear parallel to in_task() and combined
+with the capability check it should be pretty obvious what the code
+is intending to achieve.
 
-Thanks.
+sockptr_t::in_bpf which randomly implies that the lock is already held
+will be hard to understand for anyone not intimately familiar with the
+BPF code. Naming that bit is_locked seems much clearer.
 
--- 
-tejun
+Which is what I believe Stan was proposing.
