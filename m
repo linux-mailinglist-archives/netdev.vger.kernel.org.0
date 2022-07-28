@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F47584739
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 853AF584737
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 22:47:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbiG1UrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 16:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        id S232316AbiG1UrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 16:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiG1Uq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:46:56 -0400
+        with ESMTP id S230357AbiG1Uq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 16:46:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720036AA3B
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:46:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7C06BD64
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 13:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 034816179A
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB974617B7
         for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B60CC433D7;
-        Thu, 28 Jul 2022 20:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2147EC433C1;
+        Thu, 28 Jul 2022 20:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659041214;
-        bh=vVZQQqiK7u5bjNirfzNrpLfLB2SmoDv9Ojq4Rk7MMaw=;
+        s=k20201202; t=1659041215;
+        bh=VNUtvnY3L0444Wj8MWyQ0pAcW4wbqEp+4Jz+u8C57/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XKYbh2elZ7WIYfmD1McqaAl4y8VjHi5azGeLhKAZUt7sJaKo4tAyEf5krG/Bmfkl4
-         7IPOENcnqJo2g1aemkJz4MQ6yDsL1TxexD+lWfHcFvcblsi1JznvS71qnijG/Jtxml
-         vIrx/qdESEjdWbcDaVJhwwoMzoK0F2js3+tPu2YtvzTgJn8pjUf4XAglasTxVUkPn6
-         eXChqFONeNjWYGRY0AljFLEt+Jgbu/uy8kBfm6IsCOo8mMDxZnfghPO6zjaU8wYlpV
-         MNuJie9sAdE9tYbAlZfKi3WGagnUxJwOTygssTZJQ9gVdiXWZrUKgi6E6qtuIamg3h
-         ZJznAfJDwt8og==
+        b=iUbx/mJgV330emRtIbWxeYVCk7GelO3Bgd6+PAUnfWv3ZiqD4sBYvZU8pW+r9nDLq
+         Pde8L0zDYfpmlybTbQRKwi6TkeHeyu4W7UieQ0a9FzS+ro8FbKo8yMY5a7TkNX4ndf
+         qLRpWEvk6Eo7XMK++MbjuInKzBqzP31sJF8bHgrZyWDluvt9yKw7ilfcjp+2UzcoLj
+         MZ39rip5JjTLYljoDiN8MtPgY0mhWamJyQLV3zJpBQ/OgIGGfjVyfuSPgDKNXPmqQm
+         BRrMpoIbfFDOPMKk249LUMcOCl6VB3CapbCKXOT70zTGfp4tF8ctAU9T1KUTGR91Rw
+         DJA9LqOrsxkJg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [net 3/9] net/mlx5e: Fix the value of MLX5E_MAX_RQ_NUM_MTTS
-Date:   Thu, 28 Jul 2022 13:46:34 -0700
-Message-Id: <20220728204640.139990-4-saeed@kernel.org>
+Subject: [net 4/9] net/mlx5e: xsk: Account for XSK RQ UMRs when calculating ICOSQ size
+Date:   Thu, 28 Jul 2022 13:46:35 -0700
+Message-Id: <20220728204640.139990-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728204640.139990-1-saeed@kernel.org>
 References: <20220728204640.139990-1-saeed@kernel.org>
@@ -58,33 +58,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-MLX5E_MAX_RQ_NUM_MTTS should be the maximum value, so that
-MLX5_MTT_OCTW(MLX5E_MAX_RQ_NUM_MTTS) fits into u16. The current value of
-1 << 17 results in MLX5_MTT_OCTW(1 << 17) = 1 << 16, which doesn't fit
-into u16. This commit replaces it with the maximum value that still
-fits u16.
+ICOSQ is used to post UMR WQEs for both regular RQ and XSK RQ. However,
+space in ICOSQ is reserved only for the regular RQ, which may cause
+ICOSQ overflows when using XSK (the most risk is on activating
+channels).
 
-Fixes: 73281b78a37a ("net/mlx5e: Derive Striding RQ size from MTU")
+This commit fixes the issue by reserving space for XSK UMR WQEs as well.
+As XSK may be enabled without restarting the channel and recreating the
+ICOSQ, this space is reserved unconditionally.
+
+Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index b6c15efe92ad..f794ffaf1e04 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -109,7 +109,7 @@ struct page_pool;
- #define MLX5E_REQUIRED_WQE_MTTS		(MLX5_ALIGN_MTTS(MLX5_MPWRQ_PAGES_PER_WQE + 1))
- #define MLX5E_REQUIRED_MTTS(wqes)	(wqes * MLX5E_REQUIRED_WQE_MTTS)
- #define MLX5E_MAX_RQ_NUM_MTTS	\
--	((1 << 16) * 2) /* So that MLX5_MTT_OCTW(num_mtts) fits into u16 */
-+	(ALIGN_DOWN(U16_MAX, 4) * 2) /* So that MLX5_MTT_OCTW(num_mtts) fits into u16 */
- #define MLX5E_ORDER2_MAX_PACKET_MTU (order_base_2(10 * 1024))
- #define MLX5E_PARAMS_MAXIMUM_LOG_RQ_SIZE_MPW	\
- 		(ilog2(MLX5E_MAX_RQ_NUM_MTTS / MLX5E_REQUIRED_WQE_MTTS))
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 3c1edfa33aa7..e025040350ba 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -790,8 +790,20 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
+ 		return MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
+ 
+ 	wqebbs = MLX5E_UMR_WQEBBS * BIT(mlx5e_get_rq_log_wq_sz(rqp->rqc));
++
++	/* If XDP program is attached, XSK may be turned on at any time without
++	 * restarting the channel. ICOSQ must be big enough to fit UMR WQEs of
++	 * both regular RQ and XSK RQ.
++	 * Although mlx5e_mpwqe_get_log_rq_size accepts mlx5e_xsk_param, it
++	 * doesn't affect its return value, as long as params->xdp_prog != NULL,
++	 * so we can just multiply by 2.
++	 */
++	if (params->xdp_prog)
++		wqebbs *= 2;
++
+ 	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
+ 		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
++
+ 	return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE, order_base_2(wqebbs));
+ }
+ 
 -- 
 2.37.1
 
