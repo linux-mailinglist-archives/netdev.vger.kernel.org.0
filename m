@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C802158360B
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 02:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D985583618
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 02:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234348AbiG1ArF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 20:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
+        id S234495AbiG1Az5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 20:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiG1ArD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 20:47:03 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179A658B7A;
-        Wed, 27 Jul 2022 17:47:03 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 12so282435pga.1;
-        Wed, 27 Jul 2022 17:47:03 -0700 (PDT)
+        with ESMTP id S230007AbiG1Az4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 20:55:56 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2D75A2F9;
+        Wed, 27 Jul 2022 17:55:55 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id j22so557044ejs.2;
+        Wed, 27 Jul 2022 17:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=zq+yw9MoLlDFVjCZabxL+GTI/wzIy2gG7jrKCUyRlhA=;
-        b=dZ/2SsnSHTBnsjBC2dq+jJf8Bkc6/5TgzQVfXPrSTOR9iESxJgx/pAiAkNfeGDan2H
-         fTGKc2NDFsaviLubsw+pDgvWcaFnsoZAxKgBbEFH3Jz1ycuZQ5c9XSWDyUsyL7bsaN0q
-         tcsTRpsG7iIB+U+s5mgnzpUh+zxfZLGXREht8anb/QCcVRr9eUFEdRvtv5k2BrIcl2OJ
-         Trp3hzhqJ+yZ6Tpuhesw/Gs9MyyO7sFdlIU0l+twEboFYV6d0iaX6a+lVATGYEiTMsjC
-         hUVsob8kqv/1gN5gAHYkQpwGJ/tpBzl5GqqIgFxC8RAad8TJkyB78I+7xhNkyl8QOg5z
-         UanQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=heYoV5fSvwFSYO3IxD1olBe1fDtvUC4jcV2+G7UYBRA=;
+        b=OI+Z/oL2ronUsu2Gsta8991dVXXa9mLxRuZPF4T5Z79DSQ2aYF/XtzeNfwDzTTfnlH
+         zwtsHowaXObkQMIhPH+VvUjQhjCd6AHsnyarg8pCteauChA764r/M59qShSARkBWJTu1
+         G+hwAQrfM12HdZs+B/S5FDZmS91jG88BzYjlsFh9q7fSqAp+P8pVe0OJjZ6izp29p/dg
+         88XSmU4EkipxfBeN1pYl5UB+3l6JBog15+9deNrroSKjqaLyI0ZsXTSoZXPcfxgVYCRm
+         zPqgJGMw5UU5xF8iVJ1PIcSK0LUl0UfGWcjLDV2wRR33U8B+Ok/NBU5OKhTVROLJ1pBT
+         8gfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=zq+yw9MoLlDFVjCZabxL+GTI/wzIy2gG7jrKCUyRlhA=;
-        b=1izXvdvW7YQ6IpSk+KCNS7mlwlWVNvsTf1SrHo/3GDxADqmEN0iEysOc/cKZZgvESS
-         MaE48iC0GHFYUlPVx66sfe6g1HMyi5wTImwlh7RbA0cuSqT45EaMjOLQ6GeIhGVkMoRr
-         Vhlr0s7l2RvooNJ82JtfiFKb0ecxvj6Dsb9+kWS2nLgSyd+fL1o9qLKgkKnMS9Y1u0FI
-         Z1n/upkoGPYdjDb81QNQNRLRo0Bw8xVulEOJVivs4fuzPTeZqqjppo6OQ74pPR0pjsLM
-         qBYtK/hZR5h2prMi1qyiXYoGVJ1TZsd9QawOsAt/7vRC3wBKG0+LdQaKt2lcFe6A6YCl
-         HZIw==
-X-Gm-Message-State: AJIora9ELfQY/gmXsy4lE6ji4hOB+GRlrIir3Rc7N6N6TN5h0UGx+YvL
-        G7pdq5adEqPHXfLwBAVG7PPt/BZkBs2WIORKxF8=
-X-Google-Smtp-Source: AGRyM1vJd4D2/nI5bkwbGKoWa5v9oGTDJnQdmNHzCqKm5FNToDnxz055SwQa1XGgvQalbrTssE8Jx5xXbYVqjAlXZWg=
-X-Received: by 2002:a63:1b22:0:b0:411:9b47:f6bf with SMTP id
- b34-20020a631b22000000b004119b47f6bfmr20911092pgb.200.1658969222464; Wed, 27
- Jul 2022 17:47:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220727025255.61232-1-jrdr.linux@gmail.com> <20220728001648.cwfcmcg75lpqip5v@skbuf>
-In-Reply-To: <20220728001648.cwfcmcg75lpqip5v@skbuf>
-From:   Souptick Joarder <jrdr.linux@gmail.com>
-Date:   Thu, 28 Jul 2022 06:16:50 +0530
-Message-ID: <CAFqt6zZF-bTh_8vYxwhG5wWvCkFHc2duK2A14_Fdt9Agzfkxwg@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: microchip: remove of_match_ptr() from ksz9477_dt_ids
-To:     Vladimir Oltean <olteanv@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=heYoV5fSvwFSYO3IxD1olBe1fDtvUC4jcV2+G7UYBRA=;
+        b=jxjENpqDvgqPUa+BnZmqDeDEF4w9M15ISEOMWMJhKi3b2Q+Zox2wvpLNTsHGR5Inq5
+         RYYc9w/HU9RNxRvWqCl1kXW9/qN1jPEUQunEu1k4Ov2M/6u1HP8IcoRHy2kvoD1l+dwz
+         7gHo+hdLxBhD86JLnNpaaW4NP5Bfc7dCFnsELDv2B7ZxHjCEDti0oXiaRtMqCw+ysZwT
+         Gx6LFcoXVbM9KMNyaW8shuc4sg9H/ppX5ku8xoGEVtH36+Fr3BVTlNS3Z7rNDvX6czoE
+         p8wgYV68LHIJ8gMDW16f1trxIO5+9SDfL4X8PrSUm1eXSPDj9mWzUeASDIRLDleQ9AaE
+         MLiQ==
+X-Gm-Message-State: AJIora/v6rWnfPUjYw09yNn1gjeI4et8L2tGLjs3IRL8pUlJZVDX80mw
+        yL/P6f0WDX4Mx4Ugnppr4VE4WDNs7tA=
+X-Google-Smtp-Source: AGRyM1s+QC7Uq9vb+l/I/SxeK96Eaj5ZmxSyWN3GuejGLXSeHbBFsfEXSGa/08w2xHsW/+tV9Ohc8Q==
+X-Received: by 2002:a17:907:2d12:b0:72b:67fb:89a5 with SMTP id gs18-20020a1709072d1200b0072b67fb89a5mr19346795ejc.507.1658969753673;
+        Wed, 27 Jul 2022 17:55:53 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id s20-20020a05640217d400b0043baadb2279sm11233720edy.59.2022.07.27.17.55.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 17:55:53 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 03:55:50 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Souptick Joarder <jrdr.linux@gmail.com>
 Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
         Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -60,7 +58,16 @@ Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] net: dsa: microchip: remove of_match_ptr() from
+ ksz9477_dt_ids
+Message-ID: <20220728005550.amch6d4wlygg5l2p@skbuf>
+References: <20220727025255.61232-1-jrdr.linux@gmail.com>
+ <20220728001648.cwfcmcg75lpqip5v@skbuf>
+ <CAFqt6zZF-bTh_8vYxwhG5wWvCkFHc2duK2A14_Fdt9Agzfkxwg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFqt6zZF-bTh_8vYxwhG5wWvCkFHc2duK2A14_Fdt9Agzfkxwg@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -71,59 +78,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 5:46 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Wed, Jul 27, 2022 at 08:22:55AM +0530, Souptick Joarder wrote:
-> > From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
-> >
-> > >> drivers/net/dsa/microchip/ksz9477_i2c.c:89:34:
-> > warning: 'ksz9477_dt_ids' defined but not used [-Wunused-const-variable=]
-> >       89 | static const struct of_device_id ksz9477_dt_ids[] = {
-> >          |                                  ^~~~~~~~~~~~~~
-> >
-> > Removed of_match_ptr() from ksz9477_dt_ids.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-> > ---
->
-> I have to say, this is a major fail for what of_match_ptr() intended to do.
->
-> commit 3a1e362e3f3cd571b3974b8d44b8e358ec7a098c
-> Author: Ben Dooks <ben-linux@fluff.org>
-> Date:   Wed Aug 3 10:11:42 2011 +0100
->
->     OF: Add of_match_ptr() macro
->
->     Add a macro of_match_ptr() that allows the .of_match_table
->     entry in the driver structures to be assigned without having
->     an #ifdef xxx NULL for the case that OF is not enabled
->
->     Signed-off-by: Ben Dooks <ben-linux@fluff.org>
->     Signed-off-by: Grant Likely <grant.likely@secretlab.ca>
->
-> Should we also depend on CONFIG_OF?
+On Thu, Jul 28, 2022 at 06:16:50AM +0530, Souptick Joarder wrote:
+> Few other drivers threw similar warnings and the suggestion was to
+> remove of_match_ptr(). Anyway both approaches look fine.
 
-Few other drivers threw similar warnings and the suggestion was to
-remove of_match_ptr(). Anyway both approaches look fine.
-
->
-> >  drivers/net/dsa/microchip/ksz9477_i2c.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-> > index 99966514d444..c967a03a22c6 100644
-> > --- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-> > +++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-> > @@ -118,7 +118,7 @@ MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
-> >  static struct i2c_driver ksz9477_i2c_driver = {
-> >       .driver = {
-> >               .name   = "ksz9477-switch",
-> > -             .of_match_table = of_match_ptr(ksz9477_dt_ids),
-> > +             .of_match_table = ksz9477_dt_ids,
-> >       },
-> >       .probe  = ksz9477_i2c_probe,
-> >       .remove = ksz9477_i2c_remove,
-> > --
-> > 2.25.1
-> >
+I don't disagree with this change, I'm just saying that as a next step
+we may block this driver from even being compiled if CONFIG_OF=n.
