@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4CA583CF4
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:17:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A92583CF8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:17:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236139AbiG1LRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 07:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
+        id S236442AbiG1LRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 07:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235617AbiG1LRB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:17:01 -0400
+        with ESMTP id S236300AbiG1LRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:17:20 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A49F6611F
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:17:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DB97664CF
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659007019;
+        s=mimecast20190719; t=1659007039;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=gRkr8FElQJTQO7ryAbyJtV9cBZFdKZnke/CbnwuOpEg=;
-        b=QzPO+O9Q2PHQCC2IwN8z9jo6GMsTTtAMzvaSvH/JECmx5dfD2SbGlaKRMO1k5Zm9yZXB7e
-        vynLe+tYW4ngssYdu6dVw6/FM1Uvwe8tYUkYMRtXjJ5iRmp+HRiRDerf0vSr8u3nIVfJJR
-        RHuasd/Wn7JeejDu6K9n5QwsO6Qmtko=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=cTVzDc/Etmh4Gp7l1AB0glbg0gvXbjCtPcXVujhYdsM=;
+        b=KlW7KeCaLc7ORkKYNgsIf7+gaBnwpI1zhsmojrpUR5IC/FOO3oKKjJiuoQvIWXFlei+QcU
+        j3d88Cs5poGlqmY0n5WtBH4fOGyfIlCJ4DUgzIf+pX8Oowb5tsOk0PnPy9Icj7uhE5A3JZ
+        JDlNIZi7so4TDOdE1cXGZ4OxOPCDtkg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-_t9jW2n9NfSb_2O3xxlXVg-1; Thu, 28 Jul 2022 07:16:58 -0400
-X-MC-Unique: _t9jW2n9NfSb_2O3xxlXVg-1
-Received: by mail-wm1-f71.google.com with SMTP id 131-20020a1c0289000000b003a3497306a8so1032081wmc.9
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:16:57 -0700 (PDT)
+ us-mta-196-2N_emp4RPRCBYtRMnqNhvg-1; Thu, 28 Jul 2022 07:17:18 -0400
+X-MC-Unique: 2N_emp4RPRCBYtRMnqNhvg-1
+Received: by mail-wr1-f69.google.com with SMTP id d27-20020adfa41b000000b0021ee714785fso295651wra.18
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:17:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=gRkr8FElQJTQO7ryAbyJtV9cBZFdKZnke/CbnwuOpEg=;
-        b=svsY3Whz1NRGxy9SuN4u3VCEBHYac5imB6DPuQMzkSeSbDe/peXTQkyCTuvvKBW2t2
-         voz6R11v2SuIV2ieXvtaBctVMdXKYV/1SaacsvBGGdosqnvQwMEqvNK17S9CgYmvUrAU
-         IRBGl6IdH26ri1pfw8fwewe7NpzzHH+lTRV03QoN1kChmUAojku0wF/+o+ecfdTiZEF9
-         6seIn2kksbloe5/jbIsfLl9MdsxyBbXWDaJol2YqDyjLR3bo4De0N+ISkGgJPsAIap+G
-         C1Z0G0EBU1I9t1yq8uDZRe0K7tiN3J0z54tEdFOwSDFOjz3ugp93nNqXCAr6+J4RYlMq
-         FMGw==
-X-Gm-Message-State: AJIora/JxBGfstjJGJqqIGUI0DrSk3u80Jm7Fm6ehVsrBV12izxoO9M3
-        7q/5rWVhZh9NGJ1aaAm2lTmpqt1mloF/QXylwWg+8Ru7Z9Y1xJ+J8B1EOhcKIGUH73VLahcMzqn
-        wATgZcTlI6K3WGAmW
-X-Received: by 2002:a1c:7915:0:b0:3a3:11a3:7452 with SMTP id l21-20020a1c7915000000b003a311a37452mr6243104wme.27.1659007017023;
-        Thu, 28 Jul 2022 04:16:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s4yJmZr6GanQ8qu7jkm8lwvND8rNssB7frNx6bNplNpuEeVHzXPRL5ItqZ7SoRf9fS+ibHnw==
-X-Received: by 2002:a1c:7915:0:b0:3a3:11a3:7452 with SMTP id l21-20020a1c7915000000b003a311a37452mr6243080wme.27.1659007016708;
-        Thu, 28 Jul 2022 04:16:56 -0700 (PDT)
+        bh=cTVzDc/Etmh4Gp7l1AB0glbg0gvXbjCtPcXVujhYdsM=;
+        b=X9P0VfAaxhKCrwSVa31H3bt5CJEUzhVs+xd2ZA4yETepMAcljScmAYHFnUOYjksBXj
+         UMWC3DO5u86oiu1OfpKg4rcj5qty9IQJGByHG4sXcYUWSlBGWHW/n8AfvOsiQGYdz19y
+         UJxaUqMaMIYE2wnBF/1g3hybUKBjLCaqqhefOq2ZIkVj1k681z9LLXHGVYwQEHN5DEWh
+         sRLGokUn50CHvF/3g/ui7/3fQhzg52SjDAAVJ987k513dsiaKYLmkigPseMHayZHpTqY
+         rf/U9wvhW3hcvAsp4vxiMUyW/Qlw6d513JuZBL9UdZTt8Ly+SmcnS7X+IF+JN4JqZA7c
+         Yk6Q==
+X-Gm-Message-State: AJIora9//cQRk9ExGVGaAV1ngURNk1Vem/wqcD+ofAi/cFviuk98okq2
+        IUuFNtkveFo2T79g86aDK3IXi7Nn46b0k0efA7gZcvlX7w1V4KHBwtqttKgwJl5q3OgQB/mgDoI
+        oIEIaCNmNEsyNoE+o
+X-Received: by 2002:a05:600c:cd:b0:3a3:f40:8776 with SMTP id u13-20020a05600c00cd00b003a30f408776mr6318060wmm.9.1659007037016;
+        Thu, 28 Jul 2022 04:17:17 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v0fh0mnaNFWWwptxeYeiGdHLkaX4l89Ts0g2jiveSPWOsx09VtMDjpNT5WBiKB0Ap5IUWxAw==
+X-Received: by 2002:a05:600c:cd:b0:3a3:f40:8776 with SMTP id u13-20020a05600c00cd00b003a30f408776mr6318034wmm.9.1659007036558;
+        Thu, 28 Jul 2022 04:17:16 -0700 (PDT)
 Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id k19-20020a05600c1c9300b003a2e2a2e294sm1092599wms.18.2022.07.28.04.16.55
+        by smtp.gmail.com with ESMTPSA id l18-20020a7bc452000000b003a2e655f2e6sm916740wmi.21.2022.07.28.04.17.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 04:16:56 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 13:16:54 +0200
+        Thu, 28 Jul 2022 04:17:16 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 13:17:14 +0200
 From:   Guillaume Nault <gnault@redhat.com>
 To:     Wojciech Drewek <wojciech.drewek@intel.com>
 Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
-Subject: Re: [PATCH iproute-next v3 1/3] lib: refactor ll_proto functions
-Message-ID: <20220728111654.GD18015@pc-4.home>
+Subject: Re: [PATCH iproute-next v3 2/3] lib: Introduce ppp protocols
+Message-ID: <20220728111714.GE18015@pc-4.home>
 References: <20220728110117.492855-1-wojciech.drewek@intel.com>
- <20220728110117.492855-2-wojciech.drewek@intel.com>
+ <20220728110117.492855-3-wojciech.drewek@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220728110117.492855-2-wojciech.drewek@intel.com>
+In-Reply-To: <20220728110117.492855-3-wojciech.drewek@intel.com>
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -75,13 +75,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 01:01:15PM +0200, Wojciech Drewek wrote:
-> Move core logic of ll_proto_n2a and ll_proto_a2n
-> to utils.c and make it more generic by allowing to
-> pass table of protocols as argument (proto_tb).
-> Introduce struct proto with protocol ID and name to
-> allow this. This wil allow to use those functions by
-> other use cases.
+On Thu, Jul 28, 2022 at 01:01:16PM +0200, Wojciech Drewek wrote:
+> PPP protocol field uses different values than ethertype. Introduce
+> utilities for translating PPP protocols from strings to values
+> and vice versa. Use generic API from utils in order to get
+> proto id and name.
 
 Acked-by: Guillaume Nault <gnault@redhat.com>
 
