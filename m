@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C45675837BA
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 05:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CAE85837B8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 05:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbiG1DuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 23:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
+        id S234028AbiG1DuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 23:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233710AbiG1DuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 23:50:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABECC5F7C
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 20:50:16 -0700 (PDT)
+        with ESMTP id S231854AbiG1DuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 23:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12112636
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 20:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EF19B82322
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0457FC43142;
-        Thu, 28 Jul 2022 03:50:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3969161A0C
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 902F8C433B5;
+        Thu, 28 Jul 2022 03:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658980214;
-        bh=fkErlQLa14CI4mX7a7Arsxf9NAEAlyikFocou9fuFgo=;
+        s=k20201202; t=1658980213;
+        bh=5QP06Twei7lrnf8GLQeB0ya1AbCwsTfmI0p/MYvEIMk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jQjonutswB+29eyrqrksstAi8LAhk0lSipGcF2DWR9BmC6H9BfQzWwp+gq5JIJKqq
-         WkxzDHP6wUvTM4X5CMJeUqevfUHgg5cQT+uRdNf/x9lCh5EaOxchIWirOE6O53WKRn
-         pIrpg/GUWfV9edvHfv61HbbB4ywOr8Hg9hC1fqOnec1ujMODjiCpyB0gRY8goJZYze
-         vx2mT4/7UqUzhhclDBaI+5rxfaM+Bb+PvLFCwSv/2AhUCPIBgXEuFH2UvfvYb8hJc/
-         QbDtIdUJomOoNmUoj4YwYZ9nABOkUkxss9/qDahwYz8eCsscdK3Q8hMcj0Sh1Bm7vU
-         w4E100ytjZKcA==
+        b=cL9VqTi8Hft4weeup+9JyKH65MWMTLh6n84D9TAiKy5aSY/mIx//HlKGX2AFvOsxw
+         Bc34WrqKlsR0PD5uHwyqkJCoNL64dyJpEexRCYGKZg/qdhhrZIX6DJKxS+weCGxOVw
+         MKQ+CD481pnhNhe7Yho6zztcrzPQ8rstr+Cg59zaADFQ2KyN9PMJdaPecB7tnUiMxz
+         2lKDuc2S5/cl34bfERq8qyHKoU0eqiZRuLswL/GhGImmTEBE+NbqIMIGx2oc3EZQjw
+         KWgf2C2H9+3YYyWrxp1dF7teZW0dmvH4BU7W+SgXaS8Je8nMrViBu0GRtfnC49XtZU
+         Z9pC6k3sop5xQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E568CC43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78DC1C43142;
         Thu, 28 Jul 2022 03:50:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [patch net-next] net: devlink: remove redundant net_eq() check from
- sb_pool_get_dumpit()
+Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
+ 2022-07-26
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165898021393.7628.2899392174792763993.git-patchwork-notify@kernel.org>
+Message-Id: <165898021349.7628.11142880271067915675.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Jul 2022 03:50:13 +0000
-References: <20220727055912.568391-1-jiri@resnulli.us>
-In-Reply-To: <20220727055912.568391-1-jiri@resnulli.us>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
+References: <20220726204646.2171589-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220726204646.2171589-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,23 +58,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-On Wed, 27 Jul 2022 07:59:12 +0200 you wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Tue, 26 Jul 2022 13:46:41 -0700 you wrote:
+> This series contains updates to ice driver only.
 > 
-> The net_eq() check is already performed inside
-> devlinks_xa_for_each_registered_get() helper, so remove the redundant
-> appearance.
+> Przemyslaw corrects accounting for VF VLANs to allow for correct number
+> of VLANs for untrusted VF. He also correct issue with checksum offload
+> on VXLAN tunnels.
 > 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> Ani allows for two VSIs to share the same MAC address.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: devlink: remove redundant net_eq() check from sb_pool_get_dumpit()
-    https://git.kernel.org/netdev/net-next/c/2bb88b2c4f73
+  - [net,1/5] ice: Fix max VLANs available for VF
+    https://git.kernel.org/netdev/net/c/1e308c6fb712
+  - [net,2/5] ice: Fix tunnel checksum offload with fragmented traffic
+    https://git.kernel.org/netdev/net/c/01658aeeada6
+  - [net,3/5] ice: Fix VSIs unable to share unicast MAC
+    https://git.kernel.org/netdev/net/c/5c8e3c7ff3e7
+  - [net,4/5] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
+    https://git.kernel.org/netdev/net/c/283d736ff7c7
+  - [net,5/5] ice: do not setup vlan for loopback VSI
+    https://git.kernel.org/netdev/net/c/cc019545a238
 
 You are awesome, thank you!
 -- 
