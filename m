@@ -2,143 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8576584181
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 16:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E71584214
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 16:45:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbiG1OfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 10:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
+        id S230462AbiG1OpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 10:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232053AbiG1OfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 10:35:00 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886AC1;
-        Thu, 28 Jul 2022 07:33:06 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SD2lKU018062;
-        Thu, 28 Jul 2022 14:32:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
- bh=YdWZYGSPh39jAAd62+jQ+qrIcwcoj3ZLjydA76huhCY=;
- b=Hb44Fair2hKjiBPgPi48Nq8J9Z5Ckes1yw4tsGxBnLTmaU/XLadtLHz5OJf+jYzW9dff
- v5Q2zk9fed7bORRX9e5YNX3cDUJsSMvmoOOhBp2GVDu9X1AjgutR5LWYiFuJhDkjdgNp
- ppv8l3LnH5BP/Q08NMjyWrpXnP+V2zzh7bvlk1RBJO0ifhpSdNciqkEj6jY+SY1RJhnB
- 28YD4DgVg/DQWDhrsfCgou0WTn8Oe5Snqqr8GIb5wz6A+33Q/Fp6cYenT3Mu8Ga6SrsH
- 8IwV1pPDyd34JMCv07vejFzfuxpO0aLe1Y11mcG5kMsihBifwbCRB82OWA2ujkqz8svl /g== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hg9a4vvpv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Jul 2022 14:32:50 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26SDKaj5034538;
-        Thu, 28 Jul 2022 14:32:49 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2106.outbound.protection.outlook.com [104.47.70.106])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hh635pg8m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Jul 2022 14:32:49 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mflgvx/QwZm7aofQNLbSW9s+E5IPPwnUUShB3FKH4QUb+6FWcpBqZz7EsdtCpHEKzYFeaCt0VSwg9bPic+m/4YE2Hiaw8deePHNtMDNqO6kdfchEWRtWOlgtdG1U0eTwbxWbA1G5vWXgb4xpU+7MRtZ1uQxZjpmO0Uzpac4jaWJyrKdhytnwK/IE2UKj+yl6Ve7N/MA9ksMVuiMF3X6Ac90OzU2e8/1E9YrK3Hnsl4QZOjV3y5t6A71A83p5u6pknz4cxB2fqlx8cNZYIWd2O5AE9Qh68koH64r/jTHxnz1egMKPMxHv7/02OoS8dEPJt7KBQFOgI4kjHI6APHjhdA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YdWZYGSPh39jAAd62+jQ+qrIcwcoj3ZLjydA76huhCY=;
- b=YFLmXTkS/q7bnUKWWFUslc8xIOl1+aUaJxYFwvczVFHVKmsDW4w5hAS94sMYraAQXLh0aKBCFoqj4Fc8q/OgrX7E+qiR4+D2Ax/ZlfL3T9tSOMpCgC/+CIYso1sOD9160wSobVi+coYDTnoqEdfA59uulPzMp6OT9F31GoL4KtEG7gXx6mDSVOesrOrwbTKs1L2wQ33paLRBqeQJBYLzqc0w5AO/cnj4/kYws5qxUYxFKIrcFXpN4PdcAWLJKoPg7Mnwf6lfKFaOZyHujLPeYTlLe6+ecvN3JpQDoJ6026NTsO0L01D/8dkbb83MHh+ePnXiC2uJCzQuQzBtfuPz7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        with ESMTP id S230213AbiG1OpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 10:45:16 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6DAF05
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 07:45:14 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id n138so1540560iod.4
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 07:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YdWZYGSPh39jAAd62+jQ+qrIcwcoj3ZLjydA76huhCY=;
- b=P7lA5zLeN0QG8Gc4/EsIjM4hAXqINeS4ms3O0AKfSrixnU3k5KUv/Kgqha8rjzlfvS66rytiqnSpiqQhlsUw5DP1ZI+zVbDVHmLUk4wvUHVLi9j0ZKjvGERYCQaNxy5700u2vPMmag8ZlQXrln+YMljTFvqe20Vhjxh1CTQqXI8=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM6PR10MB3369.namprd10.prod.outlook.com
- (2603:10b6:5:1a7::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 28 Jul
- 2022 14:32:48 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5482.011; Thu, 28 Jul 2022
- 14:32:47 +0000
-Date:   Thu, 28 Jul 2022 17:32:36 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: marvell: prestera: uninitialized variable bug
-Message-ID: <YuKeBBuGtsmd7QdT@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-ClientProxiedBy: ZR0P278CA0099.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:23::14) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gcyZrD41WVmZL+M0duphde7MAmJcRr0cSttFggdiwxY=;
+        b=b/CEO7IqYeTQ9QzVCWitr8QpUBO316wbQg1T6Nry3tEYtE7CL80UsVwnpkEBo+HCQr
+         xGZKSoGwiOYWl5JPJT5pRxvNBJ2ic4RiCGyEr1lWflulBlD1taVWLpJrw+lWB1NsW5uq
+         oPn7NT7tFF98uvZEnaWfZBctq/8NBZVyPiv5WTX4cpxMAc/Jken/pG2GzTC6QtMKmZAT
+         PiGqfVrJ0EN3vq0cReIqnQuocZj3IAb8Xkecvfg/Hql6RC6JDpZa7Ts+dwb8hfra3GWZ
+         e3DUHon1AWUkxFoBaTBNMGgIjk4QWaerJcem4Ctl0qlFXhH04Q1gDOMnYklFoiSunhUg
+         INSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gcyZrD41WVmZL+M0duphde7MAmJcRr0cSttFggdiwxY=;
+        b=511+576tbO3dCTA3wOit96L52Hcym2vm2MsGE9r15JJ8bwzAep9LeWep6Zyk9e2eni
+         HOmnZpeWqS6w0s5fwyENgUaqB97RUTeDgNvOlt8TB8dU7MkD2x+oXORyILzTgmHCrv/L
+         n4KiaN95lUyJBEdrbKB2DaW5Rb8CBGcGp1Ekw9I2y8cmEVmnAAeR3VphLjVWd80+Takz
+         9kSb3aGJwiZw5y+TIqXj21UI7RAPEp+KJnBTsfysdCAKo3pByyko9m5iA2kXcf82F4kb
+         /6z+XnlDNg/1blFMPn4Hytjz6RYuXs9ia7YmFTpIL7eQhW2NQ37rN9GAsvRagAPByFaT
+         8x1w==
+X-Gm-Message-State: AJIora/Qgk8Bye3z+iaIZITsPvDErGwcbptTMJC8yecpeNNthh9aMWk7
+        NMzwmdZOtyUGI+iB1qAyNKhj87n3d5lL29cR9PCyR5KM2EU=
+X-Google-Smtp-Source: AGRyM1sOGuuRJVY3QjWMJGNLX2I++qh0kl7GBkhuC4fi/bYbIFz0o0rOoNRlGrrJBj1XaBJt1ko2HyRIgHj+/gFR6TE=
+X-Received: by 2002:a05:6638:1394:b0:341:4d18:3d41 with SMTP id
+ w20-20020a056638139400b003414d183d41mr11403482jad.90.1659019513390; Thu, 28
+ Jul 2022 07:45:13 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 420fbb7f-84d1-4ae7-a202-08da70a60ae5
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3369:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: F+Om0nUQB8PgMZ/dfxp54DCqBebor2GkOLdH6cZjfOZiZyFKFtarZ86EsJjGneNqIrWnsE/U0P10ks34oucRF4TqZbXM6OgPFTvkx86F995Fg2xoUVYElUKNm0LrElPwvYqNxi1Y6jfKOpiPsHI6KHYo7t3O5C3PxiTIekBUMiL2ZYGm8B+XZjrjW7H1Tq/NjraWzddJ3gHgDnRM5pdANN72YZVWsHArRcC9b5Lj9gPrleUKQOkb/BMvYVh6emQbBlO2KEYfXD75TH8LOoCmDmppN+c97vvuUvZcqvEo7c7n/4xWIBIBt8JRzja/kGavsXcV1ud/EK7lTbB6pr89DgNEU7AN/8P9MAsloico1d+t+PMndqr6ezfjJQuc+rw/0FalOmJ7qnudFVUaFDDcuTgpwJti+V5kvDDTzy3mFdJUD63gWmy31ccN9y9EgQoLMCZY1n2bCE+7euILDdl7+DCUKETsTU0kgzEZN8wPG1U2OXxjcKuNfI/ndJfbscOWx21DuEoSKF+6p3iBh9CyTEc39OZuKuHnBAUcvLTU9110uTpyGz7kUCylpHyDwVOkDQuyUfEcMX/bVNn86SIeLVq6s0q6Fc6CNPWX8GOuLFNO7ErMlfW+oNvJjcqxzZ/IgwbrMga63RT0N4jXxfJ6gAqJIu+4Q8iBp3jE9Bs8XvBjvQETxziAhLNwHr2PkM2Q+pvzHi8GX2l0dYdr3LGQdilvH3F0xfHwjhzVNho2Rg7En/TQmV0v71Ifxya5tJ6ZNugOMbNJ/z3x39WhEgKVCLo731S4gBB4N/6TY8hJkCThu2qoa2IiXXQPsH1vFFOD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(396003)(366004)(136003)(376002)(39860400002)(44832011)(83380400001)(186003)(86362001)(2906002)(38350700002)(38100700002)(316002)(8676002)(66946007)(5660300002)(4326008)(4744005)(8936002)(66476007)(52116002)(41300700001)(26005)(9686003)(54906003)(6506007)(110136005)(6486002)(6512007)(66556008)(478600001)(33716001)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?s0KSHnaB7FzXT9YQd8T2LWolTdxOZuU0BOcRBB0CA8WDYCL8mzwNzpfjNwbv?=
- =?us-ascii?Q?BtffnC7akQuSvJaFvAN6abmPeHeNZfzOf/uQEkmASu3TE+pMF23OSMkev7rp?=
- =?us-ascii?Q?HjxKgCTpssk7W/YnDl3tbVZC90hz02+n0Hk+FzjzxvmEvX+vc2UlK93Mr0hN?=
- =?us-ascii?Q?e+OpiP+hsCmfMD80+lgoi3NQlHfhj1UGS0Md484MhG/pZ2gwig9ACE01dqmt?=
- =?us-ascii?Q?jnRxBpdlWwuw4WOa8J+/mXy1IhsLGWqk60FwzVH3H3HyhJCIcWtpjDFCf5Wo?=
- =?us-ascii?Q?hGn3bqj9dBxBOVo543aiC7Hq3jHTs/MJh4inJs0Vg4oAvF2vqEB5ocLljVUx?=
- =?us-ascii?Q?zGerLOHaE/lwwWHw+tpG5skQ2Zgn76YKxVqCNADQHAb5JL+3FpYpfubGKdh9?=
- =?us-ascii?Q?nCO2GR3b+Dfhp7i50pYKRPA3iLbPQFCdccfstf4Nlr5NqHSZ1LZhUYxtc5j7?=
- =?us-ascii?Q?Ymn0gvNMB/pu0fygl8KVko3HxpnS9iqRBOjfakXK3jum6tcHUwje88QTSPF4?=
- =?us-ascii?Q?020HzOg/DsFqHijEq0c9V4AsOKBjGind321OVV8Qaz0B8mmEtypGNn50T2PJ?=
- =?us-ascii?Q?mFrGDf74xMWKRU+s7qglheEtaZL+RPpBlXqwVTKF3UPm1JqRgQiJVTsBAArK?=
- =?us-ascii?Q?+DYqioOjfiRo78akhGeXmiXUZ5BQditYazmGAAqcw0qbQcyKYFoTwd9a77mM?=
- =?us-ascii?Q?rMUyzumNPz8xSSEenounWAo2csKPrRJqdVaEUYW6lcRymg4avgqS88kVIUo4?=
- =?us-ascii?Q?7FtrwN1A6hl3RdQTOfX9kcRJ0MA7bNVfF54vvfiOvSOjUaVw0+9lzzCmpJr6?=
- =?us-ascii?Q?ZQW/VhAkXkU7O41hCl5CySxg+qtA/q1fz8aw4qcXDGemZYcVt9TTeBsPHC3m?=
- =?us-ascii?Q?pFMWVEnAwbxUYjbxTmPxfbzgZF4c28ZcuhcmtVcb+39cU0RrE3BUJoB6QiZe?=
- =?us-ascii?Q?4Gq+FFnbKkuWpTdPd51xTyXKA2bjkdcTB99P6wb27oS7cIBby5tXrGhqSvu+?=
- =?us-ascii?Q?+zbY12cC3uLwnQEwxarrVO2YSQmYbbYCDfQ8VkuqfClugJUVoloz5uiZyFi9?=
- =?us-ascii?Q?EoSveV2/CDO3gNsmv5pd312e1uiIpPvMzDuPXkvXfsJD3iW2EDlgORsEc2sF?=
- =?us-ascii?Q?ppqy0aS8cLGYJ/8R87tjsZmjWV+tIAwT/m57+b2RgXdSEsqOiRH28NaMmUeF?=
- =?us-ascii?Q?4GMj01pnlAyvsvWTnArb4+LzcHw1nMaNaIzJEUgSpnCVoUqWt4TC7s72whJS?=
- =?us-ascii?Q?mPOvQKR8Fq0DgaTlQONL3g6z3VXA1vwY/FJiab93kAWF5CX00fnL0tKF90co?=
- =?us-ascii?Q?wsCqI/49pk6V1MgIyJ+T2e3L2rJJwZPeouy3cQjIJ1VpfDoNd0EUDjgZJvY2?=
- =?us-ascii?Q?gWuFX6HsIie3ckURM4wWtzbOBJhs/uHkq8ant6iMcxJRCmRFfNv/XrJvNbFN?=
- =?us-ascii?Q?DsxB9C5dg0wLAtglOu8v+WjrloZKccY3+fh6mGIH/UDhpPbCSVQU7o3dj20a?=
- =?us-ascii?Q?/uosO6EoGNXIYW/HINCrIWcYdW7K23JKNhlnhJgiuUR5auAM15Mn9481dfIo?=
- =?us-ascii?Q?pbLpbf44aJZ13JSRedME4vgKJH+ot848lQmNU/nRCjKBUiDFhgfTs3YrZzO5?=
- =?us-ascii?Q?og=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 420fbb7f-84d1-4ae7-a202-08da70a60ae5
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 14:32:47.8862
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WqUeDGIcpfl7X6O6D0dwzb610PgYZnAUpHipdBcOcx5RdGAtkE0x/H/8jXAdb/braTt5b1abIP66/k69AkTFFDB/a2niVTBLmUw1Qs1OVo0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3369
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-28_05,2022-07-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 malwarescore=0
- adultscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207280065
-X-Proofpoint-ORIG-GUID: WxOGZQ-BUZdxiGfdmmh9UnOpyQ2Fy83O
-X-Proofpoint-GUID: WxOGZQ-BUZdxiGfdmmh9UnOpyQ2Fy83O
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <CAFZh4h-JVWt80CrQWkFji7tZJahMfOToUJQgKS5s0_=9zzpvYQ@mail.gmail.com>
+ <fd16ebb3-2435-ef01-d9f1-b873c9c0b389@gmail.com> <CAFZh4h-FJHha_uo--jHQU3w4AWh2k3+D6Lrz=ce5sbu3=BmTTw@mail.gmail.com>
+ <20220727233249.fpn7gyivnkdg5uhe@skbuf>
+In-Reply-To: <20220727233249.fpn7gyivnkdg5uhe@skbuf>
+From:   Brian Hutchinson <b.hutchman@gmail.com>
+Date:   Thu, 28 Jul 2022 10:45:02 -0400
+Message-ID: <CAFZh4h-w739Xq6x13PpFvCFX=dCD571k1bdMyfk1Wvtkk_vvCw@mail.gmail.com>
+Subject: Re: Bonded multicast traffic causing packet loss when using DSA with
+ Microchip KSZ9567 switch
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        andrew@lunn.ch, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -146,27 +71,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "ret" variable needs to be initialized at the start.
+Hi Vladimir,
 
-Fixes: 52323ef75414 ("net: marvell: prestera: add phylink support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/marvell/prestera/prestera_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Jul 27, 2022 at 7:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index c267ca1ccdba..4b64bda3f9c2 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -847,7 +847,7 @@ static void prestera_event_handlers_unregister(struct prestera_switch *sw)
- static int prestera_switch_set_base_mac_addr(struct prestera_switch *sw)
- {
- 	struct device_node *base_mac_np;
--	int ret;
-+	int ret = 0;
- 
- 	if (sw->np) {
- 		base_mac_np = of_parse_phandle(sw->np, "base-mac-provider", 0);
--- 
-2.35.1
+> > bond1: flags=5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500  metric 1
+> >        inet 192.168.1.6  netmask 255.255.255.0  broadcast 0.0.0.0
+> >        inet6 fd1c:a799:6054:0:60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x0<global>
+> >        inet6 fe80::60e2:5ff:fe75:6716  prefixlen 64  scopeid 0x20<link>
+> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+>
+> I see bond1, lan1 and lan2 all have the same MAC address (62:e2:05:75:67:16).
+> Does this happen even when they are all different?
 
+So I have (when bond is setup using Systemd) assigned unique MAC
+addresses for eth0, lan1 and lan2 ... but default action of bonding is
+to assign the bond (bond1) and the slaves (lan1, lan2) a MAC that is
+all the same among all the interfaces.  There are settings (controlled
+by fail_over_mac) to specify which MAC is chosen to seed the MAC of
+the other interfaces but bottom line is bonding makes both the bond
+and active slave at a minimum the same MAC.
+
+>
+> >        RX packets 2557  bytes 3317974 (3.1 MiB)
+> >        RX errors 0  dropped 2  overruns 0  frame 0
+> >        TX packets 2370  bytes 3338160 (3.1 MiB)
+> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> >
+> > eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1506  metric 1
+> >        inet6 fe80::f21f:afff:fe6b:b218  prefixlen 64  scopeid 0x20<link>
+> >        ether f0:1f:af:6b:b2:18  txqueuelen 1000  (Ethernet)
+> >        RX packets 2557  bytes 3371671 (3.2 MiB)
+> >        RX errors 0  dropped 0  overruns 0  frame 0
+> >        TX packets 2394  bytes 3345891 (3.1 MiB)
+> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> >
+> > lan1: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+> >        RX packets 248  bytes 19384 (18.9 KiB)
+> >        RX errors 0  dropped 0  overruns 0  frame 0
+> >        TX packets 2370  bytes 3338160 (3.1 MiB)
+> >        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+> >
+> > lan2: flags=6211<UP,BROADCAST,RUNNING,SLAVE,MULTICAST>  mtu 1500  metric 1
+> >        ether 62:e2:05:75:67:16  txqueuelen 1000  (Ethernet)
+> >        RX packets 2309  bytes 3298590 (3.1 MiB)
+> >        RX errors 0  dropped 1  overruns 0  frame 0
+>
+> I find this extremely strange. AFAIK, ifconfig reads stats from /proc/net/dev,
+> which in turn takes them from the driver using dev_get_stats():
+> https://elixir.bootlin.com/linux/v5.10.69/source/net/core/net-procfs.c#L78
+>
+> But DSA didn't even report the "dropped" count via ndo_get_stats64 in 5.10...
+> https://elixir.bootlin.com/linux/v5.10.69/source/net/dsa/slave.c#L1257
+>
+> I have no idea why this shows 1. I'll have to ignore this information
+> for now.
+>
+.
+.
+.
+>
+> Would you mind trying to test the exact same scenario again with the
+> patch attached? (also pasted below in plain text) Still the same MAC
+> address for all interfaces for now.
+
+No problem at all.  I'm stumped too and welcome ideas to figure out
+what is going on.
+
+>
+> From 033e3a8650a498de73cd202375b2e3f843e9a376 Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date: Thu, 28 Jul 2022 02:07:08 +0300
+> Subject: [PATCH] ksz9477: force-disable address learning
+>
+> I suspect that what Brian Hutchinson experiences with the rx_discards
+> counter incrementing is due to his setup, where 2 external switches
+> connect together 2 bonded KSZ9567 switch ports, in such a way that one
+> KSZ port is able to see packets sent by the other (this is probably
+> aggravated by the multicast sent at a high data rate, which is treated
+> as broadcast by the external switches and flooded).
+
+So I mentioned in a recent PM that I was looking at other vendor DSA
+drivers and I see code that smells like some of the concerns you have.
+
+I did some grepping on /drivers/net/dsa and while I get hits for
+things like 'flood', 'multicast', 'igmp' etc. in marvel and broadcom
+drivers ... I get nothing on microchip.  Hardware documentation has
+whole section on ingress and egress rate limiting and shaping but
+doesn't look like drivers use any of it.
+
+Example:
+
+/drivers/net/dsa/mv88e6xxx$ grep -i multicast *.c
+chip.c: { "in_multicasts",              4, 0x07, STATS_TYPE_BANK0, },
+chip.c: { "out_multicasts",             4, 0x12, STATS_TYPE_BANK0, },
+chip.c:                  is_multicast_ether_addr(addr))
+chip.c: /* Upstream ports flood frames with unknown unicast or multicast DA */
+chip.c:  * forwarding of unknown unicasts and multicasts.
+chip.c:         dev_err(ds->dev, "p%d: failed to load multicast MAC address\n",
+chip.c:                                  bool unicast, bool multicast)
+chip.c:                                                       multicast);
+global2.c:      /* Consider the frames with reserved multicast destination
+global2.c:      /* Consider the frames with reserved multicast destination
+port.c:                              bool unicast, bool multicast)
+port.c: if (unicast && multicast)
+port.c: else if (multicast)
+port.c:                                       int port, bool multicast)
+port.c: if (multicast)
+port.c:                              bool unicast, bool multicast)
+port.c: return mv88e6185_port_set_default_for
+ward(chip, port, multicast);
+
+Wondering if some needed support is missing.
+
+Will try your patch and report back.
+
+Regards,
+
+Brian
