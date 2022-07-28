@@ -2,57 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 464D1584405
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:17:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711CE58440C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbiG1QQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S229607AbiG1QUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiG1QQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:16:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41FC70E4A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:16:47 -0700 (PDT)
+        with ESMTP id S233042AbiG1QUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:20:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F265595
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:20:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E3E461C16
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:16:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3217BC433C1;
-        Thu, 28 Jul 2022 16:16:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 914F9B8232A
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08970C433D6;
+        Thu, 28 Jul 2022 16:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659025006;
-        bh=ux/7YHZxUFIWKl+XvHkxFh5UY4K7waamoKYm9/SALgw=;
+        s=k20201202; t=1659025209;
+        bh=f1GgTqHFECXge2LsMkF+w1GghD4hVdo9F9A3R2pt0wE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KpdWX3X4Hlwif1DyyunemnB+GQaUvfguTYMds4Hooa/uqDTqOpRVvcenKvIeDGJwY
-         ATZrgrJ/CM3GVE7kkLM8sv41ndi6hcY4z8Z/nw+WMOz58Qn/0a8c4vmR2S4FnAFldv
-         OW1d76PgWzYzPEacKALkrsghPye5F7WgBtbqy6Cp7iXF2S7tQ7Wp4p9AfHWBIaMlwq
-         nR79zhZc6tFjVToKKXhITNRcrhzRrQUVDss3gun7oW2iYNU0L88Ovi6Ml6cc+EF0P4
-         MqKdM1cq6OLi7VNd2MaBs750Rb9UvYucfTu+KysvHdHfKDb2wBFhP0Vtr47QLA7/P/
-         pooOxZcjmufEw==
-Date:   Thu, 28 Jul 2022 09:16:45 -0700
+        b=ny6z1SnhyM2jRZnB3H/PVyGrAlFcFo0d+6G6HpPzxMDJT0YtZBTk7byBdeVzvW1hq
+         umjwMUl5nqkfhmuIW+IWicPKChFcYOCRPrNX+iVtWhRSuLbyB/+v0eJkdipFRok5NL
+         fQj/HGRfPnBOpMyE51+GoS4bwHSz2S/QiCHd//No1aTBGoEawxhzTu7ZRLJiSAprjL
+         +RkgdaaNFofRO9b4Hc6y9dsI8nM8OO3h/jcYwBcZ6WjSHNe4VkG5DuQZYDu9YC1Z8p
+         H1pk6mObupBMYUmKlp9i/kaYlK0QJi5qtjFD3Blzw2mAJpa0l/MkFjNWEKsjJqleRF
+         Qh+14pPdTP/yA==
+Date:   Thu, 28 Jul 2022 09:20:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Moshe Shemesh <moshe@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/9] net: devlink: remove region snapshots list
- dependency on devlink->lock
-Message-ID: <20220728091645.7ffef7da@kernel.org>
-In-Reply-To: <YuJN1SYkPR33trcs@nanopsycho>
-References: <1658941416-74393-1-git-send-email-moshe@nvidia.com>
-        <1658941416-74393-3-git-send-email-moshe@nvidia.com>
-        <20220727190156.0ec856ae@kernel.org>
-        <YuJN1SYkPR33trcs@nanopsycho>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     ecree@xilinx.com, davem@davemloft.net, pabeni@redhat.com,
+        linux-net-drivers@amd.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
+ representor
+Message-ID: <20220728092008.2117846e@kernel.org>
+In-Reply-To: <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
+References: <cover.1658943677.git.ecree.xilinx@gmail.com>
+        <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
+        <20220727201034.3a9d7c64@kernel.org>
+        <67138e0a-9b89-c99a-6eb1-b5bdd316196f@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,20 +56,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jul 2022 10:50:29 +0200 Jiri Pirko wrote:
-> >> So resolve this by removing dependency on devlink->lock for region
-> >> snapshots list consistency and introduce new mutex to ensure it.  
-> >
-> >I was hoping to avoid per-subobject locks. What prevents us from
-> >depending on the instance lock here (once the driver is converted)?  
-> 
-> The fact that it could be called in mlx4 from both devl locked and
-> unlocked context. Basically whenever CMD to fw is called.
+On Thu, 28 Jul 2022 16:47:36 +0100 Edward Cree wrote:
+> On 28/07/2022 04:10, Jakub Kicinski wrote:
+> > On Wed, 27 Jul 2022 18:46:02 +0100 ecree@xilinx.com wrote: =20
+> >> When setting the VF rep's MAC address, set the provisioned MAC address
+> >>  for the VF through MC_CMD_SET_CLIENT_MAC_ADDRESSES. =20
+> >=20
+> > Wait.. hm? The VF rep is not the VF. It's the other side of the wire.
+> > Are you passing the VF rep's MAC on the VF? Ethernet packets between
+> > the hypervisor and the VF would have the same SA and DA.
+>=20
+> Yes (but only if there's an IP stack on the repr; I think it's fine if
+>  the repr is plugged straight into a bridge so any ARP picks up a
+>  different DA?).
+> I thought that was weird but I also thought that was 'how it's done'
+>  with reps =E2=80=94 properties of the VF are set by applying them to the=
+ rep.
+> Is there some other way to configure VF MAC?  (Are we supposed to still
+>  be using the legacy SR-IOV interface, .ndo_set_vf_mac()?  I thought
+>  that was deprecated in favour of more switchdev-flavoured stuff=E2=80=A6)
 
-Ok, I guess mlx4 uses regions as proto-health reporters so too hard of
-a battle to fight. Please update the commit message tho.
+It's set thru
 
-> What is wrong in small locks here and there when they are sufficient?
+ devlink port function set DEV/PORT_INDEX hw_addr ADDR
 
-The more locks the less obvious the semantics and ordering of locking
-are.
+"port functions" is a weird object representing something=20
+in Mellanox FW. Hopefully it makes more sense to you than
+it does to me.
