@@ -2,123 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B14584671
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF270584647
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 21:33:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiG1TUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 15:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
+        id S232538AbiG1TWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 15:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiG1TUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:20:03 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2086.outbound.protection.outlook.com [40.107.21.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C4E6069C
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 12:20:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fN9YuHyafAZJX2ty5dps6xk6iVTSX1rFS+U+Y6NEtB/gfABh2TLMAU4ya8br25/9S1rIiGVZKyiHq/904S7YT6iWS1QATQL5mZosXMrDqisoyaYiJpaME/KoaEz+aRg8lxEUFMOVzMMhmLuNQ3lcAWT9aO2s73/TKgPt5ir1lRFQwCvRyUxknQoTLWcPOcpwBmvY26LBmw7ljnQ83ajpBUqEaf/GytKgQrsD2/LH0eHTIYTrrjVLl/9JElcECKOqyqRkhot7ePUOGigGhGRAbKN5l8dIqIRBZrLOBKbRXAAxEHPnk/qvlTZ2FsWzGlue0KaVMrrTQ4JNvgUZGeSohQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8BX1S0F+32T4u8an9RH5/15PcxnBofoDFGucpW/mqAA=;
- b=imwgmYOYq8lCGGWNP/RlmbjWdm8R9n2J30mlvq3lKJWzPtFZmjT4l+SHYXrJRfZuh1+YF+TM/pJaUUsUiOg8qJN4cjLiuOkbX//B6cIuTe9z2pNV5ptP0V5JYSXMMjsFbGSlxbrH9sG6D0z1bx/QnMut6UPC/vToq5gKEOPDryIRJBc11ELRRuBLifzO8mD6pMsuVxTQ3GDYD80Quw6sv0uEwkU2ndh20kAX0DGhUM6lx4eoA3tgU780DlP1zBKIZ8KEaSxHkxHMhvw5droxhMOSlXot7cxKyqE7wVmeav1hYIRRw2ZJa0EzqjIaYA2h9LU212Y1OPN7N4xJ9KU0oA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8BX1S0F+32T4u8an9RH5/15PcxnBofoDFGucpW/mqAA=;
- b=1ZUQrDh2wwpmhvNjayH/yOOiyXOc3Vak1dvnw64FWvOJlxpZU5/zaYR/UwbOZuINXf1Y+5jrWs+jmv8Va+S3qjx+oC9czJeUTNoH5gYQTDo3RW45iB19vKnSexUSYjGAT6fWW/iCYyYaJFAt8tA6nUgeHItAQwVSQQr/yENkXBWM8+sZLfPQe9bRDXMMbZI1Ueth90CJXEQBBNWzw93Gb0awXukb0AGFe/HvKt//ZJY9tL8xnhraMXV4Xzfv4j+2fhmv7RSDBTUPF95wSVf+cihwvlzm/OKnP72CfNhW9j12W2BYtfwEcJLryK7DCeIGV9qd4HA81K7STIUSxIiR0g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16) by VI1PR0401MB2590.eurprd04.prod.outlook.com
- (2603:10a6:800:5b::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Thu, 28 Jul
- 2022 19:19:58 +0000
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::21d5:a855:6e65:cf5d]) by VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::21d5:a855:6e65:cf5d%12]) with mapi id 15.20.5458.025; Thu, 28 Jul
- 2022 19:19:58 +0000
-Message-ID: <1d50fb2a-a1ad-10a8-8e15-1fdcaa47d5ee@suse.com>
-Date:   Thu, 28 Jul 2022 21:19:56 +0200
+        with ESMTP id S229570AbiG1TWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 15:22:20 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DBA1A05E;
+        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 6so2256476pgb.13;
+        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
+        b=lB+pWhhlv93nZ1uF9MlIOnX5O59BjNqfBlzyuwaJ9IcEqZIikDytWL8FxK9mRR7bGC
+         CP0N3vcVC4GRQyBqp/aXDsHM+Rp/kL+AcBtbGgawHiyB0n2SQ/S9YTLhVKYgLJzYvnfa
+         DRgHjFYGggf4djkLYGpyCKIAfFc4nCcIoEjsFfGVMZ1/sB2/Jgb8jz20AGsMwpQd4Rhb
+         5lHHgqgPkKGl66JAg/+e1Wkvj9UiHeRANwaOr3+bwehcQ5WJ52Rwi+bf7sjW1dQxqAEB
+         0wInCPsCu9FBE5kiqsjVn81pQZUQnEayOJ4Rp+zGMKxlzT+3V1MGecumxQBkOPnllvzK
+         p+iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
+        b=irglV27uulHB7xGlavq7wJq+OWG1Pi6Aw9k9FKOFJIio3ETkwpBw5qFVt7bbmNwKOw
+         TH/ON1/OYg+Us/xaO0vhBaIxyfbP7BpbGTIAL0qZTDHb2xBEeUj7E40VDt7T5T52W0Vy
+         u+tbtfA9XkbkCiL5nWaXAIoyzmwAtdDWPl+xvQrlHOB1cjN+xVaRxVoMpW9iw3oP5bDx
+         0UZvB2cVuzafW0Uuf6UxC5LKRROo/pujw6NV4LKVFu4dz4WJMfxIqezIrV2g24OVcstg
+         9U2NPvkEQmS/YHSetnMDgOGEZ1juTFEhSBCYR9VGI1DyWjZ+EgkFYiiEg6ItedX4RV1G
+         aOhA==
+X-Gm-Message-State: AJIora8+ABlM6yjJXM2FAwHDWGyDzeLeYqPgJAiXgl2znlIaaqu8Dml8
+        juVaIkI+9S2i0adDs/H8kY0=
+X-Google-Smtp-Source: AGRyM1tj9cuz/W4LAd9BMq4WIOZkxkrW2UJLCS/AeNw+AhegYlhfdsgfmykyQIPR9LbFViQAWRDZ3w==
+X-Received: by 2002:a63:ce0f:0:b0:41a:f0ee:c28e with SMTP id y15-20020a63ce0f000000b0041af0eec28emr190116pgf.43.1659036138925;
+        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m8-20020a654c88000000b0040cfb5151fcsm1282985pgt.74.2022.07.28.12.22.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
+Message-ID: <db9560c1-7fc7-405e-bee1-3827a943b712@gmail.com>
+Date:   Thu, 28 Jul 2022 12:22:12 -0700
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: question on MAC passthrough and multiple devices in r8152
+Subject: Re: [PATCH v2 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
+ ARCH_BCMBCA
 Content-Language: en-US
-To:     Hayes Wang <hayeswang@realtek.com>,
-        Oliver Neukum <oneukum@suse.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <444df45c-ec1d-62a6-eea8-44a0635b2fdf@suse.com>
- <837bd96f9d574d3db0a4b71a9a8761a8@realtek.com>
-From:   Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <837bd96f9d574d3db0a4b71a9a8761a8@realtek.com>
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
+        kursad.oney@broadcom.com, krzysztof.kozlowski@linaro.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <20220725055402.6013-1-william.zhang@broadcom.com>
+ <20220725055402.6013-7-william.zhang@broadcom.com>
+ <63797827553783061a0ad5e897ed6538@milecki.pl>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <63797827553783061a0ad5e897ed6538@milecki.pl>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0150.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:95::19) To VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8566c5af-62c6-40c3-f4be-08da70ce2908
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2590:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DGEgZp+oufHI/RebpnB3FNOzSO37fMty5Ea+iKACXWIS5I5rsLMcntrfImWRmaBdl39tffFhsU4VB3t7se9oBAjh8UgGc7wGHCMgoJJDEzEUN427oM9i4HhK6MnjTlkNgtXCACRDGcuGGUzvkymAW/7qST9BzCSRKUz9gDufsotKwsWfwxHBrN+6+V224VKPBa/JN+TR7XedVjzjlwotieBHK3hCTdHL+RDmLmJSNfcnVk1hMSCGetX+ByI199N+An98qmiB87+Ad4yMRhw8+fwE8U9JOAHPVr7WGRpzN6N5D9FlW27Bi0IJLZBK8nmADniGty67HQVQhfaiMJPOnNF2SdONJtHNR0r7ElUNyUVGLoFMnNsLIFAJV2PG20YqlORvkhvq+m3UTUqK53ZHDdOXMsAH6xbOIbrFLWSpapcUMPkcHrPFmLHhDBV0L381rV4yByYP6YR0NTEAI5KC5TTxzfCPPglcS/gip/uA+YeUv8Xo5wjZfdxDfXdCNvDneO5gI95mKLzU9J2+BeBnBaKvZIF2whBSdT7U6GzqMxA0bCAgmBi6zhzo8ro2k5i9jm0l5IlNG4MW+Wwu+kbQJ1wBqtqGt/yehCU2jeEPFAIXVTAMWOnM8TEO4oSiuypWjl5l0vrHbm79OTOCBs2U9uYGkKPurEaAE1boBmC6UuOlSfgFLVFRelC2ZXrg/o7VcVXIKkfe9VGBL0nd82gjvYoaFUtpsF8FU2E//zDfMAVGiGPEJtrCD/nn4YMQLvFYphr8g0tRVPf8VwAuCrLD2to/mmBlRQVVg6GcpakxnqZtfu1dM98qVTdOobNhkZaX1w/143gDcbgllk7/Dsq4Ag==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2526.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(396003)(376002)(346002)(366004)(558084003)(86362001)(31696002)(38100700002)(66946007)(66476007)(8676002)(66556008)(4326008)(8936002)(5660300002)(6486002)(478600001)(316002)(110136005)(186003)(2616005)(83380400001)(41300700001)(2906002)(53546011)(6512007)(6506007)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NXdiRTZYRVdxa3l5Y0NVajJpWTBKNlFnc1U0Z2ZzZFB2Z1ByRmc1S21hdEkv?=
- =?utf-8?B?MXdjcy9GUE9mYkNTcE5ub2dpR3hFVlN0MGtZQ0RuWXA5MjNvSldYMWRYK0dV?=
- =?utf-8?B?U1hnWDVBUWg1enZ3M0JVbEtCK3NqNnZIUy8renRWNjJ5cC9iT29WRHJ3eGwx?=
- =?utf-8?B?eWVBVWZzWDFKcHludWRKeWUwSy9IMTlVS1A4eTZ5cU1KenpmakE5TFVNc2JF?=
- =?utf-8?B?RHR2SWFvM0xJRTVYUEdPNStoMzI1Yjl6MFhBQUdIdjNKUjRaa212amtpYmkr?=
- =?utf-8?B?bVBZcTZyVmh6QXc5dm1pWVJVNmhvUEJ3NEFrZVVMUTlLK3EyQ3NwWHRja2pl?=
- =?utf-8?B?VFI2UGgzeGg0WWx0bWRqUHpCSUNWVjVLVTNQQXlQc3VBM2hobmhLdUV3Nms4?=
- =?utf-8?B?aC8xcHo2OTBKN2NBdWp0YlpERXV2elAzYUxEdXBPNC9mN2FlVVdLQm9YNmdZ?=
- =?utf-8?B?bCt2VWp5N2VRSGZtL3NXbnFPNGVjdVV0d3AyUUNDY0RQT2ZlMUl1R2RXYTlJ?=
- =?utf-8?B?dGpFT3k5WkZMQ3duTlo4MG5KYVF2Y1NtWEVUVmNLYUdHUVIzZFA2RC80a21x?=
- =?utf-8?B?Vm5EQWJSdkFDaTlTeHF6QmhrYktUNlMzWEZZYkowbXJRb0UxdmlyYk5WRHJh?=
- =?utf-8?B?aUhRQ0VVWktudFY1cU8yRUJKWm1FNUp1c3p4THRlOWxYQzJyK3FrOFBJc2FR?=
- =?utf-8?B?VENBUkhVNm0yRG9KZm91ZUJyY0grMHZXbFFZNkZMcWFuZzBOZFdZTjhJRnYz?=
- =?utf-8?B?VWhwNytrWmtiZHlBV3hUUThjdTR4c0xQaWJsSlpEWWtLeHVJNkU4NVloZ2pD?=
- =?utf-8?B?Rk9yZ3NraCtkSVpRcGxtRlE0ZnBZS1d4d3FkS1NWK2UyY1RqK0VOY3ovYndw?=
- =?utf-8?B?eExPWGY0d1NValdrZlJvMTJrbm9mNzZ4UVhOVU51SU5ROXRJTXo2WXl0d2N1?=
- =?utf-8?B?eHorYlZoZU5yTUdpOVNRcW0xYVFscjFXUE9Gcy9RYlN5ZEhrTWxMY0xjYnBp?=
- =?utf-8?B?MGU1SEc2UGVUWFRLMFg5dGF6SUFHb25QaElxMXN1dXhrOElwVWNsdjNwUGto?=
- =?utf-8?B?VWM0WTNmSElWM1QyNVY0ZThuend2QXI1N0NWUTJ1ck9ibjBCOE0ydjdjVkY5?=
- =?utf-8?B?Qzhid0N2S3JqaGZkeEJoejhlY01qVndsOHQ3dzVQNXZaaVAxYkE0SlVNcHFK?=
- =?utf-8?B?Z2RjM09PclJXejc0SFJVaDB6K21ETHE0eld1d3BJaHk5Ni9EZTBrNFZsSmxC?=
- =?utf-8?B?RGtWbmZzOVFNcUptZEVrQTArSEI4NUdPRVJIQ2I0QVR4bENBRkVicml3WTAx?=
- =?utf-8?B?K1lvbXFqUGNEaUo3QmpSUWpLQ2JXeXlwQlBFVXFPRW9wY0laVXFuM1hTN1VU?=
- =?utf-8?B?RlFsWExzUGZWNm9oai82LytZQ1MwKzZYemVwUXQ0NTZVSzRaZVN3aWx5NC9H?=
- =?utf-8?B?M0EzQnVRTFJOeEdVQS9DV3hMd3RJU05wdnJmSDNoNWd4WDJYK0NvQ3pxdk9W?=
- =?utf-8?B?TldGTlpoUHBEYmIwelF5T0pkRmFZS05uRGJYVzdVQjN1MEtZSU1pMy9FSG9j?=
- =?utf-8?B?UzVIUXM3WXdDTnNyRGpqM2JVQXUzTnY5eHRiRkVoRDZTZzNKQ1VjMVV5aGx3?=
- =?utf-8?B?NnQ5d2xVNHNqMHY4TWtSQ0VtUGduNzhXR1hOSGVyOXdjMmlGNVQ4OVYrbUh6?=
- =?utf-8?B?MzQyN0J5dG9PamtvZkhvbEl3d3VFV1AxWXB5NHhXUis3Z1U3a1FXUlgxYnJF?=
- =?utf-8?B?ZDkrcWpQTEJrdk4zdTErbC9CcStXNzAxUXY3eGd2M3BVclBGSkJycVhxMlJZ?=
- =?utf-8?B?Zy9OdUFvUkNVaFM3Uk9ObWh5YTlZeWg3TDVMR2M0aWdwZERKSVBqZXBGazBO?=
- =?utf-8?B?aERQMW1GZmplNEsveUZSM0laY3ZiYWxCUU5JQUVMQlNVUFN2c2RjV1lMbVJH?=
- =?utf-8?B?dEw3K25tWXFzQXIxejZmZFQ5TGhoc1prRjgycmdxN3JBUmY5Umo4WG1Pd0Mw?=
- =?utf-8?B?SVQ1RzN0MmdSemg4MWxjOFE0M3VIL2hoRkJTdFFWV1pQbW8xMFd2Lzh0WDV2?=
- =?utf-8?B?UCtKT3hBRWpHMFVBTXZjRmc3QlY0TE00VGluOXUremtub0xRVGduUEcwdkxW?=
- =?utf-8?B?azRXZ211dm9VMTE5WW51V3JrWTFYV1hlaTk2T2QzbEFtdVRJSWJzejhOaC8x?=
- =?utf-8?Q?/l86PDitX0hFnPKfMvpGEi4F+eitbVAbkCPc8lPaGtZQ?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8566c5af-62c6-40c3-f4be-08da70ce2908
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2526.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 19:19:58.2560
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RLjfHw3/Sx0QuCo69FG1O6/gv+NwdZ8z9utvdaUHdFy6lFKkZ0R6xsDzl5ZGbQNIpuo1sAAXTVx2KPfF7BGDTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2590
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -126,17 +97,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 7/27/22 05:31, Rafał Miłecki wrote:
+> On 2022-07-25 07:53, William Zhang wrote:
+>> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
+>> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
+>> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
+>>
+>> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+>> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
+>> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
+> 
+> I still think it may be a bad idea for all below drivers. Please see my
+> previous e-mail:
+> Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
+> https://lore.kernel.org/linux-arm-kernel/eee8c85652e6dac69420a876d03f67c4@milecki.pl/
+> 
+> I think we should:
+> 1. Keep ARCH_BCM4908 for 4908 specific drivers (e.g. mtd, pinctrl, net)
+> 2. Use ARCH_BCMBCA for more generic drivers (e.g. I2C, PCI,serial, WD)
 
+IMHO here is no point in keeping an ARCH_BCM4908 anymore when the whole point of the patch series is to do a broad conversion of ARCH_BCM4908 into ARCH_BCMBCA. Even if some of the drivers are considered or thought to be 4908-specific, this is not going to be an issue in practice because there ought to be appropriate compatible strings such that even if you built a 4908-specific driver into a generic ARCH_BCMCA kernel, the actual probing would only happen on 4908.
 
-On 28.07.22 09:59, Hayes Wang wrote:
+Now let us flip it the other way round, let's say we keep ARCH_BCM4908 as a sub-arch of ARCH_BCMBCA, then this sets a precedent for adding more and more of those ARCH_BCM4906, ARCH_BCM4912 etc. etc to future kernels under the same reasons that we might want to gate certain drivers to certain sub-arches. But what good does that do?
 
-> In addition, the Dell limits the specific devices to
-> use the feature of MAC passthrough. It could reduce such
-> situation.
-
-Understood. Nevertheless, giving out the same MAC twice
-at a time is a bad idea.
-
-	Regards
-		Oliver
-
+At some point we got to make it simple for the users, and the simplest way is to have ARCH_BCMBCA only and let DT dictate the device specific probing.
+-- 
+Florian
