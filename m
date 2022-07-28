@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E1B58392F
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 09:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7267F58392A
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 09:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbiG1HDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 03:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S234501AbiG1HDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 03:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234435AbiG1HDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 03:03:07 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFF55927A
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 00:03:06 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id va17so1686236ejb.0
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 00:03:06 -0700 (PDT)
+        with ESMTP id S234470AbiG1HDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 03:03:08 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645A85C369
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 00:03:07 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id z23so1562027eju.8
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 00:03:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=W6W3RCGbQm1ftNxYyveQiUbovGJZ//OaxbWEapVu2yM=;
-        b=RMGtU7wa3UslEpI8xFxyuBq85BrBQa1EIe6ZZK8JQfbmJImOag3Lo/f6/9n3yIeGAf
-         rQGt8YLaIfAPDF3SEr3Ky6v2rPZ5bteL0UEN5FYZNbRGSrjJgoKR9tAvIb/4yzEu5042
-         d3O57JASdLqdVorgzx3y0hGmbBl3BGVytE0nk=
+        bh=OqbFbN5WONXbXcraJR8YQy0FCGLdvzQc4+bJ+5uxeJs=;
+        b=H6c+CwG85VDVmBQqbdkary0D07YA5Gn8UWubgl2cgK/GZ1TbiJwzpzjxkPiFzQJP+R
+         yFfgAHHIZIUs2Pt6u8Dp9oAkDSW239sdBm8h0Wu4UmCVcVUg6yhN1RTbZJBpSGTMxQTL
+         H0IiLIatBo86jVNNC6jZEuKm2xELL6a6ftRso=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=W6W3RCGbQm1ftNxYyveQiUbovGJZ//OaxbWEapVu2yM=;
-        b=rZxqRRnuufgdN/AGCz2YorTJl6wjG3CdwvHk1QEFWAaTmIi7NAqgpDMlVdu6GEmfuP
-         e7YVS2wmr6UlJKFeW/iLoDD4V7jMIxAEQlNsZB6HCJSaRYiAYLIC0onO0UYRnFxQZ1Eb
-         BYyF4ovp6jUv8mnYQYAQDAWCeezEhwHUgMXhAwoL2JgpKlFCYIBuoNAyAZQIfNdEkyt4
-         86Ccnws3Ob+SdilmVL1ZdWoAT8rpshwqkOwpskSUTj9wx3ObFugUF0jwXbE00nmXIQyg
-         GnGE+nL1lPrH2HcMPLmgWutPqHzxqBjnpZcEZCbAZiaCS+U4i38FBjsnL1DMjJCCXinZ
-         +lzA==
-X-Gm-Message-State: AJIora/1WzPPpR5oY92RExCPi0gNAzy40aBu8RNm3pjcHvnt5vIZpsxX
-        J/fmIHuDjgRejE7wUa2t3XYJNA==
-X-Google-Smtp-Source: AGRyM1spzt09OhzWtMpiRi8Bta1eT98E8Lb4duL5a3qcetXNCnKkplAmNgSlKyzj8QD9+m5ICLwuiQ==
-X-Received: by 2002:a17:907:28d6:b0:72b:7497:76b with SMTP id en22-20020a17090728d600b0072b7497076bmr19828979ejc.365.1658991784453;
-        Thu, 28 Jul 2022 00:03:04 -0700 (PDT)
+        bh=OqbFbN5WONXbXcraJR8YQy0FCGLdvzQc4+bJ+5uxeJs=;
+        b=RekiAEuXGekD11lRJJvjvz3lL93vZjNanUKkj5MKtQQEBLN7DuM6XYaTHNuZBKn8jk
+         wp3CivX164CW18/0SNsP765eaVg1BrPzsJ971GTk4stKthISt97iHhCL6j8Dm2QEfk8Y
+         1lR//svgKqAE8Qu2ZJucCvaMAImbvVLNeyfAC4n6Dc8MYsUwX37/ozGz3nAFDFwMZLme
+         VC/+7L4oAUR1JarnufTsGIbWOwgn/hvey/y4NHIIUvAMdmRTUHPAj2gHlubNqG+DGa7u
+         lVIvSR0uZZHJHJ8ax3dxl8yRTjZeJmP+9Tw3FucITkT2bAiP74iZ4Gw3/awWRh3tb36w
+         sZTQ==
+X-Gm-Message-State: AJIora9B2lym1a2+nGNs/Q3by4a+mjUfRUX6Ss/dgWtJ0HACKuIfvAta
+        PRgZ2Nft0EGVMSimLckjXlztbA==
+X-Google-Smtp-Source: AGRyM1tyxt5AZFv5KBrqS+15cqhzJre9JnuQgSgSQc3BlE4vTZdPfRYjKTI2goAu9xV/PLIRvFLcOA==
+X-Received: by 2002:a17:906:5d16:b0:72f:248d:525a with SMTP id g22-20020a1709065d1600b0072f248d525amr21052749ejt.441.1658991785810;
+        Thu, 28 Jul 2022 00:03:05 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-79-31-31-9.retail.telecomitalia.it. [79.31.31.9])
-        by smtp.gmail.com with ESMTPSA id r18-20020aa7d152000000b0042de3d661d2sm154742edo.1.2022.07.28.00.03.03
+        by smtp.gmail.com with ESMTPSA id r18-20020aa7d152000000b0042de3d661d2sm154742edo.1.2022.07.28.00.03.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 00:03:03 -0700 (PDT)
+        Thu, 28 Jul 2022 00:03:05 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -51,16 +51,15 @@ Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         michael@amarulasolutions.com,
         Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Subject: [PATCH v4 1/7] can: slcan: use KBUILD_MODNAME and define pr_fmt to replace hardcoded names
-Date:   Thu, 28 Jul 2022 09:02:48 +0200
-Message-Id: <20220728070254.267974-2-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v4 2/7] can: slcan: remove useless header inclusions
+Date:   Thu, 28 Jul 2022 09:02:49 +0200
+Message-Id: <20220728070254.267974-3-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220728070254.267974-1-dario.binacchi@amarulasolutions.com>
 References: <20220728070254.267974-1-dario.binacchi@amarulasolutions.com>
@@ -76,86 +75,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Include only the necessary headers.
 
-The driver uses the string "slcan" to populate
-tty_ldisc_ops::name. KBUILD_MODNAME also evaluates to "slcan". Use
-KBUILD_MODNAME to get rid on the hardcoded string names.
-
-Similarly, the pr_info() and pr_err() hardcoded the "slcan"
-prefix. Define pr_fmt so that the "slcan" prefix gets automatically
-added.
-
-CC: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+(no changes since v2)
 
- drivers/net/can/slcan/slcan-core.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+Changes in v2:
+- Re-add headers that export at least one symbol used by the module.
+
+ drivers/net/can/slcan/slcan-core.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index dfd1baba4130..2c9d9fc19ea9 100644
+index 2c9d9fc19ea9..ca383c43167d 100644
 --- a/drivers/net/can/slcan/slcan-core.c
 +++ b/drivers/net/can/slcan/slcan-core.c
-@@ -35,6 +35,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- 
-@@ -863,7 +865,7 @@ static struct slcan *slc_alloc(void)
- 	if (!dev)
- 		return NULL;
- 
--	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
-+	snprintf(dev->name, sizeof(dev->name), KBUILD_MODNAME "%d", i);
- 	dev->netdev_ops = &slc_netdev_ops;
- 	dev->base_addr  = i;
- 	slcan_set_ethtool_ops(dev);
-@@ -936,7 +938,7 @@ static int slcan_open(struct tty_struct *tty)
- 		rtnl_unlock();
- 		err = register_candev(sl->dev);
- 		if (err) {
--			pr_err("slcan: can't register candev\n");
-+			pr_err("can't register candev\n");
- 			goto err_free_chan;
- 		}
- 	} else {
-@@ -1027,7 +1029,7 @@ static int slcan_ioctl(struct tty_struct *tty, unsigned int cmd,
- static struct tty_ldisc_ops slc_ldisc = {
- 	.owner		= THIS_MODULE,
- 	.num		= N_SLCAN,
--	.name		= "slcan",
-+	.name		= KBUILD_MODNAME,
- 	.open		= slcan_open,
- 	.close		= slcan_close,
- 	.hangup		= slcan_hangup,
-@@ -1043,8 +1045,8 @@ static int __init slcan_init(void)
- 	if (maxdev < 4)
- 		maxdev = 4; /* Sanity */
- 
--	pr_info("slcan: serial line CAN interface driver\n");
--	pr_info("slcan: %d dynamic interface channels.\n", maxdev);
-+	pr_info("serial line CAN interface driver\n");
-+	pr_info("%d dynamic interface channels.\n", maxdev);
- 
- 	slcan_devs = kcalloc(maxdev, sizeof(struct net_device *), GFP_KERNEL);
- 	if (!slcan_devs)
-@@ -1053,7 +1055,7 @@ static int __init slcan_init(void)
- 	/* Fill in our line protocol discipline, and register it */
- 	status = tty_register_ldisc(&slc_ldisc);
- 	if (status)  {
--		pr_err("slcan: can't register line discipline\n");
-+		pr_err("can't register line discipline\n");
- 		kfree(slcan_devs);
- 	}
- 	return status;
+@@ -48,9 +48,6 @@
+ #include <linux/netdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/rtnetlink.h>
+-#include <linux/if_arp.h>
+-#include <linux/if_ether.h>
+-#include <linux/sched.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
 -- 
 2.32.0
 
