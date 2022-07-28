@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4F705843A5
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EA855843AD
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbiG1Pys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 11:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
+        id S230344AbiG1Pzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 11:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231979AbiG1Pyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:54:39 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2067.outbound.protection.outlook.com [40.107.95.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5604F6D2DC
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:54:38 -0700 (PDT)
+        with ESMTP id S232341AbiG1PzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:55:01 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243E26D567
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 08:54:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bkb9wBXor+Ag5P9D8lQTdxpPS9wTeXo5eOhTF7eHei7C28zwJe2M10jTIQC53ETV3FutCE8S3nkxC1y//XJmY05x0PUniR8fXdPqPyTkOX/j1g6LiAkRXSKfR+nlDWaz/IMNL9kx8xhn78g5D39h53eBzCy5XBrrKrjrgB/jkLOoMRg0dj8/0ZniMSySJ/0+mE3apAfKDWjdMR68yOz+8+66wgokrvTuqRZwme0jQ0J8PutCa+ZhKAKxOJC0cg1Qv/A7BDBSmFIMbB1nKKJa0Oby2afHc0aanIltaLMP+ZzpHBpx2fYxvbT7QNj7y0snWFFKJmE49heb5KSAPDidqw==
+ b=AZ5P6fntGh1FD0heJ7m+Y+YQMhfABt0UwW561SLxkc+lpTHfYhgU7nxObz/KclydWthnVwRX+B4/27woqZ+FXzxGxG9QgZtfm/81ETHGjN2o+QwF+w8J+W95IyxQCgAhJSJkg68GPByCOmcFMy2dE+JBSdiytMz8wD9e0xu/aax9gKkXCQtZPjTS/ekJSqkc8EyqPL80+dviESIhkrhkrJQLOXD+B5XNW8D/cZlihsb4madsGgrHNMyBBoF3D4UG9+GOV/8X5EPWldERXVEJhMCBa/PSgTXbA/r8geApHFPChw2Ke3ibjatp7evhMIIuK23rW/K9UlRjOhiZIA22fA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rBd3BcZj08RceBhH3bji32iNEFiFZ7UoVVwv8ZHjr6s=;
- b=MXoZ0bdVtEijqw0TiWxwxmRq0JpJda99gXSQbW/lCpu1JsNCeBQe8B3039v72pwaWFRREsN+IwDltCcjkv/UR4x+rMpDVXyugcJgtCFUIUGF7ZEg+EqmOZbMOhW9W/cg5iRIuwdpnmvshDz2Pn/rMx9x2FYmmE+WBXhRgLk4riP51jGCZAkpqYV8FNOUCdX9cGsnrpOQwQsT6RxD6Eye8PbJe6OiuQXx+mJ6CqMB5bsGQSAq9TjkY8noIN1ZDmHXAYtE6FqzvIyCdAZdO/r2MBtlYwjseI6fbmOpJlvETHvLp2FXl5KMUKPaVOGz+1AjE6FhG4E3k+zo2a17jhXyog==
+ bh=9FEdLw1sTXVoRDHrceXmgLjIk69yv3hyzZqPDftRQUY=;
+ b=NifJuEKhrcY9uf0uHgqRvPZOgcUkUj+uh2wmZRQwpJbdIK0eckQVNncf6icRkKkNZ1SA2dlb4nth+V+5H4gjA8jQ+tL3krfcK4f4QFLK7s5/Ar+Ajaljm5BeBM0Y0s9yF1mu8/gvJ6BJytuR3X8hBzI0VBA+AfhLxOqIslVuabDujFMYWO3ijMlX5cMaiYmcEE4oDVaw1A98u25dA1gMZGVhFcSBQ5WhHqpxVsx/K9uLou38XjxRq/kkmOJQBWTZWAYhDmbix0Q8De4eY+UNU7u3xpHH4LkidAw8CGFHJE85zcXmZLKqI3IW0TE93G10nKhEnyMkNKF14mAsQ6HbGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ 12.22.5.238) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rBd3BcZj08RceBhH3bji32iNEFiFZ7UoVVwv8ZHjr6s=;
- b=HcniUUFpnTeuM4Jr/TPyj/mpmAQ1Ad5o99noZ5PQz1ZzbcfNoaWTp1dSgf55rWjh/BQ2BybMAAOrj/Ti/HlpGKd3A2X7gzXGYBYr3/2Gka1YMLBIFCZtxgEU1VJRJWoQo7qiXbJpxswYJYhFOUckqGF+COCZOQrrohbec6tbpigsAutysUs2bBcHkE6cfDs/iKsdBkku+eB5rN8CqFd/cGK6YqgCyGRzwFP8lKu1vxCdrhVXU8ptw0kKqaBOc9D83w74qNs/wyFI3L2wNiHM7LLY6NVwS8IorVuN1pcVrm6lFCyFPrQ57XnjQ85LuT4QyNyQaMFKuaMN7ybHKyV0sA==
-Received: from DS7PR05CA0060.namprd05.prod.outlook.com (2603:10b6:8:2f::13) by
- LV2PR12MB5967.namprd12.prod.outlook.com (2603:10b6:408:170::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Thu, 28 Jul
- 2022 15:54:36 +0000
-Received: from DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::d) by DS7PR05CA0060.outlook.office365.com
- (2603:10b6:8:2f::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.1 via Frontend
- Transport; Thu, 28 Jul 2022 15:54:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ bh=9FEdLw1sTXVoRDHrceXmgLjIk69yv3hyzZqPDftRQUY=;
+ b=ZmewPgO7xIBJgeEwjGEzOjERxccdIqqJs4B2aWbFRF8x4M5iA5P9vsrSt54ZGX4dfTHbJwYkIdvx/WObvMDpxRdbMJjWBHAUsYG4XcQsW7rMbocEC0sVoF0buohAlcdwUeDLWpWXsPWz3VVB9d83tLPN0/JxYqXodbeOBpAiMLKz7Ka7FTfbcCq3aaCrMABVjz88Xg3q9i6ryuMOdwSyQdGKIhE0AYBAUqoyz2VmTCxUU8WIQHR0gGd7zU53Mit1Umy9cE3FDtQ8Js6T0DYG+mcD9kzYEVndAtLdlWXBuycUi0PAlrqTAlXTHpaFxZ2bKFRwfPoLeIn+ERNe5AGkuw==
+Received: from DM6PR07CA0070.namprd07.prod.outlook.com (2603:10b6:5:74::47) by
+ BN8PR12MB3362.namprd12.prod.outlook.com (2603:10b6:408:44::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.6; Thu, 28 Jul 2022 15:54:48 +0000
+Received: from DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::d9) by DM6PR07CA0070.outlook.office365.com
+ (2603:10b6:5:74::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20 via Frontend
+ Transport; Thu, 28 Jul 2022 15:54:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT062.mail.protection.outlook.com (10.13.173.40) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT060.mail.protection.outlook.com (10.13.173.63) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 15:54:36 +0000
+ 15.20.5482.10 via Frontend Transport; Thu, 28 Jul 2022 15:54:47 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 28 Jul 2022 15:54:35 +0000
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 28 Jul 2022 15:54:38 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
  drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Thu, 28 Jul 2022 08:54:35 -0700
+ 15.2.986.26; Thu, 28 Jul 2022 08:54:38 -0700
 Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
  (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 28 Jul 2022 08:54:32 -0700
+ Transport; Thu, 28 Jul 2022 08:54:35 -0700
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,9 +69,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Jiri Pirko <jiri@nvidia.com>, <netdev@vger.kernel.org>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next v2 5/9] net/mlx4: Use devl_ API for devlink region create / destroy
-Date:   Thu, 28 Jul 2022 18:53:46 +0300
-Message-ID: <1659023630-32006-6-git-send-email-moshe@nvidia.com>
+Subject: [PATCH net-next v2 6/9] net/mlx4: Use devl_ API for devlink port register / unregister
+Date:   Thu, 28 Jul 2022 18:53:47 +0300
+Message-ID: <1659023630-32006-7-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1659023630-32006-1-git-send-email-moshe@nvidia.com>
 References: <1659023630-32006-1-git-send-email-moshe@nvidia.com>
@@ -80,23 +79,23 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f031e1ad-31a2-478d-fe61-08da70b178bc
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5967:EE_
+X-MS-Office365-Filtering-Correlation-Id: b63de526-45a2-4326-43ff-08da70b17f76
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3362:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NzAB0iBNz2w+8l4JbL78UQPzN5I7C8vBk9S5uUIagDh+O6taGnEguYCBeKVmByCwN58eKfD12MsvM1EUJMW5Yx4QIAzvFlP7qqyW+sp0y2VuG9RKhKkyfMyL98PS5tF2WJY3U1IML5qdnhI7tY8qCKSoEQ5FPtopjfMzwQzsdadb3gTDjkIJJAHasxOby5aixD/GzR9j2B5lthrUCc6s7QbrWNAzl24iJ0mQYIZz/DeWZgRnC1U9XSrYvkl5uHvkhHbOU7GyglTutDWm8dF4TQ8r60dJoYU0g7/D8xIlA/mL7x+yPo/l97o0OWhVF9FH4ksTsKYm6yQMsV0g3o1dN912bKJvs4OyMa7n1XY/Jcz7Bt6hnXWXE0/iF0AYTiSddwIxSRMzke3lk1pSGVhBbhBXCNizAGJG71/E2ASspwbhzeO768Ifk+/mEX9U1uHWGGTF7xiPNPe6WO0blFsEVceAGERxqQHXqsOM/QOFgRiB3uW3dgasCmMiElIeTycd08HdIySreCv2WvjSQppmMPL7fShf3pEa3wkz+871UeQWNGKqfTr8Bjtpx0IIeu9OyV6GUtXXvtGObUQHYQs1TC2NyBtXRgWMMl1PFmBNCUFwWVuH8mzEJOLU9cv7lIuDe6LjCkmoA6zLS2NwDMnR8uoZ70mYF1m9sqiSviZGwRd2Ibn2aTX6ZFMiWmVWwWA02sipNbuVt+I5miKVDO2cnO3o2XCLWpmfzFq+RWyLnwzIBIrUgbFRcugGq60wgG2eDrASXzrbk/UZ/ax3jEcN4f+W7TWCfXbp6S4pMvmyTe48sAkVZZslxOm5Ryj10Snnjj4vwVVfW9beZz5h1ZdN8w==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(396003)(346002)(36840700001)(40470700004)(46966006)(7696005)(107886003)(5660300002)(26005)(186003)(6666004)(2616005)(41300700001)(336012)(40460700003)(2906002)(82310400005)(82740400003)(356005)(83380400001)(81166007)(47076005)(54906003)(36860700001)(40480700001)(426003)(110136005)(86362001)(478600001)(70586007)(36756003)(70206006)(4326008)(8676002)(8936002)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: iOxwKR+fQrk7QNg9Sv0CG8oyLJxLzQbrzo8MGvWW40E5H0XbVLufhpQG7WJwtFxpvoZRflxiamhQocIwduOYryaO2yJoKktvGRIXsdFyd2IA/DOdZXwVstKmsARZlvc37xeqHHVLfnxzdq7NcZWIUCiz5zRKWxF4vKBWkxWUh49x+KGg+mzVSzHYza33xoG4DClIr42tjOzpyMjPhlXN6PULGtNz/lDp06t/fYcv1S7Xw/JifpGqd1+625gI1EPY81kUQ9NB/0+l4EdeWBdWrnnTJBJw2Ctkhl1SfaR6dpA3NMwZ/lAa4mq38IV7DSZuOZgr6GaqZgqzOpOoYAX6sJ8ww8yoWrZWbdbgwHVfKzwscVfzA7XE0GYskenJ96gXHpbykBf6GGkz2Iej1xqK7+g4ZXOUsAXuYURNRYEXlgkni9RH9ZgcghNvYertJnpIosVy2nDAbDstPNQf75eGAvBL4jfmIkV9v48McNDIlMNlGH9F2eFA1QrckCJJ+oMuB2Rw48mdHNvxVo/5zg3b1w9XHnWzZLFc3UFaZsb4vnAl0k530aVpZIAxu5vI/ALa3D+ZmnUV3WscUPF7Ez5dyqm7Vtzh42uadyerL7YjQ2QScQiPvyN8PjE+NUsDpFhOPaWI1YGWz6VDXbSkL+ZOd43g9/B8a8cj7aHiMmMyV+dX5x3997L0ZCKhdGJkhfCpG/dqnrfiLu8JnxfvjsHsYcH4MEQ6iV3k3YGDty3JioF+m0bH40CEKwENI/5j22j3C9S7kwtm2oyZqROzHRtRtSlOAqdJCSI8/2Qhye+QrdnwjTuTMMybadbqL1Us5RzhwNFE3KjjvhNwkhoYUIu5wQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(396003)(136003)(376002)(46966006)(40470700004)(36840700001)(47076005)(107886003)(426003)(7696005)(186003)(41300700001)(6666004)(2906002)(336012)(26005)(2616005)(86362001)(82310400005)(40460700003)(81166007)(356005)(82740400003)(83380400001)(40480700001)(8936002)(110136005)(4326008)(316002)(54906003)(478600001)(5660300002)(70586007)(8676002)(70206006)(36756003)(36860700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 15:54:36.2426
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 15:54:47.4607
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f031e1ad-31a2-478d-fe61-08da70b178bc
+X-MS-Exchange-CrossTenant-Network-Message-Id: b63de526-45a2-4326-43ff-08da70b17f76
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5967
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3362
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -107,9 +106,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use devl_ API to call devl_region_create() and devl_region_destroy()
-instead of devlink_region_create() and devlink_region_destroy().
-Add devlink instance lock in mlx4 driver paths to these functions.
+Use devl_ API to call devl_port_register() and devl_port_unregister()
+instead of devlink_port_register() and devlink_port_unregister(). Add
+devlink instance lock in mlx4 driver paths to these functions.
 
 This will be used by the downstream patch to invoke mlx4 devlink reload
 callbacks with devlink lock held.
@@ -118,95 +117,105 @@ Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/crdump.c | 20 ++++++++++----------
- drivers/net/ethernet/mellanox/mlx4/main.c   |  7 +++++++
- 2 files changed, 17 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/main.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-index ac5468b77488..82a07a31cde7 100644
---- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-@@ -226,10 +226,10 @@ int mlx4_crdump_init(struct mlx4_dev *dev)
- 
- 	/* Create cr-space region */
- 	crdump->region_crspace =
--		devlink_region_create(devlink,
--				      &region_cr_space_ops,
--				      MAX_NUM_OF_DUMPS_TO_STORE,
--				      pci_resource_len(pdev, 0));
-+		devl_region_create(devlink,
-+				   &region_cr_space_ops,
-+				   MAX_NUM_OF_DUMPS_TO_STORE,
-+				   pci_resource_len(pdev, 0));
- 	if (IS_ERR(crdump->region_crspace))
- 		mlx4_warn(dev, "crdump: create devlink region %s err %ld\n",
- 			  region_cr_space_str,
-@@ -237,10 +237,10 @@ int mlx4_crdump_init(struct mlx4_dev *dev)
- 
- 	/* Create fw-health region */
- 	crdump->region_fw_health =
--		devlink_region_create(devlink,
--				      &region_fw_health_ops,
--				      MAX_NUM_OF_DUMPS_TO_STORE,
--				      HEALTH_BUFFER_SIZE);
-+		devl_region_create(devlink,
-+				   &region_fw_health_ops,
-+				   MAX_NUM_OF_DUMPS_TO_STORE,
-+				   HEALTH_BUFFER_SIZE);
- 	if (IS_ERR(crdump->region_fw_health))
- 		mlx4_warn(dev, "crdump: create devlink region %s err %ld\n",
- 			  region_fw_health_str,
-@@ -253,6 +253,6 @@ void mlx4_crdump_end(struct mlx4_dev *dev)
- {
- 	struct mlx4_fw_crdump *crdump = &dev->persist->crdump;
- 
--	devlink_region_destroy(crdump->region_fw_health);
--	devlink_region_destroy(crdump->region_crspace);
-+	devl_region_destroy(crdump->region_fw_health);
-+	devl_region_destroy(crdump->region_crspace);
- }
 diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index b187c210d4d6..f3d13190b959 100644
+index f3d13190b959..0166d003f22c 100644
 --- a/drivers/net/ethernet/mellanox/mlx4/main.c
 +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3732,6 +3732,7 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 	int prb_vf[MLX4_MAX_PORTS + 1] = {0, 0, 0};
- 	const int param_map[MLX4_MAX_PORTS + 1][MLX4_MAX_PORTS + 1] = {
- 		{2, 0, 0}, {0, 1, 2}, {0, 1, 2} };
-+	struct devlink *devlink = priv_to_devlink(priv);
- 	unsigned total_vfs = 0;
- 	unsigned int i;
+@@ -3033,7 +3033,7 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+ 	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
+ 	int err;
  
-@@ -3844,7 +3845,9 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
+-	err = devlink_port_register(devlink, &info->devlink_port, port);
++	err = devl_port_register(devlink, &info->devlink_port, port);
+ 	if (err)
+ 		return err;
+ 
+@@ -3071,7 +3071,7 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+ 	err = device_create_file(&dev->persist->pdev->dev, &info->port_attr);
+ 	if (err) {
+ 		mlx4_err(dev, "Failed to create file for port %d\n", port);
+-		devlink_port_unregister(&info->devlink_port);
++		devl_port_unregister(&info->devlink_port);
+ 		info->port = -1;
+ 		return err;
+ 	}
+@@ -3093,7 +3093,7 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+ 		mlx4_err(dev, "Failed to create mtu file for port %d\n", port);
+ 		device_remove_file(&info->dev->persist->pdev->dev,
+ 				   &info->port_attr);
+-		devlink_port_unregister(&info->devlink_port);
++		devl_port_unregister(&info->devlink_port);
+ 		info->port = -1;
+ 		return err;
+ 	}
+@@ -3109,7 +3109,7 @@ static void mlx4_cleanup_port_info(struct mlx4_port_info *info)
+ 	device_remove_file(&info->dev->persist->pdev->dev, &info->port_attr);
+ 	device_remove_file(&info->dev->persist->pdev->dev,
+ 			   &info->port_mtu_attr);
+-	devlink_port_unregister(&info->devlink_port);
++	devl_port_unregister(&info->devlink_port);
+ 
+ #ifdef CONFIG_RFS_ACCEL
+ 	free_irq_cpu_rmap(info->rmap);
+@@ -3333,6 +3333,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
+ 			 int total_vfs, int *nvfs, struct mlx4_priv *priv,
+ 			 int reset_flow)
+ {
++	struct devlink *devlink = priv_to_devlink(priv);
+ 	struct mlx4_dev *dev;
+ 	unsigned sum = 0;
+ 	int err;
+@@ -3629,6 +3630,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
  		}
  	}
  
 +	devl_lock(devlink);
- 	err = mlx4_crdump_init(&priv->dev);
-+	devl_unlock(devlink);
+ 	for (port = 1; port <= dev->caps.num_ports; port++) {
+ 		err = mlx4_init_port_info(dev, port);
+ 		if (err)
+@@ -3642,6 +3644,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
  	if (err)
- 		goto err_release_regions;
+ 		goto err_port;
  
-@@ -3862,7 +3865,9 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
- 	mlx4_catas_end(&priv->dev);
++	devl_unlock(devlink);
+ 	mlx4_request_modules(dev);
  
- err_crdump:
-+	devl_lock(devlink);
- 	mlx4_crdump_end(&priv->dev);
+ 	mlx4_sense_init(dev);
+@@ -3658,6 +3661,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
+ err_port:
+ 	for (--port; port >= 1; --port)
+ 		mlx4_cleanup_port_info(&priv->port[port]);
 +	devl_unlock(devlink);
  
- err_release_regions:
- 	pci_release_regions(pdev);
-@@ -4161,7 +4166,9 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 	else
- 		mlx4_info(dev, "%s: interface is down\n", __func__);
- 	mlx4_catas_end(dev);
+ 	mlx4_cleanup_default_counters(dev);
+ 	if (!mlx4_is_slave(dev))
+@@ -4061,8 +4065,10 @@ static void mlx4_unload_one(struct pci_dev *pdev)
+ 	struct mlx4_dev  *dev  = persist->dev;
+ 	struct mlx4_priv *priv = mlx4_priv(dev);
+ 	int               pci_dev_data;
++	struct devlink *devlink;
+ 	int p, i;
+ 
++	devlink = priv_to_devlink(priv);
+ 	if (priv->removed)
+ 		return;
+ 
+@@ -4078,10 +4084,12 @@ static void mlx4_unload_one(struct pci_dev *pdev)
+ 	mlx4_stop_sense(dev);
+ 	mlx4_unregister_device(dev);
+ 
 +	devl_lock(devlink);
- 	mlx4_crdump_end(dev);
+ 	for (p = 1; p <= dev->caps.num_ports; p++) {
+ 		mlx4_cleanup_port_info(&priv->port[p]);
+ 		mlx4_CLOSE_PORT(dev, p);
+ 	}
 +	devl_unlock(devlink);
- 	if (dev->flags & MLX4_FLAG_SRIOV && !active_vfs) {
- 		mlx4_warn(dev, "Disabling SR-IOV\n");
- 		pci_disable_sriov(pdev);
+ 
+ 	if (mlx4_is_master(dev))
+ 		mlx4_free_resource_tracker(dev,
 -- 
 2.18.2
 
