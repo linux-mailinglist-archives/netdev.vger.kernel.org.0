@@ -2,289 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34121583A33
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E38A4583A14
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235099AbiG1ISW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 04:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34578 "EHLO
+        id S235017AbiG1INA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 04:13:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234999AbiG1IST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:18:19 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9D55A2DE;
-        Thu, 28 Jul 2022 01:18:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VKefuGf_1658996289;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VKefuGf_1658996289)
-          by smtp.aliyun-inc.com;
-          Thu, 28 Jul 2022 16:18:10 +0800
-Message-ID: <1658995783.1026692-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v13 16/42] virtio_ring: split: introduce virtqueue_resize_split()
-Date:   Thu, 28 Jul 2022 16:09:43 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        Kangjie Xu <kangjie.xu@linux.alibaba.com>,
-        virtualization <virtualization@lists.linux-foundation.org>
-References: <20220726072225.19884-1-xuanzhuo@linux.alibaba.com>
- <20220726072225.19884-17-xuanzhuo@linux.alibaba.com>
- <15aa26f2-f8af-5dbd-f2b2-9270ad873412@redhat.com>
- <1658907413.1860468-2-xuanzhuo@linux.alibaba.com>
- <CACGkMEvxsOfiiaWWAR8P68GY1yfwgTvaAbHk1JF7pTw-o2k25w@mail.gmail.com>
- <1658992162.584327-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEv-KYieHKXY_Qn0nfcnLMOSF=TowF5PwLKOxESL3KQ40Q@mail.gmail.com>
-In-Reply-To: <CACGkMEv-KYieHKXY_Qn0nfcnLMOSF=TowF5PwLKOxESL3KQ40Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S233818AbiG1IM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:12:58 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1A055086;
+        Thu, 28 Jul 2022 01:12:56 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 5B98C1008B393;
+        Thu, 28 Jul 2022 16:12:52 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 34CAD2008BD4F;
+        Thu, 28 Jul 2022 16:12:52 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 7I_j8N54BGeu; Thu, 28 Jul 2022 16:12:50 +0800 (CST)
+Received: from [192.168.24.189] (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 4A714200BFDA8;
+        Thu, 28 Jul 2022 16:12:40 +0800 (CST)
+Message-ID: <f4612182-698b-c687-17c8-610c890adcf9@sjtu.edu.cn>
+Date:   Thu, 28 Jul 2022 16:12:39 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC 4/5] virtio: get desc id in order
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
+        sgarzare@redhat.com, mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+ <20220721084341.24183-5-qtxuning1999@sjtu.edu.cn>
+ <9d4c24de-f2cc-16a0-818a-16695946f3a3@redhat.com>
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <9d4c24de-f2cc-16a0-818a-16695946f3a3@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jul 2022 15:42:50 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Thu, Jul 28, 2022 at 3:24 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
-ote:
-> >
-> > On Thu, 28 Jul 2022 10:38:51 +0800, Jason Wang <jasowang@redhat.com> wr=
-ote:
-> > > On Wed, Jul 27, 2022 at 3:44 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com=
-> wrote:
-> > > >
-> > > > On Wed, 27 Jul 2022 11:12:19 +0800, Jason Wang <jasowang@redhat.com=
-> wrote:
-> > > > >
-> > > > > =E5=9C=A8 2022/7/26 15:21, Xuan Zhuo =E5=86=99=E9=81=93:
-> > > > > > virtio ring split supports resize.
-> > > > > >
-> > > > > > Only after the new vring is successfully allocated based on the=
- new num,
-> > > > > > we will release the old vring. In any case, an error is returne=
-d,
-> > > > > > indicating that the vring still points to the old vring.
-> > > > > >
-> > > > > > In the case of an error, re-initialize(virtqueue_reinit_split()=
-) the
-> > > > > > virtqueue to ensure that the vring can be used.
-> > > > > >
-> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > > > > > ---
-> > > > > >   drivers/virtio/virtio_ring.c | 34 +++++++++++++++++++++++++++=
-+++++++
-> > > > > >   1 file changed, 34 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virt=
-io_ring.c
-> > > > > > index b6fda91c8059..58355e1ac7d7 100644
-> > > > > > --- a/drivers/virtio/virtio_ring.c
-> > > > > > +++ b/drivers/virtio/virtio_ring.c
-> > > > > > @@ -220,6 +220,7 @@ static struct virtqueue *__vring_new_virtqu=
-eue(unsigned int index,
-> > > > > >                                            void (*callback)(str=
-uct virtqueue *),
-> > > > > >                                            const char *name);
-> > > > > >   static struct vring_desc_extra *vring_alloc_desc_extra(unsign=
-ed int num);
-> > > > > > +static void vring_free(struct virtqueue *_vq);
-> > > > > >
-> > > > > >   /*
-> > > > > >    * Helpers.
-> > > > > > @@ -1117,6 +1118,39 @@ static struct virtqueue *vring_create_vi=
-rtqueue_split(
-> > > > > >     return vq;
-> > > > > >   }
-> > > > > >
-> > > > > > +static int virtqueue_resize_split(struct virtqueue *_vq, u32 n=
-um)
-> > > > > > +{
-> > > > > > +   struct vring_virtqueue_split vring_split =3D {};
-> > > > > > +   struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > > > > > +   struct virtio_device *vdev =3D _vq->vdev;
-> > > > > > +   int err;
-> > > > > > +
-> > > > > > +   err =3D vring_alloc_queue_split(&vring_split, vdev, num,
-> > > > > > +                                 vq->split.vring_align,
-> > > > > > +                                 vq->split.may_reduce_num);
-> > > > > > +   if (err)
-> > > > > > +           goto err;
-> > > > >
-> > > > >
-> > > > > I think we don't need to do anything here?
-> > > >
-> > > > Am I missing something?
-> > >
-> > > I meant it looks to me most of the virtqueue_reinit() is unnecessary.
-> > > We probably only need to reinit avail/used idx there.
-> >
-> >
-> > In this function, we can indeed remove some code.
-> >
-> > >       static void virtqueue_reinit_split(struct vring_virtqueue *vq)
-> > >       {
-> > >               int size, i;
-> > >
-> > >               memset(vq->split.vring.desc, 0, vq->split.queue_size_in=
-_bytes);
-> > >
-> > >               size =3D sizeof(struct vring_desc_state_split) * vq->sp=
-lit.vring.num;
-> > >               memset(vq->split.desc_state, 0, size);
-> > >
-> > >               size =3D sizeof(struct vring_desc_extra) * vq->split.vr=
-ing.num;
-> > >               memset(vq->split.desc_extra, 0, size);
-> >
-> > These memsets can be removed, and theoretically it will not cause any
-> > exceptions.
+On 2022/7/26 16:07, Jason Wang wrote:
 >
-> Yes, otherwise we have bugs in detach_buf().
->
-> >
-> > >
-> > >
-> > >
-> > >               for (i =3D 0; i < vq->split.vring.num - 1; i++)
-> > >                       vq->split.desc_extra[i].next =3D i + 1;
-> >
-> > This can also be removed, but we need to record free_head that will bee=
-n update
-> > inside virtqueue_init().
->
-> We can simply keep free_head unchanged? Otherwise it's a bug somewhere I =
-guess.
+> 在 2022/7/21 16:43, Guo Zhi 写道:
+>> If in order feature negotiated, we can skip the used ring to get
+>> buffer's desc id sequentially.
 >
 >
-> >
-> > >
-> > >               virtqueue_init(vq, vq->split.vring.num);
-> >
-> > There are some operations in this, which can also be skipped, such as s=
-etting
-> > use_dma_api. But I think calling this function directly will be more co=
-nvenient
-> > for maintenance.
+> Let's rename the patch to something like "in order support for 
+> virtio_ring"
 >
-> I don't see anything that is necessary here.
+>
+>>
+>> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+>> ---
+>>   drivers/virtio/virtio_ring.c | 37 ++++++++++++++++++++++++++++--------
+>>   1 file changed, 29 insertions(+), 8 deletions(-)
+>
+>
+> I don't see packed support in this patch, we need to implement that.
+>
+It will be implemented later.
+>
+>>
+>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+>> index a5ec724c0..4d57a4edc 100644
+>> --- a/drivers/virtio/virtio_ring.c
+>> +++ b/drivers/virtio/virtio_ring.c
+>> @@ -144,6 +144,9 @@ struct vring_virtqueue {
+>>               /* DMA address and size information */
+>>               dma_addr_t queue_dma_addr;
+>>               size_t queue_size_in_bytes;
+>> +
+>> +            /* In order feature batch begin here */
+>> +            u16 next_batch_desc_begin;
+>>           } split;
+>>             /* Available for packed ring */
+>> @@ -700,8 +703,10 @@ static void detach_buf_split(struct 
+>> vring_virtqueue *vq, unsigned int head,
+>>       }
+>>         vring_unmap_one_split(vq, i);
+>> -    vq->split.desc_extra[i].next = vq->free_head;
+>> -    vq->free_head = head;
+>> +    if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
+>> +        vq->split.desc_extra[i].next = vq->free_head;
+>> +        vq->free_head = head;
+>> +    }
+>
+>
+> Let's add a comment to explain why we don't need anything if in order 
+> is neogitated.
+>
+LGTM.
+>
+>>         /* Plus final descriptor */
+>>       vq->vq.num_free++;
+>> @@ -743,7 +748,8 @@ static void *virtqueue_get_buf_ctx_split(struct 
+>> virtqueue *_vq,
+>>   {
+>>       struct vring_virtqueue *vq = to_vvq(_vq);
+>>       void *ret;
+>> -    unsigned int i;
+>> +    __virtio16 nextflag = cpu_to_virtio16(vq->vq.vdev, 
+>> VRING_DESC_F_NEXT);
+>> +    unsigned int i, j;
+>>       u16 last_used;
+>>         START_USE(vq);
+>> @@ -762,11 +768,24 @@ static void *virtqueue_get_buf_ctx_split(struct 
+>> virtqueue *_vq,
+>>       /* Only get used array entries after they have been exposed by 
+>> host. */
+>>       virtio_rmb(vq->weak_barriers);
+>>   -    last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
+>> -    i = virtio32_to_cpu(_vq->vdev,
+>> -            vq->split.vring.used->ring[last_used].id);
+>> -    *len = virtio32_to_cpu(_vq->vdev,
+>> -            vq->split.vring.used->ring[last_used].len);
+>> +    if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
+>> +        /* Skip used ring and get used desc in order*/
+>> +        i = vq->split.next_batch_desc_begin;
+>> +        j = i;
+>> +        while (vq->split.vring.desc[j].flags & nextflag)
+>
+>
+> Let's don't depend on the descriptor ring which is under the control 
+> of the malicious hypervisor.
+>
+> Let's use desc_extra that is not visible by the hypervisor. More can 
+> be seen in this commit:
+>
+> 72b5e8958738 ("virtio-ring: store DMA metadata in desc_extra for split 
+> virtqueue")
+>
+LGTM, I will use desc_extra in new version patch.
+>
+>> +            j = (j + 1) % vq->split.vring.num;
+>> +        /* move to next */
+>> +        j = (j + 1) % vq->split.vring.num;
+>> +        vq->split.next_batch_desc_begin = j;
+>
+>
+> I'm not sure I get the logic here, basically I think we should check 
+> buffer instead of descriptor here.
 
-These three are currently inside virtqueue_init()
-
-vq->last_used_idx =3D 0;
-vq->event_triggered =3D false;
-vq->num_added =3D 0;
+Because the vq->last_used_idx != vq->split.vring.used->idx, So the 
+virtio driver know these has at least one used descriptor. the 
+descriptor's id is vq->split.next_batch_desc_begin because of in order. 
+Then we have to traverse the descriptor chain and point 
+vq->split.next_batch_desc_begin to next used descriptor.
 
 Thanks.
 
-
 >
-> >
-> >
-> > >               virtqueue_vring_init_split(&vq->split, vq);
-> >
-> > virtqueue_vring_init_split() is necessary.
+> So if vring.used->ring[last_used].id != last_used, we know all 
+> [last_used, vring.used->ring[last_used].id] have been used in a batch?
 >
-> Right.
 >
-> >
-> > >       }
-> >
-> > Another method, we can take out all the variables to be reinitialized
-> > separately, and repackage them into a new function. I don=E2=80=99t thi=
-nk it=E2=80=99s worth
-> > it, because this path will only be reached if the memory allocation fai=
-ls, which
-> > is a rare occurrence. In this case, doing so will increase the cost of
-> > maintenance. If you think so also, I will remove the above memset in th=
-e next
-> > version.
+>> +
+>> +        /* TODO: len of buffer */
 >
-> I agree.
+>
+> So spec said:
+>
+> "
+>
+> The skipped buffers (for which no used ring entry was written) are 
+> assumed to have been used (read or written) by the device completely.
+>
+>
+> "
 >
 > Thanks
 >
-> >
-> > Thanks.
-> >
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > > +   err =3D vring_alloc_state_extra_split(&vring_split);
-> > > > > > +   if (err) {
-> > > > > > +           vring_free_split(&vring_split, vdev);
-> > > > > > +           goto err;
-> > > > >
-> > > > >
-> > > > > I suggest to move vring_free_split() into a dedicated error label.
-> > > >
-> > > > Will change.
-> > > >
-> > > > Thanks.
-> > > >
-> > > >
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > >
-> > > > > > +   }
-> > > > > > +
-> > > > > > +   vring_free(&vq->vq);
-> > > > > > +
-> > > > > > +   virtqueue_vring_init_split(&vring_split, vq);
-> > > > > > +
-> > > > > > +   virtqueue_init(vq, vring_split.vring.num);
-> > > > > > +   virtqueue_vring_attach_split(vq, &vring_split);
-> > > > > > +
-> > > > > > +   return 0;
-> > > > > > +
-> > > > > > +err:
-> > > > > > +   virtqueue_reinit_split(vq);
-> > > > > > +   return -ENOMEM;
-> > > > > > +}
-> > > > > > +
-> > > > > >
-> > > > > >   /*
-> > > > > >    * Packed ring specific functions - *_packed().
-> > > > >
-> > > >
-> > >
-> >
+The driver will need len in used ring to get buffer size. However in 
+order will not write len of each buffer in used ring. So I will tried 
+pass len of buffer in device header.
 >
+>> +    } else {
+>> +        last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
+>> +        i = virtio32_to_cpu(_vq->vdev,
+>> + vq->split.vring.used->ring[last_used].id);
+>> +        *len = virtio32_to_cpu(_vq->vdev,
+>> + vq->split.vring.used->ring[last_used].len);
+>> +    }
+>>         if (unlikely(i >= vq->split.vring.num)) {
+>>           BAD_RING(vq, "id %u out of range\n", i);
+>> @@ -2234,6 +2253,8 @@ struct virtqueue 
+>> *__vring_new_virtqueue(unsigned int index,
+>>       vq->split.avail_flags_shadow = 0;
+>>       vq->split.avail_idx_shadow = 0;
+>>   +    vq->split.next_batch_desc_begin = 0;
+>> +
+>>       /* No callback?  Tell other side not to bother us. */
+>>       if (!callback) {
+>>           vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+>
+
