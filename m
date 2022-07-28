@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB81584597
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:24:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8F85845A7
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232542AbiG1SVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
+        id S232627AbiG1SVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiG1SVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:44 -0400
+        with ESMTP id S232363AbiG1SVp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:45 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8641C10C
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A756C5B048
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659032503; x=1690568503;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NjS7/84P9n8JvysDrWYDxWAG9GnGIhWOY98Y0EOFGC4=;
-  b=fz55PMVPrN0MPnfI5CukWHEsNmWu+BdZe4UA7WOM90EZC+/SCk3VSt9v
-   pm5tqS2dXLhl2zBMraDl9fk/YDnCkQEga8NwXHI1V6ipiNNMmap0QbJ/9
-   Wf2O3qrCsNGs8MMAz4/++G6SlKWo5PwlPtj/vZ88DhgjXO2ZWRC0Ah38o
-   ke1ZhA0MZjqeedgkFn8aoAp5+pxo6nL6yNyQ6cj0CjJX1SPykHZjwKBwi
-   M3T3S0vfu/JKN4eqAbar/L/nxDbgum1rmF2Yq4A9Yl8NQm1+L/z9c3Ya4
-   gZJlp9uLEdruavWgRBpsdR8NOKkRvcIXc3fzIbgdYT0uf/QIhvAXlezLf
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348902"
+  t=1659032504; x=1690568504;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uejaYWCdzw8RAoho7ahGyWtukPMgEjBK83meTDE1X/s=;
+  b=kzB7KfBaT/IfVDfdnzG0HIPL3Q+HkLip3xrLxhOAKw/XRMzEv6fZ2vZE
+   xvPYWNGch/7uSxBqgcBiW1uBBJNWBKsJ3iQXbw4nyVeCYp3cMPx/h4mPH
+   0lAfdee7jrPE4/HcEeaXNmNkeZ/EDBArihIYXW4TcvdZn7JdYSftp3W8C
+   6l14dU4tU+mq/uENxeDdYfOJXdjolsdnd1i5i/8BoHmQ8xZ5yuHZGEf32
+   dXXTOutQSm5Vs/ouMSwWGMFahzX69VNRnnXuhdfwn4D20b1ajPriJGdnm
+   S5J85RtiIduv+9oSwY6I18iJyBDJxeNYwkld/0UGn7XUeDVMFEQBSkpEY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348904"
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="268348902"
+   d="scan'208";a="268348904"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 11:21:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="727456611"
+   d="scan'208";a="727456614"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga004.jf.intel.com with ESMTP; 28 Jul 2022 11:21:40 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        richardcochran@gmail.com, jacob.e.keller@intel.com
-Subject: [PATCH net-next 0/7][pull request] 1GbE Intel Wired LAN Driver Updates 2022-07-28
-Date:   Thu, 28 Jul 2022 11:18:29 -0700
-Message-Id: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, richardcochran@gmail.com,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 1/7] ice: implement adjfine with mul_u64_u64_div_u64
+Date:   Thu, 28 Jul 2022 11:18:30 -0700
+Message-Id: <20220728181836.3387862-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
+References: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,53 +60,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jacob Keller says:
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Convert all of the Intel drivers with PTP support to the newer .adjfine
-implementation which uses scaled parts per million.
+The PTP frequency adjustment code needs to determine an appropriate
+adjustment given an input scaled_ppm adjustment.
 
-This improves the precision of the frequency adjustments by taking advantage
-of the full scaled parts per million input coming from user space.
+We calculate the adjustment to the register by multiplying the base
+(nominal) increment value by the scaled_ppm and then dividing by the
+scaled one million value.
 
-In addition, all implementations are converted to using the
-mul_u64_u64_div_u64 function which better handles the intermediate value.
-This function supports architecture specific instructions where possible to
-avoid loss of precision if the normal 64-bit multiplication would overflow.
+For very large adjustments, this might overflow. To avoid this, both the
+scaled_ppm and divisor values are downshifted.
 
-Of note, the i40e implementation is now able to avoid loss of precision on
-slower link speeds by taking advantage of this to multiply by the link speed
-factor first. This results in a significantly more precise adjustment by
-allowing the calculation to impact the lower bits.
+We can avoid that on X86 architectures by using mul_u64_u64_div_u64. This
+helper function will perform the multiplication and division with 128bit
+intermediate values. We know that scaled_ppm is never larger than the
+divisor so this operation will never result in an overflow.
 
-This also gets us a step closer to being able to remove the .adjfreq
-entirely by removing its use from many drivers.
+This improves the accuracy of the calculations for large adjustment values
+on X86. It is likely an improvement on other architectures as well because
+the default implementation of mul_u64_u64_div_u64 is smarter than the
+original approach taken in the ice code.
 
-I plan to follow this up with a series to update the drivers from other
-vendors and drop the .adjfreq implementation entirely.
+Additionally, this implementation is easier to read, using fewer local
+variables and lines of code to implement.
 
-The following are changes since commit 623cd87006983935de6c2ad8e2d50e68f1b7d6e7:
-  net: cdns,macb: use correct xlnx prefix for Xilinx
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
 
-Jacob Keller (7):
-  ice: implement adjfine with mul_u64_u64_div_u64
-  e1000e: remove unnecessary range check in e1000e_phc_adjfreq
-  e1000e: convert .adjfreq to .adjfine
-  i40e: use mul_u64_u64_div_u64 for PTP frequency calculation
-  i40e: convert .adjfreq to .adjfine
-  ixgbe: convert .adjfreq to .adjfine
-  igb: convert .adjfreq to .adjfine
-
- drivers/net/ethernet/intel/e1000e/e1000.h    |  2 +-
- drivers/net/ethernet/intel/e1000e/netdev.c   |  4 +-
- drivers/net/ethernet/intel/e1000e/ptp.c      | 18 +++--
- drivers/net/ethernet/intel/i40e/i40e_ptp.c   | 35 ++++------
- drivers/net/ethernet/intel/ice/ice_ptp.c     | 16 +----
- drivers/net/ethernet/intel/igb/igb_ptp.c     | 15 ++--
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 73 +++++++++++---------
- 7 files changed, 75 insertions(+), 88 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 29c7a0ccb3c4..72b663108a4a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -1102,9 +1102,8 @@ static void ice_ptp_reset_phy_timestamping(struct ice_pf *pf)
+ static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
+ {
+ 	struct ice_pf *pf = ptp_info_to_pf(info);
+-	u64 freq, divisor = 1000000ULL;
+ 	struct ice_hw *hw = &pf->hw;
+-	s64 incval, diff;
++	u64 incval, diff;
+ 	int neg_adj = 0;
+ 	int err;
+ 
+@@ -1115,17 +1114,8 @@ static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
+ 		scaled_ppm = -scaled_ppm;
+ 	}
+ 
+-	while ((u64)scaled_ppm > div64_u64(U64_MAX, incval)) {
+-		/* handle overflow by scaling down the scaled_ppm and
+-		 * the divisor, losing some precision
+-		 */
+-		scaled_ppm >>= 2;
+-		divisor >>= 2;
+-	}
+-
+-	freq = (incval * (u64)scaled_ppm) >> 16;
+-	diff = div_u64(freq, divisor);
+-
++	diff = mul_u64_u64_div_u64(incval, (u64)scaled_ppm,
++				   1000000ULL << 16);
+ 	if (neg_adj)
+ 		incval -= diff;
+ 	else
 -- 
 2.35.1
 
