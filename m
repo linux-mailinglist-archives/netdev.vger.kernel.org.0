@@ -2,224 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6BFF583B1E
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F56583B22
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 11:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiG1JUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 05:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S235224AbiG1JV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 05:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234989AbiG1JUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:20:36 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701D84B0F1;
-        Thu, 28 Jul 2022 02:20:35 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LtlQL6Fwfz67Hm8;
-        Thu, 28 Jul 2022 17:16:42 +0800 (CST)
-Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 11:20:33 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 10:20:32 +0100
-Message-ID: <63e587ae-bd91-5448-60b6-2ef1eed10be7@huawei.com>
-Date:   Thu, 28 Jul 2022 12:20:31 +0300
+        with ESMTP id S234580AbiG1JVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 05:21:23 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D94624AA
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:21:21 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id l22so1395141wrz.7
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:21:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B/8iQHlWs0vjQZ+sNKUneP2OEaX0pNLBGiGa6LCtUI4=;
+        b=C1/3FMMAH2BvFWS58gfgRtqFBVNKaaLBTxfqfYySDN7IcMwH3syMjHR5huyGIw1YQr
+         qGDCCFJVTacgs6K3kEQKwTKJjBUs32ObQinmfYoPNhINltI1/vtRX3D6o6B5vh4kyOVW
+         Xez78aJapxfJyuFua7nbbLqxJUi9zCe4hyxrMvaZa2kZxwEcYVDGpvWhqACjb2xS4a/F
+         Mk+8aK1fzLJ68Ls6EwUscBtejprSqMgonGMKG9moqEwjS/5odVW0V3Telgjqp4hjhshg
+         klvxMnsgmCYvW2bDp8GVzi/jDHifsZetu56ixX0qRMi/fJm7pxkp/rGlO3F5jJnI5mSM
+         Jdnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B/8iQHlWs0vjQZ+sNKUneP2OEaX0pNLBGiGa6LCtUI4=;
+        b=XGuJE6ZoVUqx3NwxDCUK22/JYr6P4yaj9k2aRIzGLao8BEjvPVlK+8qBQ8Eeu1OCmE
+         pH1k93llbRqgD259VGSeEYPUQGzjNVimWA58qvZFyA7abw3kI16hqk5icxUTYIrJ9AVn
+         pN9I7q3ILb2hhz3Thaz2qjwBZnpK7COIKJOQUyAE+d0iwaNJg8dKk5yvhET/NnXiTsYu
+         uKPbY2l5lsjueNrPrlPKEc+Ww9X1OUoclwh9ebwgrSss0zsnbVLP9ZOyZ9xXzq/JX5S9
+         23caj6pe+dQ6246DwHiajDhb0MiJbrCFTGlB0YO86KkczSNjN0whXUoulhTjerSucoAT
+         zhYg==
+X-Gm-Message-State: AJIora/fAPhue2RpiOlgLW8U7E76t8ji1iM6/5rZBgIU3wGMfQQ8Yomc
+        ZOWrLXwmANDeG5ZQ9DwniMWQLA==
+X-Google-Smtp-Source: AGRyM1tyfDgIhkc7PCmpjHzDjWvAy1wrItt9reBK5lnbz+WD2opC4AYR44lq66sUK6M00P6PBERymg==
+X-Received: by 2002:a5d:55d1:0:b0:21e:cc2c:f357 with SMTP id i17-20020a5d55d1000000b0021ecc2cf357mr4603248wrw.186.1659000079493;
+        Thu, 28 Jul 2022 02:21:19 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o17-20020a056000011100b0021dbaa4f38dsm529520wrx.18.2022.07.28.02.21.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 02:21:18 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 11:21:17 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/9] net: devlink: remove region snapshot ID
+ tracking dependency on devlink->lock
+Message-ID: <YuJVDSTtjyiRLeHn@nanopsycho>
+References: <1658941416-74393-1-git-send-email-moshe@nvidia.com>
+ <1658941416-74393-2-git-send-email-moshe@nvidia.com>
+ <20220727185851.22ee74aa@kernel.org>
+ <YuJM5UMZW7uTKDmS@nanopsycho>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v6 00/17] Network support for Landlock
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <4c57a0c2-e207-10d6-c73d-bcda66bf3963@digikod.net>
- <75c66214-5735-36d8-b237-32dd9af48a4f@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <75c66214-5735-36d8-b237-32dd9af48a4f@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- lhreml745-chm.china.huawei.com (10.201.108.195)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuJM5UMZW7uTKDmS@nanopsycho>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Jul 28, 2022 at 10:46:29AM CEST, jiri@resnulli.us wrote:
+>Thu, Jul 28, 2022 at 03:58:51AM CEST, kuba@kernel.org wrote:
+>>On Wed, 27 Jul 2022 20:03:28 +0300 Moshe Shemesh wrote:
+>>> So resolve this by removing dependency on devlink->lock for region
+>>> snapshot ID tracking by using internal xa_lock() to maintain
+>>> shapshot_ids xa_array consistency.
+>>
+>>xa_lock() is a spin lock, right?  s/GFP_KERNEL/GFP_ATOMIC/
+>
+>Correct, will fix.
 
-
-7/27/2022 11:21 PM, Mickaël Salaün пишет:
-> 
-> On 26/07/2022 19:43, Mickaël Salaün wrote:
->> 
->> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->>> Hi,
->>> This is a new V6 patch related to Landlock LSM network confinement.
->>> It is based on the latest landlock-wip branch on top of v5.19-rc2:
->>> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=landlock-wip
->>>
->>> It brings refactoring of previous patch version V5:
->>>      - Fixes some logic errors and typos.
->>>      - Adds additional FIXTURE_VARIANT and FIXTURE_VARIANT_ADD helpers
->>>      to support both ip4 and ip6 families and shorten seltests' code.
->>>      - Makes TCP sockets confinement support optional in sandboxer demo.
->>>      - Formats the code with clang-format-14
->>>
->>> All test were run in QEMU evironment and compiled with
->>>   -static flag.
->>>   1. network_test: 18/18 tests passed.
->>>   2. base_test: 7/7 tests passed.
->>>   3. fs_test: 59/59 tests passed.
->>>   4. ptrace_test: 8/8 tests passed.
->>>
->>> Still have issue with base_test were compiled without -static flag
->>> (landlock-wip branch without network support)
->>> 1. base_test: 6/7 tests passed.
->>>   Error:
->>>   #  RUN           global.inconsistent_attr ...
->>>   # base_test.c:54:inconsistent_attr:Expected ENOMSG (42) == errno (22)
->>>   # inconsistent_attr: Test terminated by assertion
->>>   #          FAIL  global.inconsistent_attr
->>> not ok 1 global.inconsistent_attr
->>>
->>> LCOV - code coverage report:
->>>              Hit  Total  Coverage
->>> Lines:      952  1010    94.3 %
->>> Functions:  79   82      96.3 %
->>>
->>> Previous versions:
->>> v5: 
->>> https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
->>> v4: 
->>> https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
->>> v3: 
->>> https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
->>> v2: 
->>> https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
->>> v1: 
->>> https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
->>>
->>> Konstantin Meskhidze (17):
->>>    landlock: renames access mask
->>>    landlock: refactors landlock_find/insert_rule
->>>    landlock: refactors merge and inherit functions
->>>    landlock: moves helper functions
->>>    landlock: refactors helper functions
->>>    landlock: refactors landlock_add_rule syscall
->>>    landlock: user space API network support
->>>    landlock: adds support network rules
->>>    landlock: implements TCP network hooks
->>>    seltests/landlock: moves helper function
->>>    seltests/landlock: adds tests for bind() hooks
->>>    seltests/landlock: adds tests for connect() hooks
->>>    seltests/landlock: adds AF_UNSPEC family test
->>>    seltests/landlock: adds rules overlapping test
->>>    seltests/landlock: adds ruleset expanding test
->>>    seltests/landlock: adds invalid input data test
->>>    samples/landlock: adds network demo
->>>
->>>   include/uapi/linux/landlock.h               |  49 ++
->>>   samples/landlock/sandboxer.c                | 118 ++-
->>>   security/landlock/Kconfig                   |   1 +
->>>   security/landlock/Makefile                  |   2 +
->>>   security/landlock/fs.c                      | 162 +---
->>>   security/landlock/limits.h                  |   8 +-
->>>   security/landlock/net.c                     | 155 ++++
->>>   security/landlock/net.h                     |  26 +
->>>   security/landlock/ruleset.c                 | 448 +++++++++--
->>>   security/landlock/ruleset.h                 |  91 ++-
->>>   security/landlock/setup.c                   |   2 +
->>>   security/landlock/syscalls.c                | 168 +++--
->>>   tools/testing/selftests/landlock/common.h   |  10 +
->>>   tools/testing/selftests/landlock/config     |   4 +
->>>   tools/testing/selftests/landlock/fs_test.c  |  10 -
->>>   tools/testing/selftests/landlock/net_test.c | 774 ++++++++++++++++++++
->>>   16 files changed, 1737 insertions(+), 291 deletions(-)
->>>   create mode 100644 security/landlock/net.c
->>>   create mode 100644 security/landlock/net.h
->>>   create mode 100644 tools/testing/selftests/landlock/net_test.c
->>>
->>> -- 
->>> 2.25.1
->>>
->> 
->> I did a thorough review of all the code. I found that the main issue 
->> with this version is that we stick to the layers limit whereas it is 
->> only relevant for filesystem hierarchies. You'll find in the following 
->> patch miscellaneous fixes and improvement, with some TODOs to get rid of 
->> this layer limit. We'll need a test to check that too. You'll need to 
->> integrate this diff into your patches though.
->> 
->> 
-> 
-> [...]
-> 
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index 469811a77675..e7555b16069a 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
-> 
-> [...]
-> 
->> @@ -719,15 +679,43 @@ bool unmask_layers(const struct landlock_rule 
->> *const rule,
->>       return false;
->>   }
->> 
->> +typedef access_mask_t
->> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
->> +          const u16 layer_level);
->> +
->> +/*
->> + * @layer_masks must contain LANDLOCK_NUM_ACCESS_FS or 
->> LANDLOCK_NUM_ACCESS_NET
->> + * elements according to @key_type.
->> + */
->>   access_mask_t init_layer_masks(const struct landlock_ruleset *const 
->> domain,
->>                      const access_mask_t access_request,
->>                      layer_mask_t (*const layer_masks)[],
->> -                   size_t masks_size, u16 rule_type)
->> +                   const enum landlock_key_type key_type)
->>   {
->>       access_mask_t handled_accesses = 0;
->> -    size_t layer_level;
->> +    size_t layer_level, num_access;
->> +    get_access_mask_t *get_access_mask;
->> +
->> +    switch (key_type) {
->> +    case LANDLOCK_KEY_INODE:
->> +        // XXX: landlock_get_fs_access_mask() should not be removed
-> 
-> There is an extra "not", it should be: "landlock_get_fs_access_mask()
-> and landlock_get_net_access_mask() should be removed".
-> 
-   I got it. Will be fixed.
-   Thank you!
-> 
->> +        // once we use ruleset->net_access_mask, and we can then
->> +        // replace the @key_type argument with num_access to make the
->> +        // code simpler.
->> +        get_access_mask = landlock_get_fs_access_mask;
->> +        num_access = LANDLOCK_NUM_ACCESS_FS;
->> +        break;
->> +    case LANDLOCK_KEY_NET_PORT:
->> +        get_access_mask = landlock_get_net_access_mask;
->> +        num_access = LANDLOCK_NUM_ACCESS_NET;
->> +        break;
->> +    default:
->> +        WARN_ON_ONCE(1);
->> +        return 0;
->> +    }
-> .
+Well, from how I read __xa_store(), it should be ok to have GFP_KERNEL
+here, but I don't think it has any benefit over GFP_ATOMIC in this
+usecase, so I will change it to GFP_ATOMIC.
