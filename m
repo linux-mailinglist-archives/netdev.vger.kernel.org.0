@@ -2,142 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F45B5843E8
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:14:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377DC5843FE
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233003AbiG1QOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
+        id S233271AbiG1QPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232997AbiG1QN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:13:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEF66F7FB
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:13:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C98F61C61
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6950CC433C1;
-        Thu, 28 Jul 2022 16:13:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659024834;
-        bh=qQutBS72eiffF4P4V4Os6GY17cXXD43YWpoFdyGcBN8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=gdIlltz6pYIGz2Z89Yz6HHdUTDR9kou6hkAOm+9B5WpRVSMAy3sTsLcoiDnyXEzSj
-         in2Ipm2GCMXmgZ0fmV76/Fd5eHtReDFJluiwEm/FCPUKJf9/R6Cboc2y7i3zMnGExy
-         sum3Q9PVw931hXEQmYwzKdeHn/3CLfMzD/hSEFjX1c/HrhYA3tABagLRTYzZ7OFYuV
-         FwG8ofD4Fhy2PsXMkd/yfcKEkBjjx9rewRxh91ab5Q2sS2qP2cBXpXknNcetKFC1gN
-         akOTZF473eCLj6h35nrXZfY171NcJRqw2T5LL7jeH7jRQxjbYmfIPyA7Al+4ARbmvC
-         WGp93OUhJ1l9w==
-Message-ID: <8fca8bc2-d8a8-eb41-9649-f96b5801f72c@kernel.org>
-Date:   Thu, 28 Jul 2022 10:13:52 -0600
+        with ESMTP id S232868AbiG1QOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:14:50 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01176E2F8;
+        Thu, 28 Jul 2022 09:14:47 -0700 (PDT)
+Received: from [10.10.132.125] (unknown [83.149.199.65])
+        by mail.ispras.ru (Postfix) with ESMTPSA id A658240737CF;
+        Thu, 28 Jul 2022 16:14:43 +0000 (UTC)
+Message-ID: <7ea40c0e-e696-3537-c2a4-a8eccf4695d0@ispras.ru>
+Date:   Thu, 28 Jul 2022 19:14:43 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net] net: ping6: Fix memleak in ipv6_renew_options().
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] can: j1939: Remove unnecessary WARN_ON_ONCE in
+ j1939_sk_queue_activate_next_locked()
 Content-Language: en-US
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Lorenzo Colitti <lorenzo@google.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Ayushman Dutta <ayudutta@amazon.com>, netdev@vger.kernel.org,
-        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
-References: <20220728012220.46918-1-kuniyu@amazon.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220728012220.46918-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8
+        Elenita Hinds <ecathinds@gmail.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+References: <20220720110645.519601-1-pchelkin@ispras.ru>
+ <20220720191357.GB5600@pengutronix.de>
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+In-Reply-To: <20220720191357.GB5600@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/22 7:22 PM, Kuniyuki Iwashima wrote:
-> When we close ping6 sockets, some resources are left unfreed because
-> pingv6_prot is missing sk->sk_prot->destroy().  As reported by
-> syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
-> 
->     struct ipv6_sr_hdr *hdr;
->     char data[24] = {0};
->     int fd;
-> 
->     hdr = (struct ipv6_sr_hdr *)data;
->     hdr->hdrlen = 2;
->     hdr->type = IPV6_SRCRT_TYPE_4;
-> 
->     fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
->     setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
->     close(fd);
-> 
-> To fix memory leaks, let's add a destroy function.
-> 
-> Note the socket() syscall checks if the GID is within the range of
-> net.ipv4.ping_group_range.  The default value is [1, 0] so that no
-> GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
-> not succeed until we change the default value.  However, at least
-> Ubuntu/Fedora/RHEL loosen it.
-> 
->     $ cat /usr/lib/sysctl.d/50-default.conf
->     ...
->     -net.ipv4.ping_group_range = 0 2147483647
-> 
-> Also, there could be another path reported with these options, and
-> some of them require CAP_NET_RAW.
-> 
->   setsockopt
->       IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
->       IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
->       IPV6_HOPOPTS (inet6_sk(sk)->opt)
->       IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
->       IPV6_RTHDR (inet6_sk(sk)->opt)
->       IPV6_DSTOPTS (inet6_sk(sk)->opt)
->       IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
-> 
->   getsockopt
->       IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
-> 
-> For the record, I left a different splat with syzbot's one.
-> 
->   unreferenced object 0xffff888006270c60 (size 96):
->     comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
->     hex dump (first 32 bytes):
->       01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
->       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     backtrace:
->       [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
->       [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
->       [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
->       [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
->       [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
->       [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
->       [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> 
-> [0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
-> 
-> Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
-> Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
-> Reported-by: Ayushman Dutta <ayudutta@amazon.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> v2:
->   - Remove ip6_flush_pending_frames() (Jakub Kicinski)
-> 
-> v1: offlist
-> ---
->  net/ipv6/ping.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
+Hello Oleksij,
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+I'm sorry for late answering.
 
+On 20.07.2022 22:13, Oleksij Rempel wrote:
+>> Are you working on some system where this use case is valid?
 
+No, we are fuzzing the kernel and analyzing different warnings and
+crashes.
+
+On 20.07.2022 22:13, Oleksij Rempel wrote:
+ > yes
+
+Well, there is a long story about where and for which purposes the
+kernel warning macros should be correctly used and, overall,
+WARN_ON_ONCE is not intended for user-space notification.
+
+Linus Torvalds wrote:
+ > WARN_ON() should only be used for "This cannot happen, but if it does,
+ > I want to know how we got here".
+ >
+ > So if that j1939 thing is something that can be triggered by a user,
+ > then the backtrace should be reported to the driver maintainer, and
+ > then either
+ >
+ > (a) the WARN_ON_ONCE() should just be removed ("ok, this can happen,
+ > we understand why it can happen, and it's fine")
+ >
+ > (b) the problem the WARN_ON_ONCE() reports about should be made
+ > impossible some way
+ >
+ > (c) it might be downgraded to a pr_warn() if people really want to
+ > tell user space that "guys, you're doing something wrong" and it's
+ > considered a useful warning.
+
+So WARN_ON_ONCE should be replaced with a more gentle variant - I think
+pr_warn_once would suit this case. I've prepared a new patch for that,
+it will follow this email.
+
+Could you also look at the patch - [PATCH] can: j1939: fix memory leak 
+of skbs - which I sent you on 08.07.2022, please?
