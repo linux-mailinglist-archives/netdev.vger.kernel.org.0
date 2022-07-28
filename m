@@ -2,243 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B292B583A8D
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C0A5583A86
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 10:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234661AbiG1Iqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 04:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S235272AbiG1IpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 04:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234314AbiG1Iqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:46:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D39613D29
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:46:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658997996; x=1690533996;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AZ7qrY7cRaLsiPaTA8LRce0h72ENGcOx67Z+mdbV/qA=;
-  b=PLVkUFmif/Un+yc7VVcY7BuZsYYmLWY9W2fDVAtnkp3vfVs3CDsKONpD
-   OCM06qosaskUQtypmzNpXnCIvhmdbX40DqrFvyih4w+8nFFuHhU2QIwaL
-   m3IxFsd733jPUz2T9geaHapopK0W6hrgtu0rhvMtR9fy/QXumetpOF1r2
-   SJvogcbqbbUTbtms+QQyGd9TJyhHX7PY/vW1pTOe9B4lmbsfO8OdUOF0o
-   DR4L8qEogFERMY16MYgZLKjrpX0G1b8xeg76wsfPs09eWD/npuIEwJUPc
-   YKv5hLjonS7+W7sqC79zxaLEUBS8uo+7hvUhPvaqfsJiQ2m/XXAx+tTJ6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="271500180"
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="271500180"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 01:46:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="576367760"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jul 2022 01:46:34 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26S8kWS3008698;
-        Thu, 28 Jul 2022 09:46:33 +0100
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org
-Subject: [PATCH iproute-next v2 3/3] f_flower: Introduce PPPoE support
-Date:   Thu, 28 Jul 2022 10:44:37 +0200
-Message-Id: <20220728084437.486187-4-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220728084437.486187-1-wojciech.drewek@intel.com>
-References: <20220728084437.486187-1-wojciech.drewek@intel.com>
+        with ESMTP id S235252AbiG1IpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 04:45:11 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4461B13D29
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:45:09 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p10so1821614lfd.9
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 01:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wwMMWB4MgsL0geIx/JxooTNfuSKUr5tFvW+cF2MpyF0=;
+        b=lJT8mazM6EQ5UkkHOfA6SDUaIHHGEXFOhexNqqUPd4xYv4GkeeHIVbR8/u/6N5ja7Y
+         B93QwMEGkq3xOGIZzgl7QAWPKOLtMviUetbpVjfX8EhGT0uy6DeWytapO4GPO5cgzI8i
+         hmfVEgfKcu10ffSeEQLs3vgBWTjmM4ldBVJjgm9u78cIr9INgzEM+A6jFad4o6V0lZN6
+         KFhC39h5TQxEnDsLi+Ln5Fx6Vpq4wV++eqlJW9MA5r12gv/mXyLpPMBTsQclDaElSU6V
+         HU7FHSPcE9SVxFOPREjQvXDrH2shwvj8sqbZ3ja8Wxexe8k0v37pEz1yFiyg31uK7jGg
+         bMbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wwMMWB4MgsL0geIx/JxooTNfuSKUr5tFvW+cF2MpyF0=;
+        b=rge9vGLz3+0CgVEtvF+S/SOlKZZ5CrTslTv3eDRfpZ03DnOTzeacZjNxXIgI/mm2GQ
+         otry37BAU6RLnl3iayWzmNcJ1x+4EbQcOHxNC3P9olHVcevqz+fl5+4XXtTplCfNCgmT
+         qOwKIDlNxhzidSBcaC9iTsXjRPBWAqCp314IQD8nRIejuDVos0TWLGEtrHRe3F0cCA3w
+         /ys+zdL6UG2bp2V2rTKQQUmWiCYAu7Onm2kSDo8aXRaWtMWzzTZ/Ene26pBkLaL/pt+z
+         DOomfK6oTbX2Qxk3zA159R3I0MEenMoat3Lr5bPvKMFxsUQEmqdLv3v91dq065bJCHox
+         1gzg==
+X-Gm-Message-State: AJIora9zZJVMvZg3FsBGsxdkVHEe00Mdze86hCH+zWAKN2rhVh0BqJNl
+        n84O4xDHqotlfK7hqnaTuT3nVA==
+X-Google-Smtp-Source: AGRyM1vVzkb5qwBXDl3lfgqSyqXxa6KCXPbMNRJ9W9o9WbxDnjYQu4dHvOJ5/C/x+I1YYiZygfRj7w==
+X-Received: by 2002:a05:6512:1594:b0:48a:874f:535 with SMTP id bp20-20020a056512159400b0048a874f0535mr7622313lfb.320.1658997907628;
+        Thu, 28 Jul 2022 01:45:07 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id f11-20020ac251ab000000b0048a8fc05b0asm96585lfk.117.2022.07.28.01.45.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 01:45:07 -0700 (PDT)
+Message-ID: <8a043e89-0ac8-52ad-d935-3c43d1c41592@linaro.org>
+Date:   Thu, 28 Jul 2022 10:45:05 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 2/2] net: cdns,macb: use correct xlnx prefix for Xilinx
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+References: <20220726070802.26579-1-krzysztof.kozlowski@linaro.org>
+ <20220726070802.26579-2-krzysztof.kozlowski@linaro.org>
+ <87d8327b85ae54e4c9d080d0ef6645eda6f92e98.camel@redhat.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <87d8327b85ae54e4c9d080d0ef6645eda6f92e98.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce PPPoE specific fields in tc-flower:
-- session id (16 bits)
-- ppp protocol (16 bits)
-Those fields can be provided only when protocol was set to
-ETH_P_PPP_SES. ppp_proto works similar to vlan_ethtype, i.e.
-ppp_proto overwrites eth_type. Thanks to that, fields from
-encapsulated protocols (such as src_ip) can be specified.
+On 28/07/2022 09:49, Paolo Abeni wrote:
+> Hello,
+> 
+> On Tue, 2022-07-26 at 09:08 +0200, Krzysztof Kozlowski wrote:
+>> Use correct vendor for Xilinx versions of Cadence MACB/GEM Ethernet
+>> controller.  The Versal compatible was not released, so it can be
+>> changed. 
+> 
+> I'm keeping this in PW a little extra time to allow for xilinx's
+> review.
+> 
+> @Harini, @Radhey: could you please confirm the above?
 
-e.g.
-  # tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses \
-      flower \
-        pppoe_sid 1234 \
-        ppp_proto ip \
-        dst_ip 127.0.0.1 \
-        src_ip 127.0.0.2 \
-      action drop
+The best would be if it still get merged for v5.20 to replace the
+cdns,versal-gem with xlnx (as it is not released yet), so we are a bit
+tight here on timing. Anyway, thanks Paolo for looking at it!
 
-Vlan and cvlan is also supported, in this case cvlan_ethtype
-or vlan_ethtype has to be set to ETH_P_PPP_SES.
-
-e.g.
-  # tc filter add dev ens6f0 ingress prio 1 protocol 802.1Q \
-      flower \
-        vlan_id 2 \
-        vlan_ethtype ppp_ses \
-        pppoe_sid 1234 \
-        ppp_proto ip \
-        dst_ip 127.0.0.1 \
-        src_ip 127.0.0.2 \
-      action drop
-
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
-v2: add pppoe fields to explain
----
- include/uapi/linux/pkt_cls.h |  3 ++
- man/man8/tc-flower.8         | 17 ++++++++++-
- tc/f_flower.c                | 58 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 77 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 9a2ee1e39fad..a67dcd8294c9 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -589,6 +589,9 @@ enum {
- 
- 	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
- 
-+	TCA_FLOWER_KEY_PPPOE_SID,	/* u16 */
-+	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 523935242ccf..5e486ea31d37 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -40,6 +40,10 @@ flower \- flow based traffic control filter
- .IR PRIORITY " | "
- .BR cvlan_ethtype " { " ipv4 " | " ipv6 " | "
- .IR ETH_TYPE " } | "
-+.B pppoe_sid
-+.IR PSID " | "
-+.BR ppp_proto " { " ip " | " ipv6 " | " mpls_uc " | " mpls_mc " | "
-+.IR PPP_PROTO " } | "
- .B mpls
- .IR LSE_LIST " | "
- .B mpls_label
-@@ -202,7 +206,18 @@ Match on QinQ layer three protocol.
- may be either
- .BR ipv4 ", " ipv6
- or an unsigned 16bit value in hexadecimal format.
--
-+.TP
-+.BI pppoe_sid " PSID"
-+Match on PPPoE session id.
-+.I PSID
-+is an unsigned 16bit value in decimal format.
-+.TP
-+.BI ppp_proto " PPP_PROTO"
-+Match on PPP layer three protocol.
-+.I PPP_PROTO
-+may be either
-+.BR ip ", " ipv6 ", " mpls_uc ", " mpls_mc
-+or an unsigned 16bit value in hexadecimal format.
- .TP
- .BI mpls " LSE_LIST"
- Match on the MPLS label stack.
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 622ec321f310..c95320328b20 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -20,6 +20,7 @@
- #include <linux/ip.h>
- #include <linux/tc_act/tc_vlan.h>
- #include <linux/mpls.h>
-+#include <linux/ppp_defs.h>
- 
- #include "utils.h"
- #include "tc_util.h"
-@@ -55,6 +56,8 @@ static void explain(void)
- 		"			cvlan_id VID |\n"
- 		"			cvlan_prio PRIORITY |\n"
- 		"			cvlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
-+		"			pppoe_sid PSID |\n"
-+		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
- 		"			dst_mac MASKED-LLADDR |\n"
- 		"			src_mac MASKED-LLADDR |\n"
- 		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | IP-PROTO ] |\n"
-@@ -1887,6 +1890,43 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"arp_sha\"\n");
- 				return -1;
- 			}
-+
-+		} else if (!strcmp(*argv, "pppoe_sid")) {
-+			__be16 sid;
-+
-+			NEXT_ARG();
-+			if (eth_type != htons(ETH_P_PPP_SES)) {
-+				fprintf(stderr,
-+					"Can't set \"pppoe_sid\" if ethertype isn't PPPoE session\n");
-+				return -1;
-+			}
-+			ret = get_be16(&sid, *argv, 10);
-+			if (ret < 0 || sid == 0xffff) {
-+				fprintf(stderr, "Illegal \"pppoe_sid\"\n");
-+				return -1;
-+			}
-+			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPPOE_SID, sid);
-+		} else if (!strcmp(*argv, "ppp_proto")) {
-+			__be16 proto;
-+
-+			NEXT_ARG();
-+			if (eth_type != htons(ETH_P_PPP_SES)) {
-+				fprintf(stderr,
-+					"Can't set \"ppp_proto\" if ethertype isn't PPPoE session\n");
-+				return -1;
-+			}
-+			if (ppp_proto_a2n(&proto, *argv))
-+				invarg("invalid ppp_proto", *argv);
-+			/* get new ethtype for later parsing  */
-+			if (proto == htons(PPP_IP))
-+				eth_type = htons(ETH_P_IP);
-+			else if (proto == htons(PPP_IPV6))
-+				eth_type = htons(ETH_P_IPV6);
-+			else if (proto == htons(PPP_MPLS_UC))
-+				eth_type = htons(ETH_P_MPLS_UC);
-+			else if (proto == htons(PPP_MPLS_MC))
-+				eth_type = htons(ETH_P_MPLS_MC);
-+			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPP_PROTO, proto);
- 		} else if (matches(*argv, "enc_dst_ip") == 0) {
- 			NEXT_ARG();
- 			ret = flower_parse_ip_addr(*argv, 0,
-@@ -2851,6 +2891,24 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	flower_print_eth_addr("arp_tha", tb[TCA_FLOWER_KEY_ARP_THA],
- 			      tb[TCA_FLOWER_KEY_ARP_THA_MASK]);
- 
-+	if (tb[TCA_FLOWER_KEY_PPPOE_SID]) {
-+		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPPOE_SID];
-+
-+		print_nl();
-+		print_uint(PRINT_ANY, "pppoe_sid", "  pppoe_sid %u",
-+			   rta_getattr_be16(attr));
-+	}
-+
-+	if (tb[TCA_FLOWER_KEY_PPP_PROTO]) {
-+		SPRINT_BUF(buf);
-+		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPP_PROTO];
-+
-+		print_nl();
-+		print_string(PRINT_ANY, "ppp_proto", "  ppp_proto %s",
-+			     ppp_proto_n2a(rta_getattr_u16(attr),
-+			     buf, sizeof(buf)));
-+	}
-+
- 	flower_print_ip_addr("enc_dst_ip",
- 			     tb[TCA_FLOWER_KEY_ENC_IPV4_DST_MASK] ?
- 			     htons(ETH_P_IP) : htons(ETH_P_IPV6),
--- 
-2.31.1
-
+Best regards,
+Krzysztof
