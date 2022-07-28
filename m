@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8F85845A7
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564D95845AB
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbiG1SVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:21:47 -0400
+        id S229539AbiG1SVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:21:48 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232363AbiG1SVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:45 -0400
+        with ESMTP id S232464AbiG1SVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:21:46 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A756C5B048
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9361C10C
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:21:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659032504; x=1690568504;
+  t=1659032505; x=1690568505;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uejaYWCdzw8RAoho7ahGyWtukPMgEjBK83meTDE1X/s=;
-  b=kzB7KfBaT/IfVDfdnzG0HIPL3Q+HkLip3xrLxhOAKw/XRMzEv6fZ2vZE
-   xvPYWNGch/7uSxBqgcBiW1uBBJNWBKsJ3iQXbw4nyVeCYp3cMPx/h4mPH
-   0lAfdee7jrPE4/HcEeaXNmNkeZ/EDBArihIYXW4TcvdZn7JdYSftp3W8C
-   6l14dU4tU+mq/uENxeDdYfOJXdjolsdnd1i5i/8BoHmQ8xZ5yuHZGEf32
-   dXXTOutQSm5Vs/ouMSwWGMFahzX69VNRnnXuhdfwn4D20b1ajPriJGdnm
-   S5J85RtiIduv+9oSwY6I18iJyBDJxeNYwkld/0UGn7XUeDVMFEQBSkpEY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348904"
+  bh=VjRUrWD3hb298b4VeGsQkEJZQ4h467xlMyFQgIWcBDY=;
+  b=SlLDc7H4HFOVNBfmbXcGi3mFRow6nNn5o+Bsujy88bxln+YQkaRbqKac
+   atVgpAXffvGLYI1jnmULY3whQStV+AHkDIRpSSDjO4gVOkgz4+ELx/BfN
+   7KJdBdQqSdtrEyS46lNZF7Q9TFVPWF7VeI4lgnXK5QDzeWsI/3GC6vY4m
+   vCEiO59tejJZi2dl33z7QsjAZVmN3HVI2on3m6W8USqdvXOZwmlkgbj8E
+   /EV4o6ZQX+AaykZuYFoyB9avltnEm+TxD6ElnC1H3Y1zgCaVW5slLqb4/
+   wL0H/hXdS0DfxJ+frU8snGXt1kAW26o5lws8AX6xHlTfrtz35FWUlVGZw
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268348906"
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="268348904"
+   d="scan'208";a="268348906"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 11:21:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="727456614"
+   d="scan'208";a="727456617"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2022 11:21:40 -0700
+  by orsmga004.jf.intel.com with ESMTP; 28 Jul 2022 11:21:41 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 1/7] ice: implement adjfine with mul_u64_u64_div_u64
-Date:   Thu, 28 Jul 2022 11:18:30 -0700
-Message-Id: <20220728181836.3387862-2-anthony.l.nguyen@intel.com>
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: [PATCH net-next 2/7] e1000e: remove unnecessary range check in e1000e_phc_adjfreq
+Date:   Thu, 28 Jul 2022 11:18:31 -0700
+Message-Id: <20220728181836.3387862-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
 References: <20220728181836.3387862-1-anthony.l.nguyen@intel.com>
@@ -62,71 +62,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The PTP frequency adjustment code needs to determine an appropriate
-adjustment given an input scaled_ppm adjustment.
-
-We calculate the adjustment to the register by multiplying the base
-(nominal) increment value by the scaled_ppm and then dividing by the
-scaled one million value.
-
-For very large adjustments, this might overflow. To avoid this, both the
-scaled_ppm and divisor values are downshifted.
-
-We can avoid that on X86 architectures by using mul_u64_u64_div_u64. This
-helper function will perform the multiplication and division with 128bit
-intermediate values. We know that scaled_ppm is never larger than the
-divisor so this operation will never result in an overflow.
-
-This improves the accuracy of the calculations for large adjustment values
-on X86. It is likely an improvement on other architectures as well because
-the default implementation of mul_u64_u64_div_u64 is smarter than the
-original approach taken in the ice code.
-
-Additionally, this implementation is easier to read, using fewer local
-variables and lines of code to implement.
+The e1000e_phc_adjfreq function validates that the input delta is within
+the maximum range. This is already handled by the core PTP code and this is
+a duplicate and thus unnecessary check. It also complicates refactoring to
+use the newer .adjfine implementation, where the input is no longer
+specified in parts per billion. Remove the range validation check.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/intel/e1000e/ptp.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 29c7a0ccb3c4..72b663108a4a 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1102,9 +1102,8 @@ static void ice_ptp_reset_phy_timestamping(struct ice_pf *pf)
- static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
- {
- 	struct ice_pf *pf = ptp_info_to_pf(info);
--	u64 freq, divisor = 1000000ULL;
- 	struct ice_hw *hw = &pf->hw;
--	s64 incval, diff;
-+	u64 incval, diff;
- 	int neg_adj = 0;
- 	int err;
+diff --git a/drivers/net/ethernet/intel/e1000e/ptp.c b/drivers/net/ethernet/intel/e1000e/ptp.c
+index eb5c014c02fb..432e04ce8c4e 100644
+--- a/drivers/net/ethernet/intel/e1000e/ptp.c
++++ b/drivers/net/ethernet/intel/e1000e/ptp.c
+@@ -33,9 +33,6 @@ static int e1000e_phc_adjfreq(struct ptp_clock_info *ptp, s32 delta)
+ 	u32 timinca, incvalue;
+ 	s32 ret_val;
  
-@@ -1115,17 +1114,8 @@ static int ice_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
- 		scaled_ppm = -scaled_ppm;
- 	}
- 
--	while ((u64)scaled_ppm > div64_u64(U64_MAX, incval)) {
--		/* handle overflow by scaling down the scaled_ppm and
--		 * the divisor, losing some precision
--		 */
--		scaled_ppm >>= 2;
--		divisor >>= 2;
--	}
+-	if ((delta > ptp->max_adj) || (delta <= -1000000000))
+-		return -EINVAL;
 -
--	freq = (incval * (u64)scaled_ppm) >> 16;
--	diff = div_u64(freq, divisor);
--
-+	diff = mul_u64_u64_div_u64(incval, (u64)scaled_ppm,
-+				   1000000ULL << 16);
- 	if (neg_adj)
- 		incval -= diff;
- 	else
+ 	if (delta < 0) {
+ 		neg_adj = true;
+ 		delta = -delta;
 -- 
 2.35.1
 
