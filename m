@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41298583759
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 05:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1B158375C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 05:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237847AbiG1DKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 23:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59630 "EHLO
+        id S237443AbiG1DL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 23:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237792AbiG1DKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 23:10:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B70C0
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 20:10:37 -0700 (PDT)
+        with ESMTP id S234002AbiG1DL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 23:11:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9AE5C349
+        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 20:11:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF31061997
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:10:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7D7C433D7;
-        Thu, 28 Jul 2022 03:10:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AEB0BCE244B
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 03:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A234C433D6;
+        Thu, 28 Jul 2022 03:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658977836;
-        bh=xsc4101MITosDPG+XsJiTmB7aDnKm+1lJbgwFybCko8=;
+        s=k20201202; t=1658977912;
+        bh=1SNSiKmrD55Mrexc+UHC5e3u9EGIYwjK8lNQa1fTIeU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ruxSif9ofIgFbfuKDFdZuH6pxZ0A2WZ3L7FHE1tpJ7mcvJKW07oAcIwUg3G3I35Mg
-         vRyMtKmCSKxgP8sZRpRrE1oISVn0B9fesSB1kgcYuhCIIlBYdxVJu9Y0A/YPy/9g4I
-         /53uihHt5qh6C3pkMRD5CPtnkWXf8wboP7P1AQvSWy5DsAzQVguTL/320tqvYA1ARJ
-         QP0iOFLDV+D3w7o5P0MkXtml83eSO38W+sKI8XKS3xWmz8iGlNzRZFYrzkCWL4gsmu
-         BPj7sr/EHp45HkQePkOB0Mp/tSPxDvcb3FEzwiQmHWWrWKB1cPDtJJeioqg9cO/0ti
-         mPZZBrmVEl0Hg==
-Date:   Wed, 27 Jul 2022 20:10:34 -0700
+        b=jaZrT7fsmNp6KQ16mjK9VHBK30cCGsWaM8PVVC+SZ7HRBkrxPpVaBzVWVwZPJZeNY
+         pqu9cbqiysyXwGqyFrf4mrRB0VIEOfhU7h/SzOkMzTyBc2Ithb5GYnUNtnaMguiDsu
+         1VcE8GTdJd6PJu3ymA7L5nGbGNYAkBVlc6Dn4v3AlO6KbcrFqueqdilXjOlEIoboyP
+         kNt9OLp5UGuklLAgIWkTTCfwOBHeUMY9XEoefBgTSOrP3cp0tqF9n77nsH9l3F0qB1
+         HKLiDxdM3Lh336ZFeQKb45YUD7q+nwNlgBZCOIk0wEwHHWfSfECI121KNaaQcagb/5
+         ujnAZ+loyrRhg==
+Date:   Wed, 27 Jul 2022 20:11:51 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <ecree@xilinx.com>
-Cc:     <davem@davemloft.net>, <pabeni@redhat.com>,
-        <linux-net-drivers@amd.com>, <netdev@vger.kernel.org>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next v2 12/14] sfc: set EF100 VF MAC address through
- representor
-Message-ID: <20220727201034.3a9d7c64@kernel.org>
-In-Reply-To: <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
-References: <cover.1658943677.git.ecree.xilinx@gmail.com>
-        <304963d62ed1fa5f75437d1f832830d7970f9919.1658943678.git.ecree.xilinx@gmail.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Ayushman Dutta <ayudutta@amazon.com>, <netdev@vger.kernel.org>,
+        <syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com>
+Subject: Re: [PATCH v2 net] net: ping6: Fix memleak in ipv6_renew_options().
+Message-ID: <20220727201151.62da5a99@kernel.org>
+In-Reply-To: <20220728012220.46918-1-kuniyu@amazon.com>
+References: <20220728012220.46918-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,12 +58,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 18:46:02 +0100 ecree@xilinx.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> When setting the VF rep's MAC address, set the provisioned MAC address
->  for the VF through MC_CMD_SET_CLIENT_MAC_ADDRESSES.
+On Wed, 27 Jul 2022 18:22:20 -0700 Kuniyuki Iwashima wrote:
+>   - Remove ip6_flush_pending_frames() (Jakub Kicinski)
 
-Wait.. hm? The VF rep is not the VF. It's the other side of the wire.
-Are you passing the VF rep's MAC on the VF? Ethernet packets between
-the hypervisor and the VF would have the same SA and DA.
+To be clear I was just asking if it's needed, I haven't checked the code
+:)
