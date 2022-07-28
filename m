@@ -2,51 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81DBE58369C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 04:02:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFEE85836A5
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 04:05:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234096AbiG1CCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jul 2022 22:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
+        id S235564AbiG1CFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jul 2022 22:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232834AbiG1CCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 22:02:01 -0400
+        with ESMTP id S234232AbiG1CFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jul 2022 22:05:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C284F659
-        for <netdev@vger.kernel.org>; Wed, 27 Jul 2022 19:02:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA9622B13;
+        Wed, 27 Jul 2022 19:05:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2767C61778
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 02:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A46C433C1;
-        Thu, 28 Jul 2022 02:01:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1155061871;
+        Thu, 28 Jul 2022 02:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2996EC433D6;
+        Thu, 28 Jul 2022 02:05:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658973719;
-        bh=EfJz1vcpphpsoRZAn1+7akAOc3dvfPp8wwBpNZjcFVk=;
+        s=k20201202; t=1658973912;
+        bh=zxAKqmDeRgvh0LUTcg21PJ4FKLkJ74pWTcnTnUAl92Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=shZLWsQASs6CF+h5T/nkTWLuRy8RE5bolO1GU1ywC6vm84+XrD/J//Hgrne8jK6Sx
-         2z1ovP+0PReJhm5PfciURYpxvprACgEqXzakl2/Nu3gt0VbH5ZwWoowNgPDDomuTu6
-         HROQ8ZzzjrDXIH53Vb1aKLQBxW5IhEvhtar9387PfiuqX63/aL5qRrdnPTKhYjh/Ca
-         Rp5vYEnzk0mDqZL5OclhJc++NNFV8MTf1eyyiSOOCEs53PhOSzP4Npfy8cCjb88Vnb
-         Py74uJj04aKKAswALvFR7kDHH7UW8/aHQzGaVd1Kjyzkn2A6RoCMlyYM/Z+Z48pPsm
-         tx0aUWZ84ViUQ==
-Date:   Wed, 27 Jul 2022 19:01:56 -0700
+        b=mhQM00jTzuSpHfXb4wQ/CqjEsZAhMkVaV/YZBeJNXHT9hTmBuc0PwSl4HUHGO98U3
+         qbDLVZ7R4FqiZRgLP8+Tj/mEahMK/x/o+5PdACpxTByTcRGR3+dXxvtAuJXHMRFhUi
+         nABawSHdGdbZ8TZxOWZQsA+cXu7muQJT2VDNLIEg9AU+K4J/gdK4Xj4tqriwLSPaiE
+         W69sbSsE1ZqQewNtk6Gg7HxjiqIFJYmdwBGLXVeWS3LvoAQAwJNsO9vyrrvmEtAeeD
+         Ws46dXFdCewXSbo8tR3PV2Y75oUaR/kQa1Pmwav3AYW6JyxVeE5MDJ6ru7ZUapVIL2
+         4QvKQQllZGw6A==
+Date:   Wed, 27 Jul 2022 19:05:11 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "Tariq Toukan" <tariqt@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/9] net: devlink: remove region snapshots list
- dependency on devlink->lock
-Message-ID: <20220727190156.0ec856ae@kernel.org>
-In-Reply-To: <1658941416-74393-3-git-send-email-moshe@nvidia.com>
-References: <1658941416-74393-1-git-send-email-moshe@nvidia.com>
-        <1658941416-74393-3-git-send-email-moshe@nvidia.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     borisp@nvidia.com, john.fastabend@gmail.com, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] tls: rx: Fix unsigned comparison with less than
+ zero
+Message-ID: <20220727190511.08f4fe0c@kernel.org>
+In-Reply-To: <20220728011025.10865-1-yang.lee@linux.alibaba.com>
+References: <20220728011025.10865-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,17 +54,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 20:03:29 +0300 Moshe Shemesh wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> After mlx4 driver is converted to do locked reload,
-> devlink_region_snapshot_create() may be called from both locked and
-> unlocked context.
+On Thu, 28 Jul 2022 09:10:25 +0800 Yang Li wrote:
+>  	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
+> -	size_t sz, len, chunk;
+> +	int sz;
+> +	size_t len, chunk;
+>  	struct sk_buff *skb;
+>  	skb_frag_t *frag;
 
-You need to explain why, tho. What makes region snapshots special? 
-
-> So resolve this by removing dependency on devlink->lock for region
-> snapshots list consistency and introduce new mutex to ensure it.
-
-I was hoping to avoid per-subobject locks. What prevents us from
-depending on the instance lock here (once the driver is converted)?
+Thanks for the fix, please keep the sorting of the variable lines from
+longest to shortest. "int sz;" should be the last variable declaration
+line and "size_t len, chunk;" goes after the skb.
