@@ -2,322 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 740FE58461A
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8B4558460C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 20:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbiG1SkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 14:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        id S231681AbiG1SmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 14:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiG1SkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:40:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5D0E52;
-        Thu, 28 Jul 2022 11:40:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A279B824FD;
-        Thu, 28 Jul 2022 18:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFD38C433C1;
-        Thu, 28 Jul 2022 18:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659033609;
-        bh=lOBwNrqWNCKyX7sc657+GSxEk4asPX1rXJGkxa6syIk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WGbTB0Uc9ogRIpmMxlQRbDmoyyuNFZK7sYSxiKa7m1AyTyUrl2gs3m98KKE/CHpAa
-         O8cxzKVfqMVAi4fltFJgsCSdEcsweI1q28CmqlwjHmpXVqRjxHY3B1Be0dAI/rhPuv
-         BOMDEsLTwyqGUpW0Jehe5JA0vUNiVtxXRQsbV28emw9s1Zt1gMpfhSND2kJkTc5KnU
-         zBhuW3oX+vz4Z3qU6v+3KBMMuIuxYE2hmxMvYlc0D9gb3jf5/brGQ0OqVPFenosKMy
-         K8IDVxC24UpqkSvdoORzpEGBaJOoLS54YY5Tk8iWIVzTtXl+3XzdYQrQUkNLAdzCg5
-         Kap4MaxKXv+lg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PULL] Networking for 5.19-final
-Date:   Thu, 28 Jul 2022 11:40:07 -0700
-Message-Id: <20220728184007.1642187-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S230058AbiG1SmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 14:42:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84FD874E26
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659033736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/cyqjGuqo8Xez9KZB2n6ef57YiIlFUesAYzckfJsYgo=;
+        b=BLPvxdsiz7h2mcBaSvYmYHaYXZe43JIBwsQ85N7ryB9oRJZ4YMLEwnviAyJGxtynVOaItH
+        zX5/tJxgzUapoNFHb7nB5vmvxCku2UsDK4z6To9pfvftkmbP2CR8DwgeKEaLZHcEhhzWjj
+        6AsQSvf1mrKUhHggPTpXZ6CTdbFynMo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-55-cLJYadqgNPavVRFauLOS6g-1; Thu, 28 Jul 2022 14:42:15 -0400
+X-MC-Unique: cLJYadqgNPavVRFauLOS6g-1
+Received: by mail-ed1-f70.google.com with SMTP id w5-20020a05640234c500b0043be08bb082so1596897edc.9
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 11:42:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/cyqjGuqo8Xez9KZB2n6ef57YiIlFUesAYzckfJsYgo=;
+        b=YlIjw4RTLUxjKw8w1Ugn3SXsRchJfdp4DtsrtDVlVBb/LG8E4ZQEujOX6CrxLC3eCD
+         QTSxgnNcW+E7OGliervjccmz6uLWn/rPO/x4i4TClFQlw/d/YpSLr94dwW5n1gHNFqcB
+         dSxGGmC5sGIB0BKfP8lyBvIhRZnwtHmcqQgw8haMVS4MTP7euI8sYTOnycaxCNdD2PwX
+         HSat6iEATQ/ybf2szq/1WYhCGqvlQxFA43Fo+A9htUWYmLK8xtvYfeNtCIDWIlKP3I7V
+         6zS4Kahq+SHEkh6xaZs0l5sjoaz0uVCJHFuHggnjrmtIMAuE7WQx/cBLmXkd5joqr6au
+         PWJQ==
+X-Gm-Message-State: AJIora9clQL5EMGoooSR5ZdP0y62DX+CM9V80+KVHibpYclv+wZFEgi1
+        vnGtoqQzo7SN1ph4BKZC8623IvFenCs91uJfB5iCesTVvmfINZt65sCXzXi0mHyyC5XYxKSgvhG
+        usjF9d5PQQpcqrm8d
+X-Received: by 2002:a17:907:2848:b0:72b:5ba5:1db5 with SMTP id el8-20020a170907284800b0072b5ba51db5mr174749ejc.703.1659033733783;
+        Thu, 28 Jul 2022 11:42:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vF8qNtAYroVPoKQ2UZq+B8Pj08nF2u1AMY8+URINTGN7OPMC6aKfgY/EB5StPCkopth70xBw==
+X-Received: by 2002:a17:907:2848:b0:72b:5ba5:1db5 with SMTP id el8-20020a170907284800b0072b5ba51db5mr174717ejc.703.1659033733286;
+        Thu, 28 Jul 2022 11:42:13 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id w10-20020a50fa8a000000b0043bdc47803csm1150947edr.30.2022.07.28.11.42.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 11:42:12 -0700 (PDT)
+Message-ID: <71041a3b-cdb4-dd3a-d94e-c8f77179a31f@redhat.com>
+Date:   Thu, 28 Jul 2022 20:42:11 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] platform/x86: pmc_atom: Add DMI quirk for Lex 3I380A/CW
+ boards
+Content-Language: en-US
+To:     "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        carlo@endlessm.com, davem@davemloft.net, hkallweit1@gmail.com,
+        js@sig21.net, linux-clk@vger.kernel.org,
+        linux-wireless@vger.kernel.org, mturquette@baylibre.com,
+        netdev@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        sboyd@kernel.org, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        paul.gortmaker@windriver.com, stable@vger.kernel.org
+References: <20220727153232.13359-1-matwey@sai.msu.ru>
+ <5f0b98a5-1929-a78e-4d44-0bb2aec18b5a@redhat.com>
+ <CAJs94EYdNVROqDw=ZpzBTGeNRQzzCN9QQNkicv6LapJGDmb=Dg@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAJs94EYdNVROqDw=ZpzBTGeNRQzzCN9QQNkicv6LapJGDmb=Dg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+Hi,
 
-The following changes since commit 7ca433dc6dedb2ec98dfc943f6db0c9b8996ed11:
+On 7/28/22 20:39, Matwey V. Kornilov wrote:
+> чт, 28 июл. 2022 г. в 21:33, Hans de Goede <hdegoede@redhat.com>:
+>>
+>> Hi,
+>>
+>> On 7/27/22 17:32, Matwey V. Kornilov wrote:
+>>> Lex 3I380A/CW (Atom E3845) motherboards are equipped with dual Intel I211
+>>> based 1Gbps copper ethernet:
+>>>
+>>>      http://www.lex.com.tw/products/pdf/3I380A&3I380CW.pdf
+>>>
+>>> This patch is to fix the issue with broken "LAN2" port. Before the
+>>> patch, only one ethernet port is initialized:
+>>>
+>>>      igb 0000:01:00.0: added PHC on eth0
+>>>      igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+>>>      igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
+>>>      igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
+>>>      igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+>>>      igb: probe of 0000:02:00.0 failed with error -2
+>>>
+>>> With this patch, both ethernet ports are available:
+>>>
+>>>      igb 0000:01:00.0: added PHC on eth0
+>>>      igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+>>>      igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
+>>>      igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
+>>>      igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+>>>      igb 0000:02:00.0: added PHC on eth1
+>>>      igb 0000:02:00.0: Intel(R) Gigabit Ethernet Network Connection
+>>>      igb 0000:02:00.0: eth1: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e5
+>>>      igb 0000:02:00.0: eth1: PBA No: FFFFFF-0FF
+>>>      igb 0000:02:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
+>>>
+>>> The issue was observed at 3I380A board with BIOS version "A4 01/15/2016"
+>>> and 3I380CW board with BIOS version "A3 09/29/2014".
+>>>
+>>> Reference: https://lore.kernel.org/netdev/08c744e6-385b-8fcf-ecdf-1292b5869f94@redhat.com/
+>>> Fixes: 648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
+>>> Cc: <stable@vger.kernel.org> # v4.19+
+>>> Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
+>>
+>>
+>> Thank you for the patch.
+>>
+>> The last week I have received 2 different patches adding
+>> a total of 3 new "Lex BayTrail" entries to critclk_systems[]
+>> on top of the existing 2.
+>>
+>> Looking at: https://www.lex.com.tw/products/embedded-ipc-board/
+>> we can see that Lex BayTrail makes many embedded boards with
+>> multiple ethernet boards and none of their products are battery
+>> powered so we don't need to worry (too much) about power consumption
+>> when suspended.
+>>
+>> So instead of adding 3 new entries I've written a patch to
+>> simply disable the turning off of the clocks on all
+>> systems which have "Lex BayTrail" as their DMI sys_vendor:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?h=review-hans&id=c9d959fc32a5f9312282817052d8986614f2dc08
+>>
+>> I've added a Reported-by tag to give you credit for the work
+>> you have done on this.
+>>
+>> I will send this alternative fix to Linus as part of
+>> the other pdx86 patches for 5.21.
+> 
+> Thank you. Will your fix also appear in stable/lts kernels?
 
-  Merge tag 'net-5.19-rc8' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-07-21 11:08:35 -0700)
+Yes it has the same Fixes tag as your patch did, this will
+cause it to automatically get cherry-picked into kernels
+which have the fixed commit hash.
 
-are available in the Git repository at:
+Regards,
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-final
+Hans
 
-for you to fetch changes up to 4d3d3a1b244fd54629a6b7047f39a7bbc8d11910:
 
-  stmmac: dwmac-mediatek: fix resource leak in probe (2022-07-28 10:43:04 -0700)
+>>> ---
+>>>  drivers/platform/x86/pmc_atom.c | 18 ++++++++++++++++++
+>>>  1 file changed, 18 insertions(+)
+>>>
+>>> diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
+>>> index b8b1ed1406de..5dc82667907b 100644
+>>> --- a/drivers/platform/x86/pmc_atom.c
+>>> +++ b/drivers/platform/x86/pmc_atom.c
+>>> @@ -388,6 +388,24 @@ static const struct dmi_system_id critclk_systems[] = {
+>>>                       DMI_MATCH(DMI_PRODUCT_NAME, "CEC10 Family"),
+>>>               },
+>>>       },
+>>> +     {
+>>> +             /* pmc_plt_clk* - are used for ethernet controllers */
+>>> +             .ident = "Lex 3I380A",
+>>> +             .callback = dmi_callback,
+>>> +             .matches = {
+>>> +                     DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
+>>> +                     DMI_MATCH(DMI_PRODUCT_NAME, "3I380A"),
+>>> +             },
+>>> +     },
+>>> +     {
+>>> +             /* pmc_plt_clk* - are used for ethernet controllers */
+>>> +             .ident = "Lex 3I380CW",
+>>> +             .callback = dmi_callback,
+>>> +             .matches = {
+>>> +                     DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
+>>> +                     DMI_MATCH(DMI_PRODUCT_NAME, "3I380CW"),
+>>> +             },
+>>> +     },
+>>>       {
+>>>               /* pmc_plt_clk0 - 3 are used for the 4 ethernet controllers */
+>>>               .ident = "Lex 3I380D",
+>>
+> 
+> 
 
-----------------------------------------------------------------
-Including fixes from bluetooth and netfilter, no known blockers
-for the release.
-
-Current release - regressions:
-
- - wifi: mac80211: do not abuse fq.lock in ieee80211_do_stop(),
-   fix taking the lock before its initialized
-
- - Bluetooth: mgmt: fix double free on error path
-
-Current release - new code bugs:
-
- - eth: ice: fix tunnel checksum offload with fragmented traffic
-
-Previous releases - regressions:
-
- - tcp: md5: fix IPv4-mapped support after refactoring, don't take
-   the pure v6 path
-
- - Revert "tcp: change pingpong threshold to 3", improving detection
-   of interactive sessions
-
- - mld: fix netdev refcount leak in mld_{query | report}_work() due
-   to a race
-
- - Bluetooth:
-   - always set event mask on suspend, avoid early wake ups
-   - L2CAP: fix use-after-free caused by l2cap_chan_put
-
- - bridge: do not send empty IFLA_AF_SPEC attribute
-
-Previous releases - always broken:
-
- - ping6: fix memleak in ipv6_renew_options()
-
- - sctp: prevent null-deref caused by over-eager error paths
-
- - virtio-net: fix the race between refill work and close,
-   resulting in NAPI scheduled after close and a BUG()
-
- - macsec:
-   - fix three netlink parsing bugs
-   - avoid breaking the device state on invalid change requests
-   - fix a memleak in another error path
-
-Misc:
-
- - dt-bindings: net: ethernet-controller: rework 'fixed-link' schema
-
- - two more batches of sysctl data race adornment
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Abhishek Pandit-Subedi (1):
-      Bluetooth: Always set event mask on suspend
-
-Alejandro Lucero (1):
-      sfc: disable softirqs for ptp TX
-
-Anirudh Venkataramanan (1):
-      ice: Fix VSIs unable to share unicast MAC
-
-Benjamin Poirier (1):
-      bridge: Do not send empty IFLA_AF_SPEC attribute
-
-Christophe JAILLET (1):
-      caif: Fix bitmap data type in "struct caifsock"
-
-Dan Carpenter (2):
-      Bluetooth: mgmt: Fix double free on error path
-      stmmac: dwmac-mediatek: fix resource leak in probe
-
-David S. Miller (3):
-      Merge branch 'sysctl-races-part-5'
-      Merge branch 'macsec-config-issues'
-      Merge branch 'net-sysctl-races-part-6'
-
-Dimitris Michailidis (1):
-      net/funeth: Fix fun_xdp_tx() and XDP packet reclaim
-
-Duoming Zhou (1):
-      sctp: fix sleep in atomic context bug in timer handlers
-
-Eric Dumazet (1):
-      tcp: md5: fix IPv4-mapped support
-
-Florian Westphal (3):
-      netfilter: nf_queue: do not allow packet truncation below transport header offset
-      netfilter: nf_tables: add rescheduling points during loop detection walks
-      netfilter: nft_queue: only allow supported familes and hooks
-
-Jakub Kicinski (3):
-      Merge tag 'for-net-2022-07-26' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-
-Jason Wang (1):
-      virtio-net: fix the race between refill work and close
-
-Jianglei Nie (1):
-      net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
-
-Jonathan Lemon (1):
-      ptp: ocp: Select CRC16 in the Kconfig.
-
-Kuniyuki Iwashima (23):
-      tcp: Fix data-races around sysctl_tcp_dsack.
-      tcp: Fix a data-race around sysctl_tcp_app_win.
-      tcp: Fix a data-race around sysctl_tcp_adv_win_scale.
-      tcp: Fix a data-race around sysctl_tcp_frto.
-      tcp: Fix a data-race around sysctl_tcp_nometrics_save.
-      tcp: Fix data-races around sysctl_tcp_no_ssthresh_metrics_save.
-      tcp: Fix data-races around sysctl_tcp_moderate_rcvbuf.
-      tcp: Fix data-races around sysctl_tcp_workaround_signed_windows.
-      tcp: Fix a data-race around sysctl_tcp_limit_output_bytes.
-      tcp: Fix a data-race around sysctl_tcp_challenge_ack_limit.
-      tcp: Fix a data-race around sysctl_tcp_min_tso_segs.
-      tcp: Fix a data-race around sysctl_tcp_tso_rtt_log.
-      tcp: Fix a data-race around sysctl_tcp_min_rtt_wlen.
-      tcp: Fix a data-race around sysctl_tcp_autocorking.
-      tcp: Fix a data-race around sysctl_tcp_invalid_ratelimit.
-      tcp: Fix data-races around sk_pacing_rate.
-      net: Fix data-races around sysctl_[rw]mem(_offset)?.
-      tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
-      tcp: Fix a data-race around sysctl_tcp_comp_sack_slack_ns.
-      tcp: Fix a data-race around sysctl_tcp_comp_sack_nr.
-      tcp: Fix data-races around sysctl_tcp_reflect_tos.
-      ipv4: Fix data-races around sysctl_fib_notify_on_flag_change.
-      net: ping6: Fix memleak in ipv6_renew_options().
-
-Liang He (1):
-      net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
-
-Luiz Augusto von Dentz (1):
-      Bluetooth: L2CAP: Fix use-after-free caused by l2cap_chan_put
-
-Maciej Fijalkowski (2):
-      ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
-      ice: do not setup vlan for loopback VSI
-
-Mat Martineau (1):
-      mptcp: Do not return EINPROGRESS when subflow creation succeeds
-
-Maxim Mikityanskiy (1):
-      net/tls: Remove the context from the list in tls_device_down
-
-Michal Maloszewski (1):
-      i40e: Fix interface init with MSI interrupts (no MSI-X)
-
-Paolo Abeni (1):
-      Merge branch 'octeontx2-minor-tc-fixes'
-
-Przemyslaw Patynowski (2):
-      ice: Fix max VLANs available for VF
-      ice: Fix tunnel checksum offload with fragmented traffic
-
-Rob Herring (2):
-      dt-bindings: net: ethernet-controller: Rework 'fixed-link' schema
-      dt-bindings: net: fsl,fec: Add missing types to phy-reset-* properties
-
-Sabrina Dubroca (4):
-      macsec: fix NULL deref in macsec_add_rxsa
-      macsec: fix error message in macsec_add_rxsa and _txsa
-      macsec: limit replay window size with XPN
-      macsec: always read MACSEC_SA_ATTR_PN as a u64
-
-Slark Xiao (3):
-      nfp: bpf: Fix typo 'the the' in comment
-      net: ipa: Fix typo 'the the' in comment
-      s390/qeth: Fix typo 'the the' in comment
-
-Subbaraya Sundeep (1):
-      octeontx2-pf: Fix UDP/TCP src and dst port tc filters
-
-Sunil Goutham (1):
-      octeontx2-pf: cn10k: Fix egress ratelimit configuration
-
-Taehee Yoo (1):
-      net: mld: fix reference count leak in mld_{query | report}_work()
-
-Tetsuo Handa (1):
-      wifi: mac80211: do not abuse fq.lock in ieee80211_do_stop()
-
-Vladimir Oltean (2):
-      net: pcs: xpcs: propagate xpcs_read error to xpcs_get_state_c37_sgmii
-      net: dsa: fix reference counting for LAG FDBs
-
-Wei Wang (1):
-      Revert "tcp: change pingpong threshold to 3"
-
-Xin Long (2):
-      Documentation: fix sctp_wmem in ip-sysctl.rst
-      sctp: leave the err path free in sctp_stream_init to sctp_stream_free
-
-Ziyang Xuan (1):
-      ipv6/addrconf: fix a null-ptr-deref bug for ip6_ptr
-
- .../bindings/net/ethernet-controller.yaml          | 123 ++++++++++-----------
- Documentation/devicetree/bindings/net/fsl,fec.yaml |   3 +
- Documentation/networking/ip-sysctl.rst             |   9 +-
- drivers/net/ethernet/fungible/funeth/funeth_rx.c   |   5 +-
- drivers/net/ethernet/fungible/funeth/funeth_tx.c   |  20 ++--
- drivers/net/ethernet/fungible/funeth/funeth_txrx.h |   6 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c        |   4 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c       |   3 +-
- drivers/net/ethernet/intel/ice/ice_main.c          |  10 +-
- drivers/net/ethernet/intel/ice/ice_sriov.c         |  40 -------
- drivers/net/ethernet/intel/ice/ice_txrx.c          |   8 +-
- drivers/net/ethernet/intel/ice/ice_virtchnl.c      |   3 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_tc.c   | 106 ++++++++++++------
- drivers/net/ethernet/netronome/nfp/bpf/jit.c       |   2 +-
- drivers/net/ethernet/sfc/ptp.c                     |  22 ++++
- .../net/ethernet/stmicro/stmmac/dwmac-mediatek.c   |   9 +-
- drivers/net/ipa/ipa_qmi_msg.h                      |   2 +-
- drivers/net/macsec.c                               |  33 ++++--
- drivers/net/pcs/pcs-xpcs.c                         |   2 +-
- drivers/net/sungem_phy.c                           |   1 +
- drivers/net/virtio_net.c                           |  37 ++++++-
- drivers/ptp/Kconfig                                |   1 +
- drivers/s390/net/qeth_core_main.c                  |   2 +-
- include/net/addrconf.h                             |   3 +
- include/net/bluetooth/l2cap.h                      |   1 +
- include/net/inet_connection_sock.h                 |  10 +-
- include/net/sock.h                                 |   8 +-
- include/net/tcp.h                                  |   2 +-
- net/bluetooth/hci_sync.c                           |   6 +-
- net/bluetooth/l2cap_core.c                         |  61 +++++++---
- net/bluetooth/mgmt.c                               |   1 -
- net/bridge/br_netlink.c                            |   8 +-
- net/caif/caif_socket.c                             |  20 ++--
- net/decnet/af_decnet.c                             |   4 +-
- net/dsa/switch.c                                   |   1 +
- net/ipv4/fib_trie.c                                |   7 +-
- net/ipv4/tcp.c                                     |  23 ++--
- net/ipv4/tcp_input.c                               |  41 +++----
- net/ipv4/tcp_ipv4.c                                |   4 +-
- net/ipv4/tcp_metrics.c                             |  10 +-
- net/ipv4/tcp_output.c                              |  27 ++---
- net/ipv6/mcast.c                                   |  14 ++-
- net/ipv6/ping.c                                    |   6 +
- net/ipv6/tcp_ipv6.c                                |   4 +-
- net/mac80211/iface.c                               |   3 +-
- net/mptcp/options.c                                |   2 +-
- net/mptcp/protocol.c                               |   8 +-
- net/mptcp/subflow.c                                |   2 +-
- net/netfilter/nf_tables_api.c                      |   6 +
- net/netfilter/nfnetlink_queue.c                    |   7 +-
- net/netfilter/nft_queue.c                          |  27 +++++
- net/sctp/associola.c                               |   5 +-
- net/sctp/stream.c                                  |  19 +---
- net/sctp/stream_sched.c                            |   2 +-
- net/tipc/socket.c                                  |   2 +-
- net/tls/tls_device.c                               |   7 +-
- 56 files changed, 481 insertions(+), 321 deletions(-)
