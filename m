@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D42C5842D8
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4E45842DC
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 17:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbiG1PSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 11:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S231600AbiG1PSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 11:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiG1PSG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:18:06 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC8C46D93;
-        Thu, 28 Jul 2022 08:18:05 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id v185so1586720ioe.11;
-        Thu, 28 Jul 2022 08:18:05 -0700 (PDT)
+        with ESMTP id S231588AbiG1PS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 11:18:29 -0400
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8144E872;
+        Thu, 28 Jul 2022 08:18:28 -0700 (PDT)
+Received: by mail-il1-f179.google.com with SMTP id g18so1087580ilk.4;
+        Thu, 28 Jul 2022 08:18:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RvcitpT8SRhB8BocvR7SjrRkSCpHQg3td5uyJtapLlc=;
-        b=q2ecAc9U6B+x2EsYZ06j641Btj5uuj/uI8880wnQBp8RH4oGwE3x+fRHNOHYrGlbcr
-         LiPNc8tDOpumAhW6eselOP36WIh6dhmJRW3d9dazw/z7u8a1ZMPX3ueZlsqpfkXzP2fD
-         9c6n4U7ZwIh3F0ujxO4Z/8XRYMR3OlumsOCvPwxthi4yHBcN+0PGjiwH1nD5n2Sq/QL+
-         cwJsnsibw4PZPL3n86OiwM8oVTt9FvIKsAszBvs6IzVaWE/Fl31D/YDP2LJaiv+4MzeW
-         m7lBB5VQvPfeoQJnv3RSIzLQ4I6uFUzTW8fWnnhmmIJApeaq9H5E+1x0saWQuzML6UNI
-         Q+Ww==
-X-Gm-Message-State: AJIora8Wg2m6S/QmbfdJeMitJuIVv+iqhDU2RjGWRPVqaN7SsYcmhlIh
-        hYEFPgnORQ6jFaTiIYexvg==
-X-Google-Smtp-Source: AGRyM1sXd4DPBqM1JpH9G5Vt11DrwoOOQL2Jborzd8Caj/m4YTARvPG5RH2IC9+DiqZtxkJWMfb77g==
-X-Received: by 2002:a5d:8599:0:b0:67b:7d8d:9aed with SMTP id f25-20020a5d8599000000b0067b7d8d9aedmr9264709ioj.204.1659021484815;
-        Thu, 28 Jul 2022 08:18:04 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Ls3JiwmJiYnShJa3Bd4qG+DnJ7AXD6lVMWiDMb9zReM=;
+        b=dVGnYNa4lVNrmpnAFZYiGEZBfYkC3HCWW6Ko2N9jUKhtzk/htubATlKZYHRyCaEx1V
+         +sU+93hpM5dHADlp+0hrphEDWe5lHyBu1rMoWhIkD4V6VD37kJhUIaIAPH8LdClgQuKe
+         y8/BV6fIlZMN7GargEtnU7TWR22lw0WUHGoZ8T+AgWW1Sh+mFLD4oGICyapcJT9rvYJa
+         b6EtJtbBny8i3luj7NQHKV6opvDmop1Qlh2kev0wXhLJK1+w8TjqK7Y+SoN0u4Shj0Bv
+         pyd2FZVyF4nfrCS3aMRWFDof1/xhMfMo3x/eQGOxzNhVaBNQFZC87FnDeTUF6oY1e7/w
+         2ERQ==
+X-Gm-Message-State: AJIora92925JKPBmsJCJ6LACa7PFv6sXmCvlwe+djJYBpEGTY0JRbR2m
+        1nGsM6OmshV8wm9c6LJl6w==
+X-Google-Smtp-Source: AGRyM1s9jv0cpkUY/QpbAsgHZc/CwhX9Bqdm6Ubf0jkIS51YGAV/oOwEBjmvjlqz1WZnDg5UOb3LaA==
+X-Received: by 2002:a05:6e02:1181:b0:2dd:bd7a:26c5 with SMTP id y1-20020a056e02118100b002ddbd7a26c5mr3673515ili.8.1659021507770;
+        Thu, 28 Jul 2022 08:18:27 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id q3-20020a92c003000000b002dc33dbed87sm452951ild.39.2022.07.28.08.18.03
+        by smtp.gmail.com with ESMTPSA id q8-20020a02a988000000b0033f22c2e5b3sm477024jam.98.2022.07.28.08.18.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 08:18:04 -0700 (PDT)
-Received: (nullmailer pid 900900 invoked by uid 1000);
-        Thu, 28 Jul 2022 15:18:02 -0000
-Date:   Thu, 28 Jul 2022 09:18:02 -0600
+        Thu, 28 Jul 2022 08:18:27 -0700 (PDT)
+Received: (nullmailer pid 901441 invoked by uid 1000);
+        Thu, 28 Jul 2022 15:18:24 -0000
+Date:   Thu, 28 Jul 2022 09:18:24 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        linux-wireless@vger.kernel.org, devicetree@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
+        Mark Greer <mgreer@animalcreek.com>,
         Kalle Valo <kvalo@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
         Adham Abozaeid <adham.abozaeid@microchip.com>,
-        Mark Greer <mgreer@animalcreek.com>
-Subject: Re: [PATCH 1/2] dt-bindings: nfc: use spi-peripheral-props.yaml
-Message-ID: <20220728151802.GA900320-robh@kernel.org>
+        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
+        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Ajay Singh <ajay.kathat@microchip.com>
+Subject: Re: [PATCH 2/2] dt-bindings: wireless: use spi-peripheral-props.yaml
+Message-ID: <20220728151824.GA901389-robh@kernel.org>
 References: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+ <20220727164130.385411-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220727164130.385411-2-krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -71,7 +71,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jul 2022 18:41:29 +0200, Krzysztof Kozlowski wrote:
+On Wed, 27 Jul 2022 18:41:30 +0200, Krzysztof Kozlowski wrote:
 > Instead of listing directly properties typical for SPI peripherals,
 > reference the spi-peripheral-props.yaml schema.  This allows using all
 > properties typical for SPI-connected devices, even these which device
@@ -96,17 +96,13 @@ On Wed, 27 Jul 2022 18:41:29 +0200, Krzysztof Kozlowski wrote:
 > CPOL will be allowed for brief period of time, before [1] is merged.
 > This will not have negative impact, just DT schema checks will be
 > loosened for that period.
-
-I don't think these need to go via the same tree.
-
 > 
 > [1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
 > ---
->  Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml | 4 ++--
->  Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml   | 5 ++---
->  Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml   | 7 ++++---
->  Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml | 7 ++++---
->  4 files changed, 12 insertions(+), 11 deletions(-)
+>  .../net/wireless/microchip,wilc1000.yaml      |  7 ++--
+>  .../bindings/net/wireless/silabs,wfx.yaml     | 15 +++------
+>  .../bindings/net/wireless/ti,wlcore.yaml      | 32 +++++++++----------
+>  3 files changed, 25 insertions(+), 29 deletions(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
