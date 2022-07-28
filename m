@@ -2,105 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C81583DF0
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A286B583DF3
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 13:46:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236955AbiG1LqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 07:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S236966AbiG1LqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 07:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236948AbiG1LqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:46:06 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5114C10FD8
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:46:05 -0700 (PDT)
+        with ESMTP id S236209AbiG1LqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 07:46:15 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2041.outbound.protection.outlook.com [40.107.223.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39AC51A1C
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 04:46:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IE3T7/JWbiQfvO2OAhEAMbCs0/tgFnXdvsqMcdlj9KQU2b/Wj94foAWGT0jXlez0w6kmb+gsYPS98IDtqQIq/dZGIvWtEw5DMH1g98qSU+cQH/mpyEkQPcVPOid0fbNO0kegiDi8URIbnZ/3FXVN8I0myEciftaqAg097hkFmK6/XsXOlzsaHGXFs/GB6wcTO0QfSZumwVAeRs57NeoLIPnukeO2Yah17KIQf5egBaaASbidsh0A5+5P8iiJMcT/lzsrBcdUOs0gcuUkcX0AfRwyyzJrNRXNgeqYrlef7GkwVwCTjegjfJqHKMdhh3woCQFKKNrq6jBOuiZYXerk4Q==
+ b=b58OcgmpIEprl7LbYwoxqyRoa3+Ye9RgsEHkbG9iEZlqYaRZ4fwAC74Upx6+9IO9v66Yqg6mowdBTPmf//BTP9qPtYspJHadFFd2AHL+qxr4obkeeyxfARBW3KRhsqxsgL6GVwXxMtnAYa0iSkpMmk8GHxh98AMNvLI65WAaO9GLi5MSBYxlaNRSWZ8dWigVPTsq+zpVTij7xaV0H8OC6KCS0YA7ITnwkklpm4OUCgkJ1fmjKR8ZFjR1hWkG/QR+pGhqzpEmfuwgZKOp1cJod/97jkauimaRjhTUfLuOJaJYrx2GgG84OV7xLzxtiU3fSmxgiLfzRsVl93ejaEOS+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xov5VpTCc/WAoL+JPcLlDW+TPQ5zXyPhxzKPYH5JzBk=;
- b=aas/kP2dlCqC585T3X8l0m9YUkfhgcuC+FMjKVjh8LGrAOg9aLF3vwUvKyBvqrgXZz8ml46W68RD/qkhLqSwZ4pbWzCa/yJHHn7lQPM+3PQf9MOGRI32IIm7aCIdb2qRPSl29ha1VTWIze5U3wTwGRcY7fo+ti62hRf6wDAuaTNt8vLYEzEHVHMc8nmAAOQu13MFim9WXFSQ2LzG8MLMMUOQJhB8hw3qlMHagP6eS+6anJumKvmftuKwFiM7jzEa9T6VL3Nlka3mK7Ugm7OJthaAoKEvNvvnAOUcv/yWf0K6uEPjSnOeBXGc0iJle3D2mU1HqcH6o31N4VTvnPRWGA==
+ bh=ujeUQxP7MiH0ULJ8JRvdEkmscIQH6NmniYIGNP73MtY=;
+ b=IizjMCDObVhaIqcGIdICIipuOWDvvjw3RHlnIUNdeEZbfmVllmTCfOlOlLfea/HiGcAfm+70TmNlxD4FVOk1GNtsDQB+SoiYK04TvwIxAhCxIXOEeO7PvkMlm7FLig1/MD8UPba+qF8WmrPsXtD/H8P8oVyer7LXp8yK+rFxM2ICn3DOhQSRetGBWET60Y8wSTJJucPoRKBJ7fxxYADCntaw2LXCcv3vuscaZFLibouFzcMOlvvs2rvFhVHPJSBe2xE2Wx/i5vwdHwcG4rZW0ejH/rJBe3GGHkOixYDNaILnaa3pauSiq064QR8pyMHaVUauUXoyw4yaD4ylFWTjGA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xov5VpTCc/WAoL+JPcLlDW+TPQ5zXyPhxzKPYH5JzBk=;
- b=YkeSJf1DAOzoyOaGQipsHjod0dk0ndRlk7i7bgSI35wUsMW++/qpDFdXD44eCvXtLPI1oOGoxFS4bF+gqFzp+Sfx2haWtcTlR+UeeOes+c8BRjrwDrM5NLY827J/4TuTOiT+jYZctjPnPJ3AfboZShLCeSTnf+MMeHILU22BO74b9xehQPrl/CaEJYoqCvHXlCtLX9/eA7YPcduioecjxj7YOyz4O7YscIRfRxLN1T3ho2aNVWO9cHFJ1JrsEBR2mgZSP4MD8rp/RL5LGKPmjOF0i8HjBmnRr6bhzFkbjn4/3BYoW1ZA82/gUYqd9RcvlOWEwTEvW0FRcivRpGohtQ==
+ bh=ujeUQxP7MiH0ULJ8JRvdEkmscIQH6NmniYIGNP73MtY=;
+ b=Zmh9OdjX72avIBTWvjhJDOGNYyC+uqwRCYnMKG/GjvM5iz6bBxkYCUCFUlTeE6woP8UcdWe3pmfEudxOZnTwukpljqSB2odqBg+OsIi4JbA8MIdVBqCeUdY/uw+QumG0++enlcMY+QGGpnaR+Dxcy/Epm5Ier0bNtMwVWhd2C63QmcFkOAEAT99uC+VP2kS6nzCtV+KLtOyAeXeilReh4z+RE8OHj+pMhmDgkEz/IyWeVXSBTcYMSRcEJNIfeY3UQKK8+1wEVAH00+D7RvBQYtPY/izvsa4SUxw2B7aVtydEnzZNlPBvagsw18PtJQ3iummXRVjfdzQn8fvQojAw9Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by MW3PR12MB4505.namprd12.prod.outlook.com (2603:10b6:303:5a::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Thu, 28 Jul
- 2022 11:46:03 +0000
+ 2022 11:46:11 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::2d48:7610:5ec2:2d62]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::2d48:7610:5ec2:2d62%4]) with mapi id 15.20.5482.011; Thu, 28 Jul 2022
- 11:46:03 +0000
+ 11:46:11 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, amcohen@nvidia.com, dsahern@gmail.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 0/3] netdevsim: fib: Fix reference count leak on route deletion failure
-Date:   Thu, 28 Jul 2022 14:45:32 +0300
-Message-Id: <20220728114535.3318119-1-idosch@nvidia.com>
+Subject: [PATCH net 1/3] netdevsim: fib: Fix reference count leak on route deletion failure
+Date:   Thu, 28 Jul 2022 14:45:33 +0300
+Message-Id: <20220728114535.3318119-2-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220728114535.3318119-1-idosch@nvidia.com>
+References: <20220728114535.3318119-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0501CA0046.eurprd05.prod.outlook.com
- (2603:10a6:800:60::32) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR04CA0094.eurprd04.prod.outlook.com
+ (2603:10a6:803:64::29) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4f7ac336-b534-4dea-5c20-08da708ebff9
+X-MS-Office365-Filtering-Correlation-Id: d50f6a0f-b1ad-4a7b-041b-08da708ec44e
 X-MS-TrafficTypeDiagnostic: MW3PR12MB4505:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: z4WeVUTwwarbU3Kxl71pkBNhw4HdRTw9K78r/xu1irc5FohV/1Rpq3IPwXjX52Q0W8A/HF1XEVfhA9t9C4yLPtW+GZ2wthqE9L7IdWnd9a7D4pbZDreTxDc1C4+4q0EjlgRoPcOP4XQHKW42xK3KblmS8QAt+WZtw5Q2JBh+Fb3OP2QscntHn3DEQwpa+IDGlIDlf0dgUz+MIKppsWvGvxpJpNMvitZg7Oj0mXKJTBDmSni928Tzr6Pzmf85D6owhhT40cVroKrgkWrylXGBb7jH0/Lti2S+HjnaX1hkyvpJGscYf8oGVoKhO4XBu3Ls4KACsbjKJJLi06emZSSLuSEfpunKnH+N4Koiw+IvrgjFVg1OwY+iEw2eUsmBLwh8v/Mk+MVHLepKYDFNDu65qdayUbktqlgzY+6z3wKDcgjITEO31fpcop8ibE62K4TIi+I8hy0w4uhCpmTHKXWFBkebWMvyOBw7L5Mx1Is2dmSQ6RvxOI+RZ4CGi6WByK1jia2YrSriJ7bXbCC5Rh16nhKzgehQRZ1SX+KSF6aCJgOu4RgnxeosLLlv+q6Y354n6Qor3YlTnIkabdsTmjdmnGfqqisndRHCTEG3yPPrx8PDXK2DTjj6WHy3qLy/r7ENQjSgljxKTJvDeeV5O9+izTTdmG+ci2FGKJMJFRKjs29xMenKaBT1zXe37ZlzSB4l2m0ao7Pv9XHK0vDGFe3InJpTQptRvq4hzmPvBe3o/m/RROBxmEsmgGItK6R04LP4
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(6512007)(41300700001)(4744005)(186003)(83380400001)(6506007)(6666004)(8936002)(2906002)(66476007)(478600001)(6486002)(38100700002)(6916009)(5660300002)(107886003)(36756003)(4326008)(316002)(1076003)(26005)(86362001)(66946007)(8676002)(66556008)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zylA+WhNHY2OfzYVQlylyW01AvQ1CdNIXXM40zgIn0vEFptXx6YLd4o4GDKwNAf1MLaoeMHL58iWvUhFg5HsD+xvpniQhkTkpv/mD2wEUcnt4seHhT5Tebps6CvYbhZWCZT5igKSYhFcx+S2aWVrTKIVsWA4zB40sKZjol1p9NDWbAAzK7K10904uBzmOhzk76LF+rYrWjVxII8vJErLgbwzOCD7WCXNGsJ6myl7tHf1phljwdRE6HdhvgQecfXj+RtrykbHYr15HWhXLL/g3F9I1kZAvN3Ng9MwCU9xWHdtK/zthgMBiDH/c1wD4IWXXl0WJg8NiMioERic5ymAnnUX67KL+Rm5Zc+OL1V9y63ShX0N2WFe28Z9/TwBnyOCML9FWizEWT1I5shw9u4z/uFWVrwo3YKQ5P64zrR3w2JQG4ocBhcHrouuQ4vX2OiLPednCLVIKFmx08PCY3KwBtZlnU9GDkSo4lL3py1crLz3YXLJIOmD7u2tLtGzbBa2xWel2Mk18ztsOflV9GSgXNcprPPzxrBYEQujNm8ig1VD+CK4FomRYY20lMxYdKmg3POSvtuL0kMQS0qo21KXKHmXKn2fjmBWGrvACY9Ot5JewrJPLGsSz3jnH9KAqPG+mJ2j2WDrp/isJP1FJqmRvcZDafcNsLpr2lH6TIqO0XhIdj8Evt9skd+ntaSjKrWr+B4x5/zVkAtDJTPc6XZ+tZgbgSggyul/Q7QzAh9w5Df01IpKSmy6vA9BIDb3bKSm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(6512007)(41300700001)(186003)(83380400001)(6506007)(6666004)(8936002)(2906002)(66476007)(478600001)(6486002)(38100700002)(6916009)(5660300002)(107886003)(36756003)(4326008)(316002)(1076003)(26005)(86362001)(66946007)(8676002)(66556008)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8xBjJFQ6PTbkGqF3dhzW5zX0TE1GjHuxRqgrmzK82/6h/nyAZYyqBXpCE9af?=
- =?us-ascii?Q?2U7gJfgSErer3SJPzLTiwK2oLhVKVwrxtOrSUTJlQh5M616XNxnzvs4WBPQb?=
- =?us-ascii?Q?8oiQ8A6HGpku3FUNlSlsmCqKjgw4ZG4sPoPiJeNutY/w8Ae3QECg1DsJUV5E?=
- =?us-ascii?Q?mnyZ9Fya7ZT7DP8CXkBR6cX1c4/4/xbAxdD0f9d0FAwfBlgGgYRTB0lfQE4K?=
- =?us-ascii?Q?u6vbqInUi+JstmZ0jpqx3JLqfcWKU76C3vyrC6ER6RPpFQDSUeQBEOOThZED?=
- =?us-ascii?Q?BBqPY1AtFz5QA94b0SsAvlsCrkUnHk3qDei0HbknKgyagYckRGn0NTu7+RfN?=
- =?us-ascii?Q?7YukTLztQic5oF8lCJbG9k1/E6rzuNXrELGpoA+LjzAkGM/l4zvoUni8fSaY?=
- =?us-ascii?Q?ADtzHSVbZft6uZxavFNgYvVj8nEHxM8zPexAauLTYm1+0K8k2vyT68Gcuw1K?=
- =?us-ascii?Q?wk8Pgp14LTg50BgZrNMgkNcfM/4FkNvbGCJTDE2MIfh9Xf3Da4ZxyQND9Dgc?=
- =?us-ascii?Q?Dfbs1wSaDRCOW2pUjbLWdH08+nSV6SVpyu0VXfBsqT5ZahoRNHTlJfm9dy+Y?=
- =?us-ascii?Q?FL3hojWbbVvMqOct7E40mYLSsnFrTBahsh8bBln7R7AtUnyy1hhABeBx69Jr?=
- =?us-ascii?Q?c/Cox9k3O3TPHj+oNcxRP5Uf2UKZauRxY/f8Gto8JYYuzjuKVos6+JNFNmx6?=
- =?us-ascii?Q?bLS8vlfsq4Tcnp2q1+URzfvKzuQIXLyMWWMxmLESCpLqHJJ4rgKT/ssn6+am?=
- =?us-ascii?Q?Ce7d8IEQLZp3uqLC4Jjm0WzmCpsALsAtz4Er1JULTRVBTE/Vet7HLQfzQKNx?=
- =?us-ascii?Q?wP0D3V7M1Egfv+ElHVYwgucVtgfdfH/DDiDlaRsUL9I8SbZziRzn5wqUFeK8?=
- =?us-ascii?Q?LVQ05HWrDYs+oXsZm8m2KHOcczW+cDU/ajMLfJjOzRElDTee5Agzxgpg/EwN?=
- =?us-ascii?Q?bZdZS/BwgYOjOKkUOO33mj6zsbk5lS/rOZxXx9LcUtkBqYE3QXyEIE/70bs3?=
- =?us-ascii?Q?T6PTAmLPYziOl2RNSQZpMfRfsvxtj6tr9p8chMQ4dofj6xn/d7nT4hylXgQC?=
- =?us-ascii?Q?qpI800Rkbznkne7BMW34eLPWsu6kTsHTvOBSP7qyedB564m9kMprpZwQNJ+O?=
- =?us-ascii?Q?5HrhkVLwI3JtR+HE0ShH7+F37SYJPqP3pA0g1DWu0WROKSyJGGsQGjXnSL/E?=
- =?us-ascii?Q?kG4iLfQXE87DS6tbdmC+NxvngICjdwGxKu6Y3FdRTWDAeb8C16xqmKTbdYI2?=
- =?us-ascii?Q?HWWIoPNCktCEvW/isqvCIin+7xPRAUUPQ6/KHQAJjwaPJ5Bg6lIJSdHl4IR2?=
- =?us-ascii?Q?YrT+almeEWL2MD+sbKKPq4p0o9Ym7W9zRZtWN2UQsBwVJ9gqKd+e8t8o41kg?=
- =?us-ascii?Q?JTOQ/mT9M8bhD0sZNSRmWGVK8+j/PwHv4MITDjs3lsxC91VxZpcIylUGVblH?=
- =?us-ascii?Q?6lPSiO/1w/NivvXolijWFn2BtR9DIAsT9k5soHmZmS7VfUJhqB6vxenNFMFY?=
- =?us-ascii?Q?6md4Ny0G0uYfuUtgRIDDGzCpLmy8aH8OWUcLiJ+kGSjo2lsdLxUbg4wwso3r?=
- =?us-ascii?Q?BOt35MVwxsOIn4PStzPCITND1Z3lOR9x0/A2BDUG?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fqRS1XSXi6IfYrUYcFKBdc74WpF+Q6yVfmIaIeGqoudV4xecNmEmSEAzZuie?=
+ =?us-ascii?Q?G+sg8yVDSOVxNS24WwKISj2Te3LqPHHu69Oriar+AigCp3hTnQLYpYyrjhVT?=
+ =?us-ascii?Q?tYkbMvawzuVwpIRGUjO4H7KvR6yXz/6shLDtuGDe66WTlXDx0jOJ7Bncqfv4?=
+ =?us-ascii?Q?BjW9faN6/pnkQlbwmZwYrjyZzxZA/iK+x2z4+J/NOkwKzqPcNmqXTu0u+NIP?=
+ =?us-ascii?Q?b0UGxPxjUvmQH713UBhCxB3dkWBHGAHQagMSQFbAKkBCG7eG2OqpTzf+h9XQ?=
+ =?us-ascii?Q?3v+RpwuuR1fhqMTkugmON3d5R2+FD8/QTp0Wc+joBJ4mILxyZl1XIHCsZyeO?=
+ =?us-ascii?Q?qvpZXKSKbDYYZPaNDmhyAdoflAdUTkKPIA1csTRvyghMlSWwapjL68bQEGS0?=
+ =?us-ascii?Q?cXrLqdPmbRLXKoawIztLylh2mop1eoed2D8+fre0jOvdmz3HX0l+QFuHr/uG?=
+ =?us-ascii?Q?5mDJNfInfL2L4thLu01CxFhOwYl0pVb2LoQgPClRUzY/5a6v/gSk5AabdPod?=
+ =?us-ascii?Q?WEp8HwRbZb9Ksv5EUc3Mz8Fk2aGwEGWO76qBB+d9hphSjWGpCVQBy8p6SbxV?=
+ =?us-ascii?Q?m+VCvFXXWsGIkv3uqnG00xpCC04EU02crqyFmsI5O4CZhSTqSZNQ+sUhampp?=
+ =?us-ascii?Q?PYRo2H4HuM8rvBY3ndvYj+CwrnH2zWiF2n6fh6p76bCCu4K7WUX8ewdSJitH?=
+ =?us-ascii?Q?l5iJLYepJdR0PSVou74NNw6dwitktsM/3rv39H/7ARvmrZ9FZm0EP+7zUYoH?=
+ =?us-ascii?Q?yYZS8sQ5c3lFTiUaRECV7UYyUdGML8mrSq2NfM+HFYDaPAoPsLug2SzNswrg?=
+ =?us-ascii?Q?FtrLOmsq18sFGNGW8wDxFNxYrZB1kYhCIduyC/4eyFR3i6oggGUs6iKaGlBt?=
+ =?us-ascii?Q?Cd6RiZzII4R4+qbNittVSN1J25jvK+5uhEfFhOLZ6J2ei+z0SqMWh5tDMhIt?=
+ =?us-ascii?Q?8ldXPKDXw4HDAhNFvViwuUCA6e2vzUTTG0cge0g7LdpIQ1ktJkHFtsF7PFyD?=
+ =?us-ascii?Q?IZcLArlNghX3UBXnl+wz3UBn6zWRigQKKJDUfTT9xRO/8l/BwZ/ZIwjs7Coc?=
+ =?us-ascii?Q?fLbz7TAIgz4eK/pP9yXaAlyv31Ktxy89NGgJVWf21Rm6R2DMTYP06c4BWskZ?=
+ =?us-ascii?Q?zyy+Y2or2vaDDc9zFKo4Z/rKbVKhClgjmWEeGeeWSe9hql6TTEzAkIxkDAW6?=
+ =?us-ascii?Q?hegUSftti9fUcyrv9icRdaClYK+yltcxcQg66s3ZgmYJxbzg6L7x3HNFCVBh?=
+ =?us-ascii?Q?PWipVp6qxTMUq6WI6Z/04N8MPeZsT6YVXPWc01rBNcdFSdyR9VJ0te+/+zUk?=
+ =?us-ascii?Q?d54aOWRfNigcGnHUzMeaZyyl4g9Gwiepda+aOjIhLFA/VY4JZhhbN/FJJjpD?=
+ =?us-ascii?Q?0Mlib2OC+6yqx4kGRBpodyB8PfsUO5kUIfr7jc+gxoFHjMFi4tpkIOUEiP70?=
+ =?us-ascii?Q?v7cO3Zn3IjWaIUNVDEze3uIGcfNOw+D6+HqozRaNG7vUAz5GjVS+/zML1z6O?=
+ =?us-ascii?Q?QeFeywkT5RaYawVBHVEAZSeeAqNawfA7pKwCvtV1BzH2GskuZJ7+hpGAgSPM?=
+ =?us-ascii?Q?ekQffCvBjAh3D4CSFDarXax1LUupysz5U04PbbMU?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f7ac336-b534-4dea-5c20-08da708ebff9
+X-MS-Exchange-CrossTenant-Network-Message-Id: d50f6a0f-b1ad-4a7b-041b-08da708ec44e
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 11:46:03.6053
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 11:46:10.9647
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PKLlFHOHtf1bSFdJf0U815VkcimJacHhozn5qsZX5Tbb8LFuzKaQO6siqmBDdFawt/FpHUWJwaEtjpFRil3JdQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: dAsZ+EOc4U4nXm3EkgMCKjCC8n0QyoSieq+A7peqnVxbfit9qEAvZo2JN+8PY83VE+Opui9soxYcy9kEkS7P0A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4505
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -112,23 +114,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a recently reported netdevsim bug found using syzkaller.
+As part of FIB offload simulation, netdevsim stores IPv4 and IPv6 routes
+and holds a reference on FIB info structures that in turn hold a
+reference on the associated nexthop device(s).
 
-Patch #1 fixes the bug.
+In the unlikely case where we are unable to allocate memory to process a
+route deletion request, netdevsim will not release the reference from
+the associated FIB info structure, thereby preventing the associated
+nexthop device(s) from ever being removed [1].
 
-Patch #2 adds a debugfs knob to allow us to test the fix.
+Fix this by scheduling a work item that will flush netdevsim's FIB table
+upon route deletion failure. This will cause netdevsim to release its
+reference from all the FIB info structures in its table.
 
-Patch #3 adds test cases.
+Reported by Lucas Leong of Trend Micro Zero Day Initiative.
 
-Ido Schimmel (3):
-  netdevsim: fib: Fix reference count leak on route deletion failure
-  netdevsim: fib: Add debugfs knob to simulate route deletion failure
-  selftests: netdevsim: Add test cases for route deletion failure
+Fixes: 0ae3eb7b4611 ("netdevsim: fib: Perform the route programming in a non-atomic context")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+---
+No "Reported-by" tag since I do not have the mail address of the
+reporter.
+---
+ drivers/net/netdevsim/fib.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
- drivers/net/netdevsim/fib.c                   | 41 ++++++++++++++++-
- .../selftests/drivers/net/netdevsim/fib.sh    | 45 +++++++++++++++++++
- 2 files changed, 85 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
+index c8f398f5bc5b..57371c697d5c 100644
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -54,6 +54,7 @@ struct nsim_fib_data {
+ 	struct rhashtable nexthop_ht;
+ 	struct devlink *devlink;
+ 	struct work_struct fib_event_work;
++	struct work_struct fib_flush_work;
+ 	struct list_head fib_event_queue;
+ 	spinlock_t fib_event_queue_lock; /* Protects fib event queue list */
+ 	struct mutex nh_lock; /* Protects NH HT */
+@@ -978,7 +979,7 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
+ 
+ 	fib_event = kzalloc(sizeof(*fib_event), GFP_ATOMIC);
+ 	if (!fib_event)
+-		return NOTIFY_BAD;
++		goto err_fib_event_alloc;
+ 
+ 	fib_event->data = data;
+ 	fib_event->event = event;
+@@ -1006,6 +1007,9 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
+ 
+ err_fib_prepare_event:
+ 	kfree(fib_event);
++err_fib_event_alloc:
++	if (event == FIB_EVENT_ENTRY_DEL)
++		schedule_work(&data->fib_flush_work);
+ 	return NOTIFY_BAD;
+ }
+ 
+@@ -1483,6 +1487,24 @@ static void nsim_fib_event_work(struct work_struct *work)
+ 	mutex_unlock(&data->fib_lock);
+ }
+ 
++static void nsim_fib_flush_work(struct work_struct *work)
++{
++	struct nsim_fib_data *data = container_of(work, struct nsim_fib_data,
++						  fib_flush_work);
++	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
++
++	/* Process pending work. */
++	flush_work(&data->fib_event_work);
++
++	mutex_lock(&data->fib_lock);
++	list_for_each_entry_safe(fib_rt, fib_rt_tmp, &data->fib_rt_list, list) {
++		rhashtable_remove_fast(&data->fib_rt_ht, &fib_rt->ht_node,
++				       nsim_fib_rt_ht_params);
++		nsim_fib_rt_free(fib_rt, data);
++	}
++	mutex_unlock(&data->fib_lock);
++}
++
+ static int
+ nsim_fib_debugfs_init(struct nsim_fib_data *data, struct nsim_dev *nsim_dev)
+ {
+@@ -1541,6 +1563,7 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 		goto err_rhashtable_nexthop_destroy;
+ 
+ 	INIT_WORK(&data->fib_event_work, nsim_fib_event_work);
++	INIT_WORK(&data->fib_flush_work, nsim_fib_flush_work);
+ 	INIT_LIST_HEAD(&data->fib_event_queue);
+ 	spin_lock_init(&data->fib_event_queue_lock);
+ 
+@@ -1587,6 +1610,7 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ err_nexthop_nb_unregister:
+ 	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
+ err_rhashtable_fib_destroy:
++	cancel_work_sync(&data->fib_flush_work);
+ 	flush_work(&data->fib_event_work);
+ 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
+ 				    data);
+@@ -1616,6 +1640,7 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
+ 					    NSIM_RESOURCE_IPV4_FIB);
+ 	unregister_fib_notifier(devlink_net(devlink), &data->fib_nb);
+ 	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
++	cancel_work_sync(&data->fib_flush_work);
+ 	flush_work(&data->fib_event_work);
+ 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
+ 				    data);
 -- 
 2.36.1
 
