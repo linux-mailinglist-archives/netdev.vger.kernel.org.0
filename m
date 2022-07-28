@@ -2,87 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D06584454
-	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 464D1584405
+	for <lists+netdev@lfdr.de>; Thu, 28 Jul 2022 18:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbiG1QoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 12:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        id S231289AbiG1QQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 12:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbiG1QoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:44:00 -0400
-X-Greylist: delayed 900 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 09:43:59 PDT
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D490422F4;
-        Thu, 28 Jul 2022 09:43:59 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1oH6Aw-0008D9-2T;
-        Thu, 28 Jul 2022 18:15:51 +0200
-Date:   Thu, 28 Jul 2022 18:14:47 +0200
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229656AbiG1QQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 12:16:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41FC70E4A
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 09:16:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E3E461C16
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 16:16:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3217BC433C1;
+        Thu, 28 Jul 2022 16:16:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659025006;
+        bh=ux/7YHZxUFIWKl+XvHkxFh5UY4K7waamoKYm9/SALgw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KpdWX3X4Hlwif1DyyunemnB+GQaUvfguTYMds4Hooa/uqDTqOpRVvcenKvIeDGJwY
+         ATZrgrJ/CM3GVE7kkLM8sv41ndi6hcY4z8Z/nw+WMOz58Qn/0a8c4vmR2S4FnAFldv
+         OW1d76PgWzYzPEacKALkrsghPye5F7WgBtbqy6Cp7iXF2S7tQ7Wp4p9AfHWBIaMlwq
+         nR79zhZc6tFjVToKKXhITNRcrhzRrQUVDss3gun7oW2iYNU0L88Ovi6Ml6cc+EF0P4
+         MqKdM1cq6OLi7VNd2MaBs750Rb9UvYucfTu+KysvHdHfKDb2wBFhP0Vtr47QLA7/P/
+         pooOxZcjmufEw==
+Date:   Thu, 28 Jul 2022 09:16:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
- completely rework binding
-Message-ID: <YuK193gAQ+Rwe26s@makrotopia.org>
-References: <20220726122406.31043-1-arinc.unal@arinc9.com>
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/9] net: devlink: remove region snapshots list
+ dependency on devlink->lock
+Message-ID: <20220728091645.7ffef7da@kernel.org>
+In-Reply-To: <YuJN1SYkPR33trcs@nanopsycho>
+References: <1658941416-74393-1-git-send-email-moshe@nvidia.com>
+        <1658941416-74393-3-git-send-email-moshe@nvidia.com>
+        <20220727190156.0ec856ae@kernel.org>
+        <YuJN1SYkPR33trcs@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220726122406.31043-1-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, 28 Jul 2022 10:50:29 +0200 Jiri Pirko wrote:
+> >> So resolve this by removing dependency on devlink->lock for region
+> >> snapshots list consistency and introduce new mutex to ensure it.  
+> >
+> >I was hoping to avoid per-subobject locks. What prevents us from
+> >depending on the instance lock here (once the driver is converted)?  
+> 
+> The fact that it could be called in mlx4 from both devl locked and
+> unlocked context. Basically whenever CMD to fw is called.
 
-please see a minor comment inline below:
+Ok, I guess mlx4 uses regions as proto-health reporters so too hard of
+a battle to fight. Please update the commit message tho.
 
-On Tue, Jul 26, 2022 at 03:24:06PM +0300, Arınç ÜNAL wrote:
-> [...]
-> -  CPU-Ports need a phy-mode property:
-> -    Allowed values on mt7530 and mt7621:
-> -      - "rgmii"
-> -      - "trgmii"
-> -    On mt7531:
-> -      - "1000base-x"
-> -      - "2500base-x"
-> -      - "rgmii"
-> -      - "sgmii"
-> +  There are two versions of MT7530. MT7621AT, MT7621DAT, MT7621ST and MT7623AI
+> What is wrong in small locks here and there when they are sufficient?
 
-There are two version of MT7530 **supported by this driver**.....
-(MT7620 also contains MT7530, switch registers are directly mapped into
-SoC's memory map rather than using MDIO like on MT7621 and standalone
-variants, and it got FastEthernet PHYs for Port 0-4)
-
+The more locks the less obvious the semantics and ordering of locking
+are.
