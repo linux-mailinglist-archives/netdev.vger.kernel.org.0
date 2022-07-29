@@ -2,143 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3385B584E75
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:01:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E44584E7A
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbiG2KBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 06:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
+        id S234932AbiG2KEf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jul 2022 06:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiG2KBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:01:43 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4192E18345
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:01:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659088903; x=1690624903;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bV3vRNvbm9HFvcPIQ/uuH+QI+/IqQMbReMUmHzwIA7U=;
-  b=Z1xCVHOPMHjKjbxRs1uHVtWRPAAkIMl2Q/GjU1iyvaadbvXJkxiNIwam
-   hydazxo30IgF+Y573ltCy86w0gr1OchDl826uPVB1zVUgvFwnXNv8Xrfo
-   VYPEyVAOxGGgJ2pyr/Wbxp2QqrkQ6aewQ4s94KC5hY17MmuOkUKURr7Yc
-   i7Slj0AHwtH/qap3kPk6Wqe79BE8slWP7Ss8GLRGSAmXC9pkyDyaLCst3
-   nZaGgWMG5IS2l1BbIhTF96TpAUg4Oa9JJqIvd+UiJ/2oeDmvsZLGe+Pxy
-   fQt+xUwP+F8EwkelyEWu6KQvvU4fercYV/oaYeXEofzGJqfdiwbpPHH1q
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="287490296"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="287490296"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 03:01:43 -0700
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="660172928"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.175.200]) ([10.249.175.200])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 03:01:41 -0700
-Message-ID: <87efac3e-2196-f9ad-1af1-a27470824eac@intel.com>
-Date:   Fri, 29 Jul 2022 18:01:38 +0800
+        with ESMTP id S229520AbiG2KEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:04:34 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 292F57B372
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:04:33 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-315-tE6h0QNRNy-hJiKiIBFEYA-1; Fri, 29 Jul 2022 11:04:30 +0100
+X-MC-Unique: tE6h0QNRNy-hJiKiIBFEYA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Fri, 29 Jul 2022 11:04:29 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Fri, 29 Jul 2022 11:04:29 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Kicinski' <kuba@kernel.org>, Martin KaFai Lau <kafai@fb.com>
+CC:     Stanislav Fomichev <sdf@google.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: RE: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+Thread-Topic: [PATCH bpf-next 02/14] bpf: net: Avoid sock_setsockopt() taking
+ sk lock when called from bpf
+Thread-Index: AQHYoqL7kSbmKz+Wykmj0IeOsCioUq2VHixQ
+Date:   Fri, 29 Jul 2022 10:04:29 +0000
+Message-ID: <732a8006394f49d58c586156f3f81281@AcuMS.aculab.com>
+References: <20220727060856.2370358-1-kafai@fb.com>
+        <20220727060909.2371812-1-kafai@fb.com>
+        <YuFsHaTIu7dTzotG@google.com>
+        <20220727183700.iczavo77o6ubxbwm@kafai-mbp.dhcp.thefacebook.com>
+        <CAKH8qBt5-p24p9AvuEntb=gRFsJ_UQZ_GX8mFsPZZPq7CgL_4A@mail.gmail.com>
+        <20220727212133.3uvpew67rzha6rzp@kafai-mbp.dhcp.thefacebook.com>
+        <CAKH8qBs3jp_0gRiHyzm29HaW53ZYpGYpWbmLhwi87xWKi9g=UA@mail.gmail.com>
+        <20220728004546.6n42isdvyg65vuke@kafai-mbp.dhcp.thefacebook.com>
+        <20220727184903.4d24a00a@kernel.org>
+        <20220728163104.usdkmsxjyqwaitxu@kafai-mbp.dhcp.thefacebook.com>
+ <20220728095629.6109f78c@kernel.org>
+In-Reply-To: <20220728095629.6109f78c@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in
- vdpa.c
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-7-lingshan.zhu@intel.com>
- <20220729045039-mutt-send-email-mst@kernel.org>
- <7ce4da7f-80aa-14d6-8200-c7f928f32b48@intel.com>
- <20220729051119-mutt-send-email-mst@kernel.org>
- <50b4e7ba-3e49-24b7-5c23-d8a76c61c924@intel.com>
- <20220729052149-mutt-send-email-mst@kernel.org>
- <05bf4c84-28dd-4956-4719-3a5361d151d8@intel.com>
- <20220729053615-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20220729053615-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jakub Kicinski
+> Sent: 28 July 2022 17:56
+> 
+> On Thu, 28 Jul 2022 09:31:04 -0700 Martin KaFai Lau wrote:
+> > If I understand the concern correctly, it may not be straight forward to
+> > grip the reason behind the testings at in_bpf() [ the in_task() and
+> > the current->bpf_ctx test ] ?  Yes, it is a valid point.
+> >
+> > The optval.is_bpf bit can be directly traced back to the bpf_setsockopt
+> > helper and should be easier to reason about.
+> 
+> I think we're saying the opposite thing. in_bpf() the context checking
+> function is fine. There is a clear parallel to in_task() and combined
+> with the capability check it should be pretty obvious what the code
+> is intending to achieve.
+> 
+> sockptr_t::in_bpf which randomly implies that the lock is already held
+> will be hard to understand for anyone not intimately familiar with the
+> BPF code. Naming that bit is_locked seems much clearer.
+> 
+> Which is what I believe Stan was proposing.
 
+Or make sk_setsockopt() be called after the integer value
+has been read and with the lock held.
 
-On 7/29/2022 5:39 PM, Michael S. Tsirkin wrote:
-> On Fri, Jul 29, 2022 at 05:35:09PM +0800, Zhu, Lingshan wrote:
->>
->> On 7/29/2022 5:23 PM, Michael S. Tsirkin wrote:
->>> On Fri, Jul 29, 2022 at 05:20:17PM +0800, Zhu, Lingshan wrote:
->>>> On 7/29/2022 5:17 PM, Michael S. Tsirkin wrote:
->>>>> On Fri, Jul 29, 2022 at 05:07:11PM +0800, Zhu, Lingshan wrote:
->>>>>> On 7/29/2022 4:53 PM, Michael S. Tsirkin wrote:
->>>>>>> On Fri, Jul 01, 2022 at 09:28:26PM +0800, Zhu Lingshan wrote:
->>>>>>>> This commit fixes spars warnings: cast to restricted __le16
->>>>>>>> in function vdpa_dev_net_config_fill() and
->>>>>>>> vdpa_fill_stats_rec()
->>>>>>>>
->>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>>>> ---
->>>>>>>>      drivers/vdpa/vdpa.c | 6 +++---
->>>>>>>>      1 file changed, 3 insertions(+), 3 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
->>>>>>>> index 846dd37f3549..ed49fe46a79e 100644
->>>>>>>> --- a/drivers/vdpa/vdpa.c
->>>>>>>> +++ b/drivers/vdpa/vdpa.c
->>>>>>>> @@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
->>>>>>>>      		    config.mac))
->>>>>>>>      		return -EMSGSIZE;
->>>>>>>> -	val_u16 = le16_to_cpu(config.status);
->>>>>>>> +	val_u16 = __virtio16_to_cpu(true, config.status);
->>>>>>>>      	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
->>>>>>>>      		return -EMSGSIZE;
->>>>>>>> -	val_u16 = le16_to_cpu(config.mtu);
->>>>>>>> +	val_u16 = __virtio16_to_cpu(true, config.mtu);
->>>>>>>>      	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->>>>>>>>      		return -EMSGSIZE;
->>>>>>> Wrong on BE platforms with legacy interface, isn't it?
->>>>>>> We generally don't handle legacy properly in VDPA so it's
->>>>>>> not a huge deal, but maybe add a comment at least?
->>>>>> Sure, I can add a comment here: this is for modern devices only.
->>>>>>
->>>>>> Thanks,
->>>>>> Zhu Lingshan
->>>>> Hmm. what "this" is for modern devices only here?
->>>> this cast, for LE modern devices.
->>> I think status existed in legacy for sure, and it's possible that
->>> some legacy devices backported mtu and max_virtqueue_pairs otherwise
->>> we would have these fields as __le not as __virtio, right?
->> yes, that's the reason why it is virtio_16 than just le16.
->>
->> I may find a better solution to detect whether it is LE, or BE without a
->> virtio_dev structure.
->> Check whether vdpa_device->get_device_features() has VIRTIO_F_VERISON_1. If
->> the device offers _F_VERSION_1, then it is a LE device,
->> or it is a BE device, then we use __virtio16_to_cpu(false, config.status).
->>
->> Does this look good?
-> No since the question is can be a legacy driver with a transitional
-> device.  I don't have a good idea yet. vhost has VHOST_SET_VRING_ENDIAN
-> and maybe we need something like this for config as well?
-Is it a little overkill to implementing vdpa_ops.get_endian()?
->
->>>>>>>> @@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
->>>>>>>>      	}
->>>>>>>>      	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
->>>>>>>> -	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
->>>>>>>> +	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
->>>>>>>>      	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
->>>>>>>>      		return -EMSGSIZE;
->>>>>>>> -- 
->>>>>>>> 2.31.1
+That saves any (horrid) conditional locking.
+
+Also sockptr_t should probably have been a structure with separate
+user and kernel address fields.
+Putting the length in there would (probably) save code.
+
+There then might be scope for pre-copying short user buffers
+into a kernel buffer while still allowing the requests that
+ignore the length copy directly from a user buffer.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
