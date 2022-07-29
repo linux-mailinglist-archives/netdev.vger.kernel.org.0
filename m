@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F2A584E95
+	by mail.lfdr.de (Postfix) with ESMTP id 5419A584E96
 	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234827AbiG2KSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 06:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
+        id S235853AbiG2KSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 06:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235922AbiG2KSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:18:37 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B106482458
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:18:35 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id y15so4184858plp.10
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:18:35 -0700 (PDT)
+        with ESMTP id S235871AbiG2KSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:18:39 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC0E65670
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:18:39 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so4841017pjk.1
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:18:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=jXtr5AXq93zEyoCDF1JHA7qsDiaPp30BFrWqyPPuioI=;
-        b=VcsJxoERrmaByn8ceqQk1RLD6k0x0Y6h2GdacITVw9g0uHk/Ns/SGsCPSkx8rkC7ML
-         iFCkCBK6KSHvK9AlJLr5Yhf/tr3lV9WgJ5OAM3ACJKWQKTYDcBfAfZUHzJW18jEc0/du
-         z339zXd9i3egxCEjL8+Nkbt4cBHPcsCdoV8t4=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=8kxjWVlTMuvFWSh19Xr0J6Fz1hjehy/9JocLmDpApAo=;
+        b=WvBi3eVyyVvTsSJj3o+9Rnmu85gEcLd4bN4miURt8oclzyb6Te0SwKQFOa/BGm2+fp
+         EJrZ1KqMWOQka7HDavN5HieTrMXDcp4GukzP9doRnWV8W9luckB38fy17KjtGi/o9sw7
+         Mcz4tZd1vhYm2PD8hbL+qj7lFUi9jAqrgV780=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jXtr5AXq93zEyoCDF1JHA7qsDiaPp30BFrWqyPPuioI=;
-        b=Clp5Tg0Tao1RA7q6KSSpSWbz0xXkeLCAedLo5tooh2n6xmjI2Geo55Ym2QcY0z0OEJ
-         y5bDOEUuTP6Nu0xaEO9VGMNTkRx9LN0U9zTNsDJ1UIbAbCDVMYzvHk/svd+JExHIXQbT
-         46bEQZIx58y5GQXlfE6Sc/4ar6lIdP3JoqcevqCIVhRd+/ljF/ulzN75qhFW09suBCEv
-         bUZz5elHcT8JppWRCxt03LQNZMgx7CJR62OY8lMyu5kIiQlN5dxp5oG7w3XfYeJY2CI7
-         WWl3JdRIUgdjywRyLFmzbgJgbp4OyLwY81ADZ4oZ3UHdq4+3XuSP6hvudJBxvV2VvCwh
-         378A==
-X-Gm-Message-State: ACgBeo0YgpLj+Fs9zD4nutHGdbJ6XM7tjbIqAgs6JYF/GRn+iyGoUz9j
-        PMa/FNB/DoZQbf2t9q2rp+aFeA==
-X-Google-Smtp-Source: AA6agR5ps6Hb0TI7B3o5BGtaaeSW1eOsZYs6j+cYT3XvSlwq8ClTAtmmYEH7lvN6cyBvFz/t489yKQ==
-X-Received: by 2002:a17:902:b686:b0:16c:ae59:c9b4 with SMTP id c6-20020a170902b68600b0016cae59c9b4mr3181912pls.26.1659089914997;
-        Fri, 29 Jul 2022 03:18:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=8kxjWVlTMuvFWSh19Xr0J6Fz1hjehy/9JocLmDpApAo=;
+        b=INTV3VwEsK4SUxCRAYg2XfLD1ITvbNBl2yppGmwMqpFxuOiVWutQkFsab3kFry6ufz
+         r08eneiV4WppIub+OXsVNc5z+B/8UyXu1cEJUtvg1HvrF+sFT9OOH630SvXMIMNw3sYv
+         vaP4oHUs68z+9e52D6ozXsvkzKoYmA3ZayE3kVxzCWPCv+2M2cenDgE4ShokmPyKLTfQ
+         f731xrUOQ5mEWoLZ0lSf8i7sTwKG81vJWkjn4cG/xWUCMK5Vcy/3LyMSrynEZ9Ovig4i
+         icqHQqFn/6lekGiSIAUrt0k2OmH+hEbXHu6rdSpGF7yf0SSkokHL2HMwU3W+1x6eOUP9
+         2CxA==
+X-Gm-Message-State: ACgBeo0uKWakkLbyR7VkjxJPHnlGvCzqdnZts5NNDo9RETWukwcRbYiS
+        41UPhhTmjGiW4sRvay3TEzweDQ==
+X-Google-Smtp-Source: AA6agR4MHDcuX48yNXMRjWMM64OzRMIFT1swZfV5pvTA1Tbf+b16iqFSkDMTUIFzWMla5BzZYMZ7SA==
+X-Received: by 2002:a17:90b:681:b0:1f2:147a:5e55 with SMTP id m1-20020a17090b068100b001f2147a5e55mr3341510pjz.159.1659089918458;
+        Fri, 29 Jul 2022 03:18:38 -0700 (PDT)
 Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id ik24-20020a170902ab1800b0016dc6243bb2sm3141727plb.143.2022.07.29.03.18.31
+        by smtp.gmail.com with ESMTPSA id ik24-20020a170902ab1800b0016dc6243bb2sm3141727plb.143.2022.07.29.03.18.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 03:18:34 -0700 (PDT)
+        Fri, 29 Jul 2022 03:18:37 -0700 (PDT)
 From:   Vikas Gupta <vikas.gupta@broadcom.com>
 To:     jiri@nvidia.com, dsahern@kernel.org, stephen@networkplumber.org
 Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
         michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
         Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH iproute2-next v4 0/3] devlink: add support to run selftest
-Date:   Fri, 29 Jul 2022 15:48:18 +0530
-Message-Id: <20220729101821.48180-1-vikas.gupta@broadcom.com>
+Subject: [PATCH iproute2-next v4 1/3] devlink: update the devlink.h
+Date:   Fri, 29 Jul 2022 15:48:19 +0530
+Message-Id: <20220729101821.48180-2-vikas.gupta@broadcom.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220729101821.48180-1-vikas.gupta@broadcom.com>
+References: <20220729101821.48180-1-vikas.gupta@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001027ab05e4eef9ed"
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="000000000000449c2105e4eef9a7"
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_TVD_MIME_NO_HEADERS autolearn=no autolearn_force=no
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_TVD_MIME_NO_HEADERS,UPPERCASE_50_75 autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,59 +67,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001027ab05e4eef9ed
+--000000000000449c2105e4eef9a7
 
-Hi,
-  This patchset adds support in devlink to run selftests.
-  A related patchset for kernel has been merged.
+update the devlink.h to comaptible with net-next kernel.
 
- Below are the few examples for the commands implemented in the
- patchset.
-  
-Examples:
-$ devlink dev selftests run pci/0000:03:00.0 id flash
-pci/0000:03:00.0:
-    flash:
-      status passed
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+---
+ include/uapi/linux/devlink.h | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-$ devlink dev selftests show pci/0000:03:00.0
-pci/0000:03:00.0
-      flash
-
-changes from:
-v3->v4
-    Updated with the UAPI kernel header and hence related implementation
-    for selftests impacted due to reorganization of enums/attributes.
-
-v2->v3
-    a) Update the implementation of commands according to 
-       the latest patch set of kernel devlink patch.
-    b) Added bash-completion.
-
-v1->v2
-    a) Changes required to implement command due to changes
-       in kernel patch (under review).
-    b) Added commands descriptions in devlink-dev man page.
-
-Thanks,
-Vikas 
-
-Vikas Gupta (3):
-  devlink: update the devlink.h
-  devlink: add support for running selftestst
-  devlink : update man page and bash-completion for new commands
-
- bash-completion/devlink      |  21 ++-
- devlink/devlink.c            | 294 +++++++++++++++++++++++++++++++++++
- include/uapi/linux/devlink.h |  31 ++++
- man/man8/devlink-dev.8       |  48 ++++++
- 4 files changed, 393 insertions(+), 1 deletion(-)
-
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index da0f1ba8..0224b8bd 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -136,6 +136,9 @@ enum devlink_command {
+ 	DEVLINK_CMD_LINECARD_NEW,
+ 	DEVLINK_CMD_LINECARD_DEL,
+ 
++	DEVLINK_CMD_SELFTESTS_GET,	/* can dump */
++	DEVLINK_CMD_SELFTESTS_RUN,
++
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+ 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+@@ -276,6 +279,30 @@ enum {
+ #define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
+ 	(_BITUL(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
+ 
++enum devlink_attr_selftest_id {
++	DEVLINK_ATTR_SELFTEST_ID_UNSPEC,
++	DEVLINK_ATTR_SELFTEST_ID_FLASH,	/* flag */
++
++	__DEVLINK_ATTR_SELFTEST_ID_MAX,
++	DEVLINK_ATTR_SELFTEST_ID_MAX = __DEVLINK_ATTR_SELFTEST_ID_MAX - 1
++};
++
++enum devlink_selftest_status {
++	DEVLINK_SELFTEST_STATUS_SKIP,
++	DEVLINK_SELFTEST_STATUS_PASS,
++	DEVLINK_SELFTEST_STATUS_FAIL
++};
++
++enum devlink_attr_selftest_result {
++	DEVLINK_ATTR_SELFTEST_RESULT_UNSPEC,
++	DEVLINK_ATTR_SELFTEST_RESULT,		/* nested */
++	DEVLINK_ATTR_SELFTEST_RESULT_ID,	/* u32, enum devlink_attr_selftest_id */
++	DEVLINK_ATTR_SELFTEST_RESULT_STATUS,	/* u8, enum devlink_selftest_status */
++
++	__DEVLINK_ATTR_SELFTEST_RESULT_MAX,
++	DEVLINK_ATTR_SELFTEST_RESULT_MAX = __DEVLINK_ATTR_SELFTEST_RESULT_MAX - 1
++};
++
+ /**
+  * enum devlink_trap_action - Packet trap action.
+  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
+@@ -576,6 +603,10 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
+ 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+ 
++	DEVLINK_ATTR_NESTED_DEVLINK,		/* nested */
++
++	DEVLINK_ATTR_SELFTESTS,			/* nested */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
 -- 
 2.31.1
 
 
---0000000000001027ab05e4eef9ed
+--000000000000449c2105e4eef9a7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -187,13 +207,13 @@ QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
 PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
 ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
 bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBaw2dKPkjnyLq8EqSOw4OtGK8UicWcJJ6Mk
-4+7NmaLkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcyOTEw
-MTgzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIDEcONge0lN3rI5d2ptujrZYwGQ+j07blxl
+B9ce3xzrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcyOTEw
+MTgzOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
 AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQBQzLQ1tp3bwfVsC6kF4n5KSbDcN4WncS/csRy+GuodFjtGjnXWF23Y
-MgAE+ssXyK02nVulsdAS9+bgBEibVvE/TDdqhVm4SbP+Gt3CL3InRIKltM5wPSBnbYXrKldQMNes
-OHT0qJ7cNDMTJWCW2IDCvqiZSRVCgTq4Os/fZic3roreYfolHlmqykFxydzcNfmblGOAi/Kga9AX
-ycWinly+gkbe9XnqbWmaDqWdl+B2urAQ4tp82CF7AI+i3pijhjBx0gwCtorMzr8tzUve508yKahA
-w6HDaB5ogVZuIZeZBcczFFenFzBQ/dOi8NPZBWdeu2l6kzdeutLkPyRRy/Fw
---0000000000001027ab05e4eef9ed--
+BgkqhkiG9w0BAQEFAASCAQCG4VjJaBwQ/62XeVlDfuV0kQZ/aDxAyBKS7dBElJRYfCfUTPNB4lUC
+oxW46JQEBb7QD+RkrlXnG1TwjYRcK2jQncqSo2NPcQRw7BRpCin2OKtReUiU6qnJ5lnCKo/Fzfjd
+3OJBTAceBZiaNVewc8g2BQAEm4t7CfFou5k0K5jlj+lybaUvYVKu5WtkOi8NpVpl/bH9McszkTxK
+bysN5ZZjWSU5nySKu+LE0wKG5Okn5nT7elvtjFtaW11W9j1UbMR2VZuNsTf3Lykmx9j2lTp+NDD2
+2pMxZnlGgJ4cpWu4WYE5E6hjbKkPdSg84Tfrmz4rYrTI1ecwTu1HhtJb8MZL
+--000000000000449c2105e4eef9a7--
