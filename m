@@ -2,65 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 255565851B6
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75A085851DF
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236678AbiG2OkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 10:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
+        id S234333AbiG2O4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 10:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiG2OkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:40:00 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1AD7E02E
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:39:56 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id f20so438376lfc.10
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:39:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N5JoMWEdpqW2rG4X2OnLxPkiYqb3od743gGmev+ObJk=;
-        b=NB6jPgssQMsFB/CmjXcLDhk96st7QqSeQAFQzUg1+/DgvCJIXSF9NPAJhN1BYzGMG4
-         7kHAmLtC3GYv9z6WO7KmfsU0fYbFdKELkMGmmkm/uyF5FKurBqhGRmFJWmt1uhpv+cLY
-         nEwZGbwrzgmKVvxtd06jqMHTkFtTft5Um585o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N5JoMWEdpqW2rG4X2OnLxPkiYqb3od743gGmev+ObJk=;
-        b=yLRLQGRa67wxi9V4JKPzeyoV50NBCeueLdKT8PXhXkxRrn4l/uSByPDZW30wlvZPS+
-         SHIlm+31qrZDjQU3W+UOzvEyDFI+d074JMar7WxfmoHXKd/BUNGAlsJm8HM//wzb+H/o
-         44y8iZUjPd6b420dJcNO/1CzbnWe05wdYW5FB/toXGc15HuWm5cgz0hOJrVGHSy8eOWb
-         Wa4iIfxP0ZXF6SLw9dsHr7PBdE8qaSCp29ZEAyz3GPsmiBoO8xBAiymHN35tYicneytM
-         jn8Ncw9FqnFPRwm1mVN70HIApfBqdexEXgjrMU45QqM52RPfxSfgjlOMFugk5vMWbBdf
-         +t0Q==
-X-Gm-Message-State: AJIora9GETGeC/nOTlKeg42xlJKmpgPonHekJBhR/rlrAFnAgNLzmyCS
-        pyhZSe1GDBY5KJwFM+QcivB+WndSuSNATQ==
-X-Google-Smtp-Source: AGRyM1ud5Y1X1Hjgp+8ZnEdUViHKlDSPcVjAY+3CGnRkScPwH1ATkjYRK1uEEEPdyIfPRbfO8CgIKg==
-X-Received: by 2002:ac2:4c4d:0:b0:48a:7a96:470d with SMTP id o13-20020ac24c4d000000b0048a7a96470dmr1269225lfk.682.1659105594827;
-        Fri, 29 Jul 2022 07:39:54 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:110f:4304:1700:d82f:ac98:7032:476e])
-        by smtp.gmail.com with ESMTPSA id i2-20020a196d02000000b0048ab15f2262sm678380lfc.96.2022.07.29.07.39.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 07:39:54 -0700 (PDT)
-From:   Marek Majkowski <marek@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, kernel-team@cloudflare.com,
-        ivan@cloudflare.com, edumazet@google.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, brakmo@fb.com,
-        Marek Majkowski <marek@cloudflare.com>
-Subject: [PATCH net-next v2 2/2] Tests for RTAX_INITRWND
-Date:   Fri, 29 Jul 2022 16:39:35 +0200
-Message-Id: <20220729143935.2432743-3-marek@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220729143935.2432743-1-marek@cloudflare.com>
-References: <20220729143935.2432743-1-marek@cloudflare.com>
+        with ESMTP id S237283AbiG2O4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:56:30 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9822B7FE49;
+        Fri, 29 Jul 2022 07:56:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659106586; x=1690642586;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=JjYsIIth3VReWwLvNhUq4ud8SJcp+Ar96YRCAGDJqWU=;
+  b=AXAiDqrUu0Tkd6Xk2ZxbCL1Z5pfNUtunVjUHaz0b/GjveC/kKzqi6ipu
+   ihVouy9N6THUlcpdJhhcnsnXrfcTN/tiuWAR8NFZ/mfewvS9sSfNkok9o
+   AMp1px1bu88g5+gVvrSfV1VDqdXe/oSW8O+LY/V1osIycEOjHZX6+J+Ro
+   bPghyemhpAZZhUcUhDIJxMJQVExVpxWb4EBLInp5/rQfPfVMmIq/Nabob
+   i4ErJHM6lwz8pIyHI4bvbXM6naSUkio1uvqCgWThPrjs1S3x3yc1jkutu
+   J6/PdevQ9/fqSk5OezPyuhiH/ECWgrCKqFi1QTV754kWf9DIUcfE/D8FS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="269164679"
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="269164679"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 07:56:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="727765184"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga004.jf.intel.com with ESMTP; 29 Jul 2022 07:56:25 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 29 Jul 2022 07:56:24 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 29 Jul 2022 07:56:24 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Fri, 29 Jul 2022 07:56:24 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.42) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Fri, 29 Jul 2022 07:55:57 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AbFnwz2rmZj88FrQ/6VFvY4T/uSoIHCnbUr3nqv2C8AZujdwkMEIzgrMyx+BL4GC3b28dEt4j9C1cRu0M61S6B4OKHOQ4QtbVVVjiz7DzPUhF/KwAyuvvCrkfvTDWCOUPZopCUzscU4qxTGBEmMbiJlWoOQx+by9U1Y/t/nlgWNgJYCjXgQmx5SjGna7DwCTpj7EGr7ET/9XgcLRJnjJvAEp/QhEFNu2fsEMd7/qCiM4vX1termCUBzuCTcIA0Bpy8hrQWcesmp0EIUufA+dTR4IIPmMJxx/JW8z8e3g7jUvhJ5enSCi6GO9TchsvhknU2qy8r196tW2OuUV49LxHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t3ttX8HWvHyKel+oT+ggBrVuDlZx3qtuGLGXWQIU9Dg=;
+ b=NuXBZrA9nGJQJuqoFZ49FyxmC6zWoVB86zSG64bizWcMLxUJ7LLShKtNljYj6WKhxZeExCqvzDZnIF6BzMUOFIqSJgzhYx810/HhRxxIOd9d+pVqHP0lfWMZcJuasxTYdfMe2MSl5mRyf0iOB1TTqlmls+JuUwfxcgHF90wjklc/rm7ZIqXV5xQqgmySNK7WwHruyezAEVqEj9GCp92NESySY504UGnNgYhEGwSDQAEXo8J2QAzbZINAErgJiCqYQw3UoJfK8P+C8Lo3qRD7UgmtNs0TW2c0MRP3SE8hwm7ebLYrGEarY2gta5exOIK9lMQK73EneRkdhV04nxxN4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ SJ0PR11MB5814.namprd11.prod.outlook.com (2603:10b6:a03:423::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Fri, 29 Jul
+ 2022 14:55:41 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9cba:7299:ab7d:b669]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9cba:7299:ab7d:b669%9]) with mapi id 15.20.5482.012; Fri, 29 Jul 2022
+ 14:55:41 +0000
+Date:   Fri, 29 Jul 2022 16:55:28 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+CC:     <bpf@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <netdev@vger.kernel.org>, <magnus.karlsson@intel.com>,
+        <bjorn@kernel.org>, <kuba@kernel.org>, <andrii@kernel.org>,
+        <ciara.loftus@intel.com>
+Subject: Re: [PATCH bpf-next v3] selftests: xsk: Update poll test cases
+Message-ID: <YuP04F3bC5dSI+zJ@boxer>
+References: <20220729132337.211443-1-shibin.koikkara.reeny@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220729132337.211443-1-shibin.koikkara.reeny@intel.com>
+X-ClientProxiedBy: LO4P265CA0150.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2c7::10) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7c82b6cc-9c28-4bd2-9e5b-08da717267bf
+X-MS-TrafficTypeDiagnostic: SJ0PR11MB5814:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IbAekTF1b0ws940tKjGpTKsRc5L595l0VyrBZ9gBWKMSTFk6Dbft7CpF8hDSKrwoIPOei5UAebmkGMWD6oB3Taz5NvB9hxgGmecxoo+oilnwd5MtrbzJTFJuwyc3KuVEmAM7ra3ISXQ2fvAgKGqnx9F7KrpgzFDDJHt7kA0FLWQjTr3dusS1DTJCNRFiumeGiv376FlzqQ6nORwecK0c12bH/kPxS0/4d8gcTF6md6VPfIuAD5priL1Bybe8KugLam8RqrAlmrTSKZTEW19J3TfPjkvkdWVh73UcfvNVmG6MCbHdtxLRzL+mbaPmmyXNNuAjWcstrM1P7s/adi4Ird7qnXlQLqRDsDYUzsELZiskkNP4rGLshPjbMsmNTYjQdF4RXRfiTSfyOPPzHX6OP6c1QyzUXhKg9vim4f5t9gz9D8WCbqCgvnQRWZJKLSmFpvgTPA/bknwy2tYY3sl7YWmaJRE5mywtnv5g6mGPgvwivNXEaQ0DtoVnK496ZoHOt4tHulg11Wx3SwutSGHvVksrkBOjswii3YX++lhOHPf3XFn34L0zis5adaGQ+ui6Zb1GDpb8DwklgLPCHrTapjjPde77I8TQNLEjmcquVKZ9NQZQc33K/vsGgh61esLBeOTX5vzfpoTOJUDNPSEHR2mbkuzga6Yzu+LP2wxPQiBrYSNlnko74nGN2pQ7FZckQwk/NGBy2kJCAy7WlIPibRPfFdKGXlP2vxv6RAQaC0M72HvAkmI8RTeX1qipOyWAY6NShSu3PY7F3FGQ/JR0amWFtMWtZQmWC6GaftYndu3I2hmhT+ANzBfm9Xu5Gh1a/0J8A//IV0c/+9YPck7HkN26fn0eTkuhCSkKWC8u6PeNxHXMPtnfAhGgWhbGRFjAryrI31KgmRE+PEkYPYkgBA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(396003)(346002)(39860400002)(376002)(366004)(6506007)(26005)(6486002)(41300700001)(9686003)(107886003)(6512007)(478600001)(82960400001)(83380400001)(186003)(966005)(38100700002)(2906002)(316002)(30864003)(8936002)(6666004)(6636002)(33716001)(44832011)(66556008)(8676002)(15650500001)(5660300002)(66946007)(66476007)(86362001)(6862004)(4326008)(67856001)(309714004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G2a0KADMd5M0rF/uqruqcaYnD7n7zbkCAiTeAVWIYjy8PuoAi2hBPBStMRNI?=
+ =?us-ascii?Q?F/RH/WkpIe75prtTKpnaG4F/rbZLWJGILvBznAaiQ77asAzcHUgdifih3WUr?=
+ =?us-ascii?Q?ZgpKvkwu4w+Et8AiOA6l27t0j00wtW07Hiw9ipkerh/IbCdeaBGN1cVPIuWy?=
+ =?us-ascii?Q?yU8MamOWvkxBzP64g8rp8Sylab5tuFaFpLSc+32Zd+H7gLpiKs5+QQCjvk2d?=
+ =?us-ascii?Q?e+3vM2DBRmZQwV6c1sqqSgkvWEBiHDXKzX4xiHWgJdvCuHFAfPWRA7nD5trj?=
+ =?us-ascii?Q?pIok72FPyJzY00j6g+D036HIet5cdIdPALu0HlRedNUfqGAVj1FjhPZZP+g6?=
+ =?us-ascii?Q?Rb8jQWsnTrIp9Q21jwSTvqUwbh2elG3MVXqZg6AvvkQDiIfJdueyhuHfQMrZ?=
+ =?us-ascii?Q?8vBJSFF0oZdOnyswwH3MpcKX1DfYVLXWqfscV6H1BMcKDA9PBM48s9MfEuTI?=
+ =?us-ascii?Q?OTVoXRqlCHCsnLTAMdsi9oYTJdAJRGqng7k931VW6RVBL0PxTFITmK0ls+1F?=
+ =?us-ascii?Q?8wcrHNV01z5nBn6iovIdJGESU2bIMZODXhfze9GaMjkDr/IpXQUycBh/p3Ee?=
+ =?us-ascii?Q?wmnciS3diDiwPjPhT/18WCDXkl2MLjt9kmg6dg8c3DJQjVgD+9iRjXZdEKsP?=
+ =?us-ascii?Q?eoC8BZhvoWO0e1NVoXlJX4rGC6WYHu92p0o9+8MjNkIQeQjGZ1GTL9Yah558?=
+ =?us-ascii?Q?ReM8RKrAy+hwCFNmFNSacnuqIJ5faIpDHVS9AKy2mZl6vgeDACHN7Gh5/ohP?=
+ =?us-ascii?Q?MTbkx/4lyet+9mdaBkXkzGER2gzYk1XxHw3L8Z2mzMHfJfy3XK0FnKSc6LR6?=
+ =?us-ascii?Q?gmF7dUpQnSjhAMpIK+Bz+Z4eTFI4hf7dBztKhillPRzzn538ozAM21zJGiNU?=
+ =?us-ascii?Q?62OaW5Hy5btxKfgWfR2pVOCl/s/JC4l01s64+0vGpSVGtEvJSy0MZGZTOARf?=
+ =?us-ascii?Q?fBImwMMRnTzIyrB3OJzkd0dBUN7NPPgbgN/M3UFOBxHw2KQ5UtGveAeK/8mO?=
+ =?us-ascii?Q?FWefk68WcEPa1F5comnm2eKQ+mE317NTrmZKZi8YGwQ1X2eP27aRZ6NdzOwx?=
+ =?us-ascii?Q?AJx7Q3GiSkfJ6/psxtGkm3kGIXZaQCE0xSpds58d6dQ+LYbESslrquurgpEB?=
+ =?us-ascii?Q?XUiVLGgkVgnDmkCwaXspazJTgGB7M6sR7x/O502Ffb312HWAouA/o89qeQ93?=
+ =?us-ascii?Q?p4cZtcR6dpvFQ+19xJofdHZgxAPctaCGjOK9/2XxMJRAf4eBNPXv2lLT9/0N?=
+ =?us-ascii?Q?BWDZLPtk8/01Il9uG07gC1L+BOQrFK3VfbnF9aGEKVaVQ6I+eEy5/fH7Up27?=
+ =?us-ascii?Q?8wJg27RKRtGtkG/TbxjeRKKj7myr8mTU9WcQsUrbpwMZOAZq+8fshKKowsd3?=
+ =?us-ascii?Q?AeblCgjK91fC4oQ+8qKDo81lAJ6rL9l4YC+YG6DssnRTNaP3BSXYEQVf4ePS?=
+ =?us-ascii?Q?mqIfVqznLPmPncjySBOJl0sRfow4lwWHxDoxVVP/LdxcQFmNKjkiPduUBkrP?=
+ =?us-ascii?Q?VARlEl424bDLjO9+MT/iddrwGS5GP6+bwd7Xk/VIvTne2WV9tnkWw5l3pE3z?=
+ =?us-ascii?Q?CiR5bxmv4f6QxsX5GMPCHffq57dyw0cq3IQbwsKznGxX8URF9yFrpNralSoq?=
+ =?us-ascii?Q?Qg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c82b6cc-9c28-4bd2-9e5b-08da717267bf
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 14:55:41.2010
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1RcUhPDvzjJ1K10QgKvMtnXhx8bcERK/WsxN/LKFXjJvEdB4funIH2RPoCCbBxhNmF+l34UyscJgHS5q/21s7QZj1j6WHnqqJYkWjH0TMHw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5814
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,483 +148,356 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Accompanying tests. We open skops program, hooking on
-BPF_SOCK_OPS_RWND_INIT event, where we return updated value of
-initrwnd route path attribute.
+On Fri, Jul 29, 2022 at 01:23:37PM +0000, Shibin Koikkara Reeny wrote:
+> Poll test case was not testing all the functionality
+> of the poll feature in the testsuite. This patch
+> update the poll test case which contain 2 testcases to
+> test the RX and the TX poll functionality and additional
+> 2 more testcases to check the timeout features of the
+> poll event.
+> 
+> Poll testsuite have 4 test cases:
+> 
+> 1. TEST_TYPE_RX_POLL:
+> Check if RX path POLLIN function work as expect. TX path
+> can use any method to sent the traffic.
+> 
+> 2. TEST_TYPE_TX_POLL:
+> Check if TX path POLLOUT function work as expect. RX path
+> can use any method to receive the traffic.
+> 
+> 3. TEST_TYPE_POLL_RXQ_EMPTY:
+> Call poll function with parameter POLLIN on empty rx queue
+> will cause timeout.If return timeout then test case is pass.
+> 
+> 4. TEST_TYPE_POLL_TXQ_FULL:
+> When txq is filled and packets are not cleaned by the kernel
+> then if we invoke the poll function with POLLOUT then it
+> should trigger timeout.
+> 
+> v1: https://lore.kernel.org/bpf/20220718095712.588513-1-shibin.koikkara.reeny@intel.com/
+> v2: https://lore.kernel.org/bpf/20220726101723.250746-1-shibin.koikkara.reeny@intel.com/
+> 
+> Changes in v2:
+>  * Updated the commit message
+>  * fixed the while loop flow in receive_pkts function.
+> Changes in v3:
+>  * Introduced single thread validation function.
+>  * Removed pkt_stream_invalid().
+>  * Updated TEST_TYPE_POLL_TXQ_FULL testcase to create invalid frame.
+>  * Removed timer from send_pkts().
 
-In tests we see if values above 64KiB indeed are advertised correctly
-to the remote peer.
+Hmm, so timer is not needed for tx side? Is it okay to remove it
+altogether? I only meant to pull it out to preceding patch.
 
-Signed-off-by: Marek Majkowski <marek@cloudflare.com>
----
- .../selftests/bpf/prog_tests/tcp_initrwnd.c   | 420 ++++++++++++++++++
- .../selftests/bpf/progs/test_tcp_initrwnd.c   |  30 ++
- 2 files changed, 450 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/tcp_initrwnd.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_tcp_initrwnd.c
+>  * Removed boolean variable skip_rx and skip_tx
+> 
+> Signed-off-by: Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+> ---
+>  tools/testing/selftests/bpf/xskxceiver.c | 155 +++++++++++++++++------
+>  tools/testing/selftests/bpf/xskxceiver.h |   8 +-
+>  2 files changed, 125 insertions(+), 38 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> index 74d56d971baf..32ba6464f29f 100644
+> --- a/tools/testing/selftests/bpf/xskxceiver.c
+> +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> @@ -817,9 +817,9 @@ static int complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+>  	return TEST_PASS;
+>  }
+>  
+> -static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+> +static int receive_pkts(struct test_spec *test, struct ifobject *ifobj, struct pollfd *fds)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_initrwnd.c b/tools/testing/selftests/bpf/prog_tests/tcp_initrwnd.c
-new file mode 100644
-index 000000000000..af54dde05609
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/tcp_initrwnd.c
-@@ -0,0 +1,420 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+// Copyright (c) 2022 Cloudflare
-+
-+#include "test_progs.h"
-+#include "bpf_util.h"
-+#include "network_helpers.h"
-+
-+#include "test_tcp_initrwnd.skel.h"
-+
-+#define CG_NAME "/tcpbpf-user-test"
-+
-+/* It's easier to hardcode offsets than to fight with headers
-+ *
-+ * $ pahole tcp_info
-+ * struct tcp_info {
-+ *	__u32                      tcpi_rcv_ssthresh;   *    64     4 *
-+ *	__u32                      tcpi_snd_wnd;        *   228     4 *
-+ */
-+
-+#define TCPI_RCV_SSTHRESH(info) info[64 / 4]
-+#define TCPI_SND_WND(info) info[228 / 4]
-+
-+static int read_int_sysctl(const char *sysctl)
-+{
-+	char buf[16];
-+	int fd, ret;
-+
-+	fd = open(sysctl, 0);
-+	if (CHECK_FAIL(fd == -1))
-+		goto err;
-+
-+	ret = read(fd, buf, sizeof(buf));
-+	if (CHECK_FAIL(ret <= 0))
-+		goto err;
-+
-+	close(fd);
-+	return atoi(buf);
-+err:
-+	if (fd < 0)
-+		close(fd);
-+	return -1;
-+}
-+
-+static int write_int_sysctl(const char *sysctl, int v)
-+{
-+	int fd, ret, size;
-+	char buf[16];
-+
-+	fd = open(sysctl, O_RDWR);
-+	if (CHECK_FAIL(fd < 0))
-+		goto err;
-+
-+	size = snprintf(buf, sizeof(buf), "%d", v);
-+	ret = write(fd, buf, size);
-+	if (CHECK_FAIL(ret < 0))
-+		goto err;
-+
-+	close(fd);
-+	return 0;
-+err:
-+	if (fd < 0)
-+		close(fd);
-+	return -1;
-+}
-+
-+static int tcp_timestamps;
-+static int tcp_window_scaling;
-+static int tcp_workaround_signed_windows;
-+static int tcp_syncookies;
-+
-+static void do_test_server(int server_fd, struct test_tcp_initrwnd *skel,
-+			   int initrwnd, unsigned int tcpi_snd_wnd_on_connect,
-+			   unsigned int rcv_ssthresh_on_recv,
-+			   unsigned int tcpi_snd_wnd_on_recv)
-+{
-+	int client_fd = -1, sd = -1, r;
-+	__u32 info[256 / 4];
-+	socklen_t optlen = sizeof(info);
-+	char b[1] = { 0x55 };
-+
-+	fprintf(stderr, "[*] initrwnd=%d\n", initrwnd);
-+
-+	skel->bss->initrwnd = initrwnd; // in full MSS packets
-+
-+	client_fd = connect_to_fd(server_fd, 0);
-+	if (CHECK_FAIL(client_fd < 0))
-+		goto err;
-+
-+	sd = accept(server_fd, NULL, NULL);
-+	if (CHECK_FAIL(sd < 0))
-+		goto err;
-+
-+	/* There are three moments where we check the window/rcv_ssthresh.
-+	 *
-+	 * (1) First, after socket creation, TCP handshake, we expect
-+	 * the client to see only SYN+ACK which is without window
-+	 * scaling. That is: from client/sender point of view we see
-+	 * at most 64KiB open receive window.
-+	 */
-+	r = getsockopt(client_fd, SOL_TCP, TCP_INFO, &info, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	ASSERT_EQ(TCPI_SND_WND(info), tcpi_snd_wnd_on_connect,
-+		  "getsockopt(TCP_INFO.tcpi_snd_wnd) on connect");
-+
-+	/* (2) At the same time, from the server/receiver point of
-+	 * view, we already initiated socket, so rcv_ssthresh is set
-+	 * to high value, potentially larger than 64KiB.
-+	 */
-+	r = getsockopt(sd, SOL_TCP, TCP_INFO, &info, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	ASSERT_EQ(TCPI_RCV_SSTHRESH(info), rcv_ssthresh_on_recv,
-+		  "getsockopt(TCP_INFO.rcv_ssthresh) on recv");
-+
-+	ASSERT_LE(tcpi_snd_wnd_on_connect, rcv_ssthresh_on_recv,
-+		  "snd_wnd > rcv_ssthresh");
-+
-+	/* (3) Finally, after receiving some ACK from client, the
-+	 * client/sender should also see wider open window, larger
-+	 * than 64KiB.
-+	 */
-+	if (CHECK_FAIL(write(client_fd, &b, sizeof(b)) != 1))
-+		perror("Failed to send single byte");
-+
-+	if (CHECK_FAIL(read(sd, &b, sizeof(b)) != 1))
-+		perror("Failed to send single byte");
-+
-+	r = getsockopt(client_fd, SOL_TCP, TCP_INFO, &info, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	ASSERT_EQ(TCPI_SND_WND(info), tcpi_snd_wnd_on_recv,
-+		  "getsockopt(TCP_INFO.tcpi_snd_wnd) after recv");
-+
-+	ASSERT_LE(tcpi_snd_wnd_on_connect, tcpi_snd_wnd_on_recv,
-+		  "snd_wnd_on_connect > snd_wnd_on_recv");
-+
-+err:
-+	if (sd != -1)
-+		close(sd);
-+	if (client_fd != -1)
-+		close(client_fd);
-+}
-+
-+static int socket_client(int server_fd)
-+{
-+	socklen_t optlen;
-+	int family, type, protocol, r;
-+
-+	optlen = sizeof(family);
-+	r = getsockopt(server_fd, SOL_SOCKET, SO_DOMAIN, &family, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		return -1;
-+
-+	optlen = sizeof(type);
-+	r = getsockopt(server_fd, SOL_SOCKET, SO_TYPE, &type, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		return -1;
-+
-+	optlen = sizeof(protocol);
-+	r = getsockopt(server_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		return -1;
-+
-+	return socket(family, type, protocol);
-+}
-+
-+static void do_test_client(int server_fd, struct test_tcp_initrwnd *skel,
-+			   int initrwnd, unsigned int rcv_ssthresh,
-+			   unsigned int tcpi_snd_wnd)
-+{
-+	int client_fd = -1, sd = -1, r, maxseg;
-+	__u32 info[256 / 4];
-+	socklen_t optlen = sizeof(info);
-+	size_t rcvbuf;
-+
-+	fprintf(stderr, "[*] client initrwnd=%d\n", initrwnd);
-+
-+	skel->bss->initrwnd = initrwnd; // in full MSS packets
-+
-+	client_fd = socket_client(server_fd);
-+	if (CHECK_FAIL(client_fd < 0))
-+		goto err;
-+
-+	/* With MSS=64KiB on loopback it's hard to argue about init
-+	 * rwnd. Let's set MSS to something that will make our life
-+	 * easier, like 1024 + timestamps.
-+	 */
-+	maxseg = 1024;
-+
-+	r = setsockopt(client_fd, SOL_TCP, TCP_MAXSEG, &maxseg, sizeof(maxseg));
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	rcvbuf = 208 * 1024;
-+	r = setsockopt(client_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf,
-+		       sizeof(rcvbuf));
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	r = connect_fd_to_fd(client_fd, server_fd, 0);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	sd = accept(server_fd, NULL, NULL);
-+	if (CHECK_FAIL(sd < 0))
-+		goto err;
-+
-+	/* There is only one moment to check - the server should know
-+	 * about client window just after accept. First check client
-+	 * rcv_ssthresh for sanity.
-+	 */
-+	r = getsockopt(client_fd, SOL_TCP, TCP_INFO, &info, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	ASSERT_EQ(TCPI_RCV_SSTHRESH(info), rcv_ssthresh,
-+		  "getsockopt(TCP_INFO.tcpi_rcv_ssthresh) on client");
-+
-+	/* And the recevie window size as seen from the server.
-+	 */
-+	r = getsockopt(sd, SOL_TCP, TCP_INFO, &info, &optlen);
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	ASSERT_EQ(TCPI_SND_WND(info), tcpi_snd_wnd,
-+		  "getsockopt(TCP_INFO.tcpi_snd_wnd)");
-+
-+	ASSERT_GE(rcv_ssthresh, tcpi_snd_wnd, "rcv_ssthresh < tcpi_snd_wnd");
-+err:
-+	if (sd != -1)
-+		close(sd);
-+	if (client_fd != -1)
-+		close(client_fd);
-+}
-+
-+static void run_tests(int cg_fd, struct test_tcp_initrwnd *skel)
-+{
-+	int server_fd = -1, r, rcvbuf, maxseg;
-+	unsigned int max_wnd, buf;
-+
-+	skel->links.bpf_testcb =
-+		bpf_program__attach_cgroup(skel->progs.bpf_testcb, cg_fd);
-+	if (!ASSERT_OK_PTR(skel->links.bpf_testcb, "attach_cgroup(bpf_testcb)"))
-+		goto err;
-+
-+	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto err;
-+
-+	maxseg = 1024;
-+	if (tcp_timestamps)
-+		maxseg += 12;
-+
-+	/* With MSS=64KiB on loopback it's hard to argue about init
-+	 * rwnd. Let's set MSS to something that will make our life
-+	 * easier, like 1024 + timestamps.
-+	 */
-+	r = setsockopt(server_fd, SOL_TCP, TCP_MAXSEG, &maxseg, sizeof(maxseg));
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	/* Obviously, rcvbuffer must be large at the start for the
-+	 * initrwnd to make any dent in rcv_ssthresh (assuming default
-+	 * tcp_rmem of 128KiB)
-+	 */
-+	rcvbuf = 208 * 1024;
-+	r = setsockopt(server_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf,
-+		       sizeof(rcvbuf));
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	max_wnd = tcp_workaround_signed_windows ? 32767 : 65535;
-+
-+	/* [*] server advertising large window ** */
-+	fprintf(stderr,
-+		"[#] server timestamps=%d window_scaling=%d workaround_signed_windows=%d syncookies=%d\n",
-+		tcp_timestamps, tcp_window_scaling,
-+		tcp_workaround_signed_windows, tcp_syncookies);
-+
-+	/* Small initrwnd. Not exceeding 64KiB */
-+	do_test_server(server_fd, skel, 1, 1024, 1024, 1024);
-+
-+	if (tcp_window_scaling) {
-+		/* Borderline. Not exceeding 64KiB */
-+		do_test_server(server_fd, skel, 63, MIN(max_wnd, 63 * 1024),
-+			       63 * 1024, 63 * 1024);
-+	} else {
-+		do_test_server(server_fd, skel, 63, MIN(max_wnd, 63 * 1024),
-+			       63 * 1024, MIN(max_wnd, 63 * 1024));
-+	}
-+
-+	if (tcp_window_scaling) {
-+		/* The interesting case. Crossing 64KiB */
-+		do_test_server(server_fd, skel, 128, max_wnd, 128 * 1024,
-+			       128 * 1024);
-+	} else {
-+		do_test_server(server_fd, skel, 128, max_wnd, 65535, max_wnd);
-+	}
-+
-+	if (tcp_window_scaling) {
-+		/* Super large. Remember the rcv buffer is 208*2 */
-+		do_test_server(server_fd, skel, 206, max_wnd, 206 * 1024,
-+			       206 * 1024);
-+
-+		/* Not sure why, but here you go, subtract 12 if timestamps */
-+		buf = 207 * 1024U - (tcp_timestamps ? 12 : 0);
-+		do_test_server(server_fd, skel, 512, max_wnd, buf, buf);
-+	}
-+
-+	/* [*] client advertising large window ** */
-+	fprintf(stderr,
-+		"[#] client timestamps=%d window_scaling=%d workaround_signed_windows=%d syncookies=%d\n",
-+		tcp_timestamps, tcp_window_scaling,
-+		tcp_workaround_signed_windows, tcp_syncookies);
-+
-+	/* Ensure server mss is not 1024 not to be confusing */
-+	maxseg = 32767;
-+	r = setsockopt(server_fd, SOL_TCP, TCP_MAXSEG, &maxseg, sizeof(maxseg));
-+	if (CHECK_FAIL(r < 0))
-+		goto err;
-+
-+	/* Test if client advertises small rcv window */
-+	do_test_client(server_fd, skel, 1, 1024, 1024);
-+
-+	if (tcp_window_scaling) {
-+		/* Medium size */
-+		do_test_client(server_fd, skel, 63, 63 * 1024, 63 * 1024);
-+	} else {
-+		do_test_client(server_fd, skel, 63, 63 * 1024,
-+			       MIN(max_wnd, 63 * 1024));
-+	}
-+
-+	if (tcp_window_scaling) {
-+		/* And large window */
-+		do_test_client(server_fd, skel, 128, 128 * 1024, 128 * 1024);
-+	} else {
-+		do_test_client(server_fd, skel, 128, 65535, max_wnd);
-+	}
-+
-+	if (tcp_window_scaling) {
-+		/* Super large. */
-+		do_test_client(server_fd, skel, 206, 206 * 1024U, 206 * 1024U);
-+
-+		/* Not sure why, but here you go, subtract 12 if timestamps */
-+		buf = 207 * 1024U + (tcp_timestamps ? 12 : 0);
-+		do_test_client(server_fd, skel, 512, buf, buf);
-+	}
-+err:
-+	if (server_fd != -1)
-+		close(server_fd);
-+}
-+
-+#define PROC_TCP_TIMESTAMPS "/proc/sys/net/ipv4/tcp_timestamps"
-+#define PROC_TCP_WINDOW_SCALING "/proc/sys/net/ipv4/tcp_window_scaling"
-+#define PROC_TCP_WORKAROUND_SIGNED_WINDOWS \
-+	"/proc/sys/net/ipv4/tcp_workaround_signed_windows"
-+#define PROC_TCP_SYNCOOKIES "/proc/sys/net/ipv4/tcp_syncookies"
-+
-+void test_tcp_initrwnd(void)
-+{
-+	struct test_tcp_initrwnd *skel;
-+	unsigned int i;
-+	int cg_fd;
-+
-+	int saved_tcp_timestamps = read_int_sysctl(PROC_TCP_TIMESTAMPS);
-+	int saved_tcp_window_scaling = read_int_sysctl(PROC_TCP_WINDOW_SCALING);
-+	int saved_tcp_workaround_signed_windows =
-+		read_int_sysctl(PROC_TCP_WORKAROUND_SIGNED_WINDOWS);
-+	int saved_tcp_syncookies = read_int_sysctl(PROC_TCP_SYNCOOKIES);
-+
-+	if (CHECK_FAIL(saved_tcp_timestamps == -1 ||
-+		       saved_tcp_window_scaling == -1 ||
-+		       saved_tcp_workaround_signed_windows == -1 ||
-+		       saved_tcp_syncookies == -1))
-+		return;
-+
-+	cg_fd = test__join_cgroup(CG_NAME);
-+	if (CHECK_FAIL(cg_fd < 0))
-+		return;
-+
-+	skel = test_tcp_initrwnd__open_and_load();
-+	if (CHECK_FAIL(!skel)) {
-+		close(cg_fd);
-+		return;
-+	}
-+
-+	// syn cookies testing disabled
-+	for (i = 0; i < 8; i++) {
-+		tcp_timestamps = !!(i & 0x1);
-+		tcp_window_scaling = !!(i & 0x2);
-+		tcp_workaround_signed_windows = !!(i & 0x4);
-+		tcp_syncookies = (i & 0x8) ? 2 : 0;
-+
-+		write_int_sysctl(PROC_TCP_TIMESTAMPS, tcp_timestamps);
-+		write_int_sysctl(PROC_TCP_WINDOW_SCALING, tcp_window_scaling);
-+		write_int_sysctl(PROC_TCP_WORKAROUND_SIGNED_WINDOWS,
-+				 tcp_workaround_signed_windows);
-+		write_int_sysctl(PROC_TCP_SYNCOOKIES, tcp_syncookies);
-+
-+		// Without tcp timestamps syncookies can't do wscale
-+		if (tcp_syncookies && tcp_timestamps == 0)
-+			tcp_window_scaling = 0;
-+
-+		run_tests(cg_fd, skel);
-+	}
-+
-+	write_int_sysctl(PROC_TCP_TIMESTAMPS, saved_tcp_timestamps);
-+	write_int_sysctl(PROC_TCP_WINDOW_SCALING, saved_tcp_window_scaling);
-+	write_int_sysctl(PROC_TCP_WORKAROUND_SIGNED_WINDOWS,
-+			 saved_tcp_workaround_signed_windows);
-+	write_int_sysctl(PROC_TCP_SYNCOOKIES, saved_tcp_syncookies);
-+
-+	test_tcp_initrwnd__destroy(skel);
-+
-+	close(cg_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_tcp_initrwnd.c b/tools/testing/selftests/bpf/progs/test_tcp_initrwnd.c
-new file mode 100644
-index 000000000000..d532e9e2d344
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_tcp_initrwnd.c
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+// Copyright (c) 2022 Cloudflare
-+
-+#include <linux/bpf.h>
-+
-+#include <bpf/bpf_helpers.h>
-+
-+int initrwnd;
-+
-+SEC("sockops")
-+int bpf_testcb(struct bpf_sock_ops *skops)
-+{
-+	int rv = -1;
-+	int op;
-+
-+	op = (int)skops->op;
-+
-+	switch (op) {
-+	case BPF_SOCK_OPS_RWND_INIT:
-+		rv = initrwnd;
-+		break;
-+
-+	default:
-+		rv = -1;
-+	}
-+	skops->reply = rv;
-+	return 1;
-+}
-+
-+char _license[] SEC("license") = "Dual BSD/GPL";
--- 
-2.25.1
+Nit : I think that we could skip passing ifobj explicitly if we're passing
+test_spec itself and just work on
 
+	struct ifobject *ifobj = test->ifobj_rx;
+
+within the function.
+
+>  {
+> -	struct timeval tv_end, tv_now, tv_timeout = {RECV_TMOUT, 0};
+> +	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
+>  	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkts_sent = 0;
+>  	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
+>  	struct xsk_socket_info *xsk = ifobj->xsk;
+> @@ -843,17 +843,28 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+>  		}
+>  
+>  		kick_rx(xsk);
+> +		if (ifobj->use_poll) {
+> +			ret = poll(fds, 1, POLL_TMOUT);
+> +			if (ret < 0)
+> +				exit_with_error(-ret);
+> +
+> +			if (!ret) {
+> +				if (!test->ifobj_tx->umem->umem)
+> +					return TEST_PASS;
+> +
+> +				ksft_print_msg("ERROR: [%s] Poll timed out\n", __func__);
+> +				return TEST_FAILURE;
+>  
+> -		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+> -		if (!rcvd) {
+> -			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
+> -				ret = poll(fds, 1, POLL_TMOUT);
+> -				if (ret < 0)
+> -					exit_with_error(-ret);
+>  			}
+> -			continue;
+> +
+> +			if (!(fds->revents & POLLIN))
+> +				continue;
+>  		}
+>  
+> +		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+> +		if (!rcvd)
+> +			continue;
+> +
+>  		if (ifobj->use_fill_ring) {
+>  			ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
+>  			while (ret != rcvd) {
+> @@ -900,13 +911,34 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+>  	return TEST_PASS;
+>  }
+>  
+> -static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+> +static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb, bool use_poll,
+> +		       struct pollfd *fds, bool timeout)
+>  {
+>  	struct xsk_socket_info *xsk = ifobject->xsk;
+> -	u32 i, idx, valid_pkts = 0;
+> +	u32 i, idx, ret, valid_pkts = 0;
+> +
+> +	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE) {
+> +		if (use_poll) {
+> +			ret = poll(fds, 1, POLL_TMOUT);
+> +			if (timeout) {
+> +				if (ret < 0) {
+> +					ksft_print_msg("ERROR: [%s] Poll error %d\n",
+> +						       __func__, ret);
+> +					return TEST_FAILURE;
+> +				}
+> +				if (ret == 0)
+> +					return TEST_PASS;
+> +				break;
+> +			}
+> +			if (ret <= 0) {
+> +				ksft_print_msg("ERROR: [%s] Poll error %d\n",
+> +					       __func__, ret);
+> +				return TEST_FAILURE;
+> +			}
+> +		}
+>  
+> -	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE)
+>  		complete_pkts(xsk, BATCH_SIZE);
+> +	}
+>  
+>  	for (i = 0; i < BATCH_SIZE; i++) {
+>  		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
+> @@ -933,11 +965,27 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+>  
+>  	xsk_ring_prod__submit(&xsk->tx, i);
+>  	xsk->outstanding_tx += valid_pkts;
+> -	if (complete_pkts(xsk, i))
+> -		return TEST_FAILURE;
+>  
+> -	usleep(10);
+> -	return TEST_PASS;
+> +	if (use_poll) {
+> +		ret = poll(fds, 1, POLL_TMOUT);
+> +		if (ret <= 0) {
+> +			if (ret == 0 && timeout)
+> +				return TEST_PASS;
+> +
+> +			ksft_print_msg("ERROR: [%s] Poll error %d\n", __func__, ret);
+> +			return TEST_FAILURE;
+> +		}
+> +	}
+> +
+> +	if (!timeout) {
+> +		if (complete_pkts(xsk, i))
+> +			return TEST_FAILURE;
+> +
+> +		usleep(10);
+> +		return TEST_PASS;
+> +	}
+> +
+> +	return TEST_CONTINUE;
+>  }
+>  
+>  static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+> @@ -948,29 +996,19 @@ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+>  
+>  static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
+>  {
+> +	bool timeout = (!test->ifobj_rx->umem->umem) ? true : false;
+
+normally instead of such ternary operator to test if some ptr is NULL or
+not we would do:
+
+static bool is_umem_valid(struct ifobject *ifobj)
+{
+	return !!ifobj->umem->umem;
+}
+
+	bool timeout = !is_umem_valid(test->ifobj_rx);
+
+but I think this can stay as is.
+
+
+>  	struct pollfd fds = { };
+> -	u32 pkt_cnt = 0;
+> +	u32 pkt_cnt = 0, ret;
+>  
+>  	fds.fd = xsk_socket__fd(ifobject->xsk->xsk);
+>  	fds.events = POLLOUT;
+>  
+>  	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
+> -		int err;
+> -
+> -		if (ifobject->use_poll) {
+> -			int ret;
+> -
+> -			ret = poll(&fds, 1, POLL_TMOUT);
+> -			if (ret <= 0)
+> -				continue;
+> -
+> -			if (!(fds.revents & POLLOUT))
+> -				continue;
+> -		}
+> -
+> -		err = __send_pkts(ifobject, &pkt_cnt);
+> -		if (err || test->fail)
+> +		ret = __send_pkts(ifobject, &pkt_cnt, ifobject->use_poll, &fds, timeout);
+
+could you avoid passing ifobject->use_poll explicitly?
+
+> +		if ((ret || test->fail) && !timeout)
+>  			return TEST_FAILURE;
+> +		else if (ret == TEST_PASS && timeout)
+> +			return ret;
+>  	}
+>  
+>  	wait_for_tx_completion(ifobject->xsk);
+> @@ -1235,7 +1273,7 @@ static void *worker_testapp_validate_rx(void *arg)
+>  
+>  	pthread_barrier_wait(&barr);
+>  
+> -	err = receive_pkts(ifobject, &fds);
+> +	err = receive_pkts(test, ifobject, &fds);
+>  
+>  	if (!err && ifobject->validation_func)
+>  		err = ifobject->validation_func(ifobject);
+> @@ -1251,6 +1289,33 @@ static void *worker_testapp_validate_rx(void *arg)
+>  	pthread_exit(NULL);
+>  }
+>  
+> +static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
+> +						  enum test_type type)
+> +{
+> +	pthread_t t0;
+> +
+> +	if (pthread_barrier_init(&barr, NULL, 2))
+> +		exit_with_error(errno);
+> +
+> +	test->current_step++;
+> +	if (type  == TEST_TYPE_POLL_RXQ_TMOUT)
+> +		pkt_stream_reset(ifobj->pkt_stream);
+> +	pkts_in_flight = 0;
+> +
+> +	/*Spawn thread */
+> +	pthread_create(&t0, NULL, ifobj->func_ptr, test);
+> +
+> +	if (type  != TEST_TYPE_POLL_TXQ_TMOUT)
+
+nit: double space before !=
+
+> +		pthread_barrier_wait(&barr);
+> +
+> +	if (pthread_barrier_destroy(&barr))
+> +		exit_with_error(errno);
+> +
+> +	pthread_join(t0, NULL);
+> +
+> +	return !!test->fail;
+> +}
+
+I like this better as it serves its purpose and testapp_validate_traffic()
+stays cleaner. Thanks!
+
+> +
+>  static int testapp_validate_traffic(struct test_spec *test)
+>  {
+>  	struct ifobject *ifobj_tx = test->ifobj_tx;
+> @@ -1548,12 +1613,30 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+>  
+>  		pkt_stream_restore_default(test);
+>  		break;
+> -	case TEST_TYPE_POLL:
+> -		test->ifobj_tx->use_poll = true;
+> +	case TEST_TYPE_RX_POLL:
+>  		test->ifobj_rx->use_poll = true;
+> -		test_spec_set_name(test, "POLL");
+> +		test_spec_set_name(test, "POLL_RX");
+> +		testapp_validate_traffic(test);
+> +		break;
+> +	case TEST_TYPE_TX_POLL:
+> +		test->ifobj_tx->use_poll = true;
+> +		test_spec_set_name(test, "POLL_TX");
+>  		testapp_validate_traffic(test);
+>  		break;
+> +	case TEST_TYPE_POLL_TXQ_TMOUT:
+> +		test_spec_set_name(test, "POLL_TXQ_FULL");
+> +		test->ifobj_tx->use_poll = true;
+> +		/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
+> +		test->ifobj_tx->umem->frame_size = 2048;
+> +		pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
+> +		testapp_validate_traffic_single_thread(test, test->ifobj_tx, type);
+> +		pkt_stream_restore_default(test);
+> +		break;
+> +	case TEST_TYPE_POLL_RXQ_TMOUT:
+> +		test_spec_set_name(test, "POLL_RXQ_EMPTY");
+> +		test->ifobj_rx->use_poll = true;
+> +		testapp_validate_traffic_single_thread(test, test->ifobj_rx, type);
+> +		break;
+>  	case TEST_TYPE_ALIGNED_INV_DESC:
+>  		test_spec_set_name(test, "ALIGNED_INV_DESC");
+>  		testapp_invalid_desc(test);
+> diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+> index 3d17053f98e5..ee97576757a9 100644
+> --- a/tools/testing/selftests/bpf/xskxceiver.h
+> +++ b/tools/testing/selftests/bpf/xskxceiver.h
+> @@ -27,6 +27,7 @@
+>  
+>  #define TEST_PASS 0
+>  #define TEST_FAILURE -1
+> +#define TEST_CONTINUE 1
+>  #define MAX_INTERFACES 2
+>  #define MAX_INTERFACE_NAME_CHARS 7
+>  #define MAX_INTERFACES_NAMESPACE_CHARS 10
+> @@ -48,7 +49,7 @@
+>  #define SOCK_RECONF_CTR 10
+>  #define BATCH_SIZE 64
+>  #define POLL_TMOUT 1000
+> -#define RECV_TMOUT 3
+> +#define THREAD_TMOUT 3
+>  #define DEFAULT_PKT_CNT (4 * 1024)
+>  #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+>  #define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
+> @@ -68,7 +69,10 @@ enum test_type {
+>  	TEST_TYPE_RUN_TO_COMPLETION,
+>  	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
+>  	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
+> -	TEST_TYPE_POLL,
+> +	TEST_TYPE_RX_POLL,
+> +	TEST_TYPE_TX_POLL,
+> +	TEST_TYPE_POLL_RXQ_TMOUT,
+> +	TEST_TYPE_POLL_TXQ_TMOUT,
+>  	TEST_TYPE_UNALIGNED,
+>  	TEST_TYPE_ALIGNED_INV_DESC,
+>  	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
+> -- 
+> 2.34.1
+> 
