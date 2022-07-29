@@ -2,183 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC8F585579
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 21:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065AB585593
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 21:28:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238806AbiG2TMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 15:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
+        id S238344AbiG2T2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 15:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237926AbiG2TMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 15:12:37 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB7A823BB
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 12:12:35 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id i7so4277365qvr.8
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 12:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MD/Y1Ux36S7YhGnDVVwMOyxaB+EoqSrFVx9rgP9aahY=;
-        b=S4AT4Ada+qIIoQWVjxhyOOAUEoHPwY3fwslxsVJJvK4hTaUep3WogZjhTKdxr1jPTj
-         NiAFRDaIffdXgXTe0VuKReiQwhVGzrMVJIOOYVtzOyBFGxHzaaeKdtC8oLNszTrztzok
-         Rqk9lyUKpvIWzYcNpUmJHjXubVxeTe4NqQ9gdTUEVCwmoZ46YM5vI/wKHUGHMqcTFzaj
-         T2jbKkmWQY+DFZAKkBQI6hLto1jK74J3gpTOL7DyLaxU03xLOMtKIXzQk8w0EIcKb//b
-         z3EH9nla/6PrrKE7pJRHlnKl1aHxOxgOQh3zgmQLWuyjeKH3+TJli3dQuVjHhAXjuSnu
-         +4kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MD/Y1Ux36S7YhGnDVVwMOyxaB+EoqSrFVx9rgP9aahY=;
-        b=cadEI9MRdDHpktB9Wi8KO6MEmoB+kQZytbW4UxBGQB2ZJlK/XrYGBP4aklkYcUWx6t
-         eiQ5FcY3+gTVMMJQ3+3XevCfQEGoRX+vw+Rpsplnr9vLy16stCnVcGHaj1rjnbwJ1GNN
-         qBk7BN4YxXpXoJEeMC9dUwlpqHm4T1B9uqTGcvIi9kKSi3zGc7DAfjJryl6Tyq2cSa3A
-         fxPAsPNzKdn3EFLIvxrC7exbo7zhq0A20WNX8p/Wxpnsg0sgaqhNKtE93+jHO1NF3PmS
-         4RFUJJ0i9UuZkCx7c5avMDT1OFjZA7MdZMhHZYjDijN0sLRJgIKsAAnENCSS4Aj7nSm3
-         1TQg==
-X-Gm-Message-State: ACgBeo0kBpudeHO6ZJe4R7TNavjJpbd95Sw6qsVqBbi8vtMLNlRyrtZl
-        ZCaN/1QnMbWdL4moRmpKNsGKWg==
-X-Google-Smtp-Source: AA6agR5WsDNzyc0U213ntxGsYAkELGXY7PUQTdYmx68YyABWFqKq6a8LfzXgGUZihcOAo5ixikG6Hw==
-X-Received: by 2002:a05:6214:248a:b0:474:3739:6007 with SMTP id gi10-20020a056214248a00b0047437396007mr4723247qvb.57.1659121953858;
-        Fri, 29 Jul 2022 12:12:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id dm26-20020a05620a1d5a00b006af147d4876sm3035166qkb.30.2022.07.29.12.12.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 12:12:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oHVPU-000D7g-3B;
-        Fri, 29 Jul 2022 16:12:32 -0300
-Date:   Fri, 29 Jul 2022 16:12:32 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Long Li <longli@microsoft.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Message-ID: <YuQxIKxGAvUIwVmj@ziepe.ca>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-4-git-send-email-longli@linuxonhyperv.com>
- <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
- <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220720234209.GP5049@ziepe.ca>
- <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721143858.GV5049@ziepe.ca>
- <PH7PR21MB326339501D9CA5ABE69F8AE9CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721183219.GA6833@ziepe.ca>
- <PH7PR21MB326304834D36451E7609D102CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
+        with ESMTP id S229549AbiG2T2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 15:28:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FF65E32E;
+        Fri, 29 Jul 2022 12:28:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93175B827B6;
+        Fri, 29 Jul 2022 19:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5011C433D6;
+        Fri, 29 Jul 2022 19:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659122913;
+        bh=IGaQJ8n0Kx7UDMx4Xe/sD9x5Ki9q6wgjQt7ALfttjYs=;
+        h=From:Subject:To:Cc:Date:From;
+        b=pygbFv+ff9T0L8a6IRja9Vy4KmXTC6jDgzHYAal1fXQoMdoWmMA74A4lqPgkzRuOE
+         keFobBtAg2V8ECefv3d6BMaWIeeKupowLdxh2HvH5yJQwNoYwBxWRyEGtQO08ySnlu
+         bncARAYLMLc60my3TGzLp0k7H+KFuIQiVjYwQjubRLeaREBIhVI8jtqG/f5fr3lrHX
+         MM6PEPiZhkc5MjKXyONsfObHBxJCJMAzod2U8CRb6rKd3SEf4ZljCw0cnHTt4jLDLm
+         5IZGwc4FEt3spsA4+7bHyopw0L8Nh6Hk3xbBIz73zOchDpyqJVhG7upTGowcxmHPgj
+         bsaTHAWUMXVMQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR21MB326304834D36451E7609D102CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+From:   Kalle Valo <kvalo@kernel.org>
+Subject: pull-request: wireless-next-2022-07-29
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20220729192832.A5011C433D6@smtp.kernel.org>
+Date:   Fri, 29 Jul 2022 19:28:32 +0000 (UTC)
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 06:44:22PM +0000, Long Li wrote:
-> > Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-> > 
-> > On Thu, Jul 21, 2022 at 05:58:39PM +0000, Long Li wrote:
-> > > > > "vport" is a hardware resource that can either be used by an
-> > > > > Ethernet device, or an RDMA device. But it can't be used by both
-> > > > > at the same time. The "vport" is associated with a protection
-> > > > > domain and doorbell, it's programmed in the hardware. Outgoing
-> > > > > traffic is enforced on this vport based on how it is programmed.
-> > > >
-> > > > Sure, but how is the users problem to "get this configured right"
-> > > > and what exactly is the user supposed to do?
-> > > >
-> > > > I would expect the allocation of HW resources to be completely
-> > > > transparent to the user. Why is it not?
-> > > >
-> > >
-> > > In the hardware, RDMA RAW_QP shares the same hardware resource (in
-> > > this case, the vPort in hardware table) with the ethernet NIC. When an
-> > > RDMA user creates a RAW_QP, we can't just shut down the ethernet. The
-> > > user is required to make sure the ethernet is not in used when he
-> > > creates this QP type.
-> > 
-> > You haven't answered my question - how is the user supposed to achieve this?
-> 
-> The user needs to configure the network interface so the kernel will not use it when the user creates a RAW QP on this port.
-> 
-> This can be done via system configuration to not bring this
-> interface online on system boot, or equivalently doing "ifconfig xxx
-> down" to make the interface down when creating a RAW QP on this
-> port.
+Hi,
 
-That sounds horrible, why allow the user to even bind two drivers if
-the two drivers can't be used together?
+here's a pull request to net-next tree, more info below. Please let me know if
+there are any problems.
 
-> > And now I also want to know why the ethernet device and rdma device can even
-> > be loaded together if they cannot share the physical port?
-> > Exclusivity is not a sharing model that any driver today implements.
-> 
-> This physical port limitation only applies to the RAW QP. For RC QP,
-> the hardware doesn't have this limitation. The user can create RC
-> QPs on a physical port up to the hardware limits independent of the
-> Ethernet usage on the same port.
+Kalle
 
-.. and it is because you support sharing models in other cases :\
+The following changes since commit 8e4372e617854a16d4ec549ba821aad78fd748a6:
 
-> Scenario 1: The Ethernet loses TCP connection.
+  Merge branch 'add-mtu-change-with-stmmac-interface-running' (2022-07-25 19:39:36 -0700)
 
-> 1. User A runs a program listing on a TCP port, accepts an incoming
-> TCP connection and is communicating with the remote peer over this
-> TCP connection.
-> 2. User B creates an RDMA RAW_QP on the same port on the device.
-> 3. As soon as the RAW_QP is created, the program in 1 can't
-> send/receive data over this TCP connection. After some period of
-> inactivity, the TCP connection terminates.
+are available in the Git repository at:
 
-It is a little more complicated than that, but yes, that could
-possibly happen if the userspace captures the right traffic.
+  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-07-29
 
-> Please note that this may also pose a security risk. User B with
-> RAW_QP can potentially hijack this TCP connection from the kernel by
-> framing the correct Ethernet packets and send over this QP to trick
-> the remote peer, making it believe it's User A.
+for you to fetch changes up to 35610745d71df567297bb40c5e4263cda38dddd5:
 
-Any root user can do this with the netstack using eg tcpdump, bpf,
-XDP, raw sockets, etc. This is why the capability is guarded by
-CAP_NET_RAW. It is nothing unusual.
+  Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git (2022-07-29 16:38:03 +0300)
 
-> Scenario 2: The Ethernet port state changes after RDMA RAW_QP is used on the port.
-> 1. User uses "ifconfig ethx down" on the NIC, intending to make it offline
-> 2. User creates a RDMA RAW_QP on the same port on the device.
-> 3. User destroys this RAW_QP.
-> 4. The ethx device in 1 reports carrier state in step 2, in many
-> Linux distributions this makes it online without user
-> interaction. "ifconfig ethx" shows its state changes to "up".
+----------------------------------------------------------------
+wireless-next patches for v5.20
 
-This I'm not familiar with, it actually sounds like a bug that the
-RAW_QP's interfere with the netdev carrier state.
+Fourth set of patches for v5.20, last few patches before the merge
+window. Only driver changes this time, mostly just fixes and cleanup.
 
-> the Mellanox NICs implement the RAW_QP. IMHO, it's better to have
-> the user explicitly decide whether to use Ethernet or RDMA RAW_QP on
-> a specific port.
+Major changes:
 
-It should all be carefully documented someplace.
+brcmfmac
 
-Jason
+* support brcm,ccode-map-trivial DT property
+
+wcn36xx
+
+* add debugfs file to show firmware feature strings
+
+----------------------------------------------------------------
+Ajay Singh (7):
+      wifi: wilc1000: add WID_TX_POWER WID in g_cfg_byte array
+      wifi: wilc1000: set correct value of 'close' variable in failure case
+      wifi: wilc1000: set station_info flag only when signal value is valid
+      wifi: wilc1000: get correct length of string WID from received config packet
+      wifi: wilc1000: cancel the connect operation during interface down
+      wifi: wilc1000: add 'isinit' flag for SDIO bus similar to SPI
+      wifi: wilc1000: use existing iftype variable to store the interface type
+
+Alvin Šipraga (2):
+      dt-bindings: bcm4329-fmac: add optional brcm,ccode-map-trivial
+      wifi: brcmfmac: support brcm,ccode-map-trivial DT property
+
+Ammar Faizi (1):
+      wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+
+Bryan O'Donoghue (4):
+      wifi: wcn36xx: Rename clunky firmware feature bit enum
+      wifi: wcn36xx: Move firmware feature bit storage to dedicated firmware.c file
+      wifi: wcn36xx: Move capability bitmap to string translation function to firmware.c
+      wifi: wcn36xx: Add debugfs entry to read firmware feature strings
+
+Dan Carpenter (1):
+      wifi: brcmfmac: use strreplace() in brcmf_of_probe()
+
+Danny van Heumen (1):
+      wifi: brcmfmac: prevent double-free on hardware-reset
+
+Hangyu Hua (1):
+      wifi: libertas: Fix possible refcount leak in if_usb_probe()
+
+Hans de Goede (2):
+      wifi: brcmfmac: Add brcmf_c_set_cur_etheraddr() helper
+      wifi: brcmfmac: Replace default (not configured) MAC with a random MAC
+
+Jason Wang (1):
+      wifi: mwifiex: Fix comment typo
+
+Jose Ignacio Tornos Martinez (1):
+      wifi: iwlwifi: mvm: fix double list_add at iwl_mvm_mac_wake_tx_queue
+
+Justin Stitt (1):
+      wifi: iwlwifi: mvm: fix clang -Wformat warnings
+
+Kalle Valo (2):
+      Revert "ath11k: add support for hardware rfkill for QCA6390"
+      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
+
+Li Qiong (1):
+      wifi: mwl8k: use time_after to replace "jiffies > a"
+
+Manikanta Pubbisetty (1):
+      wifi: ath11k: Fix register write failure on QCN9074
+
+Paul Cercueil (1):
+      wifi: brcmfmac: Remove #ifdef guards for PM related functions
+
+Ping-Ke Shih (1):
+      wifi: rtw89: 8852a: update RF radio A/B R56
+
+Uwe Kleine-König (1):
+      wifi: wl12xx: Drop if with an always false condition
+
+William Dean (1):
+      wifi: rtw88: check the return value of alloc_workqueue()
+
+Xin Gao (1):
+      wifi: b43: do not initialise static variable to 0
+
+Xu Qiang (1):
+      wifi: plfxlc: Use eth_zero_addr() to assign zero address
+
+Yang Li (2):
+      wifi: mwifiex: clean up one inconsistent indenting
+      wifi: b43legacy: clean up one inconsistent indenting
+
+Zhang Jiaming (1):
+      wifi: rtlwifi: Remove duplicate word and Fix typo
+
+Zheyu Ma (1):
+      wifi: rtl8xxxu: Fix the error handling of the probe function
+
+Zong-Zhe Yang (1):
+      wifi: rtw89: 8852a: adjust IMR for SER L1
+
+ .../bindings/net/wireless/brcm,bcm4329-fmac.yaml   |  10 +
+ drivers/net/wireless/ath/ath11k/ahb.c              |  52 +-
+ drivers/net/wireless/ath/ath11k/core.c             |  87 --
+ drivers/net/wireless/ath/ath11k/core.h             |   4 -
+ drivers/net/wireless/ath/ath11k/hw.h               |   5 -
+ drivers/net/wireless/ath/ath11k/mac.c              |  58 --
+ drivers/net/wireless/ath/ath11k/mac.h              |   2 -
+ drivers/net/wireless/ath/ath11k/pci.c              |  70 +-
+ drivers/net/wireless/ath/ath11k/pcic.c             |  57 +-
+ drivers/net/wireless/ath/ath11k/pcic.h             |   2 +
+ drivers/net/wireless/ath/ath11k/wmi.c              |  41 -
+ drivers/net/wireless/ath/ath11k/wmi.h              |  25 -
+ drivers/net/wireless/ath/wcn36xx/Makefile          |   3 +-
+ drivers/net/wireless/ath/wcn36xx/debug.c           |  39 +
+ drivers/net/wireless/ath/wcn36xx/debug.h           |   1 +
+ drivers/net/wireless/ath/wcn36xx/firmware.c        | 125 +++
+ drivers/net/wireless/ath/wcn36xx/firmware.h        |  84 ++
+ drivers/net/wireless/ath/wcn36xx/hal.h             |  68 --
+ drivers/net/wireless/ath/wcn36xx/main.c            |  86 +-
+ drivers/net/wireless/ath/wcn36xx/smd.c             |  57 +-
+ drivers/net/wireless/ath/wcn36xx/smd.h             |   3 -
+ drivers/net/wireless/ath/wil6210/debugfs.c         |   4 +-
+ drivers/net/wireless/broadcom/b43/main.c           |   2 +-
+ drivers/net/wireless/broadcom/b43legacy/main.c     |   2 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c  |  49 +-
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c         |   3 +
+ .../wireless/broadcom/brcm80211/brcmfmac/common.c  |  41 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/common.h  |   3 +
+ .../wireless/broadcom/brcm80211/brcmfmac/core.c    |   8 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/of.c  |  12 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  15 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/sdio.h    |  16 -
+ .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |   4 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |   1 +
+ drivers/net/wireless/marvell/libertas/if_usb.c     |   1 +
+ drivers/net/wireless/marvell/mwifiex/pcie.c        |   2 +-
+ drivers/net/wireless/marvell/mwifiex/sdio.c        |   2 +-
+ drivers/net/wireless/marvell/mwl8k.c               |   2 +-
+ drivers/net/wireless/microchip/wilc1000/cfg80211.c |   3 +-
+ drivers/net/wireless/microchip/wilc1000/hif.c      |   6 +-
+ drivers/net/wireless/microchip/wilc1000/hif.h      |   1 +
+ drivers/net/wireless/microchip/wilc1000/netdev.c   |   9 +-
+ drivers/net/wireless/microchip/wilc1000/netdev.h   |   1 -
+ drivers/net/wireless/microchip/wilc1000/sdio.c     |  13 +
+ drivers/net/wireless/microchip/wilc1000/spi.c      |   8 +
+ drivers/net/wireless/microchip/wilc1000/wlan.c     |   9 +-
+ drivers/net/wireless/microchip/wilc1000/wlan.h     |   1 +
+ drivers/net/wireless/microchip/wilc1000/wlan_cfg.c |   6 +-
+ drivers/net/wireless/purelifi/plfxlc/usb.c         |   2 +-
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |  21 +-
+ drivers/net/wireless/realtek/rtlwifi/core.c        |   2 +-
+ drivers/net/wireless/realtek/rtw88/main.c          |   4 +
+ drivers/net/wireless/realtek/rtw89/pci.c           |   2 +-
+ .../net/wireless/realtek/rtw89/rtw8852a_table.c    | 896 ++++++++++-----------
+ drivers/net/wireless/ti/wl12xx/main.c              |   3 -
+ 55 files changed, 992 insertions(+), 1041 deletions(-)
+ create mode 100644 drivers/net/wireless/ath/wcn36xx/firmware.c
+ create mode 100644 drivers/net/wireless/ath/wcn36xx/firmware.h
