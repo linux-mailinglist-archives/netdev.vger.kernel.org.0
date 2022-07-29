@@ -2,115 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E41D7584DC6
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D776A584DD1
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:07:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiG2JFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 05:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
+        id S235148AbiG2JHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 05:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235462AbiG2JFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:05:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C68A24F2B
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:05:36 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oHLvo-0006wl-0v; Fri, 29 Jul 2022 11:05:16 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oHLvl-0000iK-61; Fri, 29 Jul 2022 11:05:13 +0200
-Date:   Fri, 29 Jul 2022 11:05:13 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v1 1/1] net: dsa: microchip: don't try do read Gbit
- registers on non Gbit chips
-Message-ID: <20220729090513.GA10850@pengutronix.de>
-References: <20220728131725.40492-1-o.rempel@pengutronix.de>
- <YuKOTzS89D2+O8Ye@lunn.ch>
+        with ESMTP id S234326AbiG2JHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:07:17 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB71584EEA
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659085636; x=1690621636;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+xTRbwrM/+sDoe0LaZiRYKYMp/06kLRrtj5E821wKHY=;
+  b=KEoIWwp087GGcmpFNkufzUCn1t9voIgRld1bAkHIJuHbBl3Zq5iwYLtk
+   IbyYt1/CFg57Fwr1s2ZLWMbWdNE28eorWiExHeLcRxJCOCd7MxMpXRhGP
+   IGNqnLG57QR2OQskH9i8EBKXHL1tz+9UVLTwBmy5mp/V6RWJGc5VQMEKk
+   tkLW4bvy5eCEKPTf/5SfXErTZCmhg1OXVItKNpD9MgoTO3RpIRHrvm7gq
+   Lnvm896hhcaNEis9VjNiMuGZcr7kdfpkzgY2D+GwkRBPSPql9txJWbolB
+   l4wwEl+dzv3mgpGOAqQbpeY6ZfweUOK6U81buB1k828DWIpTyP656u24P
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="352727386"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="352727386"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 02:07:16 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="660158823"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.175.200]) ([10.249.175.200])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 02:07:14 -0700
+Message-ID: <7ce4da7f-80aa-14d6-8200-c7f928f32b48@intel.com>
+Date:   Fri, 29 Jul 2022 17:07:11 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YuKOTzS89D2+O8Ye@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in
+ vdpa.c
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-7-lingshan.zhu@intel.com>
+ <20220729045039-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220729045039-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 03:25:35PM +0200, Andrew Lunn wrote:
-> On Thu, Jul 28, 2022 at 03:17:25PM +0200, Oleksij Rempel wrote:
-> > Do not try to read not existing or wrong register on chips without
-> > GBIT_SUPPORT.
-> > 
-> > Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/dsa/microchip/ksz9477.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-> > index c73bb6d383ad..f6bbd9646c85 100644
-> > --- a/drivers/net/dsa/microchip/ksz9477.c
-> > +++ b/drivers/net/dsa/microchip/ksz9477.c
-> > @@ -316,7 +316,13 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
-> >  			break;
-> >  		}
-> >  	} else {
-> > -		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
-> > +		/* No gigabit support.  Do not read wrong registers. */
-> > +		if (!(dev->features & GBIT_SUPPORT) &&
-> > +		    (reg == MII_CTRL1000 || reg == MII_ESTATUS ||
-> > +		     reg == MII_STAT1000))
-> 
-> Does this actually happen?
-> 
-> If i remember this code correctly, it tries to make the oddly looking
-> PHY look like a normal PHY. phylib is then used to drive the PHY?
-> 
-> If i have that correct, why is phylib trying to read these registers?
-> It should know there is no 1G support, and should skip them.
 
-It looks like currently undocumented silicon errata. According to the
-data sheet, the BMSR_ESTATEN should not be set BMSR_ERCAP, but this bits
-are set.
 
-The question is what is the proper place to implement it. There is same
-PHYid for most KSZ switch PHYs, it is no possible to detect it by PHYid.
-I have following options:
-- add chips specific quirk in the ksz9477_r_phy(), just remove
-  BMSR_ESTATEN and BMSR_ERCAP.
-- notify about errata over get_phy_flags and implement get_caps quirk in
-  the PHY driver.
+On 7/29/2022 4:53 PM, Michael S. Tsirkin wrote:
+> On Fri, Jul 01, 2022 at 09:28:26PM +0800, Zhu Lingshan wrote:
+>> This commit fixes spars warnings: cast to restricted __le16
+>> in function vdpa_dev_net_config_fill() and
+>> vdpa_fill_stats_rec()
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/vdpa.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>> index 846dd37f3549..ed49fe46a79e 100644
+>> --- a/drivers/vdpa/vdpa.c
+>> +++ b/drivers/vdpa/vdpa.c
+>> @@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>>   		    config.mac))
+>>   		return -EMSGSIZE;
+>>   
+>> -	val_u16 = le16_to_cpu(config.status);
+>> +	val_u16 = __virtio16_to_cpu(true, config.status);
+>>   	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
+>>   		return -EMSGSIZE;
+>>   
+>> -	val_u16 = le16_to_cpu(config.mtu);
+>> +	val_u16 = __virtio16_to_cpu(true, config.mtu);
+>>   	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>   		return -EMSGSIZE;
+>>   
+> Wrong on BE platforms with legacy interface, isn't it?
+> We generally don't handle legacy properly in VDPA so it's
+> not a huge deal, but maybe add a comment at least?
+Sure, I can add a comment here: this is for modern devices only.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Thanks,
+Zhu Lingshan
+>
+>
+>> @@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
+>>   	}
+>>   	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>>   
+>> -	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
+>> +	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
+>>   	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
+>>   		return -EMSGSIZE;
+>>   
+>> -- 
+>> 2.31.1
+
