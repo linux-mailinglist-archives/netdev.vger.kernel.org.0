@@ -2,130 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79454584CA8
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:33:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC597584CA9
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234813AbiG2HdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 03:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        id S234845AbiG2HdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 03:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbiG2HdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:33:01 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F597C1B4;
+        with ESMTP id S234371AbiG2HdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:33:02 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075747B37F
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:33:01 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id f11so3391905pgj.7
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qvpro8/9dV4bp5UsVmY66qyCUULP+kH6X5nZ/0kdvcE=;
+        b=HgfAGdrPzOGwsei9taE32rXMt27/0/KFI90L2dRllOqbwNmtKR5Whj8AhdENiXvGfV
+         9mCA7PT24qqMXIxH8XQnAMDFCR0JUSvhGaLq1bAqbdXiRV2lMJezrvl9ZX8HLdOM7fID
+         CrZcGK+HZsn/a9aa/GWw2XuLxvSE+puMel4dw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qvpro8/9dV4bp5UsVmY66qyCUULP+kH6X5nZ/0kdvcE=;
+        b=5oDKXKPLnHFzpJ1up5cpnkNgVDnQUcWeXkwIer4tMgMvT2W5VIpf+KNFXQ/se4yQMB
+         dT0MedY5yDE43ntsYfP7KS2MckE1rMsjaKtKNw3a2hp0xrol4sN8Mfcx6NKJ0EsMnOGU
+         rFbXa7V7tPMpBffbuJSdUAhw7DyrjFSyniwGUJequaMyHnbR1Fs7abmPlL2AHi4Nw3NX
+         9MILRsnF+mVWBTWNvNDrOucTTg5YjrUIrYwSUiXD/EA+bV0IGc2TDsKkEsQze8/pBWNJ
+         s0/aqdFyuMZFFh3eVDPkxHm8U3n1SbdtP+FxSp+aBKwAoiK6mVm/wljQVy3SK4iTCjln
+         F7Zw==
+X-Gm-Message-State: AJIora9pw/Kx6KmMGXb1i9pVoOsHE4U6vU/gnlLrF9L6NnDbZQNTL3S6
+        panJEtBVwZziuM0IE89Eyf2Ipg==
+X-Google-Smtp-Source: AGRyM1s8DJsZUV8w/ht8gxLaEcCv4ZUh+VFsO9ob31rnb/iFG7juASUoFEhXBcxEkJdkuAIEk5iXFQ==
+X-Received: by 2002:a63:1624:0:b0:41a:9dea:1c80 with SMTP id w36-20020a631624000000b0041a9dea1c80mr1961226pgl.400.1659079980488;
+        Fri, 29 Jul 2022 00:33:00 -0700 (PDT)
+Received: from cab09-qa-09.fungible.local ([12.190.10.11])
+        by smtp.gmail.com with ESMTPSA id w71-20020a627b4a000000b005289ffefe82sm2074226pfc.130.2022.07.29.00.32.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 29 Jul 2022 00:32:59 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id ED1271C000D;
-        Fri, 29 Jul 2022 07:32:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659079978;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qr9dBtRHpEsZnY4WwAGh3TdMzUoTMBzq+LV/3YLwXZc=;
-        b=X2aEFCq12Cd3VqkHThYBrZGJKoeYCB29lOCN6l1FKfrPKFfgmf8d2jGeBok/AgqU7LwszH
-        1TmrFcfbqn4eYwSCoY08CR/FcrC+OrSQH/BF9s7jUGsJKuhZjrSYQU6PNPxb1IHyWW/W5E
-        /DkybKlTUjBy+7aBrfRIVwJS681owU9kOlTNXCY9b22+jDBvFBW9cFZKcfXvk7i894pmnO
-        pJm9kXfZjbF9jdWAu5cTO0M0VbvMhzBLVGzHsbgFqvwf8rQGUxXRQ6Y8kil5O946VIfTS+
-        uuNmsJPIApRj1LuLoH4UfOdajD44yRUFGmhQjWR6oOyxCrxIImT9a5wNq7C2gw==
-Date:   Fri, 29 Jul 2022 09:32:52 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
-        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 3/4] net: phy: Add helper to derive the number
- of ports from a phy mode
-Message-ID: <20220729093252.50977d5c@pc-10.home>
-In-Reply-To: <YuMAdACnRKsL8/xD@lunn.ch>
-References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
-        <20220728145252.439201-4-maxime.chevallier@bootlin.com>
-        <YuMAdACnRKsL8/xD@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        lorenzo@kernel.org, hawk@kernel.org, netdev@vger.kernel.org,
+        d.michailidis@fungible.com
+Subject: [PATCH net-next 0/4] net/funeth: Tx support for XDP with frags
+Date:   Fri, 29 Jul 2022 00:32:53 -0700
+Message-Id: <20220729073257.2721-1-dmichail@fungible.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jul 2022 23:32:36 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Support XDP with fragments for XDP_TX and ndo_xdp_xmit.
 
-> > +int phy_interface_num_ports(phy_interface_t interface)
-> > +{
-> > +	switch (interface) {
-> > +	case PHY_INTERFACE_MODE_NA:
-> > +	case PHY_INTERFACE_MODE_INTERNAL:
-> > +		return 0;  
-> 
-> I've not yet looked at how this is used. Returning 0 could have
-> interesting effects i guess? INTERNAL clearly does have some sort of
-> path between the MAC and the PHY, so i think 1 would be a better
-> value. NA is less clear, it generally means Don't touch. But again,
-> there still needs to be a path between the MAC and PHY, otherwise
-> there would not be any to touch.
-> 
-> Why did you pick 0?
-> 
-> > +
-> > +	case PHY_INTERFACE_MODE_MII:
-> > +	case PHY_INTERFACE_MODE_GMII:
-> > +	case PHY_INTERFACE_MODE_TBI:
-> > +	case PHY_INTERFACE_MODE_REVMII:
-> > +	case PHY_INTERFACE_MODE_RMII:
-> > +	case PHY_INTERFACE_MODE_REVRMII:
-> > +	case PHY_INTERFACE_MODE_RGMII:
-> > +	case PHY_INTERFACE_MODE_RGMII_ID:
-> > +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> > +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> > +	case PHY_INTERFACE_MODE_RTBI:
-> > +	case PHY_INTERFACE_MODE_XGMII:
-> > +	case PHY_INTERFACE_MODE_XLGMII:
-> > +	case PHY_INTERFACE_MODE_MOCA:
-> > +	case PHY_INTERFACE_MODE_TRGMII:
-> > +	case PHY_INTERFACE_MODE_USXGMII:
-> > +	case PHY_INTERFACE_MODE_SGMII:
-> > +	case PHY_INTERFACE_MODE_SMII:
-> > +	case PHY_INTERFACE_MODE_1000BASEX:
-> > +	case PHY_INTERFACE_MODE_2500BASEX:
-> > +	case PHY_INTERFACE_MODE_5GBASER:
-> > +	case PHY_INTERFACE_MODE_10GBASER:
-> > +	case PHY_INTERFACE_MODE_25GBASER:
-> > +	case PHY_INTERFACE_MODE_10GKR:
-> > +	case PHY_INTERFACE_MODE_100BASEX:
-> > +	case PHY_INTERFACE_MODE_RXAUI:
-> > +	case PHY_INTERFACE_MODE_XAUI:
-> > +		return 1;
-> > +	case PHY_INTERFACE_MODE_QSGMII:
-> > +	case PHY_INTERFACE_MODE_QUSGMII:
-> > +		return 4;
-> > +
-> > +	default:
-> > +		return 0;
-> > +	}
-> > +}  
-> 
-> Have you tried without a default: ? I _think_ gcc will then warn about
-> missing enum values, which will help future developers when they add
-> further values to the enum.
+The first three patches rework existing code used by the skb path to
+make it suitable also for XDP. With these all the callees of the main
+Tx XDP function, fun_xdp_tx(), are fragment-capable. The last patch
+updates fun_xdp_tx() to handle fragments.
 
-Without the default clause, I get an error about the missing
-PHY_INTERFACE_MODE_MAX case, which I don't think belongs here...
+Dimitris Michailidis (4):
+  net/funeth: Unify skb/XDP Tx packet unmapping.
+  net/funeth: Unify skb/XDP gather list writing.
+  net/funeth: Unify skb/XDP packet mapping.
+  net/funeth: Tx handling of XDP with fragments.
 
-Too bad :/
+ .../net/ethernet/fungible/funeth/funeth_tx.c  | 135 ++++++++++--------
+ 1 file changed, 77 insertions(+), 58 deletions(-)
 
-> 	Andrew
+-- 
+2.25.1
 
