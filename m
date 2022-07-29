@@ -2,60 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4B858507E
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F0158509D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:14:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236317AbiG2NJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 09:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S236698AbiG2NNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 09:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiG2NI5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 09:08:57 -0400
+        with ESMTP id S236728AbiG2NM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 09:12:59 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF701C56;
-        Fri, 29 Jul 2022 06:08:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E41357234;
+        Fri, 29 Jul 2022 06:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XV4FYkS/nsQW9JhqD1MLPoDv6thr9pzmU6vmVArakKA=; b=A+X10RUu2sgNy6OI75yTPLCpL4
-        pdimq9m6r+Irwi35Ae5QGvmdLS6ff/m6GGKdMzcSpfRdAH8dhMIxQ4Zk7qSIenpTP10PCFngmHkzt
-        AtBagkT7qH0v+R36jBsoAP0qwh+RZLenM7dnMBfgAM+Tjo3PeVfCm0+jwnmJU6F7fysI=;
+        bh=1V1EPIx5SWj6VhkkBaKrSzdQ8VeFraOV5vkmO7pp+ZI=; b=cml+Ja7pPUqiLDpd+4o90bg8hR
+        kt2rrlGhY32N0WuXoh6rEfMdftCIe9WJM+2BFwShQKVr+s/cZSmVP1U+h5hzeuF5DSiKsjpUhe6hu
+        jlxfc9OymUbOCQuYV2lgWbZuoD/03bbe5bcFknsqNDAmU35falGqQKC3OHzYbNm4FooI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oHPjL-00Bv17-Va; Fri, 29 Jul 2022 15:08:39 +0200
-Date:   Fri, 29 Jul 2022 15:08:39 +0200
+        id 1oHPmk-00Bv3L-FD; Fri, 29 Jul 2022 15:12:10 +0200
+Date:   Fri, 29 Jul 2022 15:12:10 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "git@xilinx.com" <git@xilinx.com>, "git (AMD-Xilinx)" <git@amd.com>
-Subject: Re: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
- configuration support
-Message-ID: <YuPb141ykzLTWLbC@lunn.ch>
-References: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
- <1658477520-13551-3-git-send-email-radhey.shyam.pandey@amd.com>
- <Yt15J6fO5j9jxFxp@lunn.ch>
- <MN0PR12MB59537FD82D25E5B6BE17D1B6B7959@MN0PR12MB5953.namprd12.prod.outlook.com>
- <Yt7OqU9LXl4SDqYx@lunn.ch>
- <MN0PR12MB5953571B73BE19D01BCF12D4B7949@MN0PR12MB5953.namprd12.prod.outlook.com>
- <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net v1 1/1] net: dsa: microchip: don't try do read Gbit
+ registers on non Gbit chips
+Message-ID: <YuPcqscMzyURL3V/@lunn.ch>
+References: <20220728131725.40492-1-o.rempel@pengutronix.de>
+ <YuKOTzS89D2+O8Ye@lunn.ch>
+ <20220729090513.GA10850@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
+In-Reply-To: <20220729090513.GA10850@pengutronix.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -65,24 +57,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > How robust is this? What if somebody specified a different power domain?
+On Fri, Jul 29, 2022 at 11:05:13AM +0200, Oleksij Rempel wrote:
+> On Thu, Jul 28, 2022 at 03:25:35PM +0200, Andrew Lunn wrote:
+> > On Thu, Jul 28, 2022 at 03:17:25PM +0200, Oleksij Rempel wrote:
+> > > Do not try to read not existing or wrong register on chips without
+> > > GBIT_SUPPORT.
+> > > 
+> > > Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > ---
+> > >  drivers/net/dsa/microchip/ksz9477.c | 8 +++++++-
+> > >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+> > > index c73bb6d383ad..f6bbd9646c85 100644
+> > > --- a/drivers/net/dsa/microchip/ksz9477.c
+> > > +++ b/drivers/net/dsa/microchip/ksz9477.c
+> > > @@ -316,7 +316,13 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+> > >  			break;
+> > >  		}
+> > >  	} else {
+> > > -		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
+> > > +		/* No gigabit support.  Do not read wrong registers. */
+> > > +		if (!(dev->features & GBIT_SUPPORT) &&
+> > > +		    (reg == MII_CTRL1000 || reg == MII_ESTATUS ||
+> > > +		     reg == MII_STAT1000))
 > > 
-> > Some background - init_reset_optional() fn is implemented for three
-> > platforms i.e., zynqmp, versal, MPFS.
+> > Does this actually happen?
 > > 
-> > zynqmp_pm_set_gem_config API expect first argument as GEM node id so,
-> > power-domain DT property is passed to get node ID.
+> > If i remember this code correctly, it tries to make the oddly looking
+> > PHY look like a normal PHY. phylib is then used to drive the PHY?
 > > 
-> > However, power-domain property is read only if underlying firmware
-> > supports configuration of GEM secure space. It's only true for zynqmp SGMII
-> > case and for zynqmp power domain is fixed.
-> > In addition to it there is an error handling in power-domain property parsing.
-> > Hope this answers the question.
+> > If i have that correct, why is phylib trying to read these registers?
+> > It should know there is no 1G support, and should skip them.
 > 
-> Please let me know the implementation looks fine or needs any modification?
+> It looks like currently undocumented silicon errata. According to the
+> data sheet, the BMSR_ESTATEN should not be set BMSR_ERCAP, but this bits
+> are set.
+> 
+> The question is what is the proper place to implement it. There is same
+> PHYid for most KSZ switch PHYs, it is no possible to detect it by PHYid.
+> I have following options:
+> - add chips specific quirk in the ksz9477_r_phy(), just remove
+>   BMSR_ESTATEN and BMSR_ERCAP.
+> - notify about errata over get_phy_flags and implement get_caps quirk in
+>   the PHY driver.
 
-Given that explanation, it looks fine.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I would do the first. The DSA driver is already doing some emulation
+of a normal PHY, so it seems odd to push a workaround into the PHY
+driver when it can be part of the emulation.
 
     Andrew
