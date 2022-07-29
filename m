@@ -2,57 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03889584DB1
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 10:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B210584DB8
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 10:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235323AbiG2Iwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 04:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S235438AbiG2Ixi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 04:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235344AbiG2Iwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 04:52:32 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A22E83202
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659084751; x=1690620751;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MivkN7o7RjWX4FSBa2M87yeUW25x+JEFoAjWht/x4/A=;
-  b=FpL8riwwxazjas+J4El0zGisoygfiCHabNmk+xXDleHklU1fE/UXVHOX
-   /IABrqjs2HrDcvyl+q68WKzEU932sfn/0o8jFB49Cjz+uYiUYbaeP88fd
-   e6Pq4M/X9HhTSPkKpavr75oRIKUUvBDPVudXUbwswEmoAUu84M2lc+H61
-   iaUxeR79bbrwzIjEY2hY2sOLxBMbm8xrQAHYAFNn2JH44TK39Xt098Koa
-   qj61MXKGvplsE+ZmC8+eRA3t1rSur0uSxSIsirfcv6Lfz4na1YQ9JzDL/
-   iu7c+2NyA0P3KU5KCsd8ObMTAb7gE7Vg+UhLLLiOkwAOM5fHwz4/P1UdN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="286276302"
-X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="286276302"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 01:52:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="777481200"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 29 Jul 2022 01:52:30 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26T8qR3C020937;
-        Fri, 29 Jul 2022 09:52:29 +0100
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, gnault@redhat.com
-Subject: [PATCH iproute-next v4 3/3] f_flower: Introduce PPPoE support
-Date:   Fri, 29 Jul 2022 10:50:35 +0200
-Message-Id: <20220729085035.535788-4-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220729085035.535788-1-wojciech.drewek@intel.com>
-References: <20220729085035.535788-1-wojciech.drewek@intel.com>
+        with ESMTP id S235404AbiG2Ixh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 04:53:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7020F83206
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659084815;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UKNzy1wNl3/wszEHWiuWje3QkhM8MgHzTske10APxFw=;
+        b=dQDIp1nn8vdY17mCtyS5vGbng53PrUINbh6nbNXnPFI+zv1bGsM2IwPy8LU7o0KQybFti+
+        X7gInZnXl++Inc1pHmuy9pTexQhCCUfj59PM4EG5XqtsOVnE0XFZ3Z5dqBNleHw8mED+0F
+        +/l3VmnyLpykbzmqwuU9sWF5zOnuP2s=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-604-w3liKLEjOUyy1CQJ-lJ30A-1; Fri, 29 Jul 2022 04:53:32 -0400
+X-MC-Unique: w3liKLEjOUyy1CQJ-lJ30A-1
+Received: by mail-ed1-f71.google.com with SMTP id w15-20020a056402268f00b0043be4012ea9so2528958edd.4
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:53:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=UKNzy1wNl3/wszEHWiuWje3QkhM8MgHzTske10APxFw=;
+        b=uE+ALUeqV2aglPT9r7zdL4m1Pnvbl6eKIz2IPCZ0keCobf54//4Vj1cRUoZ+55y3jz
+         yUUSshKXZE8VN6nPwHT93SXkZWa8+7Eb6HXK7obZbP7FcXy0A4+vUXKt3KdRFuaVX0ya
+         JQY6rpu3WL63rK/vGXJujczGQpTmD8APJz40Hg7qtirm+NoohIoOF6XYSVRlVI4GiShy
+         Cn3Uy9VIrGjbHfBaRDXtpN/cpWCgiuqab1xVchoOY2lGXCEFf/r4nrbGCX6qe4/hdvrl
+         uCQoyaVnG3KlO8P5HxeqkCB7pcqYsRKFUqAJ5x/BDq4Mv0s4sT1CZymPMGxf0g55VWoe
+         2SdA==
+X-Gm-Message-State: AJIora/++gRoWrZrc9syhN6t59yLBK3BtCtOXc6hupJPPCJ6aKk8POG/
+        imSvn+mtiN7r9jZEm7YUgn6zZqnuUt5wGdjXY7e04VWeUrm2rWL+nSoF0Q4lb2h895ifMhRren1
+        3yUQVspTdd/FynPoi
+X-Received: by 2002:a17:906:9c84:b0:6e0:7c75:6f01 with SMTP id fj4-20020a1709069c8400b006e07c756f01mr2189883ejc.103.1659084811160;
+        Fri, 29 Jul 2022 01:53:31 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tFzt9/6A2RKYxMe6RJ6gz+kx2jnpmTWONPTb+1sLKKtOLsSJuA19N97kaMBeYyhN7fjcnflw==
+X-Received: by 2002:a17:906:9c84:b0:6e0:7c75:6f01 with SMTP id fj4-20020a1709069c8400b006e07c756f01mr2189861ejc.103.1659084810678;
+        Fri, 29 Jul 2022 01:53:30 -0700 (PDT)
+Received: from redhat.com ([2.54.183.236])
+        by smtp.gmail.com with ESMTPSA id q15-20020a17090676cf00b006fed93bf71fsm1446122ejn.18.2022.07.29.01.53.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 01:53:30 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 04:53:27 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com
+Subject: Re: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in
+ vdpa.c
+Message-ID: <20220729045039-mutt-send-email-mst@kernel.org>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-7-lingshan.zhu@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701132826.8132-7-lingshan.zhu@intel.com>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,185 +77,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce PPPoE specific fields in tc-flower:
-- session id (16 bits)
-- ppp protocol (16 bits)
-Those fields can be provided only when protocol was set to
-ETH_P_PPP_SES. ppp_proto works similar to vlan_ethtype, i.e.
-ppp_proto overwrites eth_type. Thanks to that, fields from
-encapsulated protocols (such as src_ip) can be specified.
+On Fri, Jul 01, 2022 at 09:28:26PM +0800, Zhu Lingshan wrote:
+> This commit fixes spars warnings: cast to restricted __le16
+> in function vdpa_dev_net_config_fill() and
+> vdpa_fill_stats_rec()
+> 
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vdpa/vdpa.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index 846dd37f3549..ed49fe46a79e 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>  		    config.mac))
+>  		return -EMSGSIZE;
+>  
+> -	val_u16 = le16_to_cpu(config.status);
+> +	val_u16 = __virtio16_to_cpu(true, config.status);
+>  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
+>  		return -EMSGSIZE;
+>  
+> -	val_u16 = le16_to_cpu(config.mtu);
+> +	val_u16 = __virtio16_to_cpu(true, config.mtu);
+>  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>  		return -EMSGSIZE;
+>  
 
-e.g.
-  # tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses \
-      flower \
-        pppoe_sid 1234 \
-        ppp_proto ip \
-        dst_ip 127.0.0.1 \
-        src_ip 127.0.0.2 \
-      action drop
+Wrong on BE platforms with legacy interface, isn't it?
+We generally don't handle legacy properly in VDPA so it's
+not a huge deal, but maybe add a comment at least?
 
-Vlan and cvlan is also supported, in this case cvlan_ethtype
-or vlan_ethtype has to be set to ETH_P_PPP_SES.
 
-e.g.
-  # tc filter add dev ens6f0 ingress prio 1 protocol 802.1Q \
-      flower \
-        vlan_id 2 \
-        vlan_ethtype ppp_ses \
-        pppoe_sid 1234 \
-        ppp_proto ip \
-        dst_ip 127.0.0.1 \
-        src_ip 127.0.0.2 \
-      action drop
-
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
-v3: don't reject 0xffff session ID
----
- include/uapi/linux/pkt_cls.h |  3 ++
- man/man8/tc-flower.8         | 17 ++++++++++-
- tc/f_flower.c                | 58 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 77 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 9a2ee1e39fad..a67dcd8294c9 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -589,6 +589,9 @@ enum {
- 
- 	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
- 
-+	TCA_FLOWER_KEY_PPPOE_SID,	/* u16 */
-+	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 523935242ccf..5e486ea31d37 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -40,6 +40,10 @@ flower \- flow based traffic control filter
- .IR PRIORITY " | "
- .BR cvlan_ethtype " { " ipv4 " | " ipv6 " | "
- .IR ETH_TYPE " } | "
-+.B pppoe_sid
-+.IR PSID " | "
-+.BR ppp_proto " { " ip " | " ipv6 " | " mpls_uc " | " mpls_mc " | "
-+.IR PPP_PROTO " } | "
- .B mpls
- .IR LSE_LIST " | "
- .B mpls_label
-@@ -202,7 +206,18 @@ Match on QinQ layer three protocol.
- may be either
- .BR ipv4 ", " ipv6
- or an unsigned 16bit value in hexadecimal format.
--
-+.TP
-+.BI pppoe_sid " PSID"
-+Match on PPPoE session id.
-+.I PSID
-+is an unsigned 16bit value in decimal format.
-+.TP
-+.BI ppp_proto " PPP_PROTO"
-+Match on PPP layer three protocol.
-+.I PPP_PROTO
-+may be either
-+.BR ip ", " ipv6 ", " mpls_uc ", " mpls_mc
-+or an unsigned 16bit value in hexadecimal format.
- .TP
- .BI mpls " LSE_LIST"
- Match on the MPLS label stack.
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 622ec321f310..069896a48f33 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -20,6 +20,7 @@
- #include <linux/ip.h>
- #include <linux/tc_act/tc_vlan.h>
- #include <linux/mpls.h>
-+#include <linux/ppp_defs.h>
- 
- #include "utils.h"
- #include "tc_util.h"
-@@ -55,6 +56,8 @@ static void explain(void)
- 		"			cvlan_id VID |\n"
- 		"			cvlan_prio PRIORITY |\n"
- 		"			cvlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
-+		"			pppoe_sid PSID |\n"
-+		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
- 		"			dst_mac MASKED-LLADDR |\n"
- 		"			src_mac MASKED-LLADDR |\n"
- 		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | IP-PROTO ] |\n"
-@@ -1887,6 +1890,43 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"arp_sha\"\n");
- 				return -1;
- 			}
-+
-+		} else if (!strcmp(*argv, "pppoe_sid")) {
-+			__be16 sid;
-+
-+			NEXT_ARG();
-+			if (eth_type != htons(ETH_P_PPP_SES)) {
-+				fprintf(stderr,
-+					"Can't set \"pppoe_sid\" if ethertype isn't PPPoE session\n");
-+				return -1;
-+			}
-+			ret = get_be16(&sid, *argv, 10);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"pppoe_sid\"\n");
-+				return -1;
-+			}
-+			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPPOE_SID, sid);
-+		} else if (!strcmp(*argv, "ppp_proto")) {
-+			__be16 proto;
-+
-+			NEXT_ARG();
-+			if (eth_type != htons(ETH_P_PPP_SES)) {
-+				fprintf(stderr,
-+					"Can't set \"ppp_proto\" if ethertype isn't PPPoE session\n");
-+				return -1;
-+			}
-+			if (ppp_proto_a2n(&proto, *argv))
-+				invarg("invalid ppp_proto", *argv);
-+			/* get new ethtype for later parsing  */
-+			if (proto == htons(PPP_IP))
-+				eth_type = htons(ETH_P_IP);
-+			else if (proto == htons(PPP_IPV6))
-+				eth_type = htons(ETH_P_IPV6);
-+			else if (proto == htons(PPP_MPLS_UC))
-+				eth_type = htons(ETH_P_MPLS_UC);
-+			else if (proto == htons(PPP_MPLS_MC))
-+				eth_type = htons(ETH_P_MPLS_MC);
-+			addattr16(n, MAX_MSG, TCA_FLOWER_KEY_PPP_PROTO, proto);
- 		} else if (matches(*argv, "enc_dst_ip") == 0) {
- 			NEXT_ARG();
- 			ret = flower_parse_ip_addr(*argv, 0,
-@@ -2851,6 +2891,24 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	flower_print_eth_addr("arp_tha", tb[TCA_FLOWER_KEY_ARP_THA],
- 			      tb[TCA_FLOWER_KEY_ARP_THA_MASK]);
- 
-+	if (tb[TCA_FLOWER_KEY_PPPOE_SID]) {
-+		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPPOE_SID];
-+
-+		print_nl();
-+		print_uint(PRINT_ANY, "pppoe_sid", "  pppoe_sid %u",
-+			   rta_getattr_be16(attr));
-+	}
-+
-+	if (tb[TCA_FLOWER_KEY_PPP_PROTO]) {
-+		SPRINT_BUF(buf);
-+		struct rtattr *attr = tb[TCA_FLOWER_KEY_PPP_PROTO];
-+
-+		print_nl();
-+		print_string(PRINT_ANY, "ppp_proto", "  ppp_proto %s",
-+			     ppp_proto_n2a(rta_getattr_u16(attr),
-+			     buf, sizeof(buf)));
-+	}
-+
- 	flower_print_ip_addr("enc_dst_ip",
- 			     tb[TCA_FLOWER_KEY_ENC_IPV4_DST_MASK] ?
- 			     htons(ETH_P_IP) : htons(ETH_P_IPV6),
--- 
-2.31.1
+> @@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
+>  	}
+>  	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>  
+> -	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
+> +	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
+>  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
+>  		return -EMSGSIZE;
+>  
+> -- 
+> 2.31.1
 
