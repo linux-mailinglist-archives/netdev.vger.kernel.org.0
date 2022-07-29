@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5951358507B
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4B858507E
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiG2NIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 09:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S236317AbiG2NJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 09:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231976AbiG2NId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 09:08:33 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B5310F7;
-        Fri, 29 Jul 2022 06:08:26 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 5B75D2057B;
-        Fri, 29 Jul 2022 15:08:24 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 7NYllXnDYExq; Fri, 29 Jul 2022 15:08:23 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 7A3CE204E5;
-        Fri, 29 Jul 2022 15:08:23 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 704D380004A;
-        Fri, 29 Jul 2022 15:08:23 +0200 (CEST)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 15:08:23 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
- 2022 15:08:23 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id D284B318103E; Fri, 29 Jul 2022 15:08:22 +0200 (CEST)
-Date:   Fri, 29 Jul 2022 15:08:22 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Xin Xiong <xiongx18@fudan.edu.cn>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "=?utf-8?B?4oCcRGF2aWQgUyAu?= Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        James Morris <jmorris@namei.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yuanxzhang@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: Re: [PATCH] xfrm: fix refcount leak in __xfrm_policy_check()
-Message-ID: <20220729130822.GC2602992@gauss3.secunet.de>
-References: <20220724095557.4350-1-xiongx18@fudan.edu.cn>
+        with ESMTP id S236394AbiG2NI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 09:08:57 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF701C56;
+        Fri, 29 Jul 2022 06:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XV4FYkS/nsQW9JhqD1MLPoDv6thr9pzmU6vmVArakKA=; b=A+X10RUu2sgNy6OI75yTPLCpL4
+        pdimq9m6r+Irwi35Ae5QGvmdLS6ff/m6GGKdMzcSpfRdAH8dhMIxQ4Zk7qSIenpTP10PCFngmHkzt
+        AtBagkT7qH0v+R36jBsoAP0qwh+RZLenM7dnMBfgAM+Tjo3PeVfCm0+jwnmJU6F7fysI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oHPjL-00Bv17-Va; Fri, 29 Jul 2022 15:08:39 +0200
+Date:   Fri, 29 Jul 2022 15:08:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
+Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "git@xilinx.com" <git@xilinx.com>, "git (AMD-Xilinx)" <git@amd.com>
+Subject: Re: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
+ configuration support
+Message-ID: <YuPb141ykzLTWLbC@lunn.ch>
+References: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
+ <1658477520-13551-3-git-send-email-radhey.shyam.pandey@amd.com>
+ <Yt15J6fO5j9jxFxp@lunn.ch>
+ <MN0PR12MB59537FD82D25E5B6BE17D1B6B7959@MN0PR12MB5953.namprd12.prod.outlook.com>
+ <Yt7OqU9LXl4SDqYx@lunn.ch>
+ <MN0PR12MB5953571B73BE19D01BCF12D4B7949@MN0PR12MB5953.namprd12.prod.outlook.com>
+ <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220724095557.4350-1-xiongx18@fudan.edu.cn>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 05:55:58PM +0800, Xin Xiong wrote:
-> The issue happens on an error path in __xfrm_policy_check(). When the
-> fetching process of the object `pols[1]` fails, the function simply
-> returns 0, forgetting to decrement the reference count of `pols[0]`,
-> which is incremented earlier by either xfrm_sk_policy_lookup() or
-> xfrm_policy_lookup(). This may result in memory leaks.
+> > > How robust is this? What if somebody specified a different power domain?
+> > 
+> > Some background - init_reset_optional() fn is implemented for three
+> > platforms i.e., zynqmp, versal, MPFS.
+> > 
+> > zynqmp_pm_set_gem_config API expect first argument as GEM node id so,
+> > power-domain DT property is passed to get node ID.
+> > 
+> > However, power-domain property is read only if underlying firmware
+> > supports configuration of GEM secure space. It's only true for zynqmp SGMII
+> > case and for zynqmp power domain is fixed.
+> > In addition to it there is an error handling in power-domain property parsing.
+> > Hope this answers the question.
 > 
-> Fix it by decreasing the reference count of `pols[0]` in that path.
-> 
-> Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
-> Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+> Please let me know the implementation looks fine or needs any modification?
 
-Applied, thanks a lot Xin!
+Given that explanation, it looks fine.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
