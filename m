@@ -2,88 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D35FE5851FD
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 17:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BF5585226
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 17:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236504AbiG2PA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 11:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
+        id S232563AbiG2PNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 11:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiG2PAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 11:00:54 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399C5E3E
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 08:00:54 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id l188so6053503oia.4
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 08:00:54 -0700 (PDT)
+        with ESMTP id S231158AbiG2PNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 11:13:11 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8792018C
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 08:13:10 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id w15so7731455lft.11
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 08:13:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=djbBxnzCv4stT/4u6XcDsaeh6DJggF934ace9onesHg=;
-        b=LnLhHwMcvPzFF+H5k7tQoCEj3m8czGukTuJ/isnrPD3JOejVcDVQchX6RTSxqk6ZYV
-         ph8YKcFtqPp1unAXGmiTEO7KCS+O7nIFiXQI/OLkJpy8e7Ya8MsOR/w43ICH+YuFwQEK
-         SOX4xlIx/rGGdEI9up61TsUt3bUY1rlLPko5DTx6IEgfobI6lUjAvDFHRVYj4DX/ZpR+
-         uuE0Ib1KMwjrJ5zQKBiUBjEl7EcmrzfI4nR9aonMJQM57XTExvUeHGCkigfMuHRGpLLs
-         LggXFWqEUyOjPLyWYw00vt6Fy/kqpoEYOSMVzFyWjuKeHW983bFaEs2UQ4BY3dyKfQyB
-         qtIQ==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nxmFT/vaZUMHWtUOuVktys2wX6Ce4r3JShjpg8XXvBU=;
+        b=eoOabj0CwTFrjnWgXvDFEgFyXT/Vyp6Cf1I/55kQulH6t1veSZ6oqE/cGI8O68kviB
+         TUYhAUFso59jooRJJAPT+/emnmxdH5TPrA9Xf77AUyZkDTccr2pmT1HPYVVqryIAiRKE
+         xM63SsavxzT2FIIPExVpbM9NIU9BFNJdk+BLA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=djbBxnzCv4stT/4u6XcDsaeh6DJggF934ace9onesHg=;
-        b=xxVtT5HjI9rP+kYgprahtm/LNJn/uQ10+fH7vvoWe8hyvnJhIGjDCP82rbA6yI7UrU
-         pD5lnFtN81ll9baC8DRfkoONOzPVidK58jDjoVPIep4je3hR7Q04/Xwua996j0T5f+nc
-         T3mPKnzY9wE3uBSlZfU19ntRUZICMoGV4smQwVfADYyji7TXkiyDdgTbiuM/ibltLO4q
-         O5LPknERpqKfquBpRLo6BryKfZzzA3F8c82dKznTfTXk21S5+T5ikClw08IbyzpDfm5F
-         9Mhus47lCaOJkO6WFBkNRxfJCbDTwJHMneCClTNgUtym9WyV7AjDFzYEjOx4pHYAUyQp
-         lJHw==
-X-Gm-Message-State: AJIora9bjEY5nUadVX0AidFHrZqadPWFtbTx1/E2OhvGctuwYdE2KcUJ
-        /5mbm9DWPb1FzUrmPZa2YKk=
-X-Google-Smtp-Source: AGRyM1shReCB7BR+M4rJdOJs8XQZqJJKgQOU/xKJoYQKllqTc54RpGEs3kWhxsiVbMeGvwajYRg8EA==
-X-Received: by 2002:a05:6808:1928:b0:33a:af6b:643b with SMTP id bf40-20020a056808192800b0033aaf6b643bmr1742189oib.91.1659106853500;
-        Fri, 29 Jul 2022 08:00:53 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:b47e:4ea2:2c6e:1224? ([2601:282:800:dc80:b47e:4ea2:2c6e:1224])
-        by smtp.googlemail.com with ESMTPSA id h23-20020a056830035700b0061c9c0e858fsm1281871ote.70.2022.07.29.08.00.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 08:00:53 -0700 (PDT)
-Message-ID: <48df4e83-a9b8-11db-aeaf-2015666af5a5@gmail.com>
-Date:   Fri, 29 Jul 2022 09:00:52 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nxmFT/vaZUMHWtUOuVktys2wX6Ce4r3JShjpg8XXvBU=;
+        b=J4veK+WTpikKyyitibSEYmrI28N9isUT4vnH5ZslAERxv9sAZy12Af6YsuC0eKo9jF
+         JZbuJ/0Onr/wYoCJIDDP5BXyJQ+QS41zda3ywalWJybUiaX/e6grVQK1b/W09QQ5pdWf
+         0p77GoXnHU49plv89g4EtvQ7mLq4I0QhmAW/zEl4LhCfQjbjCVDAF/BS8DqyZ81BtgwA
+         SDM9Bs4ICVI4lktmwmLzXE8igh0OD4/cFnxlQ0lSVQr2ya79zACP/VUmaO/BdGlrh8oE
+         YLr/NmE3Qu1vsy0zuwabBsFl8X2ZLwjPWYrCMIbCLUxK9O6GoAJsT4d1ccnM2U43g1gV
+         +iZA==
+X-Gm-Message-State: AJIora85OfFHSMXU11G3iDRBsl6snQ1USp7yFTc8lRjUHji32IhPNrYq
+        WucsOVqfRZu+gn5gapaCmWweDgTDdvztNkV4pFEju6IZHVuGhQ==
+X-Google-Smtp-Source: AA6agR5Mi6m32+Ue6siqyPLGXwmn2uVA0xZTRcfpkSTu9yuuh7xEYbIrn7D9LPEVD8gnt412hdISWZTSkO6wJjd/YqM=
+X-Received: by 2002:a05:6512:3047:b0:48a:888a:4ba7 with SMTP id
+ b7-20020a056512304700b0048a888a4ba7mr1598196lfb.642.1659107588521; Fri, 29
+ Jul 2022 08:13:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute-next v3 2/3] lib: Introduce ppp protocols
-Content-Language: en-US
-To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "gnault@redhat.com" <gnault@redhat.com>
-References: <20220728110117.492855-1-wojciech.drewek@intel.com>
- <20220728110117.492855-3-wojciech.drewek@intel.com>
- <4cc470f9-cfed-a121-ccd0-0ba8673ad47d@gmail.com>
- <MW4PR11MB577651A1E86058570D617CB0FD999@MW4PR11MB5776.namprd11.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <MW4PR11MB577651A1E86058570D617CB0FD999@MW4PR11MB5776.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220729143935.2432743-1-marek@cloudflare.com>
+In-Reply-To: <20220729143935.2432743-1-marek@cloudflare.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Fri, 29 Jul 2022 17:12:57 +0200
+Message-ID: <CAJPywTKe4yScX_brgZmMjsxX0G-6kV1NLVRzf8mwViuUDcNJkw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/2] RTAX_INITRWND should be able to bring the
+ rcv_ssthresh above 64KiB
+To:     network dev <netdev@vger.kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, brakmo@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 2:59 AM, Drewek, Wojciech wrote:
-> What is the standard procedure in such situation?
-> Should I create separate commit with uapi update, should
-> I not include uapi changes and ask you to update it?
+On Fri, Jul 29, 2022 at 4:39 PM Marek Majkowski <marek@cloudflare.com> wrote:
+>
+> Among many route options we support initrwnd/RTAX_INITRWND path
+> attribute:
+>
+>  $ ip route change local 127.0.0.0/8 dev lo initrwnd 1024
+>
+> This sets the initial receive window size (in packets). However, it's
+> not very useful in practice. For smaller buffers (<128KiB) it can be
+> used to bring the initial receive window down, but it's hard to
+> imagine when this is useful. The same effect can be achieved with
+> TCP_WINDOW_CLAMP / RTAX_WINDOW option.
+>
+> For larger buffers (>128KiB) the initial receive window is usually
+> limited by rcv_ssthresh, which starts at 64KiB. The initrwnd option
+> can't bring the window above it, which limits its usefulness
+>
+> This patch changes that. Now, by setting RTAX_INITRWND path attribute
+> we bring up the initial rcv_ssthresh in line with the initrwnd
+> value. This allows to increase the initial advertised receive window
+> instantly, after first TCP RTT, above 64KiB.
+>
+> With this change, the administrator can configure a route (or skops
+> ebpf program) where the receive window is opened much faster than
+> usual. This is useful on big BDP connections - large latency, high
+> throughput - where it takes much time to fully open the receive
+> window, due to the usual rcv_ssthresh cap.
+>
+> However, this feature should be used with caution. It only makes sense
+> to employ it in limited circumstances:
+>
+>  * When using high-bandwidth TCP transfers over big-latency links.
+>  * When the truesize of the flow/NIC is sensible and predictable.
+>  * When the application is ready to send a lot of data immediately
+>    after flow is established.
+>  * When the sender has configured larger than usual `initcwnd`.
+>  * When optimizing for every possible RTT.
+>
+> This patch is related to previous work by Ivan Babrou:
+>
+>   https://lore.kernel.org/bpf/CAA93jw5+LjKLcCaNr5wJGPrXhbjvLhts8hqpKPFx7JeWG4g0AA@mail.gmail.com/T/
+>
+> Please note that due to TCP wscale semantics, the TCP sender will need
+> to receive first ACK to be informed of the large opened receive
+> window. That is: the large window is advertised only in the first ACK
+> from the peer. When the TCP client has large window, it is advertised
+> in the third-packet (ACK) of the handshake. When the TCP sever has
+> large window, it is advertised only in the first ACK after some data
+> has been received.
+>
+> Syncookie support will be provided in subsequent patchet, since it
+> requires more changes.
+>
+> *** BLURB HERE ***
+>
+> Marek Majkowski (2):
+>   RTAX_INITRWND should be able to set the rcv_ssthresh above 64KiB
+>   Tests for RTAX_INITRWND
+>
+>  include/linux/tcp.h                           |   1 +
+>  net/ipv4/tcp_minisocks.c                      |   9 +-
+>  net/ipv4/tcp_output.c                         |   7 +-
+>  .../selftests/bpf/prog_tests/tcp_initrwnd.c   | 420 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_tcp_initrwnd.c   |  30 ++
+>  5 files changed, 463 insertions(+), 4 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/tcp_initrwnd.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_tcp_initrwnd.c
 
-I always pull uapi files from a kernel header sync point. If a patch or
-set contains a uapi update, it is removed before applying.
-
-If uapi changes are included in a set, a separate patch file is best. I
-can ignore it and apply the rest without modifying patch files.
+Changelog:
+ - moved proposed rcv_ssthresh from `struct inet_request_soct` into
+`struct tcp_request_sock` as per Eric's suggestion
+ - extended tests to be more explicit about syncookies
