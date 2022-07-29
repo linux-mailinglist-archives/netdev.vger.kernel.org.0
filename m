@@ -2,159 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F910584C24
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 08:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0997584C42
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbiG2GwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 02:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
+        id S232907AbiG2HAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 03:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiG2GwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 02:52:22 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D69380505
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 23:52:21 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id p10so5984963lfd.9
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 23:52:21 -0700 (PDT)
+        with ESMTP id S234037AbiG2HAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:00:13 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B21E3C
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:00:11 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ez10so6890526ejc.13
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:00:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3YdU07mGqFiuXuE6icp9hQwa4CmEM4aos/lBcDu+paA=;
-        b=QyDv8RosvYisZ/L4YmozirAZZzmYZDY7TdGbixAgsSXGAEMlhYwhGViZucM5617Bwq
-         fV3a4JWt23Iqm6dsVPBvn57Fjg+sTE8QK2DbulGxGwtopIFcrEzaPOs4gSAXH+BvB19R
-         pQ/GZ878jdpwEKUB73n8wDCE4ozGeyUH3DzuM=
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mwmHuLtF9G2EKODNbwTWiEpF4Sr2BhGxktiOGdwitQQ=;
+        b=usBS4rgvXuy+sJxNC+QJXAnpQETBKSXJvLHaQrfLvFa7XRaa3LPSXOFKVqNow43eTc
+         KNiJ6ArbLaWLEuuSSqL3JguiFIhqBleecXijNMpzsO7WiMxkONj+eczEFxsD3KkjYjhN
+         eWANkL5QIkONppjks4jjlgGGD8nenrSE6pWIhVRvVJIeL2KggjtauuIb1vAKeaacqp0F
+         +/5KvJhDA75INWx+q0RytS5XNPal/bNbmmcFn6IJw+pGdo5I6YDtu7+8F5xvct18IOZ9
+         jrXSDSRZScXdNJZPRWuSycff+3CEKxVzBpifDhG1UL0qWnmhggGiNdqPSEPDDSa5251p
+         nOBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3YdU07mGqFiuXuE6icp9hQwa4CmEM4aos/lBcDu+paA=;
-        b=xRe3VtCB8tIFmesl0WhrlxROpNDkcKyhxE+NK64m+whoZVfPM+JfGjcAc9USeTsVym
-         8tAhw/NsNV7QTDBOtOMinPPugpxDI9xdk0YM0I2xB2B7juBZLh2gkYqKMr8atXxS4uT2
-         QP/Sl9sKEPFLzI4qW/F6mPJSRlkLOsXW29BgqgesTlxj24wdMHb0+O5weYT0bdyBQiuQ
-         wYdDeqgW2jkp3HStDN5Xtfavg+6Kh6bbATjgWPsd8M+mkyCMb77/ng+9Kceo84l/mVxs
-         vSc1fsMY9fT6rbcNXKX9Cm9hWHFAnwUpSAG1TUKqu/d683dGD6WqRD9wQu+ggECFZMwd
-         ld/A==
-X-Gm-Message-State: AJIora9OWQ1V1T+13PBZ4TwxjvHpqeo1lDW0nNeh5NHJb/EFjHJMtEBY
-        utsULVpi/Cumfn26CkORWqzxfDLwEH4KmaR0iOZJmOOUS38DMg==
-X-Google-Smtp-Source: AGRyM1v+s6pbBabOtiq58q1rla6DcPiUzx1gexOuNWFWqJUbkqKm3CrTbCCRfCQTPYH+YpUhrxOvPPpTILQIGJdJmpU=
-X-Received: by 2002:a05:6512:2811:b0:48a:d1e1:12d2 with SMTP id
- cf17-20020a056512281100b0048ad1e112d2mr781330lfb.153.1659077538787; Thu, 28
- Jul 2022 23:52:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mwmHuLtF9G2EKODNbwTWiEpF4Sr2BhGxktiOGdwitQQ=;
+        b=QN7ybFcM3k9qMtp0/r7Al5yziuGsBZtpPeUDFEU/R1chLi3Nho+XpFMBOKIsdyTpaG
+         Y1NY3kI0uO4w6LPqzw2364CE78Z0yW2HrXnM+ecUANcQZhYu5DIBFyqC0atM5Mx0M/rj
+         KOHZOVprAGSAjYJ+pFjox0zSgl7q+7Us5nK0qhbEqRRDFEu1bjivQ0Il2adRZZx5Dq7R
+         QzlVcEqbGfmdw+OmhRsXR3Kbe6RKq5HcglGEiemZaCvJu1GYxGXu1UdgaV6UGFT2Ni0u
+         YiVrNui901cGbbSDUR/U0o314beazl2HQvwvGSHH0M0V5Ism6+iGm6B/+2NoDOy7ix5n
+         IMeA==
+X-Gm-Message-State: AJIora9aQZN8x8KqG7ppxX4ctxpNOXCZQJ+HDK5zxqBzPme4xQLKe+lQ
+        iZDNnXwTqAbn2IWPu/vQqKj2Rg==
+X-Google-Smtp-Source: AGRyM1v7XxiRD+Ovqiy+Qb4zbzzo0ihjFJmtt45i2tVcNdyqYOzftdqePHq7shdpWsyykKpvtJtnpQ==
+X-Received: by 2002:a17:906:5d16:b0:72f:248d:525a with SMTP id g22-20020a1709065d1600b0072f248d525amr1940654ejt.441.1659078009966;
+        Fri, 29 Jul 2022 00:00:09 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o22-20020a170906769600b0072f5fa175b2sm1295648ejm.8.2022.07.29.00.00.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 00:00:08 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 09:00:07 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Li zeming <zeming@nfschina.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched/net/act: Remove temporary state variables
+Message-ID: <YuOFd2oqA1Cbl+at@nanopsycho>
+References: <20220727094146.5990-1-zeming@nfschina.com>
+ <20220728201556.230b9efd@kernel.org>
+ <YuN+i2WtzfA0wDQb@nanopsycho>
+ <20220728235121.43bedc43@kernel.org>
 MIME-Version: 1.0
-References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
- <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
- <20220727113054.ffcckzlcipcxer2c@pengutronix.de> <20220727192839.707a3453.max@enpas.org>
- <20220727182414.3mysdeam7mtnqyfx@pengutronix.de> <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
- <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de> <CABGWkvoYR67MMmqZ6bRLuL3szhVb-gMwuAy6Z4YMkaG0yw6Sdg@mail.gmail.com>
- <20220728105049.43gbjuctezxzmm4j@pengutronix.de> <20220728125734.1c380d25.max@enpas.org>
-In-Reply-To: <20220728125734.1c380d25.max@enpas.org>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Fri, 29 Jul 2022 08:52:07 +0200
-Message-ID: <CABGWkvo0B8XM+5qLhz3zY2DzyUrEQtQyJnd91VweUWDUcjyr5A@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
- register (btr)
-To:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220728235121.43bedc43@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc and Max,
-
-On Thu, Jul 28, 2022 at 12:57 PM Max Staudt <max@enpas.org> wrote:
+Fri, Jul 29, 2022 at 08:51:21AM CEST, kuba@kernel.org wrote:
+>On Fri, 29 Jul 2022 08:30:35 +0200 Jiri Pirko wrote:
+>>> How many case like this are there in the kernel?
+>>> What tool are you using to find this?
+>>> We should focus on creating CI tools which can help catch instances of
+>>> this pattern in new code before it gets added, rather than cleaning up
+>>> old code. It just makes backports harder for hardly any gain.  
+>> 
+>> What backports do you have in mind exactly?
 >
-> On Thu, 28 Jul 2022 12:50:49 +0200
-> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> > On 28.07.2022 12:23:04, Dario Binacchi wrote:
-> > > > > Does it make sense to use the device tree
-> > > >
-> > > > The driver doesn't support DT and DT only works for static serial
-> > > > interfaces.
-> >
-> > Have you seen my remarks about Device Tree?
->
-> Dario, there seems to be a misunderstanding about the Device Tree.
->
-> It is used *only* for hardware that is permanently attached, present at
-> boot, and forever after. Not for dyamically added stuff, and definitely
-> not for ldiscs that have to be attached manually by the user.
->
->
-> The only exception to this is if you have an embedded device with an
-> slcan adapter permanently attached to one of its UARTs. Then you can
-> use the serdev ldisc adapter to attach the ldisc automatically at boot.
+>Code backports. I don't understand the question.
 
-It is evident that I am lacking some skills (I will try to fix it :)).
-I think it is
-equally clear that it is not worth going down this path.
+Code backports of what where?
+Are you talking about:
+1) mainline kernels
+2) distrubutions kernels? Or even worse, in-house kernels of companies?
 
->
-> If you are actively developing for such a use case, please let us know,
-> so we know what you're after and can help you better :)
->
-
-I don't have a use case, other than to try, if possible, to make the driver
-autonomous from slcand / slcan_attach for the CAN bus setup.
-
-Returning to Marc's previous analysis:
-"... Some USB CAN drivers query the bit timing const from the USB device."
-
-Can we think of taking the gs_usb driver as inspiration for getting/setting the
-bit timings?
-
-https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb.c#L951
-https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb.c#L510
-
-and, as done with patches:
-
-can: slcan: extend the protocol with CAN state info
-can: slcan: extend the protocol with error info
-
-further extend the protocol to get/set the bit timing from / to the adapter ?
-In the case of non-standard bit rates, the driver would try, depending on the
-firmware of the adapter, to calculate and set the bit timings autonomously.
-
-Thanks and regards,
-Dario
-
->
-> Max
+If 2), I believe it is not relevant for the upstream discussion, at all.
 
 
 
--- 
-
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
+>There's little benefit and we're getting multiple such patches a day.
