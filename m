@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7909584DE7
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF8E584DE8
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:12:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235368AbiG2JMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 05:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
+        id S235518AbiG2JMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 05:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiG2JMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:12:40 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA16D7AC2E
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:12:39 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31f46b4759bso37899697b3.0
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:12:39 -0700 (PDT)
+        with ESMTP id S235065AbiG2JMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:12:42 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB807E302
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:12:41 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id v19-20020a252f13000000b0067174f085e9so3461698ybv.1
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:12:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=pJdSBb7O8PnwlywD8R6h4XL/pLwOLWurVYrErxcvuqw=;
-        b=qu9JjMzdASyGUR9AZwPIsAJ23wNf5YQoK1/1nRGjjLGeOoNjQXanO78rWs2cOUt4Hp
-         3knIkqd8dMF4wizMjZfp2mm/kYkz3cTLDh80G9y6CRCmWY1v1Na+eCouBfQ3eEa7FnYk
-         ETvTzzZZ/lYRQqoOGGJup+ZTfnHxsem/+Hgk/S1cEdohBOLuBTbjr8RSC+zTiZZJUlkv
-         93Ked168e48bEwYWwYDbzZjQWIdZ6nGeJfswylvbUMcA6hCNKzLbbAdAI0Hb9olieyFc
-         nHgWh0cdQgtGjuWe+AXmdk5ToyLbWaIDBW6CJru/gRi02up9fL/d901P3pQlEwJjJocp
-         y9BQ==
+        bh=itPhKLTRYsDUWhvv6NIn83wr0s0F9Em1GkdyLWdXkQg=;
+        b=IeNRqdBYsc/iAGEbgaAJV3CaHpSSuk6j2ykP0c0Jn4E8pmd4JiV3Ns5rUnREw/Btm+
+         v1wWDyDMW7qoQn0DLznAEekDrm9xHUU8FlmhxZflTQTCrHpsUdfIynC0b40jtfOFKPg3
+         +XKe+ALAlfeU9F4i1F0Y1tsDRiRoMGlKglLwYTnx2U+FxjjIVfUEx8irQU2JyZI6AMa9
+         LpvpM5Hj7X006zetYjR3rOaViW+25SagJkCh4NlR0Has7pywuGCCgr+E6U6ny6/h6xXu
+         3nDYXHWD2Ox2sdUxf1CXjKeUTRtzw6vcJllafuElaGSvClSCdNw8onQa879/LhGGzSdg
+         tCmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=pJdSBb7O8PnwlywD8R6h4XL/pLwOLWurVYrErxcvuqw=;
-        b=NXAhpKS5Dq4qQJSskP+dp/ZJ+wxyNa5jUuD4I9Q4FZ6oX8JzJTNJYT4HBSpHH+IHvf
-         Ne7cRiffjXAPZKU1/uO50xHAWS9j6ru91Za0RtAOIZTYpymMYK02cYcktgrPcODFQLHV
-         hZofCUTfBWZJtBlQS4QzXSx3dkhNV1bvoKCId3ufKTEcbNeypQtlXMm9+bk1oo8kGTCA
-         WGLnY8zoetXqRPZQv71DsbtlG1cbQQ6tCAK3C0Lasq9pfck8JExjCFp1cSAb7kI+aidh
-         SsaTlRxxksZ0WTySNTpb2Ue4xOfp2YJAN2c4w8Dssx+iwWIh2cxPa6pCR3qOQeTolH5a
-         YxDg==
-X-Gm-Message-State: ACgBeo22QNryxUK4wn888ZbGnFo+kkmZxj+Zh50urdEKHuujvROFU9fF
-        LIF32K/iEFmpocFimQ5YoakL1QYTvPb7IQ==
-X-Google-Smtp-Source: AA6agR4MG0Xwo81UbKRSbA4dOLd9VmStfg4AYqeMXrj9fdc938o58Y7L/nSTvsCayutX4Br36/ZxAZQDUIUoDw==
+        bh=itPhKLTRYsDUWhvv6NIn83wr0s0F9Em1GkdyLWdXkQg=;
+        b=E5Qr9vJbNKP41HpQajrQIARKdlBLs+wvGJr+rs7Bs3XSw0ijfwWhlhM86rlFPFLBRD
+         87SYStAX7ZyUSkYFCW/JHTK+BWl1TNNZowzdTmRrewjVnSb2XIJiZz728vWg2ubRnM8q
+         ot0evcNhGctQnlvC8y66fLAYMoOAr98PAWTzpz/v5KW3ZNhUs2KyWjBqhvLk6bvNFaq7
+         b8Sj73Gn7Y3P8EQgw/BE+jJBl5dVmasVDFsx0S2w6CGanbxgNExrSmVJEP3UK8owG10z
+         OIB5rTR7ekY2RHdmjqkZllXN8Nhviw7irTtG1n+fwqDmf9a174J8bTH785NsgjjAzmdv
+         JN1A==
+X-Gm-Message-State: ACgBeo3+VhNQzgiUGx8VbcfJ7yHNj8GpB45TYARVTkwFsIs4bmRooTvK
+        206q37tDMajNj2Sega5iXO7iEUCC2fnMrQ==
+X-Google-Smtp-Source: AA6agR4y8BLMMg+7BPJU2zjJi50DLpk+UyNzUxoJb4tgD1xJFmns/yLNsRew/5iifTQXp6PF54anNfy1msaexA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:3686:0:b0:31e:322a:f3af with SMTP id
- d128-20020a813686000000b0031e322af3afmr2163332ywa.497.1659085958996; Fri, 29
- Jul 2022 02:12:38 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 09:12:32 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:1348:0:b0:31f:62f4:4dab with SMTP id
+ 69-20020a811348000000b0031f62f44dabmr2346599ywt.344.1659085960642; Fri, 29
+ Jul 2022 02:12:40 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 09:12:33 +0000
 In-Reply-To: <20220729091233.1030680-1-edumazet@google.com>
-Message-Id: <20220729091233.1030680-2-edumazet@google.com>
+Message-Id: <20220729091233.1030680-3-edumazet@google.com>
 Mime-Version: 1.0
 References: <20220729091233.1030680-1-edumazet@google.com>
 X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
-Subject: [PATCH net-next 1/2] net: rose: fix netdev reference changes
+Subject: [PATCH net-next 2/2] net: rose: add netdev ref tracker to 'struct rose_sock'
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,102 +70,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bernard reported that trying to unload rose module would lead
-to infamous messages:
+This will help debugging netdevice refcount problems with
+CONFIG_NET_DEV_REFCNT_TRACKER=y
 
-unregistered_netdevice: waiting for rose0 to become free. Usage count = xx
-
-This patch solves the issue, by making sure each socket referring to
-a netdevice holds a reference count on it, and properly releases it
-in rose_release().
-
-rose_dev_first() is also fixed to take a device reference
-before leaving the rcu_read_locked section.
-
-Following patch will add ref_tracker annotations to ease
-future bug hunting.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Bernard Pidoux <f6bvp@free.fr>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Bernard Pidoux <f6bvp@free.fr>
+Cc: Tested-by: Bernard Pidoux <f6bvp@free.fr>
 ---
- net/rose/af_rose.c    | 11 +++++++++--
- net/rose/rose_route.c |  2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ include/net/rose.h |  3 ++-
+ net/rose/af_rose.c | 12 +++++++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
+diff --git a/include/net/rose.h b/include/net/rose.h
+index f192a64ddef23b272d0fdacd9d5c30e03d2bbebd..23267b4efcfa326304c56cdd744ab6fbdd8c3907 100644
+--- a/include/net/rose.h
++++ b/include/net/rose.h
+@@ -132,7 +132,8 @@ struct rose_sock {
+ 	ax25_address		source_digis[ROSE_MAX_DIGIS];
+ 	ax25_address		dest_digis[ROSE_MAX_DIGIS];
+ 	struct rose_neigh	*neighbour;
+-	struct net_device		*device;
++	struct net_device	*device;
++	netdevice_tracker	dev_tracker;
+ 	unsigned int		lci, rand;
+ 	unsigned char		state, condition, qbitincl, defer;
+ 	unsigned char		cause, diagnostic;
 diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index bf2d986a6bc392a9d830b1dfa7fbaa3bca969aa3..a8e3ec800a9c84f19e1f87630aa1eea4cb9d9390 100644
+index a8e3ec800a9c84f19e1f87630aa1eea4cb9d9390..36fefc3957d772257755f9e5b90e71e423370ca5 100644
 --- a/net/rose/af_rose.c
 +++ b/net/rose/af_rose.c
-@@ -192,6 +192,7 @@ static void rose_kill_by_device(struct net_device *dev)
+@@ -192,7 +192,7 @@ static void rose_kill_by_device(struct net_device *dev)
  			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
  			if (rose->neighbour)
  				rose->neighbour->use--;
-+			dev_put(rose->device);
+-			dev_put(rose->device);
++			netdev_put(rose->device, &rose->dev_tracker);
  			rose->device = NULL;
  		}
  	}
-@@ -592,6 +593,8 @@ static struct sock *rose_make_new(struct sock *osk)
- 	rose->idle	= orose->idle;
+@@ -594,7 +594,7 @@ static struct sock *rose_make_new(struct sock *osk)
  	rose->defer	= orose->defer;
  	rose->device	= orose->device;
-+	if (rose->device)
-+		dev_hold(rose->device);
+ 	if (rose->device)
+-		dev_hold(rose->device);
++		netdev_hold(rose->device, &rose->dev_tracker, GFP_ATOMIC);
  	rose->qbitincl	= orose->qbitincl;
  
  	return sk;
-@@ -645,6 +648,7 @@ static int rose_release(struct socket *sock)
+@@ -648,7 +648,7 @@ static int rose_release(struct socket *sock)
  		break;
  	}
  
-+	dev_put(rose->device);
+-	dev_put(rose->device);
++	netdev_put(rose->device, &rose->dev_tracker);
  	sock->sk = NULL;
  	release_sock(sk);
  	sock_put(sk);
-@@ -721,7 +725,6 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	struct rose_sock *rose = rose_sk(sk);
- 	struct sockaddr_rose *addr = (struct sockaddr_rose *)uaddr;
- 	unsigned char cause, diagnostic;
--	struct net_device *dev;
- 	ax25_uid_assoc *user;
- 	int n, err = 0;
+@@ -700,6 +700,7 @@ static int rose_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
  
-@@ -778,9 +781,12 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 	}
+ 	rose->source_addr   = addr->srose_addr;
+ 	rose->device        = dev;
++	netdev_tracker_alloc(rose->device, &rose->dev_tracker, GFP_KERNEL);
+ 	rose->source_ndigis = addr->srose_ndigis;
  
- 	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
-+		struct net_device *dev;
-+
- 		sock_reset_flag(sk, SOCK_ZAPPED);
+ 	if (addr_len == sizeof(struct full_sockaddr_rose)) {
+@@ -801,6 +802,8 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 		memcpy(&rose->source_addr, dev->dev_addr, ROSE_ADDR_LEN);
+ 		rose->source_call = user->call;
+ 		rose->device      = dev;
++		netdev_tracker_alloc(rose->device, &rose->dev_tracker,
++				     GFP_KERNEL);
+ 		ax25_uid_put(user);
  
--		if ((dev = rose_dev_first()) == NULL) {
-+		dev = rose_dev_first();
-+		if (!dev) {
- 			err = -ENETUNREACH;
- 			goto out_release;
- 		}
-@@ -788,6 +794,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
- 		user = ax25_findbyuid(current_euid());
- 		if (!user) {
- 			err = -EINVAL;
-+			dev_put(dev);
- 			goto out_release;
- 		}
+ 		rose_insert_socket(sk);		/* Finish the bind */
+@@ -1024,6 +1027,9 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
+ 		make_rose->source_digis[n] = facilities.source_digis[n];
+ 	make_rose->neighbour     = neigh;
+ 	make_rose->device        = dev;
++	/* Caller got a reference for us. */
++	netdev_tracker_alloc(make_rose->device, &make_rose->dev_tracker,
++			     GFP_ATOMIC);
+ 	make_rose->facilities    = facilities;
  
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index eb0b8197ac825479e8fa6c00c77db71b5f74d41b..fee772b4637c8897cd606b6e7c30447619327cab 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -615,6 +615,8 @@ struct net_device *rose_dev_first(void)
- 			if (first == NULL || strncmp(dev->name, first->name, 3) < 0)
- 				first = dev;
- 	}
-+	if (first)
-+		dev_hold(first);
- 	rcu_read_unlock();
- 
- 	return first;
+ 	make_rose->neighbour->use++;
 -- 
 2.37.1.455.g008518b4e5-goog
 
