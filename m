@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26452584A29
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 05:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5AA584A3D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 05:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbiG2DWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 23:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        id S233875AbiG2Di3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 23:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiG2DWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 23:22:11 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BD27C196
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:22:09 -0700 (PDT)
+        with ESMTP id S233314AbiG2Di3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 23:38:29 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82F97B375
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:38:27 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id l4so4469033wrm.13
+        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 20:38:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1659064930; x=1690600930;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XC65Q5mr+Yoj/cgavGleB2iWzxNdc6agrE7CWcdciUY=;
-  b=wIiiNYKOmnYSCmRByXS90yf+zJG81WV448bHL6/HmcVsuIuNoCxNGbOx
-   3CwcM3IFpz332QG3ZkQR0JWFCJt5/JQSHqorzq+ETYIvl1QwyvhpKA3xl
-   sGzLOuk7XLEMl+2SFp/cuSTjIbQ3K/UetbRn4M8VF4Y1IEQhNMvoMMPfG
-   M=;
-X-IronPort-AV: E=Sophos;i="5.93,200,1654560000"; 
-   d="scan'208";a="113495221"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 03:21:55 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com (Postfix) with ESMTPS id 2FE2FC0BA0;
-        Fri, 29 Jul 2022 03:21:54 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 29 Jul 2022 03:21:53 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.87) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Fri, 29 Jul 2022 03:21:51 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next] udp: Remove redundant __udp_sysctl_init() call from udp_init().
-Date:   Thu, 28 Jul 2022 20:21:37 -0700
-Message-ID: <20220729032137.60616-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=+D1zF2DCKf5WB+zgoPewh33B5r7wz0pan/6d9WW6hok=;
+        b=ojnqkzaY7RkRdIg0tluHW87CGbw70YiWahZHEEYMC2uYwY9NsZaamCZ/mHQLKGLeKh
+         1EDREMsCihRThQlOZW3r/3nB1csGPJDH7RH9Zziub1aEtq9TxAC8ba5k9F0KINtsxLMF
+         mo2DO+HiDyDlnfQNOREZ/SJJC+dSJuxBlBmDXsmqDe4d3AI1vnx/RIumFJH1qPdQh2Ht
+         ZGD7H7KyovYLmEtVjp646et1iIni/q0W4BkTueVINalwQEXpeEg7SA5uGssBzaOofZL6
+         dNy8SX1rIfodPFzBDNkbjahjI1oECbtKsh/JWPyJpBVn489bG2WRHrdxQbcu38QvpaJo
+         CprA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=+D1zF2DCKf5WB+zgoPewh33B5r7wz0pan/6d9WW6hok=;
+        b=D4wv+yoxfSTnKKRqSWJFktJJcoI3Nqe4w5QrTQGMyWa5DYzsChK6jtuusCQEU4EyLu
+         tjHvq2Vl2VBrLNwiGmaAxmM6XvYuHvI1SY5s+N2NqnJsW3aTUJkKyKPKcQBqmFonXT7X
+         HM69tXHIAjvW10FuQPYRugXgkn55pw4Za6jYHkDABKuQn4ZbipAFx1s7t6bKxgwGdNOR
+         NwRs6WbIYH2gdSjzCvCZMhctlU5J4U7t6j7CZcbEG33v17gECAvZB9uXBaUmGPIfYcw9
+         qrYSwXe5z0Yvgc8//ErhFem0zpsszhAabj50EV1lSvYGuzS2uK6UVXqzVC74X9xbGtJG
+         cvXg==
+X-Gm-Message-State: ACgBeo21y7WODxawxsuy+qJiziqyTzMmXs4Y5LWY0VEu6aOlTbIWEOqt
+        Lz8ukwhxWkusk3peO8swUx2VzxCzMkZ2Ul8nM3s=
+X-Google-Smtp-Source: AA6agR5PFzrxxrge+66T7lro5TmEmwKOGDpAqMIxsx3kaILYLRc+/yiJkzN3OHkBzi+pKx/tQeTG+KIKj+AWRUR9prY=
+X-Received: by 2002:a5d:48d2:0:b0:21e:8f48:e362 with SMTP id
+ p18-20020a5d48d2000000b0021e8f48e362mr1099127wrs.356.1659065906472; Thu, 28
+ Jul 2022 20:38:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.87]
-X-ClientProxiedBy: EX13D47UWA004.ant.amazon.com (10.43.163.47) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+Reply-To: edmondpamela60@gmail.com
+Sender: group511930service@gmail.com
+Received: by 2002:a5d:6e8b:0:0:0:0:0 with HTTP; Thu, 28 Jul 2022 20:38:25
+ -0700 (PDT)
+From:   Pamela Edmond <edmondpamela60@gmail.com>
+Date:   Fri, 29 Jul 2022 03:38:25 +0000
+X-Google-Sender-Auth: UDOUOCdiZGoE-gbDNCAF99RTt_8
+Message-ID: <CAOx31BMsFAnGoCGK=oJxCugisQPnDubq9-HLZudn24UDd14R+w@mail.gmail.com>
+Subject: It concern Ukraine and Russian issue
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,50 +65,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__udp_sysctl_init() is called for init_net via udp_sysctl_ops.
+Good afternoon!
 
-While at it, we can rename __udp_sysctl_init() to udp_sysctl_init().
+Recently I have forwarded you a necessary documentation.
 
-Fixes: 1e8029515816 ("udp: Move the udp sysctl to namespace.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/ipv4/udp.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 2516078aa03e..34eda973bbf1 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -3264,7 +3264,7 @@ u32 udp_flow_hashrnd(void)
- }
- EXPORT_SYMBOL(udp_flow_hashrnd);
- 
--static void __udp_sysctl_init(struct net *net)
-+static int __net_init udp_sysctl_init(struct net *net)
- {
- 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
- 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
-@@ -3272,11 +3272,7 @@ static void __udp_sysctl_init(struct net *net)
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
- #endif
--}
- 
--static int __net_init udp_sysctl_init(struct net *net)
--{
--	__udp_sysctl_init(net);
- 	return 0;
- }
- 
-@@ -3352,8 +3348,6 @@ void __init udp_init(void)
- 	sysctl_udp_mem[1] = limit;
- 	sysctl_udp_mem[2] = sysctl_udp_mem[0] * 2;
- 
--	__udp_sysctl_init(&init_net);
--
- 	/* 16 spinlocks per cpu */
- 	udp_busylocks_log = ilog2(nr_cpu_ids) + 4;
- 	udp_busylocks = kmalloc(sizeof(spinlock_t) << udp_busylocks_log,
--- 
-2.30.2
-
+Have you already seen it?
