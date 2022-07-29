@@ -2,229 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 065AB585593
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 21:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0DB585599
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 21:37:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238344AbiG2T2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 15:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
+        id S238186AbiG2Tgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 15:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiG2T2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 15:28:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FF65E32E;
-        Fri, 29 Jul 2022 12:28:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93175B827B6;
-        Fri, 29 Jul 2022 19:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5011C433D6;
-        Fri, 29 Jul 2022 19:28:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659122913;
-        bh=IGaQJ8n0Kx7UDMx4Xe/sD9x5Ki9q6wgjQt7ALfttjYs=;
-        h=From:Subject:To:Cc:Date:From;
-        b=pygbFv+ff9T0L8a6IRja9Vy4KmXTC6jDgzHYAal1fXQoMdoWmMA74A4lqPgkzRuOE
-         keFobBtAg2V8ECefv3d6BMaWIeeKupowLdxh2HvH5yJQwNoYwBxWRyEGtQO08ySnlu
-         bncARAYLMLc60my3TGzLp0k7H+KFuIQiVjYwQjubRLeaREBIhVI8jtqG/f5fr3lrHX
-         MM6PEPiZhkc5MjKXyONsfObHBxJCJMAzod2U8CRb6rKd3SEf4ZljCw0cnHTt4jLDLm
-         5IZGwc4FEt3spsA4+7bHyopw0L8Nh6Hk3xbBIz73zOchDpyqJVhG7upTGowcxmHPgj
-         bsaTHAWUMXVMQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232823AbiG2Tgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 15:36:50 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2055.outbound.protection.outlook.com [40.107.102.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048EE31DD4;
+        Fri, 29 Jul 2022 12:36:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iFxyiSgi3mim3GudfPoLjAPaYn/0UjKm6oxyQOLFCXbIuGPSKSvYeDGL/QBeKc7wTrquQs9ZFVwcOsIpDfdoPdIQPoQ1/mZf9BD4H0632O8JoJbfB/32xf8YJwFb92gDujZn6vrUF8uDzkW3XKIwHi6Ax71rw5zyvL3i2yqm24rH+s417NoHCcoHJFiefei9B0R31aJN4zEHEdj4yHvwSPK19l9YbSikFC0E8u+K9+J7eCt9e+tiyw0b/SsFLJr9Yxad7BeriJaeK1M4OFRliXxFgwAny5F3bAO06SiE6xfyM7Buri0C6+HxpSqBUdZVvL+Tiu9RZZ1pgE6Z76hYdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5fPu1LfLRvFBdFXPcfaT+Z3uOTnt5Q5hwhjTjhjquEw=;
+ b=DWH4JRvrbFQ4mpcEJRB3CbIb7nR/LdpEHhIvZQfxOlLGqFG6+c7tDv1O+m6mpF4Ldc6DpwkMc2yov3Wqxx1P3vNVzxwwAim7C/jlzqyLgE5uG+PZC3giuGXPvBy5ahxcAvxZAQumycK5GLckXlFqmz+I1gSmv87FhxEKuOY4u3YLD7d1wiKgcbdK1/YLQF31ZX+dKGMi2rlUOZgGlYh5ZGt9KAqqnqUJKetcO3q82KVL1an5yWOu31auCoq7NnN9qubizM04OUkxbqsledVdHrd2YIluTmEqjxchBR271aU8JDuuLM9fhWt0qtbKFUkVWeeAWDFmBwmHu07i+1fuew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=amd.com smtp.mailfrom=xilinx.com;
+ dmarc=fail (p=quarantine sp=quarantine pct=100) action=quarantine
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5fPu1LfLRvFBdFXPcfaT+Z3uOTnt5Q5hwhjTjhjquEw=;
+ b=PbKB0sSjbiMz1SZOK9eSwJZnH3ys2GRWtrwOsuMoV3VKwIRmS3P3GjsdXFUBmnrMTPlhMT+zFEKc3EKTccF88xgvyQqZ9+AVvREEpHmIDGlijFYd1xu4Q6DVJUsxaEwVQ+DQuvr4sJLETzBqMAtITVIwBoAlOPTTOhM1mN5Mo9c=
+Received: from DM5PR08CA0041.namprd08.prod.outlook.com (2603:10b6:4:60::30) by
+ DM5PR02MB2315.namprd02.prod.outlook.com (2603:10b6:3:4f::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5458.19; Fri, 29 Jul 2022 19:36:46 +0000
+Received: from DM3NAM02FT038.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:4:60:cafe::9c) by DM5PR08CA0041.outlook.office365.com
+ (2603:10b6:4:60::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20 via Frontend
+ Transport; Fri, 29 Jul 2022 19:36:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=quarantine header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT038.mail.protection.outlook.com (10.13.5.131) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5482.10 via Frontend Transport; Fri, 29 Jul 2022 19:36:46 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 29 Jul 2022 12:36:45 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 29 Jul 2022 12:36:45 -0700
+Envelope-to: git@xilinx.com,
+ git@amd.com,
+ radhey.shyam.pandey@amd.com,
+ davem@davemloft.net,
+ edumazet@google.com,
+ kuba@kernel.org,
+ gregkh@linuxfoundation.org,
+ linux-arm-kernel@lists.infradead.org,
+ claudiu.beznea@microchip.com,
+ nicolas.ferre@microchip.com,
+ pabeni@redhat.com,
+ linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [172.23.64.3] (port=58451 helo=xhdvnc103.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1oHVmv-000Gvt-Bu; Fri, 29 Jul 2022 12:36:45 -0700
+Received: by xhdvnc103.xilinx.com (Postfix, from userid 13245)
+        id 3050F105461; Sat, 30 Jul 2022 01:06:43 +0530 (IST)
+From:   Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+To:     <michal.simek@xilinx.com>, <nicolas.ferre@microchip.com>,
+        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <git@amd.com>, <git@xilinx.com>,
+        "Radhey Shyam Pandey" <radhey.shyam.pandey@amd.com>
+Subject: [PATCH v2 net-next 0/2] macb: add zynqmp SGMII dynamic configuration support
+Date:   Sat, 30 Jul 2022 01:05:48 +0530
+Message-ID: <1659123350-10638-1-git-send-email-radhey.shyam.pandey@amd.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-next-2022-07-29
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20220729192832.A5011C433D6@smtp.kernel.org>
-Date:   Fri, 29 Jul 2022 19:28:32 +0000 (UTC)
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1f953b9d-673b-4efc-d18b-08da7199acc6
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2315:EE_
+X-MS-Exchange-SenderADCheck: 0
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DzmkALyFWo49crWOKNY+SGc5F8b1VeKUIZ8HOVsIuXCq4+FJ2pPz+SX/oRBcSvePJVWLDYUuyKtXXcZClsPOriqj780BRSaBAXpXfUi030ipKtm1Afn8+U2WUzjpBoqDwNmrc3ai3EY4M/0oEbV976os+XKP+PZbSCRD2fzN95pBC49OyKT2kNaw9pGIXqBa9D2Jw3HfC+qhg0SXJE9N/JXlB2+sd3ePA28X84GNX/3xr2doXPPoQmclYTVm2dmmTnntWO/xsTcwlYgMxXWTzYZrRKYaNH344KiknFnkXMKG699yIGhe/s0vFWfIbaFSaYuGblk3pJGOQ+fKFw3k/nmN2fZjDhyZnG5wL1ggwnzuqLfUce2OcE3oM7+0tVryiHtL5m1Z5E5FWeVUNEl8haTrYs89x7F0rJ06T2zFLU7s+sNjZzROPzo94vAiWGlJlf57X9yMdPaBV5XoaS/tZizp4z39LFiCs7OMvlgbqvemWQ7eodUuH0aRAEknhoI3IXtneYWMXtEutaACAb7WuziDAUno8Ab6AW3e2sfZkbw0UjaRvNNsskRModawQ8XjVlh8A10Aj2Yjzu8I4rBtgghDB8UzSA7D1FhFniZjC761w3RPZMeoShZJB92noMZ4V8gn2rz6rv4etzKz5uLVC9Iy8oNIiYf3KoQDjG+owDxU8QQsnL3AXWbNSDtS7IOq2kOLjqrg0DIGmejlHRP8mLU1fb6BJkk3dg2XRUMPujLANdABStLvAG9kJmT4SCP9IXuTSzb0VAikfyS/bOuR6e4XfAeU95NuNDi9FBppjdIC0YxX4oxxSO4rslxcY/xJ/aHmGAcVgq5gVBmOZZcroA==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(39860400002)(396003)(40470700004)(36840700001)(46966006)(70206006)(47076005)(8676002)(7416002)(5660300002)(70586007)(336012)(26005)(41300700001)(40460700003)(82740400003)(40480700001)(6266002)(8936002)(82310400005)(356005)(478600001)(186003)(4744005)(2906002)(4326008)(7636003)(54906003)(110136005)(36860700001)(83170400001)(2616005)(42186006)(36756003)(316002)(42882007)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 19:36:46.8054
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f953b9d-673b-4efc-d18b-08da7199acc6
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT038.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2315
+X-Spam-Status: No, score=1.3 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patchset add firmware and driver support to do SD/GEM dynamic
+configuration. In traditional flow GEM secure space configuration
+is done by FSBL. However in specific usescases like dynamic designs
+where GEM is not enabled in base vivado design, FSBL skips GEM
+initialization and we need a mechanism to configure GEM secure space
+in linux space at runtime. 
 
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
 
-Kalle
+Changes for v2:
+- Add phy_exit() in error return paths.
+- Use tab indent for zynqmp_pm_set_sd/gem_config return documentation.
 
-The following changes since commit 8e4372e617854a16d4ec549ba821aad78fd748a6:
+Radhey Shyam Pandey (1):
+  net: macb: Add zynqmp SGMII dynamic configuration support
 
-  Merge branch 'add-mtu-change-with-stmmac-interface-running' (2022-07-25 19:39:36 -0700)
+Ronak Jain (1):
+  firmware: xilinx: add support for sd/gem config
 
-are available in the Git repository at:
+ drivers/firmware/xilinx/zynqmp.c         | 31 ++++++++++++++++++++++++++++++
+ drivers/net/ethernet/cadence/macb_main.c | 25 ++++++++++++++++++++++++
+ include/linux/firmware/xlnx-zynqmp.h     | 33 ++++++++++++++++++++++++++++++++
+ 3 files changed, 89 insertions(+)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-07-29
+-- 
+2.1.1
 
-for you to fetch changes up to 35610745d71df567297bb40c5e4263cda38dddd5:
-
-  Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git (2022-07-29 16:38:03 +0300)
-
-----------------------------------------------------------------
-wireless-next patches for v5.20
-
-Fourth set of patches for v5.20, last few patches before the merge
-window. Only driver changes this time, mostly just fixes and cleanup.
-
-Major changes:
-
-brcmfmac
-
-* support brcm,ccode-map-trivial DT property
-
-wcn36xx
-
-* add debugfs file to show firmware feature strings
-
-----------------------------------------------------------------
-Ajay Singh (7):
-      wifi: wilc1000: add WID_TX_POWER WID in g_cfg_byte array
-      wifi: wilc1000: set correct value of 'close' variable in failure case
-      wifi: wilc1000: set station_info flag only when signal value is valid
-      wifi: wilc1000: get correct length of string WID from received config packet
-      wifi: wilc1000: cancel the connect operation during interface down
-      wifi: wilc1000: add 'isinit' flag for SDIO bus similar to SPI
-      wifi: wilc1000: use existing iftype variable to store the interface type
-
-Alvin Šipraga (2):
-      dt-bindings: bcm4329-fmac: add optional brcm,ccode-map-trivial
-      wifi: brcmfmac: support brcm,ccode-map-trivial DT property
-
-Ammar Faizi (1):
-      wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
-
-Bryan O'Donoghue (4):
-      wifi: wcn36xx: Rename clunky firmware feature bit enum
-      wifi: wcn36xx: Move firmware feature bit storage to dedicated firmware.c file
-      wifi: wcn36xx: Move capability bitmap to string translation function to firmware.c
-      wifi: wcn36xx: Add debugfs entry to read firmware feature strings
-
-Dan Carpenter (1):
-      wifi: brcmfmac: use strreplace() in brcmf_of_probe()
-
-Danny van Heumen (1):
-      wifi: brcmfmac: prevent double-free on hardware-reset
-
-Hangyu Hua (1):
-      wifi: libertas: Fix possible refcount leak in if_usb_probe()
-
-Hans de Goede (2):
-      wifi: brcmfmac: Add brcmf_c_set_cur_etheraddr() helper
-      wifi: brcmfmac: Replace default (not configured) MAC with a random MAC
-
-Jason Wang (1):
-      wifi: mwifiex: Fix comment typo
-
-Jose Ignacio Tornos Martinez (1):
-      wifi: iwlwifi: mvm: fix double list_add at iwl_mvm_mac_wake_tx_queue
-
-Justin Stitt (1):
-      wifi: iwlwifi: mvm: fix clang -Wformat warnings
-
-Kalle Valo (2):
-      Revert "ath11k: add support for hardware rfkill for QCA6390"
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-
-Li Qiong (1):
-      wifi: mwl8k: use time_after to replace "jiffies > a"
-
-Manikanta Pubbisetty (1):
-      wifi: ath11k: Fix register write failure on QCN9074
-
-Paul Cercueil (1):
-      wifi: brcmfmac: Remove #ifdef guards for PM related functions
-
-Ping-Ke Shih (1):
-      wifi: rtw89: 8852a: update RF radio A/B R56
-
-Uwe Kleine-König (1):
-      wifi: wl12xx: Drop if with an always false condition
-
-William Dean (1):
-      wifi: rtw88: check the return value of alloc_workqueue()
-
-Xin Gao (1):
-      wifi: b43: do not initialise static variable to 0
-
-Xu Qiang (1):
-      wifi: plfxlc: Use eth_zero_addr() to assign zero address
-
-Yang Li (2):
-      wifi: mwifiex: clean up one inconsistent indenting
-      wifi: b43legacy: clean up one inconsistent indenting
-
-Zhang Jiaming (1):
-      wifi: rtlwifi: Remove duplicate word and Fix typo
-
-Zheyu Ma (1):
-      wifi: rtl8xxxu: Fix the error handling of the probe function
-
-Zong-Zhe Yang (1):
-      wifi: rtw89: 8852a: adjust IMR for SER L1
-
- .../bindings/net/wireless/brcm,bcm4329-fmac.yaml   |  10 +
- drivers/net/wireless/ath/ath11k/ahb.c              |  52 +-
- drivers/net/wireless/ath/ath11k/core.c             |  87 --
- drivers/net/wireless/ath/ath11k/core.h             |   4 -
- drivers/net/wireless/ath/ath11k/hw.h               |   5 -
- drivers/net/wireless/ath/ath11k/mac.c              |  58 --
- drivers/net/wireless/ath/ath11k/mac.h              |   2 -
- drivers/net/wireless/ath/ath11k/pci.c              |  70 +-
- drivers/net/wireless/ath/ath11k/pcic.c             |  57 +-
- drivers/net/wireless/ath/ath11k/pcic.h             |   2 +
- drivers/net/wireless/ath/ath11k/wmi.c              |  41 -
- drivers/net/wireless/ath/ath11k/wmi.h              |  25 -
- drivers/net/wireless/ath/wcn36xx/Makefile          |   3 +-
- drivers/net/wireless/ath/wcn36xx/debug.c           |  39 +
- drivers/net/wireless/ath/wcn36xx/debug.h           |   1 +
- drivers/net/wireless/ath/wcn36xx/firmware.c        | 125 +++
- drivers/net/wireless/ath/wcn36xx/firmware.h        |  84 ++
- drivers/net/wireless/ath/wcn36xx/hal.h             |  68 --
- drivers/net/wireless/ath/wcn36xx/main.c            |  86 +-
- drivers/net/wireless/ath/wcn36xx/smd.c             |  57 +-
- drivers/net/wireless/ath/wcn36xx/smd.h             |   3 -
- drivers/net/wireless/ath/wil6210/debugfs.c         |   4 +-
- drivers/net/wireless/broadcom/b43/main.c           |   2 +-
- drivers/net/wireless/broadcom/b43legacy/main.c     |   2 +-
- .../wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c  |  49 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |   3 +
- .../wireless/broadcom/brcm80211/brcmfmac/common.c  |  41 +-
- .../wireless/broadcom/brcm80211/brcmfmac/common.h  |   3 +
- .../wireless/broadcom/brcm80211/brcmfmac/core.c    |   8 +-
- .../net/wireless/broadcom/brcm80211/brcmfmac/of.c  |  12 +-
- .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  15 +-
- .../wireless/broadcom/brcm80211/brcmfmac/sdio.h    |  16 -
- .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |   4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |   1 +
- drivers/net/wireless/marvell/libertas/if_usb.c     |   1 +
- drivers/net/wireless/marvell/mwifiex/pcie.c        |   2 +-
- drivers/net/wireless/marvell/mwifiex/sdio.c        |   2 +-
- drivers/net/wireless/marvell/mwl8k.c               |   2 +-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |   3 +-
- drivers/net/wireless/microchip/wilc1000/hif.c      |   6 +-
- drivers/net/wireless/microchip/wilc1000/hif.h      |   1 +
- drivers/net/wireless/microchip/wilc1000/netdev.c   |   9 +-
- drivers/net/wireless/microchip/wilc1000/netdev.h   |   1 -
- drivers/net/wireless/microchip/wilc1000/sdio.c     |  13 +
- drivers/net/wireless/microchip/wilc1000/spi.c      |   8 +
- drivers/net/wireless/microchip/wilc1000/wlan.c     |   9 +-
- drivers/net/wireless/microchip/wilc1000/wlan.h     |   1 +
- drivers/net/wireless/microchip/wilc1000/wlan_cfg.c |   6 +-
- drivers/net/wireless/purelifi/plfxlc/usb.c         |   2 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |  21 +-
- drivers/net/wireless/realtek/rtlwifi/core.c        |   2 +-
- drivers/net/wireless/realtek/rtw88/main.c          |   4 +
- drivers/net/wireless/realtek/rtw89/pci.c           |   2 +-
- .../net/wireless/realtek/rtw89/rtw8852a_table.c    | 896 ++++++++++-----------
- drivers/net/wireless/ti/wl12xx/main.c              |   3 -
- 55 files changed, 992 insertions(+), 1041 deletions(-)
- create mode 100644 drivers/net/wireless/ath/wcn36xx/firmware.c
- create mode 100644 drivers/net/wireless/ath/wcn36xx/firmware.h
