@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94472584B1D
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 07:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CCC6584B2D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 07:30:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234360AbiG2FaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 01:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56694 "EHLO
+        id S234472AbiG2Fad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 01:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234369AbiG2FaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 01:30:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EE3DEE7
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 22:30:16 -0700 (PDT)
+        with ESMTP id S234367AbiG2Fa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 01:30:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A317313DF3;
+        Thu, 28 Jul 2022 22:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F4BBB826F2
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 05:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B17FAC433B5;
-        Fri, 29 Jul 2022 05:30:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CC92B826F2;
+        Fri, 29 Jul 2022 05:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DF3C5C433B5;
+        Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659072613;
-        bh=QTA4WG3oXO1CEulm071lw1PITcjFT1aEknDBjGv85S4=;
+        s=k20201202; t=1659072619;
+        bh=/5oj8sE7l+/hfD4swIIxbDOHMIBGNGjoHEyU1b/Z9SU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ub+IMlVExQ+WA3k/coih0OJZupU2/g4u8qwWXGnFWkSxVt+CSNBjb+v3u7KvJwGgw
-         R7cbAIrRnsVttuTKPE0Gk6aulrUz2Z539T36KJyhg/smIK+7e1XNF1MB7zI+HNUFz5
-         bYU9awVSLej+F6muEjWc19sDayLkzTl2K45IBI2EKtnGHbOWwqadabNLkBAgt/Ad8O
-         AUMpzXji2N9vVLt2WF6FHSYhQ1lbk8quPOGUZ59b+v1cVWXpzInfHpifjng6ey5zux
-         pMFFg9SVQh2J0pWmAE0nQQeqMJplZwY4ji27MLAeT2l1VQ2ssRWq088Rcg/UJVE6xU
-         gj+N+jmNk69Gw==
+        b=nLbQfOO7XR/lNfXoWLCebbMfJgp0zZT+FkN+n+hOEdiGDNp1fZ4umWWKYxRXFIYho
+         Diev7K1eSAVG/aE9OK/7JyM57W56nDNUUn+5nuEqwatAQuQm26RzFmJWSAZ8pJSWAo
+         9j6IduarF1iMOTD9U03jke7wzDcqUHuT2EXvCMmNIOJjX4bV4eXBk7u0NpQFlaje6G
+         2px4UNcrLObW7EMOdg4B9l744T48xqL33N1PoVbKDmUncxc8TrWZTKA0pyE3ccRnPN
+         WdHQdNAzM+69c6VAUvfSyoC09FuV+OGO5sQ1EKG68+K+uN8c9kO+xmZEbyQ/S3TQAk
+         AGImiO6kEl0rw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 954F8C43143;
-        Fri, 29 Jul 2022 05:30:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C5E38C43143;
+        Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ax25: fix incorrect dev_tracker usage
+Subject: Re: [PATCH net-next v1] selftests: net: dsa: Add a Makefile which
+ installs the selftests
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165907261360.17632.6329795270179343317.git-patchwork-notify@kernel.org>
-Date:   Fri, 29 Jul 2022 05:30:13 +0000
-References: <20220728051821.3160118-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220728051821.3160118-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com, f6bvp@free.fr,
-        duoming@zju.edu.cn
+Message-Id: <165907261980.17632.18402519783746215352.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Jul 2022 05:30:19 +0000
+References: <20220727191642.480279-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220727191642.480279-1-martin.blumenstingl@googlemail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, shuah@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,23 +61,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 27 Jul 2022 22:18:21 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Wed, 27 Jul 2022 21:16:42 +0200 you wrote:
+> Add a Makefile which takes care of installing the selftests in
+> tools/testing/selftests/drivers/net/dsa. This can be used to install all
+> DSA specific selftests and forwarding.config using the same approach as
+> for the selftests in tools/testing/selftests/net/forwarding.
 > 
-> While investigating a separate rose issue [1], and enabling
-> CONFIG_NET_DEV_REFCNT_TRACKER=y, Bernard reported an orthogonal ax25 issue [2]
-> 
-> An ax25_dev can be used by one (or many) struct ax25_cb.
-> We thus need different dev_tracker, one per struct ax25_cb.
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ax25: fix incorrect dev_tracker usage
-    https://git.kernel.org/netdev/net/c/d7c4c9e075f8
+  - [net-next,v1] selftests: net: dsa: Add a Makefile which installs the selftests
+    https://git.kernel.org/netdev/net-next/c/6ecf206d602f
 
 You are awesome, thank you!
 -- 
