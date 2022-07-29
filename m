@@ -2,71 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C1FA5851E0
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF165851E5
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236361AbiG2O45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 10:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S236266AbiG2O6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 10:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232265AbiG2O44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:56:56 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF2D12620
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:56:55 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id n133so6092414oib.0
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:56:55 -0700 (PDT)
+        with ESMTP id S237024AbiG2O6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:58:10 -0400
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DC07FE59
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:58:09 -0700 (PDT)
+Received: by mail-oo1-xc31.google.com with SMTP id p5-20020a4a4805000000b0043548dba757so845719ooa.8
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RsDVZrZl+LA3Kc/LKUOnJ3Y91mTRnGArvMRybqe4uwY=;
-        b=QbjrZPJ9MnriBYjMOzRy8OgARYOxap4+8wyfbVogH9gUa1TFh7nb7EosJyq8QIBAF6
-         LzMn7+q4y2V3ekQRUDCVNX63WcgufIE2F14zA4SAuVUv3OXFtx3vGFTZvtp0w37azY27
-         39Mm24nQCTWy1NOc08479pcqgS8jPqSf2dr71PsymR93TBk6gPzOjigJ1uQgdZbn5AhM
-         Pl1b3J0xCcoB0J1l3tdDfLkQJhcYslhAelKTJAzF/iseTu4COFasKubnGS3ze4xMP4Vq
-         j2umd6XQ3h5cYUC2yJtsYqWZOM7yQe6J+rCxpGqHzRI441tXvr/1+zrEq7EP5kauiOGO
-         n+4w==
+        bh=a/m/UU0XnOFa9/SuSo6JSXgweAh4UNHUQxGuM+Tu3pM=;
+        b=Jv26Fs9HFYhpyD33DS+9fDpOGG5GLcn58KCOANn7BHZjOrxuAzO77LRHXhzYlneJQK
+         Cex24XIN1l4MphrJN9FxLPBNzGblpUGpeOwfS8agKNHiXlmn++MgjoFg2tQwCsSd+Cbq
+         Nk5a9b07PXIy/fzj4VnGmIHWawDVcENjeZ7tZFyJg9gwNqE+z+Ir+hueWr0l1yQbPwSi
+         WtaE8bjnIg7ilfnwu5lZBwjiYI9cMOgYnYbCQ/uWuJy9TdUbvCNQDhyhO85qPVwUeJ1e
+         YexfmGkdtAQY4YLlJDzBY2SVSJStRphTMEeq6YxO3HK9H8uSpgYAIk3+SZ8O4CzWbkMW
+         xwyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=RsDVZrZl+LA3Kc/LKUOnJ3Y91mTRnGArvMRybqe4uwY=;
-        b=ltkSnhRj9FCn7X5541Cox4vv4zPBgo2YajpVV95Eq03WeXUL21QEYQZPvG64uBmM6F
-         0BxwOtWQhpM9HeO3ONA4vnvCmw3htG86I7HgKZXZ9QcWLLLM0RbOu1Q7mSaKVRFAhPHl
-         zq0x2xSU+t1K0ZSTIeaQk8T89MyyJl/CMcWUKF3GMM1S2EMMN1pmM0PPrq85EmXNgBN0
-         fYWMtJD7cXEyf/OGefMOqGyjJNWRpG7ZYe1RSRQeCHqswFZvdLGnN0h8H5FD9aZelbhL
-         UZx3D/eBnscrfWe8ju2xKYsjC2JCiPpABxreblvMRoCxFbADomQsqIlcFjfWt771U1LI
-         R+mA==
-X-Gm-Message-State: AJIora/7GSFCE/JV27hJBbM2b0l3StkRVH6ZodgnH3RgagV3mDJyqj+a
-        B/U/CsB6YmXDQE9GkFwLQMA=
-X-Google-Smtp-Source: AGRyM1vilbZihfen3yHUUQtwMpJTWNOG/0lTFJO+mMaWh7+zUQ04QMGQb3dZ8T1KeFVsFpi858nDpQ==
-X-Received: by 2002:a05:6808:1b24:b0:33a:bab5:ddcf with SMTP id bx36-20020a0568081b2400b0033abab5ddcfmr1716919oib.210.1659106615155;
-        Fri, 29 Jul 2022 07:56:55 -0700 (PDT)
+        bh=a/m/UU0XnOFa9/SuSo6JSXgweAh4UNHUQxGuM+Tu3pM=;
+        b=iRculJipFRx0ZTK/dPthR9MtyH8jRg4jSkoUW0nE0t59dh62GPJDVRqLAkktGNL/B3
+         BtuaDef3ohj3Uu6320qcUAb829iRDfb4miC5J39viooHT3TkFWgW8LCH4GmSKh+IEtBx
+         CTh3XQ5Urc6fSd5cORGtgnH7YaF8iFeDhOHU5fekMx7PLZSGoSbGeLk64fnCUdx7ZuCo
+         QgU/zGYg9TWFi+zRxihpxahDNGLHnw4HPAOTrJhyQ1wUQgIyNMor4RLBqlAMcVzr851D
+         08TZX0QF1rImM7XdtlLsD1OnFlNLWWn1AAoeLRRYS9A2Fz1UfP8zvCF7zw6GKNH+sCG9
+         w2+Q==
+X-Gm-Message-State: AJIora+SBtCubEu8IJPIUTfmd6Dpx2t/ZD7JX91ekk1hlBteBBnMk3bE
+        WpvKZmH+mliGoaqsc/zNIXE=
+X-Google-Smtp-Source: AGRyM1u9Eq8TrcUVx8/cr7vSM1jbWQPaeZkZ1rhb7OUtsjUpZOoRN4SJ/Rm1o/403nf5Y6mIHU9dLw==
+X-Received: by 2002:a4a:d621:0:b0:435:d6cc:b2e1 with SMTP id n1-20020a4ad621000000b00435d6ccb2e1mr1412160oon.88.1659106688528;
+        Fri, 29 Jul 2022 07:58:08 -0700 (PDT)
 Received: from ?IPV6:2601:282:800:dc80:b47e:4ea2:2c6e:1224? ([2601:282:800:dc80:b47e:4ea2:2c6e:1224])
-        by smtp.googlemail.com with ESMTPSA id v22-20020a4ac916000000b0042573968646sm1344660ooq.11.2022.07.29.07.56.54
+        by smtp.googlemail.com with ESMTPSA id x8-20020a05683000c800b00616d25dc933sm1251874oto.69.2022.07.29.07.58.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 07:56:54 -0700 (PDT)
-Message-ID: <a1f2d255-7ae5-8091-9ff1-574ae3c7dd11@gmail.com>
-Date:   Fri, 29 Jul 2022 08:56:53 -0600
+        Fri, 29 Jul 2022 07:58:08 -0700 (PDT)
+Message-ID: <e00f3b23-7d9d-d8f1-646c-eaf843f744b5@gmail.com>
+Date:   Fri, 29 Jul 2022 08:58:07 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute-next v4 1/3] lib: refactor ll_proto functions
+Subject: Re: [PATCH iproute-next v4 2/3] lib: Introduce ppp protocols
 Content-Language: en-US
-To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>,
-        Guillaume Nault <gnault@redhat.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>
+To:     Wojciech Drewek <wojciech.drewek@intel.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, gnault@redhat.com
 References: <20220729085035.535788-1-wojciech.drewek@intel.com>
- <20220729085035.535788-2-wojciech.drewek@intel.com>
- <20220729132200.GA10877@pc-4.home>
- <MW4PR11MB5776E25C99B1DC3505BB4A54FD999@MW4PR11MB5776.namprd11.prod.outlook.com>
+ <20220729085035.535788-3-wojciech.drewek@intel.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <MW4PR11MB5776E25C99B1DC3505BB4A54FD999@MW4PR11MB5776.namprd11.prod.outlook.com>
+In-Reply-To: <20220729085035.535788-3-wojciech.drewek@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -77,7 +73,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 8:32 AM, Drewek, Wojciech wrote:
-> Sorry, I forgot to add your Acked-by, if next version will be needed I'll add it.
+On 7/29/22 2:50 AM, Wojciech Drewek wrote:
+> PPP protocol field uses different values than ethertype. Introduce
+> utilities for translating PPP protocols from strings to values
+> and vice versa. Use generic API from utils in order to get
+> proto id and name.
+> 
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> ---
+> v4: ppp_defs.h removed
+> ---
+>  include/rt_names.h |  3 +++
+>  lib/Makefile       |  2 +-
+>  lib/ppp_proto.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 56 insertions(+), 1 deletion(-)
+>  create mode 100644 lib/ppp_proto.c
+> 
 
-please keep the ack's on the next version.
+Ubuntu 20.04 with gcc 9.4 and clang 10.0 - both fail the same:
+
+$ make
+
+lib
+    CC       ppp_proto.o
+In file included from ppp_proto.c:9:
+../include/uapi/linux/ppp_defs.h:151:5: error: unknown type name
+‘__kernel_old_time_t’
+  151 |     __kernel_old_time_t xmit_idle; /* time since last NP packet
+sent */
+      |     ^~~~~~~~~~~~~~~~~~~
+../include/uapi/linux/ppp_defs.h:152:5: error: unknown type name
+‘__kernel_old_time_t’
+  152 |     __kernel_old_time_t recv_idle; /* time since last NP packet
+received */
+      |     ^~~~~~~~~~~~~~~~~~~
+make[1]: *** [../config.mk:58: ppp_proto.o] Error 1
+make: *** [Makefile:77: all] Error 2
+
