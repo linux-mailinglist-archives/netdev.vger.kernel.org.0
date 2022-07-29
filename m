@@ -2,172 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A43D8584EEA
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC984584F4C
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 13:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234698AbiG2KhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 06:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
+        id S235402AbiG2LAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 07:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232892AbiG2KhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:37:17 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8FF13F05;
-        Fri, 29 Jul 2022 03:37:16 -0700 (PDT)
-Received: from dev010.ch-qa.sw.ru ([172.29.1.15])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1oHNLB-00Cf1E-IH;
-        Fri, 29 Jul 2022 12:35:57 +0200
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>, linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, "Denis V . Lunev" <den@openvz.org>
-Subject: [PATCH 2/2] neighbour: make proxy_queue.qlen limit per-device
-Date:   Fri, 29 Jul 2022 13:35:59 +0300
-Message-Id: <20220729103559.215140-3-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+        with ESMTP id S234639AbiG2LAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 07:00:42 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41102A408;
+        Fri, 29 Jul 2022 04:00:40 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id k79so100675pfd.8;
+        Fri, 29 Jul 2022 04:00:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=+/iPCd/Fzs9lGqRmUEuLJiLQfcVAsWgZMz3tPz5hhRQ=;
+        b=MHjjq2LT4+2Lau6NVZpwhf+0AWyWdR3H0vDiDs5DI2gcp1Na9tGHe1Tw0A9ViBHDXA
+         PS+V7i3Y3M5fER+mEqpzZu4ReChmqYPMzQ1+geknjkpXjnbxhNTkmiGp7SZZUoui8/SX
+         eRuITytkPVXC1DXYw6mEkAXE4tXgc9aPYEkleZh2aE21bmSDrvLNPsW6zhSc6kmjdyrY
+         MKYHi1WAnAF3p73oEncEY7g1FtkkvTyFL4PvWlrA6LbvXoJL1S4h/gBPUsmhr6BNhpPB
+         8Dc0IZO/6lHkj/IYSMkanvuSYRNQ3vBEf8IiphFoYxMPZTvBCcrUCTQfqkh8JuV26A8T
+         Jp5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=+/iPCd/Fzs9lGqRmUEuLJiLQfcVAsWgZMz3tPz5hhRQ=;
+        b=qlZhBHbAxLYdqlY9DtNGtaRsXE1J2zCAe78ndKLiVgEMloNL+Xnq4VrZqpT+Fqaxs2
+         yIBkJMfk1mJl3CQv4zMRXwpMi5VyGlT10cM6UWcjEZfzXBPpddbVNf8OwNlY/OzRsvz5
+         QbK20OQC247Uz7RDx1/DAPRJXt5rnsit1eIJ53ptLVHm4ZR3nENHojFtc45IJQfYsH9J
+         QRaMn429YDZbl2MiSq+hoZc8YQq4hEB7HiE1Pfl8Ej+Z9NPZApGM8uamzPHCBAAEK+2U
+         V91Skd4P63Awc7tA8K9mxuVe750RZ8+Ael3lPcq7ycZmVK/WddADM1K1bB/6lh0s8Hkh
+         +k5Q==
+X-Gm-Message-State: AJIora/XmYwZeFAkZ8Fjx7wGuSqw0cD7QGDmRTj+yY8ZYjlrH9lwQ9Ka
+        bIFm2YY5TTwK7kNpygf0agI=
+X-Google-Smtp-Source: AGRyM1tEhNVtRjJtquaYNWRwmabmY/N9Fcuj5cMr0H+F/vXVpXqWTNRTC801SAun88tZtNfOW2Vtmw==
+X-Received: by 2002:a65:6398:0:b0:415:7d00:c1de with SMTP id h24-20020a656398000000b004157d00c1demr2546776pgv.610.1659092440239;
+        Fri, 29 Jul 2022 04:00:40 -0700 (PDT)
+Received: from localhost.localdomain ([129.227.148.126])
+        by smtp.gmail.com with ESMTPSA id l1-20020a170902ec0100b0016d338160d6sm3201118pld.155.2022.07.29.04.00.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 04:00:39 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, kuniyu@amazon.co.jp, joannelkoong@gmail.com,
+        richard_siegfried@systemli.org, socketcan@hartkopp.net,
+        ian.mcdonald@jandi.co.nz, acme@mandriva.com, gerrit@erg.abdn.ac.uk
+Cc:     dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v2] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push() in the same lock
+Date:   Fri, 29 Jul 2022 19:00:27 +0800
+Message-Id: <20220729110027.40569-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now we have a neigh_param PROXY_QLEN which specifies maximum length
-of neigh_table->proxy_queue. But in fact, this limitation doesn't work well
-because check condition looks like:
-tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)
+In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
+will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
+released before sock_alloc_send_skb and then relocked after
+sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
+to add skb to an already full sk_write_queue:
 
-The problem is that p (struct neigh_parms) is a per-device thing,
-but tbl (struct neigh_table) is a system-wide global thing.
+thread1--->lock
+thread1--->dccp_qpolicy_full: queue is full. drop a skb
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
+thread2--->unlock
+thread1--->lock
+thread1--->dccp_qpolicy_push: add a skb. queue is full.
+thread1--->unlock
+thread2--->lock
+thread2--->dccp_qpolicy_push: add a skb!
+thread2--->unlock
 
-It seems reasonable to make proxy_queue limit per-device based.
+Fix this by moving dccp_qpolicy_full.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: kernel@openvz.org
-Suggested-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Reviewed-by: Denis V. Lunev <den@openvz.org>
+Fixes: b1308dc015eb ("[DCCP]: Set TX Queue Length Bounds via Sysctl")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- include/net/neighbour.h |  1 +
- net/core/neighbour.c    | 25 ++++++++++++++++++++++---
- 2 files changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-index 87419f7f5421..bc3fbec70d10 100644
---- a/include/net/neighbour.h
-+++ b/include/net/neighbour.h
-@@ -82,6 +82,7 @@ struct neigh_parms {
- 	struct rcu_head rcu_head;
+v2: 
+1. call dccp_qpolicy_full first after relocking.
+2. change "Fixes:" tag.
+
+ net/dccp/proto.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index eb8e128e43e8..e13641c65f88 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -736,11 +736,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  
- 	int	reachable_time;
-+	int	qlen;
- 	int	data[NEIGH_VAR_DATA_MAX];
- 	DECLARE_BITMAP(data_state, NEIGH_VAR_DATA_MAX);
- };
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 213ec0be800b..d98923e3ff02 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -316,9 +316,19 @@ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- 	skb = skb_peek(list);
- 	while (skb != NULL) {
- 		struct sk_buff *skb_next = skb_peek_next(skb, list);
--		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-+		struct net_device *dev = skb->dev;
+ 	lock_sock(sk);
+ 
+-	if (dccp_qpolicy_full(sk)) {
+-		rc = -EAGAIN;
+-		goto out_release;
+-	}
+-
+ 	timeo = sock_sndtimeo(sk, noblock);
+ 
+ 	/*
+@@ -759,6 +754,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	if (skb == NULL)
+ 		goto out_release;
+ 
++	if (dccp_qpolicy_full(sk)) {
++		rc = -EAGAIN;
++		goto out_discard;
++	}
 +
-+		if (!net || net_eq(dev_net(dev), net)) {
-+			struct in_device *in_dev;
-+
-+			rcu_read_lock();
-+			in_dev = __in_dev_get_rcu(dev);
-+			if (in_dev)
-+				in_dev->arp_parms->qlen--;
-+			rcu_read_unlock();
- 			__skb_unlink(skb, list);
--			dev_put(skb->dev);
-+
-+			dev_put(dev);
- 			kfree_skb(skb);
- 		}
- 		skb = skb_next;
-@@ -1605,8 +1615,15 @@ static void neigh_proxy_process(struct timer_list *t)
- 
- 		if (tdif <= 0) {
- 			struct net_device *dev = skb->dev;
-+			struct in_device *in_dev;
- 
-+			rcu_read_lock();
-+			in_dev = __in_dev_get_rcu(dev);
-+			if (in_dev)
-+				in_dev->arp_parms->qlen--;
-+			rcu_read_unlock();
- 			__skb_unlink(skb, &tbl->proxy_queue);
-+
- 			if (tbl->proxy_redo && netif_running(dev)) {
- 				rcu_read_lock();
- 				tbl->proxy_redo(skb);
-@@ -1631,7 +1648,7 @@ void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
- 	unsigned long sched_next = jiffies +
- 			prandom_u32_max(NEIGH_VAR(p, PROXY_DELAY));
- 
--	if (tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)) {
-+	if (p->qlen > NEIGH_VAR(p, PROXY_QLEN)) {
- 		kfree_skb(skb);
- 		return;
- 	}
-@@ -1647,6 +1664,7 @@ void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
- 	skb_dst_drop(skb);
- 	dev_hold(skb->dev);
- 	__skb_queue_tail(&tbl->proxy_queue, skb);
-+	p->qlen++;
- 	mod_timer(&tbl->proxy_timer, sched_next);
- 	spin_unlock(&tbl->proxy_queue.lock);
- }
-@@ -1679,6 +1697,7 @@ struct neigh_parms *neigh_parms_alloc(struct net_device *dev,
- 		refcount_set(&p->refcnt, 1);
- 		p->reachable_time =
- 				neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
-+		p->qlen = 0;
- 		dev_hold_track(dev, &p->dev_tracker, GFP_KERNEL);
- 		p->dev = dev;
- 		write_pnet(&p->net, net);
-@@ -1744,6 +1763,7 @@ void neigh_table_init(int index, struct neigh_table *tbl)
- 	refcount_set(&tbl->parms.refcnt, 1);
- 	tbl->parms.reachable_time =
- 			  neigh_rand_reach_time(NEIGH_VAR(&tbl->parms, BASE_REACHABLE_TIME));
-+	tbl->parms.qlen = 0;
- 
- 	tbl->stats = alloc_percpu(struct neigh_statistics);
- 	if (!tbl->stats)
+ 	if (sk->sk_state == DCCP_CLOSED) {
+ 		rc = -ENOTCONN;
+ 		goto out_discard;
 -- 
-2.36.1
+2.25.1
 
