@@ -2,125 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BD3584D2E
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 10:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC6A584DB3
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 10:52:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235374AbiG2ILI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 04:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
+        id S235430AbiG2Iwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 04:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235355AbiG2ILH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 04:11:07 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3237E814
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:11:03 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id l4so5041642wrm.13
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:11:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uakZq5jjI3k3Wqdc3kNF9IpIwnGj43FMnuJpnIZFyDE=;
-        b=STmqqbhOq0hT2em/dkhL5QkjUXaSR7EfXG8Iy2BQq2KYYfx/kbk2kk9NQup2XgXlsy
-         6hnpnbZFrP8Bi1m1vfsT3iBEEEUK4Oebk5m3+VxqKK24lp768qyfAU7uuq1LDsbviApB
-         5AwzP/MbiPk2bQ0KCDQsB/UESVe6OmWICZctS44+jm7QQlV2YVDtxIWZwKDT+/yZkIvA
-         9/HhmS73O+c4eEqzOIg+Vod2v0JbZ/nKtr2pSWXO+0CH9sVuf/7NS8ESfVmYlYGd5dB1
-         bReC1MO71dLOl0L4F7J16JThdc0VHJ+0xMtCzrSzk8eH3WNsUaEcMrnrZcVCjkIFAHOz
-         IyUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uakZq5jjI3k3Wqdc3kNF9IpIwnGj43FMnuJpnIZFyDE=;
-        b=robuh2nd37eeLutHckI8dXPl0SCkkIkD4VxDCYxJsCOWHqkoyaryCvJoGF4A6fj5Lk
-         6TNCCcdSgrK3aZu3VsZ842xeNhjwutCVV3MHyGIzDw+t7PNfpQWpWc5Az3OSBVX+BOhl
-         opqjjPp4Qv0L8Ixw8iJ+9WGBjrl79jauPqrO7QNvRPAetv8TauGOPv/OitNyOS5WcWey
-         A0bDFiUfXKGYkKnLAEwg3wGo8wCltUOqJ1tbo1KRtWfs0GYdVwiFYHIObv+PKCa7VfrS
-         S1n0q7HGNtc/lHcNjkdO/KMNTXuNqtRS+VTerSJVzlSAW3/wJQfGV/PyczmYUK446DYn
-         kH2w==
-X-Gm-Message-State: ACgBeo3RT2DM5/than4w98tSU84UBvlHrexD0E5+OGmGOvNibSD4TwVy
-        fxF7qwaCri4LrAXvvVlGAjOr8Q==
-X-Google-Smtp-Source: AA6agR5kcl0wdu0ft/WBQaXd0Pq4W2Bq8UKv7WphlBoCYb04bUYj3ViuIYWJTjw6p8pHCm+gVmgOFw==
-X-Received: by 2002:adf:ffc1:0:b0:21d:66a1:c3ee with SMTP id x1-20020adfffc1000000b0021d66a1c3eemr1534007wrs.364.1659082261728;
-        Fri, 29 Jul 2022 01:11:01 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id q2-20020a5d6582000000b0021e52020198sm2928398wru.61.2022.07.29.01.11.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 01:11:01 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 10:11:00 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Li zeming <zeming@nfschina.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched/net/act: Remove temporary state variables 
-Message-ID: <YuOWFM/xRaJSuX5M@nanopsycho>
-References: <20220727094146.5990-1-zeming@nfschina.com>
- <20220728201556.230b9efd@kernel.org>
- <YuN+i2WtzfA0wDQb@nanopsycho>
- <20220728235121.43bedc43@kernel.org>
- <YuOFd2oqA1Cbl+at@nanopsycho>
- <20220729001842.5bc9f0b2@kernel.org>
+        with ESMTP id S234622AbiG2Iwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 04:52:34 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E501883206
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 01:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659084753; x=1690620753;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gGRCkNszxYPwbc+UF2sSw5+fUIX46ZfH1BqxL+ASUbE=;
+  b=MzrchL26AV61KXzcQhoWoZpM9ZSk/bthlrvnhoTCd9NYi5yNGgB61ePk
+   wd3NqjfvpJtUC0HPiqEFfbN5MZlNP4WTBu5y+1l/D/e9PM0IICXSQzWf8
+   GL8wkxPKj3hC6muMusAF+8myvHZkgcMR9hCNbG0FeKUwpt7XWARNbrjb8
+   emF9whOup3Mv2WkwSJ+z0R/DRKLvs+/MOVO2VPZOtNQl8GXZ9nBARJle+
+   /9AMUftoNTksCg1MVpsvmuIVCdsE22gTEVgbturr/duVQdDND7upssQG9
+   itHHbuaR6mxCndkE4qyau3xFwb4SNXsg2KSNFVOzyQ70nxxttP3wICDK0
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="275610575"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="275610575"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 01:52:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="660154357"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2022 01:52:28 -0700
+Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26T8qR39020937;
+        Fri, 29 Jul 2022 09:52:27 +0100
+From:   Wojciech Drewek <wojciech.drewek@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, gnault@redhat.com
+Subject: [PATCH iproute-next v4 0/3] PPPoE support in tc-flower
+Date:   Fri, 29 Jul 2022 10:50:32 +0200
+Message-Id: <20220729085035.535788-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729001842.5bc9f0b2@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jul 29, 2022 at 09:18:42AM CEST, kuba@kernel.org wrote:
->On Fri, 29 Jul 2022 09:00:07 +0200 Jiri Pirko wrote:
->> >> What backports do you have in mind exactly?  
->> >
->> >Code backports. I don't understand the question.  
->> 
->> Code backports of what where?
->> Are you talking about:
->> 1) mainline kernels
->> 2) distrubutions kernels? Or even worse, in-house kernels of companies?
->> 
->> If 2), I believe it is not relevant for the upstream discussion, at all.
->
->Fixes and stable. Frankly it's just a generic justification 
+This patchset implements support for matching
+on PPPoE specific fields using tc-flower.
+First patch introduces small refactor which allows
+to use same mechanism of finding protocol for
+both ppp and ether protocols. Second patch
+adds support for parsing ppp protocols.
+Last patch is about parsing PPPoE fields.
 
-Was there a significant value of breakages for net and stable backports
-in past?
+Kernel changes (merged):
+https://lore.kernel.org/netdev/20220726203133.2171332-1-anthony.l.nguyen@intel.com/T/#t
 
+Wojciech Drewek (3):
+  lib: refactor ll_proto functions
+  lib: Introduce ppp protocols
+  f_flower: Introduce PPPoE support
 
->to discourage people from sending subjective code cleanups.
->I'd never argue for the benefit of (2) :)
+ include/rt_names.h           |  3 ++
+ include/uapi/linux/pkt_cls.h |  3 ++
+ include/utils.h              | 10 +++++++
+ lib/Makefile                 |  2 +-
+ lib/ll_proto.c               | 33 +++++---------------
+ lib/ppp_proto.c              | 52 ++++++++++++++++++++++++++++++++
+ lib/utils.c                  | 34 +++++++++++++++++++++
+ man/man8/tc-flower.8         | 17 ++++++++++-
+ tc/f_flower.c                | 58 ++++++++++++++++++++++++++++++++++++
+ 9 files changed, 185 insertions(+), 27 deletions(-)
+ create mode 100644 lib/ppp_proto.c
 
-Uff, for a second, it did sound like it :)
+-- 
+2.31.1
 
-
->
->There's been a string of patches cleaning up return values
->of functions in the last few days. If people have a lot of
-
-Well, I think it is good to send a patch to clean something up when you
-spot it. If you don't do it, someone else might do it again in the
-future anyway.
-
-Plus there is one good reason at least to do this kinds of cleanups.
-People tend to copy&paste code without thinking twice. So if you clean
-it up here, it might not get copied into other code. That's good.
-
-
->time on their hands they should go do something useful, like
->converting netdev features to a bitmap. Hell, go fix W=1 warnings, 
->even easier.
-
-Random spot&clean is hardly comparable to this.
-
-
->
->The time spent reviewing those "cleanups" adds up, and I suspect
->there's hundreds of places they can be applied. Hence my question
->about automation... 
