@@ -2,113 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6845856A2
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 23:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 546DE5856B0
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 23:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239438AbiG2Voo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 17:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        id S239479AbiG2V41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 17:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239328AbiG2Vom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 17:44:42 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE118C3EC
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 14:44:41 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id y1so5692013pja.4
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 14:44:41 -0700 (PDT)
+        with ESMTP id S238276AbiG2V40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 17:56:26 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DC4DF67;
+        Fri, 29 Jul 2022 14:56:25 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z18so7299208edb.10;
+        Fri, 29 Jul 2022 14:56:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=AG3Cx+REcnvB64RcYdxCO+ogkVVrATf2Cm8UsJip7n8=;
-        b=qcVn7NVgWMhCk1kqhTLSvEcmsNod7ME112oa2+l5etGV2KDacouTw/7l7btXJeriOA
-         k1WCyjdT6Yw3M6blvAMooeUnjlkQKtLspYuJsmAneOqwCBshMf82YpTLPbZncB+pFA0N
-         fxWvudoyqQw6DuUXKAnf82cD0/qL5kuymxmADSGKTMu8NYcBCJgyJ/0JZNMAXEVPkbkB
-         Gi2vIGOe2+NLnKgx1geLWa/ZNpCKikAE6Y3LgArYqNBNS7mfgRJpemW2CfgKJhvfyPDB
-         UaIwMpm4FIq2cGzhLtKN8e48lCNiQagC7drHH1k23FcWV9XAOqYSMPeWaQboYV7K8JyQ
-         f46Q==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1oJ5ppqV81dXGgROARm3vuKcjkQjJObMa2dG00eEj7w=;
+        b=ZeymHzrZcHgrti6DtpxYn2wHVj1tb+D89fn3+wQlInaLgY/X3CrKhVor4DlLOYgPKm
+         9w6QZXYf6GhObP3dpbRRIFsApY4FUvPhgCW0A3Rge6VCD4mRRSwEQob7fGIlCR0DrrqN
+         riQfGI/3g92JkRIUqjtSxHYUI0N64mfjkwrbhW6sBBj+jhYVRWogHWx08TFGlb/v3DaV
+         7PmqVUFY8xKPqt1fSqqY/ssBPNbfnHIjdEuiklaDQ6CTqPMuwZlWk97DX93YtSb+W2My
+         UKLgGJ4RD0mFrROjCeYYrA7Pxe5uujmPJZXTBHMo8HiNjc8KDx6VOcr3KEzkdAv/Miaa
+         +pDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=AG3Cx+REcnvB64RcYdxCO+ogkVVrATf2Cm8UsJip7n8=;
-        b=P2KY+vCgroZqGTuqqPpCuK4kGmAAExiQqZC0I1fjfnLxkLR6bgZtaGb9SxsxoY3H8M
-         UAj7Nt78qrgojytxeM51UxEet/8OIKIFrC2X8HD55S2OrKZl4d+G5SCfw1/ABpw0sk03
-         c9WrR7oKsRpI2uNpkjtu3Mpn1EjxM8Na12WfTjWbhGl73ZKk+gGwol+lGpIhGwKvTf/P
-         D4Klq1a7wGJ+1P/jkMrh/WUnBXmgqSQZY9Ee1DfQg0COa4xYk4ZqItYr2Sf+l1+GXBkk
-         i0q9q0J0pWj9IQhzFXrlG//kBrgm+NrT8+XXftdC+3ZlfJyx7w88J+Rox/HwuzHaOTDM
-         U9iQ==
-X-Gm-Message-State: ACgBeo2DP/ArtW8uvbwf4WK8Vh0qQl3/3mBf/Upm4ZIMpk89FBuoM7l+
-        sJdas8cVbPXvi0LUGbMWGcg=
-X-Google-Smtp-Source: AA6agR4PW95eagQiD7IusIUn/wB3aJsZu1Buaf3jbAWPl47I84swE4dul1jn+xpZ7WCkMsaSver71w==
-X-Received: by 2002:a17:90b:3c05:b0:1f4:ca8d:c05e with SMTP id pb5-20020a17090b3c0500b001f4ca8dc05emr1826444pjb.113.1659131080671;
-        Fri, 29 Jul 2022 14:44:40 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u17-20020a170903125100b0016db43e5212sm4107624plh.175.2022.07.29.14.44.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 14:44:40 -0700 (PDT)
-Message-ID: <2a159954-7175-b747-a53b-0282998eec90@gmail.com>
-Date:   Fri, 29 Jul 2022 14:44:31 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1oJ5ppqV81dXGgROARm3vuKcjkQjJObMa2dG00eEj7w=;
+        b=AI++c9TRYSPVMK5enrocIJSEsjEx7EEzn0mTBUvY0plb/NHllCnXumNgGJcJ8e4g/K
+         IZck18zFZIzEw7iYF5qFDKcp0YDb8Sfj8nDPj6MaJXvEm2r+aJ35/A7HzE1iYbcIhw3q
+         X2ugBicbaKIc3JUCuIbi6PxqQymccxVeeE6hiRckZUWQHKU7r9t4gchWQaHb6FcZXoZU
+         GCQ1ROqIXZrxCSlYSZ0R4e/F7fNrXssRpx0FX35pAVW2sNEgj2xlj6rzzF5OtgWPJdAZ
+         toAmO/6s0NFJIVrAaUSp/1yPobjW01zEZWo/VisTiO889eTCmXViv+YZSEOqI1mf/hCF
+         DVaQ==
+X-Gm-Message-State: AJIora8Vk+T4Jwr/QRz97HU21+RaWpYTkLMYzXR3QPDp6Q6OzC5MRrLp
+        31xnW64eHlLdas3tWEwu3PCerVQg1/eOcZnNNM8=
+X-Google-Smtp-Source: AGRyM1soQseBLYKgvdEFDaSq50Y9XWsp5c865UialDKX7i0Cka6HNVhe9R9wqbc/CK0baT0hAhQHqznpzlIjANupI1I=
+X-Received: by 2002:a05:6402:5108:b0:43b:e395:d2fb with SMTP id
+ m8-20020a056402510800b0043be395d2fbmr5555406edd.260.1659131783873; Fri, 29
+ Jul 2022 14:56:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
- shared ports have the properties they need
-Content-Language: en-US
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Mans Rullgard <mans@mansr.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>
-References: <20220729132119.1191227-1-vladimir.oltean@nxp.com>
- <20220729132119.1191227-5-vladimir.oltean@nxp.com>
- <CAPv3WKe7BVS3cjPws69Zi=XqBE3UkgQM1yLKJgmphiQO_n8Jgw@mail.gmail.com>
- <20220729183444.jzr3eoj6xdumezwu@skbuf>
- <CAPv3WKfLc_3D+BQg0Mhp9t8kHzpfYo1SKZkSDHYBLEoRbTqpmw@mail.gmail.com>
- <YuROg1t+dXMwddi6@lunn.ch> <7a8b57c3-5b5a-dfc8-67cb-52061fb9085e@gmail.com>
- <CAPv3WKcoi8M6WmEtUXAObhRjJmR3jm7MguWUyw=RJQfNnt7c6w@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <CAPv3WKcoi8M6WmEtUXAObhRjJmR3jm7MguWUyw=RJQfNnt7c6w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220728114048.3540461-1-xukuohai@huaweicloud.com>
+ <YuKAlk+p/ABzfUQ+@krava> <9170060c-8727-68d6-7be2-8aa75e30c6e6@huaweicloud.com>
+ <YuKOQiJt+AA1cCEE@krava>
+In-Reply-To: <YuKOQiJt+AA1cCEE@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 29 Jul 2022 14:56:12 -0700
+Message-ID: <CAEf4BzboJpqnfAE_i7LPMe2HM_bNGo0AM8r=sAuP3E4BPZTo-w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Fix NULL pointer dereference when
+ registering bpf trampoline
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Xu Kuohai <xukuohai@huaweicloud.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Bruno Goncalves <bgoncalv@redhat.com>,
+        Song Liu <song@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -117,42 +70,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 14:33, Marcin Wojtas wrote:
-> pt., 29 lip 2022 o 23:24 Florian Fainelli <f.fainelli@gmail.com> napisał(a):
->>
->> On 7/29/22 14:17, Andrew Lunn wrote:
->>>> What I propose is to enforce more strictly an update of DT description
->>>> with a specified timeline, abandoning 'camps' idea and driver-specific
->>>> contents in the generic code.
->>>
->>> Regressions are the problem. We are supposed to be backwards
->>> compatible with older DT blobs. If we now say old DT blobs are
->>> invalid, and refuse to probe, we cause a regression.
->>>
->>> For some of the in kernel DT files using the mv88e6xxx i can make a
->>> good guess at what the missing properties are. However, i'm bound to
->>> guess wrong at some point, and cause a regression. So we could change
->>> just those we can test. But at some point, the other blobs are going
->>> to fail the enforces checks and cause a regression anyway.
->>>
->>> And what about out of tree blobs? Probably OpenWRT have some. Do we
->>> want to cause them to regress?
->>
->> No, we do not want that, which is why Vladimir's approach IMHO is reasonable in that it acknowledges mistakes or shortcomings of the past into the present, and expects the future to be corrected and not repeat those same mistakes. The deprectiation window idea is all well and good in premise, however with such a large user base, I am not sure it is going to go very far unfortunately, nor that it will hinder our ability to have a more maintainable DSA framework TBH.
->>
->> BTW, OpenWrt does not typically ship DT blobs that stay frozen, all of the kernel, DTBs, root filesystem, and sometimes a recent u-boot copy will be updated at the same time because very rarely do the existing boot loader satisfy modern requirements (PSCI, etc.).
-> 
-> Initially, I thought that the idea is a probe failure (hence the camps
-> to prevent that) - but it was clarified later, it's not the case.
-> 
-> I totally agree and I am all against breaking the backward
-> compatibility (this is why I work on ACPI support that much :) ). The
-> question is whether for existing deployments with 'broken' DT
-> description we would be ok to introduce a dev_warn/WARN_ON message
-> after a kernel update. That would be a case if the check is performed
-> unconditionally - this way we can keep compat strings out of net/dsa.
-> What do you think?
+On Thu, Jul 28, 2022 at 6:31 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> On Thu, Jul 28, 2022 at 08:56:27PM +0800, Xu Kuohai wrote:
+> > On 7/28/2022 8:27 PM, Jiri Olsa wrote:
+> > > On Thu, Jul 28, 2022 at 07:40:48AM -0400, Xu Kuohai wrote:
+> > > > From: Xu Kuohai <xukuohai@huawei.com>
+> > >
+> > > SNIP
+> > >
+> > > >
+> > > > It's caused by a NULL tr->fops passed to ftrace_set_filter_ip(). tr->fops
+> > > > is initialized to NULL and is assigned to an allocated memory address if
+> > > > CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS is enabled. Since there is no
+> > > > direct call on arm64 yet, the config can't be enabled.
+> > > >
+> > > > To fix it, call ftrace_set_filter_ip() only if tr->fops is not NULL.
+> > > >
+> > > > Fixes: 00963a2e75a8 ("bpf: Support bpf_trampoline on functions with IPMODIFY (e.g. livepatch)")
+> > > > Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+> > > > Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> > > > Tested-by: Bruno Goncalves <bgoncalv@redhat.com>
+> > > > Acked-by: Song Liu <songliubraving@fb.com>
+> > > > ---
+> > > >   kernel/bpf/trampoline.c | 11 +++++++++--
+> > > >   1 file changed, 9 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> > > > index 42e387a12694..0d5a9e0b9a7b 100644
+> > > > --- a/kernel/bpf/trampoline.c
+> > > > +++ b/kernel/bpf/trampoline.c
+> > > > @@ -255,8 +255,15 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+> > > >                   return -ENOENT;
+> > > >           if (tr->func.ftrace_managed) {
+> > > > -         ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
+> > > > -         ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
+> > > > +         if (tr->fops)
+> > > > +                 ret = ftrace_set_filter_ip(tr->fops, (unsigned long)ip,
+> > > > +                                            0, 0);
+> > > > +         else
+> > > > +                 ret = -ENOTSUPP;
+> > > > +
+> > > > +         if (!ret)
+> > > > +                 ret = register_ftrace_direct_multi(tr->fops,
+> > > > +                                                    (long)new_addr);
+> > > >           } else {
+> > > >                   ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
+> > > >           }
+> > >
+> > > do we need to do the same also in unregister_fentry and modify_fentry ?
+> > >
+> >
+> > No need for now, this is the only place where we call ftrace_set_filter_ip().
+> >
+> > tr->fops is passed to ftrace_set_filter_ip() and *ftrace_direct_multi()
+> > functions, and when CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS is not enabled,
+> > the *ftrace_direct_multi()s do nothing except returning an error code, so
+> > it's safe to pass NULL to them.
+>
+> ok, makes sense
+>
+> Acked-by: Jiri Olsa <jolsa@kernel.org>
+>
 
-A warning seems fine and appropriate to give just the right amount of nudge to get things fixed, I would not as far as a full backtrace WARN() because those will definitively upset people's CI in a wayt that seems a bit over reacting. Anyway I do have my share of DT blobs to update.
--- 
-Florian
+I've simplified this to
+
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 7ec7e23559ad..c122d8b3ddc9 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -248,8 +248,11 @@ static int register_fentry(struct bpf_trampoline
+*tr, void *new_addr)
+        int ret;
+
+        faddr = ftrace_location((unsigned long)ip);
+-       if (faddr)
++       if (faddr) {
++               if (!tr->fops)
++                       return -ENOTSUPP;
+                tr->func.ftrace_managed = true;
++       }
+
+
+and pushed to bpf-next. Thanks.
+
+
+> jirka
