@@ -2,111 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF165851E5
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698AD5851E7
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 16:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236266AbiG2O6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 10:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        id S236823AbiG2O6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 10:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237024AbiG2O6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:58:10 -0400
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DC07FE59
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:58:09 -0700 (PDT)
-Received: by mail-oo1-xc31.google.com with SMTP id p5-20020a4a4805000000b0043548dba757so845719ooa.8
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 07:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=a/m/UU0XnOFa9/SuSo6JSXgweAh4UNHUQxGuM+Tu3pM=;
-        b=Jv26Fs9HFYhpyD33DS+9fDpOGG5GLcn58KCOANn7BHZjOrxuAzO77LRHXhzYlneJQK
-         Cex24XIN1l4MphrJN9FxLPBNzGblpUGpeOwfS8agKNHiXlmn++MgjoFg2tQwCsSd+Cbq
-         Nk5a9b07PXIy/fzj4VnGmIHWawDVcENjeZ7tZFyJg9gwNqE+z+Ir+hueWr0l1yQbPwSi
-         WtaE8bjnIg7ilfnwu5lZBwjiYI9cMOgYnYbCQ/uWuJy9TdUbvCNQDhyhO85qPVwUeJ1e
-         YexfmGkdtAQY4YLlJDzBY2SVSJStRphTMEeq6YxO3HK9H8uSpgYAIk3+SZ8O4CzWbkMW
-         xwyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=a/m/UU0XnOFa9/SuSo6JSXgweAh4UNHUQxGuM+Tu3pM=;
-        b=iRculJipFRx0ZTK/dPthR9MtyH8jRg4jSkoUW0nE0t59dh62GPJDVRqLAkktGNL/B3
-         BtuaDef3ohj3Uu6320qcUAb829iRDfb4miC5J39viooHT3TkFWgW8LCH4GmSKh+IEtBx
-         CTh3XQ5Urc6fSd5cORGtgnH7YaF8iFeDhOHU5fekMx7PLZSGoSbGeLk64fnCUdx7ZuCo
-         QgU/zGYg9TWFi+zRxihpxahDNGLHnw4HPAOTrJhyQ1wUQgIyNMor4RLBqlAMcVzr851D
-         08TZX0QF1rImM7XdtlLsD1OnFlNLWWn1AAoeLRRYS9A2Fz1UfP8zvCF7zw6GKNH+sCG9
-         w2+Q==
-X-Gm-Message-State: AJIora+SBtCubEu8IJPIUTfmd6Dpx2t/ZD7JX91ekk1hlBteBBnMk3bE
-        WpvKZmH+mliGoaqsc/zNIXE=
-X-Google-Smtp-Source: AGRyM1u9Eq8TrcUVx8/cr7vSM1jbWQPaeZkZ1rhb7OUtsjUpZOoRN4SJ/Rm1o/403nf5Y6mIHU9dLw==
-X-Received: by 2002:a4a:d621:0:b0:435:d6cc:b2e1 with SMTP id n1-20020a4ad621000000b00435d6ccb2e1mr1412160oon.88.1659106688528;
-        Fri, 29 Jul 2022 07:58:08 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:b47e:4ea2:2c6e:1224? ([2601:282:800:dc80:b47e:4ea2:2c6e:1224])
-        by smtp.googlemail.com with ESMTPSA id x8-20020a05683000c800b00616d25dc933sm1251874oto.69.2022.07.29.07.58.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 07:58:08 -0700 (PDT)
-Message-ID: <e00f3b23-7d9d-d8f1-646c-eaf843f744b5@gmail.com>
-Date:   Fri, 29 Jul 2022 08:58:07 -0600
+        with ESMTP id S236539AbiG2O6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 10:58:36 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3A07FE56;
+        Fri, 29 Jul 2022 07:58:34 -0700 (PDT)
+Received: from [127.0.0.1] (ip-109-43-49-118.web.vodafone.de [109.43.49.118])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 0BFCF22246;
+        Fri, 29 Jul 2022 16:58:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1659106711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W+YShM8tCWwaAykVrnA9+dAAicvUjJ1+V+R6kmbwKkA=;
+        b=Fb/dpvs46e3e9OHp3FckYJH0lYNTUX0cSMGtqSanZdFeT3MFBOVZxkdzYN6g7pMzajlnDW
+        Mq+n2wgNji9jOK0Cw3zQTqLP6Y4qkLD73CEv69jZ+QAO87Q91MxVVhVfyM8o4/shgKO4rO
+        sUliLx42Y+BszUhKs/U3zpKXVvt/AQE=
+Date:   Fri, 29 Jul 2022 16:58:28 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+CC:     Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Walle <mwalle@kernel.org>
+Subject: RE: [PATCH] wilc1000: fix DMA on stack objects
+User-Agent: K-9 Mail for Android
+In-Reply-To: <0ed9ec85a55941fd93773825fe9d374c@AcuMS.aculab.com>
+References: <20220728152037.386543-1-michael@walle.cc> <0ed9ec85a55941fd93773825fe9d374c@AcuMS.aculab.com>
+Message-ID: <612ECEE6-1C05-4325-92A3-21E17EC177A9@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute-next v4 2/3] lib: Introduce ppp protocols
-Content-Language: en-US
-To:     Wojciech Drewek <wojciech.drewek@intel.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, gnault@redhat.com
-References: <20220729085035.535788-1-wojciech.drewek@intel.com>
- <20220729085035.535788-3-wojciech.drewek@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220729085035.535788-3-wojciech.drewek@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 2:50 AM, Wojciech Drewek wrote:
-> PPP protocol field uses different values than ethertype. Introduce
-> utilities for translating PPP protocols from strings to values
-> and vice versa. Use generic API from utils in order to get
-> proto id and name.
-> 
-> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
-> ---
-> v4: ppp_defs.h removed
-> ---
->  include/rt_names.h |  3 +++
->  lib/Makefile       |  2 +-
->  lib/ppp_proto.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 56 insertions(+), 1 deletion(-)
->  create mode 100644 lib/ppp_proto.c
-> 
+Am 29=2E Juli 2022 11:51:12 MESZ schrieb David Laight <David=2ELaight@ACULA=
+B=2ECOM>:
+>From: Michael Walle
+>> Sent: 28 July 2022 16:21
+>>=20
+>> From: Michael Walle <mwalle@kernel=2Eorg>
+>>=20
+>> Sometimes wilc_sdio_cmd53() is called with addresses pointing to an
+>> object on the stack=2E E=2Eg=2E wilc_sdio_write_reg() will call it with=
+ an
+>> address pointing to one of its arguments=2E Detect whether the buffer
+>> address is not DMA-able in which case a bounce buffer is used=2E The bo=
+unce
+>> buffer itself is protected from parallel accesses by sdio_claim_host()=
+=2E
+>>=20
+>> Fixes: 5625f965d764 ("wilc1000: move wilc driver out of staging")
+>> Signed-off-by: Michael Walle <mwalle@kernel=2Eorg>
+>> ---
+>> The bug itself probably goes back way more, but I don't know if it make=
+s
+>> any sense to use an older commit for the Fixes tag=2E If so, please sug=
+gest
+>> one=2E
+>>=20
+>> The bug leads to an actual error on an imx8mn SoC with 1GiB of RAM=2E B=
+ut the
+>> error will also be catched by CONFIG_DEBUG_VIRTUAL:
+>> [    9=2E817512] virt_to_phys used for non-linear address: (____ptrval_=
+___) (0xffff80000a94bc9c)
+>>=20
+>>  =2E=2E=2E/net/wireless/microchip/wilc1000/sdio=2Ec    | 28 +++++++++++=
++++++---
+>>  1 file changed, 24 insertions(+), 4 deletions(-)
+>>=20
+>> diff --git a/drivers/net/wireless/microchip/wilc1000/sdio=2Ec
+>> b/drivers/net/wireless/microchip/wilc1000/sdio=2Ec
+>> index 7962c11cfe84=2E=2Ee988bede880c 100644
+>> --- a/drivers/net/wireless/microchip/wilc1000/sdio=2Ec
+>> +++ b/drivers/net/wireless/microchip/wilc1000/sdio=2Ec
+>> @@ -27,6 +27,7 @@ struct wilc_sdio {
+>>  	bool irq_gpio;
+>>  	u32 block_size;
+>>  	int has_thrpt_enh3;
+>> +	u8 *dma_buffer;
+>>  };
+>>=20
+>>  struct sdio_cmd52 {
+>> @@ -89,6 +90,9 @@ static int wilc_sdio_cmd52(struct wilc *wilc, struct =
+sdio_cmd52 *cmd)
+>>  static int wilc_sdio_cmd53(struct wilc *wilc, struct sdio_cmd53 *cmd)
+>>  {
+>>  	struct sdio_func *func =3D container_of(wilc->dev, struct sdio_func, =
+dev);
+>> +	struct wilc_sdio *sdio_priv =3D wilc->bus_data;
+>> +	bool need_bounce_buf =3D false;
+>> +	u8 *buf =3D cmd->buffer;
+>>  	int size, ret;
+>>=20
+>>  	sdio_claim_host(func);
+>> @@ -100,12 +104,20 @@ static int wilc_sdio_cmd53(struct wilc *wilc, str=
+uct sdio_cmd53 *cmd)
+>>  	else
+>>  		size =3D cmd->count;
+>>=20
+>> +	if ((!virt_addr_valid(buf) || object_is_on_stack(buf)) &&
+>
+>How cheap are the above tests?
+>It might just be worth always doing the 'bounce'?
 
-Ubuntu 20.04 with gcc 9.4 and clang 10.0 - both fail the same:
+I'm not sure how cheap they are, but I don't think it costs more than copy=
+ing the bulk data around=2E That's up to the maintainer to decide=2E=20
 
-$ make
+>
+>> +	    !WARN_ON_ONCE(size > WILC_SDIO_BLOCK_SIZE)) {
+>
+>That WARN() ought to be an error return?
 
-lib
-    CC       ppp_proto.o
-In file included from ppp_proto.c:9:
-../include/uapi/linux/ppp_defs.h:151:5: error: unknown type name
-‘__kernel_old_time_t’
-  151 |     __kernel_old_time_t xmit_idle; /* time since last NP packet
-sent */
-      |     ^~~~~~~~~~~~~~~~~~~
-../include/uapi/linux/ppp_defs.h:152:5: error: unknown type name
-‘__kernel_old_time_t’
-  152 |     __kernel_old_time_t recv_idle; /* time since last NP packet
-received */
-      |     ^~~~~~~~~~~~~~~~~~~
-make[1]: *** [../config.mk:58: ppp_proto.o] Error 1
-make: *** [Makefile:77: all] Error 2
+It will just behave as before=2E I noticed it *will* work in some cases, a=
+lthough the object is on the stack=2E I mean the driver seems to work fine =
+at least on some SoCs=2E So I didn't want to change the behavior if the bou=
+nce buffer is too small=2E Of course we could also return an error here=2E =
+All the calls with stack adresses I've seen for now were the register reads=
+ and writes and the txq handling (the vmm_tables IIRC)=2E=20
+
+>Or just assume that large buffers will dma-capable?
+
+See above=2E It should be large enough=2E But I didn't audit everything=2E=
+=20
+
+-michael=20
+
+>
+>	David
+>
+>> +		need_bounce_buf =3D true;
+>> +		buf =3D sdio_priv->dma_buffer;
+>> +	}
+>> +
+>>  	if (cmd->read_write) {  /* write */
+>> -		ret =3D sdio_memcpy_toio(func, cmd->address,
+>> -				       (void *)cmd->buffer, size);
+>> +		if (need_bounce_buf)
+>> +			memcpy(buf, cmd->buffer, size);
+>> +		ret =3D sdio_memcpy_toio(func, cmd->address, buf, size);
+>>  	} else {        /* read */
+>> -		ret =3D sdio_memcpy_fromio(func, (void *)cmd->buffer,
+>> -					 cmd->address,  size);
+>> +		ret =3D sdio_memcpy_fromio(func, buf, cmd->address, size);
+>> +		if (need_bounce_buf)
+>> +			memcpy(cmd->buffer, buf, size);
+>>  	}
+>>=20
+>>  	sdio_release_host(func);
+>> @@ -127,6 +139,12 @@ static int wilc_sdio_probe(struct sdio_func *func,
+>>  	if (!sdio_priv)
+>>  		return -ENOMEM;
+>>=20
+>> +	sdio_priv->dma_buffer =3D kzalloc(WILC_SDIO_BLOCK_SIZE, GFP_KERNEL);
+>> +	if (!sdio_priv->dma_buffer) {
+>> +		ret =3D -ENOMEM;
+>> +		goto free;
+>> +	}
+>> +
+>>  	ret =3D wilc_cfg80211_init(&wilc, &func->dev, WILC_HIF_SDIO,
+>>  				 &wilc_hif_sdio);
+>>  	if (ret)
+>> @@ -160,6 +178,7 @@ static int wilc_sdio_probe(struct sdio_func *func,
+>>  	irq_dispose_mapping(wilc->dev_irq_num);
+>>  	wilc_netdev_cleanup(wilc);
+>>  free:
+>> +	kfree(sdio_priv->dma_buffer);
+>>  	kfree(sdio_priv);
+>>  	return ret;
+>>  }
+>> @@ -171,6 +190,7 @@ static void wilc_sdio_remove(struct sdio_func *func=
+)
+>>=20
+>>  	clk_disable_unprepare(wilc->rtc_clk);
+>>  	wilc_netdev_cleanup(wilc);
+>> +	kfree(sdio_priv->dma_buffer);
+>>  	kfree(sdio_priv);
+>>  }
+>>=20
+>> --
+>> 2=2E30=2E2
+>
+>-
+>Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1=
+ 1PT, UK
+>Registration No: 1397386 (Wales)
+>
 
