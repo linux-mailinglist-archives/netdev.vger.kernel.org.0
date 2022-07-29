@@ -2,140 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15182584E00
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D45584E03
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234937AbiG2JXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 05:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
+        id S235032AbiG2JZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 05:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234819AbiG2JXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:23:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B3D664C5
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659086594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oUdBoqQQwUbtvsfCW4fni3GA77RjAGhoP1Nsc9jk5ic=;
-        b=eVsG6AZfQfD49aKMRKHuO7H1/X0a+qzQjkycGaWTz07y7UrzufEvd02hSq3fnyVAYaRSBe
-        TeiPShMVsZ/68Mfnxxqwp/s7ZM+DUPxvurCkqoLaPwclX+xG9g4l2HHqHJ7/ArQ1xlVS2p
-        4fCLUDHZ5Axmrs9BluXeF4kQZusb1EY=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-s8iUTK4JNKyGfOgPoi9iHA-1; Fri, 29 Jul 2022 05:23:12 -0400
-X-MC-Unique: s8iUTK4JNKyGfOgPoi9iHA-1
-Received: by mail-wr1-f70.google.com with SMTP id w17-20020adfbad1000000b0021f0acd5398so948250wrg.1
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:23:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=oUdBoqQQwUbtvsfCW4fni3GA77RjAGhoP1Nsc9jk5ic=;
-        b=nZsMSKiwBrD80+TYvbE74eil9mUoWgpuBa78Zk61BuzsKVmC8wDANkpK+m9Hasf+3b
-         F5gGnNMFGxBFjLIdx5mgW9aCC1DPPWe7iy88bdiPHNLuUZwylqbaTjmjBvRbklFD8uZt
-         hIAtzO9+ZQB54ku8irGhEgB2tXclbxl3eS5TIYUwdfTmLuY+1tS+4RtXhYKNmK0VIGkh
-         MwAEYv2C6m5RbOlzjEjfgxmMl6rJbN03wOwju0ReXa5jbDiD3eMdHy+o4PrbLZc6KkKc
-         hvfptaDQGuWsCTsjLSlxue1AXZvvru9ItSu83iFeg+wdAkfLtcsMCVl6mB25Xyc8pKQQ
-         JMaQ==
-X-Gm-Message-State: ACgBeo2vTJNqjx0d2W9fQN1Xc/c7C968mBCoAatINc+rg4kzfmNE80F2
-        F3V3kmpDHRb75Pt3gK4T4V1dNh1iuH1yVa4o70+z6bHm3kifKoL+mMci/LHSLzplw5lIoEs6q4J
-        AbpukUNiwzmbMMV3J
-X-Received: by 2002:a05:6000:15c3:b0:21d:9f8b:2c3e with SMTP id y3-20020a05600015c300b0021d9f8b2c3emr1849915wry.72.1659086591504;
-        Fri, 29 Jul 2022 02:23:11 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7FTu+5JLpQjx+VA3oidZ9+QsK896x0RakIZgfjw1iE6x88yNMooC2rjY7ywdS8cVawU+4U1g==
-X-Received: by 2002:a05:6000:15c3:b0:21d:9f8b:2c3e with SMTP id y3-20020a05600015c300b0021d9f8b2c3emr1849896wry.72.1659086591261;
-        Fri, 29 Jul 2022 02:23:11 -0700 (PDT)
-Received: from redhat.com ([2.54.183.236])
-        by smtp.gmail.com with ESMTPSA id k18-20020a5d6d52000000b0021f0c05859esm2537511wri.71.2022.07.29.02.23.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 02:23:10 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 05:23:07 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com
-Subject: Re: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in
- vdpa.c
-Message-ID: <20220729052149-mutt-send-email-mst@kernel.org>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-7-lingshan.zhu@intel.com>
- <20220729045039-mutt-send-email-mst@kernel.org>
- <7ce4da7f-80aa-14d6-8200-c7f928f32b48@intel.com>
- <20220729051119-mutt-send-email-mst@kernel.org>
- <50b4e7ba-3e49-24b7-5c23-d8a76c61c924@intel.com>
+        with ESMTP id S234937AbiG2JZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:25:15 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6015F51;
+        Fri, 29 Jul 2022 02:25:12 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26T6qABj032226;
+        Fri, 29 Jul 2022 02:25:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=MUsZPYus2r48GMLBKtxWVkUeqxyL4L3SV3qJsWq6K28=;
+ b=Gg1GpR7lfhmVLKpw/AyujD0ZGHwUYB+Ck/Rl/4iJfFddl46HxWSsiF1rFSLToKtRZ/Hr
+ btv+9rTA9Kl7vl3/h1yC3va/u9zBcTbK+rxHSTypAr92JN+Ev6XedOIMI0IQ1uPxig8g
+ zQpQdyAv1oFyrK5fjbFLzEypvSAYwFybS+NDgpL9rvyZL9UPmsoS6+NF/xaEsFmcj5LF
+ EXgBb38D1kWgScbu3yDj/tkvy7/HJ/hmeGlNldvRy4Qyq4kaMBU2pL1I+d185xnYYe0S
+ 9ABnSRbmYfXZ6C0KKkp3ZPF4LV5yE+g5E2wKzkPeHIev6x7931M/gjIahMkCcgr7181H KA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hjyn8snkc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 29 Jul 2022 02:25:05 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 29 Jul
+ 2022 02:25:03 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 29 Jul 2022 02:25:03 -0700
+Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
+        by maili.marvell.com (Postfix) with ESMTP id 8FCD43F706A;
+        Fri, 29 Jul 2022 02:25:00 -0700 (PDT)
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sgoutham@marvell.com>
+CC:     Subbaraya Sundeep <sbhatta@marvell.com>,
+        Naveen Mamindlapalli <naveenm@marvell.com>
+Subject: [net PATCH v2] octeontx2-pf: Reduce minimum mtu size to 60
+Date:   Fri, 29 Jul 2022 14:54:57 +0530
+Message-ID: <20220729092457.3850-1-naveenm@marvell.com>
+X-Mailer: git-send-email 2.16.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <50b4e7ba-3e49-24b7-5c23-d8a76c61c924@intel.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: EiYM7sgwECUVfi05LDXqw9v0qu9g1aBS
+X-Proofpoint-GUID: EiYM7sgwECUVfi05LDXqw9v0qu9g1aBS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-28_06,2022-07-28_02,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 05:20:17PM +0800, Zhu, Lingshan wrote:
-> 
-> 
-> On 7/29/2022 5:17 PM, Michael S. Tsirkin wrote:
-> > On Fri, Jul 29, 2022 at 05:07:11PM +0800, Zhu, Lingshan wrote:
-> > > 
-> > > On 7/29/2022 4:53 PM, Michael S. Tsirkin wrote:
-> > > > On Fri, Jul 01, 2022 at 09:28:26PM +0800, Zhu Lingshan wrote:
-> > > > > This commit fixes spars warnings: cast to restricted __le16
-> > > > > in function vdpa_dev_net_config_fill() and
-> > > > > vdpa_fill_stats_rec()
-> > > > > 
-> > > > > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> > > > > ---
-> > > > >    drivers/vdpa/vdpa.c | 6 +++---
-> > > > >    1 file changed, 3 insertions(+), 3 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> > > > > index 846dd37f3549..ed49fe46a79e 100644
-> > > > > --- a/drivers/vdpa/vdpa.c
-> > > > > +++ b/drivers/vdpa/vdpa.c
-> > > > > @@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
-> > > > >    		    config.mac))
-> > > > >    		return -EMSGSIZE;
-> > > > > -	val_u16 = le16_to_cpu(config.status);
-> > > > > +	val_u16 = __virtio16_to_cpu(true, config.status);
-> > > > >    	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
-> > > > >    		return -EMSGSIZE;
-> > > > > -	val_u16 = le16_to_cpu(config.mtu);
-> > > > > +	val_u16 = __virtio16_to_cpu(true, config.mtu);
-> > > > >    	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
-> > > > >    		return -EMSGSIZE;
-> > > > Wrong on BE platforms with legacy interface, isn't it?
-> > > > We generally don't handle legacy properly in VDPA so it's
-> > > > not a huge deal, but maybe add a comment at least?
-> > > Sure, I can add a comment here: this is for modern devices only.
-> > > 
-> > > Thanks,
-> > > Zhu Lingshan
-> > Hmm. what "this" is for modern devices only here?
-> this cast, for LE modern devices.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-I think status existed in legacy for sure, and it's possible that
-some legacy devices backported mtu and max_virtqueue_pairs otherwise
-we would have these fields as __le not as __virtio, right?
+PTP messages like SYNC, FOLLOW_UP, DELAY_REQ are of size 58 bytes.
+Using a minimum packet length as 64 makes NIX to pad 6 bytes of
+zeroes while transmission. This is causing latest ptp4l application to
+emit errors since length in PTP header and received packet are not same.
+Padding upto 3 bytes is fine but more than that makes ptp4l to assume
+the pad bytes as a TLV. Hence reduce the size to 60 from 64.
 
-> > 
-> > > > 
-> > > > > @@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
-> > > > >    	}
-> > > > >    	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
-> > > > > -	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
-> > > > > +	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
-> > > > >    	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
-> > > > >    		return -EMSGSIZE;
-> > > > > -- 
-> > > > > 2.31.1
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+
+v2:
+   no code changes, added PTP maintainer also.
+
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index c88e8a436029..fbe62bbfb789 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -21,7 +21,7 @@
+ #define OTX2_HEAD_ROOM		OTX2_ALIGN
+ 
+ #define	OTX2_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN)
+-#define	OTX2_MIN_MTU		64
++#define	OTX2_MIN_MTU		60
+ 
+ #define OTX2_MAX_GSO_SEGS	255
+ #define OTX2_MAX_FRAGS_IN_SQE	9
+-- 
+2.16.5
 
