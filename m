@@ -2,142 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55693585360
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 18:23:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D9C1585373
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 18:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236187AbiG2QXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 12:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S234120AbiG2QcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 12:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiG2QXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 12:23:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C65326DC
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 09:23:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5F0C61B29
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 16:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFCBC4314A
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 16:23:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659111783;
-        bh=wEGZb3Dh/y5RPDMdWtcPYequ/bwQxkYZVROdIi5Q1Qk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CYDTgbIzjEeiQa9kJuJL2A0Bdj2ZQwVg7HDL5px4Rpt8Y/xdHKS78Q33+5e43a6nC
-         dkUU4m+aYYZVWeik6uI9WwiHcgBTl//yDPXMZxiPfE3uYCgG5JCpIrQoU2aHUcVyua
-         Ggm5xDzdz8mj2yDJezpsN6+H+YfTRAWr7k8VXMFnLCnc3pIPNE2Fe8PKmR+G9aYSa7
-         IMEGfZkH6Zxzmi115yrUa/w9rJ1ZNqGelcTDg5o8Rj7ea8KF0QDSsgp+j4wQYRJD1b
-         07kDWQ5hBgUId+CiXFSr/1I3+joiD3UTR5Mibgx2bCtJ1Ptk8E/6UDAShAm6Hs+vMR
-         mB5NVd00kUqQw==
-Received: by mail-vs1-f45.google.com with SMTP id 125so5055949vsd.5
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 09:23:02 -0700 (PDT)
-X-Gm-Message-State: AJIora/cyERyvd4jYa8yAGlznu5WRMT1aBTVZQ/T96291kKALvx0Cm2V
-        wbCadiDs4oawQU9nr5hNPSRknr/o41u+eas8cQ==
-X-Google-Smtp-Source: AGRyM1sl9yx2cOG9ppvBwbYhZ+bhIDeQrH5KJa0V66iBXLNQLiTpvKBZIqZzDjWDqooui2cVDres2ItDpwYQwIMlzG0=
-X-Received: by 2002:a67:c18d:0:b0:358:5bb6:2135 with SMTP id
- h13-20020a67c18d000000b003585bb62135mr1549740vsj.53.1659111781857; Fri, 29
- Jul 2022 09:23:01 -0700 (PDT)
+        with ESMTP id S232888AbiG2QcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 12:32:06 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA191263A
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 09:32:04 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id w63-20020a17090a6bc500b001f3160a6011so6988859pjj.5
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 09:32:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8vEvEoXiOGD+iC089b5mhdDPX1NyQHNd+5UkIwp9jpU=;
+        b=F2Y8kzczwb9Km0nTTNTajsiO92LybDkIifBYVq4p6ymFg7+WSIyfXBFF52ceO21JVD
+         JqWFT19Kn/PRXZpfy7eL1Cv41SlhQ2HdMXOwFfP36dGIOdn1hFq0j3S76arWHXwxdw4k
+         pLD/TV69dbLrO0ugmieC7WExIVCh1vqqOAPmoIVATp9he30zbKarFbt7e3TMgWFfN3Tq
+         kN87eNJBtu7agDtVESu0GYRIrYqZUWVnqxTi7uNKDgS8HsjDStNuHHnfQ/BTDaf5jERU
+         X28afroqc6Grdb8Nu1I+txorb6coSVUmBgJU3vb0lAuqDB+8qt3UWQYd/9X4pOwGdJ4l
+         zQrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8vEvEoXiOGD+iC089b5mhdDPX1NyQHNd+5UkIwp9jpU=;
+        b=6awVGVKP3DUSbA5AhHx05fx1kCYch9H6n681EJb/CjCraMlevJaV6RLpJYgd4hV9MV
+         rn/UdHHb6egxr37NFFrxeeL0MX4jQs9pDQEGHAyK5pAlnmgBjQAEQBv8RywH9rLwGhlR
+         W0H6FbsblFufPGlSOPJnpUTmrCdrNq3cTeNtQHyYbbGkSLpUiH1AlH5OZczk77SQObh8
+         OhxULjbm6Y7OU/azrkhHkHz4jJJgCsFgomG1Q7zsWcK9RDwChhOENEeqPFmpSrKSqwoK
+         bDeBRw3YrdX9lgalxJlY8AKZtjXdva417tu8GNuJY3pDFCqmeYQn2tlld58zPLsa8whm
+         2R4Q==
+X-Gm-Message-State: ACgBeo0nbPNMs5B4lV9PGAbjkekcZoGWWnIdspfyQlJBuCwO843qkxui
+        Ae4Uew8BdcYQc37JYcbvmRDBsZoHf+dIwg==
+X-Google-Smtp-Source: AA6agR6lyMYO+GX4YTLRUO8LAJhKt8b8BkgoLNf7SXU/iApo9H2hD5WF0kIFPWtmsu0ndMGBVorkPQ==
+X-Received: by 2002:a17:902:a9c6:b0:16c:9d5a:fde1 with SMTP id b6-20020a170902a9c600b0016c9d5afde1mr4662863plr.3.1659112324302;
+        Fri, 29 Jul 2022 09:32:04 -0700 (PDT)
+Received: from [192.168.0.3] ([50.53.169.105])
+        by smtp.gmail.com with ESMTPSA id f15-20020a17090a638f00b001f04479017fsm3291279pjj.29.2022.07.29.09.32.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 09:32:03 -0700 (PDT)
+Message-ID: <4f3764f1-1faa-c28d-21b1-3356ddb3cede@pensando.io>
+Date:   Fri, 29 Jul 2022 09:32:00 -0700
 MIME-Version: 1.0
-References: <20220729132119.1191227-1-vladimir.oltean@nxp.com> <20220729132119.1191227-5-vladimir.oltean@nxp.com>
-In-Reply-To: <20220729132119.1191227-5-vladimir.oltean@nxp.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 29 Jul 2022 10:22:49 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJJBDC9_RbJwUSs5Q-OjWJDSA=8GTXyfZ4LdYijB-AqqA@mail.gmail.com>
-Message-ID: <CAL_JsqJJBDC9_RbJwUSs5Q-OjWJDSA=8GTXyfZ4LdYijB-AqqA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
- shared ports have the properties they need
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Mans Rullgard <mans@mansr.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Frank Rowand <frowand.list@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH net 2/2] net: ionic: fix error check for vlan flags in
+ ionic_set_nic_features()
+Content-Language: en-US
+To:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        brett@pensando.io, drivers@pensando.io, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com
+References: <20220729101755.4798-1-huangguangbin2@huawei.com>
+ <20220729101755.4798-3-huangguangbin2@huawei.com>
+From:   Shannon Nelson <snelson@pensando.io>
+In-Reply-To: <20220729101755.4798-3-huangguangbin2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 7:21 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
-> There is a desire coming from Russell King to make all DSA drivers
-> register unconditionally with phylink, to simplify the code paths:
-> https://lore.kernel.org/netdev/YtGPO5SkMZfN8b%2Fs@shell.armlinux.org.uk/
->
-> However this is not possible today without risking to break drivers
-> which rely on a different mechanism, that where ports are manually
-> brought up to the highest link speed during setup, and never touched by
-> phylink at runtime.
->
-> This happens because DSA was not always integrated with phylink, and
-> when the early drivers were converted from platform data to the new DSA
-> bindings, there was no information kept in the platform data structures
-> about port link speeds, so as a result, there was no information
-> translated into the first DT bindings.
->
-> https://lore.kernel.org/all/YtXFtTsf++AeDm1l@lunn.ch/
->
-> Today we have a workaround in place, introduced by commit a20f997010c4
-> ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed"),
-> where shared ports would be checked for the presence of phy-handle/
-> fixed-link/managed OF properties, and if missing, phylink registration
-> would be skipped.
->
-> We modify the logic of this workaround such as to stop the proliferation
-> of more port OF nodes with lacking information, to put an upper bound to
-> the number of switches for which a link management description must be
-> faked in order for phylink registration to become possible for them.
->
-> Today we have drivers introduced years after the phylink migration of
-> CPU/DSA ports, and yet we're still not completely sure whether all new
-> drivers use phylink, because this depends on dynamic information
-> (DT blob, which may very well not be upstream, because why would it).
-> Driver maintainers may even be unaware about the fact that omitting
-> fixed-link/phy-handle for CPU/DSA ports is legal, and even works with
-> some of the old pre-phylink drivers.
->
-> Add central validation in DSA for the OF properties required by phylink,
-> in an attempt to sanitize the environment for future driver writers, and
-> as much as possible for existing driver maintainers.
+On 7/29/22 3:17 AM, Guangbin Huang wrote:
+> From: Jian Shen <shenjian15@huawei.com>
+> 
+> The prototype of input features of ionic_set_nic_features() is
+> netdev_features_t, but the vlan_flags is using the private
+> definition of ionic drivers. It should use the variable
+> ctx.cmd.lif_setattr.features, rather than features to check
+> the vlan flags. So fixes it.
+> 
+> Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 
-It's not the kernel's job to validate the DT. If it was, it does a
-horrible job. Is the schema providing this validation? If not, you
-need to add it.
+Good catch - thanks!
 
-Rob
+Acked-by: Shannon Nelson <snelson@pensando.io>
+
+
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index f3568901eb91..1443f788ee37 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -1437,7 +1437,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+>   	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+>   		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
+>   
+> -	if ((vlan_flags & features) &&
+> +	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
+>   	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
+>   		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
+>   
