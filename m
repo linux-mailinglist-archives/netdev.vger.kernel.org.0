@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B3BE585457
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 19:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28FBF58545B
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 19:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238315AbiG2RUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 13:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
+        id S238342AbiG2RVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 13:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiG2RUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 13:20:01 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24EB83225;
-        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so5872185pjf.2;
-        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
+        with ESMTP id S232488AbiG2RVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 13:21:24 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F9F7F51E
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 10:21:24 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id n133so6500663oib.0
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 10:21:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=hxBFRTN1LZRoFnahsiKcdK0tbZNGdjelWAHFypZYkFw=;
-        b=eiq04DaxAgViGZ9EjXJAweUo+d5rfzN0ZcDsnWBuTVAbrBldprM1+hXUHba9T/4yJa
-         Dfflm8wSp8C681mf5fMlGS0yPjfW38NmFqJbW+39mcFA9u+YjxX+zpB3rnKuGPvmoaCG
-         VMIHDm2ztN7RI+qdvlrDfD86Fngq/U1Tj6Yb1umPyx3nVj1K75u47/ryQMhjVU1tKa2v
-         qHSyD6s/gTlxlRcWAnErIpS1Xa7O1qogS2n4GfwNgYYRSUM/OsLO3H1tLUUo4n5zQivs
-         F7vpYEAWdZ89AvkwKQ4cJGpmLP15VViBvgiBmI1ideW0NrYN/p0WGJvmnm3iSqwoFuLJ
-         5owg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=48xpsfUfYzMAhf4n0qBQeYIP2Eaow/G0xxnR89oFbIQ=;
+        b=isQpOklwiylZzvyfYjo1NGrbCuaQgsw11zN+t6BJWitKiC+E6QfECHlbbm5ymwR6Fz
+         c97pVGmQOam1WVDyDW7G2TT0dfCjDrJPqElf4+QzI9aa1VoYRQy2/O7whI9tAcvut1Wb
+         MXRdPnMU2OlWNmTpEz7U7Z323BK/aOBp79HsbROHBgtlKnbdILwymXJNfeHKG3GHLAhj
+         pZiyNnhefivr7gE6EALO6pKYui95xJWjgEjzbWgWPOyzK0yaS1jXJPjbN2X27zkR2Jey
+         mGrswqHxyeqyZM6W9hQ3kMXUNgnyiyrHGN9I4PpiavCRHNHOe6R5vNbRLQr79qzlpWNX
+         urqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=hxBFRTN1LZRoFnahsiKcdK0tbZNGdjelWAHFypZYkFw=;
-        b=CscgOhR9kFcinc8BeOW+gU8EDiOtdqX25CwXkV0lcmIkVBnvjPiIOnjwXOgyYV9hOb
-         6wt1H4pfdcJWQ39gwj0rMh/sMAohwGcs4xIfHPQnbNGM/aQ7Icu9JXDHxWtMEP0NevHy
-         zsa/9vfqmk3DIp4RGrjZREhNAU/fUPPoT7TAtxDJky+vB3frxu81cco5KObjd/7ZxCHT
-         euFlKcYMHdmZjF9sMJtlAK6I+mJf4n69z4DZO9V+PIPGP4S4TWSOEVbgTi9ALRuRZSP0
-         3435IUutWDFypPuoq4y5F5lni0FpGGvcXERsQuTH81IxNJ7bZCQjs5ZKHbcS84ro7zqR
-         ElhQ==
-X-Gm-Message-State: ACgBeo0SimLQjVPHsfNAbxY/OTzNDbALl5GMLVh/oCGO4nAG7SSO0ncV
-        QxTrV7AZtNSCT5JcyjAw+FI=
-X-Google-Smtp-Source: AA6agR41uGgoEk7+NXJL+sFLmDGhuy+Mni8pojmb/mVvHl4PEVuWbXu8RbyWs4i0T2dCXz60Kcq39w==
-X-Received: by 2002:a17:90b:1d91:b0:1f0:7824:1297 with SMTP id pf17-20020a17090b1d9100b001f078241297mr5773562pjb.126.1659115200308;
-        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m14-20020a63710e000000b0041b667a1b69sm2818592pgc.36.2022.07.29.10.19.55
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=48xpsfUfYzMAhf4n0qBQeYIP2Eaow/G0xxnR89oFbIQ=;
+        b=kTtu3Fmp9wdWuGhhvlTDFWOuHnP8mJDRa5UNlKFYyIDihjYwh0T8Hj+AJKhIyTgKfp
+         XBc122wtmXQKK7/M2WD2KnndC2+iKI9riRHvIjIPn+JIJSJb7IccMu/rS5SSzjbqDQrD
+         cmQjhtj2hwNg9H4goGbtwf06hJ467eV0r9X0YlpX6fl2A6IZd2ZNDPoo5yWjdVcmhCjr
+         +LtXXpffvYMlUnSuBIG4eD6WkHvcBJO10TMhHkju08ZoBIU+l+qdeFqQs8xRCP2SsLOP
+         fcZTsajczQC3OfQMlVEi/awumonT8Cfoo0qzHXZyOV6nMVEj0aDybLrSGrFIlRDqSIEE
+         cVbQ==
+X-Gm-Message-State: AJIora9DCe2YgRySGQAfEI0MCU0fFWEgRu6hJ35VyRKdIGvUySKaV3Kr
+        vdIY6iMbQWuwApO4bEcp7Fs=
+X-Google-Smtp-Source: AGRyM1sNqtShcwAGoRtPfP55j+cFutB21WsE1SbqKSQ6vgkCbRpb29E6C06u3ug7bO6NL3COFqYXqg==
+X-Received: by 2002:a05:6808:1aaf:b0:32e:fec8:b67c with SMTP id bm47-20020a0568081aaf00b0032efec8b67cmr2312930oib.118.1659115283447;
+        Fri, 29 Jul 2022 10:21:23 -0700 (PDT)
+Received: from ?IPV6:2601:282:800:dc80:b47e:4ea2:2c6e:1224? ([2601:282:800:dc80:b47e:4ea2:2c6e:1224])
+        by smtp.googlemail.com with ESMTPSA id 67-20020a9d0dc9000000b0061c862ac067sm1330924ots.62.2022.07.29.10.21.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 10:19:59 -0700 (PDT)
-Message-ID: <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
-Date:   Fri, 29 Jul 2022 10:19:54 -0700
+        Fri, 29 Jul 2022 10:21:23 -0700 (PDT)
+Message-ID: <9d3f9a10-097f-0630-193d-fe6115ac7e74@gmail.com>
+Date:   Fri, 29 Jul 2022 11:21:22 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v3 3/4] net: phy: Add helper to derive the number
- of ports from a phy mode
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH iproute-next v4 2/3] lib: Introduce ppp protocols
 Content-Language: en-US
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
-        UNGLinuxDriver@microchip.com
-References: <20220729153356.581444-1-maxime.chevallier@bootlin.com>
- <20220729153356.581444-4-maxime.chevallier@bootlin.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220729153356.581444-4-maxime.chevallier@bootlin.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
+        netdev@vger.kernel.org, stephen@networkplumber.org
+References: <20220729085035.535788-1-wojciech.drewek@intel.com>
+ <20220729085035.535788-3-wojciech.drewek@intel.com>
+ <e00f3b23-7d9d-d8f1-646c-eaf843f744b5@gmail.com>
+ <20220729160351.GD10877@pc-4.home>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220729160351.GD10877@pc-4.home>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -84,46 +76,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 08:33, Maxime Chevallier wrote:
-> Some phy modes such as QSGMII multiplex several MAC<->PHY links on one
-> single physical interface. QSGMII used to be the only one supported, but
-> other modes such as QUSGMII also carry multiple links.
+On 7/29/22 10:03 AM, Guillaume Nault wrote:
+> On Fri, Jul 29, 2022 at 08:58:07AM -0600, David Ahern wrote:
+>> On 7/29/22 2:50 AM, Wojciech Drewek wrote:
+>>> PPP protocol field uses different values than ethertype. Introduce
+>>> utilities for translating PPP protocols from strings to values
+>>> and vice versa. Use generic API from utils in order to get
+>>> proto id and name.
+>>>
+>>> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+>>> ---
+>>> v4: ppp_defs.h removed
+>>> ---
+>>>  include/rt_names.h |  3 +++
+>>>  lib/Makefile       |  2 +-
+>>>  lib/ppp_proto.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+>>>  3 files changed, 56 insertions(+), 1 deletion(-)
+>>>  create mode 100644 lib/ppp_proto.c
+>>>
+>>
+>> Ubuntu 20.04 with gcc 9.4 and clang 10.0 - both fail the same:
+>>
+>> $ make
+>>
+>> lib
+>>     CC       ppp_proto.o
+>> In file included from ppp_proto.c:9:
+>> ../include/uapi/linux/ppp_defs.h:151:5: error: unknown type name
+>> ‘__kernel_old_time_t’
+>>   151 |     __kernel_old_time_t xmit_idle; /* time since last NP packet
+>> sent */
+>>       |     ^~~~~~~~~~~~~~~~~~~
+>> ../include/uapi/linux/ppp_defs.h:152:5: error: unknown type name
+>> ‘__kernel_old_time_t’
+>>   152 |     __kernel_old_time_t recv_idle; /* time since last NP packet
+>> received */
+>>       |     ^~~~~~~~~~~~~~~~~~~
+>> make[1]: *** [../config.mk:58: ppp_proto.o] Error 1
+>> make: *** [Makefile:77: all] Error 2
 > 
-> This helper allows getting the number of links that are multiplexed
-> on a given interface.
+> Works for me on Debian 11 (Bullseye), where __kernel_old_time_t is
+> defined in /usr/include/asm-generic/posix_types.h (package
+> linux-libc-dev).
 > 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
-> V1->V2 : New patch
-> V2->V3 : Made PHY_INTERFACE_MODE_INTERNAL 1 port, and added the MAX
-> case.
+> I guess the Ubuntu 20.04 failure happens because it's based on
+> Linux 5.4, while __kernel_old_time_t was introduced in v5.5 (by
+> commit 94c467ddb273 ("y2038: add __kernel_old_timespec and
+> __kernel_old_time_t")).
 > 
->  drivers/net/phy/phy-core.c | 52 ++++++++++++++++++++++++++++++++++++++
->  include/linux/phy.h        |  2 ++
->  2 files changed, 54 insertions(+)
+> Not sure how to resolve this. This series doesn't need the
+> struct ppp_idle that depends on __kernel_old_time_t.
 > 
-> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-> index 1f2531a1a876..f8ec12d3d6ae 100644
-> --- a/drivers/net/phy/phy-core.c
-> +++ b/drivers/net/phy/phy-core.c
-> @@ -74,6 +74,58 @@ const char *phy_duplex_to_str(unsigned int duplex)
->  }
->  EXPORT_SYMBOL_GPL(phy_duplex_to_str);
->  
-> +/**
-> + * phy_interface_num_ports - Return the number of links that can be carried by
-> + *			     a given MAC-PHY physical link. Returns 0 if this is
-> + *			     unknown, the number of links else.
-> + *
-> + * @interface: The interface mode we want to get the number of ports
-> + */
-> +int phy_interface_num_ports(phy_interface_t interface)
-> +{
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_NA:
-> +		return 0;
-> +	case PHY_INTERFACE_MODE_INTERNAL:
 
-Maybe this was covered in the previous iteration, but cannot the default case return 1, and all of the cases that need an explicit non-1 return value are handled? Enumeration all of those that do need to return 1 does not really scale.
--- 
-Florian
+I can fix this by importing posix_types.h from kernel headers.
+
