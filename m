@@ -2,158 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6397584E99
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:18:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CF6584ECD
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbiG2KSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 06:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
+        id S235412AbiG2KaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 06:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235901AbiG2KSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:18:46 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095A98245A
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659089925; x=1690625925;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=10HPBblEo34cGJiuvN7lHWuRxLrMmeef3KF4jSEarig=;
-  b=OtAyhSl4zGOpK3vt1UbeTyQ3NkxsDKinaxWK6VIAPRRGOFGQ5PbpjG4c
-   25QuSo5XNIXC6QXO5u+cKcZsnRQiL4Tp4/Ez4iIg0tNHIpeop9CCUUr2p
-   WzO4vUV0fY6y4sqxOLqdBIXsykSkGP1O+Us+s/kJwvmM5vmo6Ag3An2ku
-   fFqENLkWyfOPlmr+qfiWFoMRz5nsOsnvsCAoKeiY927Mvps1ceTwH4FPA
-   +l+1UjL+RP7gM6QYDUx6nkIpSMamc7KvWUfF+rwhctHsmdSHVzqBXggf0
-   CrjEhKyRU7Fcel5t+bTuTuk+On8LKNCYIUcpRfUyoW5OmlXW2Q69xTi49
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="289508940"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="289508940"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 03:18:44 -0700
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="660178308"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.175.200]) ([10.249.175.200])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 03:18:42 -0700
-Message-ID: <6adf592e-0c9a-a544-c6b2-99b2691109ee@intel.com>
-Date:   Fri, 29 Jul 2022 18:18:40 +0800
+        with ESMTP id S230272AbiG2KaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA600BB5
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 03:30:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 618CE61E13
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 10:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B3926C433D7;
+        Fri, 29 Jul 2022 10:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659090614;
+        bh=iFr/2x9jr4qdGfrKyz8Bmsu5E2AO07PZ157zRphP7ow=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qoOOL5pcXycBTBakRfh0tq+AEJwRq/NXU7pVozhKl5O9sJUFP2rX1+d02BpEJaGC7
+         osHsN2/AaYuB9aq9A5V0Szx37YkdOozeomznqNHZHbNi0VFWHEujRjP3ZBRQBPtAYh
+         MEee1dVGTTBgUioccqKRI/h/ST7SIlFkgYvF1TpEU5nRZ8s/Yrph0yhxarFo7J9Inr
+         x4V17m1oNhxao4OjdAhymgnwZwQZK1wTPGiakdSIGTDKvmtRwtYzY5wa6P9pRPVUug
+         28+BdnAtHyT18dpq+nra48wS5iTQZMHYDvF/D/uhLb2T0gGqVO5Tcbs6OlNaN4A0HN
+         Wm89tX41dQOxA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9AA0BC43140;
+        Fri, 29 Jul 2022 10:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in
- vdpa.c
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-7-lingshan.zhu@intel.com>
- <20220729045039-mutt-send-email-mst@kernel.org>
- <7ce4da7f-80aa-14d6-8200-c7f928f32b48@intel.com>
- <20220729051119-mutt-send-email-mst@kernel.org>
- <50b4e7ba-3e49-24b7-5c23-d8a76c61c924@intel.com>
- <20220729052149-mutt-send-email-mst@kernel.org>
- <05bf4c84-28dd-4956-4719-3a5361d151d8@intel.com>
- <20220729053615-mutt-send-email-mst@kernel.org>
- <87efac3e-2196-f9ad-1af1-a27470824eac@intel.com>
- <20220729061433-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20220729061433-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/9] mlxsw: Add PTP support for Spectrum-2 and newer
+ ASICs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165909061462.28132.17751188607626602427.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Jul 2022 10:30:14 +0000
+References: <20220727062328.3134613-1-idosch@nvidia.com>
+In-Reply-To: <20220727062328.3134613-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, richardcochran@gmail.com,
+        petrm@nvidia.com, amcohen@nvidia.com, danieller@nvidia.com,
+        mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 7/29/2022 6:16 PM, Michael S. Tsirkin wrote:
-> On Fri, Jul 29, 2022 at 06:01:38PM +0800, Zhu, Lingshan wrote:
->>
->> On 7/29/2022 5:39 PM, Michael S. Tsirkin wrote:
->>> On Fri, Jul 29, 2022 at 05:35:09PM +0800, Zhu, Lingshan wrote:
->>>> On 7/29/2022 5:23 PM, Michael S. Tsirkin wrote:
->>>>> On Fri, Jul 29, 2022 at 05:20:17PM +0800, Zhu, Lingshan wrote:
->>>>>> On 7/29/2022 5:17 PM, Michael S. Tsirkin wrote:
->>>>>>> On Fri, Jul 29, 2022 at 05:07:11PM +0800, Zhu, Lingshan wrote:
->>>>>>>> On 7/29/2022 4:53 PM, Michael S. Tsirkin wrote:
->>>>>>>>> On Fri, Jul 01, 2022 at 09:28:26PM +0800, Zhu Lingshan wrote:
->>>>>>>>>> This commit fixes spars warnings: cast to restricted __le16
->>>>>>>>>> in function vdpa_dev_net_config_fill() and
->>>>>>>>>> vdpa_fill_stats_rec()
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>>>>>>>> ---
->>>>>>>>>>       drivers/vdpa/vdpa.c | 6 +++---
->>>>>>>>>>       1 file changed, 3 insertions(+), 3 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
->>>>>>>>>> index 846dd37f3549..ed49fe46a79e 100644
->>>>>>>>>> --- a/drivers/vdpa/vdpa.c
->>>>>>>>>> +++ b/drivers/vdpa/vdpa.c
->>>>>>>>>> @@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
->>>>>>>>>>       		    config.mac))
->>>>>>>>>>       		return -EMSGSIZE;
->>>>>>>>>> -	val_u16 = le16_to_cpu(config.status);
->>>>>>>>>> +	val_u16 = __virtio16_to_cpu(true, config.status);
->>>>>>>>>>       	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
->>>>>>>>>>       		return -EMSGSIZE;
->>>>>>>>>> -	val_u16 = le16_to_cpu(config.mtu);
->>>>>>>>>> +	val_u16 = __virtio16_to_cpu(true, config.mtu);
->>>>>>>>>>       	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->>>>>>>>>>       		return -EMSGSIZE;
->>>>>>>>> Wrong on BE platforms with legacy interface, isn't it?
->>>>>>>>> We generally don't handle legacy properly in VDPA so it's
->>>>>>>>> not a huge deal, but maybe add a comment at least?
->>>>>>>> Sure, I can add a comment here: this is for modern devices only.
->>>>>>>>
->>>>>>>> Thanks,
->>>>>>>> Zhu Lingshan
->>>>>>> Hmm. what "this" is for modern devices only here?
->>>>>> this cast, for LE modern devices.
->>>>> I think status existed in legacy for sure, and it's possible that
->>>>> some legacy devices backported mtu and max_virtqueue_pairs otherwise
->>>>> we would have these fields as __le not as __virtio, right?
->>>> yes, that's the reason why it is virtio_16 than just le16.
->>>>
->>>> I may find a better solution to detect whether it is LE, or BE without a
->>>> virtio_dev structure.
->>>> Check whether vdpa_device->get_device_features() has VIRTIO_F_VERISON_1. If
->>>> the device offers _F_VERSION_1, then it is a LE device,
->>>> or it is a BE device, then we use __virtio16_to_cpu(false, config.status).
->>>>
->>>> Does this look good?
->>> No since the question is can be a legacy driver with a transitional
->>> device.  I don't have a good idea yet. vhost has VHOST_SET_VRING_ENDIAN
->>> and maybe we need something like this for config as well?
->> Is it a little overkill to implementing vdpa_ops.get_endian()?
-> I think the question is driver endian-ness.
->
-> But another approach is really just to say userspace should
-> tweak config endian itself.  Let's just say that in the comment?
-> /*
->   * Assume little endian for now, userspace can tweak this for
->   * legacy guest support.
->   */
-> ?
-Oh, yes, the user space can tweak the value!!!
+On Wed, 27 Jul 2022 09:23:19 +0300 you wrote:
+> This patchset adds PTP support for Spectrum-{2,3,4} switch ASICs. They
+> all act largely the same with respect to PTP except for a workaround
+> implemented for Spectrum-{2,3} in patch #6.
+> 
+> Spectrum-2 and newer ASICs essentially implement a transparent clock
+> between all the switch ports, including the CPU port. The hardware will
+> generate the UTC time stamp for transmitted / received packets at the
+> CPU port, but will compensate for forwarding delays in the ASIC by
+> adjusting the correction field in the PTP header (for PTP events) at the
+> ingress and egress ports.
+> 
+> [...]
 
-I will add this comment, thanks!!!!
->>>>>>>>>> @@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
->>>>>>>>>>       	}
->>>>>>>>>>       	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
->>>>>>>>>> -	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
->>>>>>>>>> +	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
->>>>>>>>>>       	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
->>>>>>>>>>       		return -EMSGSIZE;
->>>>>>>>>> -- 
->>>>>>>>>> 2.31.1
+Here is the summary with links:
+  - [net-next,1/9] mlxsw: spectrum_ptp: Add helper functions to configure PTP traps
+    https://git.kernel.org/netdev/net-next/c/37b62b282b18
+  - [net-next,2/9] mlxsw: Support CQEv2 for SDQ in Spectrum-2 and newer ASICs
+    https://git.kernel.org/netdev/net-next/c/42823208b946
+  - [net-next,3/9] mlxsw: spectrum_ptp: Add PTP initialization / finalization for Spectrum-2
+    https://git.kernel.org/netdev/net-next/c/d25ff63a181b
+  - [net-next,4/9] mlxsw: Query UTC sec and nsec PCI offsets and values
+    https://git.kernel.org/netdev/net-next/c/bbd300570a9e
+  - [net-next,5/9] mlxsw: spectrum_ptp: Add implementation for physical hardware clock operations
+    https://git.kernel.org/netdev/net-next/c/a5bf8e5e8b8d
+  - [net-next,6/9] mlxsw: Send PTP packets as data packets to overcome a limitation
+    https://git.kernel.org/netdev/net-next/c/24157bc69f45
+  - [net-next,7/9] mlxsw: spectrum: Support time stamping on Spectrum-2
+    https://git.kernel.org/netdev/net-next/c/382ad0d95793
+  - [net-next,8/9] mlxsw: spectrum_ptp: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls
+    https://git.kernel.org/netdev/net-next/c/08ef8bc825d9
+  - [net-next,9/9] mlxsw: spectrum: Support ethtool 'get_ts_info' callback in Spectrum-2
+    https://git.kernel.org/netdev/net-next/c/eba28aaf2f53
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
