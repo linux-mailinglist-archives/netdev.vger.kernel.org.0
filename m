@@ -2,131 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CD0585002
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 14:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A343C585017
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 14:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235681AbiG2MQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 08:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
+        id S236061AbiG2MbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 08:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiG2MQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 08:16:44 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2040.outbound.protection.outlook.com [40.107.243.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C7732B92;
-        Fri, 29 Jul 2022 05:16:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JTVZCaS7S6uKoXi2ISYGF1kF0npw5sIA7vNWUldm4e5X06WoTczcSIb1cTN+KB1KPJGD7/M/XEE7z3ojEXbhnRU2/ZcGur+nskko3EBJm6Uj1mLzxeBCOrxYqr6/XAsp5/Y24YzhIfzH2jxwXIvqRM5/SWtyG0NG/JLnZJrIKdzLyopK2653eW2ibJc1AJkIC8E1O192JQ8TJm6jlYCYaPL3Uh/TluOrbCCLkC0k1Vr3j77bDZTrgUHaCbBfHXCYCTUOUOJ2ilELsoR51Bq+Im75Q84T5K2iKrI3cDUTeFy2dpT+pjXd7hhB5rLFljw/+sZy/a74eZc2c4siN+8eJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c7Is1/P5iSzOHojzpemVU3/+eIyO/rs4A886hWOLR0A=;
- b=CvKOHfc8C10H2BLguebA2KzalB35peOjYRWJLNFVVIktVjPACJXJyqstHzNGqljE5gYqCTIt8rF7QiMIF6W2n01Ob8K8uHeIX5xAl6A5DASAWmt/D3y3a56FNMo0+J8ilM92WSQlG7VAoG9UvyxTQNjDqql3TP1c6ub+jMvxHAlCwIVvRTqqzy0grpNraMtwgLtvJE6fq9KnuthZUHGiKD1cfKPfYkqMKQ6QkpxDeYbeDF65lwA1ltfxPIchY4uC9Vhyz1kWzvbO0frx2VKacOQRDskf4cP2hyMrRJzieuIztH5BzWQCDE0VpOczwfiQFu4KLdpqGqr9Md5jhMhx+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c7Is1/P5iSzOHojzpemVU3/+eIyO/rs4A886hWOLR0A=;
- b=kUoESqK5OD7LZ5R5Q+EL/6evmXzb42Ev4baV82OjzN0qPA8zKHxHQ5rDgX2bW219p51fGtii6ZO5snVZ1ueMKpVeFKVdYcZKpQ8GZSPHzxTgfV4krZwJjmkVmwZQ85sNPoFxlG0iKl+oYIUuUlxDPafKhoQ38fnJT3H0jrkwbzE=
-Received: from MN0PR12MB5953.namprd12.prod.outlook.com (2603:10b6:208:37c::15)
- by CY4PR12MB1894.namprd12.prod.outlook.com (2603:10b6:903:128::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20; Fri, 29 Jul
- 2022 12:16:39 +0000
-Received: from MN0PR12MB5953.namprd12.prod.outlook.com
- ([fe80::bd1b:8f4b:a587:65e4]) by MN0PR12MB5953.namprd12.prod.outlook.com
- ([fe80::bd1b:8f4b:a587:65e4%3]) with mapi id 15.20.5482.012; Fri, 29 Jul 2022
- 12:16:39 +0000
-From:   "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "git@xilinx.com" <git@xilinx.com>, "git (AMD-Xilinx)" <git@amd.com>
-Subject: RE: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
- configuration support
-Thread-Topic: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
- configuration support
-Thread-Index: AQHYnaLjy2AcewErSEyspw5q+NWPga2NwKqAgAFZDXCAAD4PgIABo9kwgARNpXA=
-Date:   Fri, 29 Jul 2022 12:16:39 +0000
-Message-ID: <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
-References: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
- <1658477520-13551-3-git-send-email-radhey.shyam.pandey@amd.com>
- <Yt15J6fO5j9jxFxp@lunn.ch>
- <MN0PR12MB59537FD82D25E5B6BE17D1B6B7959@MN0PR12MB5953.namprd12.prod.outlook.com>
- <Yt7OqU9LXl4SDqYx@lunn.ch>
- <MN0PR12MB5953571B73BE19D01BCF12D4B7949@MN0PR12MB5953.namprd12.prod.outlook.com>
-In-Reply-To: <MN0PR12MB5953571B73BE19D01BCF12D4B7949@MN0PR12MB5953.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 36345716-5fb6-4ee8-c462-08da715c3098
-x-ms-traffictypediagnostic: CY4PR12MB1894:EE_
-x-ld-processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7p/9gd9qRYkLNw9y2fufq1yHRr5JxSJWIJ16x8QSanqI1Ywt0l+3W7B7Cj+iq7McJOE5Fc5claWUk6X0FShSHZovZcXHc4Kyd/SmUUPCH9UhCMyJbtpLMT/PsKCaR9EatOhZ29LLCdTC+Ua1DcypWxhqNj7POm/AeyxhlEFb0O/Ag2XCojoaNt3sLhQZ5LQ6f7eBd3z0suATMLYmyiTkJCtN9SS1A6vf7lDAFA4r46jDcx3VGZ4t+M1PDJtdKoV5w287MqRInKMzYs9RynqCpFUugCkSIbzl2jI23MNasIKYg0FmMOAC1Op9nA8MjHozds9NqRkr4LAC9MsjuqiL1uVDa2EtBy2UUGOHCAEeFVxW3/AEOGuplcyFkdrDNs1RurjCk9H24RxYecp/ZpGoRsO7vkhcOQAv+C807Q7Em5MITCkok3hnZCPLRMTLXavXAHyZUx9X/sKPwHF8hYjczcNzCmNtACzHIzGA1bJe3XonuuQPuGc5zreBizDNWltpyDShLDb5Z9FCzacVt5SXUjXB97BV+zF3frGaoNhCo33j2Ftsr2a1WaHOuNEg+MdHsVwbwoj1P1PXNaLmcs1JHvBM8S14Z/El6MHes2ZsnsjDKN2C59MkFBiIzfrhpSJwvPsVfcIO1eiRoe2SF5poWCIL16wsi4AOO0E4w9wwImXLrBc1nQWobqi26cOQVSFZTmuaNJiDEl59cOupJfTwF9IhM7C3EIaFpH48LsDy/cMW7x7+I/gQgOu1i3w0UecvS4uaKp6ZYcuK5HSGtcSpTyM3EFI2iS1rBd6Uf9M7TLOzR696bLtv13KOxQuVD4Dd
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5953.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(366004)(346002)(39860400002)(122000001)(86362001)(64756008)(83380400001)(186003)(38100700002)(9686003)(7416002)(6916009)(52536014)(478600001)(5660300002)(55016003)(316002)(76116006)(8936002)(71200400001)(66556008)(4326008)(38070700005)(53546011)(66476007)(26005)(2906002)(54906003)(41300700001)(7696005)(8676002)(66446008)(66946007)(33656002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?noYQZ2AawUd8OHjnSQzTFJohE1EsDWtZDU4aBKXSU36DAoxr3xMUb0b8JOdz?=
- =?us-ascii?Q?PBxNPiFdPCJwfXzQVqEeVnihJTXhXvvpV34IbKgCIfZ/zCfF3WRC1kgYnJ9X?=
- =?us-ascii?Q?8vOI/ciQgYKz9upq+3luDRH6xY1KAtpnvxh4y1/iTvqLZzYXY6rl3MAEM3Ln?=
- =?us-ascii?Q?Sw01IHHH1xJf61MbycVhGfvtEwNiyDOiFYsjW8kFt1BLzp22CNhBn+imcg7k?=
- =?us-ascii?Q?++BOlRHR2De3PRfGAwkLk598PDTR4bkH8w+A09fBa+ESSxc5F1KiqJBnCmlo?=
- =?us-ascii?Q?g1x/2Wm871FK+K5dgaxTQOLAAmE99bLyQTjDbiPLN63gB28mv7+vqaG33Rct?=
- =?us-ascii?Q?w9mUu1hCf3EvkK6L6ZGjBWEjZmzjcrziELCIuFiy/YTz97yiXiN1VlCIA+Ze?=
- =?us-ascii?Q?uVWkf2TrG3Y2lW8zgLrb6kIxh9QqXO5WqLwSRA8EL00xmArWIhYvb1mCYHxC?=
- =?us-ascii?Q?K/oqlzcd6tkwfdP1294rSkDv3htQWuqLhCDZktmg6J42zPL/MouRQ0a5O5si?=
- =?us-ascii?Q?eNEqqZfQzieWoIXRmiftBSdJlT1eVQ1XQJmJuQwKngP6HlW8Ftn/xo0dgXKo?=
- =?us-ascii?Q?Q4MyP0UgGbekl0mP33ijm8CpPMnXk0WXtFfF69pZ/OQzVu6kfCni1uH5wDJJ?=
- =?us-ascii?Q?3gnn5vD4KOY/qV2IMgAvekTbt08o0lk3FjZXH0cv2a7lKrhwl5NctsBfj3sU?=
- =?us-ascii?Q?Arcc7gSSburGmwhGWlgY1gNUvZu8Qfl1+ObrTN7l4vfsOvKrKTqDVmN1sNFZ?=
- =?us-ascii?Q?cNK9Bw7ZPz9JGp2ec3FckxGuxIlugtV13aXdQjizmE+lqDcECrpiPHfbM2Z9?=
- =?us-ascii?Q?VbkF/gM4UbUn6zDvMCihEJFohhYYmaAU1ISoxJ7A9lEAmGtDS+r7dtUQ1jSP?=
- =?us-ascii?Q?WP4tNJ8fb2/JAHv+v4jkOX+DEXYra5W6y3zoxblhu8IGyhlORIT5XhgI8RSo?=
- =?us-ascii?Q?sVA72YgTJGQI84/JOAoYDhD3kzELo1RbNHIQ/vdV2RzsCvq+5MxVtsp5fhme?=
- =?us-ascii?Q?xSYtKmD9VMeYDUyLtzFxtzRPw6FJFN/1SdcIzsHMMmrPVDnWjqn7l4fzCG/r?=
- =?us-ascii?Q?sxltXASQ+yMNdnYFnGBGU8jXDSz4U+nnagfgho/88rZRHywzTwG6XinSqEkY?=
- =?us-ascii?Q?V6osqVBhmUkZsF5QOrdGgABHJZNFS1E4A4tyl07Yynz9ZiPjz5MtK4gwq0wE?=
- =?us-ascii?Q?XuOgCAwZopGfs1jScm683Iq10NEH5piUut0GbT1s5LA10MnkiynnNit3vpi2?=
- =?us-ascii?Q?6jnaDLn+DzsugN/X4UnIumO27F552TzfRmV1aVEmfpcCI6WXgqmIl9UFCMcg?=
- =?us-ascii?Q?NYx9mXUj2zTnT4AClNmfTW+kRXdhLMcQNyGF+E79Iifcu3IVOWYdbia0JzsG?=
- =?us-ascii?Q?R5gXX2TsOqAWRn3pS/mp33rttoDoyBk1DDGSPTVzth2Az1TDqHuABLGlbmwK?=
- =?us-ascii?Q?WJjtnmiSbjY3KF3Hhq/xravPPryNbwG4gIF1EJf4/NSriM66ksE2VK4/sh2D?=
- =?us-ascii?Q?OkCAEQffcxddsHqiT9RVzg7XzFzw4pZKZUyFlHRA8ahkcYDpM5wnGnR20Ipo?=
- =?us-ascii?Q?s4C0qXraCrMyJv7M8NU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S235897AbiG2MbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 08:31:17 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F90A675AA
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 05:31:15 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id h12so3901554lfu.10
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 05:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UscPiVc3W69u2SDEZgLhh627QT22j/EkeFjDm8ewhDU=;
+        b=nJrpxtj3/Yr1byjkae9e+eAEwtAZS6cQLSq9Wf/FbOweTm1lCQVUsPbRKq3KsquHix
+         Ahx76WP2GWkQOvWSzNFy/ojyGd9Wrx02NkjPklNTCGLCJEyvOFX2lCKqmtSGsrSciIga
+         juEvUdPxt4sxwKHufQCBxHAQGnMZw0p0eyn1K88qjYMCqpIC8Hj5RFCIHsOW7O6qvkuU
+         6U2SdnxZg83UIY3mAlDL62txLD3y11abWwFFIGB9Klz0ZvA0NHYkD7Lmo1AXFwWl4L10
+         LCF2cCFW4VSrlv8DHIP2JK3k43qO7RHanKnUtmINBDajIStTnQ7okAWfcVh35ThcWcQl
+         Hrbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UscPiVc3W69u2SDEZgLhh627QT22j/EkeFjDm8ewhDU=;
+        b=YeXP1DV3C3aEhAS75U7B48crSoA06Z5QRAJLdcXRJTTerVufGJg0Ynjm3QkjRXKSan
+         dArGkaPI0FR2XI2AuwpZct/4BOW+pr1g8rdrLXXekziQhbP7d4vmOtqBnS/PzzuOk+9A
+         DQir08xHND6EyKk8W7dYjA8KNRGtnXzOwNGsPB0udEY9f1qGnw9YveqIn8qRO4lBmD3G
+         8WopB//tFJIRKMdGGyNKwqUAzNxU7DmKwoM9TzK9160NkPaTwVf09FhspxGOtdcUewFi
+         mCwB2u0r20hYgjqJ+NQwPhtOGGimNwcdTOfERl+7ex6wgjRuJEdAAm3ucGIO8OWIqWYq
+         jEFA==
+X-Gm-Message-State: AJIora83MeQ1WgUDViB6XljqyNXrfo/O9TRKZHSEGmyIFlkqLQ3FO7/p
+        wrftYHYHLkGtCyvuO9f79Y/dJTmavhDGZMcTxFwOYg==
+X-Google-Smtp-Source: AA6agR62HeE51l5IAK04JRZwMFJ1wYjG83cpBLDmLAJjptPk6vF7HAk3w0wXXYaTfDZ+/dbgsxR4PZ99SvySsvQiBoI=
+X-Received: by 2002:a05:6512:1093:b0:48a:7c08:8d29 with SMTP id
+ j19-20020a056512109300b0048a7c088d29mr1161026lfg.540.1659097873241; Fri, 29
+ Jul 2022 05:31:13 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5953.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36345716-5fb6-4ee8-c462-08da715c3098
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2022 12:16:39.2438
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HrpajDpX8TmSL8AojHdTT0HHNNzZtSXxk6pZVNQ39Mepdm316DJKUXvEax1XVBFO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1894
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+References: <000000000000e6917605e48ce2bf@google.com> <Yt6DjrMdIhpQmm7V@codewreck.org>
+ <CACT4Y+Yx2MZ9KEX9gfm-LahQE4KaXX=u4RQBuj-1gS57KL0OSw@mail.gmail.com> <2916828.W3qMjvkFlE@silver>
+In-Reply-To: <2916828.W3qMjvkFlE@silver>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 29 Jul 2022 14:31:01 +0200
+Message-ID: <CACT4Y+Ycz2a2tuPs4R2WS3Gs+rvLBrusamCq3kQ3wj8R+=rX6w@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     asmadeus@codewreck.org, Vlastimil Babka <vbabka@suse.cz>,
+        syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, davem@davemloft.net,
+        edumazet@google.com, elver@google.com, ericvh@gmail.com,
+        hdanton@sina.com, k.kahurani@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, rientjes@google.com,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,102 +74,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> Sent: Wednesday, July 27, 2022 12:18 AM
-> To: Andrew Lunn <andrew@lunn.ch>
-> Cc: michal.simek@xilinx.com; nicolas.ferre@microchip.com;
-> claudiu.beznea@microchip.com; davem@davemloft.net;
-> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> gregkh@linuxfoundation.org; ronak.jain@xilinx.com; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> netdev@vger.kernel.org; git@xilinx.com; git (AMD-Xilinx) <git@amd.com>
-> Subject: RE: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
-> configuration support
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Monday, July 25, 2022 10:41 PM
-> > To: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> > Cc: michal.simek@xilinx.com; nicolas.ferre@microchip.com;
-> > claudiu.beznea@microchip.com; davem@davemloft.net;
-> > edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> > gregkh@linuxfoundation.org; ronak.jain@xilinx.com; linux-arm-
-> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > netdev@vger.kernel.org; git@xilinx.com; git (AMD-Xilinx) <git@amd.com>
-> > Subject: Re: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
-> > configuration support
+On Tue, 26 Jul 2022 at 14:10, Christian Schoenebeck
+<linux_oss@crudebyte.com> wrote:
+>
+> On Montag, 25. Juli 2022 14:45:08 CEST Dmitry Vyukov wrote:
+> > On Mon, 25 Jul 2022 at 13:51, <asmadeus@codewreck.org> wrote:
+> > > Vlastimil Babka wrote on Mon, Jul 25, 2022 at 12:15:24PM +0200:
+> > > > On 7/24/22 15:17, syzbot wrote:
+> > > > > syzbot has bisected this issue to:
+> > > > >
+> > > > > commit 7302e91f39a81a9c2efcf4bc5749d18128366945
+> > > > > Author: Marco Elver <elver@google.com>
+> > > > > Date:   Fri Jan 14 22:03:58 2022 +0000
+> > > > >
+> > > > >     mm/slab_common: use WARN() if cache still has objects on destroy
+> > > >
+> > > > Just to state the obvious, bisection pointed to a commit that added the
+> > > > warning, but the reason for the warning would be that p9 is destroying a
+> > > > kmem_cache without freeing all the objects there first, and that would
+> > > > be
+> > > > true even before the commit.
+> > >
+> > > Probably true from the moment that cache/idr was introduced... I've got
+> > > a couple of fixes in next but given syzcaller claims that's the tree it
+> > > was produced on I guess there can be more such leaks.
+> > > (well, the lines it sent in the backtrace yesterday don't match next,
+> > > but I wouldn't count on it)
+> > >
+> > > If someone wants to have a look please feel free, I would bet the
+> > > problem is just that p9_fd_close() doesn't call or does something
+> > > equivalent to p9_conn_cancel() and there just are some requests that
+> > > haven't been sent yet when the mount is closed..
+> > > But I don't have/can/want to take the time to check right now as I
+> > > consider such a leak harmless enough, someone has to be root or
+> > > equivalent to do 9p mounts in most cases.
 > >
-> > On Mon, Jul 25, 2022 at 02:34:51PM +0000, Pandey, Radhey Shyam wrote:
-> > > > -----Original Message-----
-> > > > From: Andrew Lunn <andrew@lunn.ch>
-> > > > Sent: Sunday, July 24, 2022 10:24 PM
-> > > > To: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> > > > Cc: michal.simek@xilinx.com; nicolas.ferre@microchip.com;
-> > > > claudiu.beznea@microchip.com; davem@davemloft.net;
-> > > > edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> > > > gregkh@linuxfoundation.org; ronak.jain@xilinx.com; linux-arm-
-> > > > kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > > > netdev@vger.kernel.org; git@xilinx.com; git (AMD-Xilinx)
-> > > > <git@amd.com>
-> > > > Subject: Re: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII
-> > > > dynamic configuration support
-> > > >
-> > > > > +		ret =3D of_property_read_u32_array(pdev-
-> >dev.of_node,
-> > > > "power-domains",
-> > > > > +						 pm_info,
-> > > > ARRAY_SIZE(pm_info));
-> > > > > +		if (ret < 0) {
-> > > > > +			dev_err(&pdev->dev, "Failed to read power
-> > > > management information\n");
-> > > > > +			return ret;
-> > > > > +		}
-> > > > > +		ret =3D zynqmp_pm_set_gem_config(pm_info[1],
-> > > > GEM_CONFIG_FIXED, 0);
-> > > > > +		if (ret < 0)
-> > > > > +			return ret;
-> > > > > +
-> > > >
-> > > > Documentation/devicetree/bindings/net/cdns,macb.yaml says:
-> > > >
-> > > >   power-domains:
-> > > >     maxItems: 1
-> > > >
-> > > > Yet you are using pm_info[1]?
-> > >
-> > > >From power-domain description - It's a phandle and PM domain
-> > > specifier as defined by bindings of the power controller specified
-> > > by phandle.
-> > >
-> > > I assume the numbers of cells is specified by "#power-domain-cells":
-> > > Power-domain-cell is set to 1 in this case.
-> > >
-> > > arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-> > > #power-domain-cells =3D <1>;
-> > > power-domains =3D <&zynqmp_firmware PD_ETH_0>;
-> > >
-> > > Please let me know your thoughts.
-> >
-> > Ah, so you ignore the phandle value, and just use the PD_ETH_0?
-> >
-> > How robust is this? What if somebody specified a different power domain=
-?
->=20
-> Some background - init_reset_optional() fn is implemented for three
-> platforms i.e., zynqmp, versal, MPFS.
->=20
-> zynqmp_pm_set_gem_config API expect first argument as GEM node id so,
-> power-domain DT property is passed to get node ID.
->=20
-> However, power-domain property is read only if underlying firmware
-> supports configuration of GEM secure space. It's only true for zynqmp SGM=
-II
-> case and for zynqmp power domain is fixed.
-> In addition to it there is an error handling in power-domain property par=
-sing.
-> Hope this answers the question.
+> > FWIW with KASAN we have allocation stacks for each heap object. So
+> > when KASAN is enabled that warning could list all live object
+> > allocation stacks.
+>
+> With allocation stack you mean the backtrace/call stack at the point in time
+> when the memory originally was acquired?
+>
+> If the answer is yes, then sure, if someone had a chance to post those
+> backtraces, then that would help us to take a closer look at where this leak
+> might happen. Otherwise I fear it will end up among those other "lack of
+> priority" issues.
 
-Please let me know the implementation looks fine or needs any modification?
+Yes, I meant providing allocation stacks for leaked objects.
+Filed https://bugzilla.kernel.org/show_bug.cgi?id=216306 for this feature.
