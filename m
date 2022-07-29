@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 621265849FF
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 04:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A42584A07
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 05:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233856AbiG2C5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jul 2022 22:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
+        id S233970AbiG2DBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jul 2022 23:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233802AbiG2C5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 22:57:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5C57AC2D
-        for <netdev@vger.kernel.org>; Thu, 28 Jul 2022 19:57:01 -0700 (PDT)
+        with ESMTP id S233929AbiG2DBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jul 2022 23:01:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E1F68DD8;
+        Thu, 28 Jul 2022 20:01:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4B5DCCE27CB
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEE9C433C1;
-        Fri, 29 Jul 2022 02:56:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B849BB82654;
+        Fri, 29 Jul 2022 03:01:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF18C433C1;
+        Fri, 29 Jul 2022 03:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659063417;
-        bh=GHdBhWNVNnTKC12PNSiPx5/8O4XY66Iy7fxcA677iTU=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=Eli6knwZ08AOpxHpKPv7BAsbJamvfQ+KmC4TzyDfffon838FMlPRPX2Vl++uGWpUi
-         Cw+aQRdWAZdfNAOIVcUeWLkOO2nTQ2weSyypBrPddc2HLClEX+C5njMy7kAwsquwuN
-         7Ugo3UUobB6ymyFcfwlZ2ESH/KBAqFPgNhRdpi9RrLhbjoggZdP+XCUFp4SZCh4PDr
-         ih5JrjgjzLPNpoWXjybr4wsyRdlofxd7d5mOEGT9TFpi39jsP2cFHlD/Ts4L2SjM69
-         YaS+q4SI9oirVy0uxlw7vXIK1tjRz1PrAGtWd33et54pbDH0vL+VVhTKNATp+zx1r/
-         XGdny1kALjSHw==
-Message-ID: <3fe65335-4ffe-d0e4-26c5-009b6dfbc633@kernel.org>
-Date:   Thu, 28 Jul 2022 20:56:56 -0600
+        s=k20201202; t=1659063700;
+        bh=K9tSEvBx+Ax+pmKxs7VgEeb1Jgj1kHaH3v9iA8cO8RE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CJom+OLYBCyBvYOCfegifO3qIzV4jzkcq+ltNrljOz0V8viWKDPdo1tO/DoFaw97b
+         Vka7xYX9f8ZxWeu3ZBsb6aQH2bx8Do/jz+XV4OnCw0VZ76jVT2OuRh5+55yd9z+iuM
+         YXz2JiQ8g/hO5XVDkiM6aSJp+o+Dv9Z4nzwHFJJCe/yI12Y8cRwQAZ47Nbnzk35PNX
+         DGGu++wPnLDeQiu50pXDT6esOfuYxkAC4Z/pv1YiSfZ52xpAXViTLsft0DUYqj0PBX
+         gachM9QO+1xDZrDIQnk+v+8utXjRQGH14RTcFuV+mTGTd6uvGQsxr6VlNDx1pVc6op
+         LECXvg4GV1jww==
+Date:   Thu, 28 Jul 2022 20:01:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        kuniyu@amazon.co.jp, richard_siegfried@systemli.org,
+        joannelkoong@gmail.com, socketcan@hartkopp.net,
+        gerrit@erg.abdn.ac.uk, tomasz@grobelny.oswiecenia.net,
+        dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dccp: put dccp_qpolicy_full() and dccp_qpolicy_push()
+ in the same lock
+Message-ID: <20220728200139.1e7d9bc6@kernel.org>
+In-Reply-To: <20220727080609.26532-1-hbh25y@gmail.com>
+References: <20220727080609.26532-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH] net: allow unbound socket for packets in VRF when
- tcp_l3mdev_accept set
-Content-Language: en-US
-To:     Mike Manning <mvrmanning@gmail.com>, netdev@vger.kernel.org,
-        jluebbe@lasnet.de
-References: <20220725181442.18041-1-mvrmanning@gmail.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220725181442.18041-1-mvrmanning@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/25/22 12:14 PM, Mike Manning wrote:
-> The commit 3c82a21f4320 ("net: allow binding socket in a VRF when
-> there's an unbound socket") changed the inet socket lookup to avoid
-> packets in a VRF from matching an unbound socket. This is to ensure the
-> necessary isolation between the default and other VRFs for routing and
-> forwarding. VRF-unaware processes running in the default VRF cannot
-> access another VRF and have to be run with 'ip vrf exec <vrf>'. This is
-> to be expected with tcp_l3mdev_accept disabled, but could be reallowed
-> when this sysctl option is enabled. So instead of directly checking dif
-> and sdif in inet[6]_match, here call inet_sk_bound_dev_eq(). This
-> allows a match on unbound socket for non-zero sdif i.e. for packets in
-> a VRF, if tcp_l3mdev_accept is enabled.
+On Wed, 27 Jul 2022 16:06:09 +0800 Hangyu Hua wrote:
+> In the case of sk->dccps_qpolicy == DCCPQ_POLICY_PRIO, dccp_qpolicy_full
+> will drop a skb when qpolicy is full. And the lock in dccp_sendmsg is
+> released before sock_alloc_send_skb and then relocked after
+> sock_alloc_send_skb. The following conditions may lead dccp_qpolicy_push
+> to add skb to an already full sk_write_queue:
 > 
-> Fixes: 3c82a21f4320 ("net: allow binding socket in a VRF when there's an unbound socket")
-> Signed-off-by: Mike Manning <mvrmanning@gmail.com>
-> Link: https://lore.kernel.org/netdev/a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de/
-> ---
-> 
-> Nettest results for VRF testing remain unchanged:
-> 
-> $ diff nettest-baseline-502c6f8cedcc.txt nettest-fix.txt
-> $ tail -3 nettest-fix.txt
-> Tests passed: 869
-> Tests failed:   5
-> 
-> Disclaimer: While I do not think that there should be any noticeable
-> socket throughput degradation due to these changes, I am unable to
-> carry out any performance tests for this, nor provide any follow-up
-> support if there is any such degradation.
-> 
-> ---
->  include/net/inet6_hashtables.h |  7 +++----
->  include/net/inet_hashtables.h  | 19 +++----------------
->  include/net/inet_sock.h        | 11 +++++++++++
->  3 files changed, 17 insertions(+), 20 deletions(-)
-> 
+> thread1--->lock
+> thread1--->dccp_qpolicy_full: queue is full. drop a skb
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This linie should say "not full"?
+
+> thread1--->unlock
+> thread2--->lock
+> thread2--->dccp_qpolicy_full: queue is not full. no need to drop.
+> thread2--->unlock
+> thread1--->lock
+> thread1--->dccp_qpolicy_push: add a skb. queue is full.
+> thread1--->unlock
+> thread2--->lock
+> thread2--->dccp_qpolicy_push: add a skb!
+> thread2--->unlock
+> 
+> Fix this by moving dccp_qpolicy_full.
+> 
+> Fixes: 871a2c16c21b ("dccp: Policy-based packet dequeueing infrastructure")
+
+This code was added in b1308dc015eb0, AFAICT. Please double check.
+
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>  net/dccp/proto.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+> index eb8e128e43e8..1a0193823c82 100644
+> --- a/net/dccp/proto.c
+> +++ b/net/dccp/proto.c
+> @@ -736,11 +736,6 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  
+>  	lock_sock(sk);
+>  
+> -	if (dccp_qpolicy_full(sk)) {
+> -		rc = -EAGAIN;
+> -		goto out_release;
+> -	}
+> -
+>  	timeo = sock_sndtimeo(sk, noblock);
+>  
+>  	/*
+> @@ -773,6 +768,11 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  	if (rc != 0)
+>  		goto out_discard;
+>  
+> +	if (dccp_qpolicy_full(sk)) {
+> +		rc = -EAGAIN;
+> +		goto out_discard;
+> +	}
+
+Shouldn't this be earlier, right after relocking? Why copy the data etc.
+if we know the queue is full?
+
+>  	dccp_qpolicy_push(sk, skb);
+>  	/*
+>  	 * The xmit_timer is set if the TX CCID is rate-based and will expire
+
