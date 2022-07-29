@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A327585052
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E017B58504C
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 15:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiG2NER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 09:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
+        id S236247AbiG2NEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 09:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236204AbiG2NEI (ORCPT
+        with ESMTP id S236201AbiG2NEI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 09:04:08 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E084E87F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554324D175
         for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 06:04:07 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPeh-0006nJ-9e; Fri, 29 Jul 2022 15:03:51 +0200
+        id 1oHPeh-0006nK-9j; Fri, 29 Jul 2022 15:03:51 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPee-000VuJ-Kc; Fri, 29 Jul 2022 15:03:48 +0200
+        id 1oHPee-000VuM-P0; Fri, 29 Jul 2022 15:03:48 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPed-00CQYi-Ji; Fri, 29 Jul 2022 15:03:47 +0200
+        id 1oHPed-00CQYr-KI; Fri, 29 Jul 2022 15:03:47 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -38,9 +38,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v1 08/10] net: dsa: microchip: add support for regmap_access_tables
-Date:   Fri, 29 Jul 2022 15:03:44 +0200
-Message-Id: <20220729130346.2961889-9-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 09/10] net: dsa: microchip: add regmap_range for KSZ8563 chip
+Date:   Fri, 29 Jul 2022 15:03:45 +0200
+Message-Id: <20220729130346.2961889-10-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220729130346.2961889-1-o.rempel@pengutronix.de>
 References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
@@ -59,131 +59,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is complex driver with support for different chips with different
-layouts. To detect at least some bugs earlier, we should validate register
-accesses by using regmap_access_table support.
+Add register validation for KSZ8563.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz_common.h | 46 +++++++++++++++++++++++---
- drivers/net/dsa/microchip/ksz_spi.c    |  3 ++
- 2 files changed, 45 insertions(+), 4 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c | 131 +++++++++++++++++++++++++
+ 1 file changed, 131 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 3a64a444fa26..d460ae6ea82d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -61,6 +61,8 @@ struct ksz_chip_data {
- 	bool supports_rmii[KSZ_MAX_NUM_PORTS];
- 	bool supports_rgmii[KSZ_MAX_NUM_PORTS];
- 	bool internal_phy[KSZ_MAX_NUM_PORTS];
-+	const struct regmap_access_table *wr_table;
-+	const struct regmap_access_table *rd_table;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index d3a9836c706f..97b5fb75b489 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -412,6 +412,135 @@ static const u8 lan937x_shifts[] = {
+ 	[ALU_STAT_INDEX]		= 8,
  };
  
- struct ksz_port {
-@@ -329,6 +331,10 @@ static inline int ksz_read8(struct ksz_device *dev, u32 reg, u8 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[0], reg, &value);
++static const struct regmap_range ksz8563_valid_regs[] = {
++	regmap_reg_range(0x0000, 0x0003),
++	regmap_reg_range(0x0006, 0x0006),
++	regmap_reg_range(0x000f, 0x001f),
++	regmap_reg_range(0x0100, 0x0100),
++	regmap_reg_range(0x0104, 0x0107),
++	regmap_reg_range(0x010d, 0x010d),
++	regmap_reg_range(0x0110, 0x0113),
++	regmap_reg_range(0x0120, 0x012b),
++	regmap_reg_range(0x0201, 0x0201),
++	regmap_reg_range(0x0210, 0x0213),
++	regmap_reg_range(0x0300, 0x0300),
++	regmap_reg_range(0x0302, 0x031b),
++	regmap_reg_range(0x0320, 0x032b),
++	regmap_reg_range(0x0330, 0x0336),
++	regmap_reg_range(0x0338, 0x033e),
++	regmap_reg_range(0x0340, 0x035f),
++	regmap_reg_range(0x0370, 0x0370),
++	regmap_reg_range(0x0378, 0x0378),
++	regmap_reg_range(0x037c, 0x037d),
++	regmap_reg_range(0x0390, 0x0393),
++	regmap_reg_range(0x0400, 0x040e),
++	regmap_reg_range(0x0410, 0x042f),
++	regmap_reg_range(0x0500, 0x0519),
++	regmap_reg_range(0x0520, 0x054b),
++	regmap_reg_range(0x0550, 0x05b3),
++
++	/* port 1 */
++	regmap_reg_range(0x1000, 0x1001),
++	regmap_reg_range(0x1004, 0x100b),
++	regmap_reg_range(0x1013, 0x1013),
++	regmap_reg_range(0x1017, 0x1017),
++	regmap_reg_range(0x101b, 0x101b),
++	regmap_reg_range(0x101f, 0x1021),
++	regmap_reg_range(0x1030, 0x1030),
++	regmap_reg_range(0x1100, 0x1111),
++	regmap_reg_range(0x111a, 0x111d),
++	regmap_reg_range(0x1122, 0x1127),
++	regmap_reg_range(0x112a, 0x112b),
++	regmap_reg_range(0x1136, 0x1139),
++	regmap_reg_range(0x113e, 0x113f),
++	regmap_reg_range(0x1300, 0x1301),
++	regmap_reg_range(0x1303, 0x1303),
++	regmap_reg_range(0x1400, 0x1401),
++	regmap_reg_range(0x1403, 0x1403),
++	regmap_reg_range(0x1410, 0x1417),
++	regmap_reg_range(0x1420, 0x1423),
++	regmap_reg_range(0x1500, 0x1507),
++	regmap_reg_range(0x1600, 0x1612),
++	regmap_reg_range(0x1800, 0x180f),
++	regmap_reg_range(0x1900, 0x1907),
++	regmap_reg_range(0x1914, 0x191b),
++	regmap_reg_range(0x1a00, 0x1a03),
++	regmap_reg_range(0x1a04, 0x1a08),
++	regmap_reg_range(0x1b00, 0x1b01),
++	regmap_reg_range(0x1b04, 0x1b04),
++	regmap_reg_range(0x1c00, 0x1c05),
++	regmap_reg_range(0x1c08, 0x1c1b),
++
++	/* port 2 */
++	regmap_reg_range(0x2000, 0x2001),
++	regmap_reg_range(0x2004, 0x200b),
++	regmap_reg_range(0x2013, 0x2013),
++	regmap_reg_range(0x2017, 0x2017),
++	regmap_reg_range(0x201b, 0x201b),
++	regmap_reg_range(0x201f, 0x2021),
++	regmap_reg_range(0x2030, 0x2030),
++	regmap_reg_range(0x2100, 0x2111),
++	regmap_reg_range(0x211a, 0x211d),
++	regmap_reg_range(0x2122, 0x2127),
++	regmap_reg_range(0x212a, 0x212b),
++	regmap_reg_range(0x2136, 0x2139),
++	regmap_reg_range(0x213e, 0x213f),
++	regmap_reg_range(0x2300, 0x2301),
++	regmap_reg_range(0x2303, 0x2303),
++	regmap_reg_range(0x2400, 0x2401),
++	regmap_reg_range(0x2403, 0x2403),
++	regmap_reg_range(0x2410, 0x2417),
++	regmap_reg_range(0x2420, 0x2423),
++	regmap_reg_range(0x2500, 0x2507),
++	regmap_reg_range(0x2600, 0x2612),
++	regmap_reg_range(0x2800, 0x280f),
++	regmap_reg_range(0x2900, 0x2907),
++	regmap_reg_range(0x2914, 0x291b),
++	regmap_reg_range(0x2a00, 0x2a03),
++	regmap_reg_range(0x2a04, 0x2a08),
++	regmap_reg_range(0x2b00, 0x2b01),
++	regmap_reg_range(0x2b04, 0x2b04),
++	regmap_reg_range(0x2c00, 0x2c05),
++	regmap_reg_range(0x2c08, 0x2c1b),
++
++	/* port 3 */
++	regmap_reg_range(0x3000, 0x3001),
++	regmap_reg_range(0x3004, 0x300b),
++	regmap_reg_range(0x3013, 0x3013),
++	regmap_reg_range(0x3017, 0x3017),
++	regmap_reg_range(0x301b, 0x301b),
++	regmap_reg_range(0x301f, 0x3021),
++	regmap_reg_range(0x3030, 0x3030),
++	regmap_reg_range(0x3100, 0x3111),
++	regmap_reg_range(0x311a, 0x311d),
++	regmap_reg_range(0x3122, 0x3127),
++	regmap_reg_range(0x312a, 0x312b),
++	regmap_reg_range(0x3136, 0x3139),
++	regmap_reg_range(0x313e, 0x313f),
++	regmap_reg_range(0x3300, 0x3301),
++	regmap_reg_range(0x3303, 0x3303),
++	regmap_reg_range(0x3400, 0x3401),
++	regmap_reg_range(0x3403, 0x3403),
++	regmap_reg_range(0x3410, 0x3417),
++	regmap_reg_range(0x3420, 0x3423),
++	regmap_reg_range(0x3500, 0x3507),
++	regmap_reg_range(0x3600, 0x3612),
++	regmap_reg_range(0x3800, 0x380f),
++	regmap_reg_range(0x3900, 0x3907),
++	regmap_reg_range(0x3914, 0x391b),
++	regmap_reg_range(0x3a00, 0x3a03),
++	regmap_reg_range(0x3a04, 0x3a08),
++	regmap_reg_range(0x3b00, 0x3b01),
++	regmap_reg_range(0x3b04, 0x3b04),
++	regmap_reg_range(0x3c00, 0x3c05),
++	regmap_reg_range(0x3c08, 0x3c1b),
++};
++
++static const struct regmap_access_table ksz8563_register_set = {
++	.yes_ranges = ksz8563_valid_regs,
++	.n_yes_ranges = ARRAY_SIZE(ksz8563_valid_regs),
++};
++
+ const struct ksz_chip_data ksz_switch_chips[] = {
+ 	[KSZ8795] = {
+ 		.chip_id = KSZ8795_CHIP_ID,
+@@ -596,6 +725,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.supports_rmii = {false, false, true},
+ 		.supports_rgmii = {false, false, true},
+ 		.internal_phy = {true, true, false},
++		.wr_table = &ksz8563_register_set,
++		.rd_table = &ksz8563_register_set,
+ 	},
  
-+	if (ret)
-+		dev_err(dev->dev, "can't read 8bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
- 	*val = value;
- 	return ret;
- }
-@@ -338,6 +344,10 @@ static inline int ksz_read16(struct ksz_device *dev, u32 reg, u16 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[1], reg, &value);
- 
-+	if (ret)
-+		dev_err(dev->dev, "can't read 16bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
- 	*val = value;
- 	return ret;
- }
-@@ -347,6 +357,10 @@ static inline int ksz_read32(struct ksz_device *dev, u32 reg, u32 *val)
- 	unsigned int value;
- 	int ret = regmap_read(dev->regmap[2], reg, &value);
- 
-+	if (ret)
-+		dev_err(dev->dev, "can't read 32bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
- 	*val = value;
- 	return ret;
- }
-@@ -357,7 +371,10 @@ static inline int ksz_read64(struct ksz_device *dev, u32 reg, u64 *val)
- 	int ret;
- 
- 	ret = regmap_bulk_read(dev->regmap[2], reg, value, 2);
--	if (!ret)
-+	if (ret)
-+		dev_err(dev->dev, "can't read 64bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+	else
- 		*val = (u64)value[0] << 32 | value[1];
- 
- 	return ret;
-@@ -365,17 +382,38 @@ static inline int ksz_read64(struct ksz_device *dev, u32 reg, u64 *val)
- 
- static inline int ksz_write8(struct ksz_device *dev, u32 reg, u8 value)
- {
--	return regmap_write(dev->regmap[0], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[0], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 8bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write16(struct ksz_device *dev, u32 reg, u16 value)
- {
--	return regmap_write(dev->regmap[1], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[1], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 16bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
- {
--	return regmap_write(dev->regmap[2], reg, value);
-+	int ret;
-+
-+	ret = regmap_write(dev->regmap[2], reg, value);
-+	if (ret)
-+		dev_err(dev->dev, "can't write 32bit reg: 0x%x %pe \n", reg,
-+			ERR_PTR(ret));
-+
-+	return ret;
- }
- 
- static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 05bd089795f8..a377454450b3 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -66,7 +66,10 @@ static int ksz_spi_probe(struct spi_device *spi)
- 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
- 		rc = regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
-+		rc.wr_table = chip->wr_table;
-+		rc.rd_table = chip->rd_table;
- 		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
-+
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&spi->dev,
+ 	[KSZ9567] = {
 -- 
 2.30.2
 
