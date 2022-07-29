@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23789584EB3
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05427584EA6
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235911AbiG2KZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 06:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S235606AbiG2KZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 06:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235742AbiG2KZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:25:24 -0400
+        with ESMTP id S235352AbiG2KZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:25:05 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA5B1ADAC;
-        Fri, 29 Jul 2022 03:25:16 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvNqz0VZ4zlWQ6;
-        Fri, 29 Jul 2022 18:22:39 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F54E82449;
+        Fri, 29 Jul 2022 03:25:01 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvNp744mJzWg1n;
+        Fri, 29 Jul 2022 18:21:03 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 18:24:51 +0800
+ 15.1.2375.24; Fri, 29 Jul 2022 18:24:52 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 18:24:50 +0800
+ 15.1.2375.24; Fri, 29 Jul 2022 18:24:51 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
         <pabeni@redhat.com>, <snelson@pensando.io>, <brett@pensando.io>,
@@ -33,9 +33,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
 CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH net 1/2] net: ice: fix error NETIF_F_HW_VLAN_CTAG_FILTER check in ice_vsi_sync_fltr()
-Date:   Fri, 29 Jul 2022 18:17:54 +0800
-Message-ID: <20220729101755.4798-2-huangguangbin2@huawei.com>
+Subject: [PATCH net 2/2] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
+Date:   Fri, 29 Jul 2022 18:17:55 +0800
+Message-ID: <20220729101755.4798-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220729101755.4798-1-huangguangbin2@huawei.com>
 References: <20220729101755.4798-1-huangguangbin2@huawei.com>
@@ -56,32 +56,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-vsi->current_netdev_flags is used store the current net device
-flags, not the active netdevice features. So it should use
-vsi->netdev->featurs, rather than vsi->current_netdev_flags
-to check NETIF_F_HW_VLAN_CTAG_FILTER.
+The prototype of input features of ionic_set_nic_features() is
+netdev_features_t, but the vlan_flags is using the private
+definition of ionic drivers. It should use the variable
+ctx.cmd.lif_setattr.features, rather than features to check
+the vlan flags. So fixes it.
 
-Fixes: 1babaf77f49d ("ice: Advertise 802.1ad VLAN filtering and offloads for PF netdev")
+Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9f02b60459f1..bc68dc5c6927 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -433,7 +433,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 						IFF_PROMISC;
- 					goto out_promisc;
- 				}
--				if (vsi->current_netdev_flags &
-+				if (vsi->netdev->features &
- 				    NETIF_F_HW_VLAN_CTAG_FILTER)
- 					vlan_ops->ena_rx_filtering(vsi);
- 			}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index f3568901eb91..1443f788ee37 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1437,7 +1437,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+ 	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+ 		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
+ 
+-	if ((vlan_flags & features) &&
++	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
+ 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
+ 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
+ 
 -- 
 2.33.0
 
