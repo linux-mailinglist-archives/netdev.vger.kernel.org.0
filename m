@@ -2,296 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29AA8584CA4
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79454584CA8
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbiG2HcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 03:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
+        id S234813AbiG2HdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 03:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234252AbiG2HcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:32:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 593D97B37F
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659079938;
+        with ESMTP id S233985AbiG2HdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:33:01 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F597C1B4;
+        Fri, 29 Jul 2022 00:32:59 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ED1271C000D;
+        Fri, 29 Jul 2022 07:32:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1659079978;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=S2q2utn2CzeOeojEKg/tCXnqvan/YkCeq0ehI4nAHW8=;
-        b=b2kqK5R7LopoSA/5QsjfaqrxfxKY0mSuJ8Ob9UCp+eBRUtSTfy7+yxUb5eorOF2Wq3qVZT
-        k9FT+i7cfDF286IyUS7TDs6KHZQfjh+ny+ABun0yGooxoRuxAGZwEmSuXfb8nn5FmKQB2Y
-        CE9x+u8OdD8UDza39btCHh8AsY/HMco=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-197-FZiw-x9dPVCHPe1oL7HY8A-1; Fri, 29 Jul 2022 03:32:16 -0400
-X-MC-Unique: FZiw-x9dPVCHPe1oL7HY8A-1
-Received: by mail-lj1-f198.google.com with SMTP id bx35-20020a05651c19a300b0025e0c4331c6so731740ljb.13
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:32:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S2q2utn2CzeOeojEKg/tCXnqvan/YkCeq0ehI4nAHW8=;
-        b=ysRACkz/6iLJhiMDRCh0LiaYm2kpM1AiOlEMMt6oNyoUQbQfxfFC7gKMQwyA5EWHgl
-         twD4T+cFtKjCBk1FNmGD6JlhKwRmUTyjDHOykSx5pEeWCXM6NyID4XKyUQXXxJootbvE
-         wwb47K9m8PmhxXGevRTLkfpq32uYf+qvzrUz7MEmDG9EBefZRDCjEryR/A+RNn5r80cb
-         QM26SbzDQ77tnL3BaOzQhiucsHrQK4TO/NhaP/aUYYcdP6p3n3I9A3tY/td8t+oST7iD
-         kO6X11lvE8t1rPc4x9H89AHtKTh5X38tG1JDHwhlFYbzZaVunznr0OBHi60vqlmrkMcU
-         ajOQ==
-X-Gm-Message-State: AJIora9yzojb0JiYGn9BsQBz8y1V7fbAjXijXKYsaVI12OVGL54kJrFH
-        FjWK7xx1RewSevUFQ29Z3U4p5kEssCuxqHJQnfTMiJn1pq8bViFekQkGX9b2gm+m9OitiAUVwCa
-        CQJr6eOm5JqeBBhW/Z+sDwOG0UdooV7yG
-X-Received: by 2002:a19:9145:0:b0:48a:7ee4:5eac with SMTP id y5-20020a199145000000b0048a7ee45eacmr849957lfj.641.1659079934547;
-        Fri, 29 Jul 2022 00:32:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR724Z9TIFD4TBShsFS+WI+wVQDzXpDufX5nXFkZ8Tvp62c/qrPU4I1gK/YFs9x7sodZ+Vk2IgowAFkA5+mh0bs=
-X-Received: by 2002:a19:9145:0:b0:48a:7ee4:5eac with SMTP id
- y5-20020a199145000000b0048a7ee45eacmr849942lfj.641.1659079934017; Fri, 29 Jul
- 2022 00:32:14 -0700 (PDT)
+        bh=Qr9dBtRHpEsZnY4WwAGh3TdMzUoTMBzq+LV/3YLwXZc=;
+        b=X2aEFCq12Cd3VqkHThYBrZGJKoeYCB29lOCN6l1FKfrPKFfgmf8d2jGeBok/AgqU7LwszH
+        1TmrFcfbqn4eYwSCoY08CR/FcrC+OrSQH/BF9s7jUGsJKuhZjrSYQU6PNPxb1IHyWW/W5E
+        /DkybKlTUjBy+7aBrfRIVwJS681owU9kOlTNXCY9b22+jDBvFBW9cFZKcfXvk7i894pmnO
+        pJm9kXfZjbF9jdWAu5cTO0M0VbvMhzBLVGzHsbgFqvwf8rQGUxXRQ6Y8kil5O946VIfTS+
+        uuNmsJPIApRj1LuLoH4UfOdajD44yRUFGmhQjWR6oOyxCrxIImT9a5wNq7C2gw==
+Date:   Fri, 29 Jul 2022 09:32:52 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 3/4] net: phy: Add helper to derive the number
+ of ports from a phy mode
+Message-ID: <20220729093252.50977d5c@pc-10.home>
+In-Reply-To: <YuMAdACnRKsL8/xD@lunn.ch>
+References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
+        <20220728145252.439201-4-maxime.chevallier@bootlin.com>
+        <YuMAdACnRKsL8/xD@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
- <20220721084341.24183-2-qtxuning1999@sjtu.edu.cn> <16a232ad-e0a1-fd4c-ae3e-27db168daacb@redhat.com>
- <2a8838c4-2e6f-6de7-dcdc-572699ff3dc9@sjtu.edu.cn>
-In-Reply-To: <2a8838c4-2e6f-6de7-dcdc-572699ff3dc9@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 29 Jul 2022 15:32:02 +0800
-Message-ID: <CACGkMEuwgZRt=J_2i-XugMZtcG-xZ7ZF1RpTjmErT5+RCcZ1OQ@mail.gmail.com>
-Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     eperezma <eperezma@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>, mst <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 4:26 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->
-> On 2022/7/26 15:36, Jason Wang wrote:
->
->
-> =E5=9C=A8 2022/7/21 16:43, Guo Zhi =E5=86=99=E9=81=93:
->
-> Device may not use descriptors in order, for example, NIC and SCSI may
-> not call __vhost_add_used_n with buffers in order.  It's the task of
-> __vhost_add_used_n to order them.
->
->
->
-> I'm not sure this is ture. Having ooo descriptors is probably by design t=
-o have better performance.
->
-> This might be obvious for device that may have elevator or QOS stuffs.
->
-> I suspect the right thing to do here is, for the device that can't perfor=
-m better in the case of IN_ORDER, let's simply not offer IN_ORDER (zerocopy=
- or scsi). And for the device we know it can perform better, non-zercopy et=
-hernet device we can do that.
->
->
->   This commit reorder the buffers using
-> vq->heads, only the batch is begin from the expected start point and is
-> continuous can the batch be exposed to driver.  And only writing out a
-> single used ring for a batch of descriptors, according to VIRTIO 1.1
-> spec.
->
->
->
-> So this sounds more like a "workaround" of the device that can't consume =
-buffer in order, I suspect it can help in performance.
->
-> More below.
->
->
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->   drivers/vhost/vhost.c | 44 +++++++++++++++++++++++++++++++++++++++++--
->   drivers/vhost/vhost.h |  3 +++
->   2 files changed, 45 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 40097826c..e2e77e29f 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -317,6 +317,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
->       vq->used_flags =3D 0;
->       vq->log_used =3D false;
->       vq->log_addr =3D -1ull;
-> +    vq->next_used_head_idx =3D 0;
->       vq->private_data =3D NULL;
->       vq->acked_features =3D 0;
->       vq->acked_backend_features =3D 0;
-> @@ -398,6 +399,8 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *=
-dev)
->                         GFP_KERNEL);
->           if (!vq->indirect || !vq->log || !vq->heads)
->               goto err_nomem;
-> +
-> +        memset(vq->heads, 0, sizeof(*vq->heads) * dev->iov_limit);
->       }
->       return 0;
->   @@ -2374,12 +2377,49 @@ static int __vhost_add_used_n(struct vhost_virt=
-queue *vq,
->                   unsigned count)
->   {
->       vring_used_elem_t __user *used;
-> +    struct vring_desc desc;
->       u16 old, new;
->       int start;
-> +    int begin, end, i;
-> +    int copy_n =3D count;
-> +
-> +    if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
->
->
->
-> How do you guarantee that ids of heads are contiguous?
->
-> There is no need to be contiguous for ids of heads.
->
-> For example, I have three buffer { .id =3D 0, 15}, {.id =3D 20, 30} {.id =
-=3D 15, 20} for vhost_add_used_n. Then I will let the vq->heads[0].len=3D15=
-. vq->heads[15].len=3D5, vq->heads[20].len=3D10 as reorder. Once I found th=
-ere is no hold in the batched descriptors. I will expose them to driver.
+On Thu, 28 Jul 2022 23:32:36 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-So spec said:
+> > +int phy_interface_num_ports(phy_interface_t interface)
+> > +{
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_NA:
+> > +	case PHY_INTERFACE_MODE_INTERNAL:
+> > +		return 0;  
+> 
+> I've not yet looked at how this is used. Returning 0 could have
+> interesting effects i guess? INTERNAL clearly does have some sort of
+> path between the MAC and the PHY, so i think 1 would be a better
+> value. NA is less clear, it generally means Don't touch. But again,
+> there still needs to be a path between the MAC and PHY, otherwise
+> there would not be any to touch.
+> 
+> Why did you pick 0?
+> 
+> > +
+> > +	case PHY_INTERFACE_MODE_MII:
+> > +	case PHY_INTERFACE_MODE_GMII:
+> > +	case PHY_INTERFACE_MODE_TBI:
+> > +	case PHY_INTERFACE_MODE_REVMII:
+> > +	case PHY_INTERFACE_MODE_RMII:
+> > +	case PHY_INTERFACE_MODE_REVRMII:
+> > +	case PHY_INTERFACE_MODE_RGMII:
+> > +	case PHY_INTERFACE_MODE_RGMII_ID:
+> > +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> > +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> > +	case PHY_INTERFACE_MODE_RTBI:
+> > +	case PHY_INTERFACE_MODE_XGMII:
+> > +	case PHY_INTERFACE_MODE_XLGMII:
+> > +	case PHY_INTERFACE_MODE_MOCA:
+> > +	case PHY_INTERFACE_MODE_TRGMII:
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_SMII:
+> > +	case PHY_INTERFACE_MODE_1000BASEX:
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +	case PHY_INTERFACE_MODE_5GBASER:
+> > +	case PHY_INTERFACE_MODE_10GBASER:
+> > +	case PHY_INTERFACE_MODE_25GBASER:
+> > +	case PHY_INTERFACE_MODE_10GKR:
+> > +	case PHY_INTERFACE_MODE_100BASEX:
+> > +	case PHY_INTERFACE_MODE_RXAUI:
+> > +	case PHY_INTERFACE_MODE_XAUI:
+> > +		return 1;
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +	case PHY_INTERFACE_MODE_QUSGMII:
+> > +		return 4;
+> > +
+> > +	default:
+> > +		return 0;
+> > +	}
+> > +}  
+> 
+> Have you tried without a default: ? I _think_ gcc will then warn about
+> missing enum values, which will help future developers when they add
+> further values to the enum.
 
-"If VIRTIO_F_IN_ORDER has been negotiated, driver uses descriptors in
-ring order: starting from offset 0 in the table, and wrapping around
-at the end of the table."
+Without the default clause, I get an error about the missing
+PHY_INTERFACE_MODE_MAX case, which I don't think belongs here...
 
-And
+Too bad :/
 
-"VIRTIO_F_IN_ORDER(35)This feature indicates that all buffers are used
-by the device in the same order in which they have been made
-available."
-
-This means your example is not an IN_ORDER device.
-
-The driver should submit buffers (assuming each buffer have one
-descriptor) in order {id =3D 0, 15}, {id =3D 1, 30} and {id =3D 2, 20}.
-
-And even if it is submitted in order, we can not use a batch because:
-
-"The skipped buffers (for which no used ring entry was written) are
-assumed to have been used (read or written) by the device completely."
-
-This means for TX we are probably ok, but for rx, unless we know the
-buffers were written completely, we can't write them in a batch.
-
-I'd suggest to do cross testing for this series:
-
-1) testing vhost IN_ORDER support with DPDK virtio PMD
-2) testing virtio IN_ORDER with DPDK vhost-user via testpmd
-
-Thanks
-
-
->
->
-> +        /* calculate descriptor chain length for each used buffer */
->
->
->
-> I'm a little bit confused about this comment, we have heads[i].len for th=
-is?
->
-> Maybe I should not use vq->heads, some misleading.
->
->
-> +        for (i =3D 0; i < count; i++) {
-> +            begin =3D heads[i].id;
-> +            end =3D begin;
-> +            vq->heads[begin].len =3D 0;
->
->
->
-> Does this work for e.g RX virtqueue?
->
->
-> +            do {
-> +                vq->heads[begin].len +=3D 1;
-> +                if (unlikely(vhost_get_desc(vq, &desc, end))) {
->
->
->
-> Let's try hard to avoid more userspace copy here, it's the source of perf=
-ormance regression.
->
-> Thanks
->
->
-> +                    vq_err(vq, "Failed to get descriptor: idx %d addr %p=
-\n",
-> +                           end, vq->desc + end);
-> +                    return -EFAULT;
-> +                }
-> +            } while ((end =3D next_desc(vq, &desc)) !=3D -1);
-> +        }
-> +
-> +        count =3D 0;
-> +        /* sort and batch continuous used ring entry */
-> +        while (vq->heads[vq->next_used_head_idx].len !=3D 0) {
-> +            count++;
-> +            i =3D vq->next_used_head_idx;
-> +            vq->next_used_head_idx =3D (vq->next_used_head_idx +
-> +                          vq->heads[vq->next_used_head_idx].len)
-> +                          % vq->num;
-> +            vq->heads[i].len =3D 0;
-> +        }
-> +        /* only write out a single used ring entry with the id correspon=
-ding
-> +         * to the head entry of the descriptor chain describing the last=
- buffer
-> +         * in the batch.
-> +         */
-> +        heads[0].id =3D i;
-> +        copy_n =3D 1;
-> +    }
->         start =3D vq->last_used_idx & (vq->num - 1);
->       used =3D vq->used->ring + start;
-> -    if (vhost_put_used(vq, heads, start, count)) {
-> +    if (vhost_put_used(vq, heads, start, copy_n)) {
->           vq_err(vq, "Failed to write used");
->           return -EFAULT;
->       }
-> @@ -2410,7 +2450,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, st=
-ruct vring_used_elem *heads,
->         start =3D vq->last_used_idx & (vq->num - 1);
->       n =3D vq->num - start;
-> -    if (n < count) {
-> +    if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
->           r =3D __vhost_add_used_n(vq, heads, n);
->           if (r < 0)
->               return r;
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index d9109107a..7b2c0fbb5 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -107,6 +107,9 @@ struct vhost_virtqueue {
->       bool log_used;
->       u64 log_addr;
->   +    /* Sort heads in order */
-> +    u16 next_used_head_idx;
-> +
->       struct iovec iov[UIO_MAXIOV];
->       struct iovec iotlb_iov[64];
->       struct iovec *indirect;
->
->
->
+> 	Andrew
 
