@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0997584C42
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE4C584C6A
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 09:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiG2HAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 03:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S234292AbiG2HKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 03:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234037AbiG2HAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:00:13 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B21E3C
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:00:11 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id ez10so6890526ejc.13
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:00:11 -0700 (PDT)
+        with ESMTP id S234851AbiG2HKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 03:10:42 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E7E51A02
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:10:41 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id oy13so6996805ejb.1
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 00:10:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mwmHuLtF9G2EKODNbwTWiEpF4Sr2BhGxktiOGdwitQQ=;
-        b=usBS4rgvXuy+sJxNC+QJXAnpQETBKSXJvLHaQrfLvFa7XRaa3LPSXOFKVqNow43eTc
-         KNiJ6ArbLaWLEuuSSqL3JguiFIhqBleecXijNMpzsO7WiMxkONj+eczEFxsD3KkjYjhN
-         eWANkL5QIkONppjks4jjlgGGD8nenrSE6pWIhVRvVJIeL2KggjtauuIb1vAKeaacqp0F
-         +/5KvJhDA75INWx+q0RytS5XNPal/bNbmmcFn6IJw+pGdo5I6YDtu7+8F5xvct18IOZ9
-         jrXSDSRZScXdNJZPRWuSycff+3CEKxVzBpifDhG1UL0qWnmhggGiNdqPSEPDDSa5251p
-         nOBg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lRMTvJmvyH1jrtjbOqZDWvY6LG0xcVs8SwXl9n4Gt40=;
+        b=PzhZM5/9WPQAOl3xKJi8qWlOUaFFLFU6am1YnRueZvxjWNQUVpQSxZwycFV9Jo/07u
+         j/OhkqcLmJgWoRis0aHTDxhY3DpYyFHTHBBYJ7LeKY34Rgl0rAcDaZITn6yaA7oOrKLr
+         gkOklDtuj83ClTn40hDQR3RegNMWeTFfk3RcIcL26Hf0+Jj9w3aFTBdKt+rjmS04kxFW
+         u4/1JNNrZqsdgXxcnsPUgkO77ceKhF1UWx50uwrWc/2JdlPg5XFeWTG+S985mjNdv0iT
+         wznvg5W/ulI9+MV55nyb6T5SQNc1lzlH91wWzCe3XRwYI9DZcxGHzMxOXzgvyOXQ5PVE
+         wmMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mwmHuLtF9G2EKODNbwTWiEpF4Sr2BhGxktiOGdwitQQ=;
-        b=QN7ybFcM3k9qMtp0/r7Al5yziuGsBZtpPeUDFEU/R1chLi3Nho+XpFMBOKIsdyTpaG
-         Y1NY3kI0uO4w6LPqzw2364CE78Z0yW2HrXnM+ecUANcQZhYu5DIBFyqC0atM5Mx0M/rj
-         KOHZOVprAGSAjYJ+pFjox0zSgl7q+7Us5nK0qhbEqRRDFEu1bjivQ0Il2adRZZx5Dq7R
-         QzlVcEqbGfmdw+OmhRsXR3Kbe6RKq5HcglGEiemZaCvJu1GYxGXu1UdgaV6UGFT2Ni0u
-         YiVrNui901cGbbSDUR/U0o314beazl2HQvwvGSHH0M0V5Ism6+iGm6B/+2NoDOy7ix5n
-         IMeA==
-X-Gm-Message-State: AJIora9aQZN8x8KqG7ppxX4ctxpNOXCZQJ+HDK5zxqBzPme4xQLKe+lQ
-        iZDNnXwTqAbn2IWPu/vQqKj2Rg==
-X-Google-Smtp-Source: AGRyM1v7XxiRD+Ovqiy+Qb4zbzzo0ihjFJmtt45i2tVcNdyqYOzftdqePHq7shdpWsyykKpvtJtnpQ==
-X-Received: by 2002:a17:906:5d16:b0:72f:248d:525a with SMTP id g22-20020a1709065d1600b0072f248d525amr1940654ejt.441.1659078009966;
-        Fri, 29 Jul 2022 00:00:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lRMTvJmvyH1jrtjbOqZDWvY6LG0xcVs8SwXl9n4Gt40=;
+        b=pLxRhyZZht5cr04DxFzk/18U+7hom8B2rwiiXs+f/D2ivd0IbyxMwjS5O7vJsFE6QI
+         12M1bFTQbc8PRVpFE4IZ4tHocbQ1cpNTfW0Xt2b7bXZ6CpZ/Kf0lRYyca+NLcqcuEExg
+         L6AjUwnmXXW81DxU5WEcgyMwX9pgS/F2Aw1bX4YKWxqr9kgqHLBkfiyqrLcw1kGdduuv
+         HDk2LXKAIxmiuJjkOOP9V7Cj5FEu/dOCkoZCszItIeaBdSZSRZBKtdwkXAMfCC2VwJ/y
+         M0B25JP1tbGW9iNjqWmOaUAodDOQc6yE7g2350HRfMWdtGrs8f/WSXysNUpEQgbpg6D7
+         3Xtw==
+X-Gm-Message-State: AJIora8J6eE8edLKiExVAVzsyvBwKm7t6CIxzK1Dl0XXoIJJQdZjP5Ml
+        e2SA5bTi5CPF6wVftzUjnGE7e7tNNxx+YFUk
+X-Google-Smtp-Source: AGRyM1sgN7dc+keMHOITL9YXHi/ddO9mASApssqVYFZjxjXYCVk0bmogT5yT+Zpih+DUgJu71yASsQ==
+X-Received: by 2002:a17:907:7b87:b0:72e:d45a:17af with SMTP id ne7-20020a1709077b8700b0072ed45a17afmr1902278ejc.73.1659078639461;
+        Fri, 29 Jul 2022 00:10:39 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o22-20020a170906769600b0072f5fa175b2sm1295648ejm.8.2022.07.29.00.00.08
+        by smtp.gmail.com with ESMTPSA id l2-20020a1709060cc200b00722e4bab163sm1307592ejh.200.2022.07.29.00.10.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 00:00:08 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 09:00:07 +0200
+        Fri, 29 Jul 2022 00:10:39 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Li zeming <zeming@nfschina.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched/net/act: Remove temporary state variables
-Message-ID: <YuOFd2oqA1Cbl+at@nanopsycho>
-References: <20220727094146.5990-1-zeming@nfschina.com>
- <20220728201556.230b9efd@kernel.org>
- <YuN+i2WtzfA0wDQb@nanopsycho>
- <20220728235121.43bedc43@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        leon@kernel.org, moshe@nvidia.com
+Subject: [patch net-next 0/4] net: devlink: allow parallel commands on multiple devlinks
+Date:   Fri, 29 Jul 2022 09:10:34 +0200
+Message-Id: <20220729071038.983101-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220728235121.43bedc43@kernel.org>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -73,25 +68,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jul 29, 2022 at 08:51:21AM CEST, kuba@kernel.org wrote:
->On Fri, 29 Jul 2022 08:30:35 +0200 Jiri Pirko wrote:
->>> How many case like this are there in the kernel?
->>> What tool are you using to find this?
->>> We should focus on creating CI tools which can help catch instances of
->>> this pattern in new code before it gets added, rather than cleaning up
->>> old code. It just makes backports harder for hardly any gain.  
->> 
->> What backports do you have in mind exactly?
->
->Code backports. I don't understand the question.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Code backports of what where?
-Are you talking about:
-1) mainline kernels
-2) distrubutions kernels? Or even worse, in-house kernels of companies?
+Aim of this patchset is to remove devlink_mutex and eventually to enable
+parallel ops on devlink netlink interface.
 
-If 2), I believe it is not relevant for the upstream discussion, at all.
+Jiri Pirko (4):
+  net: devlink: introduce "unregistering" mark and use it during
+    devlinks iteration
+  net: devlink: convert reload command to take implicit devlink->lock
+  net: devlink: remove devlink_mutex
+  net: devlink: enable parallel ops on netlink interface
 
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   4 -
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |   4 -
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |   4 -
+ drivers/net/netdevsim/dev.c                   |   6 -
+ net/core/devlink.c                            | 110 ++++--------------
+ 5 files changed, 21 insertions(+), 107 deletions(-)
 
+-- 
+2.35.3
 
->There's little benefit and we're getting multiple such patches a day.
