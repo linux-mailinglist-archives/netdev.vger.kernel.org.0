@@ -2,186 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0738A584E62
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 11:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0733584E74
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 12:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbiG2JvU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jul 2022 05:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
+        id S233922AbiG2KAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 06:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiG2JvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 05:51:19 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02B2E76960
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 02:51:17 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-193-F8GhUeCtPHuz_IVr8tViCQ-1; Fri, 29 Jul 2022 10:51:14 +0100
-X-MC-Unique: F8GhUeCtPHuz_IVr8tViCQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 29 Jul 2022 10:51:12 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 29 Jul 2022 10:51:12 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Michael Walle' <michael@walle.cc>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-CC:     Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229520AbiG2KAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 06:00:06 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A50F3CBC4;
+        Fri, 29 Jul 2022 03:00:04 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id p5so5175283edi.12;
+        Fri, 29 Jul 2022 03:00:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=F8cMzvkhyXMKKrJL4HV7iWQsiCgB3iVXXWwPTPW7oIU=;
+        b=AgNSahQ21UQuNFBOAO5lkmuNaIWFqTOn8yPy9G6JAr2B3bsHWHmYOAH9WWpGmh7f7J
+         wOXFIcECW85zg79JjH3eZJn2jgKtRChA6ph9tTzKFDDYYO6GmESmQYv7bIB/z1x4zln3
+         Hc8ODB8HZiiGLcUix9BP9NRERrcwVAB3jChkc0jDC7k8terC76IJd7/YrSRyMOa/DE8e
+         w9i5IRuHeoANK+6TMALLyox6ZS7SAD4qolb2Xt0F6rM9vHw2em34jGlKIu85Lhy8FESt
+         V9nPZvZofM3ftmG4v38M+/EHtS+Q7dbowfi+H12X9c2jV50zpjdifHUpvGA3SxbSnbzu
+         P3OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=F8cMzvkhyXMKKrJL4HV7iWQsiCgB3iVXXWwPTPW7oIU=;
+        b=XaUeKFJBrwPHM8zispYrIKi/Sp2A89FwCzp1bMJQpVp4yNiBvYamk/Bkj52XrHI0jP
+         ae7wL5B6CtjVvJo1Xq+otLeFq78fs80cCVLeTcT10p2JJjyHevP9r8ckesAweGLT50Ny
+         dNEb58bkFNyZy59wjdyXSyWoGQwb5hgRvrJ5PhrnBPs1MeIOpE/AT+LO8TmirBAqCh3y
+         g2PQ7fKzdB6XWPefqMLKVDMbaENHcC1DDRW2HzggWLdkfW5w3163S/2f6GbR193xzUmi
+         TaT9ruhSdP7RAWhmj+qI1MjOL4lHL/H1E9hXsBaCHxO86Gs4AMYpKqXyf3hcYj6ODwI0
+         u+0g==
+X-Gm-Message-State: AJIora/RFTaeKguXGF/pWmdYRYHDptjp5U6PRy6jI95VS3DHwluB2y11
+        kxwNh6bEmefiD/fPsxIf7UklzgaMO4hrVeZSsZY=
+X-Google-Smtp-Source: AGRyM1tzQ0rc7C26HZnE/M+YU4aI0xsjQDwS92N1L5ZCjqCDLmO279LxoDRplaJuYPaAN99qtPUJAiqoUAGTWSRixeY=
+X-Received: by 2002:a05:6402:501d:b0:437:e000:a898 with SMTP id
+ p29-20020a056402501d00b00437e000a898mr2800261eda.265.1659088802585; Fri, 29
+ Jul 2022 03:00:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220727064321.2953971-7-mw@semihalf.com> <20220727143147.u6yd6wqslilspyhw@skbuf>
+ <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+ <20220727163848.f4e2b263zz3vl2hc@skbuf> <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
+ <20220727211112.kcpbxbql3tw5q5sx@skbuf> <CAPv3WKcc2i6HsraP3OSrFY0YiBOAHwBPxJUErg_0p7mpGjn3Ug@mail.gmail.com>
+ <20220728195607.co75o3k2ggjlszlw@skbuf> <YuLvFQiZP6qmWcME@lunn.ch>
+ <CAPv3WKeD_ZXeH-Y_YP91Ba6nZagzBVPoWbmFE8WtRw-NYxdEaA@mail.gmail.com> <YuMLwlqfhQoaNh6K@lunn.ch>
+In-Reply-To: <YuMLwlqfhQoaNh6K@lunn.ch>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 29 Jul 2022 11:59:22 +0200
+Message-ID: <CAHp75VeV-pFJzam_42c1w7eESWhwnxsJ4eHX5wzwLCHjKC2neQ@mail.gmail.com>
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to fwnode_find_net_device_by_node()
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michael Walle <mwalle@kernel.org>
-Subject: RE: [PATCH] wilc1000: fix DMA on stack objects
-Thread-Topic: [PATCH] wilc1000: fix DMA on stack objects
-Thread-Index: AQHYopWhqNxmqPlyb02i77gvPBc+j62VGWMQ
-Date:   Fri, 29 Jul 2022 09:51:12 +0000
-Message-ID: <0ed9ec85a55941fd93773825fe9d374c@AcuMS.aculab.com>
-References: <20220728152037.386543-1-michael@walle.cc>
-In-Reply-To: <20220728152037.386543-1-michael@walle.cc>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Walle
-> Sent: 28 July 2022 16:21
-> 
-> From: Michael Walle <mwalle@kernel.org>
-> 
-> Sometimes wilc_sdio_cmd53() is called with addresses pointing to an
-> object on the stack. E.g. wilc_sdio_write_reg() will call it with an
-> address pointing to one of its arguments. Detect whether the buffer
-> address is not DMA-able in which case a bounce buffer is used. The bounce
-> buffer itself is protected from parallel accesses by sdio_claim_host().
-> 
-> Fixes: 5625f965d764 ("wilc1000: move wilc driver out of staging")
-> Signed-off-by: Michael Walle <mwalle@kernel.org>
-> ---
-> The bug itself probably goes back way more, but I don't know if it makes
-> any sense to use an older commit for the Fixes tag. If so, please suggest
-> one.
-> 
-> The bug leads to an actual error on an imx8mn SoC with 1GiB of RAM. But the
-> error will also be catched by CONFIG_DEBUG_VIRTUAL:
-> [    9.817512] virt_to_phys used for non-linear address: (____ptrval____) (0xffff80000a94bc9c)
-> 
->  .../net/wireless/microchip/wilc1000/sdio.c    | 28 ++++++++++++++++---
->  1 file changed, 24 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c
-> b/drivers/net/wireless/microchip/wilc1000/sdio.c
-> index 7962c11cfe84..e988bede880c 100644
-> --- a/drivers/net/wireless/microchip/wilc1000/sdio.c
-> +++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
-> @@ -27,6 +27,7 @@ struct wilc_sdio {
->  	bool irq_gpio;
->  	u32 block_size;
->  	int has_thrpt_enh3;
-> +	u8 *dma_buffer;
->  };
-> 
->  struct sdio_cmd52 {
-> @@ -89,6 +90,9 @@ static int wilc_sdio_cmd52(struct wilc *wilc, struct sdio_cmd52 *cmd)
->  static int wilc_sdio_cmd53(struct wilc *wilc, struct sdio_cmd53 *cmd)
->  {
->  	struct sdio_func *func = container_of(wilc->dev, struct sdio_func, dev);
-> +	struct wilc_sdio *sdio_priv = wilc->bus_data;
-> +	bool need_bounce_buf = false;
-> +	u8 *buf = cmd->buffer;
->  	int size, ret;
-> 
->  	sdio_claim_host(func);
-> @@ -100,12 +104,20 @@ static int wilc_sdio_cmd53(struct wilc *wilc, struct sdio_cmd53 *cmd)
->  	else
->  		size = cmd->count;
-> 
-> +	if ((!virt_addr_valid(buf) || object_is_on_stack(buf)) &&
+On Fri, Jul 29, 2022 at 12:29 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> On Thu, Jul 28, 2022 at 11:23:31PM +0200, Marcin Wojtas wrote:
 
-How cheap are the above tests?
-It might just be worth always doing the 'bounce'?
+...
 
-> +	    !WARN_ON_ONCE(size > WILC_SDIO_BLOCK_SIZE)) {
+> ACPI and DT are different things, so i don't see why they need to
+> share code.
 
-That WARN() ought to be an error return?
-Or just assume that large buffers will dma-capable?
+Yes and no.
 
-	David
+ACPI _DSD extension allows us to share a lot of code when it comes to
+specific device properties (that are not standardized anyhow by ACPI
+specification, and for the record many of them even may not, but some
+are, like MIPI camera). Maybe you want to have something like a
+property standard for DSA that can be published as MIPI or so and then
+that part of the code of course may very well be shared. Discussed
+MDIOSerialBus() resource type is pure ACPI thingy if going to be
+standardized and indeed, that part can't be shared.
 
-> +		need_bounce_buf = true;
-> +		buf = sdio_priv->dma_buffer;
-> +	}
-> +
->  	if (cmd->read_write) {  /* write */
-> -		ret = sdio_memcpy_toio(func, cmd->address,
-> -				       (void *)cmd->buffer, size);
-> +		if (need_bounce_buf)
-> +			memcpy(buf, cmd->buffer, size);
-> +		ret = sdio_memcpy_toio(func, cmd->address, buf, size);
->  	} else {        /* read */
-> -		ret = sdio_memcpy_fromio(func, (void *)cmd->buffer,
-> -					 cmd->address,  size);
-> +		ret = sdio_memcpy_fromio(func, buf, cmd->address, size);
-> +		if (need_bounce_buf)
-> +			memcpy(cmd->buffer, buf, size);
->  	}
-> 
->  	sdio_release_host(func);
-> @@ -127,6 +139,12 @@ static int wilc_sdio_probe(struct sdio_func *func,
->  	if (!sdio_priv)
->  		return -ENOMEM;
-> 
-> +	sdio_priv->dma_buffer = kzalloc(WILC_SDIO_BLOCK_SIZE, GFP_KERNEL);
-> +	if (!sdio_priv->dma_buffer) {
-> +		ret = -ENOMEM;
-> +		goto free;
-> +	}
-> +
->  	ret = wilc_cfg80211_init(&wilc, &func->dev, WILC_HIF_SDIO,
->  				 &wilc_hif_sdio);
->  	if (ret)
-> @@ -160,6 +178,7 @@ static int wilc_sdio_probe(struct sdio_func *func,
->  	irq_dispose_mapping(wilc->dev_irq_num);
->  	wilc_netdev_cleanup(wilc);
->  free:
-> +	kfree(sdio_priv->dma_buffer);
->  	kfree(sdio_priv);
->  	return ret;
->  }
-> @@ -171,6 +190,7 @@ static void wilc_sdio_remove(struct sdio_func *func)
-> 
->  	clk_disable_unprepare(wilc->rtc_clk);
->  	wilc_netdev_cleanup(wilc);
-> +	kfree(sdio_priv->dma_buffer);
->  	kfree(sdio_priv);
->  }
-> 
-> --
-> 2.30.2
+Entire exercise with fwnodes allows to make drivers (most of or most
+of the parts of) to be shared between different resource providers.
+And this is a cool part about it.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+With Best Regards,
+Andy Shevchenko
