@@ -2,72 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 399F758569F
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 23:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6845856A2
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 23:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239452AbiG2Vmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 17:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
+        id S239438AbiG2Voo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 17:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239394AbiG2Vmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 17:42:43 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4268C3EC;
-        Fri, 29 Jul 2022 14:42:42 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id o3so5690447ple.5;
-        Fri, 29 Jul 2022 14:42:42 -0700 (PDT)
+        with ESMTP id S239328AbiG2Vom (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 17:44:42 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE118C3EC
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 14:44:41 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id y1so5692013pja.4
+        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 14:44:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=U9ERdoGkMZvzk0d296BdeQvJN+IjPfb6o7FkoQLdR/M=;
-        b=fdotl0qjEyBLviXLZ7UQZzfRFUehs5ZVx2Sw1z8xatQbb40IxuBdUylQNU9hajyT4Y
-         rIC8eF+3v0t9nHDrZsXvRIZSSlRrmXmlPIsJHI0obVYKvZTghy1+4mTeHqt4cU9VYp3+
-         WmQgsxV4lCHR6LnyWIJdAst/XhE24O/DNLGdxA94DeIeIjNa7y02U8hMy8bORaimutzI
-         x4t2DwXVj99kFNxp9CXcH6AX+nq0iVI1WoMPcFbVWrLAFnLwtCyhGaR1WW7JEwFhgt/B
-         AZrdqSiIbQ0fi8PpOi9yMRdgTYpUnKMfA1Zx1zuMK9SmFDVIrbk/tuat2jBRCLGrRutM
-         qiOw==
+        bh=AG3Cx+REcnvB64RcYdxCO+ogkVVrATf2Cm8UsJip7n8=;
+        b=qcVn7NVgWMhCk1kqhTLSvEcmsNod7ME112oa2+l5etGV2KDacouTw/7l7btXJeriOA
+         k1WCyjdT6Yw3M6blvAMooeUnjlkQKtLspYuJsmAneOqwCBshMf82YpTLPbZncB+pFA0N
+         fxWvudoyqQw6DuUXKAnf82cD0/qL5kuymxmADSGKTMu8NYcBCJgyJ/0JZNMAXEVPkbkB
+         Gi2vIGOe2+NLnKgx1geLWa/ZNpCKikAE6Y3LgArYqNBNS7mfgRJpemW2CfgKJhvfyPDB
+         UaIwMpm4FIq2cGzhLtKN8e48lCNiQagC7drHH1k23FcWV9XAOqYSMPeWaQboYV7K8JyQ
+         f46Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=U9ERdoGkMZvzk0d296BdeQvJN+IjPfb6o7FkoQLdR/M=;
-        b=14yaJ3xb5RVh4DXiYEHV3vPCp0qmAUMQ1dfRnxkPye2JHnn3yDB+OwI+GzUQ610RDR
-         /23h7oJUbStEHMus8eoifL8zv4o14HL2vnrLhFz+Kqg3du6KoaJRkqZC+GDlaHNymLT5
-         S4A7wsQajcNH6S2wheRxv6tRXbTBq4azZAGGwqGS35SeWFuY9f0L560loSy5Vhk3CzUy
-         pNaiB4Qv4K4o+Xf2VXkZB57QyxxWzxOnYKS166b+I5nP7rlo5+MdjTYVM00v21Cv9x3f
-         8SM3kZZJPyKWThqavlfM6av1s6bkWnmeI5GexpGVrcBpXLtq7bI6sggrzvtMVoCtGDEP
-         dM/w==
-X-Gm-Message-State: ACgBeo0tbSu+joOPP7609nDLLCWwWAptKuCgY+458hIgbtvoUZlL6mB1
-        R0rvU343R1PBYOjF3a7bXCI=
-X-Google-Smtp-Source: AA6agR5NV2m98QvIUu5Am0bVzQka0nv0zoEyUght5ByGJnRE3IVJPC0yfV3R/cqdS5uzjXRMCfEPOw==
-X-Received: by 2002:a17:90b:4b4d:b0:1ef:bff5:de4f with SMTP id mi13-20020a17090b4b4d00b001efbff5de4fmr6834388pjb.120.1659130962281;
-        Fri, 29 Jul 2022 14:42:42 -0700 (PDT)
+        bh=AG3Cx+REcnvB64RcYdxCO+ogkVVrATf2Cm8UsJip7n8=;
+        b=P2KY+vCgroZqGTuqqPpCuK4kGmAAExiQqZC0I1fjfnLxkLR6bgZtaGb9SxsxoY3H8M
+         UAj7Nt78qrgojytxeM51UxEet/8OIKIFrC2X8HD55S2OrKZl4d+G5SCfw1/ABpw0sk03
+         c9WrR7oKsRpI2uNpkjtu3Mpn1EjxM8Na12WfTjWbhGl73ZKk+gGwol+lGpIhGwKvTf/P
+         D4Klq1a7wGJ+1P/jkMrh/WUnBXmgqSQZY9Ee1DfQg0COa4xYk4ZqItYr2Sf+l1+GXBkk
+         i0q9q0J0pWj9IQhzFXrlG//kBrgm+NrT8+XXftdC+3ZlfJyx7w88J+Rox/HwuzHaOTDM
+         U9iQ==
+X-Gm-Message-State: ACgBeo2DP/ArtW8uvbwf4WK8Vh0qQl3/3mBf/Upm4ZIMpk89FBuoM7l+
+        sJdas8cVbPXvi0LUGbMWGcg=
+X-Google-Smtp-Source: AA6agR4PW95eagQiD7IusIUn/wB3aJsZu1Buaf3jbAWPl47I84swE4dul1jn+xpZ7WCkMsaSver71w==
+X-Received: by 2002:a17:90b:3c05:b0:1f4:ca8d:c05e with SMTP id pb5-20020a17090b3c0500b001f4ca8dc05emr1826444pjb.113.1659131080671;
+        Fri, 29 Jul 2022 14:44:40 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d63-20020a636842000000b00412a708f38asm3010053pgc.35.2022.07.29.14.42.39
+        by smtp.googlemail.com with ESMTPSA id u17-20020a170903125100b0016db43e5212sm4107624plh.175.2022.07.29.14.44.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 14:42:41 -0700 (PDT)
-Message-ID: <55aafcc6-e558-dffb-babb-d3bacea615e8@gmail.com>
-Date:   Fri, 29 Jul 2022 14:42:38 -0700
+        Fri, 29 Jul 2022 14:44:40 -0700 (PDT)
+Message-ID: <2a159954-7175-b747-a53b-0282998eec90@gmail.com>
+Date:   Fri, 29 Jul 2022 14:44:31 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [net-next PATCH v5 00/14] net: dsa: qca8k: code split for qca8k
+Subject: Re: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
+ shared ports have the properties they need
 Content-Language: en-US
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Christian Marangi <ansuelsmth@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, gregkh@linuxfoundation.org, axboe@kernel.dk,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20220727113523.19742-1-ansuelsmth@gmail.com>
- <165907261973.17632.10185478057101306176.git-patchwork-notify@kernel.org>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Mans Rullgard <mans@mansr.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>
+References: <20220729132119.1191227-1-vladimir.oltean@nxp.com>
+ <20220729132119.1191227-5-vladimir.oltean@nxp.com>
+ <CAPv3WKe7BVS3cjPws69Zi=XqBE3UkgQM1yLKJgmphiQO_n8Jgw@mail.gmail.com>
+ <20220729183444.jzr3eoj6xdumezwu@skbuf>
+ <CAPv3WKfLc_3D+BQg0Mhp9t8kHzpfYo1SKZkSDHYBLEoRbTqpmw@mail.gmail.com>
+ <YuROg1t+dXMwddi6@lunn.ch> <7a8b57c3-5b5a-dfc8-67cb-52061fb9085e@gmail.com>
+ <CAPv3WKcoi8M6WmEtUXAObhRjJmR3jm7MguWUyw=RJQfNnt7c6w@mail.gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <165907261973.17632.10185478057101306176.git-patchwork-notify@kernel.org>
+In-Reply-To: <CAPv3WKcoi8M6WmEtUXAObhRjJmR3jm7MguWUyw=RJQfNnt7c6w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,64 +117,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/22 22:30, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
-> 
-> This series was applied to netdev/net-next.git (master)
-> by Jakub Kicinski <kuba@kernel.org>:
-> 
-> On Wed, 27 Jul 2022 13:35:09 +0200 you wrote:
->> This is needed ad ipq4019 SoC have an internal switch that is
->> based on qca8k with very minor changes. The general function is equal.
+On 7/29/22 14:33, Marcin Wojtas wrote:
+> pt., 29 lip 2022 o 23:24 Florian Fainelli <f.fainelli@gmail.com> napisał(a):
 >>
->> Because of this we split the driver to common and specific code.
+>> On 7/29/22 14:17, Andrew Lunn wrote:
+>>>> What I propose is to enforce more strictly an update of DT description
+>>>> with a specified timeline, abandoning 'camps' idea and driver-specific
+>>>> contents in the generic code.
+>>>
+>>> Regressions are the problem. We are supposed to be backwards
+>>> compatible with older DT blobs. If we now say old DT blobs are
+>>> invalid, and refuse to probe, we cause a regression.
+>>>
+>>> For some of the in kernel DT files using the mv88e6xxx i can make a
+>>> good guess at what the missing properties are. However, i'm bound to
+>>> guess wrong at some point, and cause a regression. So we could change
+>>> just those we can test. But at some point, the other blobs are going
+>>> to fail the enforces checks and cause a regression anyway.
+>>>
+>>> And what about out of tree blobs? Probably OpenWRT have some. Do we
+>>> want to cause them to regress?
 >>
->> As the common function needs to be moved to a different file to be
->> reused, we had to convert every remaining user of qca8k_read/write/rmw
->> to regmap variant.
->> We had also to generilized the special handling for the ethtool_stats
->> function that makes use of the autocast mib. (ipq4019 will have a
->> different tagger and use mmio so it could be quicker to use mmio instead
->> of automib feature)
->> And we had to convert the regmap read/write to bulk implementation to
->> drop the special function that makes use of it. This will be compatible
->> with ipq4019 and at the same time permits normal switch to use the eth
->> mgmt way to send the entire ATU table read/write in one go.
+>> No, we do not want that, which is why Vladimir's approach IMHO is reasonable in that it acknowledges mistakes or shortcomings of the past into the present, and expects the future to be corrected and not repeat those same mistakes. The deprectiation window idea is all well and good in premise, however with such a large user base, I am not sure it is going to go very far unfortunately, nor that it will hinder our ability to have a more maintainable DSA framework TBH.
 >>
->> [...]
+>> BTW, OpenWrt does not typically ship DT blobs that stay frozen, all of the kernel, DTBs, root filesystem, and sometimes a recent u-boot copy will be updated at the same time because very rarely do the existing boot loader satisfy modern requirements (PSCI, etc.).
 > 
-> Here is the summary with links:
->   - [net-next,v5,01/14] net: dsa: qca8k: cache match data to speed up access
->     https://git.kernel.org/netdev/net-next/c/3bb0844e7bcd
->   - [net-next,v5,02/14] net: dsa: qca8k: make mib autocast feature optional
->     https://git.kernel.org/netdev/net-next/c/533c64bca62a
->   - [net-next,v5,03/14] net: dsa: qca8k: move mib struct to common code
->     https://git.kernel.org/netdev/net-next/c/027152b83043
->   - [net-next,v5,04/14] net: dsa: qca8k: move qca8k read/write/rmw and reg table to common code
->     https://git.kernel.org/netdev/net-next/c/d5f901eab2e9
->   - [net-next,v5,05/14] net: dsa: qca8k: move qca8k bulk read/write helper to common code
->     https://git.kernel.org/netdev/net-next/c/910746444313
->   - [net-next,v5,06/14] net: dsa: qca8k: move mib init function to common code
->     https://git.kernel.org/netdev/net-next/c/fce1ec0c4e2d
->   - [net-next,v5,07/14] net: dsa: qca8k: move port set status/eee/ethtool stats function to common code
->     https://git.kernel.org/netdev/net-next/c/472fcea160f2
->   - [net-next,v5,08/14] net: dsa: qca8k: move bridge functions to common code
->     https://git.kernel.org/netdev/net-next/c/fd3cae2f3ac1
->   - [net-next,v5,09/14] net: dsa: qca8k: move set age/MTU/port enable/disable functions to common code
->     https://git.kernel.org/netdev/net-next/c/b3a302b171f7
->   - [net-next,v5,10/14] net: dsa: qca8k: move port FDB/MDB function to common code
->     https://git.kernel.org/netdev/net-next/c/2e5bd96eea86
->   - [net-next,v5,11/14] net: dsa: qca8k: move port mirror functions to common code
->     https://git.kernel.org/netdev/net-next/c/742d37a84d3f
->   - [net-next,v5,12/14] net: dsa: qca8k: move port VLAN functions to common code
->     https://git.kernel.org/netdev/net-next/c/c5290f636624
->   - [net-next,v5,13/14] net: dsa: qca8k: move port LAG functions to common code
->     https://git.kernel.org/netdev/net-next/c/e9bbf019af44
->   - [net-next,v5,14/14] net: dsa: qca8k: move read_switch_id function to common code
->     https://git.kernel.org/netdev/net-next/c/9d1bcb1f293f
+> Initially, I thought that the idea is a probe failure (hence the camps
+> to prevent that) - but it was clarified later, it's not the case.
 > 
-> You are awesome, thank you!
+> I totally agree and I am all against breaking the backward
+> compatibility (this is why I work on ACPI support that much :) ). The
+> question is whether for existing deployments with 'broken' DT
+> description we would be ok to introduce a dev_warn/WARN_ON message
+> after a kernel update. That would be a case if the check is performed
+> unconditionally - this way we can keep compat strings out of net/dsa.
+> What do you think?
 
-Oh well, at least I reviewed the patches :)
+A warning seems fine and appropriate to give just the right amount of nudge to get things fixed, I would not as far as a full backtrace WARN() because those will definitively upset people's CI in a wayt that seems a bit over reacting. Anyway I do have my share of DT blobs to update.
 -- 
 Florian
