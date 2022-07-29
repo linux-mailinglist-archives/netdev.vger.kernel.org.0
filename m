@@ -2,156 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 021E558544B
-	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 19:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B3BE585457
+	for <lists+netdev@lfdr.de>; Fri, 29 Jul 2022 19:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237943AbiG2RQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 13:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
+        id S238315AbiG2RUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 13:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238249AbiG2RQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 13:16:47 -0400
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8934981489
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 10:16:46 -0700 (PDT)
-Received: by mail-ej1-f45.google.com with SMTP id z23so9639927eju.8
-        for <netdev@vger.kernel.org>; Fri, 29 Jul 2022 10:16:46 -0700 (PDT)
+        with ESMTP id S232488AbiG2RUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 13:20:01 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24EB83225;
+        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so5872185pjf.2;
+        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=hxBFRTN1LZRoFnahsiKcdK0tbZNGdjelWAHFypZYkFw=;
+        b=eiq04DaxAgViGZ9EjXJAweUo+d5rfzN0ZcDsnWBuTVAbrBldprM1+hXUHba9T/4yJa
+         Dfflm8wSp8C681mf5fMlGS0yPjfW38NmFqJbW+39mcFA9u+YjxX+zpB3rnKuGPvmoaCG
+         VMIHDm2ztN7RI+qdvlrDfD86Fngq/U1Tj6Yb1umPyx3nVj1K75u47/ryQMhjVU1tKa2v
+         qHSyD6s/gTlxlRcWAnErIpS1Xa7O1qogS2n4GfwNgYYRSUM/OsLO3H1tLUUo4n5zQivs
+         F7vpYEAWdZ89AvkwKQ4cJGpmLP15VViBvgiBmI1ideW0NrYN/p0WGJvmnm3iSqwoFuLJ
+         5owg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=26des9374/CzrFy5DJDpb080L+e4dcCl9s6cMrN4an4=;
-        b=4nZtzGBtxfqqTfPULtzF/nNO1/F2QTeXtyFMH8NOvMH1xWq0z04C/AIz5jUEfhyj7c
-         EtPCDyu9RXSLuQKus818F/7KP8ro7pZIppvEkJBKtS+6lCu1IOdUslNU3hvP3nv4rQEq
-         FkwPiO2/NJj7Y7D7XX7QFsQNTs4a2GZZjwhuFxmPL/rSY52fDMsxQ9lwS4cu9AcL+RAE
-         Ddj/uFhLxLeoVHsdfg1pDz9KMdsG9TJXjiyw3WfbLcKD5/yeqjvPsqcMdnT1MAYkOFdk
-         /6EMt8SUPhgPxYc6LYA8mUQgPVFlpNM2CMVP+VII/apm4dS4KcwKa153GAlNbHDjr2lY
-         tEDQ==
-X-Gm-Message-State: AJIora+A3Y9M6CAREWEOzp2p9TaV3VPnpxGNOSB9ZvJoxZgwFjsybp4G
-        /iO3AcTF5Q0WfLppMJmec40=
-X-Google-Smtp-Source: AGRyM1tGZg2iH+RQ6qfQjIiJsDeKXP5gEid4DnnyUeANEQwfhOz6TXaWu6W1BkxFnoW/yon2reqkQA==
-X-Received: by 2002:a17:907:7b87:b0:72e:d45a:17af with SMTP id ne7-20020a1709077b8700b0072ed45a17afmr3644213ejc.73.1659115004875;
-        Fri, 29 Jul 2022 10:16:44 -0700 (PDT)
-Received: from localhost (fwdproxy-cln-012.fbsv.net. [2a03:2880:31ff:c::face:b00c])
-        by smtp.gmail.com with ESMTPSA id 20-20020a170906309400b0072b4e4cd346sm1936599ejv.188.2022.07.29.10.16.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 10:16:44 -0700 (PDT)
-From:   Breno Leitao <leitao@debian.org>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, leit@fb.com
-Subject: [PATCH net-next] tcp: socket-specific version of WARN_ON_ONCE()
-Date:   Fri, 29 Jul 2022 10:15:54 -0700
-Message-Id: <20220729171554.3992869-1-leitao@debian.org>
-X-Mailer: git-send-email 2.30.2
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=hxBFRTN1LZRoFnahsiKcdK0tbZNGdjelWAHFypZYkFw=;
+        b=CscgOhR9kFcinc8BeOW+gU8EDiOtdqX25CwXkV0lcmIkVBnvjPiIOnjwXOgyYV9hOb
+         6wt1H4pfdcJWQ39gwj0rMh/sMAohwGcs4xIfHPQnbNGM/aQ7Icu9JXDHxWtMEP0NevHy
+         zsa/9vfqmk3DIp4RGrjZREhNAU/fUPPoT7TAtxDJky+vB3frxu81cco5KObjd/7ZxCHT
+         euFlKcYMHdmZjF9sMJtlAK6I+mJf4n69z4DZO9V+PIPGP4S4TWSOEVbgTi9ALRuRZSP0
+         3435IUutWDFypPuoq4y5F5lni0FpGGvcXERsQuTH81IxNJ7bZCQjs5ZKHbcS84ro7zqR
+         ElhQ==
+X-Gm-Message-State: ACgBeo0SimLQjVPHsfNAbxY/OTzNDbALl5GMLVh/oCGO4nAG7SSO0ncV
+        QxTrV7AZtNSCT5JcyjAw+FI=
+X-Google-Smtp-Source: AA6agR41uGgoEk7+NXJL+sFLmDGhuy+Mni8pojmb/mVvHl4PEVuWbXu8RbyWs4i0T2dCXz60Kcq39w==
+X-Received: by 2002:a17:90b:1d91:b0:1f0:7824:1297 with SMTP id pf17-20020a17090b1d9100b001f078241297mr5773562pjb.126.1659115200308;
+        Fri, 29 Jul 2022 10:20:00 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m14-20020a63710e000000b0041b667a1b69sm2818592pgc.36.2022.07.29.10.19.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 10:19:59 -0700 (PDT)
+Message-ID: <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
+Date:   Fri, 29 Jul 2022 10:19:54 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v3 3/4] net: phy: Add helper to derive the number
+ of ports from a phy mode
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+References: <20220729153356.581444-1-maxime.chevallier@bootlin.com>
+ <20220729153356.581444-4-maxime.chevallier@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220729153356.581444-4-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are cases where we need information about the socket during a
-warning, so, it could help us to find bugs that happens that do not have
-a easily repro.
+On 7/29/22 08:33, Maxime Chevallier wrote:
+> Some phy modes such as QSGMII multiplex several MAC<->PHY links on one
+> single physical interface. QSGMII used to be the only one supported, but
+> other modes such as QUSGMII also carry multiple links.
+> 
+> This helper allows getting the number of links that are multiplexed
+> on a given interface.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+> V1->V2 : New patch
+> V2->V3 : Made PHY_INTERFACE_MODE_INTERNAL 1 port, and added the MAX
+> case.
+> 
+>  drivers/net/phy/phy-core.c | 52 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/phy.h        |  2 ++
+>  2 files changed, 54 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+> index 1f2531a1a876..f8ec12d3d6ae 100644
+> --- a/drivers/net/phy/phy-core.c
+> +++ b/drivers/net/phy/phy-core.c
+> @@ -74,6 +74,58 @@ const char *phy_duplex_to_str(unsigned int duplex)
+>  }
+>  EXPORT_SYMBOL_GPL(phy_duplex_to_str);
+>  
+> +/**
+> + * phy_interface_num_ports - Return the number of links that can be carried by
+> + *			     a given MAC-PHY physical link. Returns 0 if this is
+> + *			     unknown, the number of links else.
+> + *
+> + * @interface: The interface mode we want to get the number of ports
+> + */
+> +int phy_interface_num_ports(phy_interface_t interface)
+> +{
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_NA:
+> +		return 0;
+> +	case PHY_INTERFACE_MODE_INTERNAL:
 
-BPF congestion control algorithms can change socket state in unexpected
-ways, leading to WARNings. Additional information about the socket state
-is useful to identify the culprit.
-
-This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
-attaches it to tcp_snd_cwnd_set().
-
-Signed-off-by: Breno Leitao <leitao@debian.org>
----
- include/net/tcp.h       |  3 ++-
- include/net/tcp_debug.h | 10 ++++++++++
- net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+), 1 deletion(-)
- create mode 100644 include/net/tcp_debug.h
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 071735e10872..eca7e58a3117 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -40,6 +40,7 @@
- #include <net/inet_ecn.h>
- #include <net/dst.h>
- #include <net/mptcp.h>
-+#include <net/tcp_debug.h>
- 
- #include <linux/seq_file.h>
- #include <linux/memcontrol.h>
-@@ -1216,7 +1217,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
- 
- static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
- {
--	WARN_ON_ONCE((int)val <= 0);
-+	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
- 	tp->snd_cwnd = val;
- }
- 
-diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-new file mode 100644
-index 000000000000..50e96d87d335
---- /dev/null
-+++ b/include/net/tcp_debug.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_TCP_DEBUG_H
-+#define _LINUX_TCP_DEBUG_H
-+
-+void tcp_sock_warn(const struct tcp_sock *tp);
-+
-+#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-+		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-+
-+#endif  /* _LINUX_TCP_DEBUG_H */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 2faaaaf540ac..7abd1634e876 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4556,6 +4556,36 @@ int tcp_abort(struct sock *sk, int err)
- }
- EXPORT_SYMBOL_GPL(tcp_abort);
- 
-+void tcp_sock_warn(const struct tcp_sock *tp)
-+{
-+	const struct sock *sk = (const struct sock *)tp;
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	WARN_ON(1);
-+
-+	if (!tp)
-+		return;
-+
-+	pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
-+		sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
-+		ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
-+			&inet->inet_daddr);
-+		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case AF_INET6:
-+		pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
-+			&sk->sk_v6_daddr);
-+		break;
-+#endif
-+	}
-+}
-+EXPORT_SYMBOL_GPL(tcp_sock_warn);
-+
- extern struct tcp_congestion_ops tcp_reno;
- 
- static __initdata unsigned long thash_entries;
+Maybe this was covered in the previous iteration, but cannot the default case return 1, and all of the cases that need an explicit non-1 return value are handled? Enumeration all of those that do need to return 1 does not really scale.
 -- 
-2.30.2
-
+Florian
