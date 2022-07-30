@@ -2,85 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1C5585853
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 05:43:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748B3585859
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 05:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232617AbiG3Dnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 23:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
+        id S238817AbiG3Dyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 23:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbiG3Dnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 23:43:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E417B6D2D1;
-        Fri, 29 Jul 2022 20:43:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C39DB82A44;
-        Sat, 30 Jul 2022 03:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B30AAC433C1;
-        Sat, 30 Jul 2022 03:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659152627;
-        bh=TncN4pJDqyDsQQJBNmQCqtvmBhz35mZwXUkkqwrJYEw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GL7HKou30XXgxw2Tpz9FKzVMRR6FvXoMgb+hg9MVDjdsoGOcTBgVd2SEftLkyZJWr
-         JoOImjJlKMm5nwAOK+PlfUjWTpTjoiBwbnHEdbNX9Q1mR82tYqoc11Mz0QqlpwxwdI
-         sQS3HqHYBZq1Tzi50iT+VGvpSpAUxsn7pVGaEuIow7q5Vgo4c/UYXnAUXyBziHvH9Y
-         /ilOeS7GuY5qEdu00cCaIYVzKf+jr7XFB3RFE13eE5HzWNv+2UZ3sjd7qwD2sCadXJ
-         d41RKdNweCP8P5BYNeC8o/1K3P3j36ERFAQPIjBR40h/+DFE5uzrAQdWmItNIpaF0f
-         QDAbCwmFyTbBQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        kernel test robot <lkp@intel.com>, jiri@nvidia.com,
-        corbet@lwn.net, vikas.gupta@broadcom.com, gospo@broadcom.com,
-        linux-doc@vger.kernel.org
-Subject: [PATCH net-next] docs: add devlink-selftests to the index
-Date:   Fri, 29 Jul 2022 20:43:36 -0700
-Message-Id: <20220730034336.746490-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.1
+        with ESMTP id S230251AbiG3Dyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 23:54:31 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36DD743E0;
+        Fri, 29 Jul 2022 20:54:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7YiLpMaw2/hxuRrEztHHabGbkHQasdt3WXqJtG/B6gw=; b=h6XBNvyFKzvxULfonXBLLWfWS1
+        u9687BHCigWyaGq0EikFteQpmPwoy8uAPviM+sB/X0ZJwLLz9hwfpz16IHQIHlzwof6+0WTpJaYXZ
+        Nxbblkknonx6RC6kIZs9z72+xkZScI3Qloyrs+nV+Uo6u/RCpyrRCUdCiwh21Zhtc8kk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oHdYR-00BzQN-P6; Sat, 30 Jul 2022 05:54:19 +0200
+Date:   Sat, 30 Jul 2022 05:54:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v3 3/4] net: phy: Add helper to derive the
+ number of ports from a phy mode
+Message-ID: <YuSra19Sm0VAM9T9@lunn.ch>
+References: <20220729153356.581444-1-maxime.chevallier@bootlin.com>
+ <20220729153356.581444-4-maxime.chevallier@bootlin.com>
+ <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-build bot says:
-  Documentation/networking/devlink/devlink-selftests.rst: WARNING: document isn't included in any toctree
+> > +int phy_interface_num_ports(phy_interface_t interface)
+> > +{
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_NA:
+> > +		return 0;
+> > +	case PHY_INTERFACE_MODE_INTERNAL:
+> 
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 08f588fa301b ("devlink: introduce framework for selftests")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: jiri@nvidia.com
-CC: corbet@lwn.net
-CC: vikas.gupta@broadcom.com
-CC: gospo@broadcom.com
-CC: linux-doc@vger.kernel.org
----
- Documentation/networking/devlink/index.rst | 1 +
- 1 file changed, 1 insertion(+)
+> Maybe this was covered in the previous iteration, but cannot the
+> default case return 1, and all of the cases that need an explicit
+> non-1 return value are handled? Enumeration all of those that do
+> need to return 1 does not really scale.
 
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index 850715512293..e3a5f985673e 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -38,6 +38,7 @@ general.
-    devlink-region
-    devlink-resource
-    devlink-reload
-+   devlink-selftests
-    devlink-trap
-    devlink-linecard
- 
--- 
-2.37.1
+It is a trade off. In the current form, when somebody adds a new enum
+value, gcc will give a warning if they forget to add it here. If we
+default to 1, new values are probably going to be missed here, and
+could end up with the incorrect return value.
 
+I think the compiler warning actually does make it scale. And the
+generated code probably very similar either way.
+
+	  Andrew
