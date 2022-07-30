@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E167585844
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 05:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B35585845
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 05:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239608AbiG3DaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 23:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
+        id S239772AbiG3Db6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 23:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiG3DaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 23:30:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB268DEEA;
-        Fri, 29 Jul 2022 20:30:16 -0700 (PDT)
+        with ESMTP id S230304AbiG3Dbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 23:31:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414D1EE2C;
+        Fri, 29 Jul 2022 20:31:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57322B82A44;
-        Sat, 30 Jul 2022 03:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EC1AEC433D7;
-        Sat, 30 Jul 2022 03:30:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFFE561DE5;
+        Sat, 30 Jul 2022 03:31:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3E1EC433C1;
+        Sat, 30 Jul 2022 03:31:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659151814;
-        bh=q+TzweyM5DIsiCgq3bmQnvgqxwJyoIZRSOESFgj5H0c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sRgPw4cMN/gqKItPq043Zx0tK/0bUZd1rJgEJzamSH6Avsf58T5xz3UbsYfwquBmL
-         Ew4V2MtIBCAeV5JSuxVCXvAVQruEsawIV+s851G++xG1XqQVt7hdP0DhjUc12QrjQ9
-         3OWLogGY//q8IJYSHFUqL1x3D0AJ0z+QoTWWkJKOtlEvltHMYGxAX5ecECw8XGrJp/
-         6L1JUgNfaFnrkDvByE9mRv06+eHxCbMBiz7QCayL0mp9IEQKT13LoHvPMhkME+efj+
-         fL7jLyysYvzspDI99+TiS9ZOtam4sDLA455GPLWRTqtcb1+DEjtH9uf2lYcrZNSH4e
-         pVHPYWw1nx7hA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF80AC43140;
-        Sat, 30 Jul 2022 03:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1659151913;
+        bh=T/qBos0C3RBWMkL5/pbGZ69/EtykuvP+aJ7ZH+m/CJY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B4Gb1PnPZFj0tkRvAJqIas1gkfdrW5R5t+gqum1lmq07F8YayHEoKFnVH5dp8pqbG
+         mCFr+g1oPJKEaE4UnxFoDzEDcXuTJFrVxLcz17c1g905SVwC+RlwC33nW9sbJKq/AA
+         /RI9QY7lXQcXN80AlpHoloDpTLBp9nPS8taP22w8cP5MeA69gxEalgwKiZZo4lcMig
+         wdgHV1vrOaXnMhJKUTErx1FCMfqOf6Gfri4ayAGRH3AhP772OI5sRLkc7YY48n+cDV
+         itCd42rt4wpA0mD6yOv25L/6LR4WgYNj6fBGPTAtB9QrWC4uROBRshKEL6pb43ca2L
+         Q/X+1mANjboHw==
+Date:   Fri, 29 Jul 2022 20:31:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mike Pattrick <mkp@redhat.com>
+Cc:     netdev@vger.kernel.org, pvalerio@redhat.com,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] openvswitch: Fix double reporting of drops
+ in dropwatch
+Message-ID: <20220729203151.3e849337@kernel.org>
+In-Reply-To: <20220728161259.1088662-1-mkp@redhat.com>
+References: <20220728161259.1088662-1-mkp@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: marvell: prestera: uninitialized variable bug
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165915181384.2630.12954054467926209688.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Jul 2022 03:30:13 +0000
-References: <YuKeBBuGtsmd7QdT@kili>
-In-Reply-To: <YuKeBBuGtsmd7QdT@kili>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     tchornyi@marvell.com, oleksandr.mazur@plvision.eu,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yevhen.orlov@plvision.eu,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,27 +57,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 28 Jul 2022 17:32:36 +0300 you wrote:
-> The "ret" variable needs to be initialized at the start.
+On Thu, 28 Jul 2022 12:12:58 -0400 Mike Pattrick wrote:
+> Frames sent to userspace can be reported as dropped in
+> ovs_dp_process_packet, however, if they are dropped in the netlink code
+> then netlink_attachskb will report the same frame as dropped.
 > 
-> Fixes: 52323ef75414 ("net: marvell: prestera: add phylink support")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> This patch checks for error codes which indicate that the frame has
+> already been freed.
+> 
+> Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2109946
+
+Please remove the Bugzilla link, it doesn't seem to be public.
+If it is then it should be a Link: tag, not a custom tag for bz.
+
+> Signed-off-by: Mike Pattrick <mkp@redhat.com>
 > ---
->  drivers/net/ethernet/marvell/prestera/prestera_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  net/openvswitch/datapath.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index 7e8a39a35627..029f9c3e1c28 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -252,10 +252,20 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>  
+>  		upcall.mru = OVS_CB(skb)->mru;
+>  		error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+> -		if (unlikely(error))
+> -			kfree_skb(skb);
+> -		else
+> +		switch (error) {
+> +		case 0:
+> +			fallthrough;
+> +		case -EAGAIN:
+> +			fallthrough;
+> +		case -ERESTARTSYS:
+> +			fallthrough;
 
-Here is the summary with links:
-  - [net-next] net: marvell: prestera: uninitialized variable bug
-    https://git.kernel.org/netdev/net-next/c/71930846b36f
+No need to add the fallthrough;s between two case statements.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> +		case -EINTR:
+>  			consume_skb(skb);
+> +			break;
+> +		default:
+> +			kfree_skb(skb);
+> +			break;
+> +		}
+>  		stats_counter = &stats->n_missed;
+>  		goto out;
+>  	}
 
