@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A53D5585B38
+	by mail.lfdr.de (Postfix) with ESMTP id 59875585B37
 	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 18:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235191AbiG3QD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 12:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40550 "EHLO
+        id S235137AbiG3QD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 12:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235084AbiG3QDx (ORCPT
+        with ESMTP id S235014AbiG3QDx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 12:03:53 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DFCC32;
-        Sat, 30 Jul 2022 09:03:49 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id y11so5609330qvn.3;
-        Sat, 30 Jul 2022 09:03:49 -0700 (PDT)
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B340175AB;
+        Sat, 30 Jul 2022 09:03:52 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id e12so3108769qkl.2;
+        Sat, 30 Jul 2022 09:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=44S36YW/XCMky1KM2xLak/T6CHlN1QC9bWrP+1FyJlw=;
-        b=g0Q21UbliVaSVVRMLR3KfiO1ctfkqbex+ADs1SZPfocxQiayXVsduesPlZ4XJEiDIX
-         MbPdTPlfkRj/GfrNerNSTILsktSvye1srw6OW48ozmemcia6FSJlgkXOKVrgKLANXPmu
-         +FF/9kp/oYfvE7hwMdi6PzVw2QgMACsouWINDbI3zFGjUzpPw/b098zruYu7M0QyxJVR
-         wkqAQxQKbgxWILj3gAe+4QNYGSNupa3H3lBxy4TR2c4d7ZMnUOr9D3b+A3G93pV0yHxu
-         SjwEyUuZRP1dzX4nkN6wf9HzXqxi3wo2x6YbfP2j6OxJYslXCvJOkk6/wJiWe97PEDUP
-         ii0g==
+        bh=zRKN74TQjwEeR1MXdcsMHUkpi1gfgBWwqBLJHY0W5pg=;
+        b=e8obaoeKKLn4nDRJrPnpp+Nx91jHsh+5jGuLA3o7/VXte2H4xHqwCTGOn7N/ElemPK
+         MFg6uCb2jlRoLX9GgA24VUIL1lnmH4D+w+C33UK9+pNXxer39+llNCC+Wr02JgR2Llw3
+         Ran1qCCSgTh1O1r7SV95sNfZwjKyeZ1ogrlIUio3i9j98DyrUGqHbDhQU8GOD58+m2Kd
+         /j5dUOQpykwJ/1eOkbrFTOeEdXCow4cXUi0V5K19/nkBL8e27mePsdpTwmt0yz6Vn8bS
+         O+pKMBzosX+WPPzrYaxvj7oNz1b58i+aAP980qMehS8gGMkahcHDtrfQNj1DfE41DY6n
+         f8jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=44S36YW/XCMky1KM2xLak/T6CHlN1QC9bWrP+1FyJlw=;
-        b=k44Z+mZ4u9hXSj3NHFUYEaQ7aKTDiaamGgLuixxfhir0mr3dStxvMRdU3a/qKFcOen
-         okR1nygYSi+iD6q56Wd2MOJXd0ZxPZE8OnA9Ftsv+a+ZJRV+ma7iaWzqkB3SFRut9FHO
-         tKHeqPfAmaJyBCuR3gU/roo8lIxGc5OE1tmjVGabdlA6X0lERaecpquqI9ZCpUjqPXrm
-         ltAMFd0BOzVZxicFg2IyI6SEU3WqObWF0GllcrzlsXLKANhiJZ680WF/5Eycnmmru660
-         3B9Aid5GRmvhu+z23aWJCUFOlqJdlKUn+JW5vqVzYYE0Ciw8kUhSi0xSDqeh1LqWLnAv
-         bD/g==
-X-Gm-Message-State: ACgBeo2JZFN5Aa6qMEkaDkK69a/sVPJ4qSeK5UsFz8cJspuluOa8IJQg
-        C1WGAMG0BnaGLB89URljQ2A=
-X-Google-Smtp-Source: AA6agR72LGiu7HIQOzRisPgkgt460ylBNaCgT7TT8h/4h/r1C95WTkSNIdRTCU8PS2wEFypJCH4CJA==
-X-Received: by 2002:a05:6214:d47:b0:474:7f18:4764 with SMTP id 7-20020a0562140d4700b004747f184764mr7535850qvr.15.1659197028459;
-        Sat, 30 Jul 2022 09:03:48 -0700 (PDT)
+        bh=zRKN74TQjwEeR1MXdcsMHUkpi1gfgBWwqBLJHY0W5pg=;
+        b=S4I4MbT4FvIvtgIjuuTt9AbmKwtKVlbuiujodCOb3UoKESxj2kKfERQ/G9iBXn0fuV
+         SUsAQm23wv0Ef3VAQXX19JZMfJP6WFwpcXQJLYE3EF5UG0e+MI5NQAs/gu9kRmY8neOe
+         qPjoh8iJtSBAXBxqoCXp9qPggX+tZCK24xkeJW7m0tGk3JkVzufvN3usPW/d2el2CTkR
+         9MUgx1JCmhcGWBcEK7onJvNSJpBQa5aFoaj2O7Bi8wTEUbvrf8hMpr7Ef0IlMCzAYeeW
+         QCVeR2D6lR6He8clyJmjJ7u16NAzA23vtDRmzP1R9DuGyaImmfu8KWSKKIdAghpEg10X
+         ReTg==
+X-Gm-Message-State: AJIora/xs06LCFaarn8BYlR02W1qvZb+BuRQuR+YgePefWQCdoFXsWOV
+        /BD+cOuwVLB7Qj/y6pmWjpQ=
+X-Google-Smtp-Source: AGRyM1tQF4ZDhWXmr4879jKeaqsCfxS0+QIrYK0Pb8ySlm3tndMJl7qWrMdy9M/hl4hg1/I5gQJxBw==
+X-Received: by 2002:a05:620a:2453:b0:6b6:104a:b9b4 with SMTP id h19-20020a05620a245300b006b6104ab9b4mr6449215qkn.713.1659197031240;
+        Sat, 30 Jul 2022 09:03:51 -0700 (PDT)
 Received: from ada ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id do54-20020a05620a2b3600b006b5e833d996sm4877020qkb.22.2022.07.30.09.03.47
+        by smtp.gmail.com with ESMTPSA id h3-20020a05620a400300b006b5da3c8d81sm4986651qko.73.2022.07.30.09.03.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jul 2022 09:03:47 -0700 (PDT)
+        Sat, 30 Jul 2022 09:03:50 -0700 (PDT)
 From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 To:     aroulin@nvidia.com
 Cc:     sbrivio@redhat.com, roopa@nvidia.com,
@@ -58,9 +58,9 @@ Cc:     sbrivio@redhat.com, roopa@nvidia.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bridge@lists.linux-foundation.org,
         Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH net-next 1/3] net: bridge: export br_vlan_upper_change
-Date:   Sat, 30 Jul 2022 12:03:30 -0400
-Message-Id: <75d00c06deadc0386811874f9e4edbf5381df949.1659195179.git.sevinj.aghayeva@gmail.com>
+Subject: [PATCH net-next 2/3] net: 8021q: fix bridge binding behavior for vlan interfaces
+Date:   Sat, 30 Jul 2022 12:03:31 -0400
+Message-Id: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659195179.git.sevinj.aghayeva@gmail.com>
 References: <cover.1659195179.git.sevinj.aghayeva@gmail.com>
@@ -76,75 +76,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function contains the logic for correctly setting the bridge
-binding behavior of a vlan interface. Therefore, it should be executed
-whenever the bridge binding flag of a vlan interface changes via the
-vlan_dev_change_flags function in the 8021q module. Currently this
-function is private, and it is only executed when a vlan interface is
-first created. Export the function so that it can be called from
-vlan_dev_change_flags.
+Currently, when one creates a vlan interface with the bridge binding
+flag disabled (using ip link add... command) and then enables the
+bridge binding flag afterwards (using ip link set... command), the
+second command has no effect. In other words, the vlan interface does
+not follow the status of the ports in its vlan.
+
+The root cause of this problem is as follows. The correct bridge
+binding behavior depends on two flags being set: a per vlan interface
+flag (VLAN_FLAG_BRIDGE_BINDING) and global per bridge flag
+(BROPT_VLAN_BRIDGE_BINDING); the ip link set command calls
+vlan_dev_change_flags function, which sets only the per vlan interface
+flag.
+
+The correct behavior is to set/unset per bridge flag as well,
+depending on whether there are other vlan interfaces with bridge
+binding flags set. The logic for this behavior is already captured in
+br_vlan_upper_change function. This patch fixes the bridge binding
+behavior by calling the br_vlan_upper_change function whenever the per
+interface flag is changed via vlan_dev_change_flags function.
 
 Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
 Reviewed-by: Andy Roulin <aroulin@nvidia.com>
 Reviewed-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- include/linux/if_bridge.h | 9 +++++++++
- net/bridge/br_vlan.c      | 7 ++++---
- 2 files changed, 13 insertions(+), 3 deletions(-)
+ net/8021q/vlan.h     |  2 +-
+ net/8021q/vlan_dev.c | 21 ++++++++++++++++++---
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index d62ef428e3aa..0d92b0ed0961 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -180,6 +180,9 @@ void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
- bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
- u8 br_port_get_stp_state(const struct net_device *dev);
- clock_t br_get_ageing_time(const struct net_device *br_dev);
-+void br_vlan_upper_change(struct net_device *dev,
-+			  struct net_device *upper_dev,
-+			  bool linking);
- #else
- static inline struct net_device *
- br_fdb_find_port(const struct net_device *br_dev,
-@@ -208,6 +211,12 @@ static inline clock_t br_get_ageing_time(const struct net_device *br_dev)
+diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
+index 5eaf38875554..71947cdcfaaa 100644
+--- a/net/8021q/vlan.h
++++ b/net/8021q/vlan.h
+@@ -130,7 +130,7 @@ void vlan_dev_set_ingress_priority(const struct net_device *dev,
+ int vlan_dev_set_egress_priority(const struct net_device *dev,
+ 				 u32 skb_prio, u16 vlan_prio);
+ void vlan_dev_free_egress_priority(const struct net_device *dev);
+-int vlan_dev_change_flags(const struct net_device *dev, u32 flag, u32 mask);
++int vlan_dev_change_flags(struct net_device *dev, u32 flag, u32 mask);
+ void vlan_dev_get_realdev_name(const struct net_device *dev, char *result,
+ 			       size_t size);
+ 
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index 035812b0461c..93680bac60b3 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -30,6 +30,7 @@
+ #include "vlan.h"
+ #include "vlanproc.h"
+ #include <linux/if_vlan.h>
++#include <linux/if_bridge.h>
+ #include <linux/netpoll.h>
+ 
+ /*
+@@ -211,10 +212,11 @@ int vlan_dev_set_egress_priority(const struct net_device *dev,
+ /* Flags are defined in the vlan_flags enum in
+  * include/uapi/linux/if_vlan.h file.
+  */
+-int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
++int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
  {
+ 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
+ 	u32 old_flags = vlan->flags;
++	struct net_device *br_dev;
+ 
+ 	if (mask & ~(VLAN_FLAG_REORDER_HDR | VLAN_FLAG_GVRP |
+ 		     VLAN_FLAG_LOOSE_BINDING | VLAN_FLAG_MVRP |
+@@ -223,19 +225,32 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
+ 
+ 	vlan->flags = (old_flags & ~mask) | (flags & mask);
+ 
+-	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
++	if (!netif_running(dev))
++		return 0;
++
++	if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
+ 		if (vlan->flags & VLAN_FLAG_GVRP)
+ 			vlan_gvrp_request_join(dev);
+ 		else
+ 			vlan_gvrp_request_leave(dev);
+ 	}
+ 
+-	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
++	if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
+ 		if (vlan->flags & VLAN_FLAG_MVRP)
+ 			vlan_mvrp_request_join(dev);
+ 		else
+ 			vlan_mvrp_request_leave(dev);
+ 	}
++
++	if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
++	    netif_is_bridge_port(dev)) {
++		br_dev = vlan->real_dev;
++		if (vlan->flags & VLAN_FLAG_BRIDGE_BINDING)
++			br_vlan_upper_change(br_dev, dev, true);
++		else
++			br_vlan_upper_change(br_dev, dev, false);
++	}
++
  	return 0;
  }
-+
-+static inline void br_vlan_upper_change(struct net_device *dev,
-+					struct net_device *upper_dev,
-+					bool linking)
-+{
-+}
- #endif
  
- #endif
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 6e53dc991409..6bfc36da5a88 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -1653,9 +1653,9 @@ static void br_vlan_set_all_vlan_dev_state(struct net_bridge_port *p)
- 	}
- }
- 
--static void br_vlan_upper_change(struct net_device *dev,
--				 struct net_device *upper_dev,
--				 bool linking)
-+void br_vlan_upper_change(struct net_device *dev,
-+			  struct net_device *upper_dev,
-+			  bool linking)
- {
- 	struct net_bridge *br = netdev_priv(dev);
- 
-@@ -1670,6 +1670,7 @@ static void br_vlan_upper_change(struct net_device *dev,
- 			      br_vlan_has_upper_bind_vlan_dev(dev));
- 	}
- }
-+EXPORT_SYMBOL_GPL(br_vlan_upper_change);
- 
- struct br_vlan_link_state_walk_data {
- 	struct net_bridge *br;
 -- 
 2.25.1
 
