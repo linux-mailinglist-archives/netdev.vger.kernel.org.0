@@ -2,35 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCFD585C17
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 22:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAB4585C61
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 23:40:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235912AbiG3Uax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 16:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S236013AbiG3Vk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 17:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235737AbiG3Uaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 16:30:52 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC0D11C0F
-        for <netdev@vger.kernel.org>; Sat, 30 Jul 2022 13:30:50 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Ht6bo0sxd5V1hHt6bojkgf; Sat, 30 Jul 2022 22:30:49 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 30 Jul 2022 22:30:49 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <e5cbad07-f930-8a66-2579-42f993ca566a@wanadoo.fr>
-Date:   Sat, 30 Jul 2022 22:30:36 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] stmmac: intel: Add a missing clk_disable_unprepare()
- call in intel_eth_pci_remove()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
+        with ESMTP id S233617AbiG3Vky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 17:40:54 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AFC12A9F;
+        Sat, 30 Jul 2022 14:40:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659217253; x=1690753253;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=V5fo+ZjN6qVh2ehdMQ8scHgdijFwALwamZEruMT0vWg=;
+  b=R4QRzfnUwQq5gBBuZajMaNVxanjW0gIDATuLQfElk5604pR+L+RA2Gr5
+   BfGVmnYY/SVQJbkmyUE2wXp2+cJ7Xdwkc8FuB2OKWSaQPMJU/GOigkXXD
+   PeJrYxCtUAGvRjPR2HEe9lYy6mfiXijeMkC7D5zS9eU/nHRG/oShZKNJC
+   s+L/DSs0Unf7PBgplQTbB0uAnwNwTToG8hHjfxJvSs4IY1T2tkJGxb9Ku
+   L0wNoNMxKYVGAUlpRVyTX/4SHDzbffADWStxb9fFWx6ezfG/Mz8W6+0/l
+   Ft9Re3dJvClhNhVqQjur9jONXrAd34twWw3qZqNI4NUL6JZG/TwSW9ksI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="375251665"
+X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
+   d="scan'208";a="375251665"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 14:40:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
+   d="scan'208";a="605278720"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Jul 2022 14:40:49 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHuCW-000DN9-0o;
+        Sat, 30 Jul 2022 21:40:48 +0000
+Date:   Sun, 31 Jul 2022 05:40:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        andriy.shevchenko@linux.intel.com, vee.khee.wong@intel.com,
+        weifeng.voon@intel.com,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>,
@@ -40,104 +55,90 @@ Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
         Paolo Abeni <pabeni@redhat.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Newsgroups: gmane.linux.kernel.janitors,gmane.linux.kernel,gmane.linux.network,gmane.linux.ports.arm.kernel
+Subject: Re: [PATCH 1/2] stmmac: intel: Add a missing clk_disable_unprepare()
+ call in intel_eth_pci_remove()
+Message-ID: <202207310531.48IGPx8Z-lkp@intel.com>
 References: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
- <YuWR9I8y9cWlLG3O@smile.fi.intel.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <YuWR9I8y9cWlLG3O@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 30/07/2022 à 22:17, Andy Shevchenko a écrit :
-> On Sat, Jul 30, 2022 at 08:19:47PM +0200, Christophe JAILLET wrote:
->> Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
->> paths") removed this clk_disable_unprepare()
->>
->> This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
->> handling on remove path") which removed this clk_disable_unprepare()
->> because:
->> "
->>     While unloading the dwmac-intel driver, clk_disable_unprepare() is
->>     being called twice in stmmac_dvr_remove() and
->>     intel_eth_pci_remove(). This causes kernel panic on the second call.
->> "
->>
->> However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
->> for gmac driver") has updated stmmac_dvr_remove() which do not call
->> clk_disable_unprepare() anymore.
->>
->> So this call should now be called from intel_eth_pci_remove().
-> 
-> The correct way of fixing it (which might be very well end up functionally
-> the same as this patch), is to introduce ->quit() in struct stmmac_pci_info
-> and assign it correctly, because not all platforms enable clocks.
+Hi Christophe,
 
-I won't be able to propose anything like that.
+Thank you for the patch! Yet something to improve:
 
-By the way, in the first sentence of my log, s/removed/added/.
-(I hope that it can be fixed when/if the patch is applied)
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.19-rc8 next-20220728]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Christophe-JAILLET/stmmac-intel-Add-a-missing-clk_disable_unprepare-call-in-intel_eth_pci_remove/20220731-022139
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 620725263f4222b3c94d4ee19846835feec0ad69
+config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220731/202207310531.48IGPx8Z-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2d1d09034cc62ee19f799b92bb67640ba86ca557
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Christophe-JAILLET/stmmac-intel-Add-a-missing-clk_disable_unprepare-call-in-intel_eth_pci_remove/20220731-022139
+        git checkout 2d1d09034cc62ee19f799b92bb67640ba86ca557
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/stmicro/stmmac/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c:1107:24: error: use of undeclared identifier 'plat'
+           clk_disable_unprepare(plat->stmmac_clk);
+                                 ^
+   1 error generated.
 
 
-Thanks for the review.
+vim +/plat +1107 drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
 
-CJ
+  1092	
+  1093	/**
+  1094	 * intel_eth_pci_remove
+  1095	 *
+  1096	 * @pdev: pci device pointer
+  1097	 * Description: this function calls the main to free the net resources
+  1098	 * and releases the PCI resources.
+  1099	 */
+  1100	static void intel_eth_pci_remove(struct pci_dev *pdev)
+  1101	{
+  1102		struct net_device *ndev = dev_get_drvdata(&pdev->dev);
+  1103		struct stmmac_priv *priv = netdev_priv(ndev);
+  1104	
+  1105		stmmac_dvr_remove(&pdev->dev);
+  1106	
+> 1107		clk_disable_unprepare(plat->stmmac_clk);
+  1108		clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+  1109	
+  1110		pcim_iounmap_regions(pdev, BIT(0));
+  1111	}
+  1112	
 
-> 
-> Perhaps, we may leave this patch as is (for the sake of easy backporting) and
-> apply another one as I explained above to avoid similar mistakes in the future.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
->> Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->> /!\     This patch is HIGHLY speculative.     /!\
->>
->> The corresponding clk_disable_unprepare() is still called within the pm
->> related stmmac_bus_clks_config() function.
->>
->> However, with my limited understanding of the pm API, I think it that the
->> patch is valid.
->> (in other word, does the pm_runtime_put() and/or pm_runtime_disable()
->> and/or stmmac_dvr_remove() can end up calling .runtime_suspend())
->>
->> So please review with care, as I'm not able to test the change by myself.
->>
->>
->> If I'm wrong, maybe a comment explaining why it is safe to have this
->> call in the error handling path of the probe and not in the remove function
->> would avoid erroneous patches generated from static code analyzer to be
->> sent.
->> ---
->>   drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
->> index 52f9ed8db9c9..9f38642f86ce 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
->> @@ -1134,6 +1134,7 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
->>   
->>   	stmmac_dvr_remove(&pdev->dev);
->>   
->> +	clk_disable_unprepare(plat->stmmac_clk);
->>   	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
->>   
->>   	pcim_iounmap_regions(pdev, BIT(0));
->> -- 
->> 2.34.1
->>
-> 
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
