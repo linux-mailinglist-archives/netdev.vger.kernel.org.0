@@ -2,46 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B1758580A
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 04:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D871058580C
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 04:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232937AbiG3CjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jul 2022 22:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        id S232112AbiG3CkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jul 2022 22:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbiG3CjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 22:39:03 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BBE326E8;
-        Fri, 29 Jul 2022 19:39:02 -0700 (PDT)
+        with ESMTP id S230476AbiG3CkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jul 2022 22:40:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7A9E022;
+        Fri, 29 Jul 2022 19:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0B1B2CE2C68;
-        Sat, 30 Jul 2022 02:39:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F61AC433D6;
-        Sat, 30 Jul 2022 02:38:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28A19B82927;
+        Sat, 30 Jul 2022 02:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DE971C433D6;
+        Sat, 30 Jul 2022 02:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659148739;
-        bh=jC4oRprx1TKs7W+r2M7fjYgSP5Y7zb8tHOZjDPUfBDU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jHECg2Suwr3BHPLithsIfgAJ7KS5lNxPLQJKzYvUFddEj1ot6U6tDG/vtbKziFTl5
-         6T1ovO9by8Do7IxUK9Fn8FaqCimFcC/Ld+OnjcvYlSLjK6/aOmOISLeaGz8M1JmZF1
-         Mb4ZnqEPH6kg7DTUxyaRGK0fhqw1QMBEjSlhkIPPdq0xU8i9WanvI/Mf9QC9Bdby3h
-         h7EjrvRWl4M4t9Sog3A49LMpC5cWzlBDcS/u8D70dZ1aWRvrHgFzeOyNgPs5KOwHs1
-         Rwn6IBsis94b00Y2A/mQYfFojMej3AtUAgy7zTfv/FG817eci9/TzSdnlFH0lT5oC5
-         wBtj3Woe7mkjw==
-Date:   Fri, 29 Jul 2022 19:38:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-next-2022-07-29
-Message-ID: <20220729193858.664c59f4@kernel.org>
-In-Reply-To: <20220729192832.A5011C433D6@smtp.kernel.org>
-References: <20220729192832.A5011C433D6@smtp.kernel.org>
+        s=k20201202; t=1659148814;
+        bh=dnQIMGsMIRGkHbMR9DlZwpffn+poUHwnXcvB4Nn5NH0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GWj+nHMn2mahRxmqTpFuCBRYVUu8YnOzauHelGUHV3jGFF7wbKU4FWkvvAqIVaDKw
+         mF8Jk6OjqDFb06LKbU3XK2EtZz2QQF6MwHZVCSGo5hHYwhs3WSlgDZ3FAe2FVGzEl9
+         M6FHJSBNscs1meSp6DVDlzzSCvm8sjr7ckBjWI5p1D/yfjZbMrFoRb/v2528w6Tx25
+         sm8DOY7ksNf+SL4fGVtqmzxPN64H+O1Qpz/iseFiO+vrl9VH4fdbOyWMd7WIGuHayH
+         A6ZUInDI8Ejp+7WQQm7Oeasz6ossKQnMUmgH9f8BR2fV0Fsv7VYjrAM6Cee8elXiXb
+         VzHsY/ydnV+Dg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8933C43143;
+        Sat, 30 Jul 2022 02:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2022-07-29
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165914881481.11123.5407560688953471121.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Jul 2022 02:40:14 +0000
+References: <20220729230948.1313527-1-andrii@kernel.org>
+In-Reply-To: <20220729230948.1313527-1-andrii@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -51,20 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jul 2022 19:28:32 +0000 (UTC) Kalle Valo wrote:
-> Hi,
+Hello:
+
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri, 29 Jul 2022 16:09:48 -0700 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
 > 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 22 non-merge commits during the last 4 day(s) which contain
+> a total of 27 files changed, 763 insertions(+), 120 deletions(-).
+> 
+> [...]
 
-Sparse complains about this spurious inline:
+Here is the summary with links:
+  - pull-request: bpf-next 2022-07-29
+    https://git.kernel.org/netdev/net-next/c/5fc7c5887c62
 
-+++ b/drivers/net/wireless/microchip/wilc1000/hif.h
-@@ -206,13 +206,14 @@ int wilc_get_statistics(struct wilc_vif *vif, struct rf_info *stats);
- void wilc_gnrl_async_info_received(struct wilc *wilc, u8 *buffer, u32 length);
- void *wilc_parse_join_bss_param(struct cfg80211_bss *bss,
-                                struct cfg80211_crypto_settings *crypto);
- int wilc_set_default_mgmt_key_index(struct wilc_vif *vif, u8 index);
-+inline void wilc_handle_disconnect(struct wilc_vif *vif);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-drivers/net/wireless/microchip/wilc1000/hif.h:218:35: error: marked inline, but without a definition
+
