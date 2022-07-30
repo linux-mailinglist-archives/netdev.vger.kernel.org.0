@@ -2,101 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB38585C0C
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 22:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCFD585C17
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 22:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235831AbiG3UTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 16:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
+        id S235912AbiG3Uax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 16:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235265AbiG3UTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 16:19:30 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32C313FA7;
-        Sat, 30 Jul 2022 13:19:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659212369; x=1690748369;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HNQscSxVnHtVSMnt9pu3ixHp06vIyPJvEDqvB7lVhS0=;
-  b=InghIKHgVtToJENQLj06+w+9IYh2Q91lvLOiL0RsQvWLuNLNnJjpEHo7
-   LWRi9kR/mc4GskH0VlsN+zRDcvZL9TouENgZxZh6fzdDncfkqQJ+kiDRk
-   V7wuvAmAom7Xy6hz6+NyYvJKqyh24POXnQJvEbO+wdcas9tubyjC8/Iuv
-   kYNn2siOeg0o9RPxuAm4mibdFBKj8IDKwHmnnl6EbHOa2g/P8ddbEcS92
-   5sLCLARsz17PsbZF7vIF1Fxxoiz9ZC0RULz7TgxPH+q17sMmCJPqug1q4
-   ubKNGvEhme/CUzWDQqg2+NT6bq0bFb84CB3kALLCrUzBZsahSoFmqX+1e
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="314757945"
-X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="314757945"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:19:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="777848531"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 30 Jul 2022 13:19:26 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHsvm-000DHb-0O;
-        Sat, 30 Jul 2022 20:19:26 +0000
-Date:   Sun, 31 Jul 2022 04:18:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>, aroulin@nvidia.com
-Cc:     kbuild-all@lists.01.org, sbrivio@redhat.com, roopa@nvidia.com,
+        with ESMTP id S235737AbiG3Uaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 16:30:52 -0400
+Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC0D11C0F
+        for <netdev@vger.kernel.org>; Sat, 30 Jul 2022 13:30:50 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id Ht6bo0sxd5V1hHt6bojkgf; Sat, 30 Jul 2022 22:30:49 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 30 Jul 2022 22:30:49 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <e5cbad07-f930-8a66-2579-42f993ca566a@wanadoo.fr>
+Date:   Sat, 30 Jul 2022 22:30:36 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] stmmac: intel: Add a missing clk_disable_unprepare()
+ call in intel_eth_pci_remove()
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: 8021q: fix bridge binding behavior for
- vlan interfaces
-Message-ID: <202207310426.rj5ZG7FZ-lkp@intel.com>
-References: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Newsgroups: gmane.linux.kernel.janitors,gmane.linux.kernel,gmane.linux.network,gmane.linux.ports.arm.kernel
+References: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
+ <YuWR9I8y9cWlLG3O@smile.fi.intel.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <YuWR9I8y9cWlLG3O@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sevinj,
+Le 30/07/2022 à 22:17, Andy Shevchenko a écrit :
+> On Sat, Jul 30, 2022 at 08:19:47PM +0200, Christophe JAILLET wrote:
+>> Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
+>> paths") removed this clk_disable_unprepare()
+>>
+>> This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
+>> handling on remove path") which removed this clk_disable_unprepare()
+>> because:
+>> "
+>>     While unloading the dwmac-intel driver, clk_disable_unprepare() is
+>>     being called twice in stmmac_dvr_remove() and
+>>     intel_eth_pci_remove(). This causes kernel panic on the second call.
+>> "
+>>
+>> However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
+>> for gmac driver") has updated stmmac_dvr_remove() which do not call
+>> clk_disable_unprepare() anymore.
+>>
+>> So this call should now be called from intel_eth_pci_remove().
+> 
+> The correct way of fixing it (which might be very well end up functionally
+> the same as this patch), is to introduce ->quit() in struct stmmac_pci_info
+> and assign it correctly, because not all platforms enable clocks.
 
-Thank you for the patch! Yet something to improve:
+I won't be able to propose anything like that.
 
-[auto build test ERROR on net-next/master]
+By the way, in the first sentence of my log, s/removed/added/.
+(I hope that it can be fixed when/if the patch is applied)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 63757225a93353bc2ce4499af5501eabdbbf23f9
-config: x86_64-randconfig-a002 (https://download.01.org/0day-ci/archive/20220731/202207310426.rj5ZG7FZ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/993166d2a01876dc92807f74b3d72f63d25c8227
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
-        git checkout 993166d2a01876dc92807f74b3d72f63d25c8227
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for the review.
 
-All errors (new ones prefixed by >>):
+CJ
 
-   ld: net/8021q/vlan_dev.o: in function `vlan_dev_change_flags':
->> vlan_dev.c:(.text+0xdb2): undefined reference to `br_vlan_upper_change'
+> 
+> Perhaps, we may leave this patch as is (for the sake of easy backporting) and
+> apply another one as I explained above to avoid similar mistakes in the future.
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+>> Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>> /!\     This patch is HIGHLY speculative.     /!\
+>>
+>> The corresponding clk_disable_unprepare() is still called within the pm
+>> related stmmac_bus_clks_config() function.
+>>
+>> However, with my limited understanding of the pm API, I think it that the
+>> patch is valid.
+>> (in other word, does the pm_runtime_put() and/or pm_runtime_disable()
+>> and/or stmmac_dvr_remove() can end up calling .runtime_suspend())
+>>
+>> So please review with care, as I'm not able to test the change by myself.
+>>
+>>
+>> If I'm wrong, maybe a comment explaining why it is safe to have this
+>> call in the error handling path of the probe and not in the remove function
+>> would avoid erroneous patches generated from static code analyzer to be
+>> sent.
+>> ---
+>>   drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+>> index 52f9ed8db9c9..9f38642f86ce 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+>> @@ -1134,6 +1134,7 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+>>   
+>>   	stmmac_dvr_remove(&pdev->dev);
+>>   
+>> +	clk_disable_unprepare(plat->stmmac_clk);
+>>   	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+>>   
+>>   	pcim_iounmap_regions(pdev, BIT(0));
+>> -- 
+>> 2.34.1
+>>
+> 
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
