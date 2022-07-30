@@ -2,156 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB045585BED
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 21:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49649585BF4
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 22:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbiG3T62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 15:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
+        id S235666AbiG3UHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 16:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiG3T61 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 15:58:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9C6140FE;
-        Sat, 30 Jul 2022 12:58:26 -0700 (PDT)
+        with ESMTP id S230003AbiG3UHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 16:07:23 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19D713D4F;
+        Sat, 30 Jul 2022 13:07:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659211106; x=1690747106;
+  t=1659211642; x=1690747642;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=HObJrlZGJ6u9EOYWVaX5OuT5VSYtbWLsWazETsXPcrU=;
-  b=e9Wsm7AocLyFnA2K8nBRDNarmFwjcN8Pn4l5R8LP81Ety7yBwsY2ns+U
-   50Ud9vc6TNNeyI+g24flttu2V6VVtlOtjUlbTWsa1nH0OMu4f9a5WTmYw
-   omvnMcLKvtWm2ZEBgi09vqgOSc9vQRuvbKnDLpM9oMra7nyAW2SreGCUV
-   T/69lQkOWIcvbhP43UZrBzIJPVgU4Aq3FKJUvX97BMJeXa9k1pIJBz2Yg
-   e9JgGrjQv5dCxB6sLi3ENpI1dcH6Lse5LX9wJU+U2msMCKH3MQVYwmlEL
-   tEGaA0hGgkMmcLHbiig3yaKtIuzdL7EQqTf7X1+9UziBanJ+MeQN0lRXB
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="352947743"
+  bh=qVvlkCYGySw576yQ2Em/mAMLb51VdX062dlKlXivK7E=;
+  b=JLfSiS9hb4WmPDHMEu0ZqJEoGYRZcF12vR+nME4XxcNcxWSLY7s+n8HQ
+   KVJGidQCNhzIcTzfNgVdjsnMWDcqYO1doAO9CswdW4FWqw3jmRowLsXCS
+   xrh0JZVuWGhwAZFztyXafTHwZwgRBXDRVr7sutchJzQQsetAWY8BSpqrz
+   dpeuVsufShe40FZP++Nh71K93JAwtC6xLH/nkjeqX3XtPdir48d59jOCc
+   P/obvEWrG2ioDmSwW9Cb/bRp1Muby5W50o/sOIavCwnfcp/sSiRNnH7kA
+   XJaZuUOc36jFGxBVcFFavr3s62YLuaKXPy8XjV7CYcm8KfcUFLMOLOffF
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="275837556"
 X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="352947743"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 12:58:26 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="275837556"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:07:22 -0700
 X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="601617623"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 30 Jul 2022 12:58:23 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHsbO-000DCt-1k;
-        Sat, 30 Jul 2022 19:58:22 +0000
-Date:   Sun, 31 Jul 2022 03:58:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>, aroulin@nvidia.com
-Cc:     kbuild-all@lists.01.org, sbrivio@redhat.com, roopa@nvidia.com,
+   d="scan'208";a="577321545"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:07:18 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oHsjz-001fWn-1J;
+        Sat, 30 Jul 2022 23:07:15 +0300
+Date:   Sat, 30 Jul 2022 23:07:15 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: 8021q: fix bridge binding behavior for
- vlan interfaces
-Message-ID: <202207310332.cSMhECu3-lkp@intel.com>
-References: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] stmmac: intel: Simplify intel_eth_pci_remove()
+Message-ID: <YuWPc8Flkpm4Yt/z@smile.fi.intel.com>
+References: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
+ <9f82d58aa4a6c34ec3c734399a4792d3aa23297f.1659204745.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <9f82d58aa4a6c34ec3c734399a4792d3aa23297f.1659204745.git.christophe.jaillet@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sevinj,
+On Sat, Jul 30, 2022 at 08:20:02PM +0200, Christophe JAILLET wrote:
+> There is no point to call pcim_iounmap_regions() in the remove function,
+> this frees a managed resource that would be release by the framework
+> anyway.
 
-Thank you for the patch! Yet something to improve:
+The patch is fully correct in my opinion. The iounmap() is called exactly in
+the same order as if it's done implicitly by managed resources handlers, hence
+no need to explicitly call it.
 
-[auto build test ERROR on net-next/master]
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 63757225a93353bc2ce4499af5501eabdbbf23f9
-config: openrisc-randconfig-r031-20220729 (https://download.01.org/0day-ci/archive/20220731/202207310332.cSMhECu3-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/993166d2a01876dc92807f74b3d72f63d25c8227
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
-        git checkout 993166d2a01876dc92807f74b3d72f63d25c8227
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
-   or1k-linux-ld: net/8021q/vlan_dev.o: in function `vlan_dev_change_flags':
->> net/8021q/vlan_dev.c:249: undefined reference to `br_vlan_upper_change'
-   net/8021q/vlan_dev.c:249:(.text+0x1d88): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `br_vlan_upper_change'
->> or1k-linux-ld: net/8021q/vlan_dev.c:251: undefined reference to `br_vlan_upper_change'
-   net/8021q/vlan_dev.c:251:(.text+0x1dc4): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `br_vlan_upper_change'
-
-
-vim +249 net/8021q/vlan_dev.c
-
-   211	
-   212	/* Flags are defined in the vlan_flags enum in
-   213	 * include/uapi/linux/if_vlan.h file.
-   214	 */
-   215	int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
-   216	{
-   217		struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
-   218		u32 old_flags = vlan->flags;
-   219		struct net_device *br_dev;
-   220	
-   221		if (mask & ~(VLAN_FLAG_REORDER_HDR | VLAN_FLAG_GVRP |
-   222			     VLAN_FLAG_LOOSE_BINDING | VLAN_FLAG_MVRP |
-   223			     VLAN_FLAG_BRIDGE_BINDING))
-   224			return -EINVAL;
-   225	
-   226		vlan->flags = (old_flags & ~mask) | (flags & mask);
-   227	
-   228		if (!netif_running(dev))
-   229			return 0;
-   230	
-   231		if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
-   232			if (vlan->flags & VLAN_FLAG_GVRP)
-   233				vlan_gvrp_request_join(dev);
-   234			else
-   235				vlan_gvrp_request_leave(dev);
-   236		}
-   237	
-   238		if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
-   239			if (vlan->flags & VLAN_FLAG_MVRP)
-   240				vlan_mvrp_request_join(dev);
-   241			else
-   242				vlan_mvrp_request_leave(dev);
-   243		}
-   244	
-   245		if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
-   246		    netif_is_bridge_port(dev)) {
-   247			br_dev = vlan->real_dev;
-   248			if (vlan->flags & VLAN_FLAG_BRIDGE_BINDING)
- > 249				br_vlan_upper_change(br_dev, dev, true);
-   250			else
- > 251				br_vlan_upper_change(br_dev, dev, false);
-   252		}
-   253	
-   254		return 0;
-   255	}
-   256	
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> This patch is speculative.
+> Sometimes the order of releasing managed resources is tricky.
+> 
+> Just a few drivers have this pattern, while many call pcim_iomap_regions().
+> If I'm right and this patch is reviewed and merged, I'll look at the
+> other files if they also can be simplified a bit.
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> index 9f38642f86ce..f68d23051557 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> @@ -1136,8 +1136,6 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+>  
+>  	clk_disable_unprepare(plat->stmmac_clk);
+>  	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+> -
+> -	pcim_iounmap_regions(pdev, BIT(0));
+>  }
+>  
+>  static int __maybe_unused intel_eth_pci_suspend(struct device *dev)
+> -- 
+> 2.34.1
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
