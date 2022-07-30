@@ -2,114 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29669585BC1
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 21:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB045585BED
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 21:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235624AbiG3TbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 15:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S235511AbiG3T62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 15:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiG3TbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 15:31:17 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E8B15FFD
-        for <netdev@vger.kernel.org>; Sat, 30 Jul 2022 12:31:15 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gk3so1684690ejb.8
-        for <netdev@vger.kernel.org>; Sat, 30 Jul 2022 12:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=IyGAUs/XewcJpkze6PPx60tftl/vExnGSdxM5ltgvok=;
-        b=DH9Egj9rvw3hIeuoTU4OD/zsK0GWATY3lkJ/19ic0aKtozTPHay6G7n4o5PILIEWwj
-         97bjmqu+FL/MsMbXzyIyxfhIKgpKmMiuTwsHV5lVVw0jzyLJDRoOpv9EFeAl7pC8xDoR
-         WOSpvJ/qoUQyUpfbtuR7dK4gHu/4hlzjX+Qsw2toPAKREbXtX8/EtHS9x5xzR1gy6C0Q
-         1YDFhTo7h+4ShF8+UjARjEUIonRSwCqJA087SnFOn9547AFNbkQm9pJFqcjLj25/Zm0C
-         41GW2Sp6hh6ORlwbrsx39ZD6tvM8qq0g8w5g2+efJdxFatxcRwB+d+3VbT4UEhJG9VVy
-         TsvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=IyGAUs/XewcJpkze6PPx60tftl/vExnGSdxM5ltgvok=;
-        b=lzxMB/ZB0AM1hnjPxT5QQtPnY0DqwQDsm0/JK0aDCqujA3w0BXGnDPmnUvJRcRJacM
-         yhow6EIIP+q+PcjXU+hgiPU4i2wH54OuXHXwygnDvILYVD6VIHNaUled002OncM0U3fy
-         ZSTkclFPC7FEZ2Mm9GHZIXcsbPOkh8mepezmN/a4TJSW211hu8pwMJa7+ctzsIS6G3kl
-         idbdIaauKqfqTvhqtGcIUAI5vlmf9pEM+Xa2DAG7C3U/CRFFedqOM/T+4XX/ykx/v/10
-         ehA8iv497BR5eiTtZMrOn+33dA2hFVdjEowEw9/jr9nDN8fXtuLvpRtpvVU4qzsoirT6
-         eklQ==
-X-Gm-Message-State: AJIora+YzXLyQqQ9jw6LQTDeKicUvPHcz4TCgwsiYXO3Yy17qqgh7rTz
-        Vt0QYT6hIViz9pHGODbylyeeruGdcKg=
-X-Google-Smtp-Source: AGRyM1t0HFkPzzWwYa/FYFGFkF9xd/BHdmhgs56/HijKFuMQ1e98bCVZP4ooKQJAg1sv8dqYqYBjrQ==
-X-Received: by 2002:a17:907:7b92:b0:72b:67fb:8985 with SMTP id ne18-20020a1709077b9200b0072b67fb8985mr6756364ejc.569.1659209473708;
-        Sat, 30 Jul 2022 12:31:13 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b9c0:f700:d5b:898b:b7ca:1bf3? (dynamic-2a01-0c23-b9c0-f700-0d5b-898b-b7ca-1bf3.c23.pool.telefonica.de. [2a01:c23:b9c0:f700:d5b:898b:b7ca:1bf3])
-        by smtp.googlemail.com with ESMTPSA id f15-20020a17090631cf00b006feba31171bsm3255474ejf.11.2022.07.30.12.31.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Jul 2022 12:31:13 -0700 (PDT)
-Message-ID: <88d6ef05-f77a-57a2-f34a-e3998a8d70d4@gmail.com>
-Date:   Sat, 30 Jul 2022 21:31:09 +0200
+        with ESMTP id S230003AbiG3T61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 15:58:27 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9C6140FE;
+        Sat, 30 Jul 2022 12:58:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659211106; x=1690747106;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HObJrlZGJ6u9EOYWVaX5OuT5VSYtbWLsWazETsXPcrU=;
+  b=e9Wsm7AocLyFnA2K8nBRDNarmFwjcN8Pn4l5R8LP81Ety7yBwsY2ns+U
+   50Ud9vc6TNNeyI+g24flttu2V6VVtlOtjUlbTWsa1nH0OMu4f9a5WTmYw
+   omvnMcLKvtWm2ZEBgi09vqgOSc9vQRuvbKnDLpM9oMra7nyAW2SreGCUV
+   T/69lQkOWIcvbhP43UZrBzIJPVgU4Aq3FKJUvX97BMJeXa9k1pIJBz2Yg
+   e9JgGrjQv5dCxB6sLi3ENpI1dcH6Lse5LX9wJU+U2msMCKH3MQVYwmlEL
+   tEGaA0hGgkMmcLHbiig3yaKtIuzdL7EQqTf7X1+9UziBanJ+MeQN0lRXB
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="352947743"
+X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
+   d="scan'208";a="352947743"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 12:58:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
+   d="scan'208";a="601617623"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 30 Jul 2022 12:58:23 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHsbO-000DCt-1k;
+        Sat, 30 Jul 2022 19:58:22 +0000
+Date:   Sun, 31 Jul 2022 03:58:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>, aroulin@nvidia.com
+Cc:     kbuild-all@lists.01.org, sbrivio@redhat.com, roopa@nvidia.com,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org,
+        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Subject: Re: [PATCH net-next 2/3] net: 8021q: fix bridge binding behavior for
+ vlan interfaces
+Message-ID: <202207310332.cSMhECu3-lkp@intel.com>
+References: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Meson GXL and Rockchip PHY based on same IP?
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        "linux-rockchip@lists.infradead.org" 
-        <linux-rockchip@lists.infradead.org>
-References: <ca9560eb-af9c-3cfa-c35e-388e7e71aab7@gmail.com>
- <CAFBinCCMinq1U2Pqn2LPjC9c+HqfHjvW81b1ENMxdoGmB6byEw@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <CAFBinCCMinq1U2Pqn2LPjC9c+HqfHjvW81b1ENMxdoGmB6byEw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.07.2022 19:06, Martin Blumenstingl wrote:
-> Hi Heiner,
-> 
-> On Sat, Jul 30, 2022 at 5:59 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> Meson GXL and Rockchip ethernet PHY drivers have quite something in common.
->> They share a number of non-standard registers, using the same bits
->> and same bank handling. This makes me think they they may be using
->> the same IP. However they have different quirk handling. But this
->> doesn't rule out that actually they would need the same quirk handling.
-> You made me curious and I found the following public Microchip
-> LAN83C185 datasheet: [0]
-> Page 27 has a "SMI REGISTER MAPPING" which matches the definitions in
-> meson-gxl.c.
-> Also on page 33 the interrupt source bits are a 100% match with the
-> INTSRC_* marcos in meson-gxl.c
-> 
-Great, thanks for investigating!
+Hi Sevinj,
 
-> Whether this means that:
-> - Amlogic SoCs embed a LAN83C185
-> - LAN83C185 is based on the same IP core (possibly not even designed
-> by Amlogic or SMSC)
-> - the SMI interface design is something that one hardware engineer
-> brought from one company to another
-> - ...something else
-> is something I can't tell
-> 
-> 
-> Best regards,
-> Martin
-> 
-> 
-> [0] https://ww1.microchip.com/downloads/en/DeviceDoc/LAN83C185-Data-Sheet-DS00002808A.pdf
+Thank you for the patch! Yet something to improve:
 
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 63757225a93353bc2ce4499af5501eabdbbf23f9
+config: openrisc-randconfig-r031-20220729 (https://download.01.org/0day-ci/archive/20220731/202207310332.cSMhECu3-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/993166d2a01876dc92807f74b3d72f63d25c8227
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sevinj-Aghayeva/net-vlan-fix-bridge-binding-behavior-and-add-selftests/20220731-000455
+        git checkout 993166d2a01876dc92807f74b3d72f63d25c8227
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
+   or1k-linux-ld: net/8021q/vlan_dev.o: in function `vlan_dev_change_flags':
+>> net/8021q/vlan_dev.c:249: undefined reference to `br_vlan_upper_change'
+   net/8021q/vlan_dev.c:249:(.text+0x1d88): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `br_vlan_upper_change'
+>> or1k-linux-ld: net/8021q/vlan_dev.c:251: undefined reference to `br_vlan_upper_change'
+   net/8021q/vlan_dev.c:251:(.text+0x1dc4): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `br_vlan_upper_change'
+
+
+vim +249 net/8021q/vlan_dev.c
+
+   211	
+   212	/* Flags are defined in the vlan_flags enum in
+   213	 * include/uapi/linux/if_vlan.h file.
+   214	 */
+   215	int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
+   216	{
+   217		struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
+   218		u32 old_flags = vlan->flags;
+   219		struct net_device *br_dev;
+   220	
+   221		if (mask & ~(VLAN_FLAG_REORDER_HDR | VLAN_FLAG_GVRP |
+   222			     VLAN_FLAG_LOOSE_BINDING | VLAN_FLAG_MVRP |
+   223			     VLAN_FLAG_BRIDGE_BINDING))
+   224			return -EINVAL;
+   225	
+   226		vlan->flags = (old_flags & ~mask) | (flags & mask);
+   227	
+   228		if (!netif_running(dev))
+   229			return 0;
+   230	
+   231		if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
+   232			if (vlan->flags & VLAN_FLAG_GVRP)
+   233				vlan_gvrp_request_join(dev);
+   234			else
+   235				vlan_gvrp_request_leave(dev);
+   236		}
+   237	
+   238		if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
+   239			if (vlan->flags & VLAN_FLAG_MVRP)
+   240				vlan_mvrp_request_join(dev);
+   241			else
+   242				vlan_mvrp_request_leave(dev);
+   243		}
+   244	
+   245		if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
+   246		    netif_is_bridge_port(dev)) {
+   247			br_dev = vlan->real_dev;
+   248			if (vlan->flags & VLAN_FLAG_BRIDGE_BINDING)
+ > 249				br_vlan_upper_change(br_dev, dev, true);
+   250			else
+ > 251				br_vlan_upper_change(br_dev, dev, false);
+   252		}
+   253	
+   254		return 0;
+   255	}
+   256	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
