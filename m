@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B8F585ABD
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 16:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698AA585ABB
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 16:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234766AbiG3O1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 10:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S234622AbiG3O1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 10:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234544AbiG3O1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 10:27:48 -0400
+        with ESMTP id S231592AbiG3O1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 10:27:46 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850B915A1F;
-        Sat, 30 Jul 2022 07:27:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659191224; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2E6FD18;
+        Sat, 30 Jul 2022 07:27:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659191230; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=MRsrRjr6Kk6xz2MeqqBvc9zWbLISxss+HXQCuPJgIEVGEppVlGJnyMCLaCXr4zuZ0AhbtbX1lBKF8lqNd94IudrFGUGG2B7K8BbOyWxUJKdbBpt2zvpRT+7URgde3xzFo5gyW3OwVCxTMFBW8O6IfnbJUeMCvixWj++NsneQOJc=
+        b=THKNE3zMWEpTBZoBeddmKt40ERVM317ZgVj6bs/d7JIoOF7I+9A4eUevlXXT5HRRLfCKBibAMUUECY8SRlEJQodkA/V7XYbeVTxWNSeGClm2rgD9EsihSrbKMZHVawyZBjdBdWoOcccu//VwbFugkaAOxGLZtM2yPrSZjrWc0L8=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1659191224; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=QXvWyurd3uJplbjX+1DkMin3Y9BckKMWylNYP/VVkbY=; 
-        b=NJ6rMyNJZZqQsR2R5xbK+uVbTk+DfELz8pASYHSyJtam6/A+4MLBRBpuWIqOHqtKQMoCtgqC7LBXaowTdiSEdw+26ELZNKmKMcwp+h1W4XWWB9V5hE3G2w7+MiUNN3QcLh0xu0V4/InvDQ0WO+td2dojBdeRPVga4SdtIt3eqDk=
+        t=1659191230; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=LoE98heOy0xHTysuzYGVNBpA+8dWcbzciX96/hsdc7I=; 
+        b=Hq+9ZHcNRS3H3DE2YqhjY97q2oYS0/IyydvrerY0fay1xWsysGVeU/H0p2oYmKns0fz5vt0mvMX2fQSgw9mU0fxrEpf+cREQOJG/VC1HcQLKPWy6Opt2VhD2RJR0zXrd2ynFGXyBSEMyediAYfdUP1fWyGnqyWe4j3sHV62XH5o=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659191224;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659191230;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=QXvWyurd3uJplbjX+1DkMin3Y9BckKMWylNYP/VVkbY=;
-        b=fXkGWG0XGl+VKtwpwRStDdEdG8DEumn2nBpyO5k9emm8feLocXOt6RzFJgAx3qiV
-        TS5sj4CaM2bs7CcYWlFx0P6ybnqfygQDRddsdl8rYZ1pggaOCSgC/RJ56Jms59uwxNo
-        fpYcyxW6ZjUtbEaFybLhYVWFtAaCdVgvn2UQdQeg=
+        bh=LoE98heOy0xHTysuzYGVNBpA+8dWcbzciX96/hsdc7I=;
+        b=LTkTYhmpt+uTEjsEghyW2pVFp+7nDZvc8j0R6eV67V+1cvuA4r/6qXSAvIXuMPaA
+        hRp2OTRV20vWcVyfD9xhyzD9VcHcCNgJqpPbrisJHE6DEsLBladY/rP9nPIAKX0lSIR
+        yjTtaLI8FwLLsXSyE9cb5Ne+PX790K2trvWTKm8Q=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1659191222946466.51244697668903; Sat, 30 Jul 2022 07:27:02 -0700 (PDT)
+        with SMTPS id 1659191229651795.2568893023329; Sat, 30 Jul 2022 07:27:09 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH 2/4] dt-bindings: net: dsa: mediatek,mt7530: update examples
-Date:   Sat, 30 Jul 2022 17:26:25 +0300
-Message-Id: <20220730142627.29028-3-arinc.unal@arinc9.com>
+Subject: [PATCH 3/4] dt-bindings: net: dsa: mediatek,mt7530: update binding description
+Date:   Sat, 30 Jul 2022 17:26:26 +0300
+Message-Id: <20220730142627.29028-4-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220730142627.29028-1-arinc.unal@arinc9.com>
 References: <20220730142627.29028-1-arinc.unal@arinc9.com>
@@ -78,761 +78,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the examples on the binding.
+Update the description of the binding.
 
-- Add examples which include a wide variation of configurations.
-- Make example comments YAML comment instead of DT binding comment.
-- Define examples from platform to make the bindings clearer.
-- Add interrupt controller to the examples. Include header file for
-interrupt.
-- Change reset line for MT7621 examples.
-- Pretty formatting for the examples.
-- Change switch reg to 0.
-- Change port labels to fit the example, change port 4 label to wan.
-- Change ethernet-ports to ports.
+- Describe the switches, which SoCs they are in, or if they are standalone.
+- Explain the various ways of configuring MT7530's port 5.
+- Remove phy-mode = "rgmii-txid" from description. Same code path is
+followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 661 +++++++++++++-----
- 1 file changed, 500 insertions(+), 161 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 98 ++++++++++---------
+ 1 file changed, 53 insertions(+), 45 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index 541984a7d2d4..479e292cb2af 100644
+index 479e292cb2af..a88e650e910b 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -186,144 +186,374 @@ allOf:
- unevaluatedProperties: false
+@@ -13,52 +13,60 @@ maintainers:
+   - Sean Wang <sean.wang@mediatek.com>
  
- examples:
-+  # Example 1: Standalone MT7530
-   - |
-     #include <dt-bindings/gpio/gpio.h>
--    mdio {
--        #address-cells = <1>;
--        #size-cells = <0>;
--        switch@0 {
--            compatible = "mediatek,mt7530";
--            reg = <0>;
+ description: |
+-  Port 5 of mt7530 and mt7621 switch is muxed between:
+-  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
+-  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
+-     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
+-     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
+-       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
+-       connected to external component!
 -
--            core-supply = <&mt6323_vpa_reg>;
--            io-supply = <&mt6323_vemc3v3_reg>;
--            reset-gpios = <&pio 33 GPIO_ACTIVE_HIGH>;
+-  Port 5 modes/configurations:
+-  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
+-     GMAC of the SOC.
+-     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
+-     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
+-  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
+-     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
+-     and RGMII delay.
+-  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
+-     Port 5 becomes an extra switch port.
+-     Only works on platform where external phy TX<->RX lines are swapped.
+-     Like in the Ubiquiti ER-X-SFP.
+-  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
+-     Currently a 2nd CPU port is not supported by DSA code.
 -
--            ethernet-ports {
-+
-+    platform {
-+        ethernet {
-+            mdio {
-                 #address-cells = <1>;
-                 #size-cells = <0>;
--                port@0 {
-+
-+                switch@0 {
-+                    compatible = "mediatek,mt7530";
-                     reg = <0>;
--                    label = "lan0";
--                };
- 
--                port@1 {
--                    reg = <1>;
--                    label = "lan1";
--                };
-+                    reset-gpios = <&pio 33 0>;
- 
--                port@2 {
--                    reg = <2>;
--                    label = "lan2";
--                };
-+                    core-supply = <&mt6323_vpa_reg>;
-+                    io-supply = <&mt6323_vemc3v3_reg>;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
- 
--                port@3 {
--                    reg = <3>;
--                    label = "lan3";
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
-+
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
-+
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "rgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-+                        };
-+                    };
-                 };
-+            };
-+        };
-+    };
- 
--                port@4 {
--                    reg = <4>;
--                    label = "wan";
-+  # Example 2: MT7530 in MT7623AI SoC
-+  - |
-+    #include <dt-bindings/reset/mt2701-resets.h>
-+
-+    platform {
-+        ethernet {
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                switch@0 {
-+                    compatible = "mediatek,mt7530";
-+                    reg = <0>;
-+
-+                    mediatek,mcm;
-+                    resets = <&ethsys MT2701_ETHSYS_MCM_RST>;
-+                    reset-names = "mcm";
-+
-+                    core-supply = <&mt6323_vpa_reg>;
-+                    io-supply = <&mt6323_vemc3v3_reg>;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
-+
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
-+
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "trgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-+                        };
-+                    };
-                 };
-+            };
-+        };
-+    };
-+
-+  # Example 3: Standalone MT7531
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    platform {
-+        ethernet {
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                switch@0 {
-+                    compatible = "mediatek,mt7531";
-+                    reg = <0>;
-+
-+                    reset-gpios = <&pio 54 0>;
-+
-+                    interrupt-controller;
-+                    #interrupt-cells = <1>;
-+                    interrupt-parent = <&pio>;
-+                    interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
-+
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
-+
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
- 
--                port@6 {
--                    reg = <6>;
--                    label = "cpu";
--                    ethernet = <&gmac0>;
--                    phy-mode = "trgmii";
--                    fixed-link {
--                        speed = <1000>;
--                        full-duplex;
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "2500base-x";
-+
-+                            fixed-link {
-+                                speed = <2500>;
-+                                full-duplex;
-+                                pause;
-+                            };
-+                        };
-                     };
-                 };
-             };
-         };
-     };
- 
-+  # Example 4: MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
-   - |
--    //Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
+-  Depending on how the external PHY is wired:
+-  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
+-  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
+-     a ethernet port. But can't interface to the 2nd GMAC.
 -
--    ethernet {
--        #address-cells = <1>;
--        #size-cells = <0>;
--        gmac0: mac@0 {
--            compatible = "mediatek,eth-mac";
--            reg = <0>;
--            phy-mode = "rgmii";
+-    Based on the DT the port 5 mode is configured.
 -
--            fixed-link {
--                speed = <1000>;
--                full-duplex;
--                pause;
-+    #include <dt-bindings/interrupt-controller/mips-gic.h>
-+    #include <dt-bindings/reset/mt7621-reset.h>
-+
-+    platform {
-+        ethernet {
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                switch@0 {
-+                    compatible = "mediatek,mt7621";
-+                    reg = <0>;
-+
-+                    mediatek,mcm;
-+                    resets = <&sysc MT7621_RST_MCM>;
-+                    reset-names = "mcm";
-+
-+                    interrupt-controller;
-+                    #interrupt-cells = <1>;
-+                    interrupt-parent = <&gic>;
-+                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
-+
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
-+
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "trgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-+                        };
-+                    };
-+                };
-             };
-         };
-+    };
- 
--        gmac1: mac@1 {
--            compatible = "mediatek,eth-mac";
--            reg = <1>;
--            phy-mode = "rgmii-txid";
--            phy-handle = <&phy4>;
-+  # Example 5: MT7621: mux MT7530's phy4 to SoC's gmac1
-+  - |
-+    #include <dt-bindings/interrupt-controller/mips-gic.h>
-+    #include <dt-bindings/reset/mt7621-reset.h>
-+
-+    platform {
-+        pinctrl {
-+            example5_rgmii2_pins: rgmii2-pins {
-+                pinmux {
-+                    groups = "rgmii2";
-+                    function = "rgmii2";
-+                };
-+            };
-         };
- 
--        mdio: mdio-bus {
-+        ethernet {
-             #address-cells = <1>;
-             #size-cells = <0>;
- 
--            /* Internal phy */
--            phy4: ethernet-phy@4 {
--                reg = <4>;
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&example5_rgmii2_pins>;
-+
-+            mac@1 {
-+                compatible = "mediatek,eth-mac";
-+                reg = <1>;
-+
-+                phy-mode = "rgmii";
-+                phy-handle = <&example5_ethphy4>;
-             };
- 
--            mt7530: switch@1f {
--                compatible = "mediatek,mt7621";
--                reg = <0x1f>;
--                mediatek,mcm;
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
- 
--                resets = <&rstctrl 2>;
--                reset-names = "mcm";
-+                /* MT7530's phy4 */
-+                example5_ethphy4: ethernet-phy@4 {
-+                    reg = <4>;
-+                };
- 
--                ethernet-ports {
--                    #address-cells = <1>;
--                    #size-cells = <0>;
-+                switch@0 {
-+                    compatible = "mediatek,mt7621";
-+                    reg = <0>;
- 
--                    port@0 {
--                        reg = <0>;
--                        label = "lan0";
--                    };
-+                    mediatek,mcm;
-+                    resets = <&sysc MT7621_RST_MCM>;
-+                    reset-names = "mcm";
- 
--                    port@1 {
--                        reg = <1>;
--                        label = "lan1";
--                    };
-+                    interrupt-controller;
-+                    #interrupt-cells = <1>;
-+                    interrupt-parent = <&gic>;
-+                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
- 
--                    port@2 {
--                        reg = <2>;
--                        label = "lan2";
--                    };
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
- 
--                    port@3 {
--                        reg = <3>;
--                        label = "lan3";
--                    };
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
- 
--                    /* Commented out. Port 4 is handled by 2nd GMAC.
--                    port@4 {
--                        reg = <4>;
--                        label = "lan4";
--                    };
--                    */
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
- 
--                    port@6 {
--                        reg = <6>;
--                        label = "cpu";
--                        ethernet = <&gmac0>;
--                        phy-mode = "rgmii";
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
- 
--                        fixed-link {
--                            speed = <1000>;
--                            full-duplex;
--                            pause;
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        /* Commented out, phy4 is muxed to gmac1.
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+                        */
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "trgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-                         };
-                     };
-                 };
-@@ -331,87 +561,196 @@ examples:
-         };
-     };
- 
-+  # Example 6: MT7621: mux external phy to SoC's gmac1
-   - |
--    //Example 3: MT7621: Port 5 is connected to external PHY: Port 5 -> external PHY.
+-  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
+-  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
+-  phy-mode must be set, see also example 2 below!
+-  * mt7621: phy-mode = "rgmii-txid";
+-  * mt7623: phy-mode = "rgmii";
 -
--    ethernet {
--        #address-cells = <1>;
--        #size-cells = <0>;
--        gmac_0: mac@0 {
--            compatible = "mediatek,eth-mac";
--            reg = <0>;
--            phy-mode = "rgmii";
--
--            fixed-link {
--                speed = <1000>;
--                full-duplex;
--                pause;
-+    #include <dt-bindings/interrupt-controller/mips-gic.h>
-+    #include <dt-bindings/reset/mt7621-reset.h>
-+
-+    platform {
-+        pinctrl {
-+            example6_rgmii2_pins: rgmii2-pins {
-+                pinmux {
-+                    groups = "rgmii2";
-+                    function = "rgmii2";
-+                };
-             };
-         };
+-  CPU-Ports need a phy-mode property:
+-    Allowed values on mt7530 and mt7621:
+-      - "rgmii"
+-      - "trgmii"
+-    On mt7531:
+-      - "1000base-x"
+-      - "2500base-x"
+-      - "rgmii"
+-      - "sgmii"
++  There are two versions of MT7530, standalone and in a multi-chip module.
  
--        mdio0: mdio-bus {
-+        ethernet {
-             #address-cells = <1>;
-             #size-cells = <0>;
++  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
++  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
++
++  MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
++  and the switch registers are directly mapped into SoC's memory map rather than
++  using MDIO. There is currently no support for this.
++
++  There is only the standalone version of MT7531.
++
++  Port 5 on MT7530 has got various ways of configuration.
++
++  For standalone MT7530:
++
++    - Port 5 can be used as a DSA master.
++
++    - PHY 0 or 4 of the switch can be muxed to connect to the gmac of the SoC
++      which port 5 is wired to. Usually used for connecting the wan port
++      directly to the CPU to achieve 2 Gbps routing in total.
++      The phy-handle property on the gmac node must refer to the phy node.
++
++      The driver requires the gmac of the SoC to have "mediatek,eth-mac" as the
++      compatible string and the reg must be 1. So, for now, only gmac1 of an
++      MediaTek SoC can benefit this. Banana Pi BPI-R2 for example.
++      Check out example 5 for a similar configuration.
++
++    - Port 5 can be wired to an external phy. Port 5 becomes a DSA slave.
++      Check out example 7 for a similar configuration.
++
++  For multi-chip module MT7530:
++
++    - Port 5 can be used as a DSA master.
++
++    - PHY 0 or 4 of the switch can be muxed to connect to gmac1 of the SoC.
++      Usually used for connecting the wan port directly to the CPU to achieve 2
++      Gbps routing in total.
++      The phy-handle property on the gmac node must refer to the phy node.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
++      Check out example 5.
++
++    - In case of an external phy wired to gmac1 of the SoC, port 5 must not be
++      enabled.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
++      Check out example 6.
++
++    - Port 5 can be muxed to an external phy. Port 5 becomes a DSA slave.
++      The external phy must be wired TX to TX to gmac1 of the SoC for this to
++      work. Ubiquiti EdgeRouter X SFP for example.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with gpio function.
++      Check out example 7.
  
--            /* External phy */
--            ephy5: ethernet-phy@7 {
--                reg = <7>;
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&example6_rgmii2_pins>;
-+
-+            mac@1 {
-+                compatible = "mediatek,eth-mac";
-+                reg = <1>;
-+
-+                phy-mode = "rgmii";
-             };
- 
--            switch@1f {
--                compatible = "mediatek,mt7621";
--                reg = <0x1f>;
--                mediatek,mcm;
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
- 
--                resets = <&rstctrl 2>;
--                reset-names = "mcm";
-+                /* External PHY */
-+                ethernet-phy@7 {
-+                    reg = <7>;
-+                    phy-mode = "rgmii";
-+                };
- 
--                ethernet-ports {
--                    #address-cells = <1>;
--                    #size-cells = <0>;
-+                switch@0 {
-+                    compatible = "mediatek,mt7621";
-+                    reg = <0>;
- 
--                    port@0 {
--                        reg = <0>;
--                        label = "lan0";
--                    };
-+                    mediatek,mcm;
-+                    resets = <&sysc MT7621_RST_MCM>;
-+                    reset-names = "mcm";
- 
--                    port@1 {
--                        reg = <1>;
--                        label = "lan1";
--                    };
-+                    interrupt-controller;
-+                    #interrupt-cells = <1>;
-+                    interrupt-parent = <&gic>;
-+                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
- 
--                    port@2 {
--                        reg = <2>;
--                        label = "lan2";
--                    };
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
- 
--                    port@3 {
--                        reg = <3>;
--                        label = "lan3";
--                    };
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
- 
--                    port@4 {
--                        reg = <4>;
--                        label = "lan4";
--                    };
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
- 
--                    port@5 {
--                        reg = <5>;
--                        label = "lan5";
--                        phy-mode = "rgmii";
--                        phy-handle = <&ephy5>;
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "trgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-+                        };
-                     };
-+                };
-+            };
-+        };
-+    };
-+
-+  # Example 7: MT7621: mux external phy to MT7530's port 5
-+  - |
-+    #include <dt-bindings/interrupt-controller/mips-gic.h>
-+    #include <dt-bindings/reset/mt7621-reset.h>
-+
-+    platform {
-+        pinctrl {
-+            example7_rgmii2_pins: rgmii2-pins {
-+                pinmux {
-+                    groups = "rgmii2";
-+                    function = "gpio";
-+                };
-+            };
-+        };
-+
-+        ethernet {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&example7_rgmii2_pins>;
- 
--                    cpu_port0: port@6 {
--                        reg = <6>;
--                        label = "cpu";
--                        ethernet = <&gmac_0>;
--                        phy-mode = "rgmii";
-+            mdio {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                /* External PHY */
-+                ethernet-phy@7 {
-+                    reg = <7>;
-+                    phy-mode = "rgmii";
-+                };
-+
-+                switch@0 {
-+                    compatible = "mediatek,mt7621";
-+                    reg = <0>;
-+
-+                    mediatek,mcm;
-+                    resets = <&sysc MT7621_RST_MCM>;
-+                    reset-names = "mcm";
-+
-+                    interrupt-controller;
-+                    #interrupt-cells = <1>;
-+                    interrupt-parent = <&gic>;
-+                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        port@0 {
-+                            reg = <0>;
-+                            label = "lan1";
-+                        };
-+
-+                        port@1 {
-+                            reg = <1>;
-+                            label = "lan2";
-+                        };
-+
-+                        port@2 {
-+                            reg = <2>;
-+                            label = "lan3";
-+                        };
-+
-+                        port@3 {
-+                            reg = <3>;
-+                            label = "lan4";
-+                        };
-+
-+                        port@4 {
-+                            reg = <4>;
-+                            label = "wan";
-+                        };
-+
-+                        port@5 {
-+                            reg = <5>;
-+                            label = "extphy";
-+                            phy-mode = "rgmii-txid";
-+                        };
- 
--                        fixed-link {
--                            speed = <1000>;
--                            full-duplex;
--                            pause;
-+                        port@6 {
-+                            reg = <6>;
-+                            label = "cpu";
-+                            ethernet = <&gmac0>;
-+                            phy-mode = "trgmii";
-+
-+                            fixed-link {
-+                                speed = <1000>;
-+                                full-duplex;
-+                                pause;
-+                            };
-                         };
-                     };
-                 };
+ properties:
+   compatible:
 -- 
 2.34.1
 
