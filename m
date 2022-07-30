@@ -2,119 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74789585B68
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 19:29:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95230585B9F
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 20:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235336AbiG3R3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 13:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50740 "EHLO
+        id S235064AbiG3S12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 14:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiG3R3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 13:29:42 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7049617598;
-        Sat, 30 Jul 2022 10:29:41 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id z16so9254157wrh.12;
-        Sat, 30 Jul 2022 10:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jXNl2nAbqMTGsUENmWvJuMRNyD8yYg6etmCEbWy+v6M=;
-        b=gcFZsKVJXC3IcY1kslaV3C6NiufA2f/Tv/GDJIsowX8kCCNXfHM0h9957lKOuhNDY1
-         lSqA0zoqBYCscFugaCm6XyxRlGOvBOrybBFFZZMMAW46UcJKWFbCkk24DHEZhYYNl1lL
-         fYljWQzhvNpOQk+zOYu7bQ27iTr1wzZfDW6gRMK3/9g86Ob8cKWAmY0ueXhuvBZoz50l
-         Y5U5zFQrryN8UbPEhTORaRNVOJuHPQApAz+DVjIdWF6lWCVsMiGBWcsDSBOt64TWwuGf
-         rEoyBPmubFYc8isQGH5aCYNiiy0Vhyu5gS1lXZ23AZS7wvKoLn4qRpVl2V8PoDTlkwSe
-         7cbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jXNl2nAbqMTGsUENmWvJuMRNyD8yYg6etmCEbWy+v6M=;
-        b=M59DlZEEh+HoKZdPtyjEy4pGJmdFccxnGOJuJ4aZxt4JvpAkTN5Rv/n/lmtgpZzIiQ
-         DkpQlVGcy+hmOg3C/T36HKLNymYwpkPn15PzDpLsEaQJO8jet8+nBXjAI3C3XqMw2d9z
-         4lHAujYKkmReLSfItO4emiYXALNJEq93IBCsH3LtAhJ2nzy8GvSBiuhOyx9oAXMytn+r
-         6DRXRfLRhVuZXSOfdft1TlulhSSgjzUpI+KAwoReKKHDpez5vNpAzhLOCpkN78UiKXiU
-         HxmyoqeRAjq0z1yGbv9kbUgX8OM5ZcExYjl+dwNGtG+Dk6DQclDMEuMCIp3mveDBjWKr
-         7UlA==
-X-Gm-Message-State: ACgBeo2FIPxtI1w8nEUk+Lz3W1qYIJ7t55OKkrON8KiKZsmKSOQd/36Q
-        VXzgxv1fHbrcWbG+oL92rQo=
-X-Google-Smtp-Source: AA6agR44PKiUxmMFxKJsokauJr7GaxKtpUT0yC/DBr1QO7BMiSWk8ehv3nqC5jNWcSmX47F9fEdyQA==
-X-Received: by 2002:a5d:63cb:0:b0:21e:b81d:8b0d with SMTP id c11-20020a5d63cb000000b0021eb81d8b0dmr5558142wrw.526.1659202179617;
-        Sat, 30 Jul 2022 10:29:39 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id p8-20020a5d6388000000b002205b786ab3sm1516348wru.14.2022.07.30.10.29.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Jul 2022 10:29:39 -0700 (PDT)
-Message-ID: <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
-Date:   Sat, 30 Jul 2022 20:29:36 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-Content-Language: en-US
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ben Segall <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
+        with ESMTP id S233622AbiG3S11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 14:27:27 -0400
+X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 30 Jul 2022 11:27:25 PDT
+Received: from smtp.smtpout.orange.fr (smtp-14.smtpout.orange.fr [80.12.242.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEF1F15A3A
+        for <netdev@vger.kernel.org>; Sat, 30 Jul 2022 11:27:25 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id Hr41oSyrhBDYDHr41oo8rt; Sat, 30 Jul 2022 20:19:53 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 30 Jul 2022 20:19:53 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     andriy.shevchenko@linux.intel.com, vee.khee.wong@intel.com,
+        weifeng.voon@intel.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220728191203.4055-2-tariqt@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/2] stmmac: intel: Add a missing clk_disable_unprepare() call in intel_eth_pci_remove()
+Date:   Sat, 30 Jul 2022 20:19:47 +0200
+Message-Id: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
+paths") removed this clk_disable_unprepare()
+
+This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
+handling on remove path") which removed this clk_disable_unprepare()
+because:
+"
+   While unloading the dwmac-intel driver, clk_disable_unprepare() is
+   being called twice in stmmac_dvr_remove() and
+   intel_eth_pci_remove(). This causes kernel panic on the second call.
+"
+
+However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
+for gmac driver") has updated stmmac_dvr_remove() which do not call
+clk_disable_unprepare() anymore.
+
+So this call should now be called from intel_eth_pci_remove().
+
+Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+/!\     This patch is HIGHLY speculative.     /!\
+
+The corresponding clk_disable_unprepare() is still called within the pm
+related stmmac_bus_clks_config() function.
+
+However, with my limited understanding of the pm API, I think it that the
+patch is valid.
+(in other word, does the pm_runtime_put() and/or pm_runtime_disable()
+and/or stmmac_dvr_remove() can end up calling .runtime_suspend())
+
+So please review with care, as I'm not able to test the change by myself.
 
 
-On 7/28/2022 10:12 PM, Tariq Toukan wrote:
-> Implement and expose API that sets the spread of CPUs based on distance,
-> given a NUMA node.  Fallback to legacy logic that uses
-> cpumask_local_spread.
-> 
-> This logic can be used by device drivers to prefer some remote cpus over
-> others.
-> 
-> Reviewed-by: Gal Pressman <gal@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
->   include/linux/sched/topology.h |  5 ++++
->   kernel/sched/topology.c        | 49 ++++++++++++++++++++++++++++++++++
->   2 files changed, 54 insertions(+)
-> 
+If I'm wrong, maybe a comment explaining why it is safe to have this
+call in the error handling path of the probe and not in the remove function
+would avoid erroneous patches generated from static code analyzer to be
+sent.
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-++
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 52f9ed8db9c9..9f38642f86ce 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -1134,6 +1134,7 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+ 
+ 	stmmac_dvr_remove(&pdev->dev);
+ 
++	clk_disable_unprepare(plat->stmmac_clk);
+ 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+ 
+ 	pcim_iounmap_regions(pdev, BIT(0));
+-- 
+2.34.1
 
-Dear SCHEDULER maintainers,
-
-V3 of my series was submitted ~12 days ago and had significant changes.
-I'd appreciate your review to this patch, so we could make it to the 
-upcoming kernel.
-
-Regards,
-Tariq
