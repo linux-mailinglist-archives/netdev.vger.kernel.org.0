@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7F5585AEB
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 17:08:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61005585B24
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 17:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234398AbiG3PIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 11:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
+        id S234456AbiG3Pwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 11:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbiG3PIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 11:08:18 -0400
-Received: from smtp3-g21.free.fr (smtp3-g21.free.fr [212.27.42.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0BB18B1C;
-        Sat, 30 Jul 2022 08:08:17 -0700 (PDT)
-Received: from [44.168.19.21] (unknown [86.242.59.24])
-        (Authenticated sender: f6bvp@free.fr)
-        by smtp3-g21.free.fr (Postfix) with ESMTPSA id 14E4C13FA45;
-        Sat, 30 Jul 2022 17:08:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=free.fr;
-        s=smtp-20201208; t=1659193696;
-        bh=R+cE9MuRqvbsRh1KnTNBRO2TxDgwG8rKKp3XBNCIrdY=;
-        h=Date:To:Cc:From:Subject:From;
-        b=EZN/OyiHwmHj9QKZHR++hFtDRcLwU6SSg00WYkK0Q3YG2gxFlgRdZtfhkWzS8e7HS
-         jJNkRx58Xz5Z7KIzmyyYMkKne5AH1npAbG/tYonmumEg0Yh3u4al00XhxpLBTV8GnO
-         giVqJ71wyvrF+/gvqV89YEjmzTxyS47a/+FD4JREh3bIU5upXfHeI9wWR0pTfrDLqM
-         90AikcM1IIdnt+8Ggisa3ByPrT2PeYMW2zUrsYV6/uxgT9IqpNS0ng2rG8z5Xi55XU
-         zJUHJ+lHvGHXXYV54nAg3r8jWcGqdvpvTaAn+ZZuOV02oFUm163k/NisStPaEjA73F
-         tFfBbx+cbgr5Q==
-Message-ID: <d5e93cc7-a91f-13d3-49a1-b50c11f0f811@free.fr>
-Date:   Sat, 30 Jul 2022 17:08:12 +0200
+        with ESMTP id S233019AbiG3Pwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 11:52:34 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26FFB4A3;
+        Sat, 30 Jul 2022 08:52:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659196316; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=YlURlAEWwZZDxfCQefkLozeADwMcUOka33Ne9+CUlp9Bb2vrc0hJyFQkcsbffJpckfFmuhCu8SEuzMHNQ1z/Y57N0VHZrjFuUBJZhcpACVuOBLhHDCfPGBCMicgxEa6wsYdFyuynqS8H4Q53eZ085+W2rN6inFU6xd/yDWYpz3M=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1659196316; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=btUHak4aC7AHbcsohvLeq8y59tKpw5lXk3saZUZchRA=; 
+        b=b6mYHse//3Id2udqgxXoOwnoBIjEXRbYbbtuAIFM4pOR2i8448jkfLQ99tkEmhRa4Li07ciqOCcMV/HbjvEvpR7aEC1jNhlLk4+bZKIs+MIzJRWsULQ/2hfzzoRDWXe5RBj2HaxxyjeZa+R3Y/BClgAAlxylDNcm71Bvwh3fzdE=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659196316;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=btUHak4aC7AHbcsohvLeq8y59tKpw5lXk3saZUZchRA=;
+        b=uAHwyKWFwNr89AYnV5sr8LgwJZL+c6K5Wzw+xWUZTnV0EA2jGAPzHtMV7Z8VYpps
+        B6trckRvDxP56qj65jgM3Oh9u6OK1Qj2YmFLrhwmAmFk61ucyrnZgy1TaXtIyVJuy1p
+        wI0RnE5j5KARd4VciVbbtWYnEBYb2fLRfmvtL9Ak=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1659196305433511.22681407777645; Sat, 30 Jul 2022 21:21:45 +0530 (IST)
+Date:   Sat, 30 Jul 2022 21:21:45 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Lukas Bulwahn" <lukas.bulwahn@gmail.com>
+Cc:     "Johannes Berg" <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "netdev" <netdev@vger.kernel.org>,
+        "syzbot+6cb476b7c69916a0caca" 
+        <syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com>,
+        "linux-wireless" <linux-wireless@vger.kernel.org>,
+        "syzbot+f9acff9bf08a845f225d" 
+        <syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com>,
+        "syzbot+9250865a55539d384347" 
+        <syzbot+9250865a55539d384347@syzkaller.appspotmail.com>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <1824fce6ffa.649b18b496010.5533738718445972188@siddh.me>
+In-Reply-To: <CAKXUXMzeSLuH31zQDe3Q_1YAvfmFR16ZsfFGmxEMiMQSKcp_Nw@mail.gmail.com>
+References: <20220721101018.17902-1-code@siddh.me> <CAKXUXMzeSLuH31zQDe3Q_1YAvfmFR16ZsfFGmxEMiMQSKcp_Nw@mail.gmail.com>
+Subject: Re: [RESEND PATCH] net: Fix UAF in ieee80211_scan_rx()
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     linux-hams@vger.kernel.org,
-        Thomas Osterried DL9SAU <thomas@x-berg.in-berlin.de>,
-        netdev@vger.kernel.org
-From:   Bernard f6bvp <f6bvp@free.fr>
-Subject: rose timer t error displayed in /proc/net/rose
-Organization: Dimension Parabole
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rose proc timer t error
+Hello Lukas,
 
-Timer t is decremented one by one during normal operations.
+Sorry for the late reply.
 
-When decreasing from 1 to 0 it displays a very large number until next 
-clock tic as demonstrated below.
+On Thu, 21 Jul 2022 16:05:01 +0530  Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+> Siddh,
+> 
+> I had a look at the Bug report above. Currently, we do not have any
+> syzkaller or C reproducer to confirm that the bug was actually fixed.
+> 
+> Now, that you have a supposed fix for the issue:
+> Can you write a 'stress test' and (qemu) setup script that eventually
+> makes that bug trigger (e.g., if we run the stress test for two or
+> three days it will eventually trigger)? Then, we can also use that to
+> confirm that your patch fixes the issue (beyond the normal sanity code
+> review).
+> 
+> This is certainly something you can do on your side to move this patch
+> forward, and other developers with testing infrastructure can pick up
+> and confirm your tests and results independently.
 
-t1, t2 and t3 are correctly handled.
+I have been intermittently looking about this for the past few days. Since
+such test creation is new to me, I am stuck at how to go about calling the
+requisite function.
 
-root@ubuntu-f6bvp:/home/bernard# cat /proc/net/rose
-dest_addr  dest_call src_addr   src_call  dev   lci neigh st vs vr va   
-t  t1  t2  t3  hb    idle Snd-Q Rcv-Q inode
-2080175524 WP-0      2080175524 NODE-0    rose0 002 00001  2  0 0  0   6 
-200 180 180   5   0/000     0     0 68541
-*          *         2080175524 ROUTE-0   rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68448
-*          *         2080175524 F6BVP-15  rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68447
-*          *         2080175524 WP-0      rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68433
-root@ubuntu-f6bvp:/home/bernard# cat /proc/net/rose
-dest_addr  dest_call src_addr   src_call  dev   lci neigh st vs vr va   
-t  t1  t2  t3  hb    idle Snd-Q Rcv-Q inode
-2080175524 WP-0      2080175524 NODE-0    rose0 002 00001  2  0 0  0 
-73786976294838206 200 180 180   5   0/000     0     0 68541
-*          *         2080175524 ROUTE-0   rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68448
-*          *         2080175524 F6BVP-15  rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68447
-*          *         2080175524 WP-0      rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68433
-root@ubuntu-f6bvp:/home/bernard# cat /proc/net/rose
-dest_addr  dest_call src_addr   src_call  dev   lci neigh st vs vr va   
-t  t1  t2  t3  hb    idle Snd-Q Rcv-Q inode
-*          *         2080175524 ROUTE-0   rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68448
-*          *         2080175524 F6BVP-15  rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68447
-*          *         2080175524 WP-0      rose0 000 00000  0  0 0  0   0 
-200 180 180   5   0/000     0     0 68433
+What I have gathered is that I need to use the netlink API or related tool
+and issue the scan and recieve commands. Since qemu by default doesn't
+have a WiFi interface setup by default, I was looking at simulation and
+came across the mac80211_hwsim module. After building the kernel it, I
+tried using `iw` command for scanning with the two phy simulated devices,
+but I seem to hit a deadend due to not being able to properly use them
+for the task at hand.
 
-Bernard
+Do you have any resources or/and examples on such "stress tests"?
 
+> I hope this helps, otherwise you will just need to have some patience.
+> 
+> Best regards,
+> 
+> Lukas
+
+Eric had replied to me on the original email soon after, and I have sent
+a v2. Though, I still want to see how people go about making the tests,
+so any resources for further exploring will be useful.
+
+Thanks,
+Siddh
