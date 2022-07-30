@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59875585B37
-	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 18:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBA0585B39
+	for <lists+netdev@lfdr.de>; Sat, 30 Jul 2022 18:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235137AbiG3QD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jul 2022 12:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
+        id S235190AbiG3QD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jul 2022 12:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235014AbiG3QDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 12:03:53 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B340175AB;
-        Sat, 30 Jul 2022 09:03:52 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id e12so3108769qkl.2;
-        Sat, 30 Jul 2022 09:03:52 -0700 (PDT)
+        with ESMTP id S229742AbiG3QD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jul 2022 12:03:56 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8D2175A5;
+        Sat, 30 Jul 2022 09:03:54 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id f14so5727758qkm.0;
+        Sat, 30 Jul 2022 09:03:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zRKN74TQjwEeR1MXdcsMHUkpi1gfgBWwqBLJHY0W5pg=;
-        b=e8obaoeKKLn4nDRJrPnpp+Nx91jHsh+5jGuLA3o7/VXte2H4xHqwCTGOn7N/ElemPK
-         MFg6uCb2jlRoLX9GgA24VUIL1lnmH4D+w+C33UK9+pNXxer39+llNCC+Wr02JgR2Llw3
-         Ran1qCCSgTh1O1r7SV95sNfZwjKyeZ1ogrlIUio3i9j98DyrUGqHbDhQU8GOD58+m2Kd
-         /j5dUOQpykwJ/1eOkbrFTOeEdXCow4cXUi0V5K19/nkBL8e27mePsdpTwmt0yz6Vn8bS
-         O+pKMBzosX+WPPzrYaxvj7oNz1b58i+aAP980qMehS8gGMkahcHDtrfQNj1DfE41DY6n
-         f8jQ==
+        bh=qLzw+p0S78/HSEdQ7LBwxStiGJCgHNO2kd5yQe6cZ1o=;
+        b=MKFggB8oiN4zKc2x0wkJ6tyvhwP2F+SpKt/g8ysZkswPoTRLd8TGnHZST9O1QdQUGP
+         5axm0ZkwMHkbAW94Fg4GCyM+iFetWv+6YNLrMIYiaNjAs2Gy6bRY8Ztot5v193jOn+Mz
+         sufiLomkHEpZM2ejntx+bcY1nTh8exS3sAZaR0hdRiMCfAvt/dyfx+T8x2x24Z1BjuUw
+         OPDbxlwlE7q9p/qVrTQ7s8urQkdTkLNS2LehHSNV9b3EyfBISqESwhEKyd1acvDOEwUd
+         A5EuzFTotFp3hqiFd3vGwYxLdk2Xr6Y/rnD20bgvzumT5ijD2fsyC4uFFfKX7ZagZN4s
+         xEqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zRKN74TQjwEeR1MXdcsMHUkpi1gfgBWwqBLJHY0W5pg=;
-        b=S4I4MbT4FvIvtgIjuuTt9AbmKwtKVlbuiujodCOb3UoKESxj2kKfERQ/G9iBXn0fuV
-         SUsAQm23wv0Ef3VAQXX19JZMfJP6WFwpcXQJLYE3EF5UG0e+MI5NQAs/gu9kRmY8neOe
-         qPjoh8iJtSBAXBxqoCXp9qPggX+tZCK24xkeJW7m0tGk3JkVzufvN3usPW/d2el2CTkR
-         9MUgx1JCmhcGWBcEK7onJvNSJpBQa5aFoaj2O7Bi8wTEUbvrf8hMpr7Ef0IlMCzAYeeW
-         QCVeR2D6lR6He8clyJmjJ7u16NAzA23vtDRmzP1R9DuGyaImmfu8KWSKKIdAghpEg10X
-         ReTg==
-X-Gm-Message-State: AJIora/xs06LCFaarn8BYlR02W1qvZb+BuRQuR+YgePefWQCdoFXsWOV
-        /BD+cOuwVLB7Qj/y6pmWjpQ=
-X-Google-Smtp-Source: AGRyM1tQF4ZDhWXmr4879jKeaqsCfxS0+QIrYK0Pb8ySlm3tndMJl7qWrMdy9M/hl4hg1/I5gQJxBw==
-X-Received: by 2002:a05:620a:2453:b0:6b6:104a:b9b4 with SMTP id h19-20020a05620a245300b006b6104ab9b4mr6449215qkn.713.1659197031240;
-        Sat, 30 Jul 2022 09:03:51 -0700 (PDT)
+        bh=qLzw+p0S78/HSEdQ7LBwxStiGJCgHNO2kd5yQe6cZ1o=;
+        b=W/3Gl17pmNU7opDzgEMPpeK9I8rHL+LOOypI3jX3LMqk2y4lNhY6WS6uUGFavXW6Ox
+         YYEDRoU4YOhtPoIYqAr/c4AMOWUWqTvkh1TAN9rUzpT9p7ID7c6jHceAdd7EXFWwFvXt
+         N+PArAmHBan0g50FWLYxi/SmZrWY1NI28COXbSqjYYS+TmYhMUXP90VTr/vVHWTZ7TP/
+         ndvQt9qBM7SLc2KpWIuGAZfxd7yvhHoZT8fjU+ImAoGK4VyrciROTxya65o3HpU/XRAF
+         C2bDlsgKLSfeMcvSy9TmoZWId6v6GbFazQ72znbgy3AOxDY0biirY0fjl3WkKm3tmc74
+         lnrQ==
+X-Gm-Message-State: AJIora84bqy2XUqNKOoV/CqJxRevFNDJCt5FwmF0cV2jpMXcdnyrKl/S
+        eVZ+ETYrdRii0Bo9EWzMXwo=
+X-Google-Smtp-Source: AGRyM1uDRcFu6F/JhirJPEqanfOY+Kduw/8YivoJYjVgn7Ihv3i41gAhQ7yaXEI2FLc3lzfqKa5pVw==
+X-Received: by 2002:a05:620a:290d:b0:6b5:cecc:1cab with SMTP id m13-20020a05620a290d00b006b5cecc1cabmr6446562qkp.465.1659197033916;
+        Sat, 30 Jul 2022 09:03:53 -0700 (PDT)
 Received: from ada ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id h3-20020a05620a400300b006b5da3c8d81sm4986651qko.73.2022.07.30.09.03.50
+        by smtp.gmail.com with ESMTPSA id c3-20020ac85a83000000b0031ec83851ccsm4449728qtc.38.2022.07.30.09.03.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jul 2022 09:03:50 -0700 (PDT)
+        Sat, 30 Jul 2022 09:03:53 -0700 (PDT)
 From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 To:     aroulin@nvidia.com
 Cc:     sbrivio@redhat.com, roopa@nvidia.com,
@@ -58,9 +58,9 @@ Cc:     sbrivio@redhat.com, roopa@nvidia.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bridge@lists.linux-foundation.org,
         Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH net-next 2/3] net: 8021q: fix bridge binding behavior for vlan interfaces
-Date:   Sat, 30 Jul 2022 12:03:31 -0400
-Message-Id: <2b09fbacde7e8818f4ada4829818fdf015e36b58.1659195179.git.sevinj.aghayeva@gmail.com>
+Subject: [PATCH net-next 3/3] selftests: net: tests for bridge binding behavior
+Date:   Sat, 30 Jul 2022 12:03:32 -0400
+Message-Id: <222e04a7b4647a57afbad89447f239564af39d24.1659195179.git.sevinj.aghayeva@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659195179.git.sevinj.aghayeva@gmail.com>
 References: <cover.1659195179.git.sevinj.aghayeva@gmail.com>
@@ -76,108 +76,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when one creates a vlan interface with the bridge binding
-flag disabled (using ip link add... command) and then enables the
-bridge binding flag afterwards (using ip link set... command), the
-second command has no effect. In other words, the vlan interface does
-not follow the status of the ports in its vlan.
+This patch adds two tests in a single file. The first of these is in
+function run_test_late_bridge_binding_set, which tests that when a
+vlan interface is created with bridge binding turned off, and later
+bridge binding is turned on (using ip link set... command), the vlan
+interface behaves accordingly, that is, it tracks the status of the
+ports in its vlan.
 
-The root cause of this problem is as follows. The correct bridge
-binding behavior depends on two flags being set: a per vlan interface
-flag (VLAN_FLAG_BRIDGE_BINDING) and global per bridge flag
-(BROPT_VLAN_BRIDGE_BINDING); the ip link set command calls
-vlan_dev_change_flags function, which sets only the per vlan interface
-flag.
-
-The correct behavior is to set/unset per bridge flag as well,
-depending on whether there are other vlan interfaces with bridge
-binding flags set. The logic for this behavior is already captured in
-br_vlan_upper_change function. This patch fixes the bridge binding
-behavior by calling the br_vlan_upper_change function whenever the per
-interface flag is changed via vlan_dev_change_flags function.
+The second test, which is in function run_test_multiple_vlan, tests
+that when there are two vlan interfaces with bridge binding turned on,
+turning off the bridge binding in one of the vlan interfaces does not
+affect the bridge binding on the other interface.
 
 Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
 Reviewed-by: Andy Roulin <aroulin@nvidia.com>
 Reviewed-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- net/8021q/vlan.h     |  2 +-
- net/8021q/vlan_dev.c | 21 ++++++++++++++++++---
- 2 files changed, 19 insertions(+), 4 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
+ 2 files changed, 144 insertions(+)
+ create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
 
-diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-index 5eaf38875554..71947cdcfaaa 100644
---- a/net/8021q/vlan.h
-+++ b/net/8021q/vlan.h
-@@ -130,7 +130,7 @@ void vlan_dev_set_ingress_priority(const struct net_device *dev,
- int vlan_dev_set_egress_priority(const struct net_device *dev,
- 				 u32 skb_prio, u16 vlan_prio);
- void vlan_dev_free_egress_priority(const struct net_device *dev);
--int vlan_dev_change_flags(const struct net_device *dev, u32 flag, u32 mask);
-+int vlan_dev_change_flags(struct net_device *dev, u32 flag, u32 mask);
- void vlan_dev_get_realdev_name(const struct net_device *dev, char *result,
- 			       size_t size);
- 
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index 035812b0461c..93680bac60b3 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -30,6 +30,7 @@
- #include "vlan.h"
- #include "vlanproc.h"
- #include <linux/if_vlan.h>
-+#include <linux/if_bridge.h>
- #include <linux/netpoll.h>
- 
- /*
-@@ -211,10 +212,11 @@ int vlan_dev_set_egress_priority(const struct net_device *dev,
- /* Flags are defined in the vlan_flags enum in
-  * include/uapi/linux/if_vlan.h file.
-  */
--int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
-+int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
- {
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
- 	u32 old_flags = vlan->flags;
-+	struct net_device *br_dev;
- 
- 	if (mask & ~(VLAN_FLAG_REORDER_HDR | VLAN_FLAG_GVRP |
- 		     VLAN_FLAG_LOOSE_BINDING | VLAN_FLAG_MVRP |
-@@ -223,19 +225,32 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
- 
- 	vlan->flags = (old_flags & ~mask) | (flags & mask);
- 
--	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
-+	if (!netif_running(dev))
-+		return 0;
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 80628bf8413a..f3ac4cb01695 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -40,6 +40,7 @@ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+ TEST_PROGS += ndisc_unsolicited_na_test.sh
+ TEST_PROGS += arp_ndisc_untracked_subnets.sh
+ TEST_PROGS += stress_reuseport_listen.sh
++TEST_PROGS += bridge_vlan_binding_test.sh
+ TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+ TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+ TEST_GEN_FILES =  socket nettest
+diff --git a/tools/testing/selftests/net/bridge_vlan_binding_test.sh b/tools/testing/selftests/net/bridge_vlan_binding_test.sh
+new file mode 100755
+index 000000000000..d094d847800c
+--- /dev/null
++++ b/tools/testing/selftests/net/bridge_vlan_binding_test.sh
+@@ -0,0 +1,143 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0-or-later
 +
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
- 		if (vlan->flags & VLAN_FLAG_GVRP)
- 			vlan_gvrp_request_join(dev);
- 		else
- 			vlan_gvrp_request_leave(dev);
- 	}
- 
--	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
- 		if (vlan->flags & VLAN_FLAG_MVRP)
- 			vlan_mvrp_request_join(dev);
- 		else
- 			vlan_mvrp_request_leave(dev);
- 	}
++cleanup() {
++	# Remove interfaces created by the previous run
++	ip link delete veth10 2>/dev/null
++	ip link delete veth20 2>/dev/null
++	ip link delete veth30 2>/dev/null
++	ip link delete br_default 2>/dev/null
++}
 +
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
-+	    netif_is_bridge_port(dev)) {
-+		br_dev = vlan->real_dev;
-+		if (vlan->flags & VLAN_FLAG_BRIDGE_BINDING)
-+			br_vlan_upper_change(br_dev, dev, true);
-+		else
-+			br_vlan_upper_change(br_dev, dev, false);
-+	}
++trap cleanup EXIT
 +
- 	return 0;
- }
- 
++setup() {
++	cleanup
++
++	# Create a bridge and add three ports to it.
++	ip link add dev br_default type bridge
++	ip link add dev veth10 type veth peer name veth11
++	ip link add dev veth20 type veth peer name veth21
++	ip link add dev veth30 type veth peer name veth31
++	ip link set dev veth10 master br_default
++	ip link set dev veth20 master br_default
++	ip link set dev veth30 master br_default
++
++	# Create VLAN 10 and VLAN 20.
++	bridge vlan add vid 10 dev br_default self
++	bridge vlan add vid 20 dev br_default self
++
++	# Add veth10 to VLAN 10 and veth20 to VLAN 20.
++	bridge vlan add vid 10 dev veth10
++	bridge vlan add vid 20 dev veth20
++
++	# Bring up the ports and the bridge.
++	ip link set veth10 up
++	ip link set veth11 up
++	ip link set veth20 up
++	ip link set veth21 up
++	ip link set veth30 up
++	ip link set veth31 up
++	ip link set br_default up
++}
++
++# This test checks that when a vlan interface is created with bridge
++# binding off, and then bridge binding turned on using "ip link set"
++# command, bridge binding is actually turned on -- this hasn't been
++# the case in the past.
++run_test_late_bridge_binding_set() {
++	setup
++
++	# Add VLAN interface vlan10 to VLAN 10 with bridge binding off.
++	ip link add link br_default name vlan10 type vlan id 10 protocol \
++		802.1q bridge_binding off
++
++	# Bring up  VLAN interface.
++	ip link set vlan10 up
++
++	# Turn bridge binding on for vlan10.
++	ip link set vlan10 type vlan bridge_binding on
++
++	# Bring down the port in vlan 10.
++	ip link set veth10 down
++
++	# Since bridge binding is turned on for vlan10 interface, it
++	# should be tracking only the port, veth10 in its vlan. Since
++	# veth10 is down, vlan10 should be down as well.
++	if ! ip link show vlan10 | grep -q 'state LOWERLAYERDOWN'; then
++	    echo "FAIL - vlan10 should be LOWERLAYERDOWN but it is not"
++	    exit 1
++	fi
++
++	# Bringe the port back up.
++	ip link set veth10 up
++
++	# The vlan 10 interface should be up now.
++	if ! ip link show vlan10 | grep -q 'state UP'; then
++	    echo "FAIL - vlan10 should be UP but it is not"
++	    exit 1
++	fi
++
++	echo "OK"
++}
++
++# This test checks that when there are multiple vlan interfaces with
++# bridge binding on, turning off bride binding in one of the vlan
++# interfaces does not affect the bridge binding of the other
++# interface.
++run_test_multiple_vlan() {
++	setup
++
++	# Add VLAN interface vlan10 to VLAN 10 with bridge binding on.
++	ip link add link br_default name vlan10 type vlan id 10 protocol \
++		802.1q bridge_binding on
++	# Add VLAN interface vlan20 to VLAN 20 with bridge binding on.
++	ip link add link br_default name vlan20 type vlan id 20 protocol \
++		802.1q bridge_binding on
++
++	# Bring up  VLAN interfaces.
++	ip link set vlan10 up
++	ip link set vlan20 up
++
++	# Turn bridge binding off for vlan10.
++	ip link set vlan10 type vlan bridge_binding off
++
++	# Bring down the ports in vlans 10 and 20.
++	ip link set veth10 down
++	ip link set veth20 down
++
++	# Since bridge binding is off for vlan10 interface, it should
++	# be tracking all of the ports in the bridge; since veth30 is
++	# still up, vlan10 should also be up.
++	if ! ip link show vlan10 | grep -q 'state UP'; then
++	    echo "FAIL - vlan10 should be UP but it is not"
++	    exit 1
++	fi
++
++	# Since bridge binding is on for vlan20 interface, it should
++	# be tracking only the ports in its vlan. This port is veth20,
++	# and it is down; therefore, vlan20 should be down as well.
++	if ! ip link show vlan20 | grep -q 'state LOWERLAYERDOWN'; then
++	    echo "FAIL - vlan20 should be LOWERLAYERDOWN but it is not"
++	    exit 1
++	fi
++
++	# Bring the ports back up.
++	ip link set veth10 up
++	ip link set veth20 up
++
++	# Both vlan interfaces should be up now.
++	if ! ip link show vlan10 | grep -q 'state UP'; then
++	    echo "FAIL - vlan10 should be UP but it is not"
++	    exit 1
++	fi
++	if ! ip link show vlan20 | grep -q 'state UP' ; then
++	    echo "FAIL - vlan20 should be UP but it is not"
++	    exit 1
++	fi
++
++	echo "OK"
++}
++
++run_test_late_bridge_binding_set
++run_test_multiple_vlan
 -- 
 2.25.1
 
