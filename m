@@ -2,220 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FDD585F9B
-	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 17:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18524585FB1
+	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 18:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237374AbiGaPyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jul 2022 11:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
+        id S229569AbiGaQCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jul 2022 12:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiGaPyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 11:54:15 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C08EE3B
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 08:54:13 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id r14so9877944ljp.2
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 08:54:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4eB2VODr+0qCxbAW7BEEzvMOUvlQ5Vk+lICZ8qaxZMI=;
-        b=QDeMG3c1dnSJnu0g+xKTtGTgXxlOQoPvzoCiV+1HlbbdFruMsPo2ZE+eVtH6/cjhdc
-         gcyLcbNZNyqEf3AugVUJQB5dwRJC4T2D9eJp//DlQ9O7NZCA0rcrVJD8m+kJPyWS1Pn5
-         7uX4gmcLBkhrfe7Tp+78Rc43h3NZ43QuBORiE=
+        with ESMTP id S237471AbiGaQCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 12:02:47 -0400
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C421FD06;
+        Sun, 31 Jul 2022 09:02:46 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id j20so3025949ila.6;
+        Sun, 31 Jul 2022 09:02:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4eB2VODr+0qCxbAW7BEEzvMOUvlQ5Vk+lICZ8qaxZMI=;
-        b=0Q4Zqjhba96iW8S8t1ULwr5LMVvdgoVLjz0lCQbqa6fQ1P69CCglmD7IoWps1wdDLD
-         gDWsAqLdtaIRDlYDb2GLU7UXF42MG17rjxW2ekTSzKkf1tgYZoZXXu9/QlzafVH81ZE/
-         JvkDvoc56AiBLJ1rYbnOldmO2ASAJtH76uQlF6AgXje3bePG8oQT9L2GjPT0QnArTdGl
-         zc0D1RwmxzIuYEkkCX9zK9Jxbn2XaxPG8C/QUPfWm89DtLqMAHeaOSvivWSiQ6/ihP2V
-         +dth5S4n+SgOBgqpyXh5QjOLtdD3/2Qt/k+4uSG2KUhRMoMl0nUvNtH9lMLDWgSoKs2v
-         JOOw==
-X-Gm-Message-State: ACgBeo3H4hHuPfTaGT4Of2iRQEm11g6vVGd788KYxbvrtsMab+xh4zJ+
-        3Bo6KZXae/zkYcnSO51wLH0oJcqj+RlMX+YswcQ1UA==
-X-Google-Smtp-Source: AA6agR5e02mqIv0APIESdyZGYm9Vgb8YLp38EZiRzyPAoLvvDFC/ltg6pNYhtoNIPv1pjge+C3ESgO5kP9UJGveCPRU=
-X-Received: by 2002:a05:651c:335:b0:25e:4ac0:86e2 with SMTP id
- b21-20020a05651c033500b0025e4ac086e2mr1207861ljp.427.1659282852262; Sun, 31
- Jul 2022 08:54:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
- <20220727113054.ffcckzlcipcxer2c@pengutronix.de> <20220727192839.707a3453.max@enpas.org>
- <20220727182414.3mysdeam7mtnqyfx@pengutronix.de> <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
- <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de> <CABGWkvoYR67MMmqZ6bRLuL3szhVb-gMwuAy6Z4YMkaG0yw6Sdg@mail.gmail.com>
- <20220728105049.43gbjuctezxzmm4j@pengutronix.de> <20220728125734.1c380d25.max@enpas.org>
- <CABGWkvo0B8XM+5qLhz3zY2DzyUrEQtQyJnd91VweUWDUcjyr5A@mail.gmail.com> <20220729073352.rfxdyjvttjp7rnfk@pengutronix.de>
-In-Reply-To: <20220729073352.rfxdyjvttjp7rnfk@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Sun, 31 Jul 2022 17:54:01 +0200
-Message-ID: <CABGWkvpgDZohEwPJu0hgm+OqfKbH=PgpPHjMMp=t3PxpPfVhVQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
- register (btr)
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Max Staudt <max@enpas.org>, linux-kernel@vger.kernel.org,
-        linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=Yq7IbsWb6KGMKaLqYMBkrgh9qZVrTfcDeSB4X4YswxE=;
+        b=DESqx0VFhfjV99BEzXS4wn3MlhP1FqBKKAs8tm3KOsOPaEO9Z+JDvv/DZEc4BF8a97
+         ak4gZ4YEdWpo4bMnKyFVSUqIvJNb3jPk6IK6UUoE+dI97ZcHnf9Vo3veb5UcDb1WujuX
+         mttQwDwtgqPzkmNOMiNE3JPdwGkvJDafupikUAxFT5bfhj3/3+AiOT8e6BXu16ay/4/D
+         vlcF3Ndt4Qc25hK8LxLnVrZi6OB+O+9QtoXnGE95pgDRJVmp5u2vdx6DyuXBPxIzU0qq
+         gKVWA56T55xS05P8SJSGU6yCXxLxuEZMa8Dgkh8tO05mNQ6dOMXRnCWtk6TimX1fn97R
+         cOeg==
+X-Gm-Message-State: AJIora/IU0m5wXDSZxm5cszyx53cTzepf1x3AIunGaLX10lz80SP9lVJ
+        1KBQotk3/C4lBas+3LOc4/eMisvVCw==
+X-Google-Smtp-Source: AGRyM1s+ueUdhvIOJSejGa9xW8hJwCQnq39jrQwJI44xF3l1OTLOhZUlqkBkEWz7m7XcKWQVUFVkUg==
+X-Received: by 2002:a92:6f0a:0:b0:2d9:24b5:9401 with SMTP id k10-20020a926f0a000000b002d924b59401mr4454365ilc.89.1659283365495;
+        Sun, 31 Jul 2022 09:02:45 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m3-20020a924a03000000b002de2b639101sm2891012ilf.4.2022.07.31.09.02.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 31 Jul 2022 09:02:44 -0700 (PDT)
+Received: (nullmailer pid 3380586 invoked by uid 1000);
+        Sun, 31 Jul 2022 16:02:39 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     John Crispin <john@phrozen.org>, Jakub Kicinski <kuba@kernel.org>,
+        UNGLinuxDriver@microchip.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        devicetree@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Mans Rullgard <mans@mansr.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+In-Reply-To: <20220731150006.2841795-1-vladimir.oltean@nxp.com>
+References: <20220731150006.2841795-1-vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: dsa: make phylink bindings required for CPU/DSA ports
+Date:   Sun, 31 Jul 2022 10:02:39 -0600
+Message-Id: <1659283359.435016.3380585.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Sun, 31 Jul 2022 18:00:06 +0300, Vladimir Oltean wrote:
+> It is desirable that new DSA drivers are written to expect that all
+> their ports register with phylink, and not rely on the DSA core's
+> workarounds to skip this process.
+> 
+> To that end, DSA is being changed to warn existing drivers when such DT
+> blobs are in use:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220729132119.1191227-1-vladimir.oltean@nxp.com/
+> 
+> Introduce another layer of validation in the DSA DT schema, and assert
+> that CPU and DSA ports must have phylink-related properties present.
+> 
+> Suggested-by: Rob Herring <robh+dt@kernel.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> I've sent this patch separately because at least right now I don't have
+> a reason to resend the other 4 patches linked above, and this has no
+> dependency on those.
+> 
+>  .../devicetree/bindings/net/dsa/dsa-port.yaml | 22 +++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+> 
 
-On Fri, Jul 29, 2022 at 9:33 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 29.07.2022 08:52:07, Dario Binacchi wrote:
-> > Hello Marc and Max,
-> >
-> > On Thu, Jul 28, 2022 at 12:57 PM Max Staudt <max@enpas.org> wrote:
-> > >
-> > > On Thu, 28 Jul 2022 12:50:49 +0200
-> > > Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > >
-> > > > On 28.07.2022 12:23:04, Dario Binacchi wrote:
-> > > > > > > Does it make sense to use the device tree
-> > > > > >
-> > > > > > The driver doesn't support DT and DT only works for static serial
-> > > > > > interfaces.
-> > > >
-> > > > Have you seen my remarks about Device Tree?
-> > >
-> > > Dario, there seems to be a misunderstanding about the Device Tree.
-> > >
-> > > It is used *only* for hardware that is permanently attached, present at
-> > > boot, and forever after. Not for dyamically added stuff, and definitely
-> > > not for ldiscs that have to be attached manually by the user.
-> > >
-> > >
-> > > The only exception to this is if you have an embedded device with an
-> > > slcan adapter permanently attached to one of its UARTs. Then you can
-> > > use the serdev ldisc adapter to attach the ldisc automatically at boot.
-> >
-> > It is evident that I am lacking some skills (I will try to fix it :)).
->
-> We're all here to learn something!
->
-> > I think it is equally clear that it is not worth going down this path.
->
-> If you have a static attached serial devices serdev is the way to go.
-> But slcan has so many drawbacks compared to "real" CAN adapters that I
-> hope the no one uses them in such a scenario.
->
-> > > If you are actively developing for such a use case, please let us know,
-> > > so we know what you're after and can help you better :)
-> >
-> > I don't have a use case, other than to try, if possible, to make the driver
-> > autonomous from slcand / slcan_attach for the CAN bus setup.
->
-> From my point of view your job is done!
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Ok.
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:91:3: [warning] wrong indentation: expected 4 but found 2 (indentation)
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:92:5: [warning] wrong indentation: expected 6 but found 4 (indentation)
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:94:5: [warning] wrong indentation: expected 6 but found 4 (indentation)
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:95:7: [warning] wrong indentation: expected 8 but found 6 (indentation)
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:97:7: [warning] wrong indentation: expected 8 but found 6 (indentation)
+./Documentation/devicetree/bindings/net/dsa/dsa-port.yaml:99:7: [warning] wrong indentation: expected 8 but found 6 (indentation)
 
->
-> > Returning to Marc's previous analysis:
-> > "... Some USB CAN drivers query the bit timing const from the USB device."
-> >
-> > Can we think of taking the gs_usb driver as inspiration for getting/setting the
-> > bit timings?
-> >
-> > https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb.c#L951
-> > https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb.c#L510
-> >
-> > and, as done with patches:
-> >
-> > can: slcan: extend the protocol with CAN state info
-> > can: slcan: extend the protocol with error info
->
-> You can define a way to query bit timing constants and CAN clock rate,
-> but you have to get this into the "official" firmware. You have to roll
-> out a firmware update to all devices. What about non official firmware?
->
-> > further extend the protocol to get/set the bit timing from / to the adapter ?
-> > In the case of non-standard bit rates, the driver would try, depending on the
-> > firmware of the adapter, to calculate and set the bit timings autonomously.
->
-> If an adapter follows 100% the official firmware doc the BTR registers
-> are interpreted as SJA1000 with 8 MHz CAN clock.
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.example.dtb: switch@8: ethernet-ports:ethernet-port@3: 'phy-mode' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.example.dtb: switch@8: Unevaluated properties are not allowed ('ethernet-ports' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.example.dtb: switch@ff240000: ethernet-ports:port@0: 'phy-mode' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.example.dtb: switch@ff240000: ethernet-ports:port@0: 'oneOf' conditional failed, one must be fixed:
+	'fixed-link' is a required property
+	'phy-handle' is a required property
+	'managed' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.example.dtb: switch@ff240000: Unevaluated properties are not allowed ('dsa,member', 'ethernet-ports' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/brcm,b53.example.dtb: switch@36000: ethernet-ports:port@8: 'phy-mode' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/brcm,b53.example.dtb: switch@36000: Unevaluated properties are not allowed ('ethernet-ports' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.example.dtb: switch@0: ethernet-ports:port@5: 'phy-mode' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.example.dtb: switch@0: Unevaluated properties are not allowed ('ethernet-ports' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.example.dtb: switch@1: ethernet-ports:port@6: 'phy-mode' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.example.dtb: switch@1: Unevaluated properties are not allowed ('ethernet-ports' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
 
-I checked the sources and documentation of the usb adapter I used (i.
-e. Https://www.fischl.de/usbtin/):
-...
-sxxyyzz[CR]                 Set can bitrate registers of MCP2515. You
-can set non-standard baudrates which are not supported by the "Sx"
-command.
-                                     xx: CNF1 as hexadecimal value (00-FF)
-                                     yy: CNF2 as hexadecimal value (00-FF)
-                                     zz: CNF3 as hexadecimal value
-...
+doc reference errors (make refcheckdocs):
 
-Different from what is reported by can232_ver3_Manual.pdf :
+See https://patchwork.ozlabs.org/patch/
 
-sxxyy[CR]         Setup with BTR0/BTR1 CAN bit-rates where xx and yy is a hex
-                         value. This command is only active if the CAN
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-And here is the type of control carried out by the slcan_attach for
-the btr parameter:
-https://github.com/linux-can/can-utils/blob/master/slcan_attach.c#L144
-When I would have expected a different check (i. e. if (strlen(btr) > 4).
-Therefore it is possible that each adapter uses these bytes in its own
-way as well as
-in the content and also in the number of bytes.
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-Thanks and regards,
-Dario
+pip3 install dtschema --upgrade
 
->
-> See
->
-> | https://lore.kernel.org/all/20220728105049.43gbjuctezxzmm4j@pengutronix.de
->
-> where I compare the 125 Kbit/s BTR config of the documentation with the
-> bit timing calculated by the kernel algorithm.
->
-> regards,
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Please check and re-submit.
 
-
-
--- 
-
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
