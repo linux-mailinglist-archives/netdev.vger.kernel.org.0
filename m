@@ -2,104 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 280FB586067
-	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 20:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB72586070
+	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 20:52:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237243AbiGaSq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jul 2022 14:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        id S237640AbiGaSwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jul 2022 14:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiGaSq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 14:46:57 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CB3DF6A
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 11:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659293216; x=1690829216;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P7ggAeiAb9y5sYAV6qTrQf0HnKwfuziEcvjDdFbNBEo=;
-  b=ABjTAMbSHQ7LawcNzI7Vubhkns2co379b9QTEv5uAWDl4g6IWvxtkF/X
-   bx1X2BqXgF2Q5d7nYlJeUy01Ncq3HzQaS+eaNVq5+pEWWm+KObZruoxvg
-   OSiwNr8zCdqmPlrMlObhxGZbwuOtqci2/KVoTaS9P0H3X+sOjEtv3A+38
-   6EVPEbYlWzhUP5bU/B1StfUCHKwc/an85IQQuvFt7jWQFsmPLZudNPruK
-   TZwN9AFS2Yv68ViGqzhvjLE56EYE10NcxdUaLXxhjgAObKGOHM7VtZTLX
-   TyGVcx3VmsDv6S6K2luPNjHetHgoIRKpK4AoGPxIkwEm0oqHSjU26M32G
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="353023237"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="353023237"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 11:46:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="552289350"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 31 Jul 2022 11:46:54 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIDxl-000EOh-1c;
-        Sun, 31 Jul 2022 18:46:53 +0000
-Date:   Mon, 1 Aug 2022 02:46:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joanne Koong <joannelkoong@gmail.com>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, pabeni@redhat.com, edumazet@google.com,
-        kuba@kernel.org, kafai@fb.com, davem@davemloft.net,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: Re: [PATCH net-next v3 1/3] net: Add a bhash2 table hashed by port +
- address
-Message-ID: <202208010253.SjaFtOB8-lkp@intel.com>
-References: <20220722195406.1304948-2-joannelkoong@gmail.com>
+        with ESMTP id S237564AbiGaSwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 14:52:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895B6DEC7
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 11:52:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oIE33-0004Iq-2x; Sun, 31 Jul 2022 20:52:21 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9038CBEBC3;
+        Sun, 31 Jul 2022 18:52:15 +0000 (UTC)
+Date:   Sun, 31 Jul 2022 20:52:13 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Max Staudt <max@enpas.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] can: can327: Fix a broken link to Documentation
+Message-ID: <20220731185213.gath5pgt4fcpttil@pengutronix.de>
+References: <6a54aff884ea4f84b661527d75aabd6632140715.1659249135.git.christophe.jaillet@wanadoo.fr>
+ <20220731104452.3bc2e76c.max@enpas.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="devh3drl6tdtjlei"
 Content-Disposition: inline
-In-Reply-To: <20220722195406.1304948-2-joannelkoong@gmail.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220731104452.3bc2e76c.max@enpas.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joanne,
 
-Thank you for the patch! Perhaps something to improve:
+--devh3drl6tdtjlei
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test WARNING on net-next/master]
+On 31.07.2022 10:44:52, Max Staudt wrote:
+> Thanks, Christophe!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/Add-a-second-bind-table-hashed-by-port-address/20220723-035903
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 949d6b405e6160ae44baea39192d67b39cb7eeac
-config: sh-randconfig-m041-20220722 (https://download.01.org/0day-ci/archive/20220801/202208010253.SjaFtOB8-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
+If you think the patch is Ok, you can give an Acked-by: which is then
+recorded in the patch while applying it to the kernel.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Marc
 
-smatch warnings:
-include/net/inet_hashtables.h:265 inet_bhashfn_portaddr() warn: inconsistent indenting
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-vim +265 include/net/inet_hashtables.h
+--devh3drl6tdtjlei
+Content-Type: application/pgp-signature; name="signature.asc"
 
-   253	
-   254	static inline struct inet_bind_hashbucket *
-   255	inet_bhashfn_portaddr(const struct inet_hashinfo *hinfo, const struct sock *sk,
-   256			      const struct net *net, unsigned short port)
-   257	{
-   258		u32 hash;
-   259	
-   260	#if IS_ENABLED(CONFIG_IPV6)
-   261		if (sk->sk_family == AF_INET6)
-   262			hash = ipv6_portaddr_hash(net, &sk->sk_v6_rcv_saddr, port);
-   263		else
-   264	#endif
- > 265			hash = ipv4_portaddr_hash(net, sk->sk_rcv_saddr, port);
-   266		return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-   267	}
-   268	
+-----BEGIN PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLmz1gACgkQrX5LkNig
+011XuAf/dJQV1xIfOUXfQGFEHQrYynqCpHfZ47rPqwtBdrgzlx7+aTaF3DQUdP/l
+2ekPyU1mfWPxjkTwC9J/cF2rnWpouCgnOzO9jdkMdPUM3kn+6lRT2SSd1/bF5hqx
+NBTJbl2Hc/y/0PKSFx0AMT9cOywA2IEv8pbjDC3OFrVDMZNyBJUqHzdf1/NPndYL
+OOV+K00o8QnCzhlYTutwKhkvnyiUJawRRCgIysXQVNoKIcpI9N1xhfEN3u/Pnfb2
+wjI1zb9U0ytfp26JVChHXk3L636luYHPv/G4tISck4ceV8PlCvsyw5kuIrBUV4WW
+UiCw8cKohAvpxGqRSlZaLmDcPofxzQ==
+=X7vm
+-----END PGP SIGNATURE-----
+
+--devh3drl6tdtjlei--
