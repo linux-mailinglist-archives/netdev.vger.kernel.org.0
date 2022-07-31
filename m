@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90650586101
+	by mail.lfdr.de (Postfix) with ESMTP id 4457C586100
 	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 21:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbiGaTWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jul 2022 15:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33106 "EHLO
+        id S238376AbiGaTW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jul 2022 15:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238327AbiGaTWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 15:22:17 -0400
+        with ESMTP id S238368AbiGaTWS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 15:22:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB58510FD5
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 12:21:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CFF11835
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 12:21:04 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oIEUl-0008FW-He
-        for netdev@vger.kernel.org; Sun, 31 Jul 2022 21:20:59 +0200
+        id 1oIEUm-0008GS-Fc
+        for netdev@vger.kernel.org; Sun, 31 Jul 2022 21:21:00 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 6FE4FBED2C
+        by bjornoya.blackshift.org (Postfix) with SMTP id 85277BED31
         for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 19:20:41 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id CEF03BED0C;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id F0509BED12;
         Sun, 31 Jul 2022 19:20:40 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 64e90c54;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c8824923;
         Sun, 31 Jul 2022 19:20:31 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 35/36] can: etas_es58x: remove useless calls to usb_fill_bulk_urb()
-Date:   Sun, 31 Jul 2022 21:20:28 +0200
-Message-Id: <20220731192029.746751-36-mkl@pengutronix.de>
+Subject: [PATCH net-next 36/36] can: can327: fix a broken link to Documentation
+Date:   Sun, 31 Jul 2022 21:20:29 +0200
+Message-Id: <20220731192029.746751-37-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220731192029.746751-1-mkl@pengutronix.de>
 References: <20220731192029.746751-1-mkl@pengutronix.de>
@@ -59,63 +59,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Aside of urb->transfer_buffer_length and urb->context which might
-change in the TX path, all the other URB parameters remains constant
-during runtime. So, there is no reasons to call usb_fill_bulk_urb()
-each time before submitting an URB.
+Since commit 482a4360c56a ("docs: networking: convert netdevices.txt to
+ReST"), Documentation/networking/netdevices.txt has been replaced by
+Documentation/networking/netdevices.rst.
 
-Make sure to initialize all the fields of the URB at allocation
-time. For the TX branch, replace the call usb_fill_bulk_urb() by an
-assignment of urb->context. urb->urb->transfer_buffer_length is
-already set by the caller functions, no need to set it again. For the
-RX branch, because all parameters are unchanged, simply remove the
-call to usb_fill_bulk_urb().
+Update the comment accordingly to avoid a 'make htmldocs' warning.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Link: https://lore.kernel.org/all/20220729080902.25839-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/all/6a54aff884ea4f84b661527d75aabd6632140715.1659249135.git.christophe.jaillet@wanadoo.fr
+Fixes: 43da2f07622f ("can: can327: CAN/ldisc driver for ELM327 based OBD-II adapters")
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/etas_es58x/es58x_core.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/can/can327.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 3b949e979583..51294b717040 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -1460,10 +1460,6 @@ static void es58x_read_bulk_callback(struct urb *urb)
- 	}
+diff --git a/drivers/net/can/can327.c b/drivers/net/can/can327.c
+index 50a374972ad9..0aa1af31d0fe 100644
+--- a/drivers/net/can/can327.c
++++ b/drivers/net/can/can327.c
+@@ -827,7 +827,7 @@ static netdev_tx_t can327_netdev_start_xmit(struct sk_buff *skb,
+ 	netif_stop_queue(dev);
  
-  resubmit_urb:
--	usb_fill_bulk_urb(urb, es58x_dev->udev, es58x_dev->rx_pipe,
--			  urb->transfer_buffer, urb->transfer_buffer_length,
--			  es58x_read_bulk_callback, es58x_dev);
--
- 	ret = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (ret == -ENODEV) {
- 		for (i = 0; i < es58x_dev->num_can_ch; i++)
-@@ -1597,7 +1593,8 @@ static struct urb *es58x_get_tx_urb(struct es58x_device *es58x_dev)
- 			return NULL;
- 
- 		usb_fill_bulk_urb(urb, es58x_dev->udev, es58x_dev->tx_pipe,
--				  buf, tx_buf_len, NULL, NULL);
-+				  buf, tx_buf_len, es58x_write_bulk_callback,
-+				  NULL);
- 		return urb;
- 	}
- 
-@@ -1630,9 +1627,7 @@ static int es58x_submit_urb(struct es58x_device *es58x_dev, struct urb *urb,
- 	int ret;
- 
- 	es58x_set_crc(urb->transfer_buffer, urb->transfer_buffer_length);
--	usb_fill_bulk_urb(urb, es58x_dev->udev, es58x_dev->tx_pipe,
--			  urb->transfer_buffer, urb->transfer_buffer_length,
--			  es58x_write_bulk_callback, netdev);
-+	urb->context = netdev;
- 	usb_anchor_urb(urb, &es58x_dev->tx_urbs_busy);
- 	ret = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (ret) {
+ 	/* BHs are already disabled, so no spin_lock_bh().
+-	 * See Documentation/networking/netdevices.txt
++	 * See Documentation/networking/netdevices.rst
+ 	 */
+ 	spin_lock(&elm->lock);
+ 	can327_send_frame(elm, frame);
 -- 
 2.35.1
 
