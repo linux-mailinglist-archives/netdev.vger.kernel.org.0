@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 345B85860F6
-	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 21:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825F8586103
+	for <lists+netdev@lfdr.de>; Sun, 31 Jul 2022 21:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238445AbiGaTWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jul 2022 15:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S238331AbiGaTWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jul 2022 15:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238444AbiGaTV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 15:21:26 -0400
+        with ESMTP id S238355AbiGaTWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jul 2022 15:22:17 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACDC1147D
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 12:21:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F2211814
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 12:21:03 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oIEUj-0008B9-FT
-        for netdev@vger.kernel.org; Sun, 31 Jul 2022 21:20:57 +0200
+        id 1oIEUl-0008EF-6u
+        for netdev@vger.kernel.org; Sun, 31 Jul 2022 21:20:59 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B11AABED09
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 19:20:40 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3DA31BED1E
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 19:20:41 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 092B0BECF1;
-        Sun, 31 Jul 2022 19:20:39 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 5D05ABECFD;
+        Sun, 31 Jul 2022 19:20:40 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5a395583;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 1c2ad0d5;
         Sun, 31 Jul 2022 19:20:31 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Jimmy Assarsson <extja@kvaser.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 31/36] can: kvaser_pciefd: advertise timestamping capabilities and add ioctl support
-Date:   Sun, 31 Jul 2022 21:20:24 +0200
-Message-Id: <20220731192029.746751-32-mkl@pengutronix.de>
+Subject: [PATCH net-next 32/36] can: kvaser_usb: advertise timestamping capabilities and add ioctl support
+Date:   Sun, 31 Jul 2022 21:20:25 +0200
+Message-Id: <20220731192029.746751-33-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220731192029.746751-1-mkl@pengutronix.de>
 References: <20220731192029.746751-1-mkl@pengutronix.de>
@@ -63,7 +63,7 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
 Currently, userland has no method to query which timestamping features
-are supported by the kvaser_pciefd driver (aside maybe of getting RX
+are supported by the kvaser_usb driver (aside maybe of getting RX
 messages and observe whether or not hardware timestamps stay at zero).
 
 The canonical way for a network driver to advertise what kind of
@@ -83,47 +83,83 @@ Link: https://docs.kernel.org/networking/timestamping.html#hardware-timestamping
 
 CC: Jimmy Assarsson <extja@kvaser.com>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Link: https://lore.kernel.org/all/20220727101641.198847-12-mailhol.vincent@wanadoo.fr
+Link: https://lore.kernel.org/all/20220727101641.198847-13-mailhol.vincent@wanadoo.fr
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/kvaser_pciefd.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/can/usb/kvaser_usb/kvaser_usb.h   |  1 +
+ .../net/can/usb/kvaser_usb/kvaser_usb_core.c  | 27 +++++++++++++++++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
-index dcd2c9d50d5e..ed54c0b3c7d4 100644
---- a/drivers/net/can/kvaser_pciefd.c
-+++ b/drivers/net/can/kvaser_pciefd.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
+index eefcbe3aadce..841da29cef93 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
+@@ -39,6 +39,7 @@
+ #define KVASER_USB_QUIRK_HAS_SILENT_MODE	BIT(0)
+ #define KVASER_USB_QUIRK_HAS_TXRX_ERRORS	BIT(1)
+ #define KVASER_USB_QUIRK_IGNORE_CLK_FREQ	BIT(2)
++#define KVASER_USB_QUIRK_HAS_HARDWARE_TIMESTAMP	BIT(3)
+ 
+ /* Device capabilities */
+ #define KVASER_USB_CAP_BERR_CAP			0x01
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+index ce60b16ac8ee..824cab80aa02 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+@@ -13,6 +13,7 @@
+ 
+ #include <linux/completion.h>
  #include <linux/device.h>
 +#include <linux/ethtool.h>
- #include <linux/pci.h>
- #include <linux/can/dev.h>
- #include <linux/timer.h>
-@@ -919,10 +920,15 @@ static void kvaser_pciefd_bec_poll_timer(struct timer_list *data)
- static const struct net_device_ops kvaser_pciefd_netdev_ops = {
- 	.ndo_open = kvaser_pciefd_open,
- 	.ndo_stop = kvaser_pciefd_stop,
-+	.ndo_eth_ioctl = can_eth_ioctl_hwts,
- 	.ndo_start_xmit = kvaser_pciefd_start_xmit,
+ #include <linux/gfp.h>
+ #include <linux/if.h>
+ #include <linux/kernel.h>
+@@ -89,7 +90,7 @@
+ #define USB_HYBRID_PRO_CANLIN_PRODUCT_ID	278
+ 
+ static const struct kvaser_usb_driver_info kvaser_usb_driver_info_hydra = {
+-	.quirks = 0,
++	.quirks = KVASER_USB_QUIRK_HAS_HARDWARE_TIMESTAMP,
+ 	.ops = &kvaser_usb_hydra_dev_ops,
+ };
+ 
+@@ -665,6 +666,22 @@ static const struct net_device_ops kvaser_usb_netdev_ops = {
  	.ndo_change_mtu = can_change_mtu,
  };
  
-+static const struct ethtool_ops kvaser_pciefd_ethtool_ops = {
++static const struct net_device_ops kvaser_usb_netdev_ops_hwts = {
++	.ndo_open = kvaser_usb_open,
++	.ndo_stop = kvaser_usb_close,
++	.ndo_eth_ioctl = can_eth_ioctl_hwts,
++	.ndo_start_xmit = kvaser_usb_start_xmit,
++	.ndo_change_mtu = can_change_mtu,
++};
++
++static const struct ethtool_ops kvaser_usb_ethtool_ops = {
++	.get_ts_info = ethtool_op_get_ts_info,
++};
++
++static const struct ethtool_ops kvaser_usb_ethtool_ops_hwts = {
 +	.get_ts_info = can_ethtool_op_get_ts_info_hwts,
 +};
 +
- static int kvaser_pciefd_setup_can_ctrls(struct kvaser_pciefd *pcie)
+ static void kvaser_usb_remove_interfaces(struct kvaser_usb *dev)
  {
  	int i;
-@@ -939,6 +945,7 @@ static int kvaser_pciefd_setup_can_ctrls(struct kvaser_pciefd *pcie)
+@@ -742,7 +759,13 @@ static int kvaser_usb_init_one(struct kvaser_usb *dev, int channel)
+ 	netdev->flags |= IFF_ECHO;
  
- 		can = netdev_priv(netdev);
- 		netdev->netdev_ops = &kvaser_pciefd_netdev_ops;
-+		netdev->ethtool_ops = &kvaser_pciefd_ethtool_ops;
- 		can->reg_base = pcie->reg_base + KVASER_PCIEFD_KCAN0_BASE +
- 				i * KVASER_PCIEFD_KCAN_BASE_OFFSET;
+ 	netdev->netdev_ops = &kvaser_usb_netdev_ops;
+-
++	if (driver_info->quirks & KVASER_USB_QUIRK_HAS_HARDWARE_TIMESTAMP) {
++		netdev->netdev_ops = &kvaser_usb_netdev_ops_hwts;
++		netdev->ethtool_ops = &kvaser_usb_ethtool_ops_hwts;
++	} else {
++		netdev->netdev_ops = &kvaser_usb_netdev_ops;
++		netdev->ethtool_ops = &kvaser_usb_ethtool_ops;
++	}
+ 	SET_NETDEV_DEV(netdev, &dev->intf->dev);
+ 	netdev->dev_id = channel;
  
 -- 
 2.35.1
