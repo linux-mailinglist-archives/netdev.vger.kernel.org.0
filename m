@@ -2,129 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C39B8586D8D
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 17:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AAF586DAA
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 17:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233404AbiHAPTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 11:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S232720AbiHAPXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 11:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiHAPTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 11:19:49 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85FD3336F
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 08:19:46 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id c20-20020a9d4814000000b0061cecd22af4so8357238otf.12
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 08:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=4KphHhaoyXc371JKTPQphkPCqA2NS8jh1IIkyTneq4o=;
-        b=62EB/TFA4EuJYasg0ku1Dzr9dF033+9r1gXM0z+QJ7j/FuTK5jhbf38GBxyKpAP1ji
-         7Drz7ejxjN9DxPHD/ANUEK6L3cZPI9kd1/4JsiNCkcd8r0EE7Y31h8eUk8Q4T4JCYL3I
-         wG9l4kSHTD9SNnUXEVcwOcs77YOob6wKHSNIg0dih6qNHzqlFov+sSv9NIQMHsPnI7y5
-         H4PYESNlKNYjX61q+2qeK+YdhaBuvc/wNy56XLdYm/ndygfjSy8HPh0I7D2XR9miZcy5
-         E6TRQoilJz8V5YJiz//4+CWH/Ith4r/ncRDxeHNXkGgVVHLxKgv/rSkb4eGyDgYXYkRb
-         1VlQ==
+        with ESMTP id S231162AbiHAPXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 11:23:43 -0400
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4979EE9B;
+        Mon,  1 Aug 2022 08:23:42 -0700 (PDT)
+Received: by mail-io1-f53.google.com with SMTP id l24so8600949ion.13;
+        Mon, 01 Aug 2022 08:23:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=4KphHhaoyXc371JKTPQphkPCqA2NS8jh1IIkyTneq4o=;
-        b=iHhAfXB880Gf6kmeBZhFHn64dIzVHx5nibFZ5/dp44xvG+j5VdUvFT2lltjD82pVMg
-         POL9UXOnwWBbCRuPXUjkBX2bThvPD8YZxfSr+8rG9YUUPWv1+5jdZ4dEz9J7s+3oDljX
-         j6mrij71h+OmlUavHsoq4Aq2PcJbgy2UnEZV9TvpRn6xqTeiIV0B1Qx5YhidqGSC/wBa
-         9/wQVQH9UNdPSA+wV71rIpr9X7E9GTu8gY5CLDQ6AocBqmF3v+Aoa6k4/HsA2Y0ek8xR
-         KRLagIdwd732f6ItdtkhiDJVCBz7OLrCdZrz6Ic/ru9veWbESo2jvWVdo11mVN7gkVnr
-         jTrQ==
-X-Gm-Message-State: ACgBeo25hGktNiN/AE3ja1M8QRR+Rx8dj8frH32XtomZSjp0nqX+Zo4g
-        icy3h5CPh+U7vsgsgPrQsWhGqAAB67fDb0Bvia2n
-X-Google-Smtp-Source: AA6agR58TUz+jQfBltCbxRg6WZrQY7oenMMZ6MBjbTUxC7EEAw7vmQXEqpFoYsjefFs4nmqFahyuv4TBVZlaC3y3xi4=
-X-Received: by 2002:a9d:7a99:0:b0:629:805:bca4 with SMTP id
- l25-20020a9d7a99000000b006290805bca4mr2748972otn.26.1659367185883; Mon, 01
- Aug 2022 08:19:45 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=h+EaozKCPOAR4Pt7H3+DF41E8A2I4TARDu5JctlsAKc=;
+        b=pmOW9D78wmSGO/Ps/4wHQeVt9vI+q/9UYZ5/LOQcDQE3e+RsTkjGwePqElsrKXTQtj
+         /ZMD10tX4ZjU5xzXS5NWTgix903r9wrTFoVDfJbd5+ZBjPESWc/uBuVbQEcxMFHrQOLE
+         TJglyduHatXf5xf8e7UADdUo9eP3wVbqDZy2mgMOk5zKdNDbFDyRmyq/ucVd+FACoJtk
+         FFTn/Lk+C7uygcgssyXVcilTXambbaOe8wKi8uX4F7FEd8C52Nk+xYmqaIeO8hJ2PAIC
+         qud5jMxpo9oDmuS8znG7Ik46jMzzZadFKYHsD+dR1BfLHl7SJVTFUSKq0pS15tElpVNz
+         zmcQ==
+X-Gm-Message-State: AJIora/PWArCDxNrSoD7EsGon3wRHVuxV5c8J9qmsbEEHJZlrLE5HcYm
+        nl7P/7RcJb9uqP60sTHOJQ==
+X-Google-Smtp-Source: AGRyM1sbtEtvoAfQUhoXHdTBPOIKR4FoungfLRb+EiLPBcmuQIEkA8rGIIDK77b+f14A5MTJsKzOXQ==
+X-Received: by 2002:a02:cbcd:0:b0:33f:6f8c:f4a6 with SMTP id u13-20020a02cbcd000000b0033f6f8cf4a6mr6450682jaq.300.1659367421281;
+        Mon, 01 Aug 2022 08:23:41 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id y8-20020a027308000000b00339c4e447e2sm5384819jab.151.2022.08.01.08.23.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 08:23:40 -0700 (PDT)
+Received: (nullmailer pid 1045598 invoked by uid 1000);
+        Mon, 01 Aug 2022 15:23:38 -0000
+Date:   Mon, 1 Aug 2022 09:23:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: net: Add generic Bluetooth controller
+Message-ID: <20220801152338.GB1031441-robh@kernel.org>
+References: <20220801103633.27772-1-sven@svenpeter.dev>
+ <20220801103633.27772-2-sven@svenpeter.dev>
 MIME-Version: 1.0
-References: <20220721172808.585539-1-fred@cloudflare.com> <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
- <18225d94bf0.28e3.85c95baa4474aabc7814e68940a78392@paul-moore.com> <a4db1154-94bc-9833-1665-a88a5eee48de@cloudflare.com>
-In-Reply-To: <a4db1154-94bc-9833-1665-a88a5eee48de@cloudflare.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 1 Aug 2022 11:19:35 -0400
-Message-ID: <CAHC9VhQw8LR9yJ9UkA-9aPNETQavt25G-GGSs-_ztg6ZpxNzxA@mail.gmail.com>
-Subject: Re: [PATCH v3 0/4] Introduce security_create_user_ns()
-To:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>, revest@chromium.org,
-        jackmanb@chromium.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801103633.27772-2-sven@svenpeter.dev>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 9:13 AM Frederick Lawler <fred@cloudflare.com> wrote:
-> On 7/22/22 7:20 AM, Paul Moore wrote:
-> > On July 22, 2022 2:12:03 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> >> On Thu, Jul 21, 2022 at 12:28:04PM -0500, Frederick Lawler wrote:
-> >>> While creating a LSM BPF MAC policy to block user namespace creation, we
-> >>> used the LSM cred_prepare hook because that is the closest hook to prevent
-> >>> a call to create_user_ns().
-> >>>
-> >>> The calls look something like this:
-> >>>
-> >>> cred = prepare_creds()
-> >>> security_prepare_creds()
-> >>> call_int_hook(cred_prepare, ...
-> >>> if (cred)
-> >>> create_user_ns(cred)
-> >>>
-> >>> We noticed that error codes were not propagated from this hook and
-> >>> introduced a patch [1] to propagate those errors.
-> >>>
-> >>> The discussion notes that security_prepare_creds()
-> >>> is not appropriate for MAC policies, and instead the hook is
-> >>> meant for LSM authors to prepare credentials for mutation. [2]
-> >>>
-> >>> Ultimately, we concluded that a better course of action is to introduce
-> >>> a new security hook for LSM authors. [3]
-> >>>
-> >>> This patch set first introduces a new security_create_user_ns() function
-> >>> and userns_create LSM hook, then marks the hook as sleepable in BPF.
-> >> Patch 1 and 4 still need review from the lsm/security side.
-> >
-> > This patchset is in my review queue and assuming everything checks out, I expect to merge it after the upcoming merge window closes.
-> >
-> > I would also need an ACK from the BPF LSM folks, but they're CC'd on this patchset.
->
-> Based on last weeks comments, should I go ahead and put up v4 for
-> 5.20-rc1 when that drops, or do I need to wait for more feedback?
+On Mon, Aug 01, 2022 at 12:36:29PM +0200, Sven Peter wrote:
+> Bluetooth controllers share the common local-bd-address property.
+> Add a generic YAML schema to replace bluetooth.txt for those.
+> 
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+> I hope it's fine to list the current Bluetooth maintainers in here
+> as well.
+> 
+>  .../bindings/net/bluetooth-controller.yaml    | 30 +++++++++++++++++++
+>  .../devicetree/bindings/net/bluetooth.txt     |  6 +---
+>  2 files changed, 31 insertions(+), 5 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/bluetooth-controller.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/bluetooth-controller.yaml b/Documentation/devicetree/bindings/net/bluetooth-controller.yaml
+> new file mode 100644
+> index 000000000000..0ea8a20e30f9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/bluetooth-controller.yaml
+> @@ -0,0 +1,30 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/bluetooth-controller.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Bluetooth Controller Generic Binding
+> +
+> +maintainers:
+> +  - Marcel Holtmann <marcel@holtmann.org>
+> +  - Johan Hedberg <johan.hedberg@gmail.com>
+> +  - Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^bluetooth(@.*)?$"
+> +
+> +  local-bd-address:
+> +    $ref: /schemas/types.yaml#/definitions/uint8-array
+> +    minItems: 6
+> +    maxItems: 6
+> +    description:
+> +      Specifies the BD address that was uniquely assigned to the Bluetooth
+> +      device. Formatted with least significant byte first (little-endian), e.g.
+> +      in order to assign the address 00:11:22:33:44:55 this property must have
+> +      the value [55 44 33 22 11 00].
+> +
+> +additionalProperties: true
+> +
+> +...
+> diff --git a/Documentation/devicetree/bindings/net/bluetooth.txt b/Documentation/devicetree/bindings/net/bluetooth.txt
+> index 94797df751b8..3cb5a7b8e5ad 100644
+> --- a/Documentation/devicetree/bindings/net/bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/bluetooth.txt
+> @@ -1,5 +1 @@
+> -The following properties are common to the Bluetooth controllers:
+> -
+> -- local-bd-address: array of 6 bytes, specifies the BD address that was
+> -  uniquely assigned to the Bluetooth device, formatted with least significant
+> -  byte first (little-endian).
+> +This file has been moved to bluetooth-controller.yaml.
 
-In general it rarely hurts to make another revision, and I think
-you've gotten some decent feedback on this draft, especially around
-the BPF LSM tests; I think rebasing on Linus tree after the upcoming
-io_uring changes are merged would be a good idea.  Although as a
-reminder to the BPF LSM folks - I'm looking at you KP Singh :) - I
-need an ACK from you guys before I merge the BPF related patches
-(patches {2,3}/4).  For the record, I think the SELinux portion of
-this patchset (path 4/4) is fine.
+There's one reference to bluetooth.txt. Update it and remove this file.
 
-There is the issue of Eric's NACK, but I believe the responses that
-followed his comment sufficiently addressed those concerns and it has
-now been a week with no further comment from Eric; we should continue
-to move forward with this.
-
--- 
-paul-moore.com
+Rob
