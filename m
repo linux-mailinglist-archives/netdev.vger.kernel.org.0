@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6175865B0
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 09:37:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1B665865B3
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 09:38:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiHAHhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 03:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        id S229743AbiHAHh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 03:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiHAHhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:23 -0400
+        with ESMTP id S229447AbiHAHh0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:26 -0400
 Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E593A4A9;
-        Mon,  1 Aug 2022 00:37:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623F13A4A9;
+        Mon,  1 Aug 2022 00:37:24 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CFC2124000A;
-        Mon,  1 Aug 2022 07:37:14 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 512DD240005;
+        Mon,  1 Aug 2022 07:37:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659339438;
+        t=1659339440;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rD3QjUZWg+66SP9jAAlBBPHmhDHWvUYeejN9eH8mXTY=;
-        b=h0LfKaeRHio27vUJyBgru+uQuMivEezj0vwKEe5CP1uKMATNMX9TWuTev3uxTXSFKAQHg8
-        LgWL3LjjwdJEK+ohyKxGfGI+pD12/rMqkHF4NfcHX7fQr2kFvwPvzC5WyHoDOTeQagetA9
-        62D6oBZPE8wUppXr24jRhyNb21kNdr6wMuKWXNnSl6kfJEkgqPxIXZ+PyEzmVivw/01VQo
-        qQqGDbOc6hUSpP00Ea3KJswI78E+D56nzpN4TI24I+vAt6jFO9Iyu/K7e9BQeGNtt1OjFY
-        /uzcDrMnBoFsLKRsnBaDrautBd/0iHmdneVaZXbnJQlVI0nJX3MlpNSkAYkohg==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xVWN5PxBhZIwLb93ut/eDZPEDDFTMNIGRTSGWGj2JKU=;
+        b=ffbijmahx16eA4nYrxcXq2/01d0+GDAqgTVYNauWKJWm5eFQZLJswCw2Gm6+AEIe1A2E1D
+        G7zUfqDY6ltRtjATCNHI6/kFZtOdeRceFz90tu1Th0rRRho90vYKB+ECg3dOze0Qc7wNAf
+        VJKHC7rp0fMQEmbJi5wFQ8qaVtXSR6Q+RjJ+LSZY7CsopsMgCvV1YxUiW3F7khx6VI/Idw
+        itFl7b4DCymibpX1d7Fa902guoZpWJiRzsLf6SLvH48dkSxAxlnV8hXn+7PKMWvlIJpoBb
+        lG0rmmRejN6T798lJ9orHKwi+B8VsB+RcmgaWLSAoQeuskwyFslCVO30X6yoeg==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -41,10 +42,12 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v4 0/4] net: Introduce QUSGMII phy mode
-Date:   Mon,  1 Aug 2022 09:37:09 +0200
-Message-Id: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 1/4] net: phy: Introduce QUSGMII PHY mode
+Date:   Mon,  1 Aug 2022 09:37:10 +0200
+Message-Id: <20220801073713.32290-2-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
+References: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -56,51 +59,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello everyone,
+The QUSGMII mode is a derivative of Cisco's USXGMII standard. This
+standard is pretty similar to SGMII, but allows for faster speeds, and
+has the build-in bits for Quad and Octa variants (like QSGMII).
 
-This is the V4 of a previous series [1] initially aimed at introducing
-inband extensions, with modes like QUSGMII. This mode allows passing
-info in the ethernet preamble between the MAC and the PHY, such s
-timestamps.
+The main difference with SGMII/QSGMII is that USXGMII/QUSGMII re-uses
+the preamble to carry various information, named 'Extensions'.
 
-This series has now become a preliminary series, that simply introduces
-the new interface mode, without support for inband extensions, that will
-come later.
+As of today, the USXGMII standard only mentions the "PCH" extension,
+which is used to convey timestamps, allowing in-band signaling of PTP
+timestamps without having to modify the frame itself.
 
-The reasonning is that work will need to be done in the networking
-subsystem, but also in the generic phy driver subsystem to allow serdes
-configuration for qusgmii.
+This commit adds support for that mode. When no extension is in use, it
+behaves exactly like QSGMII, although it's not compatible with QSGMII.
 
-This series add the mode, the relevant binding changes, adds support for
-it in the lan966x driver, and also introduces a small helper to get the
-number of links a given phy mode can carry (think 1 for SGMII and 4 for
-QSGMII). This allows for better readability and will prove useful
-when (if) we support PSGMII (5 links on 1 interface) and OUSGMII (8
-links on one interface).
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+V1->V2 : No changes
+V2->v3 : Added missing documentation on the new enum value
+V3->V4 : Added Andrew's R'd-by
 
-V4 contains no change but the collected Reviewed-by from Andrew.
+ Documentation/networking/phy.rst | 9 +++++++++
+ drivers/net/phy/phylink.c        | 3 +++
+ include/linux/phy.h              | 4 ++++
+ 3 files changed, 16 insertions(+)
 
-Best regards,
-
-Maxime
-
-Maxime Chevallier (4):
-  net: phy: Introduce QUSGMII PHY mode
-  dt-bindings: net: ethernet-controller: add QUSGMII mode
-  net: phy: Add helper to derive the number of ports from a phy mode
-  net: lan966x: Add QUSGMII support for lan966x
-
- .../bindings/net/ethernet-controller.yaml     |  1 +
- Documentation/networking/phy.rst              |  9 ++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  2 +
- .../microchip/lan966x/lan966x_phylink.c       |  3 +-
- .../ethernet/microchip/lan966x/lan966x_port.c | 22 +++++---
- .../ethernet/microchip/lan966x/lan966x_regs.h |  6 +++
- drivers/net/phy/phy-core.c                    | 52 +++++++++++++++++++
- drivers/net/phy/phylink.c                     |  3 ++
- include/linux/phy.h                           |  6 +++
- 9 files changed, 97 insertions(+), 7 deletions(-)
-
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index 704f31da5167..712e44caebd0 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -308,6 +308,15 @@ Some of the interface modes are described below:
+     rate of 125Mpbs using a 4B/5B encoding scheme, resulting in an underlying
+     data rate of 100Mpbs.
+ 
++``PHY_INTERFACE_MODE_QUSGMII``
++    This defines the Cisco the Quad USGMII mode, which is the Quad variant of
++    the USGMII (Universal SGMII) link. It's very similar to QSGMII, but uses
++    a Packet Control Header (PCH) instead of the 7 bytes preamble to carry not
++    only the port id, but also so-called "extensions". The only documented
++    extension so-far in the specification is the inclusion of timestamps, for
++    PTP-enabled PHYs. This mode isn't compatible with QSGMII, but offers the
++    same capabilities in terms of link speed and negociation.
++
+ Pause frames / flow control
+ ===========================
+ 
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 9bd69328dc4d..d2455df1d8d2 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -321,6 +321,7 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_QUSGMII:
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_GMII:
+ 		caps |= MAC_1000HD | MAC_1000FD;
+@@ -632,6 +633,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 		switch (pl->link_config.interface) {
+ 		case PHY_INTERFACE_MODE_SGMII:
+ 		case PHY_INTERFACE_MODE_QSGMII:
++		case PHY_INTERFACE_MODE_QUSGMII:
+ 			phylink_set(pl->supported, 10baseT_Half);
+ 			phylink_set(pl->supported, 10baseT_Full);
+ 			phylink_set(pl->supported, 100baseT_Half);
+@@ -2929,6 +2931,7 @@ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
+ 
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_QUSGMII:
+ 		phylink_decode_sgmii_word(state, lpa);
+ 		break;
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d844..9eeab9b9a74c 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -115,6 +115,7 @@ extern const int phy_10gbit_features_array[1];
+  * @PHY_INTERFACE_MODE_25GBASER: 25G BaseR
+  * @PHY_INTERFACE_MODE_USXGMII:  Universal Serial 10GE MII
+  * @PHY_INTERFACE_MODE_10GKR: 10GBASE-KR - with Clause 73 AN
++ * @PHY_INTERFACE_MODE_QUSGMII: Quad Universal SGMII
+  * @PHY_INTERFACE_MODE_MAX: Book keeping
+  *
+  * Describes the interface between the MAC and PHY.
+@@ -152,6 +153,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_USXGMII,
+ 	/* 10GBASE-KR - with Clause 73 AN */
+ 	PHY_INTERFACE_MODE_10GKR,
++	PHY_INTERFACE_MODE_QUSGMII,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
+ 
+@@ -267,6 +269,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "10gbase-kr";
+ 	case PHY_INTERFACE_MODE_100BASEX:
+ 		return "100base-x";
++	case PHY_INTERFACE_MODE_QUSGMII:
++		return "qusgmii";
+ 	default:
+ 		return "unknown";
+ 	}
 -- 
 2.37.1
 
