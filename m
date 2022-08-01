@@ -2,98 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B53586D6E
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 17:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7B1586D78
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 17:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiHAPIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 11:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S231640AbiHAPOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 11:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiHAPIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 11:08:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF632AE26;
-        Mon,  1 Aug 2022 08:08:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EFB06147B;
-        Mon,  1 Aug 2022 15:08:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D47B0C433C1;
-        Mon,  1 Aug 2022 15:08:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659366519;
-        bh=AqruWdRdzFUO73wzzBKn5xGprtjbDadpunKpXdhVebc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=tYO6GXrHSmgf6b5UQaNoTIguI0zkkMemEFQ6hijAg3nrK3UfBlhy2E7ZW/XQiJoqt
-         JK26CNqSlHs46WPjTHiQGo/zPxY0XTa42EIph2gXg+xxT9ZjnXP5kLSm2D/xmlKZgB
-         VpkuPuQzH28KgHkJoP/TbAYsxBaYFK0UXf72ADuzoHBjnngGbdmYnYxA+sefpYE9zC
-         qtiWB83TVbbeqnUhMwvlVIY7D81qggakd6ueXzM1imWqaidHOaK+sa33aw6nV6CneJ
-         9dOeezBvQN/bTw1eloPA9vhDe2jT+7f8ZDRI012YqVrHRnbLFq1x6k79W3BCx9JRN0
-         MM1sHKdfRAz9Q==
-Message-ID: <09ac06d6-4373-0953-5ed0-ed85ef25c999@kernel.org>
-Date:   Mon, 1 Aug 2022 09:08:37 -0600
+        with ESMTP id S229943AbiHAPOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 11:14:50 -0400
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B33C2A415
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 08:14:48 -0700 (PDT)
+Received: (qmail 6195 invoked from network); 1 Aug 2022 15:13:57 -0000
+Received: from p200300cf070cf4008d466ea3cdd3b58d.dip0.t-ipconnect.de ([2003:cf:70c:f400:8d46:6ea3:cdd3:b58d]:51806 HELO daneel.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <seanga2@gmail.com>; Mon, 01 Aug 2022 17:13:57 +0200
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     Sean Anderson <seanga2@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 4/x] sunhme: switch to devres
+Date:   Mon, 01 Aug 2022 17:14:39 +0200
+Message-ID: <1754323.ZfhJiG4Tka@daneel.sf-tec.de>
+In-Reply-To: <7e286518-2f01-6042-4d23-94d8846774db@gmail.com>
+References: <4686583.GXAFRqVoOG@eto.sf-tec.de> <8005d74d1e4ff2bdd75f8fefe70561a0@sf-tec.de> <7e286518-2f01-6042-4d23-94d8846774db@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] neigh: fix possible DoS due to net iface start/stop
- loop
-Content-Language: en-US
-To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        netdev@vger.kernel.org
-Cc:     "Denis V. Lunev" <den@openvz.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>, linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>, kernel@openvz.org
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
- <20220729103559.215140-2-alexander.mikhalitsyn@virtuozzo.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220729103559.215140-2-alexander.mikhalitsyn@virtuozzo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="nextPart3880961.jLpjtPeXRQ"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/29/22 4:35 AM, Alexander Mikhalitsyn wrote:
-> The patch proposed doing very simple thing. It drops only packets from
+--nextPart3880961.jLpjtPeXRQ
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
+To: Sean Anderson <seanga2@gmail.com>
+Cc: netdev@vger.kernel.org
+Subject: Re: [PATCH 4/x] sunhme: switch to devres
+Date: Mon, 01 Aug 2022 17:14:39 +0200
+Message-ID: <1754323.ZfhJiG4Tka@daneel.sf-tec.de>
+In-Reply-To: <7e286518-2f01-6042-4d23-94d8846774db@gmail.com>
 
-it does 2 things - adds a namespace check and a performance based change
-with the way the list is walked.
-
-> the same namespace in the pneigh_queue_purge() where network interface
-> state change is detected. This is enough to prevent the problem for the
-> whole node preserving original semantics of the code.
+Am Freitag, 29. Juli 2022, 02:33:01 CEST schrieb Sean Anderson:
+> On 7/28/22 3:52 PM, Rolf Eike Beer wrote:
+> > Am 2022-07-27 05:58, schrieb Sean Anderson:
+> >> On 7/26/22 11:49 PM, Sean Anderson wrote:
+> >>> This looks good, but doesn't apply cleanly. I rebased it as follows:
+> > Looks like what my local rebase has also produced.
+> > 
+> > The sentence about the leak from the commitmessage can be dropped then,
+> > as this leak has already been fixed.
+> > 
+> >>> diff --git a/drivers/net/ethernet/sun/sunhme.c
+> >>> b/drivers/net/ethernet/sun/sunhme.c index eebe8c5f480c..e83774ffaa7a
+> >>> 100644
+> >>> --- a/drivers/net/ethernet/sun/sunhme.c
+> >>> +++ b/drivers/net/ethernet/sun/sunhme.c
+> >>> @@ -2990,21 +2990,23 @@ static int happy_meal_pci_probe(struct pci_dev
+> >>> *pdev, qp->happy_meals[qfe_slot] = dev;
+> >>>       }
+> >>> 
+> >>> -    hpreg_res = pci_resource_start(pdev, 0);
+> >>> -    err = -ENODEV;
+> >>>       if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
+> >>>           printk(KERN_ERR "happymeal(PCI): Cannot find proper PCI device
+> >>> base address.\n"); goto err_out_clear_quattro;
+> >>>       }
+> >>> -    if (pci_request_regions(pdev, DRV_NAME)) {
+> >>> +
+> >>> +    if (!devm_request_region(&pdev->dev, pci_resource_start(pdev, 0),
+> >>> +                  pci_resource_len(pdev, 0),
+> >>> +                  DRV_NAME)) {
+> >> 
+> >> Actually, it looks like you are failing to set err from these *m
+> >> calls, like what
+> >> you fixed in patch 3. Can you address this for v2?
+> > 
+> > It returns NULL on error, there is no error code I can set.
 > 
+> So it does. A quick grep shows that most drivers return -EBUSY.
+
+Sure, I just meant that there is no error code I can pass on. I can change 
+that to -EBUSY if you prefer that, currently it just returns -ENODEV as the 
+old code has done before.
+
+Eike
+
+--nextPart3880961.jLpjtPeXRQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYuft3wAKCRBcpIk+abn8
+Tu5+AKCasu6YKacdBfKNU+zjht4AbDsjsgCePUramaDsX+6XRR/azC7HO9iMR7w=
+=81ne
+-----END PGP SIGNATURE-----
+
+--nextPart3880961.jLpjtPeXRQ--
 
 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 54625287ee5b..213ec0be800b 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
 
-> @@ -386,8 +396,7 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
->  	neigh_flush_dev(tbl, dev, skip_perm);
->  	pneigh_ifdown_and_unlock(tbl, dev);
->  
-> -	del_timer_sync(&tbl->proxy_timer);
-
-why are you removing this line too?
-
-> -	pneigh_queue_purge(&tbl->proxy_queue);
-> +	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
->  	return 0;
->  }
->  
