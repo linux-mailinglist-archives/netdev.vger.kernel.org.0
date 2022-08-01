@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE83F586426
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 08:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CD1586432
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 08:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232586AbiHAGjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 02:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
+        id S233342AbiHAGjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 02:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiHAGjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 02:39:13 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD42E13DC0;
-        Sun, 31 Jul 2022 23:39:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VL1cC5H_1659335944;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VL1cC5H_1659335944)
+        with ESMTP id S229530AbiHAGjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 02:39:15 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4792A12A92;
+        Sun, 31 Jul 2022 23:39:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VL1vr9s_1659335946;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VL1vr9s_1659335946)
           by smtp.aliyun-inc.com;
-          Mon, 01 Aug 2022 14:39:05 +0800
+          Mon, 01 Aug 2022 14:39:07 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v14 01/42] virtio: record the maximum queue num supported by the device.
-Date:   Mon,  1 Aug 2022 14:38:21 +0800
-Message-Id: <20220801063902.129329-2-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v14 02/42] virtio: struct virtio_config_ops add callbacks for queue_reset
+Date:   Mon,  1 Aug 2022 14:38:22 +0800
+Message-Id: <20220801063902.129329-3-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
 References: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
@@ -72,150 +72,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio-net can display the maximum (supported by hardware) ring size in
-ethtool -g eth0.
+reset can be divided into the following four steps (example):
+ 1. transport: notify the device to reset the queue
+ 2. vring:     recycle the buffer submitted
+ 3. vring:     reset/resize the vring (may re-alloc)
+ 4. transport: mmap vring to device, and enable the queue
 
-When the subsequent patch implements vring reset, it can judge whether
-the ring size passed by the driver is legal based on this.
+In order to support queue reset, add two callbacks in struct
+virtio_config_ops to implement steps 1 and 4.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- arch/um/drivers/virtio_uml.c             | 1 +
- drivers/platform/mellanox/mlxbf-tmfifo.c | 2 ++
- drivers/remoteproc/remoteproc_virtio.c   | 2 ++
- drivers/s390/virtio/virtio_ccw.c         | 3 +++
- drivers/virtio/virtio_mmio.c             | 2 ++
- drivers/virtio/virtio_pci_legacy.c       | 2 ++
- drivers/virtio/virtio_pci_modern.c       | 2 ++
- drivers/virtio/virtio_vdpa.c             | 2 ++
- include/linux/virtio.h                   | 2 ++
- 9 files changed, 18 insertions(+)
+ include/linux/virtio_config.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/arch/um/drivers/virtio_uml.c b/arch/um/drivers/virtio_uml.c
-index 82ff3785bf69..e719af8bdf56 100644
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -958,6 +958,7 @@ static struct virtqueue *vu_setup_vq(struct virtio_device *vdev,
- 		goto error_create;
- 	}
- 	vq->priv = info;
-+	vq->num_max = num;
- 	num = virtqueue_get_vring_size(vq);
- 
- 	if (vu_dev->protocol_features &
-diff --git a/drivers/platform/mellanox/mlxbf-tmfifo.c b/drivers/platform/mellanox/mlxbf-tmfifo.c
-index 38800e86ed8a..1ae3c56b66b0 100644
---- a/drivers/platform/mellanox/mlxbf-tmfifo.c
-+++ b/drivers/platform/mellanox/mlxbf-tmfifo.c
-@@ -959,6 +959,8 @@ static int mlxbf_tmfifo_virtio_find_vqs(struct virtio_device *vdev,
- 			goto error;
- 		}
- 
-+		vq->num_max = vring->num;
-+
- 		vqs[i] = vq;
- 		vring->vq = vq;
- 		vq->priv = vring;
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index d43d74733f0a..0f7706e23eb9 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -125,6 +125,8 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-+	vq->num_max = num;
-+
- 	rvring->vq = vq;
- 	vq->priv = rvring;
- 
-diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-index 161d3b141f0d..6b86d0280d6b 100644
---- a/drivers/s390/virtio/virtio_ccw.c
-+++ b/drivers/s390/virtio/virtio_ccw.c
-@@ -530,6 +530,9 @@ static struct virtqueue *virtio_ccw_setup_vq(struct virtio_device *vdev,
- 		err = -ENOMEM;
- 		goto out_err;
- 	}
-+
-+	vq->num_max = info->num;
-+
- 	/* it may have been reduced */
- 	info->num = virtqueue_get_vring_size(vq);
- 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 083ff1eb743d..a20d5a6b5819 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -403,6 +403,8 @@ static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int in
- 		goto error_new_virtqueue;
- 	}
- 
-+	vq->num_max = num;
-+
- 	/* Activate the queue */
- 	writel(virtqueue_get_vring_size(vq), vm_dev->base + VIRTIO_MMIO_QUEUE_NUM);
- 	if (vm_dev->version == 1) {
-diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
-index a5e5721145c7..2257f1b3d8ae 100644
---- a/drivers/virtio/virtio_pci_legacy.c
-+++ b/drivers/virtio/virtio_pci_legacy.c
-@@ -135,6 +135,8 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 	if (!vq)
- 		return ERR_PTR(-ENOMEM);
- 
-+	vq->num_max = num;
-+
- 	q_pfn = virtqueue_get_desc_addr(vq) >> VIRTIO_PCI_QUEUE_ADDR_SHIFT;
- 	if (q_pfn >> 32) {
- 		dev_err(&vp_dev->pci_dev->dev,
-diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-index 623906b4996c..e7e0b8c850f6 100644
---- a/drivers/virtio/virtio_pci_modern.c
-+++ b/drivers/virtio/virtio_pci_modern.c
-@@ -218,6 +218,8 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 	if (!vq)
- 		return ERR_PTR(-ENOMEM);
- 
-+	vq->num_max = num;
-+
- 	/* activate the queue */
- 	vp_modern_set_queue_size(mdev, index, virtqueue_get_vring_size(vq));
- 	vp_modern_queue_address(mdev, index, virtqueue_get_desc_addr(vq),
-diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
-index c40f7deb6b5a..9670cc79371d 100644
---- a/drivers/virtio/virtio_vdpa.c
-+++ b/drivers/virtio/virtio_vdpa.c
-@@ -183,6 +183,8 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
- 		goto error_new_virtqueue;
- 	}
- 
-+	vq->num_max = max_num;
-+
- 	/* Setup virtqueue callback */
- 	cb.callback = callback ? virtio_vdpa_virtqueue_cb : NULL;
- 	cb.private = info;
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index d8fdf170637c..129bde7521e3 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -19,6 +19,7 @@
-  * @priv: a pointer for the virtqueue implementation to use.
-  * @index: the zero-based ordinal number for this queue.
-  * @num_free: number of elements we expect to be able to fit.
-+ * @num_max: the maximum number of elements supported by the device.
-  *
-  * A note on @num_free: with indirect buffers, each buffer needs one
-  * element in the queue, otherwise a buffer will need one element per
-@@ -31,6 +32,7 @@ struct virtqueue {
- 	struct virtio_device *vdev;
- 	unsigned int index;
- 	unsigned int num_free;
-+	unsigned int num_max;
- 	void *priv;
+diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+index b47c2e7ed0ee..36ec7be1f480 100644
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -78,6 +78,18 @@ struct virtio_shm_region {
+  * @set_vq_affinity: set the affinity for a virtqueue (optional).
+  * @get_vq_affinity: get the affinity for a virtqueue (optional).
+  * @get_shm_region: get a shared memory region based on the index.
++ * @disable_vq_and_reset: reset a queue individually (optional).
++ *	vq: the virtqueue
++ *	Returns 0 on success or error status
++ *	disable_vq_and_reset will guarantee that the callbacks are disabled and
++ *	synchronized.
++ *	Except for the callback, the caller should guarantee that the vring is
++ *	not accessed by any functions of virtqueue.
++ * @enable_vq_after_reset: enable a reset queue
++ *	vq: the virtqueue
++ *	Returns 0 on success or error status
++ *	If disable_vq_and_reset is set, then enable_vq_after_reset must also be
++ *	set.
+  */
+ typedef void vq_callback_t(struct virtqueue *);
+ struct virtio_config_ops {
+@@ -104,6 +116,8 @@ struct virtio_config_ops {
+ 			int index);
+ 	bool (*get_shm_region)(struct virtio_device *vdev,
+ 			       struct virtio_shm_region *region, u8 id);
++	int (*disable_vq_and_reset)(struct virtqueue *vq);
++	int (*enable_vq_after_reset)(struct virtqueue *vq);
  };
  
+ /* If driver didn't advertise the feature, it will never appear. */
 -- 
 2.31.0
 
