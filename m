@@ -2,104 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 724AC58664A
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 10:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD4E586673
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 10:37:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiHAIXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 04:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        id S230184AbiHAIhQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Aug 2022 04:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiHAIXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 04:23:12 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0BB3AB30
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 01:23:11 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id l3so7861924qkl.3
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 01:23:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ScZfeL6ZG8VbjZfNJGy4rWVYVwaH1/TMagtzhI88vfg=;
-        b=fWudnKELwmE9x4lpiHccJNXGbZ8XQMxaKviKW43zc31xBdhMbegF8ZRYkosQBusTj1
-         IjP2Fkz4ajZ3k6W6eYTjF79yta0v24VgyBpyMq26USZwOr5UXE5TgL1UaEK9D2t3Rtu1
-         z1tYzmYy6AoZ4ReA+Jas3Qvwi+oJhqRlR1K5u1DgHAJEaaUcZ8hKDFI8FJWE59YqRAb1
-         7DW7vgg1aKqmrva831rGuXDPdRe/4/NN5EXsyqKNzuk+S0+nGAohbSwFyW8yeEHJUUOO
-         OpM//F+hFaB2AzCjFJv9eQcmF1qBRLZyYvX+oS9mSJcjSUdlihja5myHgm8KhW8ENfMR
-         HB4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ScZfeL6ZG8VbjZfNJGy4rWVYVwaH1/TMagtzhI88vfg=;
-        b=t7X7H8mDGw/5EnwPsoicl71340bmBII02yvIRshpkp9ZFAWtuXtceEKt/XWjYO84kM
-         iihEgFW2A/OuHxrBEW90v4fIli2GuEOfhZngIq1G8XDVJ91v9urdXkIKOUx6CZtcRNu8
-         ILKWvv9nlIC74Tn1ZmiqCW1zet4XhsszERoc+qRP3s6c0h9YEI9dz88yz1ZY7RD4NqoI
-         b7qxnLLpw/rAjDOWT5x0EW8LHkaA7TgOl1jQSGXGlk6M+vG2Go6YUWjSOFqU2MgFQdn7
-         W0Jwd05LmewdbsqRxYOEPOXjzEaJqfX7qWHG1G7yT4Dp9LtX5xYyu+aD6d/GvSEo2AHo
-         qLJA==
-X-Gm-Message-State: AJIora8mLAu9c24V+uFySwVi6ep70+nESwfvZ/pf5UXW+dH/WatFwYKk
-        z/RKurx+zw7W538vVPPmEdqIaPWQgvMLSg==
-X-Google-Smtp-Source: AGRyM1uup0bZ4WIvPY1iktwvxLsb7zDHelLYvX/X+0IelJz5/ecaj+RL7Jedj4kkjcuEpfNynN2VgQ==
-X-Received: by 2002:a05:620a:13e2:b0:6b6:1d4f:fcce with SMTP id h2-20020a05620a13e200b006b61d4ffccemr10586889qkl.219.1659342190860;
-        Mon, 01 Aug 2022 01:23:10 -0700 (PDT)
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
-        by smtp.gmail.com with ESMTPSA id u17-20020a05620a455100b006b5cb5d2fa0sm8458686qkp.1.2022.08.01.01.23.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 01:23:10 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-31f56c42ab5so101390537b3.10
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 01:23:10 -0700 (PDT)
-X-Received: by 2002:a81:5486:0:b0:31c:b029:1d24 with SMTP id
- i128-20020a815486000000b0031cb0291d24mr12152869ywb.56.1659342190207; Mon, 01
- Aug 2022 01:23:10 -0700 (PDT)
+        with ESMTP id S229760AbiHAIhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 04:37:15 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 279B72E6A2
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 01:37:13 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-60-CksiPPRtPA6w1mXQckakNQ-1; Mon, 01 Aug 2022 09:37:09 +0100
+X-MC-Unique: CksiPPRtPA6w1mXQckakNQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 1 Aug 2022 09:37:04 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 1 Aug 2022 09:37:04 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Stephen Hemminger' <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "Florian Westphal" <fw@strlen.de>, Borislav Petkov <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "Akhmat Karakotov" <hmukos@yandex-team.ru>,
+        Antoine Tenart <atenart@kernel.org>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        Juergen Gross <jgross@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Chen Yu <yu.c.chen@intel.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        "Suma Hegde" <suma.hegde@amd.com>,
+        =?iso-8859-1?Q?Pali_Roh=E1r?= <pali@kernel.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Scott Wood <oss@buserror.net>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "Stefano Garzarella" <sgarzare@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Wang Qing" <wangqing@vivo.com>, Yu Zhe <yuzhe@nfschina.com>,
+        Benjamin Poirier <bpoirier@nvidia.com>,
+        Victor Erminpour <victor.erminpour@oracle.com>,
+        "GONG, Ruiqi" <gongruiqi1@huawei.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        "open list:NETFILTER" <netfilter-devel@vger.kernel.org>,
+        "open list:NETFILTER" <coreteam@netfilter.org>
+Subject: RE: [RFC] Remove DECNET support from kernel
+Thread-Topic: [RFC] Remove DECNET support from kernel
+Thread-Index: AQHYpREB8DXx1AZd/0ac5Son0/agPK2ZuBOg
+Date:   Mon, 1 Aug 2022 08:37:03 +0000
+Message-ID: <c43f221d8e824cd2bf9746596423befc@AcuMS.aculab.com>
+References: <20220731190646.97039-1-stephen@networkplumber.org>
+In-Reply-To: <20220731190646.97039-1-stephen@networkplumber.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20220729190307.667b4be0@kernel.org> <20220801045736.20674-1-cbulinaru@gmail.com>
- <20220801045736.20674-2-cbulinaru@gmail.com>
-In-Reply-To: <20220801045736.20674-2-cbulinaru@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 1 Aug 2022 10:22:33 +0200
-X-Gmail-Original-Message-ID: <CA+FuTScdwmfpzoJw_YGcPZ0kYogktKy=BK+axjybxkE43wWnjA@mail.gmail.com>
-Message-ID: <CA+FuTScdwmfpzoJw_YGcPZ0kYogktKy=BK+axjybxkE43wWnjA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] selftests: add few test cases for tap driver
-To:     Cezar Bulinaru <cbulinaru@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 6:57 AM Cezar Bulinaru <cbulinaru@gmail.com> wrote:
->
-> Few test cases related to the fix for 924a9bc362a5:
-> "net: check if protocol extracted by virtio_net_hdr_set_proto is correct"
->
-> Need test for the case when a non-standard packet (GSO without NEEDS_CSUM)
-> sent to the tap device causes a BUG check in the tap driver.
->
-> Signed-off-by: Cezar Bulinaru <cbulinaru@gmail.com>
+From: Stephen Hemminger
+> Sent: 31 July 2022 20:06
+> To: netdev@vger.kernel.org
+> 
+> Decnet is an obsolete network protocol that receives more attention
+> from kernel janitors than users. It belongs in computer protocol
+> history museum not in Linux kernel.
+> 
+> It has been Orphaned in kernel since 2010.
+> And the documentation link on Sourceforge says it is abandoned there.
 
-Thanks a lot for adding initial tap tests.
+It was pretty much obsolete when I was writing ethernet drivers
+in the early 1990's.
+Sort of surprising support ever got into Linux in the first place!
 
-It is still missing .gitignore.
+Remember it requires the ethernet MAC address be set to a
+locally assigned value that is the machine's 'node number'.
 
-> +FIXTURE_TEARDOWN(tap)
-> +{
-> +       int ret;
-> +
-> +       if (self->fd != -1)
-> +               close(self->fd);
-> +
-> +       ret = dev_delete(param_dev_dummy_name);
-> +       EXPECT_EQ(ret, 0);
-> +
-> +       ret = dev_delete(param_dev_tap_name);
-> +       EXPECT_EQ(ret, 0);
+Does this remove some/most/all of the [gs]et_sockopt() calls
+where the length is ignored/
 
-Should this remove the tap device before removing the dummy device?
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
