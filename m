@@ -2,93 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C53586FED
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 19:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E26586FFC
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 19:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233874AbiHAR5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 13:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S231941AbiHAR7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 13:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234192AbiHARzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 13:55:09 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BDB3205A
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 10:55:00 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id z25so18527858lfr.2
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 10:55:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0dGf0wQlT5nVscla096RlUxod41IYCPpARZuBEndXgw=;
-        b=T6Yc3nNefe3TyXG0Vbq3cLSHdoLWMnMoLC1rCsAkOgbXk6qxf5NxTtsWLdlh+h8h+Y
-         zy2IwEG5thASc8/tliCDThGrGmtCTEdm8IXEBOHigiClrMlsAzwm83kX6UzZ765pOx1e
-         OclAzmznuvZ754z0Ve0hY1GPZHIA1OlVcjqd1pdshqzyg6rGVUId1LPHhOz3KeyYZFRc
-         t/OHO6Ha6Awj4xVLh6Z29b7VRFpOctOrXQjlHsrwl4Qf09vAHD3rLXe3d64GSOjqOUXp
-         pxqPLGY1Wx82yKUx05QB3V6cu+EFy6fNjGcOecN3bN3HXJRhuRdVTt0iyNgPggTgQqgE
-         58kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0dGf0wQlT5nVscla096RlUxod41IYCPpARZuBEndXgw=;
-        b=NF2l8HATNygp1sUBFX7cIQZiaVhVXSyhNCYaTHF/v28UAbFHHWvKNmj96WS1HxGIGe
-         oHd045I4BpBXBYPBozqTTAS/EXYrWyYC3DSsB5oQfxLZeEKU9G3cwcD62fRl371VHH5Y
-         VzoZn9yfBUWJWc3WzBcEZSHt7rKtmOPTZYY5rc/h0pX42WZmj4+q+uTohDra6Xotz/ZK
-         QbyuM8FXUB0QRU9AphAdttXBnI4E0CfA532eS8eXcyruq8/NfwL4+QmRLY7xTdGGgJa5
-         SCTgVpCbEA+O30vLeIFPnGdEa2EmJBq6Fvp4E9iimN7pO0LjkujYnDgjoaCxoVJXeJub
-         ROYg==
-X-Gm-Message-State: AJIora+Wg9Kfe8zmtsOJkr7sjBh6b+9/s7EZiYsj9zx0BZ1CIQMFVHla
-        mnLGS671J4KxeyJMrrBNyy7g2g==
-X-Google-Smtp-Source: AGRyM1sQPJdZYAWXfwoVj4Hz7Z7Cwylr4YwG9UFSXMVERZh0c/cbramPGiv0H/4T1qlznG/Ilz5Rxw==
-X-Received: by 2002:ac2:4a8f:0:b0:48a:9705:c81d with SMTP id l15-20020ac24a8f000000b0048a9705c81dmr5760708lfp.63.1659376498624;
-        Mon, 01 Aug 2022 10:54:58 -0700 (PDT)
-Received: from [192.168.1.6] ([213.161.169.44])
-        by smtp.gmail.com with ESMTPSA id bj38-20020a2eaaa6000000b0025d64453f4dsm1654422ljb.122.2022.08.01.10.54.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 10:54:57 -0700 (PDT)
-Message-ID: <428fe2c1-3c70-5ae8-efcb-1e4a0426a972@linaro.org>
-Date:   Mon, 1 Aug 2022 19:54:54 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
- completely rework binding
-Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S234056AbiHAR7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 13:59:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8425F27CE4
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 10:58:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D90FB81608
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 17:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 366D3C433D6;
+        Mon,  1 Aug 2022 17:58:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659376734;
+        bh=aCpB0E8tMH/8jopW6VTKssnQU7vOl0S9e6dSKrMC7TU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OVZNBXWnxFqjWwkbq9cGfZuSyIH478w7pMxlbk1zGD7a9ediSt9Sy8wC20frgG91W
+         n/oN74O6ZjSN7CLoE4EaksP7AX8ugmpcuKP6WSQJ3/RgkQVUyDL6KKamvKX1AlGjE7
+         Firn68QxnsoC9JKcutELEaxyb0uE30Bp/eIKAlTgdGahQzBLxQZ/l16j2PNndFlmo7
+         kIU/riQSfKcsM09mJMTWEK2sT7y2YEPkw6Eqt7IWuMjXt9GKsGnpo5OWj0f1KK6UNY
+         HoR5vmUDtvnw3ZCQEks3Sn4X+bkzq4RRwfbJTkOO4fBHl9YR6nTs89jwfhjsV8R1MV
+         S0dRDEpQG9NOw==
+Date:   Mon, 1 Aug 2022 10:58:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220726122406.31043-1-arinc.unal@arinc9.com>
- <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
- <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH v3 net 0/4] Make DSA work with bonding's ARP monitor
+Message-ID: <20220801105853.282543dd@kernel.org>
+In-Reply-To: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
+References: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,31 +65,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/07/2022 10:24, Arınç ÜNAL wrote:
-> Hi Krzysztof,
-> 
-> On 27.07.2022 13:29, Krzysztof Kozlowski wrote:
->> On 26/07/2022 14:24, Arınç ÜNAL wrote:
->>> Completely rework the binding for MediaTek MT7530 and MT7531 switches.
->>
->> Rules are the same for schema as for driver - one patch, one thing. You
->> mix here trivial style changes (removal of quotes) with functional stuff.
->>
->> Patch is unreviewable, so it must be split.
-> 
-> Thank you. I'm going to split it this way:
-> - Trivial changes; fix title and property descriptions, remove quotes, 
-> add me as maintainer, etc.
-> - Update binding description
-> - Update json-schema for compatible devices
-> - Update examples
-> 
-> Let me know if you have any objections.
+On Sun, 31 Jul 2022 15:41:04 +0300 Vladimir Oltean wrote:
+> Where I'd need some help from Jakub is to make sure these changes
+> somehow get integrated into the 5.10 stable kernel, since that's what
+> Brian, who reported the issue, actually uses. I haven't provided any
+> Fixes tags.
 
+We can just tell Greg to pull them in after the patches appear in
+Linus's tree, right? Or are there extra acrobatics required I missed?
 
-Depends what are these "udpates". One logical change = one patch. Adding
-compatible in one patch and then adding example for it, is not correct.
+As long as Jay is okay with the approach, LGTM. Thanks a lot for
+working on the solution!
 
-
-Best regards,
-Krzysztof
+BTW we could potentially also revert a31d27fbed5d ("tun: fix bonding
+active backup with arp monitoring") given we revert veth.
