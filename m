@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECE05870F3
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 21:05:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B3FF587101
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 21:05:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234590AbiHATFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 15:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51674 "EHLO
+        id S234261AbiHATFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 15:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234363AbiHATEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:04:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF3640BF2;
-        Mon,  1 Aug 2022 12:03:15 -0700 (PDT)
+        with ESMTP id S234544AbiHATFG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:05:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0053336F;
+        Mon,  1 Aug 2022 12:03:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08C0EB81645;
-        Mon,  1 Aug 2022 19:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E251C4347C;
-        Mon,  1 Aug 2022 19:03:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D049F61172;
+        Mon,  1 Aug 2022 19:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5691C4314F;
+        Mon,  1 Aug 2022 19:03:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380593;
-        bh=5i/Uh9Lzwjfks4Ev5UwH80XDhfl6C/TU08PCFqniRjY=;
+        s=k20201202; t=1659380607;
+        bh=DiNStDhc8f9jVXz6FaKN9TB72QC5VBXV6hUncDDUwm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aajZWTzHRxoruXWLw3fF/6q62hhQoLmuyT5tPWR0k+3jzcFnlRdr6o83tW6ISDN74
-         J/xKOEWP1jhQrrQ/feNaVA2moVa05aJWVRAB2sbaN+D3G8WcFQZEi9DmjV+/TlYwPJ
-         gF4xLMbOpOzAX53cJzCs1lc532v/GqZPOAz1NapemjPEAqFr0IbDKkBc/MUtcjNO0m
-         0U3rZenx+ZzzDHBTZ+8FyEnMerbAR3+K4D9IOzACAcmYhfT4CcPFq/WuRr1wsgSS7a
-         IWSWF7S310QX4afKaXbTyy/zm403S38UImXAA2tn7M25uTBX2jjyrQ9/TI+6YNTdEz
-         z0UZbM3CrLzeQ==
+        b=kASD9hIDY8Dm+IYIjGHYM2EEIJ085D/X9xhbCresiy8J0A5iVeEVGA0lsBd1tzNTN
+         x4LDFoxRVmBUdHrH52u602ilzpE70iBzg6Sb0F3S4RbYUOMpu3KEJBczkplvDmGchG
+         +2R2DsDiFDEzjM1Xd8NuJKk7MKf9O5cFyKvXiH0Sws5PBY6t+K0WEmqZ6y8+lmEAfJ
+         5y2Oqw65JT89hO+qHgR9RaVjEPT0kUXN20NInklhpSGQZ3IB52GhXbU+H3rCYUFe8m
+         WZsAvlvvCWTuC9/ZDOV3OfSy0Sj1y5XOxtGoT9PtIrPojuQHMY7MmvAT/2TUbhcbd9
+         XAvFkjA92Z4Lw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Florian Westphal <fw@strlen.de>,
@@ -39,12 +39,12 @@ Cc:     Florian Westphal <fw@strlen.de>,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, netfilter-devel@vger.kernel.org,
         coreteam@netfilter.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 6/7] netfilter: nf_tables: add rescheduling points during loop detection walks
-Date:   Mon,  1 Aug 2022 15:03:00 -0400
-Message-Id: <20220801190301.3819065-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 5/6] netfilter: nf_tables: add rescheduling points during loop detection walks
+Date:   Mon,  1 Aug 2022 15:03:16 -0400
+Message-Id: <20220801190317.3819520-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220801190301.3819065-1-sashal@kernel.org>
-References: <20220801190301.3819065-1-sashal@kernel.org>
+In-Reply-To: <20220801190317.3819520-1-sashal@kernel.org>
+References: <20220801190317.3819520-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -76,10 +76,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+)
 
 diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index e5622e925ea9..1cc75ac2d9cc 100644
+index 58a7d89719b1..d60067c5221e 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -3125,6 +3125,8 @@ int nft_chain_validate(const struct nft_ctx *ctx, const struct nft_chain *chain)
+@@ -2684,6 +2684,8 @@ int nft_chain_validate(const struct nft_ctx *ctx, const struct nft_chain *chain)
  			if (err < 0)
  				return err;
  		}
@@ -88,7 +88,7 @@ index e5622e925ea9..1cc75ac2d9cc 100644
  	}
  
  	return 0;
-@@ -8419,9 +8421,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
+@@ -7310,9 +7312,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
  				break;
  			}
  		}
