@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 133B55871BB
+	by mail.lfdr.de (Postfix) with ESMTP id 8E3245871BC
 	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 21:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235113AbiHATuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 15:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        id S235136AbiHATuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 15:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234749AbiHATuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DB7FCD;
-        Mon,  1 Aug 2022 12:50:14 -0700 (PDT)
+        with ESMTP id S235078AbiHATuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:50:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16F16166;
+        Mon,  1 Aug 2022 12:50:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC9C61346;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F24DB8167E;
+        Mon,  1 Aug 2022 19:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 31F3CC43143;
         Mon,  1 Aug 2022 19:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B4742C433D7;
-        Mon,  1 Aug 2022 19:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659383413;
-        bh=XbMu4u7qC681Oufg6pCEm6FQOATQp4hHLAqIxj8axgM=;
+        s=k20201202; t=1659383414;
+        bh=rUk41rIcjmeKzxxqdvWaLeWaI4ZzRkKxx75eQxlOa5U=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SLFLmUC5jqcVenV89Nrn74jXFdib/t/Lx6eMfh+TM2Icy/INYG/Tp7DnTOootOVBX
-         OTe4DpfB4cGVL35DGzHlC7kZmpz0j062ECkrEGfug6oILhJBGFJpYtAeE2Ezto/SUC
-         uWPifFX/DQsgVh19zZA377A0+vjDbhDWmJhlsxzgO5MH6BBjuZuq2f9+WsW+kCXRRZ
-         ph3GDfCAclM4yQCEZoh19jAGXyLt9WwYHVLmRl7wi5OBcTVPq5GgRbQy2Oz99NhsiL
-         lLbVYLrqOBmLHlDfgoIYrbEdmDuOllWeIQ/ryz6mV0nQpMEK1C3x9UbyYAraya2Kp3
-         uGmqE7HEPlrOw==
+        b=a8nYQ2BHFnR8iuakQGaswLu5h9GVeePqQL5EWKwBoLs3ybnliYQNQrVwp1udKOkig
+         6EDBJ2NcXV8oOs+AJpO5VoklVRGzn6G9MnCUndlfyzCNFgT5CDjBA4vmxUd8DVl1e9
+         e/3ztnOcwVmejhh+3H0RPZIvWMZ/FvnPld1GXSSye1ANaQZF4dXaE1+nRknMn7FKG+
+         i+6AywG8nzZcPdAszUzJ28ywCs4O0JM7G3CfUSpKttREfYTLfB5qKa8eWOSXEm+3/I
+         t482cKfLdofN0B0jnfwkCL4NQPVmu+Bs6iY0x8lsMGgSc5IRR/7+gi7WhsLhvx5TBU
+         usNv9RfBdl/eg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 99EB1C43140;
-        Mon,  1 Aug 2022 19:50:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B306C43140;
+        Mon,  1 Aug 2022 19:50:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net: fix using wrong flags to check features
+Subject: Re: [PATCH] net: devlink: Fix missing mutex_unlock() call
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165938341362.9721.5948160417702328560.git-patchwork-notify@kernel.org>
-Date:   Mon, 01 Aug 2022 19:50:13 +0000
-References: <20220729101755.4798-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220729101755.4798-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, snelson@pensando.io, brett@pensando.io,
-        drivers@pensando.io, anthony.l.nguyen@intel.com,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com
+Message-Id: <165938341410.9721.7137509933783048344.git-patchwork-notify@kernel.org>
+Date:   Mon, 01 Aug 2022 19:50:14 +0000
+References: <20220801115742.1309329-1-ammar.faizi@intel.com>
+In-Reply-To: <20220801115742.1309329-1-ammar.faizi@intel.com>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, lkp@intel.com, dan.carpenter@oracle.com,
+        moshe@nvidia.com, jiri@nvidia.com, fernandafmr12@gnuweeb.org,
+        netdev@vger.kernel.org, gwml@vger.gnuweeb.org,
+        linux-kernel@vger.kernel.org, kbuild@lists.01.org,
+        kbuild-all@lists.01.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,25 +61,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 29 Jul 2022 18:17:53 +0800 you wrote:
-> We find that some drivers may use wrong flags to check features, so fix
-> them.
+On Mon,  1 Aug 2022 18:59:56 +0700 you wrote:
+> From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 > 
-> Jian Shen (2):
->   net: ice: fix error NETIF_F_HW_VLAN_CTAG_FILTER check in
->     ice_vsi_sync_fltr()
->   net: ionic: fix error check for vlan flags in ionic_set_nic_features()
+> Commit 2dec18ad826f forgets to call mutex_unlock() before the function
+> returns in the error path:
+> 
+>    New smatch warnings:
+>    net/core/devlink.c:6392 devlink_nl_cmd_region_new() warn: inconsistent \
+>    returns '&region->snapshot_lock'.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] net: ice: fix error NETIF_F_HW_VLAN_CTAG_FILTER check in ice_vsi_sync_fltr()
-    https://git.kernel.org/netdev/net/c/7dc839fe4761
-  - [net,2/2] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
-    https://git.kernel.org/netdev/net/c/a86e86db5e6d
+  - net: devlink: Fix missing mutex_unlock() call
+    https://git.kernel.org/netdev/net-next/c/80ef928643c1
 
 You are awesome, thank you!
 -- 
