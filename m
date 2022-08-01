@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F885865BC
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 09:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13E035865B7
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 09:38:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiHAHha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 03:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
+        id S229845AbiHAHhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 03:37:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiHAHh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:27 -0400
+        with ESMTP id S229792AbiHAHhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:31 -0400
 Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30ECE3A4B9;
-        Mon,  1 Aug 2022 00:37:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CD63A4BA;
+        Mon,  1 Aug 2022 00:37:28 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A0AA324000C;
-        Mon,  1 Aug 2022 07:37:20 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id EDBB7240003;
+        Mon,  1 Aug 2022 07:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659339442;
+        t=1659339445;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gMXi6tOgQ+Hza2wQKmYRJpoHYy7nWj7ZNMRDGHNfuhs=;
-        b=IdxscUA8agYmu2ELesQvmYVMh+5kQJJ2k26Ag3AAAgIz1OyAzCjneGCZvinPVCG4m2MaB8
-        hceF/94G7kayUc9l/7HaI01Se4RlUKrtFgJqnGoHfXAKkQvQvKA3ToAeIxQF+EhyIe4yOq
-        XNPhBg9l+JmtrEiqMxOVu5ntTFqWer2CG+dFZedfCGEyHauZT7tLFW6TlGOPehW+p3RjzB
-        ppsiVtcKwDu09reJ1qwRNrpcCLKb09sh6+Dj6hUxLH2wgNhcz3PNb6138XVvsxufXHLyVZ
-        RYVW0KoRbEJ/FBVvDWAZbSbACD7BG0fYZ6TkwIIxMFLNZ7yd29dcueW9KWZiMA==
+        bh=R3uwO/NLqiqs5GMimReLDw1QptwLULET5iPOIJMtdzQ=;
+        b=YaJ7hP7EwMycrA0/gyTj/ubzxEIIu0SGxlVnahB+ArnBoB5UvkneDKfwqwWe4PDYOIiQpA
+        nQpJCIutAUYl9WOAEcuzVJjv4bfzuSJWbIzakPiip73CpZDa/aKm66FRhmNlicLK4fDuw5
+        ww2Wdi91enJ3ZYudnZ23XW+NbBPE5oSBnrFBR3RNkvpyo67IL3jJT1xCOTpPEXwZT3xFAD
+        +6I2e6XjkjN/HGRRd6cyrz3sSrXEPOjLV6Xyer6+MryKBwHtox2Scfbpq+AlYPxC37MJNz
+        gfjCzxSHR66O0w9hyBgWKHxNXlHNr2ZB9N9c0yftIogqn+GaI3gmUugGbDcOOA==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -41,10 +41,10 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         linux-arm-kernel@lists.infradead.org,
         Richard Cochran <richardcochran@gmail.com>,
         Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
-        UNGLinuxDriver@microchip.com, Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v4 2/4] dt-bindings: net: ethernet-controller: add QUSGMII mode
-Date:   Mon,  1 Aug 2022 09:37:11 +0200
-Message-Id: <20220801073713.32290-3-maxime.chevallier@bootlin.com>
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next v4 3/4] net: phy: Add helper to derive the number of ports from a phy mode
+Date:   Mon,  1 Aug 2022 09:37:12 +0200
+Message-Id: <20220801073713.32290-4-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
 References: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
@@ -59,37 +59,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new QUSGMII mode, standing for "Quad Universal Serial Gigabit
-Media Independent Interface", a derivative of USGMII which, similarly to
-QSGMII, allows to multiplex 4 1Gbps links to a Quad-PHY.
+Some phy modes such as QSGMII multiplex several MAC<->PHY links on one
+single physical interface. QSGMII used to be the only one supported, but
+other modes such as QUSGMII also carry multiple links.
 
-The main difference with QSGMII is that QUSGMII can include an extension
-instead of the standard 7bytes ethernet preamble, allowing to convey
-arbitrary data such as Timestamps.
+This helper allows getting the number of links that are multiplexed
+on a given interface.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
-V1->V2 : Added Rob's acked-by
-V2->V3 : No changes
-V3->V4 : Added Andrew's R'd-by
+V1->V2 : New patch
+V2->V3 : Made PHY_INTERFACE_MODE_INTERNAL 1 port, and added the MAX
+case.
+V3->V4 : No change
 
- Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/phy-core.c | 52 ++++++++++++++++++++++++++++++++++++++
+ include/linux/phy.h        |  2 ++
+ 2 files changed, 54 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index c138a1022879..4b3c590fcebf 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -67,6 +67,7 @@ properties:
-       - gmii
-       - sgmii
-       - qsgmii
-+      - qusgmii
-       - tbi
-       - rev-mii
-       - rmii
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 1f2531a1a876..f8ec12d3d6ae 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -74,6 +74,58 @@ const char *phy_duplex_to_str(unsigned int duplex)
+ }
+ EXPORT_SYMBOL_GPL(phy_duplex_to_str);
+ 
++/**
++ * phy_interface_num_ports - Return the number of links that can be carried by
++ *			     a given MAC-PHY physical link. Returns 0 if this is
++ *			     unknown, the number of links else.
++ *
++ * @interface: The interface mode we want to get the number of ports
++ */
++int phy_interface_num_ports(phy_interface_t interface)
++{
++	switch (interface) {
++	case PHY_INTERFACE_MODE_NA:
++		return 0;
++	case PHY_INTERFACE_MODE_INTERNAL:
++	case PHY_INTERFACE_MODE_MII:
++	case PHY_INTERFACE_MODE_GMII:
++	case PHY_INTERFACE_MODE_TBI:
++	case PHY_INTERFACE_MODE_REVMII:
++	case PHY_INTERFACE_MODE_RMII:
++	case PHY_INTERFACE_MODE_REVRMII:
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RTBI:
++	case PHY_INTERFACE_MODE_XGMII:
++	case PHY_INTERFACE_MODE_XLGMII:
++	case PHY_INTERFACE_MODE_MOCA:
++	case PHY_INTERFACE_MODE_TRGMII:
++	case PHY_INTERFACE_MODE_USXGMII:
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_SMII:
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_2500BASEX:
++	case PHY_INTERFACE_MODE_5GBASER:
++	case PHY_INTERFACE_MODE_10GBASER:
++	case PHY_INTERFACE_MODE_25GBASER:
++	case PHY_INTERFACE_MODE_10GKR:
++	case PHY_INTERFACE_MODE_100BASEX:
++	case PHY_INTERFACE_MODE_RXAUI:
++	case PHY_INTERFACE_MODE_XAUI:
++		return 1;
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_QUSGMII:
++		return 4;
++	case PHY_INTERFACE_MODE_MAX:
++		WARN_ONCE(1, "PHY_INTERFACE_MODE_MAX isn't a valid interface mode");
++		return 0;
++	}
++	return 0;
++}
++EXPORT_SYMBOL_GPL(phy_interface_num_ports);
++
+ /* A mapping of all SUPPORTED settings to speed/duplex.  This table
+  * must be grouped by speed and sorted in descending match priority
+  * - iow, descending speed.
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 9eeab9b9a74c..7c49ab95441b 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -968,6 +968,8 @@ struct phy_fixup {
+ const char *phy_speed_to_str(int speed);
+ const char *phy_duplex_to_str(unsigned int duplex);
+ 
++int phy_interface_num_ports(phy_interface_t interface);
++
+ /* A structure for mapping a particular speed and duplex
+  * combination to a particular SUPPORTED and ADVERTISED value
+  */
 -- 
 2.37.1
 
