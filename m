@@ -2,123 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB691586C71
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 15:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B682C586C84
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 16:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232204AbiHAN7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 09:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        id S232289AbiHAODO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 10:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiHAN7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 09:59:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 559922DE8
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 06:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659362343;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eXxFDNHmW1eO0dHBvosAP+F5NsGPg4Gs2jo3HyEeOm4=;
-        b=elBnH3m4Mc/5raaQ++OPBqwdsc40LXyyekriiAY3EdthBd7jxOhQrdUkFaNnS8A5EEP9DI
-        iWvW+4YxuXSmhy0zV9+xz/IJ4NZK2r8uE5gxLVQB5yOQnRGgugtY7kLXaTfUSfU88RYTz+
-        O26RUDniix2HHgO74CWDY+MR8tFxSSc=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-572-fajeKWaAN_uMjdNDtClclg-1; Mon, 01 Aug 2022 09:59:02 -0400
-X-MC-Unique: fajeKWaAN_uMjdNDtClclg-1
-Received: by mail-ej1-f72.google.com with SMTP id nc38-20020a1709071c2600b007309af9e482so173054ejc.2
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 06:59:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=eXxFDNHmW1eO0dHBvosAP+F5NsGPg4Gs2jo3HyEeOm4=;
-        b=cNRhqk1MsPlF5a9MXeat3cPc3SpY9kzJTLf523vF81QIe2VLQvHCVEKq2h5FGDag28
-         YO1qsZEWN77gVDIP3ihR1O2RhtobeDKKgstzzbiMjgbTbdERtiBjHz7NLn3j0fJdmeX3
-         ef7uuJ92hXvn4IMiDIPH5Cyw3WsueR6OkhCN4PWQqX7VaRmPHQPRuElK9Bw4JHO3+FFr
-         tJ1cGtU6Ti6N/ltNEO1Jl0mHzivTWwdtSkkZpbuuser5S0pZJ1VQ7S6sxQpGlmk1vDkR
-         7iZhUpbVe1bUyGCGKfY/ptuwtwH2l7xcrosh/2HRp8xx8QQW1hY5OlSpQk+qGDPkLBNU
-         cAnw==
-X-Gm-Message-State: AJIora/L7R8Punx6HoDTfM/dqz159RaRa13x4u/xOgF121QhyzD6r5BY
-        quDz92IbcaeXYKGt0cZju4ZLJU3jQrrY8eN8gG4wbue/77KsKs5t7B7n0iCYw+Sm+iTIH64HhCZ
-        3jk/STE1vpnA9MmSf2Fnfetqu6FqFH+Mj
-X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id g10-20020a056402428a00b0042e8f7e1638mr15797060edc.228.1659362341203;
-        Mon, 01 Aug 2022 06:59:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sOKK1XArDJ/+T2IJ3/pCZ85i2lWKtqCnCIBQNq5wFJM3QRwfxBQ0mImsdCShuk7kTJM73OnyoYE+c/C8XVIdY=
-X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id
- g10-20020a056402428a00b0042e8f7e1638mr15797050edc.228.1659362341081; Mon, 01
- Aug 2022 06:59:01 -0700 (PDT)
+        with ESMTP id S231886AbiHAODN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 10:03:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088CA30F66
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 07:03:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95565B80EBC
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 14:03:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D432C433D7
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 14:03:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659362589;
+        bh=dJpwlpoo8AtUO2dWZqhh/XD4WNKZ8Ynruzb4F/ZFrpE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HtQbRRJOVwkzg6BSZ2q30UwV+kHcr20i7uFOjDH0Oip5FQBlEwyF6bY5cgpczvNTZ
+         5dfrepWM0RVoUJlTYd8kBpXwAHw+2YwKZkriDqtW/IJl51XvSCEblp7nowOqSXD03u
+         VUIVrmOklMBNMPM79LXHfknqh1xGfiQTusRaaiRi0tnF03RfC2XiwTlvf9n3mZMrkc
+         BwiFRkH2gokCSNLv1NReOkZNK+Hy3to9vIIiYrDiFIYPP4Hg5ztoZ74MaFINI96879
+         8ZQ0yVj/Rw+wwdTsC2pR13vsEc2YDJHI67dXxhYRgdzv4Pyu/PBcZqIpObv0n2M5wc
+         NHHlqrs8mFDVA==
+Received: by mail-vs1-f46.google.com with SMTP id k3so11322483vsr.9
+        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 07:03:09 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3cWoRxtjZyP910L9/Q8/u/+5nTggtshhGYikx5s5B2nnfhwnTl
+        seSUB6vsfBbCEF+76be2Rj64Ylc+Wo2LL9We6g==
+X-Google-Smtp-Source: AA6agR6MvaHAEOfaMrNvpuLg8PnC6Xc1cyww40d0m93Gs/61Jw3HjYyN6FrVRD/Zg2iYdPbCZqk8HKPTggL2qJRGKrw=
+X-Received: by 2002:a05:6102:1494:b0:37e:2dc5:870d with SMTP id
+ d20-20020a056102149400b0037e2dc5870dmr2442430vsv.6.1659362588106; Mon, 01 Aug
+ 2022 07:03:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220711083220.2175036-1-asavkov@redhat.com> <YswAqrJrMKIZPpcz@krava>
-In-Reply-To: <YswAqrJrMKIZPpcz@krava>
-From:   Daniel Vacek <neelx@redhat.com>
-Date:   Mon, 1 Aug 2022 15:58:24 +0200
-Message-ID: <CACjP9X-HWHhFD6D1TsuhWOgj2v=dMkwVCjQCQzQqa054yKiqeg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/4] bpf_panic() helper
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Artem Savkov <asavkov@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>
+References: <20220729132119.1191227-1-vladimir.oltean@nxp.com>
+ <20220729132119.1191227-5-vladimir.oltean@nxp.com> <CAL_JsqJJBDC9_RbJwUSs5Q-OjWJDSA=8GTXyfZ4LdYijB-AqqA@mail.gmail.com>
+ <20220729170107.h4ariyl5rvhcrhq3@skbuf> <CAL_JsqL7AcAbtqwjYmhbtwZBXyRNsquuM8LqEFGYgha-xpuE+Q@mail.gmail.com>
+ <20220730162351.rwfzpma5uvsg3kax@skbuf>
+In-Reply-To: <20220730162351.rwfzpma5uvsg3kax@skbuf>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 1 Aug 2022 08:02:56 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLyCJE2c4ORx-kK1iUMR08iMUMDi0FMb9WeTyfyzO3GKw@mail.gmail.com>
+Message-ID: <CAL_JsqLyCJE2c4ORx-kK1iUMR08iMUMDi0FMb9WeTyfyzO3GKw@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
+ shared ports have the properties they need
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Mans Rullgard <mans@mansr.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Frank Rowand <frowand.list@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 12:51 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+On Sat, Jul 30, 2022 at 10:24 AM Vladimir Oltean
+<vladimir.oltean@nxp.com> wrote:
 >
-> On Mon, Jul 11, 2022 at 10:32:16AM +0200, Artem Savkov wrote:
-> > eBPF is often used for kernel debugging, and one of the widely used and
-> > powerful debugging techniques is post-mortem debugging with a full memory dump.
-> > Triggering a panic at exactly the right moment allows the user to get such a
-> > dump and thus a better view at the system's state. This patchset adds
-> > bpf_panic() helper to do exactly that.
+> Hi Rob,
 >
-> FWIW I was asked for such helper some time ago from Daniel Vacek, cc-ed
-
-Nice :-)
-This is totally welcome. Though, IIRC, I was asking if I could do a
-NULL pointer dereference within perf probe (or ftrace) back then.
-Still, the outcome is similar. So kudos to Artem.
-
---nX
-
-> jirka
+> On Fri, Jul 29, 2022 at 12:39:06PM -0600, Rob Herring wrote:
+> > All valid points. At least for the sea of warnings, you can limit
+> > checking to only a subset of schemas you care about. Setting
+> > 'DT_SCHEMA_FILES=net/' will only check networking schemas for example.
+> > Just need folks to care about those subsets.
+> >
+> > I'm not saying don't put warnings in the kernel for this. Just don't
+> > make it the only source of warnings. Given you are tightening the
+> > requirements, it makes sense to have a warning. If it was something
+> > entirely new, then I'd be more inclined to say only the schema should
+> > check.
 >
-> >
-> > I realize that even though there are multiple guards present, a helper like
-> > this is contrary to BPF being "safe", so this is sent as RFC to have a
-> > discussion on whether adding destructive capabilities is deemed acceptable.
-> >
-> > Artem Savkov (4):
-> >   bpf: add a sysctl to enable destructive bpf helpers
-> >   bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
-> >   bpf: add bpf_panic() helper
-> >   selftests/bpf: bpf_panic selftest
-> >
-> >  include/linux/bpf.h                           |   8 +
-> >  include/uapi/linux/bpf.h                      |  13 ++
-> >  kernel/bpf/core.c                             |   1 +
-> >  kernel/bpf/helpers.c                          |  13 ++
-> >  kernel/bpf/syscall.c                          |  33 +++-
-> >  kernel/bpf/verifier.c                         |   7 +
-> >  kernel/trace/bpf_trace.c                      |   2 +
-> >  tools/include/uapi/linux/bpf.h                |  13 ++
-> >  .../selftests/bpf/prog_tests/bpf_panic.c      | 144 ++++++++++++++++++
-> >  9 files changed, 233 insertions(+), 1 deletion(-)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_panic.c
-> >
-> > --
-> > 2.35.3
-> >
+> How does this look like? It says that if the 'ethernet' property exists
+> and is a phandle (i.e. this is a CPU port), or if the 'link' property
+> exists and is a phandle-array (i.e. this is a DSA port), then the
+> phylink-related properties are mandatory, in the combinations that they
+> may appear in.
 >
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> index 09317e16cb5d..ed828cec90fd 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> @@ -76,6 +76,31 @@ properties:
+>  required:
+>    - reg
+>
+> +if:
+> +  oneOf:
+> +    - properties:
+> +        ethernet:
+> +          items:
+> +            $ref: /schemas/types.yaml#/definitions/phandle
+> +    - properties:
+> +        link:
+> +          items:
+> +            $ref: /schemas/types.yaml#/definitions/phandle-array
 
+'items' here is wrong. 'required' is needed because the property not
+present will be true otherwise.
+
+Checking the type is redundant given the top-level schema already does that.
+
+> +then:
+> +  allOf:
+> +  - required:
+> +    - phy-mode
+> +  - oneOf:
+> +    - required:
+> +      - fixed-link
+> +    - required:
+> +      - phy-handle
+> +    - required:
+> +      - managed
+> +    - required:
+> +      - phy-handle
+> +      - managed
+> +
+>  additionalProperties: true
+>
+>
+> I have deliberately made this part of dsa-port.yaml and not depend on
+> any compatible string. The reason is the code - we'll warn about missing
+> properties regardless of whether we have fallback logic for some older
+> switches. Essentially the fact that some switches have the fallback to
+> not use phylink will remain an undocumented easter egg as far as the
+> dt-schema is concerned.
+
+dsa-port.yaml is only applied when some other schema references it
+which is probably based on some compatible. If you want to apply this
+under some other condition, then you need a custom 'select' schema to
+define when.
+
+Rob
