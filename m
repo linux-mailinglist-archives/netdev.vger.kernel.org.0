@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0882E58718C
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 21:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A59D9587193
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 21:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbiHATmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 15:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S234414AbiHAToZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 15:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiHATmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:42:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78707D3
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 12:42:41 -0700 (PDT)
+        with ESMTP id S234082AbiHAToW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 15:44:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4686E10575
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 12:44:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16F756130A
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 19:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2666CC433C1;
-        Mon,  1 Aug 2022 19:42:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D610B6130A
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 19:44:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44A4C433C1;
+        Mon,  1 Aug 2022 19:44:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659382960;
-        bh=Oj6DwQ8+kZS+UNrKAdYhDHSaOmmRtCiZMMiufCdCj48=;
+        s=k20201202; t=1659383061;
+        bh=HfPRiVQyuE6sX7scm9c5+wUAlPsp+HyFo1NgT0RmWsc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N+2KSAdHxExgnhpE6/Syus7gRYMPqiEonp53XMWHb2vvoOwPUIX+ZldeABKWIXQg0
-         WefWuJsOgFXMANvaymD/txM/Qu+0YLgOKMu0H3Zk1P6qIR33i296z1Y3avS6qE6i1X
-         1tdae//78W08DSUf0kQxwfDlkpAZtsKpLYxreV4AXsxtSX+S6/ZSDoI+F9MEBRAMUy
-         9ooOTAuAgXo6i5tr39HFmkkA0mDF7k81n5HKD4itpy8YG8x1PsCRDEE3oNNl0ltYX+
-         7sfQeBBU1oaCf1SE+wOq/fgesYca72B7YLoFy72nx+39HpjDWh/lEG6XMaCJC+G0ol
-         MHLzK0jLXr9ww==
-Date:   Mon, 1 Aug 2022 12:42:39 -0700
+        b=B4nK7Oyv34NdyN/0zBeo86ad76Hu2/2kbFY1/cGssLS+ldbu2671ShuRhIgoI+UY3
+         +hmFPOFwnS48d+Hq9Vp+lDUULz+WiMKM1wemMcV3gfNRonRYsPo0ZK5/25th6yl0/6
+         5tAiMMpjolRQBByogc0dMNAlqitkc2s9vghQBOAiIt1F90Zf3/fGRE/oBkAaWQUZWs
+         +E0CSbwW+2pgK5wJz1SQql3ezjkBDBSBS8QBc56nbQVEAx7KS5lef/PYzmsYjUcZhu
+         kwkWWSJ5y8d/R3NfelHCel524GfGLmwTWyWe4JGIcnI6L85mU1OZcdK43vQWA1dOBj
+         4x9qvoorvAlSQ==
+Date:   Mon, 1 Aug 2022 12:44:19 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Maxim Mikityanskiy <maximmi@nvidia.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -43,7 +43,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         John Fastabend <john.fastabend@gmail.com>,
         Gal Pressman <gal@nvidia.com>, <netdev@vger.kernel.org>
 Subject: Re: [PATCH net-next] net/tls: Use RCU API to access tls_ctx->netdev
-Message-ID: <20220801124239.067573de@kernel.org>
+Message-ID: <20220801124419.4aaffcac@kernel.org>
 In-Reply-To: <20220801080053.21849-1-maximmi@nvidia.com>
 References: <20220801080053.21849-1-maximmi@nvidia.com>
 MIME-Version: 1.0
@@ -59,19 +59,22 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, 1 Aug 2022 11:00:53 +0300 Maxim Mikityanskiy wrote:
-> @@ -1329,7 +1345,11 @@ static int tls_device_down(struct net_device *netdev)
->  
->  	spin_lock_irqsave(&tls_device_lock, flags);
->  	list_for_each_entry_safe(ctx, tmp, &tls_device_list, list) {
-> -		if (ctx->netdev != netdev ||
-> +		struct net_device *ctx_netdev =
-> +			rcu_dereference_protected(ctx->netdev,
-> +						  lockdep_is_held(&device_offload_lock));
-> +
-> +		if (ctx_netdev != netdev ||
->  		    !refcount_inc_not_zero(&ctx->refcount))
->  			continue;
+> Currently, tls_device_down synchronizes with tls_device_resync_rx using
+> RCU, however, the pointer to netdev is stored using WRITE_ONCE and
+> loaded using READ_ONCE.
+> 
+> Although such approach is technically correct (rcu_dereference is
+> essentially a READ_ONCE, and rcu_assign_pointer uses WRITE_ONCE to store
+> NULL), using special RCU helpers for pointers is more valid, as it
+> includes additional checks and might change the implementation
+> transparently to the callers.
+> 
+> Mark the netdev pointer as __rcu and use the correct RCU helpers to
+> access it. For non-concurrent access pass the right conditions that
+> guarantee safe access (locks taken, refcount value). Also use the
+> correct helper in mlx5e, where even READ_ONCE was missing.
 
-For cases like this where we don't actually hold onto the object, just
-take a peek at the address of it we can save a handful of LoC by using
-rcu_access_pointer(). 
+Oops, looks like we also got some new sparse warnings from this:
+
+2 new warnings in drivers/net/bonding/bond_main.c
+1 new warning  in drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
