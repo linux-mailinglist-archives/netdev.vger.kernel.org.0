@@ -2,60 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90E40586B3B
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 14:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF53586B58
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 14:52:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231668AbiHAMsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 08:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S235019AbiHAMv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 08:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234740AbiHAMro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 08:47:44 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C818250181;
-        Mon,  1 Aug 2022 05:38:51 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271A12YR031410;
-        Mon, 1 Aug 2022 05:38:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=AH3eQitAxYvhy4/RzAP+//HGTXu655O4Xsd9zGjJRZU=;
- b=HVFdXMKhCP7o4jUKI4O5FY1YtlHTXb/eAqu2ZnTZLDgauPEwfY14AHiYOu6yMrUAR1gq
- Ugz576RlMScn9iq+An/HTgHdTJ+2ULstYL52gHVTqpyQivJYYyxptyOjC0bkV7qbP2yS
- fr8whjxWoxKplVvRM+OUY7MZ28chUIHIgp+Rlm16e7h92XhFWEYTz5+bPi/Lx+sLbYVu
- Xs0HzMnPohm1ubsdh9P0DN5rWR8olE5+dw+34qUTeOp4YVebTSGgV7ewO4w50MXrUQF1
- qMR2xhGTJ+ov23tNJ2oULw2cqyZWeSfHjlhtdm3cJ83ZsIfH1lp2WnYaMu0eL76jnmUG hw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hn45m6j2v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 01 Aug 2022 05:38:39 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 1 Aug
- 2022 05:38:37 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 1 Aug 2022 05:38:37 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id EF6173F70A1;
-        Mon,  1 Aug 2022 05:38:34 -0700 (PDT)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC:     Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
-Date:   Mon, 1 Aug 2022 18:08:31 +0530
-Message-ID: <20220801123831.9370-1-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
+        with ESMTP id S235058AbiHAMvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 08:51:45 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50F91A380
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 05:46:28 -0700 (PDT)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A3C613F043
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 12:46:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1659357983;
+        bh=3bPb0dad/oOvrex03/AgLvrUL+bomAiOTjep52WTUPk=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=nvcjtNhY/7ks2XaqE0ubLyk1X+O7UpOq28nryjAJOhw+tvowKkwrxlYh1MmCUssDg
+         SB3hTNz//GiZKGe/ICKfvSdEm4+5yKFCOc7ioV6D37gPhEeCSwmY5Fl8WfB7siWC3Q
+         eIwbnUzYbsTDaUgWBvteJIr3T6AsIYUxOobM9aqUyF4mTitMGEM3SBPz5GNhz7b88m
+         PeOi1RdHZzhywrWMOjvM/2vqr9vP86HmoJhjju1GERqAUvj7RQFr6nN3vGwmyFtVY0
+         TAcEjtj5YPoyo28OX5vWgbUEiH6e7u+Lt31GtZJqN83A3+lMUuaHhyo/Xq5Kvs9TCm
+         7JJfLgKc/ZIPQ==
+Received: by mail-ed1-f71.google.com with SMTP id f13-20020a0564021e8d00b00437a2acb543so7029135edf.7
+        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 05:46:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bPb0dad/oOvrex03/AgLvrUL+bomAiOTjep52WTUPk=;
+        b=nVjYqdUJrafP0ENTmjRIxT1XIxv/GcQgntQ6PIIi9BgbgaKCU2hXDR6Yx6mVg0vY7L
+         RvmUctFqseTr/h3umsBr/oTdAo/Nqto9aCEKVSj+fhvC+WWpIcrYIv9588Fao2XFDQKs
+         TsKHMskQpgsxXX0Nmh87fQezvlNj3CSJZrtwbY2PTFhmULmugPE1jPqGZIPmnt9aS047
+         u/o9patC9oBOFEx8DD8iQ1yOTN4PvnqXQu9sjyy4X9yGPziXGTz1vxoacfaLamP4KQQ4
+         uOnXQE4S0dq8v2058ibxH2R4pV1EZC9w8/jDpPCC+v6J73G4aGQDSgSdR8BinfiEVaJl
+         n3jA==
+X-Gm-Message-State: AJIora8VQHr4ZR8Pkd3iuG60dHsxVUoYPoEM/n0Y1PQWxkgiexlqXqcj
+        uKzDrFyo0IKN65/LUjctzAvFjAT93RdBlaRWgwweztr2oM20NbIetCipMETf9Z7OYnQXPjJFFDm
+        wyfzv7WTx2C19n+wwAVxHR27sfEXsDnyAGQ==
+X-Received: by 2002:a17:907:1b09:b0:72f:d49e:6924 with SMTP id mp9-20020a1709071b0900b0072fd49e6924mr12342235ejc.15.1659357983395;
+        Mon, 01 Aug 2022 05:46:23 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1siAb2whtG2DzEO1CK9FWYk3yYciUFIkpJRrwW0nZ4E8RV1QembUa/rlHkpipXv6aQPvEOryg==
+X-Received: by 2002:a17:907:1b09:b0:72f:d49e:6924 with SMTP id mp9-20020a1709071b0900b0072fd49e6924mr12342227ejc.15.1659357983161;
+        Mon, 01 Aug 2022 05:46:23 -0700 (PDT)
+Received: from localhost.localdomain (p579d80fd.dip0.t-ipconnect.de. [87.157.128.253])
+        by smtp.gmail.com with ESMTPSA id ay24-20020a056402203800b0043d3e06519fsm4393386edb.57.2022.08.01.05.46.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 05:46:22 -0700 (PDT)
+From:   Kleber Sacilotto de Souza <kleber.souza@canonical.com>
+To:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Justin Iurman <justin.iurman@uliege.be>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>
+Subject: [RESEND PATCH] selftests: net: fix IOAM test skip return code
+Date:   Mon,  1 Aug 2022 14:46:15 +0200
+Message-Id: <20220801124615.256416-1-kleber.souza@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
-X-Proofpoint-ORIG-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_07,2022-08-01_01,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,89 +77,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For packets scheduled to RPM and LBK, NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
-selects the TL3 or TL2 scheduling level as the one used for link/channel
-selection and backpressure. For each scheduling queue at the selected
-level: Setting NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG[ENA] = 1 allows
-the TL3/TL2 queue to schedule packets to a specified RPM or LBK link
-and channel.
+The ioam6.sh test script exits with an error code (1) when tests are
+skipped due to lack of support from userspace/kernel or not enough
+permissions. It should return the kselftests SKIP code instead.
 
-There is an issue in the code where NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
-is set to TL3 where as the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG is
-configured for TL2 queue in some cases. As a result packets will not
-transmit on that link/channel. This patch fixes the issue by configuring
-the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG register depending on the
-NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL] value.
-
-Fixes: 5d9b976d4480 ("octeontx2-af: Support fixed transmit scheduler topology")
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Reviewed-by: Justin Iurman <justin.iurman@uliege.be>
+Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
 ---
-v2:
-  - Added more details about the fix in commit message.
-  - Added fixes Tag.
 
----
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 19 ++++++++++++++-----
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.h  |  1 +
- 2 files changed, 15 insertions(+), 5 deletions(-)
+Notes:
+    - Reposting to CC netdev@
+    - Keeping Justin's Review tag from the original post
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index fb8db5888d2f..d686c7b6252f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -632,6 +632,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->num_regs++;
- 		req->reg[1] = NIX_AF_TL3X_SCHEDULE(schq);
- 		req->regval[1] = dwrr_val;
-+		if (lvl == hw->txschq_link_cfg_lvl) {
-+			req->num_regs++;
-+			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
-+			/* Enable this queue and backpressure */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL2) {
- 		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
- 		req->reg[0] = NIX_AF_TL2X_PARENT(schq);
-@@ -641,11 +647,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->reg[1] = NIX_AF_TL2X_SCHEDULE(schq);
- 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+ tools/testing/selftests/net/ioam6.sh | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/tools/testing/selftests/net/ioam6.sh b/tools/testing/selftests/net/ioam6.sh
+index a2b9fad5a9a6..4ceb401da1bf 100755
+--- a/tools/testing/selftests/net/ioam6.sh
++++ b/tools/testing/selftests/net/ioam6.sh
+@@ -117,6 +117,8 @@
+ #        | Schema Data         |                                     |
+ #        +-----------------------------------------------------------+
  
--		req->num_regs++;
--		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
--		/* Enable this queue and backpressure */
--		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
--
-+		if (lvl == hw->txschq_link_cfg_lvl) {
-+			req->num_regs++;
-+			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
-+			/* Enable this queue and backpressure */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
- 		/* Default config for TL1.
- 		 * For VF this is always ignored.
-@@ -1591,6 +1598,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
- 		for (schq = 0; schq < rsp->schq[lvl]; schq++)
- 			pf->hw.txschq_list[lvl][schq] =
- 				rsp->schq_list[lvl][schq];
-+
-+	pf->hw.txschq_link_cfg_lvl = rsp->link_cfg_lvl;
- }
- EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
  
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index ce2766317c0b..f9c0d2f08e87 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -195,6 +195,7 @@ struct otx2_hw {
- 	u16			sqb_size;
+ ################################################################################
+ #                                                                              #
+@@ -211,7 +213,7 @@ check_kernel_compatibility()
+     echo "SKIP: kernel version probably too old, missing ioam support"
+     ip link del veth0 2>/dev/null || true
+     ip netns del ioam-tmp-node || true
+-    exit 1
++    exit $ksft_skip
+   fi
  
- 	/* NIX */
-+	u8			txschq_link_cfg_lvl;
- 	u16		txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
- 	u16			matchall_ipolicer;
- 	u32			dwrr_mtu;
+   ip -netns ioam-tmp-node route add db02::/64 encap ioam6 mode inline \
+@@ -227,7 +229,7 @@ check_kernel_compatibility()
+          "without CONFIG_IPV6_IOAM6_LWTUNNEL?"
+     ip link del veth0 2>/dev/null || true
+     ip netns del ioam-tmp-node || true
+-    exit 1
++    exit $ksft_skip
+   fi
+ 
+   ip link del veth0 2>/dev/null || true
+@@ -752,20 +754,20 @@ nfailed=0
+ if [ "$(id -u)" -ne 0 ]
+ then
+   echo "SKIP: Need root privileges"
+-  exit 1
++  exit $ksft_skip
+ fi
+ 
+ if [ ! -x "$(command -v ip)" ]
+ then
+   echo "SKIP: Could not run test without ip tool"
+-  exit 1
++  exit $ksft_skip
+ fi
+ 
+ ip ioam &>/dev/null
+ if [ $? = 1 ]
+ then
+   echo "SKIP: iproute2 too old, missing ioam command"
+-  exit 1
++  exit $ksft_skip
+ fi
+ 
+ check_kernel_compatibility
 -- 
-2.16.5
+2.34.1
 
