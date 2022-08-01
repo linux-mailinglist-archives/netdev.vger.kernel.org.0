@@ -2,273 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1635863A9
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 06:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE335863AD
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 06:57:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239606AbiHAEvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 00:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        id S238364AbiHAE5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 00:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239551AbiHAEu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 00:50:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02A5FB863
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 21:50:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659329457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Ryt5J3yzqqdOrexOVDqNu+Le5htlDEXM2+NHWY7KGo=;
-        b=CFPUULNgtUYLoejQeV90wqCUfbpGinFrGAnnFV+9GIX4g+pZDQNp1o/j+uM1wH5sMfQID7
-        hg2UexSYzGJhNb1V5UUcnio4i8dCR1NChDfbSrgjuWL81hnNZ3FrSZxnM16HjHBuUWF575
-        cGG+ejHFT9Vvww89vowiNGeYjqUkQSo=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-288-FWUtNOcIPaaKeTaJwo4ZgQ-1; Mon, 01 Aug 2022 00:50:55 -0400
-X-MC-Unique: FWUtNOcIPaaKeTaJwo4ZgQ-1
-Received: by mail-ed1-f71.google.com with SMTP id z14-20020a05640240ce00b0043c25c21e94so6419034edb.14
-        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 21:50:55 -0700 (PDT)
+        with ESMTP id S230126AbiHAE5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 00:57:53 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58C5B484
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 21:57:52 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id x64so7644407iof.1
+        for <netdev@vger.kernel.org>; Sun, 31 Jul 2022 21:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=X++rLBXBV9e86kcnusmVtw++WnGBsm/M5XmpU+vjj6A=;
+        b=nxQs8ug4B2Gf/jav02kw2SMOGlVFpxJ5TOCqpL4/tDCtXs8S/yRzffG517bc0/lOiX
+         EvpL5Td5mc5dQnYeYbR/qNN8jLoWciGosz4zBRquVgd0326IQ4RelPrkF+4ZmA2AqqWX
+         j97cZwUMTTlv+3kYYKf88qnv9gyYGb5d0i9QrELu5JvC6KzGBr1wf+BgudNYdid+u0Ts
+         nHWRvFVdVOq43UOOto4du9/mCU3VxUQYx26j4ujzVYT5B2CUatj3szJw2ag5a0vkn/35
+         sLM/CRkPheiSajhaXlxScgLfDUmQxt5gTQLV2FOWZqwiybyiE50+gOzF2B9Q5mts42qJ
+         V0lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4Ryt5J3yzqqdOrexOVDqNu+Le5htlDEXM2+NHWY7KGo=;
-        b=nvCXrwGRG03MJOlX9/4u7nhpRpwDiUEKB+OuJFX+qLd20MH1vDqflHgeqEatBv2btJ
-         wvIhpJ04SfQADx2O7FqIM9nBh1gDi3I3fRfbyu/26DQDfCWM7M9qydqyWBXaEvNLFSgJ
-         mFoqOYONjqZJ+bUL1PA6aP5fakNyyVS1nMkE6LMNDbDsxcI0k74HfXwrKHKEcqgiNFYx
-         ULRTkcGnMnSDLYoocrR9SGREo5GIH5nYZqi3PbT0mcbEfODfcf39m8iGK7/83ZEJw1PP
-         fpEPdl9rTJdpQUiyaM+gPdUY3c58mvmqS5+k8BvtHzw+bKUiTcDHdL3FfqFYE6hIl/yj
-         tW4g==
-X-Gm-Message-State: AJIora+q7sq7+pDfdm2syZqgAI+KXWWh1i+++WIQsqaw1gdIfIx5oxaY
-        vGQleuxWuWLwyenzdXcJ8EvM5KwBteXBrI63JLdJY0GyXSZ0zBUk1PfJNNqCTCjqmAuZ2FU8z4o
-        ednLDBzuEDklE42ISMpO/luvNCmxZPGC8
-X-Received: by 2002:a17:907:2d23:b0:72b:7c6a:24c with SMTP id gs35-20020a1709072d2300b0072b7c6a024cmr10844657ejc.44.1659329454289;
-        Sun, 31 Jul 2022 21:50:54 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sH+lIhZOpB9lCfREfJb6x/jvL61IYF2r9RdXMJRwFw2D9Yw+ehqNVuBnTCBa3NE3A2B6EQoIiHm09d++CQhbQ=
-X-Received: by 2002:a17:907:2d23:b0:72b:7c6a:24c with SMTP id
- gs35-20020a1709072d2300b0072b7c6a024cmr10844644ejc.44.1659329454070; Sun, 31
- Jul 2022 21:50:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=X++rLBXBV9e86kcnusmVtw++WnGBsm/M5XmpU+vjj6A=;
+        b=fgwRUfmUT8xynzk5wt4+8CYB/Z8w0fq163Th0F38InN5J2pdIOYgqw78o+c5/lEyvM
+         YhtBjBvs39Ug19gonyG9MzXFYhxxH6Z04gq+L8j1aqqfu4a8ywxROQ9F4HQeOczG7QO8
+         W3DJskmAGagt57VjQ2GqNYCTu4RsvnXn3FjMfZJfHMTzOsFTQRfVi5gWaBEUM8KRWG/p
+         ABDN6ifkqA+CmzrSEZKLA14xN4KdSnUS5UUECm/cCtoiLvfSn0rgZDc9WVvbu0mDxATC
+         FijF7VIjgUWR5+s9D3BOkF0a7jK4ciw0oxx6AWt81U/yqdUjS3CErVvgjuUGMqSYZy4/
+         Q/+w==
+X-Gm-Message-State: ACgBeo1wxYl7ALF9hdOnONvfZkHxmB0/GAJQOT29ZEqb9cigAkbhoz3V
+        ooAW9lkeruSynguk1JLAo9Q=
+X-Google-Smtp-Source: AA6agR47JmEubT09F4mfqUaDJ+AUYhGcfmEtrJFDaaopeY74hoz1HjSlj8N4ytNdf53js1aC9nwDmg==
+X-Received: by 2002:a02:b10c:0:b0:342:6c6a:eb4e with SMTP id r12-20020a02b10c000000b003426c6aeb4emr2818514jah.172.1659329872275;
+        Sun, 31 Jul 2022 21:57:52 -0700 (PDT)
+Received: from localhost (cpec09435e3ea83-cmc09435e3ea81.cpe.net.cable.rogers.com. [99.235.148.253])
+        by smtp.gmail.com with UTF8SMTPSA id i1-20020a0566022c8100b0067b74df7960sm5220197iow.32.2022.07.31.21.57.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Jul 2022 21:57:52 -0700 (PDT)
+From:   Cezar Bulinaru <cbulinaru@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     willemb@google.com, netdev@vger.kernel.org, cbulinaru@gmail.com
+Subject: [PATCH v3 1/2] Fixes: 924a9bc362a5 ("net: check if protocol extracted by virtio_net_hdr_set_proto is correct")
+Date:   Mon,  1 Aug 2022 00:57:35 -0400
+Message-Id: <20220801045736.20674-1-cbulinaru@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220729190307.667b4be0@kernel.org>
+References: <20220729190307.667b4be0@kernel.org>
 MIME-Version: 1.0
-References: <e98fc062-021b-848b-5cf4-15bd63a11c5c@intel.com>
- <PH0PR12MB54815AD7D0674FEB1D63EB61DC979@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220727015626-mutt-send-email-mst@kernel.org> <CACGkMEv62tuOP3ra0GBhjCH=syFWxP+GVfGL_i0Ce0iD4uMY=Q@mail.gmail.com>
- <20220727050222-mutt-send-email-mst@kernel.org> <CACGkMEtDFUGX17giwYdF58QJ1ccZJDJg1nFVDkSeB27sfZz28g@mail.gmail.com>
- <20220727114419-mutt-send-email-mst@kernel.org> <CACGkMEv80RTtuyw5RtwgTHUphS1s2oTeb94tc6Tx7LbJWKsEBw@mail.gmail.com>
- <459524bc-0e21-422b-31c1-39745fd25fac@intel.com> <CACGkMEu76TtzXRkv_daoHCY9gZ0ikbFBHD+gRz8KNMdeKiGArg@mail.gmail.com>
- <20220728024111-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220728024111-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 1 Aug 2022 12:50:42 +0800
-Message-ID: <CACGkMEvO4cHE-_0nvT6oe6GmXukcpT=yZGM9SGpVGhjuxnTvTQ@mail.gmail.com>
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
-        Parav Pandit <parav@nvidia.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 2:41 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Thu, Jul 28, 2022 at 01:53:51PM +0800, Jason Wang wrote:
-> > On Thu, Jul 28, 2022 at 11:47 AM Zhu, Lingshan <lingshan.zhu@intel.com>=
- wrote:
-> > >
-> > >
-> > >
-> > > On 7/28/2022 9:21 AM, Jason Wang wrote:
-> > > > On Wed, Jul 27, 2022 at 11:45 PM Michael S. Tsirkin <mst@redhat.com=
-> wrote:
-> > > >> On Wed, Jul 27, 2022 at 05:50:59PM +0800, Jason Wang wrote:
-> > > >>> On Wed, Jul 27, 2022 at 5:03 PM Michael S. Tsirkin <mst@redhat.co=
-m> wrote:
-> > > >>>> On Wed, Jul 27, 2022 at 02:54:13PM +0800, Jason Wang wrote:
-> > > >>>>> On Wed, Jul 27, 2022 at 2:01 PM Michael S. Tsirkin <mst@redhat.=
-com> wrote:
-> > > >>>>>> On Wed, Jul 27, 2022 at 03:47:35AM +0000, Parav Pandit wrote:
-> > > >>>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > > >>>>>>>> Sent: Tuesday, July 26, 2022 10:53 PM
-> > > >>>>>>>>
-> > > >>>>>>>> On 7/27/2022 10:17 AM, Parav Pandit wrote:
-> > > >>>>>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > > >>>>>>>>>> Sent: Tuesday, July 26, 2022 10:15 PM
-> > > >>>>>>>>>>
-> > > >>>>>>>>>> On 7/26/2022 11:56 PM, Parav Pandit wrote:
-> > > >>>>>>>>>>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
-> > > >>>>>>>>>>>> Sent: Tuesday, July 12, 2022 11:46 PM
-> > > >>>>>>>>>>>>> When the user space which invokes netlink commands, det=
-ects that
-> > > >>>>>>>>>> _MQ
-> > > >>>>>>>>>>>> is not supported, hence it takes max_queue_pair =3D 1 by=
- itself.
-> > > >>>>>>>>>>>> I think the kernel module have all necessary information=
- and it is
-> > > >>>>>>>>>>>> the only one which have precise information of a device,=
- so it
-> > > >>>>>>>>>>>> should answer precisely than let the user space guess. T=
-he kernel
-> > > >>>>>>>>>>>> module should be reliable than stay silent, leave the qu=
-estion to
-> > > >>>>>>>>>>>> the user space
-> > > >>>>>>>>>> tool.
-> > > >>>>>>>>>>> Kernel is reliable. It doesn=E2=80=99t expose a config sp=
-ace field if the
-> > > >>>>>>>>>>> field doesn=E2=80=99t
-> > > >>>>>>>>>> exist regardless of field should have default or no defaul=
-t.
-> > > >>>>>>>>>> so when you know it is one queue pair, you should answer o=
-ne, not try
-> > > >>>>>>>>>> to guess.
-> > > >>>>>>>>>>> User space should not guess either. User space gets to se=
-e if _MQ
-> > > >>>>>>>>>> present/not present. If _MQ present than get reliable data=
- from kernel.
-> > > >>>>>>>>>>> If _MQ not present, it means this device has one VQ pair.
-> > > >>>>>>>>>> it is still a guess, right? And all user space tools imple=
-mented this
-> > > >>>>>>>>>> feature need to guess
-> > > >>>>>>>>> No. it is not a guess.
-> > > >>>>>>>>> It is explicitly checking the _MQ feature and deriving the =
-value.
-> > > >>>>>>>>> The code you proposed will be present in the user space.
-> > > >>>>>>>>> It will be uniform for _MQ and 10 other features that are p=
-resent now and
-> > > >>>>>>>> in the future.
-> > > >>>>>>>> MQ and other features like RSS are different. If there is no=
- _RSS_XX, there
-> > > >>>>>>>> are no attributes like max_rss_key_size, and there is not a =
-default value.
-> > > >>>>>>>> But for MQ, we know it has to be 1 wihtout _MQ.
-> > > >>>>>>> "we" =3D user space.
-> > > >>>>>>> To keep the consistency among all the config space fields.
-> > > >>>>>> Actually I looked and the code some more and I'm puzzled:
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>>          struct virtio_net_config config =3D {};
-> > > >>>>>>          u64 features;
-> > > >>>>>>          u16 val_u16;
-> > > >>>>>>
-> > > >>>>>>          vdpa_get_config_unlocked(vdev, 0, &config, sizeof(con=
-fig));
-> > > >>>>>>
-> > > >>>>>>          if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeo=
-f(config.mac),
-> > > >>>>>>                      config.mac))
-> > > >>>>>>                  return -EMSGSIZE;
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>> Mac returned even without VIRTIO_NET_F_MAC
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>>          val_u16 =3D le16_to_cpu(config.status);
-> > > >>>>>>          if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u1=
-6))
-> > > >>>>>>                  return -EMSGSIZE;
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>> status returned even without VIRTIO_NET_F_STATUS
-> > > >>>>>>
-> > > >>>>>>          val_u16 =3D le16_to_cpu(config.mtu);
-> > > >>>>>>          if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u=
-16))
-> > > >>>>>>                  return -EMSGSIZE;
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>> MTU returned even without VIRTIO_NET_F_MTU
-> > > >>>>>>
-> > > >>>>>>
-> > > >>>>>> What's going on here?
-> > > >>>>> Probably too late to fix, but this should be fine as long as al=
-l
-> > > >>>>> parents support STATUS/MTU/MAC.
-> > > >>>> Why is this too late to fix.
-> > > >>> If we make this conditional on the features. This may break the
-> > > >>> userspace that always expects VDPA_ATTR_DEV_NET_CFG_MTU?
-> > > >>>
-> > > >>> Thanks
-> > > >> Well only on devices without MTU. I'm saying said userspace
-> > > >> was reading trash on such devices anyway.
-> > > > It depends on the parent actually. For example, mlx5 query the lowe=
-r
-> > > > mtu unconditionally:
-> > > >
-> > > >          err =3D query_mtu(mdev, &mtu);
-> > > >          if (err)
-> > > >                  goto err_alloc;
-> > > >
-> > > >          ndev->config.mtu =3D cpu_to_mlx5vdpa16(mvdev, mtu);
-> > > >
-> > > > Supporting MTU features seems to be a must for real hardware.
-> > > > Otherwise the driver may not work correctly.
-> > > >
-> > > >> We don't generally maintain bug for bug compatiblity on a whim,
-> > > >> only if userspace is actually known to break if we fix a bug.
-> > > >   So I think it should be fine to make this conditional then we sho=
-uld
-> > > > have a consistent handling of other fields like MQ.
-> > > For some fields that have a default value, like MQ =3D1, we can retur=
-n the
-> > > default value.
-> > > For other fields without a default value, like MAC, we return nothing=
-.
-> > >
-> > > Does this sounds good? So, for MTU, if without _F_MTU, I think we can
-> > > return 1500 by default.
-> >
-> > Or we can just read MTU from the device.
-> >
-> > But It looks to me Michael wants it conditional.
-> >
-> > Thanks
->
-> I'm fine either way but let's keep it consistent. And I think
-> Parav wants it conditional.
+Fixes a NULL pointer derefence bug triggered from tap driver.
+When tap_get_user calls virtio_net_hdr_to_skb the skb->dev is null
+(in tap.c skb->dev is set after the call to virtio_net_hdr_to_skb)
+virtio_net_hdr_to_skb calls dev_parse_header_protocol which
+needs skb->dev field to be valid.
 
-Parav, what's your opinion here?
+The line that trigers the bug is in dev_parse_header_protocol
+(dev is at offset 0x10 from skb and is stored in RAX register)
+  if (!dev->header_ops || !dev->header_ops->parse_protocol)
+  22e1:   mov    0x10(%rbx),%rax
+  22e5:	  mov    0x230(%rax),%rax
 
-Michale spots some in-consistent stuffs, so I think we should either
+Setting skb->dev before the call in tap.c fixes the issue.
 
-1) make all conditional, so we should change both MTU and MAC
+BUG: kernel NULL pointer dereference, address: 0000000000000230
+RIP: 0010:virtio_net_hdr_to_skb.constprop.0+0x335/0x410 [tap]
+Code: c0 0f 85 b7 fd ff ff eb d4 41 39 c6 77 cf 29 c6 48 89 df 44 01 f6 e8 7a 79 83 c1 48 85 c0 0f 85 d9 fd ff ff eb b7 48 8b 43 10 <48> 8b 80 30 02 00 00 48 85 c0 74 55 48 8b 40 28 48 85 c0 74 4c 48
+RSP: 0018:ffffc90005c27c38 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff888298f25300 RCX: 0000000000000010
+RDX: 0000000000000005 RSI: ffffc90005c27cb6 RDI: ffff888298f25300
+RBP: ffffc90005c27c80 R08: 00000000ffffffea R09: 00000000000007e8
+R10: ffff88858ec77458 R11: 0000000000000000 R12: 0000000000000001
+R13: 0000000000000014 R14: ffffc90005c27e08 R15: ffffc90005c27cb6
+FS:  0000000000000000(0000) GS:ffff88858ec40000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000230 CR3: 0000000281408006 CR4: 00000000003706e0
+Call Trace:
+ tap_get_user+0x3f1/0x540 [tap]
+ tap_sendmsg+0x56/0x362 [tap]
+ ? get_tx_bufs+0xc2/0x1e0 [vhost_net]
+ handle_tx_copy+0x114/0x670 [vhost_net]
+ handle_tx+0xb0/0xe0 [vhost_net]
+ handle_tx_kick+0x15/0x20 [vhost_net]
+ vhost_worker+0x7b/0xc0 [vhost]
+ ? vhost_vring_call_reset+0x40/0x40 [vhost]
+ kthread+0xfa/0x120
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x1f/0x30
 
-or
+Signed-off-by: Cezar Bulinaru <cbulinaru@gmail.com>
 
-2) make them unconditional, so we should only change MQ
-
-Thanks
-
->
-> > >
-> > > Thanks,
-> > > Zhu Lingshan
-> > > >
-> > > > Thanks
-> > > >
-> > > >>
-> > > >>>>> I wonder if we can add a check in the core and fail the device
-> > > >>>>> registration in this case.
-> > > >>>>>
-> > > >>>>> Thanks
-> > > >>>>>
-> > > >>>>>>
-> > > >>>>>> --
-> > > >>>>>> MST
-> > > >>>>>>
-> > >
->
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index c3d42062559d..557236d51d01 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -716,10 +716,20 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 	skb_reset_mac_header(skb);
+ 	skb->protocol = eth_hdr(skb)->h_proto;
+ 
++	rcu_read_lock();
++	tap = rcu_dereference(q->tap);
++	if (tap) {
++		skb->dev = tap->dev;
++	} else {
++		kfree_skb(skb);
++		goto post_send;
++	}
++
+ 	if (vnet_hdr_len) {
+ 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr,
+ 					    tap_is_little_endian(q));
+ 		if (err) {
++			rcu_read_unlock();
+ 			drop_reason = SKB_DROP_REASON_DEV_HDR;
+ 			goto err_kfree;
+ 		}
+@@ -732,8 +742,6 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+ 		skb_set_network_header(skb, depth);
+ 
+-	rcu_read_lock();
+-	tap = rcu_dereference(q->tap);
+ 	/* copy skb_ubuf_info for callback when skb has no error */
+ 	if (zerocopy) {
+ 		skb_zcopy_init(skb, msg_control);
+@@ -742,12 +750,9 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 		uarg->callback(NULL, uarg, false);
+ 	}
+ 
+-	if (tap) {
+-		skb->dev = tap->dev;
+-		dev_queue_xmit(skb);
+-	} else {
+-		kfree_skb(skb);
+-	}
++	dev_queue_xmit(skb);
++
++post_send:
+ 	rcu_read_unlock();
+ 
+ 	return total_len;
+-- 
+2.34.1
 
