@@ -2,100 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A8B58743F
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 01:06:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0BBD58744C
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 01:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbiHAXGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 19:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34434 "EHLO
+        id S233776AbiHAXRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 19:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234979AbiHAXGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 19:06:19 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E412A243
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 16:06:17 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id c185so14700809oia.7
-        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 16:06:17 -0700 (PDT)
+        with ESMTP id S231986AbiHAXRD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 19:17:03 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AA71571F;
+        Mon,  1 Aug 2022 16:17:01 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id rq15so16998310ejc.10;
+        Mon, 01 Aug 2022 16:17:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=rFaG78hGppqyEaV7sglOcQ+vFBt1MT2K6UHXnsijDug=;
-        b=0gpOV2jR9Ldyi7tWjReQ6fHVuZkXi246dTuVekkLE+udpqmfspyyVLV1/zMWAChxc2
-         1Ac+d3ITcUQnvPOO7CPt7aVGZa8CfqGOI6sNHCIcsZZnbWq74mAANt7OyqDleRsvdqzL
-         YshLVoEhtsghq6x/JkRJvx9rq1ZImRE9esUruyh0fXKTIiSDj0GJLswrLKDp2ersZB8F
-         Hu0atpgTHkw0Zi1lKmC2zz5Y4/LG82SL0GX+pwK1VWmiDRPPvrKP1JhVS/xCSLYLwmzy
-         909xLAh8M/2hvLyflN9Sq5ICwKhSKT2w2m7GIIJqqQNUukxqnyJ2+ypTBIGq0DJXYWpa
-         uUOw==
+        bh=8OXsGkXzPNYuoAlENJmJBTtuEpOWte6d9Xn7bPvey3w=;
+        b=VP54bwv7/eb1KQzOUK6UmmYFC+I/Brorumxmqlmtw6mRz3koO5NhD7vi2gqZuR4QCq
+         xFrU+7H2/Bb3UEeLt4L8lP6Pg19Zb08aA52mTTzp6cMZm8wUUmx7PXldq8D5o0k0/bdV
+         wxdkU8sgVh90z1WaVjMMGVwryy33+03UkgfS+pEEP14X4X9D/mb0l58lFrjKGBgyo7Ui
+         nC/vxCmVV4LoU+bcU9reyBqTsUHBsh1RxMtE//BMs4RPuSkY6V9jUD6gtGSRMYvkgvHU
+         cG5Pwqiqfx2370ePOOD8tYnvjc6yO56Qa9XM5u8rgwLUkRDNkd1FdMGKz2z6bau7r7OH
+         uAJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=rFaG78hGppqyEaV7sglOcQ+vFBt1MT2K6UHXnsijDug=;
-        b=w6kRIrUCOJ78lHAXFkpq1RjgUEMTcPeonXJTpEeczonBgUzjcVDhczwJ+uqPLmOj93
-         CO7zHtfkdaBuwG8Rl8ImFtceeVf3rdF1ZRTvOzRRm30UhfNyu03txPi8jdk/NZYb8e3m
-         pSHEQwznxuFJOSIDkUKeDaL7aX3yWsYGl0tMKLSY297SdvSq09/eis6p3wwPvj5ghGb3
-         dAGTBNiI2LliU5Rcp1JGZCpMsewwgxBFgmSTRAZfw1OpWNV3byLtJUQh9i7n8X55UKxB
-         yyu6HQMDWx3k+L9LQgZkxX/BOiyypPDlRtKUJkEeyj33hv3CKyS3Ybv5CC/EDhMe/Uxz
-         +jTA==
-X-Gm-Message-State: AJIora8sGTDfcChwf2Sp5sB1t2LwlCTF/2WRKmIW9JWFeB0qKsIrjCwm
-        HrEV5iPrtz76L+cl2f3hZH6vR2RYVbbJ93yHkL05
-X-Google-Smtp-Source: AGRyM1tW7X8dx4hifAe/n9Vs8A9hR+7H3zIyRYozgA1dH3CB2MVrmhq+7tur1N9HEi6/m2TV1SRxSL/FTg0L+UrrDgo=
-X-Received: by 2002:a05:6808:2389:b0:33a:cbdb:f37a with SMTP id
- bp9-20020a056808238900b0033acbdbf37amr7455375oib.136.1659395176996; Mon, 01
- Aug 2022 16:06:16 -0700 (PDT)
+        bh=8OXsGkXzPNYuoAlENJmJBTtuEpOWte6d9Xn7bPvey3w=;
+        b=hWyxiFgMGtLrBFx9aykvhZZp6NeT61ZAo3aKDcPgHL3/3X+F6nNtmgG2YQAi7GxNhN
+         5ayJb30/78pF0+XiNN5qFOKJEY5yGyNcJTP+UKQi4cEx7pC+VdkMB3SLO5RYpOKPjO/F
+         tGI7QASflbH0BEg2y434SXMsYizqply8mCNHX+OcTJ+yIaUMLZgUKpZQvjHJC1uBdKC6
+         fa19TetjgbMNuO3qaTTYHuiGeUnjxrBOOWPC+w7PCjr/6Hjo0yLGTR/w5tCWQ4zYuNPy
+         HniG9jhHItoZ5jA9RB//TrbK7r44/P/vJkQNy5kaXw72RrL3V5ZKJkmurG8dk5ezGG8C
+         HJDA==
+X-Gm-Message-State: AJIora9QAAkl4Y/K+IKrDt3cfCTFSBm4R7fFvByYyi4h25Rc4oZvqCm2
+        FLENHZXDTNW4bdhZGJ7v7dOU+MbaTwiHenpf1Ec=
+X-Google-Smtp-Source: AGRyM1vJxd/mFep8K6CGnFKBefNGT9Ceip4PPOpHGi69dZsOJKP/gF1BC9WYSnxGrjgtoeBH5OupI8E/LUswKeDGfKA=
+X-Received: by 2002:a17:907:2ccc:b0:72b:6907:fce6 with SMTP id
+ hg12-20020a1709072ccc00b0072b6907fce6mr14381139ejc.115.1659395819643; Mon, 01
+ Aug 2022 16:16:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220801180146.1157914-1-fred@cloudflare.com> <20220801180146.1157914-3-fred@cloudflare.com>
- <20220801230030.w4rgzlncgdrcz7q2@macbook-pro-3.dhcp.thefacebook.com>
-In-Reply-To: <20220801230030.w4rgzlncgdrcz7q2@macbook-pro-3.dhcp.thefacebook.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 1 Aug 2022 19:06:06 -0400
-Message-ID: <CAHC9VhQZAdpQuWu7nHtGq2EtSyD=16awQ5p46Wz6Xd2Mwoew4A@mail.gmail.com>
-Subject: Re: [PATCH v4 2/4] bpf-lsm: Make bpf_lsm_userns_create() sleepable
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
+References: <20220729152316.58205-1-laoar.shao@gmail.com> <20220729152316.58205-11-laoar.shao@gmail.com>
+In-Reply-To: <20220729152316.58205-11-laoar.shao@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 1 Aug 2022 16:16:48 -0700
+Message-ID: <CAEf4BzZR41_JcQMvBfqB_7rcRZW97cJ_0WfWh7uh4Tt==A6zXw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 10/15] bpf: Use bpf_map_pages_alloc in ringbuf
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 7:00 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Fri, Jul 29, 2022 at 8:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
 >
-> On Mon, Aug 01, 2022 at 01:01:44PM -0500, Frederick Lawler wrote:
-> > Users may want to audit calls to security_create_user_ns() and access
-> > user space memory. Also create_user_ns() runs without
-> > pagefault_disabled(). Therefore, make bpf_lsm_userns_create() sleepable
-> > for mandatory access control policies.
-> >
-> > Signed-off-by: Frederick Lawler <fred@cloudflare.com>
-> > Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+> Introduce new helper bpf_map_pages_alloc() for this memory allocation.
 >
-> We can take this set through bpf-next tree if it's easier.
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> ---
+>  include/linux/bpf.h  |  4 ++++
+>  kernel/bpf/ringbuf.c | 27 +++++++++------------------
+>  kernel/bpf/syscall.c | 41 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 54 insertions(+), 18 deletions(-)
+>
 
-Thanks Alexei, but I'm currently planning to merge it into the LSM
-next branch once the merge window closes.
+[...]
 
-> Or if it goes through other trees:
-> Acked-by: Alexei Starovoitov <ast@kernel.org>
+>         /* Each data page is mapped twice to allow "virtual"
+>          * continuous read of samples wrapping around the end of ring
+> @@ -95,16 +95,10 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(struct bpf_map *map,
+>         if (!pages)
+>                 return NULL;
+>
+> -       for (i = 0; i < nr_pages; i++) {
+> -               page = alloc_pages_node(numa_node, flags, 0);
+> -               if (!page) {
+> -                       nr_pages = i;
+> -                       goto err_free_pages;
+> -               }
+> -               pages[i] = page;
+> -               if (i >= nr_meta_pages)
+> -                       pages[nr_data_pages + i] = page;
+> -       }
+> +       ptr = bpf_map_pages_alloc(map, pages, nr_meta_pages, nr_data_pages,
+> +                                 numa_node, flags, 0);
+> +       if (!ptr)
 
-I appreciate the review/ACK, would you mind reviewing the tests too (patch 3/4)?
+bpf_map_pages_alloc() has some weird and confusing interface. It fills
+out pages (second argument) and also returns pages as void *. Why not
+just return int error (0 or -ENOMEM)? You are discarding this ptr
+anyways.
 
--- 
-paul-moore.com
+
+But also thinking some more, bpf_map_pages_alloc() is very ringbuf
+specific (which other map will have exactly the same meaning for
+nr_meta_pages and nr_data_pages, where we also allocate 2 *
+nr_data_pages, etc).
+
+I don't think it makes sense to expose it as a generic internal API.
+Why not keep all that inside kernel/bpf/ringbuf.c instead?
+
+> +               goto err_free_pages;
+>
+>         rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
+>                   VM_MAP | VM_USERMAP, PAGE_KERNEL);
+
+[...]
