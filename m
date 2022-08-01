@@ -2,80 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15E26586FFC
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 19:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9E358700B
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 20:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231941AbiHAR7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 13:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
+        id S233816AbiHASCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 14:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234056AbiHAR7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 13:59:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8425F27CE4
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 10:58:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D90FB81608
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 17:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 366D3C433D6;
-        Mon,  1 Aug 2022 17:58:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659376734;
-        bh=aCpB0E8tMH/8jopW6VTKssnQU7vOl0S9e6dSKrMC7TU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OVZNBXWnxFqjWwkbq9cGfZuSyIH478w7pMxlbk1zGD7a9ediSt9Sy8wC20frgG91W
-         n/oN74O6ZjSN7CLoE4EaksP7AX8ugmpcuKP6WSQJ3/RgkQVUyDL6KKamvKX1AlGjE7
-         Firn68QxnsoC9JKcutELEaxyb0uE30Bp/eIKAlTgdGahQzBLxQZ/l16j2PNndFlmo7
-         kIU/riQSfKcsM09mJMTWEK2sT7y2YEPkw6Eqt7IWuMjXt9GKsGnpo5OWj0f1KK6UNY
-         HoR5vmUDtvnw3ZCQEks3Sn4X+bkzq4RRwfbJTkOO4fBHl9YR6nTs89jwfhjsV8R1MV
-         S0dRDEpQG9NOw==
-Date:   Mon, 1 Aug 2022 10:58:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH v3 net 0/4] Make DSA work with bonding's ARP monitor
-Message-ID: <20220801105853.282543dd@kernel.org>
-In-Reply-To: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
-References: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
+        with ESMTP id S232577AbiHASCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 14:02:18 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58659FCE
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 11:02:15 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10ea30a098bso9688752fac.8
+        for <netdev@vger.kernel.org>; Mon, 01 Aug 2022 11:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=neYCRoMJHZhrkPomT+D8lBoa9lWbM2Zjq7tdhg++BD8=;
+        b=Mhxk6WOQ1kBwvZATBE/fUmbfdcWPONvbLqPeeFwjgpXx30ZOq9K8e9XiO+heooXplM
+         yIxZGuPYi6Y3upntqiTXP/fp9FqKCw4yfTan+k9O5EO5dpK1xku83lnqrHR4EC2zmuYi
+         1Wtv13AgwXk1J74t2M0Zv22JEVrbvaw3bB9ww=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=neYCRoMJHZhrkPomT+D8lBoa9lWbM2Zjq7tdhg++BD8=;
+        b=EGJpNBahf6F6hta7/dTsll+PGzrCs8ZhEsxJaj8SL3xezc1WKO5kjC1sy+R0Sktb1W
+         y04qyBIzGpn5wzoB/iYhZQhHoYqAUzNpqEJJN2AJNhkzpkVB2+StSXN4YwdoHD+zBAAA
+         o528lpXIfhTRt6zZ+50KnujuCfWPereS3os0trlNnjfVHpoUotkHyvNt+nHVSNpq5zCY
+         ZOk/BOPzB56uVdWjnzmfveMrsXepDALLtecXY1ka4tYuoBVpR30V2FjWWKu/QqbF/YdP
+         p0rM3ld7MQSc3fBgkgNdLLwo4z4MdICi9iAOj6KnEXF+2AWqfSqisw9jC25gb7cg8KBJ
+         kH3Q==
+X-Gm-Message-State: AJIora9rcBRSuE8B7Jgyjc4JHaqRnE3XYMgLuN6v/6uMHxjST6NkwnFi
+        KhCCNM1JlN4wS2ou/PgZMNG52g==
+X-Google-Smtp-Source: AGRyM1s00uyA5RxFeoJiOwnWUCMdS5VnKo6fHkNTdsQVmzGj5TtMhEcfqeGl5rB5c+kZha+7htuYfg==
+X-Received: by 2002:a05:6870:4302:b0:10d:c587:d30e with SMTP id w2-20020a056870430200b0010dc587d30emr7992216oah.28.1659376935129;
+        Mon, 01 Aug 2022 11:02:15 -0700 (PDT)
+Received: from localhost.localdomain ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id n14-20020a9d64ce000000b00618fa37308csm2881348otl.35.2022.08.01.11.02.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 11:02:14 -0700 (PDT)
+From:   Frederick Lawler <fred@cloudflare.com>
+To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, Frederick Lawler <fred@cloudflare.com>
+Subject: [PATCH v4 0/4] Introduce security_create_user_ns()
+Date:   Mon,  1 Aug 2022 13:01:42 -0500
+Message-Id: <20220801180146.1157914-1-fred@cloudflare.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 31 Jul 2022 15:41:04 +0300 Vladimir Oltean wrote:
-> Where I'd need some help from Jakub is to make sure these changes
-> somehow get integrated into the 5.10 stable kernel, since that's what
-> Brian, who reported the issue, actually uses. I haven't provided any
-> Fixes tags.
+While creating a LSM BPF MAC policy to block user namespace creation, we
+used the LSM cred_prepare hook because that is the closest hook to prevent
+a call to create_user_ns().
 
-We can just tell Greg to pull them in after the patches appear in
-Linus's tree, right? Or are there extra acrobatics required I missed?
+The calls look something like this:
 
-As long as Jay is okay with the approach, LGTM. Thanks a lot for
-working on the solution!
+    cred = prepare_creds()
+        security_prepare_creds()
+            call_int_hook(cred_prepare, ...
+    if (cred)
+        create_user_ns(cred)
 
-BTW we could potentially also revert a31d27fbed5d ("tun: fix bonding
-active backup with arp monitoring") given we revert veth.
+We noticed that error codes were not propagated from this hook and
+introduced a patch [1] to propagate those errors.
+
+The discussion notes that security_prepare_creds()
+is not appropriate for MAC policies, and instead the hook is
+meant for LSM authors to prepare credentials for mutation. [2]
+
+Ultimately, we concluded that a better course of action is to introduce
+a new security hook for LSM authors. [3]
+
+This patch set first introduces a new security_create_user_ns() function
+and userns_create LSM hook, then marks the hook as sleepable in BPF.
+
+Links:
+1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+
+Past discussions:
+V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
+V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
+V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+
+Changes since v3:
+- Explicitly set CAP_SYS_ADMIN to test namespace is created given
+  permission
+- Simplify BPF test to use sleepable hook only
+- Prefer unshare() over clone() for tests
+Changes since v2:
+- Rename create_user_ns hook to userns_create
+- Use user_namespace as an object opposed to a generic namespace object
+- s/domB_t/domA_t in commit message
+Changes since v1:
+- Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
+- Add selinux: Implement create_user_ns hook patch
+- Change function signature of security_create_user_ns() to only take
+  struct cred
+- Move security_create_user_ns() call after id mapping check in
+  create_user_ns()
+- Update documentation to reflect changes
+
+Frederick Lawler (4):
+  security, lsm: Introduce security_create_user_ns()
+  bpf-lsm: Make bpf_lsm_userns_create() sleepable
+  selftests/bpf: Add tests verifying bpf lsm userns_create hook
+  selinux: Implement userns_create hook
+
+ include/linux/lsm_hook_defs.h                 |   1 +
+ include/linux/lsm_hooks.h                     |   4 +
+ include/linux/security.h                      |   6 ++
+ kernel/bpf/bpf_lsm.c                          |   1 +
+ kernel/user_namespace.c                       |   5 +
+ security/security.c                           |   5 +
+ security/selinux/hooks.c                      |   9 ++
+ security/selinux/include/classmap.h           |   2 +
+ .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
+ .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
+ 10 files changed, 168 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
+
+-- 
+2.30.2
+
