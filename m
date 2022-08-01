@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E035865B7
+	by mail.lfdr.de (Postfix) with ESMTP id A90A75865B9
 	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 09:38:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiHAHhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 03:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        id S229878AbiHAHhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 03:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiHAHhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:31 -0400
+        with ESMTP id S229809AbiHAHhj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 03:37:39 -0400
 Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CD63A4BA;
-        Mon,  1 Aug 2022 00:37:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AAD3AB19;
+        Mon,  1 Aug 2022 00:37:30 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id EDBB7240003;
-        Mon,  1 Aug 2022 07:37:22 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 62158240010;
+        Mon,  1 Aug 2022 07:37:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659339445;
+        t=1659339446;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=R3uwO/NLqiqs5GMimReLDw1QptwLULET5iPOIJMtdzQ=;
-        b=YaJ7hP7EwMycrA0/gyTj/ubzxEIIu0SGxlVnahB+ArnBoB5UvkneDKfwqwWe4PDYOIiQpA
-        nQpJCIutAUYl9WOAEcuzVJjv4bfzuSJWbIzakPiip73CpZDa/aKm66FRhmNlicLK4fDuw5
-        ww2Wdi91enJ3ZYudnZ23XW+NbBPE5oSBnrFBR3RNkvpyo67IL3jJT1xCOTpPEXwZT3xFAD
-        +6I2e6XjkjN/HGRRd6cyrz3sSrXEPOjLV6Xyer6+MryKBwHtox2Scfbpq+AlYPxC37MJNz
-        gfjCzxSHR66O0w9hyBgWKHxNXlHNr2ZB9N9c0yftIogqn+GaI3gmUugGbDcOOA==
+        bh=QeuyLgP/uLqTmp79qxlI42HvqT4YfSlW6cpz6A3J+iI=;
+        b=QHz9AgQNv8BAY8piu3/bSAJaT8eUTafcFVyVmbdNoRIhnie8BOQayyedCInb5SPkAlXnB3
+        ZJRjc9RweBpv5eWxp9Am5TZn9og/TIzgCl3mffUV6QRu8prUFXSJMCfk/eEnSXW30pQumV
+        BOuyejQZ1ZYt1zhcl/2a6QlG6qcb63vgoBz9pfwxuMhc/z1pGK+I4V4822kABpOHSKECTT
+        p24Y9cLzK/DW/J62RuVO/cg9yXvYjoePLhToNxd0h/LW5E43lh3tUigHuZtG2bmvykH5e/
+        Qn4Xxp8GCy3XlIKqPgqRx2YC9Gh9QPilxF5fVuqjs6/wWnmNIHXf/YGnd60mUQ==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -42,9 +42,9 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v4 3/4] net: phy: Add helper to derive the number of ports from a phy mode
-Date:   Mon,  1 Aug 2022 09:37:12 +0200
-Message-Id: <20220801073713.32290-4-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 4/4] net: lan966x: Add QUSGMII support for lan966x
+Date:   Mon,  1 Aug 2022 09:37:13 +0200
+Message-Id: <20220801073713.32290-5-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
 References: <20220801073713.32290-1-maxime.chevallier@bootlin.com>
@@ -59,100 +59,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some phy modes such as QSGMII multiplex several MAC<->PHY links on one
-single physical interface. QSGMII used to be the only one supported, but
-other modes such as QUSGMII also carry multiple links.
+The Lan996x controller supports the QUSGMII mode, which is very similar
+to QSGMII in the way it's configured and the autonegociation
+capababilities it provides.
 
-This helper allows getting the number of links that are multiplexed
-on a given interface.
+This commit adds support for that mode, treating it most of the time
+like QSGMII, making sure that we do configure the PCS how we should.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
-V1->V2 : New patch
-V2->V3 : Made PHY_INTERFACE_MODE_INTERNAL 1 port, and added the MAX
-case.
-V3->V4 : No change
+V1->V2 : Pass the QUSGMII mode as-is to the generic PHY driver, and use
+         phy_interface_num_ports, as per Russell's review
+V2->V3 : No changes
+V3->V4 : No changes
 
- drivers/net/phy/phy-core.c | 52 ++++++++++++++++++++++++++++++++++++++
- include/linux/phy.h        |  2 ++
- 2 files changed, 54 insertions(+)
+ .../ethernet/microchip/lan966x/lan966x_main.c |  2 ++
+ .../microchip/lan966x/lan966x_phylink.c       |  3 ++-
+ .../ethernet/microchip/lan966x/lan966x_port.c | 22 ++++++++++++++-----
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  6 +++++
+ 4 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 1f2531a1a876..f8ec12d3d6ae 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -74,6 +74,58 @@ const char *phy_duplex_to_str(unsigned int duplex)
- }
- EXPORT_SYMBOL_GPL(phy_duplex_to_str);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 1d6e3b641b2e..1e604e8db20c 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -778,6 +778,8 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+ 		  port->phylink_config.supported_interfaces);
+ 	__set_bit(PHY_INTERFACE_MODE_QSGMII,
+ 		  port->phylink_config.supported_interfaces);
++	__set_bit(PHY_INTERFACE_MODE_QUSGMII,
++		  port->phylink_config.supported_interfaces);
+ 	__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+ 		  port->phylink_config.supported_interfaces);
+ 	__set_bit(PHY_INTERFACE_MODE_2500BASEX,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+index 38a7e95d69b4..87f3d3a57aed 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+@@ -28,11 +28,12 @@ static int lan966x_phylink_mac_prepare(struct phylink_config *config,
+ 				       phy_interface_t iface)
+ {
+ 	struct lan966x_port *port = netdev_priv(to_net_dev(config->dev));
++	phy_interface_t serdes_mode = iface;
+ 	int err;
  
-+/**
-+ * phy_interface_num_ports - Return the number of links that can be carried by
-+ *			     a given MAC-PHY physical link. Returns 0 if this is
-+ *			     unknown, the number of links else.
-+ *
-+ * @interface: The interface mode we want to get the number of ports
-+ */
-+int phy_interface_num_ports(phy_interface_t interface)
-+{
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_NA:
-+		return 0;
-+	case PHY_INTERFACE_MODE_INTERNAL:
-+	case PHY_INTERFACE_MODE_MII:
-+	case PHY_INTERFACE_MODE_GMII:
-+	case PHY_INTERFACE_MODE_TBI:
-+	case PHY_INTERFACE_MODE_REVMII:
-+	case PHY_INTERFACE_MODE_RMII:
-+	case PHY_INTERFACE_MODE_REVRMII:
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RTBI:
-+	case PHY_INTERFACE_MODE_XGMII:
-+	case PHY_INTERFACE_MODE_XLGMII:
-+	case PHY_INTERFACE_MODE_MOCA:
-+	case PHY_INTERFACE_MODE_TRGMII:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_SMII:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+	case PHY_INTERFACE_MODE_5GBASER:
-+	case PHY_INTERFACE_MODE_10GBASER:
-+	case PHY_INTERFACE_MODE_25GBASER:
-+	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_100BASEX:
-+	case PHY_INTERFACE_MODE_RXAUI:
-+	case PHY_INTERFACE_MODE_XAUI:
-+		return 1;
-+	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_QUSGMII:
-+		return 4;
-+	case PHY_INTERFACE_MODE_MAX:
-+		WARN_ONCE(1, "PHY_INTERFACE_MODE_MAX isn't a valid interface mode");
-+		return 0;
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(phy_interface_num_ports);
-+
- /* A mapping of all SUPPORTED settings to speed/duplex.  This table
-  * must be grouped by speed and sorted in descending match priority
-  * - iow, descending speed.
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 9eeab9b9a74c..7c49ab95441b 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -968,6 +968,8 @@ struct phy_fixup {
- const char *phy_speed_to_str(int speed);
- const char *phy_duplex_to_str(unsigned int duplex);
+ 	if (port->serdes) {
+ 		err = phy_set_mode_ext(port->serdes, PHY_MODE_ETHERNET,
+-				       iface);
++				       serdes_mode);
+ 		if (err) {
+ 			netdev_err(to_net_dev(config->dev),
+ 				   "Could not set mode of SerDes\n");
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+index f141644e4372..bbf42fc8c8d5 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
+@@ -168,7 +168,7 @@ static void lan966x_port_link_up(struct lan966x_port *port)
+ 	/* Also the GIGA_MODE_ENA(1) needs to be set regardless of the
+ 	 * port speed for QSGMII ports.
+ 	 */
+-	if (config->portmode == PHY_INTERFACE_MODE_QSGMII)
++	if (phy_interface_num_ports(config->portmode) == 4)
+ 		mode = DEV_MAC_MODE_CFG_GIGA_MODE_ENA_SET(1);
  
-+int phy_interface_num_ports(phy_interface_t interface);
+ 	lan_wr(config->duplex | mode,
+@@ -331,10 +331,14 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
+ 	struct lan966x *lan966x = port->lan966x;
+ 	bool inband_aneg = false;
+ 	bool outband;
++	bool full_preamble = false;
 +
- /* A structure for mapping a particular speed and duplex
-  * combination to a particular SUPPORTED and ADVERTISED value
-  */
++	if (config->portmode == PHY_INTERFACE_MODE_QUSGMII)
++		full_preamble = true;
+ 
+ 	if (config->inband) {
+ 		if (config->portmode == PHY_INTERFACE_MODE_SGMII ||
+-		    config->portmode == PHY_INTERFACE_MODE_QSGMII)
++		    phy_interface_num_ports(config->portmode) == 4)
+ 			inband_aneg = true; /* Cisco-SGMII in-band-aneg */
+ 		else if (config->portmode == PHY_INTERFACE_MODE_1000BASEX &&
+ 			 config->autoneg)
+@@ -345,9 +349,15 @@ int lan966x_port_pcs_set(struct lan966x_port *port,
+ 		outband = true;
+ 	}
+ 
+-	/* Disable or enable inband */
+-	lan_rmw(DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA_SET(outband),
+-		DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA,
++	/* Disable or enable inband.
++	 * For QUSGMII, we rely on the preamble to transmit data such as
++	 * timestamps, therefore force full preamble transmission, and prevent
++	 * premable shortening
++	 */
++	lan_rmw(DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA_SET(outband) |
++		DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA_SET(full_preamble),
++		DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA |
++		DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA,
+ 		lan966x, DEV_PCS1G_MODE_CFG(port->chip_port));
+ 
+ 	/* Enable PCS */
+@@ -396,7 +406,7 @@ void lan966x_port_init(struct lan966x_port *port)
+ 	if (lan966x->fdma)
+ 		lan966x_fdma_netdev_init(lan966x, port->dev);
+ 
+-	if (config->portmode != PHY_INTERFACE_MODE_QSGMII)
++	if (phy_interface_num_ports(config->portmode) != 4)
+ 		return;
+ 
+ 	lan_rmw(DEV_CLOCK_CFG_PCS_RX_RST_SET(0) |
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index 8265ad89f0bc..c53bae5d8dbd 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -504,6 +504,12 @@ enum lan966x_target {
+ #define DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA_GET(x)\
+ 	FIELD_GET(DEV_PCS1G_MODE_CFG_SGMII_MODE_ENA, x)
+ 
++#define DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA        BIT(1)
++#define DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA_SET(x)\
++	FIELD_PREP(DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA, x)
++#define DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA_GET(x)\
++	FIELD_GET(DEV_PCS1G_MODE_CFG_SAVE_PREAMBLE_ENA, x)
++
+ /*      DEV:PCS1G_CFG_STATUS:PCS1G_SD_CFG */
+ #define DEV_PCS1G_SD_CFG(t)       __REG(TARGET_DEV, t, 8, 72, 0, 1, 68, 8, 0, 1, 4)
+ 
 -- 
 2.37.1
 
