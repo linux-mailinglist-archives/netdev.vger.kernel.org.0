@@ -2,156 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0158A586CA3
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 16:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3660586CAC
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 16:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbiHAOLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 10:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60730 "EHLO
+        id S232431AbiHAOPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 10:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232452AbiHAOL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 10:11:29 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2072.outbound.protection.outlook.com [40.107.22.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80851F2C5
-        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 07:11:27 -0700 (PDT)
+        with ESMTP id S232388AbiHAOPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 10:15:45 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0FAB4B6;
+        Mon,  1 Aug 2022 07:15:44 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2719kp1J007593;
+        Mon, 1 Aug 2022 07:15:39 -0700
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3hn20q7bcp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 01 Aug 2022 07:15:39 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AW2NQLyqDPfhkZFPvwxcM9nnMlCOj4qF7KqZ2bAJeSaiFxrBJKfTyEpmypP3Zfgu7PYSLryJM/DmOOgZuhVSbhgndA1k/VfOQqKFIR3CyfBICis/zTlkndNHB54tN3sG9UhIhU2srQ1SHGgsBwDh5NX393uK781+cLcKshttMb6Ki3OVicOP492TdkkF1TilsdvVPNrMgNNQ0+ydZp8yxAsK1B0z+HabhVrIKsj9sUays+a3rsR6VZRS6ReU96nurHsBYe+RPWXrpB4Unqyi/ufqJ740p3r8SssCXOh7N7AiwN01IAgmEYglJsB0CuoagRgARkBrfGoQJ5maQUAI+Q==
+ b=RgJEVTaSDFEnwzx6IDKE+DCrrBgF+VhEy+KU0kQUSVImClS+tHtazhRtAmOzsaViGTSX/svW6j3fFlNPmfzkYb9ngVqx9ozFqXaSvIed5mB3NnpRsygwhSm6Meuy7xOl3iS4Ge2iG2GPMnwlA2gN8h6paYYuFTbZEz4eIXSSODGnvx/fujdmSarqhG7wIHbu2FlfYxs8uPME3hX/69o6u9q6TgjDKCIsEwQZKuKSKB1k1/lzqMm7IOG+84ZmosAhINksyLuNOOEsDXUOceBbGseSIwJEw9R9zXZusr3J6Dn+8z2vPemzeHG4GbfM9ZVzMYEPaSuNOgPLetd305u2LA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QwFDZc/g1/bGJO94nFd4IZ91ZHolvX3v8+kiSQvF1lc=;
- b=I/6Y9ffOWlKsBBQcArK0EhpYRYnSuQNCQgCLayBpCZgKVtNZvaM5828H9nhMkpstSMeHQxLTrN9s+zT7a9v8JEO4T++I2GldjG181A4tczXVmAhNEqJJhzbClwUQwmRxm53T83qWTGWhF4fJ/ombbwZ4p6mXadV27dk76+aQIEbr5wc4zKMdvZGq60sAPhk+7lqgDR7ztquyY/6Fntvngyrfvnrqn+L3jNWd1R6xGMWd4+JHmKp7NZSl82IlQ2leC4MZR4bR8aU5ItPFbmwxJBMu8Mp+yO854RJWKvnitziA3u8WkjpF4EAAcf//LJQKPxbAXQzxiHt6C0ARWPHOZg==
+ bh=cPmk+F/s2S475PG/V+mbWxMt8nRpgDdIkD+OHhnkNfM=;
+ b=b0AUufta9pqlUQWloWU4o6MLabOhdT0Nidm60kkgDCHBSAevlVx5DVYPHj+nXIInWQJa5B7OZaai3gIPUZOLMOyKjGFgXXl7EHMCCIEVp14oTdKOsE4+kFV9aKfIt9d3UHbip3mn7bPXstPcuuIe4OdYqqN9NSxKgoeSjZOzX2zzPatvjIVz/BUdYrknAtDd52jWK8NXeM8UhqdSQwQ+TzuRaN7+Wcc/x45t9XZxOZT6UVfNrKkg57a37vT9Cy13r9Cjks8b6uioDnYMtjsUeULCY4RHp8Z54Ivy6/5hxETQHcajUbnpt4COBAMUFl2QPtzH642Tj5gqOXAnta2jvw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QwFDZc/g1/bGJO94nFd4IZ91ZHolvX3v8+kiSQvF1lc=;
- b=OrrXUX7kZXy43i/OaR/EZkZ61Zm3T8USH3blRJNBbi2H3w4+khnxgOs0xaPp2CwqreUhq6gUhsOsiEWTUciFr6X3kx6dT5tsH7gS9g8NfS95STGPDNn4leLllZgEg6XSUG1JMrqQGyMqyNo1cWidmxsnGCMh7zuZXR0fSqFJRdI=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DU2PR04MB8550.eurprd04.prod.outlook.com (2603:10a6:10:2d5::16) with
+ bh=cPmk+F/s2S475PG/V+mbWxMt8nRpgDdIkD+OHhnkNfM=;
+ b=Q0ZEWb59qDntJAs1iUaJtZT5eDRRJZ14TwHfxV3E9jLhvPL/SBWWKdZ7aq3AauGoVexDKpOZDvjlvOa0bpW/3GjI6/3rUycYzAIHtKxQaOpnU0QT3UfyYGk05lt9loJ4CYLR66Mjwm+RHXKT6ZtInHAPRykamd5T3FBCnpgCLEU=
+Received: from DM6PR18MB3212.namprd18.prod.outlook.com (2603:10b6:5:14a::15)
+ by MWHPR18MB1343.namprd18.prod.outlook.com (2603:10b6:300:ca::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Mon, 1 Aug
- 2022 14:11:25 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
- 14:11:25 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Rob Herring <robh+dt@kernel.org>
-CC:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Mans Rullgard <mans@mansr.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        =?Windows-1252?Q?Alvin_=8Aipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Pawel Dembicki <paweldembicki@gmail.com>,
-        =?Windows-1252?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?Windows-1252?Q?Marek_Beh=FAn?= <kabel@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
- shared ports have the properties they need
-Thread-Topic: [PATCH v2 net-next 4/4] net: dsa: validate that DT nodes of
- shared ports have the properties they need
-Thread-Index: AQHYo04nl4JHZbxuek2HktTJEcy9Ma2ViEaAgAAKtICAABtgAIABbIuAgAL9SwCAAAJdAA==
-Date:   Mon, 1 Aug 2022 14:11:25 +0000
-Message-ID: <20220801141124.2bhkzqtp36hdkq5u@skbuf>
-References: <20220729132119.1191227-1-vladimir.oltean@nxp.com>
- <20220729132119.1191227-5-vladimir.oltean@nxp.com>
- <CAL_JsqJJBDC9_RbJwUSs5Q-OjWJDSA=8GTXyfZ4LdYijB-AqqA@mail.gmail.com>
- <20220729170107.h4ariyl5rvhcrhq3@skbuf>
- <CAL_JsqL7AcAbtqwjYmhbtwZBXyRNsquuM8LqEFGYgha-xpuE+Q@mail.gmail.com>
- <20220730162351.rwfzpma5uvsg3kax@skbuf>
- <CAL_JsqLyCJE2c4ORx-kK1iUMR08iMUMDi0FMb9WeTyfyzO3GKw@mail.gmail.com>
-In-Reply-To: <CAL_JsqLyCJE2c4ORx-kK1iUMR08iMUMDi0FMb9WeTyfyzO3GKw@mail.gmail.com>
-Accept-Language: en-US
+ 2022 14:15:36 +0000
+Received: from DM6PR18MB3212.namprd18.prod.outlook.com
+ ([fe80::adf6:d89d:1ebf:d956]) by DM6PR18MB3212.namprd18.prod.outlook.com
+ ([fe80::adf6:d89d:1ebf:d956%4]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
+ 14:15:36 +0000
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     Naveen Mamindlapalli <naveenm@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Subject: RE: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG
+ register configuration
+Thread-Topic: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG
+ register configuration
+Thread-Index: AQHYpaOhgeUqDdtqLk2504SKJns00q2aFrXA
+Date:   Mon, 1 Aug 2022 14:15:35 +0000
+Message-ID: <DM6PR18MB321255ED74C5684CB2B37748A29A9@DM6PR18MB3212.namprd18.prod.outlook.com>
+References: <20220801123831.9370-1-naveenm@marvell.com>
+In-Reply-To: <20220801123831.9370-1-naveenm@marvell.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c6d47ed4-597d-4173-5237-08da73c7b836
-x-ms-traffictypediagnostic: DU2PR04MB8550:EE_
+x-ms-office365-filtering-correlation-id: b0cbe51e-5a05-4f4d-50bb-08da73c84da8
+x-ms-traffictypediagnostic: MWHPR18MB1343:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UyW258mnNSFPFzyyBP6SMChOm2oSXxAnN5c+44CEIIUdy0lEY20ooKkfh7gHlsiusM6l46/l0toMWIdKC2O1q9ymOnX2vWRR+UtY/o1nY47OgP/TNKC3cgTlDoZsYs94U0Zx4GPxBZloC+Wwv2KBHz3H1X+cGHrOtxvkM0PcxuBJ14YZQN78YMd0DU7HL8T2jTXv/hF5eumhmZ4vjRl8o4LPBqom60LO+tA1xY0MvLCF+R8XuUhqom8Mz31AVRBP89w2k2/GZYfXXBMVR9WoFNmd4NdqEqKoFcCarT0txsIWLBluYrTvaaopLVTHyZGfHdVg/mkrpRuWKE5PobAj55jNAwhhV0y/XUE2OnqCJMF07Di0FQY9d65FAQQ7PSNYpdvz3Q+qdDfKA67jRnyl//xsckge4uQZgzVdhZHDZKdOppqagXJ7ivrb0PrMu/xaeZcGwNnkE2BSjomxNqyA8ZmYOEakII/IktlV/TssXOviRBwtJx+eDYdPjXmMKOpHPr7kXz+9mJXzwTNFmfs/FTw0kM0oG6QolaVXogDd6MV6VgJVqsGa9nYkppEz0KR1dG98fSdGeAvq8RXNHFEGEvvIbOm7O8xIMITlxsPZWtk6DJvWANF6Ov+nfqIOKEA1ZMqWt0fFt4XaIikZjIjCmku4mfCfdr7UVtSSWcXGtS+PbTt2zSE5aDPHlSkv4v+Gz3mCF/ZSsJga03FgULOqfnFwdExJUeb8O2Xa35CpBQT7+2fjWT5KGNixijs2xm+dhUCgCSTn7z/UYrm0/8g7gatIL5OTDzASJZeyfsa8xp0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(39860400002)(136003)(376002)(346002)(366004)(396003)(7416002)(44832011)(83380400001)(8936002)(7406005)(86362001)(5660300002)(478600001)(6486002)(9686003)(26005)(6506007)(6512007)(15650500001)(71200400001)(2906002)(4326008)(76116006)(66946007)(41300700001)(1076003)(186003)(8676002)(66446008)(66476007)(64756008)(122000001)(316002)(54906003)(91956017)(38100700002)(33716001)(38070700005)(66556008);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: j52zEvkHfcNl0tY0huLk49RxMJvSwzIo2nPzN+TOovE8JYObbf+Xw8IN+2VT9h6htHOgtCY1mE5cveK3mF4TJ8qReNbFXziGQAm2lVV0OErXPIM7D8U9aiXpPPnrb8b0iWypQ20KZwPP9OQE313IvYhSPc12/WoYpjO451beAAMzghtI4x+GeNTOGhrUX69ELAhmkl6pYq0Tp5lqwh6ES5ap2Rscz/FjOGMKthpcOFGFjEBLQKtVVoAazxJoJ4J7DqYzBuD+xBhXhWNADrlPPro1xODRcNr6w2eopM0P5c97IdmIm6rb//bPM61BQ18ahtOToQuqDuKp4ET/NziJmys0heu0a0f5zi4Ph4SXRO9SPzS7v4AEzEORppUj9suQnUJGIvo9pI08S2saXqK4h9FtOem5yMl2Q39yDOW9v9Y+w5vYoUPwYdTXjqXh15tJr7FhbNTeMsh1+ZtvbSKtteWMR3tcxfDT+/4oUEl9FXEcI+4QR6E0rhuFVbKo7XNhuKeYzmK2lx9WUlVF3FDY9HDFah0qYJ6vkRxB5rTpEQTAKgIaV3XG8I/Gn2p4+1z15mgbO1ikJEW537zDYnmcZj3pjP7ywMql/DUytWZhyPvVZgBUdxFlgpWVmiElsICIfwkBQg2F1KsZwiqilyEB28hOV8ed9+0J3h8o0oGXozabY0pVzNXv8jENLOS1Lg7MWIH9uVUxTO+WosF5KVlZBePGaA3RzeSME4cy3lpMtodJ+mRlmBiVdcoS9ydcr4C+tooD8bSpWmU+Y2U/iCip0cMDW25begiS1LvyVu/2Hwml8ZzflXxgu+niB9xQezYM
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB3212.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(478600001)(71200400001)(86362001)(110136005)(33656002)(41300700001)(6636002)(7696005)(6506007)(38070700005)(9686003)(26005)(83380400001)(53546011)(186003)(316002)(2906002)(55016003)(8936002)(5660300002)(52536014)(66476007)(64756008)(8676002)(66446008)(76116006)(66946007)(66556008)(122000001)(38100700002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?g59dtru65i3CXPExhihxCtNXUAmqNhyZO15kHk8LG5kcdgUaJDlEnqpV?=
- =?Windows-1252?Q?x4P4J1f3VaMtttTN9X1xN4GrMUhqH59bztgfpBKW6D4fkFn/4GsJmVTy?=
- =?Windows-1252?Q?r2QZ3bjkw9h2fdLvI8Ssu1axvntQ/anJ0zaQQexZGJNSzbqOI80LWiWa?=
- =?Windows-1252?Q?GLLiTT+JjQ2BLYhb9NOWW+SPXthN+WwJUVngOlSqT7KsJ0JsmcvzRW7W?=
- =?Windows-1252?Q?IFibrCVuNrcJecs+v52EuAn7AQ/CzstxAdmxtlVj4/W5i6ZBskUvZDHp?=
- =?Windows-1252?Q?MCq2oj8vIGl30qm1J1ijAHHc2I5FXRpVoLUCDcxH3CZtrV4PZhBgXtkt?=
- =?Windows-1252?Q?Cm35psbP3e0I9p5PnbceYLsn8mNIMim3NzVoAxcemKJt3ntL7KCF67lt?=
- =?Windows-1252?Q?VrwpK+c6Xxv0TGje9cg30ujAVKnGHB8f19L/9UzB0qQm9ZZyYn6pOISe?=
- =?Windows-1252?Q?3W51yHp10yEaiIJzXwCREgvoTDnTQjs8WHF0f5s3J74QIFx0/Z5nBKhH?=
- =?Windows-1252?Q?oA89dKzCevuY6k8qZjNuxkGDMclW6woaoEmaMIyL8dFNk8aXx/+Rgpzu?=
- =?Windows-1252?Q?7gs18Eyx5t0kBtiIHObhSgaF7XGw1r08UQdREQWMNwgBZr17Io0ydMIC?=
- =?Windows-1252?Q?k7MfPcUbl6GWJUbEq+qHnirvVyubwvzK1voA2xkOsDnxE8kzV64X/hMm?=
- =?Windows-1252?Q?C2mIcCnvZyOoHDvDr/blmubDAGUkdC50spfdvZTPZAouuhHrQGcgupVa?=
- =?Windows-1252?Q?DbWsUyIBSYdAXoz2ave2/lSlSRVXzyCZ/46Wm02B93lB8XujdsOWZ9C8?=
- =?Windows-1252?Q?P0OWlvKPcCEEmrB7ENre7cTjdLpK9B5M9B2uLs+ffkaK5T6jxtl8dr9w?=
- =?Windows-1252?Q?q06pPdCxAlWMElAzoAtTbcpM+LJscZgMRW0JFlP/4akuMBEijdjOuy7P?=
- =?Windows-1252?Q?picmzi0yKDwupBe9aIIHSJshMfzGYYEtTrztD4aJB4MVK9NEEo4GZjDU?=
- =?Windows-1252?Q?DIIKsz8MKVRtDUckQDz6+3C63eEuhsrlZi8kyv/5ZwP5tEJGF+aQ0Jrw?=
- =?Windows-1252?Q?1b2O2CLTz92fRU21dcT8lO8RzfZP/rpKgI9346grdvRJUQgvuaA15651?=
- =?Windows-1252?Q?lD9fa2K5wy+Uqyai+76A4LHe/UIee6IssxO7Rk21GZswp9cDynaT0/4+?=
- =?Windows-1252?Q?jkgwJPnutJJAJF9AlC0MTLQIKdEWZ/pvrcN98N0Txp0ppyWDc0OJtVY/?=
- =?Windows-1252?Q?JMkUNeWZrdLPnGwDuUDsGtPokYSNPOjesJY2O1GIpnDJ8ntTYHEdnscb?=
- =?Windows-1252?Q?2TcvpuC2b+S2UiRMAXnO2ceTOSCGiIJjN4bLEAiHAUAAZXzdFaqeEmKL?=
- =?Windows-1252?Q?wyYf61jrVhg/HcZZpAgDUlZRw3hEYFiL7KgtcPFZhwbq7NOWwlFDsbXo?=
- =?Windows-1252?Q?HflKTj1OHToeDhcfLpXNbRSJKoawWCzxqEsj3kIl1PJKfb0hcDSJ9lVI?=
- =?Windows-1252?Q?PHfM311nXBE4mZu1bELOkbrZyDmxzRmjZCp0G7VeChI4+C4ebvvm5XpX?=
- =?Windows-1252?Q?1VHtMQqHsb9NqzdrVLqBviFzwgFTiDrbfwrhGzlukqn5FZS0lNDGuJYK?=
- =?Windows-1252?Q?4erT6M6P/ZqDdFNS4aT5nOZOkiif8hD0nwEybqZ9t2zK9gXfwFQJXZ31?=
- =?Windows-1252?Q?2IIdPNrhsxc3C+A7k0ddS7Knagjx+c2V/YMXDFeGigxWLEG6Nje/1A?=
- =?Windows-1252?Q?=3D=3D?=
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <9D8BCA3ACB06184A8A9EC960DB9E2BBD@eurprd04.prod.outlook.com>
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NPbBOir5A+D0mFS9LpEKdlldXhj8l5U6FGFNjNdwb//vGNUNzHH88vsqYAPW?=
+ =?us-ascii?Q?2Lzv7cliItK+cYhs81Gbol3f3wuKpyxSlJAK5cu0dsHpENbi+TQ6e6OYdx/i?=
+ =?us-ascii?Q?4foCu+pO3PHB1akxQsLVuBphu14y4puPbzl65UK3DtR4krvjKOJ7pLL4PswW?=
+ =?us-ascii?Q?D9EMMSBLY3VLE2V6MXKjvTrlJhyPPCDaDs9mw8cQfFeOLQ2tP6AjkEKQeJej?=
+ =?us-ascii?Q?QTQOCdA/SZAn7cTeByFB++9ZeW76fF0HXmIINUeWt86FMCziWJy264J86ioM?=
+ =?us-ascii?Q?tW39paZkCG26S0RM3NcvUoWHtTfKmUMcInYvwmVykALBQYDwZRxkIA8W7jut?=
+ =?us-ascii?Q?UTVT/Ok9AxWc3DrQyP1mZqAxfIdCyPO0er9xUciJggOLFGCAbQwL4Takc4Xm?=
+ =?us-ascii?Q?pKWxOu6+QYDH1BuT/gegWB0RFAyGvui3oL9hzgtx092lOl4JE+7HleAA26kb?=
+ =?us-ascii?Q?0a1ztGCy9Qp/B10oNKbYFYrdgZTc4RLAwUsx24Af9pnOYuRJNyada8w+p7WP?=
+ =?us-ascii?Q?nrngGkEjnX/oySJyvu6FN8MWBgcsbQm4em++J7VM5Ot5mPK1532ydYh+wCOz?=
+ =?us-ascii?Q?llgXit5mNaSkTiCvjnWj4d37dW6RVJd4Tm5gJL9bhQPCdl4nkaH8Y3D0EfBI?=
+ =?us-ascii?Q?l2vZGL4SqNu57upIRyPiliIKgz6AYHa1mV5NiTalyF2uEh9wEV5dHLdax7V6?=
+ =?us-ascii?Q?CSQLV7JaOUsSW3OR0MgND37kx3eJ46xITlbMovBbnKleeOw9WDIpQaTu4y2r?=
+ =?us-ascii?Q?MfcJwN404aPO7UIGGPvBFMXY2rTGbqPFg/xS9XUB+ok8jRNEaqPKe07IveJi?=
+ =?us-ascii?Q?d+qkj45bvP+j86YWXoooNstZSDTGVDKxcB7l2V1Ioy9x/b2SyHKjPEr+IgK6?=
+ =?us-ascii?Q?7MpL4sHfOKCbHk3G/RTGMUuMUaErJK9RfQteByvakFiZKGUYXWXRBLbmOToe?=
+ =?us-ascii?Q?iZirOxB+rIbli03+X6XFXlXiqVhRx2Y8l+chG5vxnGadMdaVpnCTnWXDVTYY?=
+ =?us-ascii?Q?eYig7zmSwBNtDfvhsA/6s5myeiEBGUpPiP45NlWYCErlQsEGRjZpNhhi4m86?=
+ =?us-ascii?Q?TSRN7+pRsGEV/hqWadptFQNYV4fbRV10YVRjNy85G6Nq6LFtHl9Jb2CXYhOO?=
+ =?us-ascii?Q?Wb6eFXMV/g8bTHC6u4ZorlRpI9/gXXt2C8ZQzv0qbpTOpMEXyGjkZhXUsJLf?=
+ =?us-ascii?Q?sdFXE8dLoxK5IgYcGp8EWpF7YA32tMG9HayW0kHSHeYqPRQ0T2dwuPa2u5gW?=
+ =?us-ascii?Q?c6aAwh2jloYtNbhxD4oUY+IZV3aceNr52IzDMNRJHCiZ8Ty7iCAm1UGts2u5?=
+ =?us-ascii?Q?FGUE7D62QfqncMIR9ufFrvMVpWWnCziAbpYd/fFht0E3GD/FSn0jEnfjNed+?=
+ =?us-ascii?Q?Hb517V2hete6kFnZ/gPK8BJSx2KMS6zadpVUW7oXCjO/TH+klpL5NoZSjln+?=
+ =?us-ascii?Q?CjiFvJY6mb4iusSZU4uCIt+2GI3+9/rQeK6FWdPpDorrGwNxH+w8VXujQjmk?=
+ =?us-ascii?Q?CX34jS8yeiif0usBS5o80fkFiE4SNobYgSuOGTFp0Yb8h7MwsJjAUDqtXEKZ?=
+ =?us-ascii?Q?9VVOUbby8oBxyE5e498=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6d47ed4-597d-4173-5237-08da73c7b836
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2022 14:11:25.1975
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB3212.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b0cbe51e-5a05-4f4d-50bb-08da73c84da8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2022 14:15:35.9563
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: i53aESs43R6XTk9Jf9mp9oKuWZ1yf8l7x7U/dM47LDsqY4OsN1y660oOwSHjd7jBoBFNOMmg1c9ruCg34R0NTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8550
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-MS-Exchange-CrossTenant-userprincipalname: IALd2AHyO8kBiPW5ooub5UUsHAbrCAWnppEs7Zq3XXdD1hPJXd1fjcHU/bEBFGMMOQPvPH6H8mKuBbqyQUmDZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1343
+X-Proofpoint-GUID: 83g3OeWT6rp7d0r8tp07ak1eNcWDfvwB
+X-Proofpoint-ORIG-GUID: 83g3OeWT6rp7d0r8tp07ak1eNcWDfvwB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-01_07,2022-08-01_01,2022-06-22_01
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -159,44 +131,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 08:02:56AM -0600, Rob Herring wrote:
-> > +if:
-> > +  oneOf:
-> > +    - properties:
-> > +        ethernet:
-> > +          items:
-> > +            $ref: /schemas/types.yaml#/definitions/phandle
-> > +    - properties:
-> > +        link:
-> > +          items:
-> > +            $ref: /schemas/types.yaml#/definitions/phandle-array
+Hi All,
+
+Please ignore this patch. Sent by mistake. I will send v3.
+
+Thanks,
+Naveen
+
+> -----Original Message-----
+> From: Naveen Mamindlapalli <naveenm@marvell.com>
+> Sent: Monday, August 1, 2022 6:09 PM
+> To: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> Cc: Naveen Mamindlapalli <naveenm@marvell.com>
+> Subject: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG regis=
+ter
+> configuration
 >=20
-> 'items' here is wrong. 'required' is needed because the property not
-> present will be true otherwise.
+> For packets scheduled to RPM and LBK,
+> NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
+> selects the TL3 or TL2 scheduling level as the one used for link/channel =
+selection
+> and backpressure. For each scheduling queue at the selected
+> level: Setting NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG[ENA] =3D 1 allows t=
+he
+> TL3/TL2 queue to schedule packets to a specified RPM or LBK link and chan=
+nel.
 >=20
-> Checking the type is redundant given the top-level schema already does th=
-at.
-
-Excuse me, but I don't understand. I verified this and it works as
-expected - if the property is present, the 'items' evaluates to true,
-otherwise to false.
-
-Could you suggest an alternative way of checking whether the 'ethernet'
-or 'link' properties are present, as part of a conditional?
-
-> > I have deliberately made this part of dsa-port.yaml and not depend on
-> > any compatible string. The reason is the code - we'll warn about missin=
-g
-> > properties regardless of whether we have fallback logic for some older
-> > switches. Essentially the fact that some switches have the fallback to
-> > not use phylink will remain an undocumented easter egg as far as the
-> > dt-schema is concerned.
+> There is an issue in the code where NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
+> is set to TL3 where as the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG is
+> configured for TL2 queue in some cases. As a result packets will not tran=
+smit on
+> that link/channel. This patch fixes the issue by configuring the
+> NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG register depending on the
+> NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL] value.
 >=20
-> dsa-port.yaml is only applied when some other schema references it
-> which is probably based on some compatible. If you want to apply this
-> under some other condition, then you need a custom 'select' schema to
-> define when.
+> Fixes: 5d9b976d4480 ("octeontx2-af: Support fixed transmit scheduler
+> topology")
+> Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> ---
+> v2:
+>   - Added more details about the fix in commit message.
+>   - Added fixes Tag.
+>=20
+> ---
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 19
+> ++++++++++++++-----  .../net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> |  1 +
+>  2 files changed, 15 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> index fb8db5888d2f..d686c7b6252f 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> @@ -632,6 +632,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lv=
+l)
+>  		req->num_regs++;
+>  		req->reg[1] =3D NIX_AF_TL3X_SCHEDULE(schq);
+>  		req->regval[1] =3D dwrr_val;
+> +		if (lvl =3D=3D hw->txschq_link_cfg_lvl) {
+> +			req->num_regs++;
+> +			req->reg[2] =3D NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw-
+> >tx_link);
+> +			/* Enable this queue and backpressure */
+> +			req->regval[2] =3D BIT_ULL(13) | BIT_ULL(12);
+> +		}
+>  	} else if (lvl =3D=3D NIX_TXSCH_LVL_TL2) {
+>  		parent =3D  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
+>  		req->reg[0] =3D NIX_AF_TL2X_PARENT(schq); @@ -641,11
+> +647,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+>  		req->reg[1] =3D NIX_AF_TL2X_SCHEDULE(schq);
+>  		req->regval[1] =3D TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+>=20
+> -		req->num_regs++;
+> -		req->reg[2] =3D NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
+> -		/* Enable this queue and backpressure */
+> -		req->regval[2] =3D BIT_ULL(13) | BIT_ULL(12);
+> -
+> +		if (lvl =3D=3D hw->txschq_link_cfg_lvl) {
+> +			req->num_regs++;
+> +			req->reg[2] =3D NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw-
+> >tx_link);
+> +			/* Enable this queue and backpressure */
+> +			req->regval[2] =3D BIT_ULL(13) | BIT_ULL(12);
+> +		}
+>  	} else if (lvl =3D=3D NIX_TXSCH_LVL_TL1) {
+>  		/* Default config for TL1.
+>  		 * For VF this is always ignored.
+> @@ -1591,6 +1598,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic
+> *pf,
+>  		for (schq =3D 0; schq < rsp->schq[lvl]; schq++)
+>  			pf->hw.txschq_list[lvl][schq] =3D
+>  				rsp->schq_list[lvl][schq];
+> +
+> +	pf->hw.txschq_link_cfg_lvl =3D rsp->link_cfg_lvl;
+>  }
+>  EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
+>=20
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> index ce2766317c0b..f9c0d2f08e87 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> @@ -195,6 +195,7 @@ struct otx2_hw {
+>  	u16			sqb_size;
+>=20
+>  	/* NIX */
+> +	u8			txschq_link_cfg_lvl;
+>  	u16
+> 	txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
+>  	u16			matchall_ipolicer;
+>  	u32			dwrr_mtu;
+> --
+> 2.16.5
 
-No, this is good, I think. I got a "build warning" from your bot which
-found the DSA examples which had missing required properties, so I think
-it works the way I indended it.=
