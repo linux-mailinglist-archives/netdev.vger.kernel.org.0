@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 581AF58652E
-	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 08:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47FA7586547
+	for <lists+netdev@lfdr.de>; Mon,  1 Aug 2022 08:44:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238974AbiHAGmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Aug 2022 02:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S239326AbiHAGmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Aug 2022 02:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231638AbiHAGmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 02:42:12 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DB5A191;
-        Sun, 31 Jul 2022 23:40:18 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VL1ssRt_1659336010;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VL1ssRt_1659336010)
+        with ESMTP id S235273AbiHAGmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Aug 2022 02:42:21 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF2E15FC8;
+        Sun, 31 Jul 2022 23:40:20 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VL1cDEz_1659336012;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VL1cDEz_1659336012)
           by smtp.aliyun-inc.com;
-          Mon, 01 Aug 2022 14:40:11 +0800
+          Mon, 01 Aug 2022 14:40:13 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v14 35/42] virtio_mmio: support the arg sizes of find_vqs()
-Date:   Mon,  1 Aug 2022 14:38:55 +0800
-Message-Id: <20220801063902.129329-36-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v14 36/42] virtio: add helper virtio_find_vqs_ctx_size()
+Date:   Mon,  1 Aug 2022 14:38:56 +0800
+Message-Id: <20220801063902.129329-37-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
 References: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
@@ -72,48 +72,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Virtio MMIO support the new parameter sizes of find_vqs().
+Introduce helper virtio_find_vqs_ctx_size() to call find_vqs and specify
+the maximum size of each vq ring.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/virtio_mmio.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/linux/virtio_config.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 5e3ba3cc7fd0..c888fee18caf 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -360,7 +360,7 @@ static void vm_synchronize_cbs(struct virtio_device *vdev)
+diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+index 888f7e96f0c7..6adff09f7170 100644
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -241,6 +241,18 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
+ 				      ctx, desc);
+ }
  
- static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int index,
- 				  void (*callback)(struct virtqueue *vq),
--				  const char *name, bool ctx)
-+				  const char *name, u32 size, bool ctx)
- {
- 	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
- 	struct virtio_mmio_vq_info *info;
-@@ -395,8 +395,11 @@ static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int in
- 		goto error_new_virtqueue;
- 	}
- 
-+	if (!size || size > num)
-+		size = num;
++static inline
++int virtio_find_vqs_ctx_size(struct virtio_device *vdev, u32 nvqs,
++			     struct virtqueue *vqs[],
++			     vq_callback_t *callbacks[],
++			     const char * const names[],
++			     u32 sizes[],
++			     const bool *ctx, struct irq_affinity *desc)
++{
++	return vdev->config->find_vqs(vdev, nvqs, vqs, callbacks, names, sizes,
++				      ctx, desc);
++}
 +
- 	/* Create the vring */
--	vq = vring_create_virtqueue(index, num, VIRTIO_MMIO_VRING_ALIGN, vdev,
-+	vq = vring_create_virtqueue(index, size, VIRTIO_MMIO_VRING_ALIGN, vdev,
- 				 true, true, ctx, vm_notify, callback, name);
- 	if (!vq) {
- 		err = -ENOMEM;
-@@ -497,6 +500,7 @@ static int vm_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
- 		}
- 
- 		vqs[i] = vm_setup_vq(vdev, queue_idx++, callbacks[i], names[i],
-+				     sizes ? sizes[i] : 0,
- 				     ctx ? ctx[i] : false);
- 		if (IS_ERR(vqs[i])) {
- 			vm_del_vqs(vdev);
+ /**
+  * virtio_synchronize_cbs - synchronize with virtqueue callbacks
+  * @vdev: the device
 -- 
 2.31.0
 
