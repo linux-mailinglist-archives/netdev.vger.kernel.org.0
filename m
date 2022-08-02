@@ -2,313 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E936F58772B
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 08:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6899587741
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 08:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234309AbiHBGm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 02:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
+        id S235394AbiHBGuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 02:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231962AbiHBGm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 02:42:58 -0400
-Received: from mxd2.seznam.cz (mxd2.seznam.cz [IPv6:2a02:598:2::210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EC139BAC;
-        Mon,  1 Aug 2022 23:42:55 -0700 (PDT)
-Received: from email.seznam.cz
-        by email-smtpc30b.ng.seznam.cz (email-smtpc30b.ng.seznam.cz [10.23.18.45])
-        id 2a1a3f02ceb6ec3c2bc79e6c;
-        Tue, 02 Aug 2022 08:42:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
-        t=1659422537; bh=XHMpjL0L10lsnl2ndjwdmRBJbFxa5xkb4v0a2KjE41M=;
-        h=Received:Date:From:To:Cc:Subject:Message-ID:References:
-         MIME-Version:Content-Type:Content-Disposition:
-         Content-Transfer-Encoding:In-Reply-To:X-szn-frgn:X-szn-frgc;
-        b=XI/HtwDsR6IXGP2JQqFerhw5ZoXN7cejrqkOGrQWvPGM8fjKsxCqZqJ/QDSO5Ouv3
-         8Fb9PXgipHdSrY7WwUkqW8j2EbT9sozamGPKLnt8pu28EBGJfdxKuFeE1pX6I8JHSt
-         2Y4KWoS33AoHOrNh5eBCEPVjtWaxG+bCWldLcwBs=
-Received: from hopium (2a02:8308:900d:2400:3e72:6e2:58c0:367d [2a02:8308:900d:2400:3e72:6e2:58c0:367d])
-        by email-relay23.ng.seznam.cz (Seznam SMTPD 1.3.137) with ESMTP;
-        Tue, 02 Aug 2022 08:42:13 +0200 (CEST)  
-Date:   Tue, 2 Aug 2022 08:42:11 +0200
-From:   Matej Vasilevski <matej.vasilevski@seznam.cz>
-To:     Vincent Mailhol <vincent.mailhol@gmail.com>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] can: ctucanfd: add HW timestamps to RX and error
- CAN frames
-Message-ID: <20220802064211.GA4294@hopium>
-References: <20220801184656.702930-1-matej.vasilevski@seznam.cz>
- <20220801184656.702930-2-matej.vasilevski@seznam.cz>
- <CAMZ6RqJEBV=1iUN3dH-ZZVujOFEoJ-U1FaJ5OOJzw+aM_mkUvA@mail.gmail.com>
+        with ESMTP id S234145AbiHBGuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 02:50:14 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AA12735;
+        Mon,  1 Aug 2022 23:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659423013; x=1690959013;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Em4r8waKeUhhrtXpfrHO7VA66HUnkdX4I+KJBKy59zY=;
+  b=i9m2hzue420/jzXqaKcUqPJ/s+kZH3bwfmekhGRIv6N8j20sJGYxf4wU
+   1BbpCPgCdoyf19YUMSsFaYZiZmfvv+7TFDio7pUuBHMpJAOsm70klRZTH
+   ghRS3YTdQcFqtH+ZcaaCcEJErb34r4Zvn0bHsqsCTsiUi/vxEY16p1Ucq
+   uZ3Ku4T17Oqj5mvZGHTpJw6dcoDIxtcAj8wZbGf4+c9SCaklW4lOi9YJR
+   UR2Dn/WhxcLqnmENkGHTSfsDBHO/fKAfd5JJfKljvDQuwUK0dG6jK+AZz
+   1z74Z9a9cuSxLu5rVP2yBBwK7L8+1i04wwBFOMbb2pIuz7Lvahk6r+I3V
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="351045286"
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="351045286"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 23:50:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="744561851"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 01 Aug 2022 23:50:08 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oIljD-000Fn7-39;
+        Tue, 02 Aug 2022 06:50:07 +0000
+Date:   Tue, 2 Aug 2022 14:49:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Gautam Menghani <gautammenghani201@gmail.com>,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Gautam Menghani <gautammenghani201@gmail.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] selftests/net: Refactor xfrm_fill_key() to use array of
+ structs
+Message-ID: <202208021442.LI0ioKrz-lkp@intel.com>
+References: <20220731170316.71542-1-gautammenghani201@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMZ6RqJEBV=1iUN3dH-ZZVujOFEoJ-U1FaJ5OOJzw+aM_mkUvA@mail.gmail.com>
-X-szn-frgn: <6b1bc025-f904-4833-8d4d-9d236e3a4d2e>
-X-szn-frgc: <0>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220731170316.71542-1-gautammenghani201@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 12:43:38PM +0900, Vincent Mailhol wrote:
-> Hi Matej,
-> 
-> I just send a series last week which a significant amount of changes
-> for CAN timestamping tree-wide:
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=12a18d79dc14c80b358dbd26461614b97f2ea4a6
-> 
-> I suggest you have a look at this series and harmonize it with the new
-> features (e.g. Hardware TX timestamp).
+Hi Gautam,
 
-Hi Vincent,
+Thank you for the patch! Perhaps something to improve:
 
-thanks for your review! I saw your patch series, but I've only skimmed
-through it. I'll read it fully in the evening.
+[auto build test WARNING on klassert-ipsec-next/master]
+[also build test WARNING on klassert-ipsec/master net-next/master net/master linus/master v5.19 next-20220728]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> > @@ -148,6 +149,27 @@ static void ctucan_write_txt_buf(struct ctucan_priv *priv, enum ctu_can_fd_can_r
-> >         priv->write_reg(priv, buf_base + offset, val);
-> >  }
-> >
-> > +static u64 concatenate_two_u32(u32 high, u32 low)
-> 
-> Might be good to add the "namespace" prefix. I suggest:
-> 
-> static u64 ctucan_concat_tstamp(u32 high, u32 low)
-> 
-> Because, so far, the function is to be used exclusively with timestamps.
-> 
-> Also, I was surprised that no helper functions in include/linux/
-> headers already do that. But this is another story.
-I agree, it is more specific, thanks for the suggestion.
+url:    https://github.com/intel-lab-lkp/linux/commits/Gautam-Menghani/selftests-net-Refactor-xfrm_fill_key-to-use-array-of-structs/20220801-010446
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # https://github.com/intel-lab-lkp/linux/commit/deea0844458f9991c45aff2949b7180a95105752
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Gautam-Menghani/selftests-net-Refactor-xfrm_fill_key-to-use-array-of-structs/20220801-010446
+        git checkout deea0844458f9991c45aff2949b7180a95105752
+        make O=/tmp/kselftest headers
+        make O=/tmp/kselftest -C tools/testing/selftests
 
-> > +{
-> > +       return ((u64)high << 32) | ((u64)low);
-> > +}
-> > +
-> > +u64 ctucan_read_timestamp_counter(struct ctucan_priv *priv)
-> > +{
-> > +       u32 ts_low;
-> > +       u32 ts_high;
-> > +       u32 ts_high2;
-> > +
-> > +       ts_high = ctucan_read32(priv, CTUCANFD_TIMESTAMP_HIGH);
-> > +       ts_low = ctucan_read32(priv, CTUCANFD_TIMESTAMP_LOW);
-> > +       ts_high2 = ctucan_read32(priv, CTUCANFD_TIMESTAMP_HIGH);
-> > +
-> > +       if (ts_high2 != ts_high)
-> > +               ts_low = priv->read_reg(priv, CTUCANFD_TIMESTAMP_LOW);
-> > +
-> > +       return concatenate_two_u32(ts_high2, ts_low) & priv->cc.mask;
-> > +}
-> > +
-> >  #define CTU_CAN_FD_TXTNF(priv) (!!FIELD_GET(REG_STATUS_TXNF, ctucan_read32(priv, CTUCANFD_STATUS)))
-> >  #define CTU_CAN_FD_ENABLED(priv) (!!FIELD_GET(REG_MODE_ENA, ctucan_read32(priv, CTUCANFD_MODE)))
-> 
-> 
-> #define CTU_CAN_FD_TXTNF(priv) \
->         (!!FIELD_GET(REG_STATUS_TXNF, ctucan_read32(priv, CTUCANFD_STATUS)))
-> 
-> #define CTU_CAN_FD_ENABLED(priv) \
->         (!!FIELD_GET(REG_MODE_ENA, ctucan_read32(priv, CTUCANFD_MODE)))
-> 
-> Even if the rule is now more relaxed, the soft limit remains 80
-> characters per line:
-> 
-> https://www.kernel.org/doc/html/latest/process/coding-style.html#breaking-long-lines-and-strings
-Not from my patch but no problem, I'll fix it in the next version.
-Thanks for spotting this.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > @@ -1295,15 +1341,117 @@ static int ctucan_get_berr_counter(const struct net_device *ndev, struct can_ber
-> >         return 0;
-> >  }
-> >
-> > +static int ctucan_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
-> > +{
-> > +       struct ctucan_priv *priv = netdev_priv(dev);
-> > +       struct hwtstamp_config cfg;
-> > +
-> > +       if (!priv->timestamp_possible)
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-> > +               return -EFAULT;
-> > +
-> > +       if (cfg.flags)
-> > +               return -EINVAL;
-> > +
-> > +       if (cfg.tx_type != HWTSTAMP_TX_OFF)
-> > +               return -ERANGE;
-> 
-> I have a great news: your driver now also support hardware TX timestamps:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=8bdd1112edcd3edce2843e03826204a84a61042d
-Yes, I'll read your patch series and update accordingly.
+All warnings (new ones prefixed by >>):
 
-> > +
-> > +       switch (cfg.rx_filter) {
-> > +       case HWTSTAMP_FILTER_NONE:
-> > +               priv->timestamp_enabled = false;
-> > +               break;
-> > +       case HWTSTAMP_FILTER_ALL:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_EVENT:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_SYNC:
-> > +               fallthrough;
-> > +       case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-> > +               priv->timestamp_enabled = true;
-> > +               cfg.rx_filter = HWTSTAMP_FILTER_ALL;
-> > +               break;
-> 
-> All those HWTSTAMP_FILTER_PTP_V2_* filters are for UDP, Ethernet or AS1:
-> https://elixir.bootlin.com/linux/v5.4.5/source/include/uapi/linux/net_tstamp.h#L106
-> 
-> Because those layers do not exist in CAN, I suggest treating them all
-> as not supported.
-> 
-> Please have a look at this patch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=90f942c5a6d775bad1be33ba214755314105da4a
+>> ipsec.c:83:1: warning: useless storage class specifier in empty declaration
+      83 | };
+         | ^
+   ipsec.c: In function 'xfrm_fill_key':
+>> ipsec.c:812:13: warning: unused variable 'i' [-Wunused-variable]
+     812 |         int i = 0;
+         |             ^
 
-I followed the Doc/networking/timestamping.txt, and section 3.1 says
-"Drivers are free to use a more permissive configuration than the requested
-configuration."
-So I've added in all the _PTP filters etc. If the consensus is that
-_NONE and _ALL filters are enough, I'll gladly remove the dozen of
-unnecessary cases.
-
-
-> > +       default:
-> > +               return -ERANGE;
-> > +       }
-> > +
-> > +       return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-> > +}
-> > +
-> > +static int ctucan_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
-> > +{
-> > +       struct ctucan_priv *priv = netdev_priv(dev);
-> > +       struct hwtstamp_config cfg;
-> > +
-> > +       if (!priv->timestamp_possible)
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       cfg.flags = 0;
-> > +       cfg.tx_type = HWTSTAMP_TX_OFF;
-> 
-> Hardware TX timestamps are now supported (c.f. supra).
-ACK
-> 
-> > +       cfg.rx_filter = priv->timestamp_enabled ? HWTSTAMP_FILTER_ALL : HWTSTAMP_FILTER_NONE;
-> > +       return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-> > +}
-> > +
-> > +static int ctucan_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-> 
-> Please consider using the generic function can_eth_ioctl_hwts()
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=90f942c5a6d775bad1be33ba214755314105da4a
-I've seen it, but I have to use a custom ioctl function, if I want to
-toggle rx timestamps enabled/disabled.
-> > +{
-> > +       switch (cmd) {
-> > +       case SIOCSHWTSTAMP:
-> > +               return ctucan_hwtstamp_set(dev, ifr);
-> > +       case SIOCGHWTSTAMP:
-> > +               return ctucan_hwtstamp_get(dev, ifr);
-> > +       default:
-> > +               return -EOPNOTSUPP;
-> > +       }
-> > +}
-> >
-> > +static int ctucan_ethtool_get_ts_info(struct net_device *ndev, struct ethtool_ts_info *info)
-> 
-> Please break the line to meet the 80 columns soft limit.
-> 
-> Please consider using the generic function can_ethtool_op_get_ts_info_hwts():
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/commit/?id=7fb48d25b5ce3bc488dbb019bf1736248181de9a
-> 
-> Something like that:
-> static int ctucan_ethtool_get_ts_info(struct net_device *ndev,
->                                       struct ethtool_ts_info *inf
-> {
->         struct ctucan_priv *priv = netdev_priv(ndev);
-> 
->         if (!priv->timestamp_possible)
->                 ethtool_op_get_ts_info(ndev, info);
-> 
->         return can_ethtool_op_get_ts_info_hwts(ndev, info);
-> }
-Sure, this is better, I'll include it in v3. Thank you.
-> > +{
-> > +       struct ctucan_priv *priv = netdev_priv(ndev);
-> > +
-> > +       ethtool_op_get_ts_info(ndev, info);
-> > +
-> > +       if (!priv->timestamp_possible)
-> > +               return 0;
-> > +
-> > +       info->so_timestamping |= SOF_TIMESTAMPING_RX_HARDWARE |
-> > +                                SOF_TIMESTAMPING_RAW_HARDWARE;
-> > +       info->tx_types = BIT(HWTSTAMP_TX_OFF);
-> 
-> Hardware TX timestamps are now supported (c.f. supra).
-ACK
-> > +       info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
-> > +                          BIT(HWTSTAMP_FILTER_ALL);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > @@ -1386,7 +1536,9 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
-> >
-> >         /* Getting the can_clk info */
-> >         if (!can_clk_rate) {
-> > -               priv->can_clk = devm_clk_get(dev, NULL);
-> > +               priv->can_clk = devm_clk_get_optional(dev, "core-clk");
-> > +               if (!priv->can_clk)
-> > +                       priv->can_clk = devm_clk_get(dev, NULL);
-> >                 if (IS_ERR(priv->can_clk)) {
-> >                         dev_err(dev, "Device clock not found.\n");
-> 
-> Just a suggestion, but you may want to print the mnemotechnic of the error code:
-> dev_err(dev, "Device clock not found: %pe.\n", priv->can_clk);
-Yes the error print might need some tweaking, I'll think about it.
-
-> >                         ret = PTR_ERR(priv->can_clk);
-> > @@ -1425,6 +1577,54 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
-> >
-> >         priv->can.clock.freq = can_clk_rate;
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
