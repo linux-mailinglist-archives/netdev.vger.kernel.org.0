@@ -2,82 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17853588395
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 23:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7DD58839C
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 23:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiHBV3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 17:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
+        id S233263AbiHBVaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 17:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233053AbiHBV3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 17:29:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B081A51A37
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 14:29:36 -0700 (PDT)
+        with ESMTP id S230252AbiHBVaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 17:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB03A647D;
+        Tue,  2 Aug 2022 14:30:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5947DB820FF
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 21:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C734C433B5
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 21:29:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3705E6154D;
+        Tue,  2 Aug 2022 21:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 05726C433C1;
+        Tue,  2 Aug 2022 21:30:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659475774;
-        bh=SGZd11R+IMi10UvAspXhHJm/sz8ulVf0IdRmfkUbaoM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XaKvbothBFggIhXI28kL/x3EirQ4fjLEMykMyvw2b1YJ4pm0LhSydX3OFqj6DB12M
-         NIa/HIAGw5Duv1+M9JsF5VKcf9EAlb5fnsujl17cy7bG9MzzKwoOFLDG4Jp6ImZqto
-         AGBdf/q/FIaZi8jFrciL5R9mgJS0UQZ4vApdF0mNCXMi0IF8yAO5KsPyO8Qhr9h9f5
-         9jwyD8YkWxw+ffoDoe6YVCfS37CyfEAO7p8Dsq7+dPYjRXCRjCXwJvWxWX4LJyhg67
-         XRwsXic292ebl7E/0bgnjfJaV1SjpzfKAyzAu4qxYFtpSfSInGcUfFLxChz3OW+Jtu
-         hSCen8HnDa99g==
-Received: by mail-oo1-f45.google.com with SMTP id v5-20020a4aa505000000b00435b0bb4227so2718291ook.12
-        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 14:29:34 -0700 (PDT)
-X-Gm-Message-State: AJIora9c1g11nJZG9y/7uinp5CvKm4IskbeME+BifoFWJL7+Rc8jNnCx
-        kXjIdC6mTOiB5GDdXmuV+JBjeSWmTWJ1tbWtGFRvKQ==
-X-Google-Smtp-Source: AA6agR4gDjxO8eQIdJP2ak/bQJj6aSqPJNBmfbIMRPjX7q3qBHZva2gJEgK5hCAMdBGldKbha+0RtVlrHChFByEI3nI=
-X-Received: by 2002:a05:6902:1541:b0:675:4f34:7315 with SMTP id
- r1-20020a056902154100b006754f347315mr18285149ybu.65.1659475762836; Tue, 02
- Aug 2022 14:29:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220801180146.1157914-1-fred@cloudflare.com> <20220801180146.1157914-3-fred@cloudflare.com>
-In-Reply-To: <20220801180146.1157914-3-fred@cloudflare.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Tue, 2 Aug 2022 23:29:12 +0200
-X-Gmail-Original-Message-ID: <CACYkzJ7Oxb8dhM6SotKfS30i2_=ONbd=LF2qB6ZCpYqRFtDx+A@mail.gmail.com>
-Message-ID: <CACYkzJ7Oxb8dhM6SotKfS30i2_=ONbd=LF2qB6ZCpYqRFtDx+A@mail.gmail.com>
-Subject: Re: [PATCH v4 2/4] bpf-lsm: Make bpf_lsm_userns_create() sleepable
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-Content-Type: text/plain; charset="UTF-8"
+        s=k20201202; t=1659475815;
+        bh=kXeZ2ZbCwBh2pcSCS+H83PASuCSnrhm7s/Z6WlYiUhI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ZAhIOvetld1cww+DIwRRDKfRPvzCCMovlnvpRjN1WEn2wVItAIqyIq5Acz/rnHhyd
+         BP0cCe8e6F9uI7/bzjjRvnbPby8fdDXd0Y1TgpV8VvO3xa8TMo31kRTdI5rdVsHWS9
+         zg8IqzYsDoNIBbuOlhTpM35uNdu9046I0Hm/tc/LANfoAWV7z7Fp7Uiarsxacu0/Yx
+         xrOvzTqPQmOmJydEFSe/BuISredVMSeM+a5O93R3vsESm7IC61iLhb4d0jeKj/Ailo
+         gCxGQsphb+vwLm8IFUpeqtVV+781OE9ZY01O2yBh7Ob8GUgH8H138IbryHylWcDv89
+         RuDoySJIieglA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3CB5C43142;
+        Tue,  2 Aug 2022 21:30:14 +0000 (UTC)
+Subject: Re: [GIT PULL] io_uring support for zerocopy send
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
+References: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
+X-PR-Tracked-List-Id: <io-uring.vger.kernel.org>
+X-PR-Tracked-Message-Id: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
+X-PR-Tracked-Remote: git://git.kernel.dk/linux-block.git tags/for-5.20/io_uring-zerocopy-send-2022-07-29
+X-PR-Tracked-Commit-Id: 14b146b688ad9593f5eee93d51a34d09a47e50b5
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 42df1cbf6a4726934cc5dac12bf263aa73c49fa3
+Message-Id: <165947581492.30731.192012146995093526.pr-tracker-bot@kernel.org>
+Date:   Tue, 02 Aug 2022 21:30:14 +0000
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        io-uring <io-uring@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 8:02 PM Frederick Lawler <fred@cloudflare.com> wrote:
->
-> Users may want to audit calls to security_create_user_ns() and access
-> user space memory. Also create_user_ns() runs without
-> pagefault_disabled(). Therefore, make bpf_lsm_userns_create() sleepable
-> for mandatory access control policies.
->
-> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
-> Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+The pull request you sent on Sun, 31 Jul 2022 09:03:36 -0600:
 
-Acked-by: KP Singh <kpsingh@kernel.org>
+> git://git.kernel.dk/linux-block.git tags/for-5.20/io_uring-zerocopy-send-2022-07-29
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/42df1cbf6a4726934cc5dac12bf263aa73c49fa3
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
