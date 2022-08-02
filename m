@@ -2,128 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E71588036
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 18:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C425588042
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 18:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237703AbiHBQ0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 12:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
+        id S237224AbiHBQ32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 12:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237458AbiHBQ0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 12:26:33 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88224357E6
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 09:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659457588; x=1690993588;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ku52B6somYBDUC4YngEab5TCrpoza4ehZejhbqVpntg=;
-  b=EAooWgpkSQ7R8lxV3WxAAIlHN6rT7BOXtHX14Ynz1VGclhgU78UB/QO3
-   X26rOf7iIUTpm6mel33HTqWS9yK4YSHmyO8mc5wbkr4qw8M30Sz+av2+H
-   T3efuY8/T8gaPFG5at1/3sUcYW+TyMKaiBUwiEriBhYTdJrZ38XcBPOPS
-   Dsx1p8vrEkhpTP0yiQxYOFNWtwOhvc+vpTvQYWq6RQZYyiRwOmQIaUC7i
-   vnb6rdJhiMuoaPDRuoeoojRLSUshvs4jabzD9I2rg79NMzyoijvnXpUkq
-   f0m2EQp9NJMac7EeJmscK7pp1pOY+ngSgUs/wXphqbRAt6KU04QVzJjc9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="375758127"
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="375758127"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 09:26:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="630775505"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 02 Aug 2022 09:26:24 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIuiu-000GCm-0v;
-        Tue, 02 Aug 2022 16:26:24 +0000
-Date:   Wed, 3 Aug 2022 00:26:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        with ESMTP id S232846AbiHBQ31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 12:29:27 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3723C33E0E
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 09:29:26 -0700 (PDT)
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5A5C73F464
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 16:29:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1659457761;
+        bh=1Hb65tRMoI26SspFVybFEyCmUoPfVdEbMP7rGOmyF6U=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=aefQ9WlJnpECVkjTGG6EgyE0XTW210wnHMb83AVS+UYQBCUacUakBNR/ewe6TYgxV
+         TJdgEoIyOkkM8ULOvdD9MBaA+Pbn2wUeWe74ey27B1a4NtocoqglZGK+MrCospUi7I
+         kqTF7vV1EuuO2n5zPqNhzpmX3gid2kDznfKIfJSU/lNmmScSfNgguxca1lvZguTy2C
+         C7ILEq5KE+gUGD41Rf4NZkzEBa69RMxK79AdyzdFrI3aILXJ9FLpgFtRDaziy1Q28/
+         fKYrKGBqz0O1Grn0dRYJelzuMjx6z8omIK+chMii7e54NxApCVedlzK1uqGW08RcAj
+         hXdngIgNKpulw==
+Received: by mail-pl1-f198.google.com with SMTP id ix21-20020a170902f81500b0016ee5379fe5so4015016plb.18
+        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 09:29:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-id:mime-version:comments:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=1Hb65tRMoI26SspFVybFEyCmUoPfVdEbMP7rGOmyF6U=;
+        b=WlbnA/xo6ydZRmxESq9vupstaBFCbYJWqyAHmxbK3pen0ENPLZjJPDIZ9tPRrSOa+r
+         5q2tXZsY8meLB69eRk6BNVlrr1WIFVuG7b5Elaz9aPGrBCJEl9NFcy7bZr+FKlOnjM3S
+         BBj9wXNjuxmv0rwG0sPnhd8bgA5XF6+tkpMnd3zYbxjS55OCfNlCtzyrAc67pLQZj0+b
+         Nsu5K2Gz3R4QS/E6JJ+UZtIscRdOtSNYRpVSlw3CpFsf2y4UVM8SN2JJsDVUkZBo8F5l
+         3yIEpxldp2hIV34xafpORsMN8sjc84jYq0114oaCp74bSokvrLPg3ynlccZTb5BYrTm3
+         Xb+A==
+X-Gm-Message-State: ACgBeo34vm2eXyTJxW7t9oewUFw3mVII+/nOzbwLcSZY1YOQvIj6aUV3
+        HV5hksNm6itl1z7xBTr0Z7uUJhUga8tAnVRzNRQToKOio101czNYfF3Mi3sCLBTXOOYtxJExSYC
+        cPO2/DQXcnrC8zTEOaLlr+lWj6FKvulpO2Q==
+X-Received: by 2002:a17:90a:c718:b0:1f4:238f:f50d with SMTP id o24-20020a17090ac71800b001f4238ff50dmr306945pjt.104.1659457759910;
+        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5tladpQzdY1jKfuqCqMlb2iN1z4V+jgRczg/w8t3XMjut7Jz8U36wctoWbpduAP2sLc/mFEw==
+X-Received: by 2002:a17:90a:c718:b0:1f4:238f:f50d with SMTP id o24-20020a17090ac71800b001f4238ff50dmr306916pjt.104.1659457759644;
+        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id u5-20020a654c05000000b003fdc16f5de2sm9345358pgq.15.2022.08.02.09.29.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id DF4546118F; Tue,  2 Aug 2022 09:29:18 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id D6C149FA79;
+        Tue,  2 Aug 2022 09:29:18 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Boris Pismenny <borisp@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [PATCH net-next] net/tls: Use RCU API to access tls_ctx->netdev
-Message-ID: <202208030026.UbhC51Ku-lkp@intel.com>
-References: <20220801080053.21849-1-maximmi@nvidia.com>
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH v3 net 1/4] net: bonding: replace dev_trans_start() with the jiffies of the last ARP/NS
+In-reply-to: <20220802091110.036d40dd@kernel.org>
+References: <20220731124108.2810233-1-vladimir.oltean@nxp.com> <20220731124108.2810233-2-vladimir.oltean@nxp.com> <1547.1659293635@famine> <20220731191327.cey4ziiez5tvcxpy@skbuf> <5679.1659402295@famine> <20220802014553.rtyzpkdvwnqje44l@skbuf> <d04773ee3e6b6dee88a1362bbc537bf51b020238.camel@redhat.com> <20220802091110.036d40dd@kernel.org>
+Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
+   message dated "Tue, 02 Aug 2022 09:11:10 -0700."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801080053.21849-1-maximmi@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10960.1659457758.1@famine>
+Date:   Tue, 02 Aug 2022 09:29:18 -0700
+Message-ID: <10961.1659457758@famine>
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxim,
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Thank you for the patch! Perhaps something to improve:
+>On Tue, 02 Aug 2022 11:05:19 +0200 Paolo Abeni wrote:
+>> In any case, this looks like a significative rework, do you mind
+>> consider it for the net-next, when it re-open?
+>
+>It does seem like it could be a lot for stable.
+>
+>Perhaps we could take:
+>
+>https://lore.kernel.org/all/20220727152000.3616086-1-vladimir.oltean@nxp.com/
+>
+>as is, without the extra work Stephen asked for (since it's gonna be
+>reverted in net-next, anyway)? How do you feel about that option?
 
-[auto build test WARNING on net-next/master]
+	Would that mean that the older stable kernels end up with a
+different implementation that's unique to stable, or are you proposing
+to take the linked patch,
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Maxim-Mikityanskiy/net-tls-Use-RCU-API-to-access-tls_ctx-netdev/20220801-160258
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 63757225a93353bc2ce4499af5501eabdbbf23f9
-config: mips-randconfig-s043-20220801 (https://download.01.org/0day-ci/archive/20220803/202208030026.UbhC51Ku-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/9971662af97683a6f0ea3d752495bba5ef6229dc
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Maxim-Mikityanskiy/net-tls-Use-RCU-API-to-access-tls_ctx-netdev/20220801-160258
-        git checkout 9971662af97683a6f0ea3d752495bba5ef6229dc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/bonding/
+"net/sched: make dev_trans_start() have a better chance of working with
+stacked interfaces"
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+	as a complete replacement for this series?
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/net/bonding/bond_main.c:2831:26: sparse: sparse: restricted __be16 degrades to integer
-   drivers/net/bonding/bond_main.c:2837:20: sparse: sparse: restricted __be16 degrades to integer
-   drivers/net/bonding/bond_main.c:2910:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be16 [usertype] vlan_proto @@     got int @@
-   drivers/net/bonding/bond_main.c:2910:40: sparse:     expected restricted __be16 [usertype] vlan_proto
-   drivers/net/bonding/bond_main.c:2910:40: sparse:     got int
->> drivers/net/bonding/bond_main.c:5336:13: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected struct net_device *slave_dev @@     got struct net_device [noderef] __rcu *netdev @@
-   drivers/net/bonding/bond_main.c:5336:13: sparse:     expected struct net_device *slave_dev
-   drivers/net/bonding/bond_main.c:5336:13: sparse:     got struct net_device [noderef] __rcu *netdev
-   drivers/net/bonding/bond_main.c:5337:75: sparse: sparse: incorrect type in argument 3 (different address spaces) @@     expected struct net_device *slave_dev @@     got struct net_device [noderef] __rcu *netdev @@
-   drivers/net/bonding/bond_main.c:5337:75: sparse:     expected struct net_device *slave_dev
-   drivers/net/bonding/bond_main.c:5337:75: sparse:     got struct net_device [noderef] __rcu *netdev
+	Alternatively, would it be more comfortable to just put this
+patch (1/4) to stable and not backport the others?  If I understand
+correctly, this patch enables the functionality, and the others are
+cleaning up logic that isn't necessary after 1/4 is applied.
 
-vim +5336 drivers/net/bonding/bond_main.c
+	I think this patch will work as described, and haven't thought
+of any non-crazy scenarios that it could break (e.g., things that depend
+on the "drop after arp_send" discussed elsewhere).
 
-007feb87fb1593 Tariq Toukan 2021-01-17  5331  
-89df6a8104706f Tariq Toukan 2021-01-17  5332  #if IS_ENABLED(CONFIG_TLS_DEVICE)
-89df6a8104706f Tariq Toukan 2021-01-17  5333  static netdev_tx_t bond_tls_device_xmit(struct bonding *bond, struct sk_buff *skb,
-89df6a8104706f Tariq Toukan 2021-01-17  5334  					struct net_device *dev)
-89df6a8104706f Tariq Toukan 2021-01-17  5335  {
-89df6a8104706f Tariq Toukan 2021-01-17 @5336  	if (likely(bond_get_slave_by_dev(bond, tls_get_ctx(skb->sk)->netdev)))
-89df6a8104706f Tariq Toukan 2021-01-17  5337  		return bond_dev_queue_xmit(bond, skb, tls_get_ctx(skb->sk)->netdev);
-89df6a8104706f Tariq Toukan 2021-01-17  5338  	return bond_tx_drop(dev, skb);
-89df6a8104706f Tariq Toukan 2021-01-17  5339  }
-89df6a8104706f Tariq Toukan 2021-01-17  5340  #endif
-89df6a8104706f Tariq Toukan 2021-01-17  5341  
+	I also think this patch is preferable to the "stacked
+interfaces" patch: it limits the scope to just bonding, doesn't change
+dev_trans_start() itself, and should cover any type of interface in a
+bond.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
