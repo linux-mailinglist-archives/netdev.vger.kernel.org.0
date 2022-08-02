@@ -2,172 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AA8587B2A
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 12:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A55587B2E
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 13:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236653AbiHBK7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 06:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        id S236655AbiHBLAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 07:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236649AbiHBK7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 06:59:41 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F543286CC;
-        Tue,  2 Aug 2022 03:59:39 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id dc19so2540395ejb.12;
-        Tue, 02 Aug 2022 03:59:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IX4JVwOdpTF1p2CR8tKM1WnNVnt9/39lsNOtwtKbZTI=;
-        b=okC4YO5KqwR9XvSJlxxzLdjbMGPqY4ggh+sbxBKViwN0qc4labM+BAK6I+z5uQDgcS
-         zMS8OfuiiWdahBE6PkzLmKCVqo91qzDL8mUAv28dK3ffrUalm/1P9p2O/dwDaZC5LP1W
-         /wZxkxHMJXiHi9s1wRjDfMzWDMnThKepbqZ3WrR4FE9jN+Zve3iTrDhv0iaEdSDMzthF
-         sLeyfED8rsc4CA8FGBzlYPIToruTJS5E7+hYB7FwmPHhK7207ne93/bLk2BMa9vfgbOl
-         UdSTdLyIN18xkLSYYvNjQLLEatefcNWCGCmlUi1Tp73Ee/7oANT0BleOHtzSSdpiqham
-         6SmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IX4JVwOdpTF1p2CR8tKM1WnNVnt9/39lsNOtwtKbZTI=;
-        b=SCpRW6xXqslPt92X0FNFtjW4ZsmuW20uH6h6i8K1qAqOklPUeBxunZWiDVA9I8SCnJ
-         NtHGOIw0OMiHqxY38G2yJT4KmWA2FLiSHjDRixXJnG512JUg4jlj77LxHEKuG6jg55/j
-         nmgeW5iDWT/NwqdB80G1LyQA3ZB8o3d0L4XArDzApbYs21UMPxAPhNewPzBYYQ/t9DCc
-         mvVegGOLxnM5MdBpNX3lUBxxXJZ4NwH1r1bfQbjBwFfy5lVRUqH1ZW1RdzuB+yK1DXAc
-         hiPAC8TzMS257oMUGkABhJeGSg0tkthXP9hfv3ZJSLARNA+lVEObHniXv7JMHMgfF/XA
-         gzAg==
-X-Gm-Message-State: AJIora/vLYGi2b5ux/L+22NBurGLk0SK984gvPpzbSj1vI4zb+TzuQ7C
-        97FT/BQ84NhFjRXH+oWqa+8=
-X-Google-Smtp-Source: AGRyM1tZgR7N0/W51//RcfTMdjMbEhbjvSP+OgU0K5WcH8OJoAj/n2HnvnkqA+Ppl+h8iJb/bPqYaA==
-X-Received: by 2002:a17:906:844c:b0:72b:4d77:fd83 with SMTP id e12-20020a170906844c00b0072b4d77fd83mr15757356ejy.151.1659437977918;
-        Tue, 02 Aug 2022 03:59:37 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id ku7-20020a170907788700b0073092b543c3sm1741009ejc.141.2022.08.02.03.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 03:59:37 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 13:59:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [Patch RFC net-next 4/4] net: dsa: microchip: use private pvid
- for bridge_vlan_unwaware
-Message-ID: <20220802105935.gjjc3ft6zf35xrhr@skbuf>
-References: <20220729151733.6032-1-arun.ramadoss@microchip.com>
- <20220729151733.6032-1-arun.ramadoss@microchip.com>
- <20220729151733.6032-5-arun.ramadoss@microchip.com>
- <20220729151733.6032-5-arun.ramadoss@microchip.com>
+        with ESMTP id S236656AbiHBLAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 07:00:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE38272B;
+        Tue,  2 Aug 2022 04:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C08DCE1C40;
+        Tue,  2 Aug 2022 11:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AB801C433D7;
+        Tue,  2 Aug 2022 11:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659438013;
+        bh=0ASmGze/PTUrX6y2Ztjb7HH/oEgrz8ukg+sZwDf7hGk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GZptDqETzwQOf5E7/MyhTrC2bLncMioK3JtTQ6JTSZjnjbTC+n4Dsmj4912TlguAF
+         tP4YmhCv5qn6f8KP1Ir8llO0hkMmEm7y5Cg82VCJHP54o1HUiAizalhz1L5cXQ70Tv
+         7uBmwPJZGpQYffrELWAp+I6DUdAYQkgCqHUkQVO6EB302UcFPzgYwj6lNRwlYmyyZL
+         BKSmqbiL5UVjH9yxWmcN1UnvNxhSjRLF8urRRI5/S97S73dd6VqZpbYSivUOTfiBbI
+         cShpcE0E0t8WUvEcZSMzWi/MzoZKLZtR3sFpHa/RjlRN9G/3DWNG4mD5ZODr6+yHPW
+         EVU4IUZIjE1SA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C361C43143;
+        Tue,  2 Aug 2022 11:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729151733.6032-5-arun.ramadoss@microchip.com>
- <20220729151733.6032-5-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4] net: usb: ax88179_178a: Bind only to vendor-specific
+ interface
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165943801356.21664.8346442629133964190.git-patchwork-notify@kernel.org>
+Date:   Tue, 02 Aug 2022 11:00:13 +0000
+References: <20220731072209.45504-1-marcan@marcan.st>
+In-Reply-To: <20220731072209.45504-1-marcan@marcan.st>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     jackychou@asix.com.tw, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 08:47:33PM +0530, Arun Ramadoss wrote:
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 516fb9d35c87..8a5583b1f2f4 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -161,6 +161,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
->  	.vlan_filtering = ksz8_port_vlan_filtering,
->  	.vlan_add = ksz8_port_vlan_add,
->  	.vlan_del = ksz8_port_vlan_del,
-> +	.drop_untagged = ksz8_port_enable_pvid,
+Hello:
 
-You'll have to explain this one. What impact does PVID insertion on KSZ8
-have upon dropping/not dropping untagged packets? This patch is saying
-that when untagged packets should be dropped, PVID insertion should be
-enabled, and when untagged packets should be accepted, PVID insertion
-should be disabled. How come?
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
->  	.mirror_add = ksz8_port_mirror_add,
->  	.mirror_del = ksz8_port_mirror_del,
->  	.get_caps = ksz8_get_caps,
-> @@ -187,6 +188,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
->  	.vlan_filtering = ksz9477_port_vlan_filtering,
->  	.vlan_add = ksz9477_port_vlan_add,
->  	.vlan_del = ksz9477_port_vlan_del,
-> +	.drop_untagged = ksz9477_port_drop_untagged,
->  	.mirror_add = ksz9477_port_mirror_add,
->  	.mirror_del = ksz9477_port_mirror_del,
->  	.get_caps = ksz9477_get_caps,
-> @@ -220,6 +222,7 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
->  	.vlan_filtering = ksz9477_port_vlan_filtering,
->  	.vlan_add = ksz9477_port_vlan_add,
->  	.vlan_del = ksz9477_port_vlan_del,
-> +	.drop_untagged = ksz9477_port_drop_untagged,
->  	.mirror_add = ksz9477_port_mirror_add,
->  	.mirror_del = ksz9477_port_mirror_del,
->  	.get_caps = lan937x_phylink_get_caps,
-> @@ -1254,6 +1257,9 @@ static int ksz_enable_port(struct dsa_switch *ds, int port,
->  {
->  	struct ksz_device *dev = ds->priv;
->  
-> +	dev->dev_ops->vlan_add(dev, port, KSZ_DEFAULT_VLAN,
-> +			       BRIDGE_VLAN_INFO_UNTAGGED);
-> +
+On Sun, 31 Jul 2022 16:22:09 +0900 you wrote:
+> The Anker PowerExpand USB-C to Gigabit Ethernet adapter uses this
+> chipset, but exposes CDC Ethernet configurations as well as the
+> vendor specific one. This driver tries to bind by PID:VID
+> unconditionally and ends up picking up the CDC configuration, which
+> is supposed to be handled by the class driver. To make things even
+> more confusing, it sees both of the CDC class interfaces and tries
+> to bind twice, resulting in two broken Ethernet devices.
+> 
+> [...]
 
-How many times can this be executed before the VLAN add operation fails
-due to the VLAN already being present on the port? I notice you're
-ignoring the return code. Wouldn't it be better to do this at
-port_setup() time instead?
+Here is the summary with links:
+  - [v4] net: usb: ax88179_178a: Bind only to vendor-specific interface
+    https://git.kernel.org/netdev/net/c/c67cc4315a8e
 
-(side note, the PVID for standalone mode can be added at port_setup
-time. The PVID to use for bridges in VLAN-unaware mode can be allocated
-at port_bridge_join time)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->  	if (!dsa_is_user_port(ds, port))
->  		return 0;
->  
-> +static int ksz_commit_pvid(struct dsa_switch *ds, int port)
-> +{
-> +	struct dsa_port *dp = dsa_to_port(ds, port);
-> +	struct net_device *br = dsa_port_bridge_dev_get(dp);
-> +	struct ksz_device *dev = ds->priv;
-> +	u16 pvid = KSZ_DEFAULT_VLAN;
-> +	bool drop_untagged = false;
-> +	struct ksz_port *p;
-> +
-> +	p = &dev->ports[port];
-> +
-> +	if (br && br_vlan_enabled(br)) {
-> +		pvid = p->bridge_pvid.vid;
-> +		drop_untagged = !p->bridge_pvid.valid;
-> +	}
 
-This is better in the sense that it resolves the need for the
-configure_vlan_while_not_filtering hack. But standalone and VLAN-unaware
-bridge ports still share the same PVID. Even more so, standalone ports
-have address learning enabled, which will poison the address database of
-VLAN-unaware bridge ports (and of other standalone ports):
-https://patchwork.kernel.org/project/netdevbpf/patch/20220802002636.3963025-1-vladimir.oltean@nxp.com/
-
-Are you going to do further work in this area?
-
-> +
-> +	ksz_set_pvid(dev, port, pvid);
-> +
-> +	if (dev->dev_ops->drop_untagged)
-> +		dev->dev_ops->drop_untagged(dev, port, drop_untagged);
-> +
-> +	return 0;
-> +}
