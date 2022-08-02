@@ -2,135 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CDF587A62
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 12:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEBB587A69
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 12:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiHBKMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 06:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S236538AbiHBKNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 06:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233387AbiHBKMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 06:12:07 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CACE4B0F9;
-        Tue,  2 Aug 2022 03:12:06 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LxrJK1LVNz67gb0;
-        Tue,  2 Aug 2022 18:07:13 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 12:12:04 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Tue, 2 Aug 2022 12:12:04 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Hao Luo <haoluo@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        "Roman Gushchin" <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>
-Subject: RE: [PATCH bpf-next v6 1/8] btf: Add a new kfunc flag which allows to
- mark a function to be sleepable
-Thread-Topic: [PATCH bpf-next v6 1/8] btf: Add a new kfunc flag which allows
- to mark a function to be sleepable
-Thread-Index: AQHYpc/QHd6pQm3GSkK+4jcMX6ARwK2bZJZw
-Date:   Tue, 2 Aug 2022 10:12:04 +0000
-Message-ID: <8924d019684340ecb2f6c9e3e99a5287@huawei.com>
-References: <20220801175407.2647869-1-haoluo@google.com>
- <20220801175407.2647869-2-haoluo@google.com>
-In-Reply-To: <20220801175407.2647869-2-haoluo@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.81.210.42]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S233452AbiHBKNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 06:13:51 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9354B48D;
+        Tue,  2 Aug 2022 03:13:49 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6F5291884456;
+        Tue,  2 Aug 2022 10:13:47 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 3FCBB25032B7;
+        Tue,  2 Aug 2022 10:13:47 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 367BAA1E00B9; Tue,  2 Aug 2022 10:13:47 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Tue, 02 Aug 2022 12:13:47 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 2/6] net: switchdev: add support for
+ offloading of fdb locked flag
+In-Reply-To: <20220708085403.sk7znfad3x2mnxeh@skbuf>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+ <20220707152930.1789437-3-netdev@kapio-technology.com>
+ <20220708085403.sk7znfad3x2mnxeh@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <0d884212b8df03e5cf03c4b2e5ea3e3d@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBIYW8gTHVvIFttYWlsdG86aGFvbHVvQGdvb2dsZS5jb21dDQo+IFNlbnQ6IE1vbmRh
-eSwgQXVndXN0IDEsIDIwMjIgNzo1NCBQTQ0KPiBGcm9tOiBCZW5qYW1pbiBUaXNzb2lyZXMgPGJl
-bmphbWluLnRpc3NvaXJlc0ByZWRoYXQuY29tPg0KPiANCj4gRnJvbTogQmVuamFtaW4gVGlzc29p
-cmVzIDxiZW5qYW1pbi50aXNzb2lyZXNAcmVkaGF0LmNvbT4NCj4gDQo+IFRoaXMgYWxsb3dzIHRv
-IGRlY2xhcmUgYSBrZnVuYyBhcyBzbGVlcGFibGUgYW5kIHByZXZlbnRzIGl0cyB1c2UgaW4NCj4g
-YSBub24gc2xlZXBhYmxlIHByb2dyYW0uDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBCZW5qYW1pbiBU
-aXNzb2lyZXMgPGJlbmphbWluLnRpc3NvaXJlc0ByZWRoYXQuY29tPg0KPiBDby1kZXZlbG9wZWQt
-Ynk6IFlvc3J5IEFobWVkIDx5b3NyeWFobWVkQGdvb2dsZS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6
-IFlvc3J5IEFobWVkIDx5b3NyeWFobWVkQGdvb2dsZS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEhh
-byBMdW8gPGhhb2x1b0Bnb29nbGUuY29tPg0KDQpUaGFua3MsIGhlbHBmdWwgYWxzbyBmb3IgbWUu
-DQoNClJldmlld2VkLWJ5OiBSb2JlcnRvIFNhc3N1IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+
-DQoNClJvYmVydG8NCg0KPiAtLS0NCj4gIERvY3VtZW50YXRpb24vYnBmL2tmdW5jcy5yc3QgfCA2
-ICsrKysrKw0KPiAgaW5jbHVkZS9saW51eC9idGYuaCAgICAgICAgICB8IDEgKw0KPiAga2VybmVs
-L2JwZi9idGYuYyAgICAgICAgICAgICB8IDkgKysrKysrKysrDQo+ICAzIGZpbGVzIGNoYW5nZWQs
-IDE2IGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2JwZi9r
-ZnVuY3MucnN0IGIvRG9jdW1lbnRhdGlvbi9icGYva2Z1bmNzLnJzdA0KPiBpbmRleCBjMGI3ZGFl
-NmRiZjUuLmM4YjIxZGUxYzc3MiAxMDA2NDQNCj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9icGYva2Z1
-bmNzLnJzdA0KPiArKysgYi9Eb2N1bWVudGF0aW9uL2JwZi9rZnVuY3MucnN0DQo+IEBAIC0xNDYs
-NiArMTQ2LDEyIEBAIHRoYXQgb3BlcmF0ZSAoY2hhbmdlIHNvbWUgcHJvcGVydHksIHBlcmZvcm0g
-c29tZQ0KPiBvcGVyYXRpb24pIG9uIGFuIG9iamVjdCB0aGF0DQo+ICB3YXMgb2J0YWluZWQgdXNp
-bmcgYW4gYWNxdWlyZSBrZnVuYy4gU3VjaCBrZnVuY3MgbmVlZCBhbiB1bmNoYW5nZWQgcG9pbnRl
-ciB0bw0KPiAgZW5zdXJlIHRoZSBpbnRlZ3JpdHkgb2YgdGhlIG9wZXJhdGlvbiBiZWluZyBwZXJm
-b3JtZWQgb24gdGhlIGV4cGVjdGVkIG9iamVjdC4NCj4gDQo+ICsyLjQuNiBLRl9TTEVFUEFCTEUg
-ZmxhZw0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gKw0KPiArVGhlIEtGX1NMRUVQQUJM
-RSBmbGFnIGlzIHVzZWQgZm9yIGtmdW5jcyB0aGF0IG1heSBzbGVlcC4gU3VjaCBrZnVuY3MgY2Fu
-IG9ubHkNCj4gK2JlIGNhbGxlZCBieSBzbGVlcGFibGUgQlBGIHByb2dyYW1zIChCUEZfRl9TTEVF
-UEFCTEUpLg0KPiArDQo+ICAyLjUgUmVnaXN0ZXJpbmcgdGhlIGtmdW5jcw0KPiAgLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0NCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2J0Zi5o
-IGIvaW5jbHVkZS9saW51eC9idGYuaA0KPiBpbmRleCBjZGIzNzZkNTMyMzguLjk3NmNiZGQyOTgx
-ZiAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9idGYuaA0KPiArKysgYi9pbmNsdWRlL2xp
-bnV4L2J0Zi5oDQo+IEBAIC00OSw2ICs0OSw3IEBADQo+ICAgKiBmb3IgdGhpcyBjYXNlLg0KPiAg
-ICovDQo+ICAjZGVmaW5lIEtGX1RSVVNURURfQVJHUyAoMSA8PCA0KSAvKiBrZnVuYyBvbmx5IHRh
-a2VzIHRydXN0ZWQgcG9pbnRlcg0KPiBhcmd1bWVudHMgKi8NCj4gKyNkZWZpbmUgS0ZfU0xFRVBB
-QkxFICAgKDEgPDwgNSkgLyoga2Z1bmMgbWF5IHNsZWVwICovDQo+IA0KPiAgc3RydWN0IGJ0ZjsN
-Cj4gIHN0cnVjdCBidGZfbWVtYmVyOw0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2JwZi9idGYuYyBi
-L2tlcm5lbC9icGYvYnRmLmMNCj4gaW5kZXggN2U2NDQ0NzY1OWYzLi5kM2U0Yzg2YjhmY2QgMTAw
-NjQ0DQo+IC0tLSBhL2tlcm5lbC9icGYvYnRmLmMNCj4gKysrIGIva2VybmVsL2JwZi9idGYuYw0K
-PiBAQCAtNjE3NSw2ICs2MTc1LDcgQEAgc3RhdGljIGludCBidGZfY2hlY2tfZnVuY19hcmdfbWF0
-Y2goc3RydWN0DQo+IGJwZl92ZXJpZmllcl9lbnYgKmVudiwNCj4gIHsNCj4gIAllbnVtIGJwZl9w
-cm9nX3R5cGUgcHJvZ190eXBlID0gcmVzb2x2ZV9wcm9nX3R5cGUoZW52LT5wcm9nKTsNCj4gIAli
-b29sIHJlbCA9IGZhbHNlLCBrcHRyX2dldCA9IGZhbHNlLCB0cnVzdGVkX2FyZyA9IGZhbHNlOw0K
-PiArCWJvb2wgc2xlZXBhYmxlID0gZmFsc2U7DQo+ICAJc3RydWN0IGJwZl92ZXJpZmllcl9sb2cg
-KmxvZyA9ICZlbnYtPmxvZzsNCj4gIAl1MzIgaSwgbmFyZ3MsIHJlZl9pZCwgcmVmX29ial9pZCA9
-IDA7DQo+ICAJYm9vbCBpc19rZnVuYyA9IGJ0Zl9pc19rZXJuZWwoYnRmKTsNCj4gQEAgLTYyMTIs
-NiArNjIxMyw3IEBAIHN0YXRpYyBpbnQgYnRmX2NoZWNrX2Z1bmNfYXJnX21hdGNoKHN0cnVjdA0K
-PiBicGZfdmVyaWZpZXJfZW52ICplbnYsDQo+ICAJCXJlbCA9IGtmdW5jX2ZsYWdzICYgS0ZfUkVM
-RUFTRTsNCj4gIAkJa3B0cl9nZXQgPSBrZnVuY19mbGFncyAmIEtGX0tQVFJfR0VUOw0KPiAgCQl0
-cnVzdGVkX2FyZyA9IGtmdW5jX2ZsYWdzICYgS0ZfVFJVU1RFRF9BUkdTOw0KPiArCQlzbGVlcGFi
-bGUgPSBrZnVuY19mbGFncyAmIEtGX1NMRUVQQUJMRTsNCj4gIAl9DQo+IA0KPiAgCS8qIGNoZWNr
-IHRoYXQgQlRGIGZ1bmN0aW9uIGFyZ3VtZW50cyBtYXRjaCBhY3R1YWwgdHlwZXMgdGhhdCB0aGUN
-Cj4gQEAgLTY0MTksNiArNjQyMSwxMyBAQCBzdGF0aWMgaW50IGJ0Zl9jaGVja19mdW5jX2FyZ19t
-YXRjaChzdHJ1Y3QNCj4gYnBmX3ZlcmlmaWVyX2VudiAqZW52LA0KPiAgCQkJZnVuY19uYW1lKTsN
-Cj4gIAkJcmV0dXJuIC1FSU5WQUw7DQo+ICAJfQ0KPiArDQo+ICsJaWYgKHNsZWVwYWJsZSAmJiAh
-ZW52LT5wcm9nLT5hdXgtPnNsZWVwYWJsZSkgew0KPiArCQlicGZfbG9nKGxvZywgImtlcm5lbCBm
-dW5jdGlvbiAlcyBpcyBzbGVlcGFibGUgYnV0IHRoZSBwcm9ncmFtIGlzDQo+IG5vdFxuIiwNCj4g
-KwkJCWZ1bmNfbmFtZSk7DQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArCX0NCj4gKw0KPiAgCS8q
-IHJldHVybnMgYXJndW1lbnQgcmVnaXN0ZXIgbnVtYmVyID4gMCBpbiBjYXNlIG9mIHJlZmVyZW5j
-ZSByZWxlYXNlDQo+IGtmdW5jICovDQo+ICAJcmV0dXJuIHJlbCA/IHJlZl9yZWdubyA6IDA7DQo+
-ICB9DQo+IC0tDQo+IDIuMzcuMS40NTUuZzAwODUxOGI0ZTUtZ29vZw0KDQo=
+On 2022-07-08 10:54, Vladimir Oltean wrote:
+
+>>  	struct dsa_db db;
+>>  };
+>> 
+>> @@ -131,6 +132,7 @@ struct dsa_switchdev_event_work {
+>>  	unsigned char addr[ETH_ALEN];
+>>  	u16 vid;
+>>  	bool host_addr;
+>> +	bool is_locked;
+> 
+> drop
+> 
+>>  };
+>> 
+>>  enum dsa_standalone_event {
+>> @@ -232,7 +234,7 @@ int dsa_port_vlan_msti(struct dsa_port *dp,
+>>  		       const struct switchdev_vlan_msti *msti);
+>>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
+>>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+>> -		     u16 vid);
+>> +		     u16 vid, bool is_locked);
+> 
+> drop
+> 
+>>  int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+>>  		     u16 vid);
+>>  int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
+>> diff --git a/net/dsa/port.c b/net/dsa/port.c
+>> index 3738f2d40a0b..8bdac9aabe5d 100644
+>> --- a/net/dsa/port.c
+>> +++ b/net/dsa/port.c
+>> @@ -35,6 +35,7 @@ static void dsa_port_notify_bridge_fdb_flush(const 
+>> struct dsa_port *dp, u16 vid)
+>>  	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+>>  	struct switchdev_notifier_fdb_info info = {
+>>  		.vid = vid,
+>> +		.is_locked = false,
+> 
+> drop
+> 
+>>  	};
+>> 
+>>  	/* When the port becomes standalone it has already left the bridge.
+>> @@ -950,12 +951,13 @@ int dsa_port_mtu_change(struct dsa_port *dp, int 
+>> new_mtu)
+>>  }
+>> 
+>>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+>> -		     u16 vid)
+>> +		     u16 vid, bool is_locked)
+> 
+> drop
+> 
+>>  {
+>>  	struct dsa_notifier_fdb_info info = {
+>>  		.dp = dp,
+>>  		.addr = addr,
+>>  		.vid = vid,
+>> +		.is_locked = is_locked,
+> 
+> drop
+> 
+>>  		.db = {
+>>  			.type = DSA_DB_BRIDGE,
+>>  			.bridge = *dp->bridge,
+>> @@ -979,6 +981,7 @@ int dsa_port_fdb_del(struct dsa_port *dp, const 
+>> unsigned char *addr,
+>>  		.dp = dp,
+>>  		.addr = addr,
+>>  		.vid = vid,
+>> +		.is_locked = false,
+> 
+> drop
+> 
+>>  		.db = {
+>>  			.type = DSA_DB_BRIDGE,
+>>  			.bridge = *dp->bridge,
+>> @@ -999,6 +1002,7 @@ static int dsa_port_host_fdb_add(struct dsa_port 
+>> *dp,
+>>  		.dp = dp,
+>>  		.addr = addr,
+>>  		.vid = vid,
+>> +		.is_locked = false,
+> 
+> drop
+> 
+>>  		.db = db,
+>>  	};
+>> 
+>> @@ -1050,6 +1054,7 @@ static int dsa_port_host_fdb_del(struct dsa_port 
+>> *dp,
+>>  		.dp = dp,
+>>  		.addr = addr,
+>>  		.vid = vid,
+>> +		.is_locked = false,
+> 
+> drop
+> 
+>>  		.db = db,
+>>  	};
+>> 
+>> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>> index 801a5d445833..905b15e4eab9 100644
+>> --- a/net/dsa/slave.c
+>> +++ b/net/dsa/slave.c
+>> @@ -2784,6 +2784,7 @@ static void 
+>> dsa_slave_switchdev_event_work(struct work_struct *work)
+>>  		container_of(work, struct dsa_switchdev_event_work, work);
+>>  	const unsigned char *addr = switchdev_work->addr;
+>>  	struct net_device *dev = switchdev_work->dev;
+>> +	bool is_locked = switchdev_work->is_locked;
+> 
+> drop
+> 
+>>  	u16 vid = switchdev_work->vid;
+>>  	struct dsa_switch *ds;
+>>  	struct dsa_port *dp;
+>> @@ -2799,7 +2800,7 @@ static void 
+>> dsa_slave_switchdev_event_work(struct work_struct *work)
+>>  		else if (dp->lag)
+>>  			err = dsa_port_lag_fdb_add(dp, addr, vid);
+>>  		else
+>> -			err = dsa_port_fdb_add(dp, addr, vid);
+>> +			err = dsa_port_fdb_add(dp, addr, vid, is_locked);
+> 
+> drop
+> 
+>>  		if (err) {
+>>  			dev_err(ds->dev,
+>>  				"port %d failed to add %pM vid %d to fdb: %d\n",
+>> @@ -2907,6 +2908,7 @@ static int dsa_slave_fdb_event(struct net_device 
+>> *dev,
+>>  	ether_addr_copy(switchdev_work->addr, fdb_info->addr);
+>>  	switchdev_work->vid = fdb_info->vid;
+>>  	switchdev_work->host_addr = host_addr;
+>> +	switchdev_work->is_locked = fdb_info->is_locked;
+> 
+> drop
+> 
+>> 
+>>  	dsa_schedule_work(&switchdev_work->work);
+>> 
+>> diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+>> index 2b56218fc57c..32b1e7ac6373 100644
+>> --- a/net/dsa/switch.c
+>> +++ b/net/dsa/switch.c
+>> @@ -234,7 +234,7 @@ static int dsa_port_do_mdb_del(struct dsa_port 
+>> *dp,
+>>  }
+>> 
+>>  static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned 
+>> char *addr,
+>> -			       u16 vid, struct dsa_db db)
+>> +			       u16 vid, bool is_locked, struct dsa_db db)
+> 
+> drop
+> 
+>>  {
+>>  	struct dsa_switch *ds = dp->ds;
+>>  	struct dsa_mac_addr *a;
+>> @@ -398,7 +398,7 @@ static int dsa_switch_host_fdb_add(struct 
+>> dsa_switch *ds,
+>>  	dsa_switch_for_each_port(dp, ds) {
+>>  		if (dsa_port_host_address_match(dp, info->dp)) {
+>>  			err = dsa_port_do_fdb_add(dp, info->addr, info->vid,
+>> -						  info->db);
+>> +						  false, info->db);
+> 
+> drop
+> 
+>>  			if (err)
+>>  				break;
+>>  		}
+>> @@ -437,7 +437,7 @@ static int dsa_switch_fdb_add(struct dsa_switch 
+>> *ds,
+>>  	if (!ds->ops->port_fdb_add)
+>>  		return -EOPNOTSUPP;
+>> 
+>> -	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->db);
+>> +	return dsa_port_do_fdb_add(dp, info->addr, info->vid, 
+>> info->is_locked, info->db);
+> 
+> drop
+> 
+>>  }
+>> 
+>>  static int dsa_switch_fdb_del(struct dsa_switch *ds,
+>> --
+>> 2.30.2
+>> 
+
+Hi Vladimir and Ido,
+
+I can either ignore locked entries early or late in the dsa/switchdev 
+layers.
+
+If I ignore early, I think it should be in br_switchdev_fdb_notify() in 
+net/bridge/br_switchdev.c.
+If I ignore late, I would think that it should be jut before sending it 
+to the driver(s), e.g. in dsa_port_do_fdb_add() in net/dsa/switch.c.
+
+There is of course pros and cons of both options, but if the flag is 
+never to be sent to the driver, then it should be ignored early.
+
+If ignored late most of this patch should not be dropped.
