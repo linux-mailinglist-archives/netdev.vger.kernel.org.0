@@ -2,99 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD5F587E95
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 17:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FD7587EE2
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 17:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234847AbiHBPIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 11:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49452 "EHLO
+        id S234193AbiHBPTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 11:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233406AbiHBPIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 11:08:20 -0400
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360D826AC9;
-        Tue,  2 Aug 2022 08:08:19 -0700 (PDT)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 272F7g5t2380071;
-        Tue, 2 Aug 2022 17:07:42 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 272F7g5t2380071
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1659452862;
-        bh=2oD14gOZO93tqzNZQjZFooIHsA19Pom4E2LBsvbbNMk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=jJZhLnZ/lG173aiPYJfjoqNgC2+Hp9y2Hoyocxz+Ze90D9tr/9uAp9QaD5SAADs/+
-         P5tndqCCSnO7QKJGk9RCZbmz9HEGB4bOpSMcj4SEp8UB86FXuuub48/bhJ0Kl/N/Sp
-         0/OK1RMwWLz+ZLnXs+Iaq3wvwartlGjc0HSrJf5U=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 272F7god2380070;
-        Tue, 2 Aug 2022 17:07:42 +0200
-Date:   Tue, 2 Aug 2022 17:07:42 +0200
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, f6bvp@free.fr, thomas@osterried.de,
-        thomas@x-berg.in-berlin.de, linux-hams@vger.kernel.org
-Subject: [PATCH v1 net 1/1] net: avoid overflow when rose /proc displays
- timer information.
-Message-ID: <Yuk9vq7t7VhmnOXu@electric-eye.fr.zoreil.com>
+        with ESMTP id S229460AbiHBPTk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 11:19:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7609A107;
+        Tue,  2 Aug 2022 08:19:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6FA060AC3;
+        Tue,  2 Aug 2022 15:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABED2C433D7;
+        Tue,  2 Aug 2022 15:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659453578;
+        bh=uIFHKVSnF63qKOrJUUCg7Hh718c66h+z7U+n3VkILOM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AThHoG2+PQtHaYN+tDY1EeVpqjl0XE6wDIbyWq6gpC5cvOJ/BsomTeBrbF2OOZeIg
+         dYEJInlN9fMR4jjXbQ/BxE97M4cKRZmZSriMJ/575LoH+OGWVD2RdFeKU5VTLLr4Gc
+         Jz3Ws8pyyRhHEorO3lFPayYSPPoSgOdEvTiNygu1I7muGHcwk5hV6Gxkp5WuZ9VCN/
+         IATomtJHoDnkdeLwjqsLvh+NvNbhczoZHqv2Lg5/2bO55tzCJHtXqBSRJve9RxRh3D
+         TQsjD/45mPX7gX1a46kgOB4nKhj2SNMKTtT8uq+q3n9W0zNYRan2PoP16zm7hd/lzJ
+         syGLo+RJZF0rQ==
+From:   broonie@kernel.org
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Date:   Tue,  2 Aug 2022 16:19:32 +0100
+Message-Id: <20220802151932.2830110-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Organisation: Land of Sunshine Inc.
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_SBL_CSS,SPF_HELO_PASS,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rose /proc code does not serialize timer accesses.
+Hi all,
 
-Initial report by Bernard F6BVP Pidoux exhibits overflow amounting
-to 116 ticks on its HZ=250 system.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Full timer access serialization would imho be overkill as rose /proc
-does not enforce consistency between displayed ROSE_STATE_XYZ and
-timer values during changes of state.
+  net/ax25/af_ax25.c
 
-The patch may also fix similar behavior in ax25 /proc, ax25 ioctl
-and netrom /proc as they all exhibit the same timer serialization
-policy. This point has not been reported though.
+between commit:
 
-The sole remaining use of ax25_display_timer - ax25 rtt valuation -
-may also perform marginally better but I have not analyzed it too
-deeply.
+  d7c4c9e075f8c ("ax25: fix incorrect dev_tracker usage")
 
-Signed-off-by: Francois Romieu <romieu@fr.zoreil.com>
-Cc: Thomas DL9SAU Osterried <thomas@osterried.de>
-Link: https://lore.kernel.org/all/d5e93cc7-a91f-13d3-49a1-b50c11f0f811@free.fr/
----
- net/ax25/ax25_timer.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+from the net tree and commit:
 
-Bernard, can you formally test and add your "Tested-by:" on this one ?
+  d62607c3fe459 ("net: rename reference+tracking helpers")
 
-diff --git a/net/ax25/ax25_timer.c b/net/ax25/ax25_timer.c
-index 85865ebfdfa2..9f7cb0a7c73f 100644
---- a/net/ax25/ax25_timer.c
-+++ b/net/ax25/ax25_timer.c
-@@ -108,10 +108,12 @@ int ax25_t1timer_running(ax25_cb *ax25)
- 
- unsigned long ax25_display_timer(struct timer_list *timer)
- {
-+	long delta = timer->expires - jiffies;
-+
- 	if (!timer_pending(timer))
- 		return 0;
- 
--	return timer->expires - jiffies;
-+	return max(0L, delta);
- }
- 
- EXPORT_SYMBOL(ax25_display_timer);
--- 
-2.37.1
+from the net-next tree.
 
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+diff --cc net/ax25/af_ax25.c
+index 5b5363c99ed50,bbac3cb4dc99d..0000000000000
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@@ -102,7 -102,8 +102,8 @@@ again
+  			ax25_disconnect(s, ENETUNREACH);
+  			s->ax25_dev = NULL;
+  			if (sk->sk_socket) {
+- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++ 				netdev_put(ax25_dev->dev,
+ -					   &ax25_dev->dev_tracker);
+++					   &ax25->dev_tracker);
+  				ax25_dev_put(ax25_dev);
+  			}
+  			ax25_cb_del(s);
+@@@ -1065,7 -1066,7 +1066,7 @@@ static int ax25_release(struct socket *
+  			del_timer_sync(&ax25->t3timer);
+  			del_timer_sync(&ax25->idletimer);
+  		}
+- 		dev_put_track(ax25_dev->dev, &ax25->dev_tracker);
+ -		netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+++		netdev_put(ax25_dev->dev, &ax25->dev_tracker);
+  		ax25_dev_put(ax25_dev);
+  	}
+  
+@@@ -1146,7 -1147,7 +1147,7 @@@ static int ax25_bind(struct socket *soc
+  
+  	if (ax25_dev) {
+  		ax25_fillin_cb(ax25, ax25_dev);
+- 		dev_hold_track(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+ -		netdev_hold(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+++		netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+  	}
+  
+  done:
