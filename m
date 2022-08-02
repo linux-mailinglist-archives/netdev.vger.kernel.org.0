@@ -2,58 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9C15879E9
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 11:34:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F4D5878A2
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 10:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235536AbiHBJeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 05:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        id S236268AbiHBIEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 04:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232727AbiHBJep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 05:34:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711DD402C4
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 02:34:44 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oIoIA-0005wN-Ok; Tue, 02 Aug 2022 11:34:22 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 705CFC130C;
-        Tue,  2 Aug 2022 07:06:31 +0000 (UTC)
-Date:   Tue, 2 Aug 2022 09:06:30 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Matej Vasilevski <matej.vasilevski@seznam.cz>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S233188AbiHBIEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 04:04:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C8DF237D5
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 01:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659427470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PnAgHb+qwkYr0eoeRI+miU3649J+IzbjO84fBGvUAWw=;
+        b=ep/F+MZJgno/g4KEO/PavR5Zz8NweHNiutfkARlrXbMorBdcM3f+Coq3MPazmXeRb70fD6
+        2CeqrtNeEfHJlPtWAGQe5cPAEc5PYED7hKyOVTgec39YGbLU3vxDAZYy15AEZtWbFwB/F6
+        JeoCtUKLSkA7szepzyTe7lEl1MQEdTw=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-455-cN5omHYIOWq86cDkfu4wOw-1; Tue, 02 Aug 2022 04:04:29 -0400
+X-MC-Unique: cN5omHYIOWq86cDkfu4wOw-1
+Received: by mail-qv1-f69.google.com with SMTP id l16-20020ad44250000000b0047676a29dd9so2988006qvq.1
+        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 01:04:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=PnAgHb+qwkYr0eoeRI+miU3649J+IzbjO84fBGvUAWw=;
+        b=NCqjwHT+5X1iyIKz2z4k90KXDltcz0WNCwKihFzE3GAk5T9GoV+A1zJQLyUy5e7Mip
+         lY4+HvoScE7PiWlR0LxA4+RYRXvHN8cNO7kSquzOtvw5N/86K9Sctl/b0Y7P9hdtZSkd
+         7bVimkdGuRhPC4bRvd9se3RvHD+hpJ5OoO3Kf8ZLDg/5wWCJIgJYp1V0kBFTIO5A9Q0W
+         TFv7UDoPmSWFFDUZyz6OD8Yi/xM4pk6uxB8dm1KgJ08LUAMeFaasSb6s3uNLrSOhW6pQ
+         UpxiR3iRVz96Z5fORqmEzPDdsxCVKv0nYCOk7ypCkrkkFWsKIFJNr7juBH31M5fNb6Si
+         a4tQ==
+X-Gm-Message-State: AJIora9q4uowHppSRzBxelQiP+TuoNh9//kb1Aqi/+0vLL4Vnk+2zqwC
+        d0BQ0HQaJ9bgJORTCdSwK6oLW/S8NuUtxvAvkMszMAmlpcJIFWrLEcFuj3U7zLo4rd19aHMFXvZ
+        YeSTl26fsooO0sm/J
+X-Received: by 2002:ac8:5b96:0:b0:31f:1931:b2b1 with SMTP id a22-20020ac85b96000000b0031f1931b2b1mr17183313qta.17.1659427468871;
+        Tue, 02 Aug 2022 01:04:28 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t8d3getE7v6ehQxa40+uRjwcWSGfnrWrzaZU1/gX3jMXiALvanlrDyYV5QWSN3xAJSiT9vUw==
+X-Received: by 2002:ac8:5b96:0:b0:31f:1931:b2b1 with SMTP id a22-20020ac85b96000000b0031f1931b2b1mr17183303qta.17.1659427468660;
+        Tue, 02 Aug 2022 01:04:28 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05620a40d200b006b8d1914504sm636431qko.22.2022.08.02.01.04.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 01:04:28 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 10:04:17 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Vishnu Dasa <vdasa@vmware.com>
+Cc:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Bryan Tan <bryantan@vmware.com>,
+        Pv-drivers <Pv-drivers@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        "edumazet@google.com" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] can: ctucanfd: hardware rx timestamps reporting
-Message-ID: <20220802070630.7g5dyn732bh724az@pengutronix.de>
-References: <20220801184656.702930-1-matej.vasilevski@seznam.cz>
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
+Message-ID: <20220802080417.xyfwdidlirklr4oj@sgarzare-redhat>
+References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
+ <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
+ <D7315A7C-D288-4BDC-A8BF-B8631D8664BA@vmware.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="w4uynht36msvyibp"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220801184656.702930-1-matej.vasilevski@seznam.cz>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+In-Reply-To: <D7315A7C-D288-4BDC-A8BF-B8631D8664BA@vmware.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,67 +97,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vishnu,
 
---w4uynht36msvyibp
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Aug 02, 2022 at 05:35:22AM +0000, Vishnu Dasa wrote:
+>> On Jul 27, 2022, at 5:37 AM, Stefano Garzarella <sgarzare@redhat.com> 
+>> wrote:
+>> Hi Arseniy,
+>>
+>> On Mon, Jul 25, 2022 at 07:54:05AM +0000, Arseniy Krasnov wrote:
 
-On 01.08.2022 20:46:53, Matej Vasilevski wrote:
-> Hello,
->=20
-> this is the v2 patch for CTU CAN FD hardware timestamps reporting.
->=20
-> This patch series is based on the latest net-next, as I need the patch
-> - 9e7c9b8eb719 can: ctucanfd: Update CTU CAN FD IP core registers to matc=
-h version 3.x.
-> and the patch below to avoid git conflict (both this and my patch
-> introduce ethtool_ops)
-> - 409c188c57cd can: tree-wide: advertise software timestamping capabiliti=
-es
->=20
-> Changes in v2: (compared to the RFC I've sent in May)
+[...]
 
-Please add a link to the RFC here:
-https://lore.kernel.org/all/20220512232706.24575-1-matej.vasilevski@seznam.=
-cz
+>>>
+>>> 3) vmci/vsock:
+>>>  Same as 2), but i'm not sure about this changes. Will be very good,
+>>>  to get comments from someone who knows this code.
+>>
+>> I CCed VMCI maintainers to the patch and also to this cover, maybe
+>> better to keep them in the loop for next versions.
+>>
+>> (Jorgen's and Rajesh's emails bounced back, so I'm CCing here only
+>> Bryan, Vishnu, and pv-drivers@vmware.com)
+>
+>Hi Stefano,
+>Jorgen and Rajesh are no longer with VMware.  There's a patch in
+>flight to remove Rajesh from the MAINTAINERS file (Jorgen is already
+>removed).
 
-> - Removed kconfig option to enable/disable timestamps.
-> - Removed dt parameters ts-frequency and ts-used-bits. Now the user
->   only needs to add the timestamping clock phandle to clocks, and even
->   that is optional.
-> - Added SIOCSHWTSTAMP ioctl to enable/disable timestamps.
-> - Adressed comments from the RFC review.
->=20
-> Matej Vasilevski (3):
->   can: ctucanfd: add HW timestamps to RX and error CAN frames
->   dt-bindings: can: ctucanfd: add another clock for HW timestamping
->   doc: ctucanfd: RX frames timestamping for platform devices
+Thanks for the update! I will contact you and Bryan for any questions 
+with VMCI in the future :-)
 
-Please reorder your patches so that the dt-bindings update comes first.
+Stefano
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---w4uynht36msvyibp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLozPMACgkQrX5LkNig
-01091Af+OFXdTcBJ8SC+XtUpGidcGMP3j/04HaOYtByP8I5TVp+WdTPZAJaPbVmj
-N556yRn6xx+cbMZVYQQ0cRr0uDBMWiv0jKfP95EI6X9zQtv/eiACjoTI+81QRoPz
-+bfPfCiDnPNZKGUhGRNdJiFRbbFBG998Ihim6RVsqZcTo3aQVzzKIK7yVOpx+vKH
-e+d6wgTX0X6+iyqx5kKlONJk9vhxW9waSQEQDlu5f+M4K7djBEHg+cZkpgPI0W5P
-5yFAmPQZJCi0RoySSKXxYcQQAFXkPeTTv3eS/6sAI5EkHe+eDwcaNm8jgt3syFh+
-KAEvVRaI8HEqEXM/eVE9m9UXMac8OA==
-=/wYk
------END PGP SIGNATURE-----
-
---w4uynht36msvyibp--
