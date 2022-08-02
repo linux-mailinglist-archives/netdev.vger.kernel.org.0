@@ -2,247 +2,1122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49A5A587E42
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 16:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80ED587E6D
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 16:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236553AbiHBOk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 10:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S237340AbiHBOyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 10:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234025AbiHBOkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 10:40:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A84637B;
-        Tue,  2 Aug 2022 07:40:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1659451224; x=1690987224;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=acrZiGBdYXIAiesqDZSWyyG6E7oMwbTmgaVuNzqzxio=;
-  b=haz3N+jUickZbbhgLbPjqk9AIDKVE1WmOx3ZhfHyH+xJ0qyWKEUt62tw
-   eLTKEFX4drF/rebeP9MtE3KJSbFK/+mUOnHzM/dRgIRk5Nn9CO3EG7rUc
-   tc2OkAP6VSt/P5pJNJM5dOwrjYVkgat/Juc9uELzHdKxB8nIXRi5p/3Yx
-   Ivvsk+1tBRazs46QG0ZUwNRPbrZcwvAxjzACRNQUVizk6/lqNO1+ilmHf
-   ZvvQl6qHNSKmGAUFJdZjMPud5MRj/9exHVEgfPtBVnojjmlazCJx8fQa9
-   UsCIVdkI950ewcx3OpUms4t2c0xB1yeprLwAdcAyrTusbmLrRnBVEMLfR
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="167468136"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Aug 2022 07:40:22 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 2 Aug 2022 07:40:21 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Tue, 2 Aug 2022 07:40:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Abg6/rBmEmU3hBoIVVb9z8+TrJOznucD5GPkwWy9C/NgJvwl2nGlekTNXTxBkrAfeN/rkEBJOWXlnTbvJjRWiAkf7QVeTcGbtMmNHD51wjb2gngXy/ssJKDQLk0H+Epuvxwy4SWDMdkLPT+SDebZBCICzbghmz5d4rXxLFqm2q7qWGqZlnqwResMwNPEtlbYKsHe/8WOWRZA9XPZZ9CL8PNZv1rwhoktHHiegzaHWHGOMSyRHQWJiHKf4F6HzkGGZQrBmgsak/VjBU2imX5aG1WJ1DjK0wl7kozoCggWjW7/SW9TOze0+txxoOBo6c66ugSp8Gfqu3L1sB6VupZtqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=acrZiGBdYXIAiesqDZSWyyG6E7oMwbTmgaVuNzqzxio=;
- b=eQh2rSJYvRjU6RPni5Ta5ByjRKIISy2xK0H4salASqaAGvmrnxOtSpBcrhIjEr6YdAG7q12iKOxisxM2JjkSF/q7Tp3I7DperuW8J8APaKngyKmBnbS6a/3uk26Cvaa5uAbNUN5MuyPAXXDK3L7dCpim51Z8SDy3zAgjTlNygORxWrr53nzTQQfMB/gmVxQ8gM3vS2ZChW9XegDHO54otJ4z5LbTv2vUhNRJshLVf1ceOic193f75p4m8kBfyEkSmHejJFddi0GkD3ZEuCSQtOeJv2yADjSFG5PCO8+a3P+zMhndkldridGSOaz8qynn621EjFaZKKq0eAjPIRotjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S236888AbiHBOyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 10:54:09 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDB11EEE7
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 07:54:06 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id j15so10133369wrr.2
+        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 07:54:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=acrZiGBdYXIAiesqDZSWyyG6E7oMwbTmgaVuNzqzxio=;
- b=SRTCDtLMEBNB2jWZQlNvKkbvEiZ3Q2A/hpRni8eoqwUNZIi2mtIMPJbIE72nB739sSsyd5ooxpE1Q+N13L8OZfrlnHcjqFxQzLI8xCBnTJ3V/R7d3DjafIqBzDdozWoHKAYwVk3l34xDn1FOoAkW6iCtz8386lxPT5q9z6fYqp8=
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
- MWHPR11MB1488.namprd11.prod.outlook.com (2603:10b6:301:c::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5482.14; Tue, 2 Aug 2022 14:40:09 +0000
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::945f:fc90:5ca3:d69a]) by DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::945f:fc90:5ca3:d69a%6]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 14:40:09 +0000
-From:   <Arun.Ramadoss@microchip.com>
-To:     <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <vivien.didelot@gmail.com>,
-        <linux@armlinux.org.uk>, <f.fainelli@gmail.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>,
-        <davem@davemloft.net>
-Subject: Re: [Patch RFC net-next 4/4] net: dsa: microchip: use private pvid
- for bridge_vlan_unwaware
-Thread-Topic: [Patch RFC net-next 4/4] net: dsa: microchip: use private pvid
- for bridge_vlan_unwaware
-Thread-Index: AQHYo16i5OwaIBSN6UuhTptF+k0JEK2bd1lSgAA9bwA=
-Date:   Tue, 2 Aug 2022 14:40:09 +0000
-Message-ID: <365b35f48b4a6c2003b67a4ee0c287b8172fa262.camel@microchip.com>
-References: <20220729151733.6032-1-arun.ramadoss@microchip.com>
-         <20220729151733.6032-1-arun.ramadoss@microchip.com>
-         <20220729151733.6032-5-arun.ramadoss@microchip.com>
-         <20220729151733.6032-5-arun.ramadoss@microchip.com>
-         <20220802105935.gjjc3ft6zf35xrhr@skbuf>
-In-Reply-To: <20220802105935.gjjc3ft6zf35xrhr@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f91ab262-03e5-4578-b15e-08da7494e623
-x-ms-traffictypediagnostic: MWHPR11MB1488:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ML3fiYltpfYHBKI0dX14GCAl+Y85D+sYeoh8DTACg9kxgdAEElVh8KTUJ0/UKpmFI++iU7xBqejAYNy2egZ+XA+i2MIdxeU8lkXb/SY/aP0Hi3nP6SF3Hyh13tZp9c9KZ0EjJiPQXkxh6eI2Dd8ns82OVx8Zde5gGBopDKb0qSWc/lEXW215fHHCVfZsRCyDYobDcgMwSGK4/3NHl6n+vfILguRs9VZ0xKjHHeIbfZyaGnaqWXT1LZ2D4CTTgBaek0Dn/S3l5QU5HIP45w5rKRjYjh9Zdx18eRd/8zTDe1EB+Wjt3f2syNAXxMlLCXl3s7Vv+m0Lbo6XH3drXZcxYsFSV5a+rUeCx3YTAXg0LwUaa1p24ObA7Aku9n9JiCBs5Qt8uK3ZPPlItfW6H6x+EbaLzM0eBLFr3eTV3lSKC9lmamK6P9ZT1kfBo+Gt76CNgNWy+veg+IMwKas8QEWD+YHmHODQ3rlBlvxgfx4sOfoS8qJX5qEAkZ+kMud+q5H/DVh6aep+Q8krXtMWZUDpQPXmKpqvUuwEkC0je8E/KSZ2gPSKqLg/mRl7sc7hl8ZG8XZyPBb4O19lVz2dLnAMV5yGGXJA/uZDbia3j35EB4wr/Yuk+Q9Ko8FEXFXzb+MSzg3cawhsgLaumT9eEGRoxDoOqv7nSiQJ/hufdWEFoQNxceEaroDwE05EuGj+E9lFiKC2B/C3MOk7fjm+TTEl2Fpg51AyX6M+EiWX2tws72a7fEeYKjY+cqumQe0RnqsE31dCxNrdHbD91r/gY0B1YdGFv9lW+eQ5ajNXdgC3F36cpLp23T0xRElWuvptVuPp5ybj6qxIloI55+7kE19KniFO4raGyubsHwP0tQb745g=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(39860400002)(396003)(376002)(366004)(346002)(7416002)(5660300002)(2906002)(41300700001)(2616005)(186003)(38100700002)(6506007)(122000001)(38070700005)(6512007)(316002)(6916009)(54906003)(71200400001)(86362001)(478600001)(966005)(6486002)(83380400001)(36756003)(8936002)(64756008)(4326008)(66946007)(91956017)(66556008)(8676002)(66476007)(66446008)(76116006)(99106002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UGdlTisyOWpWN0hxdDFIamNXV25DZGNEalE0cXM0eHJoWlMyRmZtMWdBU2I1?=
- =?utf-8?B?N2pBaGRlQ1dsZnNaWkVTbGlnZTlQbEtyRk1STXVzSFJRZDZYSTFLQTE1a3Zs?=
- =?utf-8?B?YVNyVzA0N2NRNVJWdG52VE9Kbi95L3hIRkdnUXgwc25VRERHc2tHSUNDb1ky?=
- =?utf-8?B?TUVKU1NKSFd5OWplT3dmdEtpbFNyVFhnUUora2RzVlMxOHQ3WVZlNHY3SWJi?=
- =?utf-8?B?T3l5Wk5rNjM3VHJERGVQajVBRTdERUZOVCtHVVpZdzZUWjVUalNxT3NQdmFO?=
- =?utf-8?B?RHY5TmJZRjYyTFFQeGhRcnpKZXlzNk5mZ3NrZFdtVG5TWUVWYjBGeHFRVlM2?=
- =?utf-8?B?eDFQWTNwb1lOeXBLTnJlc3NUZ2MxMkpzQW5ZUzdoRi9SQitFcXk1TDNwT2pD?=
- =?utf-8?B?TzZaRS9HOWtFbWVNbjIwRCtLSGNUb1pIOVNnTm5SOU5UODdxakhnYmxxL05O?=
- =?utf-8?B?VldNU2RDditjUnYzUWNmSktOY2QyczFxNkNDaFZRQnYySWliQXp3MTVUdTlH?=
- =?utf-8?B?MjF5UlBmNXhhTERjaVBJeGtLYlpyTXpuTWpEOU9BOHBRaU9Ia1RFQlNzaHZI?=
- =?utf-8?B?YUg0MHI0bTNMQ0dSclBGWUlMTWE0Z29xeEFlZEdvQWdEcnloOHZvWWtGaUhW?=
- =?utf-8?B?ejRDQ01pYkdLSXE2TUJZY1RSazJLOVNNMXpRUThkNWR2YjNFWWR2V05zdDE1?=
- =?utf-8?B?dzhQc05lOEVGb08vNlJEWXgxOG8ydzI1am1YaXljTFU0QzUrMGJrMUxoV1pK?=
- =?utf-8?B?enBiSDZ4RUZyL2RobDZVQ1U2MGdVQ3hVUUVqVlVaWWlsVk41V0E1cXhKaUw0?=
- =?utf-8?B?S0ovb1pBa2g0b2ZkQmZrd2srYkVNUkdiakYxQllZR1BaMCtYYzQrWXBNb00x?=
- =?utf-8?B?MmRuajhNRHd1UnR4cDkzSTE4bmMwTEhPZ2pPSFB6ckZLYkxCVXlVN3ZJQ2Vk?=
- =?utf-8?B?NDNoQThvQXNsMnU3TkFWeEVqZlRXY2F0SzZuVldTVitGUEh2aTFJck4zV3dT?=
- =?utf-8?B?RXM4clA5MWVnRVBwZC96RnQvSmE5TC85ZVFBZGVSSXdvcUZpam1oOVc5Y0Qx?=
- =?utf-8?B?cjZ4SGNja2xpdTcwVkNhUzVEbkFUVnU4c245NWVqUityWmUyUXlMVVVieXA5?=
- =?utf-8?B?OTJWTUhTdUJNTnpHSkNYOFk3RncwY0g5Vkg2dmdCZTBnUkcxMHFMeVN1UDlu?=
- =?utf-8?B?b05wY1JHVjJ2TzI3eXJVd0pkaW9KM0tUQlFPNjRQTHFBRVVOa1NZZGVzQXRC?=
- =?utf-8?B?N0dQemh2YlI2Tlg0K0tENGROVklpMEk5cjRGUzg5SzVhYzZVNUZ2K2lMYWl6?=
- =?utf-8?B?V3R1WmpLd2VVVVFDbmwvRGNCVU5mY3B4dTQwM0hpZlVUOWF5QzJZOE1DVHVl?=
- =?utf-8?B?ZlNYWlRmKzBjYjRxNWY0dHNxMTJ1TjZyNlRrSUlYeHdBMFdUQlBObVorTnF5?=
- =?utf-8?B?NmNWUUUycU54STdnZzV6dStmWHpYRVBocWZVejVRZGlFbWRhM0FoaWVicU94?=
- =?utf-8?B?cmhYMGNpNDdjK0c0VnR0L2hWK09nTksrR0V4cnExQnlocUhtUWd3VjMwVWxR?=
- =?utf-8?B?bnZuN3hzVEIyWDhoMDc4a1l3RVBHMVhERUtVMnVaVXlPSUhCNE5qVHNsWGdZ?=
- =?utf-8?B?alZjU2Nqc3Q3eEsySXhxdURTaWYyREd3emx2SzhKUWwxTE9wWmRLeXAzM1h0?=
- =?utf-8?B?WlZSMVlzbG52RFUrY2VlSG1yaVRTdldnS3QxMXdQRTI3empmRmIxMjhuK0JT?=
- =?utf-8?B?bURETlg0UUtQY0ZaeUI5T2w5NE5OZ2Z3OWh5SkxNMHRXb25yekdCVERicFlu?=
- =?utf-8?B?NWEzVEJCbjBhRWNHZWtQVVk1U25TLzl4U3RxcW5tNmtwUGxmVnRYK2FIbm9w?=
- =?utf-8?B?Mm1DRkZRb0Ezdk1VY3Z2OHZRWmZTdVlUeXBXN09PcnBYbEV2L1hUcnozbWlm?=
- =?utf-8?B?bFVNcmpTbXNjbU5HRWx1cGxOYkdNZk5YYTNNa2lGZnhWWTAwT045dGtJcWFY?=
- =?utf-8?B?VWtUd3pIYVRLdjdCRFdwb0xEdXREQm9nZzd3SjNqRUVrRmhFOWFIbjRvWGd2?=
- =?utf-8?B?VkNkaHR2QzljMUV6emhiU2VDQ0JObStvSWovV0ZaeUV4TzNTclJVdVJwQjBC?=
- =?utf-8?B?a1dpUXNJS1crTzEyYTBNUGI4bWdUZUswZmF4V2w0dllhY1lxSUpTeU1RZ1Jn?=
- =?utf-8?B?SGt6bXArM3RHWloycDYvaU9PWXlpVFF5UlU2MEwwUkVkOW0xaWdzL0YwQzZO?=
- =?utf-8?Q?y2JdMSzhbsfsH6F69Y43tMhHUaE4hATo42eErHkPEY=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <292FFA8AB3585F48A0F60501AEF9103A@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8yMT+d7jKYbct9ywMuRlFAbDkKmuVQ5EakaD36c9slk=;
+        b=CMQLiS9HOwnNg3rY8qtgRK6nrDVuMUsvs6wiAvrK0Jsc9wCsX/Z9Y8ZhLkG90ee5nP
+         0mKYV7MpjUQxzyyyPnnL0jzr9ELwIxVF6ao0kr8qgx6Gj5fskGO4F5brET1+NfCjreOY
+         01d5GymnsTndyu90KkhIZTMqgY53S7JnmuFnbftLRweQ+ki7WfGQZwIHDLTqE2t+qSJl
+         JwHbfd7pkHIpAqEazEOWAkushl9oKG5zISdt3UsWkDctdwMJEEjXxFzv3Q4/zPGX4WpI
+         LA+HXuhaO+TiMnAbT6LBpAeYVUpmhmMYv0/cmX6N+Rz+L6drqXaQhwKNpbmZQqn8wyw7
+         VdOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8yMT+d7jKYbct9ywMuRlFAbDkKmuVQ5EakaD36c9slk=;
+        b=PuZCyhs++HaqCOi8KANhxrlyGw+DS1ydHf0cV4SLzTJbcVv37Xhw+bcNz+XBokFz5u
+         6Q9W8O13oSJ8eQfG0XfRMXxQoWIfJSF8Q/2hfGnycALRdsfw4I+SQzR+or471Gd6ejgP
+         ipM2HygtBmjj/AU1O4Lgef8T8gDZ3yA8S8JfeQGIrkQLRNW3hwRfjSJTUeJs9MwXbPOJ
+         riqfBV/V9bWl2xiKXuAwjKPVZcSImNBCcg9V0EKsigucVoZNA0YA8KVEcifIPNZuECv9
+         dW98Z5Tn6WYgDvdrY/sMuygCfridlkOsLyM3AfgjcDRGnVWj50XtQoeoxqykRIK1wZ8C
+         LMNQ==
+X-Gm-Message-State: ACgBeo1XNkJcTL68WsEhbwRkbplf4qiO8jYSEo4f2q7UpTu5gK311Bgl
+        m1GZHUpE3bkzcSg6uceWswqJACsr1+s=
+X-Google-Smtp-Source: AA6agR7hzYzbqUwPO6huRe451ua7PVEfms7S0pCX39Ck2VPOAwwyV3C21sEx0mpIHboH9s9cZm309A==
+X-Received: by 2002:adf:fe0d:0:b0:220:5f88:ebef with SMTP id n13-20020adffe0d000000b002205f88ebefmr7468216wrr.349.1659452044756;
+        Tue, 02 Aug 2022 07:54:04 -0700 (PDT)
+Received: from [192.168.0.104] ([77.126.166.31])
+        by smtp.gmail.com with ESMTPSA id w13-20020adfee4d000000b0021f0af83142sm14929841wro.91.2022.08.02.07.54.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 07:54:04 -0700 (PDT)
+Message-ID: <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
+Date:   Tue, 2 Aug 2022 17:54:01 +0300
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f91ab262-03e5-4578-b15e-08da7494e623
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2022 14:40:09.0958
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lXclqlQeX0PNGSyQrGL/bvM5XsJjYOxHu3ID8q3oU7gGUPnaH56sEI2ilmUCvfrjxYBeZqvNvA6vZ86KuU9/d3sKgZbHdmWY3s4uVmMHr58=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1488
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v3 7/7] tls: rx: do not use the standard
+ strparser
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, vfedorenko@novek.ru,
+        Ran Rozenstein <ranro@nvidia.com>,
+        "gal@nvidia.com" <gal@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220722235033.2594446-1-kuba@kernel.org>
+ <20220722235033.2594446-8-kuba@kernel.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20220722235033.2594446-8-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIyLTA4LTAyIGF0IDEzOjU5ICswMzAwLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6
-DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50
-cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gT24gRnJpLCBK
-dWwgMjksIDIwMjIgYXQgMDg6NDc6MzNQTSArMDUzMCwgQXJ1biBSYW1hZG9zcyB3cm90ZToNCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMNCj4g
-PiBiL2RyaXZlcnMvbmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jDQo+ID4gaW5kZXggNTE2
-ZmI5ZDM1Yzg3Li44YTU1ODNiMWYyZjQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZHNh
-L21pY3JvY2hpcC9rc3pfY29tbW9uLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9kc2EvbWljcm9j
-aGlwL2tzel9jb21tb24uYw0KPiA+IEBAIC0xNjEsNiArMTYxLDcgQEAgc3RhdGljIGNvbnN0IHN0
-cnVjdCBrc3pfZGV2X29wcyBrc3o4X2Rldl9vcHMgPQ0KPiA+IHsNCj4gPiAgICAgICAudmxhbl9m
-aWx0ZXJpbmcgPSBrc3o4X3BvcnRfdmxhbl9maWx0ZXJpbmcsDQo+ID4gICAgICAgLnZsYW5fYWRk
-ID0ga3N6OF9wb3J0X3ZsYW5fYWRkLA0KPiA+ICAgICAgIC52bGFuX2RlbCA9IGtzejhfcG9ydF92
-bGFuX2RlbCwNCj4gPiArICAgICAuZHJvcF91bnRhZ2dlZCA9IGtzejhfcG9ydF9lbmFibGVfcHZp
-ZCwNCj4gDQo+IFlvdSdsbCBoYXZlIHRvIGV4cGxhaW4gdGhpcyBvbmUuIFdoYXQgaW1wYWN0IGRv
-ZXMgUFZJRCBpbnNlcnRpb24gb24NCj4gS1NaOA0KPiBoYXZlIHVwb24gZHJvcHBpbmcvbm90IGRy
-b3BwaW5nIHVudGFnZ2VkIHBhY2tldHM/IFRoaXMgcGF0Y2ggaXMNCj4gc2F5aW5nDQo+IHRoYXQg
-d2hlbiB1bnRhZ2dlZCBwYWNrZXRzIHNob3VsZCBiZSBkcm9wcGVkLCBQVklEIGluc2VydGlvbiBz
-aG91bGQNCj4gYmUNCj4gZW5hYmxlZCwgYW5kIHdoZW4gdW50YWdnZWQgcGFja2V0cyBzaG91bGQg
-YmUgYWNjZXB0ZWQsIFBWSUQgaW5zZXJ0aW9uDQo+IHNob3VsZCBiZSBkaXNhYmxlZC4gSG93IGNv
-bWU/DQoNCkl0cyBteSBtaXN0YWtlLiBJIHJlZmVycmVkIEtTWjg3eHggZGF0YXNoZWV0IGJ1dCBJ
-IGNvdWxkbid0IGZpbmQgdGhlDQpyZWdpc3RlciBmb3IgdGhlIGRyb3BwaW5nIHRoZSB1bnRhZ2dl
-ZCBwYWNrZXQuIElmIHRoYXQgaXMgdGhlIGNhc2UsDQpzaGFsbCBJIHJlbW92ZSB0aGUgZHJvcHBp
-bmcgb2YgdW50YWdnZWQgcGFja2V0IGZlYXR1cmUgZnJvbSB0aGUga3N6OA0Kc3dpdGNoZXM/DQoN
-Cj4gDQo+ID4gICAgICAgLm1pcnJvcl9hZGQgPSBrc3o4X3BvcnRfbWlycm9yX2FkZCwNCj4gPiAg
-ICAgICAubWlycm9yX2RlbCA9IGtzejhfcG9ydF9taXJyb3JfZGVsLA0KPiA+ICAgICAgIC5nZXRf
-Y2FwcyA9IGtzejhfZ2V0X2NhcHMsDQo+ID4gQEAgLTE4Nyw2ICsxODgsNyBAQCBzdGF0aWMgY29u
-c3Qgc3RydWN0IGtzel9kZXZfb3BzIGtzejk0NzdfZGV2X29wcw0KPiA+ID0gew0KPiA+ICAgICAg
-IC52bGFuX2ZpbHRlcmluZyA9IGtzejk0NzdfcG9ydF92bGFuX2ZpbHRlcmluZywNCj4gPiAgICAg
-ICAudmxhbl9hZGQgPSBrc3o5NDc3X3BvcnRfdmxhbl9hZGQsDQo+ID4gICAgICAgLnZsYW5fZGVs
-ID0ga3N6OTQ3N19wb3J0X3ZsYW5fZGVsLA0KPiA+ICsgICAgIC5kcm9wX3VudGFnZ2VkID0ga3N6
-OTQ3N19wb3J0X2Ryb3BfdW50YWdnZWQsDQo+ID4gICAgICAgLm1pcnJvcl9hZGQgPSBrc3o5NDc3
-X3BvcnRfbWlycm9yX2FkZCwNCj4gPiAgICAgICAubWlycm9yX2RlbCA9IGtzejk0NzdfcG9ydF9t
-aXJyb3JfZGVsLA0KPiA+ICAgICAgIC5nZXRfY2FwcyA9IGtzejk0NzdfZ2V0X2NhcHMsDQo+ID4g
-QEAgLTIyMCw2ICsyMjIsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGtzel9kZXZfb3BzIGxhbjkz
-N3hfZGV2X29wcw0KPiA+ID0gew0KPiA+ICAgICAgIC52bGFuX2ZpbHRlcmluZyA9IGtzejk0Nzdf
-cG9ydF92bGFuX2ZpbHRlcmluZywNCj4gPiAgICAgICAudmxhbl9hZGQgPSBrc3o5NDc3X3BvcnRf
-dmxhbl9hZGQsDQo+ID4gICAgICAgLnZsYW5fZGVsID0ga3N6OTQ3N19wb3J0X3ZsYW5fZGVsLA0K
-PiA+ICsgICAgIC5kcm9wX3VudGFnZ2VkID0ga3N6OTQ3N19wb3J0X2Ryb3BfdW50YWdnZWQsDQo+
-ID4gICAgICAgLm1pcnJvcl9hZGQgPSBrc3o5NDc3X3BvcnRfbWlycm9yX2FkZCwNCj4gPiAgICAg
-ICAubWlycm9yX2RlbCA9IGtzejk0NzdfcG9ydF9taXJyb3JfZGVsLA0KPiA+ICAgICAgIC5nZXRf
-Y2FwcyA9IGxhbjkzN3hfcGh5bGlua19nZXRfY2FwcywNCj4gPiBAQCAtMTI1NCw2ICsxMjU3LDkg
-QEAgc3RhdGljIGludCBrc3pfZW5hYmxlX3BvcnQoc3RydWN0IGRzYV9zd2l0Y2gNCj4gPiAqZHMs
-IGludCBwb3J0LA0KPiA+ICB7DQo+ID4gICAgICAgc3RydWN0IGtzel9kZXZpY2UgKmRldiA9IGRz
-LT5wcml2Ow0KPiA+IA0KPiA+ICsgICAgIGRldi0+ZGV2X29wcy0+dmxhbl9hZGQoZGV2LCBwb3J0
-LCBLU1pfREVGQVVMVF9WTEFOLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgQlJJ
-REdFX1ZMQU5fSU5GT19VTlRBR0dFRCk7DQo+ID4gKw0KPiANCj4gSG93IG1hbnkgdGltZXMgY2Fu
-IHRoaXMgYmUgZXhlY3V0ZWQgYmVmb3JlIHRoZSBWTEFOIGFkZCBvcGVyYXRpb24NCj4gZmFpbHMN
-Cj4gZHVlIHRvIHRoZSBWTEFOIGFscmVhZHkgYmVpbmcgcHJlc2VudCBvbiB0aGUgcG9ydD8gSSBu
-b3RpY2UgeW91J3JlDQo+IGlnbm9yaW5nIHRoZSByZXR1cm4gY29kZS4gV291bGRuJ3QgaXQgYmUg
-YmV0dGVyIHRvIGRvIHRoaXMgYXQNCj4gcG9ydF9zZXR1cCgpIHRpbWUgaW5zdGVhZD8NCj4gDQo+
-IChzaWRlIG5vdGUsIHRoZSBQVklEIGZvciBzdGFuZGFsb25lIG1vZGUgY2FuIGJlIGFkZGVkIGF0
-IHBvcnRfc2V0dXANCj4gdGltZS4gVGhlIFBWSUQgdG8gdXNlIGZvciBicmlkZ2VzIGluIFZMQU4t
-dW5hd2FyZSBtb2RlIGNhbiBiZQ0KPiBhbGxvY2F0ZWQNCj4gYXQgcG9ydF9icmlkZ2Vfam9pbiB0
-aW1lKQ0KDQpPay4gSSB3aWxsIGFkZCBpbiBwb3J0X2JyaWRnZV9qb2luIGZ1bmN0aW9uIGZvciBi
-cmlkZ2Ugdmxhbl9hd2FyZQ0KcG9ydHMuDQoNCj4gDQo+ID4gICAgICAgaWYgKCFkc2FfaXNfdXNl
-cl9wb3J0KGRzLCBwb3J0KSkNCj4gPiAgICAgICAgICAgICAgIHJldHVybiAwOw0KPiA+IA0KPiA+
-ICtzdGF0aWMgaW50IGtzel9jb21taXRfcHZpZChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBw
-b3J0KQ0KPiA+ICt7DQo+ID4gKyAgICAgc3RydWN0IGRzYV9wb3J0ICpkcCA9IGRzYV90b19wb3J0
-KGRzLCBwb3J0KTsNCj4gPiArICAgICBzdHJ1Y3QgbmV0X2RldmljZSAqYnIgPSBkc2FfcG9ydF9i
-cmlkZ2VfZGV2X2dldChkcCk7DQo+ID4gKyAgICAgc3RydWN0IGtzel9kZXZpY2UgKmRldiA9IGRz
-LT5wcml2Ow0KPiA+ICsgICAgIHUxNiBwdmlkID0gS1NaX0RFRkFVTFRfVkxBTjsNCj4gPiArICAg
-ICBib29sIGRyb3BfdW50YWdnZWQgPSBmYWxzZTsNCj4gPiArICAgICBzdHJ1Y3Qga3N6X3BvcnQg
-KnA7DQo+ID4gKw0KPiA+ICsgICAgIHAgPSAmZGV2LT5wb3J0c1twb3J0XTsNCj4gPiArDQo+ID4g
-KyAgICAgaWYgKGJyICYmIGJyX3ZsYW5fZW5hYmxlZChicikpIHsNCj4gPiArICAgICAgICAgICAg
-IHB2aWQgPSBwLT5icmlkZ2VfcHZpZC52aWQ7DQo+ID4gKyAgICAgICAgICAgICBkcm9wX3VudGFn
-Z2VkID0gIXAtPmJyaWRnZV9wdmlkLnZhbGlkOw0KPiA+ICsgICAgIH0NCj4gDQo+IFRoaXMgaXMg
-YmV0dGVyIGluIHRoZSBzZW5zZSB0aGF0IGl0IHJlc29sdmVzIHRoZSBuZWVkIGZvciB0aGUNCj4g
-Y29uZmlndXJlX3ZsYW5fd2hpbGVfbm90X2ZpbHRlcmluZyBoYWNrLiBCdXQgc3RhbmRhbG9uZSBh
-bmQgVkxBTi0NCj4gdW5hd2FyZQ0KPiBicmlkZ2UgcG9ydHMgc3RpbGwgc2hhcmUgdGhlIHNhbWUg
-UFZJRC4gRXZlbiBtb3JlIHNvLCBzdGFuZGFsb25lDQo+IHBvcnRzDQo+IGhhdmUgYWRkcmVzcyBs
-ZWFybmluZyBlbmFibGVkLCB3aGljaCB3aWxsIHBvaXNvbiB0aGUgYWRkcmVzcyBkYXRhYmFzZQ0K
-PiBvZg0KPiBWTEFOLXVuYXdhcmUgYnJpZGdlIHBvcnRzIChhbmQgb2Ygb3RoZXIgc3RhbmRhbG9u
-ZSBwb3J0cyk6DQo+IA0KaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wcm9qZWN0L25ldGRl
-dmJwZi9wYXRjaC8yMDIyMDgwMjAwMjYzNi4zOTYzMDI1LTEtdmxhZGltaXIub2x0ZWFuQG54cC5j
-b20vDQo+IA0KPiBBcmUgeW91IGdvaW5nIHRvIGRvIGZ1cnRoZXIgd29yayBpbiB0aGlzIGFyZWE/
-DQoNCkZvciBub3csIEkgdGhvdWdodCBJIGNhbiBmaXggdGhlIGlzc3VlIGZvciBicmlkZ2Ugdmxh
-biB1bmF3YXJlIHBvcnQuIEkNCmhhdmUgZmV3IG90aGVyIHBhdGNoIHNlcmllcyB0byBiZSBzdWJt
-aXR0ZWQgbGlrZSBnUFRQLCB0YyBjb21tYW5kcy4gSWYNCnN0YW5kYWxvbmUgcG9ydCBmaXggYWxz
-byBuZWVkZWQgZm9yIHlvdXIgcGF0Y2ggc2VyaWVzIEkgY2FuIHdvcmsgb24gaXQNCm90aGVyd2lz
-ZSBJIGNhbiB0YWtlIHVwIGxhdGVyIHN0YWdlLg0KDQoNCj4gDQo+ID4gKw0KPiA+ICsgICAgIGtz
-el9zZXRfcHZpZChkZXYsIHBvcnQsIHB2aWQpOw0KPiA+ICsNCj4gPiArICAgICBpZiAoZGV2LT5k
-ZXZfb3BzLT5kcm9wX3VudGFnZ2VkKQ0KPiA+ICsgICAgICAgICAgICAgZGV2LT5kZXZfb3BzLT5k
-cm9wX3VudGFnZ2VkKGRldiwgcG9ydCwNCj4gPiBkcm9wX3VudGFnZ2VkKTsNCj4gPiArDQo+ID4g
-KyAgICAgcmV0dXJuIDA7DQo+ID4gK30NCg==
+
+
+On 7/23/2022 2:50 AM, Jakub Kicinski wrote:
+> TLS is a relatively poor fit for strparser. We pause the input
+> every time a message is received, wait for a read which will
+> decrypt the message, start the parser, repeat. strparser is
+> built to delineate the messages, wrap them in individual skbs
+> and let them float off into the stack or a different socket.
+> TLS wants the data pages and nothing else. There's no need
+> for TLS to keep cloning (and occasionally skb_unclone()'ing)
+> the TCP rx queue.
+> 
+> This patch uses a pre-allocated skb and attaches the skbs
+> from the TCP rx queue to it as frags. TLS is careful never
+> to modify the input skb without CoW'ing / detaching it first.
+> 
+> Since we call TCP rx queue cleanup directly we also get back
+> the benefit of skb deferred free.
+> 
+> Overall this results in a 6% gain in my benchmarks.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: borisp@nvidia.com
+> CC: john.fastabend@gmail.com
+> ---
+>   include/net/tls.h  |  19 +-
+>   net/tls/tls.h      |  24 ++-
+>   net/tls/tls_main.c |  20 +-
+>   net/tls/tls_strp.c | 484 +++++++++++++++++++++++++++++++++++++++++++--
+>   net/tls/tls_sw.c   |  80 ++++----
+>   5 files changed, 558 insertions(+), 69 deletions(-)
+> 
+
+Hi Jakub,
+
+The device offload flow got broken, we started getting the call trace 
+below in our regressions tests.
+
+Bisecting points to this one as the offending commit.
+
+I taking a look, but I'm less familiar with this change.
+Probably you have a direction?
+
+Regards,
+Tariq
+
+  [  407.560799] rcu: INFO: rcu_sched self-detected stall on CPU
+  [  407.561734] rcu: 	1-....: (5248 ticks this GP) 
+idle=51b/1/0x4000000000000000 softirq=41347/41347 fqs=2625
+  [  407.563101] 	(t=5250 jiffies g=65669 q=4492 ncpus=10)
+  [  407.563859] NMI backtrace for cpu 1
+  [  407.564430] CPU: 1 PID: 45266 Comm: iperf Not tainted 
+5.19.0-rc7_for-upstream_min-debug_5f35d2896553 #1
+  [  407.565766] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), 
+BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+  [  407.567319] Call Trace:
+  [  407.567772]  <IRQ>
+  [  407.568168]  dump_stack_lvl+0x34/0x44
+  [  407.568763]  nmi_cpu_backtrace.cold+0x30/0x70
+  [  407.569462]  ? lapic_can_unplug_cpu+0x70/0x70
+  [  407.570146]  nmi_trigger_cpumask_backtrace+0xef/0x100
+  [  407.570897]  trigger_single_cpu_backtrace+0x24/0x27
+  [  407.571635]  rcu_dump_cpu_stacks+0xa0/0xd9
+  [  407.572278]  rcu_sched_clock_irq.cold+0x111/0x2d3
+  [  407.573004]  update_process_times+0x5b/0x90
+  [  407.584227]  tick_sched_timer+0x88/0xa0
+  [  407.584855]  ? tick_sched_do_timer+0xf0/0xf0
+  [  407.585515]  __hrtimer_run_queues+0x139/0x290
+  [  407.586199]  hrtimer_interrupt+0x10e/0x240
+  [  407.586844]  __sysvec_apic_timer_interrupt+0x56/0xd0
+  [  407.587575]  sysvec_apic_timer_interrupt+0x6d/0x90
+  [  407.588293]  </IRQ>
+  [  407.588699]  <TASK>
+  [  407.589118]  asm_sysvec_apic_timer_interrupt+0x16/0x20
+  [  407.589886] RIP: 0010:tls_device_decrypted+0x7a/0x2e0
+  [  407.590641] Code: 83 e7 01 45 0f b6 e7 41 83 f7 01 48 85 d2 45 0f 
+b6 ff 74 1b 0f b6 82 83 00 00 00 48 8b 12 c0 e8 06 41 21 c4 83 f0 01 41 
+21 c7 <48> 85 d2 75 e5 8b 05 d3 71 ca 00 85 c0 0f 8f 4b 01 00 00 48 8b 85
+  [  407.593152] RSP: 0018:ffff8881a113bb60 EFLAGS: 00000202
+  [  407.593927] RAX: 0000000000000003 RBX: ffff88810e2d6000 RCX: 
+0000000000000000
+  [  407.594913] RDX: ffff8881792b80d8 RSI: ffff88814ef46800 RDI: 
+ffff8881792b8000
+  [  407.595904] RBP: ffff88814ef46800 R08: 7fffffffffffffff R09: 
+0000000000000001
+  [  407.596907] R10: ffff888105cd2200 R11: 0000000000022dd1 R12: 
+0000000000000000
+  [  407.597901] R13: ffff888108f45000 R14: ffff8881792b8000 R15: 
+0000000000000001
+  [  407.598897]  ? tls_rx_rec_wait+0x225/0x250
+  [  407.599539]  tls_rx_one_record+0xe4/0x2d0
+  [  407.600169]  tls_sw_recvmsg+0x380/0x910
+  [  407.600773]  ? 0xffffffff81000000
+  [  407.601336]  inet6_recvmsg+0x47/0xc0
+  [  407.601932]  ____sys_recvmsg+0x109/0x120
+  [  407.602554]  ? _copy_from_user+0x26/0x60
+  [  407.603171]  ? iovec_from_user+0x4a/0x150
+  [  407.603803]  ___sys_recvmsg+0xa4/0xe0
+  [  407.604394]  ? mlx5e_ktls_add_rx+0x349/0x430 [mlx5_core]
+  [  407.605262]  ? mlx5e_ktls_add_rx+0x3af/0x430 [mlx5_core]
+  [  407.606082]  ? tls_device_attach+0x60/0xe0
+  [  407.606721]  ? tls_set_device_offload_rx+0x11b/0x220
+  [  407.607464]  __sys_recvmsg+0x4e/0x90
+  [  407.608050]  do_syscall_64+0x3d/0x90
+  [  407.608631]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+  [  407.609400] RIP: 0033:0x7f7a41f856dd
+
+> diff --git a/include/net/tls.h b/include/net/tls.h
+> index 181c496b01b8..abb050b0df83 100644
+> --- a/include/net/tls.h
+> +++ b/include/net/tls.h
+> @@ -108,18 +108,33 @@ struct tls_sw_context_tx {
+>   	unsigned long tx_bitmask;
+>   };
+>   
+> +struct tls_strparser {
+> +	struct sock *sk;
+> +
+> +	u32 mark : 8;
+> +	u32 stopped : 1;
+> +	u32 copy_mode : 1;
+> +	u32 msg_ready : 1;
+> +
+> +	struct strp_msg stm;
+> +
+> +	struct sk_buff *anchor;
+> +	struct work_struct work;
+> +};
+> +
+>   struct tls_sw_context_rx {
+>   	struct crypto_aead *aead_recv;
+>   	struct crypto_wait async_wait;
+> -	struct strparser strp;
+>   	struct sk_buff_head rx_list;	/* list of decrypted 'data' records */
+>   	void (*saved_data_ready)(struct sock *sk);
+>   
+> -	struct sk_buff *recv_pkt;
+>   	u8 reader_present;
+>   	u8 async_capable:1;
+>   	u8 zc_capable:1;
+>   	u8 reader_contended:1;
+> +
+> +	struct tls_strparser strp;
+> +
+>   	atomic_t decrypt_pending;
+>   	/* protect crypto_wait with decrypt_pending*/
+>   	spinlock_t decrypt_compl_lock;
+> diff --git a/net/tls/tls.h b/net/tls/tls.h
+> index 154a3773e785..0e840a0c3437 100644
+> --- a/net/tls/tls.h
+> +++ b/net/tls/tls.h
+> @@ -1,4 +1,5 @@
+>   /*
+> + * Copyright (c) 2016 Tom Herbert <tom@herbertland.com>
+>    * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
+>    * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
+>    *
+> @@ -127,10 +128,24 @@ int tls_sw_fallback_init(struct sock *sk,
+>   			 struct tls_offload_context_tx *offload_ctx,
+>   			 struct tls_crypto_info *crypto_info);
+>   
+> +int tls_strp_dev_init(void);
+> +void tls_strp_dev_exit(void);
+> +
+> +void tls_strp_done(struct tls_strparser *strp);
+> +void tls_strp_stop(struct tls_strparser *strp);
+> +int tls_strp_init(struct tls_strparser *strp, struct sock *sk);
+> +void tls_strp_data_ready(struct tls_strparser *strp);
+> +
+> +void tls_strp_check_rcv(struct tls_strparser *strp);
+> +void tls_strp_msg_done(struct tls_strparser *strp);
+> +
+> +int tls_rx_msg_size(struct tls_strparser *strp, struct sk_buff *skb);
+> +void tls_rx_msg_ready(struct tls_strparser *strp);
+> +
+> +void tls_strp_msg_load(struct tls_strparser *strp, bool force_refresh);
+>   int tls_strp_msg_cow(struct tls_sw_context_rx *ctx);
+>   struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx);
+> -int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
+> -		      struct sk_buff_head *dst);
+> +int tls_strp_msg_hold(struct tls_strparser *strp, struct sk_buff_head *dst);
+>   
+>   static inline struct tls_msg *tls_msg(struct sk_buff *skb)
+>   {
+> @@ -141,12 +156,13 @@ static inline struct tls_msg *tls_msg(struct sk_buff *skb)
+>   
+>   static inline struct sk_buff *tls_strp_msg(struct tls_sw_context_rx *ctx)
+>   {
+> -	return ctx->recv_pkt;
+> +	DEBUG_NET_WARN_ON_ONCE(!ctx->strp.msg_ready || !ctx->strp.anchor->len);
+> +	return ctx->strp.anchor;
+>   }
+>   
+>   static inline bool tls_strp_msg_ready(struct tls_sw_context_rx *ctx)
+>   {
+> -	return ctx->recv_pkt;
+> +	return ctx->strp.msg_ready;
+>   }
+>   
+>   #ifdef CONFIG_TLS_DEVICE
+> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> index 9703636cfc60..08ddf9d837ae 100644
+> --- a/net/tls/tls_main.c
+> +++ b/net/tls/tls_main.c
+> @@ -725,6 +725,10 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
+>   	if (tx) {
+>   		ctx->sk_write_space = sk->sk_write_space;
+>   		sk->sk_write_space = tls_write_space;
+> +	} else {
+> +		struct tls_sw_context_rx *rx_ctx = tls_sw_ctx_rx(ctx);
+> +
+> +		tls_strp_check_rcv(&rx_ctx->strp);
+>   	}
+>   	return 0;
+>   
+> @@ -1141,20 +1145,28 @@ static int __init tls_register(void)
+>   	if (err)
+>   		return err;
+>   
+> +	err = tls_strp_dev_init();
+> +	if (err)
+> +		goto err_pernet;
+> +
+>   	err = tls_device_init();
+> -	if (err) {
+> -		unregister_pernet_subsys(&tls_proc_ops);
+> -		return err;
+> -	}
+> +	if (err)
+> +		goto err_strp;
+>   
+>   	tcp_register_ulp(&tcp_tls_ulp_ops);
+>   
+>   	return 0;
+> +err_strp:
+> +	tls_strp_dev_exit();
+> +err_pernet:
+> +	unregister_pernet_subsys(&tls_proc_ops);
+> +	return err;
+>   }
+>   
+>   static void __exit tls_unregister(void)
+>   {
+>   	tcp_unregister_ulp(&tcp_tls_ulp_ops);
+> +	tls_strp_dev_exit();
+>   	tls_device_cleanup();
+>   	unregister_pernet_subsys(&tls_proc_ops);
+>   }
+> diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
+> index d9bb4f23f01a..b945288c312e 100644
+> --- a/net/tls/tls_strp.c
+> +++ b/net/tls/tls_strp.c
+> @@ -1,37 +1,493 @@
+>   // SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2016 Tom Herbert <tom@herbertland.com> */
+>   
+>   #include <linux/skbuff.h>
+> +#include <linux/workqueue.h>
+> +#include <net/strparser.h>
+> +#include <net/tcp.h>
+> +#include <net/sock.h>
+> +#include <net/tls.h>
+>   
+>   #include "tls.h"
+>   
+> -struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx)
+> +static struct workqueue_struct *tls_strp_wq;
+> +
+> +static void tls_strp_abort_strp(struct tls_strparser *strp, int err)
+> +{
+> +	if (strp->stopped)
+> +		return;
+> +
+> +	strp->stopped = 1;
+> +
+> +	/* Report an error on the lower socket */
+> +	strp->sk->sk_err = -err;
+> +	sk_error_report(strp->sk);
+> +}
+> +
+> +static void tls_strp_anchor_free(struct tls_strparser *strp)
+>   {
+> +	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
+> +
+> +	DEBUG_NET_WARN_ON_ONCE(atomic_read(&shinfo->dataref) != 1);
+> +	shinfo->frag_list = NULL;
+> +	consume_skb(strp->anchor);
+> +	strp->anchor = NULL;
+> +}
+> +
+> +/* Create a new skb with the contents of input copied to its page frags */
+> +static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
+> +{
+> +	struct strp_msg *rxm;
+>   	struct sk_buff *skb;
+> +	int i, err, offset;
+> +
+> +	skb = alloc_skb_with_frags(0, strp->anchor->len, TLS_PAGE_ORDER,
+> +				   &err, strp->sk->sk_allocation);
+> +	if (!skb)
+> +		return NULL;
+> +
+> +	offset = strp->stm.offset;
+> +	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+> +		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+>   
+> -	skb = ctx->recv_pkt;
+> -	ctx->recv_pkt = NULL;
+> +		WARN_ON_ONCE(skb_copy_bits(strp->anchor, offset,
+> +					   skb_frag_address(frag),
+> +					   skb_frag_size(frag)));
+> +		offset += skb_frag_size(frag);
+> +	}
+> +
+> +	skb_copy_header(skb, strp->anchor);
+> +	rxm = strp_msg(skb);
+> +	rxm->offset = 0;
+>   	return skb;
+>   }
+>   
+> +/* Steal the input skb, input msg is invalid after calling this function */
+> +struct sk_buff *tls_strp_msg_detach(struct tls_sw_context_rx *ctx)
+> +{
+> +	struct tls_strparser *strp = &ctx->strp;
+> +
+> +#ifdef CONFIG_TLS_DEVICE
+> +	DEBUG_NET_WARN_ON_ONCE(!strp->anchor->decrypted);
+> +#else
+> +	/* This function turns an input into an output,
+> +	 * that can only happen if we have offload.
+> +	 */
+> +	WARN_ON(1);
+> +#endif
+> +
+> +	if (strp->copy_mode) {
+> +		struct sk_buff *skb;
+> +
+> +		/* Replace anchor with an empty skb, this is a little
+> +		 * dangerous but __tls_cur_msg() warns on empty skbs
+> +		 * so hopefully we'll catch abuses.
+> +		 */
+> +		skb = alloc_skb(0, strp->sk->sk_allocation);
+> +		if (!skb)
+> +			return NULL;
+> +
+> +		swap(strp->anchor, skb);
+> +		return skb;
+> +	}
+> +
+> +	return tls_strp_msg_make_copy(strp);
+> +}
+> +
+> +/* Force the input skb to be in copy mode. The data ownership remains
+> + * with the input skb itself (meaning unpause will wipe it) but it can
+> + * be modified.
+> + */
+>   int tls_strp_msg_cow(struct tls_sw_context_rx *ctx)
+>   {
+> -	struct sk_buff *unused;
+> -	int nsg;
+> +	struct tls_strparser *strp = &ctx->strp;
+> +	struct sk_buff *skb;
+> +
+> +	if (strp->copy_mode)
+> +		return 0;
+> +
+> +	skb = tls_strp_msg_make_copy(strp);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+> +	tls_strp_anchor_free(strp);
+> +	strp->anchor = skb;
+> +
+> +	tcp_read_done(strp->sk, strp->stm.full_len);
+> +	strp->copy_mode = 1;
+> +
+> +	return 0;
+> +}
+> +
+> +/* Make a clone (in the skb sense) of the input msg to keep a reference
+> + * to the underlying data. The reference-holding skbs get placed on
+> + * @dst.
+> + */
+> +int tls_strp_msg_hold(struct tls_strparser *strp, struct sk_buff_head *dst)
+> +{
+> +	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
+> +
+> +	if (strp->copy_mode) {
+> +		struct sk_buff *skb;
+> +
+> +		WARN_ON_ONCE(!shinfo->nr_frags);
+> +
+> +		/* We can't skb_clone() the anchor, it gets wiped by unpause */
+> +		skb = alloc_skb(0, strp->sk->sk_allocation);
+> +		if (!skb)
+> +			return -ENOMEM;
+> +
+> +		__skb_queue_tail(dst, strp->anchor);
+> +		strp->anchor = skb;
+> +	} else {
+> +		struct sk_buff *iter, *clone;
+> +		int chunk, len, offset;
+> +
+> +		offset = strp->stm.offset;
+> +		len = strp->stm.full_len;
+> +		iter = shinfo->frag_list;
+> +
+> +		while (len > 0) {
+> +			if (iter->len <= offset) {
+> +				offset -= iter->len;
+> +				goto next;
+> +			}
+> +
+> +			chunk = iter->len - offset;
+> +			offset = 0;
+> +
+> +			clone = skb_clone(iter, strp->sk->sk_allocation);
+> +			if (!clone)
+> +				return -ENOMEM;
+> +			__skb_queue_tail(dst, clone);
+> +
+> +			len -= chunk;
+> +next:
+> +			iter = iter->next;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void tls_strp_flush_anchor_copy(struct tls_strparser *strp)
+> +{
+> +	struct skb_shared_info *shinfo = skb_shinfo(strp->anchor);
+> +	int i;
+> +
+> +	DEBUG_NET_WARN_ON_ONCE(atomic_read(&shinfo->dataref) != 1);
+> +
+> +	for (i = 0; i < shinfo->nr_frags; i++)
+> +		__skb_frag_unref(&shinfo->frags[i], false);
+> +	shinfo->nr_frags = 0;
+> +	strp->copy_mode = 0;
+> +}
+> +
+> +static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
+> +			   unsigned int offset, size_t in_len)
+> +{
+> +	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
+> +	size_t sz, len, chunk;
+> +	struct sk_buff *skb;
+> +	skb_frag_t *frag;
+> +
+> +	if (strp->msg_ready)
+> +		return 0;
+> +
+> +	skb = strp->anchor;
+> +	frag = &skb_shinfo(skb)->frags[skb->len / PAGE_SIZE];
+> +
+> +	len = in_len;
+> +	/* First make sure we got the header */
+> +	if (!strp->stm.full_len) {
+> +		/* Assume one page is more than enough for headers */
+> +		chunk =	min_t(size_t, len, PAGE_SIZE - skb_frag_size(frag));
+> +		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
+> +					   skb_frag_address(frag) +
+> +					   skb_frag_size(frag),
+> +					   chunk));
+> +
+> +		sz = tls_rx_msg_size(strp, strp->anchor);
+> +		if (sz < 0) {
+> +			desc->error = sz;
+> +			return 0;
+> +		}
+> +
+> +		/* We may have over-read, sz == 0 is guaranteed under-read */
+> +		if (sz > 0)
+> +			chunk =	min_t(size_t, chunk, sz - skb->len);
+> +
+> +		skb->len += chunk;
+> +		skb->data_len += chunk;
+> +		skb_frag_size_add(frag, chunk);
+> +		frag++;
+> +		len -= chunk;
+> +		offset += chunk;
+> +
+> +		strp->stm.full_len = sz;
+> +		if (!strp->stm.full_len)
+> +			goto read_done;
+> +	}
+> +
+> +	/* Load up more data */
+> +	while (len && strp->stm.full_len > skb->len) {
+> +		chunk =	min_t(size_t, len, strp->stm.full_len - skb->len);
+> +		chunk = min_t(size_t, chunk, PAGE_SIZE - skb_frag_size(frag));
+> +		WARN_ON_ONCE(skb_copy_bits(in_skb, offset,
+> +					   skb_frag_address(frag) +
+> +					   skb_frag_size(frag),
+> +					   chunk));
+> +
+> +		skb->len += chunk;
+> +		skb->data_len += chunk;
+> +		skb_frag_size_add(frag, chunk);
+> +		frag++;
+> +		len -= chunk;
+> +		offset += chunk;
+> +	}
+> +
+> +	if (strp->stm.full_len == skb->len) {
+> +		desc->count = 0;
+> +
+> +		strp->msg_ready = 1;
+> +		tls_rx_msg_ready(strp);
+> +	}
+> +
+> +read_done:
+> +	return in_len - len;
+> +}
+> +
+> +static int tls_strp_read_copyin(struct tls_strparser *strp)
+> +{
+> +	struct socket *sock = strp->sk->sk_socket;
+> +	read_descriptor_t desc;
+> +
+> +	desc.arg.data = strp;
+> +	desc.error = 0;
+> +	desc.count = 1; /* give more than one skb per call */
+> +
+> +	/* sk should be locked here, so okay to do read_sock */
+> +	sock->ops->read_sock(strp->sk, &desc, tls_strp_copyin);
+> +
+> +	return desc.error;
+> +}
+> +
+> +static int tls_strp_read_short(struct tls_strparser *strp)
+> +{
+> +	struct skb_shared_info *shinfo;
+> +	struct page *page;
+> +	int need_spc, len;
+> +
+> +	/* If the rbuf is small or rcv window has collapsed to 0 we need
+> +	 * to read the data out. Otherwise the connection will stall.
+> +	 * Without pressure threshold of INT_MAX will never be ready.
+> +	 */
+> +	if (likely(!tcp_epollin_ready(strp->sk, INT_MAX)))
+> +		return 0;
+> +
+> +	shinfo = skb_shinfo(strp->anchor);
+> +	shinfo->frag_list = NULL;
+> +
+> +	/* If we don't know the length go max plus page for cipher overhead */
+> +	need_spc = strp->stm.full_len ?: TLS_MAX_PAYLOAD_SIZE + PAGE_SIZE;
+> +
+> +	for (len = need_spc; len > 0; len -= PAGE_SIZE) {
+> +		page = alloc_page(strp->sk->sk_allocation);
+> +		if (!page) {
+> +			tls_strp_flush_anchor_copy(strp);
+> +			return -ENOMEM;
+> +		}
+> +
+> +		skb_fill_page_desc(strp->anchor, shinfo->nr_frags++,
+> +				   page, 0, 0);
+> +	}
+> +
+> +	strp->copy_mode = 1;
+> +	strp->stm.offset = 0;
+> +
+> +	strp->anchor->len = 0;
+> +	strp->anchor->data_len = 0;
+> +	strp->anchor->truesize = round_up(need_spc, PAGE_SIZE);
+> +
+> +	tls_strp_read_copyin(strp);
+> +
+> +	return 0;
+> +}
+> +
+> +static void tls_strp_load_anchor_with_queue(struct tls_strparser *strp, int len)
+> +{
+> +	struct tcp_sock *tp = tcp_sk(strp->sk);
+> +	struct sk_buff *first;
+> +	u32 offset;
+> +
+> +	first = tcp_recv_skb(strp->sk, tp->copied_seq, &offset);
+> +	if (WARN_ON_ONCE(!first))
+> +		return;
+> +
+> +	/* Bestow the state onto the anchor */
+> +	strp->anchor->len = offset + len;
+> +	strp->anchor->data_len = offset + len;
+> +	strp->anchor->truesize = offset + len;
+> +
+> +	skb_shinfo(strp->anchor)->frag_list = first;
+> +
+> +	skb_copy_header(strp->anchor, first);
+> +	strp->anchor->destructor = NULL;
+> +
+> +	strp->stm.offset = offset;
+> +}
+> +
+> +void tls_strp_msg_load(struct tls_strparser *strp, bool force_refresh)
+> +{
+> +	struct strp_msg *rxm;
+> +	struct tls_msg *tlm;
+> +
+> +	DEBUG_NET_WARN_ON_ONCE(!strp->msg_ready);
+> +	DEBUG_NET_WARN_ON_ONCE(!strp->stm.full_len);
+> +
+> +	if (!strp->copy_mode && force_refresh) {
+> +		if (WARN_ON(tcp_inq(strp->sk) < strp->stm.full_len))
+> +			return;
+> +
+> +		tls_strp_load_anchor_with_queue(strp, strp->stm.full_len);
+> +	}
+> +
+> +	rxm = strp_msg(strp->anchor);
+> +	rxm->full_len	= strp->stm.full_len;
+> +	rxm->offset	= strp->stm.offset;
+> +	tlm = tls_msg(strp->anchor);
+> +	tlm->control	= strp->mark;
+> +}
+> +
+> +/* Called with lock held on lower socket */
+> +static int tls_strp_read_sock(struct tls_strparser *strp)
+> +{
+> +	int sz, inq;
+> +
+> +	inq = tcp_inq(strp->sk);
+> +	if (inq < 1)
+> +		return 0;
+> +
+> +	if (unlikely(strp->copy_mode))
+> +		return tls_strp_read_copyin(strp);
+> +
+> +	if (inq < strp->stm.full_len)
+> +		return tls_strp_read_short(strp);
+> +
+> +	if (!strp->stm.full_len) {
+> +		tls_strp_load_anchor_with_queue(strp, inq);
+> +
+> +		sz = tls_rx_msg_size(strp, strp->anchor);
+> +		if (sz < 0) {
+> +			tls_strp_abort_strp(strp, sz);
+> +			return sz;
+> +		}
+> +
+> +		strp->stm.full_len = sz;
+> +
+> +		if (!strp->stm.full_len || inq < strp->stm.full_len)
+> +			return tls_strp_read_short(strp);
+> +	}
+> +
+> +	strp->msg_ready = 1;
+> +	tls_rx_msg_ready(strp);
+> +
+> +	return 0;
+> +}
+> +
+> +void tls_strp_check_rcv(struct tls_strparser *strp)
+> +{
+> +	if (unlikely(strp->stopped) || strp->msg_ready)
+> +		return;
+> +
+> +	if (tls_strp_read_sock(strp) == -ENOMEM)
+> +		queue_work(tls_strp_wq, &strp->work);
+> +}
+> +
+> +/* Lower sock lock held */
+> +void tls_strp_data_ready(struct tls_strparser *strp)
+> +{
+> +	/* This check is needed to synchronize with do_tls_strp_work.
+> +	 * do_tls_strp_work acquires a process lock (lock_sock) whereas
+> +	 * the lock held here is bh_lock_sock. The two locks can be
+> +	 * held by different threads at the same time, but bh_lock_sock
+> +	 * allows a thread in BH context to safely check if the process
+> +	 * lock is held. In this case, if the lock is held, queue work.
+> +	 */
+> +	if (sock_owned_by_user_nocheck(strp->sk)) {
+> +		queue_work(tls_strp_wq, &strp->work);
+> +		return;
+> +	}
+> +
+> +	tls_strp_check_rcv(strp);
+> +}
+> +
+> +static void tls_strp_work(struct work_struct *w)
+> +{
+> +	struct tls_strparser *strp =
+> +		container_of(w, struct tls_strparser, work);
+> +
+> +	lock_sock(strp->sk);
+> +	tls_strp_check_rcv(strp);
+> +	release_sock(strp->sk);
+> +}
+> +
+> +void tls_strp_msg_done(struct tls_strparser *strp)
+> +{
+> +	WARN_ON(!strp->stm.full_len);
+> +
+> +	if (likely(!strp->copy_mode))
+> +		tcp_read_done(strp->sk, strp->stm.full_len);
+> +	else
+> +		tls_strp_flush_anchor_copy(strp);
+> +
+> +	strp->msg_ready = 0;
+> +	memset(&strp->stm, 0, sizeof(strp->stm));
+> +
+> +	tls_strp_check_rcv(strp);
+> +}
+> +
+> +void tls_strp_stop(struct tls_strparser *strp)
+> +{
+> +	strp->stopped = 1;
+> +}
+> +
+> +int tls_strp_init(struct tls_strparser *strp, struct sock *sk)
+> +{
+> +	memset(strp, 0, sizeof(*strp));
+> +
+> +	strp->sk = sk;
+> +
+> +	strp->anchor = alloc_skb(0, GFP_KERNEL);
+> +	if (!strp->anchor)
+> +		return -ENOMEM;
+> +
+> +	INIT_WORK(&strp->work, tls_strp_work);
+>   
+> -	nsg = skb_cow_data(ctx->recv_pkt, 0, &unused);
+> -	if (nsg < 0)
+> -		return nsg;
+>   	return 0;
+>   }
+>   
+> -int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
+> -		      struct sk_buff_head *dst)
+> +/* strp must already be stopped so that tls_strp_recv will no longer be called.
+> + * Note that tls_strp_done is not called with the lower socket held.
+> + */
+> +void tls_strp_done(struct tls_strparser *strp)
+>   {
+> -	struct sk_buff *clone;
+> +	WARN_ON(!strp->stopped);
+>   
+> -	clone = skb_clone(skb, sk->sk_allocation);
+> -	if (!clone)
+> +	cancel_work_sync(&strp->work);
+> +	tls_strp_anchor_free(strp);
+> +}
+> +
+> +int __init tls_strp_dev_init(void)
+> +{
+> +	tls_strp_wq = create_singlethread_workqueue("kstrp");
+> +	if (unlikely(!tls_strp_wq))
+>   		return -ENOMEM;
+> -	__skb_queue_tail(dst, clone);
+> +
+>   	return 0;
+>   }
+> +
+> +void tls_strp_dev_exit(void)
+> +{
+> +	destroy_workqueue(tls_strp_wq);
+> +}
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index bd4486819e64..0fc24a5ce208 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -1283,7 +1283,7 @@ int tls_sw_sendpage(struct sock *sk, struct page *page,
+>   
+>   static int
+>   tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+> -		long timeo)
+> +		bool released, long timeo)
+>   {
+>   	struct tls_context *tls_ctx = tls_get_ctx(sk);
+>   	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+> @@ -1297,7 +1297,7 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+>   			return sock_error(sk);
+>   
+>   		if (!skb_queue_empty(&sk->sk_receive_queue)) {
+> -			__strp_unpause(&ctx->strp);
+> +			tls_strp_check_rcv(&ctx->strp);
+>   			if (tls_strp_msg_ready(ctx))
+>   				break;
+>   		}
+> @@ -1311,6 +1311,7 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+>   		if (nonblock || !timeo)
+>   			return -EAGAIN;
+>   
+> +		released = true;
+>   		add_wait_queue(sk_sleep(sk), &wait);
+>   		sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+>   		sk_wait_event(sk, &timeo,
+> @@ -1325,6 +1326,8 @@ tls_rx_rec_wait(struct sock *sk, struct sk_psock *psock, bool nonblock,
+>   			return sock_intr_errno(timeo);
+>   	}
+>   
+> +	tls_strp_msg_load(&ctx->strp, released);
+> +
+>   	return 1;
+>   }
+>   
+> @@ -1570,7 +1573,7 @@ static int tls_decrypt_sg(struct sock *sk, struct iov_iter *out_iov,
+>   	clear_skb = NULL;
+>   
+>   	if (unlikely(darg->async)) {
+> -		err = tls_strp_msg_hold(sk, skb, &ctx->async_hold);
+> +		err = tls_strp_msg_hold(&ctx->strp, &ctx->async_hold);
+>   		if (err)
+>   			__skb_queue_tail(&ctx->async_hold, darg->skb);
+>   		return err;
+> @@ -1734,9 +1737,7 @@ static int tls_record_content_type(struct msghdr *msg, struct tls_msg *tlm,
+>   
+>   static void tls_rx_rec_done(struct tls_sw_context_rx *ctx)
+>   {
+> -	consume_skb(ctx->recv_pkt);
+> -	ctx->recv_pkt = NULL;
+> -	__strp_unpause(&ctx->strp);
+> +	tls_strp_msg_done(&ctx->strp);
+>   }
+>   
+>   /* This function traverses the rx_list in tls receive context to copies the
+> @@ -1823,7 +1824,7 @@ static int process_rx_list(struct tls_sw_context_rx *ctx,
+>   	return copied ? : err;
+>   }
+>   
+> -static void
+> +static bool
+>   tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
+>   		       size_t len_left, size_t decrypted, ssize_t done,
+>   		       size_t *flushed_at)
+> @@ -1831,14 +1832,14 @@ tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
+>   	size_t max_rec;
+>   
+>   	if (len_left <= decrypted)
+> -		return;
+> +		return false;
+>   
+>   	max_rec = prot->overhead_size - prot->tail_size + TLS_MAX_PAYLOAD_SIZE;
+>   	if (done - *flushed_at < SZ_128K && tcp_inq(sk) > max_rec)
+> -		return;
+> +		return false;
+>   
+>   	*flushed_at = done;
+> -	sk_flush_backlog(sk);
+> +	return sk_flush_backlog(sk);
+>   }
+>   
+>   static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
+> @@ -1916,6 +1917,7 @@ int tls_sw_recvmsg(struct sock *sk,
+>   	long timeo;
+>   	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
+>   	bool is_peek = flags & MSG_PEEK;
+> +	bool released = true;
+>   	bool bpf_strp_enabled;
+>   	bool zc_capable;
+>   
+> @@ -1952,7 +1954,8 @@ int tls_sw_recvmsg(struct sock *sk,
+>   		struct tls_decrypt_arg darg;
+>   		int to_decrypt, chunk;
+>   
+> -		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, timeo);
+> +		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, released,
+> +				      timeo);
+>   		if (err <= 0) {
+>   			if (psock) {
+>   				chunk = sk_msg_recvmsg(sk, psock, msg, len,
+> @@ -1968,8 +1971,8 @@ int tls_sw_recvmsg(struct sock *sk,
+>   
+>   		memset(&darg.inargs, 0, sizeof(darg.inargs));
+>   
+> -		rxm = strp_msg(ctx->recv_pkt);
+> -		tlm = tls_msg(ctx->recv_pkt);
+> +		rxm = strp_msg(tls_strp_msg(ctx));
+> +		tlm = tls_msg(tls_strp_msg(ctx));
+>   
+>   		to_decrypt = rxm->full_len - prot->overhead_size;
+>   
+> @@ -2008,8 +2011,9 @@ int tls_sw_recvmsg(struct sock *sk,
+>   		}
+>   
+>   		/* periodically flush backlog, and feed strparser */
+> -		tls_read_flush_backlog(sk, prot, len, to_decrypt,
+> -				       decrypted + copied, &flushed_at);
+> +		released = tls_read_flush_backlog(sk, prot, len, to_decrypt,
+> +						  decrypted + copied,
+> +						  &flushed_at);
+>   
+>   		/* TLS 1.3 may have updated the length by more than overhead */
+>   		rxm = strp_msg(darg.skb);
+> @@ -2020,7 +2024,7 @@ int tls_sw_recvmsg(struct sock *sk,
+>   			bool partially_consumed = chunk > len;
+>   			struct sk_buff *skb = darg.skb;
+>   
+> -			DEBUG_NET_WARN_ON_ONCE(darg.skb == ctx->recv_pkt);
+> +			DEBUG_NET_WARN_ON_ONCE(darg.skb == tls_strp_msg(ctx));
+>   
+>   			if (async) {
+>   				/* TLS 1.2-only, to_decrypt must be text len */
+> @@ -2034,6 +2038,7 @@ int tls_sw_recvmsg(struct sock *sk,
+>   			}
+>   
+>   			if (bpf_strp_enabled) {
+> +				released = true;
+>   				err = sk_psock_tls_strp_read(psock, skb);
+>   				if (err != __SK_PASS) {
+>   					rxm->offset = rxm->offset + rxm->full_len;
+> @@ -2140,7 +2145,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+>   		struct tls_decrypt_arg darg;
+>   
+>   		err = tls_rx_rec_wait(sk, NULL, flags & SPLICE_F_NONBLOCK,
+> -				      timeo);
+> +				      true, timeo);
+>   		if (err <= 0)
+>   			goto splice_read_end;
+>   
+> @@ -2204,19 +2209,17 @@ bool tls_sw_sock_is_readable(struct sock *sk)
+>   		!skb_queue_empty(&ctx->rx_list);
+>   }
+>   
+> -static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
+> +int tls_rx_msg_size(struct tls_strparser *strp, struct sk_buff *skb)
+>   {
+>   	struct tls_context *tls_ctx = tls_get_ctx(strp->sk);
+>   	struct tls_prot_info *prot = &tls_ctx->prot_info;
+>   	char header[TLS_HEADER_SIZE + MAX_IV_SIZE];
+> -	struct strp_msg *rxm = strp_msg(skb);
+> -	struct tls_msg *tlm = tls_msg(skb);
+>   	size_t cipher_overhead;
+>   	size_t data_len = 0;
+>   	int ret;
+>   
+>   	/* Verify that we have a full TLS header, or wait for more data */
+> -	if (rxm->offset + prot->prepend_size > skb->len)
+> +	if (strp->stm.offset + prot->prepend_size > skb->len)
+>   		return 0;
+>   
+>   	/* Sanity-check size of on-stack buffer. */
+> @@ -2226,11 +2229,11 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
+>   	}
+>   
+>   	/* Linearize header to local buffer */
+> -	ret = skb_copy_bits(skb, rxm->offset, header, prot->prepend_size);
+> +	ret = skb_copy_bits(skb, strp->stm.offset, header, prot->prepend_size);
+>   	if (ret < 0)
+>   		goto read_failure;
+>   
+> -	tlm->control = header[0];
+> +	strp->mark = header[0];
+>   
+>   	data_len = ((header[4] & 0xFF) | (header[3] << 8));
+>   
+> @@ -2257,7 +2260,7 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
+>   	}
+>   
+>   	tls_device_rx_resync_new_rec(strp->sk, data_len + TLS_HEADER_SIZE,
+> -				     TCP_SKB_CB(skb)->seq + rxm->offset);
+> +				     TCP_SKB_CB(skb)->seq + strp->stm.offset);
+>   	return data_len + TLS_HEADER_SIZE;
+>   
+>   read_failure:
+> @@ -2266,14 +2269,11 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
+>   	return ret;
+>   }
+>   
+> -static void tls_queue(struct strparser *strp, struct sk_buff *skb)
+> +void tls_rx_msg_ready(struct tls_strparser *strp)
+>   {
+> -	struct tls_context *tls_ctx = tls_get_ctx(strp->sk);
+> -	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+> -
+> -	ctx->recv_pkt = skb;
+> -	strp_pause(strp);
+> +	struct tls_sw_context_rx *ctx;
+>   
+> +	ctx = container_of(strp, struct tls_sw_context_rx, strp);
+>   	ctx->saved_data_ready(strp->sk);
+>   }
+>   
+> @@ -2283,7 +2283,7 @@ static void tls_data_ready(struct sock *sk)
+>   	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+>   	struct sk_psock *psock;
+>   
+> -	strp_data_ready(&ctx->strp);
+> +	tls_strp_data_ready(&ctx->strp);
+>   
+>   	psock = sk_psock_get(sk);
+>   	if (psock) {
+> @@ -2359,13 +2359,11 @@ void tls_sw_release_resources_rx(struct sock *sk)
+>   	kfree(tls_ctx->rx.iv);
+>   
+>   	if (ctx->aead_recv) {
+> -		kfree_skb(ctx->recv_pkt);
+> -		ctx->recv_pkt = NULL;
+>   		__skb_queue_purge(&ctx->rx_list);
+>   		crypto_free_aead(ctx->aead_recv);
+> -		strp_stop(&ctx->strp);
+> +		tls_strp_stop(&ctx->strp);
+>   		/* If tls_sw_strparser_arm() was not called (cleanup paths)
+> -		 * we still want to strp_stop(), but sk->sk_data_ready was
+> +		 * we still want to tls_strp_stop(), but sk->sk_data_ready was
+>   		 * never swapped.
+>   		 */
+>   		if (ctx->saved_data_ready) {
+> @@ -2380,7 +2378,7 @@ void tls_sw_strparser_done(struct tls_context *tls_ctx)
+>   {
+>   	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+>   
+> -	strp_done(&ctx->strp);
+> +	tls_strp_done(&ctx->strp);
+>   }
+>   
+>   void tls_sw_free_ctx_rx(struct tls_context *tls_ctx)
+> @@ -2453,8 +2451,6 @@ void tls_sw_strparser_arm(struct sock *sk, struct tls_context *tls_ctx)
+>   	rx_ctx->saved_data_ready = sk->sk_data_ready;
+>   	sk->sk_data_ready = tls_data_ready;
+>   	write_unlock_bh(&sk->sk_callback_lock);
+> -
+> -	strp_check_rcv(&rx_ctx->strp);
+>   }
+>   
+>   void tls_update_rx_zc_capable(struct tls_context *tls_ctx)
+> @@ -2474,7 +2470,6 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
+>   	struct tls_sw_context_rx *sw_ctx_rx = NULL;
+>   	struct cipher_context *cctx;
+>   	struct crypto_aead **aead;
+> -	struct strp_callbacks cb;
+>   	u16 nonce_size, tag_size, iv_size, rec_seq_size, salt_size;
+>   	struct crypto_tfm *tfm;
+>   	char *iv, *rec_seq, *key, *salt, *cipher_name;
+> @@ -2708,12 +2703,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
+>   			crypto_info->version != TLS_1_3_VERSION &&
+>   			!!(tfm->__crt_alg->cra_flags & CRYPTO_ALG_ASYNC);
+>   
+> -		/* Set up strparser */
+> -		memset(&cb, 0, sizeof(cb));
+> -		cb.rcv_msg = tls_queue;
+> -		cb.parse_msg = tls_read_size;
+> -
+> -		strp_init(&sw_ctx_rx->strp, sk, &cb);
+> +		tls_strp_init(&sw_ctx_rx->strp, sk);
+>   	}
+>   
+>   	goto out;
