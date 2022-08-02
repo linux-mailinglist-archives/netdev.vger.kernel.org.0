@@ -2,170 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8419E588215
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 20:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9320D58824D
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 21:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiHBSuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 14:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
+        id S229554AbiHBTLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 15:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbiHBSuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 14:50:16 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54913DB1
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 11:50:15 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id v16-20020a17090abb9000b001f25244c65dso19343130pjr.2
-        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 11:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aac9j45GR9uYAD1SGPgfBYWslDXmHEZ8DMgeT1dj72U=;
-        b=E/WmHTST9dqFho7a9hm5NF8dd4RJxy7cuU+v9uQleca9KM34azKlJ7tdsit4xH0RG7
-         RqPlMQxu3IpEoHn8rEecaV/ZpLhXK1rMWZEOXI1lPEApJQ9Z6Vx2DFxDxT51OBh291jM
-         gj8W6mG7XO+ROT0qodm0atypYijWsppOoL1AIJC46OG3YtRFZBq6TigKddJlBdLdjVsZ
-         1PzggMWeQNdS09FYOiPMSLZdbedIUHH3hEQ1UdqPCE/VszU7RZ0mfLWx3QYQcq6hv+eL
-         vMy0J3pD/S+EvvXCmayy06Ap1FKL2CL1Y0HCNYQAdpqi45GrfQalcnLMM9r8sd3lyyne
-         6qiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aac9j45GR9uYAD1SGPgfBYWslDXmHEZ8DMgeT1dj72U=;
-        b=N+NaAJoBxc4QdHZW40gvW8U1Taaq2K1Un6u9XrAiy9PuLnFLY69jIkydfVrppabmqh
-         AFDD3azuPt2Vk+i8cVp9vcbZZKp71PxzOPhkMaKPMPOdQfHbbx5C0ndIaqYTCzqhnVTQ
-         695LNjPGko9Fwj31Q7PnwCeBIChGY3nWn8XwOEmWMToQa0UAgMl3YTo5KI8W4XBw2NH2
-         qsFkvkDbKYto0sdZYKexToHOFm7vFZueyK4SP764AhRRdF+XaIy9Mz9e6ZgNhngfu9wN
-         bJy0ajCv85Uo7IqyXOO3tlzPFOe66OyH6daSRhsQon7IoApiSFgPVM7kQ08QQRaCw6Hp
-         XVRQ==
-X-Gm-Message-State: ACgBeo3+12g5xy92qN6JixPeSY3YN/qvd38wWVlht8lrxx13R9H7B+1C
-        iaF7fO7QqGzTcSGEJUbi1F6wUIYNsrRpVg==
-X-Google-Smtp-Source: AA6agR50+x+jIQpYViQyO37tZ3e1vGDwPIFhzOCLjWqId1yEjs7KamDvjKRgn3nH+YNGw1ATDkUIGg==
-X-Received: by 2002:a17:90b:4b89:b0:1f5:68b:b14e with SMTP id lr9-20020a17090b4b8900b001f5068bb14emr923360pjb.30.1659466214391;
-        Tue, 02 Aug 2022 11:50:14 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id o15-20020a17090a55cf00b001f333fab3d6sm9815232pjm.18.2022.08.02.11.50.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 11:50:14 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 11:50:10 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [ANNOUNCE] iproute2 5.19 release
-Message-ID: <20220802115010.22c11d14@hermes.local>
+        with ESMTP id S233477AbiHBTKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 15:10:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CAC959A
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 12:10:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 16542CE214B
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 19:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D0EC433C1;
+        Tue,  2 Aug 2022 19:10:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659467431;
+        bh=wyUzEALP4WH8+lMOlXgteuDuygTRuPjpa5dJmeBuKo0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HY2HmrRVZRCiE2vI4AGiy2b4pfE1Fu+zXzmXLKhn5ZRBr/ubu9bAzM7UpozdqzMo5
+         reSmLOjZrZgBFN5gDDt3YnXYWo1I28JBuay9MROzvNV6+JaA0pD7Bm4hQJ+ePV3fF8
+         F/0y5HMY6YFzQZLtAYNts5e7fO1ExUTeiF2TZTVkclIgid5eEoXLrU+854yJYwWqQy
+         lDDMQ4qVgG4MCIoYgXWqEqi6YzT4AfAIHXjsfElPl6B7fKfAkphPJqujDyt3/vZREe
+         NZgdwt1F6ux+j6KRUd52EmSnkKfMfoXNl7vJee7I0hq/7nkJ9eHnyAAMhBp0zunreG
+         4PTd5WXe4uspg==
+Date:   Tue, 2 Aug 2022 12:10:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH v3 net 1/4] net: bonding: replace dev_trans_start() with
+ the jiffies of the last ARP/NS
+Message-ID: <20220802121029.13b9020b@kernel.org>
+In-Reply-To: <16274.1659463241@famine>
+References: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
+        <20220731124108.2810233-2-vladimir.oltean@nxp.com>
+        <1547.1659293635@famine>
+        <20220731191327.cey4ziiez5tvcxpy@skbuf>
+        <5679.1659402295@famine>
+        <20220802014553.rtyzpkdvwnqje44l@skbuf>
+        <d04773ee3e6b6dee88a1362bbc537bf51b020238.camel@redhat.com>
+        <20220802091110.036d40dd@kernel.org>
+        <20220802163027.z4hjr5en2vcjaek5@skbuf>
+        <e11a02756a3253362a1ef17c8b43478b68cc15ba.camel@redhat.com>
+        <16274.1659463241@famine>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the release of iproute2 corresponding to the 5.19 kernel.
-Usual array of small fixes.
+On Tue, 02 Aug 2022 11:00:41 -0700 Jay Vosburgh wrote:
+> >> Alternatively, would it be more comfortable to just put this
+> >> patch (1/4) to stable and not backport the others?   
+> >
+> >The above works for me - I thought it was not ok for Jay, but since he
+> >is proposing such sulution, I guess I was wrong.  
+> 
+> 	My original reluctance was that I hadn't had an opportunity to
+> sufficiently review the patch set to think through the potential
+> regressions.  There might be something I haven't thought of, but I think
+> would only manifest in very unusual configurations.
+> 
+> 	I'm ok with applying the series to net-next when it's available,
+> and backporting 1/4 for stable (and 4/4 with it, since that's the
+> documentation update).
+> 
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
-There are still some warnings with gcc-12 that are caused by kernel
-header issues that need to be fixed upstream. Looks like they may
-make it into next release (6.0!).
+One more time, sorry :) If I'm reading things right Vladimir and 
+I would like this to be part of 5.20, Paolo is okay with that,
+Jay would prefer to delay it until 5.21.
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.19.0.tar.gz
+Is that right?
 
-Repository for current release
-    https://github.com/shemminger/iproute2.git
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
-
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-Contributions:
-
-Andrea Claudi (2):
-      l2tp: fix typo in AF_INET6 checksum JSON print
-      man: tc-ct.8: fix example
-
-Baligh Gasmi (1):
-      ip/iplink_virt_wifi: add support for virt_wifi
-
-Benjamin Poirier (5):
-      ip address: Fix memory leak when specifying device
-      bridge: Fix memory leak when doing 'fdb get'
-      mptcp: Fix memory leak when doing 'endpoint show'
-      mptcp: Fix memory leak when getting limits
-      ip neigh: Fix memory leak when doing 'get'
-
-Boris Sukholitko (3):
-      f_flower: Add num of vlans parameter
-      f_flower: Check args with num_of_vlans
-      f_flower: add number of vlans man entry
-
-David Ahern (5):
-      Update kernel headers
-      libbpf: Use bpf_object__load instead of bpf_object__load_xattr
-      libbpf: Remove use of bpf_program__set_priv and bpf_program__priv
-      libbpf: Remove use of bpf_map_is_offload_neutral
-      Update kernel headers
-
-Jiri Pirko (1):
-      devlink: introduce -[he]x cmdline option to allow dumping numbers in hex format
-
-Juhee Kang (1):
-      bpf_glue: include errno.h
-
-Nikolay Aleksandrov (1):
-      bridge: vni: add support for stats dumping
-
-Petr Machata (25):
-      libnetlink: Add filtering to rtnl_statsdump_req_filter()
-      ip: Publish functions for stats formatting
-      ip: Add a new family of commands, "stats"
-      ipstats: Add a "set" command
-      ipstats: Add a shell of "show" command
-      ipstats: Add a group "link"
-      ipstats: Add a group "offload", subgroup "cpu_hit"
-      ipstats: Add offload subgroup "hw_stats_info"
-      ipstats: Add offload subgroup "l3_stats"
-      ipmonitor: Add monitoring support for stats events
-      man: Add man pages for the "stats" functions
-      ip: ipstats: Do not assume length of response attribute payload
-      iplink: Fix formatting of MPLS stats
-      iplink: Publish a function to format MPLS stats
-      ipstats: Add a group "afstats", subgroup "mpls"
-      iplink: Add JSON support to MPLS stats formatter
-      ipstats: Add a third level of stats hierarchy, a "suite"
-      ipstats: Add groups "xstats", "xstats_slave"
-      iplink_bridge: Split bridge_print_stats_attr()
-      ipstats: Expose bridge stats in ipstats
-      ipstats: Expose bond stats in ipstats
-      man: ip-stats.8: Describe groups xstats, xstats_slave and afstats
-      ip: Convert non-constant initializers to macros
-      ip: Fix size_columns() for very large values
-      ip: Fix size_columns() invocation that passes a 32-bit quantity
-
-Roopa Prabhu (2):
-      bridge: vxlan device vnifilter support
-      ip: iplink_vxlan: add support to set vnifiltering flag on vxlan device
-
-Stephen Hemminger (13):
-      ip-link: put types on man page in alphabetic order
-      uapi: update socket.h
-      uapi: change name for zerocopy sendfile in tls
-      genl: fix duplicate include guard
-      tc: declaration hides parameter
-      uapi: update mptcp.h
-      uapi: update bpf.h
-      uapi: add vdpa.h
-      uapi: add virtio_ring.h
-      Revert "uapi: add vdpa.h"
-      vdpa: update uapi headers from 5.19-rc7
-      rdma: update uapi/ib_user_verbs.h
-      v5.19.0
-
-Yuki Inoguchi (2):
-      man: tc-fq_codel: Fix a typo.
-      man: tc-fq_codel: add drop_batch
-
+My preference for 5.20 is because we do have active users reporting
+problems in stable, and by moving to 5.21 we're delaying things by
+2 weeks. At the same time, 5.20 vs 5.21 doesn't matter as we intend 
+to hit stable users with these change before either of those is out.
