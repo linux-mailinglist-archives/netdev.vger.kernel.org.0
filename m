@@ -2,69 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C425588042
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 18:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3181588047
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 18:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiHBQ32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 12:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38140 "EHLO
+        id S230366AbiHBQag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 12:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232846AbiHBQ31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 12:29:27 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3723C33E0E
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 09:29:26 -0700 (PDT)
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5A5C73F464
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 16:29:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1659457761;
-        bh=1Hb65tRMoI26SspFVybFEyCmUoPfVdEbMP7rGOmyF6U=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=aefQ9WlJnpECVkjTGG6EgyE0XTW210wnHMb83AVS+UYQBCUacUakBNR/ewe6TYgxV
-         TJdgEoIyOkkM8ULOvdD9MBaA+Pbn2wUeWe74ey27B1a4NtocoqglZGK+MrCospUi7I
-         kqTF7vV1EuuO2n5zPqNhzpmX3gid2kDznfKIfJSU/lNmmScSfNgguxca1lvZguTy2C
-         C7ILEq5KE+gUGD41Rf4NZkzEBa69RMxK79AdyzdFrI3aILXJ9FLpgFtRDaziy1Q28/
-         fKYrKGBqz0O1Grn0dRYJelzuMjx6z8omIK+chMii7e54NxApCVedlzK1uqGW08RcAj
-         hXdngIgNKpulw==
-Received: by mail-pl1-f198.google.com with SMTP id ix21-20020a170902f81500b0016ee5379fe5so4015016plb.18
-        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 09:29:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:content-id:mime-version:comments:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=1Hb65tRMoI26SspFVybFEyCmUoPfVdEbMP7rGOmyF6U=;
-        b=WlbnA/xo6ydZRmxESq9vupstaBFCbYJWqyAHmxbK3pen0ENPLZjJPDIZ9tPRrSOa+r
-         5q2tXZsY8meLB69eRk6BNVlrr1WIFVuG7b5Elaz9aPGrBCJEl9NFcy7bZr+FKlOnjM3S
-         BBj9wXNjuxmv0rwG0sPnhd8bgA5XF6+tkpMnd3zYbxjS55OCfNlCtzyrAc67pLQZj0+b
-         Nsu5K2Gz3R4QS/E6JJ+UZtIscRdOtSNYRpVSlw3CpFsf2y4UVM8SN2JJsDVUkZBo8F5l
-         3yIEpxldp2hIV34xafpORsMN8sjc84jYq0114oaCp74bSokvrLPg3ynlccZTb5BYrTm3
-         Xb+A==
-X-Gm-Message-State: ACgBeo34vm2eXyTJxW7t9oewUFw3mVII+/nOzbwLcSZY1YOQvIj6aUV3
-        HV5hksNm6itl1z7xBTr0Z7uUJhUga8tAnVRzNRQToKOio101czNYfF3Mi3sCLBTXOOYtxJExSYC
-        cPO2/DQXcnrC8zTEOaLlr+lWj6FKvulpO2Q==
-X-Received: by 2002:a17:90a:c718:b0:1f4:238f:f50d with SMTP id o24-20020a17090ac71800b001f4238ff50dmr306945pjt.104.1659457759910;
-        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5tladpQzdY1jKfuqCqMlb2iN1z4V+jgRczg/w8t3XMjut7Jz8U36wctoWbpduAP2sLc/mFEw==
-X-Received: by 2002:a17:90a:c718:b0:1f4:238f:f50d with SMTP id o24-20020a17090ac71800b001f4238ff50dmr306916pjt.104.1659457759644;
-        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id u5-20020a654c05000000b003fdc16f5de2sm9345358pgq.15.2022.08.02.09.29.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Aug 2022 09:29:19 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id DF4546118F; Tue,  2 Aug 2022 09:29:18 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id D6C149FA79;
-        Tue,  2 Aug 2022 09:29:18 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+        with ESMTP id S232689AbiHBQad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 12:30:33 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50058.outbound.protection.outlook.com [40.107.5.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2301582B
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 09:30:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MDcrzM+6x1iSQW8l22JZ6otPxbiZlySiuuQ2zc7Ih7hLiqe2zpQLgztTnTgKzGIJiw6qLaZqrSeLA92RR76kilXvyATjP4m7XN+aU1/WL3V2EGFkqBA5Vg9jvCNqLIQSERAW/pF9nACYg+/GaBFFeBZYM1sF2Ywbf75nh3Bvn4QqoiSBkIlZuCzS4qMwBAqBSBuDLSJvKWlEl7Gcp0+fCrHcZ1pMIoCW7criWjYo3csqsmecf8RYKHO+8DX7SVG61btwwmA/SeFSHF1usuClV66QzF2z8MqVZL82Hie8264MzF8+qaUJBrzd3Dvl9XJN3pawvC64vsqimvx78b2SWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8NTFpLT9XvdydQISmJoc/3fyO+cpwkJU9EAPM5RoyjY=;
+ b=N9lpnztMkMJJe7PGrD2hGj5o0NrSouGdQOfMmvAqUD0hykpwK3NutQ/b0cdJMbbGq5sZyfhTd0alZ0pCt4Iwze3nv1xbCS8Na5MpwiCrUAJJ1li4pJRVQS/y7wspf3eXmwPo0IQzzdBTlQLZx8YuMb3IZ/rUmLUmpqmKBtcbkKdcEghGpvnmhLgPy01mCNP9APcMCi2WAl8LrB/IohtTTrv3yzfugiNBOzguYiNX12mSdgulrYFUMXnh/52v0H1OCzlmfDrC2Xil2wI/gb31kKlflhXueWpDvHAuAC/H6vbmQ6MpL8ipOKsY40pqox+SVq74CQtqOYZWeNdkiQQPvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8NTFpLT9XvdydQISmJoc/3fyO+cpwkJU9EAPM5RoyjY=;
+ b=Zm/HraBra07K3r0XFT7WARm/DF4QJjDg38CVB7ww9NjqpRe9iOwSq+ZXB0oZzJpNulNNpA7QF2Xb9vA5ulq2Gsz5roPn2UxHV61IqWB1995AnUsy4dcvIlfewBGzjTuGGFBTfIy+IZdTmCZh/4lhjUl+mbqodgBYYNudW1jGjUI=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR0402MB3605.eurprd04.prod.outlook.com (2603:10a6:209:3::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.13; Tue, 2 Aug
+ 2022 16:30:28 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
+ 16:30:28 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -80,65 +56,121 @@ cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH v3 net 1/4] net: bonding: replace dev_trans_start() with the jiffies of the last ARP/NS
-In-reply-to: <20220802091110.036d40dd@kernel.org>
-References: <20220731124108.2810233-1-vladimir.oltean@nxp.com> <20220731124108.2810233-2-vladimir.oltean@nxp.com> <1547.1659293635@famine> <20220731191327.cey4ziiez5tvcxpy@skbuf> <5679.1659402295@famine> <20220802014553.rtyzpkdvwnqje44l@skbuf> <d04773ee3e6b6dee88a1362bbc537bf51b020238.camel@redhat.com> <20220802091110.036d40dd@kernel.org>
-Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
-   message dated "Tue, 02 Aug 2022 09:11:10 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
-MIME-Version: 1.0
+Subject: Re: [PATCH v3 net 1/4] net: bonding: replace dev_trans_start() with
+ the jiffies of the last ARP/NS
+Thread-Topic: [PATCH v3 net 1/4] net: bonding: replace dev_trans_start() with
+ the jiffies of the last ARP/NS
+Thread-Index: AQHYpNrWi6m59GuIdkGFbFAEw5L52q2Y1A6AgAAFdYCAAfSIgIAAC3KAgAB6x4CAAHb7AIAABWOA
+Date:   Tue, 2 Aug 2022 16:30:28 +0000
+Message-ID: <20220802163027.z4hjr5en2vcjaek5@skbuf>
+References: <20220731124108.2810233-1-vladimir.oltean@nxp.com>
+ <20220731124108.2810233-2-vladimir.oltean@nxp.com> <1547.1659293635@famine>
+ <20220731191327.cey4ziiez5tvcxpy@skbuf> <5679.1659402295@famine>
+ <20220802014553.rtyzpkdvwnqje44l@skbuf>
+ <d04773ee3e6b6dee88a1362bbc537bf51b020238.camel@redhat.com>
+ <20220802091110.036d40dd@kernel.org>
+In-Reply-To: <20220802091110.036d40dd@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c5ce7def-71a3-4404-bc74-08da74a44f63
+x-ms-traffictypediagnostic: AM6PR0402MB3605:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: O9/Cp+JIEuY06Y46zcM1lppe34dndYtKEZqPUqLxsZHWT2wnShfPoumlnEGsFW5pEwDf7yaBDRTo9TmdXIIet4iZ511CclLcNDalifI8dALx7IuOBc2LApwy1qMjmpgL6MGzEWePxHQ8UNw7KCTH7koYk2IMJaS7z62IK4ixJKXYr1bvJyIPYBbuPH3fc/IOm3/AQa30eWDlYZ3Dzehy9sVe14s2LBb00VVkyiaGrgPPK+AoIlNZ4PSQnGqiggVz7mS6wYC0SsM5vKrsuKZxDpA/GHFledwymeCjBacdJJbYdYtCJ6OxqI3p8TW+rbKLv+ztehq/oLRn/iJHZca9M8kLFvI4Ka0Pmzc6QHqTTqN2FgoFZLplvzT4rl9VL3iPuthbOWCao8PP8aeBYe3lo/dd2OWMLMva9ry17PaZEgKBufMrciOnWP/BfwWnOKlRuDVye8IyQJfIq/bdufFdHHunj7kEVuxJoavtq+IbFSyCm5ATchJCHT2Dp7G2HZuf52I2k3uXAWPfr5F5GOE1/CDKHaq6Tcu6yPQ/Nfv7Kzk5ukdqBv0cLARCMw8QMLmnAm+fR+GfAF0cFVweJt8y3nffNxqdC7FGmXRzXmObgB/HkCSwt7evQ119lJ09TSI5aTwhgIM35WLAHCfmHN7YlfL9ipqcz8hfr3MH53Ta4xH3ZPSk+kyGP5TFjS4sVI39az9AWI3D3EP0MkR2XmYD1IaejX2mOjX5AmxfjJB461QEjVfmUCMILi7dSxKsnDnnMqTO5vVM0Xjwc4cpwn9xH3+WAfHLOljRGSoRgui/lDtg2nI3PedYv8U2MdV583qF259bDpo0M1SXV2OdHXcuZA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(346002)(39860400002)(376002)(396003)(136003)(38070700005)(86362001)(38100700002)(122000001)(66446008)(76116006)(64756008)(66476007)(66946007)(66556008)(8676002)(4326008)(316002)(91956017)(2906002)(33716001)(8936002)(5660300002)(7416002)(1076003)(26005)(44832011)(9686003)(186003)(6512007)(83380400001)(71200400001)(6916009)(54906003)(41300700001)(6506007)(478600001)(6486002)(966005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?G1/xCSEzhsrS6WJIkPeIWUy5RbEbDn21B0M/zcPCX8eSggoZtT6VziU2GkSU?=
+ =?us-ascii?Q?umKghCWKoa+xGafnsR9gJcQheSOudPNcdo+OfUuoeIgZlQjjS3rHk3hQZ/5O?=
+ =?us-ascii?Q?DyzIxacO8cqc6PI5+0Eica1lYQKObsUHKC+8SElVXsWexCRkjXJxZyklul3y?=
+ =?us-ascii?Q?2ic2AoB9EGt9Nbyp/YkicPNsEJpgCRY1n4v53aIozgZVDKBMo9cvHK4Miqfo?=
+ =?us-ascii?Q?1kuJbcQtA17MWmLuUGLeVRsiiUn8bsU7jQXQnOGCtSG42QPeqHLIMJabv2oE?=
+ =?us-ascii?Q?bn9XRn2+yUyasuh1aV1mAxWgYAauVesfwzfTKOAsAeQuzZKnpCAZiNAoF0NR?=
+ =?us-ascii?Q?TVvKJpuZL+zOqgWf1mtzS4MsRWk/SGRTbrCw2pCjRKCgt3FyENiykOWHbO3m?=
+ =?us-ascii?Q?NYV1o3HZ8T80PIkpXN8wdYxoHahE0WCtEfrOa1l3CCYuyMf/qnauucttCPzU?=
+ =?us-ascii?Q?zS6uoD6CTl4YLtR7zL2KTp9lRl0HMuqCOBJiaua3orR+2oUwwRHyjnmRhQFx?=
+ =?us-ascii?Q?sNYvgQe2M0HjOaBOEzdrXz97/blSNlH/zUSZ99yFU4Qt4zzzJBuhZ0SrvRtc?=
+ =?us-ascii?Q?g9FZaz1qrJG4IPHmwvVjMGLTYDMApmvSoIaxpFVIx3vFSgekiFWp3+hcrR+d?=
+ =?us-ascii?Q?j072WThc0rOcYxU57L3qyPlfXuMxyb72aQZNzNQQ6fO7l4veARgVET3G2iOy?=
+ =?us-ascii?Q?TiHj9ryRB89sIi27hvSiGicZ1mNEL+dnBL+GZDmODkEiePXhM+KPEFbiO1vx?=
+ =?us-ascii?Q?3JmubGIbVOycwGDQ5VEqE7fyNRi+LcwKEqNmMouVWHxPJ7Z6eMhXVoHeT6+F?=
+ =?us-ascii?Q?5BSrX3heBVVmosgZzTyEw0YrcXcNKCLJUXkd5X+sJuCI+RepsmKJpXKywI5x?=
+ =?us-ascii?Q?kz2ESJOlQcMpEvZsHprKyaffv8+YME5nMqw0XGzLH/eNDX8g+ISqXG0BnLlX?=
+ =?us-ascii?Q?MUYJ/wePCET2ZOdW5jdtYGWUTy7uHO6cQEB11quZladNjiFSkekRekelBP2i?=
+ =?us-ascii?Q?JnJEbdxnd0KSqirZ16KU6sb2MM1RLSg85qkni70rK0zBfp6WQ25a6u70kZAm?=
+ =?us-ascii?Q?jgoun441usz90H+t+TOJOjMOr3hTiLqS1d3BCM9n/BqEf704i+4H/ZNsiQ/X?=
+ =?us-ascii?Q?VdxRBgPHjxivkE76BYKrDwA+8WsRWlftpEXDG4QbtDaKJV0KHjtXvIiqbL9O?=
+ =?us-ascii?Q?ERggtfEfxIXfFlIX+w/riXEeaz2zIMKzIN//6/Xd57JVlmJLWfIqiXgoLfad?=
+ =?us-ascii?Q?9LLp1tFYV7zraq6vI8rlReeGrTR7TlhpDcadwdAqUed8KjN45APvTG5vjfqN?=
+ =?us-ascii?Q?Cx5j9pb4VKEmQkgKYlRdkpZ0f/Q4wUzZ4a9nM3pbwdngX7mp+XVP5vt+luBT?=
+ =?us-ascii?Q?p3CrbcC8YQbLoO/TNXhHCdu9anaKh1y1Pb5GSZWkggUWYmR7YnhNfRaGZ4j+?=
+ =?us-ascii?Q?1LqEz9HqG4VaFm18oBg1jxmCS5nl3VGWJ/sYiathxJVOVNTIMOCt+pRAZdlK?=
+ =?us-ascii?Q?HYyDOoQWEAwYVYsv8xtrZzv1LinX5DWfxPe0uVgDysPU5R/8aMPdlThIGMmH?=
+ =?us-ascii?Q?BcVgsdnHZMTCSupUBg0Vc3Lqjn6ATAODzHTP2Y3zR6BJTbd38BJ9xGGCTbRI?=
+ =?us-ascii?Q?jg=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <10960.1659457758.1@famine>
-Date:   Tue, 02 Aug 2022 09:29:18 -0700
-Message-ID: <10961.1659457758@famine>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-ID: <93AF961523A46B47A3C746EA6908BCB9@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5ce7def-71a3-4404-bc74-08da74a44f63
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2022 16:30:28.1585
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fShumKblMhtOy2TasV3KjN0j7+We/H8jR+pEl9gIkMiXSHkxLkCuuTTT/LWQnT67zvgFOkF+tmlTOAzL75mbcg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3605
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Aug 02, 2022 at 09:11:10AM -0700, Jakub Kicinski wrote:
+> On Tue, 02 Aug 2022 11:05:19 +0200 Paolo Abeni wrote:
+> > In any case, this looks like a significative rework, do you mind
+> > consider it for the net-next, when it re-open?
+>=20
+> It does seem like it could be a lot for stable.
+>=20
+> Perhaps we could take:
+>=20
+> https://lore.kernel.org/all/20220727152000.3616086-1-vladimir.oltean@nxp.=
+com/
+>=20
+> as is, without the extra work Stephen asked for (since it's gonna be
+> reverted in net-next, anyway)? How do you feel about that option?
 
->On Tue, 02 Aug 2022 11:05:19 +0200 Paolo Abeni wrote:
->> In any case, this looks like a significative rework, do you mind
->> consider it for the net-next, when it re-open?
->
->It does seem like it could be a lot for stable.
->
->Perhaps we could take:
->
->https://lore.kernel.org/all/20220727152000.3616086-1-vladimir.oltean@nxp.com/
->
->as is, without the extra work Stephen asked for (since it's gonna be
->reverted in net-next, anyway)? How do you feel about that option?
+The patch you've linked to doesn't really do something sane. Deferring the
+dev_trans_start() call to the lower device means, in the context of DSA,
+retrieving the trans_start of the master's TX queues. But the same DSA
+master (host port) services more than 1 DSA interface, so if you have
+swp0 and swp1 in a bond0 with ARP monitoring, and swp2 is running an
+iperf3 session, bond0 will happily interpret that as meaning that ARP
+packets are continuously being sent.
 
-	Would that mean that the older stable kernels end up with a
-different implementation that's unique to stable, or are you proposing
-to take the linked patch,
+Does it work, in the sense that the link comes up when it should, and
+doesn't when it shouldn't? Yeah, but this proves to me that most of the
+handling around the ARP monitor is just random gibberish/snake oil that
+could have simply not been written in the first place, or I'm missing
+some of the finer points. (happy to be proven wrong and see Cunningham's
+law work its magic)
 
-"net/sched: make dev_trans_start() have a better chance of working with
-stacked interfaces"
-
-	as a complete replacement for this series?
-
-	Alternatively, would it be more comfortable to just put this
-patch (1/4) to stable and not backport the others?  If I understand
-correctly, this patch enables the functionality, and the others are
-cleaning up logic that isn't necessary after 1/4 is applied.
-
-	I think this patch will work as described, and haven't thought
-of any non-crazy scenarios that it could break (e.g., things that depend
-on the "drop after arp_send" discussed elsewhere).
-
-	I also think this patch is preferable to the "stacked
-interfaces" patch: it limits the scope to just bonding, doesn't change
-dev_trans_start() itself, and should cover any type of interface in a
-bond.
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+How about applying this to the "net" tree when it starts tracking the
+5.20 release candidates (effectively a continuation of today's net-next),
+and I can send backport patches after a month or so of some more testing?
+I can prepare a backported version of this for 5.10 that Brian could
+keep in his system during this time, and we could watch that for further
+strange behavior.=
