@@ -2,225 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E89587694
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 07:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64A95876AC
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 07:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232422AbiHBFOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 01:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37792 "EHLO
+        id S235581AbiHBFbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 01:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiHBFOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 01:14:53 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21D617599;
-        Mon,  1 Aug 2022 22:14:48 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id uj29so10853602ejc.0;
-        Mon, 01 Aug 2022 22:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uWC1zUdJK3xsrbX0Ldz7N5AHy/1SKCqJSow34YlRh7s=;
-        b=kx13sSC0pSJQ4bGNEStYu4okcrSZsxZGZrqvL40AqMFEQM3M870vbq3nXYlxk9SiYs
-         6seSRnsK6yiVBlD3tpbcJUZPcIgBNFb4/DIj7S90SuGKmtKWFqUp4PKo+y8ONnIGVp9O
-         lkseGk4zIA2RK3LD1DkdA6MzApZLX5/4khpxODqYX5xr/hEKagv2/a5NaSbikfTRid8s
-         G1UPFpFAsBU91AaotegfocC9WQl+2Aq5vdVdbtiHbzQUcGl457M0s/AROMEzYXug5ba6
-         GeGaqrHW4PAiKrBH/qUEIzSUqc/MKX/6jyYpk5j9KvhGRshUoxuypXyj6Yrc5LpZtdlB
-         larQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uWC1zUdJK3xsrbX0Ldz7N5AHy/1SKCqJSow34YlRh7s=;
-        b=nMre4ypqCppfhgSWrWUUP5pe2RK6tgm1UN1I3UFPXrASjIoX9rMTDy2BC7mg7Jkhfe
-         +WoI7xMsoWhF2+MkFwy/ZcetwCxv/d5ZssEAm9DsF54PLEIbxXNMeP4QRMPrIpCCLJbz
-         vET/dbRrfi6NV45as5BXVyVDIqmvrMe7vHob4dJEb/zUDFXHgey/g7exxHRMFa67Uvww
-         xjjGSHSs1UGRvj5oBUQMtjEKvT6jNZ0a8kyl9pNGmAeHt4oq40LtjMIeKRZm/c6l5wVV
-         xdmCCj0Ayl3mvwzkm72j89GcHVM/LB9Rgrgex5LNclrRJTdTy0vr5b3jG729smveVQsa
-         VsBw==
-X-Gm-Message-State: AJIora/3P8I4rqcPYfGijS8QsMjoP4HGhBmmjsWy8+WYvceYIZS9J5oi
-        WFBM0cSwKk4C6pUNWnBruTvpT4Nis4dFT1xKbWQ=
-X-Google-Smtp-Source: AGRyM1uTQoVYCsqTpE6VJe+jcLfg26xbaHSBofjVW5AtlVA6tDsxSASoAfHhDP/cNpXbORnxz4fdEn7C62HjUUTMiAE=
-X-Received: by 2002:a17:907:3d94:b0:72b:54bc:aa38 with SMTP id
- he20-20020a1709073d9400b0072b54bcaa38mr15124074ejc.679.1659417287219; Mon, 01
- Aug 2022 22:14:47 -0700 (PDT)
+        with ESMTP id S230290AbiHBFbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 01:31:33 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2071.outbound.protection.outlook.com [40.107.212.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA411E3C2;
+        Mon,  1 Aug 2022 22:31:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eQ9RB4KrulAhXpo+okZ6M6sPa0IwJJUoBe+xHPq5q9yRJK60u9V5SHchzo1jjjobE0xPiV9U4aqbCSN2nATgpdBYhXSWBWTty9nWtnav1Vytwj5aIREj8uffqEL9HWaXiT97qVdWHYgYr67blIi7tvrloBmd4AvW4rt/+uIfL5sNawRfRYoyePBXzjVk6LCciUL28NMwO8yaxl/OLj5HOsHyfY+mSyFai72SCkqxiQU6dwayfcsmyhbyE4c5WswT4cpEd1pzg2nZj+9UwoGmCEzeV7pTO+XM9DANRo0T4+W1nnrJVKWJ4JGnQzEYC9MlyEVwwVOXoF3HkSKGP6YHxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2Bw9vNWnxDycufPy7lgFnIz3CCZZvq4e63znhIuyew4=;
+ b=OCxQ2C2RUIul+ju1neQmuz6BdbhrfJEDaweTEUMxLCNfFpmsYAiQ2HNKnDNdKdSjnYFgWaleikcsX8CMRc9C8jxJ93htRFEul0ptcrkIx8eT83XcBKjFtNZkRGVBNGNMcX0xq5nogZZb2/v+Jd32ENSOp/x6CNixeCU5U2dsFv2jIp6ZWds1Sri8psyNt20xwi2G8Ewwid6ocClHC1MWpoRy+KLZOTZY0Cz9W4v0Ayzsvc9OzJYKULyi8e9j7HARjPFyEFjqL+t0bnu5RO74lvx67a3KXqEP9AfLsksxCVIyaaAo+gO1t63TxSuJwIsGslIqQ+b870/E8jDfeTsAmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2Bw9vNWnxDycufPy7lgFnIz3CCZZvq4e63znhIuyew4=;
+ b=v5JueGYYxp2Tx8bEDPRZ2injCb3bsiUKxXdvmXo08s0vAvS4GxD7eNOeaDdIuWmOBzB1LF/ioI4UNlc9g02LH3ltNniqWvLCi1LJenJUyvQQ71D+RLJmJtwHSwKUG9P5yBBnWgGVDZJEwP2VcRzg89iqdKuCJziDGLNF6T7uXCw=
+Received: from BYAPR05MB3960.namprd05.prod.outlook.com (2603:10b6:a02:88::12)
+ by SN6PR05MB4751.namprd05.prod.outlook.com (2603:10b6:805:93::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.10; Tue, 2 Aug
+ 2022 05:31:27 +0000
+Received: from BYAPR05MB3960.namprd05.prod.outlook.com
+ ([fe80::959e:de9c:2ea:213a]) by BYAPR05MB3960.namprd05.prod.outlook.com
+ ([fe80::959e:de9c:2ea:213a%5]) with mapi id 15.20.5438.010; Tue, 2 Aug 2022
+ 05:31:26 +0000
+From:   Vishnu Dasa <vdasa@vmware.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+CC:     Stefano Garzarella <sgarzare@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Pv-drivers <Pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Topic: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Index: AQHYobWftGqT6D2PPUyTyofbXSwoca2TTYkAgAfRQoA=
+Date:   Tue, 2 Aug 2022 05:31:26 +0000
+Message-ID: <B67A3903-3AF5-40D0-9887-F2253F55C7EB@vmware.com>
+References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
+ <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
+ <d5166d4e-4892-4cdf-df01-4da43b8e269d@sberdevices.ru>
+In-Reply-To: <d5166d4e-4892-4cdf-df01-4da43b8e269d@sberdevices.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vmware.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6179d3fa-b5ba-4bd1-3d6b-08da74483eaf
+x-ms-traffictypediagnostic: SN6PR05MB4751:EE_
+x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: =?us-ascii?Q?ge+ruSwnfWT8A8hFoJgnNDOvaQ4I2FtGEGcxpzMiV/OCka/Y3Qha2WhSOmLL?=
+ =?us-ascii?Q?/+HHDFVds9Y5VgDVCTfxb9mqXwFHNwPRHutKGL2qrurb6mDuJ29f60u6GdQC?=
+ =?us-ascii?Q?UWAMy+3WrULijVe7k7fLLaPiix3ilhAOPqKOZDDsooBauDkW+zXpeNEYWz4W?=
+ =?us-ascii?Q?mkCZnBFdlHSmMaofBFZ0HTA13YgDrojnITaZeqlofLBSK9xhojEJZKva11Yd?=
+ =?us-ascii?Q?d3Jm+BBYhHe/b791NcOmYkyIPYFiY43ZzCFpc5FpWXRO1EDohrWX4zmw2HhS?=
+ =?us-ascii?Q?yaaAdo9qa53OO5Y5WHbMfDAetgOBLScnX5RzSd7nQDCQnjpLGoY3FNUUe3MD?=
+ =?us-ascii?Q?e+zmkJ7Cs6BpM37otS5aWXWUZ0/+NWUR31PMkNL+lZ4tUHPlmJw+ji0qFvDq?=
+ =?us-ascii?Q?XiIf3rLS5XywZgTZKagdOLTtddDB1dNf/a5uRWGXrPR4C3mFSbeUqQqV3kTa?=
+ =?us-ascii?Q?qQWdZixV1hHCMGLtS01rXzk8EUrAT8m5Jix6xG0Sgnwqf72eXqfbcncr35au?=
+ =?us-ascii?Q?/pZcA1XyUrrcHyiapLHiYwQ2NFLKQ2lGhQDpiiiRIlvBceGGRsBx6HNDgSa8?=
+ =?us-ascii?Q?htXMEL/bkSLbi/j7s+Ox/ULQmScrU7SDB5ZtmpAsToRRznq9Eqrx0OQ2LVo9?=
+ =?us-ascii?Q?JT6F8DlI/hER7orh51YcwCDZk4v74yeHtEKcg8TRQU4wY7Y1t/zkqkAX96PD?=
+ =?us-ascii?Q?G+5bp7P99HXcqGo8YKtzsV7VaW5sO3HU8Kudy14bx3yIQWYUwwGMIKeTVG2T?=
+ =?us-ascii?Q?8JuTe5aqI4RdvUZ28vW8gOD6/RJQonJazBDiiFkz1oVdKT8Fkf3sIx/JiiO7?=
+ =?us-ascii?Q?dUVQbRtdk8Kq1+EqytIRoF+Jf07MwlSarw0dzVAwxvnSqHVA+LuiuvS3ND8r?=
+ =?us-ascii?Q?fIDwri6z50dh0DS2D54NZGnhJ+vn9GLfsm3XDn9vjadjQ7oV69tfwDDQLf1L?=
+ =?us-ascii?Q?/2g7/olwqhWuGkggtTN1Xw=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR05MB3960.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(6512007)(53546011)(6506007)(86362001)(41300700001)(54906003)(6916009)(45080400002)(316002)(6486002)(966005)(71200400001)(478600001)(38070700005)(122000001)(38100700002)(2616005)(186003)(83380400001)(2906002)(66946007)(66556008)(8676002)(76116006)(4326008)(64756008)(66476007)(66446008)(8936002)(33656002)(5660300002)(7416002)(36756003)(15650500001)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TBnWskDXNrROHryx/Ltu2oicStT26GSDF6mHhbENCppR+mDR81bIqoQqEhvn?=
+ =?us-ascii?Q?KkPf+eVmRxA35szghV2kBRzjh5l7ITFBIh6BMjXXKsxeLskqjfbCT5enTP5K?=
+ =?us-ascii?Q?s9rZ996hOM1DmZ3oxQxa9HEre9f3Z08lVYGlSpLcf0+2VMuQX9BMgR5sGQ+I?=
+ =?us-ascii?Q?jmV11nyQwfm2ElKE/YlChqaFdaRw/89CDO8HrwTNqEwuX9VkxnXLk6FNgf6r?=
+ =?us-ascii?Q?EUmLQHivQDyNfoEWOIu5IIcBHm4rm1DTkg/Z+JgE+LlO0uHP0S/IX+K5BeHk?=
+ =?us-ascii?Q?ZxirQr0XJrsHWVT10uKTpxYkHvKdYaTTcl/yL+Lh/ocmrb6STy4j7Nnlox31?=
+ =?us-ascii?Q?7Vukh/L+XyDVdEwBV2WG0qn3yzWVic73zM5nONkP3jb0a+Vb1Kyj75BLWbrI?=
+ =?us-ascii?Q?3br+TA5e3Woa9CZUJxYEPGT14052jq6pKl1/dD7eMwKn70Cm0Fbn68eInA1D?=
+ =?us-ascii?Q?N9davl5O3TZEKRbm7tPo+ttlXtvxSMPRlor4U8RW5bbqY5bAeRWWj0XsTWeU?=
+ =?us-ascii?Q?UZqJLWCvLYmNHzyMOrI9kheOB1jDUSe5yj4uewuywyCYT47CWNUWW+xaJkst?=
+ =?us-ascii?Q?KAmY9wh+wOzJTk038xc39QpgNnsbCEWqzOmuiTG/IP5PO6TE7gNkVE86lP+U?=
+ =?us-ascii?Q?23tLFmh1NBLqx0u40E+S9eWCgx7VVdBhet7D1kOfBWsEdBN4wYG5b7RpiJFt?=
+ =?us-ascii?Q?yXfIDMm2/RMT5izsLvnnZ+LP6JbOHGHEFVRWjcoz1ysuT9UixKCwqluFa8G7?=
+ =?us-ascii?Q?2SsDJ3Azl6dV5BXmXdo4FBgOl+j0IhxoIOouaxk/CNN9vCVj6l9cdMYFziNs?=
+ =?us-ascii?Q?SA1M6dorvPIyFKAky6EF1ADT3idKFP/fYaekLUTfLk/mhws7FXuMnCzoq/ow?=
+ =?us-ascii?Q?IdNFb/o9sKuAskNzkF0UAnKK4vMa9LFao3kE6NiDTyiATPOWGqyREE8qUUTl?=
+ =?us-ascii?Q?eR1PoyyqvabPWZPEHhpcVC5huVF/fy/JHbUlOonscmIWODEzwXSPJY2v6wAr?=
+ =?us-ascii?Q?r68EYJttBaqIx1SvqQ6JbAig54fjsovD+IY5I5fRxTlnxH6AQCfa79Hn9WRN?=
+ =?us-ascii?Q?Ntayj0JEPT0I49vGHL+JIHFvCq8ZTo6Q/JuClxvGQejZ1rPyEfjDk2ncHvkV?=
+ =?us-ascii?Q?jmst4b2966AXhr5O74D/T5JST+mDmcttF0Dt6+8ZqUCjLbsZvVRIVEeOuLnt?=
+ =?us-ascii?Q?FvLC+YPKpt2FAmGsR8SwqYk3zFQYd9VMQToWlKeGr1WeZZ2ex0InLkKEWhYf?=
+ =?us-ascii?Q?CqnDhdEcD9aw8ZrTeo2pIv3hwJma7EF6nquGlMTFcobXrZcBJOrOkKPXtadx?=
+ =?us-ascii?Q?I0CjNt2YWs0o1XAaqwV2JroNiInAgQDbyXzJzawdNuGoPzVi+oAU5Z/pPZ/3?=
+ =?us-ascii?Q?AMdzoJuyrO5XUHU4sBaMI96yqAtBtD8PIZpNPH+vOeBR9TIKpxQVch496D6t?=
+ =?us-ascii?Q?NJAHfW3PfOFEZ2mocOolKC2hhO+3XlA9zCmyuogNmwl1dGLTxkP/5ILlPon3?=
+ =?us-ascii?Q?LA+86T36B0BQa8yycF91oA2ihTlf8GnrEr/xf73p6L4r51aXVZwTQTIY6Y+Y?=
+ =?us-ascii?Q?P2soqYWefoZf7ay4CMmboi9n0XMLdIjcvn/Vg3j50ZS8jC/+WxABNLFA7Df9?=
+ =?us-ascii?Q?nY1gVmRFnBt4OtT4CKAT0y8Lt97jRIkQo7hn59vncwip?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <217F182527510E499A11E1EC6457B6CB@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220726184706.954822-2-joannelkoong@gmail.com>
- <20220728233936.hjj2smwey447zqyy@kafai-mbp.dhcp.thefacebook.com>
- <CAJnrk1b2WoHV=iE3j4n_4=2NBP3GaoeD=v-Zt+p-M9N=LApsuQ@mail.gmail.com>
- <20220729213919.e7x6acvqnwqwfnzu@kafai-mbp.dhcp.thefacebook.com>
- <CAJnrk1YXSx11TGhKhAZ20R81pUsgBVeAooGJjTR7dR5iyP_eeQ@mail.gmail.com>
- <20220801193850.2qkf6uiic7nrwrfm@kafai-mbp.dhcp.thefacebook.com>
- <CAJnrk1ZCQ5nRB=jBUxPFyS4OhMvDX1t4ddFYX2LqkepMZg-12w@mail.gmail.com>
- <20220801223239.25z2krjm6ucid3fh@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzbjFOXFYeRHwnny1p-GWfMDiOqC6zGMSBjGkjY8RQi5Qw@mail.gmail.com>
- <20220801232314.shzlt7ws3sp7d744@kafai-mbp.dhcp.thefacebook.com>
- <20220802005621.d6sjq72l357eesp6@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzZCAX7h_wMpd9-uQt4smGDj8ToxS=nM6Z+qoV7j-SSVJg@mail.gmail.com> <CAJnrk1YVYtsovy+eJ3NqTDyX9O53rMuCw8RovcFp2imuqsGzMA@mail.gmail.com>
-In-Reply-To: <CAJnrk1YVYtsovy+eJ3NqTDyX9O53rMuCw8RovcFp2imuqsGzMA@mail.gmail.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 1 Aug 2022 22:14:35 -0700
-Message-ID: <CAJnrk1a82UrCT_=T6v7Ret=CnU+du09M-0O=-U2+j=SY72T1gg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 1/3] bpf: Add skb dynptrs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Jakub Kicinski <kuba@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR05MB3960.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6179d3fa-b5ba-4bd1-3d6b-08da74483eaf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2022 05:31:26.4329
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Qk39j9Y6/UjbvS3vTsEBy30ZGPPs3M75nu0c1zOigJHxl458+XtdVf3zehPqOKtjUGNw/qtO1rP4oAa2q9pTAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB4751
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 9:53 PM Joanne Koong <joannelkoong@gmail.com> wrote:
->
-> On Mon, Aug 1, 2022 at 8:51 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Mon, Aug 1, 2022 at 5:56 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > On Mon, Aug 01, 2022 at 04:23:16PM -0700, Martin KaFai Lau wrote:
-> > > > On Mon, Aug 01, 2022 at 03:58:41PM -0700, Andrii Nakryiko wrote:
-> > > > > On Mon, Aug 1, 2022 at 3:33 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > > > >
-> > > > > > On Mon, Aug 01, 2022 at 02:16:23PM -0700, Joanne Koong wrote:
-> > > > > > > On Mon, Aug 1, 2022 at 12:38 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > > > > > >
-> > > > > > > > On Mon, Aug 01, 2022 at 10:52:14AM -0700, Joanne Koong wrote:
-> > > > > > > > > > Since we are on bpf_dynptr_write, what is the reason
-> > > > > > > > > > on limiting it to the skb_headlen() ?  Not implying one
-> > > > > > > > > > way is better than another.  would like to undertand the reason
-> > > > > > > > > > behind it since it is not clear in the commit message.
-> > > > > > > > > For bpf_dynptr_write, if we don't limit it to skb_headlen() then there
-> > > > > > > > > may be writes that pull the skb, so any existing data slices to the
-> > > > > > > > > skb must be invalidated. However, in the verifier we can't detect when
-> > > > > > > > > the data slice should be invalidated vs. when it shouldn't (eg
-> > > > > > > > > detecting when a write goes into the paged area vs when the write is
-> > > > > > > > > only in the head). If the prog wants to write into the paged area, I
-> > > > > > > > > think the only way it can work is if it pulls the data first with
-> > > > > > > > > bpf_skb_pull_data before calling bpf_dynptr_write. I will add this to
-> > > > > > > > > the commit message in v2
-> > > > > > > > Note that current verifier unconditionally invalidates PTR_TO_PACKET
-> > > > > > > > after bpf_skb_store_bytes().  Potentially the same could be done for
-> > > > > > > > other new helper like bpf_dynptr_write().  I think this bpf_dynptr_write()
-> > > > > > > > behavior cannot be changed later, so want to raise this possibility here
-> > > > > > > > just in case it wasn't considered before.
-> > > > > > >
-> > > > > > > Thanks for raising this possibility. To me, it seems more intuitive
-> > > > > > > from the user standpoint to have bpf_dynptr_write() on a paged area
-> > > > > > > fail (even if bpf_dynptr_read() on that same offset succeeds) than to
-> > > > > > > have bpf_dynptr_write() always invalidate all dynptr slices related to
-> > > > > > > that skb. I think most writes will be to the data in the head area,
-> > > > > > > which seems unfortunate that bpf_dynptr_writes to the head area would
-> > > > > > > invalidate the dynptr slices regardless.
-> > > > > > >
-> > > > > > > What are your thoughts? Do you think you prefer having
-> > > > > > > bpf_dynptr_write() always work regardless of where the data is? If so,
-> > > > > > > I'm happy to make that change for v2 :)
-> > > > > > Yeah, it sounds like an optimization to avoid unnecessarily
-> > > > > > invalidating the sliced data.
-> > > > > >
-> > > > > > To be honest, I am not sure how often the dynptr_data()+dynptr_write() combo will
-> > > > > > be used considering there is usually a pkt read before a pkt write in
-> > > > > > the pkt modification use case.  If I got that far to have a sliced data pointer
-> > > > > > to satisfy what I need for reading,  I would try to avoid making extra call
-> > > > > > to dyptr_write() to modify it.
-> > > > > >
-> > > > > > I would prefer user can have similar expectation (no need to worry pkt layout)
-> > > > > > between dynptr_read() and dynptr_write(), and also has similar experience to
-> > > > > > the bpf_skb_load_bytes() and bpf_skb_store_bytes().  Otherwise, it is just
-> > > > > > unnecessary rules for user to remember while there is no clear benefit on
-> > > > > > the chance of this optimization.
-> > > > > >
-> > > > >
-> > > > > Are you saying that bpf_dynptr_read() shouldn't read from non-linear
-> > > > > part of skb (and thus match more restrictive bpf_dynptr_write), or are
-> > > > > you saying you'd rather have bpf_dynptr_write() write into non-linear
-> > > > > part but invalidate bpf_dynptr_data() pointers?
-> > > > The latter.  Read and write without worrying about the skb layout.
-> > > >
-> > > > Also, if the prog needs to call a helper to write, it knows the bytes are
-> > > > not in the data pointer.  Then it needs to bpf_skb_pull_data() before
-> > > > it can call write.  However, after bpf_skb_pull_data(), why the prog
-> > > > needs to call the write helper instead of directly getting a new
-> > > > data pointer and write to it?  If the prog needs to write many many
-> > > > bytes, a write helper may then help.
-> > > After another thought, other than the non-linear handling,
-> > > bpf_skb_store_bytes() / dynptr_write() is more useful in
-> > > the 'BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH' flags.
-> > >
-> > > That said,  my preference is still to have the same expectation on
-> > > non-linear data for both dynptr_read() and dynptr_write().  Considering
-> > > the user can fall back to use bpf_skb_load_bytes() and
-> > > bpf_skb_store_bytes(), I am fine with the current patch also.
-> > >
-> >
-> > Honestly, I don't have any specific preference, because I don't have
-> > much specific experience writing networking BPF :)
-> >
-> > But considering Jakub's point about trying to unify skb/xdp dynptr,
-> > while I can see how we might have symmetrical dynptr_{read,write}()
-> > for skb case (because you can pull skb), I believe this is not
-> > possible with XDP (e.g., multi-buffer one), so bpf_dynptr_write()
-> > would always be more limited for XDP case.
-> >
-> > Or maybe it is possible for XDP and I'm totally wrong here? I'm happy
-> > to be educated about this!
->
-> My understanding is that it's possible for XDP because the data in the
-> frags are mapped [eg we can use skb_frag_address() to get the address
-> and then copy into it with direct memcpys [0]] whereas skb frags are
-> unmapped (eg access into the frag requires kmapping [1]).
->
-> Maybe one solution is to add a function that does the mapping + write
-> to a skb frag without pulling it to the head. This would allow
-> bpf_dynptr_write to all data without needing to invalidate any dynptr
-> slices. But I don't know whether this is compatible with recomputing
-> the checksum or not, maybe the written data needs to be mapped (and
-> hence part of head) so that it can be used to compute the checksum [2]
-> - I'll read up some more on the checksumming code.
->
-> I like your point Martin that if people are using bpf_dynptr_write,
-> then they probably aren't using data slices much anyways so it
-> wouldn't be too inconvenient that their slices are invalidated (eg if
-> they are using bpf_dynptr_write it's to write into the skb frag, at
-> which point they would need to call pull before bpf_dynptr_write,
-> which would lead to same scenario where the data slices are
-> invalidated). My main concern was that slices would be invalidated for
-> bpf_dynptr_writes on data in the head area, but you're right that that
-> shouldn't be too likely since they'd just be using a direct data slice
-> access instead to read/write. I'll change it so that bpf_dynptr_write
-> always succeeds and it'll always invalidate the data slices for v2.
 
-On second thought, for v2 I plan to combine xdp and skb to 1 generic
-function ("bpf_dynptr_from_packet") per Jakub's suggestion. I think in
-that case then, for consistency, it'd be lbetter if we don't
-invalidate the slices since it would be confusing if bpf_dynptr_write
-invalidates slices for skb-type progs but not xdp-type ones. I think
-bpf_dynptr_write returning an error for writes into the frag area for
-skb type progs but not xdp type progs is less jarring than dynptr
-slices being invalidated for skb type progs but not xdp type progs.
 
->
-> [0] https://elixir.bootlin.com/linux/v5.19/source/net/core/filter.c#L3846
-> [1] https://elixir.bootlin.com/linux/v5.19/source/net/core/skbuff.c#L2367
-> [2] https://elixir.bootlin.com/linux/v5.19/source/include/linux/skbuff.h#L3839
->
-> >
-> > > >
-> > > > >
-> > > > > I guess I agree about consistency and that it seems like in practice
-> > > > > you'd use bpf_dynptr_data() to work with headers and stuff like that
-> > > > > at known locations, and then if you need to modify the rest of payload
-> > > > > you'd do either bpf_skb_load_bytes()/bpf_skb_store_bytes() or
-> > > > > bpf_dynptr_read()/bpf_dynptr_write() which would invalidate
-> > > > > bpf_dynptr_data() pointers (but that would be ok by that time).
-> > > > imo, read, write and then go back to read is less common.
-> > > > writing bytes without first reading them is also less common.
+> On Jul 27, 2022, at 11:08 PM, Arseniy Krasnov <AVKrasnov@sberdevices.ru> =
+wrote:
+>=20
+> On 27.07.2022 15:37, Stefano Garzarella wrote:
+>> Hi Arseniy,
+>>=20
+>> On Mon, Jul 25, 2022 at 07:54:05AM +0000, Arseniy Krasnov wrote:
+>>> Hello,
+>>>=20
+>>> This patchset includes some updates for SO_RCVLOWAT:
+>>>=20
+>>> 1) af_vsock:
+>>> During my experiments with zerocopy receive, i found, that in some
+>>> cases, poll() implementation violates POSIX: when socket has non-
+>>> default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
+>>> POLLRDNORM bits in 'revents' even number of bytes available to read
+>>> on socket is smaller than SO_RCVLOWAT value. In this case,user sees
+>>> POLLIN flag and then tries to read data(for example using 'read()'
+>>> call), but read call will be blocked, because SO_RCVLOWAT logic is
+>>> supported in dequeue loop in af_vsock.c. But the same time, POSIX
+>>> requires that:
+>>>=20
+>>> "POLLIN Data other than high-priority data may be read without
+>>> blocking.
+>>> POLLRDNORM Normal data may be read without blocking."
+>>>=20
+>>> See https://nam04.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
+Fwww.open-std.org%2Fjtc1%2Fsc22%2Fopen%2Fn4217.pdf&amp;data=3D05%7C01%7Cvda=
+sa%40vmware.com%7Cae83621d8709421de14b08da705faa9c%7Cb39138ca3cee4b4aa4d6cd=
+83d9dd62f0%7C0%7C1%7C637945853473740235%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4=
+wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp=
+;sdata=3DNrbycCcVXV9Tz8NRDYBpnDx7KpFF6BZpSRbuhz1IfJ4%3D&amp;reserved=3D0, p=
+age 293.
+>>>=20
+>>> So, we have, that poll() syscall returns POLLIN, but read call will
+>>> be blocked.
+>>>=20
+>>> Also in man page socket(7) i found that:
+>>>=20
+>>> "Since Linux 2.6.28, select(2), poll(2), and epoll(7) indicate a
+>>> socket as readable only if at least SO_RCVLOWAT bytes are available."
+>>>=20
+>>> I checked TCP callback for poll()(net/ipv4/tcp.c, tcp_poll()), it
+>>> uses SO_RCVLOWAT value to set POLLIN bit, also i've tested TCP with
+>>> this case for TCP socket, it works as POSIX required.
+>>>=20
+>>> I've added some fixes to af_vsock.c and virtio_transport_common.c,
+>>> test is also implemented.
+>>>=20
+>>> 2) virtio/vsock:
+>>> It adds some optimization to wake ups, when new data arrived. Now,
+>>> SO_RCVLOWAT is considered before wake up sleepers who wait new data.
+>>> There is no sense, to kick waiter, when number of available bytes
+>>> in socket's queue < SO_RCVLOWAT, because if we wake up reader in
+>>> this case, it will wait for SO_RCVLOWAT data anyway during dequeue,
+>>> or in poll() case, POLLIN/POLLRDNORM bits won't be set, so such
+>>> exit from poll() will be "spurious". This logic is also used in TCP
+>>> sockets.
+>>=20
+>> Nice, it looks good!
+> Thank You!
+>>=20
+>>>=20
+>>> 3) vmci/vsock:
+>>> Same as 2), but i'm not sure about this changes. Will be very good,
+>>> to get comments from someone who knows this code.
+>>=20
+>> I CCed VMCI maintainers to the patch and also to this cover, maybe bette=
+r to keep them in the loop for next versions.
+>>=20
+>> (Jorgen's and Rajesh's emails bounced back, so I'm CCing here only Bryan=
+, Vishnu, and pv-drivers@vmware.com)
+> Ok, i'll CC them in the next version
+>>=20
+>>>=20
+>>> 4) Hyper-V:
+>>> As Dexuan Cui mentioned, for Hyper-V transport it is difficult to
+>>> support SO_RCVLOWAT, so he suggested to disable this feature for
+>>> Hyper-V.
+>>=20
+>> I left a couple of comments in some patches, but it seems to me to be in=
+ a good state :-)
+>>=20
+>> I would just suggest a bit of a re-organization of the series (the patch=
+es are fine, just the order):
+>> - introduce vsock_set_rcvlowat()
+>> - disabling it for hv_sock
+>> - use 'target' in virtio transports
+>> - use 'target' in vmci transports
+>> - use sock_rcvlowat in vsock_poll()
+>> I think is better to pass sock_rcvlowat() as 'target' when the
+>> transports are already able to use it
+>> - add vsock_data_ready()
+>> - use vsock_data_ready() in virtio transports
+>> - use vsock_data_ready() in vmci transports
+>> - tests
+>>=20
+>> What do you think?
+> No problem! I think i can wait for reply from VMWare guys before preparin=
+g v3
+
+Looks fine to me, especially the VMCI parts.  Please send v3, and we can te=
+st it
+from VMCI point of view as well.
+
+Thanks,
+Vishnu=
