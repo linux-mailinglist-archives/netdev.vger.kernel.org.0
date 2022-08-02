@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A82A8587CB9
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 14:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEA6587CBA
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 14:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236698AbiHBM4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 08:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S236895AbiHBM4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 08:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236731AbiHBM4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 08:56:35 -0400
+        with ESMTP id S236793AbiHBM4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 08:56:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F70511A32
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 05:56:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C0912616
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 05:56:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EED7AB81EFE
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 12:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31EF2C43142;
-        Tue,  2 Aug 2022 12:56:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E20B7B81EFC
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 12:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044CBC433D6;
+        Tue,  2 Aug 2022 12:56:33 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WOJNvdBc"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="kddcOKjp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1659444990;
+        t=1659444992;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/ZeVoWm0a7/DLh9vXJVxolr+PEKcOEQOX3WI7nDKWiQ=;
-        b=WOJNvdBcy5RK6KJcLpO4tZJ/fl1CQ/o95+kqtqt+36IJPYLo35byZnYHKuyxY6VqOtRZQe
-        460Wm06jkN5ox3eIVks9F2u6n6G6ZEAektar50Zk+hLequ2zs6d6bAvwfp8RkrVKu4aSgV
-        JyygSt3M+/Pdn9PfFGQulb41iQrKwG0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fafa5dae (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 2 Aug 2022 12:56:30 +0000 (UTC)
+        bh=dHBUFAj2/ZzR0/nMiac9EsPHiKtUrJjdR+I+mamrQM4=;
+        b=kddcOKjpwfe4NWqJ615n+BAiToAHjLhmf0rYJL/RReRdzdWB6ttQsWKnEdUBDryi+ZS2G6
+        EKYt/X8ZzwMlRLwwXf3IbufAwr5Yxmfypz3lBMA9I6TQJsD15WErvv+QDdiqp9rDrtMW1M
+        YopOxKjdt5yHM9dUeesWWcB0ha8difs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 986f0f7c (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 2 Aug 2022 12:56:32 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     kuba@kernel.org, pablo@netfilter.org, netdev@vger.kernel.org
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH next-next 3/4] wireguard: allowedips: don't corrupt stack when detecting overflow
-Date:   Tue,  2 Aug 2022 14:56:12 +0200
-Message-Id: <20220802125613.340848-4-Jason@zx2c4.com>
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: [PATCH next-next 4/4] wireguard: selftests: support UML
+Date:   Tue,  2 Aug 2022 14:56:13 +0200
+Message-Id: <20220802125613.340848-5-Jason@zx2c4.com>
 In-Reply-To: <20220802125613.340848-1-Jason@zx2c4.com>
 References: <20220802125613.340848-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -56,87 +56,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case push_rcu() and related functions are buggy, there's a
-WARN_ON(len >= 128), which the selftest tries to hit by being tricky. In
-case it is hit, we shouldn't corrupt the kernel's stack, though;
-otherwise it may be hard to even receive the report that it's buggy. So
-conditionalize the stack write based on that WARN_ON()'s return value.
+This shoud open up various possibilities like time travel execution, and
+is also just another platform to help shake out bugs.
 
-Note that this never *actually* happens anyway. The WARN_ON() in the
-first place is bounded by IS_ENABLED(DEBUG), and isn't expected to ever
-actually hit. This is just a debugging sanity check.
-
-Additionally, hoist the constant 128 into a named enum,
-MAX_ALLOWEDIPS_BITS, so that it's clear why this value is chosen.
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Link: https://lore.kernel.org/all/CAHk-=wjJZGA6w_DxA+k7Ejbqsq+uGK==koPai3sqdsfJqemvag@mail.gmail.com/
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Cc: Johannes Berg <johannes@sipsolutions.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireguard/allowedips.c          | 9 ++++++---
- drivers/net/wireguard/selftest/allowedips.c | 6 +++---
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ tools/testing/selftests/wireguard/qemu/Makefile | 17 ++++++++++++++++-
+ .../selftests/wireguard/qemu/arch/um.config     |  3 +++
+ 2 files changed, 19 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/wireguard/qemu/arch/um.config
 
-diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
-index 9a4c8ff32d9d..5bf7822c53f1 100644
---- a/drivers/net/wireguard/allowedips.c
-+++ b/drivers/net/wireguard/allowedips.c
-@@ -6,6 +6,8 @@
- #include "allowedips.h"
- #include "peer.h"
+diff --git a/tools/testing/selftests/wireguard/qemu/Makefile b/tools/testing/selftests/wireguard/qemu/Makefile
+index 9700358e4337..fda76282d34b 100644
+--- a/tools/testing/selftests/wireguard/qemu/Makefile
++++ b/tools/testing/selftests/wireguard/qemu/Makefile
+@@ -248,8 +248,13 @@ QEMU_MACHINE := -cpu host,accel=kvm -machine s390-ccw-virtio -append $(KERNEL_CM
+ else
+ QEMU_MACHINE := -cpu max -machine s390-ccw-virtio -append $(KERNEL_CMDLINE)
+ endif
++else ifeq ($(ARCH),um)
++CHOST := $(HOST_ARCH)-linux-musl
++KERNEL_BZIMAGE := $(KERNEL_BUILD_PATH)/vmlinux
++KERNEL_ARCH := um
++KERNEL_CMDLINE := $(shell sed -n 's/CONFIG_CMDLINE=\(.*\)/\1/p' arch/um.config)
+ else
+-$(error I only build: x86_64, i686, arm, armeb, aarch64, aarch64_be, mips, mipsel, mips64, mips64el, powerpc64, powerpc64le, powerpc, m68k, riscv64, riscv32, s390x)
++$(error I only build: x86_64, i686, arm, armeb, aarch64, aarch64_be, mips, mipsel, mips64, mips64el, powerpc64, powerpc64le, powerpc, m68k, riscv64, riscv32, s390x, um)
+ endif
  
-+enum { MAX_ALLOWEDIPS_BITS = 128 };
-+
- static struct kmem_cache *node_cache;
+ TOOLCHAIN_FILENAME := $(CHOST)-cross.tgz
+@@ -262,7 +267,9 @@ $(eval $(call file_download,$(TOOLCHAIN_FILENAME),$(TOOLCHAIN_DIR),,$(DISTFILES_
+ STRIP := $(CHOST)-strip
+ CROSS_COMPILE_FLAG := --build=$(CBUILD) --host=$(CHOST)
+ $(info Building for $(CHOST) using $(CBUILD))
++ifneq ($(ARCH),um)
+ export CROSS_COMPILE := $(CHOST)-
++endif
+ export PATH := $(TOOLCHAIN_PATH)/bin:$(PATH)
+ export CC := $(CHOST)-gcc
+ CCACHE_PATH := $(shell which ccache 2>/dev/null)
+@@ -279,6 +286,7 @@ comma := ,
+ build: $(KERNEL_BZIMAGE)
+ qemu: $(KERNEL_BZIMAGE)
+ 	rm -f $(BUILD_PATH)/result
++ifneq ($(ARCH),um)
+ 	timeout --foreground 20m qemu-system-$(QEMU_ARCH) \
+ 		-nodefaults \
+ 		-nographic \
+@@ -291,6 +299,13 @@ qemu: $(KERNEL_BZIMAGE)
+ 		-no-reboot \
+ 		-monitor none \
+ 		-kernel $<
++else
++	timeout --foreground 20m $< \
++		$(KERNEL_CMDLINE) \
++		mem=$$(grep -q CONFIG_DEBUG_KMEMLEAK=y $(KERNEL_BUILD_PATH)/.config && echo 1G || echo 256M) \
++		noreboot \
++		con1=fd:51 51>$(BUILD_PATH)/result </dev/null 2>&1 | cat
++endif
+ 	grep -Fq success $(BUILD_PATH)/result
  
- static void swap_endian(u8 *dst, const u8 *src, u8 bits)
-@@ -40,7 +42,8 @@ static void push_rcu(struct allowedips_node **stack,
- 		     struct allowedips_node __rcu *p, unsigned int *len)
- {
- 	if (rcu_access_pointer(p)) {
--		WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
-+		if (WARN_ON(IS_ENABLED(DEBUG) && *len >= MAX_ALLOWEDIPS_BITS))
-+			return;
- 		stack[(*len)++] = rcu_dereference_raw(p);
- 	}
- }
-@@ -52,7 +55,7 @@ static void node_free_rcu(struct rcu_head *rcu)
- 
- static void root_free_rcu(struct rcu_head *rcu)
- {
--	struct allowedips_node *node, *stack[128] = {
-+	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = {
- 		container_of(rcu, struct allowedips_node, rcu) };
- 	unsigned int len = 1;
- 
-@@ -65,7 +68,7 @@ static void root_free_rcu(struct rcu_head *rcu)
- 
- static void root_remove_peer_lists(struct allowedips_node *root)
- {
--	struct allowedips_node *node, *stack[128] = { root };
-+	struct allowedips_node *node, *stack[MAX_ALLOWEDIPS_BITS] = { root };
- 	unsigned int len = 1;
- 
- 	while (len > 0 && (node = stack[--len])) {
-diff --git a/drivers/net/wireguard/selftest/allowedips.c b/drivers/net/wireguard/selftest/allowedips.c
-index e173204ae7d7..41db10f9be49 100644
---- a/drivers/net/wireguard/selftest/allowedips.c
-+++ b/drivers/net/wireguard/selftest/allowedips.c
-@@ -593,10 +593,10 @@ bool __init wg_allowedips_selftest(void)
- 	wg_allowedips_remove_by_peer(&t, a, &mutex);
- 	test_negative(4, a, 192, 168, 0, 1);
- 
--	/* These will hit the WARN_ON(len >= 128) in free_node if something
--	 * goes wrong.
-+	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_BITS) in free_node
-+	 * if something goes wrong.
- 	 */
--	for (i = 0; i < 128; ++i) {
-+	for (i = 0; i < MAX_ALLOWEDIPS_BITS; ++i) {
- 		part = cpu_to_be64(~(1LLU << (i % 64)));
- 		memset(&ip, 0xff, 16);
- 		memcpy((u8 *)&ip + (i < 64) * 8, &part, 8);
+ $(BUILD_PATH)/init-cpio-spec.txt: $(TOOLCHAIN_PATH)/.installed $(BUILD_PATH)/init
+diff --git a/tools/testing/selftests/wireguard/qemu/arch/um.config b/tools/testing/selftests/wireguard/qemu/arch/um.config
+new file mode 100644
+index 000000000000..c8b229e0810e
+--- /dev/null
++++ b/tools/testing/selftests/wireguard/qemu/arch/um.config
+@@ -0,0 +1,3 @@
++CONFIG_64BIT=y
++CONFIG_CMDLINE="wg.success=tty1 panic_on_warn=1"
++CONFIG_FRAME_WARN=1280
 -- 
 2.35.1
 
