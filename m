@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D38D6587B76
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 13:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CACC1587B79
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 13:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236017AbiHBLTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 07:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        id S236314AbiHBLTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 07:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231860AbiHBLTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 07:19:07 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B16DC3;
-        Tue,  2 Aug 2022 04:19:06 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id dc19so2621233ejb.12;
-        Tue, 02 Aug 2022 04:19:06 -0700 (PDT)
+        with ESMTP id S231860AbiHBLTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 07:19:47 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E81C5FE6;
+        Tue,  2 Aug 2022 04:19:46 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id a89so17184183edf.5;
+        Tue, 02 Aug 2022 04:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=J1y5TNZKON5vlSONcdAln0bXqaVijZkMRn5GW7MzYv0=;
-        b=p/34O66hhmCp7kPoP54vVHKU5VRMMY7RjHFHJs8gpBi4Mh+j6QhGshKvP9TtXBGPlB
-         rzWLphica/jqIULYDeb8vlhuh3xbo0uwmZ7ZiJMRjiTyhZr4wT3o6WmeGieTVk8J/5G+
-         /J9JX5PsPIOsmlYNxpsaqEsG/rmGvkQeF7DdwSXZuZUEWhNf3hUbYUAnTMxHewXtRFL6
-         fBbsGU419U1pefRjv/7SmNZbtro+R3kV1I30bVKisNBsDax2rLUgyePrGFQ6zNIQjHRb
-         hr3YEVo/teZ/He9ASXHO78CPUSN7rSxyxry0i9QDIMoV5e0cZe/Jg7aYlgQhhst8mh3q
-         LxFw==
+        bh=khmnL6d1sgXdfX9qYl6R3hkeD9PilhxrNFLSsOskVQc=;
+        b=HUaQKZpQyW2QYB9dHrq57sstOlNMtEPZqiaY8X2Lr7mimAT3laXRgSQiaHmJcR0Rhm
+         ETE/v8Leoc5Bp8DtdrINYYT0E1CBpM5j0G1ohbaWPBoG/o0tjiAXjQDUQSI6Ov1hO8fu
+         SkokhYBbMwrA6EfjOJodxxXFNdD9MtwZMpl7EGASFMRpZTUp5x8XxtLGwXcYAxbPDNF5
+         flWq8b6Ki4DpnQjA2UHLTi09abkdnnSvoMmYfI1JD85lewAUSbGYDLeiYvj9jTpz+UuC
+         pQ19Up7uylNV14xOciLcNIZZJXzfpxF6tgtn6eg08DQHgLbQ5D6qnCawwtueAbo6IEIo
+         PdXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=J1y5TNZKON5vlSONcdAln0bXqaVijZkMRn5GW7MzYv0=;
-        b=WrbVJzftCSrDMutEYZ5B0GMuBhZOglybWZKpTG0eNUwmMbhyOpw5D78NkhozS9qZsH
-         9N0LdkzYpEYtndrRTlN9yoQ88UGK0967ccDRxfEnafDYhv1uQZsU7qXORtQfVqcwk1aK
-         Pgd97ElZ92g/2Ft8NMEnw05LnVuMsUySNXsVnGbKd8xrx2tt39Xro80aLQomJEpNnsCt
-         GRBeQC9H7o8q+SgxOUKhAqwulhi+HPm+2qj7AhzYWpO+IJkVQbG1XjtsglUQzZ2XtnW3
-         OH2hKsIsjETfmhEzYb9pOYG6KezgFtf6+aBXSwnXuTHjhr6g47FZtkue2MnJdtLTpUi1
-         TTFg==
-X-Gm-Message-State: AJIora8I5hFUSuLVieIQaE+0TfwGrUMe+sN9Ia5yX87Q9967BvVbeRj4
-        8ENVPLQ4DCF4oVEA4K9XVJS4D90KIS75cw==
-X-Google-Smtp-Source: AGRyM1vDCDDrFZaU1k2I6j5t4q6GmmZEjVjjgUKq76tgUTOBVKP50JSuzmdf6hA0W4Y46OYcDmxjLQ==
-X-Received: by 2002:a17:907:9491:b0:72f:2827:37c3 with SMTP id dm17-20020a170907949100b0072f282737c3mr16094588ejc.306.1659439145030;
-        Tue, 02 Aug 2022 04:19:05 -0700 (PDT)
+        bh=khmnL6d1sgXdfX9qYl6R3hkeD9PilhxrNFLSsOskVQc=;
+        b=iKyGvcad9eZDUg/t47n9dyZoD6Kd0cVE7ORHRxqK/F8Z5ajpdWTU6Q5H+5DE9NszfZ
+         5cy7LXUo8vBQUrtHyX7HgFrYyuYuM0CyssWIEv+IyMDGe8btzEoHlt4ZLDQnMPsDm6nG
+         em4L/BFZx2xuQDOPle+231Yj4oMEn7HUGt1exdoHGeDZgpPGj50OoLLd4CuhE5qGv2ha
+         kNt5fhobI252xhtsAXuieJvNblFunWOiNaHMYO9SJ0Nz2jxt62N8g4NanVHoVgD8QIxQ
+         2UW9mcr31A7+luV5AqtNxim/NV6fwnmpXkFSA1qVBmJpTr3tbmbImq93rtotdS4j46pj
+         7smg==
+X-Gm-Message-State: AJIora9Wo1/Kcmw16ENMmhubrb/v2xBhA4LWCZg3IQodioWS5caY+i50
+        xAV75NDKYAFWQrWScQdUXto=
+X-Google-Smtp-Source: AGRyM1uUr0UWq3pPVrtU08Zm+s7iLRGdsFCvoQndfW/Eq+kllX683fbu3T4nXtoluVAU08BynF4nyA==
+X-Received: by 2002:a05:6402:34c8:b0:43b:e7b1:353c with SMTP id w8-20020a05640234c800b0043be7b1353cmr20321484edc.171.1659439185040;
+        Tue, 02 Aug 2022 04:19:45 -0700 (PDT)
 Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id e24-20020a170906315800b007246492658asm6187025eje.117.2022.08.02.04.19.03
+        by smtp.gmail.com with ESMTPSA id l15-20020a170906644f00b0072efb6c9697sm6163311ejn.101.2022.08.02.04.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 04:19:04 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 14:19:02 +0300
+        Tue, 02 Aug 2022 04:19:44 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 14:19:42 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
 Cc:     Woojung Huh <woojung.huh@microchip.com>,
@@ -59,18 +59,18 @@ Cc:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 02/10] net: dsa: microchip: allow to pass
- return values for PHY read/write accesses
-Message-ID: <20220802111902.d4wpp52vglnuxqj4@skbuf>
+Subject: Re: [PATCH net-next v1 03/10] net: dsa: microchip: forward error
+ value on all ksz_pread/ksz_pwrite functions
+Message-ID: <20220802111942.bwhtzz4hpmoiupxl@skbuf>
 References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
  <20220729130346.2961889-1-o.rempel@pengutronix.de>
- <20220729130346.2961889-3-o.rempel@pengutronix.de>
- <20220729130346.2961889-3-o.rempel@pengutronix.de>
+ <20220729130346.2961889-4-o.rempel@pengutronix.de>
+ <20220729130346.2961889-4-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220729130346.2961889-3-o.rempel@pengutronix.de>
- <20220729130346.2961889-3-o.rempel@pengutronix.de>
+In-Reply-To: <20220729130346.2961889-4-o.rempel@pengutronix.de>
+ <20220729130346.2961889-4-o.rempel@pengutronix.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -81,25 +81,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 03:03:38PM +0200, Oleksij Rempel wrote:
-> PHY access may end with errors on different levels. So, allow to forward
-> return values where possible.
+On Fri, Jul 29, 2022 at 03:03:39PM +0200, Oleksij Rempel wrote:
+> ksz_read*/ksz_write* are able to return errors, so forward it.
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > ---
-> -void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
-> +int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
->  {
->  	u8 restart, speed, ctrl, data;
->  	const u16 *regs;
-> @@ -787,6 +789,9 @@ void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
->  	default:
->  		break;
->  	}
-> +
-> +
 
-Too many empty lines.
-
-> +	return 0;
->  }
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
