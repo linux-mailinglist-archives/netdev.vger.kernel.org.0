@@ -2,137 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5105879F0
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 11:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CDF587A62
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 12:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbiHBJiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 05:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S236497AbiHBKMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 06:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233904AbiHBJiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 05:38:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9F9433E06
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 02:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659433093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SR3OgXv0SWMYMM8P/TFLmgsz2VZ9k//RlVH2mPzgJ3c=;
-        b=acAvV0J6Um2cK4CM2SwACruAoN5MExUdR2WtIYrMjPkZeBe7xhyM8Sw86dwQJbu9ThouBB
-        9nDtfdiUBbsjgBUuP3b3XVGl1UwQYyy5Y1dk8SkEKJANgYsGgXiYU9UgxefgZNTqfHesuk
-        U01ibrdZ9UFrMHEc8SmgB/awHZvmxkk=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-398-4zWHdHCqNBGqxez8FQAI4A-1; Tue, 02 Aug 2022 05:38:11 -0400
-X-MC-Unique: 4zWHdHCqNBGqxez8FQAI4A-1
-Received: by mail-wr1-f71.google.com with SMTP id d27-20020adfa41b000000b0021ee714785fso3325276wra.18
-        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 02:38:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=SR3OgXv0SWMYMM8P/TFLmgsz2VZ9k//RlVH2mPzgJ3c=;
-        b=lcblAYADyIyN5Rtm3NyP3bLcf8cnlM2Apz+IwPWBSHBbGDOwQdMoJ4Tc+fMzrf7ub7
-         aidmrYanyAlrujqhHJVzf+8V1rdHsMNDQpE/9bLWPhuk9vZ9liW+OK4aq/SNll41T/Op
-         Q11yFLdlw0KtxU6zMXgLqXPEVckcGBhLMJ37xYD/2qgiGFZUMEwRKg1CfbMmLtsYWSy1
-         TVBQbQSRtWPGXmlbs26TfYsppmsa37lyClAfXqLSI2iaFtXtKHMF8GwIntBTcX5U0aXk
-         P8xtdDwrkgSjVpWOVE7QiUIkpd45nb6lsTyaouLn+ODwJZnIcP9283+QBRRwURdPZ7x5
-         7QAw==
-X-Gm-Message-State: ACgBeo358H/NYAgDXsWDZpT+Dz7Xl9kMS8RPYWhXU/FXacDpUU4w3hRK
-        xFedME3bYB5AyOuvSj8HrgwYB7X7VtfowOC1RWB5x50Ag3YCnqPWM6VmGzUg2cTVKLG3ePi6jQF
-        0oGnSwj9IAO64MoOu
-X-Received: by 2002:a5d:688c:0:b0:21f:160d:8859 with SMTP id h12-20020a5d688c000000b0021f160d8859mr11197286wru.711.1659433090729;
-        Tue, 02 Aug 2022 02:38:10 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7QvrzYHDIVdY2kldi5Z2ZLSFcbNVD5KQ4xGD3XDy95tXVmMZVaEQX5WnRvFqmY9FJgBMUgBw==
-X-Received: by 2002:a5d:688c:0:b0:21f:160d:8859 with SMTP id h12-20020a5d688c000000b0021f160d8859mr11197274wru.711.1659433090539;
-        Tue, 02 Aug 2022 02:38:10 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id z5-20020a5d6405000000b0021f138e07acsm12028845wru.35.2022.08.02.02.38.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 02:38:10 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ben Segall <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-In-Reply-To: <9401f754-d4d6-9fbd-7354-3103ececddda@gmail.com>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
- <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
- <9401f754-d4d6-9fbd-7354-3103ececddda@gmail.com>
-Date:   Tue, 02 Aug 2022 10:38:08 +0100
-Message-ID: <xhsmhpmhjc7en.mognet@vschneid.remote.csb>
+        with ESMTP id S233387AbiHBKMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 06:12:07 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CACE4B0F9;
+        Tue,  2 Aug 2022 03:12:06 -0700 (PDT)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LxrJK1LVNz67gb0;
+        Tue,  2 Aug 2022 18:07:13 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 2 Aug 2022 12:12:04 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Tue, 2 Aug 2022 12:12:04 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Hao Luo <haoluo@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Michal Koutny <mkoutny@suse.com>,
+        "Roman Gushchin" <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>
+Subject: RE: [PATCH bpf-next v6 1/8] btf: Add a new kfunc flag which allows to
+ mark a function to be sleepable
+Thread-Topic: [PATCH bpf-next v6 1/8] btf: Add a new kfunc flag which allows
+ to mark a function to be sleepable
+Thread-Index: AQHYpc/QHd6pQm3GSkK+4jcMX6ARwK2bZJZw
+Date:   Tue, 2 Aug 2022 10:12:04 +0000
+Message-ID: <8924d019684340ecb2f6c9e3e99a5287@huawei.com>
+References: <20220801175407.2647869-1-haoluo@google.com>
+ <20220801175407.2647869-2-haoluo@google.com>
+In-Reply-To: <20220801175407.2647869-2-haoluo@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.81.210.42]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/08/22 09:40, Tariq Toukan wrote:
-> On 7/30/2022 8:29 PM, Tariq Toukan wrote:
->>
->>
->> On 7/28/2022 10:12 PM, Tariq Toukan wrote:
->>> Implement and expose API that sets the spread of CPUs based on distance,
->>> given a NUMA node.=C2=A0 Fallback to legacy logic that uses
->>> cpumask_local_spread.
->>>
->>> This logic can be used by device drivers to prefer some remote cpus over
->>> others.
->>>
->>> Reviewed-by: Gal Pressman <gal@nvidia.com>
->>> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
->>> ---
->>> =C2=A0 include/linux/sched/topology.h |=C2=A0 5 ++++
->>> =C2=A0 kernel/sched/topology.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 | 49 ++++++++++++++++++++++++++++++++++
->>> =C2=A0 2 files changed, 54 insertions(+)
->>>
->>
->> ++
->>
->> Dear SCHEDULER maintainers,
->>
->> V3 of my series was submitted ~12 days ago and had significant changes.
->> I'd appreciate your review to this patch, so we could make it to the
->> upcoming kernel.
->>
->> Regards,
->> Tariq
->
-> Hi,
-> Another reminder.
-> Do you have any comments on this patch?
-> If not, please provide your Ack.
-
-It's not even been a week since you submitted v4 (and ~3 days since you
-last pinged this thread), and not all of us are limitless reviewing
-machines :-)
-
-This is already in my todo-list, but isn't the topmost item yet.
-
+PiBGcm9tOiBIYW8gTHVvIFttYWlsdG86aGFvbHVvQGdvb2dsZS5jb21dDQo+IFNlbnQ6IE1vbmRh
+eSwgQXVndXN0IDEsIDIwMjIgNzo1NCBQTQ0KPiBGcm9tOiBCZW5qYW1pbiBUaXNzb2lyZXMgPGJl
+bmphbWluLnRpc3NvaXJlc0ByZWRoYXQuY29tPg0KPiANCj4gRnJvbTogQmVuamFtaW4gVGlzc29p
+cmVzIDxiZW5qYW1pbi50aXNzb2lyZXNAcmVkaGF0LmNvbT4NCj4gDQo+IFRoaXMgYWxsb3dzIHRv
+IGRlY2xhcmUgYSBrZnVuYyBhcyBzbGVlcGFibGUgYW5kIHByZXZlbnRzIGl0cyB1c2UgaW4NCj4g
+YSBub24gc2xlZXBhYmxlIHByb2dyYW0uDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBCZW5qYW1pbiBU
+aXNzb2lyZXMgPGJlbmphbWluLnRpc3NvaXJlc0ByZWRoYXQuY29tPg0KPiBDby1kZXZlbG9wZWQt
+Ynk6IFlvc3J5IEFobWVkIDx5b3NyeWFobWVkQGdvb2dsZS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6
+IFlvc3J5IEFobWVkIDx5b3NyeWFobWVkQGdvb2dsZS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEhh
+byBMdW8gPGhhb2x1b0Bnb29nbGUuY29tPg0KDQpUaGFua3MsIGhlbHBmdWwgYWxzbyBmb3IgbWUu
+DQoNClJldmlld2VkLWJ5OiBSb2JlcnRvIFNhc3N1IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+
+DQoNClJvYmVydG8NCg0KPiAtLS0NCj4gIERvY3VtZW50YXRpb24vYnBmL2tmdW5jcy5yc3QgfCA2
+ICsrKysrKw0KPiAgaW5jbHVkZS9saW51eC9idGYuaCAgICAgICAgICB8IDEgKw0KPiAga2VybmVs
+L2JwZi9idGYuYyAgICAgICAgICAgICB8IDkgKysrKysrKysrDQo+ICAzIGZpbGVzIGNoYW5nZWQs
+IDE2IGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2JwZi9r
+ZnVuY3MucnN0IGIvRG9jdW1lbnRhdGlvbi9icGYva2Z1bmNzLnJzdA0KPiBpbmRleCBjMGI3ZGFl
+NmRiZjUuLmM4YjIxZGUxYzc3MiAxMDA2NDQNCj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9icGYva2Z1
+bmNzLnJzdA0KPiArKysgYi9Eb2N1bWVudGF0aW9uL2JwZi9rZnVuY3MucnN0DQo+IEBAIC0xNDYs
+NiArMTQ2LDEyIEBAIHRoYXQgb3BlcmF0ZSAoY2hhbmdlIHNvbWUgcHJvcGVydHksIHBlcmZvcm0g
+c29tZQ0KPiBvcGVyYXRpb24pIG9uIGFuIG9iamVjdCB0aGF0DQo+ICB3YXMgb2J0YWluZWQgdXNp
+bmcgYW4gYWNxdWlyZSBrZnVuYy4gU3VjaCBrZnVuY3MgbmVlZCBhbiB1bmNoYW5nZWQgcG9pbnRl
+ciB0bw0KPiAgZW5zdXJlIHRoZSBpbnRlZ3JpdHkgb2YgdGhlIG9wZXJhdGlvbiBiZWluZyBwZXJm
+b3JtZWQgb24gdGhlIGV4cGVjdGVkIG9iamVjdC4NCj4gDQo+ICsyLjQuNiBLRl9TTEVFUEFCTEUg
+ZmxhZw0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gKw0KPiArVGhlIEtGX1NMRUVQQUJM
+RSBmbGFnIGlzIHVzZWQgZm9yIGtmdW5jcyB0aGF0IG1heSBzbGVlcC4gU3VjaCBrZnVuY3MgY2Fu
+IG9ubHkNCj4gK2JlIGNhbGxlZCBieSBzbGVlcGFibGUgQlBGIHByb2dyYW1zIChCUEZfRl9TTEVF
+UEFCTEUpLg0KPiArDQo+ICAyLjUgUmVnaXN0ZXJpbmcgdGhlIGtmdW5jcw0KPiAgLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0NCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2J0Zi5o
+IGIvaW5jbHVkZS9saW51eC9idGYuaA0KPiBpbmRleCBjZGIzNzZkNTMyMzguLjk3NmNiZGQyOTgx
+ZiAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9idGYuaA0KPiArKysgYi9pbmNsdWRlL2xp
+bnV4L2J0Zi5oDQo+IEBAIC00OSw2ICs0OSw3IEBADQo+ICAgKiBmb3IgdGhpcyBjYXNlLg0KPiAg
+ICovDQo+ICAjZGVmaW5lIEtGX1RSVVNURURfQVJHUyAoMSA8PCA0KSAvKiBrZnVuYyBvbmx5IHRh
+a2VzIHRydXN0ZWQgcG9pbnRlcg0KPiBhcmd1bWVudHMgKi8NCj4gKyNkZWZpbmUgS0ZfU0xFRVBB
+QkxFICAgKDEgPDwgNSkgLyoga2Z1bmMgbWF5IHNsZWVwICovDQo+IA0KPiAgc3RydWN0IGJ0ZjsN
+Cj4gIHN0cnVjdCBidGZfbWVtYmVyOw0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2JwZi9idGYuYyBi
+L2tlcm5lbC9icGYvYnRmLmMNCj4gaW5kZXggN2U2NDQ0NzY1OWYzLi5kM2U0Yzg2YjhmY2QgMTAw
+NjQ0DQo+IC0tLSBhL2tlcm5lbC9icGYvYnRmLmMNCj4gKysrIGIva2VybmVsL2JwZi9idGYuYw0K
+PiBAQCAtNjE3NSw2ICs2MTc1LDcgQEAgc3RhdGljIGludCBidGZfY2hlY2tfZnVuY19hcmdfbWF0
+Y2goc3RydWN0DQo+IGJwZl92ZXJpZmllcl9lbnYgKmVudiwNCj4gIHsNCj4gIAllbnVtIGJwZl9w
+cm9nX3R5cGUgcHJvZ190eXBlID0gcmVzb2x2ZV9wcm9nX3R5cGUoZW52LT5wcm9nKTsNCj4gIAli
+b29sIHJlbCA9IGZhbHNlLCBrcHRyX2dldCA9IGZhbHNlLCB0cnVzdGVkX2FyZyA9IGZhbHNlOw0K
+PiArCWJvb2wgc2xlZXBhYmxlID0gZmFsc2U7DQo+ICAJc3RydWN0IGJwZl92ZXJpZmllcl9sb2cg
+KmxvZyA9ICZlbnYtPmxvZzsNCj4gIAl1MzIgaSwgbmFyZ3MsIHJlZl9pZCwgcmVmX29ial9pZCA9
+IDA7DQo+ICAJYm9vbCBpc19rZnVuYyA9IGJ0Zl9pc19rZXJuZWwoYnRmKTsNCj4gQEAgLTYyMTIs
+NiArNjIxMyw3IEBAIHN0YXRpYyBpbnQgYnRmX2NoZWNrX2Z1bmNfYXJnX21hdGNoKHN0cnVjdA0K
+PiBicGZfdmVyaWZpZXJfZW52ICplbnYsDQo+ICAJCXJlbCA9IGtmdW5jX2ZsYWdzICYgS0ZfUkVM
+RUFTRTsNCj4gIAkJa3B0cl9nZXQgPSBrZnVuY19mbGFncyAmIEtGX0tQVFJfR0VUOw0KPiAgCQl0
+cnVzdGVkX2FyZyA9IGtmdW5jX2ZsYWdzICYgS0ZfVFJVU1RFRF9BUkdTOw0KPiArCQlzbGVlcGFi
+bGUgPSBrZnVuY19mbGFncyAmIEtGX1NMRUVQQUJMRTsNCj4gIAl9DQo+IA0KPiAgCS8qIGNoZWNr
+IHRoYXQgQlRGIGZ1bmN0aW9uIGFyZ3VtZW50cyBtYXRjaCBhY3R1YWwgdHlwZXMgdGhhdCB0aGUN
+Cj4gQEAgLTY0MTksNiArNjQyMSwxMyBAQCBzdGF0aWMgaW50IGJ0Zl9jaGVja19mdW5jX2FyZ19t
+YXRjaChzdHJ1Y3QNCj4gYnBmX3ZlcmlmaWVyX2VudiAqZW52LA0KPiAgCQkJZnVuY19uYW1lKTsN
+Cj4gIAkJcmV0dXJuIC1FSU5WQUw7DQo+ICAJfQ0KPiArDQo+ICsJaWYgKHNsZWVwYWJsZSAmJiAh
+ZW52LT5wcm9nLT5hdXgtPnNsZWVwYWJsZSkgew0KPiArCQlicGZfbG9nKGxvZywgImtlcm5lbCBm
+dW5jdGlvbiAlcyBpcyBzbGVlcGFibGUgYnV0IHRoZSBwcm9ncmFtIGlzDQo+IG5vdFxuIiwNCj4g
+KwkJCWZ1bmNfbmFtZSk7DQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArCX0NCj4gKw0KPiAgCS8q
+IHJldHVybnMgYXJndW1lbnQgcmVnaXN0ZXIgbnVtYmVyID4gMCBpbiBjYXNlIG9mIHJlZmVyZW5j
+ZSByZWxlYXNlDQo+IGtmdW5jICovDQo+ICAJcmV0dXJuIHJlbCA/IHJlZl9yZWdubyA6IDA7DQo+
+ICB9DQo+IC0tDQo+IDIuMzcuMS40NTUuZzAwODUxOGI0ZTUtZ29vZw0KDQo=
