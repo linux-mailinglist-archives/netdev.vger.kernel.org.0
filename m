@@ -2,151 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9865876D7
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 07:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C222F58770A
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 08:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235832AbiHBFm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 01:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
+        id S235408AbiHBGSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 02:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231804AbiHBFm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 01:42:26 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-eastus2azon11021021.outbound.protection.outlook.com [52.101.57.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33A541D0F;
-        Mon,  1 Aug 2022 22:42:25 -0700 (PDT)
+        with ESMTP id S230298AbiHBGSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 02:18:23 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C71F5A0
+        for <netdev@vger.kernel.org>; Mon,  1 Aug 2022 23:18:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PikBb6Vbe+nMZ4OAGxh1SkV4DV9NiWlNxo0lSX01hl2uuSn8N8LweaMrTNJtheC5iGsuOwsFUTyzqIDzil/uojYZn6l71+ebFKGYvYqoDVRPQ9i8h1jVe+/1GtsmEMDWChSXjhOdSyNiErET2u6gFlp+7Sg6u94wqXcL9HnsYKWmqVl5TA0RP8U0Pso14PectTYpWEMnGjZXfnw2iCJxAEHTzu5wGeceBrfBmxlLf7+tc9uIr6M0+Uh7ovilkAgJRZ+jftP5bHib94mebj3F6587stKgSE7Ie1wcnOVN7J6vkJY/f2vWDN7IIXHVIWkpgNUQjXl8aUu1ACxRd11P/w==
+ b=ViisEAt3wwNuvZrVzURMFggSBvDZAuIBOhfOPfI/YOjOt291RqvHRiJiY0Qb797Kh+BBsgRagwuAwu6fYZXsvgZz1vgh44SRkqP9qDN1jvNIOt3cfdNNqWn+afKbyPCgnz8/5Zp29IS3VKsWZ21aoykYb2mQnnnc4cRZtvzO0T3J+GY4rccPAljVio0S3HVXlHaqf/31txIWq8mn8opLxu3VAuJAkChElTXabG3sQCZAc+zc+oPh0jJfEKZ4/gdP85sSSy300FUJ/orGc7PnFWbEDhhhuDKEl92evp0TxUmIkSBrjBwzKLpNUgNuurH4cB4LSMRSpQrbLhRrRnc8fA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pwjNnhwIpH/RQOBK1rxGwe8JSsiosp0gnGYjKCFjeYM=;
- b=iAD2AfF86M1qbXW+1qPbmKLsPcLbGdz4Ec+VnAWmDZktUhzd+XIfUy1f7ygqKj/d8OmP9Zmnkf0ugoXFlMd/P3omOQ5G4vjTAostLwLYP8sXWNoFm6bNJzo7B6YV4ws/kFhzW9iN4Yv2pdUgXUPKrjH/k3Y2NviCSp56nrvYLGsTHdsJ26PodLF3cXPXJa8jRPJBS4TX/gj5kMf2dtIBd8HaX4j1eGlyKuRgTcCJVQSvS57TkG+5RjAKjYASQrZdD44KWbTu57B1ECrmfi9h/Ir5M63sA1S1YMCmHpqC82eiqiMUNWslwzIdqrSY9NxkQ9QuGTGukNMw8EPDrO4zDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ bh=EvanBTKym0NPSWPhgLh3n/2nfa6x/j9C4au56zSpk3g=;
+ b=E0+AWlUtG3+WumhYWHE8+BE9sQEnTBzB2nM8DbzTc8CaB4kL6TEZ2LifFWMRvcFxrZlM3WueZ0mlOSkUAtd2u2HKh86VQovTWBLkxydkl+jeP+U/nSNQuclc0DOmBNHgDjM3jD4Ew4GS34Q4XmztuLLS2kmA1teoN1Ksm+2hUIxXcWDNrhak1HyEBElvsEaj2nSBcJm4Hi1jglQwIZrVdNYNxtcV1oSbOpp2XEKufYAYAIkhuL57PCXYyiqwNbzqWni8BU/IuAVCxm6Cy85nSPxT2W5jt3T9hd5DjqedIP6Z0dIkUVP+4tSzlb9zLusRCuAhokFKoQd1h3ZqwZ0icA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=queasysnail.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pwjNnhwIpH/RQOBK1rxGwe8JSsiosp0gnGYjKCFjeYM=;
- b=FICnso1DOEah08h0Y7DGFJKjIWdQ+iWpilqgqgzlY3DO8tYHUBod0aejf9sjc9GmD5Yy3WueFSb70E8FqemOKCtJZOXQyXL5ZECCRTsgTylAjCzL+StS8gTyD+bM28ZzNWyWl+v87kEbylQaJaPQ2QflZ0GDSZnKZB2LNOtbx7g=
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
- by BYAPR21MB1334.namprd21.prod.outlook.com (2603:10b6:a03:115::16) with
+ bh=EvanBTKym0NPSWPhgLh3n/2nfa6x/j9C4au56zSpk3g=;
+ b=hNCPTmYvnP7/Qz4cUq2Or7pMj7KnYpgdBEtlA0+AQsloqALw/Bc3PSlY7qeTPub7smeI5I542keEp3aknBZzTAsy2owX8WAnaTGf9tPW0jKhG1+sbhaF+rUbE9a8tk2xbWxn/ki31ES4n6TvHUEynGxwLRR/Ft8NFD5VMIWnWH0lI+dHLhCWpfq5J5MEtJK2dif1P6yCQ689yFOxiPmvId8DU6v3MoUlchddWE+MX6txqhdOYfMujmBGXIX2NkJ+ZEN/nFrB3yyr58lFCh5vBj5A6rd8Q6YAoVAuTS90DXqVhRcOMCXXFjDGNqy40n8fXYNokOLSNUYiQl5vBXP+vg==
+Received: from BN9PR03CA0783.namprd03.prod.outlook.com (2603:10b6:408:13f::8)
+ by BYAPR12MB3080.namprd12.prod.outlook.com (2603:10b6:a03:de::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.3; Tue, 2 Aug
- 2022 05:42:23 +0000
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::cc4e:56fd:18c1:5059]) by SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::cc4e:56fd:18c1:5059%6]) with mapi id 15.20.5504.014; Tue, 2 Aug 2022
- 05:42:22 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: RE: [RFC PATCH v2 6/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Topic: [RFC PATCH v2 6/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Index: AQHYn/2PdDRRTeWJ4EqSAxbUzqz6wq2bJPaQ
-Date:   Tue, 2 Aug 2022 05:42:22 +0000
-Message-ID: <SA1PR21MB1335DDBD5034FE07B0D609A9BF9D9@SA1PR21MB1335.namprd21.prod.outlook.com>
-References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
- <6ee85279-df24-7de1-d62d-7a8249fc8fc3@sberdevices.ru>
-In-Reply-To: <6ee85279-df24-7de1-d62d-7a8249fc8fc3@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d3f5ca8f-4847-44a6-a807-8d17f3a6a605;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-08-02T05:41:11Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 337d6a14-260a-414d-6ccb-08da7449c5e9
-x-ms-traffictypediagnostic: BYAPR21MB1334:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: X9xtO69wmtebnHJDkGF7GpWUlHOSUYKO8KZoUUC2euA5BiObRgSkL6PgGL7pQSnJSMVES+O+pngbasAkQAOrFTWdes3I+RwpEtF/mby9jf7/d4WDH85JqQmRtDJw6R/+7/cpxggYKJZRo5F2YbLWWt1ULzsqeIgdRCpeeMpWzOrlLezFkqBpBWpZDzRwL2VXH/Hf0Al4riL9ko77Aei6TWzWDoJJV14FEcEJSJgGwjboyHiwzW7WE3r3ZsgvOM8sfQ/jke3EFsIm5J86OCDbPZNYhsy3G4CUU9uwCtyZfxTn86dhJCnXeTCSh8DeIBqMYaZejyCXkfbpOiKC5R26JiHxcq3vo7TDaBs9shbTxUP/bqT9N1zQ3ByAJt/9b/nHIiPZl/cxSaXLJiGz7v/PkUm/J7a9MEQoGxG37tXyhsc5DmoR9axCfg82n2zwxhwpHSYNcFAlMImokEXdDRXldIt08cokeNUjQkylX58luDti57fM3J1uBrKvl3ujBlcRM7rkIzziQ1RQCpNoYlIH0Mace4R482mUVh1orZbQ/ejLuenX7AnvLKdNN1Dbs8WC6aUhooRuxuV1ujfMf3j9vqIXmdhFGhujyW+ACI+3igK3qoZhOhiwKFlC2t8oFkuG5y6QIglXN5AOt99395tElmT5cemo6tmVge/afJCy45Jxg8F1W8y9Z3+w89NhLE3/pjl5q4n0ZWDojoKJWboioPDTpP8hWd9HNnUOw3jgp35zywB26glAqSVqHJ3XHtTFXBorcf9UcTS1/vA+qPlGv54lVy5pt4XQr/3ucKQsBNX3lqFjC+QXkQJEYSAVEAQZy5CHbP0nfhuBYHJPmU7aMI9OqObWV8derv2AqjnqiRdDTzpy0aohApTVLUbvY74m
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(346002)(136003)(376002)(451199009)(53546011)(26005)(8990500004)(7696005)(6506007)(41300700001)(83380400001)(9686003)(2906002)(38100700002)(55016003)(4744005)(122000001)(38070700005)(66556008)(5660300002)(33656002)(82960400001)(82950400001)(8676002)(64756008)(66446008)(66476007)(66946007)(76116006)(8936002)(54906003)(52536014)(110136005)(921005)(7416002)(478600001)(10290500003)(186003)(71200400001)(86362001)(4326008)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bENNbmt6bTQ4bzNjTG5odURpT3pUVlViMzZUTXdVWjNKWkFJTk42V1hjZWxo?=
- =?utf-8?B?a0JMN3NXM21GTWt2eHBzZFV1STFXb3hFTzFSUHEzcUNjWUJlL0dSY1FxRnFD?=
- =?utf-8?B?UXhwa0NacUpiYTRHYkQrSGNmMmRHcjNXcEVmYjZHVTZ4WDFqYWQ1NFVHeGY4?=
- =?utf-8?B?MGYzU3QzTUdGbU52c1F3d0NxTG45eTlkWXJmTDhJYk4yMDI3N0kybzFOb0pW?=
- =?utf-8?B?ZUdBaWZTR2d5REx1a3lZMUdxRmJUY0RsVHV5aktyaGczUDEzMjZ0bnRlTGRH?=
- =?utf-8?B?c1lDb3BnKzlTdzg2SWp4SktEdE5STzJzMlVQZlh4VmdoVFpoK2xiNWVJNVNB?=
- =?utf-8?B?cWdtQjQrL056RjZpM1lhdUdCVk5GNUxlWGs0dmVmR3VmendOb0ZjN2VmdExR?=
- =?utf-8?B?aXpwR3RoaU1nU1lFNC8wOHBTM01UUVhBcjhaY2EvSjBwM2o1eXdKN0JaMjJF?=
- =?utf-8?B?dHVFK3ZDSHpOOVZuL2MxRjM2QVROYkpmZjJ2b3BXN0g0ZTIrODB1T21vTjl3?=
- =?utf-8?B?aW8wU2pBWjdwcmY0Uy8rSzVKYldnV1hrQWJSSzQzQklaL3FWblNRcU9PVFF4?=
- =?utf-8?B?VDROcFBsN0J1OWQreTUwUnh0dHdpMHE2RHZJSFNYNXVpZ1BURldzYWdCaDVT?=
- =?utf-8?B?Zk1ReTZjZy9BNWVvM2lxSVgxd2Z0eU40ZitkZ2JwZDY2T081eVA4TzlhNXdC?=
- =?utf-8?B?dHdETENQUTM0a3RQSW9KQXBSc1QzS1pVMm94Y2RjRlhkMkFaZVdwSzY4OVB4?=
- =?utf-8?B?NjRyOTEwY2hHZUd1SEhzcnRhQUt1T0lQVDJEeDQzSGthbGtPR1kxSjR1bTAr?=
- =?utf-8?B?OFZBbjkvbEdoaUFubXdqMFV6SWhIK1pWWk5xZlljV2c0bk1WeDFJVldUYUUx?=
- =?utf-8?B?S2ZGZVgyWmU0QUNJNFc4a2ozc082ejgrb21DaWM4QWpXdVRiSXJ3RWM5UFMx?=
- =?utf-8?B?T3pYUUg5bkt5VVl0RnhnL1k4QXRFRnY2ekhpbVd6U2dzazhwYjA0Q3JKNld3?=
- =?utf-8?B?UXphNldqNllQckJVQ3dUVHllSk9xS3hLNnBub3lYUGlobHlMSmJuT01IMHdY?=
- =?utf-8?B?ZmUreG10SnV4cE51QThJalFRSjBTWU1pL3VKZ2dPTXh4L2QyYlB0ZDJaNHph?=
- =?utf-8?B?VjlkSjN0b054OFRCYm9yNG5NMmpQNlRwZy9DTS8yOVVEVVFLM0V2cjNNajJp?=
- =?utf-8?B?Z2RjbXB6TlRyTVFNTkkxNDk2MUZ2SEJRT1ZvaGRHQy9sR0lHR2NBRkJUMGsv?=
- =?utf-8?B?cTFCQXdtQmd2VVBMRHdqUFdVUDY1c0pMbDBpeGJaa0doblo4dVV3dTNkOWtW?=
- =?utf-8?B?SGIzY2w4VFpJcm52UDdXNVBVZ3J0NEMyQ1RWMXRBR09haXlnUnNlSTVSdHFI?=
- =?utf-8?B?YjRNK1dHeTYxOS83L0Zjd1NWamt2T2pUZ3lYYmh3YUN4K2hwaTBya0NuN0ZN?=
- =?utf-8?B?VzJMZ2VtUWVwSTBmcFoyeW9iWUU1eU9HMU90SGtKdXBnNXFWYXh6NDZ2YThp?=
- =?utf-8?B?a2FITFRwQ1B5NXFGdVZ6aEZsa2RTaTFDbTRhd2ZDZ3AvSXVVK2cvOG01M01t?=
- =?utf-8?B?ak14ZThVVklpdlFCZHZqd3VMbmFXSDJ6cWFSTE56WWVYWlF5VG5HN2hJMVhW?=
- =?utf-8?B?RVp0alFEUmVUbzBVaHdUSTZLZnZYaUQ4ajk3dzRKOUdKQWlNcTBIbmpGeFd5?=
- =?utf-8?B?ZFU0RXhpb2pGR3MrUVZFMmtBZkJmVVA4b2lRdFNjT3pkVWZMUWFmNUorbzlk?=
- =?utf-8?B?UEd3ajFtUlNsbFlER3FHOTZuODEyYXNiMFpKQnFEWldBVnpEemtsdm1SaFdv?=
- =?utf-8?B?L3puL2FCMVp6aXFBdVgrRG5weHkySnVBS0o1QjUvK2tsNU1hWUJUL0owN0xu?=
- =?utf-8?B?VGRVUVdxZzlNTkxFbm9Ja0xPenRtWEZLV0xTTUtFM2ZudGRyU0p0Z3RQY29v?=
- =?utf-8?B?RWlZQlByMUQxU2g2R2tmU0doRXZmM25vMXpyUTNWUXhreTJoczlMazVQTDBE?=
- =?utf-8?B?WUZwQk9SaVhydjlPNVZUaDIvMFl0Y3lJQWtIemI1ZWNoOW5VbkNlNlZBS0xX?=
- =?utf-8?B?eFl6eTllRXhJN3lxcGVGZDFuUEJGYnBkK012ZzlVZ1JnVGFPQTBlcXhCSk1q?=
- =?utf-8?Q?Bom3hH+RwznxMFAIi0yM5Lb0+?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Tue, 2 Aug
+ 2022 06:18:20 +0000
+Received: from BN8NAM11FT020.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13f:cafe::f) by BN9PR03CA0783.outlook.office365.com
+ (2603:10b6:408:13f::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16 via Frontend
+ Transport; Tue, 2 Aug 2022 06:18:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT020.mail.protection.outlook.com (10.13.176.223) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5482.10 via Frontend Transport; Tue, 2 Aug 2022 06:18:18 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Tue, 2 Aug 2022 06:18:18 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Mon, 1 Aug 2022 23:18:17 -0700
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Mon, 1 Aug
+ 2022 23:18:16 -0700
+From:   <ehakim@nvidia.com>
+To:     <dsahern@kernel.org>, <netdev@vger.kernel.org>
+CC:     <raeds@nvidia.com>, <tariqt@nvidia.com>, <sd@queasysnail.net>,
+        Emeel Hakim <ehakim@nvidia.com>
+Subject: [PATCH main v2 1/3] macsec: add option to pass flag list to ip link add command
+Date:   Tue, 2 Aug 2022 09:18:11 +0300
+Message-ID: <20220802061813.24082-1-ehakim@nvidia.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 337d6a14-260a-414d-6ccb-08da7449c5e9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2022 05:42:22.7553
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 66c5546a-b573-4db8-46ed-08da744ecb2e
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3080:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: j3dTnib62Gl7jFQEPD/LyzmIXu6fd2/0Udb5ERJEePLwtQrOUQtng1GowIcr5hf46sTXfr+qTv1VBYoiD3EkrVQ9pMXzsUoMesGgEOvErt3TzD4jQ1OQJqKc+n+6i5MnaQQRBkZRtCeOjrrlzp64VKmzVweqorSxWzydQBSXvG0kKc7BKlpBwNb5K5cvv0m1PGOXqpYQdQs55GVXMnL7rVNv3D0CHTarx2eSlQJxkWKfcDip+0jyy1mRN96VSbuvJPHzuojWNDDJTly/hVtzzyD7ZIA6G2o2pxDbRPeDHwag4bWhJDWbczOinjh87fUtYQwRYtF0Wb2R8eqaXHYvnxQ5LKXCADQBYV28OB88/TgGMdV/bZecAXqzCchpAa588J75rqOIQW6cwSbSieQdFx9yqAEbhDuosPEhEKYmBYmx31AXlWtELBplufNy8O1rAploEZFbh2Tr9Im9gd5DKGf+IeccUL8W0Q9UqcDj47JANQZtYWqdkULOmAeIsSNg12u1+SCHUg3UcCHgpzmCGY9ksEf7NtFdmb2KM5iX9KZSNcktfnqNKx8sOPYHqIeXOLBrgf2XloL37ZIexp99n2mM4wdVIND64G863EQxXMTLsMiclccTxi8hN5wGNR+o4MaGsm/QU0geUveUALwRaL6CU7VuZE1+AoE+gi236BSbRprIHZFE0bY/rUtgqse2+J5n6eLdIjKkqLnIWKV4PPK0IrM2g/ZghU9IMiIcPkrzvr21jjl4UgZtBL/q1XGZVr5+1lvjAjqHRLLkmpTuEexfAG+ieWRlKsF/V/R7pJLDZtBewYkVgCKsFqI5R5GHEJdVmR41vxZfIevAU3ZcSA==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(376002)(136003)(40470700004)(36840700001)(46966006)(356005)(86362001)(26005)(478600001)(186003)(2616005)(1076003)(107886003)(82310400005)(7696005)(81166007)(336012)(426003)(47076005)(2906002)(40460700003)(6666004)(41300700001)(8936002)(82740400003)(83380400001)(2876002)(5660300002)(110136005)(36860700001)(40480700001)(36756003)(316002)(54906003)(8676002)(70206006)(70586007)(4326008)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 06:18:18.9706
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vIKqcc4OUwdiLpuOisWYHCGWThchgwoUa4VmYNrnUs6Mu0v7T/W68EUP3fAmfUnpYk/Uidd/XBU1hmJUMH2LIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR21MB1334
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66c5546a-b573-4db8-46ed-08da744ecb2e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT020.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3080
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCj4gU2Vu
-dDogTW9uZGF5LCBKdWx5IDI1LCAyMDIyIDE6MDcgQU0NCj4gLi4uDQo+IFN1YmplY3Q6IFtSRkMg
-UEFUQ0ggdjIgNi85XSBodl9zb2NrOiBkaXNhYmxlIFNPX1JDVkxPV0FUIHN1cHBvcnQNCj4gDQo+
-IEZvciBIeXBlci1WIGl0IGlzIHF1aWV0IGRpZmZpY3VsdCB0byBzdXBwb3J0IHRoaXMgc29ja2V0
-IG9wdGlvbixkdWUgdG8NCj4gdHJhbnNwb3J0IGludGVybmFscywgc28gZGlzYWJsZSBpdC4NCj4g
-DQo+IFNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2Vz
-LnJ1Pg0KDQpUaGFua3MsIEFyc2VuaXkhIFRoaXMgbG9va3MgZ29vZCB0byBtZS4NCg0KUmV2aWV3
-ZWQtYnk6IERleHVhbiBDdWkgPGRlY3VpQG1pY3Jvc29mdC5jb20+DQoNCg0K
+From: Emeel Hakim <ehakim@nvidia.com>
+
+This patch introduces a new flag list option to ip link add
+command using type macsec, the patch prepares a framework for
+passing and parsing flag list for future features like macsec
+extended packet number (XPN) to use.
+
+Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+---
+ ip/ipmacsec.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
+index bf48e8b5..9aeaafcc 100644
+--- a/ip/ipmacsec.c
++++ b/ip/ipmacsec.c
+@@ -1256,9 +1256,28 @@ static void usage(FILE *f)
+ 		"                  [ validate { strict | check | disabled } ]\n"
+ 		"                  [ encodingsa { 0..3 } ]\n"
+ 		"                  [ offload { mac | phy | off } ]\n"
++		"                  [ flag FLAG-LIST ]\n"
++		"FLAG-LIST :=      [ FLAG-LIST ] FLAG\n"
++		"FLAG :=\n"
+ 		);
+ }
+ 
++static int macsec_flag_parse(__u8 *flags, int *argcp, char ***argvp)
++{
++	int argc = *argcp;
++	char **argv = *argvp;
++
++	while (1) {
++		/* parse flag list */
++		break;
++	}
++
++	*argcp = argc;
++	*argvp = argv;
++
++	return 0;
++}
++
+ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			    struct nlmsghdr *n)
+ {
+@@ -1271,6 +1290,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	bool es = false, scb = false, send_sci = false;
+ 	int replay_protect = -1;
+ 	struct sci sci = { 0 };
++	__u8 flags = 0;
+ 
+ 	ret = get_sci_portaddr(&sci, &argc, &argv, true, true);
+ 	if (ret < 0) {
+@@ -1388,6 +1408,9 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN,
+ 				 IFLA_MACSEC_OFFLOAD, offload);
++		} else if (strcmp(*argv, "flag") == 0) {
++			NEXT_ARG();
++			macsec_flag_parse(&flags, &argc, &argv);
+ 		} else {
+ 			fprintf(stderr, "macsec: unknown command \"%s\"?\n",
+ 				*argv);
+-- 
+2.21.3
+
