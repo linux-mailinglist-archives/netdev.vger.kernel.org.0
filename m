@@ -2,48 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FD7587EE2
-	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 17:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F7A587F06
+	for <lists+netdev@lfdr.de>; Tue,  2 Aug 2022 17:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234193AbiHBPTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 11:19:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
+        id S229575AbiHBPhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 11:37:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHBPTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 11:19:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7609A107;
-        Tue,  2 Aug 2022 08:19:39 -0700 (PDT)
+        with ESMTP id S229501AbiHBPhj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 11:37:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C8012621
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 08:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6FA060AC3;
-        Tue,  2 Aug 2022 15:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABED2C433D7;
-        Tue,  2 Aug 2022 15:19:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83994B819F0
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 15:37:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC961C433D7;
+        Tue,  2 Aug 2022 15:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659453578;
-        bh=uIFHKVSnF63qKOrJUUCg7Hh718c66h+z7U+n3VkILOM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AThHoG2+PQtHaYN+tDY1EeVpqjl0XE6wDIbyWq6gpC5cvOJ/BsomTeBrbF2OOZeIg
-         dYEJInlN9fMR4jjXbQ/BxE97M4cKRZmZSriMJ/575LoH+OGWVD2RdFeKU5VTLLr4Gc
-         Jz3Ws8pyyRhHEorO3lFPayYSPPoSgOdEvTiNygu1I7muGHcwk5hV6Gxkp5WuZ9VCN/
-         IATomtJHoDnkdeLwjqsLvh+NvNbhczoZHqv2Lg5/2bO55tzCJHtXqBSRJve9RxRh3D
-         TQsjD/45mPX7gX1a46kgOB4nKhj2SNMKTtT8uq+q3n9W0zNYRan2PoP16zm7hd/lzJ
-         syGLo+RJZF0rQ==
-From:   broonie@kernel.org
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Date:   Tue,  2 Aug 2022 16:19:32 +0100
-Message-Id: <20220802151932.2830110-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        s=k20201202; t=1659454653;
+        bh=AIRPFLaTVHkJcspt3rHtcIRnTUm18pFbcHW5y6nhGeE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=huuV/xG0ipp+bnY6x01c8HzFWopsxR81YRWoBFLuP2RH9yGhtzTpGawE1IxkOzpaw
+         6HN0ZcqOGcnGMYtHAXZvYwxovL340VyCjBte34R372vZCt1HlJ50qY4B8kw9asqBRG
+         GnD7jk4xrJR/wmT66t/85w6UGgSjWquSwbcAOV6uNbteehvcWGUzzWbEPHAoOcgV7C
+         JFy2rBAE9+LcGqqwra/Bke/h7SW9P95ar7+fFPyl64TLvm1EROU9mJ9nty1hryOhR1
+         eBpKCtBAartkjHW/RfJeYtwPXbAOpLhY3xvljbiVaKbHpK+f5NAiSDwBiEbOs93jfc
+         T2u0oY895kBXw==
+Date:   Tue, 2 Aug 2022 08:37:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>
+Subject: Re: [PATCH net-next] net/tls: Use RCU API to access tls_ctx->netdev
+Message-ID: <20220802083731.22291c3b@kernel.org>
+In-Reply-To: <380eb27278e581012524cdc16f99e1872cee9be0.camel@nvidia.com>
+References: <20220801080053.21849-1-maximmi@nvidia.com>
+        <20220801124239.067573de@kernel.org>
+        <380eb27278e581012524cdc16f99e1872cee9be0.camel@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -53,61 +61,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Tue, 2 Aug 2022 12:03:32 +0000 Maxim Mikityanskiy wrote:
+> > For cases like this where we don't actually hold onto the object, just
+> > take a peek at the address of it we can save a handful of LoC by using
+> > rcu_access_pointer().   
+> 
+> The documentation of rcu_access_pointer says it shouldn't be used on
+> the update side, because we lose lockdep protection:
+> 
+> --cut--
+> 
+> Although rcu_access_pointer() may also be used in cases
+> where update-side locks prevent the value of the pointer from changing,
+> you should instead use rcu_dereference_protected() for this use case.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+I think what this is trying to say is to not use the
+rcu_access_pointer() as a hack against lockdep:
 
-  net/ax25/af_ax25.c
 
-between commit:
+	lock(writer_lock);
+	/* no need for rcu_dereference() because we have writer lock */
+	ptr = rcu_access_pointer(obj->ptr);
+	ptr->something = 1;
+	unlock(writer_lock);
 
-  d7c4c9e075f8c ("ax25: fix incorrect dev_tracker usage")
+It's still perfectly fine to use access_pointer as intended on 
+the write side, which is just checking the value of the pointer, 
+not deferencing it:
 
-from the net tree and commit:
-
-  d62607c3fe459 ("net: rename reference+tracking helpers")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
-diff --cc net/ax25/af_ax25.c
-index 5b5363c99ed50,bbac3cb4dc99d..0000000000000
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@@ -102,7 -102,8 +102,8 @@@ again
-  			ax25_disconnect(s, ENETUNREACH);
-  			s->ax25_dev = NULL;
-  			if (sk->sk_socket) {
-- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+ 				netdev_put(ax25_dev->dev,
- -					   &ax25_dev->dev_tracker);
-++					   &ax25->dev_tracker);
-  				ax25_dev_put(ax25_dev);
-  			}
-  			ax25_cb_del(s);
-@@@ -1065,7 -1066,7 +1066,7 @@@ static int ax25_release(struct socket *
-  			del_timer_sync(&ax25->t3timer);
-  			del_timer_sync(&ax25->idletimer);
-  		}
-- 		dev_put_track(ax25_dev->dev, &ax25->dev_tracker);
- -		netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
-++		netdev_put(ax25_dev->dev, &ax25->dev_tracker);
-  		ax25_dev_put(ax25_dev);
-  	}
-  
-@@@ -1146,7 -1147,7 +1147,7 @@@ static int ax25_bind(struct socket *soc
-  
-  	if (ax25_dev) {
-  		ax25_fillin_cb(ax25, ax25_dev);
-- 		dev_hold_track(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
- -		netdev_hold(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
-++		netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
-  	}
-  
-  done:
+	lock(writer_lock);
+	if (rcu_access_pointer(obj->ptr) == target)
+		so_something(obj);
+	unlock(writer_lock);
