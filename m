@@ -2,173 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7C36588B61
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B306588B1F
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237618AbiHCLe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 07:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
+        id S233781AbiHCL1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 07:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237778AbiHCLeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:34:19 -0400
-X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 Aug 2022 04:34:14 PDT
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE6E564CB
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 04:34:14 -0700 (PDT)
-Received: from imsva.intranet.prolan.hu (imss.intranet.prolan.hu [10.254.254.252])
-        by fw2.prolan.hu (Postfix) with ESMTPS id CD7657F494;
-        Wed,  3 Aug 2022 13:24:51 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BA87D34064;
-        Wed,  3 Aug 2022 13:24:51 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A376E3405A;
-        Wed,  3 Aug 2022 13:24:51 +0200 (CEST)
-Received: from fw2.prolan.hu (unknown [10.254.254.253])
-        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
-        Wed,  3 Aug 2022 13:24:51 +0200 (CEST)
-Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
-        by fw2.prolan.hu (Postfix) with ESMTPS id 73B3F7F494;
-        Wed,  3 Aug 2022 13:24:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
-        t=1659525891; bh=lcqreQWva6o2Tz8OLDWCr3wBAbsUdL/CbLKNEA99Rns=;
-        h=From:To:CC:Subject:Date:From;
-        b=yPEBDdJKxUS9hrqG6B/64YB2TWAYnX0trW20/heNfGF96RppNZKmYE8Ea29G+NOzQ
-         HZ3L2q7ZNu82ulvlhrGKrU9GerNIpjWP3goBbkvIiAsi+19/odmcHlJkh3lOxF8/QI
-         LfsH3zW43jOnkll2zRgCP0sMpOuKUjVZ7mFnITFQsZDNpSA1eMt9Xqi6eJ8tyYOXIm
-         ZbkF60/LINLmuRd+kWb+JTOyuBPWl1TWJPKoLy/iuEAFcOrQi8PnLKDMw4bbCEdj6Q
-         S3sS1kxBCXiK8VkuoHLXVe+OzqaQWWMd9iDxZk5d3KI7G3T/Rlbl7cNVDCABWx0Cwi
-         gku3EbgQN0VWw==
-Received: from atlas.intranet.prolan.hu (10.254.0.229) by
- atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id
- 15.1.2507.9; Wed, 3 Aug 2022 13:24:50 +0200
-Received: from P-01011.intranet.prolan.hu (10.254.7.28) by
- atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server id
- 15.1.2507.9 via Frontend Transport; Wed, 3 Aug 2022 13:24:50 +0200
-From:   =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
-To:     <netdev@vger.kernel.org>
-CC:     =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Fugang Duan <fugang.duan@nxp.com>
-Subject: [PATCH] fec: Allow changing the PPS channel
-Date:   Wed, 3 Aug 2022 13:24:49 +0200
-Message-ID: <20220803112449.37309-1-csokas.bence@prolan.hu>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229784AbiHCL1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:27:13 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD53B275CF;
+        Wed,  3 Aug 2022 04:27:11 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=25;SR=0;TI=SMTPD_---0VLGi36p_1659526024;
+Received: from 30.227.65.209(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VLGi36p_1659526024)
+          by smtp.aliyun-inc.com;
+          Wed, 03 Aug 2022 19:27:06 +0800
+Message-ID: <ecf07c1b-a6f3-2537-aacd-a768c437fa7f@linux.alibaba.com>
+Date:   Wed, 3 Aug 2022 19:27:04 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1659525890;VERSION=7932;MC=395596656;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
-X-ESET-Antispam: OK
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29971EF456667267
-X-TM-AS-GCONF: 00
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v3] net/smc: fix refcount bug in sk_psock_get (2)
+To:     Hawkins Jiawei <yin31149@gmail.com>,
+        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
+Cc:     andrii@kernel.org, ast@kernel.org, borisp@nvidia.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, john.fastabend@gmail.com, kafai@fb.com,
+        kgraul@linux.ibm.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com, 18801353760@163.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        jakub@cloudflare.com, paskripkin@gmail.com,
+        skhan@linuxfoundation.org
+References: <00000000000026328205e08cdbeb@google.com>
+ <20220803080338.166730-1-yin31149@gmail.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <20220803080338.166730-1-yin31149@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Makes the PPS channel configurable via the Device Tree (on startup) and sysfs (run-time)
 
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
----
- drivers/net/ethernet/freescale/fec_main.c | 37 +++++++++++++++++++++++
- drivers/net/ethernet/freescale/fec_ptp.c  |  3 --
- 2 files changed, 37 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 2c3266be20e9..7482f26cd2c7 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -47,6 +47,7 @@
- #include <linux/bitops.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-+#include <linux/kobject.h>
- #include <linux/clk.h>
- #include <linux/crc32.h>
- #include <linux/platform_device.h>
-@@ -3591,6 +3592,36 @@ static int fec_enet_init_stop_mode(struct fec_enet_private *fep,
- 	return ret;
- }
- 
-+static ssize_t pps_ch_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
-+{
-+	struct device *dev = container_of(kobj, struct device, kobj);
-+	struct net_device *ndev = to_net_dev(dev);
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+
-+	return sprintf(buf, "%d", fep->pps_channel);
-+}
-+
-+static ssize_t pps_ch_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct device *dev = container_of(kobj, struct device, kobj);
-+	struct net_device *ndev = to_net_dev(dev);
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+	int enable = fep->pps_enable;
-+	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
-+
-+	if (enable)
-+		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 0);
-+
-+	kstrtoint(buf, 0, &fep->pps_channel);
-+
-+	if (enable)
-+		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
-+
-+	return count;
-+}
-+
-+struct kobj_attribute pps_ch_attr = __ATTR(pps_channel, 0660, pps_ch_show, pps_ch_store);
-+
- static int
- fec_probe(struct platform_device *pdev)
- {
-@@ -3687,6 +3718,9 @@ fec_probe(struct platform_device *pdev)
- 		fep->phy_interface = interface;
- 	}
- 
-+	if (of_property_read_u32(np, "fsl,pps-channel", &fep->pps_channel))
-+		fep->pps_channel = 0;
-+
- 	fep->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(fep->clk_ipg)) {
- 		ret = PTR_ERR(fep->clk_ipg);
-@@ -3799,6 +3833,9 @@ fec_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto failed_register;
- 
-+	if (sysfs_create_file(&ndev->dev.kobj, &pps_ch_attr.attr))
-+		pr_err("Cannot create pps_channel sysfs file\n");
-+
- 	device_init_wakeup(&ndev->dev, fep->wol_flag &
- 			   FEC_WOL_HAS_MAGIC_PACKET);
- 
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 69dfed4de4ef..a5077eff305b 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -86,8 +86,6 @@
- #define FEC_CC_MULT	(1 << 31)
- #define FEC_COUNTER_PERIOD	(1 << 31)
- #define PPS_OUPUT_RELOAD_PERIOD	NSEC_PER_SEC
--#define FEC_CHANNLE_0		0
--#define DEFAULT_PPS_CHANNEL	FEC_CHANNLE_0
- 
- /**
-  * fec_ptp_enable_pps
-@@ -112,7 +110,6 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
- 	if (fep->pps_enable == enable)
- 		return 0;
- 
--	fep->pps_channel = DEFAULT_PPS_CHANNEL;
- 	fep->reload_period = PPS_OUPUT_RELOAD_PERIOD;
- 
- 	spin_lock_irqsave(&fep->tmreg_lock, flags);
--- 
-2.25.1
+On 2022/8/3 16:03, Hawkins Jiawei wrote:
+> Syzkaller reports refcount bug as follows:
+> ------------[ cut here ]------------
+> refcount_t: saturated; leaking memory.
+> WARNING: CPU: 1 PID: 3605 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
+> Modules linked in:
+> CPU: 1 PID: 3605 Comm: syz-executor208 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
+>   <TASK>
+>   __refcount_add_not_zero include/linux/refcount.h:163 [inline]
+>   __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
+>   refcount_inc_not_zero include/linux/refcount.h:245 [inline]
+>   sk_psock_get+0x3bc/0x410 include/linux/skmsg.h:439
+>   tls_data_ready+0x6d/0x1b0 net/tls/tls_sw.c:2091
+>   tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4983
+>   tcp_data_queue+0x25f2/0x4c90 net/ipv4/tcp_input.c:5057
+>   tcp_rcv_state_process+0x1774/0x4e80 net/ipv4/tcp_input.c:6659
+>   tcp_v4_do_rcv+0x339/0x980 net/ipv4/tcp_ipv4.c:1682
+>   sk_backlog_rcv include/net/sock.h:1061 [inline]
+>   __release_sock+0x134/0x3b0 net/core/sock.c:2849
+>   release_sock+0x54/0x1b0 net/core/sock.c:3404
+>   inet_shutdown+0x1e0/0x430 net/ipv4/af_inet.c:909
+>   __sys_shutdown_sock net/socket.c:2331 [inline]
+>   __sys_shutdown_sock net/socket.c:2325 [inline]
+>   __sys_shutdown+0xf1/0x1b0 net/socket.c:2343
+>   __do_sys_shutdown net/socket.c:2351 [inline]
+>   __se_sys_shutdown net/socket.c:2349 [inline]
+>   __x64_sys_shutdown+0x50/0x70 net/socket.c:2349
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>   </TASK>
+> 
+> During SMC fallback process in connect syscall, kernel will
+> replaces TCP with SMC. In order to forward wakeup
+> smc socket waitqueue after fallback, kernel will sets
+> clcsk->sk_user_data to origin smc socket in
+> smc_fback_replace_callbacks().
+> 
+> Later, in shutdown syscall, kernel will calls
+> sk_psock_get(), which treats the clcsk->sk_user_data
+> as psock type, triggering the refcnt warning.
+> 
+> So, the root cause is that smc and psock, both will use
+> sk_user_data field. So they will mismatch this field
+> easily.
+> 
+> This patch solves it by using another bit(defined as
+> SK_USER_DATA_PSOCK) in PTRMASK, to mark whether
+> sk_user_data points to a psock object or not.
+> This patch depends on a PTRMASK introduced in commit f1ff5ce2cd5e
+> ("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
+> 
+> Reported-and-tested-by: syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Acked-by: Wen Gu <guwen@linux.alibaba.com>
+> Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+> ---
+> v2 -> v3:
+>    - use SK_USER_DATA_PSOCK instead of SK_USER_DATA_NOTPSOCK
+> to patch the bug
+>    - refactor the code on assigning to sk_user_data field
+> in psock part
+>    - refactor the code on getting and setting the flag
+> with sk_user_data field
+> 
+> v1 -> v2:
+>    - add bit in PTRMASK to patch the bug
+> 
+>   include/linux/skmsg.h |  2 +-
+>   include/net/sock.h    | 58 +++++++++++++++++++++++++++++++------------
+>   net/core/skmsg.c      |  3 ++-
+>   3 files changed, 45 insertions(+), 18 deletions(-)
+> 
 
+Hi Hawkins,
+
+Since the fix v3 doesn't involved smc codes any more, I wonder if it's still
+appropriate to use 'net/smc:' in subject?
+
+Cheers,
+Wen Gu
