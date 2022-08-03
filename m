@@ -2,217 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B09E5589167
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 19:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D7A589173
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 19:31:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238129AbiHCRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 13:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
+        id S238236AbiHCRbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 13:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234206AbiHCRaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 13:30:07 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDD9558EC;
-        Wed,  3 Aug 2022 10:30:06 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id a7so19736288ejp.2;
-        Wed, 03 Aug 2022 10:30:05 -0700 (PDT)
+        with ESMTP id S237671AbiHCRb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 13:31:29 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2118.outbound.protection.outlook.com [40.107.100.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652CC1DA75;
+        Wed,  3 Aug 2022 10:31:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pq8iYSdVn7IytTaNd16iDPNar6yUb/F5zAis2uBCFhhLtOZm8A+4uZPvs4w1EKsnNg/Lq+FgRC/BWNWAQjC0iENdTGrM/LDAZsYyptr106zQujTYehuYeUdTw2JxcJbtuYIngnjFM8+6BUzRToJMfEHzug76ju9mkTJUxTnYH3OyHd/X3szPO/PGtXSVqUInUWmJ8tMyz/kMlnR4eADU+S8Jn1yIFMC3JqPpRZD793JhXiV3y8tTNkDiCwlwVRZ/8wz1q3Uj3SulFPxq1So3MF+hJF8/TLAQvwbmPQ4pahxoAYFSy/9DVuIen580lPcr4Cpi/S09CxsbePLRSQS95w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+/AmrvWeBfQs10/angywLzKSfd0QbDP/e3Gw5qh1WrE=;
+ b=N4cG8DgkFqt9bII65JFna65et+WoqNchgi7v/CtAMKiodhl9nl2udkFyO1RWhhoaQAoFzJjwUK5hfMRzVPl6voAqmdSfIpYuA66MrLhgU39MtBsl3zRxa+sYDwmRBZXcVoVlMN69pW9SMOzBReKiLLKc3pNNqCa8cAbXM/k2ZGgAGCXXjjCDyn5MfGGDkaeRZTm3b9i4mgfVhctqC4dF7rg/Ea85/jlPPxHlvF9FpY6JBVZ3NH1QSW7gDtfgWKCxJalK1jNi4Zo9C0ngYU6ZbCqXkfeB+wXdMU3n3Z6C1ypla0QQmUtIJgNNYMYhfEZr9jCxo1BYzsbkadk8XqYSuw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=U7nJWoGM/ebcYWkwdDIue8qTiA80fkgvIER+SYbZjPE=;
-        b=WAG6eTdmnBbOaXUB+TGhPwZIc+XdJ8IuMYPZoYNl50YDJJ7HTmYzEQRV+04jPWfinn
-         lo0wuNvgf6IEQ9aMu79X6mP/4XECOjxg13mM9k5hQQ1gohaORpml5qBg7gIiSmhkT5sP
-         tIxkVXAmzjhvlHSLm6AiB5h7XX8g4O11GbZwgsyn7dvHecz7ZWK5j0heZf2zPWtcsMHP
-         YtbIPj8EXWSYvaffthlKYO78WQ5OmhpoS0m6tRWZ868s/ZxCeDzoSmAVzHhCUpu35ovy
-         8sW0PHdzgAQLj3QGyNo+1/L58oo7wCzVJwu7yNTWiR9r546uya/tLnK4aNHnqqEUksw2
-         CnwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=U7nJWoGM/ebcYWkwdDIue8qTiA80fkgvIER+SYbZjPE=;
-        b=soGVBBN/6R1VbS8quleFaDkGw8VybTy8OLI/wQ5cl4Aweg7E31vIB2PrE1+8qQOPm9
-         JYfiBt9qz0+1ga9UF+QzGbEgpeoIK1kt6OiwLQJ7vhd0kDkRCNLxFRVBd7q1k9ha1/14
-         BMRlvPlApLUjt1DKagtA2mgeaBPFQ47SeDQYVv5z4/be3Tq9Jh8NnxQ8/OlBTmQcMZQN
-         X/Qz62RWttKM56XPFCEpWkpzYjjZJRs+XLRa9dAXF7OK+7Ow5gDn52d7+7EfFHQf8aD5
-         k6yufKNvM8VRdzCuLGznAJWVA+jhXpFKcV2OeKlXaIqw+/BijNsfzsuBPQMmBCedONoN
-         PiAg==
-X-Gm-Message-State: AJIora8t2PD6+9f+ixrXERDlARUVKbMUx4HxUi33Yvd9FlvDqpPP0xZ4
-        nLOfZKGHGOCwofzouJAtA0kBwRrXbR8026rD18E=
-X-Google-Smtp-Source: AGRyM1v/yzAj7I0pvfA4lKVAuo8DXdPbWdkBAa1p9kg6fg3uu5iY78xqCz4WLFBwKe4xcfz4v5qkNpw63IaQDJC5/nI=
-X-Received: by 2002:a17:906:3f51:b0:712:3945:8c0d with SMTP id
- f17-20020a1709063f5100b0071239458c0dmr20080647ejj.302.1659547804487; Wed, 03
- Aug 2022 10:30:04 -0700 (PDT)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+/AmrvWeBfQs10/angywLzKSfd0QbDP/e3Gw5qh1WrE=;
+ b=gHutPJXKX/IWb8KgScyQrfwQLJC4woQ6tW+NrFkCwNxOi+hO5g0rYsJEbFpsQoR1GdEEXlnQ0d4kzaQ62Bh/7wGDWvWiIdGAEkKHtd0PKCOf2/2Hy4y0IujwRVOVq58b/iEm6c4DQ3k8LU2RFQjGSIFTrLtdlP/TwQRt96MO6XQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by SN7PR10MB6332.namprd10.prod.outlook.com
+ (2603:10b6:806:270::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14; Wed, 3 Aug
+ 2022 17:31:24 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee%4]) with mapi id 15.20.5482.014; Wed, 3 Aug 2022
+ 17:31:24 +0000
+Date:   Wed, 3 Aug 2022 10:31:19 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
+Subject: Re: [PATCH v15 mfd 9/9] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Message-ID: <Yuqw5+lLh65flC4D@euler>
+References: <20220803054728.1541104-1-colin.foster@in-advantage.com>
+ <20220803054728.1541104-10-colin.foster@in-advantage.com>
+ <CAHp75Vc30VW_dYGodyw4mrMwFgTVyDFaMP2ZJXQEB2nFOB2RWw@mail.gmail.com>
+ <YuqarB067s+rqFKe@euler>
+ <CAHp75VeXtuR=CYyPE9VEE0+QoQ3hgVYCoSu4Yb8EycvChi86BQ@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VeXtuR=CYyPE9VEE0+QoQ3hgVYCoSu4Yb8EycvChi86BQ@mail.gmail.com>
+X-ClientProxiedBy: SJ0PR13CA0010.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::15) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-References: <20220606103734.92423-1-kurt@linutronix.de> <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
- <875ylc6djv.ffs@tglx> <c166aa47-e404-e6ee-0ec5-0ead1923f412@redhat.com>
- <CAADnVQKqo1XfrPO8OYA1VpArKHZotuDjGNtxM0AftUj_R+vU7g@mail.gmail.com>
- <87pmhj15vf.fsf@kurt> <CAADnVQ+aDn9ku8p0M2yaPQb_Qi3CxkcyhHbcKTq8y2hrDP5A8Q@mail.gmail.com>
- <87edxxg7qu.fsf@kurt> <Yuo/0hVGQcpTPxZD@boxer>
-In-Reply-To: <Yuo/0hVGQcpTPxZD@boxer>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 3 Aug 2022 10:29:53 -0700
-Message-ID: <CAEf4BzYSzOnJ9_76RFu7e6o_Q2JEen+F-GZbzaW86yh5xnM3Qw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9972c216-27d9-4b57-1190-08da7575fca5
+X-MS-TrafficTypeDiagnostic: SN7PR10MB6332:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rbNqBUBCUSAaP9gNElER6AjchXGtx3XAeT5YiHQ2hHd8Ja/Skrzedpm1n2c8GCVbfQ+3ijUrz2TtTVUq4fbDhm1nrYC4Ck/v1Klaph1SRd9oubFEwMaXu+4hju8N/xvE6WrgYfI9O2F6JOkcl1OlBzG8ok0QP20+4Pz8N2nKw56+q9XWxJwSjslPlLlqMMcij0LU3EGHAIeShPYOXVz2sgsCmJhiQTOM1A6/hoyj6gRPctVnzim9kwVQ92UIe+JXlYd8BcNb+z6jL1THfpGKPLmuZ0NyHbRM6JQOjXHzcEyvba50VN/JxH/zFPUNfK6WcEBqgHPPWPQelKr8mSIY72F8Kwf5x3rA24hUKR0Rbz619DEnUs4Yp5DLVstZvenL0onnD5B5CZNsRunbtOypQsGPT2Re7ueJte6eo1LdTjVkGIXX5SrPgPub9qhMeX0Zya+OOXQY+1vIN7LDGHmTrriUnAx1rkYdpyblPA4HWsfSSgkYCZpy+waks8LdKmHGKpsBm7LG390EJC4hWa8sKAp6zvvgGkzJ70LAHmCyXhGjyZOiFhOd/34Er6H6RS+THnJYLLR3OBKsxYkQVveWksMQQ5KsMfmL5y9A6Q2qWAPwVDo0Sz6UwGbzHSebBu4fevVnRuavkziA/klppdvkurh/SvzDI4hmMJ4nUaVD7g5vS2rbIirdzNXzR0B6xWiJW30yUJDQ5jO5pfLuTII/VaOnRd5O5DMwXTMpx8Hn1lbtlflyYy3ERuKNkbphRbG1GjmMoxJ4OaT50A7d+yOiHKNn2AAzTUXqjAZog364SBY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(376002)(136003)(346002)(396003)(39830400003)(2906002)(6916009)(8676002)(33716001)(44832011)(5660300002)(107886003)(66556008)(66946007)(4326008)(66476007)(86362001)(7416002)(38100700002)(6512007)(9686003)(316002)(478600001)(26005)(8936002)(41300700001)(6506007)(53546011)(54906003)(6486002)(186003)(6666004)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h7ul9oZna8jTRma/Q6Ly1pyoMQm7uPGYQ16sfPqf/PjumOS+0ujDq+pgmMxV?=
+ =?us-ascii?Q?Th7M7cKqGP8IC1wR8GKtUQjUnYdUtoEcTTo7G5bQ3jO/HNQuAi3Z4kalG3Eq?=
+ =?us-ascii?Q?5vTYygYgyJA0W9h70YD5yl0PpVwMEz8Yf4IhtqIdFTU4b/658QEBEUGwVKFX?=
+ =?us-ascii?Q?cVjlkSgd8njVdzJkSvYlF3mi0faBq5mtM180VE9HKHa96ZuGM6lAz4kM69hQ?=
+ =?us-ascii?Q?vi2+J5dnsBVzWy3Se/HAdB4Mkt4sHN3GT1yv4TLdJIF/ZHKvpBvhWYsDvDK4?=
+ =?us-ascii?Q?zO1pW1Jwx2b6RKdpxvfHI3dhHrzRA7CWtsnHnM/8cJfw9rZncP1zP7/s9ntk?=
+ =?us-ascii?Q?Pz0XrFeebM3hEEy+24ocZHrgxXy4uKryzC0zImb48xEAoH/i4Ay1NOJuWHk8?=
+ =?us-ascii?Q?EX6V+EdzEHfBmypenvcOV6QSN6N7P97Mp7VRB+ZaO2sIyAiA6R5Hc8CbjFM9?=
+ =?us-ascii?Q?ojdhbKj2ePLTwmqrLRhJuFkphhyKeivHTH0uJLGz1kOY1ecqGyrdqqV4aniJ?=
+ =?us-ascii?Q?GMsCShIttvLmk5lWT2ZUVc1L2Gj+Dn1bVFzKAH20Zvi2mpMMItr51pXDB355?=
+ =?us-ascii?Q?ywzOlbi0ZmmiszltZebrESON727aTxWj8IGl5wM+bN61Dn/ssXuVa7SE2OYy?=
+ =?us-ascii?Q?J6qGe57XKXf9BSlj2LFahwz0FCgENG5H/kQuFhDFAh6JDv9QmWy72qdTNmgU?=
+ =?us-ascii?Q?Bw4kKHFpzvPe2UmKGVrtPOVhlbriCg6R99aXY78Dos8jEUPJsUuoj1lLAw4E?=
+ =?us-ascii?Q?BDdsAg8xKJDdEjC9FPzF3wHWdXmOERPEsV4+Oj7eyBkGzVNR0zaOln1Pzvbc?=
+ =?us-ascii?Q?AVtvfI8Ug/nT6cM5FkwmF/u8/wTrgbFbXV06TTp7SjbQmYkMCvU2krWWSbzr?=
+ =?us-ascii?Q?JsvllQ1xAljDBQXyzahsPSV5kf5wkqOF0qabCTbt0n88moTaD3SMuH/3EamP?=
+ =?us-ascii?Q?ioIdSRAEhM8hQ6AHO1Na38Zxwcf6ElyQyha78r0W/EBOBGW0HTf2dRd0GfzL?=
+ =?us-ascii?Q?zlORwpE6XHMM80HdxnRJpynQlBD/oHnv/CxuuCkYflPwEng10FYpRzyQvLWR?=
+ =?us-ascii?Q?7mp/ZkDciNfOnVsPHFwzxA6GTuir21lGZhvIerQx1qQIajYJ7FsF2npB5wJC?=
+ =?us-ascii?Q?Cf3dSlMnV5B5Mz/3BfZJFgtPOP20it3GhfxMg7Zl/84UVyGrD2zy9hxBPggH?=
+ =?us-ascii?Q?vi7LILI5J0GyceFTQGJZZzJoYJ8QGtQZPiD6vIkpU/LtR0jZ9qKp65jw/MWN?=
+ =?us-ascii?Q?ze0zbeo95iTD63ggGI3sQoS+h8fqQWR9pRxyiv8A6/7f1dRYeqCTSpYBynAL?=
+ =?us-ascii?Q?Taw7iTVJ+uss1UzXyDCPef0FD5/Cghaf1Fs6nYPYKKTQ3WcatKeeOUjX9Zm3?=
+ =?us-ascii?Q?hM1IEK9zX+v8Jki9A2ihJZrzrjxMTm3+RQW7O7lhmRKuCrKujrSUE6flypD2?=
+ =?us-ascii?Q?2E/OG61+eO/Dv3TmawUMU7210GIMpboWpWvrjRUKJEzeYMziAvOtbYFUgFzE?=
+ =?us-ascii?Q?psgLRkSwt5EIJxFEvSvg4NiGci/qOhMXSpIAJFunva6Bd+ws46ukGCDy5tT+?=
+ =?us-ascii?Q?jKYR/5LF6CvQuP+35l1OZ7rKDcseIsJVpk6qJqrNx70ilWQOUBo/Z5gGo7Wx?=
+ =?us-ascii?Q?4nAo/yItDobMdkjugDHWgAU=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9972c216-27d9-4b57-1190-08da7575fca5
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 17:31:23.9614
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: l14Axbbc/glFgDpiNs/v7m5D59Z0drVCRRdo2SDOcarJQMfFG9vO20XvWgAiAr6T670sLoOCx5TvfHYNYi5fyM4I6gPxiZLsMhrJIkMPGEs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB6332
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 2:29 AM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Wed, Aug 03, 2022 at 08:29:29AM +0200, Kurt Kanzenbach wrote:
-> > On Tue Aug 02 2022, Alexei Starovoitov wrote:
-> > > On Tue, Aug 2, 2022 at 12:06 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
-> > >>
-> > >> Hi Alexei,
-> > >>
-> > >> On Tue Jun 07 2022, Alexei Starovoitov wrote:
-> > >> > Anyway I guess new helper bpf_ktime_get_tai_ns() is ok, since
-> > >> > it's so trivial, but selftest is necessary.
-> > >>
-> > >> So, I did write a selftest [1] for testing bpf_ktime_get_tai_ns() and
-> > >> verifying that the access to the clock works. It uses AF_XDP sockets and
-> > >> timestamps the incoming packets. The timestamps are then validated in
-> > >> user space.
-> > >>
-> > >> Since AF_XDP related code is migrating from libbpf to libxdp, I'm
-> > >> wondering if that sample fits into the kernel's selftests or not. What
-> > >> kind of selftest are you looking for?
+On Wed, Aug 03, 2022 at 07:10:38PM +0200, Andy Shevchenko wrote:
+> On Wed, Aug 3, 2022 at 5:56 PM Colin Foster
+> <colin.foster@in-advantage.com> wrote:
+> > On Wed, Aug 03, 2022 at 01:45:04PM +0200, Andy Shevchenko wrote:
+> > > On Wed, Aug 3, 2022 at 7:48 AM Colin Foster
+> > > <colin.foster@in-advantage.com> wrote:
+> 
+> ...
+> 
+> > > > +       regmap_config.max_register = res->end - res->start;
 > > >
-> > > Please use selftests/bpf framework.
-> > > There are plenty of networking tests in there.
-> > > bpf_ktime_get_tai_ns() doesn't have to rely on af_xdp.
+> > > Hmm... First of all, resource_size() is for that (with - 1 to the
+> > > result). But don't you need to use stride in the calculations?
 > >
-> > OK.
-> >
-> > > It can be skb based.
->
-> FWIW there is xskxceiver and libbpf's xsk part in selftests/bpf framework,
-> so your initial work should be fine in there. Personally I found both
-> (AF_XDP and SKB one, below) tests valuable.
+> > DEFINE_RES_NAMED populates the resource .end with (_start) + (_size) - 1
+> > so I don't think resource_size is correct to use here.
+> 
+> Have you read what I put in parentheses? Basically it becomes very
+> well the same as a result, but in a cleaner manner (you calculate
+> resource size - 1 which will be exactly the last byte offset of the
+> register file), no?
 
-test_progs is always tested on each patch/patch set. xskxceiver can
-potentially break without anyone noticing for a while. So having
-something like this in test_progs is much better.
+Ahh... I see your point. I agree with your suggestion and will clean it
+up.
 
->
-> Later on, if we add a support to xskxceiver for loading external BPF progs
-> then your sample would just become another test case in there.
->
+> 
+> > reg_stride gets handled at the top of regmap_read(), so I don't think
+> > that's really needed either.
+> 
+> Okay.
+> 
+> > For reference:
 > >
-> > Something like this?
-> >
-> > +++ b/tools/testing/selftests/bpf/prog_tests/check_tai.c
-> > @@ -0,0 +1,57 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright (C) 2022 Linutronix GmbH */
-> > +
-> > +#include <test_progs.h>
-> > +#include <network_helpers.h>
-> > +
-> > +#include <time.h>
-> > +#include <stdint.h>
-> > +
-> > +#define TAI_THRESHOLD        1000000000ULL /* 1s */
-> > +#define NSEC_PER_SEC 1000000000ULL
-> > +
-> > +static __u64 ts_to_ns(const struct timespec *ts)
-> > +{
-> > +     return ts->tv_sec * NSEC_PER_SEC + ts->tv_nsec;
-> > +}
-> > +
-> > +void test_tai(void)
-> > +{
-> > +     struct __sk_buff skb = {
-> > +             .tstamp = 0,
-> > +             .hwtstamp = 0,
-> > +     };
-> > +     LIBBPF_OPTS(bpf_test_run_opts, topts,
-> > +             .data_in = &pkt_v4,
-> > +             .data_size_in = sizeof(pkt_v4),
-> > +             .ctx_in = &skb,
-> > +             .ctx_size_in = sizeof(skb),
-> > +             .ctx_out = &skb,
-> > +             .ctx_size_out = sizeof(skb),
-> > +     );
-> > +     struct timespec now_tai;
-> > +     struct bpf_object *obj;
-> > +     int ret, prog_fd;
-> > +
-> > +     ret = bpf_prog_test_load("./test_tai.o",
-> > +                              BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);
-> > +     if (!ASSERT_OK(ret, "load"))
-> > +             return;
-> > +     ret = bpf_prog_test_run_opts(prog_fd, &topts);
-> > +     ASSERT_OK(ret, "test_run");
-> > +
-> > +     /* TAI != 0 */
-> > +     ASSERT_NEQ(skb.tstamp, 0, "tai_ts0_0");
-> > +     ASSERT_NEQ(skb.hwtstamp, 0, "tai_ts0_1");
-> > +
-> > +     /* TAI is moving forward only */
-> > +     ASSERT_GT(skb.hwtstamp, skb.tstamp, "tai_forward");
-> > +
-> > +     /* Check for reasoneable range */
-> > +     ret = clock_gettime(CLOCK_TAI, &now_tai);
-> > +     ASSERT_EQ(ret, 0, "tai_gettime");
-> > +     ASSERT_TRUE((ts_to_ns(&now_tai) - skb.hwtstamp) < TAI_THRESHOLD,
-> > +                 "tai_range");
-> > +
-> > +     bpf_object__close(obj);
-> > +}
-> > diff --git a/tools/testing/selftests/bpf/progs/test_tai.c b/tools/testing/selftests/bpf/progs/test_tai.c
-> > new file mode 100644
-> > index 000000000000..34ac4175e29d
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_tai.c
-> > @@ -0,0 +1,17 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright (C) 2022 Linutronix GmbH */
-> > +
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +SEC("tc")
-> > +int save_tai(struct __sk_buff *skb)
-> > +{
-> > +     /* Save TAI timestamps */
-> > +     skb->tstamp = bpf_ktime_get_tai_ns();
-> > +     skb->hwtstamp = bpf_ktime_get_tai_ns();
-> > +
-> > +     return 0;
-> > +}
->
->
+> > #define VSC7512_DEVCPU_ORG_RES_START    0x71000000
+> > #define VSC7512_DEVCPU_ORG_RES_SIZE     0x38
+> 
+> Right, for 0x38 you supply 0x37, which is exactly resource_size() - 1.
+> 
+> > # cat range
+> > 0-34
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
