@@ -2,260 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73DCE58886D
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 10:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2492858887A
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 10:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235199AbiHCID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 04:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
+        id S235626AbiHCII0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 04:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiHCIDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 04:03:55 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CA813E06;
-        Wed,  3 Aug 2022 01:03:54 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso1203239pjq.4;
-        Wed, 03 Aug 2022 01:03:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=RwvyogrdBi+y8HfLgDtU4bktAJ8/XfTU9q1x/3DRwCU=;
-        b=c0YeISaCd+S1jZos5qQf/JlbMQefnTgWDCgM1xQxcVb9HekW3Jgk7V8Cffy2urjJvx
-         jEx6u2vqEPMVTLzRh6QZVxVEPlWsM/XylyBW8GlQAFS4g5jYOI7ess7rnG/6qUHokIDW
-         40QK2HBfhFtNpbAp/YKjetK5EQypDxhvCzDgKHcLpAyL65//QPNZDXaK7Jvy366FQVAp
-         oSRTl3RmI3LrDuVD1KPeqTLWchS/Fy+rKi/ObB2GdUHzyDuQ4E3d0dj6XjhpjMOXY6su
-         wBSx+ycqJK695SyK1xf05PjRP6QQITgufa6U97zkufSgpDFqQyUv4bZw6DZ/vBfGbAGY
-         axbw==
+        with ESMTP id S230071AbiHCIIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 04:08:25 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6592181C
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 01:08:24 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id j13-20020a056e02154d00b002de828b4b63so5875364ilu.10
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 01:08:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=RwvyogrdBi+y8HfLgDtU4bktAJ8/XfTU9q1x/3DRwCU=;
-        b=zAfhxR5YgeziegFvlSqp2NmIz/eFYvI5qclA9Bcq3GOZYKp7rwSt8PJ0e+ROnmq5mD
-         NMI3Ys4XJFXz03z7H7lpDAH0YWssxZeIjbR5mGpT3kXVPiqA+EdkJk2I6VU49zq+iWwR
-         VXxrsZsBwoltNJtCx6VQ4mgfftDLHJH1dHhB/4druGbtRekDUtdolXXz7QP8PwNBtzK4
-         y9SWAi4nEjBO+YfsazLpT/FHqIxA06ZZCdlUJpfB7JhPdfu3CLw0xFHZDPf0UTfwyecu
-         tGNWa/MYlEehr2OwJQAMuligIB1rjotHJmPkerUEPVDlnas0MUL5cjij/pi1Ud9PgwVh
-         +F6w==
-X-Gm-Message-State: ACgBeo078xxj673pNA4nKJSf3L0+T2j1LdtsHtOOjeUCq5ywqm9iFlwJ
-        TkgGaxw2b0EgTr1g76q1lJ4=
-X-Google-Smtp-Source: AA6agR76/zwYY+giGq5yekiXmJsdEH4fDSZnMo741CT5PmvXy90Qoa4vPHpH4CjSQgEHpkV2J4Xvkg==
-X-Received: by 2002:a17:902:f646:b0:168:e2da:8931 with SMTP id m6-20020a170902f64600b00168e2da8931mr25097102plg.84.1659513833884;
-        Wed, 03 Aug 2022 01:03:53 -0700 (PDT)
-Received: from localhost ([223.104.103.89])
-        by smtp.gmail.com with ESMTPSA id h27-20020a63211b000000b0040d48cf046csm10530027pgh.55.2022.08.03.01.03.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 01:03:53 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Cc:     andrii@kernel.org, ast@kernel.org, borisp@nvidia.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, guwen@linux.alibaba.com,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com, 18801353760@163.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        jakub@cloudflare.com, paskripkin@gmail.com,
-        skhan@linuxfoundation.org, Hawkins Jiawei <yin31149@gmail.com>
-Subject: [PATCH v3] net/smc: fix refcount bug in sk_psock_get (2)
-Date:   Wed,  3 Aug 2022 16:03:38 +0800
-Message-Id: <20220803080338.166730-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <00000000000026328205e08cdbeb@google.com>
-References: <00000000000026328205e08cdbeb@google.com>
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=DnKgHfVeryvGCNoHB1EyKn+lx8bXA1rZCbfzsbzRrB4=;
+        b=bOQxlRLgAn4kpPbG3WijRhW4Vs8b/1DUJi+vx0zGY5LP1xIpGOWIpMDs65DRgmGXwU
+         wyA0kVGRTdeb+GO1wP8wpp03WxAKErwc53ejwUX5mpFP0lmM2f2fCFBwyKQGwm96KtuL
+         eziocIeZYOy1ozic1T+qPLepsD2wtDITJL74EvzftrkBAItRPzMT9DBssoDmhgbrUHc5
+         AUimHIWnQ1Gmcys4AJqfvMyT+FLtQDUbxAS/1w1PQUuHyphW9NT4WneHhGZRK92hvBTB
+         WO+ow9qeVIw+7Pd71dmwIWQ05gyBsc4S71FZ1HXiU9ym1Afxau9BOP5Bq4NLZ99BQj6v
+         eHhQ==
+X-Gm-Message-State: AJIora/bqo/eE2VfU0UXOFqBPMq8RTxjGCHoVvHwx7W+tptEmwWXhP/J
+        lWbimUynPD6qHtlbI7o50RHT+s4FDQS8GCgIDc8J7sAtOWe2
+X-Google-Smtp-Source: AGRyM1uRqF+ppfRWmGMINjlhkoAsyyiv/kcTBOB7yLp+o6LFMAl6hFsPdPtUtinskQRHxOX03PyHY8yewA3xh1ZN567i19ofbiC2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:602:b0:2de:693:e7f4 with SMTP id
+ t2-20020a056e02060200b002de0693e7f4mr10495029ils.278.1659514103476; Wed, 03
+ Aug 2022 01:08:23 -0700 (PDT)
+Date:   Wed, 03 Aug 2022 01:08:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a33d5b05e551bc31@google.com>
+Subject: [syzbot] general protection fault in br_nf_pre_routing_finish (2)
+From:   syzbot <syzbot+dc42341ea62e8eb6c1f7@syzkaller.appspotmail.com>
+To:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, edumazet@google.com, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pabeni@redhat.com,
+        pablo@netfilter.org, razor@blackwall.org, roopa@nvidia.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports refcount bug as follows:
-------------[ cut here ]------------
-refcount_t: saturated; leaking memory.
-WARNING: CPU: 1 PID: 3605 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
-Modules linked in:
-CPU: 1 PID: 3605 Comm: syz-executor208 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    d7c4c9e075f8 ax25: fix incorrect dev_tracker usage
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=123a0cde080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=26034e6fe0075dad
+dashboard link: https://syzkaller.appspot.com/bug?extid=dc42341ea62e8eb6c1f7
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dc42341ea62e8eb6c1f7@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 32332 Comm: kworker/0:4 Not tainted 5.19.0-rc8-syzkaller-00103-gd7c4c9e075f8 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events_power_efficient neigh_managed_work
+RIP: 0010:br_nf_pre_routing_finish+0x200/0x1ad0 net/bridge/br_netfilter_hooks.c:360
+Code: 83 c0 01 38 d0 7c 08 84 d2 0f 85 e3 12 00 00 48 8d 7b 02 45 0f b7 74 24 3e 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 b9
+RSP: 0018:ffffc90000007868 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 0000000000000000 RSI: ffffffff883fc456 RDI: 0000000000000002
+RBP: ffff88801d0ee000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88807e999000
+R13: 0000000000000010 R14: 00000000000005dc R15: ffff888074392800
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fde65908d64 CR3: 000000004d41b000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ br_nf_pre_routing+0xae3/0x1f00 net/bridge/br_netfilter_hooks.c:531
+ nf_hook_entry_hookfn include/linux/netfilter.h:142 [inline]
+ nf_hook_bridge_pre net/bridge/br_input.c:255 [inline]
+ br_handle_frame+0x8df/0x1280 net/bridge/br_input.c:399
+ __netif_receive_skb_core+0xa13/0x3920 net/core/dev.c:5378
+ __netif_receive_skb_one_core+0xae/0x180 net/core/dev.c:5482
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5598
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5926
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6492
+ napi_poll net/core/dev.c:6559 [inline]
+ net_rx_action+0x9c1/0xd90 net/core/dev.c:6670
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+ do_softirq.part.0+0xde/0x130 kernel/softirq.c:472
+ </IRQ>
  <TASK>
- __refcount_add_not_zero include/linux/refcount.h:163 [inline]
- __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
- refcount_inc_not_zero include/linux/refcount.h:245 [inline]
- sk_psock_get+0x3bc/0x410 include/linux/skmsg.h:439
- tls_data_ready+0x6d/0x1b0 net/tls/tls_sw.c:2091
- tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4983
- tcp_data_queue+0x25f2/0x4c90 net/ipv4/tcp_input.c:5057
- tcp_rcv_state_process+0x1774/0x4e80 net/ipv4/tcp_input.c:6659
- tcp_v4_do_rcv+0x339/0x980 net/ipv4/tcp_ipv4.c:1682
- sk_backlog_rcv include/net/sock.h:1061 [inline]
- __release_sock+0x134/0x3b0 net/core/sock.c:2849
- release_sock+0x54/0x1b0 net/core/sock.c:3404
- inet_shutdown+0x1e0/0x430 net/ipv4/af_inet.c:909
- __sys_shutdown_sock net/socket.c:2331 [inline]
- __sys_shutdown_sock net/socket.c:2325 [inline]
- __sys_shutdown+0xf1/0x1b0 net/socket.c:2343
- __do_sys_shutdown net/socket.c:2351 [inline]
- __se_sys_shutdown net/socket.c:2349 [inline]
- __x64_sys_shutdown+0x50/0x70 net/socket.c:2349
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ do_softirq kernel/softirq.c:464 [inline]
+ __local_bh_enable_ip+0x102/0x120 kernel/softirq.c:396
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
  </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:br_nf_pre_routing_finish+0x200/0x1ad0 net/bridge/br_netfilter_hooks.c:360
+Code: 83 c0 01 38 d0 7c 08 84 d2 0f 85 e3 12 00 00 48 8d 7b 02 45 0f b7 74 24 3e 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 b9
+RSP: 0018:ffffc90000007868 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 0000000000000000 RSI: ffffffff883fc456 RDI: 0000000000000002
+RBP: ffff88801d0ee000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88807e999000
+R13: 0000000000000010 R14: 00000000000005dc R15: ffff888074392800
+FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fde65908d64 CR3: 000000004d41b000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	83 c0 01             	add    $0x1,%eax
+   3:	38 d0                	cmp    %dl,%al
+   5:	7c 08                	jl     0xf
+   7:	84 d2                	test   %dl,%dl
+   9:	0f 85 e3 12 00 00    	jne    0x12f2
+   f:	48 8d 7b 02          	lea    0x2(%rbx),%rdi
+  13:	45 0f b7 74 24 3e    	movzwl 0x3e(%r12),%r14d
+  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  20:	fc ff df
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx <-- trapping instruction
+  2e:	48 89 f8             	mov    %rdi,%rax
+  31:	83 e0 07             	and    $0x7,%eax
+  34:	83 c0 01             	add    $0x1,%eax
+  37:	38 d0                	cmp    %dl,%al
+  39:	7c 08                	jl     0x43
+  3b:	84 d2                	test   %dl,%dl
+  3d:	0f                   	.byte 0xf
+  3e:	85                   	.byte 0x85
+  3f:	b9                   	.byte 0xb9
 
-During SMC fallback process in connect syscall, kernel will
-replaces TCP with SMC. In order to forward wakeup
-smc socket waitqueue after fallback, kernel will sets
-clcsk->sk_user_data to origin smc socket in
-smc_fback_replace_callbacks().
 
-Later, in shutdown syscall, kernel will calls
-sk_psock_get(), which treats the clcsk->sk_user_data
-as psock type, triggering the refcnt warning.
-
-So, the root cause is that smc and psock, both will use
-sk_user_data field. So they will mismatch this field
-easily.
-
-This patch solves it by using another bit(defined as
-SK_USER_DATA_PSOCK) in PTRMASK, to mark whether
-sk_user_data points to a psock object or not.
-This patch depends on a PTRMASK introduced in commit f1ff5ce2cd5e
-("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
-
-Reported-and-tested-by: syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Wen Gu <guwen@linux.alibaba.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
 ---
-v2 -> v3:
-  - use SK_USER_DATA_PSOCK instead of SK_USER_DATA_NOTPSOCK
-to patch the bug
-  - refactor the code on assigning to sk_user_data field
-in psock part
-  - refactor the code on getting and setting the flag
-with sk_user_data field
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-v1 -> v2:
-  - add bit in PTRMASK to patch the bug
-
- include/linux/skmsg.h |  2 +-
- include/net/sock.h    | 58 +++++++++++++++++++++++++++++++------------
- net/core/skmsg.c      |  3 ++-
- 3 files changed, 45 insertions(+), 18 deletions(-)
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index c5a2d6f50f25..81bfa1a33623 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -277,7 +277,7 @@ static inline void sk_msg_sg_copy_clear(struct sk_msg *msg, u32 start)
- 
- static inline struct sk_psock *sk_psock(const struct sock *sk)
- {
--	return rcu_dereference_sk_user_data(sk);
-+	return rcu_dereference_sk_user_data_psock(sk);
- }
- 
- static inline void sk_psock_set_state(struct sk_psock *psock,
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 9fa54762e077..d010910d5879 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -545,14 +545,24 @@ enum sk_pacing {
- 	SK_PACING_FQ		= 2,
- };
- 
--/* Pointer stored in sk_user_data might not be suitable for copying
-- * when cloning the socket. For instance, it can point to a reference
-- * counted object. sk_user_data bottom bit is set if pointer must not
-- * be copied.
-+/* flag bits in sk_user_data
-+ *
-+ * SK_USER_DATA_NOCOPY - Pointer stored in sk_user_data might
-+ * not be suitable for copying when cloning the socket.
-+ * For instance, it can point to a reference counted object.
-+ * sk_user_data bottom bit is set if pointer must not be copied.
-+ *
-+ * SK_USER_DATA_BPF    - Managed by BPF
-+ *
-+ * SK_USER_DATA_PSOCK  - Mark whether pointer stored in sk_user_data points
-+ * to psock type. This bit should be set when sk_user_data is
-+ * assigned to a psock object.
-  */
- #define SK_USER_DATA_NOCOPY	1UL
--#define SK_USER_DATA_BPF	2UL	/* Managed by BPF */
--#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF)
-+#define SK_USER_DATA_BPF	2UL
-+#define SK_USER_DATA_PSOCK	4UL
-+#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF |\
-+				  SK_USER_DATA_PSOCK)
- 
- /**
-  * sk_user_data_is_nocopy - Test if sk_user_data pointer must not be copied
-@@ -570,19 +580,35 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
- 	void *__tmp = rcu_dereference(__sk_user_data((sk)));		\ (void *)((uintptr_t)__tmp & SK_USER_DATA_PTRMASK);		\
- })
--#define rcu_assign_sk_user_data(sk, ptr)				\
-+#define rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
- ({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
--	rcu_assign_pointer(__sk_user_data((sk)), __tmp);		\
--})
--#define rcu_assign_sk_user_data_nocopy(sk, ptr)				\
--({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
-+	uintptr_t __tmp1 = (uintptr_t)(ptr),				\
-+		  __tmp2 = (uintptr_t)(flags);				\
-+	WARN_ON_ONCE(__tmp1 & ~SK_USER_DATA_PTRMASK);			\
-+	WARN_ON_ONCE(__tmp2 & SK_USER_DATA_PTRMASK);			\
- 	rcu_assign_pointer(__sk_user_data((sk)),			\
--			   __tmp | SK_USER_DATA_NOCOPY);		\
-+			   __tmp1 | __tmp2);				\
- })
-+#define rcu_assign_sk_user_data(sk, ptr)				\
-+	rcu_assign_sk_user_data_with_flags(sk, ptr, 0)
-+
-+/**
-+ * rcu_dereference_sk_user_data_psock - return psock if sk_user_data
-+ * points to the psock type(SK_USER_DATA_PSOCK flag is set), otherwise
-+ * return NULL
-+ *
-+ * @sk: socket
-+ */
-+static inline
-+struct sk_psock *rcu_dereference_sk_user_data_psock(const struct sock *sk)
-+{
-+	uintptr_t __tmp = (uintptr_t)rcu_dereference(__sk_user_data((sk)));
-+
-+	if (__tmp & SK_USER_DATA_PSOCK)
-+		return (struct sk_psock *)(__tmp & SK_USER_DATA_PTRMASK);
-+
-+	return NULL;
-+}
- 
- static inline
- struct net *sock_net(const struct sock *sk)
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index b0fcd0200e84..d174897dbb4b 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -735,7 +735,8 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
- 	refcount_set(&psock->refcnt, 1);
- 
--	rcu_assign_sk_user_data_nocopy(sk, psock);
-+	rcu_assign_sk_user_data_with_flags(sk, psock, SK_USER_DATA_NOCOPY |
-+						      SK_USER_DATA_PSOCK);
- 	sock_hold(sk);
- 
- out:
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
