@@ -2,103 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63441588FD7
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B47588FDF
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238090AbiHCPza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 11:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
+        id S238341AbiHCP4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 11:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238259AbiHCPzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:55:13 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933FB5B06A
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 08:53:16 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 273Fqkuo014991;
-        Wed, 3 Aug 2022 15:53:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=nFLxJdw68knP+xDHSTMHp1gX78qdPaKMkNrvKqC85J4=;
- b=LlVv49fU2eZXMBaQvQo2U6u1T7g+cHoolAXu3fbJyToC+0vKUiFYTsXi5AS8BGLltZa6
- QuV/W0IBajEKS6su2jWDDPLWeJohVjEFZDikPKfvNH6bcIdvatVoHA1FxctwmpTg3X4x
- LJq07e27YHMdwuANEyWqT0ApsCdLRyMoc5rs95mSGghR1p9NAXQm2d6AmDZrKz09fHR0
- mO4eOiwTIKSUg1Pw8R38KlLjCTDM4dWip+FAyXfPdlWZlLymnHWcqPRMxg9YoaHFSeRS
- BN/uyko5s6aQnB3y61J7NsgWOHXeKs2ZhF76PsNwYRAN7c+VUnHrHkugChhqkUaLhSNj xg== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqv22r0g3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 15:53:11 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 273FqiNT019165;
-        Wed, 3 Aug 2022 15:53:10 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma01dal.us.ibm.com with ESMTP id 3hq6hyqrm5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 15:53:10 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 273Fr9Mf3015206
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 3 Aug 2022 15:53:09 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B4549AE060;
-        Wed,  3 Aug 2022 15:53:09 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3D98FAE062;
-        Wed,  3 Aug 2022 15:53:09 +0000 (GMT)
-Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.211.111.3])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed,  3 Aug 2022 15:53:09 +0000 (GMT)
-From:   Nick Child <nnac123@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, Nick Child <nnac123@linux.ibm.com>
-Subject: [PATCH] MAINTAINERS: Update ibmveth maintainer
-Date:   Wed,  3 Aug 2022 10:52:46 -0500
-Message-Id: <20220803155246.39582-1-nnac123@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S238436AbiHCPzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:55:38 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F49B6453
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 08:54:32 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id s11so10614782edd.13
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 08:54:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UNVDyDylr2RwublRPlCMPoU/yC/dqUJeARicvJmvpxE=;
+        b=buTvY4E+44Vsa9olwjWU5pfNdnlWEXqZKMP6MDeoMEBRZ/Tyej2RLGmL4JOtowQ1oM
+         WtCyqWEXtdN6ThKq7Qt/R7hgTX9D4FNLo5YaowSlGgv3ss9GJHHcZRGegoTovzZcFHbh
+         A+efJdGb2gVCB80lIvpRtpWYO4GEFGdLHAioioA6aJ4HnM7g8mQVwSyK2s6W5KzdFXvr
+         3tOmvNemv69UcFih2ZBzCcXaQbCWweKJKDbWy3+yp+DUzNl1IMLmB1m5/MnjQ0X564KY
+         jXEjm+dDUtHxBd7SminCkMKcHGwcMt6eAWABXT3iGSkSf1BhInp90nbEF3sHdj48G+wd
+         vtjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UNVDyDylr2RwublRPlCMPoU/yC/dqUJeARicvJmvpxE=;
+        b=AHHD44xsw7l7Au6KlILkDTtFTsAISUneSyOKl1pnP8CxmhaJJe4lvsVbMzc31h7TYq
+         pmQTPq3Z+6iFRRpAu237kcykqJL5RZ73q0sa+UWD+t8FJ6a0TPai7N/+TpCbPHZrdhg9
+         TmB3Vgj4KezCBznI03O/WoSm29SOPx4S9VSARzRfUf94qln0eEjTPmft0D4NNsRjZbvG
+         eHA6iD5trUnpg6ZRCPb7Px6B6EOYnqASX6r3Yc6zjmnfpAY+kG+lihzR/omRh7gKxjG0
+         SBY1FyZGA8OoNCzt0dSkz/H/tr05DZSjvXiBule5eHiIIuZefQVs0WQnCFopb6dqNRLN
+         9kgw==
+X-Gm-Message-State: AJIora8BwqEnyG3HXB8p0R8JWEMX12xlZk+7gF1R8glc6COx4KmluRPf
+        4hsTdLHalX+gg5r1cHcUMpE=
+X-Google-Smtp-Source: AGRyM1sTUM6yWcrqiTrzVhck8puiZxkJthGvT2xTlwSDUTqcKVUCR5modnelxxMtFrY+Hq4SoTCRJg==
+X-Received: by 2002:a05:6402:3881:b0:43a:691f:8e3b with SMTP id fd1-20020a056402388100b0043a691f8e3bmr26096156edb.217.1659542069962;
+        Wed, 03 Aug 2022 08:54:29 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id kv22-20020a17090778d600b007307e7df83bsm3672644ejc.21.2022.08.03.08.54.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 08:54:29 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 18:54:27 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        Hauke Mehrtens <hauke@hauke-m.de>, f.fainelli@gmail.com,
+        Aleksander Jan Bajkowski <olek2@wp.pl>
+Subject: Re: net: dsa: lantiq_gswip: getting the first selftests to pass
+Message-ID: <20220803155427.da5zqhnvmyhcxoof@skbuf>
+References: <CAFBinCDX5XRyMyOd-+c_Zkn6dawtBpQ9DaPkA4FDC5agL-t8CA@mail.gmail.com>
+ <20220727224409.jhdw3hqfta4eg4pi@skbuf>
+ <CAFBinCD5yQodsv0PoqnqVA6F7uMkoD-_mUxi54uAHc9Am7V-VQ@mail.gmail.com>
+ <20220729000536.hetgdvufplearurq@skbuf>
+ <CAFBinCBXNnpz0FUCs1PnxAoPk2nTKoj=r2wjSFx_rT=vV+JPtA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: DxLmRFzHwh2aetaNEw4qVmwLUexojgq7
-X-Proofpoint-ORIG-GUID: DxLmRFzHwh2aetaNEw4qVmwLUexojgq7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=776 bulkscore=0 spamscore=0
- clxscore=1011 phishscore=0 malwarescore=0 lowpriorityscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208030070
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCBXNnpz0FUCs1PnxAoPk2nTKoj=r2wjSFx_rT=vV+JPtA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Nick Child as the maintainer of the IBM Power Virtual Ethernet
-Device Driver, replacing Cristobal Forno.
+On Sun, Jul 31, 2022 at 10:49:35PM +0200, Martin Blumenstingl wrote:
+> While working on my patches a more practical question came up while I
+> was breaking the driver and then trying to make local_termination.sh
+> pass again.
+> At the start of run_tests for the standalone port scenario I am
+> getting the following values:
+>   rcv_dmac = 00:01:02:03:04:02
+>   MACVLAN_ADDR = 00:00:de:ad:be:ef
+> My expectation is that port_fdb_add() is called with these MAC
+> addresses. I verified that dsa_switch_supports_uc_filtering() returns
+> true, but still I
 
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Unfinished phrase, I suppose you wanted to say that you don't get a call
+to port_fdb_add() with $MACVLAN_ADDR. I don't see why that would be the
+case. Try to put some prints in dsa_slave_sync_uc(), since that's the
+path through which $MACVLAN_ADDR comes in. On the other hand, $rcv_dmac
+comes from dsa_slave_open().
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2cfda104ba4e..4686e505b8e0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9555,7 +9555,7 @@ F:	arch/powerpc/platforms/powernv/copy-paste.h
- F:	arch/powerpc/platforms/powernv/vas*
- 
- IBM Power Virtual Ethernet Device Driver
--M:	Cristobal Forno <cforno12@linux.ibm.com>
-+M:	Nick Child <nnac123@linux.ibm.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/ibm/ibmveth.*
--- 
-2.27.0
+> > I'll do so if you have a specific question about something apparently
+> > not mapping to the expectations.
+> I still have an issue which I believe is related to the FDB handling.
+> 
+> I *think* that I have implemented FDB isolation correctly in my
+> work-in-progress branch [0].
+> 
+> The GSWIP140 datasheet (page 82) has a "MAC Learning disable and MAC
+> Learning Limitation Description" (table 26).
+> In the xRX200 vendor kernel I cannot find the LNDIS bit in
+> PCE_PCTRL_3, so I suspect it has only been added in newer GSWIP
+> revisions (xRX200 is at least one major IP revision behind GSW140).
+> Maybe Hauke knows?
+> So what I'm doing to disable learning is setting the "learning limit"
+> (which limits the number of entries that can be learned) for that port
+> to zero.
+> 
+>  My problem is that whenever I disable learning a lot of tests from
+> local_termination.sh are failing, including:
+> - TEST: lan2: Unicast IPv4 to primary MAC address
+> - TEST: lan2: Unicast IPv4 to macvlan MAC address
+> 
+> Setting the PLIMMOD bit to 1 means that GSWIP won't drop the packet if
+> the learning limit is exceeded (the default value seems to be 0).
 
+Yes, I'm not sure why you'd want to drop packets that aren't learned, so
+I would expect PLIMMOD to be 1 if you're disabling learning via LRNLIM=0.
+
+> This at least works around the first failing test (Unicast IPv4 to
+> primary MAC address).
+
+Not sure why "works around" is the choice of words here.
+
+> Based on your understanding of my issue: I am going in the right
+> direction when I'm saying that this is an FDB issue?
+
+I don't know why the tests fail. I downloaded your code and I see that
+you touch PLIMMOD from ds->ops->port_set_host_flood(). Why not just
+leave it at 1? It's a global bit anyway, it affects what happens with
+all ports that have source address learning disabled, it seems a very
+odd choice to do what you're doing.
+
+When you have learning disabled on standalone ports (by design), and
+local_termination.sh receives packets on $swp1, a standalone port
+(by design), don't you agree that the MAC SA of these packets won't be
+learned, and you're telling the switch "yeah, drop them"?
+
+> [0] https://github.com/xdarklight/linux/commits/lantiq-gswip-integration-20220730
+
+There are many things to say about the code, however it's a bit
+difficult to review it just by looking at the Github commits.
+For example I'm looking at gswip_port_fdb(), I don't really understand
+why this:
+
+	for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
+		if (priv->vlans[i].bridge == bridge) {
+			fid = priv->vlans[i].fid;
+			break;
+		}
+	}
+
+is not this:
+
+	for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
+		if (priv->vlans[i].bridge == bridge &&
+		    priv->vlans[i].vid == vid) {
+			fid = priv->vlans[i].fid;
+			break;
+		}
+	}
