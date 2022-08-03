@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39CE7588C54
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 14:44:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6123588CC4
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 15:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234360AbiHCMoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 08:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        id S237978AbiHCNNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 09:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiHCMoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 08:44:16 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FEB1EC4B;
-        Wed,  3 Aug 2022 05:44:14 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d16so8189831pll.11;
-        Wed, 03 Aug 2022 05:44:14 -0700 (PDT)
+        with ESMTP id S237926AbiHCNNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 09:13:21 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA2218B39
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 06:13:17 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id h188so19470177oia.13
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 06:13:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=wjPWuGJqwbVCwB9jt00Z28vojcxuQqKt27dsntg+ryc=;
-        b=Bsq9ab0WNJi8GEhpHAIdXlVJmhL6MjJZHkZoTnU1dxwvnW4OU80rBpA0sMObELn/D4
-         VpozXVRgz+s+OjsK6WbXdj2KXfhvF91MxkBNz7GMO0YSDeDPt2evsEyFeNv66obB3FEO
-         PyDdOSIh7Mul15OBCEjxEa4pdg+gNbQa1O1WJHfa/Gq0kkoPNCPY9HQh7pkL1/EYPMal
-         sHJX4xFvsTG+z/2w+FQA/yJHFDy4mcRKlSRUlC4jkoNjxEPscKOMxDNaKd7/Teyr9nMJ
-         xP5XKLOtwac2sAxTiMPE0knMDdxZGsRDOiwmCBpJWHklxx54rvIQxze4iCh4D8J2eaEv
-         +R0g==
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=0qI80nKbtNInC7TnaqV1RRwJ5MKOkQCfQlYI1Abu+68=;
+        b=jtodadUycK+1LkDSYjWv8XqXchbrV8seFLSfpmqa6P3sOQ/of4IOcRUxXS1Bd4JQBX
+         YhmbqlC+yxW9CTOk4i0D6sxWl0tLx5O0b/6PobzrrG7Khc1GwbaSCbDxfaFKRBlVF//X
+         yBzwRrxphm+rRMuCnO5lQIVW1fkXROZV4I73U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=wjPWuGJqwbVCwB9jt00Z28vojcxuQqKt27dsntg+ryc=;
-        b=YgJXJQ2pFANqHypi5k7dIyE3ShfNYG1THnZmlEkJVK10DHaz54qKSoMkF96TIpITN9
-         Ss3lLJJAzImikN0s1yhAjkE1GqbhbHotN86jBDhDjBXLxicBykxJ+BI9lBExjE6poCkN
-         Rj71feWkDnTAC2FMXrXdwf4QfeAilnxgMc3mxIBkFYb9D+69BBb3to+CzflALkK5RtKd
-         HByZ3CHkbMR9hDNX+hsMu0aH7ITXqNsxroeut/Uvzx9xI3+mwIqq9j6OMOQRvEaETxHz
-         SiL4SLIkJy5x6Dy6OytjwspTiUblXUQ+pKMAKIS19aMdop34p3F/jdgV0P/znOe4KjC/
-         jIJA==
-X-Gm-Message-State: ACgBeo20+JeRDttEDYK80z32guUac9XIIEfVOsMhdTeZQ18QfRIWb3tv
-        q1rTUujD/DNv6RGoTMbZ/N4=
-X-Google-Smtp-Source: AA6agR4eXTm3qLYHLqodT04eMxgaDYC3PVyO6JgEv5mouYBYOb41pjejGswljLJAiEqK3JHjc8LWKw==
-X-Received: by 2002:a17:902:b686:b0:16c:ae59:c9b4 with SMTP id c6-20020a170902b68600b0016cae59c9b4mr26390503pls.26.1659530654230;
-        Wed, 03 Aug 2022 05:44:14 -0700 (PDT)
-Received: from localhost ([223.104.103.89])
-        by smtp.gmail.com with ESMTPSA id z1-20020a17090ab10100b001f4d4a1b494sm1503613pjq.7.2022.08.03.05.44.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 05:44:13 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Cc:     18801353760@163.com, andrii@kernel.org, ast@kernel.org,
-        borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, jakub@cloudflare.com,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yin31149@gmail.com, Wen Gu <guwen@linux.alibaba.com>
-Subject: [PATCH v4] net: fix refcount bug in sk_psock_get (2)
-Date:   Wed,  3 Aug 2022 20:41:22 +0800
-Message-Id: <20220803124121.173303-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <00000000000026328205e08cdbeb@google.com>
-References: <00000000000026328205e08cdbeb@google.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=0qI80nKbtNInC7TnaqV1RRwJ5MKOkQCfQlYI1Abu+68=;
+        b=I93TmwQrEyWTE9cvPMLp4QSB0CthwPAzEEo+hk2uJRzjmo0f0eo9KsmpPt2/eX2Gbk
+         0temoizrTQxzlBRBe1T7INudaXBs8zesA38G8TsCmzQezRJJ/N44OLJsog2FKFggOjXu
+         c1m1TThwNdlgW6azE3wMLgNYChuLllc9sxbY+wEJfOgi/beg4hY2Hic09zlffvDJ7wtk
+         wX7Nul9At12aAmu38jJjGKPqMza93heQee5lrRxcMJw4hAYzKpjZ+uX/uR7E56GJyV+S
+         wK4ZE2WHYjBdVJvFWLeOBjlAHQCYqs+zvt0x0ZneePc2xlrQm4SwYYyfGjMrX120P1Bn
+         za6g==
+X-Gm-Message-State: ACgBeo0CuUakfYxUBFmhPInVpMA1S/qJu4OEcZ28j0xGStawPJtS9fQ5
+        sv+nLxNlXne9TndnYnmJHNWWUg==
+X-Google-Smtp-Source: AA6agR4YcT+i543RaZOzyZZrxoYafQeMyJMNwQPlZAZ5N2PjqYDcx6ffwBEUmWSpOvruLmyqiKyulA==
+X-Received: by 2002:a05:6808:143:b0:33a:d513:1443 with SMTP id h3-20020a056808014300b0033ad5131443mr1620237oie.43.1659532396382;
+        Wed, 03 Aug 2022 06:13:16 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id t26-20020a0568080b3a00b0033a3e6e7ce9sm3539763oij.10.2022.08.03.06.13.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 06:13:16 -0700 (PDT)
+Message-ID: <11578cfd-3d19-8bda-b36e-5e522e7c4490@cloudflare.com>
+Date:   Wed, 3 Aug 2022 08:13:15 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 1/4] security, lsm: Introduce security_create_user_ns()
+Content-Language: en-US
+To:     KP Singh <kpsingh@kernel.org>
+Cc:     revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
+References: <20220801180146.1157914-1-fred@cloudflare.com>
+ <20220801180146.1157914-2-fred@cloudflare.com>
+ <CACYkzJ4x90DamdN4dRCn1gZuAHLqJNy4MoP=qTX+44Bqx1uxSQ@mail.gmail.com>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <CACYkzJ4x90DamdN4dRCn1gZuAHLqJNy4MoP=qTX+44Bqx1uxSQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,190 +82,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports refcount bug as follows:
-------------[ cut here ]------------
-refcount_t: saturated; leaking memory.
-WARNING: CPU: 1 PID: 3605 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
-Modules linked in:
-CPU: 1 PID: 3605 Comm: syz-executor208 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
- <TASK>
- __refcount_add_not_zero include/linux/refcount.h:163 [inline]
- __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
- refcount_inc_not_zero include/linux/refcount.h:245 [inline]
- sk_psock_get+0x3bc/0x410 include/linux/skmsg.h:439
- tls_data_ready+0x6d/0x1b0 net/tls/tls_sw.c:2091
- tcp_data_ready+0x106/0x520 net/ipv4/tcp_input.c:4983
- tcp_data_queue+0x25f2/0x4c90 net/ipv4/tcp_input.c:5057
- tcp_rcv_state_process+0x1774/0x4e80 net/ipv4/tcp_input.c:6659
- tcp_v4_do_rcv+0x339/0x980 net/ipv4/tcp_ipv4.c:1682
- sk_backlog_rcv include/net/sock.h:1061 [inline]
- __release_sock+0x134/0x3b0 net/core/sock.c:2849
- release_sock+0x54/0x1b0 net/core/sock.c:3404
- inet_shutdown+0x1e0/0x430 net/ipv4/af_inet.c:909
- __sys_shutdown_sock net/socket.c:2331 [inline]
- __sys_shutdown_sock net/socket.c:2325 [inline]
- __sys_shutdown+0xf1/0x1b0 net/socket.c:2343
- __do_sys_shutdown net/socket.c:2351 [inline]
- __se_sys_shutdown net/socket.c:2349 [inline]
- __x64_sys_shutdown+0x50/0x70 net/socket.c:2349
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
- </TASK>
+On 8/2/22 4:47 PM, KP Singh wrote:
+> On Mon, Aug 1, 2022 at 8:02 PM Frederick Lawler <fred@cloudflare.com> wrote:
+>>
+>> Preventing user namespace (privileged or otherwise) creation comes in a
+>> few of forms in order of granularity:
+>>
+>>          1. /proc/sys/user/max_user_namespaces sysctl
+>>          2. OS specific patch(es)
+>>          3. CONFIG_USER_NS
+>>
+>> To block a task based on its attributes, the LSM hook cred_prepare is a
+>> good candidate for use because it provides more granular control, and
+>> it is called before create_user_ns():
+>>
+>>          cred = prepare_creds()
+>>                  security_prepare_creds()
+>>                          call_int_hook(cred_prepare, ...
+>>          if (cred)
+>>                  create_user_ns(cred)
+>>
+>> Since security_prepare_creds() is meant for LSMs to copy and prepare
+>> credentials, access control is an unintended use of the hook. Therefore
+>> introduce a new function security_create_user_ns() with an accompanying
+>> userns_create LSM hook.
+>>
+>> This hook takes the prepared creds for LSM authors to write policy
+>> against. On success, the new namespace is applied to credentials,
+>> otherwise an error is returned.
+>>
+>> Signed-off-by: Frederick Lawler <fred@cloudflare.com>
+>> Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+> 
+> Reviewed-by: KP Singh <kpsingh@kernel.org>
+> 
+> This looks useful, and I would also like folks to consider the
+> observability aspects of BPF LSM as
+> brought up here:
+> 
+> https://lore.kernel.org/all/CAEiveUdPhEPAk7Y0ZXjPsD=Vb5hn453CHzS9aG-tkyRa8bf_eg@mail.gmail.com/
+> 
+> Frederick, what about adding the observability aspects to the commit
+> description as well.
 
-During SMC fallback process in connect syscall, kernel will
-replaces TCP with SMC. In order to forward wakeup
-smc socket waitqueue after fallback, kernel will sets
-clcsk->sk_user_data to origin smc socket in
-smc_fback_replace_callbacks().
+Agreed. I'll include that in v5.
 
-Later, in shutdown syscall, kernel will calls
-sk_psock_get(), which treats the clcsk->sk_user_data
-as psock type, triggering the refcnt warning.
-
-So, the root cause is that smc and psock, both will use
-sk_user_data field. So they will mismatch this field
-easily.
-
-This patch solves it by using another bit(defined as
-SK_USER_DATA_PSOCK) in PTRMASK, to mark whether
-sk_user_data points to a psock object or not.
-This patch depends on a PTRMASK introduced in commit f1ff5ce2cd5e
-("net, sk_msg: Clear sk_user_data pointer on clone if tagged").
-
-Reported-and-tested-by: syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Wen Gu <guwen@linux.alibaba.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
----
-v3 -> v4:
-  - change new subject
-  - fix diff content, which has been edit accidentally
-
-v2 -> v3:
-  - use SK_USER_DATA_PSOCK instead of SK_USER_DATA_NOTPSOCK
-to patch the bug
-  - refactor the code on assigning to sk_user_data field
-in psock part
-  - refactor the code on getting and setting the flag
-with sk_user_data field
-
-v1 -> v2:
-  - add bit in PTRMASK to patch the bug
-
- include/linux/skmsg.h |  2 +-
- include/net/sock.h    | 58 +++++++++++++++++++++++++++++++------------
- net/core/skmsg.c      |  3 ++-
- 3 files changed, 45 insertions(+), 18 deletions(-)
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index c5a2d6f50f25..81bfa1a33623 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -277,7 +277,7 @@ static inline void sk_msg_sg_copy_clear(struct sk_msg *msg, u32 start)
- 
- static inline struct sk_psock *sk_psock(const struct sock *sk)
- {
--	return rcu_dereference_sk_user_data(sk);
-+	return rcu_dereference_sk_user_data_psock(sk);
- }
- 
- static inline void sk_psock_set_state(struct sk_psock *psock,
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 9fa54762e077..d010910d5879 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -545,14 +545,24 @@ enum sk_pacing {
- 	SK_PACING_FQ		= 2,
- };
- 
--/* Pointer stored in sk_user_data might not be suitable for copying
-- * when cloning the socket. For instance, it can point to a reference
-- * counted object. sk_user_data bottom bit is set if pointer must not
-- * be copied.
-+/* flag bits in sk_user_data
-+ *
-+ * SK_USER_DATA_NOCOPY - Pointer stored in sk_user_data might
-+ * not be suitable for copying when cloning the socket.
-+ * For instance, it can point to a reference counted object.
-+ * sk_user_data bottom bit is set if pointer must not be copied.
-+ *
-+ * SK_USER_DATA_BPF    - Managed by BPF
-+ *
-+ * SK_USER_DATA_PSOCK  - Mark whether pointer stored in sk_user_data points
-+ * to psock type. This bit should be set when sk_user_data is
-+ * assigned to a psock object.
-  */
- #define SK_USER_DATA_NOCOPY	1UL
--#define SK_USER_DATA_BPF	2UL	/* Managed by BPF */
--#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF)
-+#define SK_USER_DATA_BPF	2UL
-+#define SK_USER_DATA_PSOCK	4UL
-+#define SK_USER_DATA_PTRMASK	~(SK_USER_DATA_NOCOPY | SK_USER_DATA_BPF |\
-+				  SK_USER_DATA_PSOCK)
- 
- /**
-  * sk_user_data_is_nocopy - Test if sk_user_data pointer must not be copied
-@@ -570,19 +580,35 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
- 	void *__tmp = rcu_dereference(__sk_user_data((sk)));		\
- 	(void *)((uintptr_t)__tmp & SK_USER_DATA_PTRMASK);		\
- })
--#define rcu_assign_sk_user_data(sk, ptr)				\
-+#define rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
- ({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
--	rcu_assign_pointer(__sk_user_data((sk)), __tmp);		\
--})
--#define rcu_assign_sk_user_data_nocopy(sk, ptr)				\
--({									\
--	uintptr_t __tmp = (uintptr_t)(ptr);				\
--	WARN_ON_ONCE(__tmp & ~SK_USER_DATA_PTRMASK);			\
-+	uintptr_t __tmp1 = (uintptr_t)(ptr),				\
-+		  __tmp2 = (uintptr_t)(flags);				\
-+	WARN_ON_ONCE(__tmp1 & ~SK_USER_DATA_PTRMASK);			\
-+	WARN_ON_ONCE(__tmp2 & SK_USER_DATA_PTRMASK);			\
- 	rcu_assign_pointer(__sk_user_data((sk)),			\
--			   __tmp | SK_USER_DATA_NOCOPY);		\
-+			   __tmp1 | __tmp2);				\
- })
-+#define rcu_assign_sk_user_data(sk, ptr)				\
-+	rcu_assign_sk_user_data_with_flags(sk, ptr, 0)
-+
-+/**
-+ * rcu_dereference_sk_user_data_psock - return psock if sk_user_data
-+ * points to the psock type(SK_USER_DATA_PSOCK flag is set), otherwise
-+ * return NULL
-+ *
-+ * @sk: socket
-+ */
-+static inline
-+struct sk_psock *rcu_dereference_sk_user_data_psock(const struct sock *sk)
-+{
-+	uintptr_t __tmp = (uintptr_t)rcu_dereference(__sk_user_data((sk)));
-+
-+	if (__tmp & SK_USER_DATA_PSOCK)
-+		return (struct sk_psock *)(__tmp & SK_USER_DATA_PTRMASK);
-+
-+	return NULL;
-+}
- 
- static inline
- struct net *sock_net(const struct sock *sk)
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index b0fcd0200e84..d174897dbb4b 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -735,7 +735,8 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
- 	refcount_set(&psock->refcnt, 1);
- 
--	rcu_assign_sk_user_data_nocopy(sk, psock);
-+	rcu_assign_sk_user_data_with_flags(sk, psock, SK_USER_DATA_NOCOPY |
-+						      SK_USER_DATA_PSOCK);
- 	sock_hold(sk);
- 
- out:
--- 
-2.25.1
+> 
+> - KP
+> 
+>>
+>> ---
+>> Changes since v3:
+>> - No changes
+>> Changes since v2:
+>> - Rename create_user_ns hook to userns_create
+>> Changes since v1:
+>> - Changed commit wording
+>> - Moved execution to be after id mapping check
+>> - Changed signature to only accept a const struct cred *
+>> ---
+>>   include/linux/lsm_hook_defs.h | 1 +
+>>   include/linux/lsm_hooks.h     | 4 ++++
+>>   include/linux/security.h      | 6 ++++++
+>>   kernel/user_namespace.c       | 5 +++++
+>>   security/security.c           | 5 +++++
+>>   5 files changed, 21 insertions(+)
+>>
+>> diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+>> index eafa1d2489fd..7ff93cb8ca8d 100644
+>> --- a/include/linux/lsm_hook_defs.h
+>> +++ b/include/linux/lsm_hook_defs.h
+>> @@ -223,6 +223,7 @@ LSM_HOOK(int, -ENOSYS, task_prctl, int option, unsigned long arg2,
+>>           unsigned long arg3, unsigned long arg4, unsigned long arg5)
+>>   LSM_HOOK(void, LSM_RET_VOID, task_to_inode, struct task_struct *p,
+>>           struct inode *inode)
+>> +LSM_HOOK(int, 0, userns_create, const struct cred *cred)
+>>   LSM_HOOK(int, 0, ipc_permission, struct kern_ipc_perm *ipcp, short flag)
+>>   LSM_HOOK(void, LSM_RET_VOID, ipc_getsecid, struct kern_ipc_perm *ipcp,
+>>           u32 *secid)
+>> diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+>> index 91c8146649f5..54fe534d0e01 100644
+>> --- a/include/linux/lsm_hooks.h
+>> +++ b/include/linux/lsm_hooks.h
+>> @@ -799,6 +799,10 @@
+>>    *     security attributes, e.g. for /proc/pid inodes.
+>>    *     @p contains the task_struct for the task.
+>>    *     @inode contains the inode structure for the inode.
+>> + * @userns_create:
+>> + *     Check permission prior to creating a new user namespace.
+>> + *     @cred points to prepared creds.
+>> + *     Return 0 if successful, otherwise < 0 error code.
+>>    *
+>>    * Security hooks for Netlink messaging.
+>>    *
+>> diff --git a/include/linux/security.h b/include/linux/security.h
+>> index 7fc4e9f49f54..a195bf33246a 100644
+>> --- a/include/linux/security.h
+>> +++ b/include/linux/security.h
+>> @@ -435,6 +435,7 @@ int security_task_kill(struct task_struct *p, struct kernel_siginfo *info,
+>>   int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+>>                          unsigned long arg4, unsigned long arg5);
+>>   void security_task_to_inode(struct task_struct *p, struct inode *inode);
+>> +int security_create_user_ns(const struct cred *cred);
+>>   int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag);
+>>   void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid);
+>>   int security_msg_msg_alloc(struct msg_msg *msg);
+>> @@ -1185,6 +1186,11 @@ static inline int security_task_prctl(int option, unsigned long arg2,
+>>   static inline void security_task_to_inode(struct task_struct *p, struct inode *inode)
+>>   { }
+>>
+>> +static inline int security_create_user_ns(const struct cred *cred)
+>> +{
+>> +       return 0;
+>> +}
+>> +
+>>   static inline int security_ipc_permission(struct kern_ipc_perm *ipcp,
+>>                                            short flag)
+>>   {
+>> diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+>> index 5481ba44a8d6..3f464bbda0e9 100644
+>> --- a/kernel/user_namespace.c
+>> +++ b/kernel/user_namespace.c
+>> @@ -9,6 +9,7 @@
+>>   #include <linux/highuid.h>
+>>   #include <linux/cred.h>
+>>   #include <linux/securebits.h>
+>> +#include <linux/security.h>
+>>   #include <linux/keyctl.h>
+>>   #include <linux/key-type.h>
+>>   #include <keys/user-type.h>
+>> @@ -113,6 +114,10 @@ int create_user_ns(struct cred *new)
+>>              !kgid_has_mapping(parent_ns, group))
+>>                  goto fail_dec;
+>>
+>> +       ret = security_create_user_ns(new);
+>> +       if (ret < 0)
+>> +               goto fail_dec;
+>> +
+>>          ret = -ENOMEM;
+>>          ns = kmem_cache_zalloc(user_ns_cachep, GFP_KERNEL);
+>>          if (!ns)
+>> diff --git a/security/security.c b/security/security.c
+>> index 188b8f782220..ec9b4696e86c 100644
+>> --- a/security/security.c
+>> +++ b/security/security.c
+>> @@ -1903,6 +1903,11 @@ void security_task_to_inode(struct task_struct *p, struct inode *inode)
+>>          call_void_hook(task_to_inode, p, inode);
+>>   }
+>>
+>> +int security_create_user_ns(const struct cred *cred)
+>> +{
+>> +       return call_int_hook(userns_create, 0, cred);
+>> +}
+>> +
+>>   int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
+>>   {
+>>          return call_int_hook(ipc_permission, 0, ipcp, flag);
+>> --
+>> 2.30.2
+>>
 
