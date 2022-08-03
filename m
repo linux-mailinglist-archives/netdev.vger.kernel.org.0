@@ -2,237 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32055588ECA
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4915588ED7
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:44:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiHCOmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 10:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
+        id S235093AbiHCOoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 10:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235093AbiHCOmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:42:12 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E2710FC1;
-        Wed,  3 Aug 2022 07:42:11 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 273DkKPc004151;
-        Wed, 3 Aug 2022 14:42:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=kzKTuTnydJNUn7b1tS0ZaQzgBLuC3ZCLQARGQqE2RFg=;
- b=H5p7G6P2A3bTshixxWiRMBTaKhDeVDBE9gXUepS9aB18n22Oku+Xu/OgRfhqHjq5pZBU
- qQ6uw6fW31yn90m8MARyBLpmUq3FP9w073Wt0GGd4hBdhHJ6deFei7zbWkEHFADZTR0N
- evGU1CYqqtQ8mj4MwZf0xjj1pMmV6F8BQ6kpWYdEjaik2tnVf/DrPAfyh/reELv17RDl
- UFpUUiQLVTkCQLlvhyNSCAvyOlvGSNSy4tUIS/1Dj4wOxCauhMJQfE9Iw7/vLCYCMlri
- WTP400GMZSLHbqnsA8R4xQuEhwxMh91rG9wnmgwEyQk3lr6T3wPtpT/+MePGyqfHxage 0w== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqt6stauy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 14:42:01 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 273EZnQu004618;
-        Wed, 3 Aug 2022 14:42:00 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3hmv98n2dy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 14:41:59 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 273EfuRJ9502994
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 3 Aug 2022 14:41:56 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9370A404D;
-        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A460A4040;
-        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
-Received: from Alexandras-MBP.fritz.box.com (unknown [9.145.20.221])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
-From:   Alexandra Winter <wintera@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>
-Subject: [PATCH net 2/2] s390/qeth: use cached link_info for ethtool
-Date:   Wed,  3 Aug 2022 16:40:15 +0200
-Message-Id: <20220803144015.52946-3-wintera@linux.ibm.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220803144015.52946-1-wintera@linux.ibm.com>
-References: <20220803144015.52946-1-wintera@linux.ibm.com>
+        with ESMTP id S229487AbiHCOoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:44:01 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F100813D72;
+        Wed,  3 Aug 2022 07:43:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659537840; x=1691073840;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=T4/3FsYWefVHkyY1sZZTHJV6BaozryMZW4IS2uDK4bE=;
+  b=mvRWCOwWta7+IJT6YnWPTJzKsNWvLD8voWA7DjVXpB3KYJl5oOZ5wMuT
+   5KPSNUqWDtRKgIJqraPGzxgvdcT8yY0Omj5IJiVVF3NJZpX7ibedR6XdU
+   vk150WWmDhc1OkreLkvKNPdHYcy6lXQJ7LeT7fa21+nLFqjqHiDFSbRLt
+   2bzWe4GEczLzowyyoQ5HZoPEXB9w6l6a0SBrY5yaxYzYKtT6xGQYZ4/kb
+   VJpkYV+J/+3cGr+LFAzN+dWzdTrSE85GL+2Nvo3aiIAtvGi9Llm3r3WAc
+   /uKz1ES/x6f82Y/FVE/XfiiaoQDnZxTxabfUlm/34/g7u+4NHLPNqI4OC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="290905679"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="290905679"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 07:43:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="578671981"
+Received: from silpixa00401350.ir.intel.com (HELO silpixav00401350..) ([10.55.128.131])
+  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 07:43:56 -0700
+From:   Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org, maciej.fijalkowski@intel.com,
+        andrii@kernel.org, ciara.loftus@intel.com,
+        Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
+Subject: [PATCH bpf-next v4] selftests: xsk: Update poll test cases
+Date:   Wed,  3 Aug 2022 14:43:54 +0000
+Message-Id: <20220803144354.98122-1-shibin.koikkara.reeny@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: zdDrE5tf5BKceT0KEQtKRHQFl5ColBtI
-X-Proofpoint-ORIG-GUID: zdDrE5tf5BKceT0KEQtKRHQFl5ColBtI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- malwarescore=0 impostorscore=0 adultscore=0 bulkscore=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 priorityscore=1501 clxscore=1015
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208030066
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.0 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the cached information is kept up to date, it is no longer necessary to
-query the card on each call of get_link_ksettings.
-Tools like snmpd, prometheus, sadc or nmbd call get_link_ksettings, so
-this has the potential to reduce system load.
+Poll test case was not testing all the functionality
+of the poll feature in the testsuite. This patch
+update the poll test case which contain 2 testcases to
+test the RX and the TX poll functionality and additional
+2 more testcases to check the timeout features of the
+poll event.
 
-This eliminates the need for qeth_query_card_info(). Since
-commit e6e771b3d897 ("s390/qeth: detach netdevice while card is offline")
-there was a timing window during recovery, that qeth_query_card_info could
-be sent to the card, even before it was ready for it, leading to a failing
-recovery. There is evidence that this window was hit, as not all callers
-of get_link_ksettings() check for netif_device_present.
+Poll testsuite have 4 test cases:
 
-Fixes: e6e771b3d897 ("s390/qeth: detach netdevice while card is offline")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Thorsten Winkler <twinkler@linux.ibm.com>
+1. TEST_TYPE_RX_POLL:
+Check if RX path POLLIN function work as expect. TX path
+can use any method to sent the traffic.
+
+2. TEST_TYPE_TX_POLL:
+Check if TX path POLLOUT function work as expect. RX path
+can use any method to receive the traffic.
+
+3. TEST_TYPE_POLL_RXQ_EMPTY:
+Call poll function with parameter POLLIN on empty rx queue
+will cause timeout.If return timeout then test case is pass.
+
+4. TEST_TYPE_POLL_TXQ_FULL:
+When txq is filled and packets are not cleaned by the kernel
+then if we invoke the poll function with POLLOUT then it
+should trigger timeout.
+
+v1: https://lore.kernel.org/bpf/20220718095712.588513-1-shibin.koikkara.reeny@intel.com/
+v2: https://lore.kernel.org/bpf/20220726101723.250746-1-shibin.koikkara.reeny@intel.com/
+v3: https://lore.kernel.org/bpf/20220729132337.211443-1-shibin.koikkara.reeny@intel.com/
+
+Changes in v2:
+ * Updated the commit message
+ * fixed the while loop flow in receive_pkts function.
+Changes in v3:
+ * Introduced single thread validation function.
+ * Removed pkt_stream_invalid().
+ * Updated TEST_TYPE_POLL_TXQ_FULL testcase to create invalid frame.
+ * Removed timer from send_pkts().
+ * Removed boolean variable skip_rx and skip_tx.
+Change in v4:
+ * Added is_umem_valid()
+
+Signed-off-by: Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
 ---
- drivers/s390/net/qeth_core_main.c | 86 -------------------------------
- drivers/s390/net/qeth_ethtool.c   | 12 +----
- 2 files changed, 1 insertion(+), 97 deletions(-)
+ tools/testing/selftests/bpf/xskxceiver.c | 166 +++++++++++++++++------
+ tools/testing/selftests/bpf/xskxceiver.h |   8 +-
+ 2 files changed, 134 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 05582a7a55e2..10e38fe54bc9 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -4788,92 +4788,6 @@ static int qeth_query_oat_command(struct qeth_card *card, char __user *udata)
- 	return rc;
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index 74d56d971baf..20b44ab32a06 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -244,6 +244,11 @@ static void gen_udp_hdr(u32 payload, void *pkt, struct ifobject *ifobject,
+ 	memset32_htonl(pkt + PKT_HDR_SIZE, payload, UDP_PKT_DATA_SIZE);
  }
  
--static int qeth_query_card_info_cb(struct qeth_card *card,
--				   struct qeth_reply *reply, unsigned long data)
--{
--	struct qeth_ipa_cmd *cmd = (struct qeth_ipa_cmd *)data;
--	struct qeth_link_info *link_info = reply->param;
--	struct qeth_query_card_info *card_info;
++static bool is_umem_valid(struct ifobject *ifobj)
++{
++	return !!ifobj->umem->umem;
++}
++
+ static void gen_udp_csum(struct udphdr *udp_hdr, struct iphdr *ip_hdr)
+ {
+ 	udp_hdr->check = 0;
+@@ -817,12 +822,13 @@ static int complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+ 	return TEST_PASS;
+ }
+ 
+-static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
++static int receive_pkts(struct test_spec *test, struct pollfd *fds)
+ {
+-	struct timeval tv_end, tv_now, tv_timeout = {RECV_TMOUT, 0};
++	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
++	struct pkt_stream *pkt_stream = test->ifobj_rx->pkt_stream;
+ 	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkts_sent = 0;
+-	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
+-	struct xsk_socket_info *xsk = ifobj->xsk;
++	struct xsk_socket_info *xsk = test->ifobj_rx->xsk;
++	struct ifobject *ifobj = test->ifobj_rx;
+ 	struct xsk_umem_info *umem = xsk->umem;
+ 	struct pkt *pkt;
+ 	int ret;
+@@ -843,17 +849,28 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 		}
+ 
+ 		kick_rx(xsk);
++		if (ifobj->use_poll) {
++			ret = poll(fds, 1, POLL_TMOUT);
++			if (ret < 0)
++				exit_with_error(-ret);
++
++			if (!ret) {
++				if (!is_umem_valid(test->ifobj_tx))
++					return TEST_PASS;
++
++				ksft_print_msg("ERROR: [%s] Poll timed out\n", __func__);
++				return TEST_FAILURE;
+ 
+-		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+-		if (!rcvd) {
+-			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
+-				ret = poll(fds, 1, POLL_TMOUT);
+-				if (ret < 0)
+-					exit_with_error(-ret);
+ 			}
+-			continue;
++
++			if (!(fds->revents & POLLIN))
++				continue;
+ 		}
+ 
++		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
++		if (!rcvd)
++			continue;
++
+ 		if (ifobj->use_fill_ring) {
+ 			ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
+ 			while (ret != rcvd) {
+@@ -900,13 +917,35 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 	return TEST_PASS;
+ }
+ 
+-static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
++static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb, struct pollfd *fds,
++		       bool timeout)
+ {
+ 	struct xsk_socket_info *xsk = ifobject->xsk;
+-	u32 i, idx, valid_pkts = 0;
++	bool use_poll = ifobject->use_poll;
++	u32 i, idx, ret, valid_pkts = 0;
++
++	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE) {
++		if (use_poll) {
++			ret = poll(fds, 1, POLL_TMOUT);
++			if (timeout) {
++				if (ret < 0) {
++					ksft_print_msg("ERROR: [%s] Poll error %d\n",
++						       __func__, ret);
++					return TEST_FAILURE;
++				}
++				if (ret == 0)
++					return TEST_PASS;
++				break;
++			}
++			if (ret <= 0) {
++				ksft_print_msg("ERROR: [%s] Poll error %d\n",
++					       __func__, ret);
++				return TEST_FAILURE;
++			}
++		}
+ 
+-	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE)
+ 		complete_pkts(xsk, BATCH_SIZE);
++	}
+ 
+ 	for (i = 0; i < BATCH_SIZE; i++) {
+ 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
+@@ -933,11 +972,27 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+ 
+ 	xsk_ring_prod__submit(&xsk->tx, i);
+ 	xsk->outstanding_tx += valid_pkts;
+-	if (complete_pkts(xsk, i))
+-		return TEST_FAILURE;
+ 
+-	usleep(10);
+-	return TEST_PASS;
++	if (use_poll) {
++		ret = poll(fds, 1, POLL_TMOUT);
++		if (ret <= 0) {
++			if (ret == 0 && timeout)
++				return TEST_PASS;
++
++			ksft_print_msg("ERROR: [%s] Poll error %d\n", __func__, ret);
++			return TEST_FAILURE;
++		}
++	}
++
++	if (!timeout) {
++		if (complete_pkts(xsk, i))
++			return TEST_FAILURE;
++
++		usleep(10);
++		return TEST_PASS;
++	}
++
++	return TEST_CONTINUE;
+ }
+ 
+ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+@@ -948,29 +1003,19 @@ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+ 
+ static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
+ {
++	bool timeout = !is_umem_valid(test->ifobj_rx);
+ 	struct pollfd fds = { };
+-	u32 pkt_cnt = 0;
++	u32 pkt_cnt = 0, ret;
+ 
+ 	fds.fd = xsk_socket__fd(ifobject->xsk->xsk);
+ 	fds.events = POLLOUT;
+ 
+ 	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
+-		int err;
 -
--	QETH_CARD_TEXT(card, 2, "qcrdincb");
--	if (qeth_setadpparms_inspect_rc(cmd))
--		return -EIO;
+-		if (ifobject->use_poll) {
+-			int ret;
 -
--	card_info = &cmd->data.setadapterparms.data.card_info;
--	netdev_dbg(card->dev,
--		   "card info: card_type=0x%02x, port_mode=0x%04x, port_speed=0x%08x\n",
--		   card_info->card_type, card_info->port_mode,
--		   card_info->port_speed);
+-			ret = poll(&fds, 1, POLL_TMOUT);
+-			if (ret <= 0)
+-				continue;
 -
--	switch (card_info->port_mode) {
--	case CARD_INFO_PORTM_FULLDUPLEX:
--		link_info->duplex = DUPLEX_FULL;
--		break;
--	case CARD_INFO_PORTM_HALFDUPLEX:
--		link_info->duplex = DUPLEX_HALF;
--		break;
--	default:
--		link_info->duplex = DUPLEX_UNKNOWN;
--	}
--
--	switch (card_info->card_type) {
--	case CARD_INFO_TYPE_1G_COPPER_A:
--	case CARD_INFO_TYPE_1G_COPPER_B:
--		link_info->speed = SPEED_1000;
--		link_info->port = PORT_TP;
--		break;
--	case CARD_INFO_TYPE_1G_FIBRE_A:
--	case CARD_INFO_TYPE_1G_FIBRE_B:
--		link_info->speed = SPEED_1000;
--		link_info->port = PORT_FIBRE;
--		break;
--	case CARD_INFO_TYPE_10G_FIBRE_A:
--	case CARD_INFO_TYPE_10G_FIBRE_B:
--		link_info->speed = SPEED_10000;
--		link_info->port = PORT_FIBRE;
--		break;
--	default:
--		switch (card_info->port_speed) {
--		case CARD_INFO_PORTS_10M:
--			link_info->speed = SPEED_10;
--			break;
--		case CARD_INFO_PORTS_100M:
--			link_info->speed = SPEED_100;
--			break;
--		case CARD_INFO_PORTS_1G:
--			link_info->speed = SPEED_1000;
--			break;
--		case CARD_INFO_PORTS_10G:
--			link_info->speed = SPEED_10000;
--			break;
--		case CARD_INFO_PORTS_25G:
--			link_info->speed = SPEED_25000;
--			break;
--		default:
--			link_info->speed = SPEED_UNKNOWN;
+-			if (!(fds.revents & POLLOUT))
+-				continue;
 -		}
 -
--		link_info->port = PORT_OTHER;
--	}
--
--	return 0;
--}
--
--int qeth_query_card_info(struct qeth_card *card,
--			 struct qeth_link_info *link_info)
--{
--	struct qeth_cmd_buffer *iob;
--
--	QETH_CARD_TEXT(card, 2, "qcrdinfo");
--	if (!qeth_adp_supported(card, IPA_SETADP_QUERY_CARD_INFO))
--		return -EOPNOTSUPP;
--	iob = qeth_get_adapter_cmd(card, IPA_SETADP_QUERY_CARD_INFO, 0);
--	if (!iob)
--		return -ENOMEM;
--
--	return qeth_send_ipa_cmd(card, iob, qeth_query_card_info_cb, link_info);
--}
--
- static int qeth_init_link_info_oat_cb(struct qeth_card *card,
- 				      struct qeth_reply *reply_priv,
- 				      unsigned long data)
-diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
-index b0b36b2132fe..9eba0a32e9f9 100644
---- a/drivers/s390/net/qeth_ethtool.c
-+++ b/drivers/s390/net/qeth_ethtool.c
-@@ -428,8 +428,8 @@ static int qeth_get_link_ksettings(struct net_device *netdev,
- 				   struct ethtool_link_ksettings *cmd)
+-		err = __send_pkts(ifobject, &pkt_cnt);
+-		if (err || test->fail)
++		ret = __send_pkts(ifobject, &pkt_cnt, &fds, timeout);
++		if ((ret || test->fail) && !timeout)
+ 			return TEST_FAILURE;
++		else if (ret == TEST_PASS && timeout)
++			return ret;
+ 	}
+ 
+ 	wait_for_tx_completion(ifobject->xsk);
+@@ -1235,7 +1280,7 @@ static void *worker_testapp_validate_rx(void *arg)
+ 
+ 	pthread_barrier_wait(&barr);
+ 
+-	err = receive_pkts(ifobject, &fds);
++	err = receive_pkts(test, &fds);
+ 
+ 	if (!err && ifobject->validation_func)
+ 		err = ifobject->validation_func(ifobject);
+@@ -1251,6 +1296,33 @@ static void *worker_testapp_validate_rx(void *arg)
+ 	pthread_exit(NULL);
+ }
+ 
++static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
++						  enum test_type type)
++{
++	pthread_t t0;
++
++	if (pthread_barrier_init(&barr, NULL, 2))
++		exit_with_error(errno);
++
++	test->current_step++;
++	if (type  == TEST_TYPE_POLL_RXQ_TMOUT)
++		pkt_stream_reset(ifobj->pkt_stream);
++	pkts_in_flight = 0;
++
++	/*Spawn thread */
++	pthread_create(&t0, NULL, ifobj->func_ptr, test);
++
++	if (type != TEST_TYPE_POLL_TXQ_TMOUT)
++		pthread_barrier_wait(&barr);
++
++	if (pthread_barrier_destroy(&barr))
++		exit_with_error(errno);
++
++	pthread_join(t0, NULL);
++
++	return !!test->fail;
++}
++
+ static int testapp_validate_traffic(struct test_spec *test)
  {
- 	struct qeth_card *card = netdev->ml_priv;
--	struct qeth_link_info link_info;
+ 	struct ifobject *ifobj_tx = test->ifobj_tx;
+@@ -1548,12 +1620,30 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
  
-+	QETH_CARD_TEXT(card, 4, "ethtglks");
- 	cmd->base.speed = card->info.link_info.speed;
- 	cmd->base.duplex = card->info.link_info.duplex;
- 	cmd->base.port = card->info.link_info.port;
-@@ -439,16 +439,6 @@ static int qeth_get_link_ksettings(struct net_device *netdev,
- 	cmd->base.eth_tp_mdix = ETH_TP_MDI_INVALID;
- 	cmd->base.eth_tp_mdix_ctrl = ETH_TP_MDI_INVALID;
+ 		pkt_stream_restore_default(test);
+ 		break;
+-	case TEST_TYPE_POLL:
+-		test->ifobj_tx->use_poll = true;
++	case TEST_TYPE_RX_POLL:
+ 		test->ifobj_rx->use_poll = true;
+-		test_spec_set_name(test, "POLL");
++		test_spec_set_name(test, "POLL_RX");
+ 		testapp_validate_traffic(test);
+ 		break;
++	case TEST_TYPE_TX_POLL:
++		test->ifobj_tx->use_poll = true;
++		test_spec_set_name(test, "POLL_TX");
++		testapp_validate_traffic(test);
++		break;
++	case TEST_TYPE_POLL_TXQ_TMOUT:
++		test_spec_set_name(test, "POLL_TXQ_FULL");
++		test->ifobj_tx->use_poll = true;
++		/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
++		test->ifobj_tx->umem->frame_size = 2048;
++		pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
++		testapp_validate_traffic_single_thread(test, test->ifobj_tx, type);
++		pkt_stream_restore_default(test);
++		break;
++	case TEST_TYPE_POLL_RXQ_TMOUT:
++		test_spec_set_name(test, "POLL_RXQ_EMPTY");
++		test->ifobj_rx->use_poll = true;
++		testapp_validate_traffic_single_thread(test, test->ifobj_rx, type);
++		break;
+ 	case TEST_TYPE_ALIGNED_INV_DESC:
+ 		test_spec_set_name(test, "ALIGNED_INV_DESC");
+ 		testapp_invalid_desc(test);
+diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+index 3d17053f98e5..ee97576757a9 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.h
++++ b/tools/testing/selftests/bpf/xskxceiver.h
+@@ -27,6 +27,7 @@
  
--	/* Check if we can obtain more accurate information.	 */
--	if (!qeth_query_card_info(card, &link_info)) {
--		if (link_info.speed != SPEED_UNKNOWN)
--			cmd->base.speed = link_info.speed;
--		if (link_info.duplex != DUPLEX_UNKNOWN)
--			cmd->base.duplex = link_info.duplex;
--		if (link_info.port != PORT_OTHER)
--			cmd->base.port = link_info.port;
--	}
--
- 	qeth_set_ethtool_link_modes(cmd, card->info.link_info.link_mode);
- 
- 	return 0;
+ #define TEST_PASS 0
+ #define TEST_FAILURE -1
++#define TEST_CONTINUE 1
+ #define MAX_INTERFACES 2
+ #define MAX_INTERFACE_NAME_CHARS 7
+ #define MAX_INTERFACES_NAMESPACE_CHARS 10
+@@ -48,7 +49,7 @@
+ #define SOCK_RECONF_CTR 10
+ #define BATCH_SIZE 64
+ #define POLL_TMOUT 1000
+-#define RECV_TMOUT 3
++#define THREAD_TMOUT 3
+ #define DEFAULT_PKT_CNT (4 * 1024)
+ #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+ #define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
+@@ -68,7 +69,10 @@ enum test_type {
+ 	TEST_TYPE_RUN_TO_COMPLETION,
+ 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
+ 	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
+-	TEST_TYPE_POLL,
++	TEST_TYPE_RX_POLL,
++	TEST_TYPE_TX_POLL,
++	TEST_TYPE_POLL_RXQ_TMOUT,
++	TEST_TYPE_POLL_TXQ_TMOUT,
+ 	TEST_TYPE_UNALIGNED,
+ 	TEST_TYPE_ALIGNED_INV_DESC,
+ 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
 -- 
-2.24.3 (Apple Git-128)
+2.34.1
 
