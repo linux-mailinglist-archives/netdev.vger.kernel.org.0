@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14961588B55
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564F7588B59
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237557AbiHCLdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 07:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S237665AbiHCLdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 07:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237607AbiHCLdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:33:19 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C679F4E61E;
-        Wed,  3 Aug 2022 04:33:11 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gk3so18753668ejb.8;
-        Wed, 03 Aug 2022 04:33:11 -0700 (PDT)
+        with ESMTP id S237600AbiHCLd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:33:27 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298B23DF04;
+        Wed,  3 Aug 2022 04:33:26 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id a89so21080726edf.5;
+        Wed, 03 Aug 2022 04:33:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=vao2Cp7i5f6/k5QYAFT9/dBZf5yhq/l9mTWgGJqR6PY=;
-        b=bWIMn9pC4xFcXuTK4bWw29xOdTVboCuIfO1+MCkkSWj4i30GZm2QG93Qmw2QCJGamO
-         Cgrb9KXyDgBtTRh1j7tOsoRtCwJUAegKJ+y6Go1NlRhIJLc/0cNWdW8O1N1o8gZsglVW
-         CbrG0u9x/x2rpo4d0VHdeqJ2TCMvLugC2oyZ8EJmwQl/6hhno0vtJBtx/8wyi0bEkZuB
-         NNcxeYx1qIKFRr2yyLd4MARfZo8m7X0zfZjfyOFD8USyfmrMyGF7VIFMTA8zbi4Wfcci
-         WeUK0HBL1RY1uKud3XQJjZpXnfWQuU+eqkbpQ3AHkKD9aen1I5A2iq8SYXIwSUXAnJZH
-         O70g==
+        bh=onxOdMmI5QbIGUE/oDxEeplm+cELkOPvfMCEuj17XyE=;
+        b=e80QPsaOkwgNFQn0rtSDmXyeEbAurKgI3paSkgTLa6gTyVHa4LZNNjhtUPrF+TiYjA
+         94enMiVEPbAjGBow0aSG8cUAW3ZEHaOR45ycZ+1tq/oSxijXyyqCBYgpEPAUdCA40UfB
+         xf9hnsyrmSN9yHji5necoonhG3fAqvDoqGH+sC+mk0P8cYe1PgVmkPsergu6ydQuLYtb
+         v5cr6vxyrSMjl6EK8rEExDJKgIxHanmvRoVqIYOOFDjnkDofyNCnsKKLPzAogpDGQAO6
+         z9YOfBvvyQA1AHXt3uI0kbnHPeMmo0Jo8SphvPbwBYPnrPvSoJ24cXXt4yQXwFhAiOgA
+         U4cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=vao2Cp7i5f6/k5QYAFT9/dBZf5yhq/l9mTWgGJqR6PY=;
-        b=ehQ33XYEQWWlyKRIDwsyzoV2Qa1u0FCxlaDKClbGopCFBUvcZ6GtQuNhku2IHmi7dc
-         slvhmhQ0zNl8Vj5YiS0YrGheVv4GgPDMHfeUQk33cZTLgRgELeRFQM97fdYbdk4lXTkc
-         n/4gCMVEdu4Ex06df1Mz27xkP6u6m2KRK7ZoY77nr6Eh8GzpLxY03sMzlJCH4+0SJBA5
-         ojNXcj/vWQ33o1YjsL7VvvGHdGm/TJ1WJ0Z8S/hByV10zVdZFj3VmR8Q8YpLZTgcNegF
-         zpY995SL8H9eIbFuNAmDzj/iEli4tFO2epo0VoYgJ3EOUa0FjHhvfGM+MZDvgOTxUTF2
-         FGLA==
-X-Gm-Message-State: AJIora9zEMypk8gszwenFiYI4eclOnbTwFJzNCMsJbKRSd1+Cn7aipYL
-        g7EvzjzCqRNVH28tm+MNkaUb7vmJKXj6oAlJ10o=
-X-Google-Smtp-Source: AGRyM1udxSQf76xVtwQpbkoB2qLWhTDDrQa++hbKCvIQy32osP8KAwyThml0YqEPpjzgdiCNXi/b7MNyT9hXQzjdWEA=
-X-Received: by 2002:a17:907:2dab:b0:72f:f7:bdd6 with SMTP id
- gt43-20020a1709072dab00b0072f00f7bdd6mr20763646ejc.330.1659526390304; Wed, 03
- Aug 2022 04:33:10 -0700 (PDT)
+        bh=onxOdMmI5QbIGUE/oDxEeplm+cELkOPvfMCEuj17XyE=;
+        b=soC+EZo8Y6gpLUDiDMFXHnHsKH3uHZm8mZLsZJ54hgq+xxDfh+EeyEFADNpyu7EhhF
+         JBKCNygUOxXJ2k3u19TANThldau20MNQ663ixH3UQjyUrS+5hZOKZpsLZQRBO6xxI4bx
+         JxRKKejMQ6azXo0Td1icxhVRfQTmqTiLoq5I9UDuk5EsdL7+p8jsHYIEuPjxfyyWOoGY
+         G8vduC49mjursHEllNXxeL9Lealt1wKpfIzPTEMPkj9kPve2l67gLcTDjwOXywimIcUv
+         s24diN3HB/fzoAVn283RcPEQysv8IEvhWgpQRoYXs6jhAvr3hKYJmmjltb/h9chNoG3/
+         HEsQ==
+X-Gm-Message-State: AJIora+KjzT/XZZ7X+HE/0CVKNnb6f9SgXTd3OMKmbIopZstjPOoo3uL
+        SWWs/Za+XzMuqQN6j+vd/JAPi/fum5OXdGHXB84=
+X-Google-Smtp-Source: AGRyM1sZau8R/yEHs7vvjpvJRBOiosnrmc4ppHCWFWWLbaYymgynSbBdHmb/Xq1Symzxt7lQqbvYMyAwH06xyklevEU=
+X-Received: by 2002:a05:6402:280b:b0:43b:5d75:fcfa with SMTP id
+ h11-20020a056402280b00b0043b5d75fcfamr24685276ede.114.1659526404638; Wed, 03
+ Aug 2022 04:33:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-6-colin.foster@in-advantage.com>
-In-Reply-To: <20220803054728.1541104-6-colin.foster@in-advantage.com>
+References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-7-colin.foster@in-advantage.com>
+In-Reply-To: <20220803054728.1541104-7-colin.foster@in-advantage.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Aug 2022 13:32:33 +0200
-Message-ID: <CAHp75Vd_AOSz68yzY86_ymbdOpQk_wtgJXKS47KuPcKH8S9-AQ@mail.gmail.com>
-Subject: Re: [PATCH v15 mfd 5/9] pinctrl: microchip-sgpio: allow sgpio driver
- to be used as a module
+Date:   Wed, 3 Aug 2022 13:32:47 +0200
+Message-ID: <CAHp75VdWRQmp=dNON2jWoT8yqjB1bc-bd0-W5tswY7ucDA6bvw@mail.gmail.com>
+Subject: Re: [PATCH v15 mfd 6/9] pinctrl: microchip-sgpio: add ability to be
+ used in a non-mmio configuration
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
@@ -74,9 +74,7 @@ Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        katie.morris@in-advantage.com,
-        Florian Fainelli <f.fainelli@gmail.com>
+        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -91,74 +89,63 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Aug 3, 2022 at 7:47 AM Colin Foster
 <colin.foster@in-advantage.com> wrote:
 >
-> As the commit message suggests, this simply adds the ability to select
-> SGPIO pinctrl as a module. This becomes more practical when the SGPIO
-> hardware exists on an external chip, controlled indirectly by I2C or SPI.
-> This commit enables that level of control.
+> There are a few Ocelot chips that can contain SGPIO logic, but can be
+> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
+> the externally controlled configurations these registers are not
+> memory-mapped.
+>
+> Add support for these non-memory-mapped configurations.
 
 FWIW,
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
 >
-> (No changes since before v14)
+> (No changes since v14)
 >
 > v14
->     * No changes
+>     * Add Reviewed and Acked tags
 >
 > ---
->  drivers/pinctrl/Kconfig                   | 5 ++++-
->  drivers/pinctrl/pinctrl-microchip-sgpio.c | 6 +++++-
->  2 files changed, 9 insertions(+), 2 deletions(-)
+>  drivers/pinctrl/pinctrl-microchip-sgpio.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
 >
-> diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
-> index ba48ff8be6e2..4e8d0ae6c81e 100644
-> --- a/drivers/pinctrl/Kconfig
-> +++ b/drivers/pinctrl/Kconfig
-> @@ -292,7 +292,7 @@ config PINCTRL_MCP23S08
->           corresponding interrupt-controller.
->
->  config PINCTRL_MICROCHIP_SGPIO
-> -       bool "Pinctrl driver for Microsemi/Microchip Serial GPIO"
-> +       tristate "Pinctrl driver for Microsemi/Microchip Serial GPIO"
->         depends on OF
->         depends on HAS_IOMEM
->         select GPIOLIB
-> @@ -310,6 +310,9 @@ config PINCTRL_MICROCHIP_SGPIO
->           connect control signals from SFP modules and to act as an
->           LED controller.
->
-> +         If compiled as a module, the module name will be
-> +         pinctrl-microchip-sgpio.
-> +
->  config PINCTRL_OCELOT
->         tristate "Pinctrl driver for the Microsemi Ocelot and Jaguar2 SoCs"
->         depends on OF
 > diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> index 6f55bf7d5e05..e56074b7e659 100644
+> index e56074b7e659..2b4167a09b3b 100644
 > --- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
 > +++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> @@ -999,6 +999,7 @@ static const struct of_device_id microchip_sgpio_gpio_of_match[] = {
->                 /* sentinel */
+> @@ -12,6 +12,7 @@
+>  #include <linux/clk.h>
+>  #include <linux/gpio/driver.h>
+>  #include <linux/io.h>
+> +#include <linux/mfd/ocelot.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/pinctrl/pinmux.h>
+> @@ -904,7 +905,6 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+>         struct reset_control *reset;
+>         struct sgpio_priv *priv;
+>         struct clk *clk;
+> -       u32 __iomem *regs;
+>         u32 val;
+>         struct regmap_config regmap_config = {
+>                 .reg_bits = 32,
+> @@ -937,11 +937,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+>                 return -EINVAL;
 >         }
->  };
-> +MODULE_DEVICE_TABLE(of, microchip_sgpio_gpio_of_match);
 >
->  static struct platform_driver microchip_sgpio_pinctrl_driver = {
->         .driver = {
-> @@ -1008,4 +1009,7 @@ static struct platform_driver microchip_sgpio_pinctrl_driver = {
->         },
->         .probe = microchip_sgpio_probe,
->  };
-> -builtin_platform_driver(microchip_sgpio_pinctrl_driver);
-> +module_platform_driver(microchip_sgpio_pinctrl_driver);
-> +
-> +MODULE_DESCRIPTION("Microchip SGPIO Pinctrl Driver");
-> +MODULE_LICENSE("GPL");
+> -       regs = devm_platform_ioremap_resource(pdev, 0);
+> -       if (IS_ERR(regs))
+> -               return PTR_ERR(regs);
+> -
+> -       priv->regs = devm_regmap_init_mmio(dev, regs, &regmap_config);
+> +       priv->regs = ocelot_regmap_from_resource(pdev, 0, &regmap_config);
+>         if (IS_ERR(priv->regs))
+>                 return PTR_ERR(priv->regs);
+>
 > --
 > 2.25.1
 >
