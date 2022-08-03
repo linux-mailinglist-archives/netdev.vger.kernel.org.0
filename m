@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F0A8589428
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 23:51:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 187D8589441
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 00:02:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236511AbiHCVvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 17:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        id S232796AbiHCWCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 18:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiHCVvs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 17:51:48 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC83C12AB4
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 14:51:45 -0700 (PDT)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+        with ESMTP id S229529AbiHCWCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 18:02:38 -0400
+X-Greylist: delayed 709 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 Aug 2022 15:02:36 PDT
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5C35C9F4
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 15:02:36 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4Lyltk4J8hz9sQT;
-        Wed,  3 Aug 2022 23:51:42 +0200 (CEST)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Lym7D6rtTz9skJ;
+        Thu,  4 Aug 2022 00:02:32 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1659563502;
+        t=1659564152;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4ByO9Gbmti/EP3qA25X80VD5nawLqFFDRvbEFHJxy6s=;
-        b=xxt1tVL0WVvvyeM/d8MvmOBbT7+rndftC4JDNQh9cyb8Ou5H7YALun2RSPVepq3H62Q+oe
-        STSBWGajtxvcKN5Q6iCoWv1v/eNfi0FNGj1fqwJ+0oOIF4Ki8npeYnc8kIp/LmtjBksTZV
-        VIhuKExPhD0h086kvPIVIfUV7xBTaa+VJolkIrpDBqroE2/nFgQRD9HFSsLahBtke2zZct
-        CBl4S/9Q4jluQjqTV7QgKkFoqJiYMtYCrx1bIoxtWkLH+6vQSif3NI7pFnQlIewjJo3r1z
-        xMNE+zRG/aKlUlfjgMTEX5561frR/ctiAwryoQ9AloX6W0CEAs0q042RXIGiwg==
-Message-ID: <0e66011d-c3bd-5df2-e81d-5b67e4689330@hauke-m.de>
-Date:   Wed, 3 Aug 2022 23:51:41 +0200
+        bh=VThKoP+3XVcb76t17b62EVAzPEO3vd3zJ8JQ3hsVueI=;
+        b=mxFFtwl2Cqc4o/fcYWMHKVg/QTXhkL8ZdRbNQR9m2tZFF+C+rltreMGFGG3GYjyvF89ykq
+        hNiieLf7gpv1Br+EYk3lKTr8XNBOlYqKICMv+XZJLqLkT8N4ArN8+wPH30LAf6veowVeRd
+        dmJoFac09wS/49KxaLWQEuD4ARNUYp9iW3ieSLWf+XUGQPLGz+rDC+r0EUko4+qxwoaJCA
+        3sVbwMTcDpm58kn55nrYCWUYXYKjpQhg7Zqj+94lZbb5cPwEhRBjSIURVoQaA1b2+0b+lS
+        pJUh+wNDi8KyW25CLsgkpv82bmrdmWLiMQCWlKqXhO0Nv6N+wPiL2Z3ZC10Y5A==
+Message-ID: <01af847a-3df1-885b-a01b-172dd1c809d8@hauke-m.de>
+Date:   Thu, 4 Aug 2022 00:02:31 +0200
 MIME-Version: 1.0
 Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, Aleksander Jan Bajkowski <olek2@wp.pl>
 References: <CAFBinCDX5XRyMyOd-+c_Zkn6dawtBpQ9DaPkA4FDC5agL-t8CA@mail.gmail.com>
- <CAFBinCDX5XRyMyOd-+c_Zkn6dawtBpQ9DaPkA4FDC5agL-t8CA@mail.gmail.com>
  <20220727224409.jhdw3hqfta4eg4pi@skbuf>
+ <CAFBinCD5yQodsv0PoqnqVA6F7uMkoD-_mUxi54uAHc9Am7V-VQ@mail.gmail.com>
+ <20220729000536.hetgdvufplearurq@skbuf>
+ <CAFBinCBXNnpz0FUCs1PnxAoPk2nTKoj=r2wjSFx_rT=vV+JPtA@mail.gmail.com>
 From:   Hauke Mehrtens <hauke@hauke-m.de>
 Subject: Re: net: dsa: lantiq_gswip: getting the first selftests to pass
-In-Reply-To: <20220727224409.jhdw3hqfta4eg4pi@skbuf>
+In-Reply-To: <CAFBinCBXNnpz0FUCs1PnxAoPk2nTKoj=r2wjSFx_rT=vV+JPtA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 4Lyltk4J8hz9sQT
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,130 +60,231 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/22 00:44, Vladimir Oltean wrote:
-> Hi Martin,
+On 7/31/22 22:49, Martin Blumenstingl wrote:
+> Hi Vladimir,
 > 
-> On Wed, Jul 27, 2022 at 10:36:55PM +0200, Martin Blumenstingl wrote:
->> Hello,
+> On Fri, Jul 29, 2022 at 2:05 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+> [...]
+>>> - disable learning on all ports
 >>
-.....
->> Vladimir suggested in [0]:
->>> [...] we'll need to make smaller steps, like disable address
->>> learning on standalone ports, isolate FDBs, maybe offload the bridge TX
->>> forwarding process (in order to populate the "Force no learning" bit in
->>> tag_gswip.c properly), and only then will the local_termination test
->>> also pass [...]
+>> Yes, here's just one other example of what can go wrong if it's enabled
+>> on standalone ports, if you need to see it:
+>> https://lore.kernel.org/netdev/20220727233249.fpn7gyivnkdg5uhe@skbuf/T/#m2e27a5385f70ee3440ee7f6250aaafdbfdc7446b
 >>
->> Based on the failing tests I am wondering which step would be a good
->> one to start with.
->> Is this problem that the selftests are seeing a flooding issue? In
->> that case I suspect that the "interesting behavior" (of the GSWIP's
->> flooding behavior) that Vladimir described in [1] would be a starting
->> point.
+>> Essentially every time when there's a chance that the switch will
+>> receive on one port what another port has sent, learning will be a
+>> problem. This is why it's also problematic for the selftests - because
+>> we intentionally put 2 pairs of ports in loopback.
+> Makes sense, thanks!
 > 
-> It has to do with that, yes. What I said there is that the switch
-> doesn't autonomously flood unknown packets from one bridged port to
-> another, but instead, sends them to the CPU and lets the CPU do it.
-> 
-> While that is perfectly respectable from a correctness point of view,
-> it is also not optimal if you consider performance. The selftests here
-> try to capture the fact that the switch doesn't send unknown packets to
-> the CPU. And in this case the driver sends them by construction.
-
-This was done intentional, the driver configures the switch to send all 
-unknown unicast and unknown multicast packets to the CPU.
-The PMAP_3 register configures the target port of unicast packets where 
-the destination mac address is not found in the mac forwarding table.
-The PMAP_2 register configures where the switch should send multicast 
-packets without a destination mac in the mac table.
-The PMAP_1 register configures the destination port where all packets 
-are forwarded (mirrored) to.
-
-If the packets are mirrored a special bit will be set in the special CPU 
-tag. (Bit 0 in Byte 3). I think this will only be set when it is 
-forwarded using PMAP_1 register.
-
-I think we can not configure this per source port.
-
-> So the absolute first step would be to control the bridge port flags
-> (BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD) and start
-> with good defaults for standalone mode (also set skb->offload_fwd_mark
-> when appropriate in the tagging protocol driver). I think you can use
-> bridge_vlan_aware.sh and bridge_vlan_unaware.sh as starting points to
-> check that these flags still work fine after you've offloaded them to
-> hardware.
-
-I think it is not possible to configure a per source port flooding.
-
-We can configure a port into these modes:
-* listen only
-* transmit disable, receive enable
-* transmit enable, receive disable
-* learning
-* forwarding
-
-> When flooding a packet to find its destination can be achieved without
-> involving the CPU (*), the next thing will be to simply disable flooding
-> packets of all kind to the CPU (except broadcast). That's when you'll
-> enjoy watching how all the local_termination.sh selftests fail, and
-> you'll be making them pass again, one by one.
-> 
+>>> - disable unicast flooding on all ports
 >>
->> Full local_termination.sh selftest output:
->> TEST: lan2: Unicast IPv4 to primary MAC address                 [ OK ]
+>> I am having trouble saying 'yes' or 'no' to this because I don't know
+>> exactly what you mean. By flooding a packet, I understand "if its MAC DA
+>> is unknown to the FDB, deliver it to this set of ports". But flooding,
+>> like learning, is essentially a bridging service concept, so it applies
+>> only to packets coming from a particular bridging domain. In the case of
+>> a standalone port, packets come only from the CPU, via the control
+>> plane. Depending how the hardware is constructed, when you inject a
+>> packet to a port, maybe there won't be any ifs or buts and the switch
+>> will just deliver it there (I call this behavior: "control packets
+>> bypass FDB lookup", or "CPU is in god mode"). So maybe it doesn't matter
+>> whether unicast flooding is enabled on all standalone ports or not, as
+>> long as the macroscopically expected behavior can be observed: if
+>> software xmits a packet to a port, the packet gets delivered regardless
+>> of MAC DA.
+> I think I do understand it now.
+> We want the defaults to apply to standalone ports. Since flooding does
+> not exist there we should disable it (for both, unicast and
+> broadcast/multicast traffic). When flooding is wanted on a specific
+> port it'll be enabled through port_bridge_flags.
 > 
-> For this to pass, the driver must properly respond to a port_fdb_add()
-> on the CPU port, with the MAC address of the $swp1 user port's net device,
-> offloaded in the DSA_DB_PORT corresponding to $swp1.
+> [...]
+>>> - (GSWIP can only enable broadcast and multicast at the same time, so
+>>> that's enabled too)
+>>
+>> I think the GSWIP would not be the only one in that category. The
+>> mv88e6xxx driver puts the ff:ff:ff:ff:ff:ff address in the FDB and that
+>> controls broadcast flooding, while the single knob that you mention
+>> controls what's left - i.e. multicast.
+> 
+>>> I think skb->offload_fwd_mark needs to be set unless we know that the
+>>> hardware wasn't able to forward the frame/packet.
+>>> In the vendor sources I was able to find the whole RX tag structure: [0]
+>>> I am not sure about the "mirror" bit (I assume this is: packet was
+>>> received on this port because this port is configured as a mirroring
+>>> target). All other bits seem irrelevant for skb->offload_fwd_mark -
+>>> meaning we always have to set skb->offload_fwd_mark.
+>>>
+>>> I have lots of failures in bridge_vlan_aware.sh and
+>>> bridge_vlan_unaware.sh - even before any of my changes - which I'll
+>>> need to investigate.
+>>
+>> I don't remember the problems I faced while making these tests pass on
+>> my hardware, and I also don't think they'll be the same as the ones
+>> you'll face.
+> I'll postpone bridge_vlan_unaware.sh investigations until I have the
+> standalone tests (which are relevant for GSWIP, meaning: excluding the
+> multicast ones) from local_termination.sh passing.
+> 
+> [...]
+>>> - the DSA_DB_BRIDGE case is easy as this is basically what we had
+>>> implemented before and I "just" need to look up the FID based on
+>>> db.bridge.dev
+>>
+>> Or db.bridge.num (this is currently set to 0 by DSA because you don't
+>> declare ds->fdb_isolation = true), whichever is more convenient.
+> Using db.bridge.num will probably allow us to get rid of the
+> priv->vlans array in the GSWIP driver. For now I'm using the bridge
+> dev since "it works" until tests are passing.
+> 
+> [...]
+>>> - DSA_DB_PORT for the CPU port: the port argument for port_fdb_add is
+>>> the CPU port - but we can't map this to a FID (those are always tied
+>>> to either a bridge or a user port). So instead I need to look at db.dp
+>>> and for example use it's index for getting the FID (for standalone
+>>> ports the FID is: port index + 1).
+>>
+>> Looking at db.dp to determine the FID is not a workaround, but rather
+>> exactly what you are expected to do.
+> Thanks for confirming!
+> 
+>>> That results in: we're requested to install the CPU ports MAC address
+>>> on the CPU port (6),
+>>
+>> No. The CPU port doesn't have a MAC address (and in fact no port does;
+>> it's a switch). But user ports have MAC addresses which are a purely
+>> software construct to denote L2 termination. Every user port net device
+>> can have its own MAC address, different from the other, and different
+>> from the MAC address of the DSA master. Its interpretation is: "if a
+>> user port receives a packet with a MAC DA that's equal to the net device's
+>> MAC address, send the packet to the CPU, otherwise drop it".
+>> It makes the standalone NIC illusion work.
+>>
+>> The CPU port is just a dumb pipe, it just transports packets to/from our
+>> actual user ports. We don't have a termination point for it (or as written
+>> in other places: "we don't have a net_device"), so no MAC address, not
+>> even as a software construct.
+>>
+>> A pipe is exactly how you should see the CPU port. It doesn't have a FID
+>> (a single port bridge) of its own because it is a part of all FIDs.
+>>
+>>> but what we actually do is install the FDB entry with the CPU port's
+>>> MAC address on a user port (let's say 4, which we get from db.dp).
+>>
+>> No, quite the other way around.
+>>
+>> Let's take an example based on what you've described: user port swp4 has
+>> MAC address 00:01:02:03:04:05, and CPU port is 6. You'll get a call to
+>>
+>> port_fdb_add(ds, port = 6, addr = 00:01:02:03:04:05, vid = 0,
+>>               db = {type = DSA_DB_PORT, dp = swp4}).
+>>
+>> What you need to do is create an FDB entry on which only packets
+>> received by swp4 in standalone mode will match (so it needs to have a
+>> FID equal to the FID that swp4 classifies packets to, in standalone mode),
+>> and delivers these packets to the CPU port 6, which is already in that FID,
+>> as it is part of every FID. Remember, when swp4 receives a packet and is
+>> standalone, it always assigns the FID of that packet to the value that
+>> it's configured to (port index + 1, or 5, if you say so). This packet
+>> in this FID can either find an entry in the FDB, case in which its
+>> destination is certainly the CPU port (that's why port = 6), or the
+>> address will be absent from the FDB, case in which the packet will be
+>> flooded nowhere (the only other port in this FID, the CPU port, has
+>> flooding turned off) => dropped.
+>>
+>> As mentioned earlier, it's desirable that packets delivered by software,
+>> over the CPU port and towards a standalone one, are sent in "god mode",
+>> so that the FDB won't be searched at all in that direction.
+>>
+>> You seem to have something reversed in your terminology, although I
+>> can't exactly pinpoint what. When you say "install an FDB entry on port X",
+>> what I understand is "make the packets with that FDB entry's MAC DA be
+>> delivered towards port X". Or maybe I have something reversed?
+>> I'm quite curious to know.
+> Thanks a lot for explaining this (yet again)!
+> There's three issues with my original sentence:
+> - I should have used the term "user port's MAC address" instead of
+> "CPU ports MAC"
+> - "on the CPU port (6)" needs to be more precise, it should be
+> "towards the CPU port (6)"
+> - I'm not mentioning the source port (user port) number and thus FID at all
+> 
+> Also I need to get the idea out of my head that the CPU port is equal to eth0.
+> It's not, eth0 is connected to the CPU port on the switch.
+> 
+> While working on my patches a more practical question came up while I
+> was breaking the driver and then trying to make local_termination.sh
+> pass again.
+> At the start of run_tests for the standalone port scenario I am
+> getting the following values:
+>    rcv_dmac = 00:01:02:03:04:02
+>    MACVLAN_ADDR = 00:00:de:ad:be:ef
+> My expectation is that port_fdb_add() is called with these MAC
+> addresses. I verified that dsa_switch_supports_uc_filtering() returns
+> true, but still I
+> 
+>>> Now if a packet/frame should target the CPU port we don't need
+>>> flooding because the switch knows the destination port based on the
+>>> FDB entry we installed.
+>>
+>> Yes, so rather than the CPU port being a 'dumb' pipe which passes all
+>> packets through it, you're making it a slightly 'smarter' pipe which
+>> essentially uses the FDB as an RX filter for standalone user ports.
+>>
+>>> Also I would like to point out that I am still doing all of this in my
+>>> spare time.
+>>
+>> I'm doing this in my spare time as well, and I'm having fun while at it.
+>> Sorry for being handwavy and insisting only on explaining the general
+>> idea rather than opening the GSWIP manual and checking that what I'm
+>> saying is actually implementable. [...]
+> I fully understand this and it makes sense as others can also benefit
+> from your explanation (since it's generic, not driver specific).
+> 
+>> I'll do so if you have a specific question about something apparently
+>> not mapping to the expectations.
+> I still have an issue which I believe is related to the FDB handling.
+> 
+> I *think* that I have implemented FDB isolation correctly in my
+> work-in-progress branch [0].
+> 
+> The GSWIP140 datasheet (page 82) has a "MAC Learning disable and MAC
+> Learning Limitation Description" (table 26).
+> In the xRX200 vendor kernel I cannot find the LNDIS bit in
+> PCE_PCTRL_3, so I suspect it has only been added in newer GSWIP
+> revisions (xRX200 is at least one major IP revision behind GSW140).
+> Maybe Hauke knows?
+> So what I'm doing to disable learning is setting the "learning limit"
+> (which limits the number of entries that can be learned) for that port
+> to zero.
 
-I think this is already done.
+There is no LNDIS bit in PCE_PCTRL_3 on the VR9 as far as I know.
 
-> In turn, for DSA to even consider passing you FDB entries in DSA_DB_PORT,
-> you must make dsa_switch_supports_uc_filtering() return true.
-> 
-> (if you don't know what the words here mean, I've updated the documentation at
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/Documentation/networking/dsa/dsa.rst)
-> 
-.....
-> 
->> TEST: lan2: Unicast IPv4 to unknown MAC address, promisc        [ OK ]
-> 
-> Now this passes because the expectation of promiscuous ports is to
-> receive all packets regardless of MAC DA, that's the definition of
-> promiscuity. The driver currently already floods to the CPU, so why
-> wouldn't this pass.
-> 
-> Here, what we actually want to capture is that dsa_slave_manage_host_flood(),
-> which responds to changes in the IFF_PROMISC flag on a user port, does
-> actually notify the driver via a call to port_set_host_flood() for that
-> user port. Through this method, the driver is responsible for turning
-> flooding towards the CPU port(s) on or off, from the user port given as
-> argument. If CPU flood control does not depend on user port, then you'll
-> have to keep CPU flooding enabled as long as any user port wants it.
+What do you want to archive?
 
-We could use the mirror feature here.
-We could activate port mirror with the CPU port as target and only 
-activate receive mirroring on ports where we activate IFF_PROMISC.
-....
+If you want to forward the packets only, but not learn the source mac 
+address you can configure the PSTATE register inb PCTRL_0 to forwarding 
+instead of learning. This is already implemented in 
+gswip_port_stp_state_set().
 > 
->> TEST: lan2: Multicast IPv4 to joined group                      [ OK ]
+>   My problem is that whenever I disable learning a lot of tests from
+> local_termination.sh are failing, including:
+> - TEST: lan2: Unicast IPv4 to primary MAC address
+> - TEST: lan2: Unicast IPv4 to macvlan MAC address
 > 
-> Here, I used a trivial program I found online to emit a IP_ADD_MEMBERSHIP
-> setsockopt, to trigger the kernel code that calls dev_mc_add() on the
-> net device. It seems to not be possible by design to join an IP
-> multicast group using a dedicated command in a similar way to how you'd
-> add an FDB entry on a port; instead the kernel joins the multicast group
-> for as long as the user application persists, and leaves the group afterwards.
+> Setting the PLIMMOD bit to 1 means that GSWIP won't drop the packet if
+> the learning limit is exceeded (the default value seems to be 0).
+> This at least works around the first failing test (Unicast IPv4 to
+> primary MAC address).
 > 
-> As you can probably guess, dev_mc_add() calls made by modules outside
-> DSA are translated by dsa_slave_set_rx_mode() into a port_mdb_add() on
-> the CPU port, with DSA_DB_PORT.
+> Based on your understanding of my issue: I am going in the right
+> direction when I'm saying that this is an FDB issue?
 > 
-> If the gswip driver doesn't implement port_mdb_add() but rather treats
-> multicast as broadcast (by sending it to the CPU), naturally this test
-> "passes" in the sense that it thinks the driver reacted properly to what
-> was asked.
-
-Yes port_mdb_add() is not implemented yet, but should be easy, it is the 
-same as port_fdb_add() it just allows multiple destinations.
+> 
+> Thank you!
+> Martin
+> 
+> 
+> [0] https://github.com/xdarklight/linux/commits/lantiq-gswip-integration-20220730
 
