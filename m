@@ -2,113 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9D2588E27
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3674B588E2D
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238546AbiHCOCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 10:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
+        id S238575AbiHCODa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 10:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236785AbiHCOCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:02:14 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ADC2CE1C;
-        Wed,  3 Aug 2022 07:02:12 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A28B15FD2E;
-        Wed,  3 Aug 2022 17:02:10 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659535330;
-        bh=B7MnM9LlcIMliFAHXLeyzEfSXIZ8NB66nwrKZJSvDgc=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=dubY+hTMsFMWN19jwfE4rvvJP42QM4Q1Rlayal/qamG5DnPV1O6AZrOmFdfK+MLlh
-         yH2241C6lJ0DegbnqYsKDBn0rs7Q3l0xU04J7gNW0IhfbdIhZ3Qw/uDYE0gcc2faN3
-         xGllPhWGN2OeRcK1s+cTaiXGjbI/x/EDLfwZqUL+gQXjXrxGpkdJ+M37vtkA45HH43
-         6uz/RXK6ghh3QAukfqDSx5Yb5Ep5dKLmp+RF4hwblnB9coftL3GR8m488A2T+xD0+b
-         5qc/aT4TyBS+Obq0WEH6Xmq/h7JnaXKCDdTkqhj7HA62bTPobp9LUgYFaOiGwsrQXY
-         cZYSj59OemWeg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed,  3 Aug 2022 17:02:10 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "Arseniy Krasnov" <AVKrasnov@sberdevices.ru>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v3 6/9] vsock: add API call for data ready
-Thread-Topic: [RFC PATCH v3 6/9] vsock: add API call for data ready
-Thread-Index: AQHYp0GXMIwj7aEDFUyU7Z65eKQpMg==
-Date:   Wed, 3 Aug 2022 14:01:57 +0000
-Message-ID: <edb1163d-fb78-3af0-2fdd-606c875a535b@sberdevices.ru>
-In-Reply-To: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <85A4929A98C0C144AB0C8DA1959BA189@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S238459AbiHCOD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:03:29 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3702B638
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 07:03:28 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id r70so12922931iod.10
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 07:03:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ddKdS4x8c4ZSI9PbKdla4xMHlbecpUYnHnf7KqPY/v4=;
+        b=bXGIJDAG0QTQ0XzeuyQJGjRMFwzwMo1v56Xq876/o4IOViVYVE5+DzXMKaxVk0pP3D
+         B+0bxu/cPxLmu/CcPCyIl52NGpXz9EVM36dOEG0aqa3j4XEIescjwVgl8I5qHs8d5GPu
+         7UFgQcWv+dabt3k1QHc7HJ+wdxpHL6UEaSouEHdyDbsmYuyHf/1dtfDpfGpClGGLrWSL
+         rgQ/muu6d3Qkod27MiC45IJH5iAIORtSlcBh9rIEGv+upa8lCPbxvs4AgGdYbcHxs11c
+         VD1iShRiKrKHOkxS0tv13FCFmqslOKHlRqhFeVQ7kzf90M3HDBDx+kxbmFJm0JSLQwKn
+         C/1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ddKdS4x8c4ZSI9PbKdla4xMHlbecpUYnHnf7KqPY/v4=;
+        b=oBNf1il5pBgXnvGrdp2teL7DgSZacH+d1bJ81ZElZvdhtfnuFes9SbO2VH9PR1rTz3
+         oBoF5TMCm+7+HVosrnqDmD0OXSfkqCyxUB7+y+zJnr2HENMDFd5kgqnipg9yjQ9noMLv
+         oa1EYDBSZqYNwxdOtG35CLDyTWAs4O2l19LfFCtur73kbd/188C/hrBJ8Z0wZYRRiYhn
+         HkqXasQns7QyiWw3MS0WA5yEGRPSGlrCvFVwnYYHJxBvQf0bbn26czZH6HTksdBpvqYb
+         uZNU5wmbUP24w9NcfEAXTyMxiEEACMQrIeg2TBgRKcYCvD9Xy5VCTo3+QJ7e3byzIxxG
+         /Zkg==
+X-Gm-Message-State: AJIora8AOCINaWtm5tO7hxH/4Qq+fc0Surkej46zmvF+mKzRgw+gLs85
+        bca0Wk8piDMx+OTB5DOmPIkT3WulEPSD1IalpTE=
+X-Google-Smtp-Source: AGRyM1sSIbbJBLUN/Ol8GFA8boziVAySqbvcjpUW3+uHU4yAcsEGPSbrjVvIjhNQi2gpMlbYAnc7yQufsWS0/Orguso=
+X-Received: by 2002:a6b:5d1d:0:b0:67b:e426:78a2 with SMTP id
+ r29-20020a6b5d1d000000b0067be42678a2mr9163547iob.42.1659535407828; Wed, 03
+ Aug 2022 07:03:27 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 07:41:00 #20041172
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6602:2c06:0:0:0:0 with HTTP; Wed, 3 Aug 2022 07:03:27
+ -0700 (PDT)
+Reply-To: biksusan825@gmail.com
+From:   Susan Bikarm <bikarm033@gmail.com>
+Date:   Wed, 3 Aug 2022 07:03:27 -0700
+Message-ID: <CA+w3s0qDQWM4B3yiV5u-4fzYue9B51YkLHKRUzV1AS0ksbHLyw@mail.gmail.com>
+Subject: Waiting to hear from you
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:d2e listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [bikarm033[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [biksusan825[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [bikarm033[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBhZGRzICd2c29ja19kYXRhX3JlYWR5KCknIHdoaWNoIG11c3QgYmUgY2FsbGVkIGJ5IHRy
-YW5zcG9ydCB0byBraWNrDQpzbGVlcGluZyBkYXRhIHJlYWRlcnMuIEl0IGNoZWNrcyBmb3IgU09f
-UkNWTE9XQVQgdmFsdWUgYmVmb3JlIHdha2luZw0KdXNlcix0aHVzIHByZXZlbnRpbmcgc3B1cmlv
-dXMgd2FrZSB1cHMuQmFzZWQgb24gJ3RjcF9kYXRhX3JlYWR5KCknIGxvZ2ljLg0KDQpTaWduZWQt
-b2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCi0tLQ0K
-IGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICB8ICAxICsNCiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2Nr
-LmMgfCAxMCArKysrKysrKysrDQogMiBmaWxlcyBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspDQoN
-CmRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9hZl92c29jay5oIGIvaW5jbHVkZS9uZXQvYWZfdnNv
-Y2suaA0KaW5kZXggZWFlNTg3NGJhZTM1Li43Yjc5ZmM1MTY0Y2MgMTAwNjQ0DQotLS0gYS9pbmNs
-dWRlL25ldC9hZl92c29jay5oDQorKysgYi9pbmNsdWRlL25ldC9hZl92c29jay5oDQpAQCAtNzcs
-NiArNzcsNyBAQCBzdHJ1Y3QgdnNvY2tfc29jayB7DQogczY0IHZzb2NrX3N0cmVhbV9oYXNfZGF0
-YShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKTsNCiBzNjQgdnNvY2tfc3RyZWFtX2hhc19zcGFjZShz
-dHJ1Y3QgdnNvY2tfc29jayAqdnNrKTsNCiBzdHJ1Y3Qgc29jayAqdnNvY2tfY3JlYXRlX2Nvbm5l
-Y3RlZChzdHJ1Y3Qgc29jayAqcGFyZW50KTsNCit2b2lkIHZzb2NrX2RhdGFfcmVhZHkoc3RydWN0
-IHNvY2sgKnNrKTsNCiANCiAvKioqKiBUUkFOU1BPUlQgKioqKi8NCiANCmRpZmYgLS1naXQgYS9u
-ZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCmluZGV4
-IDNhMTQyNmViOGJhYS4uNDdlODBhN2NiYmRmIDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay9h
-Zl92c29jay5jDQorKysgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCkBAIC04ODIsNiArODgy
-LDE2IEBAIHM2NCB2c29ja19zdHJlYW1faGFzX3NwYWNlKHN0cnVjdCB2c29ja19zb2NrICp2c2sp
-DQogfQ0KIEVYUE9SVF9TWU1CT0xfR1BMKHZzb2NrX3N0cmVhbV9oYXNfc3BhY2UpOw0KIA0KK3Zv
-aWQgdnNvY2tfZGF0YV9yZWFkeShzdHJ1Y3Qgc29jayAqc2spDQorew0KKwlzdHJ1Y3QgdnNvY2tf
-c29jayAqdnNrID0gdnNvY2tfc2soc2spOw0KKw0KKwlpZiAodnNvY2tfc3RyZWFtX2hhc19kYXRh
-KHZzaykgPj0gc2stPnNrX3Jjdmxvd2F0IHx8DQorCSAgICBzb2NrX2ZsYWcoc2ssIFNPQ0tfRE9O
-RSkpDQorCQlzay0+c2tfZGF0YV9yZWFkeShzayk7DQorfQ0KK0VYUE9SVF9TWU1CT0xfR1BMKHZz
-b2NrX2RhdGFfcmVhZHkpOw0KKw0KIHN0YXRpYyBpbnQgdnNvY2tfcmVsZWFzZShzdHJ1Y3Qgc29j
-a2V0ICpzb2NrKQ0KIHsNCiAJX192c29ja19yZWxlYXNlKHNvY2stPnNrLCAwKTsNCi0tIA0KMi4y
-NS4xDQo=
+Dear ,
+
+Please can I have your attention and possibly help me for humanity's
+sake please. I am writing this message with a heavy heart filled with
+sorrows and sadness.
+Please if you can respond, i have an issue that i will be most
+grateful if you could help me deal with it please.
+
+Susan
