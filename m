@@ -2,105 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B1E5890C5
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7915890C7
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiHCQrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 12:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        id S236321AbiHCQth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 12:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233102AbiHCQrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:47:41 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395D04E84D
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 09:47:38 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id c185so13319261iof.7
-        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 09:47:38 -0700 (PDT)
+        with ESMTP id S233102AbiHCQtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:49:36 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447E324F1C;
+        Wed,  3 Aug 2022 09:49:35 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id e13so3281195edj.12;
+        Wed, 03 Aug 2022 09:49:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YbVPSgk9dxNNi8gUS55ivBJ2apU2DlAKvQ9x+13Ao+A=;
-        b=auax6tZzEVheQ23bG1cZ6XY/1WL0f5OaJ9eeAMosl28oXlaLweRLYDlvypxouhNQXG
-         Wc2GtNUHRNkmOACjZIk1NDTTKhjkn5bgkpkGyo+8BUDWlGhZ+sbOmMeNH2to8Jzsd/bB
-         R3fsB0dv7rk4pJ7Jd8vgO5ErHi6+yuZrqEsxYlKMn7YbSl0oSqN/MlAR4R16Ha9dWx2W
-         zkGQzummxVUg8KxHhIFvF8V1Q/I+8+bbO0shzS5DmU2qqEW0Tuok5h96NIX5dhe3ZFD3
-         lh/ppeRjdBj4pbvv8up6UVwS5bLgTjQ14vmqb77Df9aopmOfmWztIHZiEckKDP0VOnYJ
-         unwQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=gMmZnysqAMDlPpkxFBQS+E8RqY1hDuJMvV7H1So3zZU=;
+        b=fhEdIhwTAqr5KeMUsYt/g8y6eT/BUynpWSzIPFItnbEjKFFqMBLYTgs5XuAqfq3tyZ
+         EYeZYA/AYwdnRfgqp+fgGhnOz/akfNg8ElRIcGgFLoM6P7Sh9PrfCqrPc4QGi0Ao63NA
+         Ulf0teM0yTHHKi9LehM+or72eui6A1vu3+yPKFdH6EfbEizSdmJgEfyAdLwZBHfHH8Ia
+         ve0/Bzg9LzCcnf+LvHi9mV+5ejPUvbfYgoOxnYUCe5jo2rPewOwJ7JU5vQciDUHqHXRz
+         udkbu4ioZwhsPfGd9K2qJD5PlB2TreLjQ9ZSOmb4EUzeaTPeyTzcTqkpbdN73eGHBXDF
+         xCdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YbVPSgk9dxNNi8gUS55ivBJ2apU2DlAKvQ9x+13Ao+A=;
-        b=CDgZVoyAlW78xF/ygRtHlLxOSiFNj1M/A9sbjKPLjhled+kOqeWfuOX/SOXF6oJVsY
-         C1CCWsbKs1Hw0Kg9p03oyv+R8jy7xk8SUA4vUNsMoJlHzgBvzzGWnyk/YhMERlmx6oH6
-         fKnzK8F9HfeD9HyeLVBndFXMRNsQq9eqXan3BfGK5l4IXlUAG8dSB8BBeNdpX8Qjggaj
-         5/qLs2vl8VKbrTLb80IwaN4yjEM9SJt0cWXF9TIcQO/a94POSkZ8fJ+YNDIXd2qmiTfA
-         zeNT3J/WxaH5T9EdL3jwfYSv9udmbhS3SPopVlSM7WH8FSL+s2XtZ4FkpWnIsG745Q1A
-         VxWw==
-X-Gm-Message-State: AJIora83/FndwLuw+oe+9+eh0z3Ti1y2OzBst2Djj96THGvvChARVnDw
-        NQPZC6FHLAslg1OQ0rdUNA0QdQ==
-X-Google-Smtp-Source: AGRyM1vgn3W7ondu7uH/VaFozyf9V6PUcOp1NU1GwyIQEUbIOpiNEVxk/8Esk3Wq6VI0JJeUc7RbhA==
-X-Received: by 2002:a05:6602:27cc:b0:5f0:876e:126b with SMTP id l12-20020a05660227cc00b005f0876e126bmr9445973ios.129.1659545258157;
-        Wed, 03 Aug 2022 09:47:38 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id d123-20020a026281000000b00335c432c4b9sm8033347jac.136.2022.08.03.09.47.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 09:47:37 -0700 (PDT)
-Message-ID: <ecca5fac-aa14-0023-e089-26e05ea68d46@kernel.dk>
-Date:   Wed, 3 Aug 2022 10:47:36 -0600
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=gMmZnysqAMDlPpkxFBQS+E8RqY1hDuJMvV7H1So3zZU=;
+        b=DKPfQtXcFsM4XkUqaBNVYk6PMcWSOwb4BjKQI4AQH5tZGXwZP/qdwsQhKb85FA2dXA
+         iJuLTWRxfZOZH8+2l1pH3DBum64Eq4t6kkHA2OS4GP1dbh71Ru+T3kbmarFs8FWmeYNy
+         NnOsxSUXTc8kDdM+w0UUZrqruHxQsC62TxjC+mN/17HKoxBWcAFx/H4YcLYY+rxoyHYU
+         V7Wx/YmUyTheT6mbkt0M67tb9LUA0EqtAO71TRRvRv1rzco9TA6RUPZnUfrfya+t/jzn
+         lvudjFPgVqoS1fv9KD/bpxVXFxzoCCsmueOCma/c9xTXTQWuz8MocTNVwLmwsH1vBXyZ
+         ZICA==
+X-Gm-Message-State: AJIora8b4X1stPGQc7dLli1CAvqP1aOF/rGZYr9JfueBbRqdcfl8xXy2
+        BrsIjLEWZ1YlxMYIF9FTGkLUOe5TROrmX6cau3w=
+X-Google-Smtp-Source: AGRyM1v5EszzSbNUHQJzbLHITpO5Y70v2pRK2Y37tgwqpBBiHlh4sib+QbUmmDUY/fQdfuftn7OIIkS70+ixk/gqlhc=
+X-Received: by 2002:a05:6402:4414:b0:434:f58c:ee2e with SMTP id
+ y20-20020a056402441400b00434f58cee2emr26332209eda.362.1659545373846; Wed, 03
+ Aug 2022 09:49:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [GIT PULL] io_uring support for zerocopy send
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
- <CAHk-=wjh91hcEix55tH7ydTLHbcg3hZ6SaqgeyVscbYz57crfQ@mail.gmail.com>
- <1bbb9374-c503-37c6-45d8-476a8b761d4a@kernel.dk>
- <CAHk-=whxqSBtkvr4JijDBQ-yDrE91rFHt9D9b0jj=OMYL8mEsg@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <CAHk-=whxqSBtkvr4JijDBQ-yDrE91rFHt9D9b0jj=OMYL8mEsg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
+In-Reply-To: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 3 Aug 2022 18:48:57 +0200
+Message-ID: <CAHp75VdCH2tJQq3v_-iNP27oWFGF7EtKc-w299tLhDV85WbroQ@mail.gmail.com>
+Subject: Re: [PATCH] drivers/net/can/spi/mcp251x.c: Fix race condition on
+ receive interrupt
+To:     =?UTF-8?Q?Sebastian_W=C3=BCrl?= <sebastian.wuerl@ororatech.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/22 10:44 AM, Linus Torvalds wrote:
-> On Wed, Aug 3, 2022 at 9:39 AM Jens Axboe <axboe@kernel.dk> wrote:
->>
->>      If you look at the numbers Pavel posted, it's
->> definitely firmly in benchmark land, but I do think the goals of
->> breaking even with non zero-copy for realistic payload sizes is the real
->> differentiator here.
-> 
-> Well, a big part of why I wrote the query email was exactly because I
-> haven't seen any numbers, and the pull request didn't have any links
-> to any.
-> 
-> So you say "the numbers Pavel posted" and I say "where?"
+On Wed, Aug 3, 2022 at 5:36 PM Sebastian W=C3=BCrl
+<sebastian.wuerl@ororatech.com> wrote:
+>
+> The mcp251x driver uses both receiving mailboxes of the can controller
 
-Didn't think of that since it's in the git commit link, but I now
-realize that it's like 3 series of things in there.
+CAN
 
-> It would have been good to have had a link in the pull request (and
-> thus in the merge message).
+> chips. For retrieving the CAN frames from the controller via SPI, it chec=
+ks
+> once per interrupt which mailboxes have been filled, an will retrieve the
+> messages accordingly.
+>
+> This introduces a race condition, as another CAN frame can enter mailbox =
+1
+> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
+il
+> the interrupt handler is called next, mailbox 0 is emptied before
+> mailbox 1, leading to out-of-order CAN frames in the network device.
+>
+> This is fixed by checking the interrupt flags once again after freeing
+> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
+>
+> For reproducing the bug I created the following setup:
+>  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+>  - Setup CAN to 1 MHz
+>  - Spam bursts of 5 CAN-messages with increasing CAN-ids
+>  - Continue sending the bursts while sleeping a second between the bursts
+>  - Check on the RPi whether the received messages have increasing CAN-ids
+>  - Without this patch, every burst of messages will contain a flipped pai=
+r
 
-Agree, it should've been in there. Here's the one from the series that
-got merged:
+Fixes tag?
 
-https://lore.kernel.org/all/cover.1657643355.git.asml.silence@gmail.com/
-
--- 
-Jens Axboe
-
+--=20
+With Best Regards,
+Andy Shevchenko
