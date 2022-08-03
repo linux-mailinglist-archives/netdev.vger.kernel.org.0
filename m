@@ -2,333 +2,343 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B64258848F
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 00:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AC41588503
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 02:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbiHBWuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 18:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S234419AbiHCAFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 20:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiHBWuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 18:50:09 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F0D20BE2;
-        Tue,  2 Aug 2022 15:50:07 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id i14so9679299ejg.6;
-        Tue, 02 Aug 2022 15:50:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=rfkpQPKLu8SRWjwd0TtH906xz9zr70rSua/GjZiwncg=;
-        b=Wd9p1qEtwQHVZWLVEbEMe3AQ+JCAwPYfU8jdUH2cHOQEwIoc1XBAzHbodO0B1fCYD0
-         UpBuoEJyV1B0swkybzR4KdVJh5tDDZVM3DsIIzGVNZegMkRuMLIbpXUxJqJqox4nPtAz
-         rRWzbMeRgQHivrhL138vGSActPpKv3yaatrB4cc28uHLqdkf74oLyfAXJ+c4BAOjM7W+
-         N7dCjmcV95QE8WQI3Fkci/w9EhIRvn7/02u3gGmdJxm5MjadOgEeFRbwNK1aOM38bsqL
-         zosSX19Qs0DqQGyX/LfQC0BeULRaR2n062yl92ATmp/+Jx/196u5ABsd3GGX60Je93tM
-         eABg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=rfkpQPKLu8SRWjwd0TtH906xz9zr70rSua/GjZiwncg=;
-        b=ItLxDkMDOEUqUB1TqARA3M9dLMNp5JLfG+RbHBOVpxPiN3T+0lggx/KG5IFAhwhH9Y
-         lVYDTiqUI9y/QXP70lQngl2Ui7gblJFjx7VQluleDkrEf1vQ1C0+GgrCrnbfDt2KubGs
-         tnjtjTbnPfMnLVNLmXNW7OUd4A+cFJCFzVFfjhcJTxWs9GW4Y/VsO2U5AvZoOZbTLDCN
-         qMRK7/Fs68Eq67qSjQ6Sk81B5an1fWlIXCLgrb2efD6bdoa7KHQh3Boprbfu340KCTwh
-         +7TicffX395p+2HFH0uQ/tMrQxFMyvkxtsCOiXEIyPBEXXK+jrR4e9Ny3KoUn38Zk6qY
-         SuYQ==
-X-Gm-Message-State: AJIora+D8lkvIk2p9zCJcH96D6tz9I1rUuu8o2awsXAJA9F826cBHnqM
-        +EpM3pJh8uGxmB1YtgN5G82XmrGPhSg/zFWbju0=
-X-Google-Smtp-Source: AGRyM1tVilscQlMqtuCjMqxEiWukkme1VpEV5t4XIMIpZ1DFVec4hXV3fVO69UAWvoV0Jq0YQhqQQLe/Odo9MSKricE=
-X-Received: by 2002:a17:907:6e1d:b0:72f:20ad:e1b6 with SMTP id
- sd29-20020a1709076e1d00b0072f20ade1b6mr18321344ejc.545.1659480605949; Tue, 02
- Aug 2022 15:50:05 -0700 (PDT)
+        with ESMTP id S229637AbiHCAFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 20:05:14 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1585282;
+        Tue,  2 Aug 2022 17:05:10 -0700 (PDT)
+Received: from [192.168.0.18] (unknown [37.228.234.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 9F2CE50058B;
+        Wed,  3 Aug 2022 03:02:50 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 9F2CE50058B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1659484973; bh=wXopEasXpStqYyg48pjpKCvh19nePMQDtM3Atgyc6gI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZrUZUvvplYlGoTCWRBp3Qg9EegYgVM0nS5+e8U+3ltU0zAKXjtV4Whv/mg2FLW9gK
+         XsoQVq8XdvoeivHu1Z4YlgoMYdRjitVuZyFYD5WQ9qvQrlPji9hIDZOSVEOurlU1lk
+         D3ESOIj0dJ5j2LUpP4DEtbzbav5BaUC6NwAX6DFs=
+Message-ID: <0bb71f1a-ba5e-5162-663b-1be32202231d@novek.ru>
+Date:   Wed, 3 Aug 2022 01:05:03 +0100
 MIME-Version: 1.0
-References: <20220722174829.3422466-1-yosryahmed@google.com>
- <20220722174829.3422466-5-yosryahmed@google.com> <CAEf4BzbD38XFVxMy5crO-=+Xg7U3Vc_fB4Ntug4BEbmdLpvuDQ@mail.gmail.com>
- <CA+khW7jftQikVsc8moM6rNRqBerUHDM6WRDjb33exdbogDc7aQ@mail.gmail.com>
-In-Reply-To: <CA+khW7jftQikVsc8moM6rNRqBerUHDM6WRDjb33exdbogDc7aQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 2 Aug 2022 15:49:54 -0700
-Message-ID: <CAEf4BzYDqaTQr-S8TuLkysQ+FhT+6qMS0z=Sp_7+-wk84_4h6Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 4/8] bpf: Introduce cgroup iter
-To:     Hao Luo <haoluo@google.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        Kui-Feng Lee <kuifeng@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH v2 2/3] dpll: add netlink events
+Content-Language: en-US
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+References: <20220626192444.29321-1-vfedorenko@novek.ru>
+ <20220626192444.29321-3-vfedorenko@novek.ru>
+ <DM6PR11MB46573FA8D51D40DAD2AC060B9B879@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <715d8f47-d246-6b4a-b22d-82672e8f11d8@novek.ru>
+ <DM6PR11MB465732355816F30254FCFA9E9B8B9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <DM6PR11MB4657FADDDA75A5F35CF8FE3F9B9D9@DM6PR11MB4657.namprd11.prod.outlook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <DM6PR11MB4657FADDDA75A5F35CF8FE3F9B9D9@DM6PR11MB4657.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 3:27 PM Hao Luo <haoluo@google.com> wrote:
->
-> Hi Andrii,
->
-> On Mon, Aug 1, 2022 at 8:43 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Jul 22, 2022 at 10:48 AM Yosry Ahmed <yosryahmed@google.com> wrote:
-> > >
-> > > From: Hao Luo <haoluo@google.com>
-> > >
-> > > Cgroup_iter is a type of bpf_iter. It walks over cgroups in three modes:
-> > >
-> > >  - walking a cgroup's descendants in pre-order.
-> > >  - walking a cgroup's descendants in post-order.
-> > >  - walking a cgroup's ancestors.
-> > >
-> > > When attaching cgroup_iter, one can set a cgroup to the iter_link
-> > > created from attaching. This cgroup is passed as a file descriptor and
-> > > serves as the starting point of the walk. If no cgroup is specified,
-> > > the starting point will be the root cgroup.
-> > >
-> > > For walking descendants, one can specify the order: either pre-order or
-> > > post-order. For walking ancestors, the walk starts at the specified
-> > > cgroup and ends at the root.
-> > >
-> > > One can also terminate the walk early by returning 1 from the iter
-> > > program.
-> > >
-> > > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > > program is called with cgroup_mutex held.
-> > >
-> > > Currently only one session is supported, which means, depending on the
-> > > volume of data bpf program intends to send to user space, the number
-> > > of cgroups that can be walked is limited. For example, given the current
-> > > buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
-> > > cgroup, the total number of cgroups that can be walked is 512. This is
-> > > a limitation of cgroup_iter. If the output data is larger than the
-> > > buffer size, the second read() will signal EOPNOTSUPP. In order to work
-> > > around, the user may have to update their program to reduce the volume
-> > > of data sent to output. For example, skip some uninteresting cgroups.
-> > > In future, we may extend bpf_iter flags to allow customizing buffer
-> > > size.
-> > >
-> > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > > Acked-by: Yonghong Song <yhs@fb.com>
-> > > ---
-> > >  include/linux/bpf.h                           |   8 +
-> > >  include/uapi/linux/bpf.h                      |  30 +++
-> > >  kernel/bpf/Makefile                           |   3 +
-> > >  kernel/bpf/cgroup_iter.c                      | 252 ++++++++++++++++++
-> > >  tools/include/uapi/linux/bpf.h                |  30 +++
-> > >  .../selftests/bpf/prog_tests/btf_dump.c       |   4 +-
-> > >  6 files changed, 325 insertions(+), 2 deletions(-)
-> > >  create mode 100644 kernel/bpf/cgroup_iter.c
-> > >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index a97751d845c9..9061618fe929 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -47,6 +47,7 @@ struct kobject;
-> > >  struct mem_cgroup;
-> > >  struct module;
-> > >  struct bpf_func_state;
-> > > +struct cgroup;
-> > >
-> > >  extern struct idr btf_idr;
-> > >  extern spinlock_t btf_idr_lock;
-> > > @@ -1717,7 +1718,14 @@ int bpf_obj_get_user(const char __user *pathname, int flags);
-> > >         int __init bpf_iter_ ## target(args) { return 0; }
-> > >
-> > >  struct bpf_iter_aux_info {
-> > > +       /* for map_elem iter */
-> > >         struct bpf_map *map;
-> > > +
-> > > +       /* for cgroup iter */
-> > > +       struct {
-> > > +               struct cgroup *start; /* starting cgroup */
-> > > +               int order;
-> > > +       } cgroup;
-> > >  };
-> > >
-> > >  typedef int (*bpf_iter_attach_target_t)(struct bpf_prog *prog,
-> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > index ffcbf79a556b..fe50c2489350 100644
-> > > --- a/include/uapi/linux/bpf.h
-> > > +++ b/include/uapi/linux/bpf.h
-> > > @@ -87,10 +87,30 @@ struct bpf_cgroup_storage_key {
-> > >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
-> > >  };
-> > >
-> > > +enum bpf_iter_cgroup_traversal_order {
-> > > +       BPF_ITER_CGROUP_PRE = 0,        /* pre-order traversal */
-> > > +       BPF_ITER_CGROUP_POST,           /* post-order traversal */
-> > > +       BPF_ITER_CGROUP_PARENT_UP,      /* traversal of ancestors up to the root */
-> >
-> > I've just put up my arguments why it's a good idea to also support a
-> > "trivial" mode of only traversing specified cgroup and no descendants
-> > or parents. Please see [0].
->
-> cc Kui-Feng in this thread.
->
-> Yeah, I think it's a good idea. It's useful when we only want to show
-> a single object, which can be common. Going further, I think we may
-> want to restructure bpf_iter to optimize for this case.
->
-> > I think the same applies here, especially
-> > considering that it seems like a good idea to support
-> > task/task_vma/task_files iteration within a cgroup.
->
-> I have reservations on these use cases. I don't see immediate use of
-> iterating vma or files within a cgroup. Tasks within a cgroup? Maybe.
-> :)
->
+On 02.08.2022 15:02, Kubalewski, Arkadiusz wrote:
+>> -----Original Message-----
+>> From: Vadim Fedorenko <vfedorenko@novek.ru>
+>> Sent: Friday, July 15, 2022 1:29 AM
+>>>
+>>> On 11.07.2022 10:02, Kubalewski, Arkadiusz wrote:
+>>>> -----Original Message-----
+>>>> From: Vadim Fedorenko <vfedorenko@novek.ru>
+>>>> Sent: Sunday, June 26, 2022 9:25 PM
+>>>>>
+>>>>> From: Vadim Fedorenko <vadfed@fb.com>
+>>>>>
+>>>>> Add netlink interface to enable notification of users about
+>>>>> events in DPLL framework. Part of this interface should be
+>>>>> used by drivers directly, i.e. lock status changes.
+>>>>>
+>>>>> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
+>>>>> ---
+>>>>> drivers/dpll/dpll_core.c    |   2 +
+>>>>> drivers/dpll/dpll_netlink.c | 141 ++++++++++++++++++++++++++++++++++++
+>>>>> drivers/dpll/dpll_netlink.h |   7 ++
+>>>>> 3 files changed, 150 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/dpll/dpll_core.c b/drivers/dpll/dpll_core.c
+>>>>> index dc0330e3687d..387644aa910e 100644
+>>>>> --- a/drivers/dpll/dpll_core.c
+>>>>> +++ b/drivers/dpll/dpll_core.c
+>>>>> @@ -97,6 +97,8 @@ struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_c
+>>>>> 	mutex_unlock(&dpll_device_xa_lock);
+>>>>> 	dpll->priv = priv;
+>>>>>
+>>>>> +	dpll_notify_device_create(dpll->id, dev_name(&dpll->dev));
+>>>>> +
+>>>>> 	return dpll;
+>>>>>
+>>>>> error:
+>>>>> diff --git a/drivers/dpll/dpll_netlink.c b/drivers/dpll/dpll_netlink.c
+>>>>> index e15106f30377..4b1684fcf41e 100644
+>>>>> --- a/drivers/dpll/dpll_netlink.c
+>>>>> +++ b/drivers/dpll/dpll_netlink.c
+>>>>> @@ -48,6 +48,8 @@ struct param {
+>>>>> 	int dpll_source_type;
+>>>>> 	int dpll_output_id;
+>>>>> 	int dpll_output_type;
+>>>>> +	int dpll_status;
+>>>>> +	const char *dpll_name;
+>>>>> };
+>>>>>
+>>>>> struct dpll_dump_ctx {
+>>>>> @@ -239,6 +241,8 @@ static int dpll_genl_cmd_set_source(struct param *p)
+>>>>> 	ret = dpll->ops->set_source_type(dpll, src_id, type);
+>>>>> 	mutex_unlock(&dpll->lock);
+>>>>>
+>>>>> +	dpll_notify_source_change(dpll->id, src_id, type);
+>>>>> +
+>>>>> 	return ret;
+>>>>> }
+>>>>>
+>>>>> @@ -262,6 +266,8 @@ static int dpll_genl_cmd_set_output(struct param *p)
+>>>>> 	ret = dpll->ops->set_source_type(dpll, out_id, type);
+>>>>> 	mutex_unlock(&dpll->lock);
+>>>>>
+>>>>> +	dpll_notify_source_change(dpll->id, out_id, type);
+>>>>> +
+>>>>> 	return ret;
+>>>>> }
+>>>>>
+>>>>> @@ -438,6 +444,141 @@ static struct genl_family dpll_gnl_family __ro_after_init = {
+>>>>> 	.pre_doit	= dpll_pre_doit,
+>>>>> };
+>>>>>
+>>>>> +static int dpll_event_device_create(struct param *p)
+>>>>> +{
+>>>>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>>>>> +	    nla_put_string(p->msg, DPLLA_DEVICE_NAME, p->dpll_name))
+>>>>> +		return -EMSGSIZE;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dpll_event_device_delete(struct param *p)
+>>>>> +{
+>>>>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id))
+>>>>> +		return -EMSGSIZE;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dpll_event_status(struct param *p)
+>>>>> +{
+>>>>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>>>>> +		nla_put_u32(p->msg, DPLLA_LOCK_STATUS, p->dpll_status))
+>>>>> +		return -EMSGSIZE;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dpll_event_source_change(struct param *p)
+>>>>> +{
+>>>>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>>>>> +	    nla_put_u32(p->msg, DPLLA_SOURCE_ID, p->dpll_source_id) ||
+>>>>> +		nla_put_u32(p->msg, DPLLA_SOURCE_TYPE, p->dpll_source_type))
+>>>>> +		return -EMSGSIZE;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dpll_event_output_change(struct param *p)
+>>>>> +{
+>>>>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>>>>> +	    nla_put_u32(p->msg, DPLLA_OUTPUT_ID, p->dpll_output_id) ||
+>>>>> +		nla_put_u32(p->msg, DPLLA_OUTPUT_TYPE, p->dpll_output_type))
+>>>>> +		return -EMSGSIZE;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static cb_t event_cb[] = {
+>>>>> +	[DPLL_EVENT_DEVICE_CREATE]	= dpll_event_device_create,
+>>>>> +	[DPLL_EVENT_DEVICE_DELETE]	= dpll_event_device_delete,
+>>>>> +	[DPLL_EVENT_STATUS_LOCKED]	= dpll_event_status,
+>>>>> +	[DPLL_EVENT_STATUS_UNLOCKED]	= dpll_event_status,
+>>>>> +	[DPLL_EVENT_SOURCE_CHANGE]	= dpll_event_source_change,
+>>>>> +	[DPLL_EVENT_OUTPUT_CHANGE]	= dpll_event_output_change,
+>>>>> +};
+>>>>> +/*
+>>>>> + * Generic netlink DPLL event encoding
+>>>>> + */
+>>>>> +static int dpll_send_event(enum dpll_genl_event event,
+>>>>> +				   struct param *p)
+>>>>> +{
+>>>>> +	struct sk_buff *msg;
+>>>>> +	int ret = -EMSGSIZE;
+>>>>> +	void *hdr;
+>>>>> +
+>>>>> +	msg = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+>>>>> +	if (!msg)
+>>>>> +		return -ENOMEM;
+>>>>> +	p->msg = msg;
+>>>>> +
+>>>>> +	hdr = genlmsg_put(msg, 0, 0, &dpll_gnl_family, 0, event);
+>>>>> +	if (!hdr)
+>>>>> +		goto out_free_msg;
+>>>>> +
+>>>>> +	ret = event_cb[event](p);
+>>>>> +	if (ret)
+>>>>> +		goto out_cancel_msg;
+>>>>> +
+>>>>> +	genlmsg_end(msg, hdr);
+>>>>> +
+>>>>> +	genlmsg_multicast(&dpll_gnl_family, msg, 0, 1, GFP_KERNEL);
+>>>>
+>>>> All multicasts are send only for group "1" (DPLL_CONFIG_SOURCE_GROUP_NAME),
+>>>> but 4 groups were defined.
+>>>>
+>>>
+>>> Yes, you are right! Will update it in the next round.
+>>>
+>>>>> +
+>>>>> +	return 0;
+>>>>> +
+>>>>> +out_cancel_msg:
+>>>>> +	genlmsg_cancel(msg, hdr);
+>>>>> +out_free_msg:
+>>>>> +	nlmsg_free(msg);
+>>>>> +
+>>>>> +	return ret;
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_device_create(int dpll_id, const char *name)
+>>>>> +{
+>>>>> +	struct param p = { .dpll_id = dpll_id, .dpll_name = name };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_DEVICE_CREATE, &p);
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_device_delete(int dpll_id)
+>>>>> +{
+>>>>> +	struct param p = { .dpll_id = dpll_id };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_DEVICE_DELETE, &p);
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_status_locked(int dpll_id)
+>>>>> +{
+>>>>> +	struct param p = { .dpll_id = dpll_id, .dpll_status = 1 };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_STATUS_LOCKED, &p);
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_status_unlocked(int dpll_id)
+>>>>> +{
+>>>>> +	struct param p = { .dpll_id = dpll_id, .dpll_status = 0 };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_STATUS_UNLOCKED, &p);
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_source_change(int dpll_id, int source_id, int source_type)
+>>>>> +{
+>>>>> +	struct param p =  { .dpll_id = dpll_id, .dpll_source_id = source_id,
+>>>>> +						.dpll_source_type = source_type };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_SOURCE_CHANGE, &p);
+>>>>> +}
+>>>>> +
+>>>>> +int dpll_notify_output_change(int dpll_id, int output_id, int output_type)
+>>>>> +{
+>>>>> +	struct param p =  { .dpll_id = dpll_id, .dpll_output_id = output_id,
+>>>>> +						.dpll_output_type = output_type };
+>>>>> +
+>>>>> +	return dpll_send_event(DPLL_EVENT_OUTPUT_CHANGE, &p);
+>>>>> +}
+>>>>> +
+>>>>> int __init dpll_netlink_init(void)
+>>>>> {
+>>>>> 	return genl_register_family(&dpll_gnl_family);
+>>>>> diff --git a/drivers/dpll/dpll_netlink.h b/drivers/dpll/dpll_netlink.h
+>>>>> index e2d100f59dd6..0dc81320f982 100644
+>>>>> --- a/drivers/dpll/dpll_netlink.h
+>>>>> +++ b/drivers/dpll/dpll_netlink.h
+>>>>> @@ -3,5 +3,12 @@
+>>>>>    *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
+>>>>>    */
+>>>>>
+>>>>> +int dpll_notify_device_create(int dpll_id, const char *name);
+>>>>> +int dpll_notify_device_delete(int dpll_id);
+>>>>> +int dpll_notify_status_locked(int dpll_id);
+>>>>> +int dpll_notify_status_unlocked(int dpll_id);
+>>>>> +int dpll_notify_source_change(int dpll_id, int source_id, int source_type);
+>>>>> +int dpll_notify_output_change(int dpll_id, int output_id, int output_type);
+>>>>
+>>>> Only dpll_notify_device_create is actually used, rest is not.
+>>>> I am getting confused a bit, who should call those "notify" functions?
+>>>> It is straightforward for create/delete, dpll subsystem shall do it, but what
+>>>> about the rest?
+>>>> I would say notifications about status or source/output change shall originate
+>>>> in the driver implementing dpll interface, thus they shall be exported and
+>>>> defined in the header included by the driver.
+>>>>
+>>>
+>>> I was thinking about driver too, because device can have different interfaces to
+>>> configure source/output, and different notifications to update status. I will
+>>> update ptp_ocp driver to implement this logic. And it will also cover question
+>>> of exporting these functions and their definitions.
+>>>
+>>
+>> Great!
+>>
+>> Thank,
+>> Arkadiusz
+>>>>> +
+>>>>> int __init dpll_netlink_init(void);
+>>>>> void dpll_netlink_finish(void);
+>>>>> -- 
+>>>>> 2.27.0
+>>>>>
+>>>
+>>
+> 
+> Good day Vadim,
+> 
+> I just wanted to make sure I didn't miss anything through the spam filters or
+> something? We are still waiting for that github repo, or you were on
+> vacation/busy, right?
+> 
 
-iter/task was what I had in mind in the first place. But I can also
-imagine tools utilizing iter/task_files for each process within a
-cgroup, so given iter/{task, task_file, task_vma} share the same UAPI
-and internals, I don't see why we'd restrict this to only iter/task.
+Hi Arkadiusz, Jakub
 
-> > So depending on
-> > how successful I am in arguing for supporting task iterator with
-> > target cgroup, I think we should reuse *exactly* this
-> > bpf_iter_cgroup_traversal_order and how we specify cgroup (FD or ID,
-> > see some more below) *as is* in task iterators as well. In the latter
-> > case, having an ability to say "iterate task for only given cgroup" is
-> > very useful, and for such mode all the PRE/POST/PARENT_UP is just an
-> > unnecessary nuisance.
-> >
-> > So please consider also adding and supporting BPF_ITER_CGROUP_SELF (or
-> > whatever naming makes most sense).
-> >
->
-> PRE/POST/UP can be reused for iter of tree-structured containers, like
-> rbtree [1]. SELF can be reused for any iters like iter/task,
-> iter/cgroup, etc. Promoting all of them out of cgroup-specific struct
-> seems valuable.
+Actually I was on vacation which lasted unexpectedly long thanks for european 
+airlines. So was busy catching up all the things happened while I was away.
+Finally I created github repo with all the comments from previous conversation 
+addressed and rebased on top of current net-next. No special progress apart from 
+that, still need some time to prepare RFC v3 with documentation and proper 
+driver usage, but current state should be usable for priorities implementation 
+and simple tests:
 
-you mean just define them as generic tree traversal orders? Sure, I
-guess makes sense. No strong feelings.
+https://github.com/vvfedorenko/linux-dpll.git
 
->
-> [1] https://lwn.net/Articles/902405/
->
-> >
-> > Some more naming nits. I find BPF_ITER_CGROUP_PRE and
-> > BPF_ITER_CGROUP_POST a bit confusing. Even internally in kernel we
-> > have css_next_descendant_pre/css_next_descendant_post, so why not
-> > reflect the fact that we are going to iterate descendants:
-> > BPF_ITER_CGROUP_DESCENDANTS_{PRE,POST}. And now that we use
-> > "descendants" terminology, PARENT_UP should be ANCESTORS. ANCESTORS_UP
-> > probably is fine, but seems a bit redundant (unless we consider a
-> > somewhat weird ANCESTORS_DOWN, where we find the furthest parent and
-> > then descend through preceding parents until we reach specified
-> > cgroup; seems a bit exotic).
-> >
->
-> BPF_ITER_CGROUP_DESCENDANTS_PRE is too verbose. If there is a
-> possibility of merging rbtree and supporting walk order of rbtree
-> iter, maybe the name here could be general, like
-> BPF_ITER_DESCENDANTS_PRE, which seems better.
+Ping me on github to have a write access to this repo, and sorry for being so late.
 
-it's not like you'll be typing this hundreds of type, so verboseness
-doesn't seem to be too problematic, but sure, BPF_ITER_DESCENDANTS_PRE
-is fine with me
-
->
-> >   [0] https://lore.kernel.org/bpf/f92e20e9961963e20766e290ee6668edd4bacf06.camel@fb.com/T/#m5ce50632aa550dd87a99241efb168cbcde1ee98f
-> >
-> > > +};
-> > > +
-> > >  union bpf_iter_link_info {
-> > >         struct {
-> > >                 __u32   map_fd;
-> > >         } map;
-> > > +
-> > > +       /* cgroup_iter walks either the live descendants of a cgroup subtree, or the
-> > > +        * ancestors of a given cgroup.
-> > > +        */
-> > > +       struct {
-> > > +               /* Cgroup file descriptor. This is root of the subtree if walking
-> > > +                * descendants; it's the starting cgroup if walking the ancestors.
-> > > +                * If it is left 0, the traversal starts from the default cgroup v2
-> > > +                * root. For walking v1 hierarchy, one should always explicitly
-> > > +                * specify the cgroup_fd.
-> > > +                */
-> > > +               __u32   cgroup_fd;
-> >
-> > Now, similar to what I argued in regard of pidfd vs pid, I think the
-> > same applied to cgroup_fd vs cgroup_id. Why can't we support both?
-> > cgroup_fd has some benefits, but cgroup_id is nice due to simplicity
-> > and not having to open/close/keep extra FDs (which can add up if we
-> > want to periodically query something about a large set of cgroups).
-> > Please see my arguments from [0] above.
-> >
-> > Thoughts?
-> >
->
-> We can support both, it's a good idea IMO. But what exactly is the
-> interface going to look like? Can you be more specific about that?
-> Below is something I tried based on your description.
->
-> @@ -91,6 +91,18 @@ union bpf_iter_link_info {
->         struct {
->                 __u32   map_fd;
->         } map;
-> +       struct {
-> +               /* PRE/POST/UP/SELF */
-> +               __u32 order;
-> +               struct {
-> +                       __u32 cgroup_fd;
-> +                       __u64 cgroup_id;
-> +               } cgroup;
-> +               struct {
-> +                       __u32 pid_fd;
-> +                       __u64 pid;
-> +               } task;
-> +       };
->  };
->
-
-So I wouldn't combine task and cgroup definition together, let's keep
-them independent.
-
-then for cgroup we can do something like:
-
-struct {
-    __u32 order;
-    __u32 cgroup_fd; /* cgroup_fd ^ cgroup_id, exactly one can be non-zero */
-    __u32 cgroup_id;
-} cgroup
-
-Similar idea with task, but it's a bit more complicated because there
-we have target that can be pid, pidfd, or cgroup (cgroup_fd and
-cgroup_id). I haven't put much thought into the best representation,
-though.
-
-> > > +               __u32   traversal_order;
-> > > +       } cgroup;
-> > >  };
-> > >
-> > >  /* BPF syscall commands, see bpf(2) man-page for more details. */
-> >
-> > [...]
+All best,
+Vadim
