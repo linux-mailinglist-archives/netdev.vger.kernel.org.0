@@ -2,102 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 447B3589273
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 20:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49511589286
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 20:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238383AbiHCSwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 14:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
+        id S238383AbiHCS7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 14:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236531AbiHCSwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 14:52:04 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028274A80F;
-        Wed,  3 Aug 2022 11:52:03 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso3046633pjl.4;
-        Wed, 03 Aug 2022 11:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=qakI0kMjNja616oMk36CPRVtxaRUluUF0dSRy+Y+iRg=;
-        b=bbCH6djbZxuegde4jQNgakiSSFPVOA9ETDYU7/OUoP9lvYBMe+/oWfOhKDqt/RADmn
-         KbY5TUeO80douXz3rWunAfoJlTXWKjTFAh1jpezuCRiu4VGe8ZyM6uX/ofhgy7AcapBP
-         mFPE8rRawvoApQdcFvznp7NnGNzetX8PBhXI9z9XD6pJWsEfgNF5bx5Dm6HA6J/nYD4w
-         Pc2faH/Mx19ahWAIUpSDlnwpHJyrVkO7cpjeFTUu353Md8hQF0cEF1tflUqniZ9PEdqr
-         ITJ4n1qnr3F9X8XN9gExv4CWWs/4KUeA8DOpZPvYE0PBM0ghgRWbny1+IqceasWq0Pzj
-         gnYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=qakI0kMjNja616oMk36CPRVtxaRUluUF0dSRy+Y+iRg=;
-        b=XpwETBpCZjHLYJvfAyCX4hbvG6yR/PbRGoUSlP2oBBJovonxbqeWRTDyhZPIjw8Oig
-         SZfuMBBapNzgkc0hn45XQZXpNq2szlBccHLSqy2aZVBvAdSEiic+PfkC8s/+9h34h71B
-         EfQ2h0xskGKl2Hqxqh6nX/Bv4ixdKkHB9G927qt5RhZiaEO0mBtiaHlOFvUT+ftfXnHQ
-         GpwVf1Ji7Ir7vtyXnZYzpfVoMgEf4Ze/s09veUJivSPMG+ClF4oZwnuK6abnebsFlkAy
-         DWlo6/AVgKD5WZoDQUtfgz183YQ6WwRiwY+FHmPAV5A/4GmRW1ipdlzTG0GuWAnBXhiz
-         brsQ==
-X-Gm-Message-State: ACgBeo35eiduE4jSnKcxqf90jn2pPSJN/AYOALcMBZpqyBye+wNuFNqm
-        eqdxI3ubFCdjf7X4PbSFmdY=
-X-Google-Smtp-Source: AA6agR5KiQm70vN8UWOPhaWZwetHFdRXGJmUR/QQqpAnelHScCWTHtc/2SEviK460TiD2o1u3puavQ==
-X-Received: by 2002:a17:90b:4cc5:b0:1f5:395:6c71 with SMTP id nd5-20020a17090b4cc500b001f503956c71mr6414725pjb.132.1659552722374;
-        Wed, 03 Aug 2022 11:52:02 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c083:3603:1885:b229:3257:6535? ([2620:10d:c090:500::3:dd5a])
-        by smtp.gmail.com with ESMTPSA id e7-20020a17090a7c4700b001f2ef3c7956sm1900291pjl.25.2022.08.03.11.52.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 11:52:01 -0700 (PDT)
-Message-ID: <4a757ba1-7b8e-6012-458e-217056eaee63@gmail.com>
-Date:   Wed, 3 Aug 2022 11:51:59 -0700
+        with ESMTP id S236188AbiHCS7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 14:59:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A5B33A0E
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 11:59:45 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oJJaO-0003s9-Hq; Wed, 03 Aug 2022 20:59:16 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2254BC2421;
+        Wed,  3 Aug 2022 18:59:12 +0000 (UTC)
+Date:   Wed, 3 Aug 2022 20:59:10 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Sebastian =?utf-8?B?V8O8cmw=?= <sebastian.wuerl@ororatech.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers/net/can/spi/mcp251x.c: Fix race condition on
+ receive interrupt
+Message-ID: <20220803185910.5jpufgziqsslnqtf@pengutronix.de>
+References: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [RFC net-next 1/6] net: Documentation on QUIC kernel Tx crypto.
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, corbet@lwn.net, dsahern@kernel.org,
-        shuah@kernel.org, imagedong@tencent.com, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <adel.abushaev@gmail.com>
- <20220803164045.3585187-1-adel.abushaev@gmail.com>
- <20220803164045.3585187-2-adel.abushaev@gmail.com> <Yuq9PMIfmX0UsYtL@lunn.ch>
-From:   Adel Abouchaev <adel.abushaev@gmail.com>
-In-Reply-To: <Yuq9PMIfmX0UsYtL@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="stfxcn4l5cg4r6dp"
+Content-Disposition: inline
+In-Reply-To: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew,
 
-    Could you add more to your comment? The /proc was used similarly to 
-kTLS. Netlink is better, though, unsure how ULP stats would fit in it.
+--stfxcn4l5cg4r6dp
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cheers,
+On 03.08.2022 17:32:59, Sebastian W=C3=BCrl wrote:
+> The mcp251x driver uses both receiving mailboxes of the can controller
+> chips. For retrieving the CAN frames from the controller via SPI, it chec=
+ks
+> once per interrupt which mailboxes have been filled, an will retrieve the
+> messages accordingly.
+>=20
+> This introduces a race condition, as another CAN frame can enter mailbox 1
+> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
+il
+> the interrupt handler is called next, mailbox 0 is emptied before
+> mailbox 1, leading to out-of-order CAN frames in the network device.
+>=20
+> This is fixed by checking the interrupt flags once again after freeing
+> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
 
-Adel.
+Nitpick: On mcp2515 the buffer is freed automatically.
+With this change the interrupt flags are _always_ checked a 2nd time,
+even if buffer 0 is not serviced. See below for a change proposal.
 
-On 8/3/22 11:23 AM, Andrew Lunn wrote:
->> +Statistics
->> +==========
->> +
->> +QUIC Tx offload to the kernel has counters reflected in /proc/net/quic_stat:
->> +
->> +  QuicCurrTxSw  - number of currently active kernel offloaded QUIC connections
->> +  QuicTxSw      - accumulative total number of offloaded QUIC connections
->> +  QuicTxSwError - accumulative total number of errors during QUIC Tx offload to
->> +                  kernel
-> netlink messages please, not /proc for statistics. netlink is the
-> preferred way to configure and report about the network stack.
->
-> 	 Andrew
+> For reproducing the bug I created the following setup:
+>  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+>  - Setup CAN to 1 MHz
+>  - Spam bursts of 5 CAN-messages with increasing CAN-ids
+>  - Continue sending the bursts while sleeping a second between the bursts
+>  - Check on the RPi whether the received messages have increasing CAN-ids
+>  - Without this patch, every burst of messages will contain a flipped pair
+>=20
+> Signed-off-by: Sebastian W=C3=BCrl <sebastian.wuerl@ororatech.com>
+> ---
+>  drivers/net/can/spi/mcp251x.c | 21 ++++++++++++++-------
+>  1 file changed, 14 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+> index 666a4505a55a..687aafef4717 100644
+> --- a/drivers/net/can/spi/mcp251x.c
+> +++ b/drivers/net/can/spi/mcp251x.c
+> @@ -1063,17 +1063,14 @@ static irqreturn_t mcp251x_can_ist(int irq, void =
+*dev_id)
+>  	mutex_lock(&priv->mcp_lock);
+>  	while (!priv->force_quit) {
+>  		enum can_state new_state;
+> -		u8 intf, eflag;
+> +		u8 intf, intf0, intf1, eflag, eflag0, eflag1;
+>  		u8 clear_intf =3D 0;
+>  		int can_id =3D 0, data1 =3D 0;
+> =20
+> -		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
+> -
+> -		/* mask out flags we don't care about */
+> -		intf &=3D CANINTF_RX | CANINTF_TX | CANINTF_ERR;
+> +		mcp251x_read_2regs(spi, CANINTF, &intf0, &eflag0);
+> =20
+>  		/* receive buffer 0 */
+> -		if (intf & CANINTF_RX0IF) {
+> +		if (intf0 & CANINTF_RX0IF) {
+>  			mcp251x_hw_rx(spi, 0);
+>  			/* Free one buffer ASAP
+>  			 * (The MCP2515/25625 does this automatically.)
+> @@ -1083,14 +1080,24 @@ static irqreturn_t mcp251x_can_ist(int irq, void =
+*dev_id)
+>  						   CANINTF_RX0IF, 0x00);
+>  		}
+> =20
+> +		/* intf needs to be read again to avoid a race condition */
+> +		mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
+
+I think we only have to re-read the interrupt flag if we actually read
+data from buffer 0. So what about moving this into the if () { } above?
+
+> +
+>  		/* receive buffer 1 */
+> -		if (intf & CANINTF_RX1IF) {
+> +		if (intf1 & CANINTF_RX1IF) {
+>  			mcp251x_hw_rx(spi, 1);
+>  			/* The MCP2515/25625 does this automatically. */
+>  			if (mcp251x_is_2510(spi))
+>  				clear_intf |=3D CANINTF_RX1IF;
+>  		}
+> =20
+> +		/* combine flags from both operations for error handling */
+> +		intf =3D intf0 | intf1;
+> +		eflag =3D eflag0 | eflag1;
+> +
+> +		/* mask out flags we don't care about */
+> +		intf &=3D CANINTF_RX | CANINTF_TX | CANINTF_ERR;
+> +
+>  		/* any error or tx interrupt we need to clear? */
+>  		if (intf & (CANINTF_ERR | CANINTF_TX))
+>  			clear_intf |=3D intf & (CANINTF_ERR | CANINTF_TX);
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--stfxcn4l5cg4r6dp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLqxXwACgkQrX5LkNig
+010UsAf/csW6sKyno2ENqU9sWHtlY8D1cUENGHLb9SC+LTOXHEe+1oo1vD+IoWBW
+kVJlZYQmDZh/UO4XS3EyKesE2eJZEmQxty7HluEUQb3sdjPp4Qc4goCpTLStTZRS
+TBKf3kps/BHYpAo5LeoKY96MRRVnytdyecinnfTCKK5FCtlV2SOirinZoqLGb3T0
+HyEFOtgA9gto4e75XetqLPmm7lDkmu8/DWQ/k1BocQLasCy/b7Y2mZVc0q0CEYf6
+qvAXNHzhqUAkEypVRl31I/xOjoAn6ybBibp7Ty88oGG3KcMWgcx+3FWacAHbUg53
+GX8+IkrxGxDDmN64x2SU35gl4I1maQ==
+=sE5h
+-----END PGP SIGNATURE-----
+
+--stfxcn4l5cg4r6dp--
