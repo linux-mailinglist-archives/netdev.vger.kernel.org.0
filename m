@@ -2,143 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0455588613
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 05:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8292D588639
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 06:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232511AbiHCDtP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Aug 2022 23:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
+        id S232173AbiHCEUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 00:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231693AbiHCDtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 23:49:13 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9E0C1EEF8
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 20:49:09 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 2733mlwH7027363, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 2733mlwH7027363
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 3 Aug 2022 11:48:47 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 3 Aug 2022 11:48:55 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 3 Aug 2022 11:48:55 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
- RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
- 15.01.2375.007; Wed, 3 Aug 2022 11:48:55 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Oliver Neukum <oneukum@suse.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [RFC] r8152: pass through needs to be singular
-Thread-Topic: [RFC] r8152: pass through needs to be singular
-Thread-Index: AQHYorbkT7oEeBXrNkS3PRLAR8WbAK2cjJJw
-Date:   Wed, 3 Aug 2022 03:48:55 +0000
-Message-ID: <0f5422bbeb7642f492b99e9ec1f07751@realtek.com>
-References: <20220728191851.30402-1-oneukum@suse.com>
-In-Reply-To: <20220728191851.30402-1-oneukum@suse.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/3_=3F=3F_01:23:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S230239AbiHCEUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 00:20:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0FF2B60B;
+        Tue,  2 Aug 2022 21:20:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B958A612E4;
+        Wed,  3 Aug 2022 04:20:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84062C433D6;
+        Wed,  3 Aug 2022 04:20:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659500406;
+        bh=4XvW6Am+LFtU+beJUyoqbF5SdzyM95956jiHnqhMtGw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fP7OAmnJdeDrH+3lKsGs+j7tgGMMLB/DbAh9jWp67VxaRsmO7QibW7knm2D2iYqZG
+         dSVQlg7tWQQjiQP2uvEepCh5ML010EhvEJDE6rnIBneJxT3mWexptkIVMdxHaAV9PK
+         0GEngfIwWPmIHP8Fi2aou9E21t9PuJdIKKksaZuqUSdy5tBFXAiPLM3QVzxB6rTWH8
+         uLbLhTU3bzqlWeg5Q8xKUlmlh6Owbdvf+LjbUXbJDiTCYyWephMAaEvGelYdg7GiDO
+         OlG7AH4mP60rel0pO+jvwR0Jy/ng+Vz0sYXEMcntQ2SgFkrnZdDl4V69RvYnSuPOMD
+         02P7prfEmDn8g==
+Message-ID: <9e8728e0-75e7-d3a8-038b-48e51be4df07@kernel.org>
+Date:   Tue, 2 Aug 2022 22:20:04 -0600
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH] net: seg6: initialize induction variable to first valid
+ array index
+Content-Language: en-US
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+References: <20220802161203.622293-1-ndesaulniers@google.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220802161203.622293-1-ndesaulniers@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oliver Neukum <oneukum@suse.com>
-> Sent: Friday, July 29, 2022 3:19 AM
-[...]
-> @@ -1608,6 +1622,12 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa)
->  	acpi_object_type mac_obj_type;
->  	int mac_strlen;
-> 
-> +	mutex_lock(&pass_through_lock);
-> +
-> +	if (!holder_of_pass_through) {
-> +		ret = -EBUSY;
-> +		goto failout;
-> +	}
+[ cc Andrea ]
 
-Excuse me. I have one question.
-When is the holder_of_pass_through set?
-The default value of holder_of_pass_through is NULL, so
-it seems the holder_of_pass_through would never be set.
-
-Best Regards,
-Hayes
-
->  	if (tp->lenovo_macpassthru) {
->  		mac_obj_name = "\\MACA";
->  		mac_obj_type = ACPI_TYPE_STRING;
-> @@ -1621,7 +1641,8 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa)
->  			if ((ocp_data & PASS_THRU_MASK) != 1) {
->  				netif_dbg(tp, probe, tp->netdev,
->  						"No efuse for RTL8153-AD MAC pass through\n");
-> -				return -ENODEV;
-> +				ret = -ENODEV;
-> +				goto failout;
->  			}
->  		} else {
->  			/* test for RTL8153-BND and RTL8153-BD */
-> @@ -1629,7 +1650,8 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa)
->  			if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK)
-> == 0) {
->  				netif_dbg(tp, probe, tp->netdev,
->  						"Invalid variant for MAC pass through\n");
-> -				return -ENODEV;
-> +				ret = -ENODEV;
-> +				goto failout;
->  			}
->  		}
+On 8/2/22 10:12 AM, Nick Desaulniers wrote:
+> Fixes the following warnings observed when building
+> CONFIG_IPV6_SEG6_LWTUNNEL=y with clang:
 > 
-> @@ -1641,8 +1663,10 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa)
->  	/* returns _AUXMAC_#AABBCCDDEEFF# */
->  	status = acpi_evaluate_object(NULL, mac_obj_name, NULL, &buffer);
->  	obj = (union acpi_object *)buffer.pointer;
-> -	if (!ACPI_SUCCESS(status))
-> -		return -ENODEV;
-> +	if (!ACPI_SUCCESS(status)) {
-> +		ret = -ENODEV;
-> +		goto failout;
-> +	}
->  	if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
->  		netif_warn(tp, probe, tp->netdev,
->  			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",
-> @@ -1670,6 +1694,10 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa)
+>   net/ipv6/seg6_local.o: warning: objtool: seg6_local_fill_encap() falls
+>   through to next function seg6_local_get_encap_size()
+>   net/ipv6/seg6_local.o: warning: objtool: seg6_local_cmp_encap() falls
+>   through to next function input_action_end()
 > 
->  amacout:
->  	kfree(obj);
-> +failout:
-> +	if (!ret)
-> +		holder_of_pass_through = tp;
-> +	mutex_unlock(&pass_through_lock);
->  	return ret;
->  }
+> LLVM can fully unroll loops in seg6_local_get_encap_size() and
+> seg6_local_cmp_encap(). One issue in those loops is that the induction
+> variable is initialized to 0. The loop iterates over members of
+> seg6_action_params, a global array of struct seg6_action_param calling
+> their put() function pointer members.  seg6_action_param uses an array
+> initializer to initialize SEG6_LOCAL_SRH and later elements, which is
+> the third enumeration of an anonymous union.
+> 
+> The guard `if (attrs & SEG6_F_ATTR(i))` may prevent this from being
+> called at runtime, but it would still be UB for
+> `seg6_action_params[0]->put` to be called; the unrolled loop will make
+> the initial iterations unreachable, which LLVM will later rotate to
+> fallthrough to the next function.
+> 
+> Make this more obvious that this cannot happen to the compiler by
+> initializing the loop induction variable to the minimum valid index that
+> seg6_action_params is initialized to.
+> 
+> Reported-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  net/ipv6/seg6_local.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+> index 2cd4a8d3b30a..b7de5e46fdd8 100644
+> --- a/net/ipv6/seg6_local.c
+> +++ b/net/ipv6/seg6_local.c
+> @@ -1614,7 +1614,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
+>  	 * callback. If the callback is not available, then we skip to the next
+>  	 * attribute; otherwise, we call the destroy() callback.
+>  	 */
+> -	for (i = 0; i < max_parsed; ++i) {
+> +	for (i = SEG6_LOCAL_SRH; i < max_parsed; ++i) {
+>  		if (!(parsed_attrs & SEG6_F_ATTR(i)))
+>  			continue;
+>  
+> @@ -1643,7 +1643,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
+>  	struct seg6_action_param *param;
+>  	int err, i;
+>  
+> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; ++i) {
+> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; ++i) {
+>  		if (!(desc->optattrs & SEG6_F_ATTR(i)) || !attrs[i])
+>  			continue;
+>  
+> @@ -1742,7 +1742,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+>  	}
+>  
+>  	/* parse the required attributes */
+> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
+> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+>  		if (desc->attrs & SEG6_F_ATTR(i)) {
+>  			if (!attrs[i])
+>  				return -EINVAL;
+> @@ -1847,7 +1847,7 @@ static int seg6_local_fill_encap(struct sk_buff *skb,
+>  
+>  	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
+>  
+> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
+> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+>  		if (attrs & SEG6_F_ATTR(i)) {
+>  			param = &seg6_action_params[i];
+>  			err = param->put(skb, slwt);
+> @@ -1927,7 +1927,7 @@ static int seg6_local_cmp_encap(struct lwtunnel_state *a,
+>  	if (attrs_a != attrs_b)
+>  		return 1;
+>  
+> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
+> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+>  		if (attrs_a & SEG6_F_ATTR(i)) {
+>  			param = &seg6_action_params[i];
+>  			if (param->cmp(slwt_a, slwt_b))
 
