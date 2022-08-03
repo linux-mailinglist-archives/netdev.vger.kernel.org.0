@@ -2,394 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC875885C9
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 04:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA3B588606
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 05:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234288AbiHCCbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Aug 2022 22:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
+        id S237561AbiHCDXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Aug 2022 23:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiHCCbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 22:31:15 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B2D1CFDE
-        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 19:31:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659493873; x=1691029873;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HUoObCmRm2lyJzt3aBuqB7HOMZQUJDj95Jb6oBxei6o=;
-  b=CqNHNHqlGmF59SB+VQG4be2jel7Hl2AwRkH56jSlrKQjqUBseP5qSIdn
-   or0911BhEAxf+agDtBwMp0UFZK2/fM8U4E9uj4zBnhIUHyGeKxRXUlRUg
-   xuiGUIV6FdfEwY4EKYEVZ1OZNLAmkP1RlRNMjGlLsticUa2OvsV3hm/uC
-   Fe4sMuMKL4ch080qfsVPNwePZ/Ci9iIqRXavkKrbGYDOdnbbllAf8F1cq
-   rVPsI2tC+sSYbCPfpvzmHi5bVDaj1SQwu6DYxA5n9dDvZcF2wj0oybjZY
-   PnWzC8s9uYs8ukeWYmcsmwMhLTNuy15x+QFjnT/g5jPFUC5J2Q6QSC1Hp
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="315421121"
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="315421121"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 19:31:13 -0700
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="661881784"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.28.247]) ([10.255.28.247])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 19:31:10 -0700
-Message-ID: <213dec42-bd3d-2b5c-9003-276bc2a9f649@intel.com>
-Date:   Wed, 3 Aug 2022 10:30:55 +0800
+        with ESMTP id S237568AbiHCDXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Aug 2022 23:23:45 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD0551A05;
+        Tue,  2 Aug 2022 20:23:40 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id b133so15334110pfb.6;
+        Tue, 02 Aug 2022 20:23:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQ/MHL3AvHE6awMttMKHegw9J9rY4eAGNJ5s9dewrd8=;
+        b=CHPXie25jR2yWr9q5odc83pPNnA80K0CM8v9EuqtArCTlfixskGUqP5vwCjZClW/QS
+         GfR6JSopZS+FH/bzKW/g2bL5z0clGf/22+e0F9Z2eQIb74nGjanx4AKahht+Ouu0OBs8
+         dEpg+ur6KU8Zv4ZEbgF5JBzpT5hQSWG5GI4aNsCzR3R3D8As8ne+iLXa7mFAWZVgvsAJ
+         wqfm3DWlOnODenQn0n0wb/6L3PtnZ3UlOwLj8XXo8VEpl4x1sG30qi+POOPaD63ADxlO
+         pXzI5WrL1kXH41AkH6Hq+k2ych93SEJr9RlfaUy8OwlODbzsOImZKh415RlHhdYM0Fpi
+         Yvdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQ/MHL3AvHE6awMttMKHegw9J9rY4eAGNJ5s9dewrd8=;
+        b=Yvj0SDBoRKXLXFHyzEP43d15g25MrMqrMPCwad12Fu4qUtF7c+BgKVqV/d1QzY6z48
+         kK+owOrrYpbMfwVe/gdGMGT3b1kEuRFCbrPuRwhlHJXtn8oybRNZRGF6IY3q1nFuLLnw
+         VwnljDNqYrxBlEobFCi4rKdjG+fCLxwX0EZIrMLyOxiJxAXJDQwJbB4cRnVdqilkwq8l
+         kHblXFdpYr5KDVcBc759KHPyHXWdzQjVbqKgZDFeKYm325V+fEiI+7ufwGIplT4MthjC
+         iGVVGpiGPc6u8ZLjcUfPRWoNpGQa7tYwec/ZNawn4rryB8qXild8VM5po9yN57st14YO
+         gdow==
+X-Gm-Message-State: AJIora9/5LHZ8+uYLnFiC0G/1fA1HzgPLX/24wNhkQdQW720acjxoJF1
+        QZ/mmUr/6LppxfIg1fYRSn0=
+X-Google-Smtp-Source: AGRyM1sCSz0Ss42sowkoQjXeEl16MwPxdyBbyTUiA1CDxjKiO/EnKpC5aN4upe+iDII6riEw+RVOMw==
+X-Received: by 2002:a63:f502:0:b0:415:ee58:b22b with SMTP id w2-20020a63f502000000b00415ee58b22bmr19076904pgh.349.1659497019088;
+        Tue, 02 Aug 2022 20:23:39 -0700 (PDT)
+Received: from biggie.. ([103.230.148.189])
+        by smtp.gmail.com with ESMTPSA id b9-20020a170902d50900b0016dbdf7b97bsm458620plg.266.2022.08.02.20.23.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 20:23:38 -0700 (PDT)
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [PATCH v2] selftests/net: Refactor xfrm_fill_key() to use array of structs
+Date:   Wed,  3 Aug 2022 08:53:12 +0530
+Message-Id: <20220803032312.3939-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying
- device config space
-Content-Language: en-US
-To:     Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     Parav Pandit <parav@nvidia.com>, "mst@redhat.com" <mst@redhat.com>,
-        Eli Cohen <elic@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-5-lingshan.zhu@intel.com>
- <PH0PR12MB548190DE76CC64E56DA2DF13DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <00889067-50ac-d2cd-675f-748f171e5c83@oracle.com>
- <63242254-ba84-6810-dad8-34f900b97f2f@intel.com>
- <8002554a-a77c-7b25-8f99-8d68248a741d@oracle.com>
- <00e2e07e-1a2e-7af8-a060-cc9034e0d33f@intel.com>
- <b58dba25-3258-d600-ea06-879094639852@oracle.com>
- <c143e2da-208e-b046-9b8f-1780f75ed3e6@intel.com>
- <454bdf1b-daa1-aa67-2b8c-bc15351c1851@oracle.com>
- <f1c56fd6-7fa1-c2b8-83f4-4f0d68de86f4@redhat.com>
- <ec302cd4-3791-d648-aa00-28b1e97d75e7@oracle.com>
- <c77aa133-54ad-1578-aae3-031432cc9b36@oracle.com>
- <CACGkMEuUVicQX87PDCO87pckAg5EMQ9OGura2J35DaR0T=COfw@mail.gmail.com>
- <a2b2fe74-4633-2911-b953-25fcb8e81665@oracle.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <a2b2fe74-4633-2911-b953-25fcb8e81665@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+A TODO in net/ipsec.c asks to refactor the code in xfrm_fill_key() to
+use set/map to avoid manually comparing each algorithm with the "name" 
+parameter passed to the function as an argument. This patch refactors 
+the code to create an array of structs where each struct contains the 
+algorithm name and its corresponding key length.
 
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+---
+changes in v2:
+1. Fix the compilation warnings for struct and variable declaration
 
-On 8/3/2022 9:26 AM, Si-Wei Liu wrote:
->
->
-> On 8/1/2022 11:33 PM, Jason Wang wrote:
->> On Tue, Aug 2, 2022 at 6:58 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
->>>
->>>
->>> On 8/1/2022 3:53 PM, Si-Wei Liu wrote:
->>>>
->>>> On 7/31/2022 9:44 PM, Jason Wang wrote:
->>>>> 在 2022/7/30 04:55, Si-Wei Liu 写道:
->>>>>>
->>>>>> On 7/28/2022 7:04 PM, Zhu, Lingshan wrote:
->>>>>>>
->>>>>>> On 7/29/2022 5:48 AM, Si-Wei Liu wrote:
->>>>>>>>
->>>>>>>> On 7/27/2022 7:43 PM, Zhu, Lingshan wrote:
->>>>>>>>>
->>>>>>>>> On 7/28/2022 8:56 AM, Si-Wei Liu wrote:
->>>>>>>>>>
->>>>>>>>>> On 7/27/2022 4:47 AM, Zhu, Lingshan wrote:
->>>>>>>>>>>
->>>>>>>>>>> On 7/27/2022 5:43 PM, Si-Wei Liu wrote:
->>>>>>>>>>>> Sorry to chime in late in the game. For some reason I couldn't
->>>>>>>>>>>> get to most emails for this discussion (I only subscribed to
->>>>>>>>>>>> the virtualization list), while I was taking off amongst the
->>>>>>>>>>>> past few weeks.
->>>>>>>>>>>>
->>>>>>>>>>>> It looks to me this patch is incomplete. Noted down the way in
->>>>>>>>>>>> vdpa_dev_net_config_fill(), we have the following:
->>>>>>>>>>>>           features = vdev->config->get_driver_features(vdev);
->>>>>>>>>>>>           if (nla_put_u64_64bit(msg,
->>>>>>>>>>>> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
->>>>>>>>>>>> VDPA_ATTR_PAD))
->>>>>>>>>>>>                   return -EMSGSIZE;
->>>>>>>>>>>>
->>>>>>>>>>>> Making call to .get_driver_features() doesn't make sense when
->>>>>>>>>>>> feature negotiation isn't complete. Neither should present
->>>>>>>>>>>> negotiated_features to userspace before negotiation is done.
->>>>>>>>>>>>
->>>>>>>>>>>> Similarly, max_vqp through vdpa_dev_net_mq_config_fill()
->>>>>>>>>>>> probably should not show before negotiation is done - it
->>>>>>>>>>>> depends on driver features negotiated.
->>>>>>>>>>> I have another patch in this series introduces device_features
->>>>>>>>>>> and will report device_features to the userspace even features
->>>>>>>>>>> negotiation not done. Because the spec says we should allow
->>>>>>>>>>> driver access the config space before FEATURES_OK.
->>>>>>>>>> The config space can be accessed by guest before features_ok
->>>>>>>>>> doesn't necessarily mean the value is valid. You may want to
->>>>>>>>>> double check with Michael for what he quoted earlier:
->>>>>>>>> that's why I proposed to fix these issues, e.g., if no _F_MAC,
->>>>>>>>> vDPA kernel should not return a mac to the userspace, there is
->>>>>>>>> not a default value for mac.
->>>>>>>> Then please show us the code, as I can only comment based on your
->>>>>>>> latest (v4) patch and it was not there.. To be honest, I don't
->>>>>>>> understand the motivation and the use cases you have, is it for
->>>>>>>> debugging/monitoring or there's really a use case for live
->>>>>>>> migration? For the former, you can do a direct dump on all config
->>>>>>>> space fields regardless of endianess and feature negotiation
->>>>>>>> without having to worry about validity (meaningful to present to
->>>>>>>> admin user). To me these are conflict asks that is impossible to
->>>>>>>> mix in exact one command.
->>>>>>> This bug just has been revealed two days, and you will see the
->>>>>>> patch soon.
->>>>>>>
->>>>>>> There are something to clarify:
->>>>>>> 1) we need to read the device features, or how can you pick a
->>>>>>> proper LM destination
->>>>>
->>>>> So it's probably not very efficient to use this, the manager layer
->>>>> should have the knowledge about the compatibility before doing
->>>>> migration other than try-and-fail.
->>>>>
->>>>> And it's the task of the management to gather the nodes whose devices
->>>>> could be live migrated to each other as something like "cluster"
->>>>> which we've already used in the case of cpuflags.
->>>>>
->>>>> 1) during node bootstrap, the capability of each node and devices was
->>>>> reported to management layer
->>>>> 2) management layer decide the cluster and make sure the migration
->>>>> can only done among the nodes insides the cluster
->>>>> 3) before migration, the vDPA needs to be provisioned on the 
->>>>> destination
->>>>>
->>>>>
->>>>>>> 2) vdpa dev config show can show both device features and driver
->>>>>>> features, there just need a patch for iproute2
->>>>>>> 3) To process information like MQ, we don't just dump the config
->>>>>>> space, MST has explained before
->>>>>> So, it's for live migration... Then why not export those config
->>>>>> parameters specified for vdpa creation (as well as device feature
->>>>>> bits) to the output of "vdpa dev show" command? That's where device
->>>>>> side config lives and is static across vdpa's life cycle. "vdpa dev
->>>>>> config show" is mostly for dynamic driver side config, and the
->>>>>> validity is subject to feature negotiation. I suppose this should
->>>>>> suit your need of LM, e.g.
->>>>>
->>>>> I think so.
->>>>>
->>>>>
->>>>>> $ vdpa dev add name vdpa1 mgmtdev pci/0000:41:04.2 max_vqp 7 mtu 
->>>>>> 2000
->>>>>> $ vdpa dev show vdpa1
->>>>>> vdpa1: type network mgmtdev pci/0000:41:04.2 vendor_id 5555 max_vqs
->>>>>> 15 max_vq_size 256
->>>>>>    max_vqp 7 mtu 2000
->>>>>>    dev_features CSUM GUEST_CSUM MTU HOST_TSO4 HOST_TSO6 STATUS
->>>>>> CTRL_VQ MQ CTRL_MAC_ADDR VERSION_1 RING_PACKED
->>>>>
->>>>> Note that the mgmt should know this destination have those
->>>>> capability/features before the provisioning.
->>>> Yes, mgmt software should have to check the above from source.
->>> On destination mgmt software can run below to check vdpa mgmtdev's
->>> capability/features:
->>>
->>> $ vdpa mgmtdev show pci/0000:41:04.3
->>> pci/0000:41:04.3:
->>>     supported_classes net
->>>     max_supported_vqs 257
->>>     dev_features CSUM GUEST_CSUM MTU HOST_TSO4 HOST_TSO6 STATUS CTRL_VQ
->>> MQ CTRL_MAC_ADDR VERSION_1 RING_PACKED
->> Right and this is probably better to be done at node bootstrapping for
->> the management to know about the cluster.
-> Exactly. That's what mgmt software is supposed to do typically.
-I think this could apply to both mgmt devices and vDPA devices:
-1)mgmt device, see whether the mgmt device is capable to create a vDPA 
-device with a certain feature bits, this is for LM
-2)vDPA device, report the device features, it is for normal operation
+ tools/testing/selftests/net/ipsec.c | 108 +++++++++++++---------------
+ 1 file changed, 49 insertions(+), 59 deletions(-)
 
-Thanks,
-Zhu Lingshan
->
-> Thanks,
-> -Siwei
->
->>
->> Thanks
->>
->>>>>
->>>>>> For it to work, you'd want to pass "struct vdpa_dev_set_config" to
->>>>>> _vdpa_register_device() during registration, and get it saved there
->>>>>> in "struct vdpa_device". Then in vdpa_dev_fill() show each field
->>>>>> conditionally subject to "struct vdpa_dev_set_config.mask".
->>>>>>
->>>>>> Thanks,
->>>>>> -Siwei
->>>>>
->>>>> Thanks
->>>>>
->>>>>
->>>>>>> Thanks
->>>>>>> Zhu Lingshan
->>>>>>>>>>> Nope:
->>>>>>>>>>>
->>>>>>>>>>> 2.5.1  Driver Requirements: Device Configuration Space
->>>>>>>>>>>
->>>>>>>>>>> ...
->>>>>>>>>>>
->>>>>>>>>>> For optional configuration space fields, the driver MUST check
->>>>>>>>>>> that the corresponding feature is offered
->>>>>>>>>>> before accessing that part of the configuration space.
->>>>>>>>>> and how many driver bugs taking wrong assumption of the validity
->>>>>>>>>> of config space field without features_ok. I am not sure what
->>>>>>>>>> use case you want to expose config resister values for before
->>>>>>>>>> features_ok, if it's mostly for live migration I guess it's
->>>>>>>>>> probably heading a wrong direction.
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Last but not the least, this "vdpa dev config" command was not
->>>>>>>>>>>> designed to display the real config space register values in
->>>>>>>>>>>> the first place. Quoting the vdpa-dev(8) man page:
->>>>>>>>>>>>
->>>>>>>>>>>>> vdpa dev config show - Show configuration of specific device
->>>>>>>>>>>>> or all devices.
->>>>>>>>>>>>> DEV - specifies the vdpa device to show its configuration. If
->>>>>>>>>>>>> this argument is omitted all devices configuration is listed.
->>>>>>>>>>>> It doesn't say anything about configuration space or register
->>>>>>>>>>>> values in config space. As long as it can convey the config
->>>>>>>>>>>> attribute when instantiating vDPA device instance, and more
->>>>>>>>>>>> importantly, the config can be easily imported from or
->>>>>>>>>>>> exported to userspace tools when trying to reconstruct vdpa
->>>>>>>>>>>> instance intact on destination host for live migration, IMHO
->>>>>>>>>>>> in my personal interpretation it doesn't matter what the
->>>>>>>>>>>> config space may present. It may be worth while adding a new
->>>>>>>>>>>> debug command to expose the real register value, but that's
->>>>>>>>>>>> another story.
->>>>>>>>>>> I am not sure getting your points. vDPA now reports device
->>>>>>>>>>> feature bits(device_features) and negotiated feature
->>>>>>>>>>> bits(driver_features), and yes, the drivers features can be a
->>>>>>>>>>> subset of the device features; and the vDPA device features can
->>>>>>>>>>> be a subset of the management device features.
->>>>>>>>>> What I said is after unblocking the conditional check, you'd
->>>>>>>>>> have to handle the case for each of the vdpa attribute when
->>>>>>>>>> feature negotiation is not yet done: basically the register
->>>>>>>>>> values you got from config space via the
->>>>>>>>>> vdpa_get_config_unlocked() call is not considered to be valid
->>>>>>>>>> before features_ok (per-spec). Although in some case you may get
->>>>>>>>>> sane value, such behavior is generally undefined. If you desire
->>>>>>>>>> to show just the device_features alone without any config space
->>>>>>>>>> field, which the device had advertised *before feature
->>>>>>>>>> negotiation is complete*, that'll be fine. But looks to me this
->>>>>>>>>> is not how patch has been implemented. Probably need some more
->>>>>>>>>> work?
->>>>>>>>> They are driver_features(negotiated) and the
->>>>>>>>> device_features(which comes with the device), and the config
->>>>>>>>> space fields that depend on them. In this series, we report both
->>>>>>>>> to the userspace.
->>>>>>>> I fail to understand what you want to present from your
->>>>>>>> description. May be worth showing some example outputs that at
->>>>>>>> least include the following cases: 1) when device offers features
->>>>>>>> but not yet acknowledge by guest 2) when guest acknowledged
->>>>>>>> features and device is yet to accept 3) after guest feature
->>>>>>>> negotiation is completed (agreed upon between guest and device).
->>>>>>> Only two feature sets: 1) what the device has. (2) what is 
->>>>>>> negotiated
->>>>>>>> Thanks,
->>>>>>>> -Siwei
->>>>>>>>>> Regards,
->>>>>>>>>> -Siwei
->>>>>>>>>>
->>>>>>>>>>>> Having said, please consider to drop the Fixes tag, as appears
->>>>>>>>>>>> to me you're proposing a new feature rather than fixing a real
->>>>>>>>>>>> issue.
->>>>>>>>>>> it's a new feature to report the device feature bits than only
->>>>>>>>>>> negotiated features, however this patch is a must, or it will
->>>>>>>>>>> block the device feature bits reporting. but I agree, the fix
->>>>>>>>>>> tag is not a must.
->>>>>>>>>>>> Thanks,
->>>>>>>>>>>> -Siwei
->>>>>>>>>>>>
->>>>>>>>>>>> On 7/1/2022 3:12 PM, Parav Pandit via Virtualization wrote:
->>>>>>>>>>>>>> From: Zhu Lingshan<lingshan.zhu@intel.com>
->>>>>>>>>>>>>> Sent: Friday, July 1, 2022 9:28 AM
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Users may want to query the config space of a vDPA device,
->>>>>>>>>>>>>> to choose a
->>>>>>>>>>>>>> appropriate one for a certain guest. This means the users
->>>>>>>>>>>>>> need to read the
->>>>>>>>>>>>>> config space before FEATURES_OK, and the existence of config
->>>>>>>>>>>>>> space
->>>>>>>>>>>>>> contents does not depend on FEATURES_OK.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> The spec says:
->>>>>>>>>>>>>> The device MUST allow reading of any device-specific
->>>>>>>>>>>>>> configuration field
->>>>>>>>>>>>>> before FEATURES_OK is set by the driver. This includes
->>>>>>>>>>>>>> fields which are
->>>>>>>>>>>>>> conditional on feature bits, as long as those feature bits
->>>>>>>>>>>>>> are offered by the
->>>>>>>>>>>>>> device.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Fixes: 30ef7a8ac8a07 (vdpa: Read device configuration only
->>>>>>>>>>>>>> if FEATURES_OK)
->>>>>>>>>>>>> Fix is fine, but fixes tag needs correction described below.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Above commit id is 13 letters should be 12.
->>>>>>>>>>>>> And
->>>>>>>>>>>>> It should be in format
->>>>>>>>>>>>> Fixes: 30ef7a8ac8a0 ("vdpa: Read device configuration only if
->>>>>>>>>>>>> FEATURES_OK")
->>>>>>>>>>>>>
->>>>>>>>>>>>> Please use checkpatch.pl script before posting the patches to
->>>>>>>>>>>>> catch these errors.
->>>>>>>>>>>>> There is a bot that looks at the fixes tag and identifies the
->>>>>>>>>>>>> right kernel version to apply this fix.
->>>>>>>>>>>>>
->>>>>>>>>>>>>> Signed-off-by: Zhu Lingshan<lingshan.zhu@intel.com>
->>>>>>>>>>>>>> ---
->>>>>>>>>>>>>>    drivers/vdpa/vdpa.c | 8 --------
->>>>>>>>>>>>>>    1 file changed, 8 deletions(-)
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
->>>>>>>>>>>>>> 9b0e39b2f022..d76b22b2f7ae 100644
->>>>>>>>>>>>>> --- a/drivers/vdpa/vdpa.c
->>>>>>>>>>>>>> +++ b/drivers/vdpa/vdpa.c
->>>>>>>>>>>>>> @@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device
->>>>>>>>>>>>>> *vdev,
->>>>>>>>>>>>>> struct sk_buff *msg, u32 portid,  {
->>>>>>>>>>>>>>        u32 device_id;
->>>>>>>>>>>>>>        void *hdr;
->>>>>>>>>>>>>> -    u8 status;
->>>>>>>>>>>>>>        int err;
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> down_read(&vdev->cf_lock);
->>>>>>>>>>>>>> -    status = vdev->config->get_status(vdev);
->>>>>>>>>>>>>> -    if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
->>>>>>>>>>>>>> -        NL_SET_ERR_MSG_MOD(extack, "Features negotiation 
->>>>>>>>>>>>>> not
->>>>>>>>>>>>>> completed");
->>>>>>>>>>>>>> -        err = -EAGAIN;
->>>>>>>>>>>>>> -        goto out;
->>>>>>>>>>>>>> -    }
->>>>>>>>>>>>>> -
->>>>>>>>>>>>>>        hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family,
->>>>>>>>>>>>>> flags,
->>>>>>>>>>>>>> VDPA_CMD_DEV_CONFIG_GET);
->>>>>>>>>>>>>>        if (!hdr) {
->>>>>>>>>>>>>> -- 
->>>>>>>>>>>>>> 2.31.1
->>>>>>>>>>>>> _______________________________________________
->>>>>>>>>>>>> Virtualization mailing list
->>>>>>>>>>>>> Virtualization@lists.linux-foundation.org
->>>>>>>>>>>>> https://urldefense.com/v3/__https://lists.linuxfoundation.org/mailman/listinfo/virtualization__;!!ACWV5N9M2RV99hQ!NzOv5Ew_Z2CP-zHyD7RsUoStLZ54KpB21QyuZ8L63YVPLEGDEwvcOSDlIGxQPHY-DMkOa9sKKZdBSaNknMU$ 
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>>
->
+diff --git a/tools/testing/selftests/net/ipsec.c b/tools/testing/selftests/net/ipsec.c
+index cc10c10c5ed9..4a0eeb5b71d2 100644
+--- a/tools/testing/selftests/net/ipsec.c
++++ b/tools/testing/selftests/net/ipsec.c
+@@ -58,6 +58,8 @@
+ #define VETH_FMT	"ktst-%d"
+ #define VETH_LEN	12
+ 
++#define XFRM_ALGO_NR_KEYS 29
++
+ static int nsfd_parent	= -1;
+ static int nsfd_childa	= -1;
+ static int nsfd_childb	= -1;
+@@ -75,6 +77,46 @@ const unsigned int ping_timeout		= 300;
+ const unsigned int ping_count		= 100;
+ const unsigned int ping_success		= 80;
+ 
++struct xfrm_key_entry {
++	char algo_name[35];
++	int key_len;
++};
++
++struct xfrm_key_entry xfrm_key_entries[XFRM_ALGO_NR_KEYS];
++
++static void init_xfrm_algo_keys(void)
++{
++	xfrm_key_entries[0] = (struct xfrm_key_entry) {"digest_null", 0};
++	xfrm_key_entries[1] = (struct xfrm_key_entry) {"ecb(cipher_null)", 0};
++	xfrm_key_entries[2] = (struct xfrm_key_entry) {"cbc(des)", 64};
++	xfrm_key_entries[3] = (struct xfrm_key_entry) {"hmac(md5)", 128};
++	xfrm_key_entries[4] = (struct xfrm_key_entry) {"cmac(aes)", 128};
++	xfrm_key_entries[5] = (struct xfrm_key_entry) {"xcbc(aes)", 128};
++	xfrm_key_entries[6] = (struct xfrm_key_entry) {"cbc(cast5)", 128};
++	xfrm_key_entries[7] = (struct xfrm_key_entry) {"cbc(serpent)", 128};
++	xfrm_key_entries[8] = (struct xfrm_key_entry) {"hmac(sha1)", 160};
++	xfrm_key_entries[9] = (struct xfrm_key_entry) {"hmac(rmd160)", 160};
++	xfrm_key_entries[10] = (struct xfrm_key_entry) {"cbc(des3_ede)", 192};
++	xfrm_key_entries[11] = (struct xfrm_key_entry) {"hmac(sha256)", 256};
++	xfrm_key_entries[12] = (struct xfrm_key_entry) {"cbc(aes)", 256};
++	xfrm_key_entries[13] = (struct xfrm_key_entry) {"cbc(camellia)", 256};
++	xfrm_key_entries[14] = (struct xfrm_key_entry) {"cbc(twofish)", 256};
++	xfrm_key_entries[15] = (struct xfrm_key_entry) {"rfc3686(ctr(aes))", 288};
++	xfrm_key_entries[16] = (struct xfrm_key_entry) {"hmac(sha384)", 384};
++	xfrm_key_entries[17] = (struct xfrm_key_entry) {"cbc(blowfish)", 448};
++	xfrm_key_entries[18] = (struct xfrm_key_entry) {"hmac(sha512)", 512};
++	xfrm_key_entries[19] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-128", 160};
++	xfrm_key_entries[20] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-128", 160};
++	xfrm_key_entries[21] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-128", 152};
++	xfrm_key_entries[22] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-192", 224};
++	xfrm_key_entries[23] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-192", 224};
++	xfrm_key_entries[24] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-192", 216};
++	xfrm_key_entries[25] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-256", 288};
++	xfrm_key_entries[26] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-256", 288};
++	xfrm_key_entries[27] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-256", 280};
++	xfrm_key_entries[28] = (struct xfrm_key_entry) {"rfc7539(chacha20,poly1305)-128", 0};
++}
++
+ static void randomize_buffer(void *buf, size_t buflen)
+ {
+ 	int *p = (int *)buf;
+@@ -767,65 +809,12 @@ static int do_ping(int cmd_fd, char *buf, size_t buf_len, struct in_addr from,
+ static int xfrm_fill_key(char *name, char *buf,
+ 		size_t buf_len, unsigned int *key_len)
+ {
+-	/* TODO: use set/map instead */
+-	if (strncmp(name, "digest_null", ALGO_LEN) == 0)
+-		*key_len = 0;
+-	else if (strncmp(name, "ecb(cipher_null)", ALGO_LEN) == 0)
+-		*key_len = 0;
+-	else if (strncmp(name, "cbc(des)", ALGO_LEN) == 0)
+-		*key_len = 64;
+-	else if (strncmp(name, "hmac(md5)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cmac(aes)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "xcbc(aes)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cbc(cast5)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cbc(serpent)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "hmac(sha1)", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "hmac(rmd160)", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "cbc(des3_ede)", ALGO_LEN) == 0)
+-		*key_len = 192;
+-	else if (strncmp(name, "hmac(sha256)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(aes)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(camellia)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(twofish)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "rfc3686(ctr(aes))", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "hmac(sha384)", ALGO_LEN) == 0)
+-		*key_len = 384;
+-	else if (strncmp(name, "cbc(blowfish)", ALGO_LEN) == 0)
+-		*key_len = 448;
+-	else if (strncmp(name, "hmac(sha512)", ALGO_LEN) == 0)
+-		*key_len = 512;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 152;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 224;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 224;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 216;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 280;
+-	else if (strncmp(name, "rfc7539(chacha20,poly1305)-128", ALGO_LEN) == 0)
+-		*key_len = 0;
++	int i;
++
++	for (i = 0; i < XFRM_ALGO_NR_KEYS; i++) {
++		if (strncmp(name, xfrm_key_entries[i].algo_name, ALGO_LEN) == 0)
++			*key_len = xfrm_key_entries[i].key_len;
++	}
+ 
+ 	if (*key_len > buf_len) {
+ 		printk("Can't pack a key - too big for buffer");
+@@ -2305,6 +2294,7 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
++	init_xfrm_algo_keys();
+ 	srand(time(NULL));
+ 	page_size = sysconf(_SC_PAGESIZE);
+ 	if (page_size < 1)
+-- 
+2.34.1
 
