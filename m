@@ -2,56 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4915588ED7
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E2CE588EE8
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235093AbiHCOoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 10:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S236303AbiHCOtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 10:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiHCOoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:44:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F100813D72;
-        Wed,  3 Aug 2022 07:43:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659537840; x=1691073840;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=T4/3FsYWefVHkyY1sZZTHJV6BaozryMZW4IS2uDK4bE=;
-  b=mvRWCOwWta7+IJT6YnWPTJzKsNWvLD8voWA7DjVXpB3KYJl5oOZ5wMuT
-   5KPSNUqWDtRKgIJqraPGzxgvdcT8yY0Omj5IJiVVF3NJZpX7ibedR6XdU
-   vk150WWmDhc1OkreLkvKNPdHYcy6lXQJ7LeT7fa21+nLFqjqHiDFSbRLt
-   2bzWe4GEczLzowyyoQ5HZoPEXB9w6l6a0SBrY5yaxYzYKtT6xGQYZ4/kb
-   VJpkYV+J/+3cGr+LFAzN+dWzdTrSE85GL+2Nvo3aiIAtvGi9Llm3r3WAc
-   /uKz1ES/x6f82Y/FVE/XfiiaoQDnZxTxabfUlm/34/g7u+4NHLPNqI4OC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="290905679"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="290905679"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 07:43:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="578671981"
-Received: from silpixa00401350.ir.intel.com (HELO silpixav00401350..) ([10.55.128.131])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 07:43:56 -0700
-From:   Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, kuba@kernel.org, maciej.fijalkowski@intel.com,
-        andrii@kernel.org, ciara.loftus@intel.com,
-        Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
-Subject: [PATCH bpf-next v4] selftests: xsk: Update poll test cases
-Date:   Wed,  3 Aug 2022 14:43:54 +0000
-Message-Id: <20220803144354.98122-1-shibin.koikkara.reeny@intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S236284AbiHCOtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:49:52 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0125B32ECC;
+        Wed,  3 Aug 2022 07:49:51 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id uj29so18770777ejc.0;
+        Wed, 03 Aug 2022 07:49:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T1eaEYCsiztUOu1TAFfBm7LGOQwx8sYwZrazGABjp+A=;
+        b=Yom+/5l7W5v3IQO5nqagXRpVxKMpv4b7nLy15Z6BDRoWDxwlVaalW5CEdekCHWvuPg
+         YZKrPrvu72xBODBU5dl9eDTkzvRQ2y9Mt06mqJOUZtgzugOaVbzSlQZLokrl+KZ10jch
+         skW/DCMDiUoFj2/Kuo+XwRpZxOrjibDrIb8ctmsj9wWmXHGH9jPgpIqIToC8wFJ0/ajq
+         7ll0l4RGsYggKLsbnHQ3Znd0wd+HABJIROt4nCuspGyBmuAQlXkxRPnKUrbooBsn/iFH
+         shZ6LYBNiJiN3MqtFSbqb1DFn1uN6PKeGxrVam7mN9UxqP+rr4Cv2D/AbADFsH+5HjRy
+         NIZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T1eaEYCsiztUOu1TAFfBm7LGOQwx8sYwZrazGABjp+A=;
+        b=79naeU5fqhiEB5mKC+y41ItKyNbKE6Y1QoTfXOiC1RhaYp3M59WkLyqoOo6Il6w/mO
+         6nDcrYmirCTxLpvyeYg2MRhsHlB8TtdJmipCRcpNOLvi31xselqx9MAfI1n1qIxdQPyM
+         Oaaz/9AHYmXku4ncnGauSBRRrZxSX4tVYD1c95TNMmVcTD/dV6OsFRzFc3REQRYIoOy1
+         QgSuMVSgEtdq6AUKT5elsxy0aQLT+40H54rhvMiX3RDUAuh2qjIpiAAb1tnlqhe9QRyE
+         EO9nuSODve8mP7P3WJLb/GkCZN0b1bzlPPWJAWzyoPCcfuZc0XPe/nX3QCWjFtT33WXI
+         Ahqg==
+X-Gm-Message-State: AJIora/YckQjUiv1CZFkFzYU+TFkLoAyfYKrDwtsnMgFXDevkp4/T/e+
+        B4Xc7JkXcytJa3j56L1XWEhXYdE2Bs8=
+X-Google-Smtp-Source: AGRyM1vTtK6HW/bbts8o1KO6oBtaME8U2fUjf+wRHKFzlBr/ItS+9WsFxI8n6qGRmfqGsyEQulv1QQ==
+X-Received: by 2002:a17:907:94ca:b0:72b:8f3e:3be0 with SMTP id dn10-20020a17090794ca00b0072b8f3e3be0mr20580195ejc.462.1659538189411;
+        Wed, 03 Aug 2022 07:49:49 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id ck28-20020a0564021c1c00b0043df40e4cfdsm2335053edb.35.2022.08.03.07.49.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 07:49:48 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 17:49:46 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun.Ramadoss@microchip.com
+Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        linux@armlinux.org.uk, f.fainelli@gmail.com, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        Woojung.Huh@microchip.com, davem@davemloft.net
+Subject: Re: [Patch RFC net-next 4/4] net: dsa: microchip: use private pvid
+ for bridge_vlan_unwaware
+Message-ID: <20220803144946.utxy2mbppj7lmgig@skbuf>
+References: <20220729151733.6032-1-arun.ramadoss@microchip.com>
+ <20220729151733.6032-1-arun.ramadoss@microchip.com>
+ <20220729151733.6032-5-arun.ramadoss@microchip.com>
+ <20220729151733.6032-5-arun.ramadoss@microchip.com>
+ <20220802105935.gjjc3ft6zf35xrhr@skbuf>
+ <365b35f48b4a6c2003b67a4ee0c287b8172fa262.camel@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <365b35f48b4a6c2003b67a4ee0c287b8172fa262.camel@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,341 +78,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Poll test case was not testing all the functionality
-of the poll feature in the testsuite. This patch
-update the poll test case which contain 2 testcases to
-test the RX and the TX poll functionality and additional
-2 more testcases to check the timeout features of the
-poll event.
+On Tue, Aug 02, 2022 at 02:40:09PM +0000, Arun.Ramadoss@microchip.com wrote:
+> On Tue, 2022-08-02 at 13:59 +0300, Vladimir Oltean wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you
+> > know the content is safe
+> > 
+> > On Fri, Jul 29, 2022 at 08:47:33PM +0530, Arun Ramadoss wrote:
+> > > diff --git a/drivers/net/dsa/microchip/ksz_common.c
+> > > b/drivers/net/dsa/microchip/ksz_common.c
+> > > index 516fb9d35c87..8a5583b1f2f4 100644
+> > > --- a/drivers/net/dsa/microchip/ksz_common.c
+> > > +++ b/drivers/net/dsa/microchip/ksz_common.c
+> > > @@ -161,6 +161,7 @@ static const struct ksz_dev_ops ksz8_dev_ops =
+> > > {
+> > >       .vlan_filtering = ksz8_port_vlan_filtering,
+> > >       .vlan_add = ksz8_port_vlan_add,
+> > >       .vlan_del = ksz8_port_vlan_del,
+> > > +     .drop_untagged = ksz8_port_enable_pvid,
+> > 
+> > You'll have to explain this one. What impact does PVID insertion on KSZ8
+> > have upon dropping/not dropping untagged packets? This patch is saying
+> > that when untagged packets should be dropped, PVID insertion should be
+> > enabled, and when untagged packets should be accepted, PVID insertion
+> > should be disabled. How come?
+> 
+> Its my mistake. I referred KSZ87xx datasheet but I couldn't find the
+> register for the dropping the untagged packet. If that is the case,
+> shall I remove the dropping of untagged packet feature from the ksz8
+> switches?
 
-Poll testsuite have 4 test cases:
+You'll have to see how KSZ8 behaves when the ingress port is configured
+with a PVID (through REG_PORT_CTRL_VID) which isn't present in the VLAN
+table. If untagged packets are dropped, that's your "drop untagged"
+setting. Some other switches will not do this, and accept untagged
+packets even if the VLAN table doesn't contain an entry for the PVID
+(or doesn't have this port as a member of that VLAN), but have a
+separate knob for dropping untagged traffic.
 
-1. TEST_TYPE_RX_POLL:
-Check if RX path POLLIN function work as expect. TX path
-can use any method to sent the traffic.
+> > This is better in the sense that it resolves the need for the
+> > configure_vlan_while_not_filtering hack. But standalone and VLAN-unaware
+> > bridge ports still share the same PVID. Even more so, standalone ports
+> > have address learning enabled, which will poison the address database of
+> > VLAN-unaware bridge ports (and of other standalone ports):
+> > 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220802002636.3963025-1-vladimir.oltean@nxp.com/
+> > 
+> > Are you going to do further work in this area?
+> 
+> For now, I thought I can fix the issue for bridge vlan unaware port. I
+> have few other patch series to be submitted like gPTP, tc commands. If
+> standalone port fix also needed for your patch series I can work on it
+> otherwise I can take up later stage.
 
-2. TEST_TYPE_TX_POLL:
-Check if TX path POLLOUT function work as expect. RX path
-can use any method to receive the traffic.
+I think the most imperative thing for you to do is to make sure you are
+not introducing regressions with the port default VID change - this can
+be done by running the bridge related selftests (and making them pass).
 
-3. TEST_TYPE_POLL_RXQ_EMPTY:
-Call poll function with parameter POLLIN on empty rx queue
-will cause timeout.If return timeout then test case is pass.
+Something which I forgot to mention is that normally, I'd expect a
+change of VLAN-unaware PVID to also need a change in the way that
+VLAN-unaware FDB entries are added (other drivers need to remap vid=0
+from port_fdb_add() to the PVID that they use for that VLAN-unaware
+bridge, in your case 4095, for those FDB entries to continue matching
+properly).
 
-4. TEST_TYPE_POLL_TXQ_FULL:
-When txq is filled and packets are not cleaned by the kernel
-then if we invoke the poll function with POLLOUT then it
-should trigger timeout.
+However, I see that currently, ksz9477_fdb_add() sets the "USE FID" bit
+only for VLAN-aware FDB entries (vid != 0), which leaves me with more
+questions than answers.
 
-v1: https://lore.kernel.org/bpf/20220718095712.588513-1-shibin.koikkara.reeny@intel.com/
-v2: https://lore.kernel.org/bpf/20220726101723.250746-1-shibin.koikkara.reeny@intel.com/
-v3: https://lore.kernel.org/bpf/20220729132337.211443-1-shibin.koikkara.reeny@intel.com/
+It isn't very well explained what it means to not use FID: let's say
+there are 2 entries in the static address table, one has "USE FID"=false,
+and the other has "USE FID"=true and FID=127, and a packet is received
+which is classified to FID 127. On which entry will this packet match?
 
-Changes in v2:
- * Updated the commit message
- * fixed the while loop flow in receive_pkts function.
-Changes in v3:
- * Introduced single thread validation function.
- * Removed pkt_stream_invalid().
- * Updated TEST_TYPE_POLL_TXQ_FULL testcase to create invalid frame.
- * Removed timer from send_pkts().
- * Removed boolean variable skip_rx and skip_tx.
-Change in v4:
- * Added is_umem_valid()
+The bridge driver gives you all FDB entries at once (VLAN-aware and
+VLAN-unaware), so if the USE_FID=false entries that the ksz9477 driver
+uses for VLAN-unaware mode will shadow the VLAN-aware FDB entries, this
+is going to be a problem.
 
-Signed-off-by: Shibin Koikkara Reeny <shibin.koikkara.reeny@intel.com>
----
- tools/testing/selftests/bpf/xskxceiver.c | 166 +++++++++++++++++------
- tools/testing/selftests/bpf/xskxceiver.h |   8 +-
- 2 files changed, 134 insertions(+), 40 deletions(-)
+Also, the way in which the ksz9477 driver translates a 12-bit VID into a
+7-bit FID also has me incredibly confused (FID is vlan->vid & VLAN_FID_M,
+or otherwise said, a simple truncation). This means that your
+VLAN-unaware PVID of 4095 uses a FID of 127, which is also the same FID
+as VLANs 127, 255, 383 etc, right? So there is potentially still full
+address database leakage between VLAN-unaware and VLAN-aware bridges.
 
-diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index 74d56d971baf..20b44ab32a06 100644
---- a/tools/testing/selftests/bpf/xskxceiver.c
-+++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -244,6 +244,11 @@ static void gen_udp_hdr(u32 payload, void *pkt, struct ifobject *ifobject,
- 	memset32_htonl(pkt + PKT_HDR_SIZE, payload, UDP_PKT_DATA_SIZE);
- }
- 
-+static bool is_umem_valid(struct ifobject *ifobj)
-+{
-+	return !!ifobj->umem->umem;
-+}
-+
- static void gen_udp_csum(struct udphdr *udp_hdr, struct iphdr *ip_hdr)
- {
- 	udp_hdr->check = 0;
-@@ -817,12 +822,13 @@ static int complete_pkts(struct xsk_socket_info *xsk, int batch_size)
- 	return TEST_PASS;
- }
- 
--static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
-+static int receive_pkts(struct test_spec *test, struct pollfd *fds)
- {
--	struct timeval tv_end, tv_now, tv_timeout = {RECV_TMOUT, 0};
-+	struct timeval tv_end, tv_now, tv_timeout = {THREAD_TMOUT, 0};
-+	struct pkt_stream *pkt_stream = test->ifobj_rx->pkt_stream;
- 	u32 idx_rx = 0, idx_fq = 0, rcvd, i, pkts_sent = 0;
--	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
--	struct xsk_socket_info *xsk = ifobj->xsk;
-+	struct xsk_socket_info *xsk = test->ifobj_rx->xsk;
-+	struct ifobject *ifobj = test->ifobj_rx;
- 	struct xsk_umem_info *umem = xsk->umem;
- 	struct pkt *pkt;
- 	int ret;
-@@ -843,17 +849,28 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
- 		}
- 
- 		kick_rx(xsk);
-+		if (ifobj->use_poll) {
-+			ret = poll(fds, 1, POLL_TMOUT);
-+			if (ret < 0)
-+				exit_with_error(-ret);
-+
-+			if (!ret) {
-+				if (!is_umem_valid(test->ifobj_tx))
-+					return TEST_PASS;
-+
-+				ksft_print_msg("ERROR: [%s] Poll timed out\n", __func__);
-+				return TEST_FAILURE;
- 
--		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
--		if (!rcvd) {
--			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
--				ret = poll(fds, 1, POLL_TMOUT);
--				if (ret < 0)
--					exit_with_error(-ret);
- 			}
--			continue;
-+
-+			if (!(fds->revents & POLLIN))
-+				continue;
- 		}
- 
-+		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
-+		if (!rcvd)
-+			continue;
-+
- 		if (ifobj->use_fill_ring) {
- 			ret = xsk_ring_prod__reserve(&umem->fq, rcvd, &idx_fq);
- 			while (ret != rcvd) {
-@@ -900,13 +917,35 @@ static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
- 	return TEST_PASS;
- }
- 
--static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
-+static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb, struct pollfd *fds,
-+		       bool timeout)
- {
- 	struct xsk_socket_info *xsk = ifobject->xsk;
--	u32 i, idx, valid_pkts = 0;
-+	bool use_poll = ifobject->use_poll;
-+	u32 i, idx, ret, valid_pkts = 0;
-+
-+	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE) {
-+		if (use_poll) {
-+			ret = poll(fds, 1, POLL_TMOUT);
-+			if (timeout) {
-+				if (ret < 0) {
-+					ksft_print_msg("ERROR: [%s] Poll error %d\n",
-+						       __func__, ret);
-+					return TEST_FAILURE;
-+				}
-+				if (ret == 0)
-+					return TEST_PASS;
-+				break;
-+			}
-+			if (ret <= 0) {
-+				ksft_print_msg("ERROR: [%s] Poll error %d\n",
-+					       __func__, ret);
-+				return TEST_FAILURE;
-+			}
-+		}
- 
--	while (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) < BATCH_SIZE)
- 		complete_pkts(xsk, BATCH_SIZE);
-+	}
- 
- 	for (i = 0; i < BATCH_SIZE; i++) {
- 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
-@@ -933,11 +972,27 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
- 
- 	xsk_ring_prod__submit(&xsk->tx, i);
- 	xsk->outstanding_tx += valid_pkts;
--	if (complete_pkts(xsk, i))
--		return TEST_FAILURE;
- 
--	usleep(10);
--	return TEST_PASS;
-+	if (use_poll) {
-+		ret = poll(fds, 1, POLL_TMOUT);
-+		if (ret <= 0) {
-+			if (ret == 0 && timeout)
-+				return TEST_PASS;
-+
-+			ksft_print_msg("ERROR: [%s] Poll error %d\n", __func__, ret);
-+			return TEST_FAILURE;
-+		}
-+	}
-+
-+	if (!timeout) {
-+		if (complete_pkts(xsk, i))
-+			return TEST_FAILURE;
-+
-+		usleep(10);
-+		return TEST_PASS;
-+	}
-+
-+	return TEST_CONTINUE;
- }
- 
- static void wait_for_tx_completion(struct xsk_socket_info *xsk)
-@@ -948,29 +1003,19 @@ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
- 
- static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
- {
-+	bool timeout = !is_umem_valid(test->ifobj_rx);
- 	struct pollfd fds = { };
--	u32 pkt_cnt = 0;
-+	u32 pkt_cnt = 0, ret;
- 
- 	fds.fd = xsk_socket__fd(ifobject->xsk->xsk);
- 	fds.events = POLLOUT;
- 
- 	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
--		int err;
--
--		if (ifobject->use_poll) {
--			int ret;
--
--			ret = poll(&fds, 1, POLL_TMOUT);
--			if (ret <= 0)
--				continue;
--
--			if (!(fds.revents & POLLOUT))
--				continue;
--		}
--
--		err = __send_pkts(ifobject, &pkt_cnt);
--		if (err || test->fail)
-+		ret = __send_pkts(ifobject, &pkt_cnt, &fds, timeout);
-+		if ((ret || test->fail) && !timeout)
- 			return TEST_FAILURE;
-+		else if (ret == TEST_PASS && timeout)
-+			return ret;
- 	}
- 
- 	wait_for_tx_completion(ifobject->xsk);
-@@ -1235,7 +1280,7 @@ static void *worker_testapp_validate_rx(void *arg)
- 
- 	pthread_barrier_wait(&barr);
- 
--	err = receive_pkts(ifobject, &fds);
-+	err = receive_pkts(test, &fds);
- 
- 	if (!err && ifobject->validation_func)
- 		err = ifobject->validation_func(ifobject);
-@@ -1251,6 +1296,33 @@ static void *worker_testapp_validate_rx(void *arg)
- 	pthread_exit(NULL);
- }
- 
-+static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
-+						  enum test_type type)
-+{
-+	pthread_t t0;
-+
-+	if (pthread_barrier_init(&barr, NULL, 2))
-+		exit_with_error(errno);
-+
-+	test->current_step++;
-+	if (type  == TEST_TYPE_POLL_RXQ_TMOUT)
-+		pkt_stream_reset(ifobj->pkt_stream);
-+	pkts_in_flight = 0;
-+
-+	/*Spawn thread */
-+	pthread_create(&t0, NULL, ifobj->func_ptr, test);
-+
-+	if (type != TEST_TYPE_POLL_TXQ_TMOUT)
-+		pthread_barrier_wait(&barr);
-+
-+	if (pthread_barrier_destroy(&barr))
-+		exit_with_error(errno);
-+
-+	pthread_join(t0, NULL);
-+
-+	return !!test->fail;
-+}
-+
- static int testapp_validate_traffic(struct test_spec *test)
- {
- 	struct ifobject *ifobj_tx = test->ifobj_tx;
-@@ -1548,12 +1620,30 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 
- 		pkt_stream_restore_default(test);
- 		break;
--	case TEST_TYPE_POLL:
--		test->ifobj_tx->use_poll = true;
-+	case TEST_TYPE_RX_POLL:
- 		test->ifobj_rx->use_poll = true;
--		test_spec_set_name(test, "POLL");
-+		test_spec_set_name(test, "POLL_RX");
- 		testapp_validate_traffic(test);
- 		break;
-+	case TEST_TYPE_TX_POLL:
-+		test->ifobj_tx->use_poll = true;
-+		test_spec_set_name(test, "POLL_TX");
-+		testapp_validate_traffic(test);
-+		break;
-+	case TEST_TYPE_POLL_TXQ_TMOUT:
-+		test_spec_set_name(test, "POLL_TXQ_FULL");
-+		test->ifobj_tx->use_poll = true;
-+		/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
-+		test->ifobj_tx->umem->frame_size = 2048;
-+		pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
-+		testapp_validate_traffic_single_thread(test, test->ifobj_tx, type);
-+		pkt_stream_restore_default(test);
-+		break;
-+	case TEST_TYPE_POLL_RXQ_TMOUT:
-+		test_spec_set_name(test, "POLL_RXQ_EMPTY");
-+		test->ifobj_rx->use_poll = true;
-+		testapp_validate_traffic_single_thread(test, test->ifobj_rx, type);
-+		break;
- 	case TEST_TYPE_ALIGNED_INV_DESC:
- 		test_spec_set_name(test, "ALIGNED_INV_DESC");
- 		testapp_invalid_desc(test);
-diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
-index 3d17053f98e5..ee97576757a9 100644
---- a/tools/testing/selftests/bpf/xskxceiver.h
-+++ b/tools/testing/selftests/bpf/xskxceiver.h
-@@ -27,6 +27,7 @@
- 
- #define TEST_PASS 0
- #define TEST_FAILURE -1
-+#define TEST_CONTINUE 1
- #define MAX_INTERFACES 2
- #define MAX_INTERFACE_NAME_CHARS 7
- #define MAX_INTERFACES_NAMESPACE_CHARS 10
-@@ -48,7 +49,7 @@
- #define SOCK_RECONF_CTR 10
- #define BATCH_SIZE 64
- #define POLL_TMOUT 1000
--#define RECV_TMOUT 3
-+#define THREAD_TMOUT 3
- #define DEFAULT_PKT_CNT (4 * 1024)
- #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
- #define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
-@@ -68,7 +69,10 @@ enum test_type {
- 	TEST_TYPE_RUN_TO_COMPLETION,
- 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
- 	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
--	TEST_TYPE_POLL,
-+	TEST_TYPE_RX_POLL,
-+	TEST_TYPE_TX_POLL,
-+	TEST_TYPE_POLL_RXQ_TMOUT,
-+	TEST_TYPE_POLL_TXQ_TMOUT,
- 	TEST_TYPE_UNALIGNED,
- 	TEST_TYPE_ALIGNED_INV_DESC,
- 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
--- 
-2.34.1
+I think this phrase from the documentation is under-appreciated in
+understanding how the hardware works:
 
+| Table 4-8 details the forwarding and discarding actions that are taken
+| for the various VLAN scenarios. The first entry in the table is
+| explained by the fact that VLAN Table lookup is enabled even when 802.1Q
+| VLAN is not enabled.
+
+The last part ("VLAN Table lookup is enabled even when 802.1Q VLAN is
+not enabled") is what makes it so that the PVID of the port must be
+present in the VLAN table or otherwise you get packet drops. In turn,
+if the VLAN table is being looked up, it means that regardless of
+whether the switch is VLAN-unaware or not, the VID will be transformed
+into a 7-bit FID.
+
+I want that the FID that is being used for standalone ports and
+VLAN-unaware bridges (127) to be a fully conscious decision, with the
+implications understood, and not just something done for me to shut up.
+There is a risk here that you may think things are fine and work on
+other features, but things are not fine at all. And in this area,
+standalone ports/bridge VLANs/ FDB entries/FIDs are very inter-related
+things. When you change one, you may find that the entire scheme needs
+to be re-thought.
