@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8292D588639
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 06:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77ECE588681
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 06:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232173AbiHCEUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 00:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48944 "EHLO
+        id S234270AbiHCE3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 00:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiHCEUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 00:20:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0FF2B60B;
-        Tue,  2 Aug 2022 21:20:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B958A612E4;
-        Wed,  3 Aug 2022 04:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84062C433D6;
-        Wed,  3 Aug 2022 04:20:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659500406;
-        bh=4XvW6Am+LFtU+beJUyoqbF5SdzyM95956jiHnqhMtGw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fP7OAmnJdeDrH+3lKsGs+j7tgGMMLB/DbAh9jWp67VxaRsmO7QibW7knm2D2iYqZG
-         dSVQlg7tWQQjiQP2uvEepCh5ML010EhvEJDE6rnIBneJxT3mWexptkIVMdxHaAV9PK
-         0GEngfIwWPmIHP8Fi2aou9E21t9PuJdIKKksaZuqUSdy5tBFXAiPLM3QVzxB6rTWH8
-         uLbLhTU3bzqlWeg5Q8xKUlmlh6Owbdvf+LjbUXbJDiTCYyWephMAaEvGelYdg7GiDO
-         OlG7AH4mP60rel0pO+jvwR0Jy/ng+Vz0sYXEMcntQ2SgFkrnZdDl4V69RvYnSuPOMD
-         02P7prfEmDn8g==
-Message-ID: <9e8728e0-75e7-d3a8-038b-48e51be4df07@kernel.org>
-Date:   Tue, 2 Aug 2022 22:20:04 -0600
+        with ESMTP id S232173AbiHCE3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 00:29:01 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6CD56BA3
+        for <netdev@vger.kernel.org>; Tue,  2 Aug 2022 21:29:00 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id v185so12139974ioe.11
+        for <netdev@vger.kernel.org>; Tue, 02 Aug 2022 21:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=X6lHdphthhN/ZqGN/OVjWiiJZ2d0FceYRUwg0EoQl3Q=;
+        b=X/NxyLsfRBCXmJhBwuNfq18ze19Lan6DXA5OdsbwqwxTr2fcJmlWnhyovZzDTg3How
+         deVAVdnQ0o5zjTJOF7D1I+hoqMpDG7a6voc2CeZwcFpmWbVPJ/anaFP6v9+YRPewqxIY
+         T5gmdg7eYV2wuDKDsNF5FmrItF9XZI1d2rnA1Gv6WOdoR2newQ89vwTqQKpege2gRzgE
+         38PAJxr62BsMMYyAn382784QJky2x0Oz0DHpGEK1aMTf3PzkeDa47ghYI3dThrOjtC5H
+         s1dp7qYc/bYjR8JAU4MespeHl+oERufQ9vgClFcLp+yx8O6KjstTSlQOBSgd3wGlbNSq
+         6mlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=X6lHdphthhN/ZqGN/OVjWiiJZ2d0FceYRUwg0EoQl3Q=;
+        b=KLqaaWlqWCojr5IgCdV0t4xXWBpyqyWTpef/2PNSEbwWnq+XUWbaiuuxG+RNDa1XRO
+         coUc3M/Q0RayuOtqEPdWPCDNhQWLy2RkATJRqX2yyU/2+wizOTpcun9su1JiqOJyGAUE
+         8ZQ6z53hGjPvMsIkoOKdkWR/R+S3mVqmHOmKvdHt7AW+okSfLyQZB78XTx/DiAdc0JkS
+         I+xlBqQUSG4h92Fm2RDjyUcgXso2ZoyPhkyVXlozy1OkGTxjaSMTllr70LEm7SY9PGS9
+         7o5Trga9IXgaI7qE73Y8F5AjMsPCWx/2OF/vhIegdiUbn+DXptBtj7FsVQbLKbdHRcmc
+         vrJw==
+X-Gm-Message-State: AJIora94AQjuJBDgXTMaHoP976GHwIJBTV+RDeSrq3VdRBReLd+mEnSl
+        9/UQdg0tlxenQ3GImTK4n3Y=
+X-Google-Smtp-Source: AGRyM1s/2VrOpJ90ULN1lalbUC+I1Z6uiMQBBfuznN8iMDYziUfFAAqbQaxE17AHHGjJnwALY61p/g==
+X-Received: by 2002:a5d:844d:0:b0:67c:a76d:85cd with SMTP id w13-20020a5d844d000000b0067ca76d85cdmr8862474ior.191.1659500939468;
+        Tue, 02 Aug 2022 21:28:59 -0700 (PDT)
+Received: from localhost (cpec09435e3ea83-cmc09435e3ea81.cpe.net.cable.rogers.com. [99.235.148.253])
+        by smtp.gmail.com with UTF8SMTPSA id e7-20020a92d747000000b002ddf6de928dsm6527413ilq.62.2022.08.02.21.28.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 21:28:58 -0700 (PDT)
+From:   Cezar Bulinaru <cbulinaru@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     willemb@google.com, netdev@vger.kernel.org, cbulinaru@gmail.com
+Subject: [PATCH v4 1/2] net: tap: NULL pointer derefence in dev_parse_header_protocol when skb->dev is null
+Date:   Wed,  3 Aug 2022 00:28:45 -0400
+Message-Id: <20220803042845.5754-1-cbulinaru@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <CA+FuTSfNLfLCxV8NNsJKSQynvBCa2_b7YqqPPXr=2gDhXnGiYA@mail.gmail.com>
+References: <CA+FuTSfNLfLCxV8NNsJKSQynvBCa2_b7YqqPPXr=2gDhXnGiYA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH] net: seg6: initialize induction variable to first valid
- array index
-Content-Language: en-US
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-References: <20220802161203.622293-1-ndesaulniers@google.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220802161203.622293-1-ndesaulniers@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,88 +68,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ cc Andrea ]
+Fixes a NULL pointer derefence bug triggered from tap driver.
+When tap_get_user calls virtio_net_hdr_to_skb the skb->dev is null
+(in tap.c skb->dev is set after the call to virtio_net_hdr_to_skb)
+virtio_net_hdr_to_skb calls dev_parse_header_protocol which
+needs skb->dev field to be valid.
 
-On 8/2/22 10:12 AM, Nick Desaulniers wrote:
-> Fixes the following warnings observed when building
-> CONFIG_IPV6_SEG6_LWTUNNEL=y with clang:
-> 
->   net/ipv6/seg6_local.o: warning: objtool: seg6_local_fill_encap() falls
->   through to next function seg6_local_get_encap_size()
->   net/ipv6/seg6_local.o: warning: objtool: seg6_local_cmp_encap() falls
->   through to next function input_action_end()
-> 
-> LLVM can fully unroll loops in seg6_local_get_encap_size() and
-> seg6_local_cmp_encap(). One issue in those loops is that the induction
-> variable is initialized to 0. The loop iterates over members of
-> seg6_action_params, a global array of struct seg6_action_param calling
-> their put() function pointer members.  seg6_action_param uses an array
-> initializer to initialize SEG6_LOCAL_SRH and later elements, which is
-> the third enumeration of an anonymous union.
-> 
-> The guard `if (attrs & SEG6_F_ATTR(i))` may prevent this from being
-> called at runtime, but it would still be UB for
-> `seg6_action_params[0]->put` to be called; the unrolled loop will make
-> the initial iterations unreachable, which LLVM will later rotate to
-> fallthrough to the next function.
-> 
-> Make this more obvious that this cannot happen to the compiler by
-> initializing the loop induction variable to the minimum valid index that
-> seg6_action_params is initialized to.
-> 
-> Reported-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-> ---
->  net/ipv6/seg6_local.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-> index 2cd4a8d3b30a..b7de5e46fdd8 100644
-> --- a/net/ipv6/seg6_local.c
-> +++ b/net/ipv6/seg6_local.c
-> @@ -1614,7 +1614,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
->  	 * callback. If the callback is not available, then we skip to the next
->  	 * attribute; otherwise, we call the destroy() callback.
->  	 */
-> -	for (i = 0; i < max_parsed; ++i) {
-> +	for (i = SEG6_LOCAL_SRH; i < max_parsed; ++i) {
->  		if (!(parsed_attrs & SEG6_F_ATTR(i)))
->  			continue;
->  
-> @@ -1643,7 +1643,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
->  	struct seg6_action_param *param;
->  	int err, i;
->  
-> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; ++i) {
-> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; ++i) {
->  		if (!(desc->optattrs & SEG6_F_ATTR(i)) || !attrs[i])
->  			continue;
->  
-> @@ -1742,7 +1742,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
->  	}
->  
->  	/* parse the required attributes */
-> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
-> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
->  		if (desc->attrs & SEG6_F_ATTR(i)) {
->  			if (!attrs[i])
->  				return -EINVAL;
-> @@ -1847,7 +1847,7 @@ static int seg6_local_fill_encap(struct sk_buff *skb,
->  
->  	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
->  
-> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
-> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
->  		if (attrs & SEG6_F_ATTR(i)) {
->  			param = &seg6_action_params[i];
->  			err = param->put(skb, slwt);
-> @@ -1927,7 +1927,7 @@ static int seg6_local_cmp_encap(struct lwtunnel_state *a,
->  	if (attrs_a != attrs_b)
->  		return 1;
->  
-> -	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
-> +	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
->  		if (attrs_a & SEG6_F_ATTR(i)) {
->  			param = &seg6_action_params[i];
->  			if (param->cmp(slwt_a, slwt_b))
+The line that trigers the bug is in dev_parse_header_protocol
+(dev is at offset 0x10 from skb and is stored in RAX register)
+  if (!dev->header_ops || !dev->header_ops->parse_protocol)
+  22e1:   mov    0x10(%rbx),%rax
+  22e5:	  mov    0x230(%rax),%rax
+
+Setting skb->dev before the call in tap.c fixes the issue.
+
+BUG: kernel NULL pointer dereference, address: 0000000000000230
+RIP: 0010:virtio_net_hdr_to_skb.constprop.0+0x335/0x410 [tap]
+Code: c0 0f 85 b7 fd ff ff eb d4 41 39 c6 77 cf 29 c6 48 89 df 44 01 f6 e8 7a 79 83 c1 48 85 c0 0f 85 d9 fd ff ff eb b7 48 8b 43 10 <48> 8b 80 30 02 00 00 48 85 c0 74 55 48 8b 40 28 48 85 c0 74 4c 48
+RSP: 0018:ffffc90005c27c38 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff888298f25300 RCX: 0000000000000010
+RDX: 0000000000000005 RSI: ffffc90005c27cb6 RDI: ffff888298f25300
+RBP: ffffc90005c27c80 R08: 00000000ffffffea R09: 00000000000007e8
+R10: ffff88858ec77458 R11: 0000000000000000 R12: 0000000000000001
+R13: 0000000000000014 R14: ffffc90005c27e08 R15: ffffc90005c27cb6
+FS:  0000000000000000(0000) GS:ffff88858ec40000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000230 CR3: 0000000281408006 CR4: 00000000003706e0
+Call Trace:
+ tap_get_user+0x3f1/0x540 [tap]
+ tap_sendmsg+0x56/0x362 [tap]
+ ? get_tx_bufs+0xc2/0x1e0 [vhost_net]
+ handle_tx_copy+0x114/0x670 [vhost_net]
+ handle_tx+0xb0/0xe0 [vhost_net]
+ handle_tx_kick+0x15/0x20 [vhost_net]
+ vhost_worker+0x7b/0xc0 [vhost]
+ ? vhost_vring_call_reset+0x40/0x40 [vhost]
+ kthread+0xfa/0x120
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x1f/0x30
+
+Fixes: 924a9bc362a5 ("net: check if protocol extracted by virtio_net_hdr_set_proto is correct")
+Signed-off-by: Cezar Bulinaru <cbulinaru@gmail.com>
+
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index c3d42062559d..9e75ed3f08ce 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -716,10 +716,20 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 	skb_reset_mac_header(skb);
+ 	skb->protocol = eth_hdr(skb)->h_proto;
+ 
++	rcu_read_lock();
++	tap = rcu_dereference(q->tap);
++	if (!tap) {
++		kfree_skb(skb);
++		rcu_read_unlock();
++		return total_len;
++	}
++	skb->dev = tap->dev;
++
+ 	if (vnet_hdr_len) {
+ 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr,
+ 					    tap_is_little_endian(q));
+ 		if (err) {
++			rcu_read_unlock();
+ 			drop_reason = SKB_DROP_REASON_DEV_HDR;
+ 			goto err_kfree;
+ 		}
+@@ -732,8 +742,6 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+ 		skb_set_network_header(skb, depth);
+ 
+-	rcu_read_lock();
+-	tap = rcu_dereference(q->tap);
+ 	/* copy skb_ubuf_info for callback when skb has no error */
+ 	if (zerocopy) {
+ 		skb_zcopy_init(skb, msg_control);
+@@ -742,14 +750,8 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 		uarg->callback(NULL, uarg, false);
+ 	}
+ 
+-	if (tap) {
+-		skb->dev = tap->dev;
+-		dev_queue_xmit(skb);
+-	} else {
+-		kfree_skb(skb);
+-	}
++	dev_queue_xmit(skb);
+ 	rcu_read_unlock();
+-
+ 	return total_len;
+ 
+ err_kfree:
+-- 
+2.37.1
 
