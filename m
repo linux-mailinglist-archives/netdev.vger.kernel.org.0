@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73FFC5890AE
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9E45890B0
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236806AbiHCQk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 12:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60074 "EHLO
+        id S237348AbiHCQlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 12:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbiHCQk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:40:58 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D6D3FA2D;
+        with ESMTP id S236331AbiHCQk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:40:59 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DD0BE0D;
         Wed,  3 Aug 2022 09:40:57 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id w17-20020a17090a8a1100b001f326c73df6so2586216pjn.3;
+Received: by mail-pj1-x1032.google.com with SMTP id a8so3614011pjg.5;
         Wed, 03 Aug 2022 09:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=6f6UeQgMn+TPm3ZyUUYdEOtR8TNhGAES6KBfFAB1onE=;
-        b=IwtCfhxl1pwowIz/mhN75DJWVBGy4ec92iEEEsAjJYkc+pOXxOFyGOl7UThWzMlXo3
-         r25qDvAUFA7rcatR0puxdSGYI4dnRv5BrKYH/4p3YAL2g7B+se+xqQHSGuXWLXDNPSV5
-         hwj5LPpGY5L+ASvFGWPwKBtk5vHGRf09ESroFS3wBzehVboeqoLBjrBMOQTly/ROYFML
-         MrKAi1PTpT2YRs6Pgt1DRrrNf/jV+OaICUoXNPThBSp7KT5Wb9I/jyilH6Xghff2CyjE
-         MoCKj50F/noiRwvBLVq5X4jVOfL8Tc+UH2sClqZSfuj1AL+tyruoEbdutOHadcuQkubm
-         rizA==
+        bh=Kwg0Gxnft/pxS4kgXDydNW4k2vrq3EyTloWOdq0PXAc=;
+        b=J6ry0juC/cS1/keXoOwFK+MuEMj4DPNdUiiPrRADSM1Ai+nh2WJjSsFxPPwOLXZi0E
+         OQFLgeKjWL//VpC/a7o4RQIChsxIKMpJiHC3LVZu6+hjIksbnXFCwMVBnZVEccTnT0ys
+         vFkwXozeovy3Adau/hq0kJAQGYVZzS2gRBdwxtIFRIqkNCDqV3q+OxlSu9HYEJU6Pa4T
+         r7Ul+D6d2ijz/bg3/qyOs6vngWUTXsKdCZQzTI4M7OZrARHLX1v1wnD8Vppum8HT5S0w
+         4vam+bqP4rurSh0WGNicpfHVVp8+2yynTB+dsrIjuIyrk45tJp3ku3OG970300TI8hMs
+         zDAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=6f6UeQgMn+TPm3ZyUUYdEOtR8TNhGAES6KBfFAB1onE=;
-        b=lWlET9VZoMxfF19KPhgCNRFA7TMpRutX0AOJ8v6HTvP1KsCFv+GCpb5oYf0/9DfnPs
-         1rjzl5rEgpl6n68rpTxUbmCpE/3YIKOmEn824zWsQfQLYO/w0tPhXP2QBMMzc1n/kxXu
-         +cpdi62aa5xyb17h1l6MsxV3UoIxyBK5B6Fzd1WYuTWK4WgxZVncVkPWqgB8AAKotvnY
-         z46zq9UMqIGzQqwWzuchLb52+Tkj2zCGMiLvzalmKwK1vTapFuVxd60afd2WkA1LZK+p
-         hhq/09AQiJOHIwZPTpAvUHKCo5NwW6kitpO/gakC/nMluOrZExJoju3LwZM6dqTB6mvB
-         loNg==
-X-Gm-Message-State: ACgBeo05C7A1PnLc/+UwCW1AXTmIYCovmJxE8yEdl2CZdKVuUzL3DSZv
-        vmdJ8sxzx4d2HVK2nVZUSMY=
-X-Google-Smtp-Source: AA6agR6mPeQrqI7qEdGL3qjhEipJpcXo89Pf1jRbytOaQZ1THr+8b69FpUz8Ca8P5FL9eOmRJ5C0VQ==
-X-Received: by 2002:a17:902:a418:b0:16c:9ee2:8a02 with SMTP id p24-20020a170902a41800b0016c9ee28a02mr27011748plq.46.1659544856240;
-        Wed, 03 Aug 2022 09:40:56 -0700 (PDT)
-Received: from localhost (fwdproxy-prn-011.fbsv.net. [2a03:2880:ff:b::face:b00c])
-        by smtp.gmail.com with ESMTPSA id y23-20020a17090264d700b0016dc6243bb2sm2157644pli.143.2022.08.03.09.40.55
+        bh=Kwg0Gxnft/pxS4kgXDydNW4k2vrq3EyTloWOdq0PXAc=;
+        b=u6lnZthpU7G6OqxH01HU9bLGAscsauIBo5H6G+SNjC8RmwpZ2Vrsx0u/3tuIguIocl
+         GOQ8Ib84VnOumKrroEtBi7OGZMaj6zz55HInLRrpWtPFpKTyaYTCQq3mK+WXz+njFJWZ
+         tNQwtmgpMRreb6kXyo4BatNqgx9wJ6S6tXoomEZ3zi7w3qp2QUWYWSyL8heA6TMwFLEH
+         a5ulQcfrZoHH82Tr5wMNDSi0CscfdUzbSj3XamlZFzMi/u4gUWG7lH2p1n7MycINniSb
+         oyX69JL5nh+UzK1P4AluCzcVtW+N2bmOJ38IOhFN+aKYvtclOKeLQv/vL5JUM0QrEvO8
+         1JMA==
+X-Gm-Message-State: ACgBeo2cJvLTVKyfbFyj94g7uFl/4v+FhPJPn25NZL9d94WGAWEmSGVW
+        aaWzdTe2iL2BSzMxCjkbliMtIrh3PkA3kzVT
+X-Google-Smtp-Source: AA6agR5MfZwpSsjBltY1tEBSjei9IMpegZCHDn7zPRI8i1VSTvy8b5cdgUNXmy0WqfgjUUtKIU1QnQ==
+X-Received: by 2002:a17:902:f80f:b0:16d:c4af:88aa with SMTP id ix15-20020a170902f80f00b0016dc4af88aamr27144961plb.6.1659544857267;
+        Wed, 03 Aug 2022 09:40:57 -0700 (PDT)
+Received: from localhost (fwdproxy-prn-117.fbsv.net. [2a03:2880:ff:75::face:b00c])
+        by smtp.gmail.com with ESMTPSA id l9-20020a170903244900b0016cdbb22c28sm2306177pls.0.2022.08.03.09.40.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 09:40:55 -0700 (PDT)
+        Wed, 03 Aug 2022 09:40:56 -0700 (PDT)
 From:   Adel Abouchaev <adel.abushaev@gmail.com>
 To:     kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
         imagedong@tencent.com, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [RFC net-next 1/6] net: Documentation on QUIC kernel Tx crypto.
-Date:   Wed,  3 Aug 2022 09:40:40 -0700
-Message-Id: <20220803164045.3585187-2-adel.abushaev@gmail.com>
+Subject: [RFC net-next 2/6] net: Define QUIC specific constants, control and data plane structures
+Date:   Wed,  3 Aug 2022 09:40:41 -0700
+Message-Id: <20220803164045.3585187-3-adel.abushaev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220803164045.3585187-1-adel.abushaev@gmail.com>
 References: <Adel Abouchaev <adel.abushaev@gmail.com>
@@ -72,197 +72,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding Documentation/networking/quic.rst file to describe kernel QUIC
-code.
+Define control and data plane structures to pass in control plane for
+flow add/remove and during packet send within ancillary data. Define
+constants to use within SOL_UDP to program QUIC sockets.
 
 Signed-off-by: Adel Abouchaev <adel.abushaev@gmail.com>
 ---
- Documentation/networking/quic.rst | 176 ++++++++++++++++++++++++++++++
- 1 file changed, 176 insertions(+)
- create mode 100644 Documentation/networking/quic.rst
+ include/uapi/linux/quic.h | 61 +++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/udp.h  |  3 ++
+ 2 files changed, 64 insertions(+)
+ create mode 100644 include/uapi/linux/quic.h
 
-diff --git a/Documentation/networking/quic.rst b/Documentation/networking/quic.rst
+diff --git a/include/uapi/linux/quic.h b/include/uapi/linux/quic.h
 new file mode 100644
-index 000000000000..eaa2d36310be
+index 000000000000..79680b8b18a6
 --- /dev/null
-+++ b/Documentation/networking/quic.rst
-@@ -0,0 +1,176 @@
-+.. _kernel_quic:
++++ b/include/uapi/linux/quic.h
+@@ -0,0 +1,61 @@
++/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) */
 +
-+===========
-+KERNEL QUIC
-+===========
++#ifndef _UAPI_LINUX_QUIC_H
++#define _UAPI_LINUX_QUIC_H
 +
-+Overview
-+========
++#include <linux/types.h>
++#include <linux/tls.h>
 +
-+QUIC is a secure general-purpose transport protocol that creates a stateful
-+interaction between a client and a server. QUIC provides end-to-end integrity
-+and confidentiality. Refer to RFC 9000 for more information on QUIC.
++#define QUIC_MAX_CONNECTION_ID_SIZE 20
 +
-+The kernel Tx side offload covers the encryption of the application streams
-+in the kernel rather than in the application. These packets are 1RTT packets
-+in QUIC connection. Encryption of every other packets is still done by the
-+QUIC library in user space.
++/* Side by side data for QUIC egress operations */
++#define QUIC_BYPASS_ENCRYPTION 0x01
 +
++struct quic_tx_ancillary_data {
++	__aligned_u64	next_pkt_num;
++	__u8	flags;
++	__u8	conn_id_length;
++};
 +
++struct quic_connection_info_key {
++	__u8	conn_id[QUIC_MAX_CONNECTION_ID_SIZE];
++	__u8	conn_id_length;
++};
 +
-+User Interface
-+==============
++struct quic_aes_gcm_128 {
++	__u8	header_key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
++	__u8	payload_key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
++	__u8	payload_iv[TLS_CIPHER_AES_GCM_128_IV_SIZE];
++};
 +
-+Creating a QUIC connection
-+--------------------------
++struct quic_aes_gcm_256 {
++	__u8	header_key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
++	__u8	payload_key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
++	__u8	payload_iv[TLS_CIPHER_AES_GCM_256_IV_SIZE];
++};
 +
-+QUIC connection originates and terminates in the application, using one of many
-+available QUIC libraries. The code instantiates QUIC client and QUIC server in
-+some form and configures them to use certain addresses and ports for the
-+source and destination. The client and server negotiate the set of keys to
-+protect the communication during different phases of the connection, maintain
-+the connection and perform congestion control.
++struct quic_aes_ccm_128 {
++	__u8	header_key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
++	__u8	payload_key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
++	__u8	payload_iv[TLS_CIPHER_AES_CCM_128_IV_SIZE];
++};
 +
-+Requesting to add QUIC Tx kernel encryption to the connection
-+-------------------------------------------------------------
++struct quic_chacha20_poly1305 {
++	__u8	header_key[TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE];
++	__u8	payload_key[TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE];
++	__u8	payload_iv[TLS_CIPHER_CHACHA20_POLY1305_IV_SIZE];
++};
 +
-+Each flow that should be encrypted by the kernel needs to be registered with
-+the kernel using socket API. A setsockopt() call on the socket creates an
-+association between the QUIC connection ID of the flow with the encryption
-+parameters for the crypto operations:
++struct quic_connection_info {
++	__u16	cipher_type;
++	struct quic_connection_info_key		key;
++	union {
++		struct quic_aes_gcm_128 aes_gcm_128;
++		struct quic_aes_gcm_256 aes_gcm_256;
++		struct quic_aes_ccm_128 aes_ccm_128;
++		struct quic_chacha20_poly1305 chacha20_poly1305;
++	};
++};
 +
-+.. code_block:: c
-+  struct quic_connection_info conn_info;
-+  char conn_id[5] = {0x01, 0x02, 0x03, 0x04, 0x05};
-+  const size_t conn_id_len = sizeof(conn_id);
-+  char conn_key[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-+                       0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
-+  char conn_iv[12] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-+                      0x08, 0x09, 0x0a, 0x0b};
-+  char conn_hdr_key[16] = {0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-+                       0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f};
++#endif
 +
-+  conn_info.cipher_type = TLS_CIPHER_AES_GCM_128;
-+
-+  memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
-+  conn_info.key.conn_id_length = 5;
-+  memcpy(&conn_info.key.conn_id[QUIC_MAX_CONNECTION_ID_SIZE - conn_id_len],
-+         &conn_id, conn_id_len);
-+
-+  memcpy(&conn_info.payload_key, conn_key, sizeof(conn_key));
-+  memcpy(&conn_info.payload_iv, conn_iv, sizeof(conn_iv));
-+  memcpy(&conn_info.header_key, conn_hdr_key, sizeof(conn_hdr_key));
-+
-+  setsockopt(fd, SOL_UDP, UDP_QUIC_ADD_TX_CONNECTION, &conn_info,
-+             sizeof(conn_info));
-+
-+
-+Requesting to remove QUIC Tx kernel crypto offload control messages
-+-------------------------------------------------------------------
-+
-+All flows are removed when the socket is closed. To request an explicit remove
-+of the offload for the connection during the lifetime of the socket the process
-+is similar to adding the flow. Only the connection ID and its length are 
-+necessary to supply to remove the connection from the offload:
-+
-+.. code_block:: c
-+
-+  memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
-+  conn_info.key.conn_id_length = 5;
-+  memcpy(&conn_info.key.conn_id[QUIC_MAX_CONNECTION_ID_SIZE - conn_id_len],
-+         &conn_id, conn_id_len);
-+  setsockopt(fd, SOL_UDP, UDP_QUIC_DEL_TX_CONNECTION, &conn_info,
-+             sizeof(conn_info));
-+
-+Sending QUIC application data
-+-----------------------------
-+
-+For QUIC Tx encryption offload, the application should use sendmsg() socket
-+call and provide ancillary data with information on connection ID length and
-+offload flags for the kernel to perform the encryption and GSO support if
-+requested.
-+
-+.. code_block:: c
-+
-+  size_t cmsg_tx_len = sizeof(struct quic_tx_ancillary_data);
-+  uint8_t cmsg_buf[CMSG_SPACE(cmsg_tx_len)];
-+  struct quic_tx_ancillary_data * anc_data;
-+  size_t quic_data_len = 4500;
-+  struct cmsghdr * cmsg_hdr;
-+  char quic_data[9000];
-+  struct iovec iov[2];
-+  int send_len = 9000;
-+  struct msghdr msg;
-+  int err;
-+
-+  iov[0].iov_base = quic_data;
-+  iov[0].iov_len = quic_data_len;
-+  iov[1].iov_base = quic_data + 4500;
-+  iov[1].iov_len = quic_data_len;
-+
-+  if (client.addr.sin_family == AF_INET) {
-+    msg.msg_name = &client.addr;
-+    msg.msg_namelen = sizeof(client.addr);
-+  } else {
-+    msg.msg_name = &client.addr6;
-+    msg.msg_namelen = sizeof(client.addr6);
-+  }
-+
-+  msg.msg_iov = iov;
-+  msg.msg_iovlen = 2;
-+  msg.msg_control = cmsg_buf;
-+  msg.msg_controllen = sizeof(cmsg_buf);
-+  cmsg_hdr = CMSG_FIRSTHDR(&msg);
-+  cmsg_hdr->cmsg_level = IPPROTO_UDP;
-+  cmsg_hdr->cmsg_type = UDP_QUIC_ENCRYPT;
-+  cmsg_hdr->cmsg_len = CMSG_LEN(cmsg_tx_len);
-+  anc_data = CMSG_DATA(cmsg_hdr);
-+  anc_data->flags = 0;
-+  anc_data->next_pkt_num = 0x0d65c9;
-+  anc_data->conn_id_length = conn_id_len;
-+  err = sendmsg(self->sfd, &msg, 0);
-+
-+QUIC Tx offload in kernel will read the data from userspace, encrypt and
-+copy it to the ciphertext within the same operation.
-+
-+
-+Sending QUIC application data with GSO
-+--------------------------------------
-+When GSO is in use, the kernel will use the GSO fragment size as the target
-+for ciphertext. The packets from the user space should align on the boundary
-+of GSO fragment size minus the size of the tag for the chosen cipher. For the
-+GSO fragment 1200, the plain packets should follow each other at every 1184
-+bytes, given the tag size of 16. After the encryption, the rest of the UDP
-+and IP stacks will follow the defined value of GSO fragment which will include
-+the trailing tag bytes.
-+
-+To set up GSO fragmentation:
-+
-+.. code_block:: c
-+  setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &frag_size, sizeof(frag_size));
-+
-+If the GSO fragment size is provided in ancillary data within the sendmsg()
-+call, the value in ancillary data will take precedence over the segment size
-+provided in setsockopt to split the payload into packets. This is consistent
-+with the UDP stack behavior.
-+
-+Integrating to userspace QUIC libraries
-+---------------------------------------
-+
-+Userspace QUIC libraries integration would depend on the implementation of the
-+QUIC protocol. For MVFST library, the control plane is integrated into the
-+handshake callbacks to properly configure the flows into the socket; and the
-+data plane is integrated into the methods that perform encryption and send
-+the packets to the batch scheduler for transmissions to the socket.
-+
-+MVFST library can be found at https://github.com/facebookincubator/mvfst.
-+
-+Statistics
-+==========
-+
-+QUIC Tx offload to the kernel has counters reflected in /proc/net/quic_stat:
-+
-+  QuicCurrTxSw  - number of currently active kernel offloaded QUIC connections
-+  QuicTxSw      - accumulative total number of offloaded QUIC connections
-+  QuicTxSwError - accumulative total number of errors during QUIC Tx offload to
-+                  kernel
+diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
+index 4828794efcf8..0ee4c598e70b 100644
+--- a/include/uapi/linux/udp.h
++++ b/include/uapi/linux/udp.h
+@@ -34,6 +34,9 @@ struct udphdr {
+ #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
+ #define UDP_SEGMENT	103	/* Set GSO segmentation size */
+ #define UDP_GRO		104	/* This socket can receive UDP GRO packets */
++#define UDP_QUIC_ADD_TX_CONNECTION	106 /* Add QUIC Tx crypto offload */
++#define UDP_QUIC_DEL_TX_CONNECTION	107 /* Del QUIC Tx crypto offload */
++#define UDP_QUIC_ENCRYPT		108 /* QUIC encryption parameters */
+ 
+ /* UDP encapsulation types */
+ #define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
 -- 
 2.30.2
 
