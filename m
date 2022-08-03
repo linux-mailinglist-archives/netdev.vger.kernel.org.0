@@ -2,211 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9558B589096
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0A705890A0
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:40:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236474AbiHCQel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 12:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
+        id S235039AbiHCQkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 12:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiHCQek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:34:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE34C78
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 09:34:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD5786176E
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 16:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA27C433D6;
-        Wed,  3 Aug 2022 16:34:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659544478;
-        bh=O5+p2mqlAynXzbgqf9IUcgpKMEhwoC4/NDM/nCCCneo=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=pFwvb3J/ijQ0BBsdk9GiO8YhYGwBVFmstvPZ4JphNSUThEKEtQ+LJxxA/JdWPLsa4
-         aiAihz3kF8NK7XOcA+wAoQo3iF9S/4zmYiaZXCc8wkgIrtLbBK1eEd2MVlPe8Hz7g8
-         hjb7hSIP2rxs/SAHt9bc3yEKdr/IR70A2Uy00RsSK65ds9KPl2rWAaQDbQ3XaZq1z3
-         A9izzcnYBEImwm+KaHBUKxBFbgjyQvHWmCdAgAFwk7gCf7/OShbs+TUN3XcZvEpfdn
-         6l6WwPHbYWgO+YXYVxAJCiheE3tGwF4vWdA7ln7PHwvdFKb5wAU3nqCtMtfHDXLqpZ
-         L+rcLCRyCm2nA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id B4F0E5C092A; Wed,  3 Aug 2022 09:34:37 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 09:34:37 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>
-Subject: Re: [PATCH net-next] net/tls: Use RCU API to access tls_ctx->netdev
-Message-ID: <20220803163437.GF2125313@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220801080053.21849-1-maximmi@nvidia.com>
- <20220801124239.067573de@kernel.org>
- <380eb27278e581012524cdc16f99e1872cee9be0.camel@nvidia.com>
- <20220802083731.22291c3b@kernel.org>
- <8bf08924a111d4e0875721af264f082cc9c44587.camel@nvidia.com>
- <20220803074957.33783ad4@kernel.org>
+        with ESMTP id S231527AbiHCQj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:39:59 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7E3B1DC
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 09:39:57 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id d4so8737428ilc.8
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 09:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UCh0NmoCmabNWgWJ/tUrQh2kdChsA9GHWC9sQChapLw=;
+        b=nfGRJNXrDdjCXKmG+YuN5LMHWmvUsfpT9RwX9K31nd4Ba+XTa2gUZ4EdFGNEcTVyUy
+         eba4D3Jq2bgZpKGt5yDEKNVwcz5UUltmATChUlXO5LIqZWvraK2pPtrumy2X2KbG/6gv
+         cr5Lc8Oj9fTzpQ/PmwCkLLx4nstPEm4F58xw3rfpYVSOUBS+zHA1LKIqJgT33Nj0wniy
+         DUlqaSTiIkEbVFsKD64jj+zC3poyCN5ht09cS29PhJIGY7rbhvGzyWBgIMgd8o+WFKX7
+         Cknz7GFAPav9qRiYkGjkf/OyL34qa/DvUSxVVXfMUCGBncN4luwr3A58F2/kYl83VPoX
+         lOTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UCh0NmoCmabNWgWJ/tUrQh2kdChsA9GHWC9sQChapLw=;
+        b=UlggIFVrpiwvl818ZzrXJNeDuHJdXUZrmH6XgKGnxFXi4apTuaRDHLdvpxLi4SgXbW
+         4nuhph6dsqaKFJMLx+8SP3Sp9ypJ030qeoiQTRxPTCIqpgc+FvDOCvQp9BussH70ZJT+
+         zCfpLHr2mr+aUUjTTnUpUWHlg9QIJKtuv4GlfOLu57HJZ6o8SrFRWfXHmM8EvxTRfi+1
+         4vKD/lOU2QynbCAw3n6n4/c3KiOyNy74J7gE44hg+9JSNFxUbbjdnjWaB0E4odmCaht2
+         G54ik6QuqJ/lhdT42+HFmQpXqEDOHuHjSdVdAWXNpyg9w2yhCns6uhPF5PDLDG4r8xMK
+         Tciw==
+X-Gm-Message-State: AJIora+CQX2GQNo07Iu6Sv59MP4+W/ki/bWOFhfn1xXxj/fXcUgpQJ1o
+        pOlz7m+x1LDVSifHhbxsQOYN4g==
+X-Google-Smtp-Source: AGRyM1sQNXg2KhMHneLcef3+CpUgiEDuFNui1Pkc1Qw3RWvfpsYzhU5MhWuhBD8ORf0X4v0nAIp5Ug==
+X-Received: by 2002:a92:cf4a:0:b0:2dd:e288:e4c4 with SMTP id c10-20020a92cf4a000000b002dde288e4c4mr11134344ilr.130.1659544796858;
+        Wed, 03 Aug 2022 09:39:56 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id h1-20020a056e020d4100b002de2ea2f78csm6136328ilj.23.2022.08.03.09.39.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 09:39:56 -0700 (PDT)
+Message-ID: <1bbb9374-c503-37c6-45d8-476a8b761d4a@kernel.dk>
+Date:   Wed, 3 Aug 2022 10:39:55 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220803074957.33783ad4@kernel.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [GIT PULL] io_uring support for zerocopy send
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
+ <CAHk-=wjh91hcEix55tH7ydTLHbcg3hZ6SaqgeyVscbYz57crfQ@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CAHk-=wjh91hcEix55tH7ydTLHbcg3hZ6SaqgeyVscbYz57crfQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 07:49:57AM -0700, Jakub Kicinski wrote:
-> On Wed, 3 Aug 2022 09:33:48 +0000 Maxim Mikityanskiy wrote:
-> > > > The documentation of rcu_access_pointer says it shouldn't be used on
-> > > > the update side, because we lose lockdep protection:
-> > > > 
-> > > > --cut--
-> > > > 
-> > > > Although rcu_access_pointer() may also be used in cases
-> > > > where update-side locks prevent the value of the pointer from changing,
-> > > > you should instead use rcu_dereference_protected() for this use case.  
-> > > 
-> > > I think what this is trying to say is to not use the
-> > > rcu_access_pointer() as a hack against lockdep:  
-> > 
-> > Well, maybe we understand it in different ways. This is how I parsed it
-> > (the whole comment):
-> > 
-> > 1. rcu_access_pointer is not for the read side. So, it's either for the
-> > write side or for usage outside all locks.
+On 8/2/22 2:45 PM, Linus Torvalds wrote:
+> On Sun, Jul 31, 2022 at 8:03 AM Jens Axboe <axboe@kernel.dk> wrote:
+>>
+>> On top of the core io_uring changes, this pull request adds support for
+>> efficient support for zerocopy sends through io_uring. Both ipv4 and
+>> ipv6 is supported, as well as both TCP and UDP.
+> 
+> I've pulled this, but I would *really* have wanted to see real
+> performance numbers from real loads.
+> 
+> Zero-copy networking has decades of history (and very much not just in
+> Linux) of absolutely _wonderful_ benchmark numbers, but less-than
+> impressive take-up on real loads.
+> 
+> A lot of the wonderful benchmark numbers are based on loads that
+> carefully don't touch the data on either the sender or receiver side,
+> and that get perfect behavior from a performance standpoint as a
+> result, but don't actually do anything remotely realistic in the
+> process.
+> 
+> Having data that never resides in the CPU caches, or having mappings
+> that are never written to and thus never take page faults are classic
+> examples of "look, benchmark numbers!".
+> 
+> Please?
 
-RCU readers really are permitted to use rcu_access_pointer().  As is
-pretty much any other code.
+That's a valid concern! One of the key points behind Pavel's work is
+that we wanted to make zerocopy _actually_ work with smaller payloads. A
+lot of the past work has been focused on (or only useful with) bigger
+payloads, which then almost firmly lands it in the realm of "looks good
+on streamed benchmarks". If you look at the numbers Pavel posted, it's
+definitely firmly in benchmark land, but I do think the goals of
+breaking even with non zero-copy for realistic payload sizes is the real
+differentiator here.
 
-See for example Documentation/RCU/rcu_dereference.rst:
+For the io_uring network developments, Dylan wrote a benchmark that we
+use to mimic things like Thrift. Yes it's a benchmark, but it's meant to
+model real world things, not just measure ping-pongs or streamed
+bandwidth. It's actually helped drive various of the more recent
+features, as well as things coming in the next release, and been very
+useful as a research vehicle for adding real io_uring support to Thrift.
+The latter is why it was created in the first place, not to have Yet
+Another benchmark that can just spew meaningless numbers. Zero-copy is
+being added there too, and we just talked about adding some more tweaks
+to netbench that allows it to model data/cache usage too on both ends.
 
-	Note that if checks for being within an RCU read-side critical
-	section are not required and the pointer is never dereferenced,
-	rcu_access_pointer() should be used in place of rcu_dereference().
+The Thrift work is what is really driving this, but it isn't quite done
+yet. Looking very promising vs epoll now, though, we'll make some more
+noise about this once it lands. Moving to a completion based model takes
+a bit of time, it's not a quick hack conversion where you just switch to
+a different notification base.
 
-OK, s/should be/can be/, but I will fix that.
+-- 
+Jens Axboe
 
-Or, for that matter, the rcu_access_pointer() docbook header comment:
-
-/**
- * rcu_access_pointer() - fetch RCU pointer with no dereferencing
- * @p: The pointer to read
- *
- * Return the value of the specified RCU-protected pointer, but omit the
- * lockdep checks for being in an RCU read-side critical section.  This is
- * useful when the value of this pointer is accessed, but the pointer is
- * not dereferenced, for example, when testing an RCU-protected pointer
- * against NULL.  Although rcu_access_pointer() may also be used in cases
- * where update-side locks prevent the value of the pointer from changing,
- * you should instead use rcu_dereference_protected() for this use case.
- *
- * It is also permissible to use rcu_access_pointer() when read-side
- * access to the pointer was removed at least one grace period ago, as
- * is the case in the context of the RCU callback that is freeing up
- * the data, or after a synchronize_rcu() returns.  This can be useful
- * when tearing down multi-linked structures after a grace period
- * has elapsed.
- */
-
-So the restriction is that the pointer returned from rcu_access_pointer()
-cannot be dereferenced or that the structure is beyond being updated.
-
-So this is OK:
-
-	// Not in an RCU reader.  Or even in an RCU updater.
-	if (rcu_access_pointer(my_rcu_pointer))
-		do_something();
-	...
-
-And so is this:
-
-	p = xchg(&my_rcu_pointer, NULL);
-	if (p) {
-		synchronize_rcu();
-		// No one else has access to this list!
-		while (p) {
-			q = rcu_access_pointer(p->next);
-			kfree(p);
-			q = p;
-			// But why are you hand-crafting list???
-			// Any why not use rcu_dereference_protected()?
-		}
-	}
-
-But this is not:
-
-	p = rcu_access_pointer(my_rcu_pointer);
-	do_something_with(p->a); // BUG!!!  Even in an RCU reader.
-
-In this second case, you must instead use rcu_dereference() or
-similar.
-
-> > 2. It's not for dereferencing. So, it's for reading the pointer's value
-> > on the write side or outside all locks.
-
-True enough, you are not permitted to dereference the value returned
-from rcu_access_pointer().  Unless you have the only copy.
-
-But it is just fine to check the value of the pointer, compare it, or
-do arithmetic on it.  Just don't dereference it and don't dereference
-any value computed from it.
-
-> > 3. Although it can be used on the write side, rcu_dereference_protected
-> > should be used. So, it's for reading the pointer's value outside all
-> > locks.
-
-Yes, if an RCU updater is going to dereference a pointer, it should
-use rcu_dereference_protected() rather than rcu_access_pointer().
-
-So rcu_access_pointer() does what it it says.  It permits the caller
-to access the value of the pointer, and only to access that value.
-Not dereference that value.
-
-> Using rcu_deref* when we don't dereference the pointer does not compute
-> for me, but it's not a big deal. 
-
-It is OK to use rcu_dereference*() to access a pointer without
-dereferencing it.
-
-One key difference between rcu_dereference() and rcu_access_pointer()
-is that rcu_access_pointer() can be used outside of an RCU reader.
-For example:
-
-	// Not in an RCU reader.  Or even in an RCU updater.
-	if (rcu_access_pointer(my_rcu_pointer)) {
-		rcu_read_lock();
-		p = rcu_dereference(my_rcu_pointer);
-		if (p)
-			do_something_with(p);
-		rcu_read_unlock();
-	}
-
-This example is silly because the overhead of the extra check might well
-exceed that of the rcu_read_lock() and rcu_read_unlock() put together,
-especially in CONFIG_PREEMPTION=n kernels.  A less-silly example might
-schedule a workqueue or similar to handle the RCU-protected data, and
-the overhead of the extra check might be very worthwhile in that case.
-
-> Let me CC Paul for clarification of the docs, as it may also be
-> confusing to others and therefore worth rewording. But our case is 
-> not that important so unless Paul chimes in clearly indicating one
-> interpretation is right - either way is fine by me for v2.
-
-Hope this helps!
-
-And please let me know if it does not.
-
-							Thanx, Paul
