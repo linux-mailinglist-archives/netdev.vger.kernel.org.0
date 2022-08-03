@@ -2,88 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE90588F47
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3898C588F50
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238047AbiHCPV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 11:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        id S238059AbiHCP0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 11:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236714AbiHCPVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:21:55 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C906FD05
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 08:21:54 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id y141so16744758pfb.7
-        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 08:21:54 -0700 (PDT)
+        with ESMTP id S234349AbiHCP0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:26:00 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA9D31231
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 08:25:59 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so2458088pjk.1
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 08:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6kFVTMABIBVizXQc3wXzEInC/HU3ORY+wYhC85vpaF4=;
-        b=LG077KjqrabiAVdKcTlGnpAfC2Kl7mLDqSXmCDcVylAvmX5+Edam2mw8Q+3551EOEv
-         G3MTV1/olWeokHdMl8wty3n6/zjid7WQLSZLAF0YpYNT8+9lSJsInmQMymXugaFvziIC
-         MAxS2NJekbmmjsc3AUqr4vxRKyLKpbiL6lkrWjlZG2nnQe4lrcjchIWOstlMZTCR/QEt
-         zGx/rsAVW10wLSUfT8cUIZo/9LKW2jHVKDSFrug+Ffo/k3+VmMbN4fVzF2skhbg5hIit
-         qP0N2FRALThxoTXvS64o6n5AMwN6NUaVP1Fw4bih64aYsQBWWhrzXFN59vE5fQp+FjSn
-         kWFw==
+        bh=P3MwT8RxWlfV3wpA9WW8i5Tj4HpW55bnnVr/PdyMB4I=;
+        b=VfANRgJeiS4RAYWJ+lx4c3oof8oa8aGnYXPW1Z8Y+25df8rCIn0PKntj1Oat2tn9G7
+         zr3IkkLV7vL0lMaBCvXmpIeaeHwqpBiciwsE4hgV109fO6E3lintyLCbEHLufMC3Om27
+         mD077fzLXIWeDmBnZSFsfWiLlJAlev22CzckAoetfWvqBy+4HivRSDn/vSi+xV4jq0E1
+         NiHLeeVuCa7PUf6fdd/KNQA85SHpNuS85a6WpgYifb175Fs9TKQ45Wzk8V9dzzq2oC4L
+         Dz3CerVpssamcrxJ7VVDuU8kKkOJTdofvXjtTELj9SZCv2Txq3MjtiYNb5x/ofm7pXwU
+         Z7sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6kFVTMABIBVizXQc3wXzEInC/HU3ORY+wYhC85vpaF4=;
-        b=KVs9ejO1Hm36EwNgzbGkafMCuev8zjRchxtPbDMpzHdAilMK0D1kezWYAZS7VVU9gx
-         4V3D1lHx1PcUvZrFQM4KY3fJPfwL5QPZxWxSDrcwOjWN05zgoVSPoJx7uOHiFcRqMJZp
-         UYPKqy3YPcXqHpDSw7+ZgCgQbPhZoPHW1DBkgvByK1249DrHrvqgujewlK9vw4VEnWOJ
-         9IkGCqv/zPtAoi3fLQ6Vc/47TYuzy8KssJwV5ZFKL/EZfZ/vUKOV0q1dZS5cL7Ok6fWj
-         05/OybrPhixj2CSwby84oQxKm3gQ8snk9T2dE+jYtPBtWiK+o9M0ovA7lXHMyug1n2dJ
-         Q7Lw==
-X-Gm-Message-State: ACgBeo2dZAXjLg27yR5/kUDEXBzU1L1GsO6VmsmpCY+pAhMfZOq9lkoL
-        ivh4vbYtnOw3IAZxTIaKoDeErnk6tUXRURUZ
-X-Google-Smtp-Source: AA6agR5AogMYxoa8fOgzRsSP2Yn/QI6dXGaHEKNEMfjOsPTGZHkCFec4ln/5MYXo9J4tcbsNVXWMcA==
-X-Received: by 2002:a63:5616:0:b0:41b:fb43:d04c with SMTP id k22-20020a635616000000b0041bfb43d04cmr12689971pgb.508.1659540113832;
-        Wed, 03 Aug 2022 08:21:53 -0700 (PDT)
+        bh=P3MwT8RxWlfV3wpA9WW8i5Tj4HpW55bnnVr/PdyMB4I=;
+        b=VMoGwlz/Y2TsnybNSMRzoMqfXZ6ZbzpSxuWwNBE2BYNE/gwtSyjqlV0NwjOmFTp6DJ
+         tdKFxDmBjMzRAYvx5LwuqDbcc5L0fx+w4OPzXsEHhbzPnb2AZcVROC+FXKvOoH4VUPio
+         dRTDGdJrKarly2nnd163XpS8WS/TRpRGFQnUwW2NUPSnI2SGghdtjFhcsMIW4oFC07HV
+         xioKAGJRb0EJuizFGIcOpR/ntef+Bxzg9yzHTfPb8gua8LUAchy1FGLmWqto215j+B3y
+         TWLWeuxQTjkvierFlA9BY6g/bIoP55cJi1NU1rxLVFk5MdhOEJ1rZBCqPX+cdO9TkRaE
+         jmtQ==
+X-Gm-Message-State: ACgBeo3PJW1LT2P477QJ6OslipYfPuz7afSkxUpFL8YeTN+LBlRfYrih
+        HMTKH4Eyz0VJSn+nWcP2lt/EBA==
+X-Google-Smtp-Source: AA6agR5TVipAI8STdCnpVHaOetmvjzFSR3fSK0E0sbLZw5BPy21agJNc8/qVGGuqfSC/C3kIuYwD1w==
+X-Received: by 2002:a17:90b:3ec1:b0:1f5:15a6:aaf5 with SMTP id rm1-20020a17090b3ec100b001f515a6aaf5mr5468741pjb.123.1659540359337;
+        Wed, 03 Aug 2022 08:25:59 -0700 (PDT)
 Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id p14-20020a170902780e00b0016bfafffa0esm2095888pll.227.2022.08.03.08.21.53
+        by smtp.gmail.com with ESMTPSA id mn19-20020a17090b189300b001f4f40763b1sm1766641pjb.29.2022.08.03.08.25.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 08:21:53 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 08:21:51 -0700
+        Wed, 03 Aug 2022 08:25:59 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 08:25:57 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [RFC PATCH v2 2/3] dpll: add netlink events
-Message-ID: <20220803082151.14c32a57@hermes.local>
-In-Reply-To: <20220626192444.29321-3-vfedorenko@novek.ru>
-References: <20220626192444.29321-1-vfedorenko@novek.ru>
-        <20220626192444.29321-3-vfedorenko@novek.ru>
+To:     sunsuwan <sunsuwan3@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <chenzhen126@huawei.com>,
+        <liaichun@huawei.com>, <yanan@huawei.com>, <roopa@nvidia.com>,
+        <nikolay@nvidia.com>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: Re: [PATCH] bridge-utils:close socket before exit
+Message-ID: <20220803082557.451637d4@hermes.local>
+In-Reply-To: <20220803082051.1704227-1-sunsuwan3@huawei.com>
+References: <20220803082051.1704227-1-sunsuwan3@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Jun 2022 22:24:43 +0300
-Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+On Wed, 3 Aug 2022 16:20:51 +0800
+sunsuwan <sunsuwan3@huawei.com> wrote:
 
-> +
-> +static cb_t event_cb[] = {
-> +	[DPLL_EVENT_DEVICE_CREATE]	= dpll_event_device_create,
-> +	[DPLL_EVENT_DEVICE_DELETE]	= dpll_event_device_delete,
-> +	[DPLL_EVENT_STATUS_LOCKED]	= dpll_event_status,
-> +	[DPLL_EVENT_STATUS_UNLOCKED]	= dpll_event_status,
-> +	[DPLL_EVENT_SOURCE_CHANGE]	= dpll_event_source_change,
-> +	[DPLL_EVENT_OUTPUT_CHANGE]	= dpll_event_output_change,
-> +};
+> brctl should close socket before exit.
+> 
+> Signed-off-by: sunsuwan <sunsuwan3@huawei.com>
 
-Function tables in kernel should always be const for added security
+Why bother? The file descriptor is closed automatically on process exit.
+
+At this point bridge-utils is in long term hibernation mode.
+It has been replaced by bridge command in iproute2.
+
+Don't want to do any changes or releases unless there is a very high priority
+bug that must be fixed.
