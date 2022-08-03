@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C33F588B4A
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D581F588B4D
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbiHCLcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 07:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        id S234639AbiHCLcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 07:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236312AbiHCLcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:32:15 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034B833E1F;
-        Wed,  3 Aug 2022 04:32:14 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id gb36so5352757ejc.10;
-        Wed, 03 Aug 2022 04:32:13 -0700 (PDT)
+        with ESMTP id S237246AbiHCLck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:32:40 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B95371B1;
+        Wed,  3 Aug 2022 04:32:39 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id z2so10677490edc.1;
+        Wed, 03 Aug 2022 04:32:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=ffgpxlJKI4KloBx4T0gCdNQddFQjpgif6BFX6azbkS4=;
-        b=X+Ec2mVmfXxkLlVWHzSL4F2cf5p74isrOXQZzhTrwQhnAFI+u5Ok/4I1guInVFdFVV
-         Pons1SmeZoPEGSyJtgqcSoXYvzVtZj1YpPa1LTcTH3x17gJfUoae1TmPq4n6nkX8tdWW
-         KpZhifswDDNRkhsxz22h5VsUdT2ryRC2wOyOd8GiWbSVEcDI0lGBSVC6rx5Py/nye0DP
-         PvlcwoCbXF0RzkLHW3Furxt9y+fdl0JscnJEwU7oAIuxboCQyWK4Q/qIesjtbUF7npSZ
-         b7bI4GgD6O79lALs9SdlDCrbHNC46vw4VascZJ26jynnBEZ1NQqEe70LiYcl1nNb/aA+
-         EeMQ==
+        bh=QWoNV73PMehvx7a/jO/4xAYjEo5H0FOcveRTEMgWVQE=;
+        b=aDI7HGMNzsTTK/vushA+Zc1k4AFDuhGUhoCQ3ognq967PeVK3U4/TMNg1yC9KcJiF2
+         eO95Bwjgmx2Vs2GJpLbIwwW9xlIbhKdyybUZFiYqjpYdXMIHdrtSqNlHCUWPEIlKKxH9
+         shkB910bvZhpVD4FKFZbx83W8Mp8cjqJWJOa4R5qDuAddhWdud61Vq2wQ3yRl5cbiwTS
+         M9AFliPeZThWtmwBltufkmb5VB8H6RBu9QnNrWH+FVxV8WyWKaF7IKQL1oGZC4JxVn9m
+         L/G2AhTqyinVjYROYhur7eI3RFlhjrjdkIf2vpYtn4Q9HDdRMvS+Kp7AGb/jVnfbDdXX
+         6EGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ffgpxlJKI4KloBx4T0gCdNQddFQjpgif6BFX6azbkS4=;
-        b=6DrUQ7TLOS0GapLEnVJXyCSgSZXHsyAoIxL63sO/jN6N8DMsb0I0iSdAGscg8rASZa
-         2k3F8Of1lIAUuezKzWbD3JvUzwwPLRJYJaH8qHItQat6OC8MPW0CG3zeaG9ldCEUTf7X
-         XCSU1QRZcQ1O+Oe+F0Q4OY3dXM00HNZx7jAFpMynhQp0+qg2hnI5VXpotEespaCjojQU
-         6f92baOqi7F4v5U+LMlgAJ+1fEU6eLab2f4+h27vMNXRHemCrP2tbgVl1RDSfymDhaIq
-         cSj+EsRjkFJJtf79LektONxM/Ne3rR1B+so9Ir/zpRj9luS4aQyvz8EXKo4xADZY1h8A
-         0Pew==
-X-Gm-Message-State: AJIora9S8HyYQDoB74h/uxix/Px9DB5pcdj2sDZBagJs8Swn+cQIidON
-        q2U/czcdbBIo5ICgDbYIEiELsEs3MTvoad31Mo0=
-X-Google-Smtp-Source: AGRyM1tqx4F1flQ1tWao3I+F8VQZ4n4wNfAbuNdpmxr3yAznNCZFOQfB18b2xlx8H52sSog2V2j/5+R09yFNopgS0P0=
-X-Received: by 2002:a17:906:7950:b0:72f:d4a4:564d with SMTP id
- l16-20020a170906795000b0072fd4a4564dmr19722433ejo.479.1659526332466; Wed, 03
- Aug 2022 04:32:12 -0700 (PDT)
+        bh=QWoNV73PMehvx7a/jO/4xAYjEo5H0FOcveRTEMgWVQE=;
+        b=jqVCmo3gIcGM2nPh9AJOsSHCboPUzNmDw6f1pF/IgvcFqbC37joGkkjF7QJ7KwX5u2
+         Pw2Yb+bfB8mfWCXH9oe0GSb5Av5K3uKn8wjgxRez2B5EY7GNP/ubzJVOAPjfg+7Ft4Ct
+         dAxIWVsO4lo+BpA+Dpt14hDAxlk8bc1I3v/FKSknSPeTJyt9S0e0aduSGOsg8sZPVeZy
+         isMHW6K39/cxt9OBeD4cVd4Oyj4Twm40ogktmCBeP0CEq8wDasW3sbPb9AuY8VEvMFIU
+         zbemfXZ7sITtv9VoJN3bUEvhDnsD/IvvCt0JHNOaa9fF6Cuq0Q/55BxCpNAfLFQWTxE3
+         wxGw==
+X-Gm-Message-State: ACgBeo1tJ0qX700x9T1gDf1BNeWrzK/X1Khzk24mlUGYeDECZw5pfcGX
+        EguVd+ivT4yfk/UQ5F7JaeMOaT2Up+vcbGh6Wbk=
+X-Google-Smtp-Source: AA6agR7WPU4b66O7vu9tyKaNZOp/Kj9gJKxujzvrhpRpJW3NmDwGgdtvMkPM+iCHIXWLntV2TZ0n0rgIcJSpVZ6hNVw=
+X-Received: by 2002:a50:fe91:0:b0:43d:c97d:1b93 with SMTP id
+ d17-20020a50fe91000000b0043dc97d1b93mr11855157edt.67.1659526357473; Wed, 03
+ Aug 2022 04:32:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-3-colin.foster@in-advantage.com>
-In-Reply-To: <20220803054728.1541104-3-colin.foster@in-advantage.com>
+References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-4-colin.foster@in-advantage.com>
+In-Reply-To: <20220803054728.1541104-4-colin.foster@in-advantage.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Aug 2022 13:31:35 +0200
-Message-ID: <CAHp75Ve0i4T9vu0Y4BpOX=MWMyV=jognMgwow_Tk4inW=ZyvLQ@mail.gmail.com>
-Subject: Re: [PATCH v15 mfd 2/9] net: mdio: mscc-miim: add ability to be used
- in a non-mmio configuration
+Date:   Wed, 3 Aug 2022 13:32:01 +0200
+Message-ID: <CAHp75VeBzKW16ncVw+_BqmBkwg=B-Uk7+UiuXko8ymiEN08kzg@mail.gmail.com>
+Subject: Re: [PATCH v15 mfd 3/9] pinctrl: ocelot: allow pinctrl-ocelot to be
+ loaded as a module
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
@@ -74,7 +74,9 @@ Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
+        Lee Jones <lee.jones@linaro.org>,
+        katie.morris@in-advantage.com,
+        Florian Fainelli <f.fainelli@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -89,98 +91,76 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Aug 3, 2022 at 7:47 AM Colin Foster
 <colin.foster@in-advantage.com> wrote:
 >
-> There are a few Ocelot chips that contain the logic for this bus, but are
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
->
-> Add support for these non-memory-mapped configurations.
+> Work is being done to allow external control of Ocelot chips. When pinctrl
+> drivers are used internally, it wouldn't make much sense to allow them to
+> be loaded as modules. In the case where the Ocelot chip is controlled
+> externally, this scenario becomes practical.
 
 FWIW,
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
 > ---
 >
-> (No changes since v14)
+> (No changes since before v14)
 >
 > v14
->     * Add Reviewed and Acked tags
+>     * No changes
 >
 > ---
->  drivers/net/mdio/mdio-mscc-miim.c | 42 +++++++++----------------------
->  1 file changed, 12 insertions(+), 30 deletions(-)
+>  drivers/pinctrl/Kconfig          | 7 ++++++-
+>  drivers/pinctrl/pinctrl-ocelot.c | 6 +++++-
+>  2 files changed, 11 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-> index 08541007b18a..51f68daac152 100644
-> --- a/drivers/net/mdio/mdio-mscc-miim.c
-> +++ b/drivers/net/mdio/mdio-mscc-miim.c
-> @@ -12,6 +12,7 @@
->  #include <linux/iopoll.h>
->  #include <linux/kernel.h>
->  #include <linux/mdio/mdio-mscc-miim.h>
-> +#include <linux/mfd/ocelot.h>
->  #include <linux/module.h>
->  #include <linux/of_mdio.h>
->  #include <linux/phy.h>
-> @@ -270,44 +271,25 @@ static int mscc_miim_clk_set(struct mii_bus *bus)
+> diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+> index f52960d2dfbe..ba48ff8be6e2 100644
+> --- a/drivers/pinctrl/Kconfig
+> +++ b/drivers/pinctrl/Kconfig
+> @@ -311,7 +311,7 @@ config PINCTRL_MICROCHIP_SGPIO
+>           LED controller.
 >
->  static int mscc_miim_probe(struct platform_device *pdev)
+>  config PINCTRL_OCELOT
+> -       bool "Pinctrl driver for the Microsemi Ocelot and Jaguar2 SoCs"
+> +       tristate "Pinctrl driver for the Microsemi Ocelot and Jaguar2 SoCs"
+>         depends on OF
+>         depends on HAS_IOMEM
+>         select GPIOLIB
+> @@ -321,6 +321,11 @@ config PINCTRL_OCELOT
+>         select GENERIC_PINMUX_FUNCTIONS
+>         select OF_GPIO
+>         select REGMAP_MMIO
+> +       help
+> +         Support for the internal GPIO interfaces on Microsemi Ocelot and
+> +         Jaguar2 SoCs.
+> +
+> +         If conpiled as a module, the module name will be pinctrl-ocelot.
+>
+>  config PINCTRL_OXNAS
+>         bool
+> diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+> index 5f4a8c5c6650..d18047d2306d 100644
+> --- a/drivers/pinctrl/pinctrl-ocelot.c
+> +++ b/drivers/pinctrl/pinctrl-ocelot.c
+> @@ -1889,6 +1889,7 @@ static const struct of_device_id ocelot_pinctrl_of_match[] = {
+>         { .compatible = "microchip,lan966x-pinctrl", .data = &lan966x_desc },
+>         {},
+>  };
+> +MODULE_DEVICE_TABLE(of, ocelot_pinctrl_of_match);
+>
+>  static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
 >  {
-> -       struct regmap *mii_regmap, *phy_regmap = NULL;
->         struct device_node *np = pdev->dev.of_node;
-> +       struct regmap *mii_regmap, *phy_regmap;
->         struct device *dev = &pdev->dev;
-> -       void __iomem *regs, *phy_regs;
->         struct mscc_miim_dev *miim;
-> -       struct resource *res;
->         struct mii_bus *bus;
->         int ret;
->
-> -       regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
-> -       if (IS_ERR(regs)) {
-> -               dev_err(dev, "Unable to map MIIM registers\n");
-> -               return PTR_ERR(regs);
-> -       }
-> -
-> -       mii_regmap = devm_regmap_init_mmio(dev, regs, &mscc_miim_regmap_config);
-> -
-> -       if (IS_ERR(mii_regmap)) {
-> -               dev_err(dev, "Unable to create MIIM regmap\n");
-> -               return PTR_ERR(mii_regmap);
-> -       }
-> +       mii_regmap = ocelot_regmap_from_resource(pdev, 0,
-> +                                                &mscc_miim_regmap_config);
-> +       if (IS_ERR(mii_regmap))
-> +               return dev_err_probe(dev, PTR_ERR(mii_regmap),
-> +                                    "Unable to create MIIM regmap\n");
->
->         /* This resource is optional */
-> -       res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> -       if (res) {
-> -               phy_regs = devm_ioremap_resource(dev, res);
-> -               if (IS_ERR(phy_regs)) {
-> -                       dev_err(dev, "Unable to map internal phy registers\n");
-> -                       return PTR_ERR(phy_regs);
-> -               }
-> -
-> -               phy_regmap = devm_regmap_init_mmio(dev, phy_regs,
-> -                                                  &mscc_miim_phy_regmap_config);
-> -               if (IS_ERR(phy_regmap)) {
-> -                       dev_err(dev, "Unable to create phy register regmap\n");
-> -                       return PTR_ERR(phy_regmap);
-> -               }
-> -       }
-> +       phy_regmap = ocelot_regmap_from_resource_optional(pdev, 1,
-> +                                                &mscc_miim_phy_regmap_config);
-> +       if (IS_ERR(phy_regmap))
-> +               return dev_err_probe(dev, PTR_ERR(phy_regmap),
-> +                                    "Unable to create phy register regmap\n");
->
->         ret = mscc_miim_setup(dev, &bus, "mscc_miim", mii_regmap, 0);
->         if (ret < 0) {
+> @@ -1984,4 +1985,7 @@ static struct platform_driver ocelot_pinctrl_driver = {
+>         },
+>         .probe = ocelot_pinctrl_probe,
+>  };
+> -builtin_platform_driver(ocelot_pinctrl_driver);
+> +module_platform_driver(ocelot_pinctrl_driver);
+> +
+> +MODULE_DESCRIPTION("Ocelot Chip Pinctrl Driver");
+> +MODULE_LICENSE("Dual MIT/GPL");
 > --
 > 2.25.1
 >
