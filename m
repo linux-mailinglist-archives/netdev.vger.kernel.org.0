@@ -2,71 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27710588F20
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76CF1588F2D
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 17:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237726AbiHCPKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 11:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
+        id S237997AbiHCPOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 11:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235868AbiHCPKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:10:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED171F62A
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 08:10:07 -0700 (PDT)
+        with ESMTP id S237930AbiHCPOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 11:14:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4215B2A948;
+        Wed,  3 Aug 2022 08:14:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59872B822B0
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 15:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94ABEC433C1;
-        Wed,  3 Aug 2022 15:10:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71773CE23A4;
+        Wed,  3 Aug 2022 15:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21E2C433D7;
+        Wed,  3 Aug 2022 15:14:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659539405;
-        bh=oOU918KuKRDmTdEsfJEeYqYoWoZ3iJrC6e7HEmdVn40=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XR9vNn/ZDIQywHsLG2zTb3y3Af9N/wHYtf5bPbqj/DzkQ7Z93LPu6X5egd2eKrxi7
-         jsFXUlGZALS5N7DCZ3h2zt9rgiqzn2N4NfGg1oQwtSyU4UngA4+X3nB8hOaHM5cSvB
-         6Mkz+1AuDech4OP2aHM2M8VqXF/7KqLC/nlAJE3oEiBNYbWbjn7DDnGwyNuI3lG6hs
-         rmwyMOYnDeRnZ+ZSxCcw05oqaSniHVAq1Xf8w/ED4GRICAlXzMGCPJRKrhTJbA17zg
-         F9LKMKNv9emxHofnpadNUc5bBSpy9YxmHfZDkkI0QLKnIfvK3h1SO/mTgslCKxl90D
-         UlXn7RCkUr2zw==
-Message-ID: <d475db70-5653-849d-37a8-65082698dcc6@kernel.org>
-Date:   Wed, 3 Aug 2022 09:10:03 -0600
+        s=k20201202; t=1659539655;
+        bh=pK3P6YKF/O7YvZ9WTM4gxZVhDGtihziln7chla4iH5k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WHLmK99NPoh2XDLKBc8f63WccKUVyqXftm9dlFIwJgKXDyOUW1xGLVr9REBVvDIcW
+         9IJMTMHr2rBRYhKlVGx0CW5FpSF2CmdFut3hllMCWnRjoUhIw2kQZzEjQAjg8l7P3j
+         ij54+7b2Uys4a2OeIIVOVXCvsO3bJ8vkm7A+mgPv09SiQPeQ603p9ZtYoeFMEI6m+q
+         +jjkJrqu6d9L4ql4apSGZfm8RQ3lRp9ITsfSt4uM3//ruNlYo4YrQFScbzVegcimyg
+         1pAchX4QHKemLcAlanRzbUaIwmAdqVjp69dhaNOB7ymHUs7LCW5dXIadiaUXzcR7IJ
+         WHCl3NPza6BXQ==
+Date:   Wed, 3 Aug 2022 08:14:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hawkins Jiawei <yin31149@gmail.com>, kafai@fb.com
+Cc:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
+        18801353760@163.com, andrii@kernel.org, ast@kernel.org,
+        borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, jakub@cloudflare.com,
+        john.fastabend@gmail.com, kgraul@linux.ibm.com, kpsingh@kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        Wen Gu <guwen@linux.alibaba.com>
+Subject: Re: [PATCH v4] net: fix refcount bug in sk_psock_get (2)
+Message-ID: <20220803081413.3cc27002@kernel.org>
+In-Reply-To: <20220803124121.173303-1-yin31149@gmail.com>
+References: <00000000000026328205e08cdbeb@google.com>
+        <20220803124121.173303-1-yin31149@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute2-next v5 1/2] devlink: update the devlink.h
-Content-Language: en-US
-To:     Vikas Gupta <vikas.gupta@broadcom.com>, jiri@nvidia.com,
-        stephen@networkplumber.org
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
-        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com
-References: <20220803091025.30800-1-vikas.gupta@broadcom.com>
- <20220803091025.30800-2-vikas.gupta@broadcom.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220803091025.30800-2-vikas.gupta@broadcom.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/22 3:10 AM, Vikas Gupta wrote:
-> update the devlink.h to comaptible with net-next kernel.
-> 
-> Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-> ---
->  include/uapi/linux/devlink.h | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
+On Wed,  3 Aug 2022 20:41:22 +0800 Hawkins Jiawei wrote:
+> -/* Pointer stored in sk_user_data might not be suitable for copying
+> - * when cloning the socket. For instance, it can point to a reference
+> - * counted object. sk_user_data bottom bit is set if pointer must not
+> - * be copied.
+> +/* flag bits in sk_user_data
+> + *
+> + * SK_USER_DATA_NOCOPY - Pointer stored in sk_user_data might
+> + * not be suitable for copying when cloning the socket.
+> + * For instance, it can point to a reference counted object.
+> + * sk_user_data bottom bit is set if pointer must not be copied.
+> + *
+> + * SK_USER_DATA_BPF    - Managed by BPF
 
-always send patch sets against top of tree -- iproute2-next in this case.
+I'd use this opportunity to add more info here, BPF is too general.
+Maybe "Pointer is used by a BPF reuseport array"? Martin, WDYT?
 
-This patch is not needed as the header file has already been updated.
+> + * SK_USER_DATA_PSOCK  - Mark whether pointer stored in sk_user_data points
+> + * to psock type. This bit should be set when sk_user_data is
+> + * assigned to a psock object.
+
+> +/**
+> + * rcu_dereference_sk_user_data_psock - return psock if sk_user_data
+> + * points to the psock type(SK_USER_DATA_PSOCK flag is set), otherwise
+> + * return NULL
+> + *
+> + * @sk: socket
+> + */
+> +static inline
+> +struct sk_psock *rcu_dereference_sk_user_data_psock(const struct sock *sk)
+
+nit: the return type more commonly goes on the same line as "static
+inline"
+
+> +{
+> +	uintptr_t __tmp = (uintptr_t)rcu_dereference(__sk_user_data((sk)));
+> +
+> +	if (__tmp & SK_USER_DATA_PSOCK)
+> +		return (struct sk_psock *)(__tmp & SK_USER_DATA_PTRMASK);
+> +
+> +	return NULL;
+> +}
+
+As a follow up we can probably generalize this into
+ __rcu_dereference_sk_user_data_cond(sk, bit)
+
+and make the psock just call that:
+
+static inline struct sk_psock *
+rcu_dereference_sk_user_data_psock(const struct sock *sk)
+{
+	return __rcu_dereference_sk_user_data_cond(sk, SK_USER_DATA_PSOCK);
+}
+
+then reuseport can also benefit, maybe:
+
+diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
+index e2618fb5870e..ad5c447a690c 100644
+--- a/kernel/bpf/reuseport_array.c
++++ b/kernel/bpf/reuseport_array.c
+@@ -21,14 +21,11 @@ static struct reuseport_array *reuseport_array(struct bpf_map *map)
+ /* The caller must hold the reuseport_lock */
+ void bpf_sk_reuseport_detach(struct sock *sk)
+ {
+-	uintptr_t sk_user_data;
++	struct sock __rcu **socks;
+ 
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	sk_user_data = (uintptr_t)sk->sk_user_data;
+-	if (sk_user_data & SK_USER_DATA_BPF) {
+-		struct sock __rcu **socks;
+-
+-		socks = (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
++	socks = __rcu_dereference_sk_user_data_cond(sk, SK_USER_DATA_BPF);
++	if (socks) {
+ 		WRITE_ONCE(sk->sk_user_data, NULL);
+ 		/*
+ 		 * Do not move this NULL assignment outside of
+
+
+But that must be a separate patch, not part of this fix.
