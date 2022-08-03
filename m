@@ -2,225 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C6B5887FF
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 09:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCDD558881D
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 09:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiHCHcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 03:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
+        id S235408AbiHCHmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 03:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234083AbiHCHcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 03:32:53 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488241E3D6;
-        Wed,  3 Aug 2022 00:32:52 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id m8so20331887edd.9;
-        Wed, 03 Aug 2022 00:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc;
-        bh=b7xFxPpTc9t+6GAirB/ZpAqypHutZv7FafDpzu9bEwk=;
-        b=YRP0lkjofXKPjlTcgBErcfXR3LO16U3Pljon8ji+RlMBZBK2e0GrH3Dr7am85bNw1U
-         Ul1EvLGyHUXukriFFDa2soNf2a0sdbukicLCEdCHJVdeu+jGHmSyzu/yowUIW1tOkRrb
-         fk3FnyiPKGqzb6dUUg8tnY4osAfNY84sJtimjKOgCgV7wwLo0CHDFpqKOa69DzD+vWJE
-         WhabznjFM+HaRjJhPIh3Oo6lP8NhATpI1V+EVfQX/9gaSmlpz8cI15OU2avS6IXsp7eX
-         kFiYgGqd3MDrUMws/SU9Ti2gEkjMc20mNyIUOl4zfNY4Uhi/NG7gdo28IT+YHmRHlqow
-         66Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc;
-        bh=b7xFxPpTc9t+6GAirB/ZpAqypHutZv7FafDpzu9bEwk=;
-        b=4Sj7trMJ/dvLALcgPtonPpSqVkSDiiaEaIGl38Rhi5eeufnukQBM3zeZ5qJ6RHsNtv
-         YhWEBXCWGky/vp81j9jiHaguZTjHopwLwMkChbyRKYA8bLEi3ZeEGiBfvC7E1cZXRsue
-         +7MRoB7OK0G5JJUqw3wtNdFQoRwdqDcUmlU5TWbJTvDHsduCyBFo1JU0gpCGTJo6JAQj
-         Ob+ATFMJCJo5nNJMkwPcRBcgjMoAaThXj0/8wIlkSKAwCdmxzGxaKjPQR6wctlDuMQgX
-         eeXEacVjktKcB9HNy544BkgzgLn4zxQRjKZTMFTjLyAqu+SX1gHdhgFH28XspieKafKy
-         ECUg==
-X-Gm-Message-State: ACgBeo2ksYGlC2NTf6m6kaYNGnuwtirr5oei39ZpdSItBEACRH3mHM1j
-        A2MBJcimD239Ycc+dE+yEhk=
-X-Google-Smtp-Source: AA6agR7xgkvPGABt6ZsWbe+W4GLQVN7fxxnQaqfOoZcLjjDjLxwGo3S+CNeZNMboLZs1LWK0wybk7w==
-X-Received: by 2002:a05:6402:95c:b0:43d:6297:f241 with SMTP id h28-20020a056402095c00b0043d6297f241mr17974743edz.373.1659511970651;
-        Wed, 03 Aug 2022 00:32:50 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id o5-20020a056402038500b0043cfb6af49asm9073578edv.16.2022.08.03.00.32.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 00:32:50 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Wed, 3 Aug 2022 09:32:48 +0200
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Stephane Eranian <eranian@google.com>,
-        =?utf-8?B?6LCt5qKT54WK?= <tanzixuan.me@gmail.com>,
-        Zixuan Tan <tanzixuangg@gmail.com>, terrelln@fb.com,
+        with ESMTP id S229480AbiHCHma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 03:42:30 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BC51FCE3;
+        Wed,  3 Aug 2022 00:42:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659512548; x=1691048548;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bPBTAmFItJli/FgJ5QFwiA9bwcWk7H1U0xpUswriSnI=;
+  b=A/wfslUEPTKWtCbYUpgHlF/ZPIfpuAdnozf2duO8J200RajbBJSPcLMq
+   Rc4XDjJon1RKlkmWu+YgBfJsRso+luKsjruvXMpicpOlML0fiXqyGqcen
+   f6HD9dHM74h/uHm4Eip6wcHB3C0zVZCou220GcVxBRfi9VPPGLMWFd9nq
+   FnPvU11HKPMv0SGO1Ki7jG4ewB590eaOFIz5SQPja3cUYgMII865dNRGq
+   9uOpNNaTcqfwUKN2NNH0jeN/IkjrS41tgbB0KyvQuE67GEPn3KArROGYB
+   IoN6K3n0DS/2cQydgZQknKkUk2xtF3scAQh1cmVorCpkBXAIHPnasJ5wc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="353614222"
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="353614222"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 00:42:28 -0700
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="599557794"
+Received: from mpaulits-mobl.ger.corp.intel.com (HELO [10.252.59.205]) ([10.252.59.205])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 00:42:22 -0700
+Message-ID: <9d298ab7-4ad4-7849-6a64-6e1bdd5f18c3@linux.intel.com>
+Date:   Wed, 3 Aug 2022 10:41:56 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH bpf-next v7 00/24] Introduce eBPF support for HID devices
+Content-Language: en-US
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] perf build: Suppress openssl v3 deprecation warnings in
- libcrypto feature test
-Message-ID: <YuokoBdtJ2Jp1R25@krava>
-References: <20220625153439.513559-1-tanzixuan.me@gmail.com>
- <YrhxE4s0hLvbbibp@krava>
- <CABwm_eT_LE6VbLMgT31yqW=tc_obLP=6E0jnMqVn1sMdWrVVNw@mail.gmail.com>
- <Yrqcpr7ICzpsoGrc@krava>
- <YufUAiLqKiuwdvcP@krava>
- <YuloQYU72pe4p3eK@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YuloQYU72pe4p3eK@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20220721153625.1282007-1-benjamin.tissoires@redhat.com>
+From:   Tero Kristo <tero.kristo@linux.intel.com>
+In-Reply-To: <20220721153625.1282007-1-benjamin.tissoires@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 03:09:05PM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Mon, Aug 01, 2022 at 03:24:18PM +0200, Jiri Olsa escreveu:
-> > On Tue, Jun 28, 2022 at 08:16:06AM +0200, Jiri Olsa wrote:
-> > > On Mon, Jun 27, 2022 at 11:08:34AM +0800, 谭梓煊 wrote:
-> > > > On Sun, Jun 26, 2022 at 10:45 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > > >
-> > > > > On Sat, Jun 25, 2022 at 11:34:38PM +0800, Zixuan Tan wrote:
-> > > > > > With OpenSSL v3 installed, the libcrypto feature check fails as it use the
-> > > > > > deprecated MD5_* API (and is compiled with -Werror). The error message is
-> > > > > > as follows.
-> > > > > >
-> > > > > > $ make tools/perf
-> > > > > > ```
-> > > > > > Makefile.config:778: No libcrypto.h found, disables jitted code injection,
-> > > > > > please install openssl-devel or libssl-dev
-> > > > > >
-> > > > > > Auto-detecting system features:
-> > > > > > ...                         dwarf: [ on  ]
-> > > > > > ...            dwarf_getlocations: [ on  ]
-> > > > > > ...                         glibc: [ on  ]
-> > > > > > ...                        libbfd: [ on  ]
-> > > > > > ...                libbfd-buildid: [ on  ]
-> > > > > > ...                        libcap: [ on  ]
-> > > > > > ...                        libelf: [ on  ]
-> > > > > > ...                       libnuma: [ on  ]
-> > > > > > ...        numa_num_possible_cpus: [ on  ]
-> > > > > > ...                       libperl: [ on  ]
-> > > > > > ...                     libpython: [ on  ]
-> > > > > > ...                     libcrypto: [ OFF ]
-> > > > > > ...                     libunwind: [ on  ]
-> > > > > > ...            libdw-dwarf-unwind: [ on  ]
-> > > > > > ...                          zlib: [ on  ]
-> > > > > > ...                          lzma: [ on  ]
-> > > > > > ...                     get_cpuid: [ on  ]
-> > > > > > ...                           bpf: [ on  ]
-> > > > > > ...                        libaio: [ on  ]
-> > > > > > ...                       libzstd: [ on  ]
-> > > > > > ...        disassembler-four-args: [ on  ]
-> > > > > > ```
-> > > > > >
-> > > > > > This is very confusing because the suggested library (on my Ubuntu 20.04
-> > > > > > it is libssl-dev) is already installed. As the test only checks for the
-> > > > > > presence of libcrypto, this commit suppresses the deprecation warning to
-> > > > > > allow the test to pass.
-> > > > > >
-> > > > > > Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
-> > > > > > ---
-> > > > > >  tools/build/feature/test-libcrypto.c | 6 ++++++
-> > > > > >  1 file changed, 6 insertions(+)
-> > > > > >
-> > > > > > diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
-> > > > > > index a98174e0569c..31afff093d0b 100644
-> > > > > > --- a/tools/build/feature/test-libcrypto.c
-> > > > > > +++ b/tools/build/feature/test-libcrypto.c
-> > > > > > @@ -2,6 +2,12 @@
-> > > > > >  #include <openssl/sha.h>
-> > > > > >  #include <openssl/md5.h>
-> > > > > >
-> > > > > > +/*
-> > > > > > + * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
-> > > > > > + * feature test to fail silently. This is a workaround.
-> > > > > > + */
-> > > > >
-> > > > > then we use these deprecated MD5 calls in util/genelf.c if libcrypto is detected,
-> > > > > so I wonder how come the rest of the compilation passed for you.. do you have
-> > > > > CONFIG_JITDUMP disabled?
-> > > > >
-> > > > > thanks,
-> > > > > jirka
-> > > > >
-> > > > No, CONFIG_JITDUMP is not disabled. I am using the default configuration.
-> > > > 
-> > > > Yes, you are right. The rest of the compilation should fail, but it doesn't.
-> > > > I checked the verbose build commands. This seems to be the result of another
-> > > > inconsistency.
-> > > > 
-> > > > If libcrypto is detected, the macro "HAVE_LIBCRYPTO_SUPPORT" will be
-> > > > defined, but in perf/util/genelf.c, "HAVE_LIBCRYPTO" without the "_SUPPORT"
-> > > > prefix is checked. This causes urandom always be used to create build id
-> > > > rather than MD5 and SHA1, no matter what the detection result is.
-> > > > 
-> > > > In perf/Makefile.config, from line 776
-> > > > ```
-> > > > ifndef NO_LIBCRYPTO
-> > > >   ifneq ($(feature-libcrypto), 1)
-> > > >     msg := $(warning No libcrypto.h found, disables jitted code injection,
-> > > >             please install openssl-devel or libssl-dev);
-> > > >     NO_LIBCRYPTO := 1
-> > > >   else                                  <-- if libcrypto feature detected
-> > > >     CFLAGS += -DHAVE_LIBCRYPTO_SUPPORT  <-- define this
-> > > >     EXTLIBS += -lcrypto
-> > > >     $(call detected,CONFIG_CRYPTO)
-> > > >   endif
-> > > > endif
-> > > > ```
-> > > > 
-> > > > In perf/util/genelf.c, from line 33
-> > > > ```
-> > > > #ifdef HAVE_LIBCRYPTO                <-- but check this, it's always false
-> > > 
-> > > nice :)
-> > > 
-> > > > 
-> > > > #define BUILD_ID_MD5
-> > > > #undef BUILD_ID_SHA /* does not seem to work well when linked with Java */
-> > > > #undef BUILD_ID_URANDOM /* different uuid for each run */
-> > > > 
-> > > > #ifdef BUILD_ID_SHA
-> > > > #include <openssl/sha.h>
-> > > > #endif
-> > > > 
-> > > > #ifdef BUILD_ID_MD5
-> > > > #include <openssl/md5.h>
-> > > > #endif
-> > > > #endif                               <-- this block will be skipped
-> > > > ```
-> > > > 
-> > > > Maybe we should fix this, to really make use of libcrypto if it is available?
-> > > 
-> > > yea, I think that was the original idea, let's keep the variable with
-> > > SUPPORT suffix and use the -Wdeprecated-declarations for genelf.c
-> > > 
-> > > full fix would be to detect the new API and use it when it's available but..
-> > > given that the check was false at least since 2016, perhaps we could remove
-> > > that code? ;-) Stephane?
-> > 
-> > ping
-> 
-> So, we should start with 谭梓煊 patch, then fix that ifdef and go on
-> from there?
+Hello,
 
-yes, I thought we could remove that, but there's no reply from
-Stephane so let's fix that
+Tried this out with my USI support eBPF code, and it works fine with the 
+single patch I had to apply on top of i2c-hid (not related to the 
+hid-bpf support itself.)
 
-jirka
+For the whole series:
+
+Tested-by: Tero Kristo <tero.kristo@linux.intel.com>
+
+-Tero
+
+On 21/07/2022 18:36, Benjamin Tissoires wrote:
+> Hi,
+>
+> here comes the v7 of the HID-BPF series.
+>
+> Again, for a full explanation of HID-BPF, please refer to the last patch
+> in this series (24/24).
+>
+> This version sees some minor improvements compared to v6, only
+> focusing on the reviews I got.
+>
+> I also wanted to mention that I have started working on the userspace
+> side to "see" how the BPF programs would look when automatically loaded.
+> See the udev-hid-bpf project[0] for the code.
+>
+> The idea is to define the HID-BPF userspace programs so we can reuse
+> the same semantic in the kernel.
+> I am quite happy with the results: this looks pretty similar to a kernel
+> module in term of design. The .bpf.c file is a standalone compilation
+> unit, and instead of having a table of ids, the filename is used (based
+> on the modalias). This allows to have a "probe" like function that we
+> can run to decide if the program needs to be attached or not.
+>
+> All in all, the end result is that we can write the bpf program, compile
+> it locally, and send the result to the user. The user needs to drop the
+> .bpf.o in a local folder, and udev-hid-bpf will pick it up the next time
+> the device is plugged in. No other operations is required.
+>
+> Next step will be to drop the same source file in the kernel source
+> tree, and have some magic to automatically load the compiled program
+> when the device is loaded.
+>
+> Cheers,
+> Benjamin
+>
+> [0] https://gitlab.freedesktop.org/bentiss/udev-hid-bpf (warning: probably
+> not the best rust code ever)
+>
+> Benjamin Tissoires (24):
+>    selftests/bpf: fix config for CLS_BPF
+>    bpf/verifier: allow kfunc to read user provided context
+>    bpf/verifier: do not clear meta in check_mem_size
+>    selftests/bpf: add test for accessing ctx from syscall program type
+>    bpf/verifier: allow kfunc to return an allocated mem
+>    selftests/bpf: Add tests for kfunc returning a memory pointer
+>    bpf: prepare for more bpf syscall to be used from kernel and user
+>      space.
+>    libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
+>    HID: core: store the unique system identifier in hid_device
+>    HID: export hid_report_type to uapi
+>    HID: convert defines of HID class requests into a proper enum
+>    HID: Kconfig: split HID support and hid-core compilation
+>    HID: initial BPF implementation
+>    selftests/bpf: add tests for the HID-bpf initial implementation
+>    HID: bpf: allocate data memory for device_event BPF programs
+>    selftests/bpf/hid: add test to change the report size
+>    HID: bpf: introduce hid_hw_request()
+>    selftests/bpf: add tests for bpf_hid_hw_request
+>    HID: bpf: allow to change the report descriptor
+>    selftests/bpf: add report descriptor fixup tests
+>    selftests/bpf: Add a test for BPF_F_INSERT_HEAD
+>    samples/bpf: add new hid_mouse example
+>    HID: bpf: add Surface Dial example
+>    Documentation: add HID-BPF docs
+>
+>   Documentation/hid/hid-bpf.rst                 | 512 +++++++++
+>   Documentation/hid/index.rst                   |   1 +
+>   drivers/Makefile                              |   2 +-
+>   drivers/hid/Kconfig                           |  20 +-
+>   drivers/hid/Makefile                          |   2 +
+>   drivers/hid/bpf/Kconfig                       |  18 +
+>   drivers/hid/bpf/Makefile                      |  11 +
+>   drivers/hid/bpf/entrypoints/Makefile          |  93 ++
+>   drivers/hid/bpf/entrypoints/README            |   4 +
+>   drivers/hid/bpf/entrypoints/entrypoints.bpf.c |  66 ++
+>   .../hid/bpf/entrypoints/entrypoints.lskel.h   | 682 ++++++++++++
+>   drivers/hid/bpf/hid_bpf_dispatch.c            | 553 ++++++++++
+>   drivers/hid/bpf/hid_bpf_dispatch.h            |  28 +
+>   drivers/hid/bpf/hid_bpf_jmp_table.c           | 577 ++++++++++
+>   drivers/hid/hid-core.c                        |  49 +-
+>   include/linux/bpf.h                           |   9 +-
+>   include/linux/btf.h                           |  10 +
+>   include/linux/hid.h                           |  38 +-
+>   include/linux/hid_bpf.h                       | 148 +++
+>   include/uapi/linux/hid.h                      |  26 +-
+>   include/uapi/linux/hid_bpf.h                  |  25 +
+>   kernel/bpf/btf.c                              |  91 +-
+>   kernel/bpf/syscall.c                          |  10 +-
+>   kernel/bpf/verifier.c                         |  65 +-
+>   net/bpf/test_run.c                            |  23 +
+>   samples/bpf/.gitignore                        |   2 +
+>   samples/bpf/Makefile                          |  27 +
+>   samples/bpf/hid_mouse.bpf.c                   | 134 +++
+>   samples/bpf/hid_mouse.c                       | 147 +++
+>   samples/bpf/hid_surface_dial.bpf.c            | 161 +++
+>   samples/bpf/hid_surface_dial.c                | 212 ++++
+>   tools/include/uapi/linux/hid.h                |  62 ++
+>   tools/include/uapi/linux/hid_bpf.h            |  25 +
+>   tools/lib/bpf/skel_internal.h                 |  23 +
+>   tools/testing/selftests/bpf/Makefile          |   5 +-
+>   tools/testing/selftests/bpf/config            |   5 +-
+>   tools/testing/selftests/bpf/prog_tests/hid.c  | 990 ++++++++++++++++++
+>   .../selftests/bpf/prog_tests/kfunc_call.c     |  76 ++
+>   tools/testing/selftests/bpf/progs/hid.c       | 206 ++++
+>   .../selftests/bpf/progs/kfunc_call_test.c     | 125 +++
+>   40 files changed, 5184 insertions(+), 79 deletions(-)
+>   create mode 100644 Documentation/hid/hid-bpf.rst
+>   create mode 100644 drivers/hid/bpf/Kconfig
+>   create mode 100644 drivers/hid/bpf/Makefile
+>   create mode 100644 drivers/hid/bpf/entrypoints/Makefile
+>   create mode 100644 drivers/hid/bpf/entrypoints/README
+>   create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.bpf.c
+>   create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.lskel.h
+>   create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.c
+>   create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.h
+>   create mode 100644 drivers/hid/bpf/hid_bpf_jmp_table.c
+>   create mode 100644 include/linux/hid_bpf.h
+>   create mode 100644 include/uapi/linux/hid_bpf.h
+>   create mode 100644 samples/bpf/hid_mouse.bpf.c
+>   create mode 100644 samples/bpf/hid_mouse.c
+>   create mode 100644 samples/bpf/hid_surface_dial.bpf.c
+>   create mode 100644 samples/bpf/hid_surface_dial.c
+>   create mode 100644 tools/include/uapi/linux/hid.h
+>   create mode 100644 tools/include/uapi/linux/hid_bpf.h
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/hid.c
+>
