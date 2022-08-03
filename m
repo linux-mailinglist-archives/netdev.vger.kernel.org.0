@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564F7588B59
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D07B588B5E
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237665AbiHCLdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 07:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S237739AbiHCLdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 07:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237600AbiHCLd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:33:27 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298B23DF04;
-        Wed,  3 Aug 2022 04:33:26 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id a89so21080726edf.5;
-        Wed, 03 Aug 2022 04:33:26 -0700 (PDT)
+        with ESMTP id S237661AbiHCLdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:33:45 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214894AD44;
+        Wed,  3 Aug 2022 04:33:44 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id m8so21027269edd.9;
+        Wed, 03 Aug 2022 04:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=onxOdMmI5QbIGUE/oDxEeplm+cELkOPvfMCEuj17XyE=;
-        b=e80QPsaOkwgNFQn0rtSDmXyeEbAurKgI3paSkgTLa6gTyVHa4LZNNjhtUPrF+TiYjA
-         94enMiVEPbAjGBow0aSG8cUAW3ZEHaOR45ycZ+1tq/oSxijXyyqCBYgpEPAUdCA40UfB
-         xf9hnsyrmSN9yHji5necoonhG3fAqvDoqGH+sC+mk0P8cYe1PgVmkPsergu6ydQuLYtb
-         v5cr6vxyrSMjl6EK8rEExDJKgIxHanmvRoVqIYOOFDjnkDofyNCnsKKLPzAogpDGQAO6
-         z9YOfBvvyQA1AHXt3uI0kbnHPeMmo0Jo8SphvPbwBYPnrPvSoJ24cXXt4yQXwFhAiOgA
-         U4cQ==
+        bh=KXL+wsO6+KWhNl500Va3imWuFwV+AbGMm2r8SqpxuDc=;
+        b=FSAQ0xUMfOMb5wt248xYlSSHNp59Ll5IufE2s/qJkJCE7nuoXK3tNOteQWcrWWCQQc
+         uHLr+8SonE+aDCEXjPmi3aHU/f16fGnoi6uEllREUBSqHft2uBOBs+eiFyF9wiELhTLD
+         KxxzJZueSTUeDVqBZW/iK/L8ayG9+YDPbWCNtnH2TOjT/GR3JZn6va6rTMeBU0I7RAXV
+         31Rbz7nSddoBscjd6befms3jmOEd4p1TNS6psbXBYZNhM34eWdhWbosnZykqXBmvebqg
+         W0jUXPt1ipA08dSqHg9Zt4pLlugEv1iJ9CPSiNB80PxZosj8xbKcYaVT9q+5axt0vjZP
+         jIjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=onxOdMmI5QbIGUE/oDxEeplm+cELkOPvfMCEuj17XyE=;
-        b=soC+EZo8Y6gpLUDiDMFXHnHsKH3uHZm8mZLsZJ54hgq+xxDfh+EeyEFADNpyu7EhhF
-         JBKCNygUOxXJ2k3u19TANThldau20MNQ663ixH3UQjyUrS+5hZOKZpsLZQRBO6xxI4bx
-         JxRKKejMQ6azXo0Td1icxhVRfQTmqTiLoq5I9UDuk5EsdL7+p8jsHYIEuPjxfyyWOoGY
-         G8vduC49mjursHEllNXxeL9Lealt1wKpfIzPTEMPkj9kPve2l67gLcTDjwOXywimIcUv
-         s24diN3HB/fzoAVn283RcPEQysv8IEvhWgpQRoYXs6jhAvr3hKYJmmjltb/h9chNoG3/
-         HEsQ==
-X-Gm-Message-State: AJIora+KjzT/XZZ7X+HE/0CVKNnb6f9SgXTd3OMKmbIopZstjPOoo3uL
-        SWWs/Za+XzMuqQN6j+vd/JAPi/fum5OXdGHXB84=
-X-Google-Smtp-Source: AGRyM1sZau8R/yEHs7vvjpvJRBOiosnrmc4ppHCWFWWLbaYymgynSbBdHmb/Xq1Symzxt7lQqbvYMyAwH06xyklevEU=
-X-Received: by 2002:a05:6402:280b:b0:43b:5d75:fcfa with SMTP id
- h11-20020a056402280b00b0043b5d75fcfamr24685276ede.114.1659526404638; Wed, 03
- Aug 2022 04:33:24 -0700 (PDT)
+        bh=KXL+wsO6+KWhNl500Va3imWuFwV+AbGMm2r8SqpxuDc=;
+        b=epr/R/9ViJu3xabxyrHg366zV9bk2VrsDI0lCprUkXgpZVwZ1FQQY9CO4JFQUc40Si
+         JX8SeyS8e0vxZMMoDdQyPLkofFdM2MyAVys0ACBS1kLBYjJ9u+ei8aw9yPJSMtx9CdYe
+         aV5eYkV3Jro5Ix2AdcjgTHTmreI31mdRdXNS7j62QZTIY8jdiwtVj4YYUs0kZZSGzbsC
+         uW0qCSh708+1qAZZlkTu8MZ7UR4dMf1HN/lw0Sk2Hmg4Ur8uLQoZ5iDd8jnilF0iBmZc
+         YP3dux90SuS6rLD+Ah7xUiuo3v88jeaKCwdoyg8k6SNnamh9T9SRpJorX20BYG/VKJGB
+         XWCA==
+X-Gm-Message-State: ACgBeo1dYHi2mNn4aSKYU1PFUFAL9oevZp8tndNEpTCK9iF3Oa001i3p
+        mdm96oGE6n4D7HNktuLIDsS+GI1J+KUXVzwr4IA=
+X-Google-Smtp-Source: AA6agR5wJ9sLFYiPSdtu65r2JT69FHXwjD3opg5RdPb71aO16fTfJujyvAEGsfTBGdVHAclWRxChXpwdy9vk9Dm81gE=
+X-Received: by 2002:a50:cccb:0:b0:43d:efd3:88fb with SMTP id
+ b11-20020a50cccb000000b0043defd388fbmr8059376edj.265.1659526422550; Wed, 03
+ Aug 2022 04:33:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-7-colin.foster@in-advantage.com>
-In-Reply-To: <20220803054728.1541104-7-colin.foster@in-advantage.com>
+References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-8-colin.foster@in-advantage.com>
+In-Reply-To: <20220803054728.1541104-8-colin.foster@in-advantage.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Aug 2022 13:32:47 +0200
-Message-ID: <CAHp75VdWRQmp=dNON2jWoT8yqjB1bc-bd0-W5tswY7ucDA6bvw@mail.gmail.com>
-Subject: Re: [PATCH v15 mfd 6/9] pinctrl: microchip-sgpio: add ability to be
- used in a non-mmio configuration
+Date:   Wed, 3 Aug 2022 13:33:05 +0200
+Message-ID: <CAHp75VfV037eyOs9C=pPtG5wg_DLAWkJBk6oyxQNth_YRBeeFQ@mail.gmail.com>
+Subject: Re: [PATCH v15 mfd 7/9] resource: add define macro for register
+ address resources
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
@@ -89,63 +89,42 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Aug 3, 2022 at 7:47 AM Colin Foster
 <colin.foster@in-advantage.com> wrote:
 >
-> There are a few Ocelot chips that can contain SGPIO logic, but can be
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
->
-> Add support for these non-memory-mapped configurations.
+> DEFINE_RES_ macros have been created for the commonly used resource types,
+> but not IORESOURCE_REG. Add the macro so it can be used in a similar manner
+> to all other resource types.
 
 FWIW,
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
 >
 > (No changes since v14)
 >
 > v14
->     * Add Reviewed and Acked tags
+>     * Add Reviewed tag
 >
 > ---
->  drivers/pinctrl/pinctrl-microchip-sgpio.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+>  include/linux/ioport.h | 5 +++++
+>  1 file changed, 5 insertions(+)
 >
-> diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> index e56074b7e659..2b4167a09b3b 100644
-> --- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> +++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-> @@ -12,6 +12,7 @@
->  #include <linux/clk.h>
->  #include <linux/gpio/driver.h>
->  #include <linux/io.h>
-> +#include <linux/mfd/ocelot.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/pinctrl/pinmux.h>
-> @@ -904,7 +905,6 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
->         struct reset_control *reset;
->         struct sgpio_priv *priv;
->         struct clk *clk;
-> -       u32 __iomem *regs;
->         u32 val;
->         struct regmap_config regmap_config = {
->                 .reg_bits = 32,
-> @@ -937,11 +937,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
->                 return -EINVAL;
->         }
+> diff --git a/include/linux/ioport.h b/include/linux/ioport.h
+> index ec5f71f7135b..b0d09b6f2ecf 100644
+> --- a/include/linux/ioport.h
+> +++ b/include/linux/ioport.h
+> @@ -171,6 +171,11 @@ enum {
+>  #define DEFINE_RES_MEM(_start, _size)                                  \
+>         DEFINE_RES_MEM_NAMED((_start), (_size), NULL)
 >
-> -       regs = devm_platform_ioremap_resource(pdev, 0);
-> -       if (IS_ERR(regs))
-> -               return PTR_ERR(regs);
-> -
-> -       priv->regs = devm_regmap_init_mmio(dev, regs, &regmap_config);
-> +       priv->regs = ocelot_regmap_from_resource(pdev, 0, &regmap_config);
->         if (IS_ERR(priv->regs))
->                 return PTR_ERR(priv->regs);
->
+> +#define DEFINE_RES_REG_NAMED(_start, _size, _name)                     \
+> +       DEFINE_RES_NAMED((_start), (_size), (_name), IORESOURCE_REG)
+> +#define DEFINE_RES_REG(_start, _size)                                  \
+> +       DEFINE_RES_REG_NAMED((_start), (_size), NULL)
+> +
+>  #define DEFINE_RES_IRQ_NAMED(_irq, _name)                              \
+>         DEFINE_RES_NAMED((_irq), 1, (_name), IORESOURCE_IRQ)
+>  #define DEFINE_RES_IRQ(_irq)                                           \
 > --
 > 2.25.1
 >
