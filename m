@@ -2,130 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A705890A0
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C56005890A4
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 18:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiHCQkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 12:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S236217AbiHCQk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 12:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbiHCQj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:39:59 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7E3B1DC
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 09:39:57 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id d4so8737428ilc.8
-        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 09:39:57 -0700 (PDT)
+        with ESMTP id S231527AbiHCQk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 12:40:56 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FAA13CD9;
+        Wed,  3 Aug 2022 09:40:55 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id c139so16959285pfc.2;
+        Wed, 03 Aug 2022 09:40:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UCh0NmoCmabNWgWJ/tUrQh2kdChsA9GHWC9sQChapLw=;
-        b=nfGRJNXrDdjCXKmG+YuN5LMHWmvUsfpT9RwX9K31nd4Ba+XTa2gUZ4EdFGNEcTVyUy
-         eba4D3Jq2bgZpKGt5yDEKNVwcz5UUltmATChUlXO5LIqZWvraK2pPtrumy2X2KbG/6gv
-         cr5Lc8Oj9fTzpQ/PmwCkLLx4nstPEm4F58xw3rfpYVSOUBS+zHA1LKIqJgT33Nj0wniy
-         DUlqaSTiIkEbVFsKD64jj+zC3poyCN5ht09cS29PhJIGY7rbhvGzyWBgIMgd8o+WFKX7
-         Cknz7GFAPav9qRiYkGjkf/OyL34qa/DvUSxVVXfMUCGBncN4luwr3A58F2/kYl83VPoX
-         lOTg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=plBH5pz1kX322+xbVZ52UtO9XzB3g5pnJVIVfiUhluQ=;
+        b=KvdwfZGxKAj7YuLChZ56WyD9qv4UcBjE4HFQxqIobbSpUZ5R3nToqHka89cWqPYAnt
+         FxeDjyilVe8bvEuKbQDpa2dFfxqasjS7xWbv4b9yyhFHp6Oy/4WaPerT9KtaHVDlZcig
+         zTxvnk1h4dLLyvGdpRxap0jwLzhmqodEnbV0MUI8TvHY9ka1+YBfPeEXWs9eTwOlxqiD
+         dMnWaTW87CGWHNfbxAoqi7L5max1iKLLE7nx7QV8NNEmy6kPDJUQErkGGPSBa0343oFh
+         kBzrtQUrSN9Z2kHBLk2I4tRc/jNC1LTc8hZvT/4VO+26inb4PTJTGJoiEeCdZtVRHVxV
+         C9rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UCh0NmoCmabNWgWJ/tUrQh2kdChsA9GHWC9sQChapLw=;
-        b=UlggIFVrpiwvl818ZzrXJNeDuHJdXUZrmH6XgKGnxFXi4apTuaRDHLdvpxLi4SgXbW
-         4nuhph6dsqaKFJMLx+8SP3Sp9ypJ030qeoiQTRxPTCIqpgc+FvDOCvQp9BussH70ZJT+
-         zCfpLHr2mr+aUUjTTnUpUWHlg9QIJKtuv4GlfOLu57HJZ6o8SrFRWfXHmM8EvxTRfi+1
-         4vKD/lOU2QynbCAw3n6n4/c3KiOyNy74J7gE44hg+9JSNFxUbbjdnjWaB0E4odmCaht2
-         G54ik6QuqJ/lhdT42+HFmQpXqEDOHuHjSdVdAWXNpyg9w2yhCns6uhPF5PDLDG4r8xMK
-         Tciw==
-X-Gm-Message-State: AJIora+CQX2GQNo07Iu6Sv59MP4+W/ki/bWOFhfn1xXxj/fXcUgpQJ1o
-        pOlz7m+x1LDVSifHhbxsQOYN4g==
-X-Google-Smtp-Source: AGRyM1sQNXg2KhMHneLcef3+CpUgiEDuFNui1Pkc1Qw3RWvfpsYzhU5MhWuhBD8ORf0X4v0nAIp5Ug==
-X-Received: by 2002:a92:cf4a:0:b0:2dd:e288:e4c4 with SMTP id c10-20020a92cf4a000000b002dde288e4c4mr11134344ilr.130.1659544796858;
-        Wed, 03 Aug 2022 09:39:56 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id h1-20020a056e020d4100b002de2ea2f78csm6136328ilj.23.2022.08.03.09.39.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 09:39:56 -0700 (PDT)
-Message-ID: <1bbb9374-c503-37c6-45d8-476a8b761d4a@kernel.dk>
-Date:   Wed, 3 Aug 2022 10:39:55 -0600
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=plBH5pz1kX322+xbVZ52UtO9XzB3g5pnJVIVfiUhluQ=;
+        b=YOwdFE+++TQJWU1qVGXdNbhVw1aLlFFT1tKYJucboNkBvz1tuE2gzADHUvbBZjEM3P
+         p4MzpyaNDfMs16V+G4M5Hd19jiDakxYsGHGoe0mxk5HAte7E2WLZQ8zsFvZFZxZE3FRa
+         hqJXqRj2OWnC1Ws49NdrN1B6w8KsfSlgobv9+QWI9/bJrl2XcTM/zr+KwKQDxE0Kreeb
+         MVBdyUvRbFCBWyQV0IoU7f4oNsHRCZT/PyUj6CqzUkJIYbDcbN5Am63GET7OT1hb1E/a
+         YCVz9kQV8QyWMLpd6pfSkBPkJkVeNhb8nOqLt4nj3BfeMFiJtkeqWEIQ6S2493aqOj6X
+         p5NA==
+X-Gm-Message-State: AJIora8Y0Qjxyi/RVpNaz8F8cDDF0ZHKsxiswk+QCsrOlGO4pnk/q0Wi
+        uCkRSW4hv+3kV6c/g8ffRGpZKtdTlt5fTnAO
+X-Google-Smtp-Source: AGRyM1tPRq9StTkyP8E5BpBDQnpGfYSyLpJvuqlbuSZmRLGpcEtlRZ1o0OGknQAgZKhjmkUWRlMfiw==
+X-Received: by 2002:a05:6a00:a11:b0:52b:fb6f:b614 with SMTP id p17-20020a056a000a1100b0052bfb6fb614mr26242645pfh.33.1659544855312;
+        Wed, 03 Aug 2022 09:40:55 -0700 (PDT)
+Received: from localhost (fwdproxy-prn-009.fbsv.net. [2a03:2880:ff:9::face:b00c])
+        by smtp.gmail.com with ESMTPSA id b10-20020a170902d50a00b0016dc1df9bf7sm2219695plg.27.2022.08.03.09.40.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 09:40:55 -0700 (PDT)
+From:   Adel Abouchaev <adel.abushaev@gmail.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
+        imagedong@tencent.com, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [RFC net-next 0/6] net: support QUIC crypto
+Date:   Wed,  3 Aug 2022 09:40:39 -0700
+Message-Id: <20220803164045.3585187-1-adel.abushaev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <Adel Abouchaev <adel.abushaev@gmail.com>
+References: <Adel Abouchaev <adel.abushaev@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [GIT PULL] io_uring support for zerocopy send
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     io-uring <io-uring@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <d5568318-39ea-0c39-c765-852411409b68@kernel.dk>
- <CAHk-=wjh91hcEix55tH7ydTLHbcg3hZ6SaqgeyVscbYz57crfQ@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <CAHk-=wjh91hcEix55tH7ydTLHbcg3hZ6SaqgeyVscbYz57crfQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/22 2:45 PM, Linus Torvalds wrote:
-> On Sun, Jul 31, 2022 at 8:03 AM Jens Axboe <axboe@kernel.dk> wrote:
->>
->> On top of the core io_uring changes, this pull request adds support for
->> efficient support for zerocopy sends through io_uring. Both ipv4 and
->> ipv6 is supported, as well as both TCP and UDP.
-> 
-> I've pulled this, but I would *really* have wanted to see real
-> performance numbers from real loads.
-> 
-> Zero-copy networking has decades of history (and very much not just in
-> Linux) of absolutely _wonderful_ benchmark numbers, but less-than
-> impressive take-up on real loads.
-> 
-> A lot of the wonderful benchmark numbers are based on loads that
-> carefully don't touch the data on either the sender or receiver side,
-> and that get perfect behavior from a performance standpoint as a
-> result, but don't actually do anything remotely realistic in the
-> process.
-> 
-> Having data that never resides in the CPU caches, or having mappings
-> that are never written to and thus never take page faults are classic
-> examples of "look, benchmark numbers!".
-> 
-> Please?
+QUIC requires end to end encryption of the data. The application usually
+prepares the data in clear text, encrypts and calls send() which implies
+multiple copies of the data before the packets hit the networking stack.
+Similar to kTLS, QUIC kernel offload of cryptography reduces the memory
+pressure by reducing the number of copies.
 
-That's a valid concern! One of the key points behind Pavel's work is
-that we wanted to make zerocopy _actually_ work with smaller payloads. A
-lot of the past work has been focused on (or only useful with) bigger
-payloads, which then almost firmly lands it in the realm of "looks good
-on streamed benchmarks". If you look at the numbers Pavel posted, it's
-definitely firmly in benchmark land, but I do think the goals of
-breaking even with non zero-copy for realistic payload sizes is the real
-differentiator here.
+The scope of kernel support is limited to the symmetric cryptography,
+leaving the handshake to the user space library. For QUIC in particular,
+the application packets that require symmetric cryptography are the 1RTT
+packets with short headers. Kernel will encrypt the application packets
+on transmission and decrypt on receive. This series implements Tx only,
+because in QUIC server applications Tx outweighs Rx by orders of
+magnitude.
 
-For the io_uring network developments, Dylan wrote a benchmark that we
-use to mimic things like Thrift. Yes it's a benchmark, but it's meant to
-model real world things, not just measure ping-pongs or streamed
-bandwidth. It's actually helped drive various of the more recent
-features, as well as things coming in the next release, and been very
-useful as a research vehicle for adding real io_uring support to Thrift.
-The latter is why it was created in the first place, not to have Yet
-Another benchmark that can just spew meaningless numbers. Zero-copy is
-being added there too, and we just talked about adding some more tweaks
-to netbench that allows it to model data/cache usage too on both ends.
+Supporting the combination of QUIC and GSO requires the application to
+correctly place the data and the kernel to correctly slice it. The
+encryption process appends an arbitrary number of bytes (tag) to the end
+of the message to authenticate it. The GSO value should include this
+overhead, the offload would then subtract the tag size to parse the
+input on Tx before chunking and encrypting it.
 
-The Thrift work is what is really driving this, but it isn't quite done
-yet. Looking very promising vs epoll now, though, we'll make some more
-noise about this once it lands. Moving to a completion based model takes
-a bit of time, it's not a quick hack conversion where you just switch to
-a different notification base.
+With the kernel cryptography, the buffer copy operation is conjoined
+with the encryption operation. The memory bandwidth is reduced by 5-8%.
+When devices supporting QUIC encryption in hardware come to the market,
+we will be able to free further 7% of CPU utilization which is used
+today for crypto operations.
+
+
+Adel Abouchaev (6):
+  Documentation on QUIC kernel Tx crypto.
+  Define QUIC specific constants, control and data plane structures
+  Add UDP ULP operations, initialization and handling prototype
+    functions.
+  Implement QUIC offload functions
+  Add flow counters and Tx processing error counter
+  Add self tests for ULP operations, flow setup and crypto tests
+
+ Documentation/networking/quic.rst      |  176 +++
+ include/net/inet_sock.h                |    2 +
+ include/net/netns/mib.h                |    3 +
+ include/net/quic.h                     |   59 +
+ include/net/snmp.h                     |    6 +
+ include/net/udp.h                      |   33 +
+ include/uapi/linux/quic.h              |   61 +
+ include/uapi/linux/snmp.h              |   11 +
+ include/uapi/linux/udp.h               |    4 +
+ net/Kconfig                            |    1 +
+ net/Makefile                           |    1 +
+ net/ipv4/Makefile                      |    3 +-
+ net/ipv4/udp.c                         |   14 +
+ net/ipv4/udp_ulp.c                     |  190 ++++
+ net/quic/Kconfig                       |   16 +
+ net/quic/Makefile                      |    8 +
+ net/quic/quic_main.c                   | 1446 ++++++++++++++++++++++++
+ net/quic/quic_proc.c                   |   45 +
+ tools/testing/selftests/net/.gitignore |    1 +
+ tools/testing/selftests/net/Makefile   |    2 +-
+ tools/testing/selftests/net/quic.c     | 1024 +++++++++++++++++
+ tools/testing/selftests/net/quic.sh    |   45 +
+ 22 files changed, 3149 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/networking/quic.rst
+ create mode 100644 include/net/quic.h
+ create mode 100644 include/uapi/linux/quic.h
+ create mode 100644 net/ipv4/udp_ulp.c
+ create mode 100644 net/quic/Kconfig
+ create mode 100644 net/quic/Makefile
+ create mode 100644 net/quic/quic_main.c
+ create mode 100644 net/quic/quic_proc.c
+ create mode 100644 tools/testing/selftests/net/quic.c
+ create mode 100755 tools/testing/selftests/net/quic.sh
 
 -- 
-Jens Axboe
+2.30.2
 
