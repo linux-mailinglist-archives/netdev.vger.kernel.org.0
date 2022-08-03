@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AAF588EC8
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32055588ECA
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 16:42:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235709AbiHCOmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 10:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
+        id S229959AbiHCOmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 10:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiHCOmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:42:11 -0400
+        with ESMTP id S235093AbiHCOmM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 10:42:12 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD021117C;
-        Wed,  3 Aug 2022 07:42:09 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 273EY1NU020684;
-        Wed, 3 Aug 2022 14:42:00 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E2710FC1;
+        Wed,  3 Aug 2022 07:42:11 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 273DkKPc004151;
+        Wed, 3 Aug 2022 14:42:02 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=pRKdCBBb4DAI5CXE1Mk7XtLM/sM1SVVfXjAPOjwZiow=;
- b=H+N0SKyAR7g8NDgW3+6SHaneqPRSuszCgYwxMQcKXaVF670FAvjz+RPLjQRNgpUufXAQ
- SWVSyxVU9MruiNQlRNvSml4xW6PD29/BIbM0KBUC7Lh6JNGONVsCASCGTBW027YjlqaF
- Zg/j0BMhc0kAqM8AexZa9DR9sBe4XbjYrdNw4o51LZaNVQqmQK8Nml5LIAkYbjr/vPhE
- L6/ffoxiD5PW+mzCBaLT8ZXRi16r5lwA3weRbIcF8Sn1/WzVNOIw1XmLA9tYxGNdFtyD
- eVnD1LKQRjHGW+hDMO9/M3DKFCF0KtSO8oEa+qChtHbChik/vTSG8gKU6Y7MWJ68lhFv 9g== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqr6ay5g4-1
+ bh=kzKTuTnydJNUn7b1tS0ZaQzgBLuC3ZCLQARGQqE2RFg=;
+ b=H5p7G6P2A3bTshixxWiRMBTaKhDeVDBE9gXUepS9aB18n22Oku+Xu/OgRfhqHjq5pZBU
+ qQ6uw6fW31yn90m8MARyBLpmUq3FP9w073Wt0GGd4hBdhHJ6deFei7zbWkEHFADZTR0N
+ evGU1CYqqtQ8mj4MwZf0xjj1pMmV6F8BQ6kpWYdEjaik2tnVf/DrPAfyh/reELv17RDl
+ UFpUUiQLVTkCQLlvhyNSCAvyOlvGSNSy4tUIS/1Dj4wOxCauhMJQfE9Iw7/vLCYCMlri
+ WTP400GMZSLHbqnsA8R4xQuEhwxMh91rG9wnmgwEyQk3lr6T3wPtpT/+MePGyqfHxage 0w== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqt6stauy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 14:42:00 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 273EZLjM030479;
-        Wed, 3 Aug 2022 14:41:58 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 3hmv993r5x-1
+        Wed, 03 Aug 2022 14:42:01 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 273EZnQu004618;
+        Wed, 3 Aug 2022 14:42:00 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3hmv98n2dy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 14:41:57 +0000
+        Wed, 03 Aug 2022 14:41:59 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 273Efs4E29229544
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 273EfuRJ9502994
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 3 Aug 2022 14:41:54 GMT
+        Wed, 3 Aug 2022 14:41:56 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C4F6EA404D;
-        Wed,  3 Aug 2022 14:41:54 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id C9370A404D;
+        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 73F64A4040;
-        Wed,  3 Aug 2022 14:41:54 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 7A460A4040;
+        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
 Received: from Alexandras-MBP.fritz.box.com (unknown [9.145.20.221])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  3 Aug 2022 14:41:54 +0000 (GMT)
+        Wed,  3 Aug 2022 14:41:56 +0000 (GMT)
 From:   Alexandra Winter <wintera@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -57,24 +57,24 @@ Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Heiko Carstens <hca@linux.ibm.com>,
         Alexandra Winter <wintera@linux.ibm.com>,
         Thorsten Winkler <twinkler@linux.ibm.com>
-Subject: [PATCH net 1/2] s390/qeth: update cached link_info for ethtool
-Date:   Wed,  3 Aug 2022 16:40:14 +0200
-Message-Id: <20220803144015.52946-2-wintera@linux.ibm.com>
+Subject: [PATCH net 2/2] s390/qeth: use cached link_info for ethtool
+Date:   Wed,  3 Aug 2022 16:40:15 +0200
+Message-Id: <20220803144015.52946-3-wintera@linux.ibm.com>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20220803144015.52946-1-wintera@linux.ibm.com>
 References: <20220803144015.52946-1-wintera@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: FeO25Zi9iAAX5kEhjzPETYJh7dElW8bd
-X-Proofpoint-GUID: FeO25Zi9iAAX5kEhjzPETYJh7dElW8bd
+X-Proofpoint-GUID: zdDrE5tf5BKceT0KEQtKRHQFl5ColBtI
+X-Proofpoint-ORIG-GUID: zdDrE5tf5BKceT0KEQtKRHQFl5ColBtI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 adultscore=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0 priorityscore=1501
- phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ malwarescore=0 impostorscore=0 adultscore=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2206140000 definitions=main-2208030066
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
@@ -85,139 +85,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Speed, duplex, port type and link mode can change, after the physical link
-goes down (STOPLAN) or the card goes offline, so set them to the default
-values for the card type. STARTLAN and set_online initiate a hard setup
-that will restore the current values.
+As the cached information is kept up to date, it is no longer necessary to
+query the card on each call of get_link_ksettings.
+Tools like snmpd, prometheus, sadc or nmbd call get_link_ksettings, so
+this has the potential to reduce system load.
 
+This eliminates the need for qeth_query_card_info(). Since
+commit e6e771b3d897 ("s390/qeth: detach netdevice while card is offline")
+there was a timing window during recovery, that qeth_query_card_info could
+be sent to the card, even before it was ready for it, leading to a failing
+recovery. There is evidence that this window was hit, as not all callers
+of get_link_ksettings() check for netif_device_present.
+
+Fixes: e6e771b3d897 ("s390/qeth: detach netdevice while card is offline")
 Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
 Reviewed-by: Thorsten Winkler <twinkler@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core_main.c | 83 ++++++++++++++++++-------------
- 1 file changed, 48 insertions(+), 35 deletions(-)
+ drivers/s390/net/qeth_core_main.c | 86 -------------------------------
+ drivers/s390/net/qeth_ethtool.c   | 12 +----
+ 2 files changed, 1 insertion(+), 97 deletions(-)
 
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 9e54fe76a9b2..05582a7a55e2 100644
+index 05582a7a55e2..10e38fe54bc9 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -763,6 +763,49 @@ static void qeth_issue_ipa_msg(struct qeth_ipa_cmd *cmd, int rc,
- 				 ipa_name, com, CARD_DEVID(card));
+@@ -4788,92 +4788,6 @@ static int qeth_query_oat_command(struct qeth_card *card, char __user *udata)
+ 	return rc;
  }
  
-+static void qeth_default_link_info(struct qeth_card *card)
-+{
-+	struct qeth_link_info *link_info = &card->info.link_info;
-+
-+	QETH_CARD_TEXT(card, 2, "dftlinfo");
-+	link_info->duplex = DUPLEX_FULL;
-+
-+	if (IS_IQD(card) || IS_VM_NIC(card)) {
-+		link_info->speed = SPEED_10000;
-+		link_info->port = PORT_FIBRE;
-+		link_info->link_mode = QETH_LINK_MODE_FIBRE_SHORT;
-+	} else {
-+		switch (card->info.link_type) {
-+		case QETH_LINK_TYPE_FAST_ETH:
-+		case QETH_LINK_TYPE_LANE_ETH100:
-+			link_info->speed = SPEED_100;
-+			link_info->port = PORT_TP;
-+			break;
-+		case QETH_LINK_TYPE_GBIT_ETH:
-+		case QETH_LINK_TYPE_LANE_ETH1000:
-+			link_info->speed = SPEED_1000;
-+			link_info->port = PORT_FIBRE;
-+			break;
-+		case QETH_LINK_TYPE_10GBIT_ETH:
-+			link_info->speed = SPEED_10000;
-+			link_info->port = PORT_FIBRE;
-+			break;
-+		case QETH_LINK_TYPE_25GBIT_ETH:
-+			link_info->speed = SPEED_25000;
-+			link_info->port = PORT_FIBRE;
-+			break;
-+		default:
-+			dev_info(&card->gdev->dev,
-+				 "Unknown link type %x\n",
-+				 card->info.link_type);
-+			link_info->speed = SPEED_UNKNOWN;
-+			link_info->port = PORT_OTHER;
-+		}
-+
-+		link_info->link_mode = QETH_LINK_MODE_UNKNOWN;
-+	}
-+}
-+
- static struct qeth_ipa_cmd *qeth_check_ipa_data(struct qeth_card *card,
- 						struct qeth_ipa_cmd *cmd)
- {
-@@ -790,6 +833,7 @@ static struct qeth_ipa_cmd *qeth_check_ipa_data(struct qeth_card *card,
- 				 netdev_name(card->dev), card->info.chpid);
- 			qeth_issue_ipa_msg(cmd, cmd->hdr.return_code, card);
- 			netif_carrier_off(card->dev);
-+			qeth_default_link_info(card);
- 		}
- 		return NULL;
- 	case IPA_CMD_STARTLAN:
-@@ -4839,6 +4883,7 @@ static int qeth_init_link_info_oat_cb(struct qeth_card *card,
- 	struct qeth_query_oat_physical_if *phys_if;
- 	struct qeth_query_oat_reply *reply;
- 
-+	QETH_CARD_TEXT(card, 2, "qoatincb");
- 	if (qeth_setadpparms_inspect_rc(cmd))
- 		return -EIO;
- 
-@@ -4918,41 +4963,7 @@ static int qeth_init_link_info_oat_cb(struct qeth_card *card,
- 
- static void qeth_init_link_info(struct qeth_card *card)
- {
--	card->info.link_info.duplex = DUPLEX_FULL;
+-static int qeth_query_card_info_cb(struct qeth_card *card,
+-				   struct qeth_reply *reply, unsigned long data)
+-{
+-	struct qeth_ipa_cmd *cmd = (struct qeth_ipa_cmd *)data;
+-	struct qeth_link_info *link_info = reply->param;
+-	struct qeth_query_card_info *card_info;
 -
--	if (IS_IQD(card) || IS_VM_NIC(card)) {
--		card->info.link_info.speed = SPEED_10000;
--		card->info.link_info.port = PORT_FIBRE;
--		card->info.link_info.link_mode = QETH_LINK_MODE_FIBRE_SHORT;
--	} else {
--		switch (card->info.link_type) {
--		case QETH_LINK_TYPE_FAST_ETH:
--		case QETH_LINK_TYPE_LANE_ETH100:
--			card->info.link_info.speed = SPEED_100;
--			card->info.link_info.port = PORT_TP;
+-	QETH_CARD_TEXT(card, 2, "qcrdincb");
+-	if (qeth_setadpparms_inspect_rc(cmd))
+-		return -EIO;
+-
+-	card_info = &cmd->data.setadapterparms.data.card_info;
+-	netdev_dbg(card->dev,
+-		   "card info: card_type=0x%02x, port_mode=0x%04x, port_speed=0x%08x\n",
+-		   card_info->card_type, card_info->port_mode,
+-		   card_info->port_speed);
+-
+-	switch (card_info->port_mode) {
+-	case CARD_INFO_PORTM_FULLDUPLEX:
+-		link_info->duplex = DUPLEX_FULL;
+-		break;
+-	case CARD_INFO_PORTM_HALFDUPLEX:
+-		link_info->duplex = DUPLEX_HALF;
+-		break;
+-	default:
+-		link_info->duplex = DUPLEX_UNKNOWN;
+-	}
+-
+-	switch (card_info->card_type) {
+-	case CARD_INFO_TYPE_1G_COPPER_A:
+-	case CARD_INFO_TYPE_1G_COPPER_B:
+-		link_info->speed = SPEED_1000;
+-		link_info->port = PORT_TP;
+-		break;
+-	case CARD_INFO_TYPE_1G_FIBRE_A:
+-	case CARD_INFO_TYPE_1G_FIBRE_B:
+-		link_info->speed = SPEED_1000;
+-		link_info->port = PORT_FIBRE;
+-		break;
+-	case CARD_INFO_TYPE_10G_FIBRE_A:
+-	case CARD_INFO_TYPE_10G_FIBRE_B:
+-		link_info->speed = SPEED_10000;
+-		link_info->port = PORT_FIBRE;
+-		break;
+-	default:
+-		switch (card_info->port_speed) {
+-		case CARD_INFO_PORTS_10M:
+-			link_info->speed = SPEED_10;
 -			break;
--		case QETH_LINK_TYPE_GBIT_ETH:
--		case QETH_LINK_TYPE_LANE_ETH1000:
--			card->info.link_info.speed = SPEED_1000;
--			card->info.link_info.port = PORT_FIBRE;
+-		case CARD_INFO_PORTS_100M:
+-			link_info->speed = SPEED_100;
 -			break;
--		case QETH_LINK_TYPE_10GBIT_ETH:
--			card->info.link_info.speed = SPEED_10000;
--			card->info.link_info.port = PORT_FIBRE;
+-		case CARD_INFO_PORTS_1G:
+-			link_info->speed = SPEED_1000;
 -			break;
--		case QETH_LINK_TYPE_25GBIT_ETH:
--			card->info.link_info.speed = SPEED_25000;
--			card->info.link_info.port = PORT_FIBRE;
+-		case CARD_INFO_PORTS_10G:
+-			link_info->speed = SPEED_10000;
+-			break;
+-		case CARD_INFO_PORTS_25G:
+-			link_info->speed = SPEED_25000;
 -			break;
 -		default:
--			dev_info(&card->gdev->dev, "Unknown link type %x\n",
--				 card->info.link_type);
--			card->info.link_info.speed = SPEED_UNKNOWN;
--			card->info.link_info.port = PORT_OTHER;
+-			link_info->speed = SPEED_UNKNOWN;
 -		}
 -
--		card->info.link_info.link_mode = QETH_LINK_MODE_UNKNOWN;
+-		link_info->port = PORT_OTHER;
 -	}
-+	qeth_default_link_info(card);
+-
+-	return 0;
+-}
+-
+-int qeth_query_card_info(struct qeth_card *card,
+-			 struct qeth_link_info *link_info)
+-{
+-	struct qeth_cmd_buffer *iob;
+-
+-	QETH_CARD_TEXT(card, 2, "qcrdinfo");
+-	if (!qeth_adp_supported(card, IPA_SETADP_QUERY_CARD_INFO))
+-		return -EOPNOTSUPP;
+-	iob = qeth_get_adapter_cmd(card, IPA_SETADP_QUERY_CARD_INFO, 0);
+-	if (!iob)
+-		return -ENOMEM;
+-
+-	return qeth_send_ipa_cmd(card, iob, qeth_query_card_info_cb, link_info);
+-}
+-
+ static int qeth_init_link_info_oat_cb(struct qeth_card *card,
+ 				      struct qeth_reply *reply_priv,
+ 				      unsigned long data)
+diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
+index b0b36b2132fe..9eba0a32e9f9 100644
+--- a/drivers/s390/net/qeth_ethtool.c
++++ b/drivers/s390/net/qeth_ethtool.c
+@@ -428,8 +428,8 @@ static int qeth_get_link_ksettings(struct net_device *netdev,
+ 				   struct ethtool_link_ksettings *cmd)
+ {
+ 	struct qeth_card *card = netdev->ml_priv;
+-	struct qeth_link_info link_info;
  
- 	/* Get more accurate data via QUERY OAT: */
- 	if (qeth_adp_supported(card, IPA_SETADP_QUERY_OAT)) {
-@@ -5445,6 +5456,8 @@ int qeth_set_offline(struct qeth_card *card, const struct qeth_discipline *disc,
- 	/* cancel any stalled cmd that might block the rtnl: */
- 	qeth_clear_ipacmd_list(card);
++	QETH_CARD_TEXT(card, 4, "ethtglks");
+ 	cmd->base.speed = card->info.link_info.speed;
+ 	cmd->base.duplex = card->info.link_info.duplex;
+ 	cmd->base.port = card->info.link_info.port;
+@@ -439,16 +439,6 @@ static int qeth_get_link_ksettings(struct net_device *netdev,
+ 	cmd->base.eth_tp_mdix = ETH_TP_MDI_INVALID;
+ 	cmd->base.eth_tp_mdix_ctrl = ETH_TP_MDI_INVALID;
  
-+	qeth_default_link_info(card);
-+
- 	rtnl_lock();
- 	card->info.open_when_online = card->dev->flags & IFF_UP;
- 	dev_close(card->dev);
+-	/* Check if we can obtain more accurate information.	 */
+-	if (!qeth_query_card_info(card, &link_info)) {
+-		if (link_info.speed != SPEED_UNKNOWN)
+-			cmd->base.speed = link_info.speed;
+-		if (link_info.duplex != DUPLEX_UNKNOWN)
+-			cmd->base.duplex = link_info.duplex;
+-		if (link_info.port != PORT_OTHER)
+-			cmd->base.port = link_info.port;
+-	}
+-
+ 	qeth_set_ethtool_link_modes(cmd, card->info.link_info.link_mode);
+ 
+ 	return 0;
 -- 
 2.24.3 (Apple Git-128)
 
