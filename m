@@ -2,163 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27865588CF2
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 15:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C3C588DE3
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 15:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237878AbiHCN2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 09:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
+        id S238706AbiHCNvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 09:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235432AbiHCN2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 09:28:38 -0400
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F2C1400D;
-        Wed,  3 Aug 2022 06:28:37 -0700 (PDT)
-Received: by mail-vs1-xe2a.google.com with SMTP id x125so17781664vsb.13;
-        Wed, 03 Aug 2022 06:28:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=d4CMEGQnU+S9ZYP05NLfCafbO2suR8T26hcKhvZuoaw=;
-        b=ZvIb+0C1qehTMi24B7yGhqa99SBgp/GVNYmrBlByJqiMvXiYYacZsVBTgeRmFfKrE7
-         Kcp2l/7ydf4FNWFsiBoBzFU1jLiyfPzseMEePRWYD/GvsjvLl41mEAJTUfE9BQgZYb85
-         Z2GBA+uAYNixhh2ZmCyzOqfI9BUNGYRQu/GZwl/H5PmlKdhXldqe2U+BsEPdAGKalc7X
-         k9vDr9/a1zOae6c+iHFnCBfc9YVPHtdVp2UqwPRvU5m+mSNaAeyiyj+Dno2nKCv4D60A
-         jdcrvZEnxqipK1g4h5sCiC21eN3NLMDvK7m6fsF/yJkoU2hhHiFuZtrM+Ucv+SnGb0iH
-         mvMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=d4CMEGQnU+S9ZYP05NLfCafbO2suR8T26hcKhvZuoaw=;
-        b=oTwLb55Et88EwgPSMyA9Lr2JR1xNuReJd8/N+FJvfYh0zaq37Pb3+8THBv0nr+f+TF
-         Bnro5ynt2vbnSq13Hyk6ZTp6g1UPLoOqWCIBwDl+oqjk8p5noi6iT2Qv3pqDJux92nAH
-         u5G2Ypltp0pP6wicjph3u/yjBwdZhKNs036nfiy2yQGn92DiKMh4RO/JyPpvrPRtv7aN
-         VQ+HAf1eqHyLeRGARJHTUX7cnCNzq78DQOTCYP8bdc3k3AkHsaV/bqkxJfSvOVenMjPK
-         OfqQGRDqBZWVfGiFvKJiwkzWSsH2Q9wSZCsgDnonZrodyxgmBbXyQOqPUmRv/wXlkk5u
-         xRAQ==
-X-Gm-Message-State: ACgBeo1NhEeK0EeYMIHGrx+uDpbnz61oh6zfLWc5fH0Xi9RatOX7FUFJ
-        zR8C/KqT+MYPNtYYiy5a1O8ZWBkPYhjmeMxT3pM=
-X-Google-Smtp-Source: AA6agR7fssyMEPL+0GEoOPDewD5mH1gILM/Q0lLDfqi9TugsYxRKmx7COVHqe1jBD5Wr3DA8T//+hr0gSeSsFEpRPy4=
-X-Received: by 2002:a05:6102:441c:b0:378:fcdd:d951 with SMTP id
- df28-20020a056102441c00b00378fcddd951mr7831366vsb.22.1659533316066; Wed, 03
- Aug 2022 06:28:36 -0700 (PDT)
+        with ESMTP id S237977AbiHCNvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 09:51:01 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F809205E3;
+        Wed,  3 Aug 2022 06:48:26 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id E6DFA5FD2E;
+        Wed,  3 Aug 2022 16:48:23 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659534503;
+        bh=mAMukG4zOFmQ0mJDgVLGygbis/vBX4+8MbEbbiDl3IA=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=BebLyj5e7Y5KXiXpPs0JrRIufDwlxbC/JjpQwjuHLL+FBwf71SlHuX0qHgpUgjL9H
+         80uBQ+gQ+3Bj8pavJHhFP06JKpSIEhXfZ2bVbo4YQSXDS2C/AQbvO8rFDVHMmPkBEv
+         HdaWaUSM/uJH9R/fau3Pp/ibEhRv6HnElQmMkZXN55CAjzkme2s/nvtM6mVf7t6vXY
+         5OWRLdWg+1bxdvJAPneCyecCC0QDOGBfxDvf207wFQmkQPw8LL3H0QhJXQ3TrBMWki
+         85XZKHUpOWW5xKZ6aFJmZ0gtges7c0PnanWDFHonWuMv/xg0gHlXoW1yFohp2B7SDE
+         16kzR2xaonDlw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 16:48:19 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "Arseniy Krasnov" <AVKrasnov@sberdevices.ru>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v3 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Topic: [RFC PATCH v3 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Index: AQHYpz+pcvNrW+Wes06KlvYKyF5H+Q==
+Date:   Wed, 3 Aug 2022 13:48:06 +0000
+Message-ID: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <70E7F8912CC1A849924AB89DEEDC1AD3@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220729152316.58205-1-laoar.shao@gmail.com> <20220729152316.58205-11-laoar.shao@gmail.com>
- <CAEf4BzZR41_JcQMvBfqB_7rcRZW97cJ_0WfWh7uh4Tt==A6zXw@mail.gmail.com>
- <CALOAHbBqF31ExUKJ3yFA-zrRRHErWSEHCiPbUMi36WCTRm0j+g@mail.gmail.com> <CAEf4BzYfpLG3X5b=stNBfX2KU1JOvFRucvQC_vUmg2yVK3JZ=Q@mail.gmail.com>
-In-Reply-To: <CAEf4BzYfpLG3X5b=stNBfX2KU1JOvFRucvQC_vUmg2yVK3JZ=Q@mail.gmail.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Wed, 3 Aug 2022 21:27:59 +0800
-Message-ID: <CALOAHbBaQh38htnVg7sXrBEeCghe3RYL514xAqi_DhuHbOXMyw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 10/15] bpf: Use bpf_map_pages_alloc in ringbuf
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 07:41:00 #20041172
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 2:00 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 2, 2022 at 6:31 AM Yafang Shao <laoar.shao@gmail.com> wrote:
-> >
-> > On Tue, Aug 2, 2022 at 7:17 AM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Fri, Jul 29, 2022 at 8:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
-> > > >
-> > > > Introduce new helper bpf_map_pages_alloc() for this memory allocation.
-> > > >
-> > > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > > > ---
-> > > >  include/linux/bpf.h  |  4 ++++
-> > > >  kernel/bpf/ringbuf.c | 27 +++++++++------------------
-> > > >  kernel/bpf/syscall.c | 41 +++++++++++++++++++++++++++++++++++++++++
-> > > >  3 files changed, 54 insertions(+), 18 deletions(-)
-> > > >
-> > >
-> > > [...]
-> > >
-> > > >         /* Each data page is mapped twice to allow "virtual"
-> > > >          * continuous read of samples wrapping around the end of ring
-> > > > @@ -95,16 +95,10 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(struct bpf_map *map,
-> > > >         if (!pages)
-> > > >                 return NULL;
-> > > >
-> > > > -       for (i = 0; i < nr_pages; i++) {
-> > > > -               page = alloc_pages_node(numa_node, flags, 0);
-> > > > -               if (!page) {
-> > > > -                       nr_pages = i;
-> > > > -                       goto err_free_pages;
-> > > > -               }
-> > > > -               pages[i] = page;
-> > > > -               if (i >= nr_meta_pages)
-> > > > -                       pages[nr_data_pages + i] = page;
-> > > > -       }
-> > > > +       ptr = bpf_map_pages_alloc(map, pages, nr_meta_pages, nr_data_pages,
-> > > > +                                 numa_node, flags, 0);
-> > > > +       if (!ptr)
-> > >
-> > > bpf_map_pages_alloc() has some weird and confusing interface. It fills
-> > > out pages (second argument) and also returns pages as void *. Why not
-> > > just return int error (0 or -ENOMEM)? You are discarding this ptr
-> > > anyways.
-> > >
-> >
-> > I will change it.
-> >
-> > >
-> > > But also thinking some more, bpf_map_pages_alloc() is very ringbuf
-> > > specific (which other map will have exactly the same meaning for
-> > > nr_meta_pages and nr_data_pages, where we also allocate 2 *
-> > > nr_data_pages, etc).
-> > >
-> > > I don't think it makes sense to expose it as a generic internal API.
-> > > Why not keep all that inside kernel/bpf/ringbuf.c instead?
-> > >
-> >
-> > Right, it is used in ringbuf.c only currently. I will keep it inside ringbuf.c.
-> >
->
-> In such case you might as well put pages = bpf_map_area_alloc(); part
-> into this function and return struct page ** as a result, so that
-> everything related to pages is handled as a single unit. And then
-> bpf_map_pages_free() will free not just each individual page, but also
-> struct page*[] array.
->
-
-Good suggestion. I will do it.
-
-> Also please call it something ringbuf specific, e.g.,
-> bpf_ringbuf_pages_{alloc,free}()?
->
-
-It Makes sense to me.
-
--- 
-Regards
-Yafang
+SGVsbG8sDQoNClRoaXMgcGF0Y2hzZXQgaW5jbHVkZXMgc29tZSB1cGRhdGVzIGZvciBTT19SQ1ZM
+T1dBVDoNCg0KMSkgYWZfdnNvY2s6DQogICBEdXJpbmcgbXkgZXhwZXJpbWVudHMgd2l0aCB6ZXJv
+Y29weSByZWNlaXZlLCBpIGZvdW5kLCB0aGF0IGluIHNvbWUNCiAgIGNhc2VzLCBwb2xsKCkgaW1w
+bGVtZW50YXRpb24gdmlvbGF0ZXMgUE9TSVg6IHdoZW4gc29ja2V0IGhhcyBub24tDQogICBkZWZh
+dWx0IFNPX1JDVkxPV0FUKGUuZy4gbm90IDEpLCBwb2xsKCkgd2lsbCBhbHdheXMgc2V0IFBPTExJ
+TiBhbmQNCiAgIFBPTExSRE5PUk0gYml0cyBpbiAncmV2ZW50cycgZXZlbiBudW1iZXIgb2YgYnl0
+ZXMgYXZhaWxhYmxlIHRvIHJlYWQNCiAgIG9uIHNvY2tldCBpcyBzbWFsbGVyIHRoYW4gU09fUkNW
+TE9XQVQgdmFsdWUuIEluIHRoaXMgY2FzZSx1c2VyIHNlZXMNCiAgIFBPTExJTiBmbGFnIGFuZCB0
+aGVuIHRyaWVzIHRvIHJlYWQgZGF0YShmb3IgZXhhbXBsZSB1c2luZyAgJ3JlYWQoKScNCiAgIGNh
+bGwpLCBidXQgcmVhZCBjYWxsIHdpbGwgYmUgYmxvY2tlZCwgYmVjYXVzZSAgU09fUkNWTE9XQVQg
+bG9naWMgaXMNCiAgIHN1cHBvcnRlZCBpbiBkZXF1ZXVlIGxvb3AgaW4gYWZfdnNvY2suYy4gQnV0
+IHRoZSBzYW1lIHRpbWUsICBQT1NJWA0KICAgcmVxdWlyZXMgdGhhdDoNCg0KICAgIlBPTExJTiAg
+ICAgRGF0YSBvdGhlciB0aGFuIGhpZ2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0
+DQogICAgICAgICAgICAgICBibG9ja2luZy4NCiAgICBQT0xMUkROT1JNIE5vcm1hbCBkYXRhIG1h
+eSBiZSByZWFkIHdpdGhvdXQgYmxvY2tpbmcuIg0KDQogICBTZWUgaHR0cHM6Ly93d3cub3Blbi1z
+dGQub3JnL2p0YzEvc2MyMi9vcGVuL240MjE3LnBkZiwgcGFnZSAyOTMuDQoNCiAgIFNvLCB3ZSBo
+YXZlLCB0aGF0IHBvbGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxsIHdp
+bGwNCiAgIGJlIGJsb2NrZWQuDQoNCiAgIEFsc28gaW4gbWFuIHBhZ2Ugc29ja2V0KDcpIGkgZm91
+bmQgdGhhdDoNCg0KICAgIlNpbmNlIExpbnV4IDIuNi4yOCwgc2VsZWN0KDIpLCBwb2xsKDIpLCBh
+bmQgZXBvbGwoNykgaW5kaWNhdGUgYQ0KICAgc29ja2V0IGFzIHJlYWRhYmxlIG9ubHkgaWYgYXQg
+bGVhc3QgU09fUkNWTE9XQVQgYnl0ZXMgYXJlIGF2YWlsYWJsZS4iDQoNCiAgIEkgY2hlY2tlZCBU
+Q1AgY2FsbGJhY2sgZm9yIHBvbGwoKShuZXQvaXB2NC90Y3AuYywgdGNwX3BvbGwoKSksIGl0DQog
+ICB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNldCBQT0xMSU4gYml0LCBhbHNvIGkndmUgdGVz
+dGVkIFRDUCB3aXRoDQogICB0aGlzIGNhc2UgZm9yIFRDUCBzb2NrZXQsIGl0IHdvcmtzIGFzIFBP
+U0lYIHJlcXVpcmVkLg0KDQogICBJJ3ZlIGFkZGVkIHNvbWUgZml4ZXMgdG8gYWZfdnNvY2suYyBh
+bmQgdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYywNCiAgIHRlc3QgaXMgYWxzbyBpbXBsZW1lbnRl
+ZC4NCg0KMikgdmlydGlvL3Zzb2NrOg0KICAgSXQgYWRkcyBzb21lIG9wdGltaXphdGlvbiB0byB3
+YWtlIHVwcywgd2hlbiBuZXcgZGF0YSBhcnJpdmVkLiBOb3csDQogICBTT19SQ1ZMT1dBVCBpcyBj
+b25zaWRlcmVkIGJlZm9yZSB3YWtlIHVwIHNsZWVwZXJzIHdobyB3YWl0IG5ldyBkYXRhLg0KICAg
+VGhlcmUgaXMgbm8gc2Vuc2UsIHRvIGtpY2sgd2FpdGVyLCB3aGVuIG51bWJlciBvZiBhdmFpbGFi
+bGUgYnl0ZXMNCiAgIGluIHNvY2tldCdzIHF1ZXVlIDwgU09fUkNWTE9XQVQsIGJlY2F1c2UgaWYg
+d2Ugd2FrZSB1cCByZWFkZXIgaW4NCiAgIHRoaXMgY2FzZSwgaXQgd2lsbCB3YWl0IGZvciBTT19S
+Q1ZMT1dBVCBkYXRhIGFueXdheSBkdXJpbmcgZGVxdWV1ZSwNCiAgIG9yIGluIHBvbGwoKSBjYXNl
+LCBQT0xMSU4vUE9MTFJETk9STSBiaXRzIHdvbid0IGJlIHNldCwgc28gc3VjaA0KICAgZXhpdCBm
+cm9tIHBvbGwoKSB3aWxsIGJlICJzcHVyaW91cyIuIFRoaXMgbG9naWMgaXMgYWxzbyB1c2VkIGlu
+IFRDUA0KICAgc29ja2V0cy4NCg0KMykgdm1jaS92c29jazoNCiAgIFNhbWUgYXMgMiksIGJ1dCBp
+J20gbm90IHN1cmUgYWJvdXQgdGhpcyBjaGFuZ2VzLiBXaWxsIGJlIHZlcnkgZ29vZCwNCiAgIHRv
+IGdldCBjb21tZW50cyBmcm9tIHNvbWVvbmUgd2hvIGtub3dzIHRoaXMgY29kZS4NCg0KNCkgSHlw
+ZXItVjoNCiAgIEFzIERleHVhbiBDdWkgbWVudGlvbmVkLCBmb3IgSHlwZXItViB0cmFuc3BvcnQg
+aXQgaXMgZGlmZmljdWx0IHRvDQogICBzdXBwb3J0IFNPX1JDVkxPV0FULCBzbyBoZSBzdWdnZXN0
+ZWQgdG8gZGlzYWJsZSB0aGlzIGZlYXR1cmUgZm9yDQogICBIeXBlci1WLg0KDQpUaGFuayBZb3UN
+Cg0KQXJzZW5peSBLcmFzbm92KDkpOg0KIHZzb2NrOiBTT19SQ1ZMT1dBVCB0cmFuc3BvcnQgc2V0
+IGNhbGxiYWNrDQogaHZfc29jazogZGlzYWJsZSBTT19SQ1ZMT1dBVCBzdXBwb3J0DQogdmlydGlv
+L3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2bWNpL3Zz
+b2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2c29jazogcGFz
+cyBzb2NrX3Jjdmxvd2F0IHRvIG5vdGlmeV9wb2xsX2luIGFzIHRhcmdldA0KIHZzb2NrOiBhZGQg
+QVBJIGNhbGwgZm9yIGRhdGEgcmVhZHkNCiB2aXJ0aW8vdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FU
+IGJlZm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZtY2kvdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FUIGJl
+Zm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZzb2NrX3Rlc3Q6IFBPTExJTiArIFNPX1JDVkxPV0FUIHRl
+c3QNCg0KIGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAy
+ICsNCiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgICAgICAgICAgICAgICAgICAgICB8ICAzOCAr
+KysrKysrKystDQogbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMgICAgICAgICAgICAg
+fCAgIDcgKysNCiBuZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMgICAgICB8
+ICAgNyArLQ0KIG5ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMgICAgICAgIHwg
+IDEwICstLQ0KIG5ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5X3FzdGF0ZS5jIHwg
+IDEyICstLQ0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jICAgICAgICAgICAgIHwg
+MTA3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKw0KIDcgZmlsZXMgY2hhbmdlZCwgMTY2IGlu
+c2VydGlvbnMoKyksIDE3IGRlbGV0aW9ucygtKQ0KDQogQ2hhbmdlbG9nOg0KDQogdjEgLT4gdjI6
+DQogMSkgUGF0Y2hlcyBmb3IgVk1DSSB0cmFuc3BvcnQoc2FtZSBhcyBmb3IgdmlydGlvLXZzb2Nr
+KS4NCiAyKSBQYXRjaGVzIGZvciBIeXBlci1WIHRyYW5zcG9ydChkaXNhYmxpbmcgU09fUkNWTE9X
+QVQgc2V0dGluZykuDQogMykgV2FpdGluZyBsb2dpYyBpbiB0ZXN0IHdhcyB1cGRhdGVkKHNsZWVw
+KCkgLT4gcG9sbCgpKS4NCg0KIHYyIC0+IHYzOg0KIDEpIFBhdGNoZXMgd2VyZSByZW9yZGVyZWQu
+DQogMikgQ29tbWl0IG1lc3NhZ2UgdXBkYXRlZCBpbiAwMDA1Lg0KIDMpIENoZWNrICd0cmFuc3Bv
+cnQnIHBvaW50ZXIgaW4gMDAwMSBmb3IgTlVMTC4NCiA0KSBDaGVjayAndmFsdWUnIGluIDAwMDEg
+Zm9yID4gYnVmZmVyX3NpemUuDQoNCi0tIA0KMi4yNS4xDQo=
