@@ -2,119 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 943B4588B3F
-	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B4E588B45
+	for <lists+netdev@lfdr.de>; Wed,  3 Aug 2022 13:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiHCLa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 07:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50738 "EHLO
+        id S236049AbiHCLb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 07:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236312AbiHCLau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:30:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 011F22A43C
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 04:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659526249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ACliQ9oJqgCoHX8Ef7C87bGSwzNCX201dby99j7oUC8=;
-        b=P1pXfb0p8rGSq/Zm/1FllzqVcQkOMkXuv/JBIxh4577DovpaC80Dw3FKLrAEsnI+B3SBPt
-        GJd3AeYQo5n++gZwiRiXRGNmYR1Pk0hqjwR85HnPQA8BDUp/ABH6ZMEp1v90N9KMOlp1yx
-        Wqy2Qb19xlwuAoS8Azm3sFurQ4gMMFk=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-LMs73NxkP7yPs6mpgNUMjw-1; Wed, 03 Aug 2022 07:30:48 -0400
-X-MC-Unique: LMs73NxkP7yPs6mpgNUMjw-1
-Received: by mail-qv1-f69.google.com with SMTP id o9-20020a0cecc9000000b0047491274bb1so7664136qvq.19
-        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 04:30:48 -0700 (PDT)
+        with ESMTP id S234639AbiHCLb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 07:31:57 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD092C673;
+        Wed,  3 Aug 2022 04:31:55 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id uj29so17776169ejc.0;
+        Wed, 03 Aug 2022 04:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3wQQVAw0AEj2rKso/cKnl1tlt539pW1XXl86QQyFILQ=;
+        b=YLfbOS2enJ+s26RtfesBJ8zGnIqOz8N1zVQYbOjbnUMzFumntwAsg2wEbx4BZDcy8K
+         DjhgEL4q7F389yVMDemajrC+7YZy05+V2vUwkeiTyrnkiZdOqeDtl2Jp3uxYzxtf2EzZ
+         cbfZwx6yWgzRf9i2YER4UAIisghjpJ48M7A7JLUi5ILL35agh9k0wP2wyoMevrC0WaQX
+         uYdvczGJBIeGDOBCyn5x+kjPEa2y9OG1E6AJ+PC4VANYvn3cKZS3aTw0ESO5Z6qyewfH
+         mPMzpXxxw7hVyEX5t4ZkLv12mRPc8ANE3dnFmm57K24jzCcHjdur0NH5WjwLfihg5fnQ
+         0hqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ACliQ9oJqgCoHX8Ef7C87bGSwzNCX201dby99j7oUC8=;
-        b=rZH+xbH3c0k2KaS/yGcJqKF9AYJCNHEpBiqHOpyf2cQ6IYeT7m63u9CZKub40aRMbd
-         n3gzs/53DynvwtFhO7XY0g7wbtYjQG9GmEExWPzobTFPCoGn+uklicNqtInf2K+RcT2a
-         nwvOOzuLpU2GqD8LAo19miQup5zjbG1gCFtUa1dvb+tZGtnLn/oV0kLkDaU5ijDGN44N
-         5bhzq/Eyo9+YdyC/SbvrV3w9hnScJRsbUi7/xCgh++Mj2hngfdYlAVaqHRaGM741k33x
-         QQPQ5rlmOxRBM0/gG45awUa6EAZqRKQDv6omK9u0UAn+Z61pWPSDerwWPO6q1VXcCQKP
-         J92A==
-X-Gm-Message-State: AJIora+HErV1Sg/oGH/VFRPDmwIct6WfXFoRsbM5cARKTzObCcYQPD4w
-        LYHJJSeNTBf1aP71A4yNlBHPKFj7MtaFVcOviyoqMJAgBozuh/dLYaC6wgHvggU0PRGsZQT1Bkk
-        HyhSqKjsvtAjDdhYS
-X-Received: by 2002:ac8:59d5:0:b0:31f:dde:fca8 with SMTP id f21-20020ac859d5000000b0031f0ddefca8mr22345815qtf.86.1659526247476;
-        Wed, 03 Aug 2022 04:30:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sN0PZbJQ7Njk6l2cfsYiD8YZMh9JnksyXTAlgE0zWDCVaHwC+6GHlYXN2nC/9NqFsBWxtlVQ==
-X-Received: by 2002:ac8:59d5:0:b0:31f:dde:fca8 with SMTP id f21-20020ac859d5000000b0031f0ddefca8mr22345807qtf.86.1659526247297;
-        Wed, 03 Aug 2022 04:30:47 -0700 (PDT)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id n15-20020a05620a294f00b006b5cc25535fsm12275757qkp.99.2022.08.03.04.30.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 04:30:46 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 13:30:41 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, roopa@nvidia.com,
-        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
-        saeedm@nvidia.com, leon@kernel.org, roid@nvidia.com,
-        maord@nvidia.com, lariel@nvidia.com, vladbu@nvidia.com,
-        cmi@nvidia.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nicolas.dichtel@6wind.com,
-        eyal.birger@gmail.com, jesse@nicira.com, linville@tuxdriver.com,
-        daniel@iogearbox.net, hadarh@mellanox.com, ogerlitz@mellanox.com,
-        willemb@google.com, martin.varghese@nokia.com
-Subject: Re: [PATCH v2 net 1/4] geneve: do not use RT_TOS for IPv6 flowlabel
-Message-ID: <20220803113041.GC29408@pc-4.home>
-References: <20220802120935.1363001-1-matthias.may@westermo.com>
- <20220802120935.1363001-2-matthias.may@westermo.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3wQQVAw0AEj2rKso/cKnl1tlt539pW1XXl86QQyFILQ=;
+        b=7SRusJ7KLVEHCGekWUmnwNeqHlRyS9RlP1+ZYAjpJVCDqBqylu2qztymdqMIklK38E
+         hr3rWyhOmsUOrn1gBBr0CGcyiCr95vbQF2eZu4zuz2p0yxDUkNodSYS/2JFuLkm2LIEy
+         oeSqIi6HYg+ZFPnTjmyMNGEh+aMDKXg9gwn4FgEhok0r89vZPXvUxSPReHGETFk+TJrA
+         Dz0TbmUWdBDM/rtQJkE6cYS8te8Vm557WIfjnSQnFywUjAEP+j8kWyefYftvTrLaFhpH
+         WGeWAF11wDI6sRU7C5/2MeCSYru5RuNqJH80nQSmffQr4ODHxIlkf9e4YKhBg66MuIL8
+         oubg==
+X-Gm-Message-State: AJIora8zII7VSyGsGNey8qrj5VUV/pIT2vDLQC9d/0usM9yOc/7yVdZE
+        Hc/t5jTWniTRkgjZUP5IcnhwndWGgdO3GygLvjw=
+X-Google-Smtp-Source: AGRyM1v2LZTHvoyZ0Ial20+txMxihjbbvZ9Nq7L4lWElqvegdOZdXoAtyo3ytFLkzF8T6Nu8BE5sJxhj9WJ8A5G3ets=
+X-Received: by 2002:a17:907:c06:b0:701:eb60:ded with SMTP id
+ ga6-20020a1709070c0600b00701eb600dedmr20395317ejc.178.1659526313516; Wed, 03
+ Aug 2022 04:31:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802120935.1363001-2-matthias.may@westermo.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220803054728.1541104-1-colin.foster@in-advantage.com> <20220803054728.1541104-2-colin.foster@in-advantage.com>
+In-Reply-To: <20220803054728.1541104-2-colin.foster@in-advantage.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 3 Aug 2022 13:31:16 +0200
+Message-ID: <CAHp75VcoY+Gr-T9DEvQooPmnwDjPdeZudRwq7L0Bo8vOGdbzOQ@mail.gmail.com>
+Subject: Re: [PATCH v15 mfd 1/9] mfd: ocelot: add helper to get regmap from a resource
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 02:09:32PM +0200, Matthias May wrote:
-> According to Guillaume Nault RT_TOS should never be used for IPv6.
-> 
-> Fixes: 3a56f86f1be6a ("geneve: handle ipv6 priority like ipv4 tos")
+On Wed, Aug 3, 2022 at 7:47 AM Colin Foster
+<colin.foster@in-advantage.com> wrote:
+>
+> Several ocelot-related modules are designed for MMIO / regmaps. As such,
+> they often use a combination of devm_platform_get_and_ioremap_resource()
+> and devm_regmap_init_mmio().
+>
+> Operating in an MFD might be different, in that it could be memory mapped,
+> or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
+> instead of IORESOURCE_MEM becomes necessary.
+>
+> When this happens, there's redundant logic that needs to be implemented in
+> every driver. In order to avoid this redundancy, utilize a single function
+> that, if the MFD scenario is enabled, will perform this fallback logic.
 
-While I'm at it, the SHA1 is normally truncated to 12 charaters, not 13.
+FWIW,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-> Signed-off-by: Matthias May <matthias.may@westermo.com>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
-> v1 -> v2:
->  - Fix spacing of "Fixes" tag.
->  - Add missing CCs
+>
+> v15
+>     * Add missed errno.h and ioport.h includes
+>     * Add () to function references in both the commit log and comments
+>
+> v14
+>     * Add header guard
+>     * Change regs type from u32* to void*
+>     * Add Reviewed-by tag
+>
 > ---
->  drivers/net/geneve.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> index 4c380c06f178..e1a4480e6f17 100644
-> --- a/drivers/net/geneve.c
-> +++ b/drivers/net/geneve.c
-> @@ -877,8 +877,7 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
->  		use_cache = false;
->  	}
->  
-> -	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
-> -					   info->key.label);
-> +	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
->  	dst_cache = (struct dst_cache *)&info->dst_cache;
->  	if (use_cache) {
->  		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
-> -- 
-> 2.35.1
-> 
+>  MAINTAINERS                |  5 +++
+>  include/linux/mfd/ocelot.h | 62 ++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 67 insertions(+)
+>  create mode 100644 include/linux/mfd/ocelot.h
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 28108e4fdb8f..f781caceeb38 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14467,6 +14467,11 @@ F:     net/dsa/tag_ocelot.c
+>  F:     net/dsa/tag_ocelot_8021q.c
+>  F:     tools/testing/selftests/drivers/net/ocelot/*
+>
+> +OCELOT EXTERNAL SWITCH CONTROL
+> +M:     Colin Foster <colin.foster@in-advantage.com>
+> +S:     Supported
+> +F:     include/linux/mfd/ocelot.h
+> +
+>  OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
+>  M:     Frederic Barrat <fbarrat@linux.ibm.com>
+>  M:     Andrew Donnellan <ajd@linux.ibm.com>
+> diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
+> new file mode 100644
+> index 000000000000..dd72073d2d4f
+> --- /dev/null
+> +++ b/include/linux/mfd/ocelot.h
+> @@ -0,0 +1,62 @@
+> +/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+> +/* Copyright 2022 Innovative Advantage Inc. */
+> +
+> +#ifndef _LINUX_MFD_OCELOT_H
+> +#define _LINUX_MFD_OCELOT_H
+> +
+> +#include <linux/err.h>
+> +#include <linux/errno.h>
+> +#include <linux/ioport.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/types.h>
+> +
+> +struct resource;
+> +
+> +static inline struct regmap *
+> +ocelot_regmap_from_resource_optional(struct platform_device *pdev,
+> +                                    unsigned int index,
+> +                                    const struct regmap_config *config)
+> +{
+> +       struct device *dev = &pdev->dev;
+> +       struct resource *res;
+> +       void __iomem *regs;
+> +
+> +       /*
+> +        * Don't use _get_and_ioremap_resource() here, since that will invoke
+> +        * prints of "invalid resource" which will simply add confusion.
+> +        */
+> +       res = platform_get_resource(pdev, IORESOURCE_MEM, index);
+> +       if (res) {
+> +               regs = devm_ioremap_resource(dev, res);
+> +               if (IS_ERR(regs))
+> +                       return ERR_CAST(regs);
+> +               return devm_regmap_init_mmio(dev, regs, config);
+> +       }
+> +
+> +       /*
+> +        * Fall back to using REG and getting the resource from the parent
+> +        * device, which is possible in an MFD configuration
+> +        */
+> +       if (dev->parent) {
+> +               res = platform_get_resource(pdev, IORESOURCE_REG, index);
+> +               if (!res)
+> +                       return NULL;
+> +
+> +               return dev_get_regmap(dev->parent, res->name);
+> +       }
+> +
+> +       return NULL;
+> +}
+> +
+> +static inline struct regmap *
+> +ocelot_regmap_from_resource(struct platform_device *pdev, unsigned int index,
+> +                           const struct regmap_config *config)
+> +{
+> +       struct regmap *map;
+> +
+> +       map = ocelot_regmap_from_resource_optional(pdev, index, config);
+> +       return map ?: ERR_PTR(-ENOENT);
+> +}
+> +
+> +#endif
+> --
+> 2.25.1
+>
 
+
+-- 
+With Best Regards,
+Andy Shevchenko
