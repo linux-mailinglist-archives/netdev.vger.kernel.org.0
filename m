@@ -2,221 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C26E7589F84
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 18:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EBC3589F8B
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 18:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234576AbiHDQs3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 4 Aug 2022 12:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
+        id S233360AbiHDQwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 12:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234169AbiHDQs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 12:48:27 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 014231B7B6
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 09:48:25 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-649-RiuUCv8MPxqgcoLHX8wkRQ-1; Thu, 04 Aug 2022 12:48:14 -0400
-X-MC-Unique: RiuUCv8MPxqgcoLHX8wkRQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F1D521C05144;
-        Thu,  4 Aug 2022 16:48:13 +0000 (UTC)
-Received: from hog (unknown [10.39.194.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5B1E1492C3B;
-        Thu,  4 Aug 2022 16:48:12 +0000 (UTC)
-Date:   Thu, 4 Aug 2022 18:48:05 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     ehakim@nvidia.com
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org, raeds@nvidia.com,
-        tariqt@nvidia.com
-Subject: Re: [PATCH main v2 2/3] macsec: add Extended Packet Number support
-Message-ID: <Yuv4RXYlYE6LM2d5@hog>
-References: <20220802061813.24082-1-ehakim@nvidia.com>
- <20220802061813.24082-2-ehakim@nvidia.com>
+        with ESMTP id S230177AbiHDQwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 12:52:45 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22822252B4;
+        Thu,  4 Aug 2022 09:52:44 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oJe5Q-0000fd-HW; Thu, 04 Aug 2022 18:52:40 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oJe5Q-000XjY-AK; Thu, 04 Aug 2022 18:52:40 +0200
+Subject: LPC 2022 Networking and BPF Track CFP (Final Reminder)
+References: <fa09a9f1-7d99-cafb-3c10-7a3e474d8da6@iogearbox.net>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
+        linux-wireless@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        lwn@lwn.net
+From:   Daniel Borkmann <daniel@iogearbox.net>
+X-Forwarded-Message-Id: <fa09a9f1-7d99-cafb-3c10-7a3e474d8da6@iogearbox.net>
+Message-ID: <e710903a-c436-08f5-12a4-1b7292372aed@iogearbox.net>
+Date:   Thu, 4 Aug 2022 18:52:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20220802061813.24082-2-ehakim@nvidia.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <fa09a9f1-7d99-cafb-3c10-7a3e474d8da6@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26617/Thu Aug  4 09:54:12 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Emeel,
+This is the final reminder for the Call for Proposals (CFP) for the Networking
+and BPF track at the 2022 edition of the Linux Plumbers Conference (LPC), which
+is planned to be held in Dublin, Ireland, on September 12th - 14th, 2022.
 
-2022-08-02, 09:18:12 +0300, ehakim@nvidia.com wrote:
-> diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
-> index eee31cec..6edfea0a 100644
-> --- a/include/uapi/linux/if_macsec.h
-> +++ b/include/uapi/linux/if_macsec.h
-> @@ -22,6 +22,8 @@
->  
->  #define MACSEC_KEYID_LEN 16
->  
-> +#define MACSEC_SALT_LEN 12
+Note that the conference is planned to be both in person and remote (hybrid).
+CFP submitters should ideally be able to give their presentation in person to
+minimize technical issues if circumstances permit, although presenting remotely
+will also be possible.
 
-That's not in the kernel's uapi file (probably was forgotten), I
-don't think we can just add it here.
+This year's Networking and BPF track technical committee is comprised of:
 
-[...]
-> diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-> index 9aeaafcc..54ab5f39 100644
-> --- a/ip/ipmacsec.c
-> +++ b/ip/ipmacsec.c
-> @@ -41,13 +41,33 @@ struct sci {
->  	char abuf[6];
->  };
->  
-> +union __pn {
-> +	struct {
-> +#  if __BYTE_ORDER == __LITTLE_ENDIAN
-> +		__u32 lower;
-> +		__u32 upper;
-> +#endif
-> +# if __BYTE_ORDER == __BIG_ENDIAN
-> +		__u32 upper;
-> +		__u32 lower;
-> +#endif
-> +# if __BYTE_ORDER != __BIG_ENDIAN && __BYTE_ORDER != __LITTLE_ENDIAN
-> +#error  "Please fix byteorder defines"
-> +#endif
-> +	};
-> +	__u64 full64;
-> +};
+    David S. Miller <davem@davemloft.net>
+    Jakub Kicinski <kuba@kernel.org>
+    Paolo Abeni <pabeni@redhat.com>
+    Eric Dumazet <edumazet@google.com>
+    Alexei Starovoitov <ast@kernel.org>
+    Daniel Borkmann <daniel@iogearbox.net>
+    Andrii Nakryiko <andrii@kernel.org>
 
-That's quite complicated and I don't really see the benefit,
-especially given that upper isn't used at all here. I'd just put the
-union straight in sa_desc:
+We are seeking proposals of 40 minutes in length (including Q&A discussion).
 
->  struct sa_desc {
->  	__u8 an;
-> -	__u32 pn;
+Any kind of advanced Linux networking and/or BPF related topic will be considered.
 
-+	union {
-+		__u32 pn32;
-+		__u64 pn64;
-+	};
+Please submit your proposals through the official LPC website at:
 
-> +	union __pn pn;
->  	__u8 key_id[MACSEC_KEYID_LEN];
->  	__u32 key_len;
->  	__u8 key[MACSEC_MAX_KEY_LEN];
->  	__u8 active;
-> +	__u8 salt[MACSEC_SALT_LEN];
-> +	__u32 ssci;
-> +	bool xpn;
->  };
+    https://lpc.events/event/16/abstracts/
 
-[...]
-> @@ -98,7 +124,7 @@ static void ipmacsec_usage(void)
->  		"       ip macsec show\n"
->  		"       ip macsec show DEV\n"
->  		"       ip macsec offload DEV [ off | phy | mac ]\n"
-> -		"where  OPTS := [ pn <u32> ] [ on | off ]\n"
-> +		"where  OPTS := [ pn <u32> ] [ xpn <u64> ] [ salt <u96> ] [ ssci <u32> ] [ on | off ]\n"
+Make sure to select "eBPF & Networking" in the track pull-down menu.
 
-Only one of pn and xpn can be set, so that should be
-	[ pn <u32> | pn64 <u64> ]
+Proposals must be submitted by August 10th, and submitters will be notified of
+acceptance by August 12th.
 
-And salt is a hex string like key/keyid (it doesn't take the 0x
-prefix).
+Final slides (as PDF) are due on the first day of the conference.
 
-
-[...]
-> @@ -392,9 +438,29 @@ static int do_modify_nl(enum cmd c, enum macsec_nl_commands cmd, int ifindex,
->  	addattr8(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_AN, sa->an);
->  
->  	if (c != CMD_DEL) {
-> -		if (sa->pn)
-> +		if (sa->xpn) {
-> +			if (sa->pn.full64)
-> +				addattr64(&req.n, MACSEC_BUFLEN,
-> +					  MACSEC_SA_ATTR_PN, sa->pn.full64);
-> +			if (c == CMD_ADD) {
-> +				addattr_l(&req.n, MACSEC_BUFLEN,
-> +					  MACSEC_SA_ATTR_SALT,
-> +					  sa->salt, MACSEC_SALT_LEN);
-> +				if (sa->ssci != 0)
-> +					addattr32(&req.n, MACSEC_BUFLEN,
-> +						  MACSEC_SA_ATTR_SSCI,
-> +						  sa->ssci);
-> +				else
-> +					addattr32(&req.n, MACSEC_BUFLEN,
-> +						  MACSEC_SA_ATTR_SSCI,
-> +						  DEFAULT_SSCI);
-
-I'd rather not add a default ssci at all. If the user didn't provide
-it, don't add the attribute. That would allow us to test that part of
-the uapi using iproute.
-
-Same with the 'c == CMD_ADD' test: pass the attribute to the kernel if
-they're provided, let the kernel decide.
-
-[...]
-> @@ -426,10 +492,17 @@ static bool check_sa_args(enum cmd c, struct sa_desc *sa)
->  			return -1;
->  		}
->  
-> -		if (sa->pn == 0) {
-> +		if (sa->pn.full64 == 0) {
->  			fprintf(stderr, "must specify a packet number != 0\n");
->  			return -1;
->  		}
-> +
-> +		if (sa->xpn && sa->salt[0] == '\0') {
-> +			fprintf(stderr,
-> +				"xpn set, but no salt set.\n");
-> +			return -1;
-
-I would also allow that to be empty, same as the ssci. Let the kernel
-reject invalid requests.
-
-> +		}
-> +
->  	} else if (c == CMD_UPD) {
->  		if (sa->key_len) {
->  			fprintf(stderr, "cannot change key on SA\n");
-[...]
-
-> @@ -1268,8 +1348,16 @@ static int macsec_flag_parse(__u8 *flags, int *argcp, char ***argvp)
->  	char **argv = *argvp;
->  
->  	while (1) {
-> -		/* parse flag list */
-> -		break;
-> +		if (strcmp(*argv, "xpn") == 0) {
-> +			*flags |= MACSEC_FLAGS_XPN;
-> +		} else {
-> +			PREV_ARG(); /* back track */
-> +			break;
-> +		}
-> +
-> +		if (!NEXT_ARG_OK())
-> +			break;
-> +		NEXT_ARG();
->  	}
-
-This whole thing looks a bit over-complicated to me. Why not just put
-'bool xpn = false;' in macsec_parse_opt() and match "xpn" on its own
-(without "flags" in front of it) at the same level as cipher, icvlen,
-etc?
-
-
-
-I don't see anything on the print side in your patch. PNs provided by
-userspace can be 64b with XPN, and SSCIs are also part of the dump and
-need to be handled.
-
--- 
-Sabrina
-
+We are very much looking forward to a great conference and seeing you all!
