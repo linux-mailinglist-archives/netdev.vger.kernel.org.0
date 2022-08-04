@@ -2,124 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44063589B22
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 13:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CF7589B95
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 14:21:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239125AbiHDLko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 07:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48990 "EHLO
+        id S239706AbiHDMVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 08:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239128AbiHDLke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 07:40:34 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2068.outbound.protection.outlook.com [40.107.95.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26F4EE3B;
-        Thu,  4 Aug 2022 04:40:33 -0700 (PDT)
+        with ESMTP id S239701AbiHDMU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 08:20:59 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3236E564F1;
+        Thu,  4 Aug 2022 05:20:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UkDgQDkTXh7/2FmUNEm7ubKwGmnIdtXaLJ1UQZEWF+m1TNDb9VAKo128ItzVhx4swD9knR22p49fTVmCl5/3g0YrbOyzmx6HWVtrYqBLgzkKdfK1X/jHTvE9oQtsmIrhuRUP5n7TldBTGRs25hDT5MizxKKy9OXOAo57pftC5ORv6ld2ubT+9KI3mWKhjKvy8WJCLpU8KAbvkjpwvM9RgyqfRH4oDmz5inxRqcQcIn416cL66Wrzw5nMKF4pe5EY177R+FLzlLAJZVh9oYvxFev25OLRpv6BpB9TSnIIjejBIv/hqZafzz4Fucpdh+npjSIdzN00x8ADPJYX3Fl69A==
+ b=mPVtUdCpSEJdPocAlfaPLgAL2R2Iq9XWfbVclGvUq2K7vE3U5JGWE2lr/zbGoomKSOXpYRCXVSwhbdMiCWaBuRQxcWCa5zYHcj/70dkmGKMgWguSxVC9H9AC4PizUKk0Jsyqe9SHPc8BVjmc1ZssXIzwcI09VMZjT4lv6MVrEA4mYW/Wn9HMGr41EvJ6RprdzOANqlCD+c0rFkDY+KOPXqDsnMr8t3KY6fznMtliVSr3IsGMoKmE3Zdzz5YVmqAdsAKgXl/Pzm6ShyGMKM7PIWmrQujmZXbjaJXRerERFuv9SnpL3L0i9rbpqvw2jW4CJtDxq7YWWS7RQwf/RBLBsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=14wPZRhAYvtZTqxeN0W5Uxb5dhgwtMIdWmK0vshLmp4=;
- b=e/EylboAzh7snWdOUYkDkz9hg0T8NX9UY3yrjAkRl7DUU7T9iNJ2AXDoK0nL7sz7d3rpuZgC/2q06KSVQlh5mO0s2kRv3/KiqDcPOiEITp6yBlIW8cGsJqZin5PTujzfzVPuF1tR2JzT/GA+9DVAACprlZHmV3Jmep9rT/HdKVt1VdjIoIfYvaT+JZnMgse01m0ko8ThRPxb/bKOM0U/WWJd+T/PTbOwHaCu6YAXMM0Vi/F6C+NX+MelzenHnTYUzNiVu4Bbnu6B88GUQVxes6hqw5DmUBmkPj2F6e4x81corOe3dV8+uPyR5+uRwJmjJFnkxGR0P17EQgoLoLNqWw==
+ bh=jVLQr2O25VNPa7j+zcQpmDh3UqT3sTW9RHHMRwGGZQY=;
+ b=PGmAWJGcq6j/QCnUlrsz0NkwYfhpWL3Ib/egU63n+0rjgdgeeNYt88FEY8I4OshboCsAxHDAraC5MKMGQNwBH/5rLDLjjEZOuxuNcoL3RzQH2ENY8YdukaPVe0dbBClex9xgYmOd6i8F5VrlopCoHT5pnE7aga7Iw0TRSLHmwx6k5MtkAYCdSD3VdtYbqjQTKqXU2HiAvEdIwfujk7WTRM3LGHtyG5j4iVxaU+2sYiQTmSsy98TrFpEW8chhwcw2qhMWc5TN6IrO3plCoIHWr7e+389L4DcwEmbbcGIVQp81ReBqHTG4fJiZrhhodB76jW1ETGAIMJ206nzWq9dIBg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=14wPZRhAYvtZTqxeN0W5Uxb5dhgwtMIdWmK0vshLmp4=;
- b=osT72ZhFJn5HUBSq+hMgwvjfitUAL4OkUSkpNVlB3p/nyTVMkxQu88lYIi8Mw0nNCBMV4HFUC+VgruW9QUE+0PnMAOyyuyLhgBAQUkoIiPlvENAR1PsLRAZkUdxomTG20pK9eN0Ax26ngLTnpm+aH037YSIBFQm2BxsnkxQn2YB2YtrOLR0V2ijT1XR1u6wmDcs9UnjWjxbta9tLvYe3fTv9+Y/IIMrI3CNuw4YkPRDuqLjO49ccpdfoPH+FnzrK6Yl/DXiIiCL8mO5fMQVAdqNqavA+sKsz0BLpBxyo7s/m75UpJZdY9r6eMzPujQBH4VmwD1zAU6aIrmIhJ7VkHA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM5PR1201MB2490.namprd12.prod.outlook.com (2603:10b6:3:e3::20)
- by CY4PR1201MB2484.namprd12.prod.outlook.com (2603:10b6:903:d7::21) with
+ bh=jVLQr2O25VNPa7j+zcQpmDh3UqT3sTW9RHHMRwGGZQY=;
+ b=acZfxXo5QuiznuuLV/xAN57Mx2GSyr3BlJ0qT6V+AhY9WC8ifUv1cG36k/XA5p+5hoYD6jxk0PWelqFDIOxD8NQOzdHpsWe6LRznXAN4gX8eDnHZD6AtdhkKmbvve1co63xJThEfFs1s9cT+urlWQNr5RQ7hWEzghwupnRGTXIp1v5TIAUOZG4KAyblKpdO4X/ZpLqGUpnCaZUgfuAiykVO7Osmxt0OmizO3ua6p95KWLZNW9wEPBA8CGBTL5TK1MhsmtsnqCQV5If9pi4vpCbMS/xvKZubmbltW0Vt820g2olQ+K79kT3S/7VxKg6HCT65NsIhXIBkdQ3YszTsr1w==
+Received: from BN9PR12MB5381.namprd12.prod.outlook.com (2603:10b6:408:102::24)
+ by BN6PR12MB1539.namprd12.prod.outlook.com (2603:10b6:405:6::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Thu, 4 Aug
- 2022 11:40:32 +0000
-Received: from DM5PR1201MB2490.namprd12.prod.outlook.com
- ([fe80::3870:f6d0:1c15:eee4]) by DM5PR1201MB2490.namprd12.prod.outlook.com
- ([fe80::3870:f6d0:1c15:eee4%5]) with mapi id 15.20.5482.016; Thu, 4 Aug 2022
- 11:40:31 +0000
-Message-ID: <228ceba4-47a8-49ef-994a-fe898cdc7fc1@nvidia.com>
-Date:   Thu, 4 Aug 2022 14:40:25 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net-next 1/3] ptp: Add adjphase function to support
- phase offset control.
+ 2022 12:20:55 +0000
+Received: from BN9PR12MB5381.namprd12.prod.outlook.com
+ ([fe80::bc33:c992:d654:2670]) by BN9PR12MB5381.namprd12.prod.outlook.com
+ ([fe80::bc33:c992:d654:2670%5]) with mapi id 15.20.5504.014; Thu, 4 Aug 2022
+ 12:20:54 +0000
+From:   Vadim Pasternak <vadimp@nvidia.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "rafael@kernel.org" <rafael@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: RE: [PATCH 1/2] Revert "mlxsw: core: Use different get_trend()
+ callbacks for different thermal zones"
+Thread-Topic: [PATCH 1/2] Revert "mlxsw: core: Use different get_trend()
+ callbacks for different thermal zones"
+Thread-Index: AQHYpYz823UbypK34UGkFNMWE0pI2K2erAPw
+Date:   Thu, 4 Aug 2022 12:20:54 +0000
+Message-ID: <BN9PR12MB5381BAE6F85C68E1C9168A50AF9F9@BN9PR12MB5381.namprd12.prod.outlook.com>
+References: <20220801095622.949079-1-daniel.lezcano@linaro.org>
+In-Reply-To: <20220801095622.949079-1-daniel.lezcano@linaro.org>
+Accept-Language: en-US
 Content-Language: en-US
-To:     vincent.cheng.xh@renesas.com, richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <1588390538-24589-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1588390538-24589-2-git-send-email-vincent.cheng.xh@renesas.com>
-From:   Aya Levin <ayal@nvidia.com>
-In-Reply-To: <1588390538-24589-2-git-send-email-vincent.cheng.xh@renesas.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0076.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2bd::11) To DM5PR1201MB2490.namprd12.prod.outlook.com
- (2603:10b6:3:e3::20)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f399a4af-5908-4d72-b9ba-08da7613c73d
+x-ms-traffictypediagnostic: BN6PR12MB1539:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fd+fZpACJIjL1p7RtnkDJlPHafRaoPZhejqt4zoMZ0Pzf/iTjL2/Cq6HtMyXjNikuzp2FKbt4qY/faT5IWGus9QVAwF4DNyBsC6e65qIPD2tcPb5SujBoP4I4qav9TvBcHVjCTdpgiZu+oEEsxkzaCt8Sj4P6iM7hSI6Co7qccAVMTfZtjDxR4gMHF2rdW8FPnOwujm5fbtUovJf4P00xPnpNZFdklID10m7/VX/BBrizB/GhfZRmecWE2w1yjk1S/Ye+WwCI0FQ+e5VgmQSVcEbJeVRpn/FgPreK1Hx8n/n+knxfGwNjQ6gDYs9ciC2v9gMD8N0HIr58QqnUSsbQ6avyOPzVnmlZYMVjyVAjU/1/q+svZbbqqOcWYEchSc3fUT+xhhT6yZQNHMMJwFMdyHD6eWnfPTbpN9fz3XnfeYeCIgTCtg0EUHUr6upFeq1Prs9c2y/zaMM+EUSLC6T6PnmWaSKR433Ml6vOJ4UWjTdWuS/suKLi9GbKkvST9rQihz/V8B+mFW4OK9B2Cj2oIPB0S6SBXwGD9kSiRuYVkM0GTHMX6brmOKtI4x17JGvojqF0tiXkEGh/VpJhjmI57SDDCjvtHm7aZm3xukSItCfNmeJAdgJL5QtfmpbF3cctq6HZJwwtC3eLeOUil8l4DCqSOmP+/172mWN7MApdHDFHdILZFYJxvNkg+revh5ctQcrIKHt5cVYU2Wbl8DqaQ8TFIGgt1RFqJKFSOjI34UywQa4ah+AZKWdniQVZFgppJS1Bd7b9yUQzPHC7JYhRgSw7rioNc+VdCMMibElifpIgUw/H//Ow0hMw5urHJQndigPKtyufxXsk9hl7Leo/FdqthwUbnc6x4kwl0hwoCNhT7CaR97Hj4DzCiXjf+nZ
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5381.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(55016003)(316002)(110136005)(66556008)(66446008)(66946007)(66476007)(52536014)(8676002)(76116006)(64756008)(4326008)(71200400001)(478600001)(966005)(8936002)(83380400001)(86362001)(54906003)(38100700002)(186003)(2906002)(5660300002)(41300700001)(33656002)(38070700005)(26005)(9686003)(53546011)(6506007)(122000001)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ken1GPGIIYKi78SAx+I4cJKL1cvSgeR63OFoPbx/0++t/0Ssy/cPD3b9OiHG?=
+ =?us-ascii?Q?yK2QTF6NXIYDqtt3EKLz94IDjQq6YPceyRvfeJ2T/10Xn2VH6Viq6Yjl1Dt3?=
+ =?us-ascii?Q?LnVvI4VJ1t9jnLeHJlvzcxCFYL+K1/aioDcrklWuMxZBib9t+sQfoEKM/Zw9?=
+ =?us-ascii?Q?s1MOl+c9hIdC7D7RTz55vrSxbEWbDU8Pk3sox3Imw1RJopzNZEePOOJ8Lwrg?=
+ =?us-ascii?Q?M00snR2FbogvJrk9LN5q9+VE6bMMw9QZM4eD1UycE1/xTHNTJQeweAt8oDAQ?=
+ =?us-ascii?Q?IFalWGzaTcWntdHNphdzHjmTFrO/D1uACsQR2g8phNHt3es9EUT1xC7sYR4k?=
+ =?us-ascii?Q?OF/gZMfMcJcWcS+OPXZq33HSoMjyEMFiadP7AdRxSCEC85S1p5C8XxbFaHKd?=
+ =?us-ascii?Q?K3/EsE+Ic0wMHdZqQ0C0gFK1irWqcCobnM3shmoDvuGQLY+ywxjhS/lctqPe?=
+ =?us-ascii?Q?LoyDnaa8ObV6IqlRoqRFpaBXqcRkDg2r8oYrzfjC2ei3lTIEhm3tlhRW2Gbs?=
+ =?us-ascii?Q?JeQjxFYvan3x/K1MgIKDdlU7F3feU166vGhWallN/AnUMl7wm3JtpEvNcjet?=
+ =?us-ascii?Q?5L9sg3BQT1O8JFl+XlIiWEM3Lemka7GmDqd1Fd6XKDNVs/X6v6vfsE1eaOwr?=
+ =?us-ascii?Q?PsIgFt5xV9qHx+1WuvIDJCdINlQb8n5/KwU6wmkO0HlPTAtjItIagNOcxjhF?=
+ =?us-ascii?Q?j7T0YoZnxNuIp6cYMHjp53R/g0s2aFpdIpR8ONhJNe6gxJdSXMIxygaeNz03?=
+ =?us-ascii?Q?Of4wIt46dvF0JSn1dy4yQE5azo9it5n5xtk+22Vc7Ttn7yHpqUDBWJEVa6M0?=
+ =?us-ascii?Q?V9B6rH95s89d8cFq5jiM6B5p/CXZA03ZUpgAyNDpxOHnlSXlutG61pUAlLPg?=
+ =?us-ascii?Q?jETLv4419z94zoDNvYfD8wMvHQXBZjed86Q+tGfmrV8/BYuhOXenA5XNALK/?=
+ =?us-ascii?Q?T+sjIH2Q7oKN2t1/pP9lVTP+jSny79EzcqAhNaY6mMi57X8eLYpQcmjP778D?=
+ =?us-ascii?Q?IHLFTT97T4QgLeNO6kygnmQReRdlDWYFR5aUcFIh8iW4B4RKdmyuYkxyPHHg?=
+ =?us-ascii?Q?JlwyEc3BWIQQkqaaleUOR4ac4bYn4p+xDyYsG5m2Ykc+MjMWx5QKUePJvqCK?=
+ =?us-ascii?Q?TVXrYgdESzchBfPicQ12p4TkEw7DrmnocJBlgrjVkj+/QklkL8fm+KmyI+0F?=
+ =?us-ascii?Q?YMsUA+KPIT/riITqmYvveNG+8q/Kx+8PWKDIKTkMr46+Q28vGE+vQZtAjtng?=
+ =?us-ascii?Q?f7zr1izOzbYGw5afS1MESd9tVo+BQgIpVklxcATyvNxbV6TWSX1eeKFr5U4V?=
+ =?us-ascii?Q?RlNTRUjwr5Gl5kVhXxByrHSAG0+6SKF1HA/XeWoK5H3yiPscgEwIK8NzGpvE?=
+ =?us-ascii?Q?ZtWjweJZ1Wn920FCdrVy9WTseaNZTfOKM7yqnk/uY+CMvR1Kf9RicMQMEWYn?=
+ =?us-ascii?Q?tI2YgVsz2sGdct3YtCubBC6/0auJMoRT17Z3YlSBej05IFmAb3qXUVfd7ICA?=
+ =?us-ascii?Q?fOMQldBluj0cKOxhamtzBqudhzUI28qURLycFSU5YJeBIU3fr+Q+KCkbmyHq?=
+ =?us-ascii?Q?BE1u5xuJxL9bZnzhpiucge7X8Pyfm8BGaFl3WUxq?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73aa4277-e555-49e0-6948-08da760e230d
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB2484:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DgPQTA+jjWVVFAKR/QZQXpp+gY2WEmBcsPJhaS1TvX6qsXQnfdE/Lv5KIauO/Z5jEVwKBFMHMYvycdDCjr7vNUfENNc6OxGOjo+nCpgdh/qha+16YxPIUe3nsyJfOlzKUUGkGt/ZGDfjwHvNge5xdhoNqg1Yq1iOcR8MkpnR86+UUaIJCoc6meM0OkyggmoqDvjY8qjrMomqxVGkx1e4l0pnfM+i0l4ReAGHTPcpZOnRa+BkHVO5r3euv30hSkqEFr3YVOfPUODzRhpeJeCy5HA7mMgFa/BnZtB/odx/6woBSFsZVkhmxWYc79fig/PPlzxIEpA/liTkfUmBeEIk5hQGgxS+DvRdPgDUFz12YwE+MycUL/+ufPRQnAwqNZ0mq2LkJLq+A7zHMzTfOXnxTBER1STgbgQHW4pyB9MOOXWh82xODACw1///Ut9AbA3UzGp2Oyl1Pd1oC3SHjwbr7055OgxBB43J/gtnokbGkYlCZLNjHmlHgp4eCfxGmLqoV0MxYt7N+ExoBCzgdmcMjaI4jTWF9MvAm+a1qjmBJkc/SN5Gv03D6U26W9Qrczi1ihjUj07AHj7OytF4/xSXkw+mL4YZAbKtXS6vSql2eDJTmTJgNuJZTqZ7rGm82nRZROALSXWLBs/BNzanWkAxOh/0uKoEddeheBahi57OwrMhitfjrEphvN/J+aM68gZJSmFU3UPn4PB7b3+sUzRhpvN75ywOLV3W2DouJf75o0IV6zHac/GoclcHy7B2q8hvwsN0kMp8gRpAFyEzCDTpnN0t7DQhXAHGtx4kmmdtrl2nfTjSSnLTc/J8/A6qmDnrhClEMO4eIv8XBx1h0XBpSg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1201MB2490.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39860400002)(346002)(396003)(376002)(186003)(31696002)(6666004)(6506007)(53546011)(2616005)(26005)(41300700001)(38100700002)(83380400001)(6512007)(2906002)(8936002)(36756003)(5660300002)(478600001)(86362001)(6486002)(4326008)(66556008)(66476007)(31686004)(66946007)(316002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WFVCZytWREwwYnBPUmQrRytTejdpcHM2dk56WEJkdkRIcXZGamV6WkpmSWow?=
- =?utf-8?B?ZEJtWkVsNUdZYlh1RkRZNUx6V3NVVXl2ZEdTL2o4NnU4eG43ODhNYktVT1Rs?=
- =?utf-8?B?NjZZQUZaVDhZaGQ3aUZvaGNJRlZjZzlFWXpsWVJ4YXFJMGJHTEZsRkY4M3Br?=
- =?utf-8?B?SVptaVBXTEE5QkpyVWZVRmlOVXozNStib0xYdnQ4R3hsL0xsZEZtb3VnQVlq?=
- =?utf-8?B?bGhuT2IzQ2RkTTRXa3ZHTk1CTWlCWlVBdWVFUHhXWmwyN01KNVQzQW5KTTVi?=
- =?utf-8?B?Q3NPdU9XVGthYjJUNkV1TWRuVm5PczFJMCt1VXliemhuOEVDOWJMWjVxSU9L?=
- =?utf-8?B?S0pDQ08rcVFJSlBnREs4OEZDazNLMEdnRTBQQjFOKzkxQnBvUll5U3RBOHJE?=
- =?utf-8?B?dzllcDhqeUx0L0tVbTJ2S0NZNG1MemgwSllMY2dxVTlnWFk0R0orV0t2ODNY?=
- =?utf-8?B?YXA0aDdvWlAwWjlqOUZzeTVoTVZJenpWeUw4UHZpdmlKQjZrcUhiUk55Tlll?=
- =?utf-8?B?YWYxY2VDaDBGQlJ1Y0ZFK1lnWTlDWVowQ0huR2VHS3VrTW4weUJvWmhkTlNx?=
- =?utf-8?B?ZEhFVGhnTFpoV0hFZ0wwaW9hMEVHSFQwbjE2dGRtZGdFSjArYWgwRGlQdTNY?=
- =?utf-8?B?cGhoRVIwNjVXRE5TS2ZDdFVmZGwvN0w2RDBiWUpwNXJnbU5rYmpBZWx2N3RO?=
- =?utf-8?B?VHNMbGRvWGVUUzR3amQ1czRWRis4K1hSQmxkakdVNFcxOHlWVHVlanp4M3Bs?=
- =?utf-8?B?czZ3N2h3cE9vaFBqaXJ1ZmZsRWVzNVQrUXQxdVJNOTBwMXFiYjZqdGdvMVBS?=
- =?utf-8?B?UU9NSUFzdkN4VmVIS2NRMGxDSlNJTjZjSkRrNVBmbUlXSlRNWnl0VXFHWlJM?=
- =?utf-8?B?d2FSa2Zwekk5RWhQWitkcStzTk03T3BPMXJFNXRRNmZxYWd0emc3Rm9FQ25h?=
- =?utf-8?B?N2FSa245ZlJUMDlvQ1EybHJsTXZrSUZzZC81UWIrU0Y0dCt4VG9IbCsvVndP?=
- =?utf-8?B?My9rTmhQNWxRVHdpaGMwdE9KS3lkeGZhVnhEZS9mNnNoU0NzNnNtbEpLdlBa?=
- =?utf-8?B?SXBsUG9ISHVBVmxSMmowWW91WkVnSVJOc2xMcWpFNGE0VGNWa2NoRzVNY2g3?=
- =?utf-8?B?UENvbzVINVdwODh1VUQveGJSOWpHY0djYU9ucTFBNXFzeGowWHVPdmZtajNR?=
- =?utf-8?B?YUxvUXZRR0RpSitCQUVnRWZmREt2bjB6UnFuSHUwV1ZwbWk5dkFBSDNvWHRP?=
- =?utf-8?B?QlFJYksxVFV1S1R0MjA4T1VxNjhFN1p3VlB0Y1V0K1BsaXpnVkZCYkcreHpj?=
- =?utf-8?B?WFI3bW4yZFZXN3FiMVAwbG8rSE9ZNUd3YzEzUkdHUi91RkZRQWZEMllDTjhZ?=
- =?utf-8?B?QlVEL3hCc1JjZFlCck5VK0ViQmovakRsMmRoeEt1ZG5FRjlMMHB0NnJwWVo5?=
- =?utf-8?B?WnVOUWc4WUFFOUlJR1BkaW0xQTJzaWpWWENBT1pUQkYzcklKRkcwVHVCSXR6?=
- =?utf-8?B?UTU5U2gyTGdwS1JkU1NKYlh4ZU1IbHBOT2dkS2lxdDNCT241OU5td21JYVFX?=
- =?utf-8?B?bVVOWlE5TGtGdk5QakdwRGRsanFLSHVaTmxUbEFNMTIyaEt2NEV2akRzNmNS?=
- =?utf-8?B?QXV3SkZtekxRbjlTaksyNXlONDQ2UTMra0FiNkZzQlNZZml6SW5KNGp5YjZr?=
- =?utf-8?B?WG5UOThLR1dsb1lHVHNPYUhMQWtwUXBPWmJRc002SGxrVkV5T1dGd2ZwS2NP?=
- =?utf-8?B?N0pTR2UwR3d3STgrNDg3SHlhZDIxOE00WTM1SUFDM3d1MFQ5ejNSekwyU0p2?=
- =?utf-8?B?dDBzRTRmU2c0NmFLV2xYR0lUcVVtRDJKYWsvbzA2Mlh5RWsyNHZ5VFRIa3li?=
- =?utf-8?B?Ri94UStSblhwd04wQlZEK3BFWUxDWFo1cDNrejBaWHREM3VIaEdrRGZGcUh0?=
- =?utf-8?B?REc0TytCNlA0UnprZFZYbU43bC9kTG5TcnZ1UGVvZXNPR1V4c3JqTU40UERh?=
- =?utf-8?B?cXFmd1hubU80RGhkMWI5a1QwaEttTnZHZXN3bGxEOXo1VWxuQzhkS2xUdys1?=
- =?utf-8?B?VFZIY3E1cFVzai82bHF1akVSTmY1WUtxSjNNTGlCUzl1Z0RrVmFSOG90UVFi?=
- =?utf-8?Q?MhDCkRS8Bwr3+/VgghU0ogokE?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73aa4277-e555-49e0-6948-08da760e230d
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1201MB2490.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 11:40:31.8859
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5381.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f399a4af-5908-4d72-b9ba-08da7613c73d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Aug 2022 12:20:54.5357
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NW5GNHih8FnsPQf1+UT7yDXrOeXSEAxLHAiN980svXDvnw7zN/VzMol2BzF5EW76
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2484
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FkvEcXg94fu6WHCsf9q4WFpkmxzKz3a5+D2VZ/5Umib4nnntmggNXqXiBy50223O363BcO4+sbu2sCUmZ77cKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1539
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -128,69 +126,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 5/2/2020 6:35 AM, vincent.cheng.xh@renesas.com wrote:
-> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> 
-> Adds adjust phase function to take advantage of a PHC
-> clock's hardware filtering capability that uses phase offset
-> control word instead of frequency offset control word.
-> 
-> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> -----Original Message-----
+> From: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Sent: Monday, August 1, 2022 12:56 PM
+> To: daniel.lezcano@linaro.org; rafael@kernel.org
+> Cc: Vadim Pasternak <vadimp@nvidia.com>; davem@davemloft.net;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Ido Schimmel
+> <idosch@nvidia.com>; Petr Machata <petrm@nvidia.com>; Eric Dumazet
+> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
+> <pabeni@redhat.com>
+> Subject: [PATCH 1/2] Revert "mlxsw: core: Use different get_trend()
+> callbacks for different thermal zones"
+>=20
+> This reverts commit 2dc2f760052da4925482ecdcdc5c94d4a599153c.
+>=20
+> As discussed in the thread:
+>=20
+> https://lore.kernel.org/all/f3c62ebe-7d59-c537-a010-
+> bff366c8aeba@linaro.org/
+>=20
+> the feature provided by commits 2dc2f760052da and 6f73862fabd93 is
+> actually already handled by the thermal framework via the cooling device
+> state aggregation, thus all this code is pointless.
+>=20
+> No conflict happened when reverting the patch.
+>=20
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Tested-by: Vadim Pasternak <vadimp@nvidia.com>
+
 > ---
->   drivers/ptp/ptp_clock.c          | 3 +++
->   include/linux/ptp_clock_kernel.h | 6 +++++-
->   2 files changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-> index acabbe7..fc984a8 100644
-> --- a/drivers/ptp/ptp_clock.c
-> +++ b/drivers/ptp/ptp_clock.c
-> @@ -146,6 +146,9 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
->   		else
->   			err = ops->adjfreq(ops, ppb);
->   		ptp->dialed_frequency = tx->freq;
-> +	} else if (tx->modes & ADJ_OFFSET) {
-> +		if (ops->adjphase)
-> +			err = ops->adjphase(ops, tx->offset);
->   	} else if (tx->modes == 0) {
->   		tx->freq = ptp->dialed_frequency;
->   		err = 0;
-> diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-> index 121a7ed..31144d9 100644
-> --- a/include/linux/ptp_clock_kernel.h
-> +++ b/include/linux/ptp_clock_kernel.h
-> @@ -36,7 +36,7 @@ struct ptp_system_timestamp {
->   };
->   
->   /**
-> - * struct ptp_clock_info - decribes a PTP hardware clock
-> + * struct ptp_clock_info - describes a PTP hardware clock
->    *
->    * @owner:     The clock driver should set to THIS_MODULE.
->    * @name:      A short "friendly name" to identify the clock and to
-> @@ -65,6 +65,9 @@ struct ptp_system_timestamp {
->    *            parameter delta: Desired frequency offset from nominal frequency
->    *            in parts per billion
->    *
-> + * @adjphase:  Adjusts the phase offset of the hardware clock.
-> + *             parameter delta: Desired change in nanoseconds.
-> + *
->    * @adjtime:  Shifts the time of the hardware clock.
->    *            parameter delta: Desired change in nanoseconds.
->    *
-> @@ -128,6 +131,7 @@ struct ptp_clock_info {
->   	struct ptp_pin_desc *pin_config;
->   	int (*adjfine)(struct ptp_clock_info *ptp, long scaled_ppm);
->   	int (*adjfreq)(struct ptp_clock_info *ptp, s32 delta);
-> +	int (*adjphase)(struct ptp_clock_info *ptp, s32 phase);
-Hi,
+>  .../ethernet/mellanox/mlxsw/core_thermal.c    | 23 ++++---------------
+>  1 file changed, 4 insertions(+), 19 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> index 05f54bd982c0..f5751242653b 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> @@ -345,7 +345,8 @@ static int mlxsw_thermal_set_trip_hyst(struct
+> thermal_zone_device *tzdev,  static int mlxsw_thermal_trend_get(struct
+> thermal_zone_device *tzdev,
+>  				   int trip, enum thermal_trend *trend)  {
+> -	struct mlxsw_thermal *thermal =3D tzdev->devdata;
+> +	struct mlxsw_thermal_module *tz =3D tzdev->devdata;
+> +	struct mlxsw_thermal *thermal =3D tz->parent;
+>=20
+>  	if (trip < 0 || trip >=3D MLXSW_THERMAL_NUM_TRIPS)
+>  		return -EINVAL;
+> @@ -537,22 +538,6 @@ mlxsw_thermal_module_trip_hyst_set(struct
+> thermal_zone_device *tzdev, int trip,
+>  	return 0;
+>  }
+>=20
+> -static int mlxsw_thermal_module_trend_get(struct thermal_zone_device
+> *tzdev,
+> -					  int trip, enum thermal_trend
+> *trend)
+> -{
+> -	struct mlxsw_thermal_module *tz =3D tzdev->devdata;
+> -	struct mlxsw_thermal *thermal =3D tz->parent;
+> -
+> -	if (trip < 0 || trip >=3D MLXSW_THERMAL_NUM_TRIPS)
+> -		return -EINVAL;
+> -
+> -	if (tzdev =3D=3D thermal->tz_highest_dev)
+> -		return 1;
+> -
+> -	*trend =3D THERMAL_TREND_STABLE;
+> -	return 0;
+> -}
+> -
+>  static struct thermal_zone_device_ops mlxsw_thermal_module_ops =3D {
+>  	.bind		=3D mlxsw_thermal_module_bind,
+>  	.unbind		=3D mlxsw_thermal_module_unbind,
+> @@ -562,7 +547,7 @@ static struct thermal_zone_device_ops
+> mlxsw_thermal_module_ops =3D {
+>  	.set_trip_temp	=3D mlxsw_thermal_module_trip_temp_set,
+>  	.get_trip_hyst	=3D mlxsw_thermal_module_trip_hyst_get,
+>  	.set_trip_hyst	=3D mlxsw_thermal_module_trip_hyst_set,
+> -	.get_trend	=3D mlxsw_thermal_module_trend_get,
+> +	.get_trend	=3D mlxsw_thermal_trend_get,
+>  };
+>=20
+>  static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device
+> *tzdev, @@ -599,7 +584,7 @@ static struct thermal_zone_device_ops
+> mlxsw_thermal_gearbox_ops =3D {
+>  	.set_trip_temp	=3D mlxsw_thermal_module_trip_temp_set,
+>  	.get_trip_hyst	=3D mlxsw_thermal_module_trip_hyst_get,
+>  	.set_trip_hyst	=3D mlxsw_thermal_module_trip_hyst_set,
+> -	.get_trend	=3D mlxsw_thermal_module_trend_get,
+> +	.get_trend	=3D mlxsw_thermal_trend_get,
+>  };
+>=20
+>  static int mlxsw_thermal_get_max_state(struct thermal_cooling_device
+> *cdev,
+> --
+> 2.25.1
 
-Please explain the difference in the output between adjphase and 
-adjtime. I'd expect both to add delta to current time. Am I missing 
-something?
-
-Thanks,
-Aya
->   	int (*adjtime)(struct ptp_clock_info *ptp, s64 delta);
->   	int (*gettime64)(struct ptp_clock_info *ptp, struct timespec64 *ts);
->   	int (*gettimex64)(struct ptp_clock_info *ptp, struct timespec64 *ts,
