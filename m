@@ -2,80 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D75C589538
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 02:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 456CC589550
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 02:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240103AbiHDASn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 20:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        id S238379AbiHDA13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 20:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236876AbiHDASi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 20:18:38 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3C717E33
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 17:18:36 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id y11so14114269qvn.3
-        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 17:18:36 -0700 (PDT)
+        with ESMTP id S238301AbiHDA10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 20:27:26 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2A44B4A3
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 17:27:25 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id q6-20020a05683033c600b0061d2f64df5dso11743298ott.13
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 17:27:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3To6LMVxoqoKzRmQbA8Jez/sB+9ti+KFrFIpcpqC5DU=;
-        b=jaFMYrAr15hi7try/jB5s91PiWR8kMLB484AM76aPEsChXhIBD+lTzzNWQs7YTYffC
-         63bFlVKk/ZG9whwY4EzkRsgp56VkFoRTAi46PNFdqCIVS5abYmdTkqyYEfi6IXTHpx52
-         NzZEmvnFruMTy2bQtwEpsrjGHOS+HJw3v24rafEiQbLO2WCtUWMg1dTnDoa/wPK7bpPA
-         ZDpkYHp29JtKjxj0PdUJYC1hknjlPP/1LBYX8EFh+xET+Qa4YK4rmKgX3RZdhGdwntmC
-         Dog0Dn1Z1X7nq0Ponu0M/n1lUbjjAv/lXEId6u+zqwop41RL4jilX4EHM1/wUWqYwks2
-         lHug==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=wAxTGG2z5uPbKc8r/D1X93SfdtCWLytjF7BL3/nlYA4=;
+        b=Vntdz8+B+JaSfFgoi3UYyQn+pGWRu0BUu6JkO2Qyo0srR26BX7aT7NdWIYit8POIyT
+         btdkaxIgwIHiB3+3cl4nHzXVK5C4py+EZxJXvMpY8VHZkhW4JpwP7sr3WIdu+vnm866F
+         94Gu0mqhxAjdUDMiOBuVbb2uz/icDe7bqeasE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3To6LMVxoqoKzRmQbA8Jez/sB+9ti+KFrFIpcpqC5DU=;
-        b=MOczeXervnPvJrvDbWPEz1+hT1aYSOzBLzHKnG/XUrxEgu7Mq1BJsc9kaGl34T+fde
-         sAxt6jwIUE4XgLL7T589oYG3lDaZsAA2TFcbF8A/dzAUKZhXRLBoVXpkBHkKiFZnfC42
-         hPrFXbVmXgbqrV2B0uV/b1t7wEjHHzNubv0Z996fD/D62KH+iDtClfhdnpFlpWDLnnXO
-         HkSDnpaMFzfSTQ+xRzDQ4mPJIUzItRKPKkeNxrNVY6XbsCpF3Gt4axvUTX8o4s05Ook8
-         ETarxik+FZROd5UYDMHpZ+76K3TlUg03K/9Juxb338daQMRbiCIj1PFvHlwr21a/vkdx
-         oC8w==
-X-Gm-Message-State: ACgBeo07ui4iKbc2Tle/gTybAzmK+bjkmVErg/nqD64eoPc3E/N+Q5Ps
-        U7sIPqi0nbCzwa4AZuw1fmZzmR5OagO5FROE2gSXOQ==
-X-Google-Smtp-Source: AA6agR56HJ7ItpZidaVhaD1cOoLc3NenmgaBxnC/k/Z1/A7MiHOP5q4pPn9CxMTyXfYtA5LvUWRUAOIlNT8Nb5+rfuU=
-X-Received: by 2002:a0c:9101:0:b0:473:9b:d92a with SMTP id q1-20020a0c9101000000b00473009bd92amr24057537qvq.17.1659572315631;
- Wed, 03 Aug 2022 17:18:35 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=wAxTGG2z5uPbKc8r/D1X93SfdtCWLytjF7BL3/nlYA4=;
+        b=yMeUX14yQhCYZB7kUMSKBuKW6HH4FyYun239kAuh4JNDmy8Dmuvrvrf+LWVY5cfQ9W
+         ZCToiyuI0wbiDmvpxkWb0MSpdU9EKYE6/eUoNJb5muIIxlizLW5N6/EprId+g2rNf8SK
+         Qup1h7mPZkG+zm4MaR4VWvQwYQ2sFhY6w65TmGzcnIce8Py4NY9Bda1AHjy8Q2H71+cD
+         +i0uubAercbMpdqwMFjeJaRLx3KpUHyVYgYyHEUQoUdf0rywc5I9+Ww0PoKOaUSEPaKH
+         X2TUHmlcWLWYQlA+RcXU7ZPEGUH7cO8vm/nU+J+qeu9+FqhnbXJ+dtcqx2siZQCZuXxk
+         Hc2w==
+X-Gm-Message-State: AJIora+sTs9DF2SfW6zoDgVgyj7bZQFql2a0cCbj8wgku8NHgbfNd+ex
+        XuiiNd97B4znQ8EjpUWcesQSnb5l120o/bpICeg=
+X-Google-Smtp-Source: AGRyM1uCnybtNPDlnIYrvuJnA94o8cWmI1PwH5RTcy12bKnyT83CGih09Q55gn0u9+TUgqodve6D1A==
+X-Received: by 2002:a05:6830:280c:b0:61c:ae90:2ae8 with SMTP id w12-20020a056830280c00b0061cae902ae8mr10104380otu.251.1659572845025;
+        Wed, 03 Aug 2022 17:27:25 -0700 (PDT)
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
+        by smtp.gmail.com with ESMTPSA id cd1-20020a056830620100b0061c24cd628bsm4269431otb.7.2022.08.03.17.27.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 17:27:24 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id x1-20020a056830278100b00636774b0e54so3283533otu.4
+        for <netdev@vger.kernel.org>; Wed, 03 Aug 2022 17:27:23 -0700 (PDT)
+X-Received: by 2002:a9d:61c4:0:b0:61d:17b2:59d4 with SMTP id
+ h4-20020a9d61c4000000b0061d17b259d4mr10080432otk.284.1659572843301; Wed, 03
+ Aug 2022 17:27:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220801175407.2647869-1-haoluo@google.com> <20220801175407.2647869-5-haoluo@google.com>
- <c018a834-e834-270c-24b1-2c726b38b729@fb.com>
-In-Reply-To: <c018a834-e834-270c-24b1-2c726b38b729@fb.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Wed, 3 Aug 2022 17:18:25 -0700
-Message-ID: <CA+khW7hSFU2YL+jNw2F2qsuYEW0E6r8kJkg1BoBukAqR_sk+6Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 4/8] bpf: Introduce cgroup iter
-To:     Yonghong Song <yhs@fb.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>
+References: <20220803101438.24327-1-pabeni@redhat.com> <CAHk-=widn7iZozvVZ37cDPK26BdOegGAX_JxR+v62sCv-5=eZg@mail.gmail.com>
+ <YusOpd6IuLB29LHs@salvia>
+In-Reply-To: <YusOpd6IuLB29LHs@salvia>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 3 Aug 2022 17:27:07 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj59jR+pxYHmtf+OJvThEpYLNYLb9P5YkgCcBWDWzhdPQ@mail.gmail.com>
+Message-ID: <CAHk-=wj59jR+pxYHmtf+OJvThEpYLNYLb9P5YkgCcBWDWzhdPQ@mail.gmail.com>
+Subject: Re: [GIT PULL] Networking for 6.0
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,124 +75,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 12:44 AM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Aug 3, 2022 at 5:11 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
 >
+> For these two questions, this new Kconfig toggle was copied from:
 >
+>  config NF_CONNTRACK_PROCFS
+>         bool "Supply CT list in procfs (OBSOLETE)"
+>         default y
+>         depends on PROC_FS
 >
-> On 8/1/22 10:54 AM, Hao Luo wrote:
-> > Cgroup_iter is a type of bpf_iter. It walks over cgroups in three modes:
-> >
-> >   - walking a cgroup's descendants in pre-order.
-> >   - walking a cgroup's descendants in post-order.
-> >   - walking a cgroup's ancestors.
-> >
-> > When attaching cgroup_iter, one can set a cgroup to the iter_link
-> > created from attaching. This cgroup is passed as a file descriptor and
-> > serves as the starting point of the walk. If no cgroup is specified,
-> > the starting point will be the root cgroup.
-> >
-> > For walking descendants, one can specify the order: either pre-order or
-> > post-order. For walking ancestors, the walk starts at the specified
-> > cgroup and ends at the root.
-> >
-> > One can also terminate the walk early by returning 1 from the iter
-> > program.
-> >
-> > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > program is called with cgroup_mutex held.
-> >
-> > Currently only one session is supported, which means, depending on the
-> > volume of data bpf program intends to send to user space, the number
-> > of cgroups that can be walked is limited. For example, given the current
-> > buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
-> > cgroup, assuming PAGE_SIZE is 4kb, the total number of cgroups that can
-> > be walked is 512. This is a limitation of cgroup_iter. If the output
-> > data is larger than the buffer size, the second read() will signal
-> > EOPNOTSUPP. In order to work around, the user may have to update their
+> which is under:
 >
-> 'the second read() will signal EOPNOTSUPP' is not true. for bpf_iter,
-> we have user buffer from read() syscall and kernel buffer. The above
-> buffer size like 8 * PAGE_SIZE refers to the kernel buffer size.
+>  if NF_CONNTRACK
 >
-> If read() syscall buffer size is less than kernel buffer size,
-> the second read() will not signal EOPNOTSUPP. So to make it precise,
-> we can say
->    If the output data is larger than the kernel buffer size, after
->    all data in the kernel buffer is consumed by user space, the
->    subsequent read() syscall will signal EOPNOTSUPP.
->
+> but the copy and paste was missing this.
 
-Thanks Yonghong. Will update.
+Note that there's two problems with that
 
-> > program to reduce the volume of data sent to output. For example, skip
-> > some uninteresting cgroups. In future, we may extend bpf_iter flags to
-> > allow customizing buffer size.
-> >
-> > Acked-by: Yonghong Song <yhs@fb.com>
-> > Acked-by: Tejun Heo <tj@kernel.org>
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > ---
-[...]
-> > + *
-> > + * Currently only one session is supported, which means, depending on the
-> > + * volume of data bpf program intends to send to user space, the number
-> > + * of cgroups that can be walked is limited. For example, given the current
-> > + * buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
-> > + * cgroup, assuming PAGE_SIZE is 4kb, the total number of cgroups that can
-> > + * be walked is 512. This is a limitation of cgroup_iter. If the output data
-> > + * is larger than the buffer size, the second read() will signal EOPNOTSUPP.
-> > + * In order to work around, the user may have to update their program to
->
-> same here as above for better description.
->
+ (1) the NF_CONNTRACK_PROCFS thing is 'default y' because it *USED* to
+be unconditional, and was split up as a config option back in 2011.
 
-SG. Will update.
+See commit 54b07dca6855 ("netfilter: provide config option to disable
+ancient procfs parts").
 
-> > + * reduce the volume of data sent to output. For example, skip some
-> > + * uninteresting cgroups.
-> > + */
-> > +
-> > +struct bpf_iter__cgroup {
-> > +     __bpf_md_ptr(struct bpf_iter_meta *, meta);
-> > +     __bpf_md_ptr(struct cgroup *, cgroup);
-> > +};
-> > +
-> > +struct cgroup_iter_priv {
-> > +     struct cgroup_subsys_state *start_css;
-> > +     bool visited_all;
-> > +     bool terminate;
-> > +     int order;
-> > +};
-> > +
-> > +static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
-> > +{
-> > +     struct cgroup_iter_priv *p = seq->private;
-> > +
-> > +     mutex_lock(&cgroup_mutex);
-> > +
-> > +     /* cgroup_iter doesn't support read across multiple sessions. */
-> > +     if (*pos > 0) {
-> > +             if (p->visited_all)
-> > +                     return NULL;
->
-> This looks good. thanks!
->
-> > +
-> > +             /* Haven't visited all, but because cgroup_mutex has dropped,
-> > +              * return -EOPNOTSUPP to indicate incomplete iteration.
-> > +              */
-> > +             return ERR_PTR(-EOPNOTSUPP);
-> > +     }
-> > +
-> > +     ++*pos;
-> > +     p->terminate = false;
-> > +     p->visited_all = false;
-> > +     if (p->order == BPF_ITER_CGROUP_PRE)
-> > +             return css_next_descendant_pre(NULL, p->start_css);
-> > +     else if (p->order == BPF_ITER_CGROUP_POST)
-> > +             return css_next_descendant_post(NULL, p->start_css);
-> > +     else /* BPF_ITER_CGROUP_PARENT_UP */
-> > +             return p->start_css;
-> > +}
-> > +
-> [...]
+IOW, that NF_CONNTRACK_PROCFS exists and defaults to on, not because
+people added new code and wanted to make it default, but because the
+code used to always be enabled if NF_CONNTRACK was enabled, and people
+wanted the option to *disable* it.
+
+That's when you do 'default y' - you take existing code that didn't
+originally have a question at all, and you make it optional. Then you
+use 'default y' so that people who used it don't get screwed in the
+process.
+
+ (2) it didn't do the proper conditional on the feature it depended on.
+
+So let's not do copy-and-paste programming. The old Kconfig snippet
+had completely different rules, had completely different history, and
+completely different default values as a result.
+
+I realize that it's very easy to think of Kconfig as some
+not-very-important detail to just hook things up. But because it's
+front-facing to users, I do want people to think about it more than
+perhaps people otherwise would.
+
+                Linus
