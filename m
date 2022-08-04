@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DF45895B4
+	by mail.lfdr.de (Postfix) with ESMTP id D57A05895B5
 	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 03:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237166AbiHDBlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S237257AbiHDBlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 3 Aug 2022 21:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231255AbiHDBlv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 21:41:51 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A11D5B078
-        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 18:41:40 -0700 (PDT)
+        with ESMTP id S236768AbiHDBlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 21:41:52 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4406A5D0DD
+        for <netdev@vger.kernel.org>; Wed,  3 Aug 2022 18:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659577300; x=1691113300;
+  t=1659577310; x=1691113310;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=l5lbGNNf8a9tNCkRLxBUckCEGuqDdXHa+8z21cWzbRg=;
-  b=V3eGKHdSf5Sak7pN+uvNQLY1+GZjnPVhZAwt7LDHFnRoCy+QNesyrO9x
-   4UZKUwdJQAmyErvCfhpJ0SajbiqaevTDO7bxyAoEDrmvCAdDl1rwiOlNu
-   J6FJhr7m4Asjoy4RQJl01LocZ6TTyDvluNr45vTQSwr2x+OHqF0WRBX/J
-   IXponqlLsRAgl3sQRnO6bCjnr0dAx0vlaj4+MiIDfPj/M/G0S2DpIhN9Y
-   pK/CPpVAMil1mA52AdahDAAqV1zLpT6VswsVHhTqVCk0y0Bc9ABkqkgkm
-   p+kCwhSU4n4Zsbvg01AN1C5u1dsLqCstzNqpldn/AvXpL8IF1cDzh67Dz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="287377999"
+  bh=PUF/maUW1yI2WcnWVURVsP00+61ncH/7rYUltLCFML8=;
+  b=W0e3DgEZVUPZCdvAdm38fbTIJrpwgHmo5GUTboQxXr/IosyrIWkJ5+cK
+   2FZSJn2IU2FzNFK6gKpKdTJdN2+PWR3io7NTnqc/KStfo0tay4fDFatsI
+   x4FyyN9g/yQMMWAJBPHGkqv8vlXeIrkrGRshhEOyU6/85OEbHEaSsQ8tu
+   Skkngh0M9MmcOCOVsh+l+kJ16rMqrwdjCGFVVM9lAKqsilQVmmnimWQ04
+   K2TV3S8D6XYEbGf2fMuPrXZPO5z5EnaeGno0X+TAyVJlvZXBOisK3KQXG
+   avFoDiHVbKFDLeUw86CKzz1c8gszAG4fzeKmQiyObn6cxZ20AIUzgdjpW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="353814523"
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="287377999"
+   d="scan'208";a="353814523"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 18:41:40 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 18:41:49 -0700
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="631378776"
+   d="scan'208";a="631378809"
 Received: from jzhou17-mobl.ccr.corp.intel.com (HELO [10.249.169.141]) ([10.249.169.141])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 18:41:37 -0700
-Message-ID: <a8a452d4-c021-835e-7b52-60d818cd4f65@intel.com>
-Date:   Thu, 4 Aug 2022 09:41:35 +0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 18:41:46 -0700
+Message-ID: <bdb3015d-4836-5e1e-8cad-89f0b8f63ef9@intel.com>
+Date:   Thu, 4 Aug 2022 09:41:45 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.11.0
@@ -74,9 +74,9 @@ From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
 In-Reply-To: <73b17906-fb89-5d92-ca31-ca21652b8335@oracle.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -251,7 +251,7 @@ like when you just want to check the features to pick a proper device
 > nodes. I'm not sure which case you would need to check the device 
 > features, but in case you need it, it'd be better live in "vdpa dev 
 > show" than "vdpa dev config show".
-it not only for LM
+it is not only for LM
 >
 > Thanks,
 > -Siwei
