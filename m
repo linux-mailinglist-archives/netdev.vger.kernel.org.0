@@ -2,63 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5EA58994A
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 10:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA10589986
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 10:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239478AbiHDI2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 04:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
+        id S232498AbiHDIxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 04:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239362AbiHDI2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 04:28:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7F665828
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 01:28:32 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oJWD7-0006bS-EP; Thu, 04 Aug 2022 10:28:05 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 719DCC28ED;
-        Thu,  4 Aug 2022 08:28:02 +0000 (UTC)
-Date:   Thu, 4 Aug 2022 10:28:01 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Sebastian =?utf-8?B?V8O8cmw=?= <sebastian.wuerl@ororatech.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Christian Pellegrin <chripell@fsfe.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] can: mcp251x: Fix race condition on receive interrupt
-Message-ID: <20220804082801.prjdwdindpe3alk3@pengutronix.de>
-References: <20220804081411.68567-1-sebastian.wuerl@ororatech.com>
+        with ESMTP id S229665AbiHDIxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 04:53:50 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18FB28D;
+        Thu,  4 Aug 2022 01:53:49 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2748p6pO024554;
+        Thu, 4 Aug 2022 08:53:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=D3RScZ2Gz+x6y+5VrVCyPitDchg0u4b2/eIGVjzJ54E=;
+ b=rKa5yw1Suu464/aG7HVIDx1erWVE4SqTR5pNA8s8x7QYmIQ3d74vNO58FL4xFFmnhkZY
+ iUoXzEVp8W+uNLfIISto4EjCy5mpQTB7xgbfoOt0mBsL8Baw8fGhg9dnxIIbUZoZIwPq
+ zbK+w76CA9MyCteFuhnGjNnVvTixWwm58HHxKaOINqDhoG1uOX5876up2BWNvRnT7XEo
+ px5zaA085O9eOqGtwEfy8EqjVBRPSXlpIFdvQbiZddHxJqizqE7LwmplrrajxOLYoFSN
+ 19k+tlS08/c3fDMzs2IRmGONl5gfJ0MEDWmsydDP0hsfGssPRuid4Ozm/OXRy4QvrhgS /A== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hraycg1b3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Aug 2022 08:53:39 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2748pjNp000353;
+        Thu, 4 Aug 2022 08:53:37 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3hmv98wt2x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Aug 2022 08:53:37 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2748rYtQ29426136
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 4 Aug 2022 08:53:34 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 748CD4C046;
+        Thu,  4 Aug 2022 08:53:34 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 33C944C044;
+        Thu,  4 Aug 2022 08:53:34 +0000 (GMT)
+Received: from [9.152.224.235] (unknown [9.152.224.235])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  4 Aug 2022 08:53:34 +0000 (GMT)
+Message-ID: <dae87dee-67b0-30ce-91c0-a81eae8ec66f@linux.ibm.com>
+Date:   Thu, 4 Aug 2022 10:53:33 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qwd6lmx2fq4bhe5q"
-Content-Disposition: inline
-In-Reply-To: <20220804081411.68567-1-sebastian.wuerl@ororatech.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH net 1/2] s390/qeth: update cached link_info for ethtool
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>
+References: <20220803144015.52946-1-wintera@linux.ibm.com>
+ <20220803144015.52946-2-wintera@linux.ibm.com> <YuqR8HGEe2vWsxNz@lunn.ch>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <YuqR8HGEe2vWsxNz@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 0oCgcR0ZRd-ZjGrKp844gD_t3J5B25Po
+X-Proofpoint-ORIG-GUID: 0oCgcR0ZRd-ZjGrKp844gD_t3J5B25Po
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-04_03,2022-08-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxlogscore=999
+ bulkscore=0 mlxscore=0 impostorscore=0 clxscore=1015 spamscore=0
+ adultscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2208040036
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -66,64 +89,27 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---qwd6lmx2fq4bhe5q
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 04.08.2022 10:14:11, Sebastian W=C3=BCrl wrote:
-> The mcp251x driver uses both receiving mailboxes of the CAN controller
-> chips. For retrieving the CAN frames from the controller via SPI, it chec=
-ks
-> once per interrupt which mailboxes have been filled and will retrieve the
-> messages accordingly.
->=20
-> This introduces a race condition, as another CAN frame can enter mailbox 1
-> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
-il
-> the interrupt handler is called next, mailbox 0 is emptied before
-> mailbox 1, leading to out-of-order CAN frames in the network device.
->=20
-> This is fixed by checking the interrupt flags once again after freeing
-> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
->=20
-> For reproducing the bug I created the following setup:
->  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
->  - Setup CAN to 1 MHz
->  - Spam bursts of 5 CAN-messages with increasing CAN-ids
->  - Continue sending the bursts while sleeping a second between the bursts
->  - Check on the RPi whether the received messages have increasing CAN-ids
->  - Without this patch, every burst of messages will contain a flipped pair
->=20
-> Fixes: bf66f3736a94 ("can: mcp251x: Move to threaded interrupts instead o=
-f workqueues.")
-> Signed-off-by: Sebastian W=C3=BCrl <sebastian.wuerl@ororatech.com>
+On 03.08.22 17:19, Andrew Lunn wrote:
+> On Wed, Aug 03, 2022 at 04:40:14PM +0200, Alexandra Winter wrote:
+>> Speed, duplex, port type and link mode can change, after the physical link
+>> goes down (STOPLAN) or the card goes offline
+> 
+> If the link is down, speed, and duplex are meaningless. They should be
+> set to DUPLEX_UNKNOWN, SPEED_UNKNOWN. There is no PORT_UNKNOWN, but
+> generally, it does not change on link up, so you could set this
+> depending on the hardware type.
+> 
+> 	Andrew
 
-I've reduced the scope of intf1, eflag1 while applying the patch to
-can-next/master.
+Thank you Andrew for the review. I fully understand your point.
+I would like to propose that I put that on my ToDo list and fix
+that in a follow-on patch to net-next.
 
-Thanks,
-Marc
+The fields in the link_info control blocks are used today to generate
+other values (e.g. supported speed) which will not work with *_UNKNOWN,
+so the follow-on patch will be more than just 2 lines.
+These 2 patches under review are required to solve a recovery problem, 
+so I would like them to go to net asap.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---qwd6lmx2fq4bhe5q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLrgw4ACgkQrX5LkNig
-0105lQgAsm+Bkp2do8C0S2QsVI8ZhY+9fLBsoaF/xT63CdKufAbDA6tDFMI6sCEC
-5krLrMRxtRogbpx8nJkPcWhIULA8vAs26KCuSEJO4xcOqsfZxeq0YF4DnFjZzmdA
-IYKPer7wB78gBgdBQiJlad44enwtcfVREGHDfd3PhZ34AMFUrKMEOGZ+ATleK1QB
-ryXUSa8i3SDTfKBWQx86/ns8i42JdnBTHcsNSkuPDvPf1DBWe9hWZabP0yky1ck9
-XCvbL3kNGepG0TBBRXSMTADNGj3DXgA7QvsMq38ZVE2EX4i5oia56dauC2X4H2E5
-2hPZiEAgghwGJMHb8dx+5uUSEqNNaw==
-=G5re
------END PGP SIGNATURE-----
-
---qwd6lmx2fq4bhe5q--
+Would that be ok for you?
