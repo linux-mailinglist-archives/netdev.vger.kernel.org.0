@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BAD1589F08
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 17:59:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36276589F15
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 18:06:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234373AbiHDP74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 11:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        id S232690AbiHDQGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 12:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbiHDP7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 11:59:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606425F11E
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 08:59:54 -0700 (PDT)
+        with ESMTP id S229527AbiHDQGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 12:06:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5FE64F6;
+        Thu,  4 Aug 2022 09:06:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F179B824B3
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 15:59:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3851BC433D7;
-        Thu,  4 Aug 2022 15:59:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB2656145D;
+        Thu,  4 Aug 2022 16:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6978C433C1;
+        Thu,  4 Aug 2022 16:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659628791;
-        bh=fTFvrGA/i+VKDee3qHFL4iib0JFp2UIGyEgSST/9z80=;
+        s=k20201202; t=1659629168;
+        bh=yIBhe5VH/Mtc9UsxkvWfeuMI7NsYBSBH6YG9F3/NAjc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BiCoBDlh9ANh/n0ACa4C6w6sQBCOCyDskzsm8gtLRDs4yZEYM7/WLsPo75or07djs
-         KgyhvIKe0nS8LUGwmpRYbg/sEUqZYhwPM/SBWFaDDyzi7eV9WEhBvuIXzHM4ucZEyM
-         8gxLWLxYAXGXdl/bBy9gNLpXGZwoNMBBlKzasKA7Ho892t4EKp+sZ/RlJNM252F5xc
-         F9WP/+zMsYnp8f2pUMCQjXuOmfjBBi5GqCcCkPO0gF0Mp2FkkNUTzpbWRcFALDVwF3
-         THBUSulznTYe+WXwfj/e3JrGl+Cwd648L6M2bcNHQqTw2v94hwbXx28cjOWU8tpS8b
-         rMwkpH9JnydFw==
-Date:   Thu, 4 Aug 2022 08:59:50 -0700
+        b=L4CBv5AssfXjZqYIFVgNxzAIjY7jYFfZw8S9OtNrpvalddVvilbAFPrLZA2vY6/4+
+         1EJBparExiBcTS1KDZPdmOhDRcTNUkfNRKllg7K9UnjtP6+GMN+9Zy0S2D6L2sW8cB
+         5onDeb2jsUO2RlCfg9tXDJ8UFmGe0iz2a9uN5PwSVDeg9+bb/1IwNVmynVjdkF2pOA
+         JpnNMnwHAOHg5AEym5exT7omBzs3O1FmidoIKzJKGwssKsUJabnS2p8YEo7uw6JWbD
+         PMEOcOuWkNXmm3eruVplAwmgUWntbyZ0nYFoYb0+iJyVFZil1/we2rFKVbDv4xk+Dp
+         yD5O6TTVfdQgA==
+Date:   Thu, 4 Aug 2022 09:06:06 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
-        tariqt@nvidia.com, vfedorenko@novek.ru,
-        Ran Rozenstein <ranro@nvidia.com>,
-        "gal@nvidia.com" <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 7/7] tls: rx: do not use the standard
- strparser
-Message-ID: <20220804085950.414bfa41@kernel.org>
-In-Reply-To: <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
-References: <20220722235033.2594446-1-kuba@kernel.org>
-        <20220722235033.2594446-8-kuba@kernel.org>
-        <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
-        <20220803182432.363b0c04@kernel.org>
-        <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Naveen Mamindlapalli <naveenm@marvell.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sgoutham@marvell.com
+Subject: Re: [net-next PATCH v2 0/4] Add PTP support for CN10K silicon
+Message-ID: <20220804090606.0c892e51@kernel.org>
+In-Reply-To: <Yus4QrgERE9yR9WG@hoboy.vegasvil.org>
+References: <20220730115758.16787-1-naveenm@marvell.com>
+        <20220802121439.4d784f47@kernel.org>
+        <20220802214420.10e3750f@kernel.org>
+        <Yus4QrgERE9yR9WG@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,46 +56,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Aug 2022 11:05:18 +0300 Tariq Toukan wrote:
-> >   	trace_tls_device_decrypted(sk, tcp_sk(sk)->copied_seq - rxm->full_len,  
+On Wed, 3 Aug 2022 20:08:50 -0700 Richard Cochran wrote:
+> > Oh, well. These will have to wait until after the merge window then :(  
 > 
-> Now we see a different trace:
+> FWIW - I'm okay with any PTP patches that are about specific hardware
+> drivers.  When I can, I'll review them for proper use of the core
+> layer, locking, etc, but at the end of the day, only the people
+> holding the data sheet know how to talk to the hardware.
 > 
-> ------------[ cut here ]------------
-> WARNING: CPU: 4 PID: 45887 at net/tls/tls_strp.c:53 
+> Patches that touch the core layer are another story.  These need
+> careful review by me and other.  (Obviously)
 
-OK, if you find another I promise I'll try to hassle a machine with
-offload from somewhere... here's the fix for the new one:
-
---->8----------------
-tls: rx: device: don't try to copy too much on detach
-
-Another device offload bug, we use the length of the output
-skb as an indication of how much data to copy. But that skb
-is sized to offset + record length, and we start from offset.
-So we end up double-counting the offset which leads to
-skb_copy_bits() returning -EFAULT.
-
-Reported-by: Tariq Toukan <tariqt@nvidia.com>
-Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/tls/tls_strp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index f0b7c9122fba..9b79e334dbd9 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -41,7 +41,7 @@ static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
- 	struct sk_buff *skb;
- 	int i, err, offset;
- 
--	skb = alloc_skb_with_frags(0, strp->anchor->len, TLS_PAGE_ORDER,
-+	skb = alloc_skb_with_frags(0, strp->stm.full_len, TLS_PAGE_ORDER,
- 				   &err, strp->sk->sk_allocation);
- 	if (!skb)
- 		return NULL;
--- 
-2.37.1
-
+I was hoping you could cast an eye over the 1-step implementation here.
+Giving the device a random time reference along the packet looks odd.
+Unfortunately I don't have much (any?) experience with 1-step myself so
+I can't trust my own judgment all that much.
