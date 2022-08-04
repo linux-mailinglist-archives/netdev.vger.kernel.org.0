@@ -2,725 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4C85899D4
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 11:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF025899DE
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 11:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239029AbiHDJTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 05:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        id S237862AbiHDJY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 05:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236209AbiHDJTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 05:19:01 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B5F67158
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 02:18:59 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id f65so17408066pgc.12
-        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 02:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=WVPCv+dA/fIyLksWOZcy/KGTGCh8g6OTlqwtAWqbNSg=;
-        b=OfU7jxOev8o1wHCCG3Pe35oCLvj1ATCl42qQ8jkpqeQvaDgOOnLDR8xzP6ecvS8qIy
-         w07ruVa1OqPoJ7KUDiwECcYtM59nRb9fORC3gWrGoyyFH2E52sQN9Jabw3qr4Vby4Ov5
-         hvlGcemebHncwNUVSrHf0teCryCZwCbJDV6wU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=WVPCv+dA/fIyLksWOZcy/KGTGCh8g6OTlqwtAWqbNSg=;
-        b=MDi4KPqxzeZNToLih3okT6lMDVm6l5db9g9qeBQBmHoI6+M0TBhRBU7USIBb20lA+x
-         Y7CCwc+qgdPaD2q8yU2/ubuuEVYCis110kvPovnZOyvShlXodRLy/mSUn3/C2F56TWHS
-         X98NgbZSuNm87Qvoy9sR62vfowN3r5QNUqJ4eOOVNNS+7yFuwpc5zIfkY0JvrBSKIAyw
-         rmCdbr0jgZ65baVTszLU/2P6gkAqaMorXekrENoTcnc+U4ovwFTax0lJD6Gi0g9jNLo6
-         6xYWG1rAdypnJ6f4RQnq6m1ngxbTmIcw3Z7dGbIZl1WU1Q2B2uiGW3+fDusUSfplsaPK
-         Q1rQ==
-X-Gm-Message-State: ACgBeo2HVitLgIp+8DDPk3fCk33CQ17eaxGiZl5N+sMJDBbVPXZnwLQO
-        k78GacIa9rkKEXecuC4WD2U8rQ==
-X-Google-Smtp-Source: AA6agR6XdXaI85aeJFWH29pRLbMVc+xeADSqztmL/YJGdijXzDiMCx12wh2M37jnWAwsjl11fyBxpA==
-X-Received: by 2002:a05:6a00:a8e:b0:527:9d23:c613 with SMTP id b14-20020a056a000a8e00b005279d23c613mr837382pfl.53.1659604738823;
-        Thu, 04 Aug 2022 02:18:58 -0700 (PDT)
-Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id o2-20020a170902d4c200b0016d6963cb12sm344773plg.304.2022.08.04.02.18.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 02:18:57 -0700 (PDT)
-From:   Vikas Gupta <vikas.gupta@broadcom.com>
-To:     jiri@nvidia.com, dsahern@kernel.org, stephen@networkplumber.org
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
-        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
-        Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH iproute2-next v6 1/1] devlink: add support for running selftests
-Date:   Thu,  4 Aug 2022 14:48:02 +0530
-Message-Id: <20220804091802.36136-2-vikas.gupta@broadcom.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220804091802.36136-1-vikas.gupta@broadcom.com>
-References: <20220804091802.36136-1-vikas.gupta@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f4db7a05e566d67b"
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_TVD_MIME_NO_HEADERS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229527AbiHDJY1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 05:24:27 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50076.outbound.protection.outlook.com [40.107.5.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603B467159
+        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 02:24:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZzzZsphF/DmHyUu3jU+QvktUhI0/aB0fyMS12t0CHsBimNyIU0/CEKQKuIYfuex6uUIiKKqkVkNMHFRFnGfaH859msTgR940yJUuO0ZwyzzsV3gZF1P63YhO+rj1doQxe7bmOsolkLtbcXJWS3hRo9P7XJ0Gjf1tdXrgj+WXLjhhZvh+3npHslmAvbasKZdlUS8ngqBGvz8HypDltXFx1O/Snqf9aKSibarDecdoOp/b3qj3vad+IywrN27MktlvEXOWIzPiGgJggOKfKVkaErQRWcngP9yHcTypfJ11cQK3AAWJ7secS91Xx46Yk/aYXvhHZNCgO8PS1wFHMdJwvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uM7Km2CSnITfT3BbNpHA17sqRvlyBzYd0DelvzTF/UY=;
+ b=oAMNYFLXcX/o6mKjdRHz5bF7znPVezyM3Z6+rmYlyPyicGyiV9ETD82pn9Ye9LfBmNFHLUHGA/UR4WWjJYaACcieiMY6ZUJgMsS5akygflzv1riFooWEYY1+LhiGuGmLilrcYsYA14YvAdlvrLbf9oYgLue0RInH18Omjc3e+SDDuie29f+psmGr2e4yyZF15KO5MM+AgpbOWYblH06QLjmzqpfUDjqfR5KyShfOxZsTCE4Rum8Trygo4qRIhc3+4FiEhZNT4gsqjY1TCAiDjn23QbjDU/vtXfj9wDFhbQyA5h6htNRDlb5QoPxszFrLvFDaj/3GxtdfaM48auKs9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uM7Km2CSnITfT3BbNpHA17sqRvlyBzYd0DelvzTF/UY=;
+ b=AfNjBZ1jQpMelkQ1Y6f0UzlkHmVNoGPYgKDIqrB6q4khRXCwSxZEUHnj1yaQGVvhZ89TOgdFYznRlfREfhmMZdcPK0gyX9BvliOLjqQd1jOJMahvF15KQrmgvrvdP32KHlNyyoMgsNU8RoxXxjTcIIfAwIC4tUO9viLuHSCTM9bucDE38onzAr58XEF2jlU55sqUlg7P5NuHzqIUL+b4Ts1oBQyZInnp3xWi9i2pAtxdKBAcFfrLPRqbJ9CsdayaLSrMEZTxN5VxR4sUlg/3reNzJ0PyvVWjdpcI4AF6+wI3damiXIn389xIRGEwlrT7mYy/7O23s/HcWkItrgi6pA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
+ (2603:10a6:800:58::16) by PA4PR04MB9247.eurprd04.prod.outlook.com
+ (2603:10a6:102:2a2::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Thu, 4 Aug
+ 2022 09:24:23 +0000
+Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
+ ([fe80::9cc6:7688:607e:a3b6]) by VI1PR0401MB2526.eurprd04.prod.outlook.com
+ ([fe80::9cc6:7688:607e:a3b6%9]) with mapi id 15.20.5504.015; Thu, 4 Aug 2022
+ 09:24:23 +0000
+Message-ID: <d8e45a94-e16a-1152-afad-2ebb15b48d67@suse.com>
+Date:   Thu, 4 Aug 2022 11:24:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC] r8152: pass through needs to be singular
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>
+Cc:     hayeswang@realtek.com, netdev@vger.kernel.org
+References: <20220728191851.30402-1-oneukum@suse.com>
+ <YuMJhAuZVVZtl9VZ@lunn.ch> <34f7cb15-91e8-e92c-7dcd-f5b28724df92@suse.com>
+ <YuknNESeYxCjcPrD@lunn.ch>
+From:   Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <YuknNESeYxCjcPrD@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR06CA0165.eurprd06.prod.outlook.com
+ (2603:10a6:20b:45c::12) To VI1PR0401MB2526.eurprd04.prod.outlook.com
+ (2603:10a6:800:58::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e265406-f5de-41ab-2ac6-08da75fb1e1b
+X-MS-TrafficTypeDiagnostic: PA4PR04MB9247:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iK5aD9m5V0caVBjAfDbfmkpr6FgOP2WotxLuUQNl2u10u0uRndunzPYBkHbO94QB/OVcxTxsDiupcUqq770gmhIM+aFWSZ68BQei6Xl4S9Idgpfx0lqgyyl2j0OWOB8CqTIJpp1vhdRhJ28+UjqAal5i6XnymL/UYviGEeYvD3spOFeYQ7giXjoX60csWQeMro+fTAsmAxz1InqkhnaFuprQLWUVKWWcKtyDgs0YZ79sFrHYEDTqmo9iXoeh78JZKg9xDelfkT/WdE67bgv/eYm9Sv09VrVQ92StMXccDwudw/QbilHMHgUO4U1kJZMW6kwQPx69+jadVDIRP1B6KsGsvm/Q6bGPj7pE6rkWjEHDxaIdKxhTLEEBqpOuQiMmuDykvoSsVfsZPKJ1gTVIGHAIqiKncI57xrYXJm0aikLLyJsOgD/2UxhIfhliQl0WgH8QPsKNJmsrkZLJXK3SAK1hz0fcq9i0FggP55oaKX5fll3rXxloF6K+Jnvi9GHW/T7bhMVIXErWyFol+AHhW1oz0HT2Xx03FNf/bkXbUwNCPM5qUpmr1f+BiE0u8kzFFQgGP2d0v0BPwfb+Zr5ku0SDlc+IF1IqO1/6xmoBqtsNG87izdqxUgY56+/VSODjP2Tt4/vZNxg7zWJTkE/Zf/fBmx1bLiIUCrpHQYHhDlNtSE4mwJuFkA6RvtWxb0JirRVUusurQC+6u3gZJvfRStSExFJ26LjPsMywAf4wUvZhKd16/xH7i82Aa9Y1QcOy6kUUKtI8AGeAwnqiRAZMIyfpo23om9mvhx0ew/8xsTl0g5DEzu5pPQgLpzd5pZ0SD0pqjic+mtwbJA2iQtDMTA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2526.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(136003)(366004)(39860400002)(396003)(376002)(86362001)(316002)(110136005)(8936002)(31696002)(66946007)(66556008)(66476007)(4326008)(8676002)(53546011)(6506007)(6512007)(41300700001)(186003)(83380400001)(2616005)(38100700002)(478600001)(6486002)(31686004)(36756003)(2906002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aStkdUJHRnNZbXBYNE9VSytQTmgrMHEwMjBPRzg1SjllQklVWlJhWkZEeXBQ?=
+ =?utf-8?B?N0xHaktlWERaRTFJd0FldXhPTUxUMWhzSTg2U0VCOXlxdVVQUXJlS252VUFj?=
+ =?utf-8?B?YXlJWlZuOHMrRjgxNHc0NXk1cWM5U1dETXk3cGxBUEthZnpyMDdicHI1bGt4?=
+ =?utf-8?B?KzNNZ0xvUk5TbnFGL213SkhFclZqZUZIQlFZajJUUW83NFNtNUxvdXpVc1ZW?=
+ =?utf-8?B?eFcxbUtucTZrUENVdU1lS3Zsc1BjWVl1RmJaUkJDMFY4OVVkWEF4MVhpUndL?=
+ =?utf-8?B?cEVMNDRwUGdMYWpTdmN4c0JuR0ZiMHd2bGJ0WlBwZ3pmWWdHR2F2b3FTTVlE?=
+ =?utf-8?B?clNPNUprUnI4QTVzSURFZCtCVC9IMEpwTUJWTmsxMnJYcll2c3IzUlFSUHBt?=
+ =?utf-8?B?dkJyVk1ld3A3QmZlY3UxNllRTTRhaUV3Mk1PME1hMGNnQzdpeUxuK3QrMTBZ?=
+ =?utf-8?B?bUIxT1BvOVdLQ01ZSGtvaDFmMXZacWJ4MVhiQ2o5anFnZnhaejZBK0RWWFdC?=
+ =?utf-8?B?UDhNWVdnbUhWMC9ST1RZaUhhVzdKUTNzVGhraUtxYmNmdG0zS3JnWnl1a0dU?=
+ =?utf-8?B?Y2EzR0pnMVN4eVp3bWNIa3daMlZzeFNKdUJ2TnJtVGhJbXhzMFpJZVFCSDg3?=
+ =?utf-8?B?UTltcU8vWVJ6dGxYMXNhdzVyRjJlTXFGWkJFWW45QStPVEw2cytFOWQ0amVx?=
+ =?utf-8?B?bHd4UjNvLzBjOVJEUThxazM5dTJaYVpRTUliTXV0ckRSbzVuUVpvREF2S0kr?=
+ =?utf-8?B?VWxlcno2K3VVMXE5amtPWkhmOEJmNGtVSkxkL0FaQ1BPY3RUNUFOSjkrd0lk?=
+ =?utf-8?B?TFdpbXIwNHlNZXMxWHpLWDh6SStleFhUMWZDVUVMQm9aNXJ6NDdFUkthQlFh?=
+ =?utf-8?B?L3VhL3VjbXduTFZ0R25samZQTkRmSkw3VlAwL1VyN3phVTRxM2ljVU9iWEpS?=
+ =?utf-8?B?M3dERHk1VE54VHNMTEpLNHF2K1JSejJzV0RLcW9mbVJFbnY5TjFVcUZUQ25J?=
+ =?utf-8?B?QmFhV0orRFc0YmRvZWxrMSt3OWxWUk5kajBCOTBFa0JDc1hUb0ZySGFIcHdx?=
+ =?utf-8?B?REdidkl6V0hlOFBZV3Y2ZmluUWxDS0dWNE5pUkhVNTVOeGhKVWVMUExSMk03?=
+ =?utf-8?B?NGljdTdkbFFFSmdHWWxlT2dCSTd1aFRaRll2Yi9GWWtKNkE0dkxGL2F0SzJZ?=
+ =?utf-8?B?UUxaZkNaZCthTEkzMjBaenNHMzZ5ZUt2dzYxNHQvMUJBdkZQV2ZpcHRJQnRw?=
+ =?utf-8?B?MlFUWjl0YmZwa0Q1RDRUUzhIV1dxZlFDN0krcEwzdzdsVzRabUhid3JqWjJS?=
+ =?utf-8?B?MWpsQzF0azdYSHVOdUpFZjV6U0JoWDFtSGl0RlRidFE1eGpHZ3lXK3dNUjhi?=
+ =?utf-8?B?MEF0SVZwb1E3ZEVDY1VZZThTNHUwQWdXWHRQdERqVlp1dTRCeS9YdkJXRkRP?=
+ =?utf-8?B?djg2UDJNR2J5YTY3SXBabzJLbXJpS0tKb25ESGlET1dJMVJ6VVJvM3JUNHlt?=
+ =?utf-8?B?U3Z1L1g2N0FDMFgraXdGT2MrY3VMSEFnR3p1cGhNVGhkNjZKMXlJdytSU1Av?=
+ =?utf-8?B?M1JqcGlFclYwODlkZnE3L0phM2twdmJva2tHTU9HV2FpT0RGOUFQQTV1MU55?=
+ =?utf-8?B?bHAwenpsU2NuRFE3QWZscmZlVUFpNEZMZWRaOTk5VCt3TU9wQWxaNWJzNzRa?=
+ =?utf-8?B?YVdkSUV6YVNEZ2h5cFNMOHQ1d0xCRDhHMVNxdlY4cmtYcWdXU2lsNHV0L2Y3?=
+ =?utf-8?B?Z2c3cXl3UjlXRUdVZDAxUXpaMFFMc3NIbGVlcmJNbHBBc1JXdHNhK1h3WU5r?=
+ =?utf-8?B?R1QwazdTMmFnQUNsLzNWYVgrOUxSa3FqYlhHbHNtbmJCTTFxb2JYblMvY0U2?=
+ =?utf-8?B?eE5haXRaZTl3T0s4eHNPYXFvWXJjQjlpVW9UbXdzU1ZySXNRRDJrOFRuRWEx?=
+ =?utf-8?B?RnBTZW9HaXQ1TUpWUjhiMWVlcnpsWDM0dHRrdHZzWDZ6RndONms5ZFZUMkxC?=
+ =?utf-8?B?QnB6WG9vMjgvRFgreXhsN1pyekdXbmI3M1hKdnRGT3V5SzJia0IzRUQ2MHBl?=
+ =?utf-8?B?NVViSzIyVzEyUmVxZHpjMFJFT3V5eC8yNlhnd2llTmdRRjFsY2VTQktRUkll?=
+ =?utf-8?B?dU9UVXozZXUvWnp3QVJEMzlJMC9aSlFoS2lVTmNDcTVka1J5RzRUaHh6Q1c0?=
+ =?utf-8?Q?v5uVjy3cPcG7dxRQGXwAI1xW8jE52zKJoix4EWU41Z1V?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e265406-f5de-41ab-2ac6-08da75fb1e1b
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2526.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 09:24:23.0246
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aO7kxk1NMGRYYcJvOqN0uITu1a9i7rz5Ydy6I5bl5JkKTHUQ7ckLYH9nVL2uYtszkSfvhnTv5hkWL0AufBL8oA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9247
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f4db7a05e566d67b
-
-Add commands and helper APIs to run selftests.
-Include a selftest id for a non volatile memory i.e. flash.
-Also, update the man page and bash-completion for selftests
-commands.
-
-Examples:
-$ devlink dev selftests run pci/0000:03:00.0 id flash
-pci/0000:03:00.0:
-    flash:
-      status passed
-
-$ devlink dev selftests show pci/0000:03:00.0
-pci/0000:03:00.0
-      flash
-
-$ devlink dev selftests show pci/0000:03:00.0 -j
-{"selftests":{"pci/0000:03:00.0":["flash"]}}
-
-$ devlink dev selftests run pci/0000:03:00.0 id flash -j
-{"selftests":{"pci/0000:03:00.0":{"flash":{"status":"passed"}}}}
-
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
----
- bash-completion/devlink |  30 +++-
- devlink/devlink.c       | 328 ++++++++++++++++++++++++++++++++++++++++
- man/man8/devlink-dev.8  |  46 ++++++
- 3 files changed, 403 insertions(+), 1 deletion(-)
-
-diff --git a/bash-completion/devlink b/bash-completion/devlink
-index 757e03b7..52dc82b3 100644
---- a/bash-completion/devlink
-+++ b/bash-completion/devlink
-@@ -33,6 +33,11 @@ _devlink_direct_complete()
-         dev)
-             value=$(devlink dev show 2>/dev/null)
-             ;;
-+        selftests_id)
-+            dev=${words[4]}
-+            value=$(devlink -j dev selftests show 2>/dev/null \
-+                    | jq ".selftests[\"$dev\"][]")
-+            ;;
-         param_name)
-             dev=${words[4]}
-             value=$(devlink -j dev param show 2>/dev/null \
-@@ -275,6 +280,29 @@ _devlink_dev_flash()
-      esac
- }
- 
-+# Completion for devlink dev selftests
-+_devlink_dev_selftests()
-+{
-+    if [[ $cword -gt 5 ]]; then
-+            _devlink_direct_complete "selftests_id"
-+            return
-+    fi
-+    case "$cword" in
-+        3)
-+            COMPREPLY=( $( compgen -W "show run" -- "$cur" ) )
-+            return
-+            ;;
-+        4)
-+            _devlink_direct_complete "dev"
-+            return
-+            ;;
-+        5)
-+            COMPREPLY=( $( compgen -W "id" -- "$cur" ) )
-+            return
-+            ;;
-+    esac
-+}
-+
- # Completion for devlink dev
- _devlink_dev()
- {
-@@ -287,7 +315,7 @@ _devlink_dev()
-             fi
-             return
-             ;;
--        eswitch|param)
-+        eswitch|param|selftests)
-             _devlink_dev_$command
-             return
-             ;;
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 1e2cfc3d..21f26246 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -296,6 +296,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_PORT_FN_RATE_PARENT	BIT(51)
- #define DL_OPT_LINECARD		BIT(52)
- #define DL_OPT_LINECARD_TYPE	BIT(53)
-+#define DL_OPT_SELFTESTS	BIT(54)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -358,6 +359,7 @@ struct dl_opts {
- 	const char *rate_parent_node;
- 	uint32_t linecard_index;
- 	const char *linecard_type;
-+	bool selftests_opt[DEVLINK_ATTR_SELFTEST_ID_MAX + 1];
- };
- 
- struct dl {
-@@ -701,6 +703,7 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_LINECARD_STATE] = MNL_TYPE_U8,
- 	[DEVLINK_ATTR_LINECARD_TYPE] = MNL_TYPE_STRING,
- 	[DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_SELFTESTS] = MNL_TYPE_NESTED,
- };
- 
- static const enum mnl_attr_data_type
-@@ -1409,6 +1412,17 @@ static struct str_num_map port_fn_opstate_map[] = {
- 	{ .str = NULL, }
- };
- 
-+static int selftests_get(const char *selftest_name, bool *selftests_opt)
-+{
-+	if (strcmp(selftest_name, "flash") == 0) {
-+		selftests_opt[0] = true;
-+	} else {
-+		pr_err("Unknown selftest \"%s\"\n", selftest_name);
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
- static int port_flavour_parse(const char *flavour, uint16_t *value)
- {
- 	int num;
-@@ -1500,6 +1514,7 @@ static const struct dl_args_metadata dl_args_required[] = {
- 	{DL_OPT_PORT_PFNUMBER,         "Port PCI PF number is expected."},
- 	{DL_OPT_LINECARD,	      "Linecard index expected."},
- 	{DL_OPT_LINECARD_TYPE,	      "Linecard type expected."},
-+	{DL_OPT_SELFTESTS,            "Test name is expected"},
- };
- 
- static int dl_args_finding_required_validate(uint64_t o_required,
-@@ -1803,6 +1818,21 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 				return err;
- 			o_found |= DL_OPT_FLASH_OVERWRITE;
- 
-+		} else if (dl_argv_match(dl, "id") &&
-+				(o_all & DL_OPT_SELFTESTS)) {
-+			dl_arg_inc(dl);
-+			while (dl_argc(dl)) {
-+				const char *selftest_name;
-+				err = dl_argv_str(dl, &selftest_name);
-+				if (err)
-+					return err;
-+				err = selftests_get(selftest_name,
-+						    opts->selftests_opt);
-+				if (err)
-+					return err;
-+			}
-+			o_found |= DL_OPT_SELFTESTS;
-+
- 		} else if (dl_argv_match(dl, "reporter") &&
- 			   (o_all & DL_OPT_HEALTH_REPORTER_NAME)) {
- 			dl_arg_inc(dl);
-@@ -2092,6 +2122,34 @@ dl_reload_limits_put(struct nlmsghdr *nlh, const struct dl_opts *opts)
- 	mnl_attr_put(nlh, DEVLINK_ATTR_RELOAD_LIMITS, sizeof(limits), &limits);
- }
- 
-+static void
-+dl_selftests_put(struct nlmsghdr *nlh, const struct dl_opts *opts)
-+{
-+	bool test_sel = false;
-+	struct nlattr *nest;
-+	int id;
-+
-+	nest = mnl_attr_nest_start(nlh, DEVLINK_ATTR_SELFTESTS);
-+
-+	for (id = DEVLINK_ATTR_SELFTEST_ID_UNSPEC + 1;
-+	     id <= DEVLINK_ATTR_SELFTEST_ID_MAX &&
-+		opts->selftests_opt[id]; id++) {
-+		if (opts->selftests_opt[id]) {
-+			test_sel = true;
-+			mnl_attr_put(nlh, id, 0, NULL);
-+		}
-+	}
-+
-+	/* No test selected from user, select all */
-+	if (!test_sel) {
-+		for (id = DEVLINK_ATTR_SELFTEST_ID_UNSPEC + 1;
-+		     id <= DEVLINK_ATTR_SELFTEST_ID_MAX; id++)
-+			mnl_attr_put(nlh, id, 0, NULL);
-+	}
-+
-+	mnl_attr_nest_end(nlh, nest);
-+}
-+
- static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- {
- 	struct dl_opts *opts = &dl->opts;
-@@ -2186,6 +2244,8 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 				  opts->flash_component);
- 	if (opts->present & DL_OPT_FLASH_OVERWRITE)
- 		dl_flash_update_overwrite_put(nlh, opts);
-+	if (opts->present & DL_OPT_SELFTESTS)
-+		dl_selftests_put(nlh, opts);
- 	if (opts->present & DL_OPT_HEALTH_REPORTER_NAME)
- 		mnl_attr_put_strz(nlh, DEVLINK_ATTR_HEALTH_REPORTER_NAME,
- 				  opts->reporter_name);
-@@ -2327,6 +2387,8 @@ static void cmd_dev_help(void)
- 	pr_err("                              [ action { driver_reinit | fw_activate } ] [ limit no_reset ]\n");
- 	pr_err("       devlink dev info [ DEV ]\n");
- 	pr_err("       devlink dev flash DEV file PATH [ component NAME ] [ overwrite SECTION ]\n");
-+	pr_err("       devlink dev selftests show [DEV]\n");
-+	pr_err("       devlink dev selftests run DEV [id TESTNAME ]\n");
- }
- 
- static bool cmp_arr_last_handle(struct dl *dl, const char *bus_name,
-@@ -2421,6 +2483,41 @@ static void pr_out_handle(struct dl *dl, struct nlattr **tb)
- 	pr_out_handle_end(dl);
- }
- 
-+static void pr_out_selftests_handle_start(struct dl *dl, struct nlattr **tb)
-+{
-+	const char *bus_name = mnl_attr_get_str(tb[DEVLINK_ATTR_BUS_NAME]);
-+	const char *dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
-+	char buf[64];
-+
-+	sprintf(buf, "%s/%s", bus_name, dev_name);
-+
-+	if (dl->json_output) {
-+		if (should_arr_last_handle_end(dl, bus_name, dev_name))
-+			close_json_array(PRINT_JSON, NULL);
-+		if (should_arr_last_handle_start(dl, bus_name,
-+						 dev_name)) {
-+			open_json_array(PRINT_JSON, buf);
-+			arr_last_handle_set(dl, bus_name, dev_name);
-+		}
-+	} else {
-+		if (should_arr_last_handle_end(dl, bus_name, dev_name))
-+			__pr_out_indent_dec();
-+		if (should_arr_last_handle_start(dl, bus_name,
-+						 dev_name)) {
-+			pr_out("%s%s", buf, ":");
-+			__pr_out_newline();
-+			__pr_out_indent_inc();
-+			arr_last_handle_set(dl, bus_name, dev_name);
-+		}
-+	}
-+}
-+
-+static void pr_out_selftests_handle_end(struct dl *dl)
-+{
-+	if (!dl->json_output)
-+		__pr_out_newline();
-+}
-+
- static bool cmp_arr_last_port_handle(struct dl *dl, const char *bus_name,
- 				     const char *dev_name, uint32_t port_index)
- {
-@@ -3946,6 +4043,234 @@ err_socket:
- 	return err;
- }
- 
-+static const char *devlink_get_selftest_name(int id)
-+{
-+	switch (id) {
-+	case DEVLINK_ATTR_SELFTEST_ID_FLASH:
-+		return "flash";
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static const enum mnl_attr_data_type
-+devlink_selftest_id_policy[DEVLINK_ATTR_SELFTEST_ID_MAX + 1] = {
-+	[DEVLINK_ATTR_SELFTEST_ID_FLASH] = MNL_TYPE_FLAG,
-+};
-+
-+static int selftests_attr_cb(const struct nlattr *attr, void *data)
-+{
-+	const struct nlattr **tb = data;
-+	int type;
-+
-+	if (mnl_attr_type_valid(attr, DEVLINK_ATTR_SELFTEST_ID_MAX) < 0)
-+		return MNL_CB_OK;
-+
-+	type = mnl_attr_get_type(attr);
-+	if (mnl_attr_validate(attr, devlink_selftest_id_policy[type]) < 0)
-+		return MNL_CB_ERROR;
-+
-+	tb[type] = attr;
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_dev_selftests_show_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct nlattr *selftests[DEVLINK_ATTR_SELFTEST_ID_MAX + 1] = {};
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	struct dl *dl = data;
-+	int avail = 0;
-+	int err;
-+	int i;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+
-+	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+	    !tb[DEVLINK_ATTR_SELFTESTS])
-+		return MNL_CB_ERROR;
-+
-+	err = mnl_attr_parse_nested(tb[DEVLINK_ATTR_SELFTESTS],
-+				    selftests_attr_cb, selftests);
-+	if (err != MNL_CB_OK)
-+		return MNL_CB_ERROR;
-+
-+	for (i = DEVLINK_ATTR_SELFTEST_ID_UNSPEC + 1;
-+	     i <= DEVLINK_ATTR_SELFTEST_ID_MAX; i++) {
-+		if (!(selftests[i]))
-+			continue;
-+
-+		if (!avail) {
-+			pr_out_selftests_handle_start(dl, tb);
-+			avail = 1;
-+		}
-+
-+		check_indent_newline(dl);
-+		print_string(PRINT_ANY, NULL, "%s", devlink_get_selftest_name(i));
-+	}
-+
-+	if (avail) {
-+		pr_out_selftests_handle_end(dl);
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+static const char *devlink_selftest_status_to_str(uint8_t status)
-+{
-+	switch (status) {
-+	case DEVLINK_SELFTEST_STATUS_SKIP:
-+		return "skipped";
-+	case DEVLINK_SELFTEST_STATUS_PASS:
-+		return "passed";
-+	case DEVLINK_SELFTEST_STATUS_FAIL:
-+		return "failed";
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static const enum mnl_attr_data_type
-+devlink_selftests_result_policy[DEVLINK_ATTR_SELFTEST_RESULT_MAX + 1] = {
-+	[DEVLINK_ATTR_SELFTEST_RESULT] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_SELFTEST_RESULT_ID] = MNL_TYPE_U32,
-+	[DEVLINK_ATTR_SELFTEST_RESULT_STATUS] = MNL_TYPE_U8,
-+};
-+
-+static int selftests_result_attr_cb(const struct nlattr *attr, void *data)
-+{
-+	const struct nlattr **tb = data;
-+	int type;
-+
-+	if (mnl_attr_type_valid(attr, DEVLINK_ATTR_SELFTEST_RESULT_MAX) < 0)
-+		return MNL_CB_OK;
-+
-+	type = mnl_attr_get_type(attr);
-+	if (mnl_attr_validate(attr, devlink_selftests_result_policy[type]) < 0)
-+		return MNL_CB_ERROR;
-+
-+	tb[type] = attr;
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_dev_selftests_run_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	struct nlattr *selftest;
-+	struct dl *dl = data;
-+	int avail = 0;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+
-+	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+	    !tb[DEVLINK_ATTR_SELFTESTS])
-+		return MNL_CB_ERROR;
-+
-+	mnl_attr_for_each_nested(selftest, tb[DEVLINK_ATTR_SELFTESTS]) {
-+		struct nlattr *result[DEVLINK_ATTR_SELFTEST_RESULT_MAX + 1] = {};
-+		uint8_t status;
-+		int err;
-+		int id;
-+
-+		err = mnl_attr_parse_nested(selftest,
-+					    selftests_result_attr_cb, result);
-+		if (err != MNL_CB_OK)
-+			return MNL_CB_ERROR;
-+
-+		if (!result[DEVLINK_ATTR_SELFTEST_RESULT_ID] ||
-+		    !result[DEVLINK_ATTR_SELFTEST_RESULT_STATUS])
-+			return MNL_CB_ERROR;
-+
-+		if (!avail) {
-+			pr_out_section_start(dl, "selftests");
-+			__pr_out_handle_start(dl, tb, true, false);
-+			__pr_out_indent_inc();
-+			avail = 1;
-+			if (!dl->json_output)
-+				__pr_out_newline();
-+		}
-+
-+		id = mnl_attr_get_u32(result[DEVLINK_ATTR_SELFTEST_RESULT_ID]);
-+		status = mnl_attr_get_u8(result[DEVLINK_ATTR_SELFTEST_RESULT_STATUS]);
-+
-+		pr_out_object_start(dl, devlink_get_selftest_name(id));
-+		check_indent_newline(dl);
-+		print_string_name_value("status",
-+					devlink_selftest_status_to_str(status));
-+		pr_out_object_end(dl);
-+		if (!dl->json_output)
-+			__pr_out_newline();
-+	}
-+
-+	if (avail) {
-+		__pr_out_indent_dec();
-+		pr_out_handle_end(dl);
-+		pr_out_section_end(dl);
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_dev_selftests_run(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
-+	int err;
-+
-+	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SELFTESTS_RUN, flags);
-+
-+	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, DL_OPT_SELFTESTS);
-+	if (err)
-+		return err;
-+
-+	if (!(dl->opts.present & DL_OPT_SELFTESTS))
-+		dl_selftests_put(nlh, &dl->opts);
-+
-+	err = mnlu_gen_socket_sndrcv(&dl->nlg, nlh, cmd_dev_selftests_run_cb, dl);
-+	return err;
-+}
-+
-+static int cmd_dev_selftests_show(struct dl *dl)
-+{
-+	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (dl_argc(dl) == 0)
-+		flags |= NLM_F_DUMP;
-+
-+	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SELFTESTS_GET, flags);
-+
-+	if (dl_argc(dl) > 0) {
-+		err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, 0);
-+		if (err)
-+			return err;
-+	}
-+
-+	pr_out_section_start(dl, "selftests");
-+	err = mnlu_gen_socket_sndrcv(&dl->nlg, nlh, cmd_dev_selftests_show_cb, dl);
-+	pr_out_section_end(dl);
-+	return err;
-+}
-+
-+static int cmd_dev_selftests(struct dl *dl)
-+{
-+	if (dl_argv_match(dl, "help")) {
-+		cmd_dev_help();
-+		return 0;
-+	} else if (dl_argv_match(dl, "show") ||
-+		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
-+		dl_arg_inc(dl);
-+		return cmd_dev_selftests_show(dl);
-+	} else if (dl_argv_match(dl, "run")) {
-+		dl_arg_inc(dl);
-+		return cmd_dev_selftests_run(dl);
-+	}
-+	pr_err("Command \"%s\" not found\n", dl_argv(dl));
-+	return -ENOENT;
-+}
-+
- static int cmd_dev(struct dl *dl)
- {
- 	if (dl_argv_match(dl, "help")) {
-@@ -3970,6 +4295,9 @@ static int cmd_dev(struct dl *dl)
- 	} else if (dl_argv_match(dl, "flash")) {
- 		dl_arg_inc(dl);
- 		return cmd_dev_flash(dl);
-+	} else if (dl_argv_match(dl, "selftests")) {
-+		dl_arg_inc(dl);
-+		return cmd_dev_selftests(dl);
- 	}
- 	pr_err("Command \"%s\" not found\n", dl_argv(dl));
- 	return -ENOENT;
-diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
-index 6906e509..2a776416 100644
---- a/man/man8/devlink-dev.8
-+++ b/man/man8/devlink-dev.8
-@@ -85,6 +85,20 @@ devlink-dev \- devlink device configuration
- .I ID
- ]
- 
-+.ti -8
-+.B devlink dev selftests show
-+[
-+.I DEV
-+]
-+
-+.ti -8
-+.B devlink dev selftests run
-+.I DEV
-+[
-+.B id
-+.I ID...
-+]
-+
- .SH "DESCRIPTION"
- .SS devlink dev show - display devlink device attributes
- 
-@@ -249,6 +263,28 @@ should match the component names from
- .B "devlink dev info"
- and may be driver-dependent.
- 
-+.SS devlink dev selftests show - shows supported selftests on devlink device.
-+
-+.PP
-+.I "DEV"
-+- specifies the devlink device.
-+If this argument is omitted all selftests for devlink devices are listed.
-+
-+.SS devlink dev selftests run - runs selftests on devlink device.
-+
-+.PP
-+.I "DEV"
-+- specifies the devlink device to execute selftests.
-+
-+.B id
-+.I  ID...
-+- The value of
-+.I ID(s)
-+should match the selftests shown in
-+.B "devlink dev selftests show"
-+to execute selftests on the devlink device.
-+If this argument is omitted all selftests supported by devlink devices are executed.
-+
- .SH "EXAMPLES"
- .PP
- devlink dev show
-@@ -296,6 +332,16 @@ Flashing 100%
- .br
- Flashing done
- .RE
-+.PP
-+devlink dev selftests show pci/0000:01:00.0
-+.RS 4
-+Shows the supported selftests by the devlink device.
-+.RE
-+.PP
-+devlink dev selftests run pci/0000:01:00.0 id flash
-+.RS 4
-+Perform a flash test on the devlink device.
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
--- 
-2.31.1
 
 
---000000000000f4db7a05e566d67b
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+On 02.08.22 15:31, Andrew Lunn wrote:
+>> True. Nevertheless, do we really want to say that we dislike a design
+>> so much that we are not fixing bugs?
+> 
+> I'm not sure we can fix it. Part of that long thread about why this
+> whole concept is broken is that we have no idea which interface is the
+> one which should give the MAC address to. If we change it to only give
+> out the MAC address once, all we really do is change it from one bug
+> to another bug.
 
-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
-I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
-x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
-BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
-NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
-A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
-aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
-cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
-MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
-GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
-DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
-kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
-mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
-QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
-PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
-ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
-bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIM7jjo3mFa8VmCFM8rWPjXbeinQCVgdNEfz/
-ZZf7ZOyvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgwNDA5
-MTg1OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQBYKhYQq0774jARhGYZi98zSl6BmpJS7XbNh4xuyjlf97H4raWEoDz8
-+sLGOm+U12pSa3/CNxsnR8QFagzMDbV1MfPUFPIqeHh3tlVs6TrTLe4rINssEjAvq9RokTAE47IU
-2cE+Of9UsV4T0sT2iDK9+AI2QDSZlU2/5NVd03UbADsWeRdGuvzJs96R0mSOtuC7HCphJpbhbLMC
-KoY/cnP6AZAfvjn94xqYfRMnRdieRq9Rky9rivWJ/3/Fo6GaND8NyffjrUaBnqsSUzwa8cLcJeSc
-X7sSq8ckr+/F5cKKv8UnxVZ3PtEs4fyhNXpiVbmIDf8T4QvusEoWGlC7hjjB
---000000000000f4db7a05e566d67b--
+I am afraid I have to beg to differ.
+
+We have a couple of related issues here. Obviously whoever designed
+MAC pass-through did not consider the case of somebody using two
+docking stations at the same time. While pass-through is used I agree
+that this is unsolvable.
+
+Yet connecting two (or even more) docking stations to a host is
+within spec. They are USB devices (partially) and if they contain
+a NIC it is clear what we have to do.
+We would operate them with
+1. a MAC contained on the device
+2. if the device contains no MAC, we'd use a random MAC, but a
+different one per device. User space can assign any MAC it wants to,
+but we are talking defaults here.
+
+Now, the question arises whether we let another feature interfere
+with that. And then I must say, if we do that and we have decided
+to take a feature that does so, we'll have to do it in a way that
+stays within spec. Yet I am sorry, you cannot give out the same
+MAC to two devices at the same time, if you want to do so.
+
+So while the bug in the driver derives from a stupid design,
+it nevertheless is a bug and my patch fixes it. Optimally?
+No, of course not, the design is broken.
+
+>>> What exactly is your problem which you are trying to fix? 
+>> Adressing the comment Hayes made when reset_resume() was fixed
+>> from a deadlock, that it still assigns wrong MACs. I feel that
+>> before I fix keeping the correct address I better make sure the
+>> MAC is sane in the first place.
+> 
+> I would say that reset_resume() should restore whatever the MAC
+> address was before the suspend.
+
+The problem is that these devices reread the passed through MAC
+at post_reset(). Do you want reset_resume() to act differently?
+
+> It does not matter if the MAC address
+> is not unique. As far as i know, the kernel never prevents the user
+> assigning the same MAC address on multiple interfaces via ip link set.
+> So it could actually be a user choice.
+
+Iff the user does so. Until then it is a kernel bug.
+
+	Regards
+		Oliver
+
