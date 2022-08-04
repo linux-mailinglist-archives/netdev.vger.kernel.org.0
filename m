@@ -2,48 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36276589F15
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 18:06:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA71589F39
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 18:18:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232690AbiHDQGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 12:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
+        id S232927AbiHDQSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 12:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiHDQGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 12:06:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5FE64F6;
-        Thu,  4 Aug 2022 09:06:09 -0700 (PDT)
+        with ESMTP id S232087AbiHDQSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 12:18:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A436733E2A
+        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 09:18:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB2656145D;
-        Thu,  4 Aug 2022 16:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6978C433C1;
-        Thu,  4 Aug 2022 16:06:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A956B8253E
+        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 16:18:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E25EC433C1;
+        Thu,  4 Aug 2022 16:18:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659629168;
-        bh=yIBhe5VH/Mtc9UsxkvWfeuMI7NsYBSBH6YG9F3/NAjc=;
+        s=k20201202; t=1659629886;
+        bh=2d9erdklrmfAoihhc55K+pRVlCOJEtntjFbSbrQf878=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L4CBv5AssfXjZqYIFVgNxzAIjY7jYFfZw8S9OtNrpvalddVvilbAFPrLZA2vY6/4+
-         1EJBparExiBcTS1KDZPdmOhDRcTNUkfNRKllg7K9UnjtP6+GMN+9Zy0S2D6L2sW8cB
-         5onDeb2jsUO2RlCfg9tXDJ8UFmGe0iz2a9uN5PwSVDeg9+bb/1IwNVmynVjdkF2pOA
-         JpnNMnwHAOHg5AEym5exT7omBzs3O1FmidoIKzJKGwssKsUJabnS2p8YEo7uw6JWbD
-         PMEOcOuWkNXmm3eruVplAwmgUWntbyZ0nYFoYb0+iJyVFZil1/we2rFKVbDv4xk+Dp
-         yD5O6TTVfdQgA==
-Date:   Thu, 4 Aug 2022 09:06:06 -0700
+        b=Qs9RMmr1rzi0WXyixHwuKtec2UNByG/biMwBqrfHd1qKxciptQMIKjbXMrrpQBlYj
+         l/PDBU7dVayyGA60lOxYUqWLp+yw/g5P6DyDPTdwhsnbvB8U5mPi1i/GJ8U6NtIgNv
+         x8NsydqwZ+PrCbA9N83JXLt0XPUMbc0pAbB0IgzRn/i2rG25CjwXOcRRz+OsAHvLFB
+         10eKqe/lYHUM8wkaAFuWMS0cg/CDjItFQwKy0REhF/k9dYBm/mGDbYHi2J915K8mQI
+         yzaMHpPDC8eqLo4PIu2LkISaDcjaY80yk5x8u9HFwtWmoB2T5nYSDcpZAD8usnCqXR
+         jCU01z/9aSNXw==
+Date:   Thu, 4 Aug 2022 09:18:04 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Naveen Mamindlapalli <naveenm@marvell.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sgoutham@marvell.com
-Subject: Re: [net-next PATCH v2 0/4] Add PTP support for CN10K silicon
-Message-ID: <20220804090606.0c892e51@kernel.org>
-In-Reply-To: <Yus4QrgERE9yR9WG@hoboy.vegasvil.org>
-References: <20220730115758.16787-1-naveenm@marvell.com>
-        <20220802121439.4d784f47@kernel.org>
-        <20220802214420.10e3750f@kernel.org>
-        <Yus4QrgERE9yR9WG@hoboy.vegasvil.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     "paulmck@kernel.org" <paulmck@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>
+Subject: Re: [PATCH net-next] net/tls: Use RCU API to access tls_ctx->netdev
+Message-ID: <20220804091804.77d87fcc@kernel.org>
+In-Reply-To: <dc8a86b89350e05841aaecfba5939cfb63a084ba.camel@nvidia.com>
+References: <20220801080053.21849-1-maximmi@nvidia.com>
+        <20220801124239.067573de@kernel.org>
+        <380eb27278e581012524cdc16f99e1872cee9be0.camel@nvidia.com>
+        <20220802083731.22291c3b@kernel.org>
+        <8bf08924a111d4e0875721af264f082cc9c44587.camel@nvidia.com>
+        <20220803074957.33783ad4@kernel.org>
+        <20220803163437.GF2125313@paulmck-ThinkPad-P17-Gen-1>
+        <dc8a86b89350e05841aaecfba5939cfb63a084ba.camel@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,18 +67,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Aug 2022 20:08:50 -0700 Richard Cochran wrote:
-> > Oh, well. These will have to wait until after the merge window then :(  
+On Thu, 4 Aug 2022 08:08:37 +0000 Maxim Mikityanskiy wrote:
+> 2. ctx->refcount goes down to 0, no one can access ctx->netdev anymore,
+> we tear down ctx and need to check whether ctx->netdev is NULL.
 > 
-> FWIW - I'm okay with any PTP patches that are about specific hardware
-> drivers.  When I can, I'll review them for proper use of the core
-> layer, locking, etc, but at the end of the day, only the people
-> holding the data sheet know how to talk to the hardware.
+>  if (!refcount_dec_and_test(&ctx->refcount))
+>          return;
+>  netdev = rcu_dereference_protected(ctx->netdev,
+>                                     !refcount_read(&ctx->refcount));
+>  if (netdev)
+>          queue_work(...);
 > 
-> Patches that touch the core layer are another story.  These need
-> careful review by me and other.  (Obviously)
+> It's somewhat similar to the "structure is beyond being updated" case,
+> but it's ensured by refcount, not by RCU (i.e. you example assigned
+> my_rcu_pointer = NULL and called synchronize_rcu() to ensure no one
+> touches it, and I ensure that we are the only user of ctx by dropping
+> refcount to zero).
+> 
+> So, hoping that my understanding of your explanation is correct, both
+> cases can use any of rcu_access_pointer or rcu_dereference_protected.
+> Is there some rule of thumb which one to pick in such case?
 
-I was hoping you could cast an eye over the 1-step implementation here.
-Giving the device a random time reference along the packet looks odd.
-Unfortunately I don't have much (any?) experience with 1-step myself so
-I can't trust my own judgment all that much.
+IMHO, rcu_dereference_protected() documents why it's safe to
+dereference the pointer outside of the rcu read section. 
+
+We are only documenting the writer side locking. The fact that there
+is a RCU pointer involved is coincidental - I think we could 
+as well be checking the TLS_RX_DEV_DEGRADED bit here.
+
+We can add asserts or comments to document the writer side locking.
+Piggy backing on RCU seems coincidental. But again, I'm fine either 
+way. I'm just saying this because I really doubt there is a rule of
+thumb for this level of detail. It's most likely your call.
