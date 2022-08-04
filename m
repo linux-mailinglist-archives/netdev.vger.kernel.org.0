@@ -2,66 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2AC058955F
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 02:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAF37589561
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 02:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238429AbiHDAha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Aug 2022 20:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S238660AbiHDAjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Aug 2022 20:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237066AbiHDAh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 20:37:29 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A3E3190B;
-        Wed,  3 Aug 2022 17:37:27 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R971e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VLJRyKp_1659573444;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VLJRyKp_1659573444)
-          by smtp.aliyun-inc.com;
-          Thu, 04 Aug 2022 08:37:24 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     michael.chan@broadcom.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH net-next] bnxt_en: Remove duplicated include bnxt_devlink.c
-Date:   Thu,  4 Aug 2022 08:37:22 +0800
-Message-Id: <20220804003722.54088-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S237351AbiHDAjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Aug 2022 20:39:21 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5DED5018F;
+        Wed,  3 Aug 2022 17:39:19 -0700 (PDT)
+Date:   Thu, 4 Aug 2022 02:39:15 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] Networking for 6.0
+Message-ID: <YusVM6B8bT6IOKdZ@salvia>
+References: <20220803101438.24327-1-pabeni@redhat.com>
+ <CAHk-=widn7iZozvVZ37cDPK26BdOegGAX_JxR+v62sCv-5=eZg@mail.gmail.com>
+ <YusOpd6IuLB29LHs@salvia>
+ <CAHk-=wj59jR+pxYHmtf+OJvThEpYLNYLb9P5YkgCcBWDWzhdPQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wj59jR+pxYHmtf+OJvThEpYLNYLb9P5YkgCcBWDWzhdPQ@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bnxt_ethtool.h is included twice in bnxt_devlink.c,
-remove one of them.
+On Wed, Aug 03, 2022 at 05:27:07PM -0700, Linus Torvalds wrote:
+> On Wed, Aug 3, 2022 at 5:11 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> >
+> > For these two questions, this new Kconfig toggle was copied from:
+> >
+> >  config NF_CONNTRACK_PROCFS
+> >         bool "Supply CT list in procfs (OBSOLETE)"
+> >         default y
+> >         depends on PROC_FS
+> >
+> > which is under:
+> >
+> >  if NF_CONNTRACK
+> >
+> > but the copy and paste was missing this.
+> 
+> Note that there's two problems with that
+> 
+>  (1) the NF_CONNTRACK_PROCFS thing is 'default y' because it *USED* to
+> be unconditional, and was split up as a config option back in 2011.
+> 
+> See commit 54b07dca6855 ("netfilter: provide config option to disable
+> ancient procfs parts").
+> 
+> IOW, that NF_CONNTRACK_PROCFS exists and defaults to on, not because
+> people added new code and wanted to make it default, but because the
+> code used to always be enabled if NF_CONNTRACK was enabled, and people
+> wanted the option to *disable* it.
+> 
+> That's when you do 'default y' - you take existing code that didn't
+> originally have a question at all, and you make it optional. Then you
+> use 'default y' so that people who used it don't get screwed in the
+> process.
+> 
+>  (2) it didn't do the proper conditional on the feature it depended on.
+> 
+> So let's not do copy-and-paste programming. The old Kconfig snippet
+> had completely different rules, had completely different history, and
+> completely different default values as a result.
+> 
+> I realize that it's very easy to think of Kconfig as some
+> not-very-important detail to just hook things up. But because it's
+> front-facing to users, I do want people to think about it more than
+> perhaps people otherwise would.
 
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1817
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 1 -
- 1 file changed, 1 deletion(-)
+Agreed, it was a bad a idea to copy and paste it from
+NF_CONNTRACK_PROCFS, this new toggle has nothing to do with it.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 14df8cfc2946..059f96f7a96f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -21,7 +21,6 @@
- #include "bnxt_ptp.h"
- #include "bnxt_coredump.h"
- #include "bnxt_nvm_defs.h"
--#include "bnxt_ethtool.h"
- 
- static void __bnxt_fw_recover(struct bnxt *bp)
- {
--- 
-2.20.1.7.g153144c
+I'll take a closer look at any new Kconfig toggle coming in the
+future to avoid issues like this.
 
+Thanks for reviewing.
