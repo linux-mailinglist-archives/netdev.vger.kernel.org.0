@@ -2,201 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 541A0589843
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 09:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB7CE589868
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 09:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbiHDHXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 03:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        id S234510AbiHDHd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 03:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbiHDHXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 03:23:01 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0291C60683;
-        Thu,  4 Aug 2022 00:22:57 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id CF2E82224D;
-        Thu,  4 Aug 2022 09:22:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1659597774;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z3vWBn92jw9wjv8iB6bykXSQHVghyocK8H/JdGa1fPY=;
-        b=H8h5HFdnNZZANsest1Kfov9ceHkPlfP8EoQpXVKZDaeYgmAtpbID1CWSwRy8y22CSYqVLx
-        uBH1L9yG7sRnnafOpFcUye16VmPhefsehiSVsksC6fgisUMUULaErTOlNoonDDcXjZgVmQ
-        NSAi9BXdHfAffMWTBcxJuAXBcR1uI50=
+        with ESMTP id S230194AbiHDHdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 03:33:25 -0400
+Received: from smtp116.iad3a.emailsrvr.com (smtp116.iad3a.emailsrvr.com [173.203.187.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9782250C;
+        Thu,  4 Aug 2022 00:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
+        s=20170822-45nk5nwl; t=1659598403;
+        bh=kYhrOpJX2cllhR3M2EBifKrqWsb/ILqyjRs7YM4OHjU=;
+        h=Date:To:From:Subject:From;
+        b=ISDfqj1G3uusPVK1E44YDt4hYar4Xj2ivxFzmGL2gWAjMMX2ry49Lhk5J9xt8p7el
+         0lrphm899gep807MRhd2qHFAQSvC8nwBSk3Y0FmOAUdFWi1T96aKN1DNXKaNtYKPd7
+         VuCcLGRRCETii3jF68+7Qv1MaGuLh6Cie7efqsqo=
+X-Auth-ID: antonio@openvpn.net
+Received: by smtp23.relay.iad3a.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id A1983239B9;
+        Thu,  4 Aug 2022 03:33:22 -0400 (EDT)
+Message-ID: <684e4a61-3fe3-00ac-42d2-213e501f14d4@openvpn.net>
+Date:   Thu, 4 Aug 2022 09:34:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 04 Aug 2022 09:22:51 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Ajay.Kathat@microchip.com
-Cc:     David.Laight@aculab.com, Claudiu.Beznea@microchip.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mwalle@kernel.org
-Subject: Re: [PATCH] wilc1000: fix DMA on stack objects
-In-Reply-To: <a7bcf24b-1343-b437-4e2e-1e707b5e3bd5@microchip.com>
-References: <20220728152037.386543-1-michael@walle.cc>
- <0ed9ec85a55941fd93773825fe9d374c@AcuMS.aculab.com>
- <612ECEE6-1C05-4325-92A3-21E17EC177A9@walle.cc>
- <a7bcf24b-1343-b437-4e2e-1e707b5e3bd5@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <b40636e354df866d044c07241483ff81@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220719014704.21346-1-antonio@openvpn.net>
+ <20220719014704.21346-2-antonio@openvpn.net> <YtbNBUZ0Kz7pgmWK@lunn.ch>
+ <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net> <YuKKJxSFOgOL836y@lunn.ch>
+ <52b9d7c9-9f7c-788e-2327-33af63b9c748@openvpn.net>
+ <20220803084202.4e249bdb@hermes.local>
+ <1219c53f-362e-cd55-73e0-87dfe281ec34@openvpn.net>
+ <20220803091942.0e388f5b@hermes.local>
+From:   Antonio Quartulli <antonio@openvpn.net>
+Organization: OpenVPN Inc.
+Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
+In-Reply-To: <20220803091942.0e388f5b@hermes.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: 35c30856-d3b1-47cd-9a9b-4df3cd07592e-1-1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-07-29 17:39, schrieb Ajay.Kathat@microchip.com:
-> On 29/07/22 20:28, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> Am 29. Juli 2022 11:51:12 MESZ schrieb David Laight 
->> <David.Laight@ACULAB.COM>:
->>> From: Michael Walle
->>>> Sent: 28 July 2022 16:21
->>>> 
->>>> From: Michael Walle <mwalle@kernel.org>
->>>> 
->>>> Sometimes wilc_sdio_cmd53() is called with addresses pointing to an
->>>> object on the stack. E.g. wilc_sdio_write_reg() will call it with an
->>>> address pointing to one of its arguments. Detect whether the buffer
->>>> address is not DMA-able in which case a bounce buffer is used. The 
->>>> bounce
->>>> buffer itself is protected from parallel accesses by 
->>>> sdio_claim_host().
->>>> 
->>>> Fixes: 5625f965d764 ("wilc1000: move wilc driver out of staging")
->>>> Signed-off-by: Michael Walle <mwalle@kernel.org>
->>>> ---
->>>> The bug itself probably goes back way more, but I don't know if it 
->>>> makes
->>>> any sense to use an older commit for the Fixes tag. If so, please 
->>>> suggest
->>>> one.
->>>> 
->>>> The bug leads to an actual error on an imx8mn SoC with 1GiB of RAM. 
->>>> But the
->>>> error will also be catched by CONFIG_DEBUG_VIRTUAL:
->>>> [    9.817512] virt_to_phys used for non-linear address: 
->>>> (____ptrval____) (0xffff80000a94bc9c)
->>>> 
->>>>   .../net/wireless/microchip/wilc1000/sdio.c    | 28 
->>>> ++++++++++++++++---
->>>>   1 file changed, 24 insertions(+), 4 deletions(-)
->>>> 
->>>> diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c
->>>> b/drivers/net/wireless/microchip/wilc1000/sdio.c
->>>> index 7962c11cfe84..e988bede880c 100644
->>>> --- a/drivers/net/wireless/microchip/wilc1000/sdio.c
->>>> +++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
->>>> @@ -27,6 +27,7 @@ struct wilc_sdio {
->>>>       bool irq_gpio;
->>>>       u32 block_size;
->>>>       int has_thrpt_enh3;
->>>> +    u8 *dma_buffer;
->>>>   };
->>>> 
->>>>   struct sdio_cmd52 {
->>>> @@ -89,6 +90,9 @@ static int wilc_sdio_cmd52(struct wilc *wilc, 
->>>> struct sdio_cmd52 *cmd)
->>>>   static int wilc_sdio_cmd53(struct wilc *wilc, struct sdio_cmd53 
->>>> *cmd)
->>>>   {
->>>>       struct sdio_func *func = container_of(wilc->dev, struct 
->>>> sdio_func, dev);
->>>> +    struct wilc_sdio *sdio_priv = wilc->bus_data;
->>>> +    bool need_bounce_buf = false;
->>>> +    u8 *buf = cmd->buffer;
->>>>       int size, ret;
->>>> 
->>>>       sdio_claim_host(func);
->>>> @@ -100,12 +104,20 @@ static int wilc_sdio_cmd53(struct wilc *wilc, 
->>>> struct sdio_cmd53 *cmd)
->>>>       else
->>>>               size = cmd->count;
->>>> 
->>>> +    if ((!virt_addr_valid(buf) || object_is_on_stack(buf)) &&
->>> How cheap are the above tests?
->>> It might just be worth always doing the 'bounce'?
->> I'm not sure how cheap they are, but I don't think it costs more than 
->> copying the bulk data around. That's up to the maintainer to decide.
+On 03/08/2022 18:19, Stephen Hemminger wrote:
+> On Wed, 3 Aug 2022 17:48:45 +0200
+> Antonio Quartulli <antonio@openvpn.net> wrote:
+> 
+>> There must have been some confusion - sorry about that.
+>>
+>> The repository I linked in my previous email is this very same driver
+>> packaged as "out-of-tree" module (i.e. for people running a kernel that
+>> does not yet ship ovpn-dco) and contains some compat wrapper.
+>>
+>>
+>> The driver I have submitted to the list is 100% standalone and does not
+>> contain any compat code.
+>>
+>>
+>> The only extra component required to do something useful with this
+>> driver is the OpenVPN software in userspace.
 > 
 > 
-> I think, the above checks for each CMD53 might add up to the processing
-> time of this function. These checks can be avoided, if we add new
-> function similar to 'wilc_sdio_cmd53' which can be called when the 
-> local
-> variables are used. Though we have to perform the memcpy operation 
-> which
-> is anyway required to handle this scenario for small size data.
-> 
-> Mostly, either the static global data or dynamically allocated buffer 
-> is
-> used with cmd53 except wilc_sdio_write_reg, wilc_sdio_read_reg
-> wilc_wlan_handle_txq functions.
-> 
-> I have created a patch using the above approach which can fix this 
-> issue
-> and will have no or minimal impact on existing functionality. The same
-> is copied below:
-> 
-> 
-> ---
->   .../net/wireless/microchip/wilc1000/netdev.h  |  1 +
->   .../net/wireless/microchip/wilc1000/sdio.c    | 46 
-> +++++++++++++++++--
->   .../net/wireless/microchip/wilc1000/wlan.c    |  2 +-
->   3 files changed, 45 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.h
-> b/drivers/net/wireless/microchip/wilc1000/netdev.h
-> index 43c085c74b7a..2137ef294953 100644
-> --- a/drivers/net/wireless/microchip/wilc1000/netdev.h
-> +++ b/drivers/net/wireless/microchip/wilc1000/netdev.h
-> @@ -245,6 +245,7 @@ struct wilc {
->       u8 *rx_buffer;
->       u32 rx_buffer_offset;
->       u8 *tx_buffer;
-> +    u32 vmm_table[WILC_VMM_TBL_SIZE];
-> 
->       struct txq_handle txq[NQUEUES];
->       int txq_entries;
-> diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c
-> b/drivers/net/wireless/microchip/wilc1000/sdio.c
-> index 600cc57e9da2..19d4350ecc22 100644
-> --- a/drivers/net/wireless/microchip/wilc1000/sdio.c
-> +++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
-> @@ -28,6 +28,7 @@ struct wilc_sdio {
->       u32 block_size;
->       bool isinit;
->       int has_thrpt_enh3;
-> +    u8 *dma_buffer;
->   };
-> 
->   struct sdio_cmd52 {
-> @@ -117,6 +118,36 @@ static int wilc_sdio_cmd53(struct wilc *wilc,
-> struct sdio_cmd53 *cmd)
->       return ret;
->   }
-> 
-> +static int wilc_sdio_cmd53_extend(struct wilc *wilc, struct sdio_cmd53
-> *cmd)
+> Good to here thanks.
+> I wonder if there is any chance of having multiple VPN projects
+> using same infrastructure. There seems to be some parallel effort
+> in L2TP, OpenVPN, etc.
 
-If you handle all the stack cases anyway, the caller can just use
-a bounce buffer and you don't need to duplicate the function.
+Thanks for rising this point, Stephen.
 
--michael
+I also believe it would be nice to re-use as much infrastructure as 
+possible (I always strive to reduce code duplication, while keeping core 
+building blocks simple and re-usable), however, it seems that the 
+various implementations currently do not share much logic.
+
+What could be shared is already shared (i.e. crypto, napi, gso, netdev, 
+etc). Handling the data traffic is something that can hardly be shared 
+due to different packet manipulation (i.e. encapsulation).
+
+One area that could still be worth exploring might be the queuing 
+mechanism that handles packet reception+decryption and 
+encryption+transmission. If we factor out the protocol specific bits, we 
+might be able to make the high level logic common.
+
+However, so far all my attempts did not lead to anything that could be 
+implemented in a reasonable manner.
+
+Still, I believe this is something we could work on in the medium/long-term.
+
+
+Regards,
+
+
+-- 
+Antonio Quartulli
+OpenVPN Inc.
