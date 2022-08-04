@@ -2,80 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD99B58A019
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 19:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB3658A04A
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 20:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235059AbiHDR7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 13:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        id S239661AbiHDSJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 14:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiHDR7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 13:59:23 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A5721E0D
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 10:59:22 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id p18so515203plr.8
-        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 10:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BwcQN3pfTZOhr8bApWvnkfZQqF/csSZocbJTgzPkL9o=;
-        b=lBQ+8jRiUWo6dWX4UrhHaCTuw8FRuzXD/mYy/oLD38BQbJQ7YQVxS/TcuMvjkFpT9k
-         dOzm7x1Xh7p7tN7TZI6wQuUf5dfGlyh+TvQPe6ZQFmW8JHQhWPU3k2OR/L43JdDAF1lv
-         IvpMtd03PrP8SO7o79O0g3ARI30aP32+tmL7zHspaUsRo2hIvpXEkS7nnF+ht5Wm031U
-         hQNaAHe5IU46WK2bce6CZ4v7HaxmbdYq3dfMAD72Ptw3IOyjPjn5ckLW6YhgbKO6rtaK
-         sTexPEjbefKxop8nErU9ch693WTZBG4e4pzOCrsBod/E7I9XIkJbBexKZnOLDA0gly1k
-         gRdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BwcQN3pfTZOhr8bApWvnkfZQqF/csSZocbJTgzPkL9o=;
-        b=7ydI8iZsRKy4CTkbglacs2fi7ZDShBHj0/C+SOHEh7FTc4QNIMSkS1xXGn6JEfcXAb
-         vmoV2KEVzxrOLYasdTO5Sx6MCl1b2hMdyAt3T7lh0SEKeIlkIcjaABwNCn9yY91zbfdM
-         9Me6nTJAznSmM6KOIcZ4yUoTXbzDRSO7iUxMOeX1qWtFhCfe2ro65NiQotb1V8AyGDQ5
-         o/4wTKi2wbWGgDP+q8Z8Q51M2E0idXoIKDTlUjEMR/cfuVdpMs53MgCYhJkVQobTQGSM
-         0ubEEV520RACAyvNsv5QwB+jgDnxaf+H7gnDRzAxySZ96oJ9bNswvJ7oK35nQ0JnPmmS
-         LQVQ==
-X-Gm-Message-State: ACgBeo3Qy2i6hBtaDzndyCK3nee8uUrMnZea7ldpXuu9qdIAL344RyWJ
-        zBhd189hymp7MhQZKWFlU1tmiMBONjL97A==
-X-Google-Smtp-Source: AA6agR5aVg1el+lIrqG4k3EByxhKA5PVe67mmCm5TXzLwTOSl0+TUNRaX/EQV8kLb7ry5uPB+MyFkg==
-X-Received: by 2002:a17:902:e552:b0:16c:571d:fc08 with SMTP id n18-20020a170902e55200b0016c571dfc08mr2911569plf.151.1659635961517;
-        Thu, 04 Aug 2022 10:59:21 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id y23-20020a170902b49700b0016bf9437766sm1234810plr.261.2022.08.04.10.59.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 10:59:21 -0700 (PDT)
-Date:   Thu, 4 Aug 2022 10:59:17 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     James Prestwood <prestwoj@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
-Message-ID: <20220804105917.79aaf6e9@hermes.local>
-In-Reply-To: <20220804174307.448527-2-prestwoj@gmail.com>
-References: <20220804174307.448527-1-prestwoj@gmail.com>
-        <20220804174307.448527-2-prestwoj@gmail.com>
+        with ESMTP id S233114AbiHDSJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 14:09:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF5B6BD6D;
+        Thu,  4 Aug 2022 11:09:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41008B82659;
+        Thu,  4 Aug 2022 18:09:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E61DC433D6;
+        Thu,  4 Aug 2022 18:09:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659636587;
+        bh=BCuL3wPihFZ4RUzoccGQX5On9lEl6ElteDBDW7ANNsM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mwTp9Mhxec4JRfepApvLoPZX27LJuI4/rVNS4bl8bcyjchZv6R07mAljpnWXc+nnY
+         aXKYDb46s/IrEnaHJBF/Qwft4o9f9lPDP/y6vUfHvMod0plK7spQWi0N58c3HTM9j3
+         oFFLmUdd+8rFp3RyLEZAVEov0wUruqsfTTHyxtjnNybI4mdrZfwnSUygtq7GjB0eoW
+         bxkMoJ5pHmt/0Le+b757zXlLR08r6GzsAgbGX8U+SsIYSRXN6EWPPzUDx/duCgyg6+
+         f17sfafaogbH7XLx8M+3xITmZTqjDeAIp8PsT1NIuu7Np7ns9bXWFbOe5Ei8WsdI+J
+         bmQxg2a03G8bQ==
+Date:   Thu, 4 Aug 2022 11:09:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Adel Abouchaev <adel.abushaev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [RFC net-next 1/6] net: Documentation on QUIC kernel Tx crypto.
+Message-ID: <20220804110945.08c5d58b@kernel.org>
+In-Reply-To: <CANn89iJMCrLBbPPEnk2U7ja58AawCrDe01JmBStN9btBPQQgOQ@mail.gmail.com>
+References: <adel.abushaev@gmail.com>
+        <20220803164045.3585187-1-adel.abushaev@gmail.com>
+        <20220803164045.3585187-2-adel.abushaev@gmail.com>
+        <Yuq9PMIfmX0UsYtL@lunn.ch>
+        <4a757ba1-7b8e-6012-458e-217056eaee63@gmail.com>
+        <Yuvl9uKX8z0dh5YY@lunn.ch>
+        <7c42bf11-8a30-3220-9d52-34b46b68888f@gmail.com>
+        <CANn89iJMCrLBbPPEnk2U7ja58AawCrDe01JmBStN9btBPQQgOQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  4 Aug 2022 10:43:07 -0700
-James Prestwood <prestwoj@gmail.com> wrote:
+On Thu, 4 Aug 2022 10:00:37 -0700 Eric Dumazet wrote:
+> On Thu, Aug 4, 2022 at 9:58 AM Adel Abouchaev <adel.abushaev@gmail.com> wrote:
+> > Looking at
+> > https://github.com/shemminger/iproute2/blob/main/misc/ss.c#L589 the ss.c
+> > still uses proc/.
+> 
+> Only for legacy reasons.
 
-> + * @IFF_LIVE_ADDR_CHANGE: device supports hardware address
-> + *	change when it's running. Volatile
+That but in all honesty also the fact that a proc file is pretty easy
+and self-describing while the historic netlink families are undocumented
+code salads.
 
-Since this is a property of the device driver, why is it volatile?
+> ss -t for sure will use netlink first, then fallback to /proc
+> 
+> New counters should use netlink, please.
 
-When you make it part of uapi, you also want to restrict userspace
-from changing the value via sysfs?
-
+Just to be sure I'm not missing anything - we're talking about some 
+new netlink, right? Is there an existing place for "overall prot family
+stats" over netlink today?
