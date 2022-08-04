@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC08958A12B
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 21:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED24958A13D
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 21:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234193AbiHDTXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 15:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
+        id S240120AbiHDT3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 15:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiHDTXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 15:23:48 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8D537FA9
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 12:23:47 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso6187924pjq.4
-        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 12:23:47 -0700 (PDT)
+        with ESMTP id S240110AbiHDT3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 15:29:14 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9716D54F
+        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 12:29:14 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r186so763060pgr.2
+        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 12:29:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:user-agent:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
-        bh=/2STq9RFfa9PMmXgQmnuLJWHeY4idjTBf00Ajo15GUE=;
-        b=U7rkCt70v08d11dqBZoNZIUJAI0TbKz2Xi/vT6/0bqLUwtpRjTeUzaZ10xjRXxdew4
-         FEVFazbQI8aXhkviknx7PieXAWfjUERQyUd/ISP0uzHtVOwynwb2l+FJEzLcQ87ssgNE
-         h7H2k0sc1odKmS0tWmsAIP03C/GxvKXLWZZO4HlxIqeGtADoykXiySjOnURBZZDT2qBD
-         rsZqvTOyMTM3fYrhlQGaidtCHpzifJj7eW5PkLYjrNfbY400H7HLrrwkJzTUb/AmBd7w
-         80NTTRqj6vxt0/ue63Ka8/pMI/fqP+2t/wU6AN89ghVoYLntqw2r9NotHJByM42M/pW9
-         89uw==
+        bh=7NBAD5NE5cm7rb6JhODYZEGjJRe7XAz+yMcGaqHtoMQ=;
+        b=nnKGDqMUFxvm/phLTQTxdFEmWd2u/mewQDe2KMxq23CizU6dA/grGerBMJ5yW/YrdF
+         aYzU6lFCsEb6ZnunUynetfzk2JSEAqnSdB6Bx+EaqIHoodNG43r86gwlEH7CmV2Ug0YG
+         vxbLEQj1HhwxZ+gOPEIRAD3f3sRzGMkhfqjxxc9MqbSwliv4oDvPNp47gQqEQhNooePH
+         5GU0xTi9Bhj7RHFyrxQ5P4p2N47x5My/xLr071qSuGsfPhBoWFwkPtE8Hd7YVEp2uSLa
+         QGgN5T9lMoqv0+03Fq9K0D90P4xVHCGim56IrSRgILnl/oVo5XA9IgS9Yb6MvPdzCLqA
+         FpHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:user-agent:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc;
-        bh=/2STq9RFfa9PMmXgQmnuLJWHeY4idjTBf00Ajo15GUE=;
-        b=jM/MX8ocg4s13vPJ+V6teLMHNzpJygfBpLsz4mJp0IEJ+7/XbFeEg0cN3nOLUlQO/9
-         G6TIk1wV/U77Ba6+O4kyRprjLY6q+0cCoDH8E8VcS11XzRL6A16xdDoM6g+Zd/cqnlqM
-         1EInAOKQOQlf8LyTn7/I6gdkAOD4dntHqVmGAOKpEeVe8U6szK8OIENeQsWCunsIX4su
-         N1z9C6qvtEywyBX6SCkiPNPBlx7hiVK3+zjt5rYz86Y10fDd0Qeb1zj6mBtG+iQSepxe
-         GivBVLNqdjVHGfvxTBbOlZK6D1DTK2uia4HNLXolMC1tV8aHQnTLnVmDkLilC8wSzZD3
-         U1LA==
-X-Gm-Message-State: ACgBeo0N0KUI0/Wu86f6WMPsNVnjG5q6Da7k4OmA1EZOqAs7GwVEL2N+
-        NqrqXrK/2+bvnxzI3W3ceqZejxekLe4=
-X-Google-Smtp-Source: AA6agR5WpsT/j18z1hTWEREI/gV+RQiFV1GpleEKOG2FH7U1zD2pDY3X+OAXCQ5NV1vu/kDFwXzIFg==
-X-Received: by 2002:a17:90b:343:b0:1ef:b65d:f4d8 with SMTP id fh3-20020a17090b034300b001efb65df4d8mr11815192pjb.187.1659641026555;
-        Thu, 04 Aug 2022 12:23:46 -0700 (PDT)
+        bh=7NBAD5NE5cm7rb6JhODYZEGjJRe7XAz+yMcGaqHtoMQ=;
+        b=t6a9XRq+iJBKq7GHsmBBFaGsETbn0zqjq1R2+d5LRraD1z/VWEnBmFEF1FTgICgx4B
+         BnqH/FyDm+rq3O3+ZVbGNSqxL0yZ4AK400YpUogloQ7nipIvQz+7+eqOBTMm49oj/+O+
+         a7uzdvzFIr2vKSc1wSrY/HJd3yn7jF+8kg0CIBdPogcME9ACr4lO2kziveDs1exuO3TU
+         5WiViFuWMivg+kAonlQyORC34gjAJme/xEZcqpRq6CnBN3tTqql21aAf86mB+rOFaxR5
+         POdWuIYCQE5VE0MkcfaXoJGAaCWS8u0FwmHNH9xDji3j6wzjVYiZ+rVlTCNzLT5rKgzs
+         dDJQ==
+X-Gm-Message-State: ACgBeo2ptfpmjjx0eE6tQx0h9JVxLAwTIJ8LD91aiL1nCq9L3fhnu/cH
+        rw839Y2qZQ9UOcxfAJWn+wzWGyqdFFA=
+X-Google-Smtp-Source: AA6agR5fAL1hPiJ6AJy69Bfp1DfHrDcMm6gfY4pHaa1PWRwP4snNI17ECUj+XJguJj2J+L6kIFm81w==
+X-Received: by 2002:a05:6a00:b4d:b0:52b:1eb1:218e with SMTP id p13-20020a056a000b4d00b0052b1eb1218emr3289449pfo.33.1659641352197;
+        Thu, 04 Aug 2022 12:29:12 -0700 (PDT)
 Received: from [192.168.254.91] ([50.45.187.22])
-        by smtp.gmail.com with ESMTPSA id e187-20020a621ec4000000b0052d200c8040sm1274014pfe.211.2022.08.04.12.23.46
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090341c600b0016be596c8afsm1274246ple.282.2022.08.04.12.29.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 12:23:46 -0700 (PDT)
-Message-ID: <b6b11b492622b75e50712385947e1ba6103b8e44.camel@gmail.com>
+        Thu, 04 Aug 2022 12:29:11 -0700 (PDT)
+Message-ID: <6b0d571ea5fbc5942d798d5201b2cef253688949.camel@gmail.com>
 Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
 From:   James Prestwood <prestwoj@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     netdev@vger.kernel.org
-Date:   Thu, 04 Aug 2022 12:23:45 -0700
-In-Reply-To: <20220804114342.71d2cff0@kernel.org>
+Date:   Thu, 04 Aug 2022 12:29:11 -0700
+In-Reply-To: <20220804105917.79aaf6e9@hermes.local>
 References: <20220804174307.448527-1-prestwoj@gmail.com>
          <20220804174307.448527-2-prestwoj@gmail.com>
-         <20220804114342.71d2cff0@kernel.org>
+         <20220804105917.79aaf6e9@hermes.local>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
@@ -72,38 +72,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-08-04 at 11:43 -0700, Jakub Kicinski wrote:
-> On Thu,  4 Aug 2022 10:43:07 -0700 James Prestwood wrote:
-> > By exposing IFF_LIVE_ADDR_CHANGE to userspace it at least gives an
-> > indication that we can successfully randomize the address and
-> > connect. In the worst case address randomization can be avoided
-> > ahead of time. A secondary win is also time, since userspace can
-> > avoid a power down unless its required which saves some time.
+Hi,
+
+On Thu, 2022-08-04 at 10:59 -0700, Stephen Hemminger wrote:
+> On Thu,  4 Aug 2022 10:43:07 -0700
+> James Prestwood <prestwoj@gmail.com> wrote:
 > 
-> It's not a generic thing tho, it's most of an implicit argument 
-> to eth_mac_addr(). Not all netdevs are Ethernet.
+> > + * @IFF_LIVE_ADDR_CHANGE: device supports hardware address
+> > + *     change when it's running. Volatile
 > 
-> The semantics in wireless are also a little stretched because
-> normally
-> if the flag is not set the netdev will _refuse_ (-EBUSY) to change
-> the
-> address while running, not do some crazy fw reset.
+> Since this is a property of the device driver, why is it volatile?
 
-Sorry if I wasn't clear, but its not nl80211 doing the fw reset
-automatically. The wireless subsystem actually completely disallows a
-MAC change if the device is running, this flag isn't even checked. This
-means userspace has to bring the device down itself, then change the
-MAC.
+Its not intended to be changed since its a device capability.
 
-I plan on also modifying mac80211 to first check this flag and allow a
-live MAC change if possible. But ultimately userspace still needs to be
-aware of the support.
 
+> When you make it part of uapi, you also want to restrict userspace
+> from changing the value via sysfs?
 > 
-> Perhaps we should wait for Johannes to return form vacation but my
-> immediate reaction would be to add a knob (in wireless?) that
-> controls
-> whether the reset dance is allowed.
 
-Ok sounds good. Lets see what Johannes has to say.
+Yeah, this is what I intended to do. Similar to the other volatile
+options. Basically following this comment:
+
+"...few flags can be toggled and some other flags are always preserved
+from the original net_device flags even if you try to set them via
+sysfs. Flags which are always preserved are kept under the flag
+grouping @IFF_VOLATILE. Flags which are volatile are annotated below as
+such."
+
+Thanks,
+James
 
