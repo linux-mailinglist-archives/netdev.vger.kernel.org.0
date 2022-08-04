@@ -2,201 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD785898F7
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 10:05:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44F45898FC
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 10:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239402AbiHDIF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 04:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S239464AbiHDIIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 04:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbiHDIFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 04:05:25 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED025FB2
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 01:05:23 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id v3so23368453wrp.0
-        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 01:05:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oKb+q4alb43WGECxOaoZfLIR3VkQA7xt0+X4RXnCFnc=;
-        b=cjIrl+8gyy20kNMO1/1M7zxX595MzpLz51MWmUDBhqsGxqwu6RuqoH27B4bExIHfh1
-         cx9lPZT5FBiqo+K0GaCc6LBthyFsPX8O/bjZtG6MPaVzo4LBVlpWB0+UDIvmX6EIPpLf
-         Fs+F07dm+KI12eG2oVkHEuxntH1HIs7ohNpxSvdfbKlKIRPOUMpvAEZ4eKZQCvmf9jBP
-         baBSX5VIVlRswIVwEfQQL7FwnOVdt3EM1Daohfhb/7HzplkEm1Qpm22A1Cc/DRKQ1Q3z
-         iRlf2swsI5PNP0E+vp7qoCm83lXLgZRmiH07t1/a6KtEXtjx63k4j4TCMm+ohz18Nccu
-         ym9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oKb+q4alb43WGECxOaoZfLIR3VkQA7xt0+X4RXnCFnc=;
-        b=uD0GF6crPRFIjxN6Dp54l6CoM1LiQ8MdjfKLHK0kgTX3uyOf3I19gCkfbKE0WlCuY8
-         o3jIX3nDYLb3LL8P/1b715RyWe5bqq4oxv7c9lqc+o0+M6hIncGnCZ2CyTUZsCjNhzMO
-         fZMx+21gPYaQgaM2njubrtIPLGvKFDJUfgEBjD/o0zaXR/I3IP3h4MUXNQI/6dsTRqaX
-         OfwaypvryifPUobLtYSgOOtKgXinpbcC+LtwrxMjcFY3R0hiPkNQtrnQA+e0g7wgnxCo
-         4WAkKjE/pWdBOUG6hmYVYlSpOGJHBuf+O8w2YWz/6VARHH3TIb29b0C0mCTCw2fZnla1
-         Fqew==
-X-Gm-Message-State: ACgBeo3d1/3xanK07/AqbahDHc/Rx7VknCr0hdf4QHz5vMiG/HyZtFyq
-        Idyge5P0CNnI3t2CQ7dFojY=
-X-Google-Smtp-Source: AA6agR7OWz0U/S8o608/LJsZt3igsEgI0+rzkESjTcscTeqZMcRIRK9WR2VyKp3TUNxpejq6oBFpag==
-X-Received: by 2002:adf:d20c:0:b0:21f:15aa:14fa with SMTP id j12-20020adfd20c000000b0021f15aa14famr557353wrh.354.1659600321846;
-        Thu, 04 Aug 2022 01:05:21 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id b3-20020a05600c150300b003a03185231bsm449709wmg.31.2022.08.04.01.05.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 01:05:21 -0700 (PDT)
-Message-ID: <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
-Date:   Thu, 4 Aug 2022 11:05:18 +0300
+        with ESMTP id S239425AbiHDIIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 04:08:38 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAF161DA4;
+        Thu,  4 Aug 2022 01:08:36 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 46CD130B2954;
+        Thu,  4 Aug 2022 10:08:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=AZz/N
+        ENWs9CRJqf3LgglxOqTbQNjfSDjSrFDAj9pjfQ=; b=narV3dWmXYN1Dxr6ATrb0
+        bYSsF6izLWaxkK+b4zu1HXzPqPLKMe9t3V2uvK0xFWrafY0Yy56B9V8S3KwER0Tu
+        rbdElwnzdyzSFCG/YXwCadr3AnFJc3s/OhU+qlkO+qNT40VEDzs8aU3DqxX0yFyj
+        QDZLJvGoEt8/pS0Fq2hrgZfk2o3zuawaMCX+nlNekxmZnzDAEj1bhfWM2JyCWdPf
+        hfzDDypKgHrULv1j0q7M4QL7dlAQ337wg2bjUVka7LV2p9q0E518FrkBvjIvdhYz
+        S/SoDELzivdbL1Ma+KLYCZSmfYcWI9jgv8+F27JWQkPu3naSKCabebDVg3bwNSfB
+        g==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id F1B0830B294D;
+        Thu,  4 Aug 2022 10:08:32 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 27488WBI012865;
+        Thu, 4 Aug 2022 10:08:32 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 27488W5p012864;
+        Thu, 4 Aug 2022 10:08:32 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Matej Vasilevski <matej.vasilevski@seznam.cz>
+Subject: Re: [PATCH v2 1/3] can: ctucanfd: add HW timestamps to RX and error CAN frames
+Date:   Thu, 4 Aug 2022 10:08:15 +0200
+User-Agent: KMail/1.9.10
+Cc:     Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220801184656.702930-1-matej.vasilevski@seznam.cz> <202208021820.17878.pisa@cmp.felk.cvut.cz> <20220803083718.7bh2edmsorwuv4vu@pengutronix.de>
+In-Reply-To: <20220803083718.7bh2edmsorwuv4vu@pengutronix.de>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v3 7/7] tls: rx: do not use the standard
- strparser
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
-        tariqt@nvidia.com, vfedorenko@novek.ru,
-        Ran Rozenstein <ranro@nvidia.com>,
-        "gal@nvidia.com" <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220722235033.2594446-1-kuba@kernel.org>
- <20220722235033.2594446-8-kuba@kernel.org>
- <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
- <20220803182432.363b0c04@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220803182432.363b0c04@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Disposition: inline
+Message-Id: <202208041008.15122.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Marc,
+
+On Wednesday 03 of August 2022 10:37:18 Marc Kleine-Budde wrote:
+> On 02.08.2022 18:20:17, Pavel Pisa wrote:
+> > Hello Marc,
+> >
+> > thanks for feedback.
+> >
+> > On Tuesday 02 of August 2022 11:29:07 Marc Kleine-Budde wrote:
+> > > On 01.08.2022 20:46:54, Matej Vasilevski wrote:
+> > > > This patch adds support for retrieving hardware timestamps to RX and
+> > > > error CAN frames. It uses timecounter and cyclecounter structures,
+> > > > because the timestamping counter width depends on the IP core
+> > > > integration (it might not always be 64-bit).
+> > > > For platform devices, you should specify "ts_clk" clock in device
+> > > > tree. For PCI devices, the timestamping frequency is assumed to be
+> > > > the same as bus frequency.
+> > > >
+> > > > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
+> > > > ---
+> > > >  drivers/net/can/ctucanfd/Makefile             |   2 +-
+> > > >  drivers/net/can/ctucanfd/ctucanfd.h           |  20 ++
+> > > >  drivers/net/can/ctucanfd/ctucanfd_base.c      | 214
+> > > > +++++++++++++++++- drivers/net/can/ctucanfd/ctucanfd_timestamp.c | 
+> > > > 87 +++++++ 4 files changed, 315 insertions(+), 8 deletions(-)
+> > > >  create mode 100644 drivers/net/can/ctucanfd/ctucanfd_timestamp.c
+> >
+> > ...
+> >
+> > > > +	if (ts_high2 != ts_high)
+> > > > +		ts_low = priv->read_reg(priv, CTUCANFD_TIMESTAMP_LOW);
+> > > > +
+> > > > +	return concatenate_two_u32(ts_high2, ts_low) & priv->cc.mask;
+> > > > +}
+> > > > +
+> > > >  #define CTU_CAN_FD_TXTNF(priv) (!!FIELD_GET(REG_STATUS_TXNF,
+> > > > ctucan_read32(priv, CTUCANFD_STATUS))) #define
+> > > > CTU_CAN_FD_ENABLED(priv) (!!FIELD_GET(REG_MODE_ENA,
+> > > > ctucan_read32(priv, CTUCANFD_MODE)))
+> > >
+> > > please make these static inline bool functions.
+> >
+> > We put that to TODO list. But I prefer to prepare separate followup
+> > patch later.
+>
+> ACK. I noticed later that these were not modified by this patch. Sorry
+> for the noise
+
+OK
+
+> > > > @@ -736,7 +764,9 @@ static int ctucan_rx(struct net_device *ndev)
+> > > >  		return 0;
+> > > >  	}
+> > > >
+> > > > -	ctucan_read_rx_frame(priv, cf, ffw);
+> > > > +	ctucan_read_rx_frame(priv, cf, ffw, &timestamp);
+> > > > +	if (priv->timestamp_enabled)
+> > > > +		ctucan_skb_set_timestamp(priv, skb, timestamp);
+> > >
+> > > Can the ctucan_skb_set_timestamp() and ctucan_read_timestamp_counter()
+> > > happen concurrently? AFAICS they are all called from ctucan_rx_poll(),
+> > > right?
+> >
+> > I am not sure about which possible problem do you think.
+> > But ctucan_read_timestamp_counter() is fully reentrant
+> > and has no side effect on the core. So there is no
+> > problem.
+>
+> ctucan_read_timestamp_counter() is reentrant, but on 32 bit systems the
+> update of tc->cycle_last isn't.
+>
+> [...]
+
+Good catch, so we probably should use atomic there or we need to add
+spinlock, but I think that atomic is optimal solution there.
+
+> > > > +
+> > > > +	/* Obtain timestamping frequency */
+> > > > +	if (pm_enable_call) {
+> > > > +		/* Plaftorm device: get tstamp clock from device tree */
+> > > > +		priv->timestamp_clk = devm_clk_get(dev, "ts-clk");
+> > > > +		if (IS_ERR(priv->timestamp_clk)) {
+> > > > +			/* Take the core clock frequency instead */
+> > > > +			timestamp_freq = can_clk_rate;
+> > > > +		} else {
+> > > > +			timestamp_freq = clk_get_rate(priv->timestamp_clk);
+> > > > +		}
+> > >
+> > > Who prepares/enabled the timestamp clock? clk_get_rate() is only valid
+> > > if the clock is enabled. I know, we violate this for the CAN clock. :/
+> >
+> > Yes, I have noticed that we miss clk_prepare_enable() in the
+> > ctucan_probe_common() and clk_disable_unprepare() in
+> > ctucan_platform_remove().
+>
+> Oh, I missed the fact that the CAN clock is not enabled at all. That
+> should be fixed, too, in a separate patch.
+>
+> So let's focus on the ts_clk here. On DT systems if there's no ts-clk,
+> you can assign the normal clk pointer to the priv->timestamp_clk, too.
+> Move the calculation of mult, shift and the delays into
+> ctucan_timestamp_init(). If ctucan_timestamp_init is not NULL, add a
+> clk_prepare_enable() and clk_get_rate(), otherwise use the can_clk_rate.
+> Add the corresponding clk_disable_unprepare() to ctucan_timestamp_stop().
+
+OK
+
+> > The need for clock running should be released in ctucan_suspend()
+> > and regained in ctucan_resume(). I see that the most CAN drivers
+> > use there clk_disable_unprepare/clk_prepare_enable but I am not
+> > sure, if this is right. Ma be plain clk_disable/clk_enable should
+> > be used for suspend and resume because as I understand, the clock
+> > frequency can be recomputed and reset during clk_prepare which
+> > would require to recompute bitrate. Do you have some advice
+> > what is a right option there?
+>
+> For the CAN clock, add a prepare_enable to ndo_open, corresponding
+> function to ndo_stop. Or better, add these time runtime_pm.
+
+Hmm, there is problem that we have single clock for whole design,
+so if we try to touch AXI/APB slave registers without clock setup
+then system blocks. So I think that we need to prepare and enable
+clocks in probe to allow registers access later. We need it at least
+for core bus endian probe and version validation/quirks. May it be
+we can disable clocks and reenable them in open.... But it is
+a little risky play and needs to ensure that no other path
+in the closed driver can attempt to access registers.
+
+Due to use of AXI bridges and other peripherals in Zynq Programmable
+Logic (FPGA) we keep forcibly clock enabled. In the fact, this
+should be solved some way on level of APB (now renamed in Zynq DST
+to AXI) bus mapping. 
+
+> Has system suspend/resume been tested? I think the IP core might be
+> powered off during system suspend, so the driver has to restore the
+> state of the chip. The easiest would be to run through
+> chip_start()/chip_stop().
+
+Hmm, if we do not reconfigure FPGA then it keeps state and if we
+lose configuration then whole cycle with DTS overlay is required.
+So basically for runtime power down wee need to unload overlay
+which removes driver instances and then reload  overlay and instances
+again... If you speak about suspend to disk, then I do not expect
+to run this way on any platform bus based system in near future.
+With PCIe card on PC it is possible... So it is other area to invest
+work in future...
+
+> For the possible change of clock rate between probe and ifup, we should
+> add a CAN driver framework wide function to re-calculate the bitrates
+> with the current clock rate after the prepare_enable.
+
+ACK
+
+> BTW: In an early version of the stm32mp1 device tree some graphics clock
+> and the CAN clock shared the same parent clock. The configuration of the
+> display (which happened after the probe of the CAN driver ) caused a
+> different rate in the CAN clock, resulting in broken bit timings.
+
+So in the fact each CAN device should listen to the clock rate
+change notifier...
+
+> > Actual omission is no problem on our systems, be the clock are used
+> > in whole FPGA system with AXI connection and has to running already
+> > and we use same for timestamping.
+> >
+> > I would prefer to allow timestamping patch as it is without clock enable
+> > and then correct clock enable, disable by another patch for both ts and
+> > core clocks.
+>
+> NACK - if the time stamping clock is added, please with proper handling.
+> The core clock can be fixed in a later patch.
+
+OK, how is it with your timing plans. I have already stated to Matej 
+Vasilevski that slip of the patch sending after 5.19 release means
+that we would not fit in 5.20 probably. If it is so and you, then I
+expect that postpone of discussions, replies and thoughts about our
+work after 5.20 preparation calms down is preferred on your side.
+We focus on preparation of proper series for early 5.21/6.0 cycle.
+
+Thanks for your time
+
+                Pavel
+-- 
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://control.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    RISC-V education: https://comparch.edu.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
 
 
-On 8/4/2022 4:24 AM, Jakub Kicinski wrote:
-> On Tue, 2 Aug 2022 17:54:01 +0300 Tariq Toukan wrote:
->>    [  407.589886] RIP: 0010:tls_device_decrypted+0x7a/0x2e0
-> 
-> Sorry, got distracted yesterday. This?
-> 
-> --->8--------------------
-> tls: rx: device: bound the frag walk
-> 
-> We can't do skb_walk_frags() on the input skbs, because
-> the input skbs is really just a pointer to the tcp read
-> queue. We need to bound the "is decrypted" check by the
-> amount of data in the message.
-> 
-> Note that the walk in tls_device_reencrypt() is after a
-> CoW so the skb there is safe to walk. Actually in the
-> current implementation it can't have frags at all, but
-> whatever, maybe one day it will.
-> 
-> Reported-by: Tariq Toukan <tariqt@nvidia.com>
-> Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   net/tls/tls_device.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> index e3e6cf75aa03..6ed41474bdf8 100644
-> --- a/net/tls/tls_device.c
-> +++ b/net/tls/tls_device.c
-> @@ -984,11 +984,17 @@ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx)
->   	int is_decrypted = skb->decrypted;
->   	int is_encrypted = !is_decrypted;
->   	struct sk_buff *skb_iter;
-> +	int left;
->   
-> +	left = rxm->full_len - skb->len;
->   	/* Check if all the data is decrypted already */
-> -	skb_walk_frags(skb, skb_iter) {
-> +	skb_iter = skb_shinfo(skb)->frag_list;
-> +	while (skb_iter && left > 0) {
->   		is_decrypted &= skb_iter->decrypted;
->   		is_encrypted &= !skb_iter->decrypted;
-> +
-> +		left -= skb_iter->len;
-> +		skb_iter = skb_iter->next;
->   	}
->   
->   	trace_tls_device_decrypted(sk, tcp_sk(sk)->copied_seq - rxm->full_len,
-
-Now we see a different trace:
-
-------------[ cut here ]------------
-WARNING: CPU: 4 PID: 45887 at net/tls/tls_strp.c:53 
-tls_strp_msg_make_copy+0x10e/0x120
-Modules linked in: sch_netem iptable_raw bonding rdma_ucm nf_tables 
-ib_ipoib ib_umad ip_gre ip6_gre gre ip6_tunnel tunnel6 ipip tunnel4 
-mlx5_vfio_pci vfio_pci_core vfio_virqfd vfio_iommu_type1 vfio geneve 
-mlx5_ib ib_uverbs mlx5_core openvswitch nsh xt_conntrack xt_MASQUERADE 
-nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat 
-br_netfilter rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm 
-ib_cm overlay ib_core fuse [last unloaded: ib_uverbs]
-CPU: 4 PID: 45887 Comm: iperf Not tainted 
-5.19.0-rc8_net_next_mlx5_18607aa #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 
-rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-RIP: 0010:tls_strp_msg_make_copy+0x10e/0x120
-Code: 41 c7 47 44 00 00 00 00 48 8b 44 24 08 65 48 2b 04 25 28 00 00 00 
-75 16 48 83 c4 10 4c 89 f8 5b 5d 41 5c 41 5d 41 5e 41 5f c3 <0f> 0b eb 
-a5 e8 79 0a 28 00 66 0f 1f 84 00 00 00 00 00 0f 1f 44 00
-RSP: 0018:ffff88810574fb28 EFLAGS: 00010282
-RAX: 00000000fffffff2 RBX: ffff8881136b8cd0 RCX: 0000000000000872
-RDX: ffff8881c4bb6000 RSI: 0000000000004855 RDI: ffff88810c4ab500
-RBP: 0000000000004855 R08: 00000000000042f0 R09: ffff88810c4aa000
-R10: 0000000000000001 R11: 0000000000001000 R12: 0000160000000000
-R13: 0000000000000001 R14: ffff8881ada4f8d0 R15: ffff88810c4aa000
-FS:  00007f5efe4fe700(0000) GS:ffff88846fa00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f5ef4004000 CR3: 00000001ee214005 CR4: 0000000000370ea0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  <TASK>
-  tls_rx_one_record+0x1f2/0x310
-  tls_sw_recvmsg+0x327/0x8d0
-  inet6_recvmsg+0x62/0x220
-  ____sys_recvmsg+0x109/0x120
-  ? _copy_from_user+0x44/0x80
-  ? iovec_from_user+0x4a/0x150
-  ___sys_recvmsg+0xa4/0xe0
-  ? find_held_lock+0x2b/0x80
-  ? __fget_files+0xb9/0x190
-  ? __fget_files+0xd3/0x190
-  __sys_recvmsg+0x4e/0x90
-  do_syscall_64+0x3d/0x90
-  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f5effe086dd
-Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 5a ef ff ff 8b 54 24 
-1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2f 00 00 00 0f 05 <48> 3d 00 
-f0 ff ff 77 33 44 89 c7 48 89 44 24 08 e8 8e ef ff ff 48
-RSP: 002b:00007f5efe4fda70 EFLAGS: 00000293 ORIG_RAX: 000000000000002f
-RAX: ffffffffffffffda RBX: 00007f5ef4022be0 RCX: 00007f5effe086dd
-RDX: 0000000000000000 RSI: 00007f5efe4fdad0 RDI: 0000000000000004
-RBP: 0000000000004130 R08: 0000000000000000 R09: 00007f5efe4fdc38
-R10: 0000000000000000 R11: 0000000000000293 R12: 00007f5ef40284e3
-R13: 00007f5efe4fe660 R14: 00007f5efe4fdb58 R15: 00007f5ef4020ba0
-  </TASK>
-irq event stamp: 2999
-hardirqs last  enabled at (3017): [<ffffffff811daf27>] 
-__up_console_sem+0x67/0x70
-hardirqs last disabled at (3030): [<ffffffff811daf0c>] 
-__up_console_sem+0x4c/0x70
-softirqs last  enabled at (2680): [<ffffffff81170d47>] 
-irq_exit_rcu+0x97/0xd0
-softirqs last disabled at (2671): [<ffffffff81170d47>] 
-irq_exit_rcu+0x97/0xd0
----[ end trace 0000000000000000 ]---
