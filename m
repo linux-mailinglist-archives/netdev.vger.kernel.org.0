@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B53D589875
-	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 09:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D826F58989D
+	for <lists+netdev@lfdr.de>; Thu,  4 Aug 2022 09:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239067AbiHDHgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Aug 2022 03:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
+        id S239214AbiHDHpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Aug 2022 03:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238980AbiHDHgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 03:36:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 676DA6555
-        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 00:36:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659598569;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3/muRkmZux4hv+ibTgAF3IB/lKVb0GckZo4ERwwvrw0=;
-        b=NlUhqNN6KHptMYoYZ6vZiOWOw802dYVby3t+JaZG4beaDuIiGkLZ7kSQPPPTcytlD9LE8a
-        2cgKq/fo0/w+UbFEyeWhW4KEk3i8/4UKr/nCCMll5DIaDadn5c27dSGzH58OF43RtTJpBs
-        KS5YPHGdNSzOOY2GkLYcJlb72jkfsco=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-418-EbRA70g4MtypJQT8HQ0IBA-1; Thu, 04 Aug 2022 03:36:06 -0400
-X-MC-Unique: EbRA70g4MtypJQT8HQ0IBA-1
-Received: by mail-lj1-f200.google.com with SMTP id j15-20020a2e850f000000b0025e6da69e18so769022lji.18
-        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 00:36:06 -0700 (PDT)
+        with ESMTP id S232405AbiHDHpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Aug 2022 03:45:21 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21123616E
+        for <netdev@vger.kernel.org>; Thu,  4 Aug 2022 00:45:20 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id q7so21220072ljp.13
+        for <netdev@vger.kernel.org>; Thu, 04 Aug 2022 00:45:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ororatech.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=dhLsCRYGUtuAwALD1KlxKTdhkhp8QSNYwM9InIv21hY=;
+        b=vhFbtTOGOksHyzcro9kH4cZHaorB7nfGcWpikpO7dNKwncnTRw1+ByiMFJe/2elMHX
+         b7OFjEv9TqgTOdb2zsflnf724l7IR7GO9J3muH/4h9jAjKaDV06uAda+3eRlck9Jm8fU
+         N1FdUO8DhuA0L5atc+KdjD8fiwIjd10nsD5xvo8yOopR+hvLU+gT8/ZsGbBGbSPQGPkR
+         kFaHhPAqmEtHB61cFq/nc59DDMptgPmfVJayemcGQqG1wEx9CUFQBwl1NCvkklilW4zn
+         pPID1KoWR/K7YAtLuEiitRb61GcgIiFrb7XQ5x7X9gM+xOVBccR96aiQBOxUOmkOmO+D
+         DqLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3/muRkmZux4hv+ibTgAF3IB/lKVb0GckZo4ERwwvrw0=;
-        b=cIUtXWbsfnrDaFnJCR3oijnTw175+hAA4DZM3nS0TFnen71/P3BriIZaU+Y53wbJQA
-         Wt1aRfdhj7TxNgKYyscDgJ8hIZ5jWeZOOwUWXFmLb2jL2xJzAxiHeGojGX/uhI47ij1o
-         1ZXntAb6/6MCiONmEEs/nIqSGI4TSV85zArc8EAeFdvGDtOeBMslxSZ5xidpkgnbdO6p
-         twQZh8/xhSzV6r0k3/HJn1nIAqhC9eUE0o76BKU1vfnORm8adDdBGLtYz6QlmT1vbraj
-         02IiknGUr+jzS1HwJxFQRyuGIPCwBuJaeTRsxy5WE4r2vAQ5xgk3T/+m7zEyeixiEGzv
-         DVJA==
-X-Gm-Message-State: ACgBeo2+Td6Y2r9KdEhISqxNkg2rZMx5ZvDasA7QIJETGDU7UxntewDO
-        XaXssfaoAAALNoUb6NsF3SSsiHqKMgIIsV37iMcf74MJcAgehBAaDYb/T0whn/+Nv0QMaw6PVDU
-        s9XNXt9x5IyBr1tJXC6a13AGal9WTS6Rr
-X-Received: by 2002:a2e:944d:0:b0:25e:6fbf:4a02 with SMTP id o13-20020a2e944d000000b0025e6fbf4a02mr175941ljh.323.1659598564897;
-        Thu, 04 Aug 2022 00:36:04 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4WyJkqP9zMTF5pOWPqJ+IHorwZ+JCDjdZHzX+TqrbwcI3nlP/+2xwwglAHxYjDerGDb9kg/2qog+EM2jKNg38=
-X-Received: by 2002:a2e:944d:0:b0:25e:6fbf:4a02 with SMTP id
- o13-20020a2e944d000000b0025e6fbf4a02mr175928ljh.323.1659598564723; Thu, 04
- Aug 2022 00:36:04 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=dhLsCRYGUtuAwALD1KlxKTdhkhp8QSNYwM9InIv21hY=;
+        b=WSaLKFT86IHUAr/j10tfh86/3utGvE1TZsObj4UOcoZpopk1ISWbllikKYAScWtFQR
+         HwREuGHk7zAKJWWB6NeYohVWdbfvM42Nqnv/uhMM7y6RwT7dDNVO7cSl8uxhDE6e414d
+         A6TEQHXQ5xIT3sV9/lRkPT6alKIPwIQJY7UrtkdojoQExlpMS6F2Z44eI6kMQD6/3nJB
+         dSfzoN6ziI5XLxdqo3S7a4Cn7XdL8JCZ4FKH1Ku5fP4hJv0NHZXg82++KxLYMhtveD0y
+         fh4yHfvU9MB4+tRYKA5bitAZ07OPYBtYtNi/rI+ozgX+H88aYtLwfp7Z49MipQ29rBTq
+         /D4w==
+X-Gm-Message-State: ACgBeo0/zhr3OZndzBVXDqTN81Iz8kBf7Ii7E/lPgmkVjXrdsqlRKuu0
+        hUHx/jTS5TrzuyqIh+iXLaty0sJ+4wwy0Vhu8wpbnQ==
+X-Google-Smtp-Source: AA6agR5Sj3szcvbsmwN7u+7x18QMzCdlRlPvPZm74RpikcBlNUt3W+A0c8kDn0SglEOtyhPijnOp/MbeyjstLRROdpA=
+X-Received: by 2002:a2e:9e55:0:b0:25d:e795:d852 with SMTP id
+ g21-20020a2e9e55000000b0025de795d852mr191846ljk.367.1659599118481; Thu, 04
+ Aug 2022 00:45:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220804063248.104523-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20220804063248.104523-1-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 4 Aug 2022 15:35:53 +0800
-Message-ID: <CACGkMEvDE2mBHx7BOt0c6VswwzaJ4nTfb3+MMbRE=NS90YRAvA@mail.gmail.com>
-Subject: Re: [PATCH net] virtio_net: fix memory leak inside XPD_TX with mergeable
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+References: <20220803185910.5jpufgziqsslnqtf@pengutronix.de>
+ <20220804064803.63157-1-sebastian.wuerl@ororatech.com> <20220804070603.s3llvccpldtkejln@pengutronix.de>
+In-Reply-To: <20220804070603.s3llvccpldtkejln@pengutronix.de>
+From:   =?UTF-8?Q?Sebastian_W=C3=BCrl?= <sebastian.wuerl@ororatech.com>
+Date:   Thu, 4 Aug 2022 09:45:07 +0200
+Message-ID: <CA+KjhYWukGxZUMMch_vFe=TNYCD0-jmuwO2520oUVDPE2kE1Rw@mail.gmail.com>
+Subject: Re: [PATCH] can: mcp251x: Fix race condition on receive interrupt
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Christian Pellegrin <chripell@fsfe.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,40 +79,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 4, 2022 at 2:33 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Thu, Aug 4, 2022 at 9:06 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
 >
-> When we call xdp_convert_buff_to_frame() to get xdpf, if it returns
-> NULL, we should check if xdp_page was allocated by xdp_linearize_page().
-> If it is newly allocated, it should be freed here alone. Just like any
-> other "goto err_xdp".
->
-> Fixes: 44fa2dbd4759 ("xdp: transition into using xdp_frame for ndo_xdp_xmit")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Another optimization idea: Do we need to re-read the eflag1? "eflag" is
+> for error handling only and you're optimizing the good path.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+I'd argue if a new message entered mailbox 1, this also potentially
+changed the error state, so we need to read it.
 
-> ---
->  drivers/net/virtio_net.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index ec8e1b3108c3..3b3eebad3977 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1057,8 +1057,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->                 case XDP_TX:
->                         stats->xdp_tx++;
->                         xdpf = xdp_convert_buff_to_frame(&xdp);
-> -                       if (unlikely(!xdpf))
-> +                       if (unlikely(!xdpf)) {
-> +                               if (unlikely(xdp_page != page))
-> +                                       put_page(xdp_page);
->                                 goto err_xdp;
-> +                       }
->                         err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
->                         if (unlikely(!err)) {
->                                 xdp_return_frame_rx_napi(xdpf);
-> --
-> 2.31.0
->
+Thanks a lot for your feedback! Will post v3 soon.
 
+Also I'm sorry for spam in anyones inbox, I didn't get my mailing
+program to produce plain-text for the last mail.
+
+best,
+Sebastian
