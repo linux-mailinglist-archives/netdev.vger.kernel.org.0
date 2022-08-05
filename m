@@ -2,58 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 662DF58AC54
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 16:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3809E58AC87
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 16:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240927AbiHEOWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 10:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
+        id S240425AbiHEOy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 10:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiHEOWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 10:22:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088A5724C;
-        Fri,  5 Aug 2022 07:22:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82AF2B8293F;
-        Fri,  5 Aug 2022 14:22:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C96C433D6;
-        Fri,  5 Aug 2022 14:22:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659709329;
-        bh=eeOR1aMLDowJXXETVzUrPqRnOqFYbjijqPZUbyAzk7I=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=QNnn8DaarldpwiG+11+ab5RVfuaI8opzCO3qec5vuvzfoL90qfnsguiz6WCIfeXr8
-         Xjrvr5TfQTzWqoJA/fkXa/0AQXdCoucYcO87aUwsS9uYj+EKrZXXJAmm2WuKrsUDKp
-         ZXMYUBYe5X7E2VNJXnY5LTR4fRySMwC0i20EG7TuMHCQE62nCF77TqASQoEvXgkQpP
-         05t1zfrmgbqqF6vDcQSAxgZRGGl/j5ZYk6fafxQ7xS01uNWUTn4qbk7tHOLZgSP0IP
-         g3gcatZTDUDXaWciLuKZ0f11cbg4Vin5YXqaccaxsrqNlvDJKPc8Qdn6G2Zh4a8TWK
-         Q0ALUBU/RrT1A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Veerendranath Jakkam <quic_vjakkam@quicinc.com>,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Arend van Spriel <aspriel@gmail.com>
-Subject: Re: [GIT PULL] Networking for 6.0
-References: <20220803101438.24327-1-pabeni@redhat.com>
-        <CAHk-=wjhSSHM+ESVnchxazGx4Vi0fEfmHpwYxE45JZDSC8SUAQ@mail.gmail.com>
-        <87les4id7b.fsf@kernel.org>
-Date:   Fri, 05 Aug 2022 17:22:02 +0300
-In-Reply-To: <87les4id7b.fsf@kernel.org> (Kalle Valo's message of "Thu, 04 Aug
-        2022 12:13:12 +0300")
-Message-ID: <877d3mixdh.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S232185AbiHEOy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 10:54:26 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBE95C34F;
+        Fri,  5 Aug 2022 07:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659711264; x=1691247264;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=85sOUquFlJ/tQRW7uPa7MBnstCcG8G62zfua8oflet0=;
+  b=IORpVpnuQXPIfGcNeEV56RA6tIZf/m1C01dn2CKUCuKLKxaslMzMvhn6
+   IWgL+MJFB9I+7mxw4UwbB7P/Xd23a00BboHDU7kofXp/p1bvX3Kjs1mKS
+   nzzT7Bht9knHltVm2ubxEaPkKYfj88YoKQvwsh0gK93WZWbTM4g2IHuT/
+   tUxpTc/thhq7w0+1cYVJJ8KZs9QciNqkg7mxKLbAAQf62RtlA59Uc1KtT
+   85sSoCrHFW6TXAbyyDDo0M+Pww9glUhA5JylW5MKqjd3q5WlxIsUeeFY1
+   Rxv12zj05OMIHGar5LMyMA7m59nlAuAb+Z2olmNmSPIMnyPzBavA0ekMR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="376511085"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="376511085"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 07:54:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="671709650"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Aug 2022 07:54:21 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJyiT-000JSh-0Q;
+        Fri, 05 Aug 2022 14:54:21 +0000
+Date:   Fri, 5 Aug 2022 22:53:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     AceLan Kao <acelan.kao@canonical.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dmitrii Tarakanov <Dmitrii.Tarakanov@aquantia.com>,
+        Alexander Loktionov <Alexander.Loktionov@aquantia.com>,
+        David VomLehn <vomlehn@texas.net>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: atlantic: fix aq_vec index out of range error
+Message-ID: <202208052211.yWBUaHIc-lkp@intel.com>
+References: <20220805093319.3722179-1-acelan.kao@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805093319.3722179-1-acelan.kao@canonical.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,51 +72,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@kernel.org> writes:
+Hi AceLan,
 
-> Linus Torvalds <torvalds@linux-foundation.org> writes:
->
->> Hmm. Another issue with the networking pull..
->>
->> On Wed, Aug 3, 2022 at 3:15 AM Paolo Abeni <pabeni@redhat.com> wrote:
->>>
->>>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-6.0
->>>
->>> Veerendranath Jakkam (5):
->>>       cfg80211: Indicate MLO connection info in connect and roam callbacks
->>
->> This one added a
->>
->>                 for_each_valid_link(cr, link) {
->>                         if (WARN_ON_ONCE(!cr->links[link].bss))
->>                                 break;
->>                 }
->>
->> in net/wireless/sme.c, and it seems to trigger on my brand new M2 Macbook Air.
->>
->> Wireless still works fine (I'm writing this report on the machine),
->> but you get a scary splat:
->>
->>   WARNING: CPU: 5 PID: 514 at net/wireless/sme.c:786
->> __cfg80211_connect_result+0x2fc/0x5c0 [cfg80211]
->>
->> full call trace etc in the attachment.
->
-> Thanks for the report, adding also Arend and changing Johannes' email.
-> Unfortunately Johannes is away this week. Arend, would you be able to
-> look at this? I don't have any brcmfmac hardware.
+Thank you for the patch! Perhaps something to improve:
 
-Veerendranath took a look at this and here's a quick fix:
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master linus/master horms-ipvs/master v5.19 next-20220804]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220805135259.4126630-1-quic_vjakkam@quicinc.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/AceLan-Kao/net-atlantic-fix-aq_vec-index-out-of-range-error/20220805-173434
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git f86d1fbbe7858884d6754534a0afbb74fc30bc26
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220805/202208052211.yWBUaHIc-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/23a65a8ebdb1e74cf7fc03a89741246de646622b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review AceLan-Kao/net-atlantic-fix-aq_vec-index-out-of-range-error/20220805-173434
+        git checkout 23a65a8ebdb1e74cf7fc03a89741246de646622b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/aquantia/atlantic/
 
-Do note that this isn't tested with brcmfmac but it should work :)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Linus, do you want to take that directly or should I take it to wireless
-tree? I assume with the latter you would then get it by the end of next
-week.
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/aquantia/atlantic/aq_nic.c: In function 'aq_nic_polling_timer_cb':
+>> drivers/net/ethernet/aquantia/atlantic/aq_nic.c:268:26: warning: variable 'aq_vec' set but not used [-Wunused-but-set-variable]
+     268 |         struct aq_vec_s *aq_vec = NULL;
+         |                          ^~~~~~
+   drivers/net/ethernet/aquantia/atlantic/aq_nic.c: In function 'aq_nic_stop':
+   drivers/net/ethernet/aquantia/atlantic/aq_nic.c:1384:26: warning: variable 'aq_vec' set but not used [-Wunused-but-set-variable]
+    1384 |         struct aq_vec_s *aq_vec = NULL;
+         |                          ^~~~~~
+
+
+vim +/aq_vec +268 drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+
+97bde5c4f909a55a David VomLehn         2017-01-23  264  
+e99e88a9d2b06746 Kees Cook             2017-10-16  265  static void aq_nic_polling_timer_cb(struct timer_list *t)
+97bde5c4f909a55a David VomLehn         2017-01-23  266  {
+e99e88a9d2b06746 Kees Cook             2017-10-16  267  	struct aq_nic_s *self = from_timer(self, t, polling_timer);
+97bde5c4f909a55a David VomLehn         2017-01-23 @268  	struct aq_vec_s *aq_vec = NULL;
+97bde5c4f909a55a David VomLehn         2017-01-23  269  	unsigned int i = 0U;
+97bde5c4f909a55a David VomLehn         2017-01-23  270  
+97bde5c4f909a55a David VomLehn         2017-01-23  271  	for (i = 0U, aq_vec = self->aq_vec[0];
+23a65a8ebdb1e74c Chia-Lin Kao (AceLan  2022-08-05  272) 		self->aq_vecs > i; ++i)
+23a65a8ebdb1e74c Chia-Lin Kao (AceLan  2022-08-05  273) 		aq_vec_isr(i, (void *)self->aq_vec[i]);
+97bde5c4f909a55a David VomLehn         2017-01-23  274  
+97bde5c4f909a55a David VomLehn         2017-01-23  275  	mod_timer(&self->polling_timer, jiffies +
+97bde5c4f909a55a David VomLehn         2017-01-23  276  		  AQ_CFG_POLLING_TIMER_INTERVAL);
+97bde5c4f909a55a David VomLehn         2017-01-23  277  }
+97bde5c4f909a55a David VomLehn         2017-01-23  278  
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+0-DAY CI Kernel Test Service
+https://01.org/lkp
