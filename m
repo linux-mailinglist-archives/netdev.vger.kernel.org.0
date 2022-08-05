@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 334CE58ADA4
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 17:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C0E58AD8C
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 17:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbiHEPwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 11:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
+        id S241320AbiHEPvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 11:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241376AbiHEPvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 11:51:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312D56AA26;
-        Fri,  5 Aug 2022 08:49:24 -0700 (PDT)
+        with ESMTP id S241315AbiHEPvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 11:51:16 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7159C61B2D;
+        Fri,  5 Aug 2022 08:49:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659714564; x=1691250564;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gqNuEVUhBCL0H7kHU+gOp/djo7FF1HWO1qrDMH826Oo=;
-  b=efHFobDQCo2p4/Zd0IIKCI87IT2mMVtEm0gUPgsamMQqAA9atZLNjRO8
-   S/gIBNQUmQ3IdyicXpWfUrsiWFSVjmx8WyBYo9Te+CcBJWtYmcTJO/Scc
-   U32GQq72KA5kEU85HAP/kZDWWfRGSMit9FE5WtrmTkypliAGsQDxNWtrr
-   7aYh0UmpQsZ0Ff9x2nvTnnyILs/eN7nKZDYwDwB5yiB7jNHLyiALtJZjB
-   QnK0JMLs//WKxylsb+dd/CVQ/Of8qYYvzCW/Hyjzur2dQ2aLPhxEBrZCz
-   m2sjk21zdjDSESEylIHauT9LRHd1YECYWuE2+SWiZEJBatQD0MoK7010Z
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="288988400"
+  t=1659714552; x=1691250552;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=b85nclneF9BX61RtcZxdbpTMJV7DSQfjZ+m4p4X2wC0=;
+  b=dgOXyW/Hh6aAEwzSx/hoeQt06N4RLzgUGtxd27m9HmZlyETy+liDnr8s
+   Rl/+38jJYzOaIrK/Mjt3ctyCv74FP3kRrkysXw+GIN9o+ja2XlTy0oJAC
+   i6CnLl4Axb+oAyt9V2S5Lm7vuflzQVYaUCdQ3OnYBq+cP5G8lNAOYw651
+   yM19jzwxLAqywBX694f/cvm79P3nPvlStlmdfL3a5NJDvDJcl6Iai/4dQ
+   LUKiwnaivL4zeDu17ghpxEV9XSYckLbAfcBiRxfLwk6C+JaM7Eui8qk8R
+   x6K/HdzwPcrZBtKg9D9dQTtDlUQumKoFX/cI+THlm758HXREx5Zl6TuZV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="291450564"
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="288988400"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 08:49:10 -0700
+   d="scan'208";a="291450564"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 08:49:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="693037565"
+   d="scan'208";a="931271130"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Aug 2022 08:49:05 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 05 Aug 2022 08:49:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 899CAF7; Fri,  5 Aug 2022 18:49:16 +0300 (EEST)
+        id 94660D9; Fri,  5 Aug 2022 18:49:16 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Gene Chen <gene_chen@richtek.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -59,10 +59,12 @@ Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2 00/11] leds: deduplicate led_init_default_state_get()
-Date:   Fri,  5 Aug 2022 18:48:56 +0300
-Message-Id: <20220805154907.32263-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 01/11] leds: add missing includes and forward declarations in leds.h
+Date:   Fri,  5 Aug 2022 18:48:57 +0300
+Message-Id: <20220805154907.32263-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220805154907.32263-1-andriy.shevchenko@linux.intel.com>
+References: <20220805154907.32263-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -75,42 +77,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several users of LED framework that reimplement the
-functionality of led_init_default_state_get(). In order to 
-deduplicate them move the declaration to the global header
-(patch 2) and convert users (patche 3-11).
+Add missing includes and forward declarations to leds.h. While at it,
+replace headers by forward declarations and vise versa.
 
-Chnagelog v2:
-- added missed patch 2 and hence make it the series
-- appended tag to patch 7
-- new patch 1
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ include/linux/leds.h | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-Andy Shevchenko (11):
-  leds: add missing includes and forward declarations in leds.h
-  leds: Move led_init_default_state_get() to the global header
-  leds: an30259a: Get rid of custom led_init_default_state_get()
-  leds: bcm6328: Get rid of custom led_init_default_state_get()
-  leds: bcm6358: Get rid of custom led_init_default_state_get()
-  leds: mt6323: Get rid of custom led_init_default_state_get()
-  leds: mt6360: Get rid of custom led_init_default_state_get()
-  leds: pca955x: Get rid of custom led_init_default_state_get()
-  leds: pm8058: Get rid of custom led_init_default_state_get()
-  leds: syscon: Get rid of custom led_init_default_state_get()
-  net: dsa: hellcreek: Get rid of custom led_init_default_state_get()
-
- drivers/leds/flash/leds-mt6360.c           | 38 +++--------------
- drivers/leds/leds-an30259a.c               | 21 ++--------
- drivers/leds/leds-bcm6328.c                | 49 +++++++++++-----------
- drivers/leds/leds-bcm6358.c                | 32 +++++++-------
- drivers/leds/leds-mt6323.c                 | 30 ++++++-------
- drivers/leds/leds-pca955x.c                | 26 +++---------
- drivers/leds/leds-pm8058.c                 | 29 ++++++-------
- drivers/leds/leds-syscon.c                 | 49 ++++++++++------------
- drivers/leds/leds.h                        |  1 -
- drivers/net/dsa/hirschmann/hellcreek_ptp.c | 45 ++++++++++----------
- include/linux/leds.h                       | 15 ++++---
- 11 files changed, 143 insertions(+), 192 deletions(-)
-
+diff --git a/include/linux/leds.h b/include/linux/leds.h
+index ba4861ec73d3..499aea1e59b9 100644
+--- a/include/linux/leds.h
++++ b/include/linux/leds.h
+@@ -10,17 +10,21 @@
+ 
+ #include <dt-bindings/leds/common.h>
+ #include <linux/device.h>
+-#include <linux/kernfs.h>
+-#include <linux/list.h>
+ #include <linux/mutex.h>
+ #include <linux/rwsem.h>
+ #include <linux/spinlock.h>
+ #include <linux/timer.h>
++#include <linux/types.h>
+ #include <linux/workqueue.h>
+ 
+-struct device;
+-struct led_pattern;
++struct attribute_group;
+ struct device_node;
++struct fwnode_handle;
++struct gpio_desc;
++struct kernfs_node;
++struct led_pattern;
++struct platform_device;
++
+ /*
+  * LED Core
+  */
+@@ -508,7 +512,6 @@ struct led_properties {
+ 	const char	*label;
+ };
+ 
+-struct gpio_desc;
+ typedef int (*gpio_blink_set_t)(struct gpio_desc *desc, int state,
+ 				unsigned long *delay_on,
+ 				unsigned long *delay_off);
 -- 
 2.35.1
 
