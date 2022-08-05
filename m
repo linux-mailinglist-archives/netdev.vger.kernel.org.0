@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE11E58B2D0
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 01:42:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83DB58B2D2
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 01:42:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241892AbiHEXmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 19:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
+        id S241895AbiHEXmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 19:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241713AbiHEXmF (ORCPT
+        with ESMTP id S241883AbiHEXmF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 19:42:05 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799BA18E2A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E773718E28
         for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 16:42:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659742924; x=1691278924;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xttVxhrx7wNtzIM4coVZJiokUXiUYRuIvL/lFvDXVno=;
-  b=iBr7e7NKAKU/4UIUlDz8Vvgl8PBEWt+vCKSomSFN01qum6jXHPyHQ7gd
-   OAyvRsjynLlOScLWJvMXuuYwdA1kE/zQMD5Bc2qcsa5VMkkzaBoHv4TgD
-   bLAAOCVdh5KMD4zwf/E1pdmGlKn9tyjaO+IeNfqtwrsNNtu1gr1LNLxbB
-   +Ub9aqVC7isdK6FirG7wNX2s8Zaj/4gN+SgRbA0O2Cj8qShdM7M8QLsv+
-   k6boJDJUZaauYMw78X5CO0MkRtXyw3P3ub0LVpk/zj7ATo9MsWjd3Eo1Z
-   8vrG6DaEOn904T/AmBgzZB2HhNZYfHiIflDiley8hjNZrtcG44KmWepUt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="289072934"
+  bh=OKGAe9HURuRaJS8H5DmC+QFA3cfQtBnJWWaWdKkiqoU=;
+  b=htUKAdNsGhgY8OGUh185CFqNx/7F1u5TRjFF96eCCdtnw12E6FTq3OCM
+   T+P82N4MJ0eey+RcndfwZ7reRKuxn5QEcz0fyZai3Pmdv5qSneG9/UHwC
+   w9nSFiCWXwPEycs47K3jYIKBGHFSz0uy+coHJXpacqrEo4op8Xf3YHxtK
+   YSnqIuJV+4ovM2kF3QLG5QDM7txmMj2cGwKXI7A2LdCuCxulNq/f8pmNH
+   R7cBWQJO3EWBTj/ZtxxJr2bqCDgQeHtRESkcXuxTSb86acSlPYTWboQyv
+   tQQOrFFC054wdax5QPlBapmR1gQ/JvBYwjdU/IhNR+6ADBWA6MqGLLPHf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="289072935"
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="289072934"
+   d="scan'208";a="289072935"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 16:42:03 -0700
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="931401656"
+   d="scan'208";a="931401660"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 16:42:03 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -46,9 +46,9 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Paolo Abeni <pabeni@redhat.com>,
         David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [RFC iproute2 3/6] mnl_utils: add function to dump command policy
-Date:   Fri,  5 Aug 2022 16:41:52 -0700
-Message-Id: <20220805234155.2878160-4-jacob.e.keller@intel.com>
+Subject: [RFC iproute2 4/6] devlink: use dl_no_arg instead of checking dl_argc == 0
+Date:   Fri,  5 Aug 2022 16:41:53 -0700
+Message-Id: <20220805234155.2878160-5-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.37.1.208.ge72d93e88cb2
 In-Reply-To: <20220805234155.2878160-1-jacob.e.keller@intel.com>
 References: <20220805234155.2878160-1-jacob.e.keller@intel.com>
@@ -64,322 +64,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a new mnlu_get_get_op_policy function which can extract the
-kernel policy data for a command. This will enable checking policy to
-determine whether an attribute is accepted by a netlink command.
-
-The policy data is reported using a new mnlu_attr_policy structure. This
-allows getting a single array of policy data for a command making it easy
-to check if an attribute is supported. The structure does also contain the
-table of pointers to the policy data attributes which would also allow
-checking both type and range.
-
-This policy information will be used in a future change to make devlink
-ensure attributes it sends are supported by the reported policy for that
-command.
-
-Only one layer of policy checking is currently supported, but an additional
-mnlu_gen_get_policy_idx function could be added to support nested policy
-checking in the future.
+Use the helper dl_no_arg function to check for whether the command has any
+arguments.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- include/mnl_utils.h |  27 +++++
- lib/mnl_utils.c     | 240 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 267 insertions(+)
+ devlink/devlink.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/include/mnl_utils.h b/include/mnl_utils.h
-index 2193934849e1..450f304bb302 100644
---- a/include/mnl_utils.h
-+++ b/include/mnl_utils.h
-@@ -11,6 +11,31 @@ struct mnlu_gen_socket {
- 	uint8_t version;
- };
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 21f26246f91b..485b1a82f9ef 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -3338,7 +3338,7 @@ static int cmd_dev_param_show(struct dl *dl)
+ 	struct nlmsghdr *nlh;
+ 	int err;
  
-+/**
-+ * struct mnlu_attr_policy
-+ *
-+ * Structure representing the policy for a single attribute. Pass an array of
-+ * at least nlg->maxattr + 1 to mnlu_gen_get_op_policy to extract the policy
-+ * for a netlink op.
-+ *
-+ * @attr_type: the attribute type, extracted from the NLA data
-+ *
-+ * @valid: if set, the attribute is accepted by the policy. If not set, the
-+ *         attribute is not accepted by the policy.
-+ *
-+ * @tb: Pointers to the NLA data. Only remains valid until a new netlink
-+ *      command is sent, as it points directly to the netlink message buffer.
-+ */
-+struct mnlu_attr_policy {
-+	/* Pointers to the nla attributes describing the policy for this
-+	 * attribute. Note that these only remain valid until the next netlink
-+	 * message is sent.
-+	 */
-+	const struct nlattr *tb[NL_POLICY_TYPE_ATTR_MAX + 1];
-+	uint32_t attr_type;
-+	uint8_t valid : 1;
-+};
-+
- int mnlu_gen_socket_open(struct mnlu_gen_socket *nlg, const char *family_name,
- 			 uint8_t version);
- void mnlu_gen_socket_close(struct mnlu_gen_socket *nlg);
-@@ -30,5 +55,7 @@ int mnlu_socket_recv_run(struct mnl_socket *nl, unsigned int seq, void *buf, siz
- 			 mnl_cb_t cb, void *data);
- int mnlu_gen_socket_recv_run(struct mnlu_gen_socket *nlg, mnl_cb_t cb,
- 			     void *data);
-+int mnlu_gen_get_op_policy(struct mnlu_gen_socket *nlg, uint32_t op, bool dump,
-+			   struct mnlu_attr_policy *policy);
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
  
- #endif /* __MNL_UTILS_H__ */
-diff --git a/lib/mnl_utils.c b/lib/mnl_utils.c
-index 79bac5cfd4de..f9918afd517d 100644
---- a/lib/mnl_utils.c
-+++ b/lib/mnl_utils.c
-@@ -252,3 +252,243 @@ int mnlu_gen_socket_recv_run(struct mnlu_gen_socket *nlg, mnl_cb_t cb,
- 				    MNL_SOCKET_BUFFER_SIZE,
- 				    cb, data);
- }
-+
-+struct policy_info {
-+	struct mnlu_gen_socket *nlg;
-+	struct mnlu_attr_policy *policy;
-+	uint32_t policy_idx;
-+	uint32_t op;
-+	bool dump;
-+};
-+
-+static int
-+parse_policy_idx_cb(const struct nlattr *attr, void *data)
-+{
-+	const struct nlattr **tb = data;
-+	int type = mnl_attr_get_type(attr);
-+
-+	if (mnl_attr_type_valid(attr, CTRL_ATTR_POLICY_DUMP_MAX) < 0)
-+		return MNL_CB_OK;
-+
-+	switch (type) {
-+	case CTRL_ATTR_POLICY_DO:
-+	case CTRL_ATTR_POLICY_DUMP:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	default:
-+		break;
-+	}
-+	tb[type] = attr;
-+	return MNL_CB_OK;
-+}
-+
-+static int
-+parse_policy_idx(const struct nlattr *attr, struct policy_info *info)
-+{
-+	struct nlattr *tb[CTRL_ATTR_POLICY_DUMP_MAX + 1] = {};
-+	struct nlattr *idx_attr;
-+	uint32_t op;
-+
-+	/* The type of this nested attribute is the op */
-+	op = mnl_attr_get_type(attr);
-+
-+	/* Skip ops we're not interested in */
-+	if (op != info->op)
-+		return MNL_CB_OK;
-+
-+	mnl_attr_parse_nested(attr, parse_policy_idx_cb, tb);
-+	if (info->dump)
-+		idx_attr = tb[CTRL_ATTR_POLICY_DUMP];
-+	else
-+		idx_attr = tb[CTRL_ATTR_POLICY_DO];
-+	if (!idx_attr)
-+		return MNL_CB_ERROR;
-+
-+	info->policy_idx = mnl_attr_get_u32(idx_attr);
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int
-+parse_policy_attr_data_cb(const struct nlattr *attr, void *data)
-+{
-+	struct mnlu_attr_policy *policy = data;
-+	int type = mnl_attr_get_type(attr);
-+
-+	/* Unknown policy type attributes are ignored */
-+	if (mnl_attr_type_valid(attr, NL_POLICY_TYPE_ATTR_MAX) < 0)
-+		return MNL_CB_OK;
-+
-+	switch (type) {
-+	case NL_POLICY_TYPE_ATTR_TYPE:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+
-+		policy->attr_type = mnl_attr_get_u32(attr);
-+		policy->valid = 1;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MIN_VALUE_S:
-+		/* libmnl doesn't yet have s64 */
-+		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MAX_VALUE_S:
-+		/* libmnl doesn't yet have s64 */
-+		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MIN_VALUE_U:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MAX_VALUE_U:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MIN_LENGTH:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MAX_LENGTH:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_POLICY_IDX:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_BITFIELD32_MASK:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	case NL_POLICY_TYPE_ATTR_MASK:
-+		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
-+			return MNL_CB_ERROR;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	policy->tb[type] = attr;
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int
-+parse_policy_data(const struct nlattr *attr, struct policy_info *info)
-+{
-+	const struct nlattr *nested_attr;
-+	int policy_idx, attr_id;
-+
-+	/* The type of this nested attribute is the policy index */
-+	policy_idx = mnl_attr_get_type(attr);
-+
-+	/* Skip policies we're not interested in */
-+	if (policy_idx != info->policy_idx)
-+		return MNL_CB_OK;
-+
-+	if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0)
-+		return MNL_CB_ERROR;
-+	nested_attr = mnl_attr_get_payload(attr);
-+	if (!mnl_attr_ok(nested_attr, mnl_attr_get_payload_len(attr)))
-+		return MNL_CB_ERROR;
-+	if (mnl_attr_validate(nested_attr, MNL_TYPE_NESTED) < 0)
-+		return MNL_CB_ERROR;
-+	if (mnl_attr_type_valid(attr, info->nlg->maxattr) < 0)
-+		return MNL_CB_ERROR;
-+
-+	attr_id = mnl_attr_get_type(nested_attr);
-+
-+	return mnl_attr_parse_nested(nested_attr, parse_policy_attr_data_cb,
-+				     &info->policy[attr_id]);
-+}
-+
-+static int get_policy_attrs_cb(const struct nlattr *attr, void *data)
-+{
-+	int type = mnl_attr_get_type(attr);
-+	struct policy_info *info = data;
-+	struct nlattr *nested_attr;
-+
-+	if (mnl_attr_type_valid(attr, CTRL_ATTR_MAX) < 0)
-+		return MNL_CB_ERROR;
-+
-+	switch (type) {
-+	case CTRL_ATTR_OP_POLICY:
-+	case CTRL_ATTR_POLICY:
-+		if (mnl_attr_validate(attr, MNL_TYPE_NESTED) < 0)
-+			return MNL_CB_ERROR;
-+
-+		nested_attr = mnl_attr_get_payload(attr);
-+		if (!mnl_attr_ok(nested_attr, mnl_attr_get_payload_len(attr)))
-+			return MNL_CB_ERROR;
-+
-+		if (mnl_attr_validate(nested_attr, MNL_TYPE_NESTED) < 0)
-+			return MNL_CB_ERROR;
-+
-+		if (type == CTRL_ATTR_OP_POLICY)
-+			return parse_policy_idx(nested_attr, info);
-+
-+		return parse_policy_data(nested_attr, info);
-+	default:
-+		break;
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int get_policy_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+
-+	return mnl_attr_parse(nlh, sizeof(*genl), get_policy_attrs_cb, data);
-+}
-+
-+/**
-+ * mnlu_get_op_policy - Get policy for a specific op.
-+ * @nlg: the socket to get policy on
-+ * @op: the op to get the policy for
-+ * @dump: if true, get the policy NLM_F_DUMP
-+ * @policy: an array of size nlg->maxattr used to return policy data
-+ *
-+ * Uses CTRL_CMD_GETPOLICY to extract policy information from the kernel for
-+ * the specified op. The data is extracted into the provided policy buffer
-+ * which is expected to be of size nlg->maxattr.
-+ *
-+ * This function must be called after mnlu_gen_socket_open.
-+ */
-+int mnlu_gen_get_op_policy(struct mnlu_gen_socket *nlg, uint32_t op, bool dump,
-+			   struct mnlu_attr_policy *policy)
-+{
-+	struct policy_info info = {};
-+	struct genlmsghdr hdr = {};
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	info.nlg = nlg;
-+	info.policy = policy;
-+	info.dump = dump;
-+	info.op = op;
-+
-+	hdr.cmd = CTRL_CMD_GETPOLICY;
-+	hdr.version = 0x1;
-+
-+	nlh = mnlu_msg_prepare(nlg->buf, GENL_ID_CTRL,
-+			       NLM_F_REQUEST | NLM_F_ACK | NLM_F_DUMP,
-+			       &hdr, sizeof(hdr));
-+
-+	mnl_attr_put_u16(nlh, CTRL_ATTR_FAMILY_ID, nlg->family);
-+	mnl_attr_put_u32(nlh, CTRL_ATTR_OP, op);
-+
-+	err = mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
-+	if (err < 0)
-+		return err;
-+
-+	return mnlu_socket_recv_run(nlg->nl, nlh->nlmsg_seq, nlg->buf,
-+				    MNL_SOCKET_BUFFER_SIZE,
-+				    get_policy_cb, &info);
-+}
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PARAM_GET, flags);
+@@ -3494,7 +3494,7 @@ static int cmd_dev_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_GET, flags);
+@@ -3714,7 +3714,7 @@ static int cmd_dev_info(struct dl *dl)
+ 		return 0;
+ 	}
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_INFO_GET, flags);
+@@ -4517,7 +4517,7 @@ static int cmd_port_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PORT_GET, flags);
+@@ -4585,7 +4585,7 @@ static int cmd_port_param_show(struct dl *dl)
+ 	struct nlmsghdr *nlh;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_PORT_PARAM_GET,
+@@ -4939,7 +4939,7 @@ static int cmd_port_fn_rate_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_RATE_GET, flags);
+@@ -5303,7 +5303,7 @@ static int cmd_linecard_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_LINECARD_GET,
+@@ -5418,7 +5418,7 @@ static int cmd_sb_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SB_GET, flags);
+@@ -5495,7 +5495,7 @@ static int cmd_sb_pool_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SB_POOL_GET, flags);
+@@ -5580,7 +5580,7 @@ static int cmd_sb_port_pool_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SB_PORT_POOL_GET, flags);
+@@ -5684,7 +5684,7 @@ static int cmd_sb_tc_bind_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_SB_TC_POOL_BIND_GET, flags);
+@@ -8354,7 +8354,7 @@ static int cmd_region_show(struct dl *dl)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_REGION_GET, flags);
+@@ -9024,7 +9024,7 @@ static int __cmd_health_show(struct dl *dl, bool show_device, bool show_port)
+ 	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_HEALTH_REPORTER_GET,
+ 			       flags);
+@@ -9216,7 +9216,7 @@ static int cmd_trap_show(struct dl *dl)
+ 	struct nlmsghdr *nlh;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_TRAP_GET, flags);
+@@ -9291,7 +9291,7 @@ static int cmd_trap_group_show(struct dl *dl)
+ 	struct nlmsghdr *nlh;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_TRAP_GROUP_GET, flags);
+@@ -9388,7 +9388,7 @@ static int cmd_trap_policer_show(struct dl *dl)
+ 	struct nlmsghdr *nlh;
+ 	int err;
+ 
+-	if (dl_argc(dl) == 0)
++	if (dl_no_arg(dl))
+ 		flags |= NLM_F_DUMP;
+ 
+ 	nlh = mnlu_gen_socket_cmd_prepare(&dl->nlg, DEVLINK_CMD_TRAP_POLICER_GET, flags);
 -- 
 2.37.1.208.ge72d93e88cb2
 
