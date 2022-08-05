@@ -2,100 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7328658AA1A
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 13:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D55A758AA24
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 13:31:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240630AbiHEL1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 07:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50166 "EHLO
+        id S240626AbiHELb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 07:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240627AbiHEL1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 07:27:05 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F218576445
-        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 04:27:00 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-3246910dac3so20947827b3.12
-        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 04:27:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=muUdW2iF3NLjwFcKkUArmJmVBNuXYz5InLqAh5elhfQ=;
-        b=BqACUvNC35ZzRLm/C6CVkq5r/zaFsGTvsAO0hZSVg8BAxcVRE7Jku2TiCV9wYArHsW
-         lazyBkRVvwkxA6jIWH9TP0Ix5AY88RAeP4vIhF3mn4nPG09XsM8Ic9nYfju15LtJ8xc0
-         jzDDIkbpczrNSnqZl22wcCagCd7ew1rHjf114dqIwKA+dxtngpGjuvzXtoygrBlhEgqn
-         r0pODtohqfXDfViiXU2LpEsUbNSqGCWjY6alVmjk4wY0RWPA6Vs6gPQ64BA6GvXzwFyy
-         eTSuwWE0LpQ6i22+qppRXlLaaI2TjosKB+LEh4KCaD+H6BNWBN5IIGwoE9p7ryGCqk2y
-         MxTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=muUdW2iF3NLjwFcKkUArmJmVBNuXYz5InLqAh5elhfQ=;
-        b=QBYERW3/oy9LGQbUK8w0WSPNNfRzZwFO3cJ8uRG7TwRwKmFghoey8UJSW6oJwQDisW
-         VdHDStwZXD46q/esFkkwZh16505ocrWvDvJ6yTPkXg76EBcInpFUylJFhbj+yqsTifEI
-         P7spNGRVVgkBxRpgV0AU2OS9IYdX9kPO2J3deI0l1QwbmVjMcsUwfKgrwMTrR+ABQzB/
-         zwm/WSAPIQbtMNwnRbRUoKF6qxbUFEcieQc8RbLaSRm9O3JHW8Qs3YXQnvjbI8wmpEKp
-         xeWvB8m0/gn9ivs0/3JruzHVXZDwpPKBpalBFgYmWQIjVW0h9V12+GD5coTjMcZoocLj
-         jEmA==
-X-Gm-Message-State: ACgBeo3kDaA/0+ifKiLEr8NnjzsD/7LnigkuOQVmUMV2KRpfMO/KKhoY
-        OoUd4Dpl/XkDFkJSLZplKwqRcN9cfy0jLIu6Ndk=
-X-Google-Smtp-Source: AA6agR6aEJ88XvyOeTtvXE7q/gen0/geDK2rX8ZL9TOc/6x8rjDMk5k7ZugmgYlTx/51zPCtCnSDiZwGffzTWodw9P0=
-X-Received: by 2002:a81:6d4d:0:b0:328:3b8d:2f6e with SMTP id
- i74-20020a816d4d000000b003283b8d2f6emr5531728ywc.37.1659698819995; Fri, 05
- Aug 2022 04:26:59 -0700 (PDT)
+        with ESMTP id S235412AbiHELbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 07:31:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5469A1A817
+        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 04:31:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659699082;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJ2vojdH8FtOr3UJApDg2Ea8FrlKufBhz/SYWXyGjZg=;
+        b=GLMRzlKtkY16uUuZd56fyvJRgnruNmqR/M8Ui3avKlL4NRen0QiQwi8DiKiVKFDKp9XW//
+        4mmiPuthy8hns1SzjJHy5bvSNUy8MvpVZYN/j23BgHjI8TrlbvE8+rvaqXYNKHI42xaSrA
+        r+4Cl+JYbAhy33l2khzI0IVROlik32k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-38-msbGWBtKM9GAzByWCUYbKg-1; Fri, 05 Aug 2022 07:31:19 -0400
+X-MC-Unique: msbGWBtKM9GAzByWCUYbKg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D74DA108C19D;
+        Fri,  5 Aug 2022 11:31:18 +0000 (UTC)
+Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 242A618EB7;
+        Fri,  5 Aug 2022 11:31:17 +0000 (UTC)
+Date:   Fri, 5 Aug 2022 13:31:15 +0200
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Daniel Vacek <dvacek@redhat.com>,
+        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>
+Subject: Re: [PATCH bpf-next v2 2/3] bpf: export crash_kexec() as destructive
+ kfunc
+Message-ID: <Yuz/g8nONMJyiyrh@samus.usersys.redhat.com>
+Mail-Followup-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Daniel Vacek <dvacek@redhat.com>, Jiri Olsa <olsajiri@gmail.com>,
+        Song Liu <song@kernel.org>, Daniel Xu <dxu@dxuuu.xyz>
+References: <20220802091030.3742334-1-asavkov@redhat.com>
+ <20220802091030.3742334-3-asavkov@redhat.com>
+ <CAADnVQL7GH0MBhjTHA2xWXVzkDgdzk4RS9qS+DJ1+t1T8NkYxA@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7010:5087:b0:2e8:760f:3500 with HTTP; Fri, 5 Aug 2022
- 04:26:59 -0700 (PDT)
-Reply-To: rolandnyemih200@gmail.com
-From:   Rowland Nyemih <fralaimetals100@gmail.com>
-Date:   Fri, 5 Aug 2022 12:26:59 +0100
-Message-ID: <CA+5KX21qD7xz962CyFE+jsHLRM9-cDOQr8_kDcNE-vWcVAV46A@mail.gmail.com>
-Subject: Rowland
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:112d listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [fralaimetals100[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [fralaimetals100[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [rolandnyemih200[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAADnVQL7GH0MBhjTHA2xWXVzkDgdzk4RS9qS+DJ1+t1T8NkYxA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HI,
-Good day.
-Kindly confirm to me if this is your correct email Address and get
-back to me for our interest.
-Sincerely,
-Rowland Nyemih
+On Thu, Aug 04, 2022 at 01:41:53PM -0700, Alexei Starovoitov wrote:
+> On Tue, Aug 2, 2022 at 2:10 AM Artem Savkov <asavkov@redhat.com> wrote:
+> >
+> > Allow properly marked bpf programs to call crash_kexec().
+> >
+> > Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> > ---
+> >  kernel/kexec_core.c | 21 +++++++++++++++++++++
+> >  1 file changed, 21 insertions(+)
+> >
+> > diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+> > index 4d34c78334ce..9259ea3bd693 100644
+> > --- a/kernel/kexec_core.c
+> > +++ b/kernel/kexec_core.c
+> > @@ -39,6 +39,8 @@
+> >  #include <linux/hugetlb.h>
+> >  #include <linux/objtool.h>
+> >  #include <linux/kmsg_dump.h>
+> > +#include <linux/btf.h>
+> > +#include <linux/btf_ids.h>
+> >
+> >  #include <asm/page.h>
+> >  #include <asm/sections.h>
+> > @@ -1238,3 +1240,22 @@ void __weak arch_kexec_protect_crashkres(void)
+> >
+> >  void __weak arch_kexec_unprotect_crashkres(void)
+> >  {}
+> > +
+> > +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> > +BTF_SET8_START(kexec_btf_ids)
+> > +BTF_ID_FLAGS(func, crash_kexec, KF_DESTRUCTIVE)
+> > +BTF_SET8_END(kexec_btf_ids)
+> > +
+> > +static const struct btf_kfunc_id_set kexec_kfunc_set = {
+> > +       .owner = THIS_MODULE,
+> > +       .set   = &kexec_btf_ids,
+> > +};
+> > +
+> > +static int __init crash_kfunc_init(void)
+> > +{
+> > +       register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &kexec_kfunc_set);
+> > +       return 0;
+> > +}
+> > +
+> > +subsys_initcall(crash_kfunc_init);
+> > +#endif
+> 
+> It feels there will be a bunch of such boiler plate code
+> in different .c files in many places in the kernel
+> if we go with this approach.
+> 
+> Maybe we should do one call:
+> register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING
+> from kernel/bpf/helper.c
+> to register all tracing kfuncs ?
+> 
+> And gate
+> BTF_ID_FLAGS(func, crash_kexec, KF_DESTRUCTIVE)
+> with #ifdef CONFIG_KEXEC_CORE.
+> 
+> We have such a pattern in verifier.c already.
+
+Good idea, thanks for the pointers. I'll do that in next version.
+
+-- 
+ Artem
+
