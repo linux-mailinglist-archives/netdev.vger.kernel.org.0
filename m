@@ -2,149 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D5158B027
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 21:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E112D58B022
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 21:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241224AbiHETC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 15:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
+        id S233405AbiHETB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 15:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240804AbiHETC4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 15:02:56 -0400
-Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550551A825;
-        Fri,  5 Aug 2022 12:02:54 -0700 (PDT)
-Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 275IwEkG013875;
-        Fri, 5 Aug 2022 21:00:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=12052020; bh=DY+k8f6xizD0E3lDErdfonPO+Yme8zArGJdWjHyUqU8=;
- b=3VptLbCDLonm4U2mDgkzwUEUC52OQtaEECvttjmJGO6EyOdi1IBEJtIJZS4HE+ocj+90
- v8Rm5ZSoqnUJS4z3swui6gcJRXZJFE2D1JsnWSU1t6FqMVoJOY2lI2dIT0FztKh7xv3d
- VrKdtuPxOCwF308CQ56PQLgEnEPUx+bbqMMu619/NybVRu65fC0I7KymMDlB3BOGvvSQ
- UVaSrEbzvrnim4Q/wA8BLrU4Vbyv666WUHEYELrLYQIwZPYYtfpycck7h0ZsBA6w1U4T
- oarnPJVD2oBOdaPFiVOT4BjAhL4ukEiJB6aUElOQ2GVp0asJrijgxCAEGjhmIQJNREv9 BA== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3hr402hn6v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 05 Aug 2022 21:00:20 +0200
-Received: from Orpheus.nch.westermo.com (172.29.100.2) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Fri, 5 Aug 2022 21:00:17 +0200
-From:   Matthias May <matthias.may@westermo.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <nicolas.dichtel@6wind.com>,
-        <eyal.birger@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <jesse@nicira.com>, <pshelar@nicira.com>, <tgraf@suug.ch>,
-        Matthias May <matthias.may@westermo.com>
-Subject: [PATCH v4 net] geneve: fix TOS inheriting for ipv4
-Date:   Fri, 5 Aug 2022 21:00:06 +0200
-Message-ID: <20220805190006.8078-1-matthias.may@westermo.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S231262AbiHETB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 15:01:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87E1BAE76
+        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 12:01:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659726085;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7jrr///GTPolXMT+fiyn3eyuZH49mBtYTjRUTuSdpSs=;
+        b=EcJkzmngwNK2u4mqHfiov0BQCBUs6EtAwVSUBwsZqra6ea+AmtlBVAM7UquxD/G5JY05JJ
+        7vpEnjIfMRF2HzL5kjIGqNyOFrZQNThMBvryEofmbvoUmCDH1w6gAKgNAJCKVHV7AUjHV9
+        ddYXTfSYrdAdIRHACzxUbDprYRaCnYE=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-382-1NScn8cONvmsSUh0tbDJ4g-1; Fri, 05 Aug 2022 15:01:24 -0400
+X-MC-Unique: 1NScn8cONvmsSUh0tbDJ4g-1
+Received: by mail-il1-f197.google.com with SMTP id k11-20020a92c24b000000b002dd46b47e01so2217762ilo.14
+        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 12:01:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc;
+        bh=7jrr///GTPolXMT+fiyn3eyuZH49mBtYTjRUTuSdpSs=;
+        b=YIZOgxjgaUOI26i/lGqyIc70pA1FU4ywUl3qISyi4BI7ctPRXuHFigUF0or2iHA1/E
+         K8HK5G7YDrJKJLD11Q2BEv3gBhe27zH6oiDYBW5sKGtBj181rvvdJVKjwIzC5sfUR6xT
+         4O2En85sr9OKvx1IEJ6Dybi640NDsm4zRC9VLfNW5dzXC4oTqzdWPzmueX7CBKoFlC/5
+         KoIY7yQHQbbxJdvZe1RDvzAnDBFAT12BvaMo+wS8E5Vi28N+H+NP/43rAIklb4uUwy0B
+         PwfDhjgaGfo0was9aiwNB5or27OrmFWkTcf6msMqbU+PJFdFnvW6lfg2Xi5IkR7B2JFs
+         BuTg==
+X-Gm-Message-State: ACgBeo0N9l91/ekQqltE4BVAndC8YTigxoGfO4kF5Cju0d68/lM0fKKh
+        /hX5Qx5pfd0/0gPwLtqGd7Zvw3zVhjznK50zzlFFHT+aob3FCinucrlCT9qkuKEgxQ+yG4jA9js
+        1k+V9QbVpluUsfgVB
+X-Received: by 2002:a05:6638:1305:b0:33f:7e59:4bc7 with SMTP id r5-20020a056638130500b0033f7e594bc7mr3471387jad.316.1659726083690;
+        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5tl8wkqOGSRQbqQPvsP8x/sMHa+aTSdU4oxacleMUjEkM/f7HmEieSFt52FFtURojAjdepMg==
+X-Received: by 2002:a05:6638:1305:b0:33f:7e59:4bc7 with SMTP id r5-20020a056638130500b0033f7e594bc7mr3471385jad.316.1659726083508;
+        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id f43-20020a02242b000000b00342744f18a9sm1983541jaa.99.2022.08.05.12.01.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
+Date:   Fri, 5 Aug 2022 13:01:21 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, saeedm@nvidia.com,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        kevin.tian@intel.com, joao.m.martins@oracle.com, leonro@nvidia.com,
+        maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V3 vfio 04/11] vfio: Move vfio.c to vfio_main.c
+Message-ID: <20220805130121.36a2697d.alex.williamson@redhat.com>
+In-Reply-To: <Yu08gdx2Py9vAN1n@nvidia.com>
+References: <20220731125503.142683-1-yishaih@nvidia.com>
+        <20220731125503.142683-5-yishaih@nvidia.com>
+        <Yu08gdx2Py9vAN1n@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.29.100.2]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-GUID: AfOFOut94Z3B6azK3CtgGuOFKlYf8rtW
-X-Proofpoint-ORIG-GUID: AfOFOut94Z3B6azK3CtgGuOFKlYf8rtW
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current code retrieves the TOS field after the lookup
-on the ipv4 routing table. The routing process currently
-only allows routing based on the original 3 TOS bits, and
-not on the full 6 DSCP bits.
-As a result the retrieved TOS is cut to the 3 bits.
-However for inheriting purposes the full 6 bits should be used.
+On Fri, 5 Aug 2022 12:51:29 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Extract the full 6 bits before the route lookup and use
-that instead of the cut off 3 TOS bits.
+> On Sun, Jul 31, 2022 at 03:54:56PM +0300, Yishai Hadas wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > If a source file has the same name as a module then kbuild only supports
+> > a single source file in the module.
+> > 
+> > Rename vfio.c to vfio_main.c so that we can have more that one .c file
+> > in vfio.ko.
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> > 
+> > ---
+> >  drivers/vfio/Makefile                | 2 ++
+> >  drivers/vfio/{vfio.c => vfio_main.c} | 0
+> >  2 files changed, 2 insertions(+)
+> >  rename drivers/vfio/{vfio.c => vfio_main.c} (100%)  
+> 
+> Alex, could you grab this patch for the current merge window?
+> 
+> It is a PITA to rebase across, it would be nice to have the rename in
+> rc1
 
-Fixes: e305ac6cf5a1 ("geneve: Add support to collect tunnel metadata.")
-Signed-off-by: Matthias May <matthias.may@westermo.com>
----
-v1 -> v2:
- - Fix typo in "Fixes" tag
-v2 -> v3:
- - Add missing CCs
-v3 -> v4:
- - Drop reference to IPv6 equivalent of this patch (Guillaume Nault)
- - Return of full_tos in geneve_get_v4_rt only when needed (David Ahern))
----
- drivers/net/geneve.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+No objection from me, I'll see if Linus picks up my current pull
+request and either pull this in or send it separately next week.
+Thanks,
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 018d365f9deb..fafe7dea2227 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -797,7 +797,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
- 				       struct geneve_sock *gs4,
- 				       struct flowi4 *fl4,
- 				       const struct ip_tunnel_info *info,
--				       __be16 dport, __be16 sport)
-+				       __be16 dport, __be16 sport,
-+				       __u8 *full_tos)
- {
- 	bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
- 	struct geneve_dev *geneve = netdev_priv(dev);
-@@ -823,6 +824,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
- 		use_cache = false;
- 	}
- 	fl4->flowi4_tos = RT_TOS(tos);
-+	if (full_tos)
-+		*full_tos = tos;
- 
- 	dst_cache = (struct dst_cache *)&info->dst_cache;
- 	if (use_cache) {
-@@ -911,6 +914,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	const struct ip_tunnel_key *key = &info->key;
- 	struct rtable *rt;
- 	struct flowi4 fl4;
-+	__u8 full_tos;
- 	__u8 tos, ttl;
- 	__be16 df = 0;
- 	__be16 sport;
-@@ -921,7 +925,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
- 	rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
--			      geneve->cfg.info.key.tp_dst, sport);
-+			      geneve->cfg.info.key.tp_dst, sport, &full_tos);
- 	if (IS_ERR(rt))
- 		return PTR_ERR(rt);
- 
-@@ -965,7 +969,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 
- 		df = key->tun_flags & TUNNEL_DONT_FRAGMENT ? htons(IP_DF) : 0;
- 	} else {
--		tos = ip_tunnel_ecn_encap(fl4.flowi4_tos, ip_hdr(skb), skb);
-+		tos = ip_tunnel_ecn_encap(full_tos, ip_hdr(skb), skb);
- 		if (geneve->cfg.ttl_inherit)
- 			ttl = ip_tunnel_get_ttl(ip_hdr(skb), skb);
- 		else
-@@ -1149,7 +1153,7 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
- 					  1, USHRT_MAX, true);
- 
- 		rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
--				      geneve->cfg.info.key.tp_dst, sport);
-+				      geneve->cfg.info.key.tp_dst, sport, NULL);
- 		if (IS_ERR(rt))
- 			return PTR_ERR(rt);
- 
--- 
-2.35.1
+Alex
 
