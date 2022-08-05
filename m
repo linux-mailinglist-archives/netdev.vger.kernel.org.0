@@ -2,146 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2483C58A729
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 09:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB0A658A787
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 09:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237688AbiHEHcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 03:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
+        id S240338AbiHEHy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 03:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237079AbiHEHcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 03:32:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE46BC0E
-        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 00:32:21 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oJroT-0004s9-Cg; Fri, 05 Aug 2022 09:32:05 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oJroO-001qjH-Rw; Fri, 05 Aug 2022 09:32:03 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oJroQ-003odj-AT; Fri, 05 Aug 2022 09:32:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net v1 1/1] net: phy: c45 baset1: do not skip aneg configuration if clock role is not specified
-Date:   Fri,  5 Aug 2022 09:31:59 +0200
-Message-Id: <20220805073159.908643-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235835AbiHEHy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 03:54:56 -0400
+X-Greylist: delayed 504 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 00:54:54 PDT
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6712872EC7;
+        Fri,  5 Aug 2022 00:54:53 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:53364.1398039832
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.8.199 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id D69DB280099;
+        Fri,  5 Aug 2022 15:46:16 +0800 (CST)
+X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 2f870a74468f4d4b992006056bb14515 for j.vosburgh@gmail.com;
+        Fri, 05 Aug 2022 15:46:22 CST
+X-Transaction-ID: 2f870a74468f4d4b992006056bb14515
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, huyd12@chinatelecom.cn,
+        sunshouxin@chinatelecom.cn
+Subject: [PATCH] net:bonding:support balance-alb interface with vlan to bridge
+Date:   Fri,  5 Aug 2022 00:45:56 -0700
+Message-Id: <20220805074556.70297-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case master/slave clock role is not specified (which is default), the
-aneg registers will not be written.
+In my test, balance-alb bonding with two slaves eth0 and eth1,
+and then Bond0.150 is created with vlan id attached bond0.
+After adding bond0.150 into one linux bridge, I noted that Bond0,
+bond0.150 and  bridge were assigned to the same MAC as eth0.
+Once bond0.150 receives a packet whose dest IP is bridge's
+and dest MAC is eth1's, the linux bridge cannot process it as expected.
+The patch fix the issue, and diagram as below:
 
-The visible impact of this is missing pause advertisement.
+eth1(mac:eth1_mac)--bond0(balance-alb,mac:eth0_mac)--eth0(mac:eth0_mac)
+      		      |
+      		   bond0.150(mac:eth0_mac)
+      		      |
+      	           bridge(ip:br_ip, mac:eth0_mac)--other port
 
-So, rework genphy_c45_baset1_an_config_aneg() to be able to write
-advertisement registers even if clock role is unknown.
-
-Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
 ---
- drivers/net/phy/phy-c45.c | 34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/net/bonding/bond_main.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index 29b1df03f3e8b..a87a4b3ffce4e 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -190,44 +190,42 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_forced);
-  */
- static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
- {
-+	u16 adv_l_mask, adv_l = 0;
-+	u16 adv_m_mask, adv_m = 0;
- 	int changed = 0;
--	u16 adv_l = 0;
--	u16 adv_m = 0;
- 	int ret;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index e75acb14d066..6210a9c7ca76 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1537,9 +1537,11 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
+ 	struct sk_buff *skb = *pskb;
+ 	struct slave *slave;
+ 	struct bonding *bond;
++	struct net_device *vlan;
+ 	int (*recv_probe)(const struct sk_buff *, struct bonding *,
+ 			  struct slave *);
+ 	int ret = RX_HANDLER_ANOTHER;
++	unsigned int headroom;
  
-+	adv_l_mask = MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP |
-+		MDIO_AN_T1_ADV_L_PAUSE_ASYM;
-+	adv_m_mask = MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L;
-+
- 	switch (phydev->master_slave_set) {
- 	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+		adv_m |= MDIO_AN_T1_ADV_M_MST;
-+		fallthrough;
- 	case MASTER_SLAVE_CFG_SLAVE_FORCE:
- 		adv_l |= MDIO_AN_T1_ADV_L_FORCE_MS;
- 		break;
- 	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+		adv_m |= MDIO_AN_T1_ADV_M_MST;
-+		fallthrough;
- 	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
- 		break;
- 	case MASTER_SLAVE_CFG_UNKNOWN:
- 	case MASTER_SLAVE_CFG_UNSUPPORTED:
--		return 0;
-+		/* if master/slave role is not specified, do not overwrite it */
-+		adv_l_mask &= ~MDIO_AN_T1_ADV_L_FORCE_MS;
-+		adv_m_mask &= ~MDIO_AN_T1_ADV_M_MST;
-+		break;
- 	default:
- 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
- 		return -EOPNOTSUPP;
+ 	skb = skb_share_check(skb, GFP_ATOMIC);
+ 	if (unlikely(!skb))
+@@ -1591,6 +1593,24 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
+ 				  bond->dev->addr_len);
  	}
  
--	switch (phydev->master_slave_set) {
--	case MASTER_SLAVE_CFG_MASTER_FORCE:
--	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
--		adv_m |= MDIO_AN_T1_ADV_M_MST;
--		break;
--	case MASTER_SLAVE_CFG_SLAVE_FORCE:
--	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
--		break;
--	default:
--		break;
--	}
--
- 	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
++	if (skb_vlan_tag_present(skb)) {
++		if (BOND_MODE(bond) == BOND_MODE_ALB && skb->pkt_type == PACKET_HOST) {
++			vlan = __vlan_find_dev_deep_rcu(bond->dev, skb->vlan_proto,
++							skb_vlan_tag_get(skb) & VLAN_VID_MASK);
++			if (vlan) {
++				if (vlan->priv_flags & IFF_BRIDGE_PORT) {
++					headroom = skb->data - skb_mac_header(skb);
++					if (unlikely(skb_cow_head(skb, headroom))) {
++						kfree_skb(skb);
++						return RX_HANDLER_CONSUMED;
++					}
++					bond_hw_addr_copy(eth_hdr(skb)->h_dest, vlan->dev_addr,
++							  vlan->addr_len);
++				}
++			}
++		}
++	}
++
+ 	return ret;
+ }
  
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
--				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
--				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
-+				     adv_l_mask, adv_l);
- 	if (ret < 0)
- 		return ret;
- 	if (ret > 0)
-@@ -236,7 +234,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
- 	adv_m |= linkmode_adv_to_mii_t1_adv_m_t(phydev->advertising);
- 
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M,
--				     MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L, adv_m);
-+				     adv_m_mask, adv_m);
- 	if (ret < 0)
- 		return ret;
- 	if (ret > 0)
 -- 
-2.30.2
+2.27.0
 
