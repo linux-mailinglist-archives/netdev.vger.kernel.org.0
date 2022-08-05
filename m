@@ -2,47 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A636158A85A
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 10:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFD858A88A
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 11:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240183AbiHEI42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 04:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
+        id S240259AbiHEJNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 05:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbiHEI41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 04:56:27 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA896AA3C;
-        Fri,  5 Aug 2022 01:56:25 -0700 (PDT)
-Received: from [192.168.31.174] (unknown [95.31.173.239])
-        by mail.ispras.ru (Postfix) with ESMTPSA id BBDCD40737C5;
-        Fri,  5 Aug 2022 08:56:19 +0000 (UTC)
-Message-ID: <18aa0617-0afe-2543-89cf-2f04c682ea88@ispras.ru>
-Date:   Fri, 5 Aug 2022 11:56:18 +0300
+        with ESMTP id S240152AbiHEJNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 05:13:10 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47A674DDE;
+        Fri,  5 Aug 2022 02:13:01 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id AJS00156;
+        Fri, 05 Aug 2022 17:12:56 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201605.home.langchao.com (10.100.2.5) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 5 Aug 2022 17:12:55 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] vhost-vdpa: Call ida_simple_remove() when failed
+Date:   Fri, 5 Aug 2022 05:12:54 -0400
+Message-ID: <20220805091254.20026-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] can: j1939: fix memory leak of skbs
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-References: <20220708175949.539064-1-pchelkin@ispras.ru>
- <20220729042244.GC30201@pengutronix.de>
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-In-Reply-To: <20220729042244.GC30201@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20228051712564b68e5e4e530f6396c94bdd65571fa10
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -51,35 +46,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+In function vhost_vdpa_probe(), when code execution fails, we should
+call ida_simple_remove() to free ida.
 
-On 29.07.2022 07:22, Oleksij Rempel wrote:
-> Initial issue can be reproduced by using real (slow) CAN with j1939cat[1]
-> tool. Both parts should be started to make sure the j1939_session_tx_dat() will
-> actually start using the queue. After pushing about 100K of data, application
-> will try to close the socket and exit. After socket is closed, all skb related
-> to this socket will be freed and j1939_session_tx_dat() will use freed skbs.
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/vhost/vdpa.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Ok, the patch I suggested was a kind of a guess, now I understand that
-it breaks important logic.
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 7fa671ac4bdf..c7c89f969249 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1396,6 +1396,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+ 
+ err:
+ 	put_device(&v->dev);
++	ida_simple_remove(&vhost_vdpa_ida, v->minor);
+ 	return r;
+ }
+ 
+-- 
+2.27.0
 
-On 29.07.2022 07:22, Oleksij Rempel wrote:
- > This skb_get() is counter part of skb_unref()
- > j1939_session_skb_drop_old().
-
-However, we have a case [1] where j1939_session_skb_queue() is called
-but the corresponding j1939_session_skb_drop_old() is not called and it
-causes a memory leak.
-
-I tried to investigate it a little bit: the thing is that
-j1939_session_skb_drop_old() can be called only when processing
-J1939_ETP_CMD_CTS. On the contrary, as I can see,
-j1939_session_skb_queue() can be called independently from
-J1939_ETP_CMD_CTS so the two functions obviously do not correspond to
-each other.
-
-In reproducer case there is a J1939_ETP_CMD_RTS processing, then
-we send some messages (where j1939_session_skb_queue() is called) and
-after that J1939_ETP_CMD_ABORT is processed and we lose those skbs.
-
-[1] https://forge.ispras.ru/issues/11743
