@@ -2,92 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 259F458A919
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 11:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4363758A96A
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 12:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240503AbiHEJ5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 05:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S240381AbiHEKWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 06:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240554AbiHEJ5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 05:57:48 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF0077562
-        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 02:57:46 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id uj29so4226172ejc.0
-        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 02:57:46 -0700 (PDT)
+        with ESMTP id S237681AbiHEKWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 06:22:24 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BEC1B873
+        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 03:22:23 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id tl27so4258813ejc.1
+        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 03:22:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Td4g1Kh1bfrx34l0/UewmcPgD1HP9zjlky++5KBl8rw=;
-        b=MsVxcm9F8W6ERzILshCCpr8HgmZ2AKHSzQ/ShS6Rzh11nmJ2jC2qh16rOmKVAh7jSN
-         qRC9Q7+XMu5FUEiho+8LDX6PTDBspcxZNBfY6kOqTu9Xw+ofqsBnY1CYPa9mG0R2fvWK
-         3JrAL1mmMyBkHxdEkTPwP+PoYRamjdU1Guigw=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc;
+        bh=CYGrnjE+ptPSQWCLJyZC/ltLUx5UOCvg6ncMc56M2JM=;
+        b=YchnSB8Ua8IMO/cG72STIbgkyJBXmuEoLwx4p/PXGpRkshqZN7psYkwjmyEh02TwIg
+         h45slaGrba0sqPgrBcDBePHHSx8LzOKrBz6yXf76pAkVGak7E2A/raNbKg6UXSBE3koR
+         A1xv1jI7P7FNRzvYhf6S3duBrjryiIzxcEhJzjvC9Acb2GxERdr5RsjSTgPFg0s5CLZc
+         WFCwZyNcxKKGh2Xk5YXocT6oMy5HW/QGk6QVyzU+/USRDYGRbOXvPv8KxPdWFbXW0Cl5
+         t0D3/JgXBXD67Y4rS3vaAKsm5DWf+OuT33mNmHwSliUaPtZjhWE15yxry6qLUb7tsLNh
+         7L4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Td4g1Kh1bfrx34l0/UewmcPgD1HP9zjlky++5KBl8rw=;
-        b=qeZmU+lgnw89h3aK9sQu+v81OvLsoDUKonNAFm2PqT8tQSbe4FZoybm2CJB4OuJg9p
-         BDw+JrpUpnLQmnLUXGdrMVczbNbQC+T2OLM8UHWqOEWFCwqrf9kyqxsiZobKLZRyJADa
-         IqPmcAcjg3S1triACP7vUz8F65OjgqrCpxreQtZaxVbZPiwx23Vhto4DuJNWxbztdBbb
-         4X+uIEuIPW+98Nbp/ZpUJHtUoBoEvkOL5srTdLd1V3gmS3vndjsEbAfUWDXGEjf/lkED
-         0M+W3BGqYEnZFHfkwc7tHF18WBSz4v1tsOVZrWIDiIxnAW0Cipb4iEyOvU7pY5Ju4drH
-         yS9Q==
-X-Gm-Message-State: ACgBeo2i0uLQ802svO1D/biPtIyWsE0GXm9FPkx0lXRYB1481pvHCBPB
-        80+Ys+ifa1Jckv5cZmaYRtbOQQ==
-X-Google-Smtp-Source: AA6agR6/awoYCaaW+MhRbzO2wn8SNzT6MJXkAEcUGdIJnR+2VTNEQg/Fz/9iNqBuznVDyPeQC6ji1w==
-X-Received: by 2002:a17:907:2856:b0:730:86f7:4fda with SMTP id el22-20020a170907285600b0073086f74fdamr4580504ejc.689.1659693464711;
-        Fri, 05 Aug 2022 02:57:44 -0700 (PDT)
-Received: from [192.168.1.149] ([80.208.71.65])
-        by smtp.gmail.com with ESMTPSA id f1-20020a50fe01000000b0043d5ead65a6sm1780812edt.84.2022.08.05.02.57.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 02:57:44 -0700 (PDT)
-Message-ID: <be6ee88d-1434-8ac0-5019-c50bf34a3306@rasmusvillemoes.dk>
-Date:   Fri, 5 Aug 2022 11:57:42 +0200
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=CYGrnjE+ptPSQWCLJyZC/ltLUx5UOCvg6ncMc56M2JM=;
+        b=Ba87gWfrFs55+YfzbP3GgVUvqXr0EU0W/hg2eIPNuB4MHBS1ueFC2M8vVD9rIV7kLB
+         LDaTnKE8CNaqHRo7RSRHndFtPlUm4WhE1qNw6hKdnhj8vmr7mPD7bu40wa08cJTG/tcw
+         IF1EvfqyZD94gAM5nHOAHKV01fSJ9k5hpCNeVJ5ZHZi51iG+Jm1q+Ei2Ena/Yl+ixRl4
+         W2/G7du4FC2SeTEOahZjObTOaW5CSnHn4n2y02UZsrt8LAJq8EcN8RgdO2a7UUtF0jRP
+         fmkmDNNZbFS1dq4yARj8kmUIkplz7QQCetzMUW786EB7OZMhdj3r6Mc7hWSu+hLzcev6
+         aOlw==
+X-Gm-Message-State: ACgBeo3y2Y0YsobbhmNNtW4VNdozmTgkuM5ayXMrET8EQVWV0meK9q4h
+        zzlRJmIc51lUSSUV29KDibGWHGWcYrEs3tp2QF8=
+X-Google-Smtp-Source: AA6agR6oejP2+ZGcuVyBw0O9VAEsBmOz13f60WM4MtSg+aXNqQWxhBSnO5YJonH3HKO0QdUM/OWOnRCHP/PtcXnT7J0=
+X-Received: by 2002:a17:907:6285:b0:72f:a3b9:9666 with SMTP id
+ nd5-20020a170907628500b0072fa3b99666mr4692887ejc.455.1659694941401; Fri, 05
+ Aug 2022 03:22:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: phy: dp83867: fix get nvmem cell fail
-Content-Language: en-US
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     linux@yadro.com, Nikita Shubin <n.shubin@yadro.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220805084843.24542-1-nikita.shubin@maquefel.me>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <20220805084843.24542-1-nikita.shubin@maquefel.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:640c:1b87:b0:179:693:70d with HTTP; Fri, 5 Aug 2022
+ 03:22:20 -0700 (PDT)
+Reply-To: jon768266@gmail.com
+From:   johnson <rahamaaliou74@gmail.com>
+Date:   Fri, 5 Aug 2022 10:22:20 +0000
+Message-ID: <CAHhQV0d2s2=WEDdpQwesZh7MckdvCP54iJY0xgaGNTzJE55JNQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_40,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/08/2022 10.48, Nikita Shubin wrote:
-> From: Nikita Shubin <n.shubin@yadro.com>
-> 
-> If CONFIG_NVMEM is not set of_nvmem_cell_get, of_nvmem_device_get
-> functions will return ERR_PTR(-EOPNOTSUPP) and "failed to get nvmem
-> cell io_impedance_ctrl" error would be reported despite "io_impedance_ctrl"
-> is completely missing in Device Tree and we should use default values.
-> 
-> Check -EOPNOTSUPP togather with -ENOENT to avoid this situation.
-
-Ah, sorry about that, and thanks for catching.
-
-Acked-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+0JTRgNCw0LPQviDQvNC4INGY0LUg0YjRgtC+INCy0LDRgSDQvNC+0LPRgyDQvtCx0LDQstC10YHR
+gtC40YLQuCDQviDQvNC+0Lwg0YPRgdC/0LXRhdGDINGDINGC0YDQsNC90YHRhNC10YDRgyDRgtC4
+0YUNCtGB0YDQtdC00YHRgtCw0LLQsCDRg9C3INC/0L7QvNC+0Zsg0L3QvtCy0L7QsyDQv9Cw0YDR
+gtC90LXRgNCwINC40Lcg0JjQvdC00LjRmNC1LiDQotGA0LXQvdGD0YLQvdC+INGB0LDQvCDRgyDQ
+mNC90LTQuNGY0LgNCtC30LHQvtCzINC40L3QstC10YHRgtC40YbQuNC+0L3QuNGFINC/0YDQvtGY
+0LXQutCw0YLQsCDRgdCwINGB0L7Qv9GB0YLQstC10L3QuNC8INGD0LTQtdC70L7QvCDRgyDRg9C6
+0YPQv9C90L7RmCDRgdGD0LzQuC4g0KMNCtC80LXRktGD0LLRgNC10LzQtdC90YMsINC90LjRgdCw
+0Lwg0LfQsNCx0L7RgNCw0LLQuNC+INCy0LDRiNC1INC00L7RgdCw0LTQsNGI0ZrQtSDQvdCw0L/Q
+vtGA0LUg0Lgg0L/QvtC60YPRiNCw0ZjQtSDQtNCwINC80LgNCtC/0L7QvNC+0LPQvdC10YLQtSDR
+gyDRgtGA0LDQvdGB0YTQtdGA0YMg0YLQuNGFINGB0YDQtdC00YHRgtCw0LLQsCDRg9C/0YDQutC+
+0YEg0YLQvtC80LUg0YjRgtC+INGB0YMg0L3QsNGBINC90LXQutCw0LrQvg0K0LjQt9C90LXQstC1
+0YDQuNC70LguINCh0LDQtNCwINC60L7QvdGC0LDQutGC0LjRgNCw0ZjRgtC1INC80L7RmNGDINGB
+0LXQutGA0LXRgtCw0YDQuNGG0YMg0YMg0JvQvtC80LUg0KLQvtCz0L4g0YHQsCDRmtC10LPQvtCy
+0LjQvA0K0LrQvtC90YLQsNC60YLQvtC8INC40YHQv9C+0LQsINC40YHQv9GD0YHRgtC40L4g0YHQ
+sNC8INGB0LXRgNGC0LjRhNC40LrQvtCy0LDQvdGDINCx0LDQvdC60L7QvNCw0YIg0LLQuNGB0LAg
+0LrQsNGA0YLQuNGG0YMg0LfQsA0K0LLQsNGBLiDQt9Cw0LzQvtC70LjRgtC1INCz0LAg0LTQsCDQ
+stCw0Lwg0LPQsCDQv9C+0YjQsNGZ0LUsINC90LAg0LrQsNGA0YLQuNGG0Lgg0YHQtSDQvdCw0LvQ
+sNC30LggMjUwLjAwMCwwMA0K0LTQvtC70LDRgNCwINC60L7RmNC1INGB0LDQvCDQvNGDINC+0YHR
+gtCw0LLQuNC+INC30LAg0LLQsNGI0YMg0LrQvtC80L/QtdC90LfQsNGG0LjRmNGDINC30LAg0YHQ
+stC1INC00L7RgdCw0LTQsNGI0ZrQtQ0K0L3QsNC/0L7RgNC1INC4INC/0L7QutGD0YjQsNGY0LUg
+0LTQsCDQvNC4INC/0L7QvNC+0LPQvdC10YLQtSDRgyDQvtCy0L7RmCDRgdGC0LLQsNGA0LguINCS
+0LXQvtC80LAg0YHQsNC8INGG0LXQvdC40L4g0LLQsNGI0LUNCtC90LDQv9C+0YDQtSDRgyDRgtC+
+INCy0YDQtdC80LUuDQoNCtCX0LDRgtC+INGB0LvQvtCx0L7QtNC90L4g0LrQvtC90YLQsNC60YLQ
+uNGA0LDRmNGC0LUg0LzQvtGY0YMg0YHQtdC60YDQtdGC0LDRgNC40YbRgyDQuCDRg9C/0YPRgtC4
+0YLQtSDQs9CwINCz0LTQtSDQtNCwINCy0LDQvA0K0L/QvtGI0LDRmdC1INCx0LDQvdC60L7QvNCw
+0YIg0LLQuNGB0LAg0LrQsNGA0YLQuNGG0YMg0YHQsCDQuNC30L3QvtGB0L7QvC4g0JzQvtC70LjQ
+vCDQstCw0YEg0LTQsCDQvNC1INC+0LTQvNCw0YUNCtC+0LHQsNCy0LXRgdGC0LjRgtC1INCw0LrQ
+viDQs9CwINC00L7QsdC40ZjQtdGC0LUg0LrQsNC60L4g0LHQuNGB0LzQviDQt9Cw0ZjQtdC00L3Q
+viDQv9C+0LTQtdC70LjQu9C4INGA0LDQtNC+0YHRgiDQv9C+0YHQu9C1DQrRgdCy0LjRhSDQv9Cw
+0YLRmtC4INGDINGC0L4g0LLRgNC10LzQtS4g0YLRgNC10L3Rg9GC0L3QviDRgdCw0Lwg0LLQtdC+
+0LzQsCDQt9Cw0YPQt9C10YIg0L7QstC00LUg0LfQsdC+0LMNCtC40L3QstC10YHRgtC40YbQuNC+
+0L3QuNGFINC/0YDQvtGY0LXQutCw0YLQsCDQutC+0ZjQtSDQstC+0LTQuNC8INGB0LAg0LzQvtGY
+0LjQvCDQvdC+0LLQuNC8INC/0LDRgNGC0L3QtdGA0L7QvCwg0YHQtdGC0Lgg0YHQtQ0K0LrQvtC9
+0LDRh9C90L4g0LTQsCDRgdCw0Lwg0L/RgNC+0YHQu9C10LTQuNC+INC40L3RgdGC0YDRg9C60YbQ
+uNGY0YMg0YHQstC+0ZjQvtGYINGB0LXQutGA0LXRgtCw0YDQuNGG0Lgg0L3QsCDQstCw0YjQtSDQ
+uNC80LUg0LTQsA0K0L/Rg9GB0YLQuCDQsdCw0L3QutC+0LzQsNGCINCy0LjRgdCwINC60LDRgNGC
+0LjRhtGDINGB0LDQvNC+INCy0LDQvNCwLCDQv9CwINGB0LUg0L7RgdC10ZvQsNGC0LUg0YHQu9C+
+0LHQvtC00L3QviDRgdGC0YPQv9C40YLQtQ0K0YMg0LrQvtC90YLQsNC60YIg0YHQsCDRmtC40Lwg
+0Lgg0L/RgNC+0YHQu9C10LTQuNGC0LUg0LzRgyDRgdCy0L7RmNC1INC/0L7QtNCw0YLQutC1LCDR
+gdCy0L7RmNCwINC/0YPQvdCwINC40LzQtdC90LAsDQrQsNC00YDQtdGB0YMg0Lgg0LrQvtC90YLQ
+sNC60YIg0LHRgNC+0Zgg0YDQsNC00Lgg0LvQsNC60YjQtSDQutC+0LzRg9C90LjQutCw0YbQuNGY
+0LUg0LTQvtC6INC90LUg0LTQvtCx0LjRmNC10YLQtSDQsdCw0L3QutC+0LzQsNGCDQrQstC40YHQ
+sCDQutCw0YDRgtC40YbRgy4gKNGY0L7QvTc2ODI2NkDQs9C80LDQuNC7LtGG0L7QvCkNCg0K0KHR
+gNC00LDRh9Cw0L0g0L/QvtC30LTRgNCw0LINCtCe0YDQu9Cw0L3QtNC+INCc0L7RgNC40YEuDQo=
