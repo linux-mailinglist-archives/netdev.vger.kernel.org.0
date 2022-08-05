@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9290A58B286
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 00:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD36058B2C0
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 01:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241450AbiHEW4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 18:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S241616AbiHEX2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 19:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241366AbiHEW4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 18:56:33 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6C6120AA;
-        Fri,  5 Aug 2022 15:56:32 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id d139so2945573iof.4;
-        Fri, 05 Aug 2022 15:56:32 -0700 (PDT)
+        with ESMTP id S238141AbiHEX2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 19:28:38 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E845175BA;
+        Fri,  5 Aug 2022 16:28:37 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so2755564pjm.3;
+        Fri, 05 Aug 2022 16:28:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=6aTUnPtbLiDNZOmm7ZJHJEmqOdom7rZsShr5BudS8+Q=;
-        b=hX4XqTnWUynlWrF+u8zPv9/McHO5uzg29MxGU75VaDjXXmd94Xz0U9YKlvX/zdRGsa
-         x75jhbeXOwALVyDEOAzscIesbFnzy9c/yDVhKdWZFLxnYZG9lXX2KcG3e3JheT5Ee26l
-         w2hvkyQAvpUGDbVvsq3jWRZ4MA4ucXz83Kmiwl6vA0xGpYh4wdzZM3/3bw254s5YjZC0
-         rsna4cwlgpBhU+XFGhBkvB2DrBCZoCuKRwBmIJYORNDaK38zsSlbs4sl1pXxh6hLRpCh
-         5ulWPlxGTmLuuOPa7kcQrCvfhuFcNZ73+MmsdpNlr2+T856HU+ERQSVUeJldQTxzbsN1
-         Xlvw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lX56W+vf9zyDi6j+4csF/9/BmLcJVTV+VtL7UwiF1kU=;
+        b=kSYAoigWbys1J8x42COsIgNq0tj0TDFGrIxsxbOpW89BiNIxYK2CaschD3KPfcrPXR
+         J51wWi3xlYgvhC5m3YMn8+m4uqVysssMVuTlT/LXrp8yCmxfS1T7cm5vJlvbLCC/Pr9b
+         Qb+jJi4JIFkF+rVr+yTy6n+CyLK7L/pAj+EGsmQnEdEYp4AsN6M+DbID6qh3HW/Vw6sl
+         rxZfEdTdeJ8Hay7556tcvm1vXJPiofktxsqxi87s8qi3Ik+OkAgjoijVbG/hqdAIGpPG
+         lShaAxfqglwHhpeNk9wfk6tiTfMFz4LsgnEy/JEVEmN8JS5mZYsPBCd6b+E6sHglUUxu
+         WKFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=6aTUnPtbLiDNZOmm7ZJHJEmqOdom7rZsShr5BudS8+Q=;
-        b=CnL8lhVe2uGI3JvzQuMiRvqAxqkNm6xpQHrp7V7O+7LNAK8/k+bHu+gNEGQPMWI6oz
-         1QXTr0IEzpp3ehXDW6hUUzaCx1WeGolzZiSDeahj3z/7iZF1RGGuJfNT7qT2/u0O9VtQ
-         oQBViuwJqBNV08AxucBTaAaQqFWH7U0vd67AJDZFtqExaxBIs+uUmXpbE1z7/67lYTk7
-         rGzj0uSx4eFdsUlwTyHK3SXiokCfxCgc20+thaBHqjfHuRLia+lUVZLS/BcbtJUSbFw8
-         1uAkslZ1bAAZz65w6MDFQcmKGxVB3q/a+gKI3hKS+ifX579xpi7W0LDE2kmY+Ne9kbTQ
-         6/+g==
-X-Gm-Message-State: ACgBeo3eAi6MRQpxHdzNEwkPCXnEtfrb0xdi3brBs2kvjrermndLH6GJ
-        Kz4VN/aa0aYsR4ndtTz/PUClZhvIS1s1g3veFAdB+VSh
-X-Google-Smtp-Source: AA6agR6MJBFV30kggXjBciLw1N20HUZUrzC3XwFJPgBObA70KlFFBX9l3ZmlHogoX1FMf/008T1JgavgG76JmBSrvlQ=
-X-Received: by 2002:a02:2403:0:b0:342:9303:cafb with SMTP id
- f3-20020a022403000000b003429303cafbmr3992525jaa.231.1659740192165; Fri, 05
- Aug 2022 15:56:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lX56W+vf9zyDi6j+4csF/9/BmLcJVTV+VtL7UwiF1kU=;
+        b=dMfXkZXrfNlHeUi32p9ukZazsBct0Ast2BVOSqW+BXtYk1JXN9/RW25qbhQxYIXUcj
+         xrNusSMDuxXgl72eSXbtt1WLaTHtMmB+SymUGFmxoCNly1PLsji5u/mfi8rnnNhubB86
+         AXLOS7w2q6Uu8m8bQFhZNy5ZSLORNK/4gEHg/xyNfTmF4aE5uJ7dHCdofWaorurW6Y0u
+         D37sdznR/0Wb1I/T/VoK4kyrK218htZrel8OUv03P4zo7V7lI5QAjfGXm8MoZkNKxgYW
+         a6dNl3eJCwwhbl4loosHoaAbLAtusaS1SHlOa69us7VO6VQj1CVdp/8ibxu16S5EVsIy
+         svhg==
+X-Gm-Message-State: ACgBeo24mhD7l3RZeUwRQHrd1+vsbbAgtZ/zuzRaPQMnaIaxv/n04fwU
+        99APVFpX+QTkwyo4W/L5q1uLuWr0HUGMCA==
+X-Google-Smtp-Source: AA6agR65pIa56/i9mU3EnoLdfy9Ftgghi768bf6UA5fai+49ld34Y8ildj4dGfEinMUUWx/ndeibDg==
+X-Received: by 2002:a17:902:f788:b0:16c:f48b:905e with SMTP id q8-20020a170902f78800b0016cf48b905emr8921616pln.60.1659742116392;
+        Fri, 05 Aug 2022 16:28:36 -0700 (PDT)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id u17-20020a170902e5d100b0016c78aaae7fsm3716200plf.23.2022.08.05.16.28.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 16:28:35 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-08-05
+Date:   Fri,  5 Aug 2022 16:28:34 -0700
+Message-Id: <20220805232834.4024091-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220725085130.11553-1-memxor@gmail.com>
-In-Reply-To: <20220725085130.11553-1-memxor@gmail.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Sat, 6 Aug 2022 00:55:55 +0200
-Message-ID: <CAP01T740E3SmW98hxooFwiB6zZ58wV2iQSTJZg-zKNYWg+x1Ow@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] net: netfilter: Remove ifdefs for code shared by
- BPF and ctnetlink
-To:     bpf@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -69,67 +66,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jul 2022 at 10:51, Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
->
-> The current ifdefry for code shared by the BPF and ctnetlink side looks
-> ugly. As per Pablo's request, simplify this by unconditionally compiling
-> in the code. This can be revisited when the shared code between the two
-> grows further.
->
-> Suggested-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
+The following changes since commit 2e64fe4624d19bc71212aae434c54874e5c49c5a:
 
-Pablo, presumably this needs your ack before it can be applied, as it
-is marked Needs Ack in patchwork.
+  selftests: add few test cases for tap driver (2022-08-05 08:59:15 +0100)
 
->  include/net/netfilter/nf_conntrack_core.h | 6 ------
->  net/netfilter/nf_conntrack_core.c         | 6 ------
->  2 files changed, 12 deletions(-)
->
-> diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-> index 3cd3a6e631aa..b2b9de70d9f4 100644
-> --- a/include/net/netfilter/nf_conntrack_core.h
-> +++ b/include/net/netfilter/nf_conntrack_core.h
-> @@ -86,10 +86,6 @@ extern spinlock_t nf_conntrack_expect_lock;
->
->  /* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
->
-> -#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
-> -    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES) || \
-> -    IS_ENABLED(CONFIG_NF_CT_NETLINK))
-> -
->  static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
->  {
->         if (timeout > INT_MAX)
-> @@ -101,6 +97,4 @@ int __nf_ct_change_timeout(struct nf_conn *ct, u64 cta_timeout);
->  void __nf_ct_change_status(struct nf_conn *ct, unsigned long on, unsigned long off);
->  int nf_ct_change_status_common(struct nf_conn *ct, unsigned int status);
->
-> -#endif
-> -
->  #endif /* _NF_CONNTRACK_CORE_H */
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 66a0aa8dbc3b..afe02772c010 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -2787,10 +2787,6 @@ int nf_conntrack_init_net(struct net *net)
->         return ret;
->  }
->
-> -#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
-> -    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES) || \
-> -    IS_ENABLED(CONFIG_NF_CT_NETLINK))
-> -
->  /* ctnetlink code shared by both ctnetlink and nf_conntrack_bpf */
->
->  int __nf_ct_change_timeout(struct nf_conn *ct, u64 timeout)
-> @@ -2846,5 +2842,3 @@ int nf_ct_change_status_common(struct nf_conn *ct, unsigned int status)
->         return 0;
->  }
->  EXPORT_SYMBOL_GPL(nf_ct_change_status_common);
-> -
-> -#endif
-> --
-> 2.34.1
->
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-08-05
+
+for you to fetch changes up to 118862122fcb298548ddadf4a3b6c8511b3345b7:
+
+  Bluetooth: ISO: Fix not using the correct QoS (2022-08-05 16:16:54 -0700)
+
+----------------------------------------------------------------
+bluetooth pull request for net:
+
+ - Fixes various issues related to ISO channel/socket support
+ - Fixes issues when building with C=1
+ - Fix cancel uninitilized work which blocks syzbot to run
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      Bluetooth: ISO: unlock on error path in iso_sock_setsockopt()
+
+Luiz Augusto von Dentz (8):
+      Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+      Bluetooth: hci_conn: Fix updating ISO QoS PHY
+      Bluetooth: ISO: Fix info leak in iso_sock_getsockopt()
+      Bluetooth: ISO: Fix memory corruption
+      Bluetooth: hci_event: Fix build warning with C=1
+      Bluetooth: MGMT: Fixes build warnings with C=1
+      Bluetooth: ISO: Fix iso_sock_getsockopt for BT_DEFER_SETUP
+      Bluetooth: ISO: Fix not using the correct QoS
+
+Soenke Huster (1):
+      Bluetooth: Fix null pointer deref on unexpected status event
+
+Tetsuo Handa (1):
+      Bluetooth: don't try to cancel uninitialized works at mgmt_index_removed()
+
+ net/bluetooth/aosp.c       | 15 ++++++++++++---
+ net/bluetooth/hci_conn.c   | 11 ++---------
+ net/bluetooth/hci_event.c  |  7 +++++--
+ net/bluetooth/iso.c        | 35 +++++++++++++++++++++++------------
+ net/bluetooth/l2cap_core.c | 13 ++++++-------
+ net/bluetooth/mgmt.c       |  7 ++++---
+ net/bluetooth/msft.c       | 15 ++++++++++++---
+ 7 files changed, 64 insertions(+), 39 deletions(-)
