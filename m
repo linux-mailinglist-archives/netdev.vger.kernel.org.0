@@ -2,78 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E112D58B022
-	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 21:01:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636F158B036
+	for <lists+netdev@lfdr.de>; Fri,  5 Aug 2022 21:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233405AbiHETB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 15:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        id S237571AbiHETPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 15:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbiHETB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 15:01:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87E1BAE76
-        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 12:01:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659726085;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7jrr///GTPolXMT+fiyn3eyuZH49mBtYTjRUTuSdpSs=;
-        b=EcJkzmngwNK2u4mqHfiov0BQCBUs6EtAwVSUBwsZqra6ea+AmtlBVAM7UquxD/G5JY05JJ
-        7vpEnjIfMRF2HzL5kjIGqNyOFrZQNThMBvryEofmbvoUmCDH1w6gAKgNAJCKVHV7AUjHV9
-        ddYXTfSYrdAdIRHACzxUbDprYRaCnYE=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-382-1NScn8cONvmsSUh0tbDJ4g-1; Fri, 05 Aug 2022 15:01:24 -0400
-X-MC-Unique: 1NScn8cONvmsSUh0tbDJ4g-1
-Received: by mail-il1-f197.google.com with SMTP id k11-20020a92c24b000000b002dd46b47e01so2217762ilo.14
-        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 12:01:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc;
-        bh=7jrr///GTPolXMT+fiyn3eyuZH49mBtYTjRUTuSdpSs=;
-        b=YIZOgxjgaUOI26i/lGqyIc70pA1FU4ywUl3qISyi4BI7ctPRXuHFigUF0or2iHA1/E
-         K8HK5G7YDrJKJLD11Q2BEv3gBhe27zH6oiDYBW5sKGtBj181rvvdJVKjwIzC5sfUR6xT
-         4O2En85sr9OKvx1IEJ6Dybi640NDsm4zRC9VLfNW5dzXC4oTqzdWPzmueX7CBKoFlC/5
-         KoIY7yQHQbbxJdvZe1RDvzAnDBFAT12BvaMo+wS8E5Vi28N+H+NP/43rAIklb4uUwy0B
-         PwfDhjgaGfo0was9aiwNB5or27OrmFWkTcf6msMqbU+PJFdFnvW6lfg2Xi5IkR7B2JFs
-         BuTg==
-X-Gm-Message-State: ACgBeo0N9l91/ekQqltE4BVAndC8YTigxoGfO4kF5Cju0d68/lM0fKKh
-        /hX5Qx5pfd0/0gPwLtqGd7Zvw3zVhjznK50zzlFFHT+aob3FCinucrlCT9qkuKEgxQ+yG4jA9js
-        1k+V9QbVpluUsfgVB
-X-Received: by 2002:a05:6638:1305:b0:33f:7e59:4bc7 with SMTP id r5-20020a056638130500b0033f7e594bc7mr3471387jad.316.1659726083690;
-        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5tl8wkqOGSRQbqQPvsP8x/sMHa+aTSdU4oxacleMUjEkM/f7HmEieSFt52FFtURojAjdepMg==
-X-Received: by 2002:a05:6638:1305:b0:33f:7e59:4bc7 with SMTP id r5-20020a056638130500b0033f7e594bc7mr3471385jad.316.1659726083508;
-        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id f43-20020a02242b000000b00342744f18a9sm1983541jaa.99.2022.08.05.12.01.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 12:01:23 -0700 (PDT)
-Date:   Fri, 5 Aug 2022 13:01:21 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, saeedm@nvidia.com,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        kevin.tian@intel.com, joao.m.martins@oracle.com, leonro@nvidia.com,
-        maorg@nvidia.com, cohuck@redhat.com
-Subject: Re: [PATCH V3 vfio 04/11] vfio: Move vfio.c to vfio_main.c
-Message-ID: <20220805130121.36a2697d.alex.williamson@redhat.com>
-In-Reply-To: <Yu08gdx2Py9vAN1n@nvidia.com>
-References: <20220731125503.142683-1-yishaih@nvidia.com>
-        <20220731125503.142683-5-yishaih@nvidia.com>
-        <Yu08gdx2Py9vAN1n@nvidia.com>
-Organization: Red Hat
+        with ESMTP id S237004AbiHETPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 15:15:18 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6194DF07;
+        Fri,  5 Aug 2022 12:15:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=i+098UWC6l99cEswBPhk9HEYm1VyxfN7HJa6lueXNqY=; b=YMdxLfj8Jw0WkNe8vfrkVe+jLc
+        hfr7tmc7kIuSXcyBCfGc774rsepLXUJKKFb6gKjMgwMujgBUnOsALlJFwtzwHhQmkSyVgm41rqv5+
+        rh8bmM7zouWQItL5vFsL9kMaiwe9G/f+lCwCL9RcwEyXZbo5Mlft1nqBO0DR8viWnqNWfax63lNJ8
+        eZqhtoA0Te0A0ecXQod2AK3X1wnkQzdkP7YFjAVmSiUvcaY/JRd/xwb3qYMV3twlZCvYSDhQx25Uc
+        nSkSt5bCZ5zLtzi8t0b9qSqHQm/k+37vnqjb5gIEGWoMLZix8g0Zsd3D9xNOFbuPbS+BQRgYiOuLg
+        spF8fHmQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oK2mw-0007RR-Vo; Fri, 05 Aug 2022 19:15:15 +0000
+Message-ID: <c389fb10-6eaf-7a86-6d50-f195eb29dd38@infradead.org>
+Date:   Fri, 5 Aug 2022 12:15:13 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next] docs: net: add an explanation of VF (and
+ other) Representors
+Content-Language: en-US
+To:     ecree@xilinx.com, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, corbet@lwn.net, linux-doc@vger.kernel.org,
+        Edward Cree <ecree.xilinx@gmail.com>, linux-net-drivers@amd.com
+References: <20220805165850.50160-1-ecree@xilinx.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220805165850.50160-1-ecree@xilinx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,35 +54,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Aug 2022 12:51:29 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Hi--
 
-> On Sun, Jul 31, 2022 at 03:54:56PM +0300, Yishai Hadas wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > 
-> > If a source file has the same name as a module then kbuild only supports
-> > a single source file in the module.
-> > 
-> > Rename vfio.c to vfio_main.c so that we can have more that one .c file
-> > in vfio.ko.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> > 
-> > ---
-> >  drivers/vfio/Makefile                | 2 ++
-> >  drivers/vfio/{vfio.c => vfio_main.c} | 0
-> >  2 files changed, 2 insertions(+)
-> >  rename drivers/vfio/{vfio.c => vfio_main.c} (100%)  
+On 8/5/22 09:58, ecree@xilinx.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
 > 
-> Alex, could you grab this patch for the current merge window?
+> There's no clear explanation of what VF Representors are for, their
+>  semantics, etc., outside of vendor docs and random conference slides.
+> Add a document explaining Representors and defining what drivers that
+>  implement them are expected to do.
 > 
-> It is a PITA to rebase across, it would be nice to have the rename in
-> rc1
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+> ---
+> diff --git a/Documentation/networking/representors.rst b/Documentation/networking/representors.rst
+> new file mode 100644
+> index 000000000000..4d28731a5b5b
+> --- /dev/null
+> +++ b/Documentation/networking/representors.rst
+> @@ -0,0 +1,219 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +=============================
+> +Network Function Representors
+> +=============================
+> +
+> +This document describes the semantics and usage of representor netdevices, as
+> +used to control internal switching on SmartNICs.  For the closely-related port
+> +representors on physical (multi-port) switches, see
+> +:ref:`Documentation/networking/switchdev.rst <switchdev>`.
+> +
+> +Motivation
+> +----------
+> +
+> +Since the mid-2010s, network cards have started offering more complex
+> +virtualisation capabilities than the legacy SR-IOV approach (with its simple
+> +MAC/VLAN-based switching model) can support.  This led to a desire to offload
+> +software-defined networks (such as OpenVSwitch) to these NICs to specify the
+> +network connectivity of each function.  The resulting designs are variously
+> +called SmartNICs or DPUs.
+> +
+> +Network function representors provide the mechanism by which network functions
+> +on an internal switch are managed.  They are used both to configure the
+> +corresponding function ('representee') and to handle slow-path traffic to and
+> +from the representee for which no fast-path switching rule is matched.
+> +
+> +That is, a representor is both a control plane object (representing the function
+> +in administrative commands) and a data plane object (one end of a virtual pipe).
+> +As a virtual link endpoint, the representor can be configured like any other
+> +netdevice; in some cases (e.g. link state) the representee will follow the
+> +representor's configuration, while in others there are separate APIs to
+> +configure the representee.
+> +
+> +What does a representor do?
+> +---------------------------
+> +
+> +A representor has three main rôles.
 
-No objection from me, I'll see if Linus picks up my current pull
-request and either pull this in or send it separately next week.
-Thanks,
+Just use "roles". dict.org and m-w.com are happy with that.
+m-w.com says for "role":
+  variants: or less commonly rôle
 
-Alex
-
+thanks.
+-- 
+~Randy
