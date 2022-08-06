@@ -2,208 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F047258B53D
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 13:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D64358B5B9
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 15:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230308AbiHFLYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Aug 2022 07:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S230211AbiHFNgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Aug 2022 09:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiHFLYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 07:24:53 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477D31054F
-        for <netdev@vger.kernel.org>; Sat,  6 Aug 2022 04:24:52 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id o1so3510497qkg.9
-        for <netdev@vger.kernel.org>; Sat, 06 Aug 2022 04:24:52 -0700 (PDT)
+        with ESMTP id S230018AbiHFNgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 09:36:02 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4817F60FB;
+        Sat,  6 Aug 2022 06:36:01 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso10626544pjo.1;
+        Sat, 06 Aug 2022 06:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=HzJh0YLghezA+W7ONhtFdDOIja3bIw6J8jHQmyCuUaY=;
-        b=M/guQFUESEYAjGGCGqLBSq++8M6Rg/0xNlAw+g9Dm9OWnrMO3ykQnOBx96rh51AflR
-         yJeJ1avg1dxwHvjOvZl3FTx7x6sjwokJ0qmDUNu8xcLuR2TWv1W2RP55kcBjpmYpTs0c
-         XjcubtuJHZB7VosOb56Gr1WfDw+kALqZYgNSbL2XL9/Hei0himq1eNUjBEXgn9A6GE3m
-         C8MtueZhY9uJNMFs6gjAgE5OxATmPMEReRD0en7O4i7LQeTj5CJ/g4/nq1/Jy9b06zZM
-         u5bxBpGJHSibLjH8/4HC3sYGY+nZdulA9SA+h3Ii0AGLJocDv2Al8kyKiVGIOPY+okxe
-         CxGw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:sender:from:to:cc;
+        bh=q//QPCFJ+lomTuvB83Pn/0/9ILoFCI64bQr/I2c0Ih8=;
+        b=X06xJcWuc7XtjDkM+GIg09mA43NDQCaFGZqaz7dEl9oe7JGVXOSiuyNCldX7PL1w18
+         bo1/Q0tyrxvVXIDdyGdRSo950yqpwWDBbB9pxEHDopF6umYdFKr5Eg6FgscWwhap/MkT
+         wZvnLMmxJNcN5DTHxgFhDf+QARuyIXYH2cGR5PMb799+tdOl1/A1DbSOSelrGkaaoUiY
+         AYXlJ9qX1+P4w7JMef7MP8HjPv1leEpaohl4tkCcjZbM+0MHxs/taDO9UtTMHrOeG6rm
+         PdPN9+TAZrjn+Fun6XLCVW35U8d74PDY2HH+VB8R6uusIY4KQOd/rKQtOmSGpXCIO3mG
+         ow+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=HzJh0YLghezA+W7ONhtFdDOIja3bIw6J8jHQmyCuUaY=;
-        b=Njszz79bQavHHi6xit9lWK3rcJ6Jrr0Mgz1dmygR4k7E2bT52AfEXHSzqHbpRnRT7N
-         SX0wzPQLqrQQH18N58oYwDJ/Qu36OE0bCMGELqfD9zZ0kDizE7IWaTlfCXF9jI5ogtEB
-         hG/F9RCdLamtpzd+OGmDOuOu01e94mtbCkvmgl34LYm8Y/sfBI8gC8YKE4bV1XJ28Us+
-         dxVzvt8YN99eDk3L4+Rp5LBeL/KVHCMFZT/Jc1OHotEsq6FiUO9DbIENdKoROlLNtSdZ
-         mJcf8D5+cBh4HS3chazGb7nF288n7MnHJAM3mKKV7POyT0YJdRfNcWXG96hhqJFiYFp+
-         iU5Q==
-X-Gm-Message-State: ACgBeo2wHC8QA2EG38hUmnY9puZ7Uy0RE+gIe386ICDCGXXSLjW6KofV
-        sK64hQOfjZtAh3x5O/QXem3bdsW0nT/WgeXQuBeH0A==
-X-Google-Smtp-Source: AA6agR4MS7Nb2kKGJLxBQuuGlLphpuIHnY2QPIRKDdbjq2m5UDUvJAr4xpbisWG5VWSe1uMkpN3bC2hlvIiW+/bR+BQ=
-X-Received: by 2002:a05:620a:4454:b0:6b5:d7b9:4839 with SMTP id
- w20-20020a05620a445400b006b5d7b94839mr8250346qkp.434.1659785091260; Sat, 06
- Aug 2022 04:24:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220721204404.388396-1-weiwan@google.com> <ca408271-8730-eb2b-f12e-3f66df2e643a@kernel.org>
-In-Reply-To: <ca408271-8730-eb2b-f12e-3f66df2e643a@kernel.org>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sat, 6 Aug 2022 07:24:35 -0400
-Message-ID: <CADVnQymVXMamTRP-eSKhwq1M612zx0ZoNd=rs4MtipJNGm5Wcw@mail.gmail.com>
-Subject: Re: [PATCH net v2] Revert "tcp: change pingpong threshold to 3"
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:sender:x-gm-message-state:from:to:cc;
+        bh=q//QPCFJ+lomTuvB83Pn/0/9ILoFCI64bQr/I2c0Ih8=;
+        b=7hr7GuH5QJzZRkv8XTrxhEQACnirWLDVLGfwLlyE0dWIqNH6rln9AwU/5tv3d09GyB
+         mjpc3yOmCxq6LA3VBCQpQedsWy0eX7HascovpX9HApT9yDp+fBsQ99yr55Cd0CnJlBpi
+         eEk4FarOG045ruzdoB9t1SvA/pzHfcLGfAE2iZpBFfW/WGzz/H/m11KaqJnR0bQULR31
+         ewr2ykyoGwL2hTdG9U9Bwp9m5qHOrvRCkzNSSVjgfE0DerdZiIKPAUTcEHN3fqRPOdUp
+         0HLRwi6g2xYVVkWI841thABN7P8VMU87oPtdChwKfWVjsMSg60NC3RLbL4XVObZBLrnx
+         5sCw==
+X-Gm-Message-State: ACgBeo1L2QQt4J+9j5sqJEkMgqinOp0RgzgIVD1ktreKBt5mCtWinLk4
+        DrN9HeUVDfE2FCHIYoXtQU8=
+X-Google-Smtp-Source: AA6agR4ZOlh71lA7ZC6N0opxCo1T2Q7kXeldIEQ9tBQ2L8U97SGnLbBUbCA34DhNmLSQsaCu4SpndQ==
+X-Received: by 2002:a17:903:41c1:b0:16f:68c:28 with SMTP id u1-20020a17090341c100b0016f068c0028mr10950996ple.74.1659792960607;
+        Sat, 06 Aug 2022 06:36:00 -0700 (PDT)
+Received: from localhost (220-135-95-34.hinet-ip.hinet.net. [220.135.95.34])
+        by smtp.gmail.com with ESMTPSA id h22-20020a63df56000000b0041cbcc1c222sm3102052pgj.41.2022.08.06.06.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 06:35:59 -0700 (PDT)
+Sender: AceLan Kao <acelan@gmail.com>
+From:   AceLan Kao <acelan.kao@canonical.com>
+To:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        LemmyHuang <hlm3280@163.com>, stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dmitrii Tarakanov <Dmitrii.Tarakanov@aquantia.com>,
+        Alexander Loktionov <Alexander.Loktionov@aquantia.com>,
+        David VomLehn <vomlehn@texas.net>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: atlantic: fix aq_vec index out of range error
+Date:   Sat,  6 Aug 2022 21:35:58 +0800
+Message-Id: <20220806133558.3897444-1-acelan.kao@canonical.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 6, 2022 at 6:02 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 21. 07. 22, 22:44, Wei Wang wrote:
-> > This reverts commit 4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
-> >
-> > This to-be-reverted commit was meant to apply a stricter rule for the
-> > stack to enter pingpong mode. However, the condition used to check for
-> > interactive session "before(tp->lsndtime, icsk->icsk_ack.lrcvtime)" is
-> > jiffy based and might be too coarse, which delays the stack entering
-> > pingpong mode.
-> > We revert this patch so that we no longer use the above condition to
-> > determine interactive session, and also reduce pingpong threshold to 1.
-> >
-> > Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
-> > Reported-by: LemmyHuang <hlm3280@163.com>
-> > Suggested-by: Neal Cardwell <ncardwell@google.com>
-> > Signed-off-by: Wei Wang <weiwan@google.com>
->
->
-> This breaks python-eventlet [1] (and was backported to stable trees):
-> ________________ TestHttpd.test_018b_http_10_keepalive_framing
-> _________________
->
-> self = <tests.wsgi_test.TestHttpd
-> testMethod=test_018b_http_10_keepalive_framing>
->
->      def test_018b_http_10_keepalive_framing(self):
->          # verify that if an http/1.0 client sends connection: keep-alive
->          # that we don't mangle the request framing if the app doesn't
-> read the request
->          def app(environ, start_response):
->              resp_body = {
->                  '/1': b'first response',
->                  '/2': b'second response',
->                  '/3': b'third response',
->              }.get(environ['PATH_INFO'])
->              if resp_body is None:
->                  resp_body = 'Unexpected path: ' + environ['PATH_INFO']
->                  if six.PY3:
->                      resp_body = resp_body.encode('latin1')
->              # Never look at wsgi.input!
->              start_response('200 OK', [('Content-type', 'text/plain')])
->              return [resp_body]
->
->          self.site.application = app
->          sock = eventlet.connect(self.server_addr)
->          req_body = b'GET /tricksy HTTP/1.1\r\n'
->          body_len = str(len(req_body)).encode('ascii')
->
->          sock.sendall(b'PUT /1 HTTP/1.0\r\nHost:
-> localhost\r\nConnection: keep-alive\r\n'
->                       b'Content-Length: ' + body_len + b'\r\n\r\n' +
-> req_body)
->          result1 = read_http(sock)
->          self.assertEqual(b'first response', result1.body)
->          self.assertEqual(result1.headers_original.get('Connection'),
-> 'keep-alive')
->
->          sock.sendall(b'PUT /2 HTTP/1.0\r\nHost:
-> localhost\r\nConnection: keep-alive\r\n'
->                       b'Content-Length: ' + body_len + b'\r\nExpect:
-> 100-continue\r\n\r\n')
->          # Client may have a short timeout waiting on that 100 Continue
->          # and basically immediately send its body
->          sock.sendall(req_body)
->          result2 = read_http(sock)
->          self.assertEqual(b'second response', result2.body)
->          self.assertEqual(result2.headers_original.get('Connection'),
-> 'close')
->
->  >       sock.sendall(b'PUT /3 HTTP/1.0\r\nHost:
-> localhost\r\nConnection: close\r\n\r\n')
->
-> tests/wsgi_test.py:648:
-> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-> _ _ _ _
-> eventlet/greenio/base.py:407: in sendall
->      tail = self.send(data, flags)
-> eventlet/greenio/base.py:401: in send
->      return self._send_loop(self.fd.send, data, flags)
-> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-> _ _ _ _
->
-> self = <eventlet.greenio.base.GreenSocket object at 0x7f5f2f73c9a0>
-> send_method = <built-in method send of socket object at 0x7f5f2f73d520>
-> data = b'PUT /3 HTTP/1.0\r\nHost: localhost\r\nConnection: close\r\n\r\n'
-> args = (0,), _timeout_exc = timeout('timed out'), eno = 32
->
->      def _send_loop(self, send_method, data, *args):
->          if self.act_non_blocking:
->              return send_method(data, *args)
->
->          _timeout_exc = socket_timeout('timed out')
->          while True:
->              try:
->  >               return send_method(data, *args)
-> E               BrokenPipeError: [Errno 32] Broken pipe
->
-> eventlet/greenio/base.py:388: BrokenPipeError
-> ====================
->
-> Reverting this revert on the top of 5.19 solves the issue.
->
-> Any ideas?
+From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
 
-Interesting. This revert should return the kernel back to the delayed
-ACK behavior it had for many years before May 2019 and Linux 5.1,
-which contains the commit it is reverting:
+The final update statement of the for loop exceeds the array range, the
+dereference of self->aq_vec[i] is not checked and then leads to the
+index out of range error.
+Also fixed this kind of coding style in other for loop.
 
-  4a41f453bedfd tcp: change pingpong threshold to 3
+[   97.937604] UBSAN: array-index-out-of-bounds in drivers/net/ethernet/aquantia/atlantic/aq_nic.c:1404:48
+[   97.937607] index 8 is out of range for type 'aq_vec_s *[8]'
+[   97.937608] CPU: 38 PID: 3767 Comm: kworker/u256:18 Not tainted 5.19.0+ #2
+[   97.937610] Hardware name: Dell Inc. Precision 7865 Tower/, BIOS 1.0.0 06/12/2022
+[   97.937611] Workqueue: events_unbound async_run_entry_fn
+[   97.937616] Call Trace:
+[   97.937617]  <TASK>
+[   97.937619]  dump_stack_lvl+0x49/0x63
+[   97.937624]  dump_stack+0x10/0x16
+[   97.937626]  ubsan_epilogue+0x9/0x3f
+[   97.937627]  __ubsan_handle_out_of_bounds.cold+0x44/0x49
+[   97.937629]  ? __scm_send+0x348/0x440
+[   97.937632]  ? aq_vec_stop+0x72/0x80 [atlantic]
+[   97.937639]  aq_nic_stop+0x1b6/0x1c0 [atlantic]
+[   97.937644]  aq_suspend_common+0x88/0x90 [atlantic]
+[   97.937648]  aq_pm_suspend_poweroff+0xe/0x20 [atlantic]
+[   97.937653]  pci_pm_suspend+0x7e/0x1a0
+[   97.937655]  ? pci_pm_suspend_noirq+0x2b0/0x2b0
+[   97.937657]  dpm_run_callback+0x54/0x190
+[   97.937660]  __device_suspend+0x14c/0x4d0
+[   97.937661]  async_suspend+0x23/0x70
+[   97.937663]  async_run_entry_fn+0x33/0x120
+[   97.937664]  process_one_work+0x21f/0x3f0
+[   97.937666]  worker_thread+0x4a/0x3c0
+[   97.937668]  ? process_one_work+0x3f0/0x3f0
+[   97.937669]  kthread+0xf0/0x120
+[   97.937671]  ? kthread_complete_and_exit+0x20/0x20
+[   97.937672]  ret_from_fork+0x22/0x30
+[   97.937676]  </TASK>
 
-It sounds like perhaps this test you mention has an implicit
-dependence on the timing of delayed ACKs.
+v2. fixed "warning: variable 'aq_vec' set but not used"
 
-A few questions:
+Fixes: 97bde5c4f909 ("net: ethernet: aquantia: Support for NIC-specific code")
+Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-(1) What are the timeout values in this test? If there is some
-implicit or explicit timeout value less than the typical Linux TCP
-40ms delayed ACK timer value then this could be the problem. If you
-make sure all timeouts are at least, say, 300ms then this should
-remove dependencies on delayed ACK behavior (and make the test more
-portable).
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index e11cc29d3264..6986f0080072 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -265,12 +265,10 @@ static void aq_nic_service_timer_cb(struct timer_list *t)
+ static void aq_nic_polling_timer_cb(struct timer_list *t)
+ {
+ 	struct aq_nic_s *self = from_timer(self, t, polling_timer);
+-	struct aq_vec_s *aq_vec = NULL;
+ 	unsigned int i = 0U;
+ 
+-	for (i = 0U, aq_vec = self->aq_vec[0];
+-		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i])
+-		aq_vec_isr(i, (void *)aq_vec);
++	for (i = 0U; self->aq_vecs > i; ++i)
++		aq_vec_isr(i, (void *)self->aq_vec[i]);
+ 
+ 	mod_timer(&self->polling_timer, jiffies +
+ 		  AQ_CFG_POLLING_TIMER_INTERVAL);
+@@ -1065,10 +1063,11 @@ u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
+ 
+ 	for (tc = 0U; tc < self->aq_nic_cfg.tcs; tc++) {
+ 		for (i = 0U, aq_vec = self->aq_vec[0];
+-		     aq_vec && self->aq_vecs > i;
+-		     ++i, aq_vec = self->aq_vec[i]) {
++		     aq_vec && self->aq_vecs > i; ++i) {
+ 			data += count;
+ 			count = aq_vec_get_sw_stats(aq_vec, tc, data);
++			if (self->aq_vecs > i)
++				aq_vec = self->aq_vec[i];
+ 		}
+ 	}
+ 
+@@ -1382,7 +1381,6 @@ int aq_nic_set_loopback(struct aq_nic_s *self)
+ 
+ int aq_nic_stop(struct aq_nic_s *self)
+ {
+-	struct aq_vec_s *aq_vec = NULL;
+ 	unsigned int i = 0U;
+ 
+ 	netif_tx_disable(self->ndev);
+@@ -1400,9 +1398,8 @@ int aq_nic_stop(struct aq_nic_s *self)
+ 
+ 	aq_ptp_irq_free(self);
+ 
+-	for (i = 0U, aq_vec = self->aq_vec[0];
+-		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i])
+-		aq_vec_stop(aq_vec);
++	for (i = 0U; self->aq_vecs > i; ++i)
++		aq_vec_stop(self->aq_vec[i]);
+ 
+ 	aq_ptp_ring_stop(self);
+ 
+-- 
+2.25.1
 
-(2) Does this test use the TCP_NODELAY socket option to disable
-Nagle's algorithm? Presumably it should, given that it's a network app
-that cares about latency. Omitting the TCP_NODELAY socket option can
-cause request/response traffic to depend on delayed ACK behavior.
-
-(3) If (1) and (2) do not fix the test, would you be able to provide
-binary .pcap traces of the behavior with the test (a) passing and (b)
-failing? For example:
-   sudo tcpdump -i any -w /tmp/trace.pcap -s 100 port 80 &
-   # run test
-   killall tcpdump
-
-thanks,
-neal
