@@ -2,123 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD1358B2EE
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 02:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0C458B2F3
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 02:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241351AbiHFAHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Aug 2022 20:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
+        id S241368AbiHFAMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Aug 2022 20:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiHFAG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 20:06:59 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D2D2D1C0
-        for <netdev@vger.kernel.org>; Fri,  5 Aug 2022 17:06:58 -0700 (PDT)
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 275HHEQK008056
-        for <netdev@vger.kernel.org>; Fri, 5 Aug 2022 17:06:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=zrAu2d6Awa3DTHIWUHb462duCgxHnfPFFfUZlSOGOdk=;
- b=W7VxoW26lBChzYV20+mc0J/dR5QIBW4h/FfI5Bto30OULnmy5B9NrFllx8J0iVABGSYu
- m+tzIjZvU8zPThdbfH/UizvrJwVDIiwLDGRyzr76DJpTE51oEn7mgX5FY1dQICOOJ0By
- KuX7hsIo5pP0hhWL3j5Rt5P9KPr08mGJzwg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hr9gncupp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 05 Aug 2022 17:06:58 -0700
-Received: from twshared6447.05.prn5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 5 Aug 2022 17:06:56 -0700
-Received: by devbig150.prn5.facebook.com (Postfix, from userid 187975)
-        id 0362ED612258; Fri,  5 Aug 2022 17:06:53 -0700 (PDT)
-From:   Jie Meng <jmeng@fb.com>
-To:     <netdev@vger.kernel.org>
-CC:     <kafai@fb.com>, Jie Meng <jmeng@fb.com>
-Subject: [PATCH net-next] tcp: Make SYN ACK RTO tunable by BPF programs with TFO
-Date:   Fri, 5 Aug 2022 17:06:35 -0700
-Message-ID: <20220806000635.472853-1-jmeng@fb.com>
+        with ESMTP id S230490AbiHFAMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Aug 2022 20:12:08 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1691CF;
+        Fri,  5 Aug 2022 17:12:07 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id f65so3877179pgc.12;
+        Fri, 05 Aug 2022 17:12:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=2OPxgYF4D6h5wjZImTyJGUOKy1Actvd35pc3Pp0CfsA=;
+        b=R6IiMOxo6nk166hYodD1UaZKm62f3UMNK0sHQqoMGpQwCRijpo/+vByx5eX2BrBTpn
+         MKQvZGR/cQDsnP/falppuXzOQok0zRedWFlFdvXzqfGs8uUbCR0W2Uam8ZSl4xPdP9Ns
+         gwsYu/6EkvrWbish+OX9oN9y0NtFsfB9ynwvAkGNSjkKQ3dhb8mwnHWMuK6Yfbzt9c08
+         YAPggUW2LmSjveSWAs1hOR1ZsIAzEOTgYZMWqus8McB3r6i5W64vA/9OWd6+dezj8SB+
+         noOivZ/WwpsUvFUNrzcToIeVtkzI+rwRKROu2Gv+rFuSrEVCpBiFPhLf4RVk/nqsf3Kp
+         kbeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=2OPxgYF4D6h5wjZImTyJGUOKy1Actvd35pc3Pp0CfsA=;
+        b=QCcO8u/v5LgqTfIZobVOi96783JrAQAJSFUBovKB9SnZumY7J3uZ+Au23L8KO17dLW
+         eoEkVvNn7SJeib/h9qLBKwxbi/iknYRg9dUvL5YkSHqRhnHDcbgN95mKmPCpqsZswgeF
+         3+8W82p9cwcVYHOsb+sc4SFx1GrkwUjH0BJHsilok9ioUkP1bBI4p/Hf5kkgAeXleJYt
+         /6mnqiIsPjo0oY9wpZF8u+yTfdIPPL2wfL4YQH2hvDbUZu6QmdJ0oU+sBCyfkbg0tNd5
+         NzL6EUgh7XnTs9YOJFL7qxF04JDQZsa0ZECiCb6ItaBBhD0xj5bqtbpLCzSJBwyQp/YJ
+         7erg==
+X-Gm-Message-State: ACgBeo37OXArbr2U2MHKK+SzLThOodnIZQB3Xj0FgHKYV6uVbhv+xHYt
+        OIoKkI4cddtqcuKDECkoH1A=
+X-Google-Smtp-Source: AA6agR6hAeAi+xVVv9gTwp9NeZdxhn/kJD4CsCtYZ4lChRjbLM6AQC27qNZLx/sDI9IPUQZSrkuD/Q==
+X-Received: by 2002:a65:5644:0:b0:41c:5b91:9ba with SMTP id m4-20020a655644000000b0041c5b9109bamr7522931pgs.553.1659744727155;
+        Fri, 05 Aug 2022 17:12:07 -0700 (PDT)
+Received: from localhost (fwdproxy-prn-116.fbsv.net. [2a03:2880:ff:74::face:b00c])
+        by smtp.gmail.com with ESMTPSA id m14-20020a170902f64e00b0016dc0a6f576sm3541026plg.250.2022.08.05.17.12.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 17:12:06 -0700 (PDT)
+From:   Adel Abouchaev <adel.abushaev@gmail.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
+        imagedong@tencent.com, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [RFC net-next v2 0/6] net: support QUIC crypto
+Date:   Fri,  5 Aug 2022 17:11:47 -0700
+Message-Id: <20220806001153.1461577-1-adel.abushaev@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <Adel Abouchaev <adel.abushaev@gmail.com>
+References: <Adel Abouchaev <adel.abushaev@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: QW0ECVXV440zKOD1ojOxit4m6nSxCIf8
-X-Proofpoint-ORIG-GUID: QW0ECVXV440zKOD1ojOxit4m6nSxCIf8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-05_12,2022-08-05_01,2022-06-22_01
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of the hardcoded TCP_TIMEOUT_INIT, this diff calls tcp_timeout_in=
-it
-to initiate req->timeout like the non TFO SYN ACK case.
+QUIC requires end to end encryption of the data. The application usually
+prepares the data in clear text, encrypts and calls send() which implies
+multiple copies of the data before the packets hit the networking stack.
+Similar to kTLS, QUIC kernel offload of cryptography reduces the memory
+pressure by reducing the number of copies.
 
-Tested using the following packetdrill script, on a host with a BPF
-program that sets the initial connect timeout to 10ms.
+The scope of kernel support is limited to the symmetric cryptography,
+leaving the handshake to the user space library. For QUIC in particular,
+the application packets that require symmetric cryptography are the 1RTT
+packets with short headers. Kernel will encrypt the application packets
+on transmission and decrypt on receive. This series implements Tx only,
+because in QUIC server applications Tx outweighs Rx by orders of
+magnitude.
 
-`../../common/defaults.sh`
+Supporting the combination of QUIC and GSO requires the application to
+correctly place the data and the kernel to correctly slice it. The
+encryption process appends an arbitrary number of bytes (tag) to the end
+of the message to authenticate it. The GSO value should include this
+overhead, the offload would then subtract the tag size to parse the
+input on Tx before chunking and encrypting it.
 
-// Initialize connection
-    0 socket(..., SOCK_STREAM, IPPROTO_TCP) =3D 3
-   +0 setsockopt(3, SOL_TCP, TCP_FASTOPEN, [1], 4) =3D 0
-   +0 bind(3, ..., ...) =3D 0
-   +0 listen(3, 1) =3D 0
+With the kernel cryptography, the buffer copy operation is conjoined
+with the encryption operation. The memory bandwidth is reduced by 5-8%.
+When devices supporting QUIC encryption in hardware come to the market,
+we will be able to free further 7% of CPU utilization which is used
+today for crypto operations.
 
-   +0 < S 0:0(0) win 32792 <mss 1000,sackOK,FO TFO_COOKIE>
-   +0 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-   +.01 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-   +.02 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-   +.04 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-   +.01 < . 1:1(0) ack 1 win 32792
 
-   +0 accept(3, ..., ...) =3D 4
+Adel Abouchaev (6):
+  Documentation on QUIC kernel Tx crypto.
+  Define QUIC specific constants, control and data plane structures
+  Add UDP ULP operations, initialization and handling prototype
+    functions.
+  Implement QUIC offload functions
+  Add flow counters and Tx processing error counter
+  Add self tests for ULP operations, flow setup and crypto tests
+  v2: Moved the inner QUIC Kconfig from the ULP patch to QUIC patch.
+  v2: Updated the tests to match the uAPI context structure fields.
+  v2: Formatted the quic.rst document.
 
-Signed-off-by: Jie Meng <jmeng@fb.com>
----
- net/ipv4/tcp_fastopen.c | 3 ++-
- net/ipv4/tcp_timer.c    | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ Documentation/networking/index.rst     |    1 +
+ Documentation/networking/quic.rst      |  186 +++
+ include/net/inet_sock.h                |    2 +
+ include/net/netns/mib.h                |    3 +
+ include/net/quic.h                     |   59 +
+ include/net/snmp.h                     |    6 +
+ include/net/udp.h                      |   33 +
+ include/uapi/linux/quic.h              |   61 +
+ include/uapi/linux/snmp.h              |   11 +
+ include/uapi/linux/udp.h               |    4 +
+ net/Kconfig                            |    1 +
+ net/Makefile                           |    1 +
+ net/ipv4/Makefile                      |    3 +-
+ net/ipv4/udp.c                         |   14 +
+ net/ipv4/udp_ulp.c                     |  190 ++++
+ net/quic/Kconfig                       |   16 +
+ net/quic/Makefile                      |    8 +
+ net/quic/quic_main.c                   | 1446 ++++++++++++++++++++++++
+ net/quic/quic_proc.c                   |   45 +
+ tools/testing/selftests/net/.gitignore |    3 +-
+ tools/testing/selftests/net/Makefile   |    2 +-
+ tools/testing/selftests/net/quic.c     | 1024 +++++++++++++++++
+ tools/testing/selftests/net/quic.sh    |   45 +
+ 23 files changed, 3161 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/networking/quic.rst
+ create mode 100644 include/net/quic.h
+ create mode 100644 include/uapi/linux/quic.h
+ create mode 100644 net/ipv4/udp_ulp.c
+ create mode 100644 net/quic/Kconfig
+ create mode 100644 net/quic/Makefile
+ create mode 100644 net/quic/quic_main.c
+ create mode 100644 net/quic/quic_proc.c
+ create mode 100644 tools/testing/selftests/net/quic.c
+ create mode 100755 tools/testing/selftests/net/quic.sh
 
-diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
-index 825b216d11f5..45cc7f1ca296 100644
---- a/net/ipv4/tcp_fastopen.c
-+++ b/net/ipv4/tcp_fastopen.c
-@@ -272,8 +272,9 @@ static struct sock *tcp_fastopen_create_child(struct =
-sock *sk,
- 	 * The request socket is not added to the ehash
- 	 * because it's been added to the accept queue directly.
- 	 */
-+	req->timeout =3D tcp_timeout_init(child);
- 	inet_csk_reset_xmit_timer(child, ICSK_TIME_RETRANS,
--				  TCP_TIMEOUT_INIT, TCP_RTO_MAX);
-+				  req->timeout, TCP_RTO_MAX);
-=20
- 	refcount_set(&req->rsk_refcnt, 2);
-=20
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index b4dfb82d6ecb..cb79127f45c3 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -428,7 +428,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk=
-, struct request_sock *req)
- 	if (!tp->retrans_stamp)
- 		tp->retrans_stamp =3D tcp_time_stamp(tp);
- 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
--			  TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-+			  req->timeout << req->num_timeout, TCP_RTO_MAX);
- }
-=20
-=20
---=20
+-- 
 2.30.2
 
