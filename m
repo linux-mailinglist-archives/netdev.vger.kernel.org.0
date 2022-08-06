@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F4558B605
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 16:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49BEE58B615
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 16:32:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiHFOSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Aug 2022 10:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
+        id S231367AbiHFOcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Aug 2022 10:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiHFOSA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 10:18:00 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8F411A22
-        for <netdev@vger.kernel.org>; Sat,  6 Aug 2022 07:17:59 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 12so4928481pga.1
-        for <netdev@vger.kernel.org>; Sat, 06 Aug 2022 07:17:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=2ER2WW01ET2wH1WV2jGlyhputEhjwKA2tNpxchjmONE=;
-        b=ilBHK/J1hqBrLwaUKoS8EYROLGxOsh8/TetRDPMcw5OKVt1sYjPRC14naiiR/o3Ip6
-         s6jBHW1mqjLgctZnVk1xbbpcHUl7xD15F6PEjZk1fq3QKDliBybFw4+YW8xoidqzda6S
-         5izDC4d4tdk/UTTbb/8PzL/uKDb7NLTsJvp3uu66x8yh0fdFY/w1tv952+8H15jL8tZE
-         gcHZQ1bvr0+f2pNWdOTzZFmGS58oZmEf4lGaOos3meO3faILK1LmKvlwxHT6+0iPiWtw
-         iaDNyoWo+JewELqUa1tyWxUq1qK0qk+tQhixLIvD5u4HS4PRzecdcSKIbSxE0vZsLkXI
-         nUzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=2ER2WW01ET2wH1WV2jGlyhputEhjwKA2tNpxchjmONE=;
-        b=knm7rIJt3PPp6UTbZSFSqbDWzo1lop6lhprX/dSqOZwJMiL/KhH4OtKquEdJq2E233
-         5wkNhXa9GkwkMPxP8u1rtyN5apKNrFPLa1lDE/GoR0N4PwzGkLfcdivXkNdc2h+BmU72
-         IGZvNwBsXb4BHApTCeq2e0vz9GLEaAszuzA7fGLzhqHUU5UmhtTXxRDfAT6XI4HVFx09
-         5q2ij3ima7Vik33gdQqRZLP7Qn5lRGQRXZMs7WiVUJ3vhlSAoR7MwrYinq80ksUDmvaG
-         2su5UWkKf3ggZMcUM1JERiEmbO35XHMVvxr+XaCZAcgcu/LFDdehILDnnBQ6f4Qwdjh0
-         QfyA==
-X-Gm-Message-State: ACgBeo0hNICnKt4qNfAs+ort7E7kpYx+zx7HYRz1YnHdUpujJeKx/TdC
-        PWP9XIcmXJCj8yEpYBaozOUOy1tE3tiDR1vyJ2o=
-X-Google-Smtp-Source: AA6agR7GJ0h0MJELxsYYKhiTwpxLW3fj/5EWjqMttjrQfxl+crfStxypYNqc0Mwihp5VyEpVvBi59KZ82omPy7K16EE=
-X-Received: by 2002:a63:8b44:0:b0:41c:df4c:7275 with SMTP id
- j65-20020a638b44000000b0041cdf4c7275mr9595528pge.434.1659795479172; Sat, 06
- Aug 2022 07:17:59 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a17:902:d50c:b0:16f:14c5:2d63 with HTTP; Sat, 6 Aug 2022
- 07:17:58 -0700 (PDT)
-Reply-To: Drlisawilliams919@gmail.com
-From:   Drlisawilliams <furlanamanda467@gmail.com>
-Date:   Sat, 6 Aug 2022 16:17:58 +0200
-Message-ID: <CAF=1E6Ua1Mqc1ZdkdiczVgi+ajr0+U3JcKWxnDXb_E8fX3L_Cw@mail.gmail.com>
-Subject: Hi Dear,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        with ESMTP id S229853AbiHFOcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 10:32:18 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6BFCDF43;
+        Sat,  6 Aug 2022 07:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=io15jxipwkxp8dnmKQ
+        w0UQoEYG0T27HzvS5H04/lWlA=; b=h+R+2Yg4qw9b3KWTETWmceCkMhBzCnoN9F
+        cGCKHNvFMLsZOTPF7Etoxo86gHbFWEEHSN6tFhybBWBsCswzqjS5QvpIN2DLTFtZ
+        RI86nWWRDsN1gHndU8wqXFfo8N3HdDYvaSUb4Q/5947Rg3rvewmgt6Y9e63zNexP
+        4Wsd/QoDE=
+Received: from user-virtual-machine.localdomain (unknown [124.133.191.247])
+        by smtp4 (Coremail) with SMTP id HNxpCgDXZ94be+5icYDGTQ--.25852S4;
+        Sat, 06 Aug 2022 22:31:19 +0800 (CST)
+From:   Jialiang Wang <wangjialiang0806@163.com>
+To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, niejianglei2021@163.com,
+        wangjialiang0806@163.com
+Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] nfp: fix use-after-free in area_cache_get()
+Date:   Sat,  6 Aug 2022 22:30:43 +0800
+Message-Id: <20220806143043.106787-1-wangjialiang0806@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: HNxpCgDXZ94be+5icYDGTQ--.25852S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uw1Utw1kKryrGr1fWF4rZrb_yoW8Ar1UpF
+        WrJ3yFkr48XrsrXw4DJayxX34rCa9xtFyrW345Cw4rua4avr13JF1xKr45ZF4DurW8Jayx
+        AFyjqa4fGrs8J3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jwDGrUUUUU=
+X-Originating-IP: [124.133.191.247]
+X-CM-SenderInfo: pzdqwy5ldoxtdqjqmiqw6rljoofrz/1tbivxdVzlWB0wjmhAAAse
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:544 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [furlanamanda467[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [furlanamanda467[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [drlisawilliams919[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dear,
+area_cache_get() calls cpp->op->area_init() and uses cache->area by
+ nfp_cpp_area_priv(area), but in
+ nfp_cpp_area_release()->nfp_cpp_area_put()->__release_cpp_area() we
+ already freed the cache->area.
 
-My name is Dr Lisa Williams from the United States.I am a French and
-American nationality (dual) living in the U.S and sometimes in France
-for Work Purpose.
+To avoid the use-after-free, reallocate a piece of memory for the
+ cache->area by nfp_cpp_area_alloc().
 
-I hope you consider my friend request. I will share some of my pics
-and more details about myself when I get your response.
+Note: This vulnerability is triggerable by providing emulated device
+ equipped with specified configuration.
 
-Thanks
-With love
-Lisa
+BUG: KASAN: use-after-free in nfp6000_area_init+0x74/0x1d0 [nfp]
+Write of size 4 at addr ffff888005b490a0 by task insmod/226
+Call Trace:
+  <TASK>
+  dump_stack_lvl+0x33/0x46
+  print_report.cold.12+0xb2/0x6b7
+  ? nfp6000_area_init+0x74/0x1d0 [nfp]
+  kasan_report+0xa5/0x120
+  ? nfp6000_area_init+0x74/0x1d0 [nfp]
+  nfp6000_area_init+0x74/0x1d0 [nfp]
+  area_cache_get.constprop.8+0x2da/0x360 [nfp]
+
+Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
+---
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+index 34c0d2ddf9ef..99091f24d2ba 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+@@ -871,6 +871,10 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		nfp_cpp_area_release(cache->area);
+ 		cache->id = 0;
+ 		cache->addr = 0;
++		cache->area = nfp_cpp_area_alloc(cpp,
++						 NFP_CPP_ID(7,
++						 NFP_CPP_ACTION_RW, 0),
++						 0, cache->size);
+ 	}
+ 
+ 	/* Adjust the start address to be cache size aligned */
+-- 
+2.17.1
+
