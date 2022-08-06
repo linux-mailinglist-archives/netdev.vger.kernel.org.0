@@ -2,70 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 906FC58B48B
-	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 10:25:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C21258B491
+	for <lists+netdev@lfdr.de>; Sat,  6 Aug 2022 10:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbiHFIYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Aug 2022 04:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
+        id S230025AbiHFIa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Aug 2022 04:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiHFIYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 04:24:40 -0400
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 06 Aug 2022 01:24:39 PDT
-Received: from mail1.systemli.org (mail1.systemli.org [93.190.126.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6030714030
-        for <netdev@vger.kernel.org>; Sat,  6 Aug 2022 01:24:39 -0700 (PDT)
-From:   Nick Hainke <vincent@systemli.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
-        s=default; t=1659774277;
-        bh=EAriawOA4lz7ohIRct2NpDLexxoJzVkbnojxJWSFc3U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lIXeNghSZIuJ4xwLqAdWFLJb0fWWbQ0zzfYLm9YP3Zua89G+a5ns3ZcC1e1FfAtW1
-         /GxbtffosijkTwVQlrD6J63s3US5i8FlBjNI+iSbN/py2lEQO6xlkVJoAHDhJcIliN
-         YHr+sjB22cuQcwSPMmmiBS+VWVp75YQ03g9KO5dR9LJ5t9ZvS3b9ILp8xpgWkjhPDP
-         IBDy4wtL17sh9M82Qi9jr4KwUXutBjIaPcIEUYVmAFwYlnveW4DAl+/Hg47fJ8SE0e
-         lEe243Mly7cNBuVWCY5q3flz5Y/5Q9qrtQPmCzUpJjQIg0Yhg0ggKPrLt3Vjps8NrO
-         hybMVNCvM45rg==
-To:     netdev@vger.kernel.org
-Cc:     Nick Hainke <vincent@systemli.org>
-Subject: [PATCH iproute2] ipstats: Define MIN function to fix undefined references
-Date:   Sat,  6 Aug 2022 10:24:06 +0200
-Message-Id: <20220806082406.216286-1-vincent@systemli.org>
+        with ESMTP id S229685AbiHFIa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Aug 2022 04:30:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71298E0E5;
+        Sat,  6 Aug 2022 01:30:56 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659774653;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jD62rE7HTpABv1viMwh70H2T9Lk2mqB4lZpeEUAn7rs=;
+        b=E1CMU6Dl6hEHJsFFfONIFG26dG22lAy7Is0O1sAUYTeZ1srkiAZEe7JFtbZNyesMnJfwOG
+        hUl5AvC0Q8mnm7GZzQ3J9/Iia437hi/gbtkY9hUoRA2lsMHbLgyX0UVJfWQtPEGx9PIkOy
+        rVD4sGRedtJ32HjEjEm9vP2eUpVmvdQFXNbNNIwQ5GRxdCI4/pWC1nCj+dC83MG0pvimJs
+        CRA9OKRL9jFO8rI43SoZSPV0YOAncDpoI6HG3tT/L+O7pxrJWFyCgdOHNayh2shIlZhFXa
+        efXnddpctbWVUHH8KUnM/OgSzjMbs4JEdGxiriLaW5qE/huno18y5Yk2LZPGoQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659774653;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jD62rE7HTpABv1viMwh70H2T9Lk2mqB4lZpeEUAn7rs=;
+        b=+4GPKoy6VlEqy5c/lQ6BDMSTFeovlKihb/Hs4NPgW3pr8Uvtc+BYZDVGQyr5zslyvGvo1n
+        CF9bgtDm4R23oZCA==
+To:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Klimov <aklimov@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dennis Zhou <dennis@kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Frederic Weisbecker <fweisbec@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tejun Heo <tj@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
+        Yury Norov <yury.norov@gmail.com>, linux-mm@kvack.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 11/16] time: optimize tick_check_preferred()
+In-Reply-To: <20220718192844.1805158-12-yury.norov@gmail.com>
+References: <20220718192844.1805158-1-yury.norov@gmail.com>
+ <20220718192844.1805158-12-yury.norov@gmail.com>
+Date:   Sat, 06 Aug 2022 10:30:53 +0200
+Message-ID: <87fsi9rcxu.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes errors in the form of:
- in function `ipstats_show_64':
- <artificial>:(.text+0x4e30): undefined reference to `MIN'
+On Mon, Jul 18 2022 at 12:28, Yury Norov wrote:
 
-Signed-off-by: Nick Hainke <vincent@systemli.org>
----
- ip/ipstats.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> tick_check_preferred() calls cpumask_equal() even if
+> curdev->cpumask == newdev->cpumask. Fix it.
 
-diff --git a/ip/ipstats.c b/ip/ipstats.c
-index 5cdd15ae..2f500fc8 100644
---- a/ip/ipstats.c
-+++ b/ip/ipstats.c
-@@ -6,6 +6,10 @@
- #include "utils.h"
- #include "ip_common.h"
- 
-+#ifndef MIN
-+#define MIN(a, b) ((a) < (b) ? (a) : (b))
-+#endif
-+
- struct ipstats_stat_dump_filters {
- 	/* mask[0] filters outer attributes. Then individual nests have their
- 	 * filtering mask at the index of the nested attribute.
--- 
-2.37.1
+What's to fix here? It's a pointless operation in a slow path and all
+your "fix' is doing is to make the code larger.
 
+Thanks,
+
+        tglx
