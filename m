@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E5758B9C1
-	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 08:01:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C95B58B9C2
+	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 08:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiHGGBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Aug 2022 02:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S232812AbiHGGCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Aug 2022 02:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiHGGBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 02:01:13 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344D2B874
-        for <netdev@vger.kernel.org>; Sat,  6 Aug 2022 23:01:11 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id p10so7512808wru.8
-        for <netdev@vger.kernel.org>; Sat, 06 Aug 2022 23:01:11 -0700 (PDT)
+        with ESMTP id S229904AbiHGGCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 02:02:01 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA8ACE37
+        for <netdev@vger.kernel.org>; Sat,  6 Aug 2022 23:01:59 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id 186-20020a1c02c3000000b003a34ac64bdfso3626004wmc.1
+        for <netdev@vger.kernel.org>; Sat, 06 Aug 2022 23:01:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=TKefnLrtTQKsiMi+0BPxYk0WL1t7uR4y4cu8hieo2BE=;
-        b=q1KRKhoi6b7DAoKJ9TDHv3U/hSncFbzkESuIvmP+xEgN2SjEgNNhxJRphbPsSsPTEo
-         ZbBhv/Nk7lbyMGUpYiq3ycSFU977z+9ulmx9FCl5SJs/jD2QqKzQSL20AzMnqRQz4ppA
-         ukdhFPUq+8Tv2+2Kcx2a4BFamM81JmpMpXmvNlVjIB971hz0t+/qczWLSaOPYjNXNmZn
-         hqC/H9OU78WWHd2W/tGg5LxbMcUCcwoOPZbwORj+EFEe075HtbxPN6jOLFthw4rKFezi
-         eGCt70dbmSbGum3ONc0eqxD28632gwRUU3sUJjlKVCOP1vJg/atbmQ09OD0W2JyVJSHH
-         0/Dw==
+        bh=6gmfXr9QGls9vVBZe4q8fXg3fecncB9at70wrmD69Qw=;
+        b=Dx8EBlMlnujAcL9POR4z2LCil7xzrzSLu+M5x7sy8g+aE5taUgevZdLyf0/mS75T23
+         iUFElXtj1qgGr8Y2Zlza1phWrmuZh1kUwpWtpMcYfteGwM73U36Rp6r9oijy66kG7E94
+         GX6JIZbgquVW3oJfK1RyvQTZWog2GcFlqKc2ZzFYWLvpVItoMcFEFZm85YQ70LlgMw+d
+         bLYCL/my6HbG7S3O96nEjd0WXLR4Ho98v6oXOBtvhPYR5nwrjfMAsYP0tXRHflH9w9Da
+         3eQKEA6h2+yb3QWYKFMEVQWc3tzJSgifRWm49OTbLu4rmjdtRMvhaGbTVIzrJXWiq3tc
+         Hu0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=TKefnLrtTQKsiMi+0BPxYk0WL1t7uR4y4cu8hieo2BE=;
-        b=uosI9xOEQEN1UO9G2DhbyKKeLIno2JFunhAOktlB9oOxBUhCdWmmTthZcRjsqiK1Ju
-         8kwMceA+Bsq6YXzygNLKRPLMNxQbdyj0IGYdG/QYDJS5eyGWwrlhZDSkUOclSxiPuLHU
-         gdPZY904DBDLMXE/WzRQc8JF287ZDOWbHW3BYesSFX4vcuWY1A3m7NWequQT3+18xNl1
-         7Ma3T1BDLsj0I77vywdeVDKq+fCfp3k7tqYtvU2o/5Igd0buItyS6d+wd+awH1O2vSzZ
-         oyMDXszUrrXrnJaWMXjZT89KY40m1a3Lr/37O0w86WHWPaq1RIUvdircbRrwz9Z+Vziv
-         3+Wg==
-X-Gm-Message-State: ACgBeo0HIW79/LtBWoGjqd5T8k74cohHBtgePNJ81i42/Fq79HT7A6TR
-        1I8Aevz9evRMYAfIzvirLqM=
-X-Google-Smtp-Source: AA6agR4rVmjOul6FT271VqPIl45KbaRuHVkA3Hx+w0uVxLRLknw/B1DEExR9ETYQwGI/96sGxAc/8Q==
-X-Received: by 2002:adf:e44b:0:b0:220:5bc5:e942 with SMTP id t11-20020adfe44b000000b002205bc5e942mr8156461wrm.179.1659852069746;
-        Sat, 06 Aug 2022 23:01:09 -0700 (PDT)
+        bh=6gmfXr9QGls9vVBZe4q8fXg3fecncB9at70wrmD69Qw=;
+        b=THnRoS20FiwXIPfcTF0RTytrTHZ1pPBDDOoj/EAzzPx1WfQHgPuDOrEvxwbROOk8xH
+         qqnZRmwI9f54//2unw6hJqw9aZ0uYibtmKs4dP7U2Rm8pqXQXNv027GcEf2i1HMcDvzV
+         lEfGMnJOrWYuw225vMxRx+K7t/KJBy3hsN6rHe2WD0EwV3RewEXMjpKxxNnrtFdruL8A
+         xm55Lzw8251CihzeT8q+1eYdloYISHtRL0z/TjBZamf/8UuhYJ1x8ddJRnocqb0zEAQS
+         xnRKDkgIHT1QnXwDjn29IP1zvPsn0WBoSTLnloAfVYxE3ekTc6y1yyw1DYoVT2Uscccf
+         LfQw==
+X-Gm-Message-State: ACgBeo0ORHf8wJ44cOcO2A8nXy8HPPPkWBtRtkY8UGdR3BipAO5xteeO
+        BNxgCAZOekiZ2yP4md0qEE0=
+X-Google-Smtp-Source: AA6agR4lYC6slSrl3T1Nx2CPVmWF+jjCNqrA3g9Pf1ItD882JXOkCl0+19ap63ZSipEQrbtp7zAs6w==
+X-Received: by 2002:a7b:c4d6:0:b0:3a5:3abc:8f6f with SMTP id g22-20020a7bc4d6000000b003a53abc8f6fmr776212wmk.10.1659852118426;
+        Sat, 06 Aug 2022 23:01:58 -0700 (PDT)
 Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id n11-20020a05600c500b00b003a4fb64efcasm13905062wmr.26.2022.08.06.23.01.08
+        by smtp.gmail.com with ESMTPSA id f6-20020a05600c4e8600b003a37d8b864esm10892226wmq.30.2022.08.06.23.01.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Aug 2022 23:01:09 -0700 (PDT)
-Message-ID: <5696e2f2-1a0d-7da9-700b-d665045c79d9@gmail.com>
-Date:   Sun, 7 Aug 2022 09:01:06 +0300
+        Sat, 06 Aug 2022 23:01:58 -0700 (PDT)
+Message-ID: <a76a2ff8-e2b7-acd1-f5eb-32daddb23df5@gmail.com>
+Date:   Sun, 7 Aug 2022 09:01:56 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
@@ -69,9 +69,9 @@ References: <20220722235033.2594446-1-kuba@kernel.org>
  <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
  <20220803182432.363b0c04@kernel.org>
  <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
- <20220804085950.414bfa41@kernel.org>
+ <20220804083508.3631071e@kernel.org>
 From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220804085950.414bfa41@kernel.org>
+In-Reply-To: <20220804083508.3631071e@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -86,7 +86,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/4/2022 6:59 PM, Jakub Kicinski wrote:
+On 8/4/2022 6:35 PM, Jakub Kicinski wrote:
 > On Thu, 4 Aug 2022 11:05:18 +0300 Tariq Toukan wrote:
 >>>    	trace_tls_device_decrypted(sk, tcp_sk(sk)->copied_seq - rxm->full_len,
 >>
@@ -95,39 +95,7 @@ On 8/4/2022 6:59 PM, Jakub Kicinski wrote:
 >> ------------[ cut here ]------------
 >> WARNING: CPU: 4 PID: 45887 at net/tls/tls_strp.c:53
 > 
-> OK, if you find another I promise I'll try to hassle a machine with
-> offload from somewhere... here's the fix for the new one:
-> 
-> --->8----------------
-> tls: rx: device: don't try to copy too much on detach
-> 
-> Another device offload bug, we use the length of the output
-> skb as an indication of how much data to copy. But that skb
-> is sized to offset + record length, and we start from offset.
-> So we end up double-counting the offset which leads to
-> skb_copy_bits() returning -EFAULT.
-> 
-> Reported-by: Tariq Toukan <tariqt@nvidia.com>
-> Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   net/tls/tls_strp.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-> index f0b7c9122fba..9b79e334dbd9 100644
-> --- a/net/tls/tls_strp.c
-> +++ b/net/tls/tls_strp.c
-> @@ -41,7 +41,7 @@ static struct sk_buff *tls_strp_msg_make_copy(struct tls_strparser *strp)
->   	struct sk_buff *skb;
->   	int i, err, offset;
->   
-> -	skb = alloc_skb_with_frags(0, strp->anchor->len, TLS_PAGE_ORDER,
-> +	skb = alloc_skb_with_frags(0, strp->stm.full_len, TLS_PAGE_ORDER,
->   				   &err, strp->sk->sk_allocation);
->   	if (!skb)
->   		return NULL;
+> Is this with 1.2 or 1.3?
 
-Hi Jakub,
-Thanks for the patch.
-We're testing it and I'll update.
+Repro with 1.2.
+We didn't try with 1.3.
