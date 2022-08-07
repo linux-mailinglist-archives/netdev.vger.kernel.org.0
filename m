@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A78B858BB9A
-	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 17:37:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 379C358BB9E
+	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 17:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234107AbiHGPhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Aug 2022 11:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
+        id S234788AbiHGPjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Aug 2022 11:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233356AbiHGPhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 11:37:22 -0400
+        with ESMTP id S233356AbiHGPjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 11:39:04 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFED3626B;
-        Sun,  7 Aug 2022 08:37:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D4A626B;
+        Sun,  7 Aug 2022 08:39:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=l55pJQcZ1NtSw92ANqP6zdKYAHPUxRJf02byqPAHpeU=; b=J41lFEvKvGWs40UEuQ3L9XZjX9
-        0qgdt79wCDmsaIgb0pFUl3+A5LSvtbQq2Sr6agU2ozxeFF0C4fcJGnnGXT4jj69p+z6jglRBoPVOD
-        ARccBb4jXL6eFywTBIwUncZHajIY/5M7JjAm2w/RY1KQzj1hMm35Eu+eIAFLqwaGwVr+Kq7J06JOW
-        Sgdb6BmP5a43VejM51kP1wj/janEK2e6BRT3a+uKEGvqGreEsrJqrbOnSGxRITccwNju33yHhdOZQ
-        Bm2aj+RIUHvJa5EkUFnTQDtMrJA6EKxcIbg5//OVfNyFfIQITA1+hC1Pml2hGRkwkNWrrDrtZDVRe
-        SxKiUOoQ==;
+        bh=FfOmDqrueH5zbkn3yATMhpqMWWEe+35EmBPi72/LV0I=; b=qAULYagpbd2RoWJByTE0dULDjL
+        r7Tu7V5xMI6abRrlBB1Hdw79O2+Gi1+SniR1hAmkwGAZLtm63NGffvzeN9UTGCm5bw4JRv7N3/vug
+        hf4eGxeOAY49HIsm/Vot9pTpSQF7Q8xM6I2Rt5rEoIcAvOGE8ciejoIAfsZ/B2IsWvr82U8P7Hk4Q
+        C13RHqD5sFxOCSCBo5zBx6YZ1ZD36P7qDjBwFgNMsZ2OSQ7nnkn9tW6FLa5TptfpHKGEa0NR0w1Z+
+        k8DeFu3wlxquxk0Jsn7hIHZjWq2TmYaGFvCrd1/xXk1jUKgyliHRhTH6USSKsazGe0o59QY0IFDhP
+        FxNVrtnQ==;
 Received: from [187.56.70.103] (helo=[192.168.1.60])
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oKiKD-0011fz-IR; Sun, 07 Aug 2022 17:36:21 +0200
-Message-ID: <5b1805ff-eb9f-8575-ceb0-9d2e768f3589@igalia.com>
-Date:   Sun, 7 Aug 2022 12:35:56 -0300
+        id 1oKiMm-0011kP-W9; Sun, 07 Aug 2022 17:39:01 +0200
+Message-ID: <5e9d4906-3601-f07d-a886-7a723c6867c8@igalia.com>
+Date:   Sun, 7 Aug 2022 12:38:33 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 01/13] ARM: Disable FIQs (but not IRQs) on CPUs
- shutdown paths
+Subject: Re: [PATCH v2 03/13] firmware: google: Test spinlock on panic path to
+ avoid lockups
 Content-Language: en-US
-To:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Marc Zyngier <maz@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     bhe@redhat.com, pmladek@suse.com, akpm@linux-foundation.org,
+To:     kexec@lists.infradead.org, linux-efi@vger.kernel.org,
+        Evan Green <evgreen@chromium.org>
+Cc:     pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org,
         linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
         kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
@@ -55,11 +54,13 @@ Cc:     bhe@redhat.com, pmladek@suse.com, akpm@linux-foundation.org,
         paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
+        will@kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Julius Werner <jwerner@chromium.org>,
+        David Gow <davidgow@google.com>
 References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-2-gpiccoli@igalia.com>
+ <20220719195325.402745-4-gpiccoli@igalia.com>
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220719195325.402745-2-gpiccoli@igalia.com>
+In-Reply-To: <20220719195325.402745-4-gpiccoli@igalia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,53 +74,39 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 19/07/2022 16:53, Guilherme G. Piccoli wrote:
-> Currently the regular CPU shutdown path for ARM disables IRQs/FIQs
-> in the secondary CPUs - smp_send_stop() calls ipi_cpu_stop(), which
-> is responsible for that. IRQs are architecturally masked when we
-> take an interrupt, but FIQs are high priority than IRQs, hence they
-> aren't masked. With that said, it makes sense to disable FIQs here,
-> but there's no need for (re-)disabling IRQs.
+> Currently the gsmi driver registers a panic notifier as well as
+> reboot and die notifiers. The callbacks registered are called in
+> atomic and very limited context - for instance, panic disables
+> preemption and local IRQs, also all secondary CPUs (not executing
+> the panic path) are shutdown.
 > 
-> More than that: there is an alternative path for disabling CPUs,
-> in the form of function crash_smp_send_stop(), which is used for
-> kexec/panic path. This function relies on a SMP call that also
-> triggers a busy-wait loop [at machine_crash_nonpanic_core()], but
-> without disabling FIQs. This might lead to odd scenarios, like
-> early interrupts in the boot of kexec'd kernel or even interrupts
-> in secondary "disabled" CPUs while the main one still works in the
-> panic path and assumes all secondary CPUs are (really!) off.
+> With that said, taking a spinlock in this scenario is a dangerous
+> invitation for lockup scenarios. So, fix that by checking if the
+> spinlock is free to acquire in the panic notifier callback - if not,
+> bail-out and avoid a potential hang.
 > 
-> So, let's disable FIQs in both paths and *not* disable IRQs a second
-> time, since they are already masked in both paths by the architecture.
-> This way, we keep both CPU quiesce paths consistent and safe.
-> 
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Michael Kelley <mikelley@microsoft.com>
-> Cc: Russell King <linux@armlinux.org.uk>
+> Fixes: 74c5b31c6618 ("driver: Google EFI SMI")
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: David Gow <davidgow@google.com>
+> Cc: Evan Green <evgreen@chromium.org>
+> Cc: Julius Werner <jwerner@chromium.org>
 > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 > 
 > ---
 > 
 > V2:
-> - Small wording improvement (thanks Michael Kelley);
-> - Only disable FIQs, since IRQs are masked by architecture
-> definition when we take an interrupt. Thanks a lot Russell
-> and Marc for the discussion [0].
+> - do not use spin_trylock anymore, to avoid messing with
+> non-panic paths; now we just check the spinlock state in
+> the panic notifier before taking it. Thanks Evan for the
+> review/idea!
 > 
-> Should we add a Fixes tag here? If so, maybe the proper target is:
-> b23065313297 ("ARM: 6522/1: kexec: Add call to non-crashing cores through IPI")
-> 
-> [0] https://lore.kernel.org/lkml/Ymxcaqy6DwhoQrZT@shell.armlinux.org.uk/
-> 
->  arch/arm/kernel/machine_kexec.c | 2 ++
->  arch/arm/kernel/smp.c           | 5 ++---
->  2 files changed, 4 insertions(+), 3 deletions(-)
+>  drivers/firmware/google/gsmi.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > [...]
 
-Hi Mark / Russell, do you think this one is good enough or is there room
-for improvement?
+Hi Evan, do you think this one is good now, based on your previous review?
 
-Appreciate the reviews!
+Appreciate any feedback!
 Cheers,
 
 
