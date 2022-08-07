@@ -2,110 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F17758BBAF
-	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 17:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0CC58BBB7
+	for <lists+netdev@lfdr.de>; Sun,  7 Aug 2022 17:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235066AbiHGPtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Aug 2022 11:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
+        id S234156AbiHGP4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Aug 2022 11:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiHGPtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 11:49:08 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076FB95AB;
-        Sun,  7 Aug 2022 08:49:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=a5evKL0dxZts3vCV7sxGwPKkDHYfYVKHor4w3PAWq2c=; b=UgGUADWMWMdDX5W8sGGx3nbKJG
-        AyM7ZqrY3yIDLwhLgALxOOJOECEOo5OQS5ih+S5YxzxuCBHGQDtjqOYnfuVd1QY/S0lbrTrxNFHpY
-        Bro6Oe1QYCxHOwwuzSAMX9Ztw5K7CMBYUdkIG4k00taEVXehekd48/vX2B4Tt3rHc5cAKZ2ZdZyIq
-        B0LQrO9dG7ieDm45SHEcp8eQHM3Q1AUmE1kS6N6hBmg2Dp3Fd5IgZJvoAIKWK9M8w/IR4wZ/aAAbo
-        voQpoRP6X3DitgWapEOWxQp3OQv+ZQuNJbfakbxcntbmu5bBXwSsbnb9bgbIrl6WxIGEm7EI/J0Kt
-        EqMN83vA==;
-Received: from [187.56.70.103] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oKiWT-001239-V7; Sun, 07 Aug 2022 17:49:02 +0200
-Message-ID: <612c2d54-59db-9d2c-cea3-2ffcfcaffec9@igalia.com>
-Date:   Sun, 7 Aug 2022 12:48:36 -0300
+        with ESMTP id S232661AbiHGP4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 11:56:45 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE3A95B7
+        for <netdev@vger.kernel.org>; Sun,  7 Aug 2022 08:56:44 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id j66-20020a9d17c8000000b00636b0377a8cso4052875otj.1
+        for <netdev@vger.kernel.org>; Sun, 07 Aug 2022 08:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=tnkMy90miiYykpI+4R1JbqPUfm8FqXUj36yuJdO5lZQ=;
+        b=04TcRDDnQ/n11tjO3q2a9hJ4jGbfIbJaW7mx0SB6gZ5L4yoY8n3fLm3er880S4x4iX
+         vzYte+KixhJeKl+VthtAq3fFD9LJarWfY356ntsGb0STqseQGrOP8MkME58FPFPcj90Y
+         +YDXcGXh6AOQ5o819qrFPx/RP3vmykt6X7yuBOwyAod3AxgrwanNJnphHPRRLfNtyv1B
+         7aLSl1pfs7CDf+d2xNRPQEzeg1qEsccxszVPUxCxyCOPlVPaKSpJh6cokkwKcaUEhg7R
+         6WV868ttwy1j/VZoWibA0kF/REF19gC7jVCOCpRwUG4OrjHIpd5odWIcx6xBFbJ0xuYt
+         yvCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=tnkMy90miiYykpI+4R1JbqPUfm8FqXUj36yuJdO5lZQ=;
+        b=2CEaOntv24e4Td4+eqylu+sMyeYYI3gNaNE3wastsU78psUFBd+0upm/Xplf4Oytcj
+         /RS8tn5Xvn2HcNIpjUCHVg9MHW7C1xGXF/GDexnePhRyYfwDmzetUwEASY0U5Cm31QDT
+         0dVqPv3IPc3QSSPWjUvJY+N1aMIiRS3QDI3cMii0gNz8FtM3NKqCc3jSOMjDxpDOUByx
+         KzKIeBUmM9v2you9TdoEE/cA97GmaZjjeNInaHpTkHralxRZgeMVkJKKfQryLUZjbzDu
+         L2HF/kfgx8N+LGg+NMPX7lLv8lorQ/ntYlbhqFJ9dQqUfxLnosU1jl2CZZ5mAWkNtMjU
+         fuYA==
+X-Gm-Message-State: ACgBeo2OryCjZcZPNn8fNqhR2jx0Gf0/szPsRuq9nJ2U2xbR9Zx67q9/
+        p58jbl2vg3imbnwk2IZrL2U6Orgu2yTOAYsNlzJI
+X-Google-Smtp-Source: AA6agR4Jo+rOQva+fvprNdCfYk170dTkQW52EuCCfVrlN5lste6gHm1XEEVirBB3TnHF9GTNsVkrILmixIDOMbPMhIc=
+X-Received: by 2002:a9d:4d13:0:b0:636:bdd9:b57b with SMTP id
+ n19-20020a9d4d13000000b00636bdd9b57bmr3280310otf.26.1659887803849; Sun, 07
+ Aug 2022 08:56:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
-Content-Language: en-US
-To:     kexec@lists.infradead.org, Tony Luck <tony.luck@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>, linux-edac@vger.kernel.org
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, pmladek@suse.com
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220719195325.402745-11-gpiccoli@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220806101253.13865-1-toiwoton@gmail.com>
+In-Reply-To: <20220806101253.13865-1-toiwoton@gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sun, 7 Aug 2022 11:56:33 -0400
+Message-ID: <CAHC9VhQz_gcJHuKEpkJTgOw1PLHNoEY+vniEpW+qs=76w0eLPQ@mail.gmail.com>
+Subject: Re: [PATCH] netlabel: fix typo in comment
+To:     Topi Miettinen <toiwoton@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/07/2022 16:53, Guilherme G. Piccoli wrote:
-> The altera_edac panic notifier performs some data collection with
-> regards errors detected; such code relies in the regmap layer to
-> perform reads/writes, so the code is abstracted and there is some
-> risk level to execute that, since the panic path runs in atomic
-> context, with interrupts/preemption and secondary CPUs disabled.
-> 
-> Users want the information collected in this panic notifier though,
-> so in order to balance the risk/benefit, let's skip the altera panic
-> notifier if kdump is loaded. While at it, remove a useless header
-> and encompass a macro inside the sole ifdef block it is used.
-> 
-> Cc: Dinh Nguyen <dinguyen@kernel.org>
-> Cc: Petr Mladek <pmladek@suse.com>
-> Cc: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> 
+On Sat, Aug 6, 2022 at 6:13 AM Topi Miettinen <toiwoton@gmail.com> wrote:
+>
+> 'IPv4 and IPv4' should be 'IPv4 and IPv6'.
+>
+> Signed-off-by: Topi Miettinen <toiwoton@gmail.com>
 > ---
-> 
-> V2:
-> - new patch, based on the discussion in [0].
-> [0] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
-> 
->  drivers/edac/altera_edac.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
-> [...]
+>  net/netlabel/netlabel_unlabeled.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hey Tony / Dinh, do you think this patch is good, based on the
-discussion we had [0] last iteration?
+Thanks for catching this.
 
-Thanks in advance,
+Acked-by: Paul Moore <paul@paul-moore.com>
 
-
-Guilherme
-
-
-[0]
-https://lore.kernel.org/lkml/599b72f6-76a4-8e6d-5432-56fb1ffd7e0b@igalia.com/
+-- 
+paul-moore.com
