@@ -2,82 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A77658C479
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 09:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDE658C47F
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 09:57:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241868AbiHHH4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 03:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        id S242011AbiHHH5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 03:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232167AbiHHH4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 03:56:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9191E5FDC
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 00:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659945411;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AufWZZEcgThI2xBgpMKruzYOgK1FWSrmvzjD3Nvo93Q=;
-        b=HLM8ROvV42hgXX7JO115DQX3PC8JNm7G3G2Lz7hY3E72+uAFAlG+aza6rdz4KdnbMoluSj
-        E9HptPP5wwpLdBfZx6II7OyxpLLaRr98D9k+w2Y+wxOqxO9/rItRZSTQ9+bsmRFHWibTM2
-        2NvFWaz5yboetgChLBvfIP4FVQdVGJ4=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-604-JRRCIIebMSS1itAD5E4LIA-1; Mon, 08 Aug 2022 03:56:50 -0400
-X-MC-Unique: JRRCIIebMSS1itAD5E4LIA-1
-Received: by mail-qt1-f198.google.com with SMTP id d29-20020ac8615d000000b0033d168124e9so6313193qtm.19
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 00:56:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=AufWZZEcgThI2xBgpMKruzYOgK1FWSrmvzjD3Nvo93Q=;
-        b=JrL6vzthoHuJFuPUkP0dDYDV8WpLe8m9HuQ2rBzYfCs6r0z34rOmVLQw3rGJG3FfaK
-         TO1xy98ZeTSxQPngqy6/VTqhb++VrBPOQT+3BTUEMJzv4EiomwbSJWrGxV3UsZvx0l5m
-         q9ztc04qTcSwfY88TZWomVuc74MTqraICFFY9RWx0g8szb7LRhJEGogHSN1kl20oDzH5
-         QbPelou09UI+iEpgzFcZo4qxltw/npDy0bfF2+vgZim2JBLmO/dg/+epjfyhMm4t7ihA
-         4219IAFn+Ngw9R6rfRjKHf96F+jUlnD8zGTWOwti0pojci4fO36wPUtDnRxD6UHRm61q
-         vXNA==
-X-Gm-Message-State: ACgBeo0orQ8XSLPMCTJ6fqMvUtICHOg9bU2YhinsLCWz8X0L1dKElcwt
-        rSv8WkZYs2J83mZiiw4XDtSdVnSIcTejvV9Gg04ljT/0D1sjklmB8gF90UGIa46LRlmMlVWy4II
-        DDfv2+MS5gDSXhcYO
-X-Received: by 2002:a05:620a:2b8b:b0:6b9:43ca:4a6 with SMTP id dz11-20020a05620a2b8b00b006b943ca04a6mr3566707qkb.346.1659945409701;
-        Mon, 08 Aug 2022 00:56:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5AHQLL6/c6cBtSoanSesmnPrpZdXyxLWrWNaQRi8fOEBNqs018hbyfcdBhlapIkl42VoQl4w==
-X-Received: by 2002:a05:620a:2b8b:b0:6b9:43ca:4a6 with SMTP id dz11-20020a05620a2b8b00b006b943ca04a6mr3566697qkb.346.1659945409523;
-        Mon, 08 Aug 2022 00:56:49 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id b16-20020a05622a021000b0031eddc83560sm7421933qtx.90.2022.08.08.00.56.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 00:56:48 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 09:56:40 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237712AbiHHH53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 03:57:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CE813D39
+        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 00:57:27 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oKxd6-0008Ov-7v; Mon, 08 Aug 2022 09:56:52 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 87AA1C45A6;
+        Mon,  8 Aug 2022 07:56:46 +0000 (UTC)
+Date:   Mon, 8 Aug 2022 09:56:45 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>,
+        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        George Zhang <georgezhang@vmware.com>,
-        Dmitry Torokhov <dtor@vmware.com>,
-        Andy King <acking@vmware.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 2/2] vsock: Set socket state back to
- SS_UNCONNECTED in vsock_connect_timeout()
-Message-ID: <20220808075640.5it462iozqgecxih@sgarzare-redhat>
-References: <a02c6e7e3135473d254ac97abc603d963ba8f716.1659862577.git.peilin.ye@bytedance.com>
- <5cf1337b4f6e82bc0a4eb0bef422a53dcc9d584a.1659862577.git.peilin.ye@bytedance.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: Re: [PATCH] can: j1939: fix memory leak of skbs
+Message-ID: <20220808075645.qtgwu64mjc2rxnuc@pengutronix.de>
+References: <20220805150216.66313-1-pchelkin@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hiqec7dmmpfnqmy6"
 Content-Disposition: inline
-In-Reply-To: <5cf1337b4f6e82bc0a4eb0bef422a53dcc9d584a.1659862577.git.peilin.ye@bytedance.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220805150216.66313-1-pchelkin@ispras.ru>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,28 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 07, 2022 at 02:00:46AM -0700, Peilin Ye wrote:
->From: Peilin Ye <peilin.ye@bytedance.com>
->
->Imagine two non-blocking vsock_connect() requests on the same socket.
->The first request schedules @connect_work, and after it times out,
->vsock_connect_timeout() sets *sock* state back to TCP_CLOSE, but keeps
->*socket* state as SS_CONNECTING.
->
->Later, the second request returns -EALREADY, meaning the socket "already
->has a pending connection in progress", even if the first request has
->already timed out.
->
->As suggested by Stefano, fix it by setting *socket* state back to
->SS_UNCONNECTED, so that the second request will return -ETIMEDOUT.
->
->Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
->Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
->Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
->---
->(new patch in v2)
 
-Thanks for sending this :-)
+--hiqec7dmmpfnqmy6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+On 05.08.2022 18:02:16, Fedor Pchelkin wrote:
+> We need to drop skb references taken in j1939_session_skb_queue() when
+> destroying a session in j1939_session_destroy(). Otherwise those skbs
+> would be lost.
+>=20
+> Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
+>=20
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+>=20
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
+Added to can/master
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--hiqec7dmmpfnqmy6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLwwboACgkQrX5LkNig
+010SAgf8DcRHAVx/USEkzkATwto/JOfRALIMKu8UHkPr+0JyLricXyQYn4NPMUjg
+3dP3ZYZY3l5Pg5hCrto9W0T1tgn/9SxRR7ngIgqX46YNphbBgIr07DjWMOrB5Lv+
+YnrdkYgWfBH2rx1f6BJfF+9Dmur3vLomVG7IpwemLDeWa4azE2f9gRnJwHLBbfGX
+RuvaBIgA+F6qAMXdU9RZv8d4/NGlI3gHQdvzrmNIZA79NEIVZMQA3DrZroN/W8t1
+Hf/mJncv4eRYt38RcDoihu/CKEbS3C4gq2olzLN4xA1h+jUDJsDNdBHDHfd0w1fo
+/3KKaSQleo2KY+k8pFkGm3LivhmhQQ==
+=TBCJ
+-----END PGP SIGNATURE-----
+
+--hiqec7dmmpfnqmy6--
