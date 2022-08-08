@@ -2,61 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D53EB58CFEB
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 23:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F155358D026
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 00:33:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244201AbiHHVvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 17:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S238347AbiHHWdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 18:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238812AbiHHVvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 17:51:14 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0401837D;
-        Mon,  8 Aug 2022 14:51:13 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id kb8so19024332ejc.4;
-        Mon, 08 Aug 2022 14:51:13 -0700 (PDT)
+        with ESMTP id S238925AbiHHWd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 18:33:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A352193F2;
+        Mon,  8 Aug 2022 15:33:28 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id y13so19088015ejp.13;
+        Mon, 08 Aug 2022 15:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=otg60AufERYTqDC1MTXvUQXU1Bq6/yb6ZQ9eUtFwppA=;
-        b=B1muCApCKw0PKw5o0QeGdtTWIadHlNhwuGcHpHxSAXwv5SnZ9w0iUkOsUZBv16877L
-         NEHUZJJb69YKj7ZYb2LCtZaYWGKqsfP0BSUySuecaPvuKbKl28PJTLc8GZCngMe7ZY8p
-         HtI1PfLJIrv/xjdqYoLNYL1/Nl8nI6nb6XP3mSt4KrgrnM3a5qqgOnbI+zABhyssiJWO
-         9Zik4iGeawLcQEmvuJvPrdCbccAjqts6EIonKoC/mXXdW+3/fP+gGJz+e/7KgOnrpcts
-         N2J21TJxIyQBjDpeFVXa9gOYBhxvSxdBr1L6pRt2b/s0sDzmkt+cZ88xJoA2nMIm2/3i
-         TLfg==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=KMXQ/Pwj7yDaZ7TRzg/t/aATv4ZfeHOhQlXQrMZVKBA=;
+        b=j3sZULbKIqIZbAamBjBRRR39xeiXXPQsf+PI6szKCszlTfbUArigeAIlyNbwu12Fs7
+         No1RdPepj/Xljl5HxmR60rMWgizu3kCwnM2SdQv2nkYbVGBNj2Lx9K8R21qfcon37j43
+         Shnhrj/VeXJRQMHkPr5tVXOLTTypCbSyKR2nHjvtkWuHLf/G7HfEZSJy6edK6vmmJzn2
+         kbhsQXtcc4OZoZEiknGUjoA20qlsKlyY7yA0NV2G0ryxzzHdxbs3TofiAK/+BI/nv7M4
+         HiRLT6L5feNATp/4R9wSWGwPUOM9U1cxk1GvZiC/KEzUdwdurnr1iuLKn32jSKFLJINX
+         1mfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=otg60AufERYTqDC1MTXvUQXU1Bq6/yb6ZQ9eUtFwppA=;
-        b=fr7HlXLr2WT4/g/Py8mss5TPrS2+u0vgdy4WaBUhPUucP5aDkh03fgZU/InKdBIDkh
-         /OsZquzWm6QsdHY+4np/JYtZFnihTLBFWZ2gtKnh/4KYtYdxG5q9yUuxjjF1gPvkjPEU
-         ipZHJlr33xVbRlSoJ1iQ9I9cYrfwgwE398ksWUFNPxtkEGS55Oe5+WZyxN63YcVTZvtc
-         2Fu66bjbImmf4Z2SFunXVDgHbCxhbsVxksm56Z+o9fpnj9zAUYpe68AsDG1ML8ZTsZ9Y
-         XZEyYV1thuXyck1X3p5MXOZ6szBR63UHoU0zTKYmFcv/H0ooDYxP+YKtJgWYBFna8uAz
-         RlBg==
-X-Gm-Message-State: ACgBeo1r7fRJ6VkxF/k8LsKIapeJxY9N3lGHT5WiKlPNIsDwObn1WQdT
-        Oudz+BZo8A9/h9OVF8c0v8lHzXXE4KM9Gp9txTU=
-X-Google-Smtp-Source: AA6agR5GZc/2WVDCq80du7287di40nBg8bw9b0KXfn3G6wRl1MJwcc3dWhmsrJxskHCkUtZ3D92y56AAqc7u2MqAmNs=
-X-Received: by 2002:a17:906:4bd3:b0:731:3bdf:b95c with SMTP id
- x19-20020a1709064bd300b007313bdfb95cmr7408694ejv.677.1659995472416; Mon, 08
- Aug 2022 14:51:12 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=KMXQ/Pwj7yDaZ7TRzg/t/aATv4ZfeHOhQlXQrMZVKBA=;
+        b=5pQYlkt+QBMYzRN2uJYqHa14HI2/muCQglv+yJQM4Xmu8JOwkKVtF9HvU0SQlAbBRD
+         DBajtseTPcmoTGD/a58DzINoAZPq2J7l9r41GguX1y+3P4N5Jti+S/NDyTFZMIF1UrPz
+         iDuc9mAcugfawOTa5fmrWHcCyDaAU2DnlsBiaCoRdQ3n7oCLVM7ufTE2oR+CBNPJH/+y
+         6aXRLSqoDcnMiq6fIlEN3DHVjiZd1YsRpekcVqrzxtHnKibKWL+LOfTu32Sbln2lZuIz
+         GkbA2dhH55Yu+9WVNUX+5npHdueeH0/1YGrveKgw9STrFNY24vsCXo8qFSf1YYLQiEbM
+         PtQw==
+X-Gm-Message-State: ACgBeo1oJkD0klqGfPppWR6hZ8NOC/d7jzrfXjGE79ouze0o3RS63EHn
+        VGF5pxpgT4dCgyUveq4XeGu/uyZXWOXyxsNSe6o=
+X-Google-Smtp-Source: AA6agR5QhVsszhSijvfbG8Fw8DLy0BZulXTgtsciGWMcGiEwJkfX5R28DfJEKhIA7I4EMnfxmSWPK0qKnhBU9WxskiQ=
+X-Received: by 2002:a17:907:6e22:b0:731:152:2504 with SMTP id
+ sd34-20020a1709076e2200b0073101522504mr11517720ejc.545.1659998006964; Mon, 08
+ Aug 2022 15:33:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220805232834.4024091-1-luiz.dentz@gmail.com>
- <20220805174724.12fcb86a@kernel.org> <CABBYNZLPkVHJRtGkfV8eugAgLoSxK+jf_-UwhSoL2n=9J9TFcw@mail.gmail.com>
- <20220808143011.7136f07a@kernel.org> <CABBYNZKmuUpmUChz+tixFCOE_pUeaJq0Sbqkvjy54zd9H=GB4A@mail.gmail.com>
-In-Reply-To: <CABBYNZKmuUpmUChz+tixFCOE_pUeaJq0Sbqkvjy54zd9H=GB4A@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 8 Aug 2022 14:51:00 -0700
-Message-ID: <CABBYNZJXdt_aL2SOH_Eu9PDaLhHksTRJDBPKSDitXKURPqG-7w@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2022-08-05
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <20220808093304.46291-1-liuhangbin@gmail.com>
+In-Reply-To: <20220808093304.46291-1-liuhangbin@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 8 Aug 2022 15:33:15 -0700
+Message-ID: <CAEf4BzYL1TQwo1231s83pjTdFPk9XWWhfZC5=KzkU-VO0k=0Ug@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: try to add a name for bpftool
+ self-created maps
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -68,41 +75,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On Mon, Aug 8, 2022 at 2:33 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> As discussed before[1], the bpftool self-created maps can appear in final
+> map show output due to deferred removal in kernel. These maps don't have
+> a name, which would make users confused about where it comes from.
+>
+> Adding names for these maps could make users know what these maps used for.
+> It also could make some tests (like test_offload.py, which skip base maps
+> without names as a workaround) filter them out.
+>
+> As Quentin suggested, add a small wrapper to fall back with no name
+> if kernel is not supported.
+>
+> [1] https://lore.kernel.org/bpf/CAEf4BzY66WPKQbDe74AKZ6nFtZjq5e+G3Ji2egcVytB9R6_sGQ@mail.gmail.com/
+>
+> Suggested-by: Quentin Monnet <quentin@isovalent.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 22 +++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+>
 
-On Mon, Aug 8, 2022 at 2:36 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Jakub,
->
-> On Mon, Aug 8, 2022 at 2:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Mon, 8 Aug 2022 12:38:25 -0700 Luiz Augusto von Dentz wrote:
-> > > > Did you end up switching to the no-rebase/pull-back model or are you
-> > > > still rebasing?
-> > >
-> > > Still rebasing, I thought that didn't make any difference as long as
-> > > the patches apply.
-> >
-> > Long term the non-rebasing model is probably better since it'd be great
-> > for the bluetooth tree to be included in linux-next.
->
-> You mean that bluetooth-next would be pulled directly into linux-next
-> rather than net-next?
->
-> > Since you haven't started using that model, tho, would you mind
-> > repairing the Fixes tags in this PR? :)
->
-> Let me fix them.
+Hm... this is pretty ugly. And unfortunately I mostly ignored the
+previous discussion, sorry about that.
 
-Is there a script or something which can be used to verify the Fix
-tags? Or you can actually tell me what are the hashes that appear not
-to be on net.
+To give you my view of this. I've considered making bpf_prog_load()
+and bpf_map_create() smart enough to ignore name if kernel doesn't
+support program or map name, respectively. I previously decided to
+keep it simple and follow the approach that low-level APIs (which
+bpf_prog_load and bpf_map_create are) should not do any such
+adjustments to user arguments. But we are not 100% following that
+anyways (e.g., bpf_prog_load does retries and is more clever about
+log_level, as one example), and it does seem very unlikely that user
+will explicitly want to cause failure by passing non-NULL name to
+bpf_prog_load/bpf_map_create on old kernels that don't support names.
+It's way more likely that a user doesn't want to care and always wants
+to specify a name and use it if the kernel supports it.
 
+So I propose we just teach bpf_map_create and bpf_prog_load to ignore
+non-NULL names if the kernel doesn't support it. Please double check
+if map name support was added at the same time as prog name support,
+and if yes, just use kernel_supports(NULL, FEAT_PROG_NAME) in both
+cases. If not, we can add a dedicated map name feature detector.
+
+If a user really-really wants to force failure (for some reason),
+they'd need to do their own bpf() syscall. Which I think is totally
+fine, given the upside of not having to care about whether the kernel
+supports names.
+
+
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 77e3797cf75a..db4f1a02b9e0 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -4423,6 +4423,22 @@ static int probe_kern_prog_name(void)
+>         return probe_fd(ret);
+>  }
+>
+> +static int probe_kern_map_name(enum bpf_map_type map_type,
+> +                              const char *map_name, __u32 key_size,
+> +                              __u32 value_size, __u32 max_entries,
+> +                              const struct bpf_map_create_opts *opts)
+> +{
+> +       int map;
+> +
+> +       map = bpf_map_create(map_type, map_name, key_size, value_size, max_entries, opts);
+> +       if (map < 0 && errno == EINVAL) {
+> +               /* Retry without name */
+> +               map = bpf_map_create(map_type, NULL, key_size, value_size, max_entries, opts);
+> +       }
+> +
+> +       return map;
+> +}
+> +
+>  static int probe_kern_global_data(void)
+>  {
+>         char *cp, errmsg[STRERR_BUFSIZE];
+> @@ -4434,7 +4450,7 @@ static int probe_kern_global_data(void)
+>         };
+>         int ret, map, insn_cnt = ARRAY_SIZE(insns);
+>
+> -       map = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), 32, 1, NULL);
+> +       map = probe_kern_map_name(BPF_MAP_TYPE_ARRAY, "global_data", sizeof(int), 32, 1, NULL);
+>         if (map < 0) {
+>                 ret = -errno;
+>                 cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
+> @@ -4567,7 +4583,7 @@ static int probe_kern_array_mmap(void)
+>         LIBBPF_OPTS(bpf_map_create_opts, opts, .map_flags = BPF_F_MMAPABLE);
+>         int fd;
+>
+> -       fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), sizeof(int), 1, &opts);
+> +       fd = probe_kern_map_name(BPF_MAP_TYPE_ARRAY, "array_mmap", sizeof(int), sizeof(int), 1, &opts);
+>         return probe_fd(fd);
+>  }
+>
+> @@ -4614,7 +4630,7 @@ static int probe_prog_bind_map(void)
+>         };
+>         int ret, map, prog, insn_cnt = ARRAY_SIZE(insns);
+>
+> -       map = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), 32, 1, NULL);
+> +       map = probe_kern_map_name(BPF_MAP_TYPE_ARRAY, "bind_map_detect", sizeof(int), 32, 1, NULL);
+>         if (map < 0) {
+>                 ret = -errno;
+>                 cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
 > --
-> Luiz Augusto von Dentz
-
-
-
--- 
-Luiz Augusto von Dentz
+> 2.35.3
+>
