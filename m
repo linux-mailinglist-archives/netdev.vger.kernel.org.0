@@ -2,225 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 364A058CC78
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 19:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A9258CCD4
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 19:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237094AbiHHRC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 13:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50778 "EHLO
+        id S244107AbiHHRkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 13:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233053AbiHHRCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 13:02:55 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CF913F20
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 10:02:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659978174; x=1691514174;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=zm7fon29/93pUpyrj2wg1apNTIKrls0z71bpLMMUfY4=;
-  b=hvxg4y0I+u7UoZ+miinQV0EB5oizEMuG1vB7aL0F7PSMgqt0/bRc76no
-   kjdGer43dTjlsc1alGurzaMJKriHYfJn0T4Zs3GnqzVbDKD4r6VeF5dyw
-   EVzu+o+k6GDz7JQSE8S1ZDPCkGvhh1yyfjBgXPEvPzalf59mkwR+SM6cm
-   Ohbm/za1K0oJYsQGp3JSw/ElBFo6xh5IT5fcyGzGpS407Ml2psUeOLWs8
-   jRmFIlP5Y7Z0GvY7UvDjrfKSbF082v8SS7B1sXyDl/H4zUJAGcjV8AM7g
-   K7XMKd6knduHv3i7ELIPC4vaDqafwyVY0Lb9i1M/eKvYftCaoi/WvitgR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="352371878"
-X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
-   d="scan'208";a="352371878"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 10:02:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
-   d="scan'208";a="637383207"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga001.jf.intel.com with ESMTP; 08 Aug 2022 10:02:53 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 8 Aug 2022 10:02:53 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 8 Aug 2022 10:02:52 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Mon, 8 Aug 2022 10:02:52 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.45) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Mon, 8 Aug 2022 10:02:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LbQNP644WinQcNq3EkQfu99jv7/C6xiXqqvTROyv+F3vsVk2piqSnACjPqQoQ3DueB4Ufroo+Bt5zNgJYqg3FpYkx8mZJzB4KOB6YbegJV9Q0fxscW7cmrxfyDbpXtqngtAeK7JcsWompo5HKMfDbzH/hZSKwVEjikzEiAgwlx6evPMWMCkjYO6/zxfIBd4thwNSVs4Pp5MVVm40DZJknpEiT+22gK2RpLQjIFPi8kRWSIrkxtzeZ0PJwz5JpjisTjdbBRwNtpI2dGoE+VpJxm3mRTxfZ7fxD33pv5Ipdl9/d81T4GmP6xNQstoFYu4SUShXjwGYWAhZVVS8wKGJDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Op1nrIl7qIXRJl5EqKCzyGegpLBU7J4qKHVvfDawUak=;
- b=MLxBfug2wDOO3iTNGOmAW2ajvrnPgN0d6r1FnwxvMCrg9c3LfBA5aMXU7El+rEk+AlsiMpcAdM4DnqEQc5aRtkQS7rb6BHzk/kdQVmng6c+/sVEb1biU0f46ckI3bAi3nWxzV6I4eMMt91/sUWPopIHsICdxbYhieNSjhvEtYD3HPLMs7kxAbbBvKv4T4GuZaL5iEapU6GJfBJ98NfVuJF+W34pkyat5iklYV2lJfwkZYy5usRLc+zKR696AZ2akk4mqqCxKAEEiQ4KM0jmuJ/PMdMmXWVV/SWanvytRd+eaWPNbv8D4kZIUmoHsdj/hHswAwkx9GeiERtFHGnOQJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
- by SN6PR11MB3343.namprd11.prod.outlook.com (2603:10b6:805:ba::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Mon, 8 Aug
- 2022 17:02:50 +0000
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::6d2c:6e35:bb16:6cdf]) by PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::6d2c:6e35:bb16:6cdf%9]) with mapi id 15.20.5504.020; Mon, 8 Aug 2022
- 17:02:50 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+        with ESMTP id S243999AbiHHRkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 13:40:16 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E39BE27;
+        Mon,  8 Aug 2022 10:40:14 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id j7so11721425wrh.3;
+        Mon, 08 Aug 2022 10:40:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b6NyspBynCgB0aqOOfv34vTT0VGyBHOTvX5leDaB4ow=;
+        b=MvsqmM9fHt3qUcS9fwPL4xOfzpuvlux1xSaZ3z/EuZcMjlDK/rUaEFHboaRG6+l3Dk
+         15cmqOsEt9LNE1rfXhWMMwjoonbFvQp7/wkPbrz2GpUJFqYLiqySEcrrP57qGY569l4D
+         puy5WjLyjHi8qcg5GSxrP9L6CCfJo8b2srLakUreBShuuKLr1ilEY/e2s0SoYmHR7bMl
+         RrhQ8H/FqBn+lhC/+hL3eIwm3rpNofCqnmaC9dMS730I2++JGcHXeMkBSg8zYpIPiuDo
+         bcxNZSKPAIBsf9T4ulvLx/u3Bu8n2LHSW5oxfx3ZF4MZbjdhCxwlX1kIZPG/tDW/mdXb
+         5c+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b6NyspBynCgB0aqOOfv34vTT0VGyBHOTvX5leDaB4ow=;
+        b=DkrHOY7gUj94j/oo9Iz/OZrocPKiy2r3hHPYXetL4FJ0IM1qKU1YP07IgHH3cQnZOD
+         W10BaBb0cvGs3TZgXwveW4HnFp4Lan5PCIwDWHrjKeS9PrGqAfTqaoguS5QAtrTUol/i
+         vE/1gfRHtxNquH80Q4RZgTdXKhqs388qEkYYvajLQVZVh41W/6Ehb9dsXAUEZ1iNjIOh
+         VsC5IK98zpB8UmRpk5ZbnQjLvtDB/rxHDN9xNyJyWsIzj30Ty2bWa4ScHIeUrkUOJ73L
+         EZvDK4EWy/eLX2M6QhGsYLMlG9i0GhYKEBjUf2s56Mxwa4tc0pxVXzsYxBSv163vAogs
+         1V+w==
+X-Gm-Message-State: ACgBeo25WDx2VfBuu+VTpd+myX31Lh7Gkztq8EYnGysifY8E9tia0Frc
+        frgeWC4Tds5TIrMnJVIeXsZmKtH/rN7bDg==
+X-Google-Smtp-Source: AA6agR70oUi5lMFUJ8/LRlO+IVjjg44N56BMArjcJLorq3ALwlbUbo9GKUG9/yZv27A45inkzEgRwQ==
+X-Received: by 2002:a5d:6102:0:b0:220:6382:eab1 with SMTP id v2-20020a5d6102000000b002206382eab1mr11908128wrt.539.1659980412635;
+        Mon, 08 Aug 2022 10:40:12 -0700 (PDT)
+Received: from snuff.lan (94-21-185-111.pool.digikabel.hu. [94.21.185.111])
+        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b0021e491fd250sm12015621wrv.89.2022.08.08.10.40.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 10:40:11 -0700 (PDT)
+From:   Sandor Bodo-Merle <sbodomerle@gmail.com>
+To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: RE: [RFC iproute2 0/6] devlink: add policy check for all attributes
-Thread-Topic: [RFC iproute2 0/6] devlink: add policy check for all attributes
-Thread-Index: AQHYqST7LsXEUCV47UePgGkSOtX+Ha2k0fwAgABppxA=
-Date:   Mon, 8 Aug 2022 17:02:49 +0000
-Message-ID: <PH0PR11MB5095F7729B6A1EF25D6E052CD6639@PH0PR11MB5095.namprd11.prod.outlook.com>
-References: <20220805234155.2878160-1-jacob.e.keller@intel.com>
- <YvDmNO6/QtXfJW8h@nanopsycho>
-In-Reply-To: <YvDmNO6/QtXfJW8h@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a88b03f2-0f32-41b1-f518-08da795fd342
-x-ms-traffictypediagnostic: SN6PR11MB3343:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 47oWcGSg3nxtad5GV/SBYGTZeRs7rXiYGAw8UpZfToWX7dU1EWL6XfJKguetQiHr9kfp5FQ+SlS3lurj5H3Fvh1ZNiwYl5C5oiD7xOVgm3YFIna+muf8KxyZYbBPYivoeGjuQT2t2tgDxo7dWTKXLJD5wutugiE6HcnPD6WbaKQisxqkBxBVD4K1P0jK6eg4tdqzO962V/jmalwWCcNc81VO+HiejL5hTBC2nY8kcvwJJFoshiqia/HtySRoXJ6VjOVXDBOAT1KqHGFvWGj+2Pblw/+La9xdxNPmoGBCh33chMtLAR1TmyG2Jcm+rYwvljmUL81i++WIZ3MPYZ4Q62yCgnLtTKly42twdvBxyUPYgoNbEeqP0ZhpzN9KmyT2J50MZboeJMvJJX/oMsWgMY2q1E2VISpkzwCIPmk19zGXoi0R3VZNUCR4pS8a9mHMxcVFjOjjT4a8fpZgLkMUx6Erfqi8dD3MFuEHjjS7gtCjpBQpfHC9u4jROZMa9ABT1pbw+udpvxgLFAoduRMVYM/fnKcTGde326g6Bjk7Dz6y6YjRU2045GXmedZp4SzYUXQcwdDm2wfhj6m3MfS3Y3dqaCkkXgJeZ7slK7SqlecRWT/5olaUFcFPH3FSKFZwqPEeT2leXbFtiTO2YnlQHrDLwVQNupXeaXKmW8a+Axnwigr2xs5NeTs8Y3oKvl2sw/oIDovxts2iD50kesCo6uPMuvrgqWRzUEJEBumZRU1+fltMnR72OGxJ7kd7EcMcS78CcK1zZyTy3LsjxuFh6RsO4RYcUxayKrOb1Um6oah1QYJ8BVvoIVFk2jn+nfJF
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(39860400002)(366004)(376002)(396003)(38070700005)(83380400001)(2906002)(122000001)(54906003)(316002)(82960400001)(6916009)(52536014)(8936002)(38100700002)(4326008)(8676002)(64756008)(76116006)(66476007)(66946007)(26005)(9686003)(6506007)(7696005)(66556008)(66446008)(186003)(5660300002)(53546011)(478600001)(71200400001)(41300700001)(86362001)(55016003)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oDHY09XdVU0Q9Wy8NFx7VKaKgAzqIj6mQ+X9J9gdZbAPKVqjv5+EfDIDcGPH?=
- =?us-ascii?Q?cB1cPoZqU7qyDiUYshzXMk4VZ3wBhFTDVO0DTtRxv6fIrRB6VCymTA6qWykY?=
- =?us-ascii?Q?dONJmtuwHO+oQWxPred1vfGRzR9gs2/N+I0yH5ocMAkmiqxJGOY5EBfE5PIk?=
- =?us-ascii?Q?scS1hRatcDFYyttGMWbuqpP3G9G8cW16QzNailRoI1+bUjf55IlVXIJjI4nG?=
- =?us-ascii?Q?1JmxnLQdOMEj2BTcWVeULY6SBGyeN1aTDFAJJiRA3GL4UEtecMXAPSSsTZLS?=
- =?us-ascii?Q?0FjeGFnCDyymtM4M8Oe+RSSRBCO2WXos89ZIbK8g7TurQzY/t6WYiIwwzPmv?=
- =?us-ascii?Q?CinkwcyQ8N9kUQJuFAFTJuL5728Q0NTKn4/Jsv7sSmlvgP4xuGxy2VH167IU?=
- =?us-ascii?Q?FCXTx0FOu8eHBSuM7YEe7+p5MbIM8eVimTPwW8zSpRZ8K9rGX/i68jSc/wP4?=
- =?us-ascii?Q?IZ4GDVwNv66bWNw+S3N0vpEivkXVAnPT+cimuMQfW5kF5NZsheqG3q7ymZA5?=
- =?us-ascii?Q?mL1O0ebw8dVUOVLryVHzy9dRzihZnLlE9qgp9yIkpGlAklw+3Fw+ykMFFEVX?=
- =?us-ascii?Q?egM1CQacddW4Ct+Wl+PjvMkSOGO2lm3vY35Vxl3Brqf6GbjlmvHvtA59Gxdv?=
- =?us-ascii?Q?htt0AAyKlRFFnP50LeGjpyNtP77LdwnV5ZF6z7KqNYg1jvDKE0DC5aGu2p0M?=
- =?us-ascii?Q?iXLHT7xv+zsRDhpcFpoqtB3mxZKN5yUeObEzHcrPu6Oe7h/mIKm5SOUBGwQl?=
- =?us-ascii?Q?sd2lvID3un1x+zg5hfQMNVhVaGB8Tk4SoMNN3A36n2rcawRlXB9mPcQCXgK3?=
- =?us-ascii?Q?Q1vgAT1H2+SRNSCIi2fvC78L9+CEYtVSKTPlGu0cZ/eCRdJLqpSFTGTZelfQ?=
- =?us-ascii?Q?YNZWB6CS7at/xqoP8IG+u46ykgwdV5N3gfrIjIwj8Dd42GvoDDdGSSIIK4ff?=
- =?us-ascii?Q?OCuIbNKocq2XLXDRSESAwGCgYhubduEmjU9Vh9MeecIeJVWkcTEtAbQ9Owja?=
- =?us-ascii?Q?bC3mR5n9fDo0Ev4dbiYq1e3OArFru+IbJUchHyu+BEbQEj3OqFdKoM+o5gmt?=
- =?us-ascii?Q?tAnP4ZIkcJf6pb951kp9iOoF0KMV2FqHU7FslI0NrenSoJAr6xbJN7XS51Dj?=
- =?us-ascii?Q?mTbd31UFvuR9GFbPJEdjNP/HDlVhZBixT4nr49C47L4H4KHIuNoYXJtIgmmJ?=
- =?us-ascii?Q?U64BnVZpu+ymJxS0Xk+O87XYVHJ6cJl3P8UPBldrht56SlrobwOTtPepe6Di?=
- =?us-ascii?Q?EyDlG8/RUy7ZiHScLqfTSJUbMxddA6AvX/7oKcswNxsDJz/6e6TkshI7Bd/6?=
- =?us-ascii?Q?j4QO9kjlJUnhaEogOLPJnNCKLYjjmP4aVTzv39n2qj56m9Mg8EJOWMMjxzK9?=
- =?us-ascii?Q?fWaLgpwihotzjdnB4E0bPDzbUshOQxFSKj8cjKxflhMAOsFAcxj8RSyMCUrb?=
- =?us-ascii?Q?HtumHsLHyedOIiXNL6zJIkGTpGLSos8In1UEJBLC+ABPakQxwlSjUzXjH3ej?=
- =?us-ascii?Q?eDkT8kqtfah1ENLkGHtAmXHD48sGCyuTbnTZBKmX/4MfCRnwtI4XRG2O6XJ+?=
- =?us-ascii?Q?jQLXCWezibWOk6cdI3/7MU5tV27m5Jq0D7+2Nl1N?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Felix Fietkau <nbd@openwrt.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Sandor Bodo-Merle <sbodomerle@gmail.com>
+Subject: [PATCH] net: bgmac:`Fix a BUG triggered by wrong bytes_compl
+Date:   Mon,  8 Aug 2022 19:39:39 +0200
+Message-Id: <20220808173939.193804-1-sbodomerle@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a88b03f2-0f32-41b1-f518-08da795fd342
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2022 17:02:49.9268
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 93N9cWAZOODpDkv3nX7YQIfJIQTZ6I3PzRQP9x11eegFlxQn0Ir3c5jpfx2DTa6lXK+/5GyC7clNEk3LaRxn5Or1SC5BDlN4KK2X4qNLXwo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3343
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On one of our machines we got:
 
+kernel BUG at lib/dynamic_queue_limits.c:27!\r\n
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM\r\n
+CPU: 0 PID: 1166 Comm: irq/41-bgmac Tainted: G        W  O    4.14.275-rt132 #1\r\n
+Hardware name: BRCM XGS iProc\r\n
+task: ee3415c0 task.stack: ee32a000\r\n
+PC is at dql_completed+0x168/0x178\r\n
+LR is at bgmac_poll+0x18c/0x6d8\r\n
+pc : [<c03b9430>]    lr : [<c04b5a18>]    psr: 800a0313\r\n
+sp : ee32be14  ip : 000005ea  fp : 00000bd4\r\n
+r10: ee558500  r9 : c0116298  r8 : 00000002\r\n
+r7 : 00000000  r6 : ef128810  r5 : 01993267  r4 : 01993851\r\n
+r3 : ee558000  r2 : 000070e1  r1 : 00000bd4  r0 : ee52c180\r\n
+Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none\r\n
+Control: 12c5387d  Table: 8e88c04a  DAC: 00000051\r\n
+Process irq/41-bgmac (pid: 1166, stack limit = 0xee32a210)\r\n
+Stack: (0xee32be14 to 0xee32c000)\r\n
+be00:                                              ee558520 ee52c100 ef128810\r\n
+be20: 00000000 00000002 c0116298 c04b5a18 00000000 c0a0c8c4 c0951780 00000040\r\n
+be40: c0701780 ee558500 ee55d520 ef05b340 ef6f9780 ee558520 00000001 00000040\r\n
+be60: ffffe000 c0a56878 ef6fa040 c0952040 0000012c c0528744 ef6f97b0 fffcfb6a\r\n
+be80: c0a04104 2eda8000 c0a0c4ec c0a0d368 ee32bf44 c0153534 ee32be98 ee32be98\r\n
+bea0: ee32bea0 ee32bea0 ee32bea8 ee32bea8 00000000 c01462e4 ffffe000 ef6f22a8\r\n
+bec0: ffffe000 00000008 ee32bee4 c0147430 ffffe000 c094a2a8 00000003 ffffe000\r\n
+bee0: c0a54528 00208040 0000000c c0a0c8c4 c0a65980 c0124d3c 00000008 ee558520\r\n
+bf00: c094a23c c0a02080 00000000 c07a9910 ef136970 ef136970 ee30a440 ef136900\r\n
+bf20: ee30a440 00000001 ef136900 ee30a440 c016d990 00000000 c0108db0 c012500c\r\n
+bf40: ef136900 c016da14 ee30a464 ffffe000 00000001 c016dd14 00000000 c016db28\r\n
+bf60: ffffe000 ee21a080 ee30a400 00000000 ee32a000 ee30a440 c016dbfc ee25fd70\r\n
+bf80: ee21a09c c013edcc ee32a000 ee30a400 c013ec7c 00000000 00000000 00000000\r\n
+bfa0: 00000000 00000000 00000000 c0108470 00000000 00000000 00000000 00000000\r\n
+bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000\r\n
+bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000\r\n
+[<c03b9430>] (dql_completed) from [<c04b5a18>] (bgmac_poll+0x18c/0x6d8)\r\n
+[<c04b5a18>] (bgmac_poll) from [<c0528744>] (net_rx_action+0x1c4/0x494)\r\n
+[<c0528744>] (net_rx_action) from [<c0124d3c>] (do_current_softirqs+0x1ec/0x43c)\r\n
+[<c0124d3c>] (do_current_softirqs) from [<c012500c>] (__local_bh_enable+0x80/0x98)\r\n
+[<c012500c>] (__local_bh_enable) from [<c016da14>] (irq_forced_thread_fn+0x84/0x98)\r\n
+[<c016da14>] (irq_forced_thread_fn) from [<c016dd14>] (irq_thread+0x118/0x1c0)\r\n
+[<c016dd14>] (irq_thread) from [<c013edcc>] (kthread+0x150/0x158)\r\n
+[<c013edcc>] (kthread) from [<c0108470>] (ret_from_fork+0x14/0x24)\r\n
+Code: a83f15e0 0200001a 0630a0e1 c3ffffea (f201f0e7) \r\n
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@nvidia.com>
-> Sent: Monday, August 08, 2022 3:32 AM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jonathan Corbet <corbet@lwn.net>; David S. Mi=
-ller
-> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub Kicinski
-> <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; David Ahern
-> <dsahern@kernel.org>; Stephen Hemminger <stephen@networkplumber.org>
-> Subject: Re: [RFC iproute2 0/6] devlink: add policy check for all attribu=
-tes
->=20
-> Sat, Aug 06, 2022 at 01:41:49AM CEST, jacob.e.keller@intel.com wrote:
->=20
->=20
-> [...]
->=20
-> >This is intended to eventually go along with improvements to the policy
-> >reporting in devlink kernel code to report separate policy for each comm=
-and.
->=20
-> Can you explain this a bit please?
+The issue seems similar to commit 90b3b339364c ("net: hisilicon: Fix a BUG
+trigered by wrong bytes_compl") and potentially introduced by commit
+b38c83dd0866 ("bgmac: simplify tx ring index handling").
 
-Currently devlink only reports a global policy which is the same for every =
-command. This means that commands like DEVLINK_CMD_FLASH report the same at=
-tributes as valid as other commands like DEVLINK_CMD_INFO_GET. The policy (=
-if the command is strict) would only require that attributes be one of the =
-known attributes according to the general devlink policy.
+If there is an RX interrupt between setting ring->end
+and netdev_sent_queue() we can hit the BUG_ON as bgmac_dma_tx_free()
+can miscalculate the queue size while called from bgmac_poll().
 
-However, none of the commands accept or honor all the attributes. The netli=
-nk policy support allows each command to report an individual policy that w=
-ould only include the attributes which the command uses and would honor the=
- meaning of.
+The machine which triggered the BUG runs a v4.14 RT kernel - but the issue
+seems present in mainline too.
 
-Without per-command policy, there is no way for user space to tell when the=
- kernel changed support for some attribute (such as the DEVLINK_ATTR_DRY_RU=
-N I recently proposed). Yes, you can use maxattr to determine of the kernel=
- knows about the attribute, but that doesn't guarantee that every command s=
-upports it.
+Fixes: b38c83dd0866 ("bgmac: simplify tx ring index handling")
+Signed-off-by: Sandor Bodo-Merle <sbodomerle@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bgmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The per-command policy would report only the subset of attributes supported=
- by the command. In strict validation, this would also make the kernel reje=
-ct commands which tried to send other attributes. Ideally we would also hav=
-e nested attribute policy, so each nested attribute would express the polic=
-y for the subset of attributes which are valid within that nest as well.
+diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+index 2dfc1e32bbb3..93580484a3f4 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -189,8 +189,8 @@ static netdev_tx_t bgmac_dma_tx_add(struct bgmac *bgmac,
+ 	}
+ 
+ 	slot->skb = skb;
+-	ring->end += nr_frags + 1;
+ 	netdev_sent_queue(net_dev, skb->len);
++	ring->end += nr_frags + 1;
+ 
+ 	wmb();
+ 
+-- 
+2.36.1
 
-By adding policy checking support to user space, we can make sure that at l=
-east iproute2 userspace won't accidentally send an unsupported attribute to=
- a command, but that only works once the policy for the command in the kern=
-el is updated to list the specific policy. Right now, this will effectively=
- get the generic policy and indicate that all known attributes in the polic=
-y table are accepted.
-
-Note that this means strict validation on its own is not enough.  It doesn'=
-t really matter if a command is set to strict validation when the validatio=
-n still allows every attribute in the general policy, regardless of whether=
- the command currently does anything with the attribute. Any of the unsuppo=
-rted ones get silently ignored, with no warning to the user.
-
-Related to this, also think we should determine a plan for how to migrate d=
-evlink to strict validation, once the per-command policy is defined and imp=
-lemented. However, I am not sure what the backwards-compatibility issues ex=
-ist for switching.
-
-Hope this explains things,
-Jake
