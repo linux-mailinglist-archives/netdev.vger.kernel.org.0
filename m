@@ -2,49 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD8558C484
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 09:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF9A958C4AF
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 10:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237632AbiHHH5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 03:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
+        id S242329AbiHHIHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 04:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242061AbiHHH5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 03:57:43 -0400
+        with ESMTP id S242257AbiHHIH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 04:07:28 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33A613D73
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 00:57:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E1913FA7
+        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 01:07:10 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oKxdm-000065-Br; Mon, 08 Aug 2022 09:57:34 +0200
+        id 1oKxmW-0001rc-Jk; Mon, 08 Aug 2022 10:06:36 +0200
 Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E59C9C45B4;
-        Mon,  8 Aug 2022 07:57:32 +0000 (UTC)
-Date:   Mon, 8 Aug 2022 09:57:32 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id CCFD4C45CB;
+        Mon,  8 Aug 2022 08:06:34 +0000 (UTC)
+Date:   Mon, 8 Aug 2022 10:06:32 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] can: rcar_canfd: Use dev_err_probe() to simplify code
- and better handle -EPROBE_DEFER
-Message-ID: <20220808075732.gue3p4d5lhsa4sse@pengutronix.de>
-References: <f5bf0b8f757bd3bc9b391094ece3548cc2f96456.1659858686.git.christophe.jaillet@wanadoo.fr>
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v2] can: j1939: Replace WARN_ON_ONCE with
+ netdev_warn_once() in j1939_sk_queue_activate_next_locked()
+Message-ID: <20220808080632.vyl3zcchyyuwmpvn@pengutronix.de>
+References: <20220729142634.GD10850@pengutronix.de>
+ <20220729143655.1108297-1-pchelkin@ispras.ru>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sbokewfw5xtt5aba"
+        protocol="application/pgp-signature"; boundary="vreaklujen3bcdlb"
 Content-Disposition: inline
-In-Reply-To: <f5bf0b8f757bd3bc9b391094ece3548cc2f96456.1659858686.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220729143655.1108297-1-pchelkin@ispras.ru>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -59,26 +64,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---sbokewfw5xtt5aba
+--vreaklujen3bcdlb
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 07.08.2022 09:52:11, Christophe JAILLET wrote:
-> devm_clk_get() can return -EPROBE_DEFER, so use dev_err_probe() instead of
-> dev_err() in order to be less verbose in the log.
+On 29.07.2022 17:36:55, Fedor Pchelkin wrote:
+> We should warn user-space that it is doing something wrong when trying to
+> activate sessions with identical parameters but WARN_ON_ONCE macro can not
+> be used here as it serves a different purpose.
 >=20
-> This also saves a few LoC.
+> So it would be good to replace it with netdev_warn_once() message.
 >=20
-> While at it, turn a "goto fail_dev;" at the beginning of the function into
-> a direct return in order to avoid mixing goto and return, which looks
-> spurious.
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 >=20
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Added to can-next/testing.
+Nitpick: You should add your S-o-b below every other tag line.
 
-Thanks,
+Added to linux-can with fixed indention.
+
 Marc
 
 --=20
@@ -87,19 +95,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---sbokewfw5xtt5aba
+--vreaklujen3bcdlb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLwweoACgkQrX5LkNig
-012yDgf/VDv2f0dcYbhTF4sZWOuz4JarIS/2huEEeU7inNy2gjqWXvlWV5WLDrSP
-FfZYXJWFl/RDOERfC0mi3AGHMghOA9WAkkXgZEpz/9edR3yF94TWvHmQkRIBYYvg
-wiRR4O6VaSRfbW+2bHf9aROEx5xczf+jszHmmlZcqQpM9oTUqOxZiwg2KKQVM9oL
-fM9orCR8kGetnbE6B0AsDf2HulQNWkjMqA+AiSM/QwxvG3XlvfCD/QG5/wGXns0s
-FTNEyP6sf9iNfhiFFquKEbxv9JBOEV6Tar9Q5Xs7M3w0dfwbVYOiZ0lTT8Hkt8q2
-hTvTcuS7m/0miL8xZvIBymTW7iz7Zg==
-=IjJ6
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLwxAYACgkQrX5LkNig
+012K0Af8D7wJmhikOyLYznZKn3Xobpfdif03hgTMbZKUK699it7FpxPLKtpz0glA
+DELYBddvKZ4yLmQftWG4LaFSxNSOW+NRitUqdtTaW5sKxQdmarVony6BWKSy/XsF
+upWRctkPBgXey/H3voaqQR3auOkvMnPnbigeNWCFZhEtezrpAwbXqqGKISV1tQrA
+pajNlRwD1nvzY2ZiX87RxmWarWt6doeXaeiwfLGPK2vn7s4SZM1WGz1NlarA3AwX
+E4ixgmPVXB81mXLKq9Na3XffQTW9oWZMahOOEcvq+IkpH1y3iR14TzazUskRXQ35
+fLiK17VYB3DUE95M9duhJzH8XQ2bIw==
+=5Wqw
 -----END PGP SIGNATURE-----
 
---sbokewfw5xtt5aba--
+--vreaklujen3bcdlb--
