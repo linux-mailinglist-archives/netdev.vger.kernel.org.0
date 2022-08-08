@@ -2,58 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A96A558C20F
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 05:31:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 497AF58C213
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 05:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236048AbiHHDb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Aug 2022 23:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
+        id S236872AbiHHDb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Aug 2022 23:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbiHHDbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 23:31:23 -0400
+        with ESMTP id S232190AbiHHDbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 23:31:25 -0400
 Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C722F6269;
-        Sun,  7 Aug 2022 20:31:22 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id n133so9168181oib.0;
-        Sun, 07 Aug 2022 20:31:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7427679;
+        Sun,  7 Aug 2022 20:31:23 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id n133so9168202oib.0;
+        Sun, 07 Aug 2022 20:31:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sG4WSPOFSrB4BWd5XsDTyjpNIlzRx3yn9bSIEBRT+ro=;
-        b=p0O3WYDz9TsVpfUf/P5hQei70HzQXV0cus/i4L6FRlYsGPzioGhL4/FeJ3IlcRi0lO
-         iLaX0tpHLzHSOWOA8i5I7K7AqaN4syW3/ENaKAfuseh1HiQJJzX9EGef0nUR7sqhK8v4
-         AlcchPRu9ZlCX2Kytk92NqKS0eSbixjdFXOQhOAQhLWgvt1JLvb+ukLUbovfjU709HuN
-         nirFsxr4mCITqRuMcmjLxkwsj+UOAblursE9c/cwr8ozVCJ40FX0lLjNGpdCbre1GMnU
-         ALViyEse39llD1YWv7xPuTEqm6yQPdxsbU7qdu+VxifihN5f7CqSs3kR0jNxg/fi3gvL
-         Ij6Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DG0amPyG3yrFr3Vfk3jNOUNVe3MFz9pJ1sYI46Pla6A=;
+        b=EkXagkcfh8hgTyLEGYGHySv2Lluaau/vK+LIc3V28JMxAoaEvTz/8s1147fLeDnUn/
+         PiVcIY4oK7ju8JqBltovNOf4/ZJ2d5Lpscqqkd86EcSrz8Hx0S6Gu1yY3fBAjDeBpZsw
+         QC97xOFlsfmJ8gZE7qFG6T2QOIyRyGQsMZjdhswEaRlQaBqCuNhJABG5vLbuXOE/piv/
+         rELBsVmzhzxmF+Ev5YwNo+l7C0j3+lCCiloJ+aZ3f5Zymnk/DL5oCN3kYY+IveOMZLEa
+         1lyar+wYQ3sly0RwWSw0c4I+bj0QnsqXq1v00cxCgyfwgKg1MmH+rXLTV/7lo+pm+Zy3
+         d9Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sG4WSPOFSrB4BWd5XsDTyjpNIlzRx3yn9bSIEBRT+ro=;
-        b=2iCLqkS3Tj6knTTpASlVDSj5Gxp0mT7e6kXpza35oDLCokdhEeV7hxkzXoqbWsdoU+
-         tC9J8zTYpTpNRRs5KH6yHB8XYjruju+vrWbKosSr8HfwNe2VLbkKHVuR0c1gTLFUIKML
-         CxgDNQ/I8OVB8Nt2JEZpLdhv10FcP2brpGe3YE2RS5QFG4D7DC3Y3ZgK/+UZ0JLhJ8WL
-         /xwRPZv88nhv6XVN4j1zxAbL2d7S6Vv20JykOnLbEjOW3Nsyjh4VRuU9YrUyDUWC81pC
-         plM09VqeVGWj7SP6eDWTsSBEVG8PjfpK5QNIGnR5DsOABCmobEqSVketpufhkvTIb/PZ
-         BFQw==
-X-Gm-Message-State: ACgBeo2a2ir7XpMViFnA5TfmivO16QaqfmJcpADfGEpOtRHyxMOujjoa
-        y0unmg5DNhH7zoaQR49z+WmFeJdrXLg=
-X-Google-Smtp-Source: AA6agR4jSv0EeyG259uGDpwiSYDuxxGtY/LD/6ilxZXegTl4oB/p1TrN4iKGWrzMZUI4Eyj4xmPhsg==
-X-Received: by 2002:a05:6808:1642:b0:331:567c:54e1 with SMTP id az2-20020a056808164200b00331567c54e1mr6825631oib.232.1659929481922;
-        Sun, 07 Aug 2022 20:31:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DG0amPyG3yrFr3Vfk3jNOUNVe3MFz9pJ1sYI46Pla6A=;
+        b=anpvsTsFyXv0y2gmig65VhZfNhLrHmqs635/kt66MShzVedxVwPuip+uab1O7c35Rc
+         BqFJA2hxZUA7WOTNHF2OAQL5g9OskKR3LZgpoCmhAX0v2POmmoFFRvuSJeDPpXM5zsdC
+         rr9stiMCz38i8KTvAa2Pz2FPtYPP2wbt7RdMgU0NK0vmReUv4FdNI8CBV4gWKyQqGVWy
+         rcfQZeAMK3KkfU4KOUYyn5wAyOupmh7aEXD3T0sHBmuKqlJ6tjXa0mFgWXu5CCFNUhU4
+         zIYQIB2PhvrkBNhJSwA6Ya8zRCKc4LJBlQUb0VRjrsYzLOTUvvzHYXbQms21RNGzX2BY
+         i3oQ==
+X-Gm-Message-State: ACgBeo0icQ/Uz5ger2EqzCXdAcDgOHjILJC5WMs0CfRS4UHiUpLJLzYY
+        ukEqkdrd9XBLRA9xRE3mYvCFBwVQLGg=
+X-Google-Smtp-Source: AA6agR6m9fcea7cA0v91SVykKrKvMPyYGmvznJVXPf9CVCWQcxjdMnTPSjGAbxXSY898Pgh/gIcxVA==
+X-Received: by 2002:a05:6808:1285:b0:33a:c5c8:45ce with SMTP id a5-20020a056808128500b0033ac5c845cemr9944284oiw.136.1659929483231;
+        Sun, 07 Aug 2022 20:31:23 -0700 (PDT)
 Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:ad03:d88f:99fe:9487])
-        by smtp.gmail.com with ESMTPSA id k39-20020a4a94aa000000b00425806a20f5sm1945138ooi.3.2022.08.07.20.31.20
+        by smtp.gmail.com with ESMTPSA id k39-20020a4a94aa000000b00425806a20f5sm1945138ooi.3.2022.08.07.20.31.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 20:31:21 -0700 (PDT)
+        Sun, 07 Aug 2022 20:31:22 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net v2 0/4] tcp: some bug fixes for tcp_read_skb()
-Date:   Sun,  7 Aug 2022 20:31:02 -0700
-Message-Id: <20220808033106.130263-1-xiyou.wangcong@gmail.com>
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com,
+        Stanislav Fomichev <sdf@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Subject: [Patch net v2 1/4] tcp: fix sock skb accounting in tcp_read_skb()
+Date:   Sun,  7 Aug 2022 20:31:03 -0700
+Message-Id: <20220808033106.130263-2-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220808033106.130263-1-xiyou.wangcong@gmail.com>
+References: <20220808033106.130263-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -68,23 +75,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-This patchset contains 3 bug fixes and 1 minor refactor patch for
-tcp_read_skb(). V1 only had the first patch, as Eric prefers to fix all
-of them together, I have to group them together. Please see each patch
-description for more details.
+Before commit 965b57b469a5 ("net: Introduce a new proto_ops
+->read_skb()"), skb was not dequeued from receive queue hence
+when we close TCP socket skb can be just flushed synchronously.
 
+After this commit, we have to uncharge skb immediately after being
+dequeued, otherwise it is still charged in the original sock. And we
+still need to retain skb->sk, as eBPF programs may extract sock
+information from skb->sk. Therefore, we have to call
+skb_set_owner_sk_safe() here.
+
+Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
+Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+Tested-by: Stanislav Fomichev <sdf@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
+ net/ipv4/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Cong Wang (4):
-  tcp: fix sock skb accounting in tcp_read_skb()
-  tcp: fix tcp_cleanup_rbuf() for tcp_read_skb()
-  tcp: refactor tcp_read_skb() a bit
-  tcp: handle pure FIN case correctly
-
- net/core/skmsg.c |  5 +++--
- net/ipv4/tcp.c   | 46 +++++++++++++++++++++-------------------------
- 2 files changed, 24 insertions(+), 27 deletions(-)
-
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 970e9a2cca4a..05da5cac080b 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1760,6 +1760,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 		int used;
+ 
+ 		__skb_unlink(skb, &sk->sk_receive_queue);
++		WARN_ON(!skb_set_owner_sk_safe(skb, sk));
+ 		used = recv_actor(sk, skb);
+ 		if (used <= 0) {
+ 			if (!copied)
 -- 
 2.34.1
 
