@@ -2,55 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFA558CDAD
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 20:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD47458CDEF
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 20:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243918AbiHHSeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 14:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
+        id S244259AbiHHSpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 14:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237830AbiHHSd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 14:33:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE5917E0F;
-        Mon,  8 Aug 2022 11:33:57 -0700 (PDT)
+        with ESMTP id S244279AbiHHSpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 14:45:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6687A2DC1;
+        Mon,  8 Aug 2022 11:44:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6770E61229;
-        Mon,  8 Aug 2022 18:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BE1C433B5;
-        Mon,  8 Aug 2022 18:33:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD556126A;
+        Mon,  8 Aug 2022 18:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FB5AC433C1;
+        Mon,  8 Aug 2022 18:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659983636;
-        bh=1VQ11gHLr87lHj6/9x8gTQ9nytaOq8HzAs4f2LgF+Jk=;
+        s=k20201202; t=1659984292;
+        bh=x1i9aM0KKc+coszc99vWY7V+PJsjLN0jdT6owj1wD40=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rDTce0ZtooT3WhkORC51F6Yc8UnvkS32wF7uWAE8IELp7OEFWaTOKehoPOxZokb3h
-         CDxViU7B7nF9tzOcjh50GR/GVeUevUcRJ9QgSjFSDqVKrEAAYtOPVLld/kPT5PGDsD
-         xuPwIfx5jz/dTZ0TJsqtx0Dc5AwqEAe0Nhcxie5KW3A8ZWza5vTbDdB0w7T3VoqX/4
-         Zq7qhKBxU2eEZycMactGFFqcmIYDwdS9aDoCJfFEoKiZ2EVGcMwGqSxXV7n24qzHeG
-         s2vQI1jSSaxR51tq9/waptpARe7AbOrV0OoagQKdEVAOKozpj4wGCJYA9eKpm2OkqS
-         D4uy/zd0GxR1Q==
-Date:   Mon, 8 Aug 2022 11:33:55 -0700
+        b=lWYZoLyuxBTdKRiytxakUukzLJH5J1mKZnue4xKNr6ljXTHOdj+2kjO39iHGWS8O/
+         SrMFmKR2exi9RVWkgyjpnY35h04W0JhAWj1GAvVCc0+VJUOj5+j6iMgZyHQyDPrkWH
+         61iS4N08gMZH34Vm3KHbqsZrADPi1FUMbXIcynjS8m2IzJ/2gP+CVLIpEBKx+rBZU9
+         K67Ejv4RU+SwDzKeW1El+HYk38Wq+KXZbUdP0BRXzNW8EZ1tWbkNs65kwgcu1j3e1f
+         VTwi72wQeaPM5dtCDTFJD21Yyxitz+4XZBO19LizKdSNYeJ7IiYMSMl4Be9L1x+m10
+         NA/1mbnXnR8kw==
+Date:   Mon, 8 Aug 2022 11:44:51 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Veerendranath Jakkam <quic_vjakkam@quicinc.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Arend van Spriel <aspriel@gmail.com>
-Subject: Re: [GIT PULL] Networking for 6.0
-Message-ID: <20220808113355.32f29e8c@kernel.org>
-In-Reply-To: <8735e7i22v.fsf@kernel.org>
-References: <20220803101438.24327-1-pabeni@redhat.com>
-        <CAHk-=wjhSSHM+ESVnchxazGx4Vi0fEfmHpwYxE45JZDSC8SUAQ@mail.gmail.com>
-        <87les4id7b.fsf@kernel.org>
-        <877d3mixdh.fsf@kernel.org>
-        <CAHk-=wiW62CSONUNdpPcohmnTOtF_Fa4tSrz-H+pqE3VmpuARA@mail.gmail.com>
-        <8735e7i22v.fsf@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Pavel Begunkov <asml.silence@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.15 44/45] skbuff: don't mix ubuf_info from
+ different sources
+Message-ID: <20220808114451.78686a5b@kernel.org>
+In-Reply-To: <20220808013551.315446-44-sashal@kernel.org>
+References: <20220808013551.315446-1-sashal@kernel.org>
+        <20220808013551.315446-44-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,12 +58,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 08 Aug 2022 11:14:48 +0300 Kalle Valo wrote:
-> Ok, let's do that. I now applied the fix:
+On Sun,  7 Aug 2022 21:35:48 -0400 Sasha Levin wrote:
+> From: Pavel Begunkov <asml.silence@gmail.com>
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git/commit/?id=baa56dfe2cdad12edb2625b2d454e205943c3402
+> [ Upstream commit 1b4b2b09d4fb451029b112f17d34792e0277aeb2 ]
 > 
-> Network folks, I'm planning to submit a pull request on Tuesday or
-> Wednesday. Do you still submit your pull requests to Linus on Thursdays?
+> We should not append MSG_ZEROCOPY requests to skbuff with non
+> MSG_ZEROCOPY ubuf_info, they might be not compatible.
 
-With fixes, yes! Thu the 11th will be the next round.
+This is prep for later patches which add a different type of zerocopy.
+No need to backport.
