@@ -2,149 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECCFB58C9AF
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 15:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 199B058C9DB
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 15:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243058AbiHHNpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 09:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        id S243216AbiHHN4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 09:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242651AbiHHNpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 09:45:08 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDDBBE39
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 06:45:06 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id z17so10959389wrq.4
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 06:45:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=xbARny34m6AaAfB3bQjFW271YXpbVtEoFE3ylaSXndU=;
-        b=Ip/wMUk9fZpWB8Vx39YbgZNluU6LUE4mCmMT85P/E5VMoMYb/NOXVIIS1aBVRYGT2r
-         pGV6HNKIi8M0U6B8ald7Onz7sce8o57JyO9SYCstCm5fiCQpUX3q8LiEymUuKdFkKQS+
-         GwDvBbX6ZmiWyb5Rvi7AMO0kltmR5QSQRMXyeTNIlmVHVRptenOWEIg7y77zcpNVwbOr
-         gLBEdYNVGWrvQrYW3wdSA5kvKr0/ueNVvxm/6Porn/8RGaaixS+1Q0oLHuAVMvrsH+1q
-         9l9vWpH4pzO+qililXqz0bk+2chXWWCpd68y4savLFCupQPjpZisbeWF7mk9RxrRtBiv
-         JD7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=xbARny34m6AaAfB3bQjFW271YXpbVtEoFE3ylaSXndU=;
-        b=FNKMpBk5jVluoeraStchCNV4DhFOMIEJlLiws3JqbEt/FN3q6QRjNaGYkexJR95iRb
-         dYgCtHyfBpiwFO7USh8Xt+dgXmEy4DniVVfxNRzesqEZT+zARaLCoxqn/NrwP9YzFa05
-         KfWw5wCzE9wHveW5qo50WTQUyRzn+H1t6oqMyFRLVgPPDiMPWf8dQN9PMvEx/aiuMYsU
-         hoFluGbEWi9KXGYLUZCNAfM1YyAFH7z/qks+yrV9e4GEAWtBepmnwLotsh5DLzgO7He/
-         HXgcU2k6alXqHhg3I9VwaY7k5eOkX0UCh5aFGT2Kn5nlOLvFQI3ExemKpI2jN4cwSk/h
-         vg8g==
-X-Gm-Message-State: ACgBeo3iTl96s6ASr+UgbLoQvxyFOmCK+Lv2qp/r+wmryeEwuzaT08OG
-        Mz6LkICOvyHOfNDHQyTrTSeRyQ==
-X-Google-Smtp-Source: AA6agR4s0GVF2NYGmEeNlKfrNPGu9D7ml9GYPOYX9mj5oDwZqB0H7XfCkZ59uVurcQBrMdmUVvBlIw==
-X-Received: by 2002:a5d:453a:0:b0:21e:cfb2:b325 with SMTP id j26-20020a5d453a000000b0021ecfb2b325mr11010730wra.540.1659966305381;
-        Mon, 08 Aug 2022 06:45:05 -0700 (PDT)
-Received: from [192.168.178.32] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id u7-20020a05600c210700b003a3561d4f3fsm2625132wml.43.2022.08.08.06.45.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 06:45:04 -0700 (PDT)
-Message-ID: <9656fc7c-a5f6-8fa8-31c1-aeac07b765d8@isovalent.com>
-Date:   Mon, 8 Aug 2022 14:45:03 +0100
+        with ESMTP id S237479AbiHHN4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 09:56:15 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCA2D113;
+        Mon,  8 Aug 2022 06:56:12 -0700 (PDT)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M1d5j361Yz6H74W;
+        Mon,  8 Aug 2022 21:56:09 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 8 Aug 2022 15:56:09 +0200
+Received: from localhost (10.122.247.231) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 8 Aug
+ 2022 14:56:09 +0100
+Date:   Mon, 8 Aug 2022 14:56:08 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Pavel Machek <pavel@ucw.cz>,
+        "Tim Harvey" <tharvey@gateworks.com>,
+        Robert Jones <rjones@gateworks.com>,
+        "Lee Jones" <lee@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Ricardo Rivera-Matos" <r-rivera-matos@ti.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-fbdev@vger.kernel.org>, <linux-leds@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH 5/5] dt-bindings: Drop Dan Murphy
+Message-ID: <20220808145608.00002bf8@huawei.com>
+In-Reply-To: <20220808104712.54315-6-krzysztof.kozlowski@linaro.org>
+References: <20220808104712.54315-1-krzysztof.kozlowski@linaro.org>
+        <20220808104712.54315-6-krzysztof.kozlowski@linaro.org>
+Organization: Huawei Technologies R&D (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; x86_64-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH bpf-next] libbpf: try to add a name for bpftool
- self-created maps
-Content-Language: en-GB
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf@vger.kernel.org
-References: <20220808093304.46291-1-liuhangbin@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220808093304.46291-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.122.247.231]
+X-ClientProxiedBy: lhrpeml500004.china.huawei.com (7.191.163.9) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/08/2022 10:33, Hangbin Liu wrote:
-> As discussed before[1], the bpftool self-created maps can appear in final
-> map show output due to deferred removal in kernel. These maps don't have
-> a name, which would make users confused about where it comes from.
+On Mon,  8 Aug 2022 13:47:12 +0300
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+
+> Emails to Dan Murphy bounce ("550 Invalid recipient <dmurphy@ti.com>
+> (#5.1.1)").
 > 
-> Adding names for these maps could make users know what these maps used for.
-> It also could make some tests (like test_offload.py, which skip base maps
-> without names as a workaround) filter them out.
-> 
-> As Quentin suggested, add a small wrapper to fall back with no name
-> if kernel is not supported.
-> 
-> [1] https://lore.kernel.org/bpf/CAEf4BzY66WPKQbDe74AKZ6nFtZjq5e+G3Ji2egcVytB9R6_sGQ@mail.gmail.com/
-> 
-> Suggested-by: Quentin Monnet <quentin@isovalent.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  tools/lib/bpf/libbpf.c | 22 +++++++++++++++++++---
->  1 file changed, 19 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml     | 2 +-
+>  .../devicetree/bindings/leds/leds-class-multicolor.yaml         | 2 +-
+>  Documentation/devicetree/bindings/leds/leds-lp50xx.yaml         | 2 +-
+>  Documentation/devicetree/bindings/net/ti,dp83822.yaml           | 2 +-
+>  Documentation/devicetree/bindings/net/ti,dp83867.yaml           | 2 +-
+>  Documentation/devicetree/bindings/net/ti,dp83869.yaml           | 2 +-
+>  Documentation/devicetree/bindings/power/supply/bq2515x.yaml     | 1 -
+>  Documentation/devicetree/bindings/power/supply/bq25980.yaml     | 1 -
+>  Documentation/devicetree/bindings/sound/tas2562.yaml            | 2 +-
+>  Documentation/devicetree/bindings/sound/tlv320adcx140.yaml      | 2 +-
+>  10 files changed, 8 insertions(+), 10 deletions(-)
 > 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 77e3797cf75a..db4f1a02b9e0 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4423,6 +4423,22 @@ static int probe_kern_prog_name(void)
->  	return probe_fd(ret);
->  }
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
+> index 9f5e96439c01..8f50f0f719df 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: Texas Instruments' ads124s08 and ads124s06 ADC chip
 >  
-> +static int probe_kern_map_name(enum bpf_map_type map_type,
-> +			       const char *map_name, __u32 key_size,
-> +			       __u32 value_size, __u32 max_entries,
-> +			       const struct bpf_map_create_opts *opts)
-> +{
-> +	int map;
-> +
-> +	map = bpf_map_create(map_type, map_name, key_size, value_size, max_entries, opts);
-> +	if (map < 0 && errno == EINVAL) {
-> +		/* Retry without name */
-> +		map = bpf_map_create(map_type, NULL, key_size, value_size, max_entries, opts);
-> +	}
-> +
-> +	return map;
-> +}
-> +
->  static int probe_kern_global_data(void)
->  {
->  	char *cp, errmsg[STRERR_BUFSIZE];
-> @@ -4434,7 +4450,7 @@ static int probe_kern_global_data(void)
->  	};
->  	int ret, map, insn_cnt = ARRAY_SIZE(insns);
->  
-> -	map = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), 32, 1, NULL);
-> +	map = probe_kern_map_name(BPF_MAP_TYPE_ARRAY, "global_data", sizeof(int), 32, 1, NULL);
+>  maintainers:
+> -  - Dan Murphy <dmurphy@ti.com>
+> +  - Jonathan Cameron <jic23@kernel.org>
+For this one,
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Thanks! Some comments on the naming: It reads strange here to "probe"
-for the maps, given that we still need to compare the return value
-below. Maybe use something else instead of "probe_kern_map_name()"?
-Maybe "map_create_adjust_name()" or "map_create_compat()" (or something
-else)?
+(I'm fine with using my kernel.org address for bindings)
 
-Regarding "global_data": If the intent is to filter out these maps from
-the output of bpftool for example, should we use a common prefix for the
-three of them? "libbpf_" or "probe_"? Or even something shorter? I know
-we're limited to 15 characters.
-
-Quentin
