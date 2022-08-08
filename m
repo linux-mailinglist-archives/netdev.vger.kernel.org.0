@@ -2,105 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBEE58C19B
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 04:28:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96A558C20F
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 05:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243907AbiHHC2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Aug 2022 22:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
+        id S236048AbiHHDb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Aug 2022 23:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242774AbiHHC2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 22:28:07 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A33261
-        for <netdev@vger.kernel.org>; Sun,  7 Aug 2022 19:26:38 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id t5so9625535edc.11
-        for <netdev@vger.kernel.org>; Sun, 07 Aug 2022 19:26:38 -0700 (PDT)
+        with ESMTP id S231905AbiHHDbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Aug 2022 23:31:23 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C722F6269;
+        Sun,  7 Aug 2022 20:31:22 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id n133so9168181oib.0;
+        Sun, 07 Aug 2022 20:31:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GyIdygXpERIYq0zhovmgdDSjsG4Trhk4Rphv5GwxReI=;
-        b=AcYngUUqMi7z0wcPZMRagIa7PoAdW07wfshuE+kut+yIbRA46gPjQ/fCbemc8jwUUp
-         Jfn4n6X/Q36WPgAaHgDst95KQGo5rIP1YQaLajHO/5TjqrXXTKzWIiShxhMvURme/bW/
-         E81DkcHa8Ul85tl2ld3wQSC5dZzaZU5uXsBc3RQ1WR3aa1XSX9g2S4XlhBHZZF9NeUET
-         RGcyc4IDqZNP9DXUzFbtb84AJkZsasBi4hS2sMGD5gw0NYF8Gi3atnPkxdmzYnDy0Kvv
-         Z5GJStchCF7/Qww7gPMDBwMdvaRsSZuSYxzsDSiLTa0ZeT2fbnC5Ext7abySWommIiUt
-         DS1A==
+        bh=sG4WSPOFSrB4BWd5XsDTyjpNIlzRx3yn9bSIEBRT+ro=;
+        b=p0O3WYDz9TsVpfUf/P5hQei70HzQXV0cus/i4L6FRlYsGPzioGhL4/FeJ3IlcRi0lO
+         iLaX0tpHLzHSOWOA8i5I7K7AqaN4syW3/ENaKAfuseh1HiQJJzX9EGef0nUR7sqhK8v4
+         AlcchPRu9ZlCX2Kytk92NqKS0eSbixjdFXOQhOAQhLWgvt1JLvb+ukLUbovfjU709HuN
+         nirFsxr4mCITqRuMcmjLxkwsj+UOAblursE9c/cwr8ozVCJ40FX0lLjNGpdCbre1GMnU
+         ALViyEse39llD1YWv7xPuTEqm6yQPdxsbU7qdu+VxifihN5f7CqSs3kR0jNxg/fi3gvL
+         Ij6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=GyIdygXpERIYq0zhovmgdDSjsG4Trhk4Rphv5GwxReI=;
-        b=0kNhAW0eSJ3Mo7X9HnsZ3OQGNJ4WRlnHckE9+pF/kjZ6Jj3/PIr9jhYhOqNeTEmKBx
-         H8tiETq++Cy72m1qTsp0EIdlOp4pfpHMsULr3jZ4SKB+y1IrhBgCWevCVIgjGnvQns/D
-         7tfRmcyWijXV15ofkFzk/qM8OBCPNSHUrnB+BMI0Pz9MFk6rFZUzLszpx70OdFreje0q
-         Isw8sTJdrAK4No1KweqvfUJLbc79rANtwl3EOxZAroCafC7lG2pdZJhOMDDqTS9CC6OA
-         hNojO4o8u+XOh5LFOosOJdS0b4k34XXOBNJSc4r2w7uK6HoW2K1kt9dYPsVfcLHMPyDq
-         mcdQ==
-X-Gm-Message-State: ACgBeo0v4MzMTgjsuMgArnJJp++3z+f12YAZU2+6z68q8fVNpO7tVYpi
-        9s4FATRnc4DhfxERqpydnKor8bNigsvxd2kn3sM=
-X-Google-Smtp-Source: AA6agR49XMxHZZItasZZGlmmpgPSTUdD8og3CjgUIo3nWBbsiSBXhA5rcuKqKX2Keck7ERMr6fJqCCGUbzaswZ7Am5s=
-X-Received: by 2002:aa7:d053:0:b0:43d:b75:fd96 with SMTP id
- n19-20020aa7d053000000b0043d0b75fd96mr15946154edo.12.1659925596764; Sun, 07
- Aug 2022 19:26:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sG4WSPOFSrB4BWd5XsDTyjpNIlzRx3yn9bSIEBRT+ro=;
+        b=2iCLqkS3Tj6knTTpASlVDSj5Gxp0mT7e6kXpza35oDLCokdhEeV7hxkzXoqbWsdoU+
+         tC9J8zTYpTpNRRs5KH6yHB8XYjruju+vrWbKosSr8HfwNe2VLbkKHVuR0c1gTLFUIKML
+         CxgDNQ/I8OVB8Nt2JEZpLdhv10FcP2brpGe3YE2RS5QFG4D7DC3Y3ZgK/+UZ0JLhJ8WL
+         /xwRPZv88nhv6XVN4j1zxAbL2d7S6Vv20JykOnLbEjOW3Nsyjh4VRuU9YrUyDUWC81pC
+         plM09VqeVGWj7SP6eDWTsSBEVG8PjfpK5QNIGnR5DsOABCmobEqSVketpufhkvTIb/PZ
+         BFQw==
+X-Gm-Message-State: ACgBeo2a2ir7XpMViFnA5TfmivO16QaqfmJcpADfGEpOtRHyxMOujjoa
+        y0unmg5DNhH7zoaQR49z+WmFeJdrXLg=
+X-Google-Smtp-Source: AA6agR4jSv0EeyG259uGDpwiSYDuxxGtY/LD/6ilxZXegTl4oB/p1TrN4iKGWrzMZUI4Eyj4xmPhsg==
+X-Received: by 2002:a05:6808:1642:b0:331:567c:54e1 with SMTP id az2-20020a056808164200b00331567c54e1mr6825631oib.232.1659929481922;
+        Sun, 07 Aug 2022 20:31:21 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:ad03:d88f:99fe:9487])
+        by smtp.gmail.com with ESMTPSA id k39-20020a4a94aa000000b00425806a20f5sm1945138ooi.3.2022.08.07.20.31.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Aug 2022 20:31:21 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch net v2 0/4] tcp: some bug fixes for tcp_read_skb()
+Date:   Sun,  7 Aug 2022 20:31:02 -0700
+Message-Id: <20220808033106.130263-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Received: by 2002:a05:6f02:27:b0:20:d56a:d507 with HTTP; Sun, 7 Aug 2022
- 19:26:36 -0700 (PDT)
-Reply-To: aseanvietnam55@gmail.com
-From:   ASEAN VIETNAM <rw49060@gmail.com>
-Date:   Mon, 8 Aug 2022 02:26:36 +0000
-Message-ID: <CACL3VFMwTqk8RCcJccjiDUs6BtUKziv5Ne6c--NLD5U65zV1Sg@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:532 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [rw49060[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [rw49060[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [aseanvietnam55[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Hello,
+From: Cong Wang <cong.wang@bytedance.com>
 
-You have an important message get back to me for more information.
+This patchset contains 3 bug fixes and 1 minor refactor patch for
+tcp_read_skb(). V1 only had the first patch, as Eric prefers to fix all
+of them together, I have to group them together. Please see each patch
+description for more details.
 
-Mr. Le Luong Minh
-(Ph=C3=B3 C=E1=BB=A5c Ng=C3=A2n kh=E1=BB=91) Deputy Department of the Treas=
-ury
-Vietnam.
+---
+
+Cong Wang (4):
+  tcp: fix sock skb accounting in tcp_read_skb()
+  tcp: fix tcp_cleanup_rbuf() for tcp_read_skb()
+  tcp: refactor tcp_read_skb() a bit
+  tcp: handle pure FIN case correctly
+
+ net/core/skmsg.c |  5 +++--
+ net/ipv4/tcp.c   | 46 +++++++++++++++++++++-------------------------
+ 2 files changed, 24 insertions(+), 27 deletions(-)
+
+-- 
+2.34.1
+
