@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFEDC58CFA7
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 23:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E874D58CFA8
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 23:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244371AbiHHVaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 17:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
+        id S236531AbiHHVam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 17:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238532AbiHHVaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 17:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D24247;
-        Mon,  8 Aug 2022 14:30:14 -0700 (PDT)
+        with ESMTP id S236078AbiHHVal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 17:30:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51271103A
+        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 14:30:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2FDFB81057;
-        Mon,  8 Aug 2022 21:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FFAC433C1;
-        Mon,  8 Aug 2022 21:30:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17C76B81059
+        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 21:30:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B724BC433D6;
+        Mon,  8 Aug 2022 21:30:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659994212;
-        bh=8I/6BSCB7QRgGY9y/Ch+UemtT6uX2ke0x7wPLXYO2Jo=;
+        s=k20201202; t=1659994237;
+        bh=loaqGAQtscdD7pttz6hcD+sSY+1Yp2oCjycWZKscoo0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YoQXx1BVTKzcpPWbTYiLLfa6VX1OZVvXYTKfuplpwqucw//VCTfu3BeNLbuAyW9dn
-         2VMwISWtomZOXcFI1XWxDLM4qSGfqxgP160V9KiPw1hV0YOGoeoeegoPhKlAThfkri
-         DgDMQiseGYlbmWn8XxAd4hLaF6C+omW+JwGErkVpUPPKv8JLVaOKzF2KLYl4ZRAV2D
-         hnp8jM6Pp9ai/o7Ss33c5gqvI/nApve37AzDZgXNyQGEiKZ3Ol/TGFz2sU/WO5IEmw
-         LLEhYtLTHnKCot2A3eBjrvNJChQn5GUFCnkKV8I20XHHzDyuaHkRZgT9wlN3zno1SG
-         FPw/OrM1ByXGw==
-Date:   Mon, 8 Aug 2022 14:30:11 -0700
+        b=dkawPl6Xq71q2RyKlJ8JZ2YcIkpaLNb214sp4ErpnAOFzDKdc5bsnr5iKLKoXnCly
+         nFYLiin+45Ogyq4dUyN0gIyk3mATwCjIgZUAMCYclvZndnarQzB7XVK1ENot0NjMha
+         8TbUwJPZWAUIxCBQ+NqdG6AoWppKZGg4SUtHy/CrfkNdR/P4lOVF8eAoO5drLq888Y
+         gPOGTVa2DqoWLe5xiPbgmFOEF+ngWCH7hyykFXfI4Fal/tsSTNORlOKBtKQJagCrdi
+         8ZTSXFkXdl/QT1mPCxePB0YbnHHvvztZ87yrcfBgpT+TQzRss+7iMsCKBOZpiI/ku9
+         iCUD2/+IvSuHQ==
+Date:   Mon, 8 Aug 2022 14:30:36 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: pull request: bluetooth 2022-08-05
-Message-ID: <20220808143011.7136f07a@kernel.org>
-In-Reply-To: <CABBYNZLPkVHJRtGkfV8eugAgLoSxK+jf_-UwhSoL2n=9J9TFcw@mail.gmail.com>
-References: <20220805232834.4024091-1-luiz.dentz@gmail.com>
-        <20220805174724.12fcb86a@kernel.org>
-        <CABBYNZLPkVHJRtGkfV8eugAgLoSxK+jf_-UwhSoL2n=9J9TFcw@mail.gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] tsnep: Fix tsnep_tx_unmap() error path
+ usage
+Message-ID: <20220808143036.2f22e809@kernel.org>
+In-Reply-To: <44114097-15bc-77ff-51f5-bfc0b5e02b70@engleder-embedded.com>
+References: <20220804183935.73763-1-gerhard@engleder-embedded.com>
+        <20220804183935.73763-3-gerhard@engleder-embedded.com>
+        <20220808122319.4164b5c6@kernel.org>
+        <44114097-15bc-77ff-51f5-bfc0b5e02b70@engleder-embedded.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,15 +56,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Aug 2022 12:38:25 -0700 Luiz Augusto von Dentz wrote:
-> > Did you end up switching to the no-rebase/pull-back model or are you
-> > still rebasing?  
-> 
-> Still rebasing, I thought that didn't make any difference as long as
-> the patches apply.
+On Mon, 8 Aug 2022 21:30:02 +0200 Gerhard Engleder wrote:
+> On 08.08.22 21:23, Jakub Kicinski wrote:
+> > On Thu,  4 Aug 2022 20:39:35 +0200 Gerhard Engleder wrote:  
+> >> If tsnep_tx_map() fails, then tsnep_tx_unmap() shall start at the write
+> >> index like tsnep_tx_map(). This is different to the normal operation.
+> >> Thus, add an additional parameter to tsnep_tx_unmap() to enable start at
+> >> different positions for successful TX and failed TX.
+> >>
+> >> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>  
+> > Is this correct:
+> >
+> > Fixes: 403f69bbdbad ("tsnep: Add TSN endpoint Ethernet MAC driver")
+> >
+> > ?  
+> Yes, that's correct. Sorry I forget to add it. Shall I add it and resend?
 
-Long term the non-rebasing model is probably better since it'd be great
-for the bluetooth tree to be included in linux-next.
-
-Since you haven't started using that model, tho, would you mind
-repairing the Fixes tags in this PR? :)
+It's okay, I'll add it.
