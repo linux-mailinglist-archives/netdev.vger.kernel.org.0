@@ -2,129 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B912758CB01
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 17:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E236958CB15
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 17:15:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238473AbiHHPFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 11:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S243538AbiHHPPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 11:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234034AbiHHPFX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 11:05:23 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9D0E9F;
-        Mon,  8 Aug 2022 08:05:21 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 278F4JoD126550;
-        Mon, 8 Aug 2022 10:04:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1659971059;
-        bh=NdjYuYrRgfFqkXrI7faf1aVXflieuCOWZNGCJMFOx94=;
-        h=Date:Subject:To:References:From:In-Reply-To;
-        b=lmySqfLgt6rnGnRx3ZDw9pTF65QwTb++SXCsh9IxxF9MAQRftqsa/WREeGJ17tqpA
-         k/sw5R/YUoMY4tJ7HDRVaR9WOH2DGsonOxC62b5Vp7Cpp88RkVhE3Y2KkkcdnHE1Hm
-         UYW69jWcmfDjbrWDx4ioxp0dues0NZ0ZN0Pbdg8I=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 278F4Jd1015602
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 8 Aug 2022 10:04:19 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 8
- Aug 2022 10:04:18 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 8 Aug 2022 10:04:18 -0500
-Received: from [10.250.34.173] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 278F4HdP032491;
-        Mon, 8 Aug 2022 10:04:17 -0500
-Message-ID: <6ae15e00-36a4-09a8-112e-553ed8c5f4da@ti.com>
-Date:   Mon, 8 Aug 2022 10:04:17 -0500
+        with ESMTP id S243008AbiHHPPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 11:15:17 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57125B39;
+        Mon,  8 Aug 2022 08:15:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8NeebcQIowJFvYNvYAuayRA5HrGpbu0y4rq77R8ZNew=; b=UkbTPpK3PkL/KNCksKY7NedBjm
+        eKGiMxQ4EDIlwc6yVThl6uDq8BNqa4i68qOQ2Qq5S90ePBFJodmONvOinj6rYRKU6GiWn/OWgq1Es
+        UIzqDDJemiX7jgCVd3GNHShRuixAW+yG8Oh+DqrjWqkwf8Py90cGVhk2xbcxCWicuz/ewTPJeLHxT
+        KjoC96tOXtJRhzyQkOrOz8StFqrRq+Uh/Pu/C6+u0nELLuErbjXiUorKj+4jNXJfclDHIn47M4+xG
+        zqeERGj2xybEfBqXzwIGK7cVMaWSp/uv9wMXfCaStJPbYwCSSyhl1n6XwAwA+F2AzoQY35Tq/eNZY
+        v+RLic4w==;
+Received: from [187.56.70.103] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oL4T6-002tRL-3C; Mon, 08 Aug 2022 17:15:00 +0200
+Message-ID: <019ae735-3d69-cb4e-c003-b83cc8cd76f8@igalia.com>
+Date:   Mon, 8 Aug 2022 12:14:30 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 5/5] dt-bindings: Drop Dan Murphy
+Subject: Re: [PATCH v2 03/13] firmware: google: Test spinlock on panic path to
+ avoid lockups
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>,
-        Lee Jones <lee@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, <linux-hwmon@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
-        <linux-leds@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <alsa-devel@alsa-project.org>
-References: <20220808104712.54315-1-krzysztof.kozlowski@linaro.org>
- <20220808104712.54315-6-krzysztof.kozlowski@linaro.org>
- <43b3c497-97fd-29aa-a07b-bcd6413802c4@linaro.org>
-From:   Andrew Davis <afd@ti.com>
-In-Reply-To: <43b3c497-97fd-29aa-a07b-bcd6413802c4@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Evan Green <evgreen@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-efi@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, mikelley@microsoft.com,
+        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
+        john.ogness@linutronix.de, Kees Cook <keescook@chromium.org>,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-4-gpiccoli@igalia.com>
+ <CAE=gft71vH+P3iAFXC0bLu0M2x2V4uJGWc82Xa+246ECuUdT-w@mail.gmail.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <CAE=gft71vH+P3iAFXC0bLu0M2x2V4uJGWc82Xa+246ECuUdT-w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/8/22 6:08 AM, Krzysztof Kozlowski wrote:
-> On 08/08/2022 13:47, Krzysztof Kozlowski wrote:
->> Emails to Dan Murphy bounce ("550 Invalid recipient <dmurphy@ti.com>
->> (#5.1.1)").
+On 08/08/2022 02:07, Evan Green wrote:
+> On Tue, Jul 19, 2022 at 12:55 PM Guilherme G. Piccoli
+> <gpiccoli@igalia.com> wrote:
+>>
+>> Currently the gsmi driver registers a panic notifier as well as
+>> reboot and die notifiers. The callbacks registered are called in
+>> atomic and very limited context - for instance, panic disables
+>> preemption and local IRQs, also all secondary CPUs (not executing
+>> the panic path) are shutdown.
+>>
+>> With that said, taking a spinlock in this scenario is a dangerous
+>> invitation for lockup scenarios. So, fix that by checking if the
+>> spinlock is free to acquire in the panic notifier callback - if not,
+>> bail-out and avoid a potential hang.
+>>
+>> Fixes: 74c5b31c6618 ("driver: Google EFI SMI")
+>> Cc: Ard Biesheuvel <ardb@kernel.org>
+>> Cc: David Gow <davidgow@google.com>
+>> Cc: Evan Green <evgreen@chromium.org>
+>> Cc: Julius Werner <jwerner@chromium.org>
+>> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 > 
-> 
-> (...)
-> 
->>   description: |
->> diff --git a/Documentation/devicetree/bindings/power/supply/bq25980.yaml b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->> index 4883527ab5c7..509a0667b04e 100644
->> --- a/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->> +++ b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->> @@ -8,7 +8,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->>   title: TI BQ25980 Flash Charger
->>   
->>   maintainers:
->> -  - Dan Murphy <dmurphy@ti.com>
->>     - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-> 
-> Ricardo's also bounces... Does it mean TI is not interested in
-> maintaining mainline support for its drivers?
-> 
+> Reviewed-by: Evan Green <evgreen@chromium.org>
 
-TI is still interested in maintaining support here. But as we know folks
-come and go, so giving specific emails might not be the best option.
-Doesn't look like the schema here allows free-form strings, but if it did
-I'd recommend the TI E2E Power-Management support forum[0] added. Any
-questions on Linux/DT for these parts posted there would land on my desk
-just the same, or to whomever is assigned in the future with maintaining
-these drivers.
+Thanks a bunch Evan!
 
-Either way, I have several of these parts and can support these. Feel free
-to replace Dan's email with my email if that works better.
+Ard / Greg, do you think you could get this patch through your -next (or
+-fixes) trees? Not sure which tree is the most common for picking GSMI
+stuff.
 
-Andrew
+I'm trying to get these fixes merged individually in their trees to not
+stall the whole series and increase the burden of re-submitting.
+Thanks in advance,
 
-[0] https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum
 
-> Best regards,
-> Krzysztof
+Guilherme
