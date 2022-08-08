@@ -2,456 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EB658CC40
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 18:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5544358CC62
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 18:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243677AbiHHQjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 12:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S243890AbiHHQu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 12:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235709AbiHHQjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 12:39:42 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D569C1115B;
-        Mon,  8 Aug 2022 09:39:37 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 278GdPsW5029967, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 278GdPsW5029967
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 9 Aug 2022 00:39:25 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+        with ESMTP id S243809AbiHHQuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 12:50:21 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75ADB1101;
+        Mon,  8 Aug 2022 09:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659977420; x=1691513420;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KPn7/mZ+oRJPhaU+/PWQT88koePflmiq4sR2i9MB4eA=;
+  b=bJgvFfupHKWQrYfE9/o2n+qUZGshstb0K6HW2Yc0snXIbwYkUi/U0Z+L
+   CqGjQRVjVCg2TVtweBRA0APSEloFg4gtdzVG6mAP8SW5FpZz1tQJHoCRh
+   nHrpxRNiiPrxtqJ0fCOKUwKcw5geAXg057riVRJzTRUmBhfmwly9E7SMx
+   G00skfhTcyb/1PsGewd+OGe6gqvhszuzhvoOtQJKmt8jpXElXNHbtPj5H
+   32jp+umHbGQ0hdw2p+uGWeEH+o6MkGm/Wnq30OH5ktCs1cDTdsyxyMuw6
+   xBMDrTGHc4l6sjv0P+7lidU05u9Cjr+02kJvg/vChUMVQC5Azn2QBAVyK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="316556902"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="316556902"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 09:50:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="932132002"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Aug 2022 09:50:19 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 9 Aug 2022 00:39:35 +0800
-Received: from localhost.localdomain (172.21.182.184) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ 15.1.2375.28; Mon, 8 Aug 2022 09:50:17 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 9 Aug 2022 00:39:34 +0800
-From:   Chunhao Lin <hau@realtek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
-        Chunhao Lin <hau@realtek.com>
-Subject: [PATCH v2 net-next] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
-Date:   Tue, 9 Aug 2022 00:39:29 +0800
-Message-ID: <20220808163929.4068-1-hau@realtek.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.28; Mon, 8 Aug 2022 09:50:17 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Mon, 8 Aug 2022 09:50:17 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Mon, 8 Aug 2022 09:50:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DVwvVJPNqiPwCnDUI3KpWLBo2lmq2B4YDCBuIbOHyQmHAx8SQzuXWVvlgoESWs3Ur22DrJo7TDuwBHE4AozdMGL0lZPyzR9Q+MooKlVQVkXFsUlTvww7/xE2C321RTBr2CoR1KdUhYcCEqOKLtSL5xqyJJ52+h1IkTUBnb7vjTlMTHTLjpxJG6LI50KRTJlb0lbtSaORfelp5JQ9W5yG1WLp7g72oSNNhVgERDGVDzya6OXCGpwGl2c589KTCQSMQPE+hov3Ak47kABcSQ/myDVLImWW/rzIPcp/Ppyzhonwgf5OC79nzzctxQ1vttYi2iO947Bfcw14qZqyLEET3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KPn7/mZ+oRJPhaU+/PWQT88koePflmiq4sR2i9MB4eA=;
+ b=Aqv0CmvJW5poe03Ie7mVcfRMx1LT1kcADLyYlHDjqHTLl/YeUfiJ7q8wUKqlvFfGUuSvkz6z2o20Yv5Skru/2FIus1f0Jd+YB0sFe1aXJ93X8PrM8ngptXNDn0Y+e5pPO+r7tw0+dpTxsy2WYnKdO3dXPs72CVnaVA25jmmR245B0uEm2giTTB7hFoLPdMaAgqT2FZw1ZLTZMU6RHMWsnm3MRunZPinDXdJ7jHGmjLFnHZ8IbSkRoKGnD4Ahk9cNZNdLR8amlqK4EJnM+YwWClwobpjOM+TC9BdWmdlfd3JZbqy5y4SjE9lZpJIS5Mks64s4sgrhzP83JzAqdloxsw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
+ by PH7PR11MB6676.namprd11.prod.outlook.com (2603:10b6:510:1ae::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Mon, 8 Aug
+ 2022 16:50:15 +0000
+Received: from PH0PR11MB5095.namprd11.prod.outlook.com
+ ([fe80::6d2c:6e35:bb16:6cdf]) by PH0PR11MB5095.namprd11.prod.outlook.com
+ ([fe80::6d2c:6e35:bb16:6cdf%9]) with mapi id 15.20.5504.020; Mon, 8 Aug 2022
+ 16:50:15 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "ecree@xilinx.com" <ecree@xilinx.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "linux-net-drivers@amd.com" <linux-net-drivers@amd.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "Andy Gospodarek" <andy@greyhouse.net>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Jiri Pirko" <jiri@resnulli.us>,
+        Shannon Nelson <snelson@pensando.io>,
+        Simon Horman <simon.horman@corigine.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: RE: [RFC PATCH net-next] docs: net: add an explanation of VF (and
+ other) Representors
+Thread-Topic: [RFC PATCH net-next] docs: net: add an explanation of VF (and
+ other) Representors
+Thread-Index: AQHYqO0dovW2pkPiMk+VVg4103WPy62hGiSAgAQe+mA=
+Date:   Mon, 8 Aug 2022 16:50:15 +0000
+Message-ID: <PH0PR11MB5095235AC8D7C4670C1E5910D6639@PH0PR11MB5095.namprd11.prod.outlook.com>
+References: <20220805165850.50160-1-ecree@xilinx.com>
+ <20220805184359.5c55ca0d@kernel.org>
+In-Reply-To: <20220805184359.5c55ca0d@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 39782e73-90e9-4d52-957a-08da795e1180
+x-ms-traffictypediagnostic: PH7PR11MB6676:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2vSVNvaLAbUW1++vFzpd+OuNtT/WjSklQnGPskksItum2oXxTBRu7K34qBPdnRhkWz15xj3FHobxq0L1j5taCd1ZM6vZecjEO/1E3qi9QiiRNOi0iKjGrkZImeqDHAcW8fl0RtPI9HPW4vMZrCt4kJzmjAqR4ZP5xTP5iPEtYbPaUHrAnx36Z/6MMcsYZK9gxF051AYOJglBq1AvMY+mFi2Fw5Fvox8XP68c+meI+m4MCmBY3+AilQCtxjHuiU+qNFJWy80qNxXfybXxgmyo4jZC9h9Vl0X+9Tg0ODXE5r3qJZTjNXvV7KuOO6vmTWZyhkCxFEv/hHTC223i5zQ55xxIzGU1K2Vo3sNeVkDyrEFnK8CtNXDcW4jX8ljEOUNFarfy1XJtrcyP15qN7gZaT4B8LMj7skYZnnswEGj0ZdIUJc8R4dO74YXDwuLxAvXEsx/DqBJpFmVZ9kNMdTXuy0gBJ1uXfGAIm0BQjNEfcvuiaWgax224fzlGJHXnbnheuGTbNtznYJAJrSu7mxjtqhMkioaFnDjnmnGQE6B60AUnPDcplLRKHnlXF8rfXKnv3a60vUTzKG+jlnS02ljWUjqOlx8r94S5a2J0eSZ0xSxPlNzpRj0HZ62O5bX4dA+Bmiazzttk+myAyI2ofnqGL0rf2bbGeBxK5MWXT3VYnIRo+ct8kGCueRggm04f3j9MjryOLofFgCMCewxNu49xyNxr3FSRkflFL6vwwJWRAZQeq4C5N1eTYpuT2iOoWMdICGJMkPRYxqzaiWGu0Xnt51QPu0jU6+C1Z5xquGwWXYF92DJuKBD5adi+O/N5th86
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(396003)(376002)(366004)(346002)(9686003)(26005)(53546011)(41300700001)(7696005)(6506007)(71200400001)(186003)(2906002)(478600001)(8936002)(86362001)(83380400001)(55016003)(8676002)(66946007)(33656002)(5660300002)(54906003)(66476007)(110136005)(38100700002)(7416002)(66556008)(66446008)(4326008)(64756008)(316002)(76116006)(52536014)(122000001)(38070700005)(82960400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?a21qOEpQaXR5S3VDdThyaFVZOTF3THUyWmk1blVTTHplTVk3ZmpIY1FjVzhn?=
+ =?utf-8?B?TnlTTlhSc1E5THdXbk5UcDdCenh4NVE4emdvZlBBM3VrblpTUEx1VTJFM2Ru?=
+ =?utf-8?B?NXduejBrenp1SFVYSHc4Nyt5L2xLSGtmbnlLNnBLWThXRjJnUERzcXhGcnlj?=
+ =?utf-8?B?WXRXRUlyckRaNTc0MXZOV3c3R3VmNFFaTTA2cGRUcjFFR3R4L2FCTmo1OHIv?=
+ =?utf-8?B?YXg4RUYrU3JIbW5BQXZpY2xXRnZVeUFSdlU3cldZR09adDRnRU1HeWlPN0Zw?=
+ =?utf-8?B?cWRmd2gzV0xuNXgrUkhURElsUFdVN0dFTTVZdi9XNitGT2hJZ1N1cjg2bTNZ?=
+ =?utf-8?B?aDVlS3AzU3Qzd0FiQVNUMERONzhSRkNka1FLVDh3S3VzMWsxVS9xWVZrSmFO?=
+ =?utf-8?B?YlJsVE9vSTg4MXNFY2I4dFZjQ0xOWVdUVk5YNHgwNXBpc1hwdmtxMWZTZjBy?=
+ =?utf-8?B?WkVISHF6SXdWak1qTlVyN1EzVmR1bmRxazIrbWMxY2Z3SVpKRWlGeEVUSzRj?=
+ =?utf-8?B?b1I5VnFTMkk5OVM2UUdBVXQyV1FYb1g1ZzRHMVBteDNyZzZLblVRTDZRSHly?=
+ =?utf-8?B?L3RadkhBUG4rZDJHV1cvcGxpTWl0QTkvdnQ4Z3l6WmZhRWhzT1hidDNuU3Rk?=
+ =?utf-8?B?TDFSSGQ4eVZwRzVZZGcwTFUxSWRKeHFxNVJ1RUw0cGxxcXd1b0xyZ1ZKSW1O?=
+ =?utf-8?B?SXlCL3Y2enR4YWpXdkhvWHoramFBcXBsRVpuRXI1RFppcFdFcFI5alZiQ2JR?=
+ =?utf-8?B?R2V0WnJKYSszNk5UTmthcDBRRnZZMDNjRTFjT2JiTWZ3ekpxL2NZSmxjcnA4?=
+ =?utf-8?B?RmIyQ0thQ3dvS0JjblMvSWE0SzZOZ1JhM3VQUktrWG1BZjJyM1BCdEFLOEI3?=
+ =?utf-8?B?WU0xcElSalV5b0Y4eGkranl2MUNhdDRvcFlJVHFScW11VzdLUDlReUtDYjdX?=
+ =?utf-8?B?MDRVZ1Q0K2VnNHFjbFJtVFQwbUpzREZsZG15UEROallvZVZ1eDh6dytWN0c5?=
+ =?utf-8?B?QVNkbkQ0cE5hMEN6bk9hZWgvTmZYeS9PbDJHSXovL2J1blhudTB5elhKaXhE?=
+ =?utf-8?B?Rk1WMGQyRXd6Y094cDlHZ1ZWY0xzcjJOWjV4VFo1eDdnTW82aS9MaDY2Zjcr?=
+ =?utf-8?B?SnZvb3JNOGd4U080alRnMjFqTmZoWVJ0K2xmSUswRk9JNEtIcVdkN2N2eXkv?=
+ =?utf-8?B?akYrbWhCbXdabjNhbnZZRm42NnBCdms2UmdBZ21GYU5xSXpBK3RlQnV3QTg2?=
+ =?utf-8?B?Q1c0RDB5eVBvR0RnM2FzT2ZtT3diQkZpc1BwWm9zd0lNQklNQVRMMGd6a0Yv?=
+ =?utf-8?B?QmhkUEplQnFvTjFoZVVhbjVTZWV3RzJlYWNpb0lSUEV5amh2T3FucGk0MU9r?=
+ =?utf-8?B?Q1NJYmdHQ1liVk9OZlAveWFSUmc0Rjl5UEVVWFBmR1BpY0JiL2Q2OEl1emt3?=
+ =?utf-8?B?NFlRQ0JMTDBRaXhsUmg3ZERXNERrRWdDenV1SnJ6ejJ1T3g1akN1ZU14OGlM?=
+ =?utf-8?B?amN3RFJlaXBKWVRXNHFUcldLUFdmaGhzWElvNjBPZm16Q1JrTjUrZHhvRUJn?=
+ =?utf-8?B?WUIvL0V6Zm9maVZ3Vm50NVNReFVPMmVvT1NDcEh4djRHdzJnTng0WDJ0OUZz?=
+ =?utf-8?B?bE1aODZYMWlJVis5S2hRZjFrUElqNFVFd01YRDN3V3IyYWxyZjAwOUFBU2ZX?=
+ =?utf-8?B?YmN1WkVIVk1acU1Wd2NxRWJ0Q0cxWEJJZ2V1b0Y4UkdMSEJLbk15Z2F1Q0pm?=
+ =?utf-8?B?T2U2bFhXS0pNVWtGRExiQWlzRC8zOHdldnVwdExMY3hRTWNocng2RVl3d2Rv?=
+ =?utf-8?B?bG1EdjlFcW9xbnNNY1FadEppY3ZkUndHdTB2TVVDdjJyRVFYRTUzeHFTT3py?=
+ =?utf-8?B?ZXJVbzB0SVVSQlZCYlg4M1RadnhwQmF0Z3VoTExCeTFpandMVmF3djAvSGlS?=
+ =?utf-8?B?QVJ6ajE4K1F2MnRvL2JMb2pIK2NtYUdObEp4TVZZaVlXY1RwdXJmQ29BRkMr?=
+ =?utf-8?B?RjN6d0pWNExFSGxFem10SUFKYjJuMVBvNFpta3ZNTVBMU2RlclJWN2c3a1lL?=
+ =?utf-8?B?Q3o2QVFCbFRXbnM1WEphc1FKR0FFR2luczQwSXIvU1lWUFh0dUcza3ptRVlo?=
+ =?utf-8?Q?BSqJzwZthFXsZMrSQ0PUKpwW3?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.182.184]
-X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 08/08/2022 16:19:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvOCCkVaTIIDAyOjAwOjAw?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39782e73-90e9-4d52-957a-08da795e1180
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2022 16:50:15.3404
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uELDHsc9kNd5txshJUkXAHN+jvzFivur9v/Sj1lDj5XcGYhqmKKHT+/OnCFKdwZGJsw5dVd/NVAwy6KkKP2dDsZ4pPEgVzv6jAjhMlmkdyI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6676
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl8168h(revid 0x2a) + rtl8211fs is for fiber related application.
-rtl8168h is connected to rtl8211fs mdio bus via its eeprom or gpio pins.
-In this patch, use bitbanged MDIO framework to access rtl8211fs.
-
-Signed-off-by: Chunhao Lin <hau@realtek.com>
----
- drivers/net/ethernet/realtek/Kconfig      |   1 +
- drivers/net/ethernet/realtek/r8169_main.c | 289 +++++++++++++++++++++-
- 2 files changed, 288 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
-index 93d9df55b361..20367114ac72 100644
---- a/drivers/net/ethernet/realtek/Kconfig
-+++ b/drivers/net/ethernet/realtek/Kconfig
-@@ -100,6 +100,7 @@ config R8169
- 	depends on PCI
- 	select FW_LOADER
- 	select CRC32
-+	select MDIO_BITBANG
- 	select PHYLIB
- 	select REALTEK_PHY
- 	help
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 1b7fdb4f056b..8051cdf46f85 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -28,6 +28,7 @@
- #include <linux/bitfield.h>
- #include <linux/prefetch.h>
- #include <linux/ipv6.h>
-+#include <linux/mdio-bitbang.h>
- #include <asm/unaligned.h>
- #include <net/ip6_checksum.h>
- 
-@@ -344,6 +345,15 @@ enum rtl8125_registers {
- 	EEE_TXIDLE_TIMER_8125	= 0x6048,
- };
- 
-+enum rtl8168_sfp_registers {
-+	MDIO_IN			= 0xdc04,
-+	PINOE			= 0xdc06,
-+	PIN_I_SEL_1		= 0xdc08,
-+	PIN_I_SEL_2		= 0xdc0A,
-+	PINPU			= 0xdc18,
-+	GPOUTPIN_SEL	= 0xdc20,
-+};
-+
- #define RX_VLAN_INNER_8125	BIT(22)
- #define RX_VLAN_OUTER_8125	BIT(23)
- #define RX_VLAN_8125		(RX_VLAN_INNER_8125 | RX_VLAN_OUTER_8125)
-@@ -584,6 +594,24 @@ struct rtl8169_tc_offsets {
- 	__le16	rx_missed;
- };
- 
-+struct rtl_sfp_if_info {
-+	u16 mdio_oe_i;
-+	u16 mdio_oe_o;
-+	u16 mdio_pu;
-+	u16 mdio_pd;
-+	u16 mdc_pu;
-+	u16 mdc_pd;
-+};
-+
-+struct rtl_sfp_if_mask {
-+	const u16 pin_mask;
-+	const u16 mdio_oe_mask;
-+	const u16 mdio_mask;
-+	const u16 mdc_mask;
-+	const u16 phy_addr;
-+	const u16 rb_pos;
-+};
-+
- enum rtl_flag {
- 	RTL_FLAG_TASK_ENABLED = 0,
- 	RTL_FLAG_TASK_RESET_PENDING,
-@@ -596,6 +624,12 @@ enum rtl_dash_type {
- 	RTL_DASH_EP,
- };
- 
-+enum rtl_sfp_if_type {
-+	RTL_SFP_IF_NONE,
-+	RTL_SFP_IF_EEPROM,
-+	RTL_SFP_IF_GPIO,
-+};
-+
- struct rtl8169_private {
- 	void __iomem *mmio_addr;	/* memory map physical address */
- 	struct pci_dev *pci_dev;
-@@ -635,6 +669,10 @@ struct rtl8169_private {
- 	struct rtl_fw *rtl_fw;
- 
- 	u32 ocp_base;
-+
-+	enum rtl_sfp_if_type sfp_if_type;
-+
-+	struct mii_bus *mii_bus;	/* MDIO bus control */
- };
- 
- typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
-@@ -914,8 +952,12 @@ static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
- 	if (tp->ocp_base != OCP_STD_PHY_BASE)
- 		reg -= 0x10;
- 
--	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR)
-+	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR) {
-+		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value & BMCR_PDOWN)
-+			return;
-+
- 		rtl8168g_phy_suspend_quirk(tp, value);
-+	}
- 
- 	r8168_phy_ocp_write(tp, tp->ocp_base + reg * 2, value);
- }
-@@ -1214,6 +1256,243 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
- 	}
- }
- 
-+struct bb_info {
-+	struct rtl8169_private *tp;
-+	struct mdiobb_ctrl ctrl;
-+	struct rtl_sfp_if_mask sfp_mask;
-+	u16 pinoe_value;
-+	u16 pin_i_sel_1_value;
-+	u16 pin_i_sel_2_value;
-+};
-+
-+/* Data I/O pin control */
-+static void rtl_mdio_dir(struct mdiobb_ctrl *ctrl, int output)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 reg = PINOE;
-+	const u16 mask = bitbang->sfp_mask.mdio_oe_mask;
-+	u16 value;
-+
-+	value = bitbang->pinoe_value;
-+	if (output)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, reg, value);
-+}
-+
-+/* Set bit data*/
-+static void rtl_set_mdio(struct mdiobb_ctrl *ctrl, int set)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 reg = PIN_I_SEL_2;
-+	const u16 mask = bitbang->sfp_mask.mdio_mask;
-+	u16 value;
-+
-+	value = bitbang->pin_i_sel_2_value;
-+	if (set)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, reg, value);
-+}
-+
-+/* Get bit data*/
-+static int rtl_get_mdio(struct mdiobb_ctrl *ctrl)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 reg = MDIO_IN;
-+
-+	return (r8168_mac_ocp_read(tp, reg) & BIT(bitbang->sfp_mask.rb_pos)) != 0;
-+}
-+
-+/* MDC pin control */
-+static void rtl_mdc_ctrl(struct mdiobb_ctrl *ctrl, int set)
-+{
-+	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
-+	struct rtl8169_private *tp = bitbang->tp;
-+	const u16 mdc_reg = PIN_I_SEL_1;
-+	const u16 mask = bitbang->sfp_mask.mdc_mask;
-+	u16 value;
-+
-+	value = bitbang->pin_i_sel_1_value;
-+	if (set)
-+		value |= mask;
-+	else
-+		value &= ~mask;
-+	r8168_mac_ocp_write(tp, mdc_reg, value);
-+}
-+
-+/* mdio bus control struct */
-+static const struct mdiobb_ops bb_ops = {
-+	.owner = THIS_MODULE,
-+	.set_mdc = rtl_mdc_ctrl,
-+	.set_mdio_dir = rtl_mdio_dir,
-+	.set_mdio_data = rtl_set_mdio,
-+	.get_mdio_data = rtl_get_mdio,
-+};
-+
-+#define MDIO_READ 2
-+#define MDIO_WRITE 1
-+/* MDIO bus init function */
-+static int rtl_mdio_bitbang_init(struct rtl8169_private *tp)
-+{
-+	struct bb_info *bitbang;
-+	struct device *d = tp_to_dev(tp);
-+	struct mii_bus *new_bus;
-+
-+	/* create bit control struct for PHY */
-+	bitbang = devm_kzalloc(d, sizeof(struct bb_info), GFP_KERNEL);
-+	if (!bitbang)
-+		return -ENOMEM;
-+
-+	/* bitbang init */
-+	bitbang->tp = tp;
-+	bitbang->ctrl.ops = &bb_ops;
-+	bitbang->ctrl.op_c22_read = MDIO_READ;
-+	bitbang->ctrl.op_c22_write = MDIO_WRITE;
-+
-+	/* MII controller setting */
-+	new_bus = devm_mdiobus_alloc(d);
-+	if (!new_bus)
-+		return -ENOMEM;
-+
-+	new_bus->read = mdiobb_read;
-+	new_bus->write = mdiobb_write;
-+	new_bus->priv = &bitbang->ctrl;
-+
-+	tp->mii_bus = new_bus;
-+
-+	return 0;
-+}
-+
-+static void rtl_sfp_bitbang_init(struct rtl8169_private *tp,
-+				  struct rtl_sfp_if_mask *sfp_mask)
-+{
-+	struct mii_bus *bus = tp->mii_bus;
-+	struct bb_info *bitbang = container_of(bus->priv, struct bb_info, ctrl);
-+
-+	r8168_mac_ocp_modify(tp, PINPU, sfp_mask->pin_mask, 0);
-+	r8168_mac_ocp_modify(tp, PINOE, 0, sfp_mask->pin_mask);
-+	bitbang->pinoe_value = r8168_mac_ocp_read(tp, PINOE);
-+	bitbang->pin_i_sel_1_value = r8168_mac_ocp_read(tp, PIN_I_SEL_1);
-+	bitbang->pin_i_sel_2_value = r8168_mac_ocp_read(tp, PIN_I_SEL_2);
-+	memcpy(&bitbang->sfp_mask, sfp_mask, sizeof(struct rtl_sfp_if_mask));
-+}
-+
-+static void rtl_sfp_mdio_write(struct rtl8169_private *tp,
-+				  u8 reg,
-+				  u16 val)
-+{
-+	struct mii_bus *bus = tp->mii_bus;
-+	struct bb_info *bitbang;
-+
-+	if (!bus)
-+		return;
-+
-+	bitbang = container_of(bus->priv, struct bb_info, ctrl);
-+	bus->write(bus, bitbang->sfp_mask.phy_addr, reg, val);
-+}
-+
-+static u16 rtl_sfp_mdio_read(struct rtl8169_private *tp,
-+				  u8 reg)
-+{
-+	struct mii_bus *bus = tp->mii_bus;
-+	struct bb_info *bitbang;
-+
-+	if (!bus)
-+		return ~0;
-+
-+	bitbang = container_of(bus->priv, struct bb_info, ctrl);
-+
-+	return bus->read(bus, bitbang->sfp_mask.phy_addr, reg);
-+}
-+
-+static void rtl_sfp_mdio_modify(struct rtl8169_private *tp, u32 reg, u16 mask,
-+				 u16 set)
-+{
-+	u16 data = rtl_sfp_mdio_read(tp, reg);
-+
-+	rtl_sfp_mdio_write(tp, reg, (data & ~mask) | set);
-+}
-+
-+#define RTL8211FS_PHY_ID_1 0x001c
-+#define RTL8211FS_PHY_ID_2 0xc916
-+
-+static enum rtl_sfp_if_type rtl8168h_check_sfp(struct rtl8169_private *tp)
-+{
-+	int i;
-+	int const checkcnt = 4;
-+	static struct rtl_sfp_if_mask rtl_sfp_if_eeprom_mask = {
-+		0x0050, 0x0040, 0x000f, 0x0f00, 0, 6};
-+	static struct rtl_sfp_if_mask rtl_sfp_if_gpo_mask = {
-+		0x0210, 0x0200, 0xf000, 0x0f00, 1, 9};
-+
-+	if (rtl_mdio_bitbang_init(tp))
-+		return RTL_SFP_IF_NONE;
-+
-+	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_eeprom_mask);
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
-+	for (i = 0; i < checkcnt; i++) {
-+		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
-+			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
-+			break;
-+	}
-+
-+	if (i == checkcnt)
-+		return RTL_SFP_IF_EEPROM;
-+
-+	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_gpo_mask);
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
-+	for (i = 0; i < checkcnt; i++) {
-+		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
-+			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
-+			break;
-+	}
-+
-+	if (i == checkcnt)
-+		return RTL_SFP_IF_GPIO;
-+
-+	return RTL_SFP_IF_NONE;
-+}
-+
-+static enum rtl_sfp_if_type rtl_check_sfp(struct rtl8169_private *tp)
-+{
-+	switch (tp->mac_version) {
-+	case RTL_GIGA_MAC_VER_45:
-+	case RTL_GIGA_MAC_VER_46:
-+		if (tp->pci_dev->revision == 0x2a)
-+			return rtl8168h_check_sfp(tp);
-+		else
-+			return RTL_SFP_IF_NONE;
-+	default:
-+		return RTL_SFP_IF_NONE;
-+	}
-+}
-+
-+static void rtl_hw_sfp_phy_config(struct rtl8169_private *tp)
-+{
-+	/* disable ctap */
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0a43);
-+	rtl_sfp_mdio_modify(tp, 0x19, BIT(6), 0);
-+
-+	/* change Rx threshold */
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0dcc);
-+	rtl_sfp_mdio_modify(tp, 0x14, 0, BIT(2) | BIT(3) | BIT(4));
-+
-+	/* switch pin34 to PMEB pin */
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0d40);
-+	rtl_sfp_mdio_modify(tp, 0x16, 0, BIT(5));
-+
-+	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
-+
-+	/* disable ctap */
-+	phy_modify_paged(tp->phydev, 0x0a43, 0x11, BIT(6), 0);
-+}
-+
- static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
- {
- 	switch (tp->mac_version) {
-@@ -2195,6 +2474,9 @@ static void rtl8169_init_phy(struct rtl8169_private *tp)
- 	    tp->pci_dev->subsystem_device == 0xe000)
- 		phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
- 
-+	if (tp->sfp_if_type != RTL_SFP_IF_NONE)
-+		rtl_hw_sfp_phy_config(tp);
-+
- 	/* We may have called phy_speed_down before */
- 	phy_speed_up(tp->phydev);
- 
-@@ -2251,7 +2533,8 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
- 		rtl_ephy_write(tp, 0x19, 0xff64);
- 
- 	if (device_may_wakeup(tp_to_dev(tp))) {
--		phy_speed_down(tp->phydev, false);
-+		if (tp->sfp_if_type == RTL_SFP_IF_NONE)
-+			phy_speed_down(tp->phydev, false);
- 		rtl_wol_enable_rx(tp);
- 	}
- }
-@@ -5386,6 +5669,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	tp->dash_type = rtl_check_dash(tp);
- 
-+	tp->sfp_if_type = rtl_check_sfp(tp);
-+
- 	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
- 
- 	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
--- 
-2.25.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFrdWIgS2ljaW5za2kg
+PGt1YmFAa2VybmVsLm9yZz4NCj4gU2VudDogRnJpZGF5LCBBdWd1c3QgMDUsIDIwMjIgNjo0NCBQ
+TQ0KPiBUbzogZWNyZWVAeGlsaW54LmNvbQ0KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
+ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsgcGFiZW5pQHJlZGhhdC5jb207DQo+IGVkdW1hemV0QGdvb2ds
+ZS5jb207IGNvcmJldEBsd24ubmV0OyBsaW51eC1kb2NAdmdlci5rZXJuZWwub3JnOyBFZHdhcmQN
+Cj4gQ3JlZSA8ZWNyZWUueGlsaW54QGdtYWlsLmNvbT47IGxpbnV4LW5ldC1kcml2ZXJzQGFtZC5j
+b207IEtlbGxlciwgSmFjb2IgRQ0KPiA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29tPjsgQnJhbmRl
+YnVyZywgSmVzc2UgPGplc3NlLmJyYW5kZWJ1cmdAaW50ZWwuY29tPjsNCj4gTWljaGFlbCBDaGFu
+IDxtaWNoYWVsLmNoYW5AYnJvYWRjb20uY29tPjsgQW5keSBHb3Nwb2RhcmVrDQo+IDxhbmR5QGdy
+ZXlob3VzZS5uZXQ+OyBTYWVlZCBNYWhhbWVlZCA8c2FlZWRAa2VybmVsLm9yZz47IEppcmkgUGly
+a28NCj4gPGppcmlAcmVzbnVsbGkudXM+OyBTaGFubm9uIE5lbHNvbiA8c25lbHNvbkBwZW5zYW5k
+by5pbz47IFNpbW9uIEhvcm1hbg0KPiA8c2ltb24uaG9ybWFuQGNvcmlnaW5lLmNvbT47IEFsZXhh
+bmRlciBEdXljaw0KPiA8YWxleGFuZGVyLmR1eWNrQGdtYWlsLmNvbT4NCj4gU3ViamVjdDogUmU6
+IFtSRkMgUEFUQ0ggbmV0LW5leHRdIGRvY3M6IG5ldDogYWRkIGFuIGV4cGxhbmF0aW9uIG9mIFZG
+IChhbmQgb3RoZXIpDQo+IFJlcHJlc2VudG9ycw0KPiANCj4gT24gRnJpLCA1IEF1ZyAyMDIyIDE3
+OjU4OjUwICswMTAwIGVjcmVlQHhpbGlueC5jb20gd3JvdGU6DQo+ID4gRnJvbTogRWR3YXJkIENy
+ZWUgPGVjcmVlLnhpbGlueEBnbWFpbC5jb20+DQo+ID4NCj4gPiBUaGVyZSdzIG5vIGNsZWFyIGV4
+cGxhbmF0aW9uIG9mIHdoYXQgVkYgUmVwcmVzZW50b3JzIGFyZSBmb3IsIHRoZWlyDQo+ID4gIHNl
+bWFudGljcywgZXRjLiwgb3V0c2lkZSBvZiB2ZW5kb3IgZG9jcyBhbmQgcmFuZG9tIGNvbmZlcmVu
+Y2Ugc2xpZGVzLg0KPiA+IEFkZCBhIGRvY3VtZW50IGV4cGxhaW5pbmcgUmVwcmVzZW50b3JzIGFu
+ZCBkZWZpbmluZyB3aGF0IGRyaXZlcnMgdGhhdA0KPiA+ICBpbXBsZW1lbnQgdGhlbSBhcmUgZXhw
+ZWN0ZWQgdG8gZG8uDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBFZHdhcmQgQ3JlZSA8ZWNyZWUu
+eGlsaW54QGdtYWlsLmNvbT4NCj4gPiAtLS0NCj4gPiBUaGlzIGRvY3VtZW50cyByZXByZXNlbnRv
+cnMgYXMgSSB1bmRlcnN0YW5kIHRoZW0sIGJ1dCBJIHN1c3BlY3Qgb3RoZXJzDQo+ID4gIChpbmNs
+dWRpbmcgb3RoZXIgdmVuZG9ycykgbWlnaHQgZGlzYWdyZWUgKHBhcnRpY3VsYXJseSB3aXRoIHRo
+ZSAid2hhdA0KPiA+ICBmdW5jdGlvbnMgc2hvdWxkIGhhdmUgYSByZXAiIHNlY3Rpb24pLiAgSSdt
+IGhvcGluZyB0aGF0IHRocm91Z2ggcmV2aWV3DQo+ID4gIG9mIHRoaXMgZG9jIHdlIGNhbiBjb252
+ZXJnZSBvbiBhIGNvbnNlbnN1cy4NCj4gDQo+IFRoYW5rcyBmb3IgZG9pbmcgdGhpcywgd2UgbmVl
+ZCB0byBDQyBwZW9wbGUgdGhvLiBPdGhlcndpc2UgdGhleSB3b24ndA0KPiBwYXkgYXR0ZW50aW9u
+LiAoYWRkaW5nIHNlbWktbm9uLWV4aGF1c3RpdmVseSB0aG9zZSBJIGhhdmUgaW4gbXkgYWRkcmVz
+cw0KPiBib29rKQ0KPiANCj4gPiArPT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4gPiAr
+TmV0d29yayBGdW5jdGlvbiBSZXByZXNlbnRvcnMNCj4gPiArPT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT0NCj4gPiArDQo+ID4gK1RoaXMgZG9jdW1lbnQgZGVzY3JpYmVzIHRoZSBzZW1hbnRp
+Y3MgYW5kIHVzYWdlIG9mIHJlcHJlc2VudG9yIG5ldGRldmljZXMsDQo+IGFzDQo+ID4gK3VzZWQg
+dG8gY29udHJvbCBpbnRlcm5hbCBzd2l0Y2hpbmcgb24gU21hcnROSUNzLiAgRm9yIHRoZSBjbG9z
+ZWx5LXJlbGF0ZWQgcG9ydA0KPiA+ICtyZXByZXNlbnRvcnMgb24gcGh5c2ljYWwgKG11bHRpLXBv
+cnQpIHN3aXRjaGVzLCBzZWUNCj4gPiArOnJlZjpgRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL3N3
+aXRjaGRldi5yc3QgPHN3aXRjaGRldj5gLg0KPiA+ICsNCj4gPiArTW90aXZhdGlvbg0KPiA+ICst
+LS0tLS0tLS0tDQo+ID4gKw0KPiA+ICtTaW5jZSB0aGUgbWlkLTIwMTBzLCBuZXR3b3JrIGNhcmRz
+IGhhdmUgc3RhcnRlZCBvZmZlcmluZyBtb3JlIGNvbXBsZXgNCj4gPiArdmlydHVhbGlzYXRpb24g
+Y2FwYWJpbGl0aWVzIHRoYW4gdGhlIGxlZ2FjeSBTUi1JT1YgYXBwcm9hY2ggKHdpdGggaXRzIHNp
+bXBsZQ0KPiA+ICtNQUMvVkxBTi1iYXNlZCBzd2l0Y2hpbmcgbW9kZWwpIGNhbiBzdXBwb3J0LiAg
+VGhpcyBsZWQgdG8gYSBkZXNpcmUgdG8NCj4gb2ZmbG9hZA0KPiA+ICtzb2Z0d2FyZS1kZWZpbmVk
+IG5ldHdvcmtzIChzdWNoIGFzIE9wZW5WU3dpdGNoKSB0byB0aGVzZSBOSUNzIHRvIHNwZWNpZnkg
+dGhlDQo+ID4gK25ldHdvcmsgY29ubmVjdGl2aXR5IG9mIGVhY2ggZnVuY3Rpb24uICBUaGUgcmVz
+dWx0aW5nIGRlc2lnbnMgYXJlIHZhcmlvdXNseQ0KPiA+ICtjYWxsZWQgU21hcnROSUNzIG9yIERQ
+VXMuDQo+ID4gKw0KPiA+ICtOZXR3b3JrIGZ1bmN0aW9uIHJlcHJlc2VudG9ycyBwcm92aWRlIHRo
+ZSBtZWNoYW5pc20gYnkgd2hpY2ggbmV0d29yaw0KPiBmdW5jdGlvbnMNCj4gPiArb24gYW4gaW50
+ZXJuYWwgc3dpdGNoIGFyZSBtYW5hZ2VkLiBUaGV5IGFyZSB1c2VkIGJvdGggdG8gY29uZmlndXJl
+IHRoZQ0KPiA+ICtjb3JyZXNwb25kaW5nIGZ1bmN0aW9uICgncmVwcmVzZW50ZWUnKSBhbmQgdG8g
+aGFuZGxlIHNsb3ctcGF0aCB0cmFmZmljIHRvIGFuZA0KPiA+ICtmcm9tIHRoZSByZXByZXNlbnRl
+ZSBmb3Igd2hpY2ggbm8gZmFzdC1wYXRoIHN3aXRjaGluZyBydWxlIGlzIG1hdGNoZWQuDQo+IA0K
+PiBJIHRoaW5rIHdlIHNob3VsZCBqdXN0IGRlc2NyaWJlIGhvdyB0aG9zZSBuZXRkZXZzIGJyaW5n
+IFNSLUlPVg0KPiBmb3J3YXJkaW5nIGludG8gTGludXggbmV0d29ya2luZyBzdGFjay4gVGhpcyBz
+ZWN0aW9uIHJlYWRzIHRvbyBtdWNoDQo+IGxpa2UgaXQncyBhIGhhY2sgcmF0aGVyIHRoYW4gYW4g
+b2J2aW91cyBjaG9pY2UuDQoNCkkgYWdyZWUuIFRob3VnaCBub3QgYWxsIG9mIHRoZSBkZXZpY2Vz
+IGNhbiBzdXBwb3J0IGl0LCByZXByZXNlbnRvciBkZXZpY2VzIGFuZCBzd2l0Y2hkZXYgYXJlIGFi
+bGUgdG8gYmUgc3VwcG9ydGVkIGV2ZW4gaW4gc29tZSBjYXNlcyB3aGljaCBtYXkgbm90IGJlIGFz
+IGZ1bGx5IGZlYXR1cmVkICBvciBjYXBhYmxlIGFzICJTbWFydE5JQyIuIE9mY291cnNlIHRoZSB0
+ZXJtaW5vbG9neSBoZXJlIGNhbiBnZXQgbXVkZGxlZCB3aXRoIHZhcmlvdXMgYnJhbmRpbmcgZXRj
+Li4NCg==
