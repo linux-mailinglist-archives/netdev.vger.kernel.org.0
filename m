@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD5958CA36
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 16:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 046A558CA38
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 16:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242879AbiHHOMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 10:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        id S236032AbiHHOO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 10:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236032AbiHHOMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 10:12:15 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94963BF
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 07:12:14 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so9207524pjf.2
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 07:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=+/nfGYDOiyq9i8n1KnyJRPRi4g+jbVgntX/q7vC1EFk=;
-        b=PRjtIIU/nwfZtoJpNsQ9pKru7NSsnWrfYSBqwKp2UscjfAqTZc4UhCR6nNSopMT6GM
-         kY+wZf6uvEorQLSk2bO2EcRdEjqsvjQYYSqaNgrMcKMZ9HSpXjGcHHhgIhWc3k7O6ewj
-         UwELYN3ypSoLWlsx7g/6vxXhYhrGelsUK7NucYGCksHNrQYtcflhiVCG5XRqe6I1X679
-         29esjZHsi2oI9Z/fOnB5FuXX1l0vMCWO0G0cpn1uDqnpReOwvr2ENn7871eRA44KwcqC
-         wb4bjqw7mg9dBbv0ZA5agoM39cywlNZKRvDMn3QKaPhnRjMf7+C8giK5O0Q9jOyoTB/3
-         9A5g==
+        with ESMTP id S233836AbiHHOOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 10:14:25 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634AAEE1B
+        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 07:14:24 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id x2-20020a6bfe02000000b00682bffede8fso4541505ioh.2
+        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 07:14:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc;
-        bh=+/nfGYDOiyq9i8n1KnyJRPRi4g+jbVgntX/q7vC1EFk=;
-        b=bVRHiDpFHJeo6Bxba/Hk8Z0JBTJEdd3gTQF0UoVffiFhSxUpglIcyJ38BAWE0KmXWD
-         juai7x5emUZSASoDwLtDjswjottSGZWmgux6FtqrNdQ+dfhG0MAtDJztqkRnRGylTuAk
-         awefwh/b+hM2JF9bF+utjxE4Nt4cmGKY6hgycsp25LtFG/mf3E55nj6Ytwiur7tyHoOc
-         Ii40tn93oaeNfx8UpnCHDBKQ1FvnPfsdZ+e3LasekWt3MTefJxLRClQxtQtADqSLzDdA
-         yhXZAvuGLIgTziyxBdUc3FapUxDDFVFHjiXZ0Zps6P6ufDYfKUm9EPxPRoA5Y+iNIy0+
-         CHQw==
-X-Gm-Message-State: ACgBeo3LtqqxYMoNyNhfc6jgZA/OSI9Ih0KcT2coWYkAbMqR9RSD9mN3
-        nFwd9MDnpG4Z9z8eOWrVY0BsadWKLSQ=
-X-Google-Smtp-Source: AA6agR6vvluAeqSyOLXswyNUCOojZ2UWxqJY3MAl7TdSM4jdpssyHo2caqb/r6SMuxW9U8cH7a20ZQ==
-X-Received: by 2002:a17:902:e94e:b0:16d:12b6:b9fe with SMTP id b14-20020a170902e94e00b0016d12b6b9femr18828549pll.152.1659967934481;
-        Mon, 08 Aug 2022 07:12:14 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id 22-20020a621616000000b0052f1e061b21sm3841635pfw.66.2022.08.08.07.12.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 07:12:14 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 07:12:12 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] fec: Allow changing the PPS channel
-Message-ID: <YvEZvCmS9lSoyhDQ@hoboy.vegasvil.org>
-References: <20220808131556.163207-1-csokas.bence@prolan.hu>
+        bh=JbxttqbDHdfUzYooNKEfPwjaG5YKBPoGxF8SI8GnlAo=;
+        b=1dDiurla0IaH24lEc5KBOJN3PKqFzY/9qP3IqxW9CwnVkqTvG6LWOee00xOPapEYUd
+         3Bo4D7/N1GB9O3cCcjYWGgd8im0JXn8Uh1JQovwQgc1hL3Uq0U5HQwiZPETd29KNEmJO
+         YFZEjxawkqBCe8xjN7IRBbf31KU1Mi+TQZhv/odChaj8qENuD1Q5kVWZZDqQiNBYIq5G
+         XN+qUjBueDvBwzE8VeAp1fTsudoBxilNUApMmevurWl61xId+t3VLEtEeugnmyk+eXvC
+         JL3tjHH8+bkSms3bceLOFeruKk597HIEfpwh3gXmCQRL8SVG/kQWd7k52CWb9nwjRNRY
+         DPzQ==
+X-Gm-Message-State: ACgBeo0PdXuly0odYJZFaTdQRhyIetU2CSlIbSsHexvq/BwNRS1Lnxho
+        dbxSg6+08foGHQg5gpVfo5+7TGzBKIGc9ACdAW1yMvk86J/u
+X-Google-Smtp-Source: AA6agR5g0KpuQOyObZUkfCjHm/y5cz64ijRFmojwXbbmyIAIPgevNyi2viWTAmjmlWlOpT1XbciZ1k0dMqDKrjw6SkJscr0hfjhn
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220808131556.163207-1-csokas.bence@prolan.hu>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a5e:a70f:0:b0:684:d596:b7e7 with SMTP id
+ b15-20020a5ea70f000000b00684d596b7e7mr1192526iod.84.1659968063797; Mon, 08
+ Aug 2022 07:14:23 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 07:14:23 -0700
+In-Reply-To: <000000000000cad57405e5b5dbb7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c7ff6a05e5bb6ec8@google.com>
+Subject: Re: [syzbot] possible deadlock in p9_req_put
+From:   syzbot <syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 03:15:57PM +0200, Csókás Bence wrote:
-> +static ssize_t pps_ch_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct device *dev = container_of(kobj, struct device, kobj);
-> +	struct net_device *ndev = to_net_dev(dev);
-> +	struct fec_enet_private *fep = netdev_priv(ndev);
-> +	int enable = fep->pps_enable;
-> +	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
-> +
-> +	if (enable)
-> +		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 0);
-> +
-> +	kstrtoint(buf, 0, &fep->pps_channel);
-> +
-> +	if (enable)
-> +		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
+syzbot has found a reproducer for the following issue on:
 
-NAK.
+HEAD commit:    ca688bff68bc Add linux-next specific files for 20220808
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1408148e080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=50f7e8d06c3768dd97f3
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f6ea66080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1640de8e080000
 
-Don't use a private, custom sysfs knob.  The core PTP layer provides
-an API for that already.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
 
-Thanks,
-Richard
+============================================
+WARNING: possible recursive locking detected
+5.19.0-next-20220808-syzkaller #0 Not tainted
+--------------------------------------------
+kworker/1:2/1590 is trying to acquire lock:
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_tag_remove net/9p/client.c:367 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put net/9p/client.c:375 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put+0xc6/0x250 net/9p/client.c:372
 
-> +
-> +	return count;
-> +}
+but task is already holding lock:
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&clnt->lock);
+  lock(&clnt->lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+3 locks held by kworker/1:2/1590:
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
+ #1: ffffc90006357da8 (p9_poll_work){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+ #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
+
+stack backtrace:
+CPU: 1 PID: 1590 Comm: kworker/1:2 Not tainted 5.19.0-next-20220808-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events p9_poll_workfn
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+ check_deadlock kernel/locking/lockdep.c:3031 [inline]
+ validate_chain kernel/locking/lockdep.c:3816 [inline]
+ __lock_acquire.cold+0x116/0x3a7 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ p9_tag_remove net/9p/client.c:367 [inline]
+ p9_req_put net/9p/client.c:375 [inline]
+ p9_req_put+0xc6/0x250 net/9p/client.c:372
+ p9_conn_cancel+0x640/0x970 net/9p/trans_fd.c:213
+ p9_poll_mux net/9p/trans_fd.c:627 [inline]
+ p9_poll_workfn+0x25d/0x4e0 net/9p/trans_fd.c:1147
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
