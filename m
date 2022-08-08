@@ -2,139 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A1858C2CA
-	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 07:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7A158C2DF
+	for <lists+netdev@lfdr.de>; Mon,  8 Aug 2022 07:31:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234259AbiHHFYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 01:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54600 "EHLO
+        id S234922AbiHHFb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 01:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234138AbiHHFYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 01:24:10 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3576AE67
-        for <netdev@vger.kernel.org>; Sun,  7 Aug 2022 22:24:09 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id q30so9556553wra.11
-        for <netdev@vger.kernel.org>; Sun, 07 Aug 2022 22:24:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=epvBdCzoLdaTzO8R/dOMwi76RUdf0O2pSwjYAyOVC1U=;
-        b=gDjHHIL96yM4+6xr4yCHOTKQqqkxFRZH8SewcwgjmV7JfukhNRuzHPdSRr4RqR2gI6
-         GWzCN0up8EA/JWncYA2ah5LOAdlVgv1msccJfCz3ZhZJLh55CMks+O1htO6smig5QhUg
-         w5NOPcYKk5VUbuelwwj1JMUHAnf/PDoIDlrjEgyD7ps3QkbAZgcfIEjctGLRwcn4z1li
-         9Xf9O+iwuPEyD2tqj23R5wxAlm5SCWur45NgI8BxrML+7Ad2xoLoETQtAqm9UL9Ih7gi
-         IlKlydSgXmXR/AqPrqXwmxeyg2/WVKKzDM9izukgvQZ2x7FGEKzt8LEoBhnFNzWLCPGl
-         bOBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=epvBdCzoLdaTzO8R/dOMwi76RUdf0O2pSwjYAyOVC1U=;
-        b=uWL0APYPwvNRv85/OpcC8KpumQUsut9XxH+RHdciKozy5KdD9y+xeExegC7pE+3V43
-         NlwcnoNdJTxcV/ZKCHJSfvCEO0XI7iXu3R/9zDX8W458sT1wB9tFWfiObRcwu3fflELO
-         u3kU+MocAkJukmmN5rNupSLFWHea9Hnw1sCDst0JIO67/zPaSv/4Kg9fM+If5eKsC/oN
-         dH0cqqoyzdiS3MtJShyVR8JPEk2CTMO/og7XvMS3e4JZM2IiwP0L0CcC8xO7GZzasJwZ
-         dt8dLblf2Rg1wIA/vaG6xy07CXuOXU8RPFcOdH02rAbCn3gIMztme2OkkJiRPVODPBTC
-         d60A==
-X-Gm-Message-State: ACgBeo0G3c3Q/roNz7xnakhVI1mOYJDHOu2zf4JX0PhJOvW1RbhdgrIx
-        Kud1VVvDcUvY8nSN/B6aQsE=
-X-Google-Smtp-Source: AA6agR5IIVopg0iyyIOlTDEkqEBfhoJg/re9oSAJelcAeLjRGCsiWIRGEX4qPTB/GFrGRBRPXHDCTg==
-X-Received: by 2002:adf:fe81:0:b0:21b:88ea:6981 with SMTP id l1-20020adffe81000000b0021b88ea6981mr11096766wrr.616.1659936247454;
-        Sun, 07 Aug 2022 22:24:07 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id z11-20020a5d44cb000000b00220688d445esm12433121wrr.117.2022.08.07.22.24.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Aug 2022 22:24:07 -0700 (PDT)
-Message-ID: <1513fb1a-e196-bc2c-cdb8-34f962282ea2@gmail.com>
-Date:   Mon, 8 Aug 2022 08:24:05 +0300
+        with ESMTP id S233256AbiHHFb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 01:31:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80E0641F;
+        Sun,  7 Aug 2022 22:31:26 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659936684;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7Dw0RQXvBc2kKRj4xAlqJpYNon4vsUwnGQl85FZk3jQ=;
+        b=Ecvt+JymeyJ+6Ybd/lC5IsM7hRrUzMr99jrcbZ39cqPhQZbfOhG2VbALoZojWCl+2b4Mz4
+        UKXGmGXsXeWzcVJhnNjSPsHgjZpDGZufsARzCD5gkoM8vqkA1Cr8ucLqiQqUlRWaZjBiBz
+        UggZJe2UlrXRzy2ZrzbomxQbJ+6cyxMo4jgRVbiC717/8614xALyHEl3lb99IVBzT29DJe
+        Vm400MeFY12KsAvyT31WTHerJE5l1Grak9MeqqcWIOa9pFuxNpzgy6TZd79lmpkMg089TL
+        QrBpFBdEUlg7+8dIQCEvUVCDsqacY6R2cE6zLFkiOpYVMqQAhFeX2G5CAxe0EA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659936684;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7Dw0RQXvBc2kKRj4xAlqJpYNon4vsUwnGQl85FZk3jQ=;
+        b=UsjBsSpcrzMzZdQbWFtcOeHL/uBpiZkraNINO+4KY6BAubeZcjnir/s8M8H5Q8AmA/51rZ
+        nQS2qqt8aL+19SCg==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Mans Rullgard <mans@mansr.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>, Marek Vasut <marex@denx.de>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [RFC PATCH v3 net-next 02/10] dt-bindings: net: dsa: hellcreek:
+ add missing CPU port phy-mode/fixed-link to example
+In-Reply-To: <20220806141059.2498226-3-vladimir.oltean@nxp.com>
+References: <20220806141059.2498226-1-vladimir.oltean@nxp.com>
+ <20220806141059.2498226-3-vladimir.oltean@nxp.com>
+Date:   Mon, 08 Aug 2022 07:31:20 +0200
+Message-ID: <87sfm7xpw7.fsf@kurt>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next v3 7/7] tls: rx: do not use the standard
- strparser
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
-        tariqt@nvidia.com, vfedorenko@novek.ru,
-        Ran Rozenstein <ranro@nvidia.com>,
-        "gal@nvidia.com" <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220722235033.2594446-1-kuba@kernel.org>
- <20220722235033.2594446-8-kuba@kernel.org>
- <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
- <20220803182432.363b0c04@kernel.org>
- <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
- <20220804085950.414bfa41@kernel.org>
- <5696e2f2-1a0d-7da9-700b-d665045c79d9@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <5696e2f2-1a0d-7da9-700b-d665045c79d9@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
 
+On Sat Aug 06 2022, Vladimir Oltean wrote:
+> Looking at hellcreek_phylink_get_caps(), I see that depending on whether
+> is_100_mbits is set, speeds of 1G or of 100M will be advertised. The
+> de1soc_r1_pdata sets is_100_mbits to true.
+>
+> The PHY modes declared in the capabilities are MII, RGMII and GMII. GMII
+> doesn't support 100Mbps, and as for RGMII, it would be a bit implausible
+> to me to support this PHY mode but limit it to only 25 MHz. So I've
+> settled on MII as a phy-mode in the example, and a fixed-link of
+> 100Mbps.
+>
+> As a side note, there exists such a thing as "rev-mii", because the MII
+> protocol is asymmetric, and "mii" is the designation for the MAC side
+> (expected to be connected to a PHY), and "rev-mii" is the designation
+> for the PHY side (expected to be connected to a MAC). I wonder whether
+> "mii" or "rev-mii" should actually be used here, since this is a CPU
+> port and presumably connected to another MAC.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On 8/7/2022 9:01 AM, Tariq Toukan wrote:
-> 
-> 
-> On 8/4/2022 6:59 PM, Jakub Kicinski wrote:
->> On Thu, 4 Aug 2022 11:05:18 +0300 Tariq Toukan wrote:
->>>>        trace_tls_device_decrypted(sk, tcp_sk(sk)->copied_seq - 
->>>> rxm->full_len,
->>>
->>> Now we see a different trace:
->>>
->>> ------------[ cut here ]------------
->>> WARNING: CPU: 4 PID: 45887 at net/tls/tls_strp.c:53
->>
->> OK, if you find another I promise I'll try to hassle a machine with
->> offload from somewhere... here's the fix for the new one:
->>
->> --->8----------------
->> tls: rx: device: don't try to copy too much on detach
->>
->> Another device offload bug, we use the length of the output
->> skb as an indication of how much data to copy. But that skb
->> is sized to offset + record length, and we start from offset.
->> So we end up double-counting the offset which leads to
->> skb_copy_bits() returning -EFAULT.
->>
->> Reported-by: Tariq Toukan <tariqt@nvidia.com>
->> Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
->> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->> ---
->>   net/tls/tls_strp.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
->> index f0b7c9122fba..9b79e334dbd9 100644
->> --- a/net/tls/tls_strp.c
->> +++ b/net/tls/tls_strp.c
->> @@ -41,7 +41,7 @@ static struct sk_buff *tls_strp_msg_make_copy(struct 
->> tls_strparser *strp)
->>       struct sk_buff *skb;
->>       int i, err, offset;
->> -    skb = alloc_skb_with_frags(0, strp->anchor->len, TLS_PAGE_ORDER,
->> +    skb = alloc_skb_with_frags(0, strp->stm.full_len, TLS_PAGE_ORDER,
->>                      &err, strp->sk->sk_allocation);
->>       if (!skb)
->>           return NULL;
-> 
-> Hi Jakub,
-> Thanks for the patch.
-> We're testing it and I'll update.
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Trace is gone. But we got TlsDecryptError counter increasing by 2.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmLwn6gTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgnV1D/4jjpY2LHBzIngNbW80H26+NeagzhRL
+WIma9gdVOSr6P9BKCRR7YOk1STqB1Ggwahy9QV/st9zaH4ZBC1TurrLtkRZ2UAxW
+zZ+DsW6z08xd/sdbmLTth6TfGzEA3uk2BtmBYTJkeWxm+ln2fKfMpZ3YXC27eNyf
+zB9t5k4fCcZfNA8HXAKUKSbprvypLuNssjGLzHL5UOb4KXuPONGOAMbY3D5ovqKS
+cDw/SVKwPQXy14JzSS0sHli2gJtPyo485tH4rnqXhwBmhbYO1eW+/nE2ocRmkdKW
+Viop1RTs6/xIbyJ9lbK9EcpRqOimaiImX7nDy1Qo2zD0nFWhmbWcKoTlgwZjX3A2
+x8uT68hbcOVKT/bGdC6u2xbLrdO460exmn1iU9MoaRRcxpuku2IgyT//FiDS29cF
+LoxTGvuUO7ziaD3DvWfRkemYZPR6g9X/84XBOP5J73SBgIN4xeMJCBggFZY4RvCg
+VG/eVjfMcRV80yLEBv3pauBHpXzpndwBWi012JBCsKUdZLujDuXNPjKYB0TUIjwr
+tB/q+m4/PDxCz+BHy6uCNxk2OOF1DcD/vx6yurEYWv+jXIxq/wooI7hYHDkAz4jQ
+CLTDVv2GkMOmgwrP/NHcW6WbizCvOBaLTATSAdp+rAnDhhKn46OiDD1hUvJ5AAJO
+KE4eDXO2ippa7w==
+=h8JJ
+-----END PGP SIGNATURE-----
+--=-=-=--
