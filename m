@@ -2,79 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D15958D37B
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 08:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7D658D390
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 08:08:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiHIGAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 02:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
+        id S236238AbiHIGIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 02:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235002AbiHIGA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 02:00:28 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B597103E
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 23:00:27 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id d4so6014299ilc.8
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 23:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc;
-        bh=/mIApTZ5ORl/xrCdkKtKMRgzC3PHdDTAoEMupXtPSiE=;
-        b=eSGMTknoXDuJqOzbPWaKyF2MMhkZwC82tMlZ6+XB6XBSGHPogM5dOHSAUX8qUZvW02
-         uRbKKpkaqc674dX9EsXoi4Ywj1c0WzsPVFcm4AarsfKmG2meJqmxPJktrkAd9izGlJ0I
-         0QLeE96kRFaakIahxyDs8CqbCPl0TpGBvQdbOgmKFg9uslmrZC7FZ36bQN8zqIHdLjoX
-         vmezvI6AUkgXWzBnlw9CvJQryj/imjlLAVp+PVLlX4dCqzeKwhiAKajCRipxHj24mxx0
-         ESbXaL+uMz5IwvK8ZjTVe82HWZc057foaveVVD4//wtFIdrZrQnsLxnWTK7ohmXe9io2
-         lcQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=/mIApTZ5ORl/xrCdkKtKMRgzC3PHdDTAoEMupXtPSiE=;
-        b=RFO40KmzXl2Uty1mW0zPkFrIW5ZKo6YK+cJXWjdksHax/c9X1DOdHV8WtyZzTLG5y4
-         7SJejQn0yUDWc3hOuf2gmctSfHpndswJ4/iC/Sjw1cWW4/FjP/8Fgne9vsi/E+eTEEI5
-         +s3N+EWL26HESzNMfGEa2H7etvYiMBPY18ei31vGNSiJL56QJO8PEyooWmCMRbq4AFE7
-         QNbgo1NXZsJmRDjwwIfrqt574SoEP1jS91GvMgMtNsSMAXfMPdIayTqTh3/iN/IXpxPu
-         Fw1uSWYT4H8moFdT3GBZzmU3CZpKJxwZ03GezBjGkWDtJSMLG+ryMJFgLwbsI+dXpR2z
-         q5tA==
-X-Gm-Message-State: ACgBeo3FfXak25qXesFEanJF6V38B18WZ0Xek5vj4Qs12EfAxvlMYsnI
-        6qtz/mcTJo5QiEWnw7Kf6qLP+cZxTqkKClyDCns=
-X-Google-Smtp-Source: AA6agR7qtoN8vkSanLc39n5eOUutvIU2p90vHvltpxfsQAbyVnveHbAFhZkQz538v/V0RyWLfTfnt9U99qH0hhV3RmA=
-X-Received: by 2002:a05:6e02:1bed:b0:2df:6a1f:4f8a with SMTP id
- y13-20020a056e021bed00b002df6a1f4f8amr10502394ilv.117.1660024826608; Mon, 08
- Aug 2022 23:00:26 -0700 (PDT)
+        with ESMTP id S236222AbiHIGIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 02:08:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E181175B8;
+        Mon,  8 Aug 2022 23:08:47 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660025326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1VkAw1xF+UahkRCVjT6R8UphZj9L/W44DG4qgQ9C9kQ=;
+        b=Ys0QESHods3FACRsKWcek22EgvHEiu9eVxFxFWJdaCjSN3QqloRe4o3sDwZmxPfx7m2699
+        j/It62ALcuj+/b3IWxrw1dYGh2luV4I2lmOT5/hoc7dOpbTuJZi9KIIzdSDpk1u071j66H
+        Hg9JMRKRdIqO13to6Veu+KuyR9W5gJF7T5TVvfKMqcHlYlBOtfXfddigu4umqtvTuU35YH
+        d5DF3Ahi2l/pCuW5BfR1DnK5IeDE/MMYnTpiA8tnOikfR2eMqA8cxr3cvKb08kWbAQGgaM
+        Nuw8ERe4oA+NowsmUkncQT1LnWV5GSeuY4BPijUoE4r8fQoyBnr1nQFIMbLVDw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660025326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1VkAw1xF+UahkRCVjT6R8UphZj9L/W44DG4qgQ9C9kQ=;
+        b=DB3rf+EDScjkZGsGcg1mVSGkZhehY+PAKnLF4jGxjFNAyPqIyj+B+el9BX4uCcEsRO96Ag
+        4WNX0k9A5iG1r+Bw==
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH bpf-next v2 0/2] Add BPF-helper for accessing CLOCK_TAI
+Date:   Tue,  9 Aug 2022 08:08:01 +0200
+Message-Id: <20220809060803.5773-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Sender: luckyokiridu@gmail.com
-Received: by 2002:a05:6e04:1408:0:0:0:0 with HTTP; Mon, 8 Aug 2022 23:00:26
- -0700 (PDT)
-From:   "mydesk.ceoinfo@barclaysbank.co.uk" <nigelhiggins.md5@gmail.com>
-Date:   Tue, 9 Aug 2022 07:00:26 +0100
-X-Google-Sender-Auth: kT9m6qQx77O1ztJp5BYdSPIgmtM
-Message-ID: <CAPy23v7TYrvZ_U74ppq+uqM4=dSe=F6JLi-vbQYUJ5ZqP2_8=A@mail.gmail.com>
-Subject: RE PAYMENT NOTIFICATION UPDATE
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FROM_2_EMAILS_SHORT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
-X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Congratulation! Your delayed payment has been released this morning.
-Kindly reconfirm your details for payment to you.
+Hi,
 
-Nigel Higgins, (Group Chairman),
-Barclays Bank Plc,
-Registered number: 1026167,
-1 Churchill Place, London, ENG E14 5HP,
-SWIFT Code: BARCGB21,
-Direct Telephone: +44 770 000 8965,
-WhatsApp, SMS Number: + 44 787 229 9022
-www.barclays.co.uk
+add a BPF-helper for accessing CLOCK_TAI. Use cases for such a BPF helper
+include functionalities such as Tx launch time (e.g. ETF and TAPRIO Qdiscs),
+timestamping and policing.
+
+Patch #1 - Introduce BPF helper
+Patch #2 - Add test case (skb based)
+
+Changes since v1:
+
+ * Update changelog (Alexei Starovoitov)
+ * Add test case (Alexei Starovoitov, Andrii Nakryiko)
+ * Add missing function prototype (netdev ci)
+
+Previous versions:
+
+ * v1: https://lore.kernel.org/r/20220606103734.92423-1-kurt@linutronix.de/
+
+Jesper Dangaard Brouer (1):
+  bpf: Add BPF-helper for accessing CLOCK_TAI
+
+Kurt Kanzenbach (1):
+  selftests/bpf: Add BPF-helper test for CLOCK_TAI access
+
+ include/linux/bpf.h                           |  1 +
+ include/uapi/linux/bpf.h                      | 13 ++++
+ kernel/bpf/core.c                             |  1 +
+ kernel/bpf/helpers.c                          | 14 ++++
+ tools/include/uapi/linux/bpf.h                | 13 ++++
+ .../selftests/bpf/prog_tests/time_tai.c       | 74 +++++++++++++++++++
+ .../selftests/bpf/progs/test_time_tai.c       | 24 ++++++
+ 7 files changed, 140 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/time_tai.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_time_tai.c
+
+-- 
+2.30.2
+
