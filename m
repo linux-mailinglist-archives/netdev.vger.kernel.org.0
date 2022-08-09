@@ -2,233 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFA958D575
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 10:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F0458D5AC
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 10:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240679AbiHIIgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 04:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        id S241079AbiHIIsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 04:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240542AbiHIIgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 04:36:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E981EAFE;
-        Tue,  9 Aug 2022 01:36:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660034208; x=1691570208;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tU4ICht2TOgLGArM7FP2OTiD81+/PhEHs/4VqKJDb94=;
-  b=WEpctERC+izwPF9OAv1J+3GCvP+9j5qexUefCppV1nk+HtS2lCRbsSXz
-   C1Ji0p8KI/QXc7YbAvrdLDQ6AjioBWKqQ4h9b+VlHELvmvgN6FWfSAzgO
-   unUktec90AyNW6aHUgh53Zlnx5Ulgcy2iJMlVHQobD9VCGnMgUgW9IoTo
-   RXzCsVkhC2PVNeOqpZRarOJIMYRci+66L4iSa7vAf7QNzrc0drIh6Rrn3
-   BECQ/ngAQzNLzSlh5yDJp+sTdnuCRMb7kLLbFPdx0hyULdu5Sgi5vSGKZ
-   8+FAyVSwpuLTI5KIPGu7XObqY8WjH0rjlds/RZ1IxWI7WH58UjKHfmIn1
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="171582123"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Aug 2022 01:36:48 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 9 Aug 2022 01:36:36 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.28 via Frontend Transport; Tue, 9 Aug 2022 01:36:33 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
-        <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next] net: lan743x: Fix the multi queue overflow issue
-Date:   Tue, 9 Aug 2022 14:06:28 +0530
-Message-ID: <20220809083628.650493-1-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S241089AbiHIIr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 04:47:56 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0C8422283
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 01:47:54 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:50480.284727279
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-36.111.140.9 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 2211E2800D1;
+        Tue,  9 Aug 2022 16:47:48 +0800 (CST)
+X-189-SAVE-TO-SEND: +liyonglong@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id b258151eca38427b8cdfa05979fe4581 for netdev@vger.kernel.org;
+        Tue, 09 Aug 2022 16:47:50 CST
+X-Transaction-ID: b258151eca38427b8cdfa05979fe4581
+X-Real-From: liyonglong@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: liyonglong@chinatelecom.cn
+From:   Yonglong Li <liyonglong@chinatelecom.cn>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, liyonglong@chinatelecom.cn
+Subject: [PATCH] tcp: adjust rcvbuff according copied rate of user space
+Date:   Tue,  9 Aug 2022 16:47:46 +0800
+Message-Id: <1660034866-1844-1-git-send-email-liyonglong@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the Tx multi-queue overflow issue
+it is more reasonable to adjust rcvbuff by copied rate instead
+of copied buff len.
 
-Tx ring size of 128 (for TCP) provides ability to handle way more data than
-what Rx can (Rx buffers are constrained to one frame or even less during a
-dynamic mtu size change)
-
-TX napi weight dependent of the ring size like it is now (ring size -1)
-because there is an express warning in the kernel about not registering weight
-values > NAPI_POLL_WEIGHT (currently 64)
-
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
 ---
- drivers/net/ethernet/microchip/lan743x_main.c | 64 +++++++++++--------
- drivers/net/ethernet/microchip/lan743x_main.h |  5 +-
- 2 files changed, 41 insertions(+), 28 deletions(-)
+ include/linux/tcp.h  |  1 +
+ net/ipv4/tcp_input.c | 16 +++++++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index a9a1dea6d731..d7c14ee7e413 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -2064,8 +2064,10 @@ static void lan743x_tx_frame_end(struct lan743x_tx *tx,
- static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
- 					 struct sk_buff *skb)
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index a9fbe22..18e091c 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -410,6 +410,7 @@ struct tcp_sock {
+ 		u32	space;
+ 		u32	seq;
+ 		u64	time;
++		u32	prior_rate;
+ 	} rcvq_space;
+ 
+ /* TCP-specific MTU probe information. */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index ab5f0ea..2bdf2a5 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -544,6 +544,7 @@ static void tcp_init_buffer_space(struct sock *sk)
+ 	tcp_mstamp_refresh(tp);
+ 	tp->rcvq_space.time = tp->tcp_mstamp;
+ 	tp->rcvq_space.seq = tp->copied_seq;
++	tp->rcvq_space.prior_rate = 0;
+ 
+ 	maxwin = tcp_full_space(sk);
+ 
+@@ -701,6 +702,7 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
+ void tcp_rcv_space_adjust(struct sock *sk)
  {
-+	struct lan743x_adapter *adapter = tx->adapter;
- 	int required_number_of_descriptors = 0;
- 	unsigned int start_frame_length = 0;
-+	netdev_tx_t retval = NETDEV_TX_OK;
- 	unsigned int frame_length = 0;
- 	unsigned int head_length = 0;
- 	unsigned long irq_flags = 0;
-@@ -2083,9 +2085,13 @@ static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
- 		if (required_number_of_descriptors > (tx->ring_size - 1)) {
- 			dev_kfree_skb_irq(skb);
- 		} else {
--			/* save to overflow buffer */
--			tx->overflow_skb = skb;
--			netif_stop_queue(tx->adapter->netdev);
-+			/* save how many descriptors we needed to restart the queue */
-+			tx->rqd_descriptors = required_number_of_descriptors;
-+			retval = NETDEV_TX_BUSY;
-+			if (is_pci11x1x_chip(adapter))
-+				netif_stop_subqueue(adapter->netdev, tx->channel_number);
-+			else
-+				netif_stop_queue(adapter->netdev);
- 		}
- 		goto unlock;
- 	}
-@@ -2093,7 +2099,7 @@ static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
- 	/* space available, transmit skb  */
- 	if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
- 	    (tx->ts_flags & TX_TS_FLAG_TIMESTAMPING_ENABLED) &&
--	    (lan743x_ptp_request_tx_timestamp(tx->adapter))) {
-+	    (lan743x_ptp_request_tx_timestamp(adapter))) {
- 		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 		do_timestamp = true;
- 		if (tx->ts_flags & TX_TS_FLAG_ONE_STEP_SYNC)
-@@ -2144,14 +2150,13 @@ static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	u64 pre_copied_rate, copied_rate;
+ 	u32 copied;
+ 	int time;
  
- unlock:
- 	spin_unlock_irqrestore(&tx->ring_lock, irq_flags);
--	return NETDEV_TX_OK;
-+	return retval;
- }
+@@ -713,7 +715,14 @@ void tcp_rcv_space_adjust(struct sock *sk)
  
- static int lan743x_tx_napi_poll(struct napi_struct *napi, int weight)
- {
- 	struct lan743x_tx *tx = container_of(napi, struct lan743x_tx, napi);
- 	struct lan743x_adapter *adapter = tx->adapter;
--	bool start_transmitter = false;
- 	unsigned long irq_flags = 0;
- 	u32 ioc_bit = 0;
+ 	/* Number of bytes copied to user in last RTT */
+ 	copied = tp->copied_seq - tp->rcvq_space.seq;
+-	if (copied <= tp->rcvq_space.space)
++	copied_rate = copied * USEC_PER_SEC;
++	do_div(copied_rate, time);
++	pre_copied_rate = tp->rcvq_space.prior_rate;
++	if (!tp->rcvq_space.prior_rate) {
++		pre_copied_rate = tp->rcvq_space.space * USEC_PER_SEC;
++		do_div(pre_copied_rate, time);
++	}
++	if (copied_rate <= pre_copied_rate || !pre_copied_rate)
+ 		goto new_measure;
  
-@@ -2163,24 +2168,36 @@ static int lan743x_tx_napi_poll(struct napi_struct *napi, int weight)
+ 	/* A bit of theory :
+@@ -736,8 +745,8 @@ void tcp_rcv_space_adjust(struct sock *sk)
+ 		rcvwin = ((u64)copied << 1) + 16 * tp->advmss;
  
- 	/* clean up tx ring */
- 	lan743x_tx_release_completed_descriptors(tx);
--	if (netif_queue_stopped(adapter->netdev)) {
--		if (tx->overflow_skb) {
--			if (lan743x_tx_get_desc_cnt(tx, tx->overflow_skb) <=
--				lan743x_tx_get_avail_desc(tx))
--				start_transmitter = true;
--		} else {
--			netif_wake_queue(adapter->netdev);
-+	if (is_pci11x1x_chip(adapter)) {
-+		if (__netif_subqueue_stopped(adapter->netdev,
-+		    tx->channel_number)) {
-+			if (tx->rqd_descriptors) {
-+				if (tx->rqd_descriptors <=
-+					lan743x_tx_get_avail_desc(tx)) {
-+					tx->rqd_descriptors = 0;
-+					netif_wake_subqueue(adapter->netdev,
-+							    tx->channel_number);
-+				}
-+			} else {
-+				netif_wake_subqueue(adapter->netdev,
-+						    tx->channel_number);
-+			}
-+		}
-+	} else {
-+		if (netif_queue_stopped(adapter->netdev)) {
-+			if (tx->rqd_descriptors) {
-+				if (tx->rqd_descriptors <=
-+				    lan743x_tx_get_avail_desc(tx)) {
-+					tx->rqd_descriptors = 0;
-+					netif_wake_queue(adapter->netdev);
-+				}
-+			} else {
-+				netif_wake_queue(adapter->netdev);
-+			}
+ 		/* Accommodate for sender rate increase (eg. slow start) */
+-		grow = rcvwin * (copied - tp->rcvq_space.space);
+-		do_div(grow, tp->rcvq_space.space);
++		grow = rcvwin * (copied_rate - pre_copied_rate);
++		do_div(grow, pre_copied_rate);
+ 		rcvwin += (grow << 1);
+ 
+ 		rcvmem = SKB_TRUESIZE(tp->advmss + MAX_TCP_HEADER);
+@@ -755,6 +764,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
  		}
  	}
- 	spin_unlock_irqrestore(&tx->ring_lock, irq_flags);
+ 	tp->rcvq_space.space = copied;
++	tp->rcvq_space.prior_rate = pre_copied_rate;
  
--	if (start_transmitter) {
--		/* space is now available, transmit overflow skb */
--		lan743x_tx_xmit_frame(tx, tx->overflow_skb);
--		tx->overflow_skb = NULL;
--		netif_wake_queue(adapter->netdev);
--	}
--
- 	if (!napi_complete(napi))
- 		goto done;
- 
-@@ -2304,10 +2321,7 @@ static void lan743x_tx_close(struct lan743x_tx *tx)
- 
- 	lan743x_tx_release_all_descriptors(tx);
- 
--	if (tx->overflow_skb) {
--		dev_kfree_skb(tx->overflow_skb);
--		tx->overflow_skb = NULL;
--	}
-+	tx->rqd_descriptors = 0;
- 
- 	lan743x_tx_ring_cleanup(tx);
- }
-@@ -2387,7 +2401,7 @@ static int lan743x_tx_open(struct lan743x_tx *tx)
- 							 (tx->channel_number));
- 	netif_napi_add_tx_weight(adapter->netdev,
- 				 &tx->napi, lan743x_tx_napi_poll,
--				 tx->ring_size - 1);
-+				 NAPI_POLL_WEIGHT);
- 	napi_enable(&tx->napi);
- 
- 	data = 0;
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 72adae4f2aa0..58eb7abf976b 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -954,8 +954,7 @@ struct lan743x_tx {
- 
- 	struct napi_struct napi;
- 	u32 frame_count;
--
--	struct sk_buff *overflow_skb;
-+	u32 rqd_descriptors;
- };
- 
- void lan743x_tx_set_timestamping_mode(struct lan743x_tx *tx,
-@@ -1110,7 +1109,7 @@ struct lan743x_tx_buffer_info {
- 	unsigned int    buffer_length;
- };
- 
--#define LAN743X_TX_RING_SIZE    (50)
-+#define LAN743X_TX_RING_SIZE    (128)
- 
- /* OWN bit is set. ie, Descs are owned by RX DMAC */
- #define RX_DESC_DATA0_OWN_                (0x00008000)
+ new_measure:
+ 	tp->rcvq_space.seq = tp->copied_seq;
 -- 
-2.25.1
+1.8.3.1
 
