@@ -2,138 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91D358D8D3
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1137158D8D7
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242254AbiHIMlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 08:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        id S242481AbiHIMlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 08:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230178AbiHIMlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:41:09 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C96D110E;
-        Tue,  9 Aug 2022 05:41:08 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id x2so286995ilp.10;
-        Tue, 09 Aug 2022 05:41:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=OH2f5g6k9+qbXZFsQ2Ho2erjcjWAHljfg8M1LYTp1+A=;
-        b=i2KuZ9g7/tmr06LMSl8brb+5GUD0ec0/F/f7Qb89WqyrjYSoKisi7F8HrPNpnjvPjU
-         wSWsDyJaCf3hsY2liT26vQ4VtT6ExN3PvaqjRe0BIFP+oJ3qziKtqzpSFvZQ4//oUA2H
-         kPATgvO5FM/hd5IHppHl7AtneqzNSjYbSl3SFG/69u/VOV2apJQ8knFJpbq3HbjB0jfp
-         frHXkHcBwYt4hc6l/tHIPBXQb9xlGJLfilF+fB3fMhXLSdhJigyVUgJbL0VOJWfnhPqr
-         cbwyoUbvyc2sWBL6oYv8S3Pknx+m8SBYW+HcfNpdUx4F92eGolGJQ1t3hHhChbdWJuEd
-         T7hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=OH2f5g6k9+qbXZFsQ2Ho2erjcjWAHljfg8M1LYTp1+A=;
-        b=hQsNk8jr8ywtBHYN7mDjirgpEUiaFxYdKBpsxszCL+gaJLzMrRHtnnbHqK8w0KBLSc
-         4KJ79DsemFwFKlhLk7xPaWYggfi5lDqoPGSoZRscdwnXof8d59R+zFjQ4oO40oQrzoDM
-         MtE8yAJmwcM8JpxFDuCdF4PjWRzcrtXgcLk31p7zMm9JjMlyah/aUn07A/+8XvkUAUdY
-         Ha9VmgOPmz3jOghU9CLdCDmsQTmxtXGrftORFGnuWoohJ8/7V6FaeF/papPmit/GooNX
-         L4zFZFjosx5H2MezfbAWjdmWJKIaHBA/CT7moN/f5Mct9BTYxHCphc6QSxYTcEZy924i
-         Ixpw==
-X-Gm-Message-State: ACgBeo39UbhV1GL0vvxUpaTpt/kAUeQFg9armsdbmQW6qNlPSCo1GzdC
-        Mjd02OykiMUj/UOORJOW6V+IDz2Z0NK2Y79W5z4=
-X-Google-Smtp-Source: AA6agR5MDCW3WkYaKVwM860AoLF4ea8orT7Y7FpX4CVO7hpJqDmrZvd5hEkHX6/Oy6S8zRwxTZ5ZBQwxHJCxEFRVVKo=
-X-Received: by 2002:a05:6e02:198c:b0:2e0:ac33:d22 with SMTP id
- g12-20020a056e02198c00b002e0ac330d22mr6236746ilf.219.1660048867835; Tue, 09
- Aug 2022 05:41:07 -0700 (PDT)
+        with ESMTP id S242545AbiHIMlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:41:37 -0400
+Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C971B18E00
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 05:41:33 -0700 (PDT)
+Received: from imsva.intranet.prolan.hu (imsva.intranet.prolan.hu [10.254.254.252])
+        by fw2.prolan.hu (Postfix) with ESMTPS id 3525C7F46C;
+        Tue,  9 Aug 2022 14:41:30 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5F9A634064;
+        Tue,  9 Aug 2022 14:41:29 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46FD93405A;
+        Tue,  9 Aug 2022 14:41:29 +0200 (CEST)
+Received: from fw2.prolan.hu (unknown [10.254.254.253])
+        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
+        Tue,  9 Aug 2022 14:41:29 +0200 (CEST)
+Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
+        by fw2.prolan.hu (Postfix) with ESMTPS id CE2FA7F46C;
+        Tue,  9 Aug 2022 14:41:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
+        t=1660048889; bh=BNnVjwIjLqAVMaMj7s9CekZJLoj03OFBcFyY+gVYHD0=;
+        h=From:To:CC:Subject:Date:From;
+        b=KmS3rI3fj+BlAGta3uZdlLVkqUyA0IYL8V6OnOHH5x+ssNiJUhGeY2xR2bzu5QVq6
+         98ZK2GXD195VOEVSJDCKGZvo99IuObJaIKqd4hAqvwe+dQvkpk9I2/HHkO16BTBd9Q
+         sY3qoTSi5tpenLwIWQCqquUd159CTh8g+q8DcqPBdDjQ0A8QmHFLvDapv6EKBDEI42
+         Ow2bFXtH6PLF1FTDakKNf3KoE+KYM+CRXiC+z53vZ/ftteQXRrq/bapvAl9e1G7ZhI
+         LndnfuwTYNLxlXq/iNadGpGGS4mXeK8ergyYRR6YoD+xM6sr0jpiOQwi0NLK0qoV8C
+         cECte5Pzzh60A==
+Received: from atlas.intranet.prolan.hu (10.254.0.229) by
+ atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id
+ 15.1.2507.9; Tue, 9 Aug 2022 14:41:29 +0200
+Received: from P-01011.intranet.prolan.hu (10.254.7.28) by
+ atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server id
+ 15.1.2507.9 via Frontend Transport; Tue, 9 Aug 2022 14:41:29 +0200
+From:   =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
+To:     <netdev@vger.kernel.org>
+CC:     =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>
+Subject: [PATCH] fec: Restart PPS after link state change
+Date:   Tue, 9 Aug 2022 14:41:19 +0200
+Message-ID: <20220809124119.29922-1-csokas.bence@prolan.hu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220809105317.436682-1-asavkov@redhat.com> <20220809105317.436682-2-asavkov@redhat.com>
-In-Reply-To: <20220809105317.436682-2-asavkov@redhat.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Tue, 9 Aug 2022 14:40:30 +0200
-Message-ID: <CAP01T75Qern=-hvYONBMom7T3ycs-bpGxR1n5CdrehJBwrOTuQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 1/3] bpf: add destructive kfunc flag
-To:     Artem Savkov <asavkov@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Daniel Vacek <dvacek@redhat.com>,
-        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
-        Daniel Xu <dxu@dxuuu.xyz>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1660048889;VERSION=7932;MC=51325858;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
+X-ESET-Antispam: OK
+X-EsetResult: clean, is OK
+X-EsetId: 37303A29971EF45661766A
+X-TM-AS-GCONF: 00
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 9 Aug 2022 at 12:53, Artem Savkov <asavkov@redhat.com> wrote:
->
-> Add KF_DESTRUCTIVE flag for destructive functions. Functions with this
-> flag set will require CAP_SYS_BOOT capabilities.
->
-> Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> ---
->  Documentation/bpf/kfuncs.rst | 9 +++++++++
->  include/linux/btf.h          | 1 +
->  kernel/bpf/verifier.c        | 5 +++++
->  3 files changed, 15 insertions(+)
->
-> diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
-> index c0b7dae6dbf5..2e97e08be7de 100644
-> --- a/Documentation/bpf/kfuncs.rst
-> +++ b/Documentation/bpf/kfuncs.rst
-> @@ -146,6 +146,15 @@ that operate (change some property, perform some operation) on an object that
->  was obtained using an acquire kfunc. Such kfuncs need an unchanged pointer to
->  ensure the integrity of the operation being performed on the expected object.
->
-> +2.4.5 KF_DESTRUCTIVE flag
+On link state change, the controller gets reset,
+causing PPS to drop out. So we restart it if needed.
 
-This should be 2.4.6.
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 27 ++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-> +--------------------------
-> +
-> +The KF_DESTRUCTIVE flag is used to indicate functions calling which is
-> +destructive to the system. For example such a call can result in system
-> +rebooting or panicking. Due to this additional restrictions apply to these
-> +calls. At the moment they only require CAP_SYS_BOOT capability, but more can be
-> +added later.
-> +
->  2.5 Registering the kfuncs
->  --------------------------
->
-> diff --git a/include/linux/btf.h b/include/linux/btf.h
-> index cdb376d53238..51a0961c84e3 100644
-> --- a/include/linux/btf.h
-> +++ b/include/linux/btf.h
-> @@ -49,6 +49,7 @@
->   * for this case.
->   */
->  #define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
-> +#define KF_DESTRUCTIVE  (1 << 5) /* kfunc performs destructive actions */
->
->  struct btf;
->  struct btf_member;
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 843a966cd02b..163cc0a2dc5a 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -7598,6 +7598,11 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
->                         func_name);
->                 return -EACCES;
->         }
-> +       if (*kfunc_flags & KF_DESTRUCTIVE && !capable(CAP_SYS_BOOT)) {
-> +               verbose(env, "destructive kfunc calls require CAP_SYS_BOOT capabilities\n");
-> +               return -EACCES;
-> +       }
-> +
->         acq = *kfunc_flags & KF_ACQUIRE;
->
->         /* Check the arguments */
-> --
-> 2.37.1
->
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index ca5d49361fdf..c264b1dd5286 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -954,6 +954,7 @@ fec_restart(struct net_device *ndev)
+ 	u32 temp_mac[2];
+ 	u32 rcntl = OPT_FRAME_SIZE | 0x04;
+ 	u32 ecntl = 0x2; /* ETHEREN */
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
+ 
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+@@ -1119,6 +1120,13 @@ fec_restart(struct net_device *ndev)
+ 	if (fep->bufdesc_ex)
+ 		fec_ptp_start_cyclecounter(ndev);
+ 
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
++
+ 	/* Enable interrupts we wish to service */
+ 	if (fep->link)
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+@@ -1154,6 +1162,8 @@ fec_stop(struct net_device *ndev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	u32 rmii_mode = readl(fep->hwp + FEC_R_CNTRL) & (1 << 8);
+ 	u32 val;
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++	u32 ecntl = 0;
+ 
+ 	/* We cannot expect a graceful transmit stop without link !!! */
+ 	if (fep->link) {
+@@ -1184,12 +1194,27 @@ fec_stop(struct net_device *ndev)
+ 	}
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
++	if (fep->bufdesc_ex)
++		ecntl |= (1 << 4);
++
+ 	/* We have to keep ENET enabled to have MII interrupt stay working */
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC &&
+ 		!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
+-		writel(2, fep->hwp + FEC_ECNTRL);
++		ecntl |= 0x2;
+ 		writel(rmii_mode, fep->hwp + FEC_R_CNTRL);
+ 	}
++
++	writel(ecntl, fep->hwp + FEC_ECNTRL);
++
++	if (fep->bufdesc_ex)
++		fec_ptp_start_cyclecounter(ndev);
++
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
+ }
+ 
+ 
+-- 
+2.25.1
+
