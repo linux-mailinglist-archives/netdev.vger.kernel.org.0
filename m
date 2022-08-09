@@ -2,261 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DDE58DC0E
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 18:28:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D66658DC42
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 18:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245132AbiHIQ2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 12:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        id S241197AbiHIQk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 12:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245072AbiHIQ2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 12:28:19 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A285921822
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 09:28:07 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id c17so17719319lfb.3
-        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 09:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qhv9k0TbYNDlEH5wJV2m/URwiIcfUYBdwGvhAbNRhYc=;
-        b=EiKupjYynxiyS9Uwk2mNnJzzAIT3urs5FtysK2HK54pytgUUl2otaC9r8FRiN8VPbk
-         Jg4kBYK52Zx6R1aldTuV+4G13ygwtq+o+I5wCerQAk9lhqr1ohdkDMKKM6f6Rzhi468v
-         oen26vYiW/DLmKbM5XYQ8exGEnzaRdGf9OzchwXf9iSJt2lnDmO6Rj+K2P88++GHE1ND
-         XNBDXn11cLAk9bDVKhCDUCi5CYkV29cETrv5/u780v23Ve7ZMl5o9HAW0Ntg3/Ucoze8
-         rSSzeIjHfN8XIgrwVoGvcC6uqrPJIRuEvFSjx0+SuKpI2nd7xRYv2GFWsegu2CKHRLAf
-         UXpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qhv9k0TbYNDlEH5wJV2m/URwiIcfUYBdwGvhAbNRhYc=;
-        b=QlNecloDgrIHBAiRb5whsLdXEd0Jedwz51B5CMDsiKFBepZLnhm8MxPsafem5zAB4m
-         0n/agc4+NTaYXgFOPd6bTTeqYC04FImvLQlyjXhr1mPbLR+9rO/n/l/15YNHQexGDRrP
-         cDVLpTbkH+D7GY1U/+UrwSvslq5HV5wBrNrkoADP+9ysmr/MT4XeLtK8O0rZjAd3opa6
-         QdfrfU+5R6EemWvziP6XpnwGGWaua30Y+gpS90atdtw7KFIHpndOOF8t5gh1kPVZV3A7
-         benHI86yNG6V/aFIFkStw71vcZRxxTqF0mDzButODFKpHtKX7kE/qAdNa4YJSONqlj+m
-         ipzw==
-X-Gm-Message-State: ACgBeo398C+JMpKwmalGB8U1sq+KR+MaPb4huxStkiwUKg0e/RAM9dR5
-        GghCzPQirThF8yN3rxPd8/JdmQ==
-X-Google-Smtp-Source: AA6agR42hKIYpkLWqFJZdS65VukpL2Tjqz72YTDDKxz0IV0ext6Zf4qjr7mf1IyY+1bUCOW+Rgo/wg==
-X-Received: by 2002:a05:6512:690:b0:48b:beb:9868 with SMTP id t16-20020a056512069000b0048b0beb9868mr8021822lfe.541.1660062485452;
-        Tue, 09 Aug 2022 09:28:05 -0700 (PDT)
-Received: from localhost.localdomain ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id h7-20020ac24d27000000b0048a8c907fe9sm20999lfk.167.2022.08.09.09.28.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 09:28:04 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tim Harvey <tharvey@gateworks.com>, Lee Jones <lee@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Andrew Davis <afd@ti.com>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 5/5] dt-bindings: Drop Dan Murphy and Ricardo Rivera-Matos
-Date:   Tue,  9 Aug 2022 19:27:52 +0300
-Message-Id: <20220809162752.10186-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
-References: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S231409AbiHIQkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 12:40:25 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E821138;
+        Tue,  9 Aug 2022 09:40:23 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:40688)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oLSHF-003Ve1-S8; Tue, 09 Aug 2022 10:40:21 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:59198 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oLSHE-002Sv9-L4; Tue, 09 Aug 2022 10:40:21 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com
+References: <20220801180146.1157914-1-fred@cloudflare.com>
+        <87les7cq03.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhRpUxyxkPaTz1scGeRm+i4KviQQA7WismOX2q5agzC+DQ@mail.gmail.com>
+        <87wnbia7jh.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
+        <877d3ia65v.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhSKmqn5wxF3BZ67Z+-CV7sZzdnO+JODq48rZJ4WAe8ULA@mail.gmail.com>
+Date:   Tue, 09 Aug 2022 11:40:12 -0500
+In-Reply-To: <CAHC9VhSKmqn5wxF3BZ67Z+-CV7sZzdnO+JODq48rZJ4WAe8ULA@mail.gmail.com>
+        (Paul Moore's message of "Mon, 8 Aug 2022 15:49:48 -0400")
+Message-ID: <87a68d4bgz.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-XM-SPF: eid=1oLSHE-002Sv9-L4;;;mid=<87a68d4bgz.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18HBy/xVu3Fi4ZlEEXadKSoHy1u0KD36K8=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Virus: No
+X-Spam-DCC: XMission; sa03 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ***;Paul Moore <paul@paul-moore.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 627 ms - load_scoreonly_sql: 0.03 (0.0%),
+        signal_user_changed: 3.8 (0.6%), b_tie_ro: 2.6 (0.4%), parse: 1.32
+        (0.2%), extract_message_metadata: 19 (3.0%), get_uri_detail_list: 4.5
+        (0.7%), tests_pri_-1000: 20 (3.3%), tests_pri_-950: 1.49 (0.2%),
+        tests_pri_-900: 1.23 (0.2%), tests_pri_-90: 95 (15.1%), check_bayes:
+        93 (14.8%), b_tokenize: 16 (2.6%), b_tok_get_all: 13 (2.1%),
+        b_comp_prob: 3.8 (0.6%), b_tok_touch_all: 56 (9.0%), b_finish: 0.67
+        (0.1%), tests_pri_0: 471 (75.0%), check_dkim_signature: 0.49 (0.1%),
+        check_dkim_adsp: 5 (0.8%), poll_dns_idle: 0.02 (0.0%), tests_pri_10:
+        2.6 (0.4%), tests_pri_500: 9 (1.4%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Emails to Dan Murphy and Ricardo Rivera-Matos bounce ("550 Invalid
-recipient").  Andrew Davis agreed to take over the bindings.
+Paul Moore <paul@paul-moore.com> writes:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> On Mon, Aug 8, 2022 at 3:26 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> Paul Moore <paul@paul-moore.com> writes:
+>> >> I did provide constructive feedback.  My feedback to his problem
+>> >> was to address the real problem of bugs in the kernel.
+>> >
+>> > We've heard from several people who have use cases which require
+>> > adding LSM-level access controls and observability to user namespace
+>> > creation.  This is the problem we are trying to solve here; if you do
+>> > not like the approach proposed in this patchset please suggest another
+>> > implementation that allows LSMs visibility into user namespace
+>> > creation.
+>>
+>> Please stop, ignoring my feedback, not detailing what problem or
+>> problems you are actually trying to be solved, and threatening to merge
+>> code into files that I maintain that has the express purpose of breaking
+>> my users.
+>
+> I've heard you talk about bugs being the only reason why people would
+> want to ever block user namespaces, but I think we've all seen use
+> cases now where it goes beyond that.
 
----
+I really have not, and I don't appreciate being called a liar.
 
-Changes since v1:
-1. Add Andrew Davis instead.
-2. Not adding accumulated ack due to change above.
----
- Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml    | 2 +-
- .../devicetree/bindings/leds/leds-class-multicolor.yaml        | 2 +-
- Documentation/devicetree/bindings/leds/leds-lp50xx.yaml        | 2 +-
- Documentation/devicetree/bindings/net/ti,dp83822.yaml          | 2 +-
- Documentation/devicetree/bindings/net/ti,dp83867.yaml          | 2 +-
- Documentation/devicetree/bindings/net/ti,dp83869.yaml          | 2 +-
- Documentation/devicetree/bindings/power/supply/bq2515x.yaml    | 3 +--
- Documentation/devicetree/bindings/power/supply/bq256xx.yaml    | 2 +-
- Documentation/devicetree/bindings/power/supply/bq25980.yaml    | 3 +--
- Documentation/devicetree/bindings/sound/tas2562.yaml           | 2 +-
- Documentation/devicetree/bindings/sound/tlv320adcx140.yaml     | 2 +-
- 11 files changed, 11 insertions(+), 13 deletions(-)
+> However, even if it didn't, the
+> need to build high confidence/assurance systems where big chunks of
+> functionality can be disabled based on a security policy is a very
+> real use case, and this patchset would help enable that.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-index 9f5e96439c01..2e6abc9d746a 100644
---- a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Texas Instruments' ads124s08 and ads124s06 ADC chip
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- properties:
-   compatible:
-diff --git a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-index 12693483231f..31840e33dcf5 100644
---- a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-+++ b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Common properties for the multicolor LED class.
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   Bindings for multi color LEDs show how to describe current outputs of
-diff --git a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-index e0b658f07973..63da380748bf 100644
---- a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-+++ b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: LED driver for LP50XX RGB LED from Texas Instruments.
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The LP50XX is multi-channel, I2C RGB LED Drivers that can group RGB LEDs into
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83822.yaml b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-index 75e8712e903a..f2489a9c852f 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-@@ -8,7 +8,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
- title: TI DP83822 ethernet PHY
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The DP83822 is a low-power, single-port, 10/100 Mbps Ethernet PHY. It
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-index 76ff08a477ba..b8c0e4b5b494 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-@@ -11,7 +11,7 @@ allOf:
-   - $ref: "ethernet-controller.yaml#"
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The DP83867 device is a robust, low power, fully featured Physical Layer
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-index 1b780dce61ab..b04ff0014a59 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-@@ -11,7 +11,7 @@ allOf:
-   - $ref: "ethernet-phy.yaml#"
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The DP83869HM device is a robust, fully-featured Gigabit (PHY) transceiver
-diff --git a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-index 27db38577822..1a1b240034ef 100644
---- a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-+++ b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-@@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: TI bq2515x 500-mA Linear charger family
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
--  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The BQ2515x family is a highly integrated battery charge management IC that
-diff --git a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-index 91abe5733c41..82f382a7ffb3 100644
---- a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-+++ b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-@@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: TI bq256xx Switch Mode Buck Charger
- 
- maintainers:
--  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The bq256xx devices are a family of highly-integrated battery charge
-diff --git a/Documentation/devicetree/bindings/power/supply/bq25980.yaml b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-index 4883527ab5c7..b687b8bcd705 100644
---- a/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-+++ b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-@@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: TI BQ25980 Flash Charger
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
--  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The BQ25980, BQ25975, and BQ25960 are a series of flash chargers intended
-diff --git a/Documentation/devicetree/bindings/sound/tas2562.yaml b/Documentation/devicetree/bindings/sound/tas2562.yaml
-index 5f7dd5d6cbca..30f6b029ac08 100644
---- a/Documentation/devicetree/bindings/sound/tas2562.yaml
-+++ b/Documentation/devicetree/bindings/sound/tas2562.yaml
-@@ -8,7 +8,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
- title: Texas Instruments TAS2562 Smart PA
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The TAS2562 is a mono, digital input Class-D audio amplifier optimized for
-diff --git a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-index bc2fb1a80ed7..ee698614862e 100644
---- a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-+++ b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-@@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Texas Instruments TLV320ADCX140 Quad Channel Analog-to-Digital Converter
- 
- maintainers:
--  - Dan Murphy <dmurphy@ti.com>
-+  - Andrew Davis <afd@ti.com>
- 
- description: |
-   The TLV320ADCX140 are multichannel (4-ch analog recording or 8-ch digital
--- 
-2.34.1
+Details please.  What does this look like.  What is the overall plan for
+attack surface reduction in one of these systems.  How does it differ
+from seccomp?
 
+How does this differ from setting /proc/sys/user/max_usernamespaces to 0?
+
+Why is it only the user namespace that needs to be modified to implement
+such a system?
+
+Why is there no discussion of that in the change description.
+
+> I've noticed
+> you like to talk about these hooks being a source of "regressions",
+> but access controls are not regressions Eric, they are tools that
+> system builders, administrators, and users use to secure their
+> systems.
+>
+> From my perspective, I believe that addresses your feedback around
+> "fix the bugs" and "this is a regression", which is the only thing
+> I've noted from your responses in this thread and others, but if I'm
+> missing something more technical please let me/us know.
+
+Which is a short way of saying that the using this hook for attack
+surface reduction without a larger plan will be ineffective.  If the
+attack surface is not sufficiently reduced it will not achieve a
+prevention of exploits and the attacks will still happen and be
+successful.
+
+With a change that is designed to prevent exploits not actually doing so
+all that is left is breaking userspace and causing maintenance problems.
+
+Earlier I asked to confirm that was the only reason cloudfare was
+interested in this change.  I have asked that we have an actual
+conversation about what is trying to be achieved.
+
+Instead the conversation has simply been about implementation issues
+and not about if the code will be worth having.  So far in my book the
+code very much does not look worth having.  That is my technical
+judgment and I don't see anyone taking about my arguments or even
+really engaging in them.
+
+Since I keep getting blown off, instead of having my concerns addressed
+I say this code should not go.
+
+
+>> You just artificially constrained the problems, so that no other
+>> solution is acceptable.
+>
+> There is a real need to be able to gain both additional visibility and
+> access control over user namespace creation, please suggest the
+> approach(es) you would find acceptable.
+
+The suggested hook is not at all appropriate for visibility.  Either the
+user namespace needs to have some state that can be set, or there needs
+to be something that is notified when the user namespace goes away.  At
+best the hook can print an audit message.  So the proposed hook is
+really not appropriate to add visibility to the user namespace.
+
+For the record I don't object to adding visibility, I am just pointing
+out the proposed hook is not appropriate to that task.
+
+
+What is the need to have an access control?
+
+Why do you need to fundamentally change the design of user namespaces?
+
+Those are questions I have not seen any answers to.  Without actual
+answers of what the actual problems are I can't have a reasonable
+technical conversation.
+
+>> On that basis alone I am object to this whole
+>> approach to steam roll over me and my code.
+>
+> I saw that choice of wording in your last email and thought it a bit
+> curious, so I did a quick git log dump on kernel/user_namespace.c and
+> I see approximately 31 contributors to that one file.  I've always
+> thought of the open source maintainer role as more of a "steward" and
+> less of an "owner", but that's just my opinion.
+
+As such it is unfortunately my responsibility to say no to badly thought
+out proposals.  Proposals that will negatively affect the people using
+the code I maintain.
+
+
+My apologies if I have not been more elegant right now when I have been
+constantly sick, and tired.  People getting scared of user namespaces
+for no real reason has been an on-going trend for a decade or so.  This
+isn't a new issue, and it irritates me that it is still going on.  I
+have addressed real concerns and fixed code, for many many years.
+
+This round of the people being afraid of user namespaces, I have yet to
+find any real concerns.
+
+So when I express my concerns that this is a pointless exercise and
+people don't address my concern.  I say no.
+
+Eric
