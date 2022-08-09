@@ -2,142 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8974358D2EF
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 06:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D15AC58D304
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 06:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbiHIEe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 00:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        id S233316AbiHIEtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 00:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231805AbiHIEeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 00:34:24 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC05E1AF0A
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 21:34:20 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id t1so15437085lft.8
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 21:34:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=A2cJx4TzfVfLcjEZf5Am6QDuHfwBw6Iwol89LnoU7nc=;
-        b=Jj76Z/jKDUcmTCulxZCqo/LuRjfbdQf1qvEHt1HWkgnmwQAefjhDHIaaiCqEFvEYTN
-         LIRqrtBLpyDQ8XmzpE1wcv+p+OKdW6SOW/w9GO5PylbeCuI0ZpiUAHUNJLq5Gkzmwhv/
-         6n1C7kFTUqpWcEJ8OAyQ+Ang5aSyQJE6G0fB1tWDKiErdTS3TLHiMS4avkS+93E8vxaW
-         aqjdfDBBywZwi8o2eJWlhThCoJNNrrRzb4W5HfyWBg3IquciIg+hMO42TV9o6XKvXVys
-         s32eXG5huF8fXFNYFtyZcqyKdwWUDqkztx7dK4X0ml/kis8bFJll6EFESaMA9Q3vxNBi
-         GiNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A2cJx4TzfVfLcjEZf5Am6QDuHfwBw6Iwol89LnoU7nc=;
-        b=Xczbk/yJH9mDdaJXp8BAsHadYvoJkpbTgZ8kTf3d5C9LU1GGpMH8YL+L2EmPT8EQsT
-         4acwdlkR784C2uFnDCc3oztN67K8xio+XrokO6WGblLw5QlIaYHmWZ54xeVe0A1Nc4dW
-         KkOrhOoD9BAQasf8AZo34GVlbmrGRFA3YAmajewg8cOaCVEYsJWLYFwRberfxil5hi/P
-         GkApHzqi39D/ZBysdle2UsU1URpiOg1PwN0nITlmssI+R5KsdtZ5+RlsvgLphSUDTVo9
-         xGvm8/ar0885I4Vvma0TFKkkB2kkqK1PcBxvf47rfHbi+ZcBSa1NkYamhsAUWQ3Zqlpr
-         iKjw==
-X-Gm-Message-State: ACgBeo1y1Lyt/FDrWr403ketqme1I3JKWsdpjz+Hf0USOJ/7ra8yptDb
-        60pCw5LoMo00Ss8xcaabgNlYGQ==
-X-Google-Smtp-Source: AA6agR4BZyPN7vBEUxb+Ezny+n+osGnBvWSa4FG9wknX3U75cx2BkOZ/jdDmNcMZm3gyQUiR3bv27A==
-X-Received: by 2002:a05:6512:ac5:b0:48c:ecd1:4f14 with SMTP id n5-20020a0565120ac500b0048cecd14f14mr2407443lfu.287.1660019659041;
-        Mon, 08 Aug 2022 21:34:19 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id s30-20020a05651c201e00b0025e778f6f13sm1431364ljo.4.2022.08.08.21.34.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 21:34:18 -0700 (PDT)
-Message-ID: <a2136b83-2c96-27c4-c262-d4e75614f9a7@linaro.org>
-Date:   Tue, 9 Aug 2022 07:34:16 +0300
+        with ESMTP id S229600AbiHIEtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 00:49:16 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07BBB1D32B;
+        Mon,  8 Aug 2022 21:49:09 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.12.77.33])
+        by mail-app2 (Coremail) with SMTP id by_KCgC3vvYY5_FiY7Z_Ag--.15876S4;
+        Tue, 09 Aug 2022 12:48:24 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v2] igb: Add lock to avoid data race
+Date:   Tue,  9 Aug 2022 12:48:20 +0800
+Message-Id: <20220809044820.2861-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 5/5] dt-bindings: Drop Dan Murphy
-Content-Language: en-US
-To:     Andrew Davis <afd@ti.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>,
-        Lee Jones <lee@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-leds@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20220808104712.54315-1-krzysztof.kozlowski@linaro.org>
- <20220808104712.54315-6-krzysztof.kozlowski@linaro.org>
- <43b3c497-97fd-29aa-a07b-bcd6413802c4@linaro.org>
- <6ae15e00-36a4-09a8-112e-553ed8c5f4da@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <6ae15e00-36a4-09a8-112e-553ed8c5f4da@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: by_KCgC3vvYY5_FiY7Z_Ag--.15876S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxur4xCr13XF48ZrykuF17ZFb_yoWrZr1rpF
+        4DX342yr10qF12qa97Xa18Ary3K3yrtrWfK3W3uw4F93Z8JryqqrWFyryjvFyFk393u3ZI
+        yryDuw4fZ3WDAFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
+        cxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/08/2022 18:04, Andrew Davis wrote:
-> On 8/8/22 6:08 AM, Krzysztof Kozlowski wrote:
->> On 08/08/2022 13:47, Krzysztof Kozlowski wrote:
->>> Emails to Dan Murphy bounce ("550 Invalid recipient <dmurphy@ti.com>
->>> (#5.1.1)").
->>
->>
->> (...)
->>
->>>   description: |
->>> diff --git a/Documentation/devicetree/bindings/power/supply/bq25980.yaml b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->>> index 4883527ab5c7..509a0667b04e 100644
->>> --- a/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->>> +++ b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
->>> @@ -8,7 +8,6 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->>>   title: TI BQ25980 Flash Charger
->>>   
->>>   maintainers:
->>> -  - Dan Murphy <dmurphy@ti.com>
->>>     - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
->>
->> Ricardo's also bounces... Does it mean TI is not interested in
->> maintaining mainline support for its drivers?
->>
-> 
-> TI is still interested in maintaining support here. But as we know folks
-> come and go, so giving specific emails might not be the best option.
-> Doesn't look like the schema here allows free-form strings, but if it did
-> I'd recommend the TI E2E Power-Management support forum[0] added. Any
-> questions on Linux/DT for these parts posted there would land on my desk
-> just the same, or to whomever is assigned in the future with maintaining
-> these drivers.
+The commit c23d92b80e0b ("igb: Teardown SR-IOV before
+unregister_netdev()") places the unregister_netdev() call after the
+igb_disable_sriov() call to avoid functionality issue.
 
-Currently an email address is required. I am not sure if there is
-intention to change it, because similarly to MAINTAINERS file email is
-the way of our communication. Also in MAINTAINERS we expect to have
-person's address (with M:) and for the lists there is a separate entry.
+However, it introduces several race conditions when detaching a device.
+For example, when .remove() is called, the below interleaving leads to
+use-after-free.
 
-> Either way, I have several of these parts and can support these. Feel free
-> to replace Dan's email with my email if that works better.
+ (FREE from device detaching)      |   (USE from netdev core)
+igb_remove                         |  igb_ndo_get_vf_config
+ igb_disable_sriov                 |  vf >= adapter->vfs_allocated_count?
+  kfree(adapter->vf_data)          |
+  adapter->vfs_allocated_count = 0 |
+                                   |    memcpy(... adapter->vf_data[vf]
 
-Yes, that would be great, thanks!
+Moreover, just as commit 1e53834ce541 ("ixgbe: Add locking to
+prevent panic when setting sriov_numvfs to zero") shows. The
+igb_disable_sriov function also need to watch out the requests from VF
+driver.
 
-Best regards,
-Krzysztof
+To this end, this commit first eliminates the data races from netdev
+core by using rtnl_lock (similar to commit 719479230893 ("dpaa2-eth: add
+MAC/PHY support through phylink")). And then adds a spinlock just as
+1d53834ce541 did.
+
+Fixes: c23d92b80e0b ("igb: Teardown SR-IOV before unregister_netdev()")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+V1 -> V2:  fix typo in title idb -> igb
+V0 -> V1:  change title from "Add rtnl_lock" to "Add lock"
+           add additional spinlock as suggested by Jakub, according to
+           1e53834ce541 ("ixgbe: Add locking to prevent panic when setting
+           sriov_numvfs to zero")
+
+ drivers/net/ethernet/intel/igb/igb.h      |  2 ++
+ drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
+index 2d3daf022651..015b78144114 100644
+--- a/drivers/net/ethernet/intel/igb/igb.h
++++ b/drivers/net/ethernet/intel/igb/igb.h
+@@ -664,6 +664,8 @@ struct igb_adapter {
+ 	struct igb_mac_addr *mac_table;
+ 	struct vf_mac_filter vf_macs;
+ 	struct vf_mac_filter *vf_mac_list;
++	/* lock for VF resources */
++	spinlock_t vfs_lock;
+ };
+ 
+ /* flags controlling PTP/1588 function */
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index d8b836a85cc3..2796e81d2726 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3637,6 +3637,7 @@ static int igb_disable_sriov(struct pci_dev *pdev)
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct igb_adapter *adapter = netdev_priv(netdev);
+ 	struct e1000_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 
+ 	/* reclaim resources allocated to VFs */
+ 	if (adapter->vf_data) {
+@@ -3649,12 +3650,13 @@ static int igb_disable_sriov(struct pci_dev *pdev)
+ 			pci_disable_sriov(pdev);
+ 			msleep(500);
+ 		}
+-
++		spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 		kfree(adapter->vf_mac_list);
+ 		adapter->vf_mac_list = NULL;
+ 		kfree(adapter->vf_data);
+ 		adapter->vf_data = NULL;
+ 		adapter->vfs_allocated_count = 0;
++		spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ 		wr32(E1000_IOVCTL, E1000_IOVCTL_REUSE_VFQ);
+ 		wrfl();
+ 		msleep(100);
+@@ -3814,7 +3816,9 @@ static void igb_remove(struct pci_dev *pdev)
+ 	igb_release_hw_control(adapter);
+ 
+ #ifdef CONFIG_PCI_IOV
++	rtnl_lock();
+ 	igb_disable_sriov(pdev);
++	rtnl_unlock();
+ #endif
+ 
+ 	unregister_netdev(netdev);
+@@ -3974,6 +3978,9 @@ static int igb_sw_init(struct igb_adapter *adapter)
+ 
+ 	spin_lock_init(&adapter->nfc_lock);
+ 	spin_lock_init(&adapter->stats64_lock);
++
++	/* init spinlock to avoid concurrency of VF resources */
++	spin_lock_init(&adapter->vfs_lock);
+ #ifdef CONFIG_PCI_IOV
+ 	switch (hw->mac.type) {
+ 	case e1000_82576:
+@@ -7958,8 +7965,10 @@ static void igb_rcv_msg_from_vf(struct igb_adapter *adapter, u32 vf)
+ static void igb_msg_task(struct igb_adapter *adapter)
+ {
+ 	struct e1000_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 	u32 vf;
+ 
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	for (vf = 0; vf < adapter->vfs_allocated_count; vf++) {
+ 		/* process any reset requests */
+ 		if (!igb_check_for_rst(hw, vf))
+@@ -7973,6 +7982,7 @@ static void igb_msg_task(struct igb_adapter *adapter)
+ 		if (!igb_check_for_ack(hw, vf))
+ 			igb_rcv_ack_from_vf(adapter, vf);
+ 	}
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ }
+ 
+ /**
+-- 
+2.36.1
+
