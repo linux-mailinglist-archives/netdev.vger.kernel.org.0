@@ -2,95 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4697D58D34A
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 07:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 735D058D357
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 07:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234917AbiHIFk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 01:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        id S235175AbiHIFrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 01:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234902AbiHIFkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 01:40:39 -0400
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DCF263C
-        for <netdev@vger.kernel.org>; Mon,  8 Aug 2022 22:40:39 -0700 (PDT)
-Received: by mail-pl1-f199.google.com with SMTP id q11-20020a170902dacb00b0016efd6984c3so7434161plx.17
-        for <netdev@vger.kernel.org>; Mon, 08 Aug 2022 22:40:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=4WRjZBPGOS7PDzHhRHuHLZYa8Vua1VrrZ8WseiQhNsY=;
-        b=zQFILXs4juTIMQTQzDMl9sq/jQdCZ5Wuf+IUlc2oDEnNYQ5hTUFOVJUZotOIbQsfsH
-         8D3hn5Nio2f5CRNEKnY5zaWAmJHPlsjsWy0c7WPFLtmkEPcKHX7C2H1iDE7BeTrz8iRC
-         ok/RnTMZT0chUoyWnIMS18dkhEL6/Byhijh73vBrodi7XXXjAK3SVvcox5jjE3nvTpio
-         TTv5wfXbj92+o65Dc0s9OcMZYgvGd13uVQ8HsJXZoYBF9jo0kpooS8doOulR2Pm3i5/S
-         LZOvnuy+VBlrihnn8QGAANoGccImtoLXOdYieifvpA876Jnm2KPMqYQJWdyiNh/C2Sfl
-         vN9Q==
-X-Gm-Message-State: ACgBeo0myDNe76hAlzZsh3N9qMHJRP/30YK4IzuA4tvCo6lBWsbg4W78
-        Uz7dL9y8XOQuFkfe3tiIVf0uw9VAjcn8CJxczu95GWW1z3tL
-X-Google-Smtp-Source: AA6agR5x4kCvBhEzAZyhAbeD611La5eVcvU33tBUXl8U1eAAv4dU0acgp2hwUCX9zm9lDlTYj3dy1PyezpOzZ6JJ36TxnQvag5PK
+        with ESMTP id S229606AbiHIFrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 01:47:35 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A351BEAD;
+        Mon,  8 Aug 2022 22:47:33 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 7D7D32050A;
+        Tue,  9 Aug 2022 07:47:30 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pBNKI6Ghzl_T; Tue,  9 Aug 2022 07:47:29 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id A26712008D;
+        Tue,  9 Aug 2022 07:47:29 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 977FB80004A;
+        Tue,  9 Aug 2022 07:47:29 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 07:47:29 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
+ 2022 07:47:29 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id BC732318053D; Tue,  9 Aug 2022 07:47:28 +0200 (CEST)
+Date:   Tue, 9 Aug 2022 07:47:28 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+CC:     Abhishek Shah <abhishek.shah@columbia.edu>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>,
+        Gabriel Ryan <gabe@cs.columbia.edu>,
+        Fan Du <fan.du@windriver.com>,
+        Steffen Klassert <klassert@kernel.org>
+Subject: Re: [PATCH] af_key: Do not call xfrm_probe_algs in parallel
+Message-ID: <20220809054728.GX2950045@gauss3.secunet.de>
+References: <CAEHB24-9hXY+TgQKxJB4bE9a9dFD9C+Lan+ShBwpvwaHVAGMFg@mail.gmail.com>
+ <YtoWqEkKzvimzWS5@gondor.apana.org.au>
+ <CAEHB249ygptvp9wpynMF7zZ2Kcet0+bwLVuVg5UReZHOU1+8HA@mail.gmail.com>
+ <YuNGR/5U5pSo6YM3@gondor.apana.org.au>
+ <YuuZgsdmJK8roKLD@gondor.apana.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1bcc:b0:2de:5182:be7 with SMTP id
- x12-20020a056e021bcc00b002de51820be7mr9478794ilv.265.1660023627840; Mon, 08
- Aug 2022 22:40:27 -0700 (PDT)
-Date:   Mon, 08 Aug 2022 22:40:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a806e205e5c85e54@google.com>
-Subject: [syzbot] WARNING: CPU: NUM PID: NUM at net/wireless/ibss.c:LINE __cfg80211_ibss_join
-From:   syzbot <syzbot+af9c72450de65fd26129@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YuuZgsdmJK8roKLD@gondor.apana.org.au>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Aug 04, 2022 at 06:03:46PM +0800, Herbert Xu wrote:
+> When namespace support was added to xfrm/afkey, it caused the
+> previously single-threaded call to xfrm_probe_algs to become
+> multi-threaded.  This is buggy and needs to be fixed with a mutex.
+> 
+> Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+> Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-syzbot found the following issue on:
-
-HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16dd956a080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
-dashboard link: https://syzkaller.appspot.com/bug?extid=af9c72450de65fd26129
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126cccbc080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10b964b6080000
-
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=168a8e61080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=158a8e61080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=118a8e61080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+af9c72450de65fd26129@syzkaller.appspotmail.com
-
-wlan1: Created IBSS using preconfigured BSSID 50:50:50:50:50:50
-wlan1: Creating new IBSS network, BSSID 50:50:50:50:50:50
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 46 at net/wireless/ibss.c:37 __cfg80211_ibss_join
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Applied, thanks a lot Herbert!
