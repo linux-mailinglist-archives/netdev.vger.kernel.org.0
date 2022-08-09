@@ -2,185 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EE258D657
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 11:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E455358D697
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 11:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239090AbiHIJV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 05:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
+        id S235779AbiHIJho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 05:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241268AbiHIJVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 05:21:10 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2068.outbound.protection.outlook.com [40.107.92.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E9323174;
-        Tue,  9 Aug 2022 02:21:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YqY1psh/eQ8q8PuUGJVsez6EwtJvkES6x4hS6ZltYuZuTCEe2a3SHw0xHzSoYl+dxz5sgTSKWh/6foV/Io6k7nqCqYgfH+UaHrlwfCtGM5RiyApFeK7le/JcDstwIidsWdt84PW/kc7ELEcWCAsbkToKxK09dPl4evSVkpSjHx3pCHdWP5bVbEIemjA6eT0TzGzCv7R/fyhcDyeMjjqybcXhiXxpEUed9ZGifQHnajo6EfRtXmSM3g03HCaoyfyXIZ/ac2oRoFDLfO7giVkcF+cUDjA6kqBRos82VuEWMuydlx93FxZXt3fggtx5tu0KNfeUjWZuozNiJ13NGN0o0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=43aqpcNIYFz3QzNCa4K6nZo4D8in/o5cheQZTbooLHo=;
- b=NJFw8GEBJi1ouDBz2IpXj209yxAMx2zFm1LD3XYj2mCBI1hBZvLoKmtTjCmr/T7MLe7LMkOI1vPTMcv8SpWxE9Y1u+T/prOlqU/adrcJRcqP8mLrtL8pAWXzlpjt5e1bzD04JaTUEShs6bAG53shQlc2ItWyOiJ5IDyQiBWz/W8LQSl2ScovBldlx7ftMWfEDnq1GCeOVKbl7pz8lFwNQiOhuCCT6QHeCP3pLbRV69xVrbh3qDpDK5twAVeLtdceXlIiSXAYuq0R7k2sPpDs0dnLTvF5gZetWCsDPqitzZsRlH2WB0ViyYvXVzRNlpYoLIpaVDHrkTkDcDcTUKx2Jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=43aqpcNIYFz3QzNCa4K6nZo4D8in/o5cheQZTbooLHo=;
- b=C1+7kppzrN6EqgnISDPR9x0DhXRADM+zSxEPPv4xLt/hFSOW8sjFHnyONWAc/3QcTPFvfMw6++AUHIEHeFh3olnzNifJj6SRDC3CnD8pjVY5PlHdcoVvw4IMssjeucKo1fAZORons1LhuhDeWELX+jXuP1s0XS905QzW4gcHo6ePO51JfQgkW7iFYsVQL0XLOISsDbLBAcCBpmmYxK5/FdeSgpUpLsuFkhwIpYv26dgK+EVn+PXPQgCYsfgPteCj+NsvjNi43v4tN2x/yM6ZXA7+ZZSi7qm+j0f27o7l15l/iMXiVumgVPs4bXkaLEXrCmmz7GgP0fPOnwk4OOAEhw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
- by MN2PR12MB4110.namprd12.prod.outlook.com (2603:10b6:208:1dd::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 9 Aug
- 2022 09:21:04 +0000
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5504.014; Tue, 9 Aug 2022
- 09:21:03 +0000
-Date:   Tue, 9 Aug 2022 12:20:56 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <YvIm+OvXvxbH6POv@shredder>
-References: <20220708084904.33otb6x256huddps@skbuf>
- <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
- <20220708091550.2qcu3tyqkhgiudjg@skbuf>
- <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
- <20220708115624.rrjzjtidlhcqczjv@skbuf>
- <723e2995314b41ff323272536ef27341@kapio-technology.com>
- <YsqPWK67U0+Iw2Ru@shredder>
- <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
- <Ys69DiAwT0Md+6ai@shredder>
- <79683d9cf122e22b66b5da3bbbb0ee1f@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <79683d9cf122e22b66b5da3bbbb0ee1f@kapio-technology.com>
-X-ClientProxiedBy: VI1PR0801CA0072.eurprd08.prod.outlook.com
- (2603:10a6:800:7d::16) To IA1PR12MB6163.namprd12.prod.outlook.com
- (2603:10b6:208:3e9::22)
+        with ESMTP id S235278AbiHIJhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 05:37:42 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D5E1C10F;
+        Tue,  9 Aug 2022 02:37:40 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id A7D845FD05;
+        Tue,  9 Aug 2022 12:37:38 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660037858;
+        bh=2DdyAtzagU1qRtqV2lJK0nAzEAra85U3delt8oqRUKc=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=H7Sf+5ag6KI+IBb6HlSaoHjNLgUkIQdIO7g2Sm1kFzFRbh12bWth5X6/OkGvi28Gy
+         iMi8Vchbc0jgc4Mdx5E0uel7NHD63GMOUOzn7yGvFxRNrCniITci3dOpak2rZDzKQ0
+         PodZHYdV6gJxFnA/6nrTrRq4t6pwDoe6Peb0hCFiuhCRP2vNildI6o1/rQqgoktFC7
+         DkBj6eepsNjGUporsQM9W7Vmlw6Gam0OiOkqnJq+t3H2/2+G7J1L7TDVLsCbh0ydDX
+         4MECtzkJxCHg467X7yqdyV4LfLLdnNeKbDtnv2BxeJzgbyf9shNiQpOSAtDq1urqfm
+         kHdb44Dwu4IJg==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue,  9 Aug 2022 12:37:36 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "Dexuan Cui" <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "VMware PV-Drivers Reviewers" <pv-drivers@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v3 1/9] vsock: SO_RCVLOWAT transport set callback
+Thread-Topic: [RFC PATCH v3 1/9] vsock: SO_RCVLOWAT transport set callback
+Thread-Index: AQHYp0ATlQNqO/GwP0WKlu98/YZplK2koQqAgAAB2ICAAYOigA==
+Date:   Tue, 9 Aug 2022 09:37:31 +0000
+Message-ID: <1ea271c1-d492-d7f7-5016-7650a72b6139@sberdevices.ru>
+References: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
+ <45822644-8e37-1625-5944-63fd5fc20dd3@sberdevices.ru>
+ <20220808102335.nkviqobpgcmcaqhn@sgarzare-redhat>
+ <CAGxU2F513N+0sB0fEz4EF7+NeELhW9w9Rk6hh5K7QQO+eXRymA@mail.gmail.com>
+In-Reply-To: <CAGxU2F513N+0sB0fEz4EF7+NeELhW9w9Rk6hh5K7QQO+eXRymA@mail.gmail.com>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E0B6EEECE4FC3D4C8F906F0394EDE15A@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 90da7f63-5caf-42af-b56f-08da79e87b69
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4110:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3MKIShftrPDRd4e/Pqt7xYVk/RvFIWXoWExU31Z7mA1UW/JH+tctg54qA01POJkDHig/aE3Yb1D3HXm5y9vUnA0QgxArehqVLEpccu55uYPE23rPIZPuuzxWWvZAkWtEziEH7kPKwiT5jJ/WwK51rPydejRjo0WjFZq1wwbAJBL+wjZtdQ/Z135uOn0M44c0vOojeZyKL9dH1gXCM+jVGMlMmiYVzMT6Qs/30MVdnmWvwn4YEembvB7y4yXtPuC0gSIHMrIr7U50QxEtTpmI5zh1W7OBAyT4YN0yMzDBp/IRhOTSTv/qd/Wpm2sTMEYZL2FO8SAbC8t+mxGR6CsZsI/TfEp+IYPWZLhOyh8uRe5wMyBu/4Xb3Z70yV/NGLIkcDH2WeUI5jMsu8Hcqog6NxWzKPHHK2PtpcmweS2EL1UbhWNC2XkUmXb8HeggrhzxtWg8KkagUrPFunNV4e6/hCZbNB2Ci5EGVqvFrvoIaxZ2CpSmL2O71CVJRsas4QT3Nh7L43Nb90P32EEx6udsD09laFqqSKAL6Ct7gGquX1Mk0kmN9yPMcnJDmG2ps8VBMADosyU/m0hWQ3XdxsrZ7iItghD7MCi+zgBRdWQQZpX/m5+rSZtcCFnGnbjuax18ZxDCSUv8AXHS4IOAgRQRkPGpwfHnLz/G6kDLuFtl9jr49fSwQnAT3Ig3rhIGf9WBgoNVYx/uY0UktkbuN19XWwqCnWFdR3FJS0eP96t7qZYZ29OuFjhsKRY3rHgMl3sCOf34EDl/mjxP9pA22XDhjh661slh2EY9pF45bsNI5ECwZeOVzvzjKx1C4whyKt6yIUZqYvylerMLzLfPaswtAo5Xg+qbd5szSN8qF8sBfamKq/BldLPeoy6qwGu2B+1F
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(7416002)(5660300002)(2906002)(66946007)(966005)(6916009)(6486002)(478600001)(33716001)(316002)(54906003)(8936002)(41300700001)(38100700002)(9686003)(6512007)(6666004)(53546011)(6506007)(26005)(86362001)(4326008)(66476007)(8676002)(66556008)(186003)(83380400001)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GnDu9eizY+9urTKLzU4mANW0oW6ACfVZwTVmRpz+3cCZ7HyyXhLIWx++9153?=
- =?us-ascii?Q?4OWQctZt07QRUpbTXMnwzxEFQfh+mm0/QADepj8AVTeNFx6XilTrNSduGqmV?=
- =?us-ascii?Q?OUDPF1nnSPGIVem+p6Jjcs7ea5CB8VYa28UWDfovW3A6IOs0Xm/uJopdoo6v?=
- =?us-ascii?Q?ndvhAfxcZ+Beg6FKK0k6RMAKJz9nEkDLRPhMANfzFsu8UA+17nfWTKGVYQ8q?=
- =?us-ascii?Q?2lt2JnmjAiPQBSl4GtLSPm3YkEVQ5r1fK+yW5L2rZWGMPtwQ6UdZOvIh0lr9?=
- =?us-ascii?Q?4rs0YoInXYjzxq2Q/n8yJWukqdwFUZM9g2cbg90/IFN/2tKzkce+Dk2zgvNv?=
- =?us-ascii?Q?3XGdG4s7CL30XBghn8x6brKSaTa0h5ww8XsRyszepfrT2MEe6mRyh39/u4eM?=
- =?us-ascii?Q?slbZ2rSmzKarRCbUWyTTaj0Do8v8UbsqTUdysKt5Z5UVyK1Aosxk4T1uFhXJ?=
- =?us-ascii?Q?/vTWF+fdesUEwu0JRvOj7EJoR2w4BYY9RrJAXGbbvs41ymwGdOI0RpFe+rVO?=
- =?us-ascii?Q?oStnF4XqPE2k5MO142MFdCdf2rsMpF+NelqRKbtR+9EVZfHEQwri2S3VCS+x?=
- =?us-ascii?Q?xSA4JHTGcNkYunNPPnWMDbcsIxeeCUTlH/ypzrdxxaLDOfC1gFsdI2oNNaI4?=
- =?us-ascii?Q?YPsSAOOkJf5O17AA8c2UtNPFxIIEi/hIi5YnJ8a8tPyxQ0db0fNb4e0HYHLC?=
- =?us-ascii?Q?myQSHMAXp0Ofs6yGuwM5tB2LCVmmprGBwIcQwZ/r0bFuv1NejLyEboN2ogjc?=
- =?us-ascii?Q?npJVggtpFDB882gp/zFfjs4ZqRhFQ04V0dBE/qt1HblF3lwENc6etdVGqG40?=
- =?us-ascii?Q?mxteTLfTEVH5VZiJHlKormh9YfK5oojmPcFk/AMn9AoRAjzYxrE+IKQ2fimI?=
- =?us-ascii?Q?Btu9G45hnN/uJ67/fXCh3lAWH2eUAl8c7AwYxRrUpXo9T3oC5FqbduK9M/M3?=
- =?us-ascii?Q?rSNBLAvxOHI9dv85prxLs1ojLECrB0QSilQobg5UrFR/ba+qQJgPDoRBNNj0?=
- =?us-ascii?Q?SlfDCnrkSWdgE0si1SlmhMYhgu9WdfaxXcKBYCggV5W0dJdSWCx6Yo3lRcYO?=
- =?us-ascii?Q?UBirHf8LI9wSSeddTssPvDTDcaIietMyl6xOKTKK4lWZ/CPUDyTTQOKXEZoG?=
- =?us-ascii?Q?IAbv7EmITSvlD5UxSSlduMYnR6IRueWHjwrdm/08rtdaLp4aHtytXEKE0DG1?=
- =?us-ascii?Q?Y+d2sV6wDq9/dCU14Xs/YTfx7V6jMRzYjoKAijdGRgmM4tnhlm3TrjLMWsnl?=
- =?us-ascii?Q?RQtQZlIYmYstBTVAdq1TK9qCeuBPlaU6W/WJ3gB3V3k5o6QWe43cyZnL7B5U?=
- =?us-ascii?Q?hJYYIEtposA9cgTTwFAHStscfQlX0fkcxojYzDdRYTmuK3/x8GjYwQ6KWi5b?=
- =?us-ascii?Q?ErV01ySApqMxcU9VICzN05jyED+ef1OD6lZ+iqnEZ7r2+gfqAI9mkt9GN3AK?=
- =?us-ascii?Q?kstq7Cpf4ECNdeCaXVv1BP8f5ePBCZEVXR8LaVAEYQabQoNjlu4woLhkU4TU?=
- =?us-ascii?Q?mYpVOV6PO1WKjUU1BvpXOyBhbjeGMzwbEqESbimYDAX2k7hQ7Dvp5Ea8RTDI?=
- =?us-ascii?Q?zrRU94iTFfDNm35p3UKYsf/jAAWoNBhxFtUGkpew?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90da7f63-5caf-42af-b56f-08da79e87b69
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 09:21:03.7807
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JGBmHNY1Dp6HsLyueHy1l0ubECG9TIqbL+nJxzSPnKyHjw7xGSC9ND0RRmB1JgflkEjtCxeXtSHgv9wBx4CzyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4110
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/09 07:32:00 #20083496
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 05:33:49PM +0200, netdev@kapio-technology.com wrote:
-> On 2022-07-13 14:39, Ido Schimmel wrote:
-> 
-> > 
-> > What are "Storm Prevention" and "zero-DPV" FDB entries?
-> > 
-> 
-> For the zero-DPV entries, I can summarize:
-> 
-> Since a CPU can become saturated from constant SA Miss Violations from a
-> denied source, source MAC address are masked by loading a zero-DPV
-> (Destination Port Vector) entry in the ATU. As the address now appears in
-> the database it will not cause more Miss Violations. ANY port trying to send
-> a frame to this unauthorized address is discarded. Any locked port trying to
-> use this unauthorized address has its frames discarded too (as the ports SA
-> bit is not set in the ATU entry).
-
-What happens to unlocked ports that have learning enabled and are trying
-to use this address as SMAC? AFAICT, at least in the bridge driver, the
-locked entry will roam, but will keep the "locked" flag, which is
-probably not what we want. Let's see if we can agree on these semantics
-for a "locked" entry:
-
-1. It discards packets with matching DMAC, regardless of ingress port. I
-read the document [1] you linked to in a different reply and could not
-find anything against this approach, so this might be fine or at least
-not very significant.
-
-Note that this means that "locked" entries need to be notified to device
-drivers so that they will install a matching entry in the HW FDB.
-
-2. It is not refreshed and has ageing enabled. That is, after initial
-installation it will be removed by the bridge driver after configured
-ageing time unless converted to a regular (unlocked) entry.
-
-I assume this allows you to remove the timer implementation from your
-driver and let the bridge driver notify you about the removal of this
-entry.
-
-3. With regards to roaming, the entry cannot roam between locked ports
-(they need to have learning disabled anyway), but can roam to an
-unlocked port, in which case it becomes a regular entry that can roam
-and age.
-
-If we agree on these semantics, then I can try to verify that at least
-Spectrum can support them (it seems mv88e6xxx can).
-
-P.S. Sorry for the delay, I'm busy with other tasks at the moment.
-
-[1] https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Security/TrustSec_1-99/MAB/MAB_Dep_Guide.html#wp392522
+T24gMDguMDguMjAyMiAxMzozMCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBNb24s
+IEF1ZyA4LCAyMDIyIGF0IDEyOjIzIFBNIFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVk
+aGF0LmNvbT4gd3JvdGU6DQo+Pg0KPj4gT24gV2VkLCBBdWcgMDMsIDIwMjIgYXQgMDE6NTE6MDVQ
+TSArMDAwMCwgQXJzZW5peSBLcmFzbm92IHdyb3RlOg0KPj4+IFRoaXMgYWRkcyB0cmFuc3BvcnQg
+c3BlY2lmaWMgY2FsbGJhY2sgZm9yIFNPX1JDVkxPV0FULCBiZWNhdXNlIGluIHNvbWUNCj4+PiB0
+cmFuc3BvcnRzIGl0IG1heSBiZSBkaWZmaWN1bHQgdG8ga25vdyBjdXJyZW50IGF2YWlsYWJsZSBu
+dW1iZXIgb2YgYnl0ZXMNCj4+PiByZWFkeSB0byByZWFkLiBUaHVzLCB3aGVuIFNPX1JDVkxPV0FU
+IGlzIHNldCwgdHJhbnNwb3J0IG1heSByZWplY3QgaXQuDQo+Pj4NCj4+PiBTaWduZWQtb2ZmLWJ5
+OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCj4+PiAtLS0NCj4+
+PiBpbmNsdWRlL25ldC9hZl92c29jay5oICAgfCAgMSArDQo+Pj4gbmV0L3Ztd192c29jay9hZl92
+c29jay5jIHwgMjUgKysrKysrKysrKysrKysrKysrKysrKysrKw0KPj4+IDIgZmlsZXMgY2hhbmdl
+ZCwgMjYgaW5zZXJ0aW9ucygrKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L2Fm
+X3Zzb2NrLmggYi9pbmNsdWRlL25ldC9hZl92c29jay5oDQo+Pj4gaW5kZXggZjc0MmU1MDIwN2Zi
+Li5lYWU1ODc0YmFlMzUgMTAwNjQ0DQo+Pj4gLS0tIGEvaW5jbHVkZS9uZXQvYWZfdnNvY2suaA0K
+Pj4+ICsrKyBiL2luY2x1ZGUvbmV0L2FmX3Zzb2NrLmgNCj4+PiBAQCAtMTM0LDYgKzEzNCw3IEBA
+IHN0cnVjdCB2c29ja190cmFuc3BvcnQgew0KPj4+ICAgICAgIHU2NCAoKnN0cmVhbV9yY3ZoaXdh
+dCkoc3RydWN0IHZzb2NrX3NvY2sgKik7DQo+Pj4gICAgICAgYm9vbCAoKnN0cmVhbV9pc19hY3Rp
+dmUpKHN0cnVjdCB2c29ja19zb2NrICopOw0KPj4+ICAgICAgIGJvb2wgKCpzdHJlYW1fYWxsb3cp
+KHUzMiBjaWQsIHUzMiBwb3J0KTsNCj4+PiArICAgICAgaW50ICgqc2V0X3Jjdmxvd2F0KShzdHJ1
+Y3QgdnNvY2tfc29jayAqLCBpbnQpOw0KPj4NCj4+IGNoZWNrcGF0Y2ggc3VnZ2VzdHMgdG8gYWRk
+IGlkZW50aWZpZXIgbmFtZXMuIEZvciBzb21lIHdlIHB1dCB0aGVtIGluLA0KPj4gZm9yIG90aGVy
+cyB3ZSBkaWRuJ3QsIGJ1dCBJIHN1Z2dlc3QgcHV0dGluZyB0aGVtIGluIGZvciB0aGUgbmV3IG9u
+ZXMNCj4+IGJlY2F1c2UgSSB0aGluayBpdCdzIGNsZWFyZXIgdG9vLg0KPj4NCj4+IFdBUk5JTkc6
+IGZ1bmN0aW9uIGRlZmluaXRpb24gYXJndW1lbnQgJ3N0cnVjdCB2c29ja19zb2NrIConIHNob3Vs
+ZCBhbHNvDQo+PiBoYXZlIGFuIGlkZW50aWZpZXIgbmFtZQ0KPj4gIzI1OiBGSUxFOiBpbmNsdWRl
+L25ldC9hZl92c29jay5oOjEzNzoNCj4+ICsgICAgICAgaW50ICgqc2V0X3Jjdmxvd2F0KShzdHJ1
+Y3QgdnNvY2tfc29jayAqLCBpbnQpOw0KPj4NCj4+IFdBUk5JTkc6IGZ1bmN0aW9uIGRlZmluaXRp
+b24gYXJndW1lbnQgJ2ludCcgc2hvdWxkIGFsc28gaGF2ZSBhbiBpZGVudGlmaWVyIG5hbWUNCj4+
+ICMyNTogRklMRTogaW5jbHVkZS9uZXQvYWZfdnNvY2suaDoxMzc6DQo+PiArICAgICAgIGludCAo
+KnNldF9yY3Zsb3dhdCkoc3RydWN0IHZzb2NrX3NvY2sgKiwgaW50KTsNCj4+DQo+PiB0b3RhbDog
+MCBlcnJvcnMsIDIgd2FybmluZ3MsIDAgY2hlY2tzLCA0NCBsaW5lcyBjaGVja2VkDQo+Pg0KPj4+
+DQo+Pj4gICAgICAgLyogU0VRX1BBQ0tFVC4gKi8NCj4+PiAgICAgICBzc2l6ZV90ICgqc2VxcGFj
+a2V0X2RlcXVldWUpKHN0cnVjdCB2c29ja19zb2NrICp2c2ssIHN0cnVjdCBtc2doZHIgKm1zZywN
+Cj4+PiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay9hZl92c29jay5jIGIvbmV0L3Ztd192c29j
+ay9hZl92c29jay5jDQo+Pj4gaW5kZXggZjA0YWJmNjYyZWM2Li4wMTZhZDVmZjc4YjcgMTAwNjQ0
+DQo+Pj4gLS0tIGEvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+Pj4gKysrIGIvbmV0L3Ztd192
+c29jay9hZl92c29jay5jDQo+Pj4gQEAgLTIxMjksNiArMjEyOSwzMCBAQCB2c29ja19jb25uZWN0
+aWJsZV9yZWN2bXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1zZywgc2l6
+ZV90IGxlbiwNCj4+PiAgICAgICByZXR1cm4gZXJyOw0KPj4+IH0NCj4+Pg0KPj4+ICtzdGF0aWMg
+aW50IHZzb2NrX3NldF9yY3Zsb3dhdChzdHJ1Y3Qgc29jayAqc2ssIGludCB2YWwpDQo+Pj4gK3sN
+Cj4+PiArICAgICAgY29uc3Qgc3RydWN0IHZzb2NrX3RyYW5zcG9ydCAqdHJhbnNwb3J0Ow0KPj4+
+ICsgICAgICBzdHJ1Y3QgdnNvY2tfc29jayAqdnNrOw0KPj4+ICsgICAgICBpbnQgZXJyID0gMDsN
+Cj4+PiArDQo+Pj4gKyAgICAgIHZzayA9IHZzb2NrX3NrKHNrKTsNCj4+PiArDQo+Pj4gKyAgICAg
+IGlmICh2YWwgPiB2c2stPmJ1ZmZlcl9zaXplKQ0KPj4+ICsgICAgICAgICAgICAgIHJldHVybiAt
+RUlOVkFMOw0KPj4+ICsNCj4+PiArICAgICAgdHJhbnNwb3J0ID0gdnNrLT50cmFuc3BvcnQ7DQo+
+Pj4gKw0KPj4+ICsgICAgICBpZiAoIXRyYW5zcG9ydCkNCj4+PiArICAgICAgICAgICAgICByZXR1
+cm4gLUVPUE5PVFNVUFA7DQo+Pg0KPj4gSSBkb24ndCBrbm93IHdoZXRoZXIgaXQgaXMgYmV0dGVy
+IGluIHRoaXMgY2FzZSB0byB3cml0ZSBpdCBpbg0KPj4gc2stPnNrX3Jjdmxvd2F0LCBtYXliZSB3
+ZSBjYW4gcmV0dXJuIEVPUE5PVFNVUFAgb25seSB3aGVuIHRoZSB0cmFzcG9ydA0KPj4gaXMgYXNz
+aWduZWQgYW5kIHNldF9yY3Zsb3dhdCBpcyBub3QgZGVmaW5lZC4gVGhpcyBpcyBiZWNhdXNlIHVz
+dWFsbHkgdGhlDQo+PiBvcHRpb25zIGFyZSBzZXQganVzdCBhZnRlciBjcmVhdGlvbiwgd2hlbiB0
+aGUgdHJhbnNwb3J0IGlzIHByYWN0aWNhbGx5DQo+PiB1bmFzc2lnbmVkLg0KPj4NCj4+IEkgbWVh
+biBzb21ldGhpbmcgbGlrZSB0aGlzOg0KPj4NCj4+ICAgICAgICAgIGlmICh0cmFuc3BvcnQpIHsN
+Cj4+ICAgICAgICAgICAgICAgICAgaWYgKHRyYW5zcG9ydC0+c2V0X3Jjdmxvd2F0KQ0KPj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgIHJldHVybiB0cmFuc3BvcnQtPnNldF9yY3Zsb3dhdCh2c2ss
+IHZhbCk7DQo+PiAgICAgICAgICAgICAgICAgIGVsc2UNCj4+ICAgICAgICAgICAgICAgICAgICAg
+ICAgICByZXR1cm4gLUVPUE5PVFNVUFA7DQo+PiAgICAgICAgICB9DQo+Pg0KPj4gICAgICAgICAg
+V1JJVEVfT05DRShzay0+c2tfcmN2bG93YXQsIHZhbCA/IDogMSk7DQo+Pg0KPj4gICAgICAgICAg
+cmV0dXJuIDA7DQo+IA0KPiBTaW5jZSBodl9zb2NrIGltcGxlbWVudHMgYHNldF9yY3Zsb3dhdGAg
+dG8gcmV0dXJuIEVPUE5PVFNVUFAuIG1heWJlIHdlIA0KPiBjYW4ganVzdCBkbyB0aGUgZm9sbG93
+aW5nOg0KPiANCj4gICAgICAgICBpZiAodHJhbnNwb3J0ICYmIHRyYW5zcG9ydC0+c2V0X3Jjdmxv
+d2F0KQ0KPiAgICAgICAgICAgICAgICAgcmV0dXJuIHRyYW5zcG9ydC0+c2V0X3Jjdmxvd2F0KHZz
+aywgdmFsKTsNCj4gDQo+ICAgICAgICAgV1JJVEVfT05DRShzay0+c2tfcmN2bG93YXQsIHZhbCA/
+IDogMSk7DQo+ICAgICAgICAgcmV0dXJuIDA7DQo+IA0KPiBUaGF0IGlzLCB0aGUgZGVmYXVsdCBi
+ZWhhdmlvciBpcyB0byBzZXQgc2stPnNrX3Jjdmxvd2F0LCBidXQgZm9yIA0KPiB0cmFuc3BvcnRz
+IHRoYXQgd2FudCBhIGRpZmZlcmVudCBiZWhhdmlvciwgdGhleSBuZWVkIHRvIGRlZmluZSANCj4g
+c2V0X3Jjdmxvd2F0KCkgKGxpa2UgaHZfc29jaykuDQpIbSBvaywgaSBzZWUuIEkndmUgaW1wbGVt
+ZW50ZWQgbG9naWMgd2hlbiBub24tZW1wdHkgdHJhbnNwb3J0IGlzIHJlcXVpcmVkLCBiZWNhdXNl
+IGh5cGVydiB0cmFuc3BvcnQNCmZvcmJpZHMgdG8gc2V0IFNPX1JDVkxPV0FULCBzbyB1c2VyIG5l
+ZWRzIHRvIGNhbGwgdGhpcyBzZXRzb2Nrb3B0IEFGVEVSIHRyYW5zcG9ydCBpcyBhc3NpZ25lZCh0
+byBjaGVjaw0KdGhhdCB0cmFuc3BvcnQgYWxsb3dzIGl0LiBOb3QgYWZ0ZXIgc29ja2V0IGNyZWF0
+aW9uIGFzIFlvdSBtZW50aW9uZWQgYWJvdmUpLiBPdGhlcndpc2UgdGhlcmUgaXMgbm8gc2Vuc2UN
+CmluIHN1Y2ggY2FsbGJhY2sgLSBpdCB3aWxsIGJlIG5ldmVyIHVzZWQuIEFsc28gaW4gY29kZSBh
+Ym92ZSAtIGZvciBoeXBlcnYgd2Ugd2lsbCBoYXZlIGRpZmZlcmVudCBiZWhhdmlvcg0KZGVwZW5k
+cyBvbiB3aGVuIHNldF9yY3Zsb3dhdCBpcyBjYWxsZWQ6IGJlZm9yZSBvciBhZnRlciB0cmFuc3Bv
+cnQgYXNzaWdubWVudC4gSXMgaXQgb2s/DQo+IA0KPiBUaGFua3MsDQo+IFN0ZWZhbm8NCj4gDQoN
+Cg==
