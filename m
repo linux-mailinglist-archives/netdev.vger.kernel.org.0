@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A21158DA09
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 16:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54BDE58DA72
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 16:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237373AbiHIOEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 10:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        id S243742AbiHIOjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 10:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbiHIOEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 10:04:12 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3074BC37;
-        Tue,  9 Aug 2022 07:04:11 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id z16so14380780wrh.12;
-        Tue, 09 Aug 2022 07:04:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=DDKIcyj9Z0sGFhBonIYv1vMbP6zsZA0f1KiomNe+d78=;
-        b=CJhsWA91H6jWASh85FxrEygMLwuz8qmN2L1vaWzcLg93UW1J5b3gSXC2E0ceH+zCuy
-         BQ6W1OM0Q4vVt5DWLJWl5PutysBGcO1HYqclY+LZH9TeeADU9NhehEx/KCkbm+1+AAKJ
-         3iRxI6p5eroVoxMzjqF8xhHvTY7xSYBZ3P6gnXVhTXqGZ5EMAbw0GSQqxEbVP3vSpAVc
-         PmRA6dAX2zfVSRl5pzO5XOLet/K4wl7l8KX+OjuoYcHqMCZCjsx3hLa3a8b2bEAKP+KJ
-         upC3S34qpg/b3/3H2h7RrAVHxJ7vwotTA1PWgZq5IQGSKYH1FugVJJKYtdZCc1FHEWlB
-         8MXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=DDKIcyj9Z0sGFhBonIYv1vMbP6zsZA0f1KiomNe+d78=;
-        b=vvrz+WvDSXT0i8H8eGvR+9ehH39Jxa+BJmmgsIP6s9gTyXEJMJw/KDjxAFdUjOqntV
-         vrm36nCYPOxK33vZyjWZmK/P0jbYGbXB4Ry6Rto8eTShu28vr2jRUQcVfjJeY6HPetJp
-         nuWBhfgGHrfGlgcY8jUje/EF3eqiW5wGAKaoN2rr+GJcd94iVYtkVaiF5n4CDiCdoA4s
-         sfdfTQbPRWXZyw8FbxnYstbjZ5EskqzWPRFBXYNw2DLkKgDGPOzPp7x5Q5lqpbvgN7Pf
-         x2wysXAkcIfBsyLGBV+pNjMzQGu+CxMdySx2Q1+yMdaWs/YWOlUE6X28QWU+vwIhv0ss
-         CCTQ==
-X-Gm-Message-State: ACgBeo2q+FDvz+uF6eU9i0U8mjKG0asRzSB8dZjw9f6Nb57QCmeUISnT
-        zK87Tf+jM+H3IE+NSjsiwWM=
-X-Google-Smtp-Source: AA6agR58ORGm0OUkPlmNNA2FCN5hW5yDkabypPTKe4GvE5qlmbvzfHxtYgsz/SjlJ7S3yOpSpdejGw==
-X-Received: by 2002:a5d:5903:0:b0:221:9d43:961 with SMTP id v3-20020a5d5903000000b002219d430961mr9892794wrd.385.1660053850399;
-        Tue, 09 Aug 2022 07:04:10 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id c5-20020a5d4f05000000b002205a5de337sm13823218wru.102.2022.08.09.07.04.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 07:04:09 -0700 (PDT)
-Message-ID: <69829c71-d51c-b25f-2d74-5fdd231ed9e4@gmail.com>
-Date:   Tue, 9 Aug 2022 17:04:07 +0300
+        with ESMTP id S230178AbiHIOjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 10:39:47 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB8E1B7B4
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 07:39:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dwr2RM+3mdSqEvNdvvMOd4VCH0sIfkMZyaOdzG78aw5ikN9DQA0yCrM4IwW6JqYH6Yfrx2psl7SxUIRazi0NoCiie+nrhyQE4hKgoQzZ4djlFB8SoO9YP2z2K12IccySlayyZhUqntF66Dnu7Krd+VGQ1/pAypJLhiSrusR62wTeBW4QIH7MAsfSZdY4w9pFEliXygf5D4AO8b3zoW5AiR94VIcOSTW5DrnUN3dxDve7RkDmllMWuNuBGhCps1hwKTdrV7U0MQu2PeNvhXXPazn+tIZeFppRoXaqjZTfiKPr0gH4ejQqqaKWlgh+ZSwvK6nIbPMLj4wPbAzfmC+Exg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i3+WjLlPKH93zDf93y76TFPiWaRkxxEhEMVqV0+4WD0=;
+ b=mGStLZFk9RZ3N9hb3FCrtLcG8qyWyXEiojdRrE8Ox109MWLmp89InXFBBphO+lNRjw2LoaH3uhWgQuS9UasWP4XdPzwKILGDM+n4cJo/jHCM5BOAH2MLp52666wzV8viFD8eGeQTGIh2PYn+yWnEujvqznrIdzXzIxvKunIKIuo21zGYEGVb0BI4lZ9dWFttUBcOPNHkdlAkWt72lk4yd0e8+TM0JrYDp/wyogl3Jm9w6SHXs52DcYsmqOvDg2eGH+pLiQOuDWsJ73Thy5lL0oe24R7tgf3m55Rcz5ZO4bQODXgFvFOk/fTCFLxupCGUzYygs9vgiqi9U/iJUiwiwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i3+WjLlPKH93zDf93y76TFPiWaRkxxEhEMVqV0+4WD0=;
+ b=Lszr+Y9hGK1t04BOYMpxZrawig2yMsa4qhPZP7Q9FWocMNdXKE04Ic0NigVsDk2rCGI8El146zsAfSzCpZE/krHLip6YoXGXuz3bpOuFKf0tPiXOWs2eu22Rq0mO0LwkJglNhysF1uMuDjL2QhHrt5mp/6O0OwPscl/Ruh6P5G53AkTRHqQTtTsuu/xtussRXAlsnenQR+GDIYoXHGsFgqHc/MrDgiShieu62ssCou39CjfpnBBl51XJUJBYhgD+EDKmB58OTueJI8ol5xCTkkoFQft/y5VqtY+t+OcesxQiIJN0RzOKK/KlOY3yHLSd97foSa/imuhVkkNEdemsXg==
+Received: from BN0PR04CA0108.namprd04.prod.outlook.com (2603:10b6:408:ec::23)
+ by SN6PR12MB5694.namprd12.prod.outlook.com (2603:10b6:805:e3::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Tue, 9 Aug
+ 2022 14:39:44 +0000
+Received: from BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ec:cafe::5f) by BN0PR04CA0108.outlook.office365.com
+ (2603:10b6:408:ec::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
+ Transport; Tue, 9 Aug 2022 14:39:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT018.mail.protection.outlook.com (10.13.176.89) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5504.14 via Frontend Transport; Tue, 9 Aug 2022 14:39:44 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 9 Aug
+ 2022 14:39:43 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 9 Aug 2022
+ 07:39:40 -0700
+References: <20220809113320.751413-1-idosch@nvidia.com>
+ <YvJcql9M0CHJ6qGP@nanopsycho>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+CC:     Ido Schimmel <idosch@nvidia.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <amcohen@nvidia.com>, <dsahern@gmail.com>,
+        <ivecera@redhat.com>, <mlxsw@nvidia.com>
+Subject: Re: [PATCH net] selftests: forwarding: Fix failing tests with old
+ libnet
+Date:   Tue, 9 Aug 2022 16:21:31 +0200
+In-Reply-To: <YvJcql9M0CHJ6qGP@nanopsycho>
+Message-ID: <875yj17a6t.fsf@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-Content-Language: en-US
-To:     Valentin Schneider <vschneid@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
- <xhsmhedxvdikz.mognet@vschneid.remote.csb>
- <df8b684d-ede6-7412-423d-51d57365e065@gmail.com>
- <xhsmh35e5d9b4.mognet@vschneid.remote.csb>
- <12fd25f9-96fb-d0e0-14ec-3f08c01a5a4b@gmail.com>
- <xhsmhzggdbmv6.mognet@vschneid.remote.csb>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <xhsmhzggdbmv6.mognet@vschneid.remote.csb>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e2f3f791-6a57-40a8-a653-08da7a150052
+X-MS-TrafficTypeDiagnostic: SN6PR12MB5694:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NR2W+zwiE0BHsfKOnq6A0ExZ1G0j+GAWtM0dkOmO756eFvbPzDIXjcYDQPBP1wcafy4pHn5P9B4TlpJsnxmjZBwXBGcoe/e89BgFN7qQ5tJ6/CvEQjjlwCOQZYwpXaltg6sFDOSjgusPYdrAGABx59tNNaCb7eRcXeFkSMJ+w1qv1KdUfqzyz0jsf8CqdgB1EKZpfHJeCA34WgVRH1hL+ysBWSPV4qWRX70ccgEsUNi7ebzqvHNuG3MWAMySB+wivzzAmOpBPnvbB7eVO3dGynmP8gT4PqHb+IhQj+B8YBM+JjiNpC/GCcU6KQ+C2pRrOzUlBqFoN5A8AK3p/bTVdCzIALu/TUxHHTYF1BXEEfRsZpeCzCj9HjYhSPTF3dxRZl8m7sHlyKkCQaZYKywT7IVJp95cBorCFaxTptQVLy/U1Gv47FJ6xanTr2lXE6HEYgwut7mfAyjIC8yZoRuuvHaedLOInGCj5a7UkzIzGU5zrXEsY2DznL3p2x4t98UPAnIL/Qwsj/o3JObGZpypVvKnkXU8DOvd8u77gkZj7Ji2IliXB2IyLrGHS/fcho8aA0ddnqstwt+BHsfMaRFvToB2wswnKRTHb1c45cxkp10quvFuzxGUzC0zpiC5qI8yoZ4feqmbRhlELyW0dg+RhtnHiOHIYz2j9Ovdnd3stcx4TL0smlu7yItoVz1fKy+g6NSyNEAzOWGDqQ/8xn0K4dmcDz17451twsUqfHL5TexdINr8qWza8evQbzdori1XF/NCIpre7YFqCzE3V3Fq0simUK2NClC+Oo8GdPNRRhwV+KfrXZV+mjFTtExzgNaddwv+f+R46qQ2RoqkmUmHZQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(376002)(346002)(396003)(46966006)(40470700004)(36840700001)(6862004)(8676002)(2616005)(8936002)(4326008)(70206006)(70586007)(40460700003)(6636002)(336012)(426003)(16526019)(186003)(47076005)(316002)(36860700001)(86362001)(107886003)(54906003)(37006003)(82310400005)(356005)(5660300002)(40480700001)(41300700001)(26005)(82740400003)(478600001)(36756003)(6666004)(81166007)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 14:39:44.2946
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2f3f791-6a57-40a8-a653-08da7a150052
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB5694
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -92,72 +106,34 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Jiri Pirko <jiri@nvidia.com> writes:
 
-On 8/9/2022 3:52 PM, Valentin Schneider wrote:
-> On 09/08/22 13:18, Tariq Toukan wrote:
->> On 8/9/2022 1:02 PM, Valentin Schneider wrote:
->>>
->>> Are there cases where we can't figure this out in advance? From what I grok
->>> out of the two callsites you patched, all vectors will be used unless some
->>> error happens, so compressing the CPUs in a single cpumask seemed
->>> sufficient.
->>>
->>
->> All vectors will be initialized to support the maximum number of traffic
->> rings. However, the actual number of traffic rings can be controlled and
->> set to a lower number N_actual < N. In this case, we'll be using only
->> N_actual instances and we want them to be the first/closest.
-> 
-> Ok, that makes sense, thank you.
-> 
-> In that case I wonder if we'd want a public-facing iterator for
-> sched_domains_numa_masks[%i][node], rather than copy a portion of
-> it. Something like the below (naming and implementation haven't been
-> thought about too much).
-> 
->    const struct cpumask *sched_numa_level_mask(int node, int level)
->    {
->            struct cpumask ***masks = rcu_dereference(sched_domains_numa_masks);
-> 
->            if (node >= nr_node_ids || level >= sched_domains_numa_levels)
->                    return NULL;
-> 
->            if (!masks)
->                    return NULL;
-> 
->            return masks[level][node];
->    }
->    EXPORT_SYMBOL_GPL(sched_numa_level_mask);
-> 
+> Tue, Aug 09, 2022 at 01:33:20PM CEST, idosch@nvidia.com wrote:
+>>diff --git a/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
+>>index a15d21dc035a..56eb83d1a3bd 100755
+>>--- a/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
+>>+++ b/tools/testing/selftests/net/forwarding/custom_multipath_hash.sh
+>>@@ -181,37 +181,43 @@ ping_ipv6()
+>> 
+>> send_src_ipv4()
+>> {
+>>-	$MZ $h1 -q -p 64 -A "198.51.100.2-198.51.100.253" -B 203.0.113.2 \
+>>+	ip vrf exec v$h1 $MZ $h1 -q -p 64 \
+>
+> Not directly related to this, but I was wondering, if it would be
+> possible to use $IP and allow user to replace the system-wide "ip" for
+> testing purposes...
 
-The above can be kept static, and expose only the foo() function below, 
-similar to my sched_cpus_set_spread().
+A typical forwarding test builds a whole topology with a number of IP
+addresses and assumptions about them. E.g. routes need network address
+derived from address of the remote endpoint, directly attached hosts
+need addresses from the same network, flower rules etc. might match
+pieces of endpoint addresses, the above code fragment actually walks a
+range of IPs... So it's not just $IP. At the minimum it's a map of IPs
+plus some helpers to derive the rest, and conversion of the selftests to
+correctly use the helpers. Doable, sure, but I suspect a fairly messy
+deal.
 
-LGTM.
-How do you suggest to proceed?
-You want to formalize it? Or should I take it from here?
-
-
->    #define for_each_numa_level_mask(node, lvl, mask)	    \
->            for (mask = sched_numa_level_mask(node, lvl); mask;	\
->                 mask = sched_numa_level_mask(node, ++lvl))
-> 
->    void foo(int node, int cpus[], int ncpus)
->    {
->            const struct cpumask *mask;
->            int lvl = 0;
->            int i = 0;
->            int cpu;
-> 
->            rcu_read_lock();
->            for_each_numa_level_mask(node, lvl, mask) {
->                    for_each_cpu(cpu, mask) {
->                            cpus[i] = cpu;
->                            if (++i == ncpus)
->                                    goto done;
->                    }
->            }
->    done:
->            rcu_read_unlock();
->    }
-> 
+That's why the selftests use reserved ranges: 192.0.2.0/24,
+198.51.100.0/24 etc. and 2001:db8::/32. They are not supposed to
+conflict with whatever addresses the user uses.
