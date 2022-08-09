@@ -2,129 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F0458D5AC
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 10:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D3A58D5AD
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 10:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241079AbiHIIsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 04:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        id S241217AbiHIIsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 04:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241089AbiHIIr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 04:47:56 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0C8422283
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 01:47:54 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.218:50480.284727279
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-36.111.140.9 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 2211E2800D1;
-        Tue,  9 Aug 2022 16:47:48 +0800 (CST)
-X-189-SAVE-TO-SEND: +liyonglong@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id b258151eca38427b8cdfa05979fe4581 for netdev@vger.kernel.org;
-        Tue, 09 Aug 2022 16:47:50 CST
-X-Transaction-ID: b258151eca38427b8cdfa05979fe4581
-X-Real-From: liyonglong@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: liyonglong@chinatelecom.cn
-From:   Yonglong Li <liyonglong@chinatelecom.cn>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, liyonglong@chinatelecom.cn
-Subject: [PATCH] tcp: adjust rcvbuff according copied rate of user space
-Date:   Tue,  9 Aug 2022 16:47:46 +0800
-Message-Id: <1660034866-1844-1-git-send-email-liyonglong@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S241141AbiHIIsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 04:48:04 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5015D222AA
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 01:48:03 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id a11so5978403wmq.3
+        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 01:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=LuKqlVYKWsafszP4iMMFVYlR6h3QkfP1Xb5EBCUkHEY=;
+        b=HpvzmHyd2z67jYHOPTRlqGtUFVtZOYvN+DXtdYVQOoW80uktsizILbEv6y84VgyfN/
+         oz98hNW7i05Y1vMJNdiiYhtc0Sm/NFOSwuDlqV3vye0OtAd7gWYYOhsnaD1fYchOdn7l
+         Sq7MPzeixCFcdczppZlw/X83RtEL7laErwSfeIZoa4bLz+HvmrCeEvwqORJmwEVgNwaW
+         1SVxRomtL8veLyWfNUgCKfqDjwvoeGJbfq/eEn18GdSbq69UuYE4nuuSpQVsYjU159A1
+         U0LvayYbHJl+h9sQwb+UcM+ozQZhAqp+lG428W09rDHwtw63HfrMnfraxAc5soVjJl5z
+         41eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=LuKqlVYKWsafszP4iMMFVYlR6h3QkfP1Xb5EBCUkHEY=;
+        b=ChvMEY0olOKPPHAQzHZlWfQ2YbIv4iz9JmJTCM89rBSsjOA4Aj81ciZoyfWXz4toGj
+         vXnkMd1LcdyAztiv8SrYERy+LYZvCd4W4gCH8GBlKxJDfv+Z5+H1v9o321ENyRDrq0fO
+         dVOiBIkePr0XySfv9jaXVq8xBMM91jctYV5hHuve6kF87v5iqjSbTy5L5I67/o3hxPvO
+         uvDr7Wo/QkXwGE5giaMcCW+SA0j1ag6L/JUeGse4eHh/2FrGxPdw9S7naBq0RMo97AjV
+         XKLj15OajsU14nwEnmjwUIDODqEa6RrryXDf/FwMZjqbsmwcKPyvkmiPBmof6byhY2Yi
+         nGBg==
+X-Gm-Message-State: ACgBeo0lV1y7+zGJULojtmLNrZUcJpLtvz29hAFFQMv5F26eqBIA/L03
+        BA9Asn4WPNeehIAM3PmYTvE=
+X-Google-Smtp-Source: AA6agR7APU4Djby9/bLRWQhLU1ha2Oiu7FEAgzzQAoBwuBldfjkVgjS6wU1/o+t1oHiXvidHrNnjcw==
+X-Received: by 2002:a05:600c:25d1:b0:3a5:371d:38f with SMTP id 17-20020a05600c25d100b003a5371d038fmr7695133wml.75.1660034881877;
+        Tue, 09 Aug 2022 01:48:01 -0700 (PDT)
+Received: from [192.168.0.104] ([77.126.166.31])
+        by smtp.gmail.com with ESMTPSA id v128-20020a1cac86000000b003a327b98c0asm15975818wme.22.2022.08.09.01.48.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 01:48:01 -0700 (PDT)
+Message-ID: <b7ef2c41-12d4-ebea-74bb-e37982cf975b@gmail.com>
+Date:   Tue, 9 Aug 2022 11:47:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next v3 7/7] tls: rx: do not use the standard
+ strparser
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, vfedorenko@novek.ru,
+        Ran Rozenstein <ranro@nvidia.com>,
+        "gal@nvidia.com" <gal@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220722235033.2594446-1-kuba@kernel.org>
+ <20220722235033.2594446-8-kuba@kernel.org>
+ <84406eec-289b-edde-759a-cf0b2c39c150@gmail.com>
+ <20220803182432.363b0c04@kernel.org>
+ <61de09de-b988-3097-05a8-fd6053b9288a@gmail.com>
+ <20220804085950.414bfa41@kernel.org>
+ <5696e2f2-1a0d-7da9-700b-d665045c79d9@gmail.com>
+ <1513fb1a-e196-bc2c-cdb8-34f962282ea2@gmail.com>
+ <20220808112417.7839cb5d@kernel.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20220808112417.7839cb5d@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-it is more reasonable to adjust rcvbuff by copied rate instead
-of copied buff len.
 
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
----
- include/linux/tcp.h  |  1 +
- net/ipv4/tcp_input.c | 16 +++++++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index a9fbe22..18e091c 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -410,6 +410,7 @@ struct tcp_sock {
- 		u32	space;
- 		u32	seq;
- 		u64	time;
-+		u32	prior_rate;
- 	} rcvq_space;
- 
- /* TCP-specific MTU probe information. */
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index ab5f0ea..2bdf2a5 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -544,6 +544,7 @@ static void tcp_init_buffer_space(struct sock *sk)
- 	tcp_mstamp_refresh(tp);
- 	tp->rcvq_space.time = tp->tcp_mstamp;
- 	tp->rcvq_space.seq = tp->copied_seq;
-+	tp->rcvq_space.prior_rate = 0;
- 
- 	maxwin = tcp_full_space(sk);
- 
-@@ -701,6 +702,7 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
- void tcp_rcv_space_adjust(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	u64 pre_copied_rate, copied_rate;
- 	u32 copied;
- 	int time;
- 
-@@ -713,7 +715,14 @@ void tcp_rcv_space_adjust(struct sock *sk)
- 
- 	/* Number of bytes copied to user in last RTT */
- 	copied = tp->copied_seq - tp->rcvq_space.seq;
--	if (copied <= tp->rcvq_space.space)
-+	copied_rate = copied * USEC_PER_SEC;
-+	do_div(copied_rate, time);
-+	pre_copied_rate = tp->rcvq_space.prior_rate;
-+	if (!tp->rcvq_space.prior_rate) {
-+		pre_copied_rate = tp->rcvq_space.space * USEC_PER_SEC;
-+		do_div(pre_copied_rate, time);
-+	}
-+	if (copied_rate <= pre_copied_rate || !pre_copied_rate)
- 		goto new_measure;
- 
- 	/* A bit of theory :
-@@ -736,8 +745,8 @@ void tcp_rcv_space_adjust(struct sock *sk)
- 		rcvwin = ((u64)copied << 1) + 16 * tp->advmss;
- 
- 		/* Accommodate for sender rate increase (eg. slow start) */
--		grow = rcvwin * (copied - tp->rcvq_space.space);
--		do_div(grow, tp->rcvq_space.space);
-+		grow = rcvwin * (copied_rate - pre_copied_rate);
-+		do_div(grow, pre_copied_rate);
- 		rcvwin += (grow << 1);
- 
- 		rcvmem = SKB_TRUESIZE(tp->advmss + MAX_TCP_HEADER);
-@@ -755,6 +764,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
- 		}
- 	}
- 	tp->rcvq_space.space = copied;
-+	tp->rcvq_space.prior_rate = pre_copied_rate;
- 
- new_measure:
- 	tp->rcvq_space.seq = tp->copied_seq;
--- 
-1.8.3.1
+On 8/8/2022 9:24 PM, Jakub Kicinski wrote:
+> On Mon, 8 Aug 2022 08:24:05 +0300 Tariq Toukan wrote:
+>>> Thanks for the patch.
+>>> We're testing it and I'll update.
+>>
+>> Trace is gone. But we got TlsDecryptError counter increasing by 2.
+> 
+> Does the connection break? Is there a repro?
 
+Hi Jakub,
+
+Please ignore my previous email regarding the TlsDecryptError. It was a 
+false alarm.
+
+Fix looks goods.
+
+Tested-by: Ran Rozenstein <ranro@nvidia.com>
+
+Regards,
+Tariq
