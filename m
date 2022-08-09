@@ -2,128 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E356858D8CC
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91D358D8D3
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242651AbiHIMhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 08:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S242254AbiHIMlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 08:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239452AbiHIMhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:37:31 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96975186D6
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 05:37:29 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id w15so12868016ljw.1
-        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 05:37:29 -0700 (PDT)
+        with ESMTP id S230178AbiHIMlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:41:09 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C96D110E;
+        Tue,  9 Aug 2022 05:41:08 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id x2so286995ilp.10;
+        Tue, 09 Aug 2022 05:41:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=S/vY+pHOAJw8ND8t13oTQazIac4o9LGilFJcZDyaByQ=;
-        b=Mrb2Al4kVt5O3KiUdyGMMX9sVayGDb/FyFERwnGXD0vImjgWnB9fEsdatVsTaDfecG
-         tvBp1u1TXVZ3p9+RiYyop/1CWPisZcwCgR9LRfnwCJTDts+eeXMqzsNrHTfIXOK8bsxg
-         7oIhTFZA3U3EMwPCbiMwRNLvtfZtB21DPskCo=
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=OH2f5g6k9+qbXZFsQ2Ho2erjcjWAHljfg8M1LYTp1+A=;
+        b=i2KuZ9g7/tmr06LMSl8brb+5GUD0ec0/F/f7Qb89WqyrjYSoKisi7F8HrPNpnjvPjU
+         wSWsDyJaCf3hsY2liT26vQ4VtT6ExN3PvaqjRe0BIFP+oJ3qziKtqzpSFvZQ4//oUA2H
+         kPATgvO5FM/hd5IHppHl7AtneqzNSjYbSl3SFG/69u/VOV2apJQ8knFJpbq3HbjB0jfp
+         frHXkHcBwYt4hc6l/tHIPBXQb9xlGJLfilF+fB3fMhXLSdhJigyVUgJbL0VOJWfnhPqr
+         cbwyoUbvyc2sWBL6oYv8S3Pknx+m8SBYW+HcfNpdUx4F92eGolGJQ1t3hHhChbdWJuEd
+         T7hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=S/vY+pHOAJw8ND8t13oTQazIac4o9LGilFJcZDyaByQ=;
-        b=6lKdznlp4WoIu0TlbQ5yq3UWaVilvFs3LDfsqvMGkhNcVXXnLcQts+sxfaEGHpGdux
-         kwlX4e5a0UDNkgGz7g+OQHBxER/QDxa95r/qUrIUK6khmHAln8c1oBBfifoszM7mTtfr
-         8VhRQ3aMk2gC/MUef7p2j2HIRcoDQGpuoyt/mbnAaZiEU1Q+rgPwHEV+ATVG03rjoC+s
-         LfR57PbnyqbiB7IXmb3Crx/w64nNvW2rF+LFv4J/SbaQdt/S5FXlLGN5cNsGJFn54p4c
-         Lc28yL7HBGQ4hod43P1apu6wBImzd1Waw+twTQOwd1HTBmRHFLEvROmiXWLsFiPpRE8D
-         R/8w==
-X-Gm-Message-State: ACgBeo0H1TI5HEv9rfxxz4bdey4QtbYPMicqYv8j+RVnxc6GB+eg7p4h
-        Yja0BPT9jydPTdTJHXjahzG//Q==
-X-Google-Smtp-Source: AA6agR7VK6CZDk/4NkzM6eVPldsJwBnFAODpPxiIOJfOv7G8gfUodLs+podMq64PJ/ngkiXV2YfR9A==
-X-Received: by 2002:a05:651c:222:b0:25e:4ae2:c5ae with SMTP id z2-20020a05651c022200b0025e4ae2c5aemr7207953ljn.440.1660048647869;
-        Tue, 09 Aug 2022 05:37:27 -0700 (PDT)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id c6-20020a056512324600b0048b2245519asm1753471lfr.192.2022.08.09.05.37.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 05:37:25 -0700 (PDT)
-Message-ID: <36677eab-6407-afd1-4cbf-a90be9554c8b@rasmusvillemoes.dk>
-Date:   Tue, 9 Aug 2022 14:37:22 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=OH2f5g6k9+qbXZFsQ2Ho2erjcjWAHljfg8M1LYTp1+A=;
+        b=hQsNk8jr8ywtBHYN7mDjirgpEUiaFxYdKBpsxszCL+gaJLzMrRHtnnbHqK8w0KBLSc
+         4KJ79DsemFwFKlhLk7xPaWYggfi5lDqoPGSoZRscdwnXof8d59R+zFjQ4oO40oQrzoDM
+         MtE8yAJmwcM8JpxFDuCdF4PjWRzcrtXgcLk31p7zMm9JjMlyah/aUn07A/+8XvkUAUdY
+         Ha9VmgOPmz3jOghU9CLdCDmsQTmxtXGrftORFGnuWoohJ8/7V6FaeF/papPmit/GooNX
+         L4zFZFjosx5H2MezfbAWjdmWJKIaHBA/CT7moN/f5Mct9BTYxHCphc6QSxYTcEZy924i
+         Ixpw==
+X-Gm-Message-State: ACgBeo39UbhV1GL0vvxUpaTpt/kAUeQFg9armsdbmQW6qNlPSCo1GzdC
+        Mjd02OykiMUj/UOORJOW6V+IDz2Z0NK2Y79W5z4=
+X-Google-Smtp-Source: AA6agR5MDCW3WkYaKVwM860AoLF4ea8orT7Y7FpX4CVO7hpJqDmrZvd5hEkHX6/Oy6S8zRwxTZ5ZBQwxHJCxEFRVVKo=
+X-Received: by 2002:a05:6e02:198c:b0:2e0:ac33:d22 with SMTP id
+ g12-20020a056e02198c00b002e0ac330d22mr6236746ilf.219.1660048867835; Tue, 09
+ Aug 2022 05:41:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 03/16] lib/test_bitmap: don't test bitmap_set if nbits ==
- 0
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ben Segall <bsegall@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+References: <20220809105317.436682-1-asavkov@redhat.com> <20220809105317.436682-2-asavkov@redhat.com>
+In-Reply-To: <20220809105317.436682-2-asavkov@redhat.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Tue, 9 Aug 2022 14:40:30 +0200
+Message-ID: <CAP01T75Qern=-hvYONBMom7T3ycs-bpGxR1n5CdrehJBwrOTuQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/3] bpf: add destructive kfunc flag
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mel Gorman <mgorman@suse.de>, Miroslav Benes <mbenes@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
-        linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-4-yury.norov@gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <20220718192844.1805158-4-yury.norov@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Daniel Vacek <dvacek@redhat.com>,
+        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/07/2022 21.28, Yury Norov wrote:
-> Don't test bitmap_set(bitmap, start, 0) as it's useless, most probably
-> a sign of error in real code, 
+On Tue, 9 Aug 2022 at 12:53, Artem Savkov <asavkov@redhat.com> wrote:
+>
+> Add KF_DESTRUCTIVE flag for destructive functions. Functions with this
+> flag set will require CAP_SYS_BOOT capabilities.
+>
+> Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> ---
+>  Documentation/bpf/kfuncs.rst | 9 +++++++++
+>  include/linux/btf.h          | 1 +
+>  kernel/bpf/verifier.c        | 5 +++++
+>  3 files changed, 15 insertions(+)
+>
+> diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
+> index c0b7dae6dbf5..2e97e08be7de 100644
+> --- a/Documentation/bpf/kfuncs.rst
+> +++ b/Documentation/bpf/kfuncs.rst
+> @@ -146,6 +146,15 @@ that operate (change some property, perform some operation) on an object that
+>  was obtained using an acquire kfunc. Such kfuncs need an unchanged pointer to
+>  ensure the integrity of the operation being performed on the expected object.
+>
+> +2.4.5 KF_DESTRUCTIVE flag
 
-No it's not. The nbits can easily be the result of some computation that
-ended up resulting in 0 being the right number to copy (or set, or
-whatnot), and it's not unreasonable to _not_ check in the caller for
-that special case, but rather rely on bitmap_set() to behave sanely - it
-has perfectly well-defined semantics to "set 0 bits starting at @start".
+This should be 2.4.6.
 
-The same way that memset() and memcpy() and memcmp() and countless other
-functions have perfectly well-defined semantics with a length of 0, and
-we don't add caller-side checks for those either.
-
-NAK on this series.
-
-Rasmus
+> +--------------------------
+> +
+> +The KF_DESTRUCTIVE flag is used to indicate functions calling which is
+> +destructive to the system. For example such a call can result in system
+> +rebooting or panicking. Due to this additional restrictions apply to these
+> +calls. At the moment they only require CAP_SYS_BOOT capability, but more can be
+> +added later.
+> +
+>  2.5 Registering the kfuncs
+>  --------------------------
+>
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index cdb376d53238..51a0961c84e3 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -49,6 +49,7 @@
+>   * for this case.
+>   */
+>  #define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
+> +#define KF_DESTRUCTIVE  (1 << 5) /* kfunc performs destructive actions */
+>
+>  struct btf;
+>  struct btf_member;
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 843a966cd02b..163cc0a2dc5a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -7598,6 +7598,11 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>                         func_name);
+>                 return -EACCES;
+>         }
+> +       if (*kfunc_flags & KF_DESTRUCTIVE && !capable(CAP_SYS_BOOT)) {
+> +               verbose(env, "destructive kfunc calls require CAP_SYS_BOOT capabilities\n");
+> +               return -EACCES;
+> +       }
+> +
+>         acq = *kfunc_flags & KF_ACQUIRE;
+>
+>         /* Check the arguments */
+> --
+> 2.37.1
+>
