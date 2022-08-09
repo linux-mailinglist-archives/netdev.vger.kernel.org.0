@@ -2,316 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91A958DD8E
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 19:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4745E58DEFC
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 20:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245532AbiHIR7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 13:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
+        id S245503AbiHIS27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 14:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343902AbiHIR65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 13:58:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35217315
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 10:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660067933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=09PduL8Bxz81WATsNd44JrQ3EwyDrrI3zDl7S+d/+nU=;
-        b=LlE3iROLxlwW/zX6ZD7jADUZUOpOFYjyars7ImwovVFwHdRnG2/6ww2AIEJsouuINEpkXw
-        Swclr3yyi+4QGtvo2uhT0jCfzxxhWUYUXVrP6dqTRp/dYbTE7ZiVPbhhamYOd68mmIJ/a/
-        Xw/GhvHzagBjawOaUcNur+wZ6DTnnq8=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-WreljIGDO0-Js0dvj949TQ-1; Tue, 09 Aug 2022 13:58:52 -0400
-X-MC-Unique: WreljIGDO0-Js0dvj949TQ-1
-Received: by mail-qk1-f200.google.com with SMTP id l15-20020a05620a28cf00b006b46997c070so10873296qkp.20
-        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 10:58:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=09PduL8Bxz81WATsNd44JrQ3EwyDrrI3zDl7S+d/+nU=;
-        b=gU1sSL0BNGlxpZx9hRZPGV06YiE89OOV9dmlL9W8kvYrf2rxDeWa9iMpw2fNvd7iZx
-         ZmSmHueDEF4cEnVK0DsXbuGP8EUDTJXdrsVfrA8b1OnVafWSYWua/B107FZJuPIM8Mr5
-         WEaLitYGOWr7UtrCVgXy5aLMUeIOeHyGCf4noIK1plmLkBr9jqSoOl1A4jWjuFHP4z3i
-         y7iqx9+uAUrBqyIgHrVjz0u4JpSX5rA6nBcpC7+fSvp1uZF02zqh0/nvHfXkU6K/bzyu
-         dm+qccxqlIizbHvXYMbnlfb+jJ6dlCxPyW+gjv8GLquRtWrtWUYQ1jDFPe3aAQzQItjw
-         S7fw==
-X-Gm-Message-State: ACgBeo17VBRgUWg13F2FJ4s9rlYPMLT0dqX5R65AbR7EEUlbauBRl50x
-        tprKzQJS+68lkEu4Asy2AwjfDSDaCYL0tUGGPxSBfw2HbfM3tlsHAVTLqn1qfmEWmyWuWCxhUMC
-        gYvvtQ4q1nSAGKswA
-X-Received: by 2002:a05:6214:5098:b0:476:b536:3308 with SMTP id kk24-20020a056214509800b00476b5363308mr20615754qvb.81.1660067932210;
-        Tue, 09 Aug 2022 10:58:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7oPyfJWfTABDCpAON4FDDHUZg1fgqWSPEtwElsZqbu+JeG21LUxNMaLpon4QMXifDE0JbcFw==
-X-Received: by 2002:a05:6214:5098:b0:476:b536:3308 with SMTP id kk24-20020a056214509800b00476b5363308mr20615739qvb.81.1660067931874;
-        Tue, 09 Aug 2022 10:58:51 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id a127-20020a379885000000b006af039ff090sm11607104qke.97.2022.08.09.10.58.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 10:58:51 -0700 (PDT)
-Message-ID: <c51343e9-3b39-5874-b44c-c15c310cbde8@redhat.com>
-Date:   Tue, 9 Aug 2022 13:58:50 -0400
+        with ESMTP id S1346700AbiHIS0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 14:26:36 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B2832ED8;
+        Tue,  9 Aug 2022 11:09:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=DWkpz8+ByW7L5elLg9cMcWybBCw50VP7bckI/LSep/o=;
+        t=1660068575; x=1661278175; b=Z/PpNygG5+d4mRAsefuVgd2vfzodFgFfYEZenommRdVVtjU
+        VdXWo2Nf2rewOLeKRGMpYiM2LQ7t6kFbCssOBQy/gH4UBPuyB1ia3YmSy06LWY4n7P8mhotr1bgmf
+        kYJeVxizJFVk9LBik1bbbzlO1XhmCftqXQhKcfoVPy2fdSJuoxMoATecjswM9FWJsfrWz62jkFu/s
+        ULc8dGrxR7IIcCKbJVhDmlIfaPHL8Olr6rXHObVXb9ozV/NyoVa34lISe1f39LnDiLOfkyHXo7wYf
+        swVgcoO03FDpPNCoZIoeWxy3q2TU+oijt8e0fb3xAfSp4C98Y4IOWnfuLheFkWTg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oLTfR-003HXy-0m;
+        Tue, 09 Aug 2022 20:09:25 +0200
+Message-ID: <54cd8c11428db4c419edf2267db00ca10da7a178.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 06/13] um: Improve panic notifiers consistency and
+ ordering
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        kexec@lists.infradead.org, linux-um@lists.infradead.org
+Cc:     pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Date:   Tue, 09 Aug 2022 20:09:23 +0200
+In-Reply-To: <5bbc4296-4858-d01c-0c76-09d942377ddf@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+         <20220719195325.402745-7-gpiccoli@igalia.com>
+         <5bbc4296-4858-d01c-0c76-09d942377ddf@igalia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC net] bonding: 802.3ad: fix no transmission of LACPDUs
-Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <c2f698e6f73e6e78232ab4ded065c3828d245dbd.1660065706.git.jtoppins@redhat.com>
- <12990.1660066616@famine>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <12990.1660066616@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/9/22 13:36, Jay Vosburgh wrote:
-> Jonathan Toppins <jtoppins@redhat.com> wrote:
-> 
->> Running the script in
->> `tools/testing/selftests/net/bonding/bond-break-lacpdu-tx.sh` puts
->> bonding into a state where it never transmits LACPDUs.
->>
->> line 53: echo 65535 > /sys/class/net/fbond/bonding/ad_actor_sys_prio
->> setting bond param: ad_actor_sys_prio
->> given:
->>     params.ad_actor_system = 0
->> call stack:
->>     bond_option_ad_actor_sys_prio()
->>     -> bond_3ad_update_ad_actor_settings()
->>        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->>        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->>             params.ad_actor_system == 0
->> results:
->>      ad.system.sys_mac_addr = bond->dev->dev_addr
->>
->> line 59: ip link set fbond address 52:54:00:3B:7C:A6
->> setting bond MAC addr
->> call stack:
->>     bond->dev->dev_addr = new_mac
->>
->> line 63: echo 65535 > /sys/class/net/fbond/bonding/ad_actor_sys_prio
->> setting bond param: ad_actor_sys_prio
->> given:
->>     params.ad_actor_system = 0
->> call stack:
->>     bond_option_ad_actor_sys_prio()
->>     -> bond_3ad_update_ad_actor_settings()
->>        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->>        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->>             params.ad_actor_system == 0
->> results:
->>      ad.system.sys_mac_addr = bond->dev->dev_addr
->>
->> line 71: ip link set veth1-bond down master fbond
->> given:
->>     params.ad_actor_system = 0
->>     params.mode = BOND_MODE_8023AD
->>     ad.system.sys_mac_addr == bond->dev->dev_addr
->> call stack:
->>     bond_enslave
->>     -> bond_3ad_initialize(); because first slave
->>        -> if ad.system.sys_mac_addr != bond->dev->dev_addr
->>           return
->> results:
->>      Nothing is run in bond_3ad_initialize() because dev_add equals
->>      sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
->>      never initialized anywhere else.
->>
->> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
->> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
->> ---
->> MAINTAINERS                                   |  1 +
->> drivers/net/bonding/bond_3ad.c                |  2 +-
->> .../net/bonding/bond-break-lacpdu-tx.sh       | 88 +++++++++++++++++++
->> 3 files changed, 90 insertions(+), 1 deletion(-)
->> create mode 100644 tools/testing/selftests/net/bonding/bond-break-lacpdu-tx.sh
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 386178699ae7..6e7cebc1bca3 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -3636,6 +3636,7 @@ F:	Documentation/networking/bonding.rst
->> F:	drivers/net/bonding/
->> F:	include/net/bond*
->> F:	include/uapi/linux/if_bonding.h
->> +F:	tools/testing/selftests/net/bonding/
->>
->> BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
->> M:	Dan Robertson <dan@dlrobertson.com>
->> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
->> index d7fb33c078e8..e357bc6b8e05 100644
->> --- a/drivers/net/bonding/bond_3ad.c
->> +++ b/drivers/net/bonding/bond_3ad.c
->> @@ -84,7 +84,7 @@ enum ad_link_speed_type {
->> static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned = {
->> 	0, 0, 0, 0, 0, 0
->> };
->> -static u16 ad_ticks_per_sec;
->> +static u16 ad_ticks_per_sec = 1000/AD_TIMER_INTERVAL;
-> 
-> 	How does this resolve the problem?  Does bond_3ad_initialize
-> actually run, or is this change sort of jump-starting things?
+On Sun, 2022-08-07 at 12:40 -0300, Guilherme G. Piccoli wrote:
+> On 19/07/2022 16:53, Guilherme G. Piccoli wrote:
+> > Currently the panic notifiers from user mode linux don't follow
+> > the convention for most of the other notifiers present in the
+> > kernel (indentation, priority setting, numeric return).
+> > More important, the priorities could be improved, since it's a
+> > special case (userspace), hence we could run the notifiers earlier;
+> > user mode linux shouldn't care much with other panic notifiers but
+> > the ordering among the mconsole and arch notifier is important,
+> > given that the arch one effectively triggers a core dump.
+> >=20
+> > Fix that by running the mconsole notifier as the first panic
+> > notifier, followed by the architecture one (that coredumps).
+> >=20
+> > Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+> > Cc: Johannes Berg <johannes@sipsolutions.net>
+> > Cc: Richard Weinberger <richard@nod.at>
+> > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> >=20
+> > ---
+> >=20
+> > V2:
+> > - Kept the notifier header to avoid implicit usage - thanks
+> > Johannes for the suggestion!
+> >=20
+> >  arch/um/drivers/mconsole_kern.c | 7 +++----
+> >  arch/um/kernel/um_arch.c        | 8 ++++----
+> >  2 files changed, 7 insertions(+), 8 deletions(-)
+> > [...]
+>=20
+> Hi Johannes, do you feel this one is good now, after your last review?
+> Thanks in advance,
+>=20
 
-It is jump-starting things. Really bond_3ad_initialize() should be 
-fixed, but it seemed this change would be easier from a backporting 
-perspective. The real issue seems to be bond_3ad_initialize() checks to 
-make sure the "bond is not initialized yet" and if this check fails no 
-initialization is done, which seems incorrect. Some minimal amount of 
-initialization it seems needs to be done.
+Yeah, no objections, my previous comment was just a minor almost style
+issue anyway.
 
-This is also an order of execution bug, as I tried to layout in the 
-commit message. Basically setting fbond's MAC and then resetting the 
-option ad_actor_sys_prio causes the if check in bond_3ad_initialize() to 
-not execute anything. We first saw this when using NetworkManager as for 
-some reason NetworkManager was setting options twice, this is being 
-looked at as well.
-
-I am open to other possible fixes, I just chose the one that appeared to 
-be the easiest to backport, hence the RFC.
-
-> 
->> static const int ad_delta_in_ticks = (AD_TIMER_INTERVAL * HZ) / 1000;
->>
->> static const u8 lacpdu_mcast_addr[ETH_ALEN + 2] __long_aligned =
->> diff --git a/tools/testing/selftests/net/bonding/bond-break-lacpdu-tx.sh b/tools/testing/selftests/net/bonding/bond-break-lacpdu-tx.sh
->> new file mode 100644
->> index 000000000000..be9f1b64e89e
->> --- /dev/null
->> +++ b/tools/testing/selftests/net/bonding/bond-break-lacpdu-tx.sh
->> @@ -0,0 +1,88 @@
->> +#!/bin/sh
->> +
->> +# Regression Test:
->> +#   Verify LACPDUs get transmitted after setting the MAC address of
->> +#   the bond.
->> +#
->> +# https://bugzilla.redhat.com/show_bug.cgi?id=2020773
->> +#
->> +#       +---------+
->> +#       | fab-br0 |
->> +#       +---------+
->> +#            |
->> +#       +---------+
->> +#       |  fbond  |
->> +#       +---------+
->> +#        |       |
->> +#    +------+ +------+
->> +#    |veth1 | |veth2 |
->> +#    +------+ +------+
->> +#
->> +# We use veths instead of physical interfaces
->> +
->> +set -e
->> +#set -x
->> +tmp=$(mktemp -q dump.XXXXXX)
->> +cleanup() {
->> +	ip link del fab-br0 >/dev/null 2>&1 || :
->> +	ip link del fbond  >/dev/null 2>&1 || :
->> +	ip link del veth1-bond  >/dev/null 2>&1 || :
->> +	ip link del veth2-bond  >/dev/null 2>&1 || :
->> +	modprobe -r bonding  >/dev/null 2>&1 || :
->> +	rm -f -- ${tmp}
->> +}
->> +
->> +trap cleanup 0 1 2
->> +cleanup
->> +sleep 1
->> +
->> +# create the bridge
->> +ip link add fab-br0 address 52:54:00:3B:7C:A6 mtu 1500 type bridge \
->> +	forward_delay 15
->> +
->> +# create the bond
->> +ip link add fbond type bond
->> +ip link set fbond up
->> +
->> +# set bond sysfs parameters
->> +ip link set fbond down
->> +echo 802.3ad           > /sys/class/net/fbond/bonding/mode
->> +echo 200               > /sys/class/net/fbond/bonding/miimon
->> +echo 1                 > /sys/class/net/fbond/bonding/xmit_hash_policy
->> +echo 65535             > /sys/class/net/fbond/bonding/ad_actor_sys_prio
->> +echo stable            > /sys/class/net/fbond/bonding/ad_select
->> +echo slow              > /sys/class/net/fbond/bonding/lacp_rate
->> +echo any               > /sys/class/net/fbond/bonding/arp_all_targets
-> 
-> 	Having a test case is very nice; would it be possible to avoid
-> using sysfs, though?  I believe all of these parameters are available
-> via /sbin/ip.
-
-I can convert the test case to `ip link`, it doesn't appear the method 
-of configuration would cause a difference in the result.
-
-> 
-> 	Also, is setting "arp_all_targets" necessary for the test?
-
-Its probably not, I probably do not need to configure most of these 
-options because most are default values. I can work on trimming it down 
-even more.
-
-> 
-> 	-J
-> 
->> +
->> +# set bond address
->> +ip link set fbond address 52:54:00:3B:7C:A6
->> +ip link set fbond up
->> +
->> +# set again bond sysfs parameters
->> +echo 65535             > /sys/class/net/fbond/bonding/ad_actor_sys_prio
->> +
->> +# create veths
->> +ip link add name veth1-bond type veth peer name veth1-end
->> +ip link add name veth2-bond type veth peer name veth2-end
->> +
->> +# add ports
->> +ip link set fbond master fab-br0
->> +ip link set veth1-bond down master fbond
->> +ip link set veth2-bond down master fbond
->> +
->> +# bring up
->> +ip link set veth1-end up
->> +ip link set veth2-end up
->> +ip link set fab-br0 up
->> +ip link set fbond up
->> +ip addr add dev fab-br0 10.0.0.3
->> +
->> +tcpdump -n -i veth1-end -e ether proto 0x8809 >${tmp} 2>&1 &
->> +sleep 60
->> +pkill tcpdump >/dev/null 2>&1
->> +num=$(grep "packets captured" ${tmp} | awk '{print $1}')
->> +if test "$num" -gt 0; then
->> +	echo "PASS, captured ${num}"
->> +else
->> +	echo "FAIL"
->> +fi
->> -- 
->> 2.31.1
->>
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> 
-
+johannes
