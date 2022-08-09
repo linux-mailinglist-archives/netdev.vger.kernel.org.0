@@ -2,105 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AFB658E008
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C488B58E012
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344326AbiHITS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 15:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
+        id S1345537AbiHITSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 15:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345645AbiHITPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:15:20 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD0D27CCB;
-        Tue,  9 Aug 2022 12:08:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=CE9ribd82Wfwyf4qIpdyVQVcb49dja2n3iMdmx/FOf8=;
-        t=1660072120; x=1661281720; b=orlBgeBkwMRUzTnxtTciRUQbmcMW6MHm86LHtYuejp9uPbL
-        DiwtSch/R7WEVGoOHWVTElvfA+lfFbVL07XaY2BSVKMbFSL+ItaT76YZZ4f+7Zhn8zHKHbRgxAKfc
-        z6OWvbimmsAtePUSWgfzcT1SIchqCp7P/tILa/YzEJSbxOOpIZtPE+/0jLr6fxDcHbOdSHXg/5MEW
-        eJNVwj9ttTPMxu54ZRTF11uqP2V6fa4E4DAnNZvXSg5Fu8vNi3qJSe6LdFS+z1Xm6/+OG2b9/2SFi
-        xESy6kkAKWoZgAspEEFjsknjBYA5mA2h2LnbSf5UTuaIIvRbWtCMQygm47/3Hvwg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oLUac-003Ii0-22;
-        Tue, 09 Aug 2022 21:08:30 +0200
-Message-ID: <f366b3d50aa8b713b0a921e4507bae4779a7cd02.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 06/13] um: Improve panic notifiers consistency and
- ordering
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        kexec@lists.infradead.org, linux-um@lists.infradead.org
-Cc:     pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>
-Date:   Tue, 09 Aug 2022 21:08:28 +0200
-In-Reply-To: <15188cf2-a510-2725-0c6e-3c4b264714c5@igalia.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
-         <20220719195325.402745-7-gpiccoli@igalia.com>
-         <5bbc4296-4858-d01c-0c76-09d942377ddf@igalia.com>
-         <54cd8c11428db4c419edf2267db00ca10da7a178.camel@sipsolutions.net>
-         <15188cf2-a510-2725-0c6e-3c4b264714c5@igalia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        with ESMTP id S1348598AbiHITRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:17:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39F1D2980A
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 12:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660072279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8drQIOkaD6GQvUhT1YCHnZA3lYVCzqb0vqZtLW9Cpd0=;
+        b=SbvRzdmhRAE7pGC+HBOu2e9tSbc08rJKoXf7PY7yYXuexotXdBZ5z2KdeakWxN4Vnlw5OD
+        Dz/e8aiO2fFb5eFdWZJNWZZFmoDlDE/MmqziIInZJzaKcUF0FQ/gK+UnQUZ6DeQHeCyCk5
+        k+kZOYC7/lY6yirtoAyGsrGRlSr5tVY=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-LoUj4_1dOM2FmGRbx5z7rg-1; Tue, 09 Aug 2022 15:11:18 -0400
+X-MC-Unique: LoUj4_1dOM2FmGRbx5z7rg-1
+Received: by mail-ed1-f72.google.com with SMTP id h6-20020a05640250c600b0043d9964d2ceso7691390edb.4
+        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 12:11:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=8drQIOkaD6GQvUhT1YCHnZA3lYVCzqb0vqZtLW9Cpd0=;
+        b=CWQsfdoqEsDEZ6T6vKoV/3csy1rbVjuC+8++0DcpQHwIfI31W8348UfF/1cXiLPd67
+         tj3oXuIydHQM9IY4G2BCFHO7Bkowip2nZXIfrzbevh+AI3qcXZ7iPATXKtj9jsU1tSMv
+         43sjh9U8XvS+bTBV+0JmdRQga3GEGd5y1qv8ns32+qmC9QXGR4YRt1HG1Ke7OogFv4QQ
+         tDZsTLame84Lwfq23wDBdBOmiIvylyjyRH5CQMpyDmz8GFGsc78ttontOS4S0ipJ8yCA
+         HyUzwl0ajerGo1RsmmWAW3bG4uaSdX6Z7Z5W11v3G//ZHkTVcZ1mGHPvwAXMMEQi+FPd
+         Hw4g==
+X-Gm-Message-State: ACgBeo3K8Wz/C6YVHEYJGK5pp41h3xrB2iZOSo4DlGTWqdm0PGVJKkCw
+        ExT2cLwu8ZohN5NAwxDBRbmIZYtKWasHVfm961gyhGahtqD1lzxJ78s5aNK38avPlKDSxWgOmgM
+        zZg0kjdBt4/9iZfhd
+X-Received: by 2002:a17:907:2cf2:b0:730:d73e:acb7 with SMTP id hz18-20020a1709072cf200b00730d73eacb7mr16752099ejc.223.1660072276811;
+        Tue, 09 Aug 2022 12:11:16 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5YoKWVCebUxEif7a7tIu4SNc4fOwoMoYRGnC9FJEMPI9x8tuhmkysOAeL3C53b+c22LOTVCw==
+X-Received: by 2002:a17:907:2cf2:b0:730:d73e:acb7 with SMTP id hz18-20020a1709072cf200b00730d73eacb7mr16752079ejc.223.1660072276513;
+        Tue, 09 Aug 2022 12:11:16 -0700 (PDT)
+Received: from redhat.com ([2.52.152.113])
+        by smtp.gmail.com with ESMTPSA id o11-20020aa7d3cb000000b004417eeff836sm1147077edr.53.2022.08.09.12.11.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 12:11:15 -0700 (PDT)
+Date:   Tue, 9 Aug 2022 15:11:12 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v4] net: virtio_net: notifications coalescing
+ support
+Message-ID: <20220809150704-mutt-send-email-mst@kernel.org>
+References: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718091102.498774-1-alvaro.karsz@solid-run.com>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-08-09 at 16:03 -0300, Guilherme G. Piccoli wrote:
-> On 09/08/2022 15:09, Johannes Berg wrote:
-> > [...]
-> > > > V2:
-> > > > - Kept the notifier header to avoid implicit usage - thanks
-> > > > Johannes for the suggestion!
-> > > >=20
-> > > >  arch/um/drivers/mconsole_kern.c | 7 +++----
-> > > >  arch/um/kernel/um_arch.c        | 8 ++++----
-> > > >  2 files changed, 7 insertions(+), 8 deletions(-)
-> > > > [...]
-> > >=20
-> > > Hi Johannes, do you feel this one is good now, after your last review=
-?
-> > > Thanks in advance,
-> > >=20
-> >=20
-> > Yeah, no objections, my previous comment was just a minor almost style
-> > issue anyway.
-> >=20
-> > johannes
->=20
-> Perfect, thank you! Let me take the opportunity to ask you something I'm
-> asking all the maintainers involved here - do you prefer taking the
-> patch through your tree, or to get it landed with the whole series, at
-> once, from some maintainer?
->=20
-Hm. I don't think we'd really care, but so far I was thinking - since
-it's a series - it'd go through some appropriate tree all together. If
-you think it should be applied separately, let us know.
+On Mon, Jul 18, 2022 at 12:11:02PM +0300, Alvaro Karsz wrote:
+> New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
+> 
+> Control a Virtio network device notifications coalescing parameters
+> using the control virtqueue.
+> 
+> A device that supports this fetature can receive
+> VIRTIO_NET_CTRL_NOTF_COAL control commands.
+> 
+> - VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
+>   Ask the network device to change the following parameters:
+>   - tx_usecs: Maximum number of usecs to delay a TX notification.
+>   - tx_max_packets: Maximum number of packets to send before a
+>     TX notification.
+> 
+> - VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
+>   Ask the network device to change the following parameters:
+>   - rx_usecs: Maximum number of usecs to delay a RX notification.
+>   - rx_max_packets: Maximum number of packets to receive before a
+>     RX notification.
+> 
+> VirtIO spec. patch:
+> https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
+> 
+> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> ---
+> v2:
+> 	- Fix type assignments warnings found with sparse.
+> 	- Fix a few typos.
+> 
+> v3:
+>   - Change the coalescing parameters in a dedicated function.
+>   - Return -EBUSY from the set coalescing function when the device's
+>     link is up, even if the notifications coalescing feature is negotiated.
+> 
+> v4:
+>   - If link is up and we need to update NAPI weight, return -EBUSY before
+>     sending the coalescing commands to the device
+> ---
+>  drivers/net/virtio_net.c        | 111 +++++++++++++++++++++++++++-----
+>  include/uapi/linux/virtio_net.h |  34 +++++++++-
+>  2 files changed, 129 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 356cf8dd416..4fde66bd511 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -261,6 +261,12 @@ struct virtnet_info {
+>  	u8 duplex;
+>  	u32 speed;
+> 
+> +	/* Interrupt coalescing settings */
+> +	u32 tx_usecs;
+> +	u32 rx_usecs;
+> +	u32 tx_max_packets;
+> +	u32 rx_max_packets;
+> +
+>  	unsigned long guest_offloads;
+>  	unsigned long guest_offloads_capable;
+> 
+> @@ -2587,27 +2593,89 @@ static int virtnet_get_link_ksettings(struct net_device *dev,
+>  	return 0;
+>  }
+> 
+> +static int virtnet_send_notf_coal_cmds(struct virtnet_info *vi,
+> +				       struct ethtool_coalesce *ec)
+> +{
+> +	struct scatterlist sgs_tx, sgs_rx;
+> +	struct virtio_net_ctrl_coal_tx coal_tx;
+> +	struct virtio_net_ctrl_coal_rx coal_rx;
+> +
+> +	coal_tx.tx_usecs = cpu_to_le32(ec->tx_coalesce_usecs);
+> +	coal_tx.tx_max_packets = cpu_to_le32(ec->tx_max_coalesced_frames);
+> +	sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
+> +
+> +	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
+> +				  VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
+> +				  &sgs_tx))
+> +		return -EINVAL;
+> +
+> +	/* Save parameters */
+> +	vi->tx_usecs = ec->tx_coalesce_usecs;
+> +	vi->tx_max_packets = ec->tx_max_coalesced_frames;
+> +
+> +	coal_rx.rx_usecs = cpu_to_le32(ec->rx_coalesce_usecs);
+> +	coal_rx.rx_max_packets = cpu_to_le32(ec->rx_max_coalesced_frames);
+> +	sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
+> +
+> +	if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
+> +				  VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
+> +				  &sgs_rx))
+> +		return -EINVAL;
+> +
+> +	/* Save parameters */
+> +	vi->rx_usecs = ec->rx_coalesce_usecs;
+> +	vi->rx_max_packets = ec->rx_max_coalesced_frames;
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtnet_coal_params_supported(struct ethtool_coalesce *ec)
+> +{
+> +	/* usecs coalescing is supported only if VIRTIO_NET_F_NOTF_COAL
+> +	 * feature is negotiated.
+> +	 */
+> +	if (ec->rx_coalesce_usecs || ec->tx_coalesce_usecs)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ec->tx_max_coalesced_frames > 1 ||
+> +	    ec->rx_max_coalesced_frames != 1)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+>  static int virtnet_set_coalesce(struct net_device *dev,
+>  				struct ethtool_coalesce *ec,
+>  				struct kernel_ethtool_coalesce *kernel_coal,
+>  				struct netlink_ext_ack *extack)
+>  {
+>  	struct virtnet_info *vi = netdev_priv(dev);
+> -	int i, napi_weight;
+> -
+> -	if (ec->tx_max_coalesced_frames > 1 ||
+> -	    ec->rx_max_coalesced_frames != 1)
+> -		return -EINVAL;
+> +	int ret, i, napi_weight;
+> +	bool update_napi = false;
+> 
+> +	/* Can't change NAPI weight if the link is up */
+>  	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
+>  	if (napi_weight ^ vi->sq[0].napi.weight) {
+>  		if (dev->flags & IFF_UP)
+>  			return -EBUSY;
+> +		else
+> +			update_napi = true;
+> +	}
+> +
+> +	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL))
+> +		ret = virtnet_send_notf_coal_cmds(vi, ec);
+> +	else
+> +		ret = virtnet_coal_params_supported(ec);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (update_napi) {
+>  		for (i = 0; i < vi->max_queue_pairs; i++)
+>  			vi->sq[i].napi.weight = napi_weight;
+>  	}
+> 
+> -	return 0;
+> +	return ret;
+>  }
+> 
+>  static int virtnet_get_coalesce(struct net_device *dev,
 
-johannes
+
+OK so I thought hard about this. At the moment the only way
+I see is this:
+
+for tx max coalesced, interpret tx_max_coalesced_frames == 0
+as napi disable. tx_max_coalesced_frames = 0 as napi
+disable, tx_max_coalesced_frames != 0 as napi enable
+and if the feature has been negotiated additionally forward
+it to hardware. If not force tx_max_coalesced_frames <= 1
+as we do now.
+
+Without hardware support force rx_max_coalesced_frames == 1
+as we do now otherwise do not force and forward to hardware.
+
+
+> @@ -2615,16 +2683,19 @@ static int virtnet_get_coalesce(struct net_device *dev,
+>  				struct kernel_ethtool_coalesce *kernel_coal,
+>  				struct netlink_ext_ack *extack)
+>  {
+> -	struct ethtool_coalesce ec_default = {
+> -		.cmd = ETHTOOL_GCOALESCE,
+> -		.rx_max_coalesced_frames = 1,
+> -	};
+>  	struct virtnet_info *vi = netdev_priv(dev);
+> 
+> -	memcpy(ec, &ec_default, sizeof(ec_default));
+> +	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
+> +		ec->rx_coalesce_usecs = vi->rx_usecs;
+> +		ec->tx_coalesce_usecs = vi->tx_usecs;
+> +		ec->tx_max_coalesced_frames = vi->tx_max_packets;
+> +		ec->rx_max_coalesced_frames = vi->rx_max_packets;
+> +	} else {
+> +		ec->rx_max_coalesced_frames = 1;
+> 
+> -	if (vi->sq[0].napi.weight)
+> -		ec->tx_max_coalesced_frames = 1;
+> +		if (vi->sq[0].napi.weight)
+> +			ec->tx_max_coalesced_frames = 1;
+> +	}
+> 
+>  	return 0;
+>  }
+> @@ -2743,7 +2814,8 @@ static int virtnet_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
+>  }
+> 
+>  static const struct ethtool_ops virtnet_ethtool_ops = {
+> -	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES,
+> +	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES |
+> +		ETHTOOL_COALESCE_USECS,
+>  	.get_drvinfo = virtnet_get_drvinfo,
+>  	.get_link = ethtool_op_get_link,
+>  	.get_ringparam = virtnet_get_ringparam,
+> @@ -3411,6 +3483,8 @@ static bool virtnet_validate_features(struct virtio_device *vdev)
+>  	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
+>  			     "VIRTIO_NET_F_CTRL_VQ") ||
+>  	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_HASH_REPORT,
+> +			     "VIRTIO_NET_F_CTRL_VQ") ||
+> +	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_NOTF_COAL,
+>  			     "VIRTIO_NET_F_CTRL_VQ"))) {
+>  		return false;
+>  	}
+> @@ -3546,6 +3620,13 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>  		vi->mergeable_rx_bufs = true;
+> 
+> +	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
+> +		vi->rx_usecs = 0;
+> +		vi->tx_usecs = 0;
+> +		vi->tx_max_packets = 0;
+> +		vi->rx_max_packets = 0;
+> +	}
+> +
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT))
+>  		vi->has_rss_hash_report = true;
+> 
+> @@ -3780,7 +3861,7 @@ static struct virtio_device_id id_table[] = {
+>  	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+>  	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+>  	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> -	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
+> +	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
+> 
+>  static unsigned int features[] = {
+>  	VIRTNET_FEATURES,
+> diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+> index 3f55a4215f1..29ced55514d 100644
+> --- a/include/uapi/linux/virtio_net.h
+> +++ b/include/uapi/linux/virtio_net.h
+> @@ -56,7 +56,7 @@
+>  #define VIRTIO_NET_F_MQ	22	/* Device supports Receive Flow
+>  					 * Steering */
+>  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+> -
+> +#define VIRTIO_NET_F_NOTF_COAL	53	/* Guest can handle notifications coalescing */
+>  #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
+>  #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+>  #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+> @@ -355,4 +355,36 @@ struct virtio_net_hash_config {
+>  #define VIRTIO_NET_CTRL_GUEST_OFFLOADS   5
+>  #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET        0
+> 
+> +/*
+> + * Control notifications coalescing.
+> + *
+> + * Request the device to change the notifications coalescing parameters.
+> + *
+> + * Available with the VIRTIO_NET_F_NOTF_COAL feature bit.
+> + */
+> +#define VIRTIO_NET_CTRL_NOTF_COAL		6
+> +/*
+> + * Set the tx-usecs/tx-max-packets patameters.
+> + * tx-usecs - Maximum number of usecs to delay a TX notification.
+> + * tx-max-packets - Maximum number of packets to send before a TX notification.
+> + */
+> +struct virtio_net_ctrl_coal_tx {
+> +	__le32 tx_max_packets;
+> +	__le32 tx_usecs;
+> +};
+> +
+> +#define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET		0
+> +
+> +/*
+> + * Set the rx-usecs/rx-max-packets patameters.
+> + * rx-usecs - Maximum number of usecs to delay a RX notification.
+> + * rx-max-frames - Maximum number of packets to receive before a RX notification.
+> + */
+> +struct virtio_net_ctrl_coal_rx {
+> +	__le32 rx_max_packets;
+> +	__le32 rx_usecs;
+> +};
+> +
+> +#define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET		1
+> +
+>  #endif /* _UAPI_LINUX_VIRTIO_NET_H */
+> --
+> 2.32.0
+
