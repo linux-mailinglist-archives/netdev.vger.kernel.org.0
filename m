@@ -2,46 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE7EA58DFF2
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AFB658E008
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346044AbiHITM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 15:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
+        id S1344326AbiHITS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 15:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348702AbiHITMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:12:19 -0400
+        with ESMTP id S1345645AbiHITPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:15:20 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FBB2A410
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 12:04:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD0D27CCB;
+        Tue,  9 Aug 2022 12:08:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
         Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=tSTzpfcXrI5uqlzD2cbZ4itdhS2mwAbKtRBGNmoJ91M=;
-        t=1660071863; x=1661281463; b=BzfHTEIzJF3xsnBRgEHCqPi52dpf9qDaYFo946ylberXrIG
-        PEJQ/UHwkaH+Sk2HDzo+FWcfcr8xdc8ajmxt7iUcwQ52GN0DbgXCMT1yLAX2lGZIMBKrbUE9AvP5B
-        gtKa/1kppVIXiFDLScZpdtCIJY6Z0F5ZJw9QHHgfbaX1iNLevsQodMAfXos2GBfpD2yAxNqLEQ9Ee
-        l51y/B5Qio/8qRCOR+bZZjuS4AxQcBcO5mIl/Apf9mLI2FY3Ex6UPcz2Y17MOg8XSE8xHe2cMFihY
-        0cg9bp2oo9Hrhbhoi3gqXbocwtuDQ1t6RKQ+l/nHq+/H+gy7BBn8fCVCwQprtqJQ==;
+        Resent-Cc:Resent-Message-ID; bh=CE9ribd82Wfwyf4qIpdyVQVcb49dja2n3iMdmx/FOf8=;
+        t=1660072120; x=1661281720; b=orlBgeBkwMRUzTnxtTciRUQbmcMW6MHm86LHtYuejp9uPbL
+        DiwtSch/R7WEVGoOHWVTElvfA+lfFbVL07XaY2BSVKMbFSL+ItaT76YZZ4f+7Zhn8zHKHbRgxAKfc
+        z6OWvbimmsAtePUSWgfzcT1SIchqCp7P/tILa/YzEJSbxOOpIZtPE+/0jLr6fxDcHbOdSHXg/5MEW
+        eJNVwj9ttTPMxu54ZRTF11uqP2V6fa4E4DAnNZvXSg5Fu8vNi3qJSe6LdFS+z1Xm6/+OG2b9/2SFi
+        xESy6kkAKWoZgAspEEFjsknjBYA5mA2h2LnbSf5UTuaIIvRbWtCMQygm47/3Hvwg==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.96)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1oLUWa-003IY9-2v;
-        Tue, 09 Aug 2022 21:04:21 +0200
-Message-ID: <0fc27b144ca3adb4ff6b3057f2654040392ef2d8.camel@sipsolutions.net>
-Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
+        id 1oLUac-003Ii0-22;
+        Tue, 09 Aug 2022 21:08:30 +0200
+Message-ID: <f366b3d50aa8b713b0a921e4507bae4779a7cd02.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 06/13] um: Improve panic notifiers consistency and
+ ordering
 From:   Johannes Berg <johannes@sipsolutions.net>
-To:     James Prestwood <prestwoj@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Date:   Tue, 09 Aug 2022 21:04:20 +0200
-In-Reply-To: <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
-References: <20220804174307.448527-1-prestwoj@gmail.com>
-         <20220804174307.448527-2-prestwoj@gmail.com>
-         <20220804114342.71d2cff0@kernel.org>
-         <b6b11b492622b75e50712385947e1ba6103b8e44.camel@gmail.com>
-         <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        kexec@lists.infradead.org, linux-um@lists.infradead.org
+Cc:     pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Date:   Tue, 09 Aug 2022 21:08:28 +0200
+In-Reply-To: <15188cf2-a510-2725-0c6e-3c4b264714c5@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+         <20220719195325.402745-7-gpiccoli@igalia.com>
+         <5bbc4296-4858-d01c-0c76-09d942377ddf@igalia.com>
+         <54cd8c11428db4c419edf2267db00ca10da7a178.camel@sipsolutions.net>
+         <15188cf2-a510-2725-0c6e-3c4b264714c5@igalia.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
@@ -56,62 +72,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-08-04 at 12:49 -0700, James Prestwood wrote:
+On Tue, 2022-08-09 at 16:03 -0300, Guilherme G. Piccoli wrote:
+> On 09/08/2022 15:09, Johannes Berg wrote:
+> > [...]
+> > > > V2:
+> > > > - Kept the notifier header to avoid implicit usage - thanks
+> > > > Johannes for the suggestion!
+> > > >=20
+> > > >  arch/um/drivers/mconsole_kern.c | 7 +++----
+> > > >  arch/um/kernel/um_arch.c        | 8 ++++----
+> > > >  2 files changed, 7 insertions(+), 8 deletions(-)
+> > > > [...]
 > > >=20
-> > > The semantics in wireless are also a little stretched because
-> > > normally
-> > > if the flag is not set the netdev will _refuse_ (-EBUSY) to change
-> > > the
-> > > address while running, not do some crazy fw reset.
+> > > Hi Johannes, do you feel this one is good now, after your last review=
+?
+> > > Thanks in advance,
+> > >=20
 > >=20
-> > Sorry if I wasn't clear, but its not nl80211 doing the fw reset
-> > automatically. The wireless subsystem actually completely disallows a
-> > MAC change if the device is running, this flag isn't even checked.
-> > This
-> > means userspace has to bring the device down itself, then change the
-> > MAC.
+> > Yeah, no objections, my previous comment was just a minor almost style
+> > issue anyway.
 > >=20
-> > I plan on also modifying mac80211 to first check this flag and allow
-> > a
-> > live MAC change if possible. But ultimately userspace still needs to
-> > be
-> > aware of the support.
-> >=20
-
-I'm not sure this is the right approach.
-
-For the stated purpose (not powering down the NIC), with most mac80211
-drivers the following would work:
-
- - add a new virtual interface of any supported type, and bring it up
- - bring down the other interface, change MAC address, bring it up again
- - remove the interface added in step 1
-
-though obviously that's not a good way to do it!
-
-But internally in mac80211, there's a distinction between
-
- ->stop() to turn off the NIC, and
- ->remove_interface() to remove the interface.
-
-Changing the MAC address should always be possible when the interface
-doesn't exist in the driver (remove_interface), but without stop()ing
-the NIC.
-
-However, obviously remove_interface() implies that you break the
-connection first, and obviously you cannot change the MAC address
-without breaking the connection (stopping AP, etc.)
-
-Therefore, the semantics of this flag don't make sense - you cannot
-change the MAC address in a "live" way while there's a connection, and
-at least internally you need not stop the NIC to change it. Since
-ethernet has no concept of a "connection" in the same way, things are
-different there.
-
-Not sure how to really solve this - perhaps a wireless-specific way of
-changing the MAC address could be added, though that's quite ugly, or we
-might be able to permit changing the MAC address while not active in any
-way (connected, scanning etc.) by removing from/re-adding to the driver
-at least as far as mac80211 is concerned.
+> > johannes
+>=20
+> Perfect, thank you! Let me take the opportunity to ask you something I'm
+> asking all the maintainers involved here - do you prefer taking the
+> patch through your tree, or to get it landed with the whole series, at
+> once, from some maintainer?
+>=20
+Hm. I don't think we'd really care, but so far I was thinking - since
+it's a series - it'd go through some appropriate tree all together. If
+you think it should be applied separately, let us know.
 
 johannes
