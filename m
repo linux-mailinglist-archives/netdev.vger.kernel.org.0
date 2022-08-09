@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECA358D13C
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 02:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2936C58D13E
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 02:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244222AbiHIAJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Aug 2022 20:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
+        id S244450AbiHIAM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Aug 2022 20:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236115AbiHIAI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 20:08:59 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A022B483;
-        Mon,  8 Aug 2022 17:08:58 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id gk3so19453637ejb.8;
-        Mon, 08 Aug 2022 17:08:58 -0700 (PDT)
+        with ESMTP id S234033AbiHIAM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Aug 2022 20:12:27 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA7512AFC;
+        Mon,  8 Aug 2022 17:12:27 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id h28so9423868pfq.11;
+        Mon, 08 Aug 2022 17:12:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ooPUbC+s3/fZoFqwQQ3XHm5MoWraTII+HFvO9mvXWIs=;
-        b=QJOBwz7B/8+kTBHwan7ipOs29vVD3r+slDEtVOEzJgU9loS9CDpMz8yZp9QO6XQoYF
-         nWseKz5x/p5k9dLHI74QFaUIpaCNMSmeIYVS9cClyH5WQMM/Hh47RzZiB2RtB2a/JtDn
-         Igw68CrnMY37+fs6J9Xkd39tOJLMp5N5//94CzsED76zI0c3Q2hbOSYD1pj1cMJfTSoB
-         xnt+iRK7GeSmyzK11XkEJojrdsP3yQJAH2j3ahvaAwrpnDg2IaGalS4buznNw0y3deo2
-         kBJqiVD7YEbRsJqd68nHoteVzO4eJ1R6CYfxSYZwdZr+9xmD3/LL3yd/5lycHfBv45Go
-         okRg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wWVSWwBjUjhre+TPE3Gad01Q+7UOwhiBi4KtMcK9pqE=;
+        b=VWid3e0Jq3IOssNjMVAGL4s3DYu8gO/IysbvXN4xo+92ikwKo+v7cScLS8TOy/C7u4
+         lLQ777aZVuif9S4vcIXq5XItQ8N/HNK8DtxJJAkTa9McKOIxY6wFK9cLL3WLFtYkq5NL
+         OV6Kj8xSZkevywVuqHS/Nb51UGoITnbLrsrVm2SJkSkbLjo3i4XqutTccMck2klxgp1D
+         C2WQlG8al0agtuhrXTeYPgJAYARThigS1BqhyApuCeeK9ZlSJuQ6LEClr7drGOWEqOCU
+         51xH3FrBanS48KMUJsppZbXJz6iytmMAaPWoy1pIHhLVgvDy8MoTF1A/ca14r8u2e7b1
+         uKNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ooPUbC+s3/fZoFqwQQ3XHm5MoWraTII+HFvO9mvXWIs=;
-        b=1eWJw2OYOw5fzTe+mBBeHsqumTEBkg6uz07u8tJ0dhOen8IgUQetY8s9SKigSZmhVx
-         v76Xu1nOvLd8yUeuyIFxUHduDfNmbaOA+2o/Z8d1yoVQUREJ8IaPk/qCZP82Sxmp/8ml
-         ElHb26iR2NBYWNX5fDTyqLP9Vve0Xlqrzx1xld8AA6BkXdBYU2wHfPfZCr65oJIx2kDX
-         xScBp+HmaNhygX2OYmDQyVzKC716/pCNXKmlg77EyK+F7DIZUMKoq7Cx/46oRkGudfRC
-         HG0mh/9SxFuI8sWF61+q1feYgLQ6By8EapTeWgx3ZfWH8Gw8E4hQhpgz9wKAOBazcgvI
-         FUhQ==
-X-Gm-Message-State: ACgBeo1//K5Q9gYzXC/nLy/TClGgI8Bo/8fuwfcgAJEbwRSQfE/NewyS
-        udZljolAZ1TFw7InaP/p5pTV86WjGNVmkql9B4fvgpePEmiqIg==
-X-Google-Smtp-Source: AA6agR7GU6ZXlZ7/kPtCCKiYfiFRx7LElyf4lQzxJYnIzlu/7qwhquQQqtAqOHWOf61ZCn1izfx+GQcAvfhcm7l9+vQ=
-X-Received: by 2002:a17:906:29d:b0:6f0:18d8:7be0 with SMTP id
- 29-20020a170906029d00b006f018d87be0mr15021258ejf.561.1660003736789; Mon, 08
- Aug 2022 17:08:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220805232834.4024091-1-luiz.dentz@gmail.com>
- <20220805174724.12fcb86a@kernel.org> <CABBYNZLPkVHJRtGkfV8eugAgLoSxK+jf_-UwhSoL2n=9J9TFcw@mail.gmail.com>
- <20220808143011.7136f07a@kernel.org> <CABBYNZKmuUpmUChz+tixFCOE_pUeaJq0Sbqkvjy54zd9H=GB4A@mail.gmail.com>
- <CABBYNZJXdt_aL2SOH_Eu9PDaLhHksTRJDBPKSDitXKURPqG-7w@mail.gmail.com> <20220808164614.3b4b5a25@kernel.org>
-In-Reply-To: <20220808164614.3b4b5a25@kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wWVSWwBjUjhre+TPE3Gad01Q+7UOwhiBi4KtMcK9pqE=;
+        b=XI4y/lDj5RU5tz5408rWfV3teXk/Rh+oU3t8Thu5+cUAb+/K9vnA0wDxF3UQ+Unq86
+         VMTbbLk1mswoXyDTekzgOxWO3Ir5y3e73aZ7i/EGBrCHwDyNNGrR2j1wF/fQcV/AUKt5
+         bbFENAsRq79wjRF3fuiq4/pE1QkyPhzYwTVfLuIB19M7l/hJ2qsgACnOkCisJiWaYFoK
+         nILK01Pe5QSKGZVPPE9rJP97crF9gtbVx7Pg7W8gxAWVPtNKqv5FWgNRCFlYqCm9xK7c
+         RPFfpaBxZ5m7ErrKTZKiSA/0Be6oeOh/vjPzhguyV7n0lyNK0U+DTuW6pNWuUcuCdKs1
+         mqdg==
+X-Gm-Message-State: ACgBeo19kVS8hj8zztmkPEHmKkaTVbrmVNTtw47ha6m4FpptE52L2qnA
+        IH8nBocH+U6jCDXnjY+tf2NlM2dRWNM97w==
+X-Google-Smtp-Source: AA6agR4hG+U/cpehPdz44GuaSY2eAbaf+5G4VCMVkfPfEu6I6gLgEk1TZOqkKVFK3jxIRKi4+AT8BA==
+X-Received: by 2002:a63:7847:0:b0:41c:9e74:21e2 with SMTP id t68-20020a637847000000b0041c9e7421e2mr17696573pgc.455.1660003946502;
+        Mon, 08 Aug 2022 17:12:26 -0700 (PDT)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id g6-20020a63fa46000000b0041c35462316sm6972177pgk.26.2022.08.08.17.12.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 17:12:25 -0700 (PDT)
 From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 8 Aug 2022 17:08:45 -0700
-Message-ID: <CABBYNZLe1rrvstMTXQ_YQxE9dgEwnemYmi21n6BnOEFaWW_zGA@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2022-08-05
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-08-08
+Date:   Mon,  8 Aug 2022 17:12:24 -0700
+Message-Id: <20220809001224.412807-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -69,39 +66,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+The following changes since commit 2e64fe4624d19bc71212aae434c54874e5c49c5a:
 
-On Mon, Aug 8, 2022 at 4:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 8 Aug 2022 14:51:00 -0700 Luiz Augusto von Dentz wrote:
-> > Is there a script or something which can be used to verify the Fix
-> > tags? Or you can actually tell me what are the hashes that appear not
-> > to be on net.
->
-> Yes:
->
-> https://raw.githubusercontent.com/gregkh/gregkh-linux/master/work/verify_fixes.sh
+  selftests: add few test cases for tap driver (2022-08-05 08:59:15 +0100)
 
-Perfect, looks like I missed 2 but the script find them out:
+are available in the Git repository at:
 
-Commit: 4896e034bdd1 ("Bluetooth: ISO: Fix memory corruption")
-    Fixes tag: Fixes: f764a6c2c1e4: ("Bluetooth: ISO: Add broadcast support")
-    Has these problem(s):
-        - missing space between the SHA1 and the subject
-        - Subject does not match target commit subject
-          Just use
-            git log -1 --format='Fixes: %h ("%s")'
-Commit: 25d6bec1685d ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm
-regression")
-    Fixes tag: Fixes: d0be8347c623: ("Bluetooth: L2CAP: Fix
-use-after-free caused by l2cap_chan_put")
-    Has these problem(s):
-        - missing space between the SHA1 and the subject
-        - Subject does not match target commit subject
-          Just use
-            git log -1 --format='Fixes: %h ("%s")'
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-08-08
 
-I fixed those and it now comes empty which I guess is what we expect.
+for you to fetch changes up to 1d1ab5d39be7590bb2400418877bff43da9e75ec:
 
--- 
-Luiz Augusto von Dentz
+  Bluetooth: ISO: Fix not using the correct QoS (2022-08-08 17:06:36 -0700)
+
+----------------------------------------------------------------
+bluetooth pull request for net:
+
+ - Fixes various issues related to ISO channel/socket support
+ - Fixes issues when building with C=1
+ - Fix cancel uninitilized work which blocks syzbot to run
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      Bluetooth: ISO: unlock on error path in iso_sock_setsockopt()
+
+Luiz Augusto von Dentz (8):
+      Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression
+      Bluetooth: hci_conn: Fix updating ISO QoS PHY
+      Bluetooth: ISO: Fix info leak in iso_sock_getsockopt()
+      Bluetooth: ISO: Fix memory corruption
+      Bluetooth: hci_event: Fix build warning with C=1
+      Bluetooth: MGMT: Fixes build warnings with C=1
+      Bluetooth: ISO: Fix iso_sock_getsockopt for BT_DEFER_SETUP
+      Bluetooth: ISO: Fix not using the correct QoS
+
+Soenke Huster (1):
+      Bluetooth: Fix null pointer deref on unexpected status event
+
+Tetsuo Handa (1):
+      Bluetooth: don't try to cancel uninitialized works at mgmt_index_removed()
+
+ net/bluetooth/aosp.c       | 15 ++++++++++++---
+ net/bluetooth/hci_conn.c   | 11 ++---------
+ net/bluetooth/hci_event.c  |  7 +++++--
+ net/bluetooth/iso.c        | 35 +++++++++++++++++++++++------------
+ net/bluetooth/l2cap_core.c | 13 ++++++-------
+ net/bluetooth/mgmt.c       |  7 ++++---
+ net/bluetooth/msft.c       | 15 ++++++++++++---
+ 7 files changed, 64 insertions(+), 39 deletions(-)
