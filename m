@@ -2,167 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B13C158E1C7
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 23:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9146A58E1CE
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 23:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbiHIV33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 17:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        id S229753AbiHIVcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 17:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiHIV3Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 17:29:16 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA53367CBA
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 14:29:13 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id s11so2852628qtx.6
-        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 14:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=aX6ITTLIpOJpEyMZ6gr0hNentDS0pw4+7wwlwAWZwHM=;
-        b=ERMwqJjl3QbRrikFFgWhJ6060Q9X/z19Ugm+GeYU/AxaFAe+/f0K3TAFvWcr5/zXq4
-         iyPCPA1U2X2z0kM72KSbSYD4sVN4NXCRDeXGquu/XaaSgnPqim7z6m1nTRgVBWivgQLc
-         lU0kB/dgTiZ5E7UxhQsLUDiYlI2u86Mtl/F3qHtLm/PrAdn9CgeUUkvVoqXFd0dEd0ei
-         aS/lyBroPXbFRySYvq4jd2E3Ior1Fncs504eeoknaLq/snpuHPKk4twTS9tVVNioiKzJ
-         OUKabOJpokem7pUwXHb6yFryB0aQJWAQVAif7NcWNHNP3xaSUhV6X7DEfgSgAgplAeOg
-         rscA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=aX6ITTLIpOJpEyMZ6gr0hNentDS0pw4+7wwlwAWZwHM=;
-        b=m+S8Jwf6HFUmt91xgTS1jNIUjluhfti/XCPsfmqfjyETYzqpyTDAogPl1hwGbuqY/O
-         W6UKQmLDcyz7PkqVNOVyxec9fAkjB192vwWHEaT4Iqy3NcKKoQTV7SImPHOtS+I8BUkF
-         9CvsEmkbnMLGEwf2OCsa6zqYrSjpTAO7zR6G20ST6XZ7elbyhNLyqzHniAINhehbZUtu
-         QQvIT2gDzyIDs3/+ZJH542Yn9RSquAjdrCwbc9VE8rCdQdOt7OT+LRtOYVTk6pznTmss
-         DVpGa5apErQEzRIxexewMofMXp+tFR3UnOmc5oNNxe8k+yz3trMK3uzu4RNDi5YjOXIi
-         MWeA==
-X-Gm-Message-State: ACgBeo1J9iI+dF5ytEsroipbqd6XeBW7MtcV9prBmph/4k8cvq9JjEVn
-        BCLQM4UH+PHx8p6OXCYBknpF1on5WGHoGWDIc3wg8Q==
-X-Google-Smtp-Source: AA6agR7Td891FXU6QZkjIokNG+scKTJM3TaU2KL/5YCRcl3nNvzwHRrarmqRe9y8V5HpNd8h+W4g50lRsyD/agMRfZ8=
-X-Received: by 2002:a05:622a:1984:b0:342:ea3d:696e with SMTP id
- u4-20020a05622a198400b00342ea3d696emr15006739qtc.7.1660080552657; Tue, 09 Aug
- 2022 14:29:12 -0700 (PDT)
+        with ESMTP id S229778AbiHIVbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 17:31:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6F05464B;
+        Tue,  9 Aug 2022 14:31:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB39EB818DF;
+        Tue,  9 Aug 2022 21:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 159D1C433D6;
+        Tue,  9 Aug 2022 21:31:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660080709;
+        bh=SS+deqcBXGLJ8B3p5rtnrZHq5rnI1dPPjVS73GOWDas=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KEPHMIYETTUdl0ZRoDFMWs2bTrQTbl7zwwy5BTv2LxVdeCjE0b/DHlytUBiPTms+Q
+         E09/KiKRiOg09QY67nA+X2UhxnO4RewvrCXDwL0NM2xmObE5gk4I29GCUmBJMGMS7k
+         7HETxwdksljoByowqcw4jVn5Dwj7Qn0hnIAKFAgSBf1yoKiX4r67BlkELIua+YI5Uu
+         QWzVSMqE2K+aLlVe5YmCDhoYZS5UaDHgJvIetlSh1aLrsSLQIx9Bjjc82FlxpD7UqL
+         GOhcr2b3+b4YemMJZMNUDRoT2t588IoAKVmNz72R93do51Izv96Q6IXhjVNvA4jYa7
+         GkTRPMFY3Q0Eg==
+Received: by pali.im (Postfix)
+        id 6259EC1F; Tue,  9 Aug 2022 23:31:46 +0200 (CEST)
+Date:   Tue, 9 Aug 2022 23:31:46 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Michal =?utf-8?B?U3VjaMOhbmVr?= <msuchanek@suse.de>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        netdev <netdev@vger.kernel.org>, u-boot <u-boot@lists.denx.de>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>
+Subject: Re: ethernet<n> dt aliases implications in U-Boot and Linux
+Message-ID: <20220809213146.m6a3kfex673pjtgq@pali>
+References: <CAJ+vNU05_xH4b8DFVJLpiDTkJ_z9MrBFvf1gSz9P1KXy9POU7w@mail.gmail.com>
+ <5914cae0-e87b-fb94-85dd-33311fc84c52@seco.com>
+ <20220808210945.GP17705@kitsune.suse.cz>
+ <20220808143835.41b38971@hermes.local>
+ <20220808214522.GQ17705@kitsune.suse.cz>
+ <53f91ad4-a0d1-e223-a173-d2f59524e286@seco.com>
 MIME-Version: 1.0
-References: <1660034866-1844-1-git-send-email-liyonglong@chinatelecom.cn>
-In-Reply-To: <1660034866-1844-1-git-send-email-liyonglong@chinatelecom.cn>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Tue, 9 Aug 2022 17:28:56 -0400
-Message-ID: <CADVnQykvc1oXP=jLeimcRuZRHoN+q7S9VPFky7otYdbEedom7w@mail.gmail.com>
-Subject: Re: [PATCH] tcp: adjust rcvbuff according copied rate of user space
-To:     Yonglong Li <liyonglong@chinatelecom.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <53f91ad4-a0d1-e223-a173-d2f59524e286@seco.com>
+User-Agent: NeoMutt/20180716
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 4:48 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
->
-> it is more reasonable to adjust rcvbuff by copied rate instead
-> of copied buff len.
->
-> Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-> ---
+On Tuesday 09 August 2022 16:48:23 Sean Anderson wrote:
+> On 8/8/22 5:45 PM, Michal Suchánek wrote:
+> > On Mon, Aug 08, 2022 at 02:38:35PM -0700, Stephen Hemminger wrote:
+> >> On Mon, 8 Aug 2022 23:09:45 +0200
+> >> Michal Suchánek <msuchanek@suse.de> wrote:
+> >> 
+> >> > On Mon, Aug 08, 2022 at 03:57:55PM -0400, Sean Anderson wrote:
+> >> > > Hi Tim,
+> >> > > 
+> >> > > On 8/8/22 3:18 PM, Tim Harvey wrote:  
+> >> > > > Greetings,
+> >> > > > 
+> >> > > > I'm trying to understand if there is any implication of 'ethernet<n>'
+> >> > > > aliases in Linux such as:
+> >> > > >         aliases {
+> >> > > >                 ethernet0 = &eqos;
+> >> > > >                 ethernet1 = &fec;
+> >> > > >                 ethernet2 = &lan1;
+> >> > > >                 ethernet3 = &lan2;
+> >> > > >                 ethernet4 = &lan3;
+> >> > > >                 ethernet5 = &lan4;
+> >> > > >                 ethernet6 = &lan5;
+> >> > > >         };
+> >> > > > 
+> >> > > > I know U-Boot boards that use device-tree will use these aliases to
+> >> > > > name the devices in U-Boot such that the device with alias 'ethernet0'
+> >> > > > becomes eth0 and alias 'ethernet1' becomes eth1 but for Linux it
+> >> > > > appears that the naming of network devices that are embedded (ie SoC)
+> >> > > > vs enumerated (ie pci/usb) are always based on device registration
+> >> > > > order which for static drivers depends on Makefile linking order and
+> >> > > > has nothing to do with device-tree.
+> >> > > > 
+> >> > > > Is there currently any way to control network device naming in Linux
+> >> > > > other than udev?  
+> >> > > 
+> >> > > You can also use systemd-networkd et al. (but that is the same kind of mechanism)
+> >> > >   
+> >> > > > Does Linux use the ethernet<n> aliases for anything at all?  
+> >> > > 
+> >> > > No :l  
+> >> > 
+> >> > Maybe it's a great opportunity for porting biosdevname to DT based
+> >> > platforms ;-)
+> >> 
+> >> Sorry, biosdevname was wrong way to do things.
+> >> Did you look at the internals, it was dumpster diving as root into BIOS.
+> > 
+> > When it's BIOS what defines the names then you have to read them from
+> > the BIOS. Recently it was updated to use some sysfs file or whatver.
+> > It's not like you would use any of that code with DT, anyway.
+> > 
+> >> Systemd-networkd does things in much more supportable manner using existing
+> >> sysfs API's.
+> > 
+> > Which is a dumpster of systemd code, no thanks.
+> > 
+> > I want my device naming independent of the init system, especially if
+> > it's systemd.
+> 
+> Well, there's always nameif...
+> 
+> That said, I have made [1] for people using systemd-networkd.
+> 
+> --Sean
+> 
+> [1] https://github.com/systemd/systemd/pull/24265
 
-Thanks for sending out the patch. My sense is that this would need a
-more detailed commit description describing the algorithm change, the
-motivation for the change, and justifying the added complexity and
-state by showing some meaningful performance test results that
-demonstrate some improvement.
+Hello!
 
->  include/linux/tcp.h  |  1 +
->  net/ipv4/tcp_input.c | 16 +++++++++++++---
->  2 files changed, 14 insertions(+), 3 deletions(-)
->
-> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> index a9fbe22..18e091c 100644
-> --- a/include/linux/tcp.h
-> +++ b/include/linux/tcp.h
-> @@ -410,6 +410,7 @@ struct tcp_sock {
->                 u32     space;
->                 u32     seq;
->                 u64     time;
-> +               u32     prior_rate;
->         } rcvq_space;
->
->  /* TCP-specific MTU probe information. */
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index ab5f0ea..2bdf2a5 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -544,6 +544,7 @@ static void tcp_init_buffer_space(struct sock *sk)
->         tcp_mstamp_refresh(tp);
->         tp->rcvq_space.time = tp->tcp_mstamp;
->         tp->rcvq_space.seq = tp->copied_seq;
-> +       tp->rcvq_space.prior_rate = 0;
->
->         maxwin = tcp_full_space(sk);
->
-> @@ -701,6 +702,7 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
->  void tcp_rcv_space_adjust(struct sock *sk)
->  {
->         struct tcp_sock *tp = tcp_sk(sk);
-> +       u64 pre_copied_rate, copied_rate;
->         u32 copied;
->         int time;
->
-> @@ -713,7 +715,14 @@ void tcp_rcv_space_adjust(struct sock *sk)
->
->         /* Number of bytes copied to user in last RTT */
->         copied = tp->copied_seq - tp->rcvq_space.seq;
-> -       if (copied <= tp->rcvq_space.space)
-> +       copied_rate = copied * USEC_PER_SEC;
-> +       do_div(copied_rate, time);
-> +       pre_copied_rate = tp->rcvq_space.prior_rate;
-> +       if (!tp->rcvq_space.prior_rate) {
-> +               pre_copied_rate = tp->rcvq_space.space * USEC_PER_SEC;
-> +               do_div(pre_copied_rate, time);
-> +       }
-> +       if (copied_rate <= pre_copied_rate || !pre_copied_rate)
->                 goto new_measure;
->
->         /* A bit of theory :
-> @@ -736,8 +745,8 @@ void tcp_rcv_space_adjust(struct sock *sk)
->                 rcvwin = ((u64)copied << 1) + 16 * tp->advmss;
->
->                 /* Accommodate for sender rate increase (eg. slow start) */
-> -               grow = rcvwin * (copied - tp->rcvq_space.space);
-> -               do_div(grow, tp->rcvq_space.space);
-> +               grow = rcvwin * (copied_rate - pre_copied_rate);
-> +               do_div(grow, pre_copied_rate);
->                 rcvwin += (grow << 1);
->
->                 rcvmem = SKB_TRUESIZE(tp->advmss + MAX_TCP_HEADER);
-> @@ -755,6 +764,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
->                 }
->         }
->         tp->rcvq_space.space = copied;
-> +       tp->rcvq_space.prior_rate = pre_copied_rate;
+In some cases "label" DT property can be used also as interface name.
+For example this property is already used by DSA kernel driver.
 
-Shouldn't that line be:
+I created very simple script which renames all interfaces in system to
+their "label" DT property (if there is any defined).
 
-   tp->rcvq_space.prior_rate = copied_rate;
+#!/bin/sh
+for iface in `ls /sys/class/net/`; do
+	for of_node in of_node device/of_node; do
+		if test -e /sys/class/net/$iface/$of_node/; then
+			label=`cat /sys/class/net/$iface/$of_node/label 2>/dev/null`
+			if test -n "$label" && test "$label" != "$iface"; then
+				echo "Renaming net interface $iface to $label..."
+				up=$((`cat /sys/class/net/$iface/flags 2>/dev/null || echo 1` & 0x1))
+				if test "$up" != "0"; then
+					ip link set dev $iface down
+				fi
+				ip link set dev $iface name "$label" && iface=$label
+				if test "$up" != "0"; then
+					ip link set dev $iface up
+				fi
+			fi
+			break
+		fi
+	done
+done
 
-Otherwise, AFAICT the patch could preserve forever in
-tp->rcvq_space.prior_rate the very first rate that was computed, since
-the top of the patch does:
-
- +       pre_copied_rate = tp->rcvq_space.prior_rate;
-
-and the bottom of the patch does:
-
- +       tp->rcvq_space.prior_rate = pre_copied_rate;
-
-best regards,
-neal
+Maybe it would be better first to use "label" and then use ethernet alias?
