@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F14158D8BE
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E356858D8CC
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 14:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241560AbiHIM31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 08:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
+        id S242651AbiHIMhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 08:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230380AbiHIM30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:29:26 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0F51704C
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 05:29:24 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id s9so12825032ljs.6
-        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 05:29:24 -0700 (PDT)
+        with ESMTP id S239452AbiHIMhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 08:37:31 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96975186D6
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 05:37:29 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id w15so12868016ljw.1
+        for <netdev@vger.kernel.org>; Tue, 09 Aug 2022 05:37:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:from:references:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=3+KBkpV9m1bxJhsMtzeVGV+drTP66AAmd/wpftn5OL4=;
-        b=E6FupvpTXxk3V7KyG/UrXwV0+9ePJHgQQbeBBwxS0LtgXCHuLfAblq2be3zPHNhFB/
-         vU1EKkk3gRW0HTgiBX5BfrJuD1WggYV2YPN8v3MuvYDa3wYj8nRV2W4n1joyK0aa1b+4
-         l8DJQzOPlXgjSBkJWS4VIsnVC0XlC5ryT1cJo=
+        bh=S/vY+pHOAJw8ND8t13oTQazIac4o9LGilFJcZDyaByQ=;
+        b=Mrb2Al4kVt5O3KiUdyGMMX9sVayGDb/FyFERwnGXD0vImjgWnB9fEsdatVsTaDfecG
+         tvBp1u1TXVZ3p9+RiYyop/1CWPisZcwCgR9LRfnwCJTDts+eeXMqzsNrHTfIXOK8bsxg
+         7oIhTFZA3U3EMwPCbiMwRNLvtfZtB21DPskCo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:from:references:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=3+KBkpV9m1bxJhsMtzeVGV+drTP66AAmd/wpftn5OL4=;
-        b=0G8UOJVFwRRMBW/Q5SGZKwhRBGVWfGSJrzPJYk5W4swiaz1Df1xjzw2aePyPpcAkzj
-         sOyasPKIj6qcxkd+5WEMKZ/ZjbSeKjehyqni8xxuyGGuSjgJbYrmDQMc4TKwmITjTiai
-         UW9dvfhzX66j2JzVdE4j+l6AASh1bYan4e/0pfA8o2WBvkjgix0CVDGlrwcuhBZsIK9l
-         xkMUr9yRUiB6+thznSQdN+IbHbfmzfuB7R/3psYBB3Ag74SBf6rgJl4wdYFF4uzMCk/w
-         65gw0Y+QeLMMzu5yJ8DJSPVCpqi8EF/lMJTu5XfvF+c4GKhkK/irvFHAuCavikYZmhQN
-         hMFg==
-X-Gm-Message-State: ACgBeo3T6xkNXfBQCZ1DyaRYMaz+ZCZjWnWvcwVhZiSGjRnw+hZ1c7DQ
-        EIycM3dlJXvu8dvpUBpOA1GOzQ==
-X-Google-Smtp-Source: AA6agR7f9t6NUk6GIPJFQim/LeGnjxzz1Ffi5AyCR+zSh+hscpnQ+tPNX0g+xvGZG32bZsniYdwOeQ==
-X-Received: by 2002:a2e:8008:0:b0:25f:dd78:8312 with SMTP id j8-20020a2e8008000000b0025fdd788312mr3002868ljg.127.1660048162776;
-        Tue, 09 Aug 2022 05:29:22 -0700 (PDT)
+        bh=S/vY+pHOAJw8ND8t13oTQazIac4o9LGilFJcZDyaByQ=;
+        b=6lKdznlp4WoIu0TlbQ5yq3UWaVilvFs3LDfsqvMGkhNcVXXnLcQts+sxfaEGHpGdux
+         kwlX4e5a0UDNkgGz7g+OQHBxER/QDxa95r/qUrIUK6khmHAln8c1oBBfifoszM7mTtfr
+         8VhRQ3aMk2gC/MUef7p2j2HIRcoDQGpuoyt/mbnAaZiEU1Q+rgPwHEV+ATVG03rjoC+s
+         LfR57PbnyqbiB7IXmb3Crx/w64nNvW2rF+LFv4J/SbaQdt/S5FXlLGN5cNsGJFn54p4c
+         Lc28yL7HBGQ4hod43P1apu6wBImzd1Waw+twTQOwd1HTBmRHFLEvROmiXWLsFiPpRE8D
+         R/8w==
+X-Gm-Message-State: ACgBeo0H1TI5HEv9rfxxz4bdey4QtbYPMicqYv8j+RVnxc6GB+eg7p4h
+        Yja0BPT9jydPTdTJHXjahzG//Q==
+X-Google-Smtp-Source: AA6agR7VK6CZDk/4NkzM6eVPldsJwBnFAODpPxiIOJfOv7G8gfUodLs+podMq64PJ/ngkiXV2YfR9A==
+X-Received: by 2002:a05:651c:222:b0:25e:4ae2:c5ae with SMTP id z2-20020a05651c022200b0025e4ae2c5aemr7207953ljn.440.1660048647869;
+        Tue, 09 Aug 2022 05:37:27 -0700 (PDT)
 Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id y8-20020ac24208000000b0047f8e9826a1sm1752461lfh.31.2022.08.09.05.29.13
+        by smtp.gmail.com with ESMTPSA id c6-20020a056512324600b0048b2245519asm1753471lfr.192.2022.08.09.05.37.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 05:29:19 -0700 (PDT)
-Message-ID: <79b1b62c-8ea1-5f47-bf80-3e003f7a3ac7@rasmusvillemoes.dk>
-Date:   Tue, 9 Aug 2022 14:29:12 +0200
+        Tue, 09 Aug 2022 05:37:25 -0700 (PDT)
+Message-ID: <36677eab-6407-afd1-4cbf-a90be9554c8b@rasmusvillemoes.dk>
+Date:   Tue, 9 Aug 2022 14:37:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 11/16] time: optimize tick_check_preferred()
+Subject: Re: [PATCH 03/16] lib/test_bitmap: don't test bitmap_set if nbits ==
+ 0
 Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
+To:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Alexey Klimov <aklimov@redhat.com>,
@@ -90,20 +89,20 @@ Cc:     linux-kernel@vger.kernel.org,
         Song Liu <songliubraving@fb.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Valentin Schneider <vschneid@redhat.com>,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Vlastimil Babka <vbabka@suse.cz>, Yonghong Song <yhs@fb.com>,
         linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org
 References: <20220718192844.1805158-1-yury.norov@gmail.com>
- <20220718192844.1805158-12-yury.norov@gmail.com> <87fsi9rcxu.ffs@tglx>
- <87czdbq7up.ffs@tglx> <YvE8HGXFDicr/zI5@yury-laptop>
+ <20220718192844.1805158-4-yury.norov@gmail.com>
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <YvE8HGXFDicr/zI5@yury-laptop>
+In-Reply-To: <20220718192844.1805158-4-yury.norov@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -111,37 +110,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/08/2022 18.38, Yury Norov wrote:
-> On Mon, Aug 08, 2022 at 01:42:54PM +0200, Thomas Gleixner wrote:
->> On Sat, Aug 06 2022 at 10:30, Thomas Gleixner wrote:
->>> On Mon, Jul 18 2022 at 12:28, Yury Norov wrote:
->>>
->>>> tick_check_preferred() calls cpumask_equal() even if
->>>> curdev->cpumask == newdev->cpumask. Fix it.
->>>
->>> What's to fix here? It's a pointless operation in a slow path and all
->>> your "fix' is doing is to make the code larger.
-> 
-> Pointless operation in a slow path is still pointless.
->  
->> In fact cpumask_equal() should have the ptr1 == ptr2 check, so you don't
->> have to add it all over the place.
-> 
-> This adds to the image size:
-> add/remove: 1/1 grow/shrink: 24/3 up/down: 507/-46 (461)
-> 
-> The more important, cpumask shouldn't check parameters because this is
-> an internal function. This whole series point is about adding such checks
-> under DEBUG_BITMAP config, and not affecting general case.
+On 18/07/2022 21.28, Yury Norov wrote:
+> Don't test bitmap_set(bitmap, start, 0) as it's useless, most probably
+> a sign of error in real code, 
 
-Yury, calling bitmap_equal (and by extension cpumask_equal) with
-something that happens in some cases to be the same pointer for both
-operands is not a bug.
+No it's not. The nbits can easily be the result of some computation that
+ended up resulting in 0 being the right number to copy (or set, or
+whatnot), and it's not unreasonable to _not_ check in the caller for
+that special case, but rather rely on bitmap_set() to behave sanely - it
+has perfectly well-defined semantics to "set 0 bits starting at @start".
 
-If you want to optimize that case, add a check in __bitmap_equal(), it
-will add a few bytes (maybe 2-4 instructions) to the kernel image, much
-less than what this whole series does by open-coding that check all
-over, and since it's comparing two registers, it won't in any way affect
-the performance of the case where the pointers are distinct.
+The same way that memset() and memcpy() and memcmp() and countless other
+functions have perfectly well-defined semantics with a length of 0, and
+we don't add caller-side checks for those either.
+
+NAK on this series.
 
 Rasmus
