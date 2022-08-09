@@ -2,118 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C9758D4B8
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 09:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F102A58D4F2
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 09:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239320AbiHIHhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 03:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60492 "EHLO
+        id S237933AbiHIHyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 03:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237824AbiHIHhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 03:37:03 -0400
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD1B20F60
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 00:37:00 -0700 (PDT)
-Received: from imsva.intranet.prolan.hu (imss.intranet.prolan.hu [10.254.254.252])
-        by fw2.prolan.hu (Postfix) with ESMTPS id 1CE6E7F46C;
-        Tue,  9 Aug 2022 09:36:56 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0703434064;
-        Tue,  9 Aug 2022 09:36:56 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E3EDB3405A;
-        Tue,  9 Aug 2022 09:36:55 +0200 (CEST)
-Received: from fw2.prolan.hu (unknown [10.254.254.253])
-        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
-        Tue,  9 Aug 2022 09:36:55 +0200 (CEST)
-Received: from sinope.intranet.prolan.hu (sinope.intranet.prolan.hu [10.254.0.237])
-        by fw2.prolan.hu (Postfix) with ESMTPS id B275E7F46C;
-        Tue,  9 Aug 2022 09:36:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
-        t=1660030615; bh=7yJ6IVYVLaNCDNqrW/hsBvDqBYC7JP/mDUiChoOwEnw=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=zPGFt0P2Z631uopVIw5+Oe9HUOuqbR1ZztXzqgBn/HB0k3aXRVOJKUku49Pf+aU3c
-         WsWnDKoWBqUuHSaMq2rTpWmJYQzipJz4EjymJGMHds2gNEIxqQC7NLFqR5EBGdldGo
-         7lIPVKs9UiVNP1FhZGtrdiCzckeHye4ehkSZO/jIA9qniTMg5xrULVon0b6t3nQyQM
-         NoVNQ2f2rzoGqxASEu114g+go06QR4iqsqqE/dTFR9oDw1NQ/kRRhyl0KYoo2+wAkT
-         tnM6/Cd4xBZhAij/oJw7odYRJdGsReOK21BN9Axgz9VZEkffAHIotXGVBZtOT8zkcW
-         G+W+UTTeUWNcw==
-Received: from atlas.intranet.prolan.hu (10.254.0.229) by
- sinope.intranet.prolan.hu (10.254.0.237) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id
- 15.1.2507.9; Tue, 9 Aug 2022 09:36:55 +0200
-Received: from atlas.intranet.prolan.hu ([fe80::9c8:3400:4efa:8de7]) by
- atlas.intranet.prolan.hu ([fe80::9c8:3400:4efa:8de7%11]) with mapi id
- 15.01.2507.009; Tue, 9 Aug 2022 09:36:55 +0200
-From:   =?iso-8859-2?Q?Cs=F3k=E1s_Bence?= <Csokas.Bence@prolan.hu>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] fec: Allow changing the PPS channel
-Thread-Topic: [PATCH] fec: Allow changing the PPS channel
-Thread-Index: AQHYqykV8NCDZGrvf0GRT4CMfxBJF62k6dsAgAFD/SM=
-Date:   Tue, 9 Aug 2022 07:36:55 +0000
-Message-ID: <da7f75cc331744fd8890ffd0f580f220@prolan.hu>
-References: <20220808131556.163207-1-csokas.bence@prolan.hu>,<YvEZvCmS9lSoyhDQ@hoboy.vegasvil.org>
-In-Reply-To: <YvEZvCmS9lSoyhDQ@hoboy.vegasvil.org>
-Accept-Language: hu-HU, en-US
-Content-Language: hu-HU
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.254.7.28]
-x-esetresult: clean, is OK
-x-esetid: 37303A29A91EF456617664
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S240068AbiHIHyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 03:54:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152DF21808
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 00:54:48 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oLK4c-0000UE-Cm
+        for netdev@vger.kernel.org; Tue, 09 Aug 2022 09:54:46 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 8A2CEC5563
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 07:53:20 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 3513AC555C;
+        Tue,  9 Aug 2022 07:53:20 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 0515bd6d;
+        Tue, 9 Aug 2022 07:53:19 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net 0/4] pull-request: can 2022-08-09
+Date:   Tue,  9 Aug 2022 09:53:13 +0200
+Message-Id: <20220809075317.1549323-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Hello Jakub, hello David,
 
->On Mon, Aug 08, 2022 at 03:15:57PM +0200, Cs=F3k=E1s Bence wrote:
->> +static ssize_t pps_ch_store(struct kobject *kobj, struct kobj_attribute=
- *attr, const char *buf, size_t count)
->> +{
->> +=A0=A0=A0=A0 struct device *dev =3D container_of(kobj, struct device, k=
-obj);
->> +=A0=A0=A0=A0 struct net_device *ndev =3D to_net_dev(dev);
->> +=A0=A0=A0=A0 struct fec_enet_private *fep =3D netdev_priv(ndev);
->> +=A0=A0=A0=A0 int enable =3D fep->pps_enable;
->> +=A0=A0=A0=A0 struct ptp_clock_request ptp_rq =3D { .type =3D PTP_CLK_RE=
-Q_PPS };
->> +
->> +=A0=A0=A0=A0 if (enable)
->> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 fep->ptp_caps.enable(&fep->ptp_cap=
-s, &ptp_rq, 0);
->> +
->> +=A0=A0=A0=A0 kstrtoint(buf, 0, &fep->pps_channel);
->> +
->> +=A0=A0=A0=A0 if (enable)
->> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 fep->ptp_caps.enable(&fep->ptp_cap=
-s, &ptp_rq, 1);
->
-> NAK.
->
-> Don't use a private, custom sysfs knob.=A0 The core PTP layer provides
-> an API for that already.
+this is a pull request of 4 patches for net/master.
 
-Does it? I seem to have missed it. Can you point me at some docs?
-Also, does it have support for setting pulse mode (i.e. high, low, toggle)?
+Fedor Pchelkin contributes 2 fixes for the j1939 CAN protcol.
 
-> Thanks,
-> Richard
+A patch by me for the ems_usb driver fixes an unaligned-access
+warning.
 
-Thanks,
-Bence
+Sebastian Würl's patch for the mcp251x driver fixes a race condition
+in the receive interrupt.
 
->
->> +
->> +=A0=A0=A0=A0 return count;
->> +}=
+regards,
+Marc
+
+---
+
+The following changes since commit b8c3bf0ed2edf2deaedba5f0bf0bb54c76dee71d:
+
+  Merge tag 'for-net-2022-08-08' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth (2022-08-08 20:59:07 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.0-20220809
+
+for you to fetch changes up to 72599394ad46226ca17a405fa0472078c3160c62:
+
+  can: mcp251x: Fix race condition on receive interrupt (2022-08-09 09:05:06 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-6.0-20220809
+
+----------------------------------------------------------------
+Fedor Pchelkin (2):
+      can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
+      can: j1939: j1939_session_destroy(): fix memory leak of skbs
+
+Marc Kleine-Budde (1):
+      can: ems_usb: fix clang's -Wunaligned-access warning
+
+Sebastian Würl (1):
+      can: mcp251x: Fix race condition on receive interrupt
+
+ drivers/net/can/spi/mcp251x.c | 18 +++++++++++++++---
+ drivers/net/can/usb/ems_usb.c |  2 +-
+ net/can/j1939/socket.c        |  5 ++++-
+ net/can/j1939/transport.c     |  8 +++++++-
+ 4 files changed, 27 insertions(+), 6 deletions(-)
+
+
