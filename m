@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86EEF58D391
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 08:08:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F63358D393
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 08:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbiHIGIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 02:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
+        id S236271AbiHIGIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 02:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236254AbiHIGIu (ORCPT
+        with ESMTP id S236251AbiHIGIu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 02:08:50 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E0B175B8;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215871D32B;
         Mon,  8 Aug 2022 23:08:49 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660025326;
+        s=2020; t=1660025327;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nn8HpLI7UMZhD6fnzbEyryarR8wsr+6bgYT5KEeEP0A=;
-        b=roIkkCSFzcDNDfC0+xYOxYiUh2+YjvbLD3Yk102EDbNnXNQIo7JvdPCsgSSMYQ90M36l6W
-        dzqgZqu1dqFc9Wy/Ja1FxhIN34xn2XSTj1gn8vlrA5ifVxeBKAnQqfgXAuwCuE1N97iLL8
-        Z3W5L2t/KQ9aOO8XjE4GHuO8lZ4zbXKTSvJ6a7Aoi6IuzSCfkCnGeZfEgyKwPHjw/KHiYb
-        +V9ZLY0v+r2dhCPZYumgHY6RvUozK2GUFa5YJrSgmEs3+AijboBWZQG4zNggUixY2s3nYQ
-        cN7iyVoOLh0vHBQwGaIEq+/1pAzYI8Br6qGcc1FYvcHcRk3CJU7rNaBhLdqf8g==
+        bh=Oh+N7C97zM8ubSg7JH/5CdwUFBpbVQtZQ0gN8jL99T8=;
+        b=JhKlaporNeHGSUIVcMOrGlmayFo8h1wzA6MEQtZothEw/AGOVfy2WWZm0sQHumtcxqYq1e
+        e4thXMokdbWbrDkDVj3fsiBNG4OJkAc0A2KJo9d1TTgHnN6MuAuOgx9ArhQObY4TuWwGyM
+        AWzWUKpQ95Qa0XeBy3jrOWWZPDCLR9h8U5qLqQjlvK0gyWs/+j4AR754MoiV3XMetcgdAt
+        5+1uasLPrbOOTDSyuolnCdCXlBKLgD7SNMWaoLwmPKahEdrtwyGhnDXLsQwa4amfzTZNIV
+        0sjIWsTSQwrqLrLgLNPfLrg9VFhlPOjfR8B1R3J0p/apVgoGSRobPUHxRMdP4g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660025326;
+        s=2020e; t=1660025327;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nn8HpLI7UMZhD6fnzbEyryarR8wsr+6bgYT5KEeEP0A=;
-        b=u6Fo5NjVwFiAgk35Dw3EOYZbZK/D5RvM5nZPL1zT/cJlbICKlCpGILiSfBD+fKC41s/qXz
-        Kni4VSI/0r/YWJCA==
+        bh=Oh+N7C97zM8ubSg7JH/5CdwUFBpbVQtZQ0gN8jL99T8=;
+        b=u7hNKA2navC0XTWG8eFXBCcKKfwDQAx0ind+KgP9valSIlxjNq1m/qlEUq8CBesrupTGyf
+        yUphy5CTHND0gKDQ==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
@@ -53,9 +53,9 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH bpf-next v2 1/2] bpf: Add BPF-helper for accessing CLOCK_TAI
-Date:   Tue,  9 Aug 2022 08:08:02 +0200
-Message-Id: <20220809060803.5773-2-kurt@linutronix.de>
+Subject: [PATCH bpf-next v2 2/2] selftests/bpf: Add BPF-helper test for CLOCK_TAI access
+Date:   Tue,  9 Aug 2022 08:08:03 +0200
+Message-Id: <20220809060803.5773-3-kurt@linutronix.de>
 In-Reply-To: <20220809060803.5773-1-kurt@linutronix.de>
 References: <20220809060803.5773-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -70,150 +70,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Add BPF-helper test case for CLOCK_TAI access. The added test verifies that:
 
-Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
-introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
-sensitive networks (TSN), where all nodes are synchronized by Precision Time
-Protocol (PTP), it's helpful to have the possibility to generate timestamps
-based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
-place, it becomes very convenient to correlate activity across different
-machines in the network.
+ * Timestamps are generated
+ * Timestamps are moving forward
+ * Timestamps are reasonable
 
-Use cases for such a BPF helper include functionalities such as Tx launch
-time (e.g. ETF and TAPRIO Qdiscs) and timestamping.
-
-Note: CLOCK_TAI is nothing new per se, only the NMI-safe variant of it is.
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-[Kurt: Wrote changelog and renamed helper]
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       | 13 +++++++++++++
- kernel/bpf/core.c              |  1 +
- kernel/bpf/helpers.c           | 14 ++++++++++++++
- tools/include/uapi/linux/bpf.h | 13 +++++++++++++
- 5 files changed, 42 insertions(+)
+ .../selftests/bpf/prog_tests/time_tai.c       | 74 +++++++++++++++++++
+ .../selftests/bpf/progs/test_time_tai.c       | 24 ++++++
+ 2 files changed, 98 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/time_tai.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_time_tai.c
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 20c26aed7896..a627a02cf8ab 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2349,6 +2349,7 @@ extern const struct bpf_func_proto bpf_get_numa_node_id_proto;
- extern const struct bpf_func_proto bpf_tail_call_proto;
- extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
- extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
-+extern const struct bpf_func_proto bpf_ktime_get_tai_ns_proto;
- extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
- extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
- extern const struct bpf_func_proto bpf_get_current_comm_proto;
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 534e33fb1029..7d1e2794d83e 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5341,6 +5341,18 @@ union bpf_attr {
-  *		**-EACCES** if the SYN cookie is not valid.
-  *
-  *		**-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
-+ *
-+ * u64 bpf_ktime_get_tai_ns(void)
-+ *	Description
-+ *		A nonsettable system-wide clock derived from wall-clock time but
-+ *		ignoring leap seconds.  This clock does not experience
-+ *		discontinuities and backwards jumps caused by NTP inserting leap
-+ *		seconds as CLOCK_REALTIME does.
-+ *
-+ *		See: **clock_gettime**\ (**CLOCK_TAI**)
-+ *	Return
-+ *		Current *ktime*.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5551,6 +5563,7 @@ union bpf_attr {
- 	FN(tcp_raw_gen_syncookie_ipv6),	\
- 	FN(tcp_raw_check_syncookie_ipv4),	\
- 	FN(tcp_raw_check_syncookie_ipv6),	\
-+	FN(ktime_get_tai_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index c1e10d088dbb..639437f36928 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2623,6 +2623,7 @@ const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto __weak;
-+const struct bpf_func_proto bpf_ktime_get_tai_ns_proto __weak;
- 
- const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
- const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 1f961f9982d2..a95eb9fb01ff 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -198,6 +198,18 @@ const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto = {
- 	.ret_type	= RET_INTEGER,
- };
- 
-+BPF_CALL_0(bpf_ktime_get_tai_ns)
+diff --git a/tools/testing/selftests/bpf/prog_tests/time_tai.c b/tools/testing/selftests/bpf/prog_tests/time_tai.c
+new file mode 100644
+index 000000000000..a31119823666
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/time_tai.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022 Linutronix GmbH */
++
++#include <test_progs.h>
++#include <network_helpers.h>
++
++#include "test_time_tai.skel.h"
++
++#include <time.h>
++#include <stdint.h>
++
++#define TAI_THRESHOLD	1000000000ULL /* 1s */
++#define NSEC_PER_SEC	1000000000ULL
++
++static __u64 ts_to_ns(const struct timespec *ts)
 +{
-+	/* NMI safe access to clock tai */
-+	return ktime_get_tai_fast_ns();
++	return ts->tv_sec * NSEC_PER_SEC + ts->tv_nsec;
 +}
 +
-+const struct bpf_func_proto bpf_ktime_get_tai_ns_proto = {
-+	.func		= bpf_ktime_get_tai_ns,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+};
++void test_time_tai(void)
++{
++	struct __sk_buff skb = {
++		.cb[0] = 0,
++		.cb[1] = 0,
++		.tstamp = 0,
++	};
++	LIBBPF_OPTS(bpf_test_run_opts, topts,
++		.data_in = &pkt_v4,
++		.data_size_in = sizeof(pkt_v4),
++		.ctx_in = &skb,
++		.ctx_size_in = sizeof(skb),
++		.ctx_out = &skb,
++		.ctx_size_out = sizeof(skb),
++	);
++	struct test_time_tai *skel;
++	struct timespec now_tai;
++	__u64 ts1, ts2, now;
++	int ret, prog_fd;
 +
- BPF_CALL_0(bpf_get_current_pid_tgid)
- {
- 	struct task_struct *task = current;
-@@ -1617,6 +1629,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_ktime_get_boot_ns:
- 		return &bpf_ktime_get_boot_ns_proto;
-+	case BPF_FUNC_ktime_get_tai_ns:
-+		return &bpf_ktime_get_tai_ns_proto;
- 	case BPF_FUNC_ringbuf_output:
- 		return &bpf_ringbuf_output_proto;
- 	case BPF_FUNC_ringbuf_reserve:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index f58d58e1d547..e174ad28aeb7 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5341,6 +5341,18 @@ union bpf_attr {
-  *		**-EACCES** if the SYN cookie is not valid.
-  *
-  *		**-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
-+ *
-+ * u64 bpf_ktime_get_tai_ns(void)
-+ *	Description
-+ *		A nonsettable system-wide clock derived from wall-clock time but
-+ *		ignoring leap seconds.  This clock does not experience
-+ *		discontinuities and backwards jumps caused by NTP inserting leap
-+ *		seconds as CLOCK_REALTIME does.
-+ *
-+ *		See: **clock_gettime**\ (**CLOCK_TAI**)
-+ *	Return
-+ *		Current *ktime*.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5551,6 +5563,7 @@ union bpf_attr {
- 	FN(tcp_raw_gen_syncookie_ipv6),	\
- 	FN(tcp_raw_check_syncookie_ipv4),	\
- 	FN(tcp_raw_check_syncookie_ipv6),	\
-+	FN(ktime_get_tai_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
++	/* Open and load */
++	skel = test_time_tai__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "tai_open"))
++		return;
++
++	/* Run test program */
++	prog_fd = bpf_program__fd(skel->progs.time_tai);
++	ret = bpf_prog_test_run_opts(prog_fd, &topts);
++	ASSERT_OK(ret, "test_run");
++
++	/* Retrieve generated TAI timestamps */
++	ts1 = skb.tstamp;
++	ts2 = skb.cb[0] | ((__u64)skb.cb[1] << 32);
++
++	/* TAI != 0 */
++	ASSERT_NEQ(ts1, 0, "tai_ts1");
++	ASSERT_NEQ(ts2, 0, "tai_ts2");
++
++	/* TAI is moving forward only */
++	ASSERT_GT(ts2, ts1, "tai_forward");
++
++	/* Check for future */
++	ret = clock_gettime(CLOCK_TAI, &now_tai);
++	ASSERT_EQ(ret, 0, "tai_gettime");
++	now = ts_to_ns(&now_tai);
++
++	ASSERT_TRUE(now > ts1, "tai_future_ts1");
++	ASSERT_TRUE(now > ts2, "tai_future_ts2");
++
++	/* Check for reasonable range */
++	ASSERT_TRUE(now - ts1 < TAI_THRESHOLD, "tai_range_ts1");
++	ASSERT_TRUE(now - ts2 < TAI_THRESHOLD, "tai_range_ts2");
++
++	test_time_tai__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_time_tai.c b/tools/testing/selftests/bpf/progs/test_time_tai.c
+new file mode 100644
+index 000000000000..7ea0863f3ddb
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_time_tai.c
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022 Linutronix GmbH */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++char _license[] SEC("license") = "GPL";
++
++SEC("tc")
++int time_tai(struct __sk_buff *skb)
++{
++	__u64 ts1, ts2;
++
++	/* Get TAI timestamps */
++	ts1 = bpf_ktime_get_tai_ns();
++	ts2 = bpf_ktime_get_tai_ns();
++
++	/* Save TAI timestamps (Note: skb->hwtstamp is read-only) */
++	skb->tstamp = ts1;
++	skb->cb[0] = ts2 & 0xffffffff;
++	skb->cb[1] = ts2 >> 32;
++
++	return 0;
++}
 -- 
 2.30.2
 
