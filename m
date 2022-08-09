@@ -2,117 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68ACA58E0B4
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 22:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F9B158E08E
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 22:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiHIUKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 16:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
+        id S243800AbiHIUC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 16:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiHIUKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 16:10:16 -0400
-X-Greylist: delayed 3590 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 09 Aug 2022 13:10:14 PDT
-Received: from stargate.chelsio.com (stargate.chelsio.com [12.32.117.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D651F0A;
-        Tue,  9 Aug 2022 13:10:14 -0700 (PDT)
-Received: from localhost (raina-lt.asicdesigners.com [10.193.177.168] (may be forged))
-        by stargate.chelsio.com (8.14.7/8.14.7) with ESMTP id 279IftXR031673;
-        Tue, 9 Aug 2022 11:41:57 -0700
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     linux-rdma@vger.kernel.org
-Cc:     netdev@vger.kernel.org, jgg@nvidia.com, leonro@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, keescook@chromium.org, bharat@chelsio.com
-Subject: [PATCH for-rc] RDMA/cxgb4: fix accept failure due to increased cpl_t5_pass_accept_rpl size
-Date:   Wed, 10 Aug 2022 00:11:18 +0530
-Message-Id: <20220809184118.2029-1-rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S1346132AbiHIUAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 16:00:54 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C769CF9;
+        Tue,  9 Aug 2022 13:00:51 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id CA12218849F2;
+        Tue,  9 Aug 2022 20:00:49 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id B35F725032B7;
+        Tue,  9 Aug 2022 20:00:49 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id A6770A1A0047; Tue,  9 Aug 2022 20:00:49 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Date:   Tue, 09 Aug 2022 22:00:49 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <YvIm+OvXvxbH6POv@shredder>
+References: <20220708084904.33otb6x256huddps@skbuf>
+ <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
+ <20220708091550.2qcu3tyqkhgiudjg@skbuf>
+ <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+ <20220708115624.rrjzjtidlhcqczjv@skbuf>
+ <723e2995314b41ff323272536ef27341@kapio-technology.com>
+ <YsqPWK67U0+Iw2Ru@shredder>
+ <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
+ <Ys69DiAwT0Md+6ai@shredder>
+ <79683d9cf122e22b66b5da3bbbb0ee1f@kapio-technology.com>
+ <YvIm+OvXvxbH6POv@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <6c6fe135ce7b5b118289dc370135b0d3@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Potnuri Bharat Teja <bharat@chelsio.com>
+On 2022-08-09 11:20, Ido Schimmel wrote:
+> On Mon, Aug 01, 2022 at 05:33:49PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-07-13 14:39, Ido Schimmel wrote:
+>> 
+>> >
+>> > What are "Storm Prevention" and "zero-DPV" FDB entries?
+>> >
+>> 
+>> For the zero-DPV entries, I can summarize:
+>> 
+>> Since a CPU can become saturated from constant SA Miss Violations from 
+>> a
+>> denied source, source MAC address are masked by loading a zero-DPV
+>> (Destination Port Vector) entry in the ATU. As the address now appears 
+>> in
+>> the database it will not cause more Miss Violations. ANY port trying 
+>> to send
+>> a frame to this unauthorized address is discarded. Any locked port 
+>> trying to
+>> use this unauthorized address has its frames discarded too (as the 
+>> ports SA
+>> bit is not set in the ATU entry).
+> 
+> What happens to unlocked ports that have learning enabled and are 
+> trying
+> to use this address as SMAC? AFAICT, at least in the bridge driver, the
+> locked entry will roam, but will keep the "locked" flag, which is
+> probably not what we want. Let's see if we can agree on these semantics
+> for a "locked" entry:
 
-Commit 'c2ed5611afd7' has increased the cpl_t5_pass_accept_rpl{} structure
-size by 8B to avoid roundup. cpl_t5_pass_accept_rpl{} is a HW specific
-structure and increasing its size will lead to unwanted adapter errors.
-Current commit reverts the cpl_t5_pass_accept_rpl{} back to its original
-and allocates zeroed skb buffer there by avoiding the memset for iss field.
-Reorder code to minimize chip type checks.
+The next version of this will block forwarding to locked entries in the 
+bridge, so they will behave like the zero-DPV entries.
 
-Fixes: c2ed5611afd7 ("iw_cxgb4: Use memset_startat() for cpl_t5_pass_accept_rpl")
-Signed-off-by: Potnuri Bharat Teja <bharat@chelsio.com>
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- drivers/infiniband/hw/cxgb4/cm.c            | 25 ++++++++-------------
- drivers/net/ethernet/chelsio/cxgb4/t4_msg.h |  2 +-
- 2 files changed, 10 insertions(+), 17 deletions(-)
+> 
+> 1. It discards packets with matching DMAC, regardless of ingress port. 
+> I
+> read the document [1] you linked to in a different reply and could not
+> find anything against this approach, so this might be fine or at least
+> not very significant.
+> 
+> Note that this means that "locked" entries need to be notified to 
+> device
+> drivers so that they will install a matching entry in the HW FDB.
 
-diff --git a/drivers/infiniband/hw/cxgb4/cm.c b/drivers/infiniband/hw/cxgb4/cm.c
-index c16017f6e8db..14392c942f49 100644
---- a/drivers/infiniband/hw/cxgb4/cm.c
-+++ b/drivers/infiniband/hw/cxgb4/cm.c
-@@ -2468,31 +2468,24 @@ static int accept_cr(struct c4iw_ep *ep, struct sk_buff *skb,
- 			opt2 |= CCTRL_ECN_V(1);
- 	}
- 
--	skb_get(skb);
--	rpl = cplhdr(skb);
- 	if (!is_t4(adapter_type)) {
--		BUILD_BUG_ON(sizeof(*rpl5) != roundup(sizeof(*rpl5), 16));
--		skb_trim(skb, sizeof(*rpl5));
--		rpl5 = (void *)rpl;
--		INIT_TP_WR(rpl5, ep->hwtid);
--	} else {
--		skb_trim(skb, sizeof(*rpl));
--		INIT_TP_WR(rpl, ep->hwtid);
--	}
--	OPCODE_TID(rpl) = cpu_to_be32(MK_OPCODE_TID(CPL_PASS_ACCEPT_RPL,
--						    ep->hwtid));
--
--	if (CHELSIO_CHIP_VERSION(adapter_type) > CHELSIO_T4) {
- 		u32 isn = (prandom_u32() & ~7UL) - 1;
-+
-+		skb = get_skb(skb, roundup(sizeof(*rpl5), 16), GFP_KERNEL);
-+		rpl5 = __skb_put_zero(skb, roundup(sizeof(*rpl5), 16));
-+		rpl = (void *)rpl5;
-+		INIT_TP_WR_CPL(rpl5, CPL_PASS_ACCEPT_RPL, ep->hwtid);
- 		opt2 |= T5_OPT_2_VALID_F;
- 		opt2 |= CONG_CNTRL_V(CONG_ALG_TAHOE);
- 		opt2 |= T5_ISS_F;
--		rpl5 = (void *)rpl;
--		memset_after(rpl5, 0, iss);
- 		if (peer2peer)
- 			isn += 4;
- 		rpl5->iss = cpu_to_be32(isn);
- 		pr_debug("iss %u\n", be32_to_cpu(rpl5->iss));
-+	} else {
-+		skb = get_skb(skb, sizeof(*rpl), GFP_KERNEL);
-+		rpl = __skb_put_zero(skb, sizeof(*rpl));
-+		INIT_TP_WR_CPL(rpl, CPL_PASS_ACCEPT_RPL, ep->hwtid);
- 	}
- 
- 	rpl->opt0 = cpu_to_be64(opt0);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-index 26433a62d7f0..fed5f93bf620 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-@@ -497,7 +497,7 @@ struct cpl_t5_pass_accept_rpl {
- 	__be32 opt2;
- 	__be64 opt0;
- 	__be32 iss;
--	__be32 rsvd[3];
-+	__be32 rsvd;
- };
- 
- struct cpl_act_open_req {
--- 
-2.31.1
+Okay, so as V4 does (just without the error noted).
 
+> 
+> 2. It is not refreshed and has ageing enabled. That is, after initial
+> installation it will be removed by the bridge driver after configured
+> ageing time unless converted to a regular (unlocked) entry.
+> 
+> I assume this allows you to remove the timer implementation from your
+> driver and let the bridge driver notify you about the removal of this
+> entry.
+
+Okay, but only if the scheme is not so that the driver creates the 
+locked entries itself, unless you indicate that the driver notifies the 
+bridge, which then notifies back to the driver and installs the zero-DPV 
+entry? If not I think the current implementation for the mv88e6xxx is 
+fine.
+
+> 
+> 3. With regards to roaming, the entry cannot roam between locked ports
+> (they need to have learning disabled anyway), but can roam to an
+> unlocked port, in which case it becomes a regular entry that can roam
+> and age.
+> 
+> If we agree on these semantics, then I can try to verify that at least
+> Spectrum can support them (it seems mv88e6xxx can).
+
+The consensus here is that at least for the mv88e6xxx, learning should 
+be on and link local learning should be blocked by the userspace setting 
+you pointed to earlier.
+
+> 
+> P.S. Sorry for the delay, I'm busy with other tasks at the moment.
+
+I understand :-)
+
+> 
+> [1] 
+> https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Security/TrustSec_1-99/MAB/MAB_Dep_Guide.html#wp392522
