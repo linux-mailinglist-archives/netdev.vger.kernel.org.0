@@ -2,101 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E68358DFF7
-	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7EA58DFF2
+	for <lists+netdev@lfdr.de>; Tue,  9 Aug 2022 21:13:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345528AbiHITOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 15:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
+        id S1346044AbiHITM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 15:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345496AbiHITNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:13:52 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FD3396;
-        Tue,  9 Aug 2022 12:05:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6RIQ0lsH7SzTIzVp99WDyc0D2gkpsha+DsfnlWOGmVM=; b=LbwWnCn7YGFZiUHtA5VIw6zpjm
-        AI4mTSD37n0b+CjaKxm9C1z3JcyfcJa1xhHSXDPMhZurSkjfeBvuXCIVD/SZflQ49goPyxACJsmk4
-        Dve4XzeAnEBNetq25XCzE1veKxNwbMWFW+GqNs2gPkQS+A2YDL8lqgY20qLY6DJMYqY5qt1iIye1L
-        w93yio6Gi+O8OzmpdNqTFBOanaijVaqR/f2QxYUcY5Ud7iO1du5dwk6YpZ/gEzvGMAAoybCw5fLlE
-        c8X+2yQ2cyaRreWixWoiOwgjg2500HTd/KjIo0JJ24feOWMpq3WKTu1dac5fHfXnhgAifAi6cJoKB
-        BZyKmvhw==;
-Received: from [187.56.70.103] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oLUWY-003lox-0k; Tue, 09 Aug 2022 21:04:18 +0200
-Message-ID: <15188cf2-a510-2725-0c6e-3c4b264714c5@igalia.com>
-Date:   Tue, 9 Aug 2022 16:03:51 -0300
+        with ESMTP id S1348702AbiHITMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 15:12:19 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FBB2A410
+        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 12:04:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=tSTzpfcXrI5uqlzD2cbZ4itdhS2mwAbKtRBGNmoJ91M=;
+        t=1660071863; x=1661281463; b=BzfHTEIzJF3xsnBRgEHCqPi52dpf9qDaYFo946ylberXrIG
+        PEJQ/UHwkaH+Sk2HDzo+FWcfcr8xdc8ajmxt7iUcwQ52GN0DbgXCMT1yLAX2lGZIMBKrbUE9AvP5B
+        gtKa/1kppVIXiFDLScZpdtCIJY6Z0F5ZJw9QHHgfbaX1iNLevsQodMAfXos2GBfpD2yAxNqLEQ9Ee
+        l51y/B5Qio/8qRCOR+bZZjuS4AxQcBcO5mIl/Apf9mLI2FY3Ex6UPcz2Y17MOg8XSE8xHe2cMFihY
+        0cg9bp2oo9Hrhbhoi3gqXbocwtuDQ1t6RKQ+l/nHq+/H+gy7BBn8fCVCwQprtqJQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oLUWa-003IY9-2v;
+        Tue, 09 Aug 2022 21:04:21 +0200
+Message-ID: <0fc27b144ca3adb4ff6b3057f2654040392ef2d8.camel@sipsolutions.net>
+Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     James Prestwood <prestwoj@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Date:   Tue, 09 Aug 2022 21:04:20 +0200
+In-Reply-To: <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
+References: <20220804174307.448527-1-prestwoj@gmail.com>
+         <20220804174307.448527-2-prestwoj@gmail.com>
+         <20220804114342.71d2cff0@kernel.org>
+         <b6b11b492622b75e50712385947e1ba6103b8e44.camel@gmail.com>
+         <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 06/13] um: Improve panic notifiers consistency and
- ordering
-Content-Language: en-US
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        kexec@lists.infradead.org, linux-um@lists.infradead.org
-Cc:     pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-7-gpiccoli@igalia.com>
- <5bbc4296-4858-d01c-0c76-09d942377ddf@igalia.com>
- <54cd8c11428db4c419edf2267db00ca10da7a178.camel@sipsolutions.net>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <54cd8c11428db4c419edf2267db00ca10da7a178.camel@sipsolutions.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/08/2022 15:09, Johannes Berg wrote:
-> [...]
->>> V2:
->>> - Kept the notifier header to avoid implicit usage - thanks
->>> Johannes for the suggestion!
->>>
->>>  arch/um/drivers/mconsole_kern.c | 7 +++----
->>>  arch/um/kernel/um_arch.c        | 8 ++++----
->>>  2 files changed, 7 insertions(+), 8 deletions(-)
->>> [...]
->>
->> Hi Johannes, do you feel this one is good now, after your last review?
->> Thanks in advance,
->>
-> 
-> Yeah, no objections, my previous comment was just a minor almost style
-> issue anyway.
-> 
-> johannes
+On Thu, 2022-08-04 at 12:49 -0700, James Prestwood wrote:
+> > >=20
+> > > The semantics in wireless are also a little stretched because
+> > > normally
+> > > if the flag is not set the netdev will _refuse_ (-EBUSY) to change
+> > > the
+> > > address while running, not do some crazy fw reset.
+> >=20
+> > Sorry if I wasn't clear, but its not nl80211 doing the fw reset
+> > automatically. The wireless subsystem actually completely disallows a
+> > MAC change if the device is running, this flag isn't even checked.
+> > This
+> > means userspace has to bring the device down itself, then change the
+> > MAC.
+> >=20
+> > I plan on also modifying mac80211 to first check this flag and allow
+> > a
+> > live MAC change if possible. But ultimately userspace still needs to
+> > be
+> > aware of the support.
+> >=20
 
-Perfect, thank you! Let me take the opportunity to ask you something I'm
-asking all the maintainers involved here - do you prefer taking the
-patch through your tree, or to get it landed with the whole series, at
-once, from some maintainer?
+I'm not sure this is the right approach.
 
-Cheers!
+For the stated purpose (not powering down the NIC), with most mac80211
+drivers the following would work:
+
+ - add a new virtual interface of any supported type, and bring it up
+ - bring down the other interface, change MAC address, bring it up again
+ - remove the interface added in step 1
+
+though obviously that's not a good way to do it!
+
+But internally in mac80211, there's a distinction between
+
+ ->stop() to turn off the NIC, and
+ ->remove_interface() to remove the interface.
+
+Changing the MAC address should always be possible when the interface
+doesn't exist in the driver (remove_interface), but without stop()ing
+the NIC.
+
+However, obviously remove_interface() implies that you break the
+connection first, and obviously you cannot change the MAC address
+without breaking the connection (stopping AP, etc.)
+
+Therefore, the semantics of this flag don't make sense - you cannot
+change the MAC address in a "live" way while there's a connection, and
+at least internally you need not stop the NIC to change it. Since
+ethernet has no concept of a "connection" in the same way, things are
+different there.
+
+Not sure how to really solve this - perhaps a wireless-specific way of
+changing the MAC address could be added, though that's quite ugly, or we
+might be able to permit changing the MAC address while not active in any
+way (connected, scanning etc.) by removing from/re-adding to the driver
+at least as far as mac80211 is concerned.
+
+johannes
