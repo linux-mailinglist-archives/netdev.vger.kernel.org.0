@@ -2,710 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6C458EA2A
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E957A58E9E1
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 11:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231445AbiHJJ77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 05:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
+        id S230462AbiHJJnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 05:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiHJJ75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:59:57 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214456EF25
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 02:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660125596; x=1691661596;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DEWWuzpMZInucZ0CQXrD26e4L4XgevhRGVkLnPU1pWg=;
-  b=Z2C0RUOb7gC3OnMhWaD52IQVJc1+mN5YTOl6tlIsjGO7kmGgbYkW9JDc
-   mMWgn7Rt3QwCtAySdZhl5EGxzDI7N3LUj94CxLBBjbBL3epujLFrKCvAi
-   bM+I1zuAqO8AjVmOpms+2StuwO9/Cgdi4w2T5j2f3V1Pz2g4FU6x2NJV6
-   C/bkPGFHh35TKm9wt9OGVsycI59QQcL0WpxfhIeCpkQsjgQ8VE3HuE7nb
-   uCrGD50+aFHg7P5IBmY7lV72A7qvZK1hXyc2AMMCY5Yv0s8iWzfUcHB4r
-   QPMCpTGPBEzazG09urnnnQExw0KPW1JaQWg2BDPjdz5+QfJXF+JLu+GXF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="271430286"
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="271430286"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:59:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
-   d="scan'208";a="932830521"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Aug 2022 02:59:53 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27A9xqrE014700;
-        Wed, 10 Aug 2022 10:59:52 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Jian Shen <shenjian15@huawei.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
-        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
-Subject: Re: [RFCv7 PATCH net-next 02/36] net: replace general features macroes with global netdev_features variables
-Date:   Wed, 10 Aug 2022 11:58:00 +0200
-Message-Id: <20220810095800.1304489-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220810030624.34711-3-shenjian15@huawei.com>
-References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-3-shenjian15@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        with ESMTP id S230104AbiHJJnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:43:41 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2082.outbound.protection.outlook.com [40.107.21.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B5D5005F
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 02:43:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Mnx+N5vi2rpiTY/OpGclXlvNb14Bc/F6DatjV2rwbQl2q2m5XXafFunkFj+SNr1GC1G78dgDQF+iz/5iGdwlJJdtOYivWjgpuxw6A5kEdF4CDJU2mfKUtnrQuE6mxWDQlFffv21xldK4V2jsOYCfZiOqkwFbUGQAAdaB5K12oNp1Sq02LmSJCPQt7cWqmiSeKJZPIX7UJvtaltv3NHcoYsWni0gcn+oHSYNvo7NT2N96KrTc00ecxeDd84WcBg87Q0ds/gHWGOvgXdmveeRXh0t7T+D2J9AySCAGMeTMOnPb/CQNVrT7BaWQIi7Ulkq3mOApQwfd6BFqZO22eOuKnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vtBs/m/KNZngXmcFqUlVd6781VLBAfrkr/FL7BIArRQ=;
+ b=k4VY3G5st81YisIGfA8qWKPYkziRub3nSMNNyjfAZXywgqmVm+XYCcTxd1GjvAnDoYtAHcccuZ9romXZowrbruOi65FhQyLqNK0daFQGTPZR+8NEizXl51smiLnUZkU7pLpmGepDKiyi7RtPiaZO6crxvsZliYYNAIf3ID4zBDdLBg26AffphaMe8H8V+DtUuK7D8RMuisXlQIsf10a1JHQzT01C4a22XxmI5PTe4zcZRBkW97zfsl8gCtB8GepAG12XrFZ/NqWO4WN1cutcUCWArsHUtYpXRJDXxcAXlinvdqm41cLNLevTJAchEOBXgYCesX4WMVc6PjW3c4w7eA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vtBs/m/KNZngXmcFqUlVd6781VLBAfrkr/FL7BIArRQ=;
+ b=CBcoiKOug3gdEmlzo29QEumsSxYNCInV0tjZvIWuDZyMl/8tA8hDTj8rpfSt+nbjLHaj+Rqgk70rhuGPi3XiBz9Ftzzroucws6M4y9IIwJQ0aKGZZ+u0A3LDc2khY2rZditbfhGxqHnA4sYbCTDiYAlwyeImQxlX0h+BaqgLLeQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by HE1PR0401MB2666.eurprd04.prod.outlook.com (2603:10a6:3:86::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Wed, 10 Aug
+ 2022 09:43:36 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279%9]) with mapi id 15.20.5525.010; Wed, 10 Aug 2022
+ 09:43:36 +0000
+From:   wei.fang@nxp.com
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     xiaoning.wang@nxp.com
+Subject: [PATCH net-next] net: phy: realtek: add support for RTL8821F(D)(I)-VD-CG
+Date:   Thu, 11 Aug 2022 03:37:33 +1000
+Message-Id: <20220810173733.795897-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0138.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:8f::18) To DB9PR04MB8106.eurprd04.prod.outlook.com
+ (2603:10a6:10:24b::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f99dbace-fa6d-4d91-8ce5-08da7ab4cc15
+X-MS-TrafficTypeDiagnostic: HE1PR0401MB2666:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lAvyjoMgnJ5fvfQfuch90rDFR4ROBU/AutE9r4PlCWKJnpnJPbUgJ4H0h5qPAtEPAVSndKg0Eb3ooiSFX3hvB6e4lUg5SOKHdjIUkGHVXHQL2XQ5Yp6HuP4FXCyNWi44a0WTUOpk3J3P6XH6BzzMvuhOZpHmSvp9geIW7s+Fm86RY4yMOUCrKPKEz7beVuL9A+1uSWW0CbCttUIhhDilt+usEPn1tVfuf8O2GBfiG9ru/kbC90bMghKUhKObc+GxkUxv8we2S/cYDAr4TfBPBqQj7ssFZ3o5DDxDa8xYmzEPti/saywUqTJM4ncev2W87WStD9Rt3VsuUe0J7rlki0hjYn0VeZGJfagEreZSUdZEFC15fiBl090iEiB92/SIwZjsqAnNiKiOmU8me//vbe2Xf1CcJe+tC+pbzPToigp/9CcSzND6mkYyVHJnCNJ7tOu3fFxxLDqsRQjuCTNshia80aouDePoDaRiRb6kffp/sSBkDWOumKp2TN6tG9GfdKuXwizEjDGD/As01dinDCnNl/jHnpAdCvmHbS7zZRLOP5KJ5mz86gkaBfpiV40YvqLM3eeIQBm7RWb/Z278vMtS+acbnJtXnW6ou0nHXOOI1LenYy8dNM1Wb4bqDZyPUveL2gejY7sbzwyQLEva/NbT3Pg1IpreMdsO65XU8xpB0Jfr/8D/9+tsBVaDp3V66Dv4IAEi3rfl3iHJ1uohJE83mNsqcd8lsRI3HnAp9Wml081wO4c5QgZOPZ8OqH4ZdLHe67ZCn4iGnWkwu34XU2F7/cu9lJQRRlrn1tnKfck=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(396003)(39860400002)(136003)(83380400001)(186003)(6512007)(9686003)(26005)(4326008)(316002)(1076003)(2616005)(66946007)(66556008)(66476007)(8676002)(36756003)(6666004)(478600001)(2906002)(41300700001)(6506007)(52116002)(38100700002)(8936002)(5660300002)(6486002)(86362001)(38350700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JdjCv3jX9dJUetOJhV2nr57xyxbL79ez4Y4mG5oHjvRMFrL9kyGpX+w/y1wd?=
+ =?us-ascii?Q?JAcv0BB5M1Gwvv+7fVjAm6SUPdhtdQxTOxWv6SYC8Z2kXv3h0BHWwnpJPBG6?=
+ =?us-ascii?Q?jd5p638oN3dFMSReI0sFLEAMIuFzXkeB/IHndsJQIDLwQ36rSjUUTgtAldCw?=
+ =?us-ascii?Q?W2aCSLDGMir0D6smTHwUyJBeibDl7HQitCD+k+n9sO8mt5yMZymYTmWEtM2T?=
+ =?us-ascii?Q?Qp5STkUBmaCOCRv8zYbgi7FkQvlYbdWFzWEOho3E0wH4YCz0Ltx+bMHP5wAO?=
+ =?us-ascii?Q?auARL9z7JuKpGFFwmxdwt7R6A7ct7+2INcWDQw8ilrEGpvGFtwcswzLKAVao?=
+ =?us-ascii?Q?20GS6kxHlwei9bbzJJtDyNbZVRIwt6n9hXJGTK/22NvDjTracDnEkVyceJnN?=
+ =?us-ascii?Q?zyfncrv5ZF2NdFf1qp/eHBFpUseZru/OLL+vmD604M0h8mLZcGSGauU1exUJ?=
+ =?us-ascii?Q?N7TgIIOaubit/TWrigNnOnWWvCOEVyANp3EtdtcmGNS6sHuA7NtnvwH1S7K7?=
+ =?us-ascii?Q?PmfThOrJu7nbxaXrHOHIQD8J0lxfI3eTMck2kYGd7/lCC/BmzjH6hOXWH+0X?=
+ =?us-ascii?Q?dcvjPiP1q6uCO4yDuJxkPA/xXDts9BGDmtfl5w5zn4KMaDDeeJX7HeicSncJ?=
+ =?us-ascii?Q?ec099cgi2MXnsRww/hs0otHbejxbKW/kjzomaL30kf0MgH93tKxKcKVdU6h2?=
+ =?us-ascii?Q?tSYgGoTTyLK0/z3Z8ieLqdIbr73zjsoE6oJambKsee/YmSeFNpnMLWkYXAEV?=
+ =?us-ascii?Q?0i/DueSTjFeXB1ZE9f4cyX0SdR1w4yq2cpgrRAcZANIEIjX2sSRXKGnj1PPa?=
+ =?us-ascii?Q?l0Go6FRDvV0uXfd6ysoiRrywffQr4XJa5ZuyTFPSV2MENvn5LXABAPQGimoF?=
+ =?us-ascii?Q?d6ixXPhPb7V3KxlMKh4WLYh+G0mHq8Is5StsAWDeztBW4ULsVv8mZ6WjD053?=
+ =?us-ascii?Q?4NTUEYzxvyBFw1gFNlhEvIYjPSfbC7/+6ghLkWVfMB12YIa4vLc22BIpNybi?=
+ =?us-ascii?Q?PvqcQvAEnsdSz2nJXOkBWXayo6Dd1PQkAsMvuKJ7AFB6yq8OIitTKxD8rIzd?=
+ =?us-ascii?Q?EhZiJ9SqBdQnkCKk/s4DuWHwgDZjexgns9AgoJt2RoLqyfmZVXZm8A+ck+5P?=
+ =?us-ascii?Q?TVTRE8wbfXXHsTYH1xOEzeg9R4OAhKFNNIPkamlK1rwaw6SRhe8a0mD8usUZ?=
+ =?us-ascii?Q?bcepvqUjhJuGigpP15vBjk3dOr9eckq70hNW1pOJ7ErhAcJ6WdJmkeFYKIvB?=
+ =?us-ascii?Q?Ue1i7nzJWGMdJiCO+Z1gkhYyjBw9t9U9Sc2vIPIoZJq3FWwLr71Wgv5SPb7a?=
+ =?us-ascii?Q?RIPLGWCZFHR/W4eF58J1bXVtWUIyt1d03SfyC3DL7FXh8egNTPjUnOIKzma2?=
+ =?us-ascii?Q?GZW0YtqeagJtQCWnwCFp055PN6h66WrALVaRBdWj/1+/6BvWge2n+wqGM3HE?=
+ =?us-ascii?Q?/Bbfj2MobgkYI89C/Lk7g5+xiUzLssVMYMUGDDaXi0I8Wryarf6xR3kCeSR2?=
+ =?us-ascii?Q?A58nM4kEC9kwDoEfvZ5MHtfBE0LWRmtuSKszdJUeGUynEQQ7OYEjbO6ElUHB?=
+ =?us-ascii?Q?YtLnL7WLbN1Szi0Q6U+L1yYeBY5aRzTMTi5hSR64?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f99dbace-fa6d-4d91-8ce5-08da7ab4cc15
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2022 09:43:36.4731
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pjsxfL85xUWHxHY3TMQwVMbEedPStQWnCDoaUh2bJzSldunxPpHlp6GckTWzjQtxZTSce3slxzJdbFQmF/4UAQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2666
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
-Date: Wed, 10 Aug 2022 11:05:50 +0800
+From: Clark Wang <xiaoning.wang@nxp.com>
 
-> There are many netdev_features bits group used in kernel. The definition
-> will be illegal when using feature bit more than 64. Replace these macroes
-> with global netdev_features variables, initialize them when netdev module
-> init.
-> 
-> Signed-off-by: Jian Shen <shenjian15@huawei.com>
-> ---
->  drivers/net/hyperv/hyperv_net.h |   5 +-
->  include/linux/netdev_features.h | 111 +++++++++----
->  net/core/Makefile               |   2 +-
->  net/core/dev.c                  |  83 ++++++++++
->  net/core/netdev_features.c      | 281 ++++++++++++++++++++++++++++++++
->  5 files changed, 441 insertions(+), 41 deletions(-)
->  create mode 100644 net/core/netdev_features.c
-> 
-> diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-> index 25b38a374e3c..6336ed81fb8c 100644
-> --- a/drivers/net/hyperv/hyperv_net.h
-> +++ b/drivers/net/hyperv/hyperv_net.h
-> @@ -873,10 +873,7 @@ struct nvsp_message {
->  #define NETVSC_RECEIVE_BUFFER_ID		0xcafe
->  #define NETVSC_SEND_BUFFER_ID			0
->  
-> -#define NETVSC_SUPPORTED_HW_FEATURES (NETIF_F_RXCSUM | NETIF_F_IP_CSUM | \
-> -				      NETIF_F_TSO | NETIF_F_IPV6_CSUM | \
-> -				      NETIF_F_TSO6 | NETIF_F_LRO | \
-> -				      NETIF_F_SG | NETIF_F_RXHASH)
-> +#define NETVSC_SUPPORTED_HW_FEATURES	netvsc_supported_hw_features
->  
->  #define VRSS_SEND_TAB_SIZE 16  /* must be power of 2 */
->  #define VRSS_CHANNEL_MAX 64
-> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-> index 9d434b4e6e6e..a005c781fabf 100644
-> --- a/include/linux/netdev_features.h
-> +++ b/include/linux/netdev_features.h
-> @@ -7,6 +7,7 @@
->  
->  #include <linux/types.h>
->  #include <linux/bitops.h>
-> +#include <linux/cache.h>
->  #include <asm/byteorder.h>
->  
->  typedef u64 netdev_features_t;
-> @@ -112,6 +113,64 @@ enum {
->  	/**/NETDEV_FEATURE_COUNT
->  };
->  
-> +extern netdev_features_t netdev_ethtool_features __ro_after_init;
-> +extern netdev_features_t netdev_never_change_features __ro_after_init;
-> +extern netdev_features_t netdev_gso_features_mask __ro_after_init;
-> +extern netdev_features_t netdev_ip_csum_features __ro_after_init;
-> +extern netdev_features_t netdev_csum_features_mask __ro_after_init;
-> +extern netdev_features_t netdev_general_tso_features __ro_after_init;
-> +extern netdev_features_t netdev_all_tso_features __ro_after_init;
-> +extern netdev_features_t netdev_tso_ecn_features __ro_after_init;
-> +extern netdev_features_t netdev_all_fcoe_features __ro_after_init;
-> +extern netdev_features_t netdev_gso_software_features __ro_after_init;
-> +extern netdev_features_t netdev_one_for_all_features __ro_after_init;
-> +extern netdev_features_t netdev_all_for_all_features __ro_after_init;
-> +extern netdev_features_t netdev_upper_disable_features __ro_after_init;
-> +extern netdev_features_t netdev_soft_features __ro_after_init;
-> +extern netdev_features_t netdev_soft_off_features __ro_after_init;
-> +extern netdev_features_t netdev_all_vlan_features __ro_after_init;
-> +extern netdev_features_t netdev_rx_vlan_features __ro_after_init;
-> +extern netdev_features_t netdev_tx_vlan_features __ro_after_init;
-> +extern netdev_features_t netdev_ctag_vlan_offload_features __ro_after_init;
-> +extern netdev_features_t netdev_stag_vlan_offload_features __ro_after_init;
-> +extern netdev_features_t netdev_vlan_offload_features __ro_after_init;
-> +extern netdev_features_t netdev_ctag_vlan_features __ro_after_init;
-> +extern netdev_features_t netdev_stag_vlan_features __ro_after_init;
-> +extern netdev_features_t netdev_vlan_filter_features __ro_after_init;
-> +extern netdev_features_t netdev_multi_tags_features_mask __ro_after_init;
-> +extern netdev_features_t netdev_gso_encap_all_features __ro_after_init;
-> +extern netdev_features_t netdev_xfrm_features __ro_after_init;
-> +extern netdev_features_t netdev_tls_features __ro_after_init;
-> +extern netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
-> +extern netdev_features_t netdev_empty_features __ro_after_init;
-> +extern netdev_features_t netvsc_supported_hw_features __ro_after_init;
+RTL8821F(D)(I)-VD-CG is the pin-to-pin upgrade chip from
+RTL8821F(D)(I)-CG.
 
-netvsc stuff belongs to hyperv_net driver, I'd place it there. Those
-features aren't used outside of it I believe.
+Add new PHY ID for this chip.
+It does not support RTL8211F_PHYCR2 anymore, so remove the w/r operation
+of this register.
 
-> +extern const struct netdev_feature_set netif_f_never_change_feature_set;
-> +extern const struct netdev_feature_set netif_f_gso_feature_set_mask;
-> +extern const struct netdev_feature_set netif_f_ip_csum_feature_set;
-> +extern const struct netdev_feature_set netif_f_csum_feature_set_mask;
-> +extern const struct netdev_feature_set netif_f_general_tso_feature_set;
-> +extern const struct netdev_feature_set netif_f_all_tso_feature_set;
-> +extern const struct netdev_feature_set netif_f_tso_ecn_feature_set;
-> +extern const struct netdev_feature_set netif_f_all_fcoe_feature_set;
-> +extern const struct netdev_feature_set netif_f_gso_soft_feature_set;
-> +extern const struct netdev_feature_set netif_f_one_for_all_feature_set;
-> +extern const struct netdev_feature_set netif_f_all_for_all_feature_set;
-> +extern const struct netdev_feature_set netif_f_upper_disables_feature_set;
-> +extern const struct netdev_feature_set netif_f_soft_feature_set;
-> +extern const struct netdev_feature_set netif_f_soft_off_feature_set;
-> +extern const struct netdev_feature_set netif_f_tx_vlan_feature_set;
-> +extern const struct netdev_feature_set netif_f_rx_vlan_feature_set;
-> +extern const struct netdev_feature_set netif_f_vlan_filter_feature_set;
-> +extern const struct netdev_feature_set netif_f_ctag_vlan_feature_set;
-> +extern const struct netdev_feature_set netif_f_stag_vlan_feature_set;
-> +extern const struct netdev_feature_set netif_f_ctag_vlan_offload_feature_set;
-> +extern const struct netdev_feature_set netif_f_stag_vlan_offload_feature_set;
-> +extern const struct netdev_feature_set netif_f_multi_tags_feature_set_mask;
-> +extern const struct netdev_feature_set netif_f_gso_encap_feature_set;
-> +extern const struct netdev_feature_set netif_f_xfrm_feature_set;
-> +extern const struct netdev_feature_set netif_f_tls_feature_set;
-> +extern const struct netdev_feature_set netvsc_supported_hw_feature_set;
-> +
->  /* copy'n'paste compression ;) */
->  #define __NETIF_F_BIT(bit)	((netdev_features_t)1 << (bit))
->  #define __NETIF_F(name)		__NETIF_F_BIT(NETIF_F_##name##_BIT)
-> @@ -203,73 +262,53 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
->  
->  /* Features valid for ethtool to change */
->  /* = all defined minus driver/device-class-related */
-> -#define NETIF_F_NEVER_CHANGE	(NETIF_F_VLAN_CHALLENGED | \
-> -				 NETIF_F_LLTX | NETIF_F_NETNS_LOCAL)
-> +#define NETIF_F_NEVER_CHANGE	netdev_never_change_features
->  
->  /* remember that ((t)1 << t_BITS) is undefined in C99 */
-> -#define NETIF_F_ETHTOOL_BITS	((__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) | \
-> -		(__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) - 1)) & \
-> -		~NETIF_F_NEVER_CHANGE)
-> +#define NETIF_F_ETHTOOL_BITS	netdev_ethtool_features
->  
->  /* Segmentation offload feature mask */
-> -#define NETIF_F_GSO_MASK	(__NETIF_F_BIT(NETIF_F_GSO_LAST + 1) - \
-> -		__NETIF_F_BIT(NETIF_F_GSO_SHIFT))
-> +#define NETIF_F_GSO_MASK	netdev_gso_features_mask
->  
->  /* List of IP checksum features. Note that NETIF_F_HW_CSUM should not be
->   * set in features when NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM are set--
->   * this would be contradictory
->   */
-> -#define NETIF_F_CSUM_MASK	(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
-> -				 NETIF_F_HW_CSUM)
-> +#define NETIF_F_CSUM_MASK	netdev_csum_features_mask
->  
-> -#define NETIF_F_ALL_TSO 	(NETIF_F_TSO | NETIF_F_TSO6 | \
-> -				 NETIF_F_TSO_ECN | NETIF_F_TSO_MANGLEID)
-> +#define NETIF_F_ALL_TSO		netdev_all_tso_features
->  
-> -#define NETIF_F_ALL_FCOE	(NETIF_F_FCOE_CRC | NETIF_F_FCOE_MTU | \
-> -				 NETIF_F_FSO)
-> +#define NETIF_F_ALL_FCOE	netdev_all_fcoe_features
->  
->  /* List of features with software fallbacks. */
-> -#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_SCTP |	     \
-> -				 NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST)
-> +#define NETIF_F_GSO_SOFTWARE	netdev_gso_software_features
->  
->  /*
->   * If one device supports one of these features, then enable them
->   * for all in netdev_increment_features.
->   */
-> -#define NETIF_F_ONE_FOR_ALL	(NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ROBUST | \
-> -				 NETIF_F_SG | NETIF_F_HIGHDMA |		\
-> -				 NETIF_F_FRAGLIST | NETIF_F_VLAN_CHALLENGED)
-> +#define NETIF_F_ONE_FOR_ALL	netdev_one_for_all_features
->  
->  /*
->   * If one device doesn't support one of these features, then disable it
->   * for all in netdev_increment_features.
->   */
-> -#define NETIF_F_ALL_FOR_ALL	(NETIF_F_NOCACHE_COPY | NETIF_F_FSO)
-> +#define NETIF_F_ALL_FOR_ALL	netdev_all_for_all_features
->  
->  /*
->   * If upper/master device has these features disabled, they must be disabled
->   * on all lower/slave devices as well.
->   */
-> -#define NETIF_F_UPPER_DISABLES	NETIF_F_LRO
-> +#define NETIF_F_UPPER_DISABLES	netdev_upper_disable_features
->  
->  /* changeable features with no special hardware requirements */
-> -#define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
-> +#define NETIF_F_SOFT_FEATURES	netdev_soft_features
->  
->  /* Changeable features with no special hardware requirements that defaults to off. */
-> -#define NETIF_F_SOFT_FEATURES_OFF	(NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD)
-> -
-> -#define NETIF_F_VLAN_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
-> -				 NETIF_F_HW_VLAN_CTAG_RX | \
-> -				 NETIF_F_HW_VLAN_CTAG_TX | \
-> -				 NETIF_F_HW_VLAN_STAG_FILTER | \
-> -				 NETIF_F_HW_VLAN_STAG_RX | \
-> -				 NETIF_F_HW_VLAN_STAG_TX)
-> -
-> -#define NETIF_F_GSO_ENCAP_ALL	(NETIF_F_GSO_GRE |			\
-> -				 NETIF_F_GSO_GRE_CSUM |			\
-> -				 NETIF_F_GSO_IPXIP4 |			\
-> -				 NETIF_F_GSO_IPXIP6 |			\
-> -				 NETIF_F_GSO_UDP_TUNNEL |		\
-> -				 NETIF_F_GSO_UDP_TUNNEL_CSUM)
-> +#define NETIF_F_SOFT_FEATURES_OFF	netdev_soft_off_features
-> +
-> +#define NETIF_F_VLAN_FEATURES	netdev_all_vlan_features
-> +
-> +#define NETIF_F_GSO_ENCAP_ALL	netdev_gso_encap_all_features
->  
->  #endif	/* _LINUX_NETDEV_FEATURES_H */
-> diff --git a/net/core/Makefile b/net/core/Makefile
-> index e8ce3bd283a6..360a101584c8 100644
-> --- a/net/core/Makefile
-> +++ b/net/core/Makefile
-> @@ -12,7 +12,7 @@ obj-$(CONFIG_SYSCTL) += sysctl_net_core.o
->  obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
->  			neighbour.o rtnetlink.o utils.o link_watch.o filter.o \
->  			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
-> -			fib_notifier.o xdp.o flow_offload.o gro.o
-> +			fib_notifier.o xdp.o flow_offload.o gro.o netdev_features.o
->  
->  obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
->  
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 45e80c84497f..9603bac63ffb 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -146,6 +146,7 @@
->  #include <linux/sctp.h>
->  #include <net/udp_tunnel.h>
->  #include <linux/net_namespace.h>
-> +#include <linux/netdev_features_helper.h>
->  #include <linux/indirect_call_wrapper.h>
->  #include <net/devlink.h>
->  #include <linux/pm_runtime.h>
-> @@ -11362,6 +11363,86 @@ static struct pernet_operations __net_initdata default_device_ops = {
->  	.exit_batch = default_device_exit_batch,
->  };
->  
-> +static void __init netdev_features_init(void)
+Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
+---
+ drivers/net/phy/realtek.c | 48 +++++++++++++++++++++++++++++----------
+ 1 file changed, 36 insertions(+), 12 deletions(-)
 
-Given that you're creating a new file dedicated to netdev features,
-I'd place that initializer there. You can then declare its proto in
-net/core/dev.h.
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index a5671ab896b3..bfde22dc85f5 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -70,6 +70,7 @@
+ #define RTLGEN_SPEED_MASK			0x0630
+ 
+ #define RTL_GENERIC_PHYID			0x001cc800
++#define RTL_8211FVD_PHYID			0x001cc878
+ 
+ MODULE_DESCRIPTION("Realtek PHY driver");
+ MODULE_AUTHOR("Johnson Leung");
+@@ -80,6 +81,11 @@ struct rtl821x_priv {
+ 	u16 phycr2;
+ };
+ 
++static bool is_rtl8211fvd(u32 phy_id)
++{
++	return phy_id == RTL_8211FVD_PHYID;
++}
++
+ static int rtl821x_read_page(struct phy_device *phydev)
+ {
+ 	return __phy_read(phydev, RTL821x_PAGE_SELECT);
+@@ -94,6 +100,7 @@ static int rtl821x_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	struct rtl821x_priv *priv;
++	u32 phy_id = phydev->drv->phy_id;
+ 	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+@@ -108,13 +115,15 @@ static int rtl821x_probe(struct phy_device *phydev)
+ 	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
+ 		priv->phycr1 |= RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF;
+ 
+-	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
+-	if (ret < 0)
+-		return ret;
++	if (!is_rtl8211fvd(phy_id)) {
++		ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
++		if (ret < 0)
++			return ret;
+ 
+-	priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
+-	if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
+-		priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
++		priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
++		if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
++			priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
++	}
+ 
+ 	phydev->priv = priv;
+ 
+@@ -333,6 +342,7 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ {
+ 	struct rtl821x_priv *priv = phydev->priv;
+ 	struct device *dev = &phydev->mdio.dev;
++	u32 phy_id = phydev->drv->phy_id;
+ 	u16 val_txdly, val_rxdly;
+ 	int ret;
+ 
+@@ -400,12 +410,14 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 			val_rxdly ? "enabled" : "disabled");
+ 	}
+ 
+-	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+-			       RTL8211F_CLKOUT_EN, priv->phycr2);
+-	if (ret < 0) {
+-		dev_err(dev, "clkout configuration failed: %pe\n",
+-			ERR_PTR(ret));
+-		return ret;
++	if (!is_rtl8211fvd(phy_id)) {
++		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
++				       RTL8211F_CLKOUT_EN, priv->phycr2);
++		if (ret < 0) {
++			dev_err(dev, "clkout configuration failed: %pe\n",
++				ERR_PTR(ret));
++			return ret;
++		}
+ 	}
+ 
+ 	return genphy_soft_reset(phydev);
+@@ -923,6 +935,18 @@ static struct phy_driver realtek_drvs[] = {
+ 		.resume		= rtl821x_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
++	}, {
++		PHY_ID_MATCH_EXACT(RTL_8211FVD_PHYID),
++		.name		= "RTL8211F-VD Gigabit Ethernet",
++		.probe		= rtl821x_probe,
++		.config_init	= &rtl8211f_config_init,
++		.read_status	= rtlgen_read_status,
++		.config_intr	= &rtl8211f_config_intr,
++		.handle_interrupt = rtl8211f_handle_interrupt,
++		.suspend	= genphy_suspend,
++		.resume		= rtl821x_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	}, {
+ 		.name		= "Generic FE-GE Realtek PHY",
+ 		.match_phy_device = rtlgen_match_phy_device,
+-- 
+2.25.1
 
-> +{
-> +	netdev_features_t features;
-> +
-> +	netdev_features_set_array(&netif_f_ip_csum_feature_set,
-> +				  &netdev_ip_csum_features);
-> +	netdev_features_set_array(&netif_f_csum_feature_set_mask,
-> +				  &netdev_csum_features_mask);
-> +
-> +	netdev_features_set_array(&netif_f_gso_feature_set_mask,
-> +				  &netdev_gso_features_mask);
-> +	netdev_features_set_array(&netif_f_general_tso_feature_set,
-> +				  &netdev_general_tso_features);
-> +	netdev_features_set_array(&netif_f_all_tso_feature_set,
-> +				  &netdev_all_tso_features);
-> +	netdev_features_set_array(&netif_f_tso_ecn_feature_set,
-> +				  &netdev_tso_ecn_features);
-> +	netdev_features_set_array(&netif_f_all_fcoe_feature_set,
-> +				  &netdev_all_fcoe_features);
-> +	netdev_features_set_array(&netif_f_gso_soft_feature_set,
-> +				  &netdev_gso_software_features);
-> +	netdev_features_set_array(&netif_f_gso_encap_feature_set,
-> +				  &netdev_gso_encap_all_features);
-> +
-> +	netdev_csum_gso_features_mask =
-> +		netdev_features_or(netdev_gso_features_mask,
-> +				   netdev_csum_features_mask);
-
-(I forgot to mention this in 01/36 ._.)
-
-As you're converting to bitmaps, you should probably avoid direct
-assignments. All the bitmap_*() modification functions take a pointer
-to the destination as a first argument. So it should be
-
-netdev_features_or(netdev_features_t *dst, const netdev_features_t *src1,
-		   const netdev_features_t *src1);
-
-> +
-> +	netdev_features_set_array(&netif_f_one_for_all_feature_set,
-> +				  &netdev_one_for_all_features);
-
-Does it make sense to prefix features and the corresponding sets
-differently? Why not just 'netdev_' for both of them?
-
-> +	netdev_features_set_array(&netif_f_all_for_all_feature_set,
-> +				  &netdev_all_for_all_features);
-> +
-> +	netdev_features_set_array(&netif_f_upper_disables_feature_set,
-> +				  &netdev_upper_disable_features);
-> +
-> +	netdev_features_set_array(&netif_f_soft_feature_set,
-> +				  &netdev_soft_features);
-> +	netdev_features_set_array(&netif_f_soft_off_feature_set,
-> +				  &netdev_soft_off_features);
-> +
-> +	netdev_features_set_array(&netif_f_rx_vlan_feature_set,
-> +				  &netdev_rx_vlan_features);
-> +	netdev_features_set_array(&netif_f_tx_vlan_feature_set,
-> +				  &netdev_tx_vlan_features);
-> +	netdev_features_set_array(&netif_f_vlan_filter_feature_set,
-> +				  &netdev_vlan_filter_features);
-> +	netdev_all_vlan_features = netdev_features_or(netdev_rx_vlan_features,
-> +						      netdev_tx_vlan_features);
-> +	netdev_features_set_array(&netif_f_ctag_vlan_offload_feature_set,
-> +				  &netdev_ctag_vlan_offload_features);
-> +	netdev_features_set_array(&netif_f_stag_vlan_offload_feature_set,
-> +				  &netdev_stag_vlan_offload_features);
-> +	netdev_vlan_offload_features =
-> +			netdev_features_or(netdev_ctag_vlan_offload_features,
-> +					   netdev_stag_vlan_offload_features);
-> +	netdev_features_set_array(&netif_f_ctag_vlan_feature_set,
-> +				  &netdev_ctag_vlan_features);
-> +	netdev_features_set_array(&netif_f_stag_vlan_feature_set,
-> +				  &netdev_stag_vlan_features);
-> +	netdev_features_set_array(&netif_f_multi_tags_feature_set_mask,
-> +				  &netdev_multi_tags_features_mask);
-> +
-> +	netdev_features_set_array(&netif_f_xfrm_feature_set,
-> +				  &netdev_xfrm_features);
-> +	netdev_features_set_array(&netif_f_tls_feature_set,
-> +				  &netdev_tls_features);
-> +
-> +	netdev_features_set_array(&netif_f_never_change_feature_set,
-> +				  &netdev_never_change_features);
-> +	netdev_features_fill(&features);
-> +	netdev_ethtool_features =
-> +		netdev_features_andnot(features, netdev_never_change_features);
-> +
-> +	netdev_features_zero(&netdev_empty_features);
-> +
-> +	netdev_features_set_array(&netvsc_supported_hw_feature_set,
-> +				  &netvsc_supported_hw_features);
-> +}
-> +
->  /*
->   *	Initialize the DEV module. At boot time this walks the device list and
->   *	unhooks any devices that fail to initialise (normally hardware not
-> @@ -11392,6 +11473,8 @@ static int __init net_dev_init(void)
->  	if (register_pernet_subsys(&netdev_net_ops))
->  		goto out;
->  
-> +	netdev_features_init();
-> +
->  	/*
->  	 *	Initialise the packet receive queues.
->  	 */
-> diff --git a/net/core/netdev_features.c b/net/core/netdev_features.c
-> new file mode 100644
-> index 000000000000..158c750ea7a2
-> --- /dev/null
-> +++ b/net/core/netdev_features.c
-> @@ -0,0 +1,281 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Network device features.
-> + */
-> +
-> +#include <linux/netdev_features.h>
-> +
-> +netdev_features_t netdev_ethtool_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_ethtool_features);
-
-I think GPL is too strict for such a core functionality.
-I mean, I personally don't use non-GPL and don't work on such stuff,
-but there must be plenty of non-GPL networking drivers, and with
-this change they will simply stop working. Not that I don't like
-it :D But there definitely will be argues and "angry" articles.
-
-> +
-> +netdev_features_t netdev_never_change_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_never_change_features);
-> +
-> +netdev_features_t netdev_gso_features_mask __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_gso_features_mask);
-> +
-> +netdev_features_t netdev_ip_csum_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_ip_csum_features);
-> +
-> +netdev_features_t netdev_csum_features_mask __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_csum_features_mask);
-> +
-> +netdev_features_t netdev_general_tso_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_general_tso_features);
-> +
-> +netdev_features_t netdev_all_tso_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_all_tso_features);
-> +
-> +netdev_features_t netdev_tso_ecn_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_tso_ecn_features);
-> +
-> +netdev_features_t netdev_all_fcoe_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_all_fcoe_features);
-> +
-> +netdev_features_t netdev_gso_software_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_gso_software_features);
-> +
-> +netdev_features_t netdev_one_for_all_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_one_for_all_features);
-> +
-> +netdev_features_t netdev_all_for_all_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_all_for_all_features);
-> +
-> +netdev_features_t netdev_upper_disable_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_upper_disable_features);
-> +
-> +netdev_features_t netdev_soft_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_soft_features);
-> +
-> +netdev_features_t netdev_soft_off_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_soft_off_features);
-> +
-> +netdev_features_t netdev_all_vlan_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_all_vlan_features);
-> +
-> +netdev_features_t netdev_vlan_filter_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_vlan_filter_features);
-> +
-> +netdev_features_t netdev_rx_vlan_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_rx_vlan_features);
-> +
-> +netdev_features_t netdev_tx_vlan_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_tx_vlan_features);
-> +
-> +netdev_features_t netdev_ctag_vlan_offload_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_ctag_vlan_offload_features);
-> +
-> +netdev_features_t netdev_stag_vlan_offload_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_stag_vlan_offload_features);
-> +
-> +netdev_features_t netdev_vlan_offload_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_vlan_offload_features);
-> +
-> +netdev_features_t netdev_ctag_vlan_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_ctag_vlan_features);
-> +
-> +netdev_features_t netdev_stag_vlan_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_stag_vlan_features);
-> +
-> +netdev_features_t netdev_multi_tags_features_mask __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_multi_tags_features_mask);
-> +
-> +netdev_features_t netdev_gso_encap_all_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_gso_encap_all_features);
-> +
-> +netdev_features_t netdev_xfrm_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_xfrm_features);
-> +
-> +netdev_features_t netdev_tls_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_tls_features);
-> +
-> +netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_csum_gso_features_mask);
-> +
-> +netdev_features_t netdev_empty_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netdev_empty_features);
-> +
-> +netdev_features_t netvsc_supported_hw_features __ro_after_init;
-> +EXPORT_SYMBOL_GPL(netvsc_supported_hw_features);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_never_change_feature_set,
-> +			   NETIF_F_VLAN_CHALLENGED_BIT,
-> +			   NETIF_F_LLTX_BIT,
-> +			   NETIF_F_NETNS_LOCAL_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_never_change_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_gso_feature_set_mask,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_GSO_ROBUST_BIT,
-> +			   NETIF_F_TSO_ECN_BIT,
-> +			   NETIF_F_TSO_MANGLEID_BIT,
-> +			   NETIF_F_TSO6_BIT,
-> +			   NETIF_F_FSO_BIT,
-> +			   NETIF_F_GSO_GRE_BIT,
-> +			   NETIF_F_GSO_GRE_CSUM_BIT,
-> +			   NETIF_F_GSO_IPXIP4_BIT,
-> +			   NETIF_F_GSO_IPXIP6_BIT,
-> +			   NETIF_F_GSO_UDP_TUNNEL_BIT,
-> +			   NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT,
-> +			   NETIF_F_GSO_PARTIAL_BIT,
-> +			   NETIF_F_GSO_TUNNEL_REMCSUM_BIT,
-> +			   NETIF_F_GSO_SCTP_BIT,
-> +			   NETIF_F_GSO_ESP_BIT,
-> +			   NETIF_F_GSO_UDP_BIT,
-> +			   NETIF_F_GSO_UDP_L4_BIT,
-> +			   NETIF_F_GSO_FRAGLIST_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_gso_feature_set_mask);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_ip_csum_feature_set,
-> +			   NETIF_F_IP_CSUM_BIT,
-> +			   NETIF_F_IPV6_CSUM_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_ip_csum_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_csum_feature_set_mask,
-> +			   NETIF_F_IP_CSUM_BIT,
-> +			   NETIF_F_IPV6_CSUM_BIT,
-> +			   NETIF_F_HW_CSUM_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_csum_feature_set_mask);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_general_tso_feature_set,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_TSO6_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_general_tso_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_all_tso_feature_set,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_TSO6_BIT,
-> +			   NETIF_F_TSO_ECN_BIT,
-> +			   NETIF_F_TSO_MANGLEID_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_all_tso_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_tso_ecn_feature_set,
-> +			   NETIF_F_TSO_ECN_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_tso_ecn_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_all_fcoe_feature_set,
-> +			   NETIF_F_FCOE_CRC_BIT,
-> +			   NETIF_F_FCOE_MTU_BIT,
-> +			   NETIF_F_FSO_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_all_fcoe_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_gso_soft_feature_set,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_TSO6_BIT,
-> +			   NETIF_F_TSO_ECN_BIT,
-> +			   NETIF_F_TSO_MANGLEID_BIT,
-> +			   NETIF_F_GSO_SCTP_BIT,
-> +			   NETIF_F_GSO_UDP_L4_BIT,
-> +			   NETIF_F_GSO_FRAGLIST_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_gso_soft_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_one_for_all_feature_set,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_TSO6_BIT,
-> +			   NETIF_F_TSO_ECN_BIT,
-> +			   NETIF_F_TSO_MANGLEID_BIT,
-> +			   NETIF_F_GSO_SCTP_BIT,
-> +			   NETIF_F_GSO_UDP_L4_BIT,
-> +			   NETIF_F_GSO_FRAGLIST_BIT,
-> +			   NETIF_F_GSO_ROBUST_BIT,
-> +			   NETIF_F_SG_BIT,
-> +			   NETIF_F_HIGHDMA_BIT,
-> +			   NETIF_F_FRAGLIST_BIT,
-> +			   NETIF_F_VLAN_CHALLENGED_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_one_for_all_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_all_for_all_feature_set,
-> +			   NETIF_F_NOCACHE_COPY_BIT,
-> +			   NETIF_F_FSO_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_all_for_all_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_upper_disables_feature_set,
-> +			   NETIF_F_LRO_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_upper_disables_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_soft_feature_set,
-> +			   NETIF_F_GSO_BIT,
-> +			   NETIF_F_GRO_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_soft_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_soft_off_feature_set,
-> +			   NETIF_F_GRO_FRAGLIST_BIT,
-> +			   NETIF_F_GRO_UDP_FWD_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_soft_off_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_tx_vlan_feature_set,
-> +			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_TX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_tx_vlan_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_rx_vlan_feature_set,
-> +			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_RX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_rx_vlan_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_vlan_filter_feature_set,
-> +			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_FILTER_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_vlan_filter_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_ctag_vlan_offload_feature_set,
-> +			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_CTAG_RX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_ctag_vlan_offload_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_stag_vlan_offload_feature_set,
-> +			   NETIF_F_HW_VLAN_STAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_RX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_stag_vlan_offload_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_ctag_vlan_feature_set,
-> +			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
-> +			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_ctag_vlan_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_stag_vlan_feature_set,
-> +			   NETIF_F_HW_VLAN_STAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_RX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_FILTER_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_stag_vlan_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_multi_tags_feature_set_mask,
-> +			   NETIF_F_SG_BIT,
-> +			   NETIF_F_HIGHDMA_BIT,
-> +			   NETIF_F_HW_CSUM_BIT,
-> +			   NETIF_F_FRAGLIST_BIT,
-> +			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-> +			   NETIF_F_HW_VLAN_STAG_TX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_multi_tags_feature_set_mask);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_gso_encap_feature_set,
-> +			   NETIF_F_GSO_GRE_BIT,
-> +			   NETIF_F_GSO_GRE_CSUM_BIT,
-> +			   NETIF_F_GSO_IPXIP4_BIT,
-> +			   NETIF_F_GSO_IPXIP6_BIT,
-> +			   NETIF_F_GSO_UDP_TUNNEL_BIT,
-> +			   NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_gso_encap_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_xfrm_feature_set,
-> +			   NETIF_F_HW_ESP_BIT,
-> +			   NETIF_F_HW_ESP_TX_CSUM_BIT,
-> +			   NETIF_F_GSO_ESP_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_xfrm_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netif_f_tls_feature_set,
-> +			   NETIF_F_HW_TLS_TX_BIT,
-> +			   NETIF_F_HW_TLS_RX_BIT);
-> +EXPORT_SYMBOL_GPL(netif_f_tls_feature_set);
-> +
-> +DECLARE_NETDEV_FEATURE_SET(netvsc_supported_hw_feature_set,
-> +			   NETIF_F_RXCSUM_BIT,
-> +			   NETIF_F_IP_CSUM_BIT,
-> +			   NETIF_F_TSO_BIT,
-> +			   NETIF_F_IPV6_CSUM_BIT,
-> +			   NETIF_F_TSO6_BIT,
-> +			   NETIF_F_LRO_BIT,
-> +			   NETIF_F_SG_BIT,
-> +			   NETIF_F_RXHASH_BIT);
-> +EXPORT_SYMBOL_GPL(netvsc_supported_hw_feature_set);
-> -- 
-> 2.33.0
-
-Thanks,
-Olek
