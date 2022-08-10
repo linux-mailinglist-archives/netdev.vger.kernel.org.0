@@ -2,71 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F9C58E468
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 03:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9161358E47D
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 03:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiHJBTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 21:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        id S230015AbiHJB1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 21:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiHJBTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 21:19:40 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B52F66109
-        for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 18:19:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=UaNHEpkgk6wNwqmudBtAcpn/Q6XoVs4mxR7wN+UJqeQ=; b=BdfOaeJcFT4vJgJkf+CFeogibj
-        aRKeJehoInEmb1MmniB+oNVT9Z8TSq9BXTGQ9qIXgRYi1yeZjSbqUe0epZ5cv8AHi/qq51SP+0H6f
-        3XFFDxATCuXouC7eqEX+Ezl6HoBTdg1drCxEoRO4Mlbc9xx88Cb+DAqXzDqq6cnEiE2Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oLaNj-00CtOO-KX; Wed, 10 Aug 2022 03:19:35 +0200
-Date:   Wed, 10 Aug 2022 03:19:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Philipp Rossak <embed3d@gmail.com>
-Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        netdev@vger.kernel.org, qiangqing.zhang@nxp.com,
-        philipp.rossak@formulastudent.de
-Subject: Re: Question: Ethernet Phy issues on Colibri IMX8X (imx8qxp) -
- kernel 5.19
-Message-ID: <YvMHp0K65a/L0pa4@lunn.ch>
-References: <90d979b7-7457-34b0-5142-fe288c4206d8@gmail.com>
+        with ESMTP id S230093AbiHJB1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 21:27:08 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D025FADD;
+        Tue,  9 Aug 2022 18:27:05 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id w14so12903564plp.9;
+        Tue, 09 Aug 2022 18:27:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=aMmzBt/TBT59uBGgogc8HNMQteHV+aheJkP8yVZzq38=;
+        b=fHR57LZaM+eGHS8Kvxf+MdiXJkXyfzeDA4Vk/JzKtfiCwZRhUPn3KWl3V/q5iDdKsc
+         W8D739RIOCAwDUAPBW8YWUqDrgyxZjSutzq05wRMOmau4JEosK7H8fP+E/aziyBkAe3H
+         z9kqGn2u3QRBMPACkLT/3w5p+AggUYLCpI0zQGhK0aGHDoDEPx7Hqwzd8xXXrzWJo5V7
+         Ispcan8lwNq7IRwPlVyN6ACGl0WM+I7dIJF3tTT7yrqj/72PG/PCryz7adTZwXkMdA6X
+         Q9W8loZpzQtQlaSzAZWmHkxv+6EQAAcyXW9/KDemK3AW7tAjubV2CWwoIcj3V9qQYeiS
+         GEUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=aMmzBt/TBT59uBGgogc8HNMQteHV+aheJkP8yVZzq38=;
+        b=IkF2+3l8e1MyzCBewAmrGFtkjrOoU86tD+AliXj5GfkR3QfaqnQfVlCFfBZYA7/xVe
+         bXWjSo2as4mZNvy5aVhr3iTwMh9iGj4g0v2aGUOQEolwwGPlOU/h5V8KrfK1e6UTxgnf
+         6BvNwdoFpwPiJpDDnmFx7UZqPo2My8ZYjd3j2ZFnaJUnk2rZPIs1BjLm2Qb3O01RFU6Q
+         h9WHTwETJp4Taz/2/FWx/JrmuE79mzZamfAEWZ7IMxB9/IvC8tsh1s9r6OAczNC1jrHP
+         xrpg994FMJWqp9M3QYu2KWMCZkgy/cbYj73kYm+a9mBTzl2+FBaEmmaumYoEbXSUDe6H
+         0dVg==
+X-Gm-Message-State: ACgBeo2+WiaufJ1ktCf+FmCQit5f0DbAVJr7pnUwCJXBHS9229O7bJpd
+        raeu6VGo6jpbTspMTlVKil0=
+X-Google-Smtp-Source: AA6agR5ttwmHSdAARFoSlrXLSeIVikShFhitZkshbZZxVg5OnVr/Y53jsTLQPRB5rC2ztDWn9l7ikw==
+X-Received: by 2002:a17:902:c24c:b0:16d:d5d4:aa84 with SMTP id 12-20020a170902c24c00b0016dd5d4aa84mr25307703plg.36.1660094825222;
+        Tue, 09 Aug 2022 18:27:05 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h3-20020a17090a580300b001f2ef2f9c6fsm223336pji.56.2022.08.09.18.27.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 18:27:04 -0700 (PDT)
+Date:   Wed, 10 Aug 2022 09:26:57 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [RFC net] bonding: 802.3ad: fix no transmission of LACPDUs
+Message-ID: <YvMJYb0VDJW+6CRh@Laptop-X1>
+References: <c2f698e6f73e6e78232ab4ded065c3828d245dbd.1660065706.git.jtoppins@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <90d979b7-7457-34b0-5142-fe288c4206d8@gmail.com>
+In-Reply-To: <c2f698e6f73e6e78232ab4ded065c3828d245dbd.1660065706.git.jtoppins@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 12:55:58AM +0200, Philipp Rossak wrote:
-> Hi,
-> 
-> I currently have a project with a Toradex Colibri IMX8X SOM board whith an
-> onboard Micrel KSZ8041NL Ethernet PHY.
-> 
-> The hardware is described in the devictree properly so I expected that the
-> onboard Ethernet with the phy is working.
-> 
-> Currently I'm not able to get the link up.
-> 
-> I already compared it to the BSP kernel, but I didn't found anything
-> helpful. The BSP kernel is working.
-> 
-> Do you know if there is something in the kernel missing and got it running?
+On Tue, Aug 09, 2022 at 01:21:46PM -0400, Jonathan Toppins wrote:
+> ---
+>  MAINTAINERS                                   |  1 +
+>  drivers/net/bonding/bond_3ad.c                |  2 +-
+>  .../net/bonding/bond-break-lacpdu-tx.sh       | 88 +++++++++++++++++++
 
-dmesg output might be useful.
+Hi Jon,
 
-Do you have the micrel driver either built in, or in your initramfs
-image?
+You need a Makefile in this folder and set TEST_PROGS so we can generate the
+test in kselftest-list.txt.
 
-	Andrew
+Thanks
+Hangbin
