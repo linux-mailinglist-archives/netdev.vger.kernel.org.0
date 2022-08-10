@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C16258E544
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 05:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B919958E54C
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 05:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbiHJDOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 23:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        id S230321AbiHJDOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Aug 2022 23:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiHJDNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 23:13:50 -0400
+        with ESMTP id S230232AbiHJDNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 23:13:51 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346F181B30
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6264A81B3B
         for <netdev@vger.kernel.org>; Tue,  9 Aug 2022 20:13:48 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2Zgv0rbJzjXhl;
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2Zgv24ThzjXkZ;
         Wed, 10 Aug 2022 11:10:35 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [RFCv7 PATCH net-next 16/36] treewide: use replace features '0' by netdev_empty_features
-Date:   Wed, 10 Aug 2022 11:06:04 +0800
-Message-ID: <20220810030624.34711-17-shenjian15@huawei.com>
+Subject: [RFCv7 PATCH net-next 17/36] treewide: adjust features initialization
+Date:   Wed, 10 Aug 2022 11:06:05 +0800
+Message-ID: <20220810030624.34711-18-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220810030624.34711-1-shenjian15@huawei.com>
 References: <20220810030624.34711-1-shenjian15@huawei.com>
@@ -48,540 +48,990 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the prototype of netdev_features_t will be changed from
-u64 to bitmap, so it's unable to assignment with 0 directly.
-Replace it with netdev_empty_features.
+There are many direclty single bit assignment to netdev features.
+Adjust these expressions, so can use netdev features helpers later.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/hsi/clients/ssi_protocol.c             | 2 +-
- drivers/net/caif/caif_serial.c                 | 2 +-
- drivers/net/ethernet/amazon/ena/ena_netdev.c   | 2 +-
- drivers/net/ethernet/broadcom/b44.c            | 2 +-
- drivers/net/ethernet/broadcom/tg3.c            | 2 +-
- drivers/net/ethernet/dnet.c                    | 2 +-
- drivers/net/ethernet/ec_bhf.c                  | 2 +-
- drivers/net/ethernet/emulex/benet/be_main.c    | 2 +-
- drivers/net/ethernet/ethoc.c                   | 2 +-
- drivers/net/ethernet/huawei/hinic/hinic_main.c | 5 +++--
- drivers/net/ethernet/ibm/ibmvnic.c             | 6 +++---
- drivers/net/ethernet/intel/iavf/iavf_main.c    | 9 +++++----
- drivers/net/ethernet/microsoft/mana/mana_en.c  | 2 +-
- drivers/net/ethernet/sfc/ef10.c                | 2 +-
- drivers/net/tap.c                              | 2 +-
- drivers/net/tun.c                              | 2 +-
- drivers/net/usb/cdc-phonet.c                   | 3 ++-
- drivers/net/usb/lan78xx.c                      | 2 +-
- drivers/s390/net/qeth_core_main.c              | 2 +-
- drivers/usb/gadget/function/f_phonet.c         | 3 ++-
- net/dccp/ipv4.c                                | 2 +-
- net/dccp/ipv6.c                                | 2 +-
- net/ethtool/features.c                         | 2 +-
- net/ethtool/ioctl.c                            | 6 ++++--
- net/ipv4/af_inet.c                             | 2 +-
- net/ipv4/tcp.c                                 | 2 +-
- net/ipv4/tcp_ipv4.c                            | 2 +-
- net/ipv6/af_inet6.c                            | 2 +-
- net/ipv6/inet6_connection_sock.c               | 2 +-
- net/ipv6/tcp_ipv6.c                            | 2 +-
- net/openvswitch/datapath.c                     | 2 +-
- 31 files changed, 44 insertions(+), 38 deletions(-)
+ arch/um/drivers/vector_kern.c                       | 5 ++++-
+ drivers/firewire/net.c                              | 4 +++-
+ drivers/infiniband/hw/hfi1/vnic_main.c              | 4 +++-
+ drivers/misc/sgi-xp/xpnet.c                         | 3 ++-
+ drivers/net/can/dev/dev.c                           | 4 +++-
+ drivers/net/ethernet/alacritech/slicoss.c           | 4 +++-
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c            | 4 +++-
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c     | 3 ++-
+ drivers/net/ethernet/atheros/atlx/atl2.c            | 4 +++-
+ drivers/net/ethernet/cadence/macb_main.c            | 4 +++-
+ drivers/net/ethernet/davicom/dm9000.c               | 4 +++-
+ drivers/net/ethernet/engleder/tsnep_main.c          | 4 +++-
+ drivers/net/ethernet/ibm/ibmveth.c                  | 3 ++-
+ drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 4 +++-
+ drivers/net/ethernet/mellanox/mlx4/en_netdev.c      | 3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 +++-
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++++--
+ drivers/net/ethernet/netronome/nfp/nfp_net_repr.c   | 3 ++-
+ drivers/net/ethernet/ni/nixge.c                     | 4 +++-
+ drivers/net/ethernet/renesas/sh_eth.c               | 6 ++++--
+ drivers/net/ethernet/sun/sunhme.c                   | 7 +++++--
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c        | 6 ++++--
+ drivers/net/ethernet/toshiba/spider_net.c           | 3 ++-
+ drivers/net/ethernet/tundra/tsi108_eth.c            | 3 ++-
+ drivers/net/ethernet/xilinx/ll_temac_main.c         | 4 +++-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c   | 4 +++-
+ drivers/net/hamradio/bpqether.c                     | 4 +++-
+ drivers/net/hyperv/netvsc_drv.c                     | 3 ++-
+ drivers/net/ipa/ipa_modem.c                         | 4 +++-
+ drivers/net/ntb_netdev.c                            | 4 +++-
+ drivers/net/rionet.c                                | 4 +++-
+ drivers/net/tap.c                                   | 2 +-
+ drivers/net/thunderbolt.c                           | 3 ++-
+ drivers/net/usb/smsc95xx.c                          | 4 +++-
+ drivers/net/virtio_net.c                            | 4 +++-
+ drivers/net/wireless/ath/ath10k/mac.c               | 7 +++++--
+ drivers/net/wireless/ath/ath11k/mac.c               | 4 +++-
+ drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c   | 4 +++-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c   | 4 +++-
+ drivers/net/wireless/mediatek/mt76/mt7615/init.c    | 4 +++-
+ drivers/net/wireless/mediatek/mt76/mt7915/init.c    | 4 +++-
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c    | 4 +++-
+ drivers/net/wwan/t7xx/t7xx_netdev.c                 | 4 +++-
+ drivers/s390/net/qeth_core_main.c                   | 7 +++++--
+ include/net/udp.h                                   | 4 +++-
+ net/phonet/pep-gprs.c                               | 4 +++-
+ 46 files changed, 138 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/hsi/clients/ssi_protocol.c b/drivers/hsi/clients/ssi_protocol.c
-index 21f11a5b965b..c7f3dae91e36 100644
---- a/drivers/hsi/clients/ssi_protocol.c
-+++ b/drivers/hsi/clients/ssi_protocol.c
-@@ -1057,7 +1057,7 @@ static void ssip_pn_setup(struct net_device *dev)
- {
- 	static const u8 addr = PN_MEDIA_SOS;
+diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
+index 1d59522a50d8..d797758850e1 100644
+--- a/arch/um/drivers/vector_kern.c
++++ b/arch/um/drivers/vector_kern.c
+@@ -1628,7 +1628,10 @@ static void vector_eth_configure(
+ 		.bpf			= NULL
+ 	});
  
--	dev->features		= 0;
-+	dev->features		= netdev_empty_features;
- 	dev->netdev_ops		= &ssip_pn_ops;
- 	dev->type		= ARPHRD_PHONET;
- 	dev->flags		= IFF_POINTOPOINT | IFF_NOARP;
-diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-index 688075859ae4..1fca20f97e8f 100644
---- a/drivers/net/caif/caif_serial.c
-+++ b/drivers/net/caif/caif_serial.c
-@@ -398,7 +398,7 @@ static void caifdev_setup(struct net_device *dev)
- {
- 	struct ser_device *serdev = netdev_priv(dev);
+-	dev->features = dev->hw_features = (NETIF_F_SG | NETIF_F_FRAGLIST);
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_SG;
++	dev->features |= NETIF_F_FRAGLIST;
++	dev->features = dev->hw_features;
+ 	INIT_WORK(&vp->reset_tx, vector_reset_tx);
  
--	dev->features = 0;
-+	dev->features = netdev_empty_features;
- 	dev->netdev_ops = &netdev_ops;
- 	dev->type = ARPHRD_CAIF;
- 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index ab102769965f..f77a930367ce 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -4019,7 +4019,7 @@ static DECLARE_NETDEV_FEATURE_SET(ena_feature_set,
- static void ena_set_dev_offloads(struct ena_com_dev_get_features_ctx *feat,
- 				 struct net_device *netdev)
- {
--	netdev_features_t dev_features = 0;
-+	netdev_features_t dev_features = netdev_empty_features;
+ 	timer_setup(&vp->tl, vector_timer_expire, 0);
+diff --git a/drivers/firewire/net.c b/drivers/firewire/net.c
+index af22be84034b..e73c8793599b 100644
+--- a/drivers/firewire/net.c
++++ b/drivers/firewire/net.c
+@@ -24,6 +24,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/mutex.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/skbuff.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+@@ -1374,7 +1375,8 @@ static void fwnet_init_dev(struct net_device *net)
+ 	net->netdev_ops		= &fwnet_netdev_ops;
+ 	net->watchdog_timeo	= 2 * HZ;
+ 	net->flags		= IFF_BROADCAST | IFF_MULTICAST;
+-	net->features		= NETIF_F_HIGHDMA;
++	netdev_active_features_zero(net);
++	net->features		|= NETIF_F_HIGHDMA;
+ 	net->addr_len		= FWNET_ALEN;
+ 	net->hard_header_len	= FWNET_HLEN;
+ 	net->type		= ARPHRD_IEEE1394;
+diff --git a/drivers/infiniband/hw/hfi1/vnic_main.c b/drivers/infiniband/hw/hfi1/vnic_main.c
+index 3650fababf25..52f805909ce3 100644
+--- a/drivers/infiniband/hw/hfi1/vnic_main.c
++++ b/drivers/infiniband/hw/hfi1/vnic_main.c
+@@ -588,7 +588,9 @@ struct net_device *hfi1_vnic_alloc_rn(struct ib_device *device,
+ 	rn->free_rdma_netdev = hfi1_vnic_free_rn;
+ 	rn->set_id = hfi1_vnic_set_vesw_id;
  
- 	/* Set offload features */
- 	if (feat->offload.tx &
-diff --git a/drivers/net/ethernet/broadcom/b44.c b/drivers/net/ethernet/broadcom/b44.c
-index e5857e88c207..075bdded8e45 100644
---- a/drivers/net/ethernet/broadcom/b44.c
-+++ b/drivers/net/ethernet/broadcom/b44.c
-@@ -2359,7 +2359,7 @@ static int b44_init_one(struct ssb_device *sdev,
- 	SET_NETDEV_DEV(dev, sdev->dev);
+-	netdev->features = NETIF_F_HIGHDMA | NETIF_F_SG;
++	netdev_active_features_zero(netdev);
++	netdev->features |= NETIF_F_HIGHDMA;
++	netdev->features |= NETIF_F_SG;
+ 	netdev->hw_features = netdev->features;
+ 	netdev->vlan_features = netdev->features;
+ 	netdev->watchdog_timeo = msecs_to_jiffies(HFI_TX_TIMEOUT_MS);
+diff --git a/drivers/misc/sgi-xp/xpnet.c b/drivers/misc/sgi-xp/xpnet.c
+index 50644f83e78c..8547652c7b59 100644
+--- a/drivers/misc/sgi-xp/xpnet.c
++++ b/drivers/misc/sgi-xp/xpnet.c
+@@ -569,7 +569,8 @@ xpnet_init(void)
+ 	 * report an error if the data is not retrievable and the
+ 	 * packet will be dropped.
+ 	 */
+-	xpnet_device->features = NETIF_F_HW_CSUM;
++	netdev_active_features_zero(xpnet_device);
++	xpnet_device->features |= NETIF_F_HW_CSUM;
  
- 	/* No interesting netdevice features in this card... */
--	dev->features |= 0;
-+	dev->features |= netdev_empty_features;
- 
- 	bp = netdev_priv(dev);
- 	bp->sdev = sdev;
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index 72a9b1f38cab..f4a455f8743b 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -17550,13 +17550,13 @@ static void tg3_init_coal(struct tg3 *tp)
- static int tg3_init_one(struct pci_dev *pdev,
- 				  const struct pci_device_id *ent)
- {
-+	netdev_features_t features = netdev_empty_features;
- 	struct net_device *dev;
- 	struct tg3 *tp;
- 	int i, err;
- 	u32 sndmbx, rcvmbx, intmbx;
- 	char str[40];
- 	u64 dma_mask, persist_dma_mask;
--	netdev_features_t features = 0;
- 	u8 addr[ETH_ALEN] __aligned(2);
- 
- 	err = pci_enable_device(pdev);
-diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
-index 92462ed87bc4..7f4dcea2cd87 100644
---- a/drivers/net/ethernet/dnet.c
-+++ b/drivers/net/ethernet/dnet.c
-@@ -763,7 +763,7 @@ static int dnet_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	/* TODO: Actually, we have some interesting features... */
--	dev->features |= 0;
-+	dev->features |= netdev_empty_features;
- 
- 	bp = netdev_priv(dev);
- 	bp->dev = dev;
-diff --git a/drivers/net/ethernet/ec_bhf.c b/drivers/net/ethernet/ec_bhf.c
-index 46e3a05e9582..44e90e06fdab 100644
---- a/drivers/net/ethernet/ec_bhf.c
-+++ b/drivers/net/ethernet/ec_bhf.c
-@@ -525,7 +525,7 @@ static int ec_bhf_probe(struct pci_dev *dev, const struct pci_device_id *id)
- 	pci_set_drvdata(dev, net_dev);
- 	SET_NETDEV_DEV(net_dev, &dev->dev);
- 
--	net_dev->features = 0;
-+	net_dev->features = netdev_empty_features;
- 	net_dev->flags |= IFF_NOARP;
- 
- 	net_dev->netdev_ops = &ec_bhf_netdev_ops;
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 22af4232329e..fefacd5530e2 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -4029,7 +4029,7 @@ static int be_vxlan_unset_port(struct net_device *netdev, unsigned int table,
- 	adapter->flags &= ~BE_FLAGS_VXLAN_OFFLOADS;
- 	adapter->vxlan_port = 0;
- 
--	netdev->hw_enc_features = 0;
-+	netdev->hw_enc_features = netdev_empty_features;
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/ethoc.c b/drivers/net/ethernet/ethoc.c
-index 437c5acfe222..3ced63aaa6cb 100644
---- a/drivers/net/ethernet/ethoc.c
-+++ b/drivers/net/ethernet/ethoc.c
-@@ -1220,7 +1220,7 @@ static int ethoc_probe(struct platform_device *pdev)
- 	/* setup the net_device structure */
- 	netdev->netdev_ops = &ethoc_netdev_ops;
- 	netdev->watchdog_timeo = ETHOC_TIMEOUT;
--	netdev->features |= 0;
-+	netdev->features |= netdev_empty_features;
- 	netdev->ethtool_ops = &ethoc_ethtool_ops;
- 
- 	/* setup NAPI */
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 80d14a014d2d..93d4b019a4d1 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1073,8 +1073,8 @@ static int set_features(struct hinic_dev *nic_dev,
- 			netdev_features_t features, bool force_change)
- {
- 	netdev_features_t changed = force_change ? ~0 : pre_features ^ features;
-+	netdev_features_t failed_features = netdev_empty_features;
- 	u32 csum_en = HINIC_RX_CSUM_OFFLOAD_EN;
--	netdev_features_t failed_features = 0;
- 	int ret = 0;
- 	int err = 0;
- 
-@@ -1295,7 +1295,8 @@ static int nic_dev_init(struct pci_dev *pdev)
- 				HINIC_MGMT_MSG_CMD_LINK_ERR_EVENT,
- 				nic_dev, link_err_event);
- 
--	err = set_features(nic_dev, 0, nic_dev->netdev->features, true);
-+	err = set_features(nic_dev, netdev_empty_features,
-+			   nic_dev->netdev->features, true);
- 	if (err)
- 		goto err_set_features;
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 598f5b9d9025..0ceecd372b7e 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -4840,8 +4840,8 @@ static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
- {
- 	struct ibmvnic_control_ip_offload_buffer *ctrl_buf = &adapter->ip_offload_ctrl;
- 	struct ibmvnic_query_ip_offload_buffer *buf = &adapter->ip_offload_buf;
-+	netdev_features_t old_hw_features = netdev_emtpy_features;
- 	struct device *dev = &adapter->vdev->dev;
--	netdev_features_t old_hw_features = 0;
- 	union ibmvnic_crq crq;
- 
- 	adapter->ip_offload_ctrl_tok =
-@@ -4872,7 +4872,7 @@ static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
- 
- 	if (adapter->state != VNIC_PROBING) {
- 		old_hw_features = adapter->netdev->hw_features;
--		adapter->netdev->hw_features = 0;
-+		adapter->netdev->hw_features = netdev_empty_features;
- 	}
- 
- 	netdev_hw_features_zero(adapter->netdev);
-@@ -4895,7 +4895,7 @@ static void send_control_ip_offload(struct ibmvnic_adapter *adapter)
- 	if (adapter->state == VNIC_PROBING) {
- 		adapter->netdev->features |= adapter->netdev->hw_features;
- 	} else if (old_hw_features != adapter->netdev->hw_features) {
--		netdev_features_t tmp = 0;
-+		netdev_features_t tmp = netdev_empty_features;
- 
- 		/* disable features no longer supported */
- 		adapter->netdev->features &= adapter->netdev->hw_features;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 95dd5a16b553..d4a2776381c3 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2595,7 +2595,8 @@ static void iavf_init_config_adapter(struct iavf_adapter *adapter)
- 
- 	if (VLAN_V2_ALLOWED(adapter))
- 		/* request initial VLAN offload settings */
--		iavf_set_vlan_offload_features(adapter, 0, netdev->features);
-+		iavf_set_vlan_offload_features(adapter, netdev_empty_features,
-+					       netdev->features);
- 
- 	return;
- err_mem:
-@@ -3151,7 +3152,7 @@ static void iavf_adminq_task(struct work_struct *work)
- 			/* Request VLAN offload settings */
- 			if (VLAN_V2_ALLOWED(adapter))
- 				iavf_set_vlan_offload_features
--					(adapter, 0, netdev->features);
-+					(adapter, netdev_empty_features, netdev->features);
- 
- 			iavf_set_queue_vlan_tag_loc(adapter);
- 		}
-@@ -4316,7 +4317,7 @@ static netdev_features_t iavf_features_check(struct sk_buff *skb,
- static netdev_features_t
- iavf_get_netdev_vlan_hw_features(struct iavf_adapter *adapter)
- {
--	netdev_features_t hw_features = 0;
-+	netdev_features_t hw_features = netdev_empty_features;
- 
- 	if (!adapter->vf_res || !adapter->vf_res->vf_cap_flags)
- 		return hw_features;
-@@ -4377,7 +4378,7 @@ iavf_get_netdev_vlan_hw_features(struct iavf_adapter *adapter)
- static netdev_features_t
- iavf_get_netdev_vlan_features(struct iavf_adapter *adapter)
- {
--	netdev_features_t features = 0;
-+	netdev_features_t features = netdev_empty_features;
- 
- 	if (!adapter->vf_res || !adapter->vf_res->vf_cap_flags)
- 		return features;
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index d2a424573d89..29bb41fdcdcd 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -2093,7 +2093,7 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
- 	netdev_hw_features_zero(ndev);
- 	netdev_hw_features_set_array(ndev, &mana_hw_feature_set);
- 	ndev->features = ndev->hw_features;
--	ndev->vlan_features = 0;
-+	ndev->vlan_features = netdev_empty_features;
- 
- 	err = register_netdev(ndev);
- 	if (err) {
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index dd8e278f8d8d..2f908bf1f019 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -1310,7 +1310,7 @@ static DECLARE_NETDEV_FEATURE_SET(ef10_tso_feature_set,
- static int efx_ef10_init_nic(struct efx_nic *efx)
- {
- 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
--	netdev_features_t hw_enc_features = 0;
-+	netdev_features_t hw_enc_features = netdev_empty_features;
- 	int rc;
- 
- 	if (nic_data->must_check_datapath_caps) {
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 7d5446500d67..53865533d7a9 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -944,7 +944,7 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
- {
- 	struct tap_dev *tap;
- 	netdev_features_t features;
--	netdev_features_t feature_mask = 0;
-+	netdev_features_t feature_mask = netdev_empty_features;
- 
- 	tap = rtnl_dereference(q->tap);
- 	if (!tap)
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 322956768815..661391e9399b 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2865,7 +2865,7 @@ static void tun_get_iff(struct tun_struct *tun, struct ifreq *ifr)
-  * privs required. */
- static int set_offload(struct tun_struct *tun, unsigned long arg)
- {
--	netdev_features_t features = 0;
-+	netdev_features_t features = netdev_empty_features;
- 
- 	if (arg & TUN_F_CSUM) {
- 		features |= NETIF_F_HW_CSUM;
-diff --git a/drivers/net/usb/cdc-phonet.c b/drivers/net/usb/cdc-phonet.c
-index ad5121e9cf5d..8c5116ed7278 100644
---- a/drivers/net/usb/cdc-phonet.c
-+++ b/drivers/net/usb/cdc-phonet.c
-@@ -14,6 +14,7 @@
- #include <linux/usb.h>
- #include <linux/usb/cdc.h>
+ 	result = register_netdev(xpnet_device);
+ 	if (result != 0) {
+diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
+index c1956b1e9faf..4243e65b2c68 100644
+--- a/drivers/net/can/dev/dev.c
++++ b/drivers/net/can/dev/dev.c
+@@ -7,6 +7,7 @@
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
  #include <linux/netdevice.h>
 +#include <linux/netdev_features_helper.h>
  #include <linux/if_arp.h>
- #include <linux/if_phonet.h>
- #include <linux/phonet.h>
-@@ -277,7 +278,7 @@ static void usbpn_setup(struct net_device *dev)
- {
- 	const u8 addr = PN_MEDIA_USB;
+ #include <linux/workqueue.h>
+ #include <linux/can.h>
+@@ -221,7 +222,8 @@ void can_setup(struct net_device *dev)
  
--	dev->features		= 0;
-+	dev->features		= netdev_empty_features;
- 	dev->netdev_ops		= &usbpn_ops;
- 	dev->header_ops		= &phonet_header_ops;
- 	dev->type		= ARPHRD_PHONET;
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index b3c01bee9504..1c67cfb9bdb8 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -3462,7 +3462,7 @@ static int lan78xx_bind(struct lan78xx_net *dev, struct usb_interface *intf)
+ 	/* New-style flags. */
+ 	dev->flags = IFF_NOARP;
+-	dev->features = NETIF_F_HW_CSUM;
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_HW_CSUM;
+ }
  
- 	INIT_WORK(&pdata->set_vlan, lan78xx_deferred_vlan_write);
+ /* Allocate and setup space for the CAN network device */
+diff --git a/drivers/net/ethernet/alacritech/slicoss.c b/drivers/net/ethernet/alacritech/slicoss.c
+index ce353b0c02a3..a52e3bc855e4 100644
+--- a/drivers/net/ethernet/alacritech/slicoss.c
++++ b/drivers/net/ethernet/alacritech/slicoss.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/if_ether.h>
+ #include <linux/crc32.h>
+@@ -1778,7 +1779,8 @@ static int slic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	pci_set_drvdata(pdev, dev);
+ 	dev->irq = pdev->irq;
+ 	dev->netdev_ops = &slic_netdev_ops;
+-	dev->hw_features = NETIF_F_RXCSUM;
++	netdev_hw_features_zero(dev);
++	dev->hw_features |= NETIF_F_RXCSUM;
+ 	dev->features |= dev->hw_features;
  
--	dev->net->features = 0;
-+	dev->net->features = netdev_empty_features;
+ 	dev->ethtool_ops = &slic_ethtool_ops;
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+index ce0e2fa3eb63..eb0b205b49af 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -121,6 +121,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/clk.h>
+ #include <linux/if_ether.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/net_tstamp.h>
+ #include <linux/phy.h>
+ #include <net/vxlan.h>
+@@ -2183,7 +2184,8 @@ static netdev_features_t xgbe_fix_features(struct net_device *netdev,
+ 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
+ 	netdev_features_t vxlan_base;
  
- 	if (DEFAULT_TX_CSUM_ENABLE)
- 		dev->net->features |= NETIF_F_HW_CSUM;
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 35d4b398c197..1ee35c5cb0bd 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -6938,7 +6938,7 @@ netdev_features_t qeth_features_check(struct sk_buff *skb,
- 	/* Traffic with local next-hop is not eligible for some offloads: */
- 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
- 	    READ_ONCE(card->options.isolation) != ISOLATION_MODE_FWD) {
--		netdev_features_t restricted = 0;
-+		netdev_features_t restricted = netdev_empty_features;
+-	vxlan_base = NETIF_F_GSO_UDP_TUNNEL;
++	netdev_features_zero(&vxlan_base);
++	vxlan_base |= NETIF_F_GSO_UDP_TUNNEL;
+ 	vxlan_base |= NETIF_F_RX_UDP_TUNNEL_PORT;
  
- 		if (skb_is_gso(skb) && !netif_needs_gso(skb, features))
- 			restricted |= NETIF_F_ALL_TSO;
-diff --git a/drivers/usb/gadget/function/f_phonet.c b/drivers/usb/gadget/function/f_phonet.c
-index 0bebbdf3f213..a540bf98441f 100644
---- a/drivers/usb/gadget/function/f_phonet.c
-+++ b/drivers/usb/gadget/function/f_phonet.c
-@@ -14,6 +14,7 @@
- #include <linux/device.h>
+ 	if (!pdata->hw_feat.vxn)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index a8de1fb20a3f..e2fe6f2507d3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -386,7 +386,8 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
+ 	self->ndev->hw_features |= *aq_hw_caps->hw_features;
+ 	self->ndev->features = *aq_hw_caps->hw_features;
+ 	netdev_vlan_features_set_array(self->ndev, &aq_nic_vlan_feature_set);
+-	self->ndev->gso_partial_features = NETIF_F_GSO_UDP_L4;
++	netdev_gso_partial_features_zero(self->ndev);
++	self->ndev->gso_partial_features |= NETIF_F_GSO_UDP_L4;
+ 	self->ndev->priv_flags = aq_hw_caps->hw_priv_flags;
+ 	self->ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
  
+diff --git a/drivers/net/ethernet/atheros/atlx/atl2.c b/drivers/net/ethernet/atheros/atlx/atl2.c
+index 1d647c4d1d44..15df55325aae 100644
+--- a/drivers/net/ethernet/atheros/atlx/atl2.c
++++ b/drivers/net/ethernet/atheros/atlx/atl2.c
+@@ -22,6 +22,7 @@
+ #include <linux/mii.h>
+ #include <linux/net.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/pci.h>
+ #include <linux/pci_ids.h>
+ #include <linux/pm.h>
+@@ -1389,7 +1390,8 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto err_sw_init;
+ 
+-	netdev->hw_features = NETIF_F_HW_VLAN_CTAG_RX;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
+ 	netdev->features |= netdev_ctag_vlan_offload_features;
+ 
+ 	/* Init PHY as early as possible due to power saving issue  */
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 4cac5e3a1929..1f84d3bc42c9 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -21,6 +21,7 @@
+ #include <linux/gpio/consumer.h>
+ #include <linux/interrupt.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/platform_device.h>
+@@ -4051,7 +4052,8 @@ static int macb_init(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Set features */
+-	dev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(dev);
++	dev->hw_features |= NETIF_F_SG;
+ 
+ 	/* Check LSO capability */
+ 	if (GEM_BFEXT(PBUF_LSO, gem_readl(bp, DCFG6)))
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 363490713825..fec097064e52 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/interrupt.h>
+ #include <linux/skbuff.h>
+@@ -1644,7 +1645,8 @@ dm9000_probe(struct platform_device *pdev)
+ 
+ 	/* dm9000a/b are capable of hardware checksum offload */
+ 	if (db->type == TYPE_DM9000A || db->type == TYPE_DM9000B) {
+-		ndev->hw_features = NETIF_F_RXCSUM;
++		netdev_hw_features_zero(ndev);
++		ndev->hw_features |= NETIF_F_RXCSUM;
+ 		ndev->hw_features |= NETIF_F_IP_CSUM;
+ 		ndev->features |= ndev->hw_features;
+ 	}
+diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+index cb069a0af7b9..8e58b36a826d 100644
+--- a/drivers/net/ethernet/engleder/tsnep_main.c
++++ b/drivers/net/ethernet/engleder/tsnep_main.c
+@@ -24,6 +24,7 @@
+ #include <linux/of_mdio.h>
+ #include <linux/interrupt.h>
+ #include <linux/etherdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/phy.h>
+ #include <linux/iopoll.h>
+ 
+@@ -1224,7 +1225,8 @@ static int tsnep_probe(struct platform_device *pdev)
+ 
+ 	netdev->netdev_ops = &tsnep_netdev_ops;
+ 	netdev->ethtool_ops = &tsnep_ethtool_ops;
+-	netdev->features = NETIF_F_SG;
++	netdev_active_features_zero(netdev);
++	netdev->features |= NETIF_F_SG;
+ 	netdev->hw_features = netdev->features;
+ 
+ 	/* carrier off reporting is important to ethtool even BEFORE open */
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 3533ae7c92f7..c59bbbcd094e 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1684,7 +1684,8 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	netdev->netdev_ops = &ibmveth_netdev_ops;
+ 	netdev->ethtool_ops = &netdev_ethtool_ops;
+ 	SET_NETDEV_DEV(netdev, &dev->dev);
+-	netdev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_SG;
+ 	if (vio_get_attribute(dev, "ibm,illan-options", NULL) != NULL)
+ 		netdev_hw_features_set_array(netdev, &ibmveth_hw_feature_set);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+index 97f080c66dd4..42973668ca53 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+@@ -10,6 +10,7 @@
+ #include <linux/pci.h>
+ #include <linux/aer.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/vmalloc.h>
+@@ -1064,7 +1065,8 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	octep_set_ethtool_ops(netdev);
+ 	netif_carrier_off(netdev);
+ 
+-	netdev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_SG;
+ 	netdev->features |= netdev->hw_features;
+ 	netdev->min_mtu = OCTEP_MIN_MTU;
+ 	netdev->max_mtu = OCTEP_MAX_MTU;
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index c73fcb4a15f3..37abb1ed9bd4 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -3367,7 +3367,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+ 	    MLX4_TUNNEL_OFFLOAD_MODE_VXLAN) {
+ 		netdev_hw_features_set_array(dev, &mlx4_gso_feature_set);
+ 		netdev_active_features_set_array(dev, &mlx4_gso_feature_set);
+-		dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev_gso_partial_features_zero(dev);
++		dev->gso_partial_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		netdev_hw_enc_features_zero(dev);
+ 		netdev_hw_enc_features_set_array(dev, &mlx4_hw_enc_feature_set);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 3c8d059c8484..e516a2805c0d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -37,6 +37,7 @@
+ #include <linux/bpf.h>
+ #include <linux/if_bridge.h>
+ #include <linux/filter.h>
++#include <linux/netdev_features_helper.h>
+ #include <net/page_pool.h>
+ #include <net/xdp_sock_drv.h>
+ #include "eswitch.h"
+@@ -4925,7 +4926,8 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 		netdev->hw_features     |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
+ 		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-		netdev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev_gso_partial_features_zero(netdev);
++		netdev->gso_partial_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL;
+ 		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index 29611221990f..e306b58b643c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -18,6 +18,7 @@
+ #include <linux/init.h>
+ #include <linux/fs.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/interrupt.h>
+ #include <linux/ip.h>
+@@ -2351,7 +2352,8 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
+ 	if (nn->cap & NFP_NET_CFG_CTRL_LIVE_ADDR)
+ 		netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 
+-	netdev->hw_features = NETIF_F_HIGHDMA;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_HIGHDMA;
+ 	if (nn->cap & NFP_NET_CFG_CTRL_RXCSUM_ANY) {
+ 		netdev->hw_features |= NETIF_F_RXCSUM;
+ 		nn->dp.ctrl |= nn->cap & NFP_NET_CFG_CTRL_RXCSUM_ANY;
+@@ -2378,7 +2380,8 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
+ 			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 			netdev->hw_features |= NETIF_F_GSO_PARTIAL;
+ 
+-			netdev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			netdev_gso_partial_features_zero(netdev);
++			netdev->gso_partial_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		}
+ 		netdev->udp_tunnel_nic_info = &nfp_udp_tunnels;
+ 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_VXLAN;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+index 48da1da1c704..66f0a9de53ad 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+@@ -345,7 +345,8 @@ int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
+ 	if (repr_cap & NFP_NET_CFG_CTRL_LIVE_ADDR)
+ 		netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 
+-	netdev->hw_features = NETIF_F_HIGHDMA;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_HIGHDMA;
+ 	if (repr_cap & NFP_NET_CFG_CTRL_RXCSUM_ANY)
+ 		netdev->hw_features |= NETIF_F_RXCSUM;
+ 	if (repr_cap & NFP_NET_CFG_CTRL_TXCSUM)
+diff --git a/drivers/net/ethernet/ni/nixge.c b/drivers/net/ethernet/ni/nixge.c
+index 4b3482ce90a1..f70feffbf2ba 100644
+--- a/drivers/net/ethernet/ni/nixge.c
++++ b/drivers/net/ethernet/ni/nixge.c
+@@ -7,6 +7,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/of_address.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+@@ -1274,7 +1275,8 @@ static int nixge_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, ndev);
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 
+-	ndev->features = NETIF_F_SG;
++	netdev_active_features_zero(ndev);
++	ndev->features |= NETIF_F_SG;
+ 	ndev->netdev_ops = &nixge_netdev_ops;
+ 	ndev->ethtool_ops = &nixge_ethtool_ops;
+ 
+diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+index 67ade78fb767..d42adef5a143 100644
+--- a/drivers/net/ethernet/renesas/sh_eth.c
++++ b/drivers/net/ethernet/renesas/sh_eth.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/mdio-bitbang.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
+@@ -3291,8 +3292,9 @@ static int sh_eth_drv_probe(struct platform_device *pdev)
+ 	ndev->min_mtu = ETH_MIN_MTU;
+ 
+ 	if (mdp->cd->rx_csum) {
+-		ndev->features = NETIF_F_RXCSUM;
+-		ndev->hw_features = NETIF_F_RXCSUM;
++		netdev_active_features_zero(ndev);
++		ndev->features |= NETIF_F_RXCSUM;
++		ndev->hw_features = ndev->features;
+ 	}
+ 
+ 	/* set function */
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index f8868f79ee95..f9fcca2adcf4 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -31,6 +31,7 @@
+ #include <linux/random.h>
+ #include <linux/errno.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/mm.h>
+@@ -2784,7 +2785,8 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+ 	dev->ethtool_ops = &hme_ethtool_ops;
+ 
+ 	/* Happy Meal can do it all... */
+-	dev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(dev);
++	dev->hw_features |= NETIF_F_SG;
+ 	dev->hw_features |= NETIF_F_HW_CSUM;
+ 	dev->features |= dev->hw_features;
+ 	dev->features |= NETIF_F_RXCSUM;
+@@ -3106,7 +3108,8 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	dev->ethtool_ops = &hme_ethtool_ops;
+ 
+ 	/* Happy Meal can do it all... */
+-	dev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(dev);
++	dev->hw_features |= NETIF_F_SG;
+ 	dev->hw_features |= NETIF_F_HW_CSUM;
+ 	dev->features |= dev->hw_features;
+ 	dev->features |= NETIF_F_RXCSUM;
+diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+index 5def0b3bf8ef..45c0cb3c9a48 100644
+--- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
++++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+@@ -1461,10 +1461,12 @@ int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
+ 	int status;
+ 	u64 v1, v2;
+ 
+-	netdev->hw_features = NETIF_F_IP_CSUM;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_IP_CSUM;
+ 	netdev->hw_features |= NETIF_F_RXCSUM;
+ 
+-	netdev->features = NETIF_F_IP_CSUM;
++	netdev_active_features_zero(netdev);
++	netdev->features |= NETIF_F_IP_CSUM;
+ 	if (GELIC_CARD_RX_CSUM_DEFAULT)
+ 		netdev->features |= NETIF_F_RXCSUM;
+ 
+diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
+index e2e0e18fcdc8..03dc5fb10a2b 100644
+--- a/drivers/net/ethernet/toshiba/spider_net.c
++++ b/drivers/net/ethernet/toshiba/spider_net.c
+@@ -2275,7 +2275,8 @@ spider_net_setup_netdev(struct spider_net_card *card)
+ 
+ 	spider_net_setup_netdev_ops(netdev);
+ 
+-	netdev->hw_features = NETIF_F_RXCSUM;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_RXCSUM;
+ 	netdev->hw_features |= NETIF_F_IP_CSUM;
+ 	if (SPIDER_NET_RX_CSUM_DEFAULT)
+ 		netdev->features |= NETIF_F_RXCSUM;
+diff --git a/drivers/net/ethernet/tundra/tsi108_eth.c b/drivers/net/ethernet/tundra/tsi108_eth.c
+index 5251fc324221..785f4f3bd0ee 100644
+--- a/drivers/net/ethernet/tundra/tsi108_eth.c
++++ b/drivers/net/ethernet/tundra/tsi108_eth.c
+@@ -1610,7 +1610,8 @@ tsi108_init_one(struct platform_device *pdev)
+ 	 * a new function skb_csum_dev() in net/core/skbuff.c).
+ 	 */
+ 
+-	dev->features = NETIF_F_HIGHDMA;
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_HIGHDMA;
+ 
+ 	spin_lock_init(&data->txlock);
+ 	spin_lock_init(&data->misclock);
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 3f6b9dfca095..e3299bb3a1e6 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -33,6 +33,7 @@
+ #include <linux/module.h>
+ #include <linux/mutex.h>
  #include <linux/netdevice.h>
 +#include <linux/netdev_features_helper.h>
  #include <linux/if_ether.h>
- #include <linux/if_phonet.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -1395,7 +1396,8 @@ static int temac_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, ndev);
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+-	ndev->features = NETIF_F_SG;
++	netdev_active_features_zero(ndev);
++	ndev->features |= NETIF_F_SG;
+ 	ndev->netdev_ops = &temac_netdev_ops;
+ 	ndev->ethtool_ops = &temac_ethtool_ops;
+ #if 0
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 1760930ec0c4..cac3437991ae 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -27,6 +27,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
+@@ -1835,7 +1836,8 @@ static int axienet_probe(struct platform_device *pdev)
+ 
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 	ndev->flags &= ~IFF_MULTICAST;  /* clear multicast */
+-	ndev->features = NETIF_F_SG;
++	netdev_active_features_zero(ndev);
++	ndev->features |= NETIF_F_SG;
+ 	ndev->netdev_ops = &axienet_netdev_ops;
+ 	ndev->ethtool_ops = &axienet_ethtool_ops;
+ 
+diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
+index 30af0081e2be..3b5d82b09675 100644
+--- a/drivers/net/hamradio/bpqether.c
++++ b/drivers/net/hamradio/bpqether.c
+@@ -60,6 +60,7 @@
+ #include <net/ax25.h>
+ #include <linux/inet.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
  #include <linux/if_arp.h>
-@@ -269,7 +270,7 @@ static void pn_net_setup(struct net_device *dev)
- {
- 	const u8 addr = PN_MEDIA_USB;
+ #include <linux/skbuff.h>
+@@ -458,7 +459,8 @@ static void bpq_setup(struct net_device *dev)
+ 	dev->needs_free_netdev = true;
  
--	dev->features		= 0;
-+	dev->features		= netdev_empty_features;
- 	dev->type		= ARPHRD_PHONET;
- 	dev->flags		= IFF_POINTOPOINT | IFF_NOARP;
- 	dev->mtu		= PHONET_DEV_MTU;
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index da6e3b20cd75..3a017cecc6d3 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -137,7 +137,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 	dev->flags      = 0;
+-	dev->features	= NETIF_F_LLTX;	/* Allow recursion */
++	netdev_active_features_zero(dev);
++	dev->features	|= NETIF_F_LLTX;	/* Allow recursion */
+ 
+ #if IS_ENABLED(CONFIG_AX25)
+ 	dev->header_ops      = &ax25_header_ops;
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 6bf8d63132a1..b83a966b73db 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1163,7 +1163,8 @@ static void netvsc_init_settings(struct net_device *dev)
+ 	ndc->speed = SPEED_UNKNOWN;
+ 	ndc->duplex = DUPLEX_FULL;
+ 
+-	dev->features = NETIF_F_LRO;
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_LRO;
+ }
+ 
+ static int netvsc_get_link_ksettings(struct net_device *dev,
+diff --git a/drivers/net/ipa/ipa_modem.c b/drivers/net/ipa/ipa_modem.c
+index c8b1c4d9c507..b7d16d16d523 100644
+--- a/drivers/net/ipa/ipa_modem.c
++++ b/drivers/net/ipa/ipa_modem.c
+@@ -7,6 +7,7 @@
+ #include <linux/errno.h>
+ #include <linux/if_arp.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/skbuff.h>
+ #include <linux/if_rmnet.h>
+ #include <linux/etherdevice.h>
+@@ -223,7 +224,8 @@ static void ipa_modem_netdev_setup(struct net_device *netdev)
+ 	netdev->needed_headroom = sizeof(struct rmnet_map_header);
+ 	netdev->needed_tailroom = IPA_NETDEV_TAILROOM;
+ 	netdev->watchdog_timeo = IPA_NETDEV_TIMEOUT * HZ;
+-	netdev->hw_features = NETIF_F_SG;
++	netdev_hw_features_zero(netdev);
++	netdev->hw_features |= NETIF_F_SG;
+ }
+ 
+ /** ipa_modem_suspend() - suspend callback
+diff --git a/drivers/net/ntb_netdev.c b/drivers/net/ntb_netdev.c
+index 80bdc07f2cd3..2075e0b9f175 100644
+--- a/drivers/net/ntb_netdev.c
++++ b/drivers/net/ntb_netdev.c
+@@ -50,6 +50,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/module.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/pci.h>
+ #include <linux/ntb.h>
+ #include <linux/ntb_transport.h>
+@@ -420,7 +421,8 @@ static int ntb_netdev_probe(struct device *client_dev)
+ 	dev = netdev_priv(ndev);
+ 	dev->ndev = ndev;
+ 	dev->pdev = pdev;
+-	ndev->features = NETIF_F_HIGHDMA;
++	netdev_active_features_zero(ndev);
++	ndev->features |= NETIF_F_HIGHDMA;
+ 
+ 	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 
+diff --git a/drivers/net/rionet.c b/drivers/net/rionet.c
+index 39e61e07e489..9f0175b73fd7 100644
+--- a/drivers/net/rionet.c
++++ b/drivers/net/rionet.c
+@@ -16,6 +16,7 @@
+ #include <linux/rio_ids.h>
+ 
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/crc32.h>
+@@ -515,7 +516,8 @@ static int rionet_setup_netdev(struct rio_mport *mport, struct net_device *ndev)
+ 	/* MTU range: 68 - 4082 */
+ 	ndev->min_mtu = ETH_MIN_MTU;
+ 	ndev->max_mtu = RIONET_MAX_MTU;
+-	ndev->features = NETIF_F_LLTX;
++	netdev_active_features_zero(ndev);
++	ndev->features |= NETIF_F_LLTX;
+ 	SET_NETDEV_DEV(ndev, &mport->dev);
+ 	ndev->ethtool_ops = &rionet_ethtool_ops;
+ 
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 53865533d7a9..496de424121e 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -953,7 +953,7 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
+ 	features = tap->dev->features;
+ 
+ 	if (arg & TUN_F_CSUM) {
+-		feature_mask = NETIF_F_HW_CSUM;
++		feature_mask |= NETIF_F_HW_CSUM;
+ 
+ 		if (arg & (TUN_F_TSO4 | TUN_F_TSO6)) {
+ 			if (arg & TUN_F_TSO_ECN)
+diff --git a/drivers/net/thunderbolt.c b/drivers/net/thunderbolt.c
+index baed53386606..5fad8f09d69f 100644
+--- a/drivers/net/thunderbolt.c
++++ b/drivers/net/thunderbolt.c
+@@ -1268,7 +1268,8 @@ static int tbnet_probe(struct tb_service *svc, const struct tb_service_id *id)
  	 */
- 	dccp_set_state(sk, DCCP_CLOSED);
- 	ip_rt_put(rt);
--	sk->sk_route_caps = 0;
-+	sk->sk_route_caps = netdev_empty_features;
- 	inet->inet_dport = 0;
- 	goto out;
- }
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 53fa477d20ab..84fdb991bee5 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -971,7 +971,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	__sk_dst_reset(sk);
- failure:
- 	inet->inet_dport = 0;
--	sk->sk_route_caps = 0;
-+	sk->sk_route_caps = netdev_empty_features;
- 	return err;
- }
+ 	dev->hw_features = NETIF_F_ALL_TSO;
+ 	netdev_hw_features_set_array(dev, &tbnet_hw_feature_set);
+-	dev->features = dev->hw_features | NETIF_F_HIGHDMA;
++	dev->features = dev->hw_features;
++	dev->features |= NETIF_F_HIGHDMA;
+ 	dev->hard_header_len += sizeof(struct thunderbolt_ip_frame_header);
  
-diff --git a/net/ethtool/features.c b/net/ethtool/features.c
-index 67a837d44491..38efdab960ba 100644
---- a/net/ethtool/features.c
-+++ b/net/ethtool/features.c
-@@ -144,7 +144,7 @@ static netdev_features_t ethnl_bitmap_to_features(unsigned long *src)
+ 	netif_napi_add(dev, &net->napi, tbnet_poll, NAPI_POLL_WEIGHT);
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 10cf0a68980e..d7c8b9d6ba29 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -8,6 +8,7 @@
+ #include <linux/module.h>
+ #include <linux/kmod.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/mii.h>
+@@ -1085,7 +1086,8 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	if (DEFAULT_RX_CSUM_ENABLE)
+ 		dev->net->features |= NETIF_F_RXCSUM;
+ 
+-	dev->net->hw_features = NETIF_F_IP_CSUM;
++	netdev_hw_features_zero(dev->net);
++	dev->net->hw_features |= NETIF_F_IP_CSUM;
+ 	dev->net->hw_features |= NETIF_F_RXCSUM;
+ 	set_bit(EVENT_NO_IP_ALIGN, &dev->flags);
+ 
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 3d8f4da73bd7..4fb30d9534f4 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -5,6 +5,7 @@
+  */
+ //#define DEBUG
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/module.h>
+@@ -3502,7 +3503,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE |
+ 			   IFF_TX_SKB_NO_LINEAR;
+ 	dev->netdev_ops = &virtnet_netdev;
+-	dev->features = NETIF_F_HIGHDMA;
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_HIGHDMA;
+ 
+ 	dev->ethtool_ops = &virtnet_ethtool_ops;
+ 	SET_NETDEV_DEV(dev, &vdev->dev);
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 9dd3b8fba4b0..4d9cd3df3095 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -13,6 +13,7 @@
+ #include <linux/acpi.h>
+ #include <linux/of.h>
+ #include <linux/bitfield.h>
++#include <linux/netdev_features_helper.h>
+ 
+ #include "hif.h"
+ #include "core.h"
+@@ -10210,8 +10211,10 @@ int ath10k_mac_register(struct ath10k *ar)
+ 	if (ar->hw_params.dynamic_sar_support)
+ 		ar->hw->wiphy->sar_capa = &ath10k_sar_capa;
+ 
+-	if (!test_bit(ATH10K_FLAG_RAW_MODE, &ar->dev_flags))
+-		ar->hw->netdev_features = NETIF_F_HW_CSUM;
++	if (!test_bit(ATH10K_FLAG_RAW_MODE, &ar->dev_flags)) {
++		netdev_features_zero(&ar->hw->netdev_features);
++		ar->hw->netdev_features |= NETIF_F_HW_CSUM;
++	}
+ 
+ 	if (IS_ENABLED(CONFIG_ATH10K_DFS_CERTIFIED)) {
+ 		/* Init ath dfs pattern detector */
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 7e91e347c9ff..2b78b47e0a90 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -8,6 +8,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/bitfield.h>
+ #include <linux/inetdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <net/if_inet6.h>
+ #include <net/ipv6.h>
+ 
+@@ -8895,7 +8896,8 @@ static int __ath11k_mac_register(struct ath11k *ar)
+ 	ath11k_reg_init(ar);
+ 
+ 	if (!test_bit(ATH11K_FLAG_RAW_MODE, &ab->dev_flags)) {
+-		ar->hw->netdev_features = NETIF_F_HW_CSUM;
++		netdev_features_zero(&ar->hw->netdev_features);
++		ar->hw->netdev_features |= NETIF_F_HW_CSUM;
+ 		ieee80211_hw_set(ar->hw, SW_CRYPTO_CONTROL);
+ 		ieee80211_hw_set(ar->hw, SUPPORT_FAST_XMIT);
+ 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+index 5f0bba0cfdf6..53c41f48ecf8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+@@ -15,6 +15,7 @@
+ #include <linux/sched.h>
+ #include <linux/skbuff.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/if_arp.h>
+ 
+@@ -97,7 +98,8 @@ int iwlagn_mac_setup_register(struct iwl_priv *priv,
+ 	ieee80211_hw_set(hw, WANT_MONITOR_VIF);
+ 
+ 	if (priv->trans->max_skb_frags) {
+-		hw->netdev_features = NETIF_F_HIGHDMA;
++		netdev_features_zero(&hw->netdev_features);
++		hw->netdev_features |= NETIF_F_HIGHDMA;
+ 		hw->netdev_features |= NETIF_F_SG;
+ 	}
+ 
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 5fbeb262a90b..1c6bb3317a30 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -8,6 +8,7 @@
+ #include <linux/slab.h>
+ #include <linux/skbuff.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ip.h>
+ #include <linux/if_arp.h>
+@@ -319,7 +320,8 @@ int iwl_mvm_mac_setup_register(struct iwl_mvm *mvm)
+ 		ieee80211_hw_set(hw, USES_RSS);
+ 
+ 	if (mvm->trans->max_skb_frags) {
+-		hw->netdev_features = NETIF_F_HIGHDMA;
++		netdev_features_zero(&hw->netdev_features);
++		hw->netdev_features |= NETIF_F_HIGHDMA;
+ 		hw->netdev_features |= NETIF_F_SG;
+ 	}
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/init.c b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
+index 07a1fea94f66..bc2e309d45ed 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
+@@ -10,6 +10,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/hwmon.h>
+ #include <linux/hwmon-sysfs.h>
++#include <linux/netdev_features_helper.h>
+ #include "mt7615.h"
+ #include "mac.h"
+ #include "mcu.h"
+@@ -366,7 +367,8 @@ mt7615_init_wiphy(struct ieee80211_hw *hw)
+ 	hw->max_rates = 3;
+ 	hw->max_report_rates = 7;
+ 	hw->max_rate_tries = 11;
+-	hw->netdev_features = NETIF_F_RXCSUM;
++	netdev_features_zero(&hw->netdev_features);
++	hw->netdev_features |= NETIF_F_RXCSUM;
+ 
+ 	hw->radiotap_timestamp.units_pos =
+ 		IEEE80211_RADIOTAP_TIMESTAMP_UNIT_US;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+index cc2aac86bcfb..bc35271f41da 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+@@ -4,6 +4,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/hwmon.h>
+ #include <linux/hwmon-sysfs.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/thermal.h>
+ #include "mt7915.h"
+ #include "mac.h"
+@@ -329,7 +330,8 @@ mt7915_init_wiphy(struct ieee80211_hw *hw)
+ 	hw->queues = 4;
+ 	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+ 	hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+-	hw->netdev_features = NETIF_F_RXCSUM;
++	netdev_features_zero(&hw->netdev_features);
++	hw->netdev_features |= NETIF_F_RXCSUM;
+ 
+ 	hw->radiotap_timestamp.units_pos =
+ 		IEEE80211_RADIOTAP_TIMESTAMP_UNIT_US;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+index cd960e23770f..7824ee8e29cc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+@@ -2,6 +2,7 @@
+ /* Copyright (C) 2020 MediaTek Inc. */
+ 
+ #include <linux/etherdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include "mt7921.h"
+ #include "mac.h"
+ #include "mcu.h"
+@@ -54,7 +55,8 @@ mt7921_init_wiphy(struct ieee80211_hw *hw)
+ 	hw->queues = 4;
+ 	hw->max_rx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+ 	hw->max_tx_aggregation_subframes = IEEE80211_MAX_AMPDU_BUF_HE;
+-	hw->netdev_features = NETIF_F_RXCSUM;
++	netdev_features_zero(&hw->netdev_features);
++	hw->netdev_features |= NETIF_F_RXCSUM;
+ 
+ 	hw->radiotap_timestamp.units_pos =
+ 		IEEE80211_RADIOTAP_TIMESTAMP_UNIT_US;
+diff --git a/drivers/net/wwan/t7xx/t7xx_netdev.c b/drivers/net/wwan/t7xx/t7xx_netdev.c
+index c6b6547f2c6f..52a77a224a64 100644
+--- a/drivers/net/wwan/t7xx/t7xx_netdev.c
++++ b/drivers/net/wwan/t7xx/t7xx_netdev.c
+@@ -25,6 +25,7 @@
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/netdev_features.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/netdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/types.h>
+@@ -172,7 +173,8 @@ static void t7xx_ccmni_wwan_setup(struct net_device *dev)
+ 
+ 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
+ 
+-	dev->features = NETIF_F_VLAN_CHALLENGED;
++	netdev_active_features_zero(dev);
++	dev->features |= NETIF_F_VLAN_CHALLENGED;
+ 
+ 	dev->features |= NETIF_F_SG;
+ 	dev->hw_features |= NETIF_F_SG;
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index 1ee35c5cb0bd..1a903161c46c 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -6839,8 +6839,11 @@ static void qeth_check_restricted_features(struct qeth_card *card,
+ 					   netdev_features_t changed,
+ 					   netdev_features_t actual)
  {
- 	const unsigned int nft_bits = sizeof(netdev_features_t) * BITS_PER_BYTE;
- 	const unsigned int words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
--	netdev_features_t ret = 0;
-+	netdev_features_t ret = netdev_empty_features;
- 	unsigned int i;
+-	netdev_features_t ipv6_features = NETIF_F_TSO6;
+-	netdev_features_t ipv4_features = NETIF_F_TSO;
++	netdev_features_t ipv6_features = netdev_empty_features;
++	netdev_features_t ipv4_features = netdev_empty_features;
++
++	ipv6_features |= NETIF_F_TSO6;
++	ipv4_features |= NETIF_F_TSO;
  
- 	for (i = 0; i < words; i++)
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 8f32e4f06bfb..7674629773a1 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -125,7 +125,8 @@ static int ethtool_set_features(struct net_device *dev, void __user *useraddr)
+ 	if (!card->info.has_lp2lp_cso_v6)
+ 		ipv6_features |= NETIF_F_IPV6_CSUM;
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 13887234a241..46d7527cae38 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -457,9 +457,11 @@ void udpv6_encap_enable(void);
+ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
+ 					      struct sk_buff *skb, bool ipv4)
  {
- 	struct ethtool_sfeatures cmd;
- 	struct ethtool_set_features_block features[ETHTOOL_DEV_FEATURE_WORDS];
--	netdev_features_t wanted = 0, valid = 0;
-+	netdev_features_t wanted = netdev_empty_features;
-+	netdev_features_t valid = netdev_empty_features;
- 	netdev_features_t tmp;
- 	int i, ret = 0;
- 
-@@ -332,8 +333,9 @@ static u32 __ethtool_get_flags(struct net_device *dev)
- 
- static int __ethtool_set_flags(struct net_device *dev, u32 data)
- {
--	netdev_features_t features = 0, changed;
+-	netdev_features_t features = NETIF_F_SG;
 +	netdev_features_t features = netdev_empty_features;
- 	netdev_features_t eth_all_features;
-+	netdev_features_t changed;
- 	netdev_features_t tmp;
+ 	struct sk_buff *segs;
  
- 	if (data & ~ETH_ALL_FLAGS)
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 3ca0cc467886..ad3bea716358 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1297,7 +1297,7 @@ int inet_sk_rebuild_header(struct sock *sk)
- 		err = PTR_ERR(rt);
- 
- 		/* Routing failed... */
--		sk->sk_route_caps = 0;
-+		sk->sk_route_caps = netdev_empty_features;
- 		/*
- 		 * Other protocols have to map its equivalent state to TCP_SYN_SENT.
- 		 * DCCP maps its DCCP_REQUESTING state to TCP_SYN_SENT. -acme
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 970e9a2cca4a..df10a1e5027c 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1193,7 +1193,7 @@ static int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg,
- 		if (err) {
- 			tcp_set_state(sk, TCP_CLOSE);
- 			inet->inet_dport = 0;
--			sk->sk_route_caps = 0;
-+			sk->sk_route_caps = netdev_empty_features;
- 		}
- 	}
- 	flags = (msg->msg_flags & MSG_DONTWAIT) ? O_NONBLOCK : 0;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 0c83780dc9bf..0d1459b52fc9 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -324,7 +324,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
++	features |= NETIF_F_SG;
++
+ 	/* Avoid csum recalculation by skb_segment unless userspace explicitly
+ 	 * asks for the final checksum values
  	 */
- 	tcp_set_state(sk, TCP_CLOSE);
- 	ip_rt_put(rt);
--	sk->sk_route_caps = 0;
-+	sk->sk_route_caps = netdev_empty_features;
- 	inet->inet_dport = 0;
- 	return err;
- }
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 2ce0c44d0081..eacac47c9fda 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -846,7 +846,7 @@ int inet6_sk_rebuild_header(struct sock *sk)
+diff --git a/net/phonet/pep-gprs.c b/net/phonet/pep-gprs.c
+index 1f5df0432d37..0b09b1ba0c05 100644
+--- a/net/phonet/pep-gprs.c
++++ b/net/phonet/pep-gprs.c
+@@ -11,6 +11,7 @@
  
- 		dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
- 		if (IS_ERR(dst)) {
--			sk->sk_route_caps = 0;
-+			sk->sk_route_caps = netdev_empty_features;
- 			sk->sk_err_soft = -PTR_ERR(dst);
- 			return PTR_ERR(dst);
- 		}
-diff --git a/net/ipv6/inet6_connection_sock.c b/net/ipv6/inet6_connection_sock.c
-index 5a9f4d722f35..52209f42d18a 100644
---- a/net/ipv6/inet6_connection_sock.c
-+++ b/net/ipv6/inet6_connection_sock.c
-@@ -121,7 +121,7 @@ int inet6_csk_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl_unused
- 	dst = inet6_csk_route_socket(sk, &fl6);
- 	if (IS_ERR(dst)) {
- 		sk->sk_err_soft = -PTR_ERR(dst);
--		sk->sk_route_caps = 0;
-+		sk->sk_route_caps = netdev_empty_features;
- 		kfree_skb(skb);
- 		return PTR_ERR(dst);
- 	}
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index e54eee80ce5f..c60e1f714b79 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -342,7 +342,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	tcp_set_state(sk, TCP_CLOSE);
- failure:
- 	inet->inet_dport = 0;
--	sk->sk_route_caps = 0;
-+	sk->sk_route_caps = netdev_empty_features;
- 	return err;
- }
+ #include <linux/kernel.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/if_ether.h>
+ #include <linux/if_arp.h>
+ #include <net/sock.h>
+@@ -212,7 +213,8 @@ static const struct net_device_ops gprs_netdev_ops = {
  
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 0780c418a971..73571e1393fc 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -437,7 +437,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- 
- 	/* Complete checksum if needed */
- 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
--	    (err = skb_csum_hwoffload_help(skb, 0)))
-+	    (err = skb_csum_hwoffload_help(skb, netdev_empty_features)))
- 		goto out;
- 
- 	/* Older versions of OVS user space enforce alignment of the last
+ static void gprs_setup(struct net_device *dev)
+ {
+-	dev->features		= NETIF_F_FRAGLIST;
++	netdev_active_features_zero(dev);
++	dev->features		|= NETIF_F_FRAGLIST;
+ 	dev->type		= ARPHRD_PHONET_PIPE;
+ 	dev->flags		= IFF_POINTOPOINT | IFF_NOARP;
+ 	dev->mtu		= GPRS_DEFAULT_MTU;
 -- 
 2.33.0
 
