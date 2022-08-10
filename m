@@ -2,161 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D924858EDE0
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 16:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F1A58EE69
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 16:33:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232887AbiHJOHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 10:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        id S230506AbiHJOdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 10:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiHJOHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 10:07:03 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5648C59261
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:07:01 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M2sCd0pTzzGpJx;
-        Wed, 10 Aug 2022 22:05:33 +0800 (CST)
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
- 2022 22:06:58 +0800
-Subject: Re: [RFCv7 PATCH net-next 17/36] treewide: adjust features
- initialization
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
-        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>
-References: <20220810030624.34711-1-shenjian15@huawei.com>
- <20220810030624.34711-18-shenjian15@huawei.com>
- <20220810105831.1307150-1-alexandr.lobakin@intel.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <e4c6e1f7-5957-1501-de89-76c904351f1d@huawei.com>
-Date:   Wed, 10 Aug 2022 22:06:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        with ESMTP id S232521AbiHJOcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 10:32:32 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DAD29C92
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:32:31 -0700 (PDT)
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 65A413F470
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 14:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1660141949;
+        bh=BmcNJoX0tb4WJRJWcaohS0QcQ063FfE3jZ9bfdEJX58=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=hNBHOdMWe88AmtLH6odEqI4i45Mt4gaQ13M6LEk9auWqUisyKidhuyQ8FoME5kzY4
+         q4zuTGxfLQ9CI/0I7cVxJfFQ5wrOSorehkHihWrWVcCbyDNx4DguWNhQnICSGhMoRD
+         v+27fj4qAktE/NXVtynublg27RM3sl3GCv5T4nJZdKDkKB2emZwKqDl15h3QBXZXNA
+         0zAl8bsuXKfwFYAwXt9ILC3mGQEUC3AtjyKcebGKxt//Z1yN06o0WqEGJlLSpu9nwI
+         azsakcBKyYzDuqDhM7RbNZryWRFlak2V4MpZR1owPkbGxsM7uUT2z2vgNnK0Q6RTt5
+         jMjgSFzD/w6HA==
+Received: by mail-pf1-f199.google.com with SMTP id r13-20020aa7988d000000b0052ed235197bso5885482pfl.20
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:32:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=BmcNJoX0tb4WJRJWcaohS0QcQ063FfE3jZ9bfdEJX58=;
+        b=aaU5PviuE5UvoN6TekMu8KvQD/XG/1zhR09ggJilNpsHFHP1EDcFZR6tI22Fxh28Os
+         6sSJI5bw9scCda+cmmTFt607D5GJLn0PElyZs50D6D3jXfFTgueHJxt1CPt6fXsogEvx
+         yISdLsWQygBiIOU1m6JZbEdzjnyYSqg/f8/QSzIemFE4ofQGxKGx0MAGcSq13gcmh/cs
+         plHPuBbQihKm/zlZ60ZhZfME3tS2BZwDhOq+1VWLaTEuODMZOEFPE5gfKYfqrz0wrTWM
+         KoPsrNPYwOdcUtKKu88pa1U5YmkPAAfXNClyF7Q3UyNaHvAY6COfmEoTXVOts2mFCtCK
+         7Pgg==
+X-Gm-Message-State: ACgBeo3cIrzRFrj+EMYkXio+acAtBTfyPOH8U08mKqybCX0OkzzoW9/M
+        aHOggC8zZFIsMrj/lMo7LRJ+2jOJ7550LE6mvyafGRoRNVCwAlpmKdJbZrGqEhw8sJP3ucgXlSr
+        4OJFk6i/H6ANRu/WOj9Y6RfrYszYEjzW/TA==
+X-Received: by 2002:a63:e4f:0:b0:41a:9472:eca0 with SMTP id 15-20020a630e4f000000b0041a9472eca0mr23118300pgo.623.1660141947107;
+        Wed, 10 Aug 2022 07:32:27 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6SbPfI4FRAXuP5uxoCn7uNxC6/UShze/WtduBxD/rL03D2ONXUpeGsOaLZdHoLfJiTG3cz2w==
+X-Received: by 2002:a63:e4f:0:b0:41a:9472:eca0 with SMTP id 15-20020a630e4f000000b0041a9472eca0mr23118287pgo.623.1660141946874;
+        Wed, 10 Aug 2022 07:32:26 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id r6-20020aa79ec6000000b0052d4ffac466sm2049832pfq.188.2022.08.10.07.32.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 10 Aug 2022 07:32:26 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id E25016119B; Wed, 10 Aug 2022 07:32:25 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id DC8A49FA79;
+        Wed, 10 Aug 2022 07:32:25 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
+cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        razor@blackwall.org, huyd12@chinatelecom.cn
+Subject: Re: [PATCH v2] net:bonding:support balance-alb interface with vlan to bridge
+In-reply-to: <20220809062103.31213-1-sunshouxin@chinatelecom.cn>
+References: <20220809062103.31213-1-sunshouxin@chinatelecom.cn>
+Comments: In-reply-to Sun Shouxin <sunshouxin@chinatelecom.cn>
+   message dated "Mon, 08 Aug 2022 23:21:03 -0700."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-In-Reply-To: <20220810105831.1307150-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <14779.1660141945.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 10 Aug 2022 07:32:25 -0700
+Message-ID: <14780.1660141945@famine>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
+
+>In my test, balance-alb bonding with two slaves eth0 and eth1,
+>and then Bond0.150 is created with vlan id attached bond0.
+>After adding bond0.150 into one linux bridge, I noted that Bond0,
+>bond0.150 and  bridge were assigned to the same MAC as eth0.
+>Once bond0.150 receives a packet whose dest IP is bridge's
+>and dest MAC is eth1's, the linux bridge will not match
+>eth1's MAC entry in FDB, and not handle it as expected.
+>The patch fix the issue, and diagram as below:
+>
+>eth1(mac:eth1_mac)--bond0(balance-alb,mac:eth0_mac)--eth0(mac:eth0_mac)
+>                      |
+>                   bond0.150(mac:eth0_mac)
+>                      |
+>                   bridge(ip:br_ip, mac:eth0_mac)--other port
+>
+>Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+
+	As Nik suggested, please add some additional explanation here.
+You can cut and paste my description from the original discussion if
+you'd like.
+
+>---
+>
+>changelog:
+>v1->v2:
+>  -declare variabls in reverse xmas tree order
+>  -delete {}
+>  -add explanation in commit message
+>---
+> drivers/net/bonding/bond_alb.c | 7 +++++++
+> 1 file changed, 7 insertions(+)
+>
+>diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_al=
+b.c
+>index 007d43e46dcb..60cb9a0225aa 100644
+>--- a/drivers/net/bonding/bond_alb.c
+>+++ b/drivers/net/bonding/bond_alb.c
+>@@ -653,6 +653,7 @@ static struct slave *rlb_choose_channel(struct sk_buf=
+f *skb,
+> static struct slave *rlb_arp_xmit(struct sk_buff *skb, struct bonding *b=
+ond)
+> {
+> 	struct slave *tx_slave =3D NULL;
+>+	struct net_device *dev;
+> 	struct arp_pkt *arp;
+> =
+
+> 	if (!pskb_network_may_pull(skb, sizeof(*arp)))
+>@@ -665,6 +666,12 @@ static struct slave *rlb_arp_xmit(struct sk_buff *sk=
+b, struct bonding *bond)
+> 	if (!bond_slave_has_mac_rx(bond, arp->mac_src))
+> 		return NULL;
+> =
+
+>+	dev =3D ip_dev_find(dev_net(bond->dev), arp->ip_src);
+>+	if (dev) {
+>+		if (netif_is_bridge_master(dev))
+>+			return NULL;
+
+	Stylistically, the "if dev" and "if netif_is_bridge_master"
+could be one line, e.g., "if dev && netif_is_bridge_master".
+
+	Functionally, ip_dev_find acquires a reference to dev, and this
+code will need to release (dev_put) that reference.
+
+	I'm also wondering if testing bond->dev for netif_if_bridge_port
+before ip_dev_find would help here (as an optimization); I think so, for
+the case where the bond is directly in the bridge without a VLAN in the
+middle.
+
+	-J
 
 
-ÔÚ 2022/8/10 18:58, Alexander Lobakin Ð´µÀ:
-> From: Jian Shen <shenjian15@huawei.com>
-> Date: Wed, 10 Aug 2022 11:06:05 +0800
->
->> There are many direclty single bit assignment to netdev features.
->> Adjust these expressions, so can use netdev features helpers later.
->>
->> Signed-off-by: Jian Shen <shenjian15@huawei.com>
->> ---
->>   arch/um/drivers/vector_kern.c                       | 5 ++++-
->>   drivers/firewire/net.c                              | 4 +++-
->>   drivers/infiniband/hw/hfi1/vnic_main.c              | 4 +++-
->>   drivers/misc/sgi-xp/xpnet.c                         | 3 ++-
->>   drivers/net/can/dev/dev.c                           | 4 +++-
->>   drivers/net/ethernet/alacritech/slicoss.c           | 4 +++-
->>   drivers/net/ethernet/amd/xgbe/xgbe-drv.c            | 4 +++-
->>   drivers/net/ethernet/aquantia/atlantic/aq_nic.c     | 3 ++-
->>   drivers/net/ethernet/atheros/atlx/atl2.c            | 4 +++-
->>   drivers/net/ethernet/cadence/macb_main.c            | 4 +++-
->>   drivers/net/ethernet/davicom/dm9000.c               | 4 +++-
->>   drivers/net/ethernet/engleder/tsnep_main.c          | 4 +++-
->>   drivers/net/ethernet/ibm/ibmveth.c                  | 3 ++-
->>   drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 4 +++-
->>   drivers/net/ethernet/mellanox/mlx4/en_netdev.c      | 3 ++-
->>   drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 +++-
->>   drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++++--
->>   drivers/net/ethernet/netronome/nfp/nfp_net_repr.c   | 3 ++-
->>   drivers/net/ethernet/ni/nixge.c                     | 4 +++-
->>   drivers/net/ethernet/renesas/sh_eth.c               | 6 ++++--
->>   drivers/net/ethernet/sun/sunhme.c                   | 7 +++++--
->>   drivers/net/ethernet/toshiba/ps3_gelic_net.c        | 6 ++++--
->>   drivers/net/ethernet/toshiba/spider_net.c           | 3 ++-
->>   drivers/net/ethernet/tundra/tsi108_eth.c            | 3 ++-
->>   drivers/net/ethernet/xilinx/ll_temac_main.c         | 4 +++-
->>   drivers/net/ethernet/xilinx/xilinx_axienet_main.c   | 4 +++-
->>   drivers/net/hamradio/bpqether.c                     | 4 +++-
->>   drivers/net/hyperv/netvsc_drv.c                     | 3 ++-
->>   drivers/net/ipa/ipa_modem.c                         | 4 +++-
->>   drivers/net/ntb_netdev.c                            | 4 +++-
->>   drivers/net/rionet.c                                | 4 +++-
->>   drivers/net/tap.c                                   | 2 +-
->>   drivers/net/thunderbolt.c                           | 3 ++-
->>   drivers/net/usb/smsc95xx.c                          | 4 +++-
->>   drivers/net/virtio_net.c                            | 4 +++-
->>   drivers/net/wireless/ath/ath10k/mac.c               | 7 +++++--
->>   drivers/net/wireless/ath/ath11k/mac.c               | 4 +++-
->>   drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c   | 4 +++-
->>   drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c   | 4 +++-
->>   drivers/net/wireless/mediatek/mt76/mt7615/init.c    | 4 +++-
->>   drivers/net/wireless/mediatek/mt76/mt7915/init.c    | 4 +++-
->>   drivers/net/wireless/mediatek/mt76/mt7921/init.c    | 4 +++-
->>   drivers/net/wwan/t7xx/t7xx_netdev.c                 | 4 +++-
->>   drivers/s390/net/qeth_core_main.c                   | 7 +++++--
->>   include/net/udp.h                                   | 4 +++-
->>   net/phonet/pep-gprs.c                               | 4 +++-
->>   46 files changed, 138 insertions(+), 52 deletions(-)
->>
->> diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
->> index 1d59522a50d8..d797758850e1 100644
->> --- a/arch/um/drivers/vector_kern.c
->> +++ b/arch/um/drivers/vector_kern.c
->> @@ -1628,7 +1628,10 @@ static void vector_eth_configure(
->>   		.bpf			= NULL
->>   	});
->>   
->> -	dev->features = dev->hw_features = (NETIF_F_SG | NETIF_F_FRAGLIST);
->> +	netdev_active_features_zero(dev);
->> +	dev->features |= NETIF_F_SG;
->> +	dev->features |= NETIF_F_FRAGLIST;
->> +	dev->features = dev->hw_features;
-> I think a new helper can be useful there and in a couple other
-> places, which would set or clear an array of bits taking them as
-> varargs:
->
-> #define __netdev_features_set_set(feat, uniq, ...) ({	\
-> 	DECLARE_NETDEV_FEATURE_SET(uniq, __VA_ARGS__);	\
-> 	netdev_features_set_array(feat, &(uniq));	\
-> })
-> #define netdev_features_set_set(feat, ...)		\
-> 	__smth(feat, __UNIQUE_ID(feat_set), __VA_ARGS__)
->
-> (name is a placeholder)
->
-> so that you can do
->
-> 	netdev_active_features_zero(dev);
-> 	netdev_features_set_set(dev->features, NETIF_F_SG, NETIF_F_FRAGLIST);
->
-> in one take. I think it looks elegant, doesn't it?
-good idea. I will try it, thanks!
+>+	}
+>+
+> 	if (arp->op_code =3D=3D htons(ARPOP_REPLY)) {
+> 		/* the arp must be sent on the selected rx channel */
+> 		tx_slave =3D rlb_choose_channel(skb, bond, arp);
+>-- =
 
-
->>   	INIT_WORK(&vp->reset_tx, vector_reset_tx);
->>   
->>   	timer_setup(&vp->tl, vector_timer_expire, 0);
-> [...]
->
->> -- 
->> 2.33.0
-> Thanks,
-> Olek
->
-> .
+>2.27.0
 >
 
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
