@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2A558EFC9
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:53:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133D358EFB5
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:52:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231810AbiHJPx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 11:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
+        id S232342AbiHJPwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 11:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiHJPwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:52:10 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59ED360686;
-        Wed, 10 Aug 2022 08:51:51 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id s11-20020a1cf20b000000b003a52a0945e8so1194722wmc.1;
-        Wed, 10 Aug 2022 08:51:51 -0700 (PDT)
+        with ESMTP id S232545AbiHJPwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:52:09 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81D765541;
+        Wed, 10 Aug 2022 08:51:52 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso1227700wma.2;
+        Wed, 10 Aug 2022 08:51:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=P8aAKAj6QbUGM3qiLbxj6rCIuSDWisCzVUCts73nG7k=;
-        b=iw4zMeJIq6Iduj5Ai23kLZLWv6lH2honhKvhFD/8RjX03J6CC6OT3GFZdBOkedBUdt
-         n+4sEAA+jY/L/94w0veZ6+BigRGb/z+iiaiJDK2kbDqMnLkYpIKAVeEpBGeRkUhR8ZY4
-         3C2zmmMBUj+haew1vR4ZvQFcsNz2n5JD1clVwf0uHdPmnBF3QMz0ffFPSnpU76csdYvx
-         WghdcQ+nasGK3chHwCDoPTmwBdCerSaeh8eCSRiiRqlv5NxV5e1DoaVA1cZ7GwqNoWTR
-         Iu2g0zXQ4q7bhvEbKDfbxuVUgmKMV7FWlYgxIhokbOIyG0ObnwT0cf/lwdYDKKmbRxeE
-         YrCA==
+        bh=KeuLRkJHac7T18EvJz7V2qjxDYwlB1JNeLqOJx59kSU=;
+        b=NwaYFZmlXQkYLPFX3ZTPko8HcLgEHLwlrcyFvHq9hm7vQV2IwxrttH0/p8/BnnmZQl
+         BTO0b3I01yD4gVwVuca1h/jbv+Cfysmr/pwkJd2AgCZmA4nNJaqDDMtHbPuEcJweTVo2
+         579S6P3KHIkfq4qhjgykgSQx3GEN7jkMGKOWCq1fqwahARcWVFoKAElwF2/ur8B6ClIo
+         4VUYL64JbAwxyO16ryqLgQ35TM4VOjpGgJE30dWaAoTd8zwN9ejtzD9yLFz3cxaGQo9r
+         I+xFxR/ul8X0T8pEmed+ACyAEzgpzPI6KoqWeaF80317jz0w1JJi3GWEirlZLAj1Zjjz
+         DcIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=P8aAKAj6QbUGM3qiLbxj6rCIuSDWisCzVUCts73nG7k=;
-        b=QvOBTC59h5AidkNvLgHwm0uXicB5kDWjDfifkrQuGZHvcHAlxYa2pVqEozHcvcWVK0
-         5RKQFESxiGqP+5q7eJiwG/7szw9K0/Jn2ILHpUr20OLHFzPRZkrP75HkwGcUS8FWyscU
-         NlE2SMxG+sfdtxoX7PDYKIqWw8hQUOMHn6V74tUxrUNpOQ5wLnvbrBiQavxHvd+lUzpn
-         OKmfMkjNE8HytOwBtssE/8E7vUmxEoWUgLJ8kmAnxcbhvL0P8HD2JLdLlloLh6hieDQx
-         qv2QyY/IUH7+vCvPbPBLATdEvLJIatDKo1oW0xbvWOyjVypt8hYouWtqG/F0u2TOEN7m
-         g9jA==
-X-Gm-Message-State: ACgBeo2P6UPpAZNYtaZCVFybX8ftDCLXHDDVig6uA3pgtQhA08nDNhiG
-        xs6e9o9BeG6NjqNLyxc3TeynOjLSSGM=
-X-Google-Smtp-Source: AA6agR51LI/17gzAJrVldihDliUyILNuNHqftq15rGqHxVJN5cbfccCeChTUV2Xc8UnWpC6KUoJk0Q==
-X-Received: by 2002:a1c:f209:0:b0:3a4:f42c:9ffb with SMTP id s9-20020a1cf209000000b003a4f42c9ffbmr2964735wmc.62.1660146709173;
-        Wed, 10 Aug 2022 08:51:49 -0700 (PDT)
+        bh=KeuLRkJHac7T18EvJz7V2qjxDYwlB1JNeLqOJx59kSU=;
+        b=RZ8EOPfH4zHrwmQxojqmbzpzfAX88SLw2BiN77K8tAA0hFNufyQsKeQHIt8NHAefZB
+         8U9nhdE+zB/lVRky3cASaN+fF2+PYfJOaOCJzEZ7G8MhBHX+vVPC/qrFg4sP5FumvUwQ
+         +3tyDHiBfWVlzId+XeUlBtgnEQHXe9xD6aEjIzJcGSJVeGfGrdoltei9wRB7Y0Nnjx/f
+         itK+XycLz9yp2tW9DoXq0tk8wQ9CqJWsl8IEVM4EZ+QdS5YG655EhqdQBDiudKV9iBHq
+         E0RSRzphbWSCV/Tc9F9pwZH1pYbuBlwN7nYk8flxk5DM/A9cVITM5sxWZ68DUort9mmR
+         uzhQ==
+X-Gm-Message-State: ACgBeo3hAES7nOXwi4NiBTWzmqN7h7vBETrXLSBrS60UjJI1+OiIK5KV
+        /BCIvYY+2SoEZkSviKhmjVobRdZr4i4=
+X-Google-Smtp-Source: AA6agR6Ld0dgt8VkL4NPznZl6LE5uIBV6RhDIhjeXAmILYOIjoMjQERHnQMZ5pvfGHOhFOpmDqlmgQ==
+X-Received: by 2002:a7b:c852:0:b0:3a5:407a:76df with SMTP id c18-20020a7bc852000000b003a5407a76dfmr2851591wml.101.1660146710481;
+        Wed, 10 Aug 2022 08:51:50 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.126.24.threembb.co.uk. [188.28.126.24])
-        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b003a342933727sm3004519wmb.3.2022.08.10.08.51.48
+        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b003a342933727sm3004519wmb.3.2022.08.10.08.51.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 08:51:48 -0700 (PDT)
+        Wed, 10 Aug 2022 08:51:50 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Jens Axboe <axboe@kernel.dk>,
@@ -58,9 +58,9 @@ Cc:     Jens Axboe <axboe@kernel.dk>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next io_uring 09/11] io_uring/notif: add helper for flushing refs
-Date:   Wed, 10 Aug 2022 16:49:17 +0100
-Message-Id: <a68ff48da5a52be8f64b058c30d7076fbec41beb.1660124059.git.asml.silence@gmail.com>
+Subject: [RFC net-next io_uring 10/11] io_uring/notif: mark notifs with UARGFL_CALLER_PINNED
+Date:   Wed, 10 Aug 2022 16:49:18 +0100
+Message-Id: <19cad183acc3a44b17b76c1719ad30c80aeff1ef.1660124059.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1660124059.git.asml.silence@gmail.com>
 References: <cover.1660124059.git.asml.silence@gmail.com>
@@ -76,58 +76,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a helper for dropping notification references during flush. It's a
-preparation patch, currently it's only one master ref, but we're going
-to add ref caching.
+We always keep references to active notifications and drop them only
+when we flush, so they're always pinned during sock_sendmsg() and we can
+add UARGFL_CALLER_PINNED.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- io_uring/notif.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ io_uring/notif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/io_uring/notif.c b/io_uring/notif.c
-index a2ba1e35a59f..5661681b3b44 100644
+index 5661681b3b44..dd346ea67580 100644
 --- a/io_uring/notif.c
 +++ b/io_uring/notif.c
-@@ -73,6 +73,13 @@ struct io_kiocb *io_alloc_notif(struct io_ring_ctx *ctx,
- 	return notif;
- }
- 
-+static inline bool io_notif_drop_refs(struct io_notif_data *nd)
-+{
-+	int refs = 1;
-+
-+	return refcount_sub_and_test(refs, &nd->uarg.refcnt);
-+}
-+
- void io_notif_slot_flush(struct io_notif_slot *slot)
- 	__must_hold(&ctx->uring_lock)
- {
-@@ -81,8 +88,7 @@ void io_notif_slot_flush(struct io_notif_slot *slot)
- 
- 	slot->notif = NULL;
- 
--	/* drop slot's master ref */
--	if (refcount_dec_and_test(&nd->uarg.refcnt))
-+	if (io_notif_drop_refs(nd))
- 		io_notif_complete(notif);
- }
- 
-@@ -97,13 +103,11 @@ __cold int io_notif_unregister(struct io_ring_ctx *ctx)
- 	for (i = 0; i < ctx->nr_notif_slots; i++) {
- 		struct io_notif_slot *slot = &ctx->notif_slots[i];
- 		struct io_kiocb *notif = slot->notif;
--		struct io_notif_data *nd;
- 
- 		if (!notif)
- 			continue;
--		nd = io_kiocb_to_cmd(notif);
- 		slot->notif = NULL;
--		if (!refcount_dec_and_test(&nd->uarg.refcnt))
-+		if (!io_notif_drop_refs(io_kiocb_to_cmd(notif)))
- 			continue;
- 		notif->io_task_work.func = __io_notif_complete_tw;
- 		io_req_task_work_add(notif);
+@@ -66,7 +66,7 @@ struct io_kiocb *io_alloc_notif(struct io_ring_ctx *ctx,
+ 	nd = io_notif_to_data(notif);
+ 	nd->account_pages = 0;
+ 	nd->uarg.skb_flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
+-	nd->uarg.flags = 0;
++	nd->uarg.flags = UARGFL_CALLER_PINNED;
+ 	nd->uarg.callback = io_uring_tx_zerocopy_callback;
+ 	/* master ref owned by io_notif_slot, will be dropped on flush */
+ 	refcount_set(&nd->uarg.refcnt, 1);
 -- 
 2.37.0
 
