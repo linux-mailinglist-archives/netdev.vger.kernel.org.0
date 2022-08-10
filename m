@@ -2,102 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE33A58EC5C
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06EAD58EC83
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:58:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbiHJMyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 08:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S232395AbiHJM61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 08:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiHJMyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:54:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A096483F3D;
-        Wed, 10 Aug 2022 05:54:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5330DB81C67;
-        Wed, 10 Aug 2022 12:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F2DC433D6;
-        Wed, 10 Aug 2022 12:54:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660136077;
-        bh=uPLuF+DDW04LT9gSOZbFu31bMHZHY7AuwxnDEymETPY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UNkY0zZ/dvbVjljh7EO1ErSs2YeEMilfLO5c7AcIqM6C1wcyaDC45s2CAW4+v+5bm
-         aSZTtEljP0xweM/nDWXYsXgAGq/7xNaMyvKwesvewAHqmg1qJ58a7fWwmZ2C2n+tlo
-         KD8eRKVStYwt20VObVfv4seCARLA42wybbg5rK9E=
-Date:   Wed, 10 Aug 2022 14:54:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     Evan Green <evgreen@chromium.org>, linux-efi@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, mikelley@microsoft.com,
-        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
-        john.ogness@linutronix.de, Kees Cook <keescook@chromium.org>,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-Subject: Re: [PATCH v2 03/13] firmware: google: Test spinlock on panic path
- to avoid lockups
-Message-ID: <YvOqimNnybaCDDBm@kroah.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-4-gpiccoli@igalia.com>
- <CAE=gft71vH+P3iAFXC0bLu0M2x2V4uJGWc82Xa+246ECuUdT-w@mail.gmail.com>
- <019ae735-3d69-cb4e-c003-b83cc8cd76f8@igalia.com>
- <YvErMyM8FNjeDeiW@kroah.com>
- <55a074a0-ca3a-8afc-4336-e40cff757394@igalia.com>
+        with ESMTP id S232559AbiHJM54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:57:56 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9CB7868B8;
+        Wed, 10 Aug 2022 05:57:38 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id l4so17616128wrm.13;
+        Wed, 10 Aug 2022 05:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=T2be+Zp3BRWJY28DzQwwQ6dblnROjqmbLs3Ho5BkMeU=;
+        b=gfdFdeGfZtxc+le394dNA2aOBnUmu2HKWBAgmY2lLf7anpFNz2oN3dnaro8WgllmXu
+         j7N7GDZ9WQt/XYtKXVjzBsCIVWCeyE+6x8jj88swuYES2UwIx5Y14JF2T0kWUB7j+m7t
+         6kDIVLnXzDjWwrCBDKO41IKkA7kTZnfdaS8h06lzJJIAJ+wRTNfzgMznvOHv/eZjbWwm
+         c+F2l0AXKc6nF0qDnAUO7fXBdWOaddOp0saKUCfrxQddx3OZlElY+WnXSr5itZmwEzaw
+         AXGPJUkMKUSQ0cG02XSZBu5AKu+BP0GuURd/GwMxwlY9MHIKrefuYV4BaUiDOQA7RGJs
+         0QgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=T2be+Zp3BRWJY28DzQwwQ6dblnROjqmbLs3Ho5BkMeU=;
+        b=kVWIdrsRalB/AeGZHfFQQNpCW5vrJFLzsxUHNNbaJpe67a49e4ZQ7jdQ8rQcO4Rjs0
+         vqn8p2U4jXwLd+nd0MHkXYewA3eM+mLVw7TV5bEStIAwDF8wzwtkq3hhNcUzNH8QtiIQ
+         G4cDmxg7Vz6ncGbktPqFeH0cyEdctZCSpCgmaMvnEMfZ0kSKmc4Im7cqfOnS5sydvZU4
+         tsbBzr9BTTIeTUPLRIg7BXWarU1k4ypCdMcUFiQpDHXgchus1ojRDoTbOC1/6bwxkGsL
+         eK8rfyG3CzNJV8TGql3T+hxfQE+M7CnCUZbZjeXw3U1t9/PYKXc5w940lR60BM0rOwzy
+         6mVQ==
+X-Gm-Message-State: ACgBeo1Ow1slq8ujT3P4VXNHz0kocfwmjhlIhPLny7vXuc1b1LAOG3Qa
+        G78WZjeb8r2ziTzw4izFPSg=
+X-Google-Smtp-Source: AA6agR4aCrPkvCHK3qpBL3kcQh2NZUsredunvzUyeviW3uKJ42iSQWO1RC+C9aqq7DPcGWPL96hH6Q==
+X-Received: by 2002:a5d:4b8c:0:b0:223:7c9f:cad8 with SMTP id b12-20020a5d4b8c000000b002237c9fcad8mr1916083wrt.247.1660136256762;
+        Wed, 10 Aug 2022 05:57:36 -0700 (PDT)
+Received: from [192.168.0.104] ([77.126.166.31])
+        by smtp.gmail.com with ESMTPSA id e16-20020a5d65d0000000b0021b970a68f9sm16350991wrw.26.2022.08.10.05.57.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 05:57:36 -0700 (PDT)
+Message-ID: <8448dade-a64a-0b6b-1ed0-dd164917eedf@gmail.com>
+Date:   Wed, 10 Aug 2022 15:57:33 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55a074a0-ca3a-8afc-4336-e40cff757394@igalia.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] net/mlx5e: Leverage sched_numa_hop_mask()
+Content-Language: en-US
+To:     Valentin Schneider <vschneid@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <xhsmhtu6kbckc.mognet@vschneid.remote.csb>
+ <20220810105119.2684079-1-vschneid@redhat.com>
+ <20220810105119.2684079-2-vschneid@redhat.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20220810105119.2684079-2-vschneid@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 12:37:46PM -0300, Guilherme G. Piccoli wrote:
-> Let me clarify / ask something: this series, for example, is composed as
-> a bunch of patches "centered" around the same idea, panic notifiers
-> improvements/fixes. But its patches belong to completely different
-> subsystems, like EFI/misc, architectures (alpha, parisc, arm), core
-> kernel code, etc.
+
+
+On 8/10/2022 1:51 PM, Valentin Schneider wrote:
+> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+> ---
+>   drivers/net/ethernet/mellanox/mlx5/core/eq.c | 16 ++++++++++++++--
+>   1 file changed, 14 insertions(+), 2 deletions(-)
 > 
-> What is the best way of getting this merged?
-> (a) Re-send individual patches with the respective Review/ACK tags to
-> the proper subsystem, or;
 
-Yes.
+Missing description.
 
-> (b) Wait until the whole series is ACKed/Reviewed, and a single
-> maintainer (like you or Andrew, for example) would pick the whole series
-> and apply at once, even if it spans across multiple parts of the kernel?
+I had a very detailed description with performance numbers and an 
+affinity hints example with before/after tables. I don't want to get 
+them lost.
 
-No, only do this after a kernel release cycle happens and there are
-straggler patches that did not get picked up by the relevant subsystem
-maintainers.
 
-thanks,
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+> index 229728c80233..2eb4ffd96a95 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+> @@ -809,9 +809,12 @@ static void comp_irqs_release(struct mlx5_core_dev *dev)
+>   static int comp_irqs_request(struct mlx5_core_dev *dev)
+>   {
+>   	struct mlx5_eq_table *table = dev->priv.eq_table;
+> +	const struct cpumask *mask;
+>   	int ncomp_eqs = table->num_comp_eqs;
+> +	int hops = 0;
+>   	u16 *cpus;
+>   	int ret;
+> +	int cpu;
+>   	int i;
+>   
+>   	ncomp_eqs = table->num_comp_eqs;
+> @@ -830,8 +833,17 @@ static int comp_irqs_request(struct mlx5_core_dev *dev)
+>   		ret = -ENOMEM;
+>   		goto free_irqs;
+>   	}
+> -	for (i = 0; i < ncomp_eqs; i++)
+> -		cpus[i] = cpumask_local_spread(i, dev->priv.numa_node);
+> +
+> +	rcu_read_lock();
+> +	for_each_numa_hop_mask(dev->priv.numa_node, hops, mask) {
 
-greg k-h
+We don't really use this 'hops' iterator. We always pass 0 (not a 
+valuable input...), and we do not care about its final value. Probably 
+it's best to hide it from the user into the macro.
+
+> +		for_each_cpu(cpu, mask) {
+> +			cpus[i] = cpu;
+> +			if (++i == ncomp_eqs)
+> +				goto spread_done;
+> +		}
+> +	}
+> +spread_done:
+> +	rcu_read_unlock();
+>   	ret = mlx5_irqs_request_vectors(dev, cpus, ncomp_eqs, table->comp_irqs);
+>   	kfree(cpus);
+>   	if (ret < 0)
+
+This logic is typical. Other drivers would also want to use it.
+It must be introduced as a service/API function, if not by the sched 
+topology, then at least by the networking subsystem.
+Jakub, WDYT?
