@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB83558E921
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 10:57:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D7E58E92E
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 10:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231833AbiHJI5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 04:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
+        id S231904AbiHJI65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 04:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiHJI5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 04:57:07 -0400
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1913B6F547
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 01:56:49 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1660121806t3660ufa
+        with ESMTP id S231874AbiHJI6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 04:58:23 -0400
+X-Greylist: delayed 67 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 01:58:05 PDT
+Received: from smtpbgbr1.qq.com (smtpbgbr1.qq.com [54.207.19.206])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA356F54E
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 01:58:00 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1660121808twabvdqd
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 10 Aug 2022 16:56:45 +0800 (CST)
+        id ; Wed, 10 Aug 2022 16:56:47 +0800 (CST)
 X-QQ-SSF: 01400000000000G0S000B00A0000000
-X-QQ-FEAT: Xz3VOcA7Mr07maBaz6/1yeozGAi9NiyJy5wo/RbnELZD0u4L/AIdybTQwNfMG
-        7Ex0nO1Gyalp6E2TFeBDy7hU1mZi/Gs6nsfxUKpxEncLuxYm8ydMdEf4OrvaZpabIHFEtCD
-        y9coYXhlSKJsXaCgTOgVV1pTnjlthktSF2C5ZfYhBzR1z6+zWv9MsGL9VMd1M6nu+Y1UzJg
-        vkt35/KoCYmoZDSwctyQAeVAdKRVn3psNE6KPIX/33cPgoJXzDKETfK3xL8+CJyz+XNTCZW
-        OHyuM9I1MNpJ8Z+nOehuf3VqI84H8LJIrDt1usKF0j5Fm+9I3hj6S/OmBL3vX9qBs7w2pmK
-        +XZBGs3VeiVs5tPUzhZ1BwkWAt1YTnvIf4HSN3rqL8Em8B7/HZlgJn/aSQIUlFVR79SgbLn
-        rpy0Otr/RErxNIcmJTn0DQ==
+X-QQ-FEAT: XlKBH1Cks656WZVZ6s+qzZTYjGB3BuSJiLH07/M24QaraTNpvPcd+bvopXHU+
+        w+LHd7Z4fV0frcJYJzafNHG5Rh9pyqXqlsdjxXvtmxn7Dayy9HiEjG/cfvWlTr8r6LOBZX+
+        sYs2rYFIC1ZN1j7bUUEgsKPEoeMw7innUz2EhUN5WGYs9baj/+eB7VQ+4ydVXnS6J4n7vZi
+        5G0O+t6Er+uUjbeWAcV01WVlS45UlIyexDTn9mJnlG6Edf4wxYtyfIFxozGDeY0Q2Q2HavS
+        zjnU8B3rYMMSLX+ndtkJkvME2CoqhxsioBYTMo3GtfMBYP3ZpG0XaFVKhG5w1zEZ3IrAwAa
+        p3DeVmyO6y6+deVtDvyDbx9fO1ca59ekjPZgCnQOD2v4p60oydZv58FiwRq8+O8G6yLShri
 X-QQ-GoodBg: 2
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org
 Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [RFC PATCH net-next 12/16] net: txgbe: Add Rx and Tx cleanup routine
-Date:   Wed, 10 Aug 2022 16:55:28 +0800
-Message-Id: <20220810085532.246613-13-jiawenwu@trustnetic.com>
+Subject: [RFC PATCH net-next 13/16] net: txgbe: Add device Rx features
+Date:   Wed, 10 Aug 2022 16:55:29 +0800
+Message-Id: <20220810085532.246613-14-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220810085532.246613-1-jiawenwu@trustnetic.com>
 References: <20220810085532.246613-1-jiawenwu@trustnetic.com>
@@ -40,1058 +40,1501 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support to clean all queues associated with a q_vector, in NAPI polling.
-Add to simple receive packets, without hardware features.
+Support RSC/LRO, Rx checksum offload, VLAN, jumbo frame, VXLAN, etc.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  63 ++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 823 ++++++++++++++++++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  13 +
- 3 files changed, 899 insertions(+)
+ .../device_drivers/ethernet/wangxun/txgbe.rst |  40 ++
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  36 ++
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c | 391 +++++++++++++-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |  64 +++
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 484 +++++++++++++++++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  54 +-
+ 6 files changed, 1064 insertions(+), 5 deletions(-)
 
+diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+index 3c7656057c69..b331c73c8393 100644
+--- a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
++++ b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+@@ -12,6 +12,7 @@ Contents
+ ========
+ 
+ - Identifying Your Adapter
++- Additional Features and Configurations
+ - Support
+ 
+ 
+@@ -57,6 +58,45 @@ Laser turns off for SFP+ when ifconfig ethX down
+ "ifconfig ethX up" turns on the laser.
+ 
+ 
++Additional Features and Configurations
++======================================
++
++Jumbo Frames
++------------
++Jumbo Frames support is enabled by changing the Maximum Transmission Unit
++(MTU) to a value larger than the default value of 1500.
++
++Use the ifconfig command to increase the MTU size. For example, enter the
++following where <x> is the interface number::
++
++  ifconfig eth<x> mtu 9000 up
++
++NOTES:
++- The maximum MTU setting for Jumbo Frames is 9710. This value coincides
++  with the maximum Jumbo Frames size of 9728 bytes.
++- This driver will attempt to use multiple page sized buffers to receive
++  each jumbo packet. This should help to avoid buffer starvation issues
++  when allocating receive packets.
++
++Hardware Receive Side Coalescing (HW RSC)
++-----------------------------------------
++Sapphire adapters support HW RSC, which can merge multiple
++frames from the same IPv4 TCP/IP flow into a single structure that can span
++one or more descriptors. It works similarly to Software Large Receive Offload
++technique.
++
++VXLAN Overlay HW Offloading
++---------------------------
++Virtual Extensible LAN (VXLAN) allows you to extend an L2 network over an L3
++network, which may be useful in a virtualized or cloud environment. WangXun(R)
++10Gb Ethernet Network devices perform VXLAN processing, offloading it from the
++operating system. This reduces CPU utilization.
++
++VXLAN offloading is controlled by the tx and rx checksum offload options
++provided by ethtool. That is, if tx checksum offload is enabled, and the adapter
++has the capability, VXLAN offloading is also enabled. If rx checksum offload is
++enabled, then the VXLAN packets rx checksum will be offloaded.
++
+ Support
+ =======
+ If you got any problem, contact Wangxun support team via support@trustnetic.com
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-index d3db6f1aabc5..4d998ed33998 100644
+index 4d998ed33998..4e3dc9f20f74 100644
 --- a/drivers/net/ethernet/wangxun/txgbe/txgbe.h
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -44,14 +44,28 @@
-  */
- #define TXGBE_RX_HDR_SIZE       TXGBE_RXBUFFER_256
+@@ -6,6 +6,7 @@
  
-+/* How many Rx Buffers do we bundle into one write to the hardware ? */
-+#define TXGBE_RX_BUFFER_WRITE   16      /* Must be power of 2 */
-+#define TXGBE_RX_DMA_ATTR \
-+	(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)
-+
- #define TXGBE_MAX_RX_DESC_POLL          10
+ #include <net/ip.h>
+ #include <linux/pci.h>
++#include <linux/if_vlan.h>
+ #include <linux/etherdevice.h>
+ #include <linux/timecounter.h>
  
-+#ifndef MAX_SKB_FRAGS
-+#define DESC_NEEDED     4
-+#elif (MAX_SKB_FRAGS < 16)
-+#define DESC_NEEDED     ((MAX_SKB_FRAGS * TXD_USE_COUNT(PAGE_SIZE)) + 4)
-+#else
-+#define DESC_NEEDED     (MAX_SKB_FRAGS + 4)
-+#endif
-+
- /* wrapper around a pointer to a socket buffer,
-  * so a DMA handle can be stored along with the buffer
-  */
- struct txgbe_tx_buffer {
- 	union txgbe_tx_desc *next_to_watch;
- 	struct sk_buff *skb;
-+	unsigned int bytecount;
- 	DEFINE_DMA_UNMAP_ADDR(dma);
- 	DEFINE_DMA_UNMAP_LEN(len);
- };
-@@ -61,6 +75,22 @@ struct txgbe_rx_buffer {
- 	dma_addr_t dma;
- 	dma_addr_t page_dma;
- 	struct page *page;
-+	unsigned int page_offset;
-+};
-+
-+struct txgbe_queue_stats {
-+	u64 packets;
-+	u64 bytes;
-+};
-+
-+struct txgbe_tx_queue_stats {
-+	u64 restart_queue;
-+};
-+
-+struct txgbe_rx_queue_stats {
-+	u64 non_eop_descs;
-+	u64 alloc_rx_page_failed;
-+	u64 alloc_rx_buff_failed;
+@@ -88,21 +89,43 @@ struct txgbe_tx_queue_stats {
  };
  
+ struct txgbe_rx_queue_stats {
++	u64 rsc_count;
++	u64 rsc_flush;
+ 	u64 non_eop_descs;
+ 	u64 alloc_rx_page_failed;
+ 	u64 alloc_rx_buff_failed;
++	u64 csum_good_cnt;
++	u64 csum_err;
+ };
+ 
++enum txgbe_ring_state_t {
++	__TXGBE_RX_RSC_ENABLED,
++};
++
++struct txgbe_fwd_adapter {
++	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
++	struct txgbe_adapter *adapter;
++};
++
++#define ring_is_rsc_enabled(ring) \
++	test_bit(__TXGBE_RX_RSC_ENABLED, &(ring)->state)
++#define set_ring_rsc_enabled(ring) \
++	set_bit(__TXGBE_RX_RSC_ENABLED, &(ring)->state)
++#define clear_ring_rsc_enabled(ring) \
++	clear_bit(__TXGBE_RX_RSC_ENABLED, &(ring)->state)
++
  struct txgbe_ring {
-@@ -85,6 +115,13 @@ struct txgbe_ring {
- 	u16 next_to_clean;
- 	u16 rx_buf_len;
- 	u16 next_to_alloc;
-+	struct txgbe_queue_stats stats;
-+	struct u64_stats_sync syncp;
-+
-+	union {
-+		struct txgbe_tx_queue_stats tx_stats;
-+		struct txgbe_rx_queue_stats rx_stats;
-+	};
- } ____cacheline_internodealigned_in_smp;
- 
- #define TXGBE_MAX_FDIR_INDICES          63
-@@ -112,8 +149,11 @@ static inline unsigned int txgbe_rx_pg_order(struct txgbe_ring __maybe_unused *r
- 
- struct txgbe_ring_container {
- 	struct txgbe_ring *ring;        /* pointer to linked list of rings */
-+	unsigned int total_bytes;       /* total bytes processed this int */
-+	unsigned int total_packets;     /* total packets processed this int */
- 	u16 work_limit;                 /* total work allowed per interrupt */
- 	u8 count;                       /* total number of rings in vector */
-+	u8 itr;                         /* current ITR setting for ring */
- };
- 
- /* iterator for handling rings in ring container */
-@@ -151,6 +191,27 @@ struct txgbe_q_vector {
+ 	struct txgbe_ring *next;        /* pointer to next ring in q_vector */
+ 	struct txgbe_q_vector *q_vector; /* backpointer to host q_vector */
+ 	struct net_device *netdev;      /* netdev ring belongs to */
+ 	struct device *dev;             /* device for DMA mapping */
++	struct txgbe_fwd_adapter *accel;
+ 	void *desc;                     /* descriptor ring memory */
+ 	union {
+ 		struct txgbe_tx_buffer *tx_buffer_info;
+ 		struct txgbe_rx_buffer *rx_buffer_info;
+ 	};
++	unsigned long state;
+ 	u8 __iomem *tail;
+ 	dma_addr_t dma;                 /* phys. address of descriptor ring */
+ 	unsigned int size;              /* length in bytes */
+@@ -186,6 +209,7 @@ struct txgbe_q_vector {
+ /* microsecond values for various ITR rates shifted by 2 to fit itr register
+  * with the first 3 bits reserved 0
+  */
++#define TXGBE_MIN_RSC_ITR       24
+ #define TXGBE_100K_ITR          40
+ #define TXGBE_20K_ITR           200
  #define TXGBE_16K_ITR           248
- #define TXGBE_12K_ITR           336
+@@ -247,6 +271,8 @@ struct txgbe_mac_addr {
+ #define TXGBE_FLAG_NEED_LINK_CONFIG             BIT(1)
+ #define TXGBE_FLAG_MSI_ENABLED                  BIT(2)
+ #define TXGBE_FLAG_MSIX_ENABLED                 BIT(3)
++#define TXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE        BIT(4)
++#define TXGBE_FLAG_VXLAN_OFFLOAD_ENABLE         BIT(5)
  
-+/* txgbe_test_staterr - tests bits in Rx descriptor status and error fields */
-+static inline __le32 txgbe_test_staterr(union txgbe_rx_desc *rx_desc,
-+					const u32 stat_err_bits)
-+{
-+	return rx_desc->wb.upper.status_error & cpu_to_le32(stat_err_bits);
-+}
-+
-+/* txgbe_desc_unused - calculate if we have unused descriptors */
-+static inline u16 txgbe_desc_unused(struct txgbe_ring *ring)
-+{
-+	u16 ntc = ring->next_to_clean;
-+	u16 ntu = ring->next_to_use;
-+
-+	return ((ntc > ntu) ? 0 : ring->count) + ntc - ntu - 1;
-+}
-+
-+#define TXGBE_RX_DESC(R, i)     \
-+	(&(((union txgbe_rx_desc *)((R)->desc))[i]))
-+#define TXGBE_TX_DESC(R, i)     \
-+	(&(((union txgbe_tx_desc *)((R)->desc))[i]))
-+
- #define TXGBE_MAX_JUMBO_FRAME_SIZE      9432 /* max payload 9414 */
+ /**
+  * txgbe_adapter.flag2
+@@ -257,6 +283,8 @@ struct txgbe_mac_addr {
+ #define TXGBE_FLAG2_PF_RESET_REQUESTED          BIT(3)
+ #define TXGBE_FLAG2_RESET_INTR_RECEIVED         BIT(4)
+ #define TXGBE_FLAG2_GLOBAL_RESET_REQUESTED      BIT(5)
++#define TXGBE_FLAG2_RSC_CAPABLE                 BIT(6)
++#define TXGBE_FLAG2_RSC_ENABLED                 BIT(7)
  
- #define TCP_TIMER_VECTOR        0
-@@ -233,6 +294,7 @@ struct txgbe_adapter {
- 
- 	/* RX */
- 	struct txgbe_ring *rx_ring[TXGBE_MAX_RX_QUEUES];
-+
- 	struct txgbe_q_vector *q_vector[MAX_MSIX_Q_VECTORS];
- 
- 	int num_q_vectors;      /* current number of q_vectors for device */
-@@ -329,6 +391,7 @@ void txgbe_set_interrupt_capability(struct txgbe_adapter *adapter);
- void txgbe_clear_interrupt_scheme(struct txgbe_adapter *adapter);
+ enum txgbe_isb_idx {
+ 	TXGBE_ISB_HEADER,
+@@ -269,6 +297,7 @@ enum txgbe_isb_idx {
+ /* board specific private data structure */
+ struct txgbe_adapter {
+ 	u8 __iomem *io_addr;    /* Mainly for iounmap use */
++	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
+ 	/* OS defined structs */
+ 	struct net_device *netdev;
+ 	struct pci_dev *pdev;
+@@ -392,13 +421,19 @@ void txgbe_clear_interrupt_scheme(struct txgbe_adapter *adapter);
  void txgbe_unmap_and_free_tx_resource(struct txgbe_ring *ring,
  				      struct txgbe_tx_buffer *tx_buffer);
-+void txgbe_alloc_rx_buffers(struct txgbe_ring *rx_ring, u16 cleaned_count);
+ void txgbe_alloc_rx_buffers(struct txgbe_ring *rx_ring, u16 cleaned_count);
++void txgbe_configure_rscctl(struct txgbe_adapter *adapter,
++			    struct txgbe_ring *ring);
  void txgbe_configure_port(struct txgbe_adapter *adapter);
++void txgbe_clear_vxlan_port(struct txgbe_adapter *adapter);
  void txgbe_set_rx_mode(struct net_device *netdev);
  int txgbe_write_mc_addr_list(struct net_device *netdev);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index c66ad524750b..e7ab9c2c093d 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -204,6 +204,653 @@ void txgbe_unmap_and_free_tx_resource(struct txgbe_ring *ring,
- 	/* tx_buffer must be completely set up in the transmit path */
- }
++void txgbe_do_reset(struct net_device *netdev);
+ void txgbe_write_eitr(struct txgbe_q_vector *q_vector);
+ int txgbe_poll(struct napi_struct *napi, int budget);
+ void txgbe_disable_rx_queue(struct txgbe_adapter *adapter,
+ 			    struct txgbe_ring *ring);
++void txgbe_vlan_strip_enable(struct txgbe_adapter *adapter);
++void txgbe_vlan_strip_disable(struct txgbe_adapter *adapter);
  
-+/**
-+ * txgbe_clean_tx_irq - Reclaim resources after transmit completes
-+ * @q_vector: structure containing interrupt and ring information
-+ * @tx_ring: tx ring to clean
-+ **/
-+static bool txgbe_clean_tx_irq(struct txgbe_q_vector *q_vector,
-+			       struct txgbe_ring *tx_ring)
-+{
-+	struct txgbe_adapter *adapter = q_vector->adapter;
-+	unsigned int total_bytes = 0, total_packets = 0;
-+	unsigned int budget = q_vector->tx.work_limit;
-+	unsigned int i = tx_ring->next_to_clean;
-+	struct txgbe_tx_buffer *tx_buffer;
-+	union txgbe_tx_desc *tx_desc;
-+
-+	if (test_bit(__TXGBE_DOWN, &adapter->state))
-+		return true;
-+
-+	tx_buffer = &tx_ring->tx_buffer_info[i];
-+	tx_desc = TXGBE_TX_DESC(tx_ring, i);
-+	i -= tx_ring->count;
-+
-+	do {
-+		union txgbe_tx_desc *eop_desc = tx_buffer->next_to_watch;
-+
-+		/* if next_to_watch is not set then there is no work pending */
-+		if (!eop_desc)
-+			break;
-+
-+		/* prevent any other reads prior to eop_desc */
-+		smp_rmb();
-+
-+		/* if DD is not set pending work has not been completed */
-+		if (!(eop_desc->wb.status & cpu_to_le32(TXGBE_TXD_STAT_DD)))
-+			break;
-+
-+		/* clear next_to_watch to prevent false hangs */
-+		tx_buffer->next_to_watch = NULL;
-+
-+		/* update the statistics for this packet */
-+		total_bytes += tx_buffer->bytecount;
-+
-+		/* free the skb */
-+		dev_consume_skb_any(tx_buffer->skb);
-+
-+		/* unmap skb header data */
-+		dma_unmap_single(tx_ring->dev,
-+				 dma_unmap_addr(tx_buffer, dma),
-+				 dma_unmap_len(tx_buffer, len),
-+				 DMA_TO_DEVICE);
-+
-+		/* clear tx_buffer data */
-+		tx_buffer->skb = NULL;
-+		dma_unmap_len_set(tx_buffer, len, 0);
-+
-+		/* unmap remaining buffers */
-+		while (tx_desc != eop_desc) {
-+			tx_buffer++;
-+			tx_desc++;
-+			i++;
-+			if (unlikely(!i)) {
-+				i -= tx_ring->count;
-+				tx_buffer = tx_ring->tx_buffer_info;
-+				tx_desc = TXGBE_TX_DESC(tx_ring, 0);
-+			}
-+
-+			/* unmap any remaining paged data */
-+			if (dma_unmap_len(tx_buffer, len)) {
-+				dma_unmap_page(tx_ring->dev,
-+					       dma_unmap_addr(tx_buffer, dma),
-+					       dma_unmap_len(tx_buffer, len),
-+					       DMA_TO_DEVICE);
-+				dma_unmap_len_set(tx_buffer, len, 0);
-+			}
-+		}
-+
-+		/* move us one more past the eop_desc for start of next pkt */
-+		tx_buffer++;
-+		tx_desc++;
-+		i++;
-+		if (unlikely(!i)) {
-+			i -= tx_ring->count;
-+			tx_buffer = tx_ring->tx_buffer_info;
-+			tx_desc = TXGBE_TX_DESC(tx_ring, 0);
-+		}
-+
-+		/* issue prefetch for next Tx descriptor */
-+		prefetch(tx_desc);
-+
-+		/* update budget accounting */
-+		budget--;
-+	} while (likely(budget));
-+
-+	i += tx_ring->count;
-+	tx_ring->next_to_clean = i;
-+	u64_stats_update_begin(&tx_ring->syncp);
-+	tx_ring->stats.bytes += total_bytes;
-+	tx_ring->stats.packets += total_packets;
-+	u64_stats_update_end(&tx_ring->syncp);
-+	q_vector->tx.total_bytes += total_bytes;
-+	q_vector->tx.total_packets += total_packets;
-+
-+	netdev_tx_completed_queue(txring_txq(tx_ring),
-+				  total_packets, total_bytes);
-+
-+#define TX_WAKE_THRESHOLD (DESC_NEEDED * 2)
-+	if (unlikely(total_packets && netif_carrier_ok(tx_ring->netdev) &&
-+		     (txgbe_desc_unused(tx_ring) >= TX_WAKE_THRESHOLD))) {
-+		/* Make sure that anybody stopping the queue after this
-+		 * sees the new next_to_clean.
-+		 */
-+		smp_mb();
-+
-+		if (__netif_subqueue_stopped(tx_ring->netdev,
-+					     tx_ring->queue_index) &&
-+		    !test_bit(__TXGBE_DOWN, &adapter->state)) {
-+			netif_wake_subqueue(tx_ring->netdev,
-+					    tx_ring->queue_index);
-+			++tx_ring->tx_stats.restart_queue;
-+		}
-+	}
-+
-+	return !!budget;
-+}
-+
-+static bool txgbe_alloc_mapped_page(struct txgbe_ring *rx_ring,
-+				    struct txgbe_rx_buffer *bi)
-+{
-+	struct page *page = bi->page;
-+	dma_addr_t dma;
-+
-+	/* since we are recycling buffers we should seldom need to alloc */
-+	if (likely(page))
-+		return true;
-+
-+	/* alloc new page for storage */
-+	page = dev_alloc_pages(txgbe_rx_pg_order(rx_ring));
-+	if (unlikely(!page)) {
-+		rx_ring->rx_stats.alloc_rx_page_failed++;
-+		return false;
-+	}
-+
-+	/* map page for use */
-+	dma = dma_map_page(rx_ring->dev, page, 0,
-+			   txgbe_rx_pg_size(rx_ring), DMA_FROM_DEVICE);
-+
-+	/* if mapping failed free memory back to system since
-+	 * there isn't much point in holding memory we can't use
-+	 */
-+	if (dma_mapping_error(rx_ring->dev, dma)) {
-+		__free_pages(page, txgbe_rx_pg_order(rx_ring));
-+
-+		rx_ring->rx_stats.alloc_rx_page_failed++;
-+		return false;
-+	}
-+
-+	bi->page_dma = dma;
-+	bi->page = page;
-+	bi->page_offset = 0;
-+
-+	return true;
-+}
-+
-+/**
-+ * txgbe_alloc_rx_buffers - Replace used receive buffers
-+ * @rx_ring: ring to place buffers on
-+ * @cleaned_count: number of buffers to replace
-+ **/
-+void txgbe_alloc_rx_buffers(struct txgbe_ring *rx_ring, u16 cleaned_count)
-+{
-+	union txgbe_rx_desc *rx_desc;
-+	struct txgbe_rx_buffer *bi;
-+	u16 i = rx_ring->next_to_use;
-+
-+	/* nothing to do */
-+	if (!cleaned_count)
-+		return;
-+
-+	rx_desc = TXGBE_RX_DESC(rx_ring, i);
-+	bi = &rx_ring->rx_buffer_info[i];
-+	i -= rx_ring->count;
-+
-+	do {
-+		if (!txgbe_alloc_mapped_page(rx_ring, bi))
-+			break;
-+		rx_desc->read.pkt_addr =
-+			cpu_to_le64(bi->page_dma + bi->page_offset);
-+
-+		rx_desc++;
-+		bi++;
-+		i++;
-+		if (unlikely(!i)) {
-+			rx_desc = TXGBE_RX_DESC(rx_ring, 0);
-+			bi = rx_ring->rx_buffer_info;
-+			i -= rx_ring->count;
-+		}
-+
-+		/* clear the status bits for the next_to_use descriptor */
-+		rx_desc->wb.upper.status_error = 0;
-+
-+		cleaned_count--;
-+	} while (cleaned_count);
-+
-+	i += rx_ring->count;
-+
-+	if (rx_ring->next_to_use != i) {
-+		rx_ring->next_to_use = i;
-+		/* update next to alloc since we have filled the ring */
-+		rx_ring->next_to_alloc = i;
-+
-+		/* Force memory writes to complete before letting h/w
-+		 * know there are new descriptors to fetch.  (Only
-+		 * applicable for weak-ordered memory model archs,
-+		 * such as IA-64).
-+		 */
-+		wmb();
-+		writel(i, rx_ring->tail);
-+	}
-+}
-+
-+/**
-+ * txgbe_process_skb_fields - Populate skb header fields from Rx descriptor
-+ * @rx_ring: rx descriptor ring packet is being transacted on
-+ * @rx_desc: pointer to the EOP Rx descriptor
-+ * @skb: pointer to current skb being populated
-+ *
-+ * This function checks the ring, descriptor, and packet information in
-+ * order to populate fields within the skb.
-+ **/
-+static void txgbe_process_skb_fields(struct txgbe_ring *rx_ring,
-+				     union txgbe_rx_desc *rx_desc,
-+				     struct sk_buff *skb)
-+{
-+	skb_record_rx_queue(skb, rx_ring->queue_index);
-+
-+	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
-+}
-+
-+static void txgbe_rx_skb(struct txgbe_q_vector *q_vector,
-+			 struct sk_buff *skb)
-+{
-+	napi_gro_receive(&q_vector->napi, skb);
-+}
-+
-+/**
-+ * txgbe_is_non_eop - process handling of non-EOP buffers
-+ * @rx_ring: Rx ring being processed
-+ * @rx_desc: Rx descriptor for current buffer
-+ * @skb: Current socket buffer containing buffer in progress
-+ *
-+ * This function updates next to clean. If the buffer is an EOP buffer
-+ * this function exits returning false, otherwise it will place the
-+ * sk_buff in the next buffer to be chained and return true indicating
-+ * that this is in fact a non-EOP buffer.
-+ **/
-+static bool txgbe_is_non_eop(struct txgbe_ring *rx_ring,
-+			     union txgbe_rx_desc *rx_desc,
-+			     struct sk_buff *skb)
-+{
-+	u32 ntc = rx_ring->next_to_clean + 1;
-+
-+	/* fetch, update, and store next to clean */
-+	ntc = (ntc < rx_ring->count) ? ntc : 0;
-+	rx_ring->next_to_clean = ntc;
-+
-+	prefetch(TXGBE_RX_DESC(rx_ring, ntc));
-+
-+	/* if we are the last buffer then there is nothing else to do */
-+	if (likely(txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_EOP)))
-+		return false;
-+
-+	rx_ring->rx_buffer_info[ntc].skb = skb;
-+	rx_ring->rx_stats.non_eop_descs++;
-+
-+	return true;
-+}
-+
-+static void txgbe_pull_tail(struct sk_buff *skb)
-+{
-+	skb_frag_t *frag = &skb_shinfo(skb)->frags[0];
-+	unsigned int pull_len;
-+	unsigned char *va;
-+
-+	/* it is valid to use page_address instead of kmap since we are
-+	 * working with pages allocated out of the lomem pool per
-+	 * alloc_page(GFP_ATOMIC)
-+	 */
-+	va = skb_frag_address(frag);
-+
-+	/* we need the header to contain the greater of either ETH_HLEN or
-+	 * 60 bytes if the skb->len is less than 60 for skb_pad.
-+	 */
-+	pull_len = eth_get_headlen(skb->dev, va, TXGBE_RX_HDR_SIZE);
-+
-+	/* align pull length to size of long to optimize memcpy performance */
-+	skb_copy_to_linear_data(skb, va, ALIGN(pull_len, sizeof(long)));
-+
-+	/* update all of the pointers */
-+	skb_frag_size_sub(frag, pull_len);
-+	skb_frag_off_add(frag, pull_len);
-+	skb->data_len -= pull_len;
-+	skb->tail += pull_len;
-+}
-+
-+/**
-+ * txgbe_dma_sync_frag - perform DMA sync for first frag of SKB
-+ * @rx_ring: rx descriptor ring packet is being transacted on
-+ * @skb: pointer to current skb being updated
-+ *
-+ * This function provides a basic DMA sync up for the first fragment of an
-+ * skb.  The reason for doing this is that the first fragment cannot be
-+ * unmapped until we have reached the end of packet descriptor for a buffer
-+ * chain.
-+ */
-+static void txgbe_dma_sync_frag(struct txgbe_ring *rx_ring,
-+				struct sk_buff *skb)
-+{
-+	skb_frag_t *frag = &skb_shinfo(skb)->frags[0];
-+
-+	dma_sync_single_range_for_cpu(rx_ring->dev,
-+				      TXGBE_CB(skb)->dma,
-+				      skb_frag_off(frag),
-+				      skb_frag_size(frag),
-+				      DMA_FROM_DEVICE);
-+
-+	/* If the page was released, just unmap it. */
-+	if (unlikely(TXGBE_CB(skb)->page_released)) {
-+		dma_unmap_page_attrs(rx_ring->dev, TXGBE_CB(skb)->dma,
-+				     txgbe_rx_pg_size(rx_ring),
-+				     DMA_FROM_DEVICE,
-+				     TXGBE_RX_DMA_ATTR);
-+	}
-+}
-+
-+/**
-+ * txgbe_cleanup_headers - Correct corrupted or empty headers
-+ * @rx_ring: rx descriptor ring packet is being transacted on
-+ * @rx_desc: pointer to the EOP Rx descriptor
-+ * @skb: pointer to current skb being fixed
-+ *
-+ * Check for corrupted packet headers caused by senders on the local L2
-+ * embedded NIC switch not setting up their Tx Descriptors right.  These
-+ * should be very rare.
-+ *
-+ * Also address the case where we are pulling data in on pages only
-+ * and as such no data is present in the skb header.
-+ *
-+ * In addition if skb is not at least 60 bytes we need to pad it so that
-+ * it is large enough to qualify as a valid Ethernet frame.
-+ *
-+ * Returns true if an error was encountered and skb was freed.
-+ **/
-+static bool txgbe_cleanup_headers(struct txgbe_ring *rx_ring,
-+				  union txgbe_rx_desc *rx_desc,
-+				  struct sk_buff *skb)
-+{
-+	struct net_device *netdev = rx_ring->netdev;
-+
-+	/* verify that the packet does not have any known errors */
-+	if (unlikely(txgbe_test_staterr(rx_desc,
-+					TXGBE_RXD_ERR_FRAME_ERR_MASK) &&
-+		     !(netdev->features & NETIF_F_RXALL))) {
-+		dev_kfree_skb_any(skb);
-+		return true;
-+	}
-+
-+	/* place header in linear portion of buffer */
-+	if (skb_is_nonlinear(skb)  && !skb_headlen(skb))
-+		txgbe_pull_tail(skb);
-+
-+	/* if eth_skb_pad returns an error the skb was freed */
-+	if (eth_skb_pad(skb))
-+		return true;
-+
-+	return false;
-+}
-+
-+/**
-+ * txgbe_reuse_rx_page - page flip buffer and store it back on the ring
-+ * @rx_ring: rx descriptor ring to store buffers on
-+ * @old_buff: donor buffer to have page reused
-+ *
-+ * Synchronizes page for reuse by the adapter
-+ **/
-+static void txgbe_reuse_rx_page(struct txgbe_ring *rx_ring,
-+				struct txgbe_rx_buffer *old_buff)
-+{
-+	struct txgbe_rx_buffer *new_buff;
-+	u16 nta = rx_ring->next_to_alloc;
-+
-+	new_buff = &rx_ring->rx_buffer_info[nta];
-+
-+	/* update, and store next to alloc */
-+	nta++;
-+	rx_ring->next_to_alloc = (nta < rx_ring->count) ? nta : 0;
-+
-+	/* transfer page from old buffer to new buffer */
-+	new_buff->page_dma = old_buff->page_dma;
-+	new_buff->page = old_buff->page;
-+	new_buff->page_offset = old_buff->page_offset;
-+
-+	/* sync the buffer for use by the device */
-+	dma_sync_single_range_for_device(rx_ring->dev, new_buff->page_dma,
-+					 new_buff->page_offset,
-+					 txgbe_rx_bufsz(rx_ring),
-+					 DMA_FROM_DEVICE);
-+}
-+
-+static inline bool txgbe_page_is_reserved(struct page *page)
-+{
-+	return (page_to_nid(page) != numa_mem_id()) || page_is_pfmemalloc(page);
-+}
-+
-+/**
-+ * txgbe_add_rx_frag - Add contents of Rx buffer to sk_buff
-+ * @rx_ring: rx descriptor ring to transact packets on
-+ * @rx_buffer: buffer containing page to add
-+ * @rx_desc: descriptor containing length of buffer written by hardware
-+ * @skb: sk_buff to place the data into
-+ *
-+ * This function will add the data contained in rx_buffer->page to the skb.
-+ * This is done either through a direct copy if the data in the buffer is
-+ * less than the skb header size, otherwise it will just attach the page as
-+ * a frag to the skb.
-+ *
-+ * The function will then update the page offset if necessary and return
-+ * true if the buffer can be reused by the adapter.
-+ **/
-+static bool txgbe_add_rx_frag(struct txgbe_ring *rx_ring,
-+			      struct txgbe_rx_buffer *rx_buffer,
-+			      union txgbe_rx_desc *rx_desc,
-+			      struct sk_buff *skb)
-+{
-+	struct page *page = rx_buffer->page;
-+	unsigned int size = le16_to_cpu(rx_desc->wb.upper.length);
-+#if (PAGE_SIZE < 8192)
-+	unsigned int truesize = txgbe_rx_bufsz(rx_ring);
-+#else
-+	unsigned int truesize = ALIGN(size, L1_CACHE_BYTES);
-+	unsigned int last_offset = txgbe_rx_pg_size(rx_ring) -
-+				   txgbe_rx_bufsz(rx_ring);
-+#endif
-+
-+	if (size <= TXGBE_RX_HDR_SIZE && !skb_is_nonlinear(skb)) {
-+		unsigned char *va = page_address(page) + rx_buffer->page_offset;
-+
-+		memcpy(__skb_put(skb, size), va, ALIGN(size, sizeof(long)));
-+
-+		/* page is not reserved, we can reuse buffer as-is */
-+		if (likely(!txgbe_page_is_reserved(page)))
-+			return true;
-+
-+		/* this page cannot be reused so discard it */
-+		__free_pages(page, txgbe_rx_pg_order(rx_ring));
-+		return false;
-+	}
-+
-+	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
-+			rx_buffer->page_offset, size, truesize);
-+
-+	/* avoid re-using remote pages */
-+	if (unlikely(txgbe_page_is_reserved(page)))
-+		return false;
-+
-+#if (PAGE_SIZE < 8192)
-+	/* if we are only owner of page we can reuse it */
-+	if (unlikely(page_count(page) != 1))
-+		return false;
-+
-+	/* flip page offset to other buffer */
-+	rx_buffer->page_offset ^= truesize;
-+#else
-+	/* move offset up to the next cache line */
-+	rx_buffer->page_offset += truesize;
-+
-+	if (rx_buffer->page_offset > last_offset)
-+		return false;
-+#endif
-+
-+	/* Even if we own the page, we are not allowed to use atomic_set()
-+	 * This would break get_page_unless_zero() users.
-+	 */
-+	page_ref_inc(page);
-+
-+	return true;
-+}
-+
-+static struct sk_buff *txgbe_fetch_rx_buffer(struct txgbe_ring *rx_ring,
-+					     union txgbe_rx_desc *rx_desc)
-+{
-+	struct txgbe_rx_buffer *rx_buffer;
-+	struct sk_buff *skb;
-+	struct page *page;
-+
-+	rx_buffer = &rx_ring->rx_buffer_info[rx_ring->next_to_clean];
-+	page = rx_buffer->page;
-+	prefetchw(page);
-+
-+	skb = rx_buffer->skb;
-+
-+	if (likely(!skb)) {
-+		void *page_addr = page_address(page) +
-+				  rx_buffer->page_offset;
-+
-+		/* prefetch first cache line of first page */
-+		prefetch(page_addr);
-+#if L1_CACHE_BYTES < 128
-+		prefetch(page_addr + L1_CACHE_BYTES);
-+#endif
-+
-+		/* allocate a skb to store the frags */
-+		skb = netdev_alloc_skb_ip_align(rx_ring->netdev,
-+						TXGBE_RX_HDR_SIZE);
-+		if (unlikely(!skb)) {
-+			rx_ring->rx_stats.alloc_rx_buff_failed++;
-+			return NULL;
-+		}
-+
-+		/* we will be copying header into skb->data in
-+		 * pskb_may_pull so it is in our interest to prefetch
-+		 * it now to avoid a possible cache miss
-+		 */
-+		prefetchw(skb->data);
-+
-+		/* Delay unmapping of the first packet. It carries the
-+		 * header information, HW may still access the header
-+		 * after the writeback.  Only unmap it when EOP is
-+		 * reached
-+		 */
-+		if (likely(txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_EOP)))
-+			goto dma_sync;
-+
-+		TXGBE_CB(skb)->dma = rx_buffer->page_dma;
-+	} else {
-+		if (txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_EOP))
-+			txgbe_dma_sync_frag(rx_ring, skb);
-+
-+dma_sync:
-+		/* we are reusing so sync this buffer for CPU use */
-+		dma_sync_single_range_for_cpu(rx_ring->dev,
-+					      rx_buffer->page_dma,
-+					      rx_buffer->page_offset,
-+					      txgbe_rx_bufsz(rx_ring),
-+					      DMA_FROM_DEVICE);
-+
-+		rx_buffer->skb = NULL;
-+	}
-+
-+	/* pull page into skb */
-+	if (txgbe_add_rx_frag(rx_ring, rx_buffer, rx_desc, skb)) {
-+		/* hand second half of page back to the ring */
-+		txgbe_reuse_rx_page(rx_ring, rx_buffer);
-+	} else if (TXGBE_CB(skb)->dma == rx_buffer->page_dma) {
-+		/* the page has been released from the ring */
-+		TXGBE_CB(skb)->page_released = true;
-+	} else {
-+		/* we are not reusing the buffer so unmap it */
-+		dma_unmap_page(rx_ring->dev, rx_buffer->page_dma,
-+			       txgbe_rx_pg_size(rx_ring),
-+			       DMA_FROM_DEVICE);
-+	}
-+
-+	/* clear contents of buffer_info */
-+	rx_buffer->page = NULL;
-+
-+	return skb;
-+}
-+
-+/**
-+ * txgbe_clean_rx_irq - Clean completed descriptors from Rx ring - bounce buf
-+ * @q_vector: structure containing interrupt and ring information
-+ * @rx_ring: rx descriptor ring to transact packets on
-+ * @budget: Total limit on number of packets to process
-+ *
-+ * This function provides a "bounce buffer" approach to Rx interrupt
-+ * processing.  The advantage to this is that on systems that have
-+ * expensive overhead for IOMMU access this provides a means of avoiding
-+ * it by maintaining the mapping of the page to the system.
-+ *
-+ * Returns amount of work completed.
-+ **/
-+static int txgbe_clean_rx_irq(struct txgbe_q_vector *q_vector,
-+			      struct txgbe_ring *rx_ring,
-+			      int budget)
-+{
-+	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
-+	u16 cleaned_count = txgbe_desc_unused(rx_ring);
-+
-+	do {
-+		union txgbe_rx_desc *rx_desc;
-+		struct sk_buff *skb;
-+
-+		/* return some buffers to hardware, one at a time is too slow */
-+		if (cleaned_count >= TXGBE_RX_BUFFER_WRITE) {
-+			txgbe_alloc_rx_buffers(rx_ring, cleaned_count);
-+			cleaned_count = 0;
-+		}
-+
-+		rx_desc = TXGBE_RX_DESC(rx_ring, rx_ring->next_to_clean);
-+
-+		if (!txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_DD))
-+			break;
-+
-+		/* This memory barrier is needed to keep us from reading
-+		 * any other fields out of the rx_desc until we know the
-+		 * descriptor has been written back
-+		 */
-+		dma_rmb();
-+
-+		/* retrieve a buffer from the ring */
-+		skb = txgbe_fetch_rx_buffer(rx_ring, rx_desc);
-+
-+		/* exit if we failed to retrieve a buffer */
-+		if (!skb)
-+			break;
-+
-+		cleaned_count++;
-+
-+		/* place incomplete frames back on ring for completion */
-+		if (txgbe_is_non_eop(rx_ring, rx_desc, skb))
-+			continue;
-+
-+		/* verify the packet layout is correct */
-+		if (txgbe_cleanup_headers(rx_ring, rx_desc, skb))
-+			continue;
-+
-+		/* probably a little skewed due to removing CRC */
-+		total_rx_bytes += skb->len;
-+
-+		txgbe_process_skb_fields(rx_ring, rx_desc, skb);
-+
-+		txgbe_rx_skb(q_vector, skb);
-+
-+		/* update budget accounting */
-+		total_rx_packets++;
-+	} while (likely(total_rx_packets < budget));
-+
-+	u64_stats_update_begin(&rx_ring->syncp);
-+	rx_ring->stats.packets += total_rx_packets;
-+	rx_ring->stats.bytes += total_rx_bytes;
-+	u64_stats_update_end(&rx_ring->syncp);
-+	q_vector->rx.total_packets += total_rx_packets;
-+	q_vector->rx.total_bytes += total_rx_bytes;
-+
-+	return total_rx_packets;
-+}
-+
- /**
-  * txgbe_configure_msix - Configure MSI-X hardware
-  * @adapter: board private structure
-@@ -239,6 +886,74 @@ static void txgbe_configure_msix(struct txgbe_adapter *adapter)
- 	wr32(&adapter->hw, TXGBE_PX_ITR(v_idx), 1950);
- }
- 
-+enum latency_range {
-+	lowest_latency = 0,
-+	low_latency = 1,
-+	bulk_latency = 2,
-+	latency_invalid = 255
-+};
-+
-+/**
-+ * txgbe_update_itr - update the dynamic ITR value based on statistics
-+ * @q_vector: structure containing interrupt and ring information
-+ * @ring_container: structure containing ring performance data
-+ *
-+ * Stores a new ITR value based on packets and byte
-+ * counts during the last interrupt.  The advantage of per interrupt
-+ * computation is faster updates and more accurate ITR for the current
-+ * traffic pattern.  Constants in this function were computed
-+ * based on theoretical maximum wire speed and thresholds were set based
-+ * on testing data as well as attempting to minimize response time
-+ * while increasing bulk throughput.
-+ **/
-+static void txgbe_update_itr(struct txgbe_q_vector *q_vector,
-+			     struct txgbe_ring_container *ring_container)
-+{
-+	int packets = ring_container->total_packets;
-+	int bytes = ring_container->total_bytes;
-+	u8 itr_setting = ring_container->itr;
-+	u32 timepassed_us;
-+	u64 bytes_perint;
-+
-+	if (packets == 0)
-+		return;
-+
-+	/* simple throttlerate management
-+	 *   0-10MB/s   lowest (100000 ints/s)
-+	 *  10-20MB/s   low    (20000 ints/s)
-+	 *  20-1249MB/s bulk   (12000 ints/s)
-+	 */
-+	/* what was last interrupt timeslice? */
-+	timepassed_us = q_vector->itr >> 2;
-+	if (timepassed_us == 0)
-+		return;
-+	bytes_perint = bytes / timepassed_us; /* bytes/usec */
-+
-+	switch (itr_setting) {
-+	case lowest_latency:
-+		if (bytes_perint > 10)
-+			itr_setting = low_latency;
-+		break;
-+	case low_latency:
-+		if (bytes_perint > 20)
-+			itr_setting = bulk_latency;
-+		else if (bytes_perint <= 10)
-+			itr_setting = lowest_latency;
-+		break;
-+	case bulk_latency:
-+		if (bytes_perint <= 20)
-+			itr_setting = low_latency;
-+		break;
-+	}
-+
-+	/* clear work counters since we have the values we need */
-+	ring_container->total_bytes = 0;
-+	ring_container->total_packets = 0;
-+
-+	/* write updated itr to ring container */
-+	ring_container->itr = itr_setting;
-+}
-+
- /**
-  * txgbe_write_eitr - write EITR register in hardware specific way
-  * @q_vector: structure containing interrupt and ring information
-@@ -259,6 +974,43 @@ void txgbe_write_eitr(struct txgbe_q_vector *q_vector)
- 	wr32(hw, TXGBE_PX_ITR(v_idx), itr_reg);
- }
- 
-+static void txgbe_set_itr(struct txgbe_q_vector *q_vector)
-+{
-+	u16 new_itr = q_vector->itr;
-+	u8 current_itr;
-+
-+	txgbe_update_itr(q_vector, &q_vector->tx);
-+	txgbe_update_itr(q_vector, &q_vector->rx);
-+
-+	current_itr = max(q_vector->rx.itr, q_vector->tx.itr);
-+
-+	switch (current_itr) {
-+	/* counts and packets in update_itr are dependent on these numbers */
-+	case lowest_latency:
-+		new_itr = TXGBE_100K_ITR;
-+		break;
-+	case low_latency:
-+		new_itr = TXGBE_20K_ITR;
-+		break;
-+	case bulk_latency:
-+		new_itr = TXGBE_12K_ITR;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (new_itr != q_vector->itr) {
-+		/* do an exponential smoothing */
-+		new_itr = (10 * new_itr * q_vector->itr) /
-+			  ((9 * new_itr) + q_vector->itr);
-+
-+		/* save the algorithm value here */
-+		q_vector->itr = new_itr;
-+
-+		txgbe_write_eitr(q_vector);
-+	}
-+}
-+
- /**
-  * txgbe_check_overtemp_subtask - check for over temperature
-  * @adapter: pointer to adapter
-@@ -473,6 +1225,50 @@ static irqreturn_t txgbe_msix_clean_rings(int __always_unused irq, void *data)
-  **/
- int txgbe_poll(struct napi_struct *napi, int budget)
+ static inline struct netdev_queue *txring_txq(const struct txgbe_ring *ring)
  {
-+	struct txgbe_q_vector *q_vector =
-+			       container_of(napi, struct txgbe_q_vector, napi);
-+	struct txgbe_adapter *adapter = q_vector->adapter;
-+	struct txgbe_ring *ring;
-+	int per_ring_budget;
-+	bool clean_complete = true;
-+
-+	txgbe_for_each_ring(ring, q_vector->tx) {
-+		if (!txgbe_clean_tx_irq(q_vector, ring))
-+			clean_complete = false;
-+	}
-+
-+	/* Exit if we are called by netpoll */
-+	if (budget <= 0)
-+		return budget;
-+
-+	/* attempt to distribute budget to each queue fairly, but don't allow
-+	 * the budget to go below 1 because we'll exit polling
-+	 */
-+	if (q_vector->rx.count > 1)
-+		per_ring_budget = max(budget / q_vector->rx.count, 1);
-+	else
-+		per_ring_budget = budget;
-+
-+	txgbe_for_each_ring(ring, q_vector->rx) {
-+		int cleaned = txgbe_clean_rx_irq(q_vector, ring,
-+						 per_ring_budget);
-+
-+		if (cleaned >= per_ring_budget)
-+			clean_complete = false;
-+	}
-+
-+	/* If all work not completed, return budget and keep polling */
-+	if (!clean_complete)
-+		return budget;
-+
-+	/* all work done, exit the polling mode */
-+	napi_complete(napi);
-+	if (adapter->rx_itr_setting == 1)
-+		txgbe_set_itr(q_vector);
-+	if (!test_bit(__TXGBE_DOWN, &adapter->state))
-+		txgbe_intr_enable(&adapter->hw,
-+				  TXGBE_INTR_Q(q_vector->v_idx));
-+
+@@ -409,6 +444,7 @@ int txgbe_write_uc_addr_list(struct net_device *netdev, int pool);
+ int txgbe_add_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool);
+ int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool);
+ int txgbe_available_rars(struct txgbe_adapter *adapter);
++void txgbe_vlan_mode(struct net_device *netdev, u32 features);
+ 
+ void txgbe_set_rx_drop_en(struct txgbe_adapter *adapter);
+ 
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+index dd93b07cc87b..6cd7e1a1c751 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+@@ -10,6 +10,7 @@
+ #define TXGBE_SP_MAX_RX_QUEUES  128
+ #define TXGBE_SP_RAR_ENTRIES    128
+ #define TXGBE_SP_MC_TBL_SIZE    128
++#define TXGBE_SP_VFT_TBL_SIZE   128
+ #define TXGBE_SP_RX_PB_SIZE     512
+ 
+ static s32 txgbe_get_eeprom_semaphore(struct txgbe_hw *hw);
+@@ -1031,6 +1032,82 @@ s32 txgbe_init_uta_tables(struct txgbe_hw *hw)
  	return 0;
  }
  
-@@ -933,6 +1729,7 @@ void txgbe_configure_rx_ring(struct txgbe_adapter *adapter,
- 	      TXGBE_PX_RR_CFG_RR_EN, TXGBE_PX_RR_CFG_RR_EN);
- 
- 	txgbe_rx_desc_queue_enable(adapter, ring);
-+	txgbe_alloc_rx_buffers(ring, txgbe_desc_unused(ring));
++/**
++ *  txgbe_set_vfta - Set VLAN filter table
++ *  @hw: pointer to hardware structure
++ *  @vlan: VLAN id to write to VLAN filter
++ *  @vind: VMDq output index that maps queue to VLAN id in VFVFB
++ *  @vlan_on: boolean flag to turn on/off VLAN in VFVF
++ *
++ *  Turn on/off specified VLAN in the VLAN filter table.
++ **/
++s32 txgbe_set_vfta(struct txgbe_hw *hw, u32 vlan, u32 vind,
++		   bool vlan_on)
++{
++	s32 regindex;
++	u32 bitindex;
++	u32 vfta;
++	u32 targetbit;
++	bool vfta_changed = false;
++
++	if (vlan > 4095)
++		return TXGBE_ERR_PARAM;
++
++	/* The VFTA is a bitstring made up of 128 32-bit registers
++	 * that enable the particular VLAN id, much like the MTA:
++	 *    bits[11-5]: which register
++	 *    bits[4-0]:  which bit in the register
++	 */
++	regindex = (vlan >> 5) & 0x7F;
++	bitindex = vlan & 0x1F;
++	targetbit = (1 << bitindex);
++	/* errata 5 */
++	vfta = hw->mac.vft_shadow[regindex];
++	if (vlan_on) {
++		if (!(vfta & targetbit)) {
++			vfta |= targetbit;
++			vfta_changed = true;
++		}
++	} else {
++		if ((vfta & targetbit)) {
++			vfta &= ~targetbit;
++			vfta_changed = true;
++		}
++	}
++
++	if (vfta_changed)
++		wr32(hw, TXGBE_PSR_VLAN_TBL(regindex), vfta);
++	/* errata 5 */
++	hw->mac.vft_shadow[regindex] = vfta;
++	return 0;
++}
++
++/**
++ *  txgbe_clear_vfta - Clear VLAN filter table
++ *  @hw: pointer to hardware structure
++ *
++ *  Clears the VLAN filer table, and the VMDq index associated with the filter
++ **/
++s32 txgbe_clear_vfta(struct txgbe_hw *hw)
++{
++	u32 offset;
++
++	for (offset = 0; offset < hw->mac.vft_size; offset++) {
++		wr32(hw, TXGBE_PSR_VLAN_TBL(offset), 0);
++		/* errata 5 */
++		hw->mac.vft_shadow[offset] = 0;
++	}
++
++	for (offset = 0; offset < TXGBE_PSR_VLAN_SWC_ENTRIES; offset++) {
++		wr32(hw, TXGBE_PSR_VLAN_SWC_IDX, offset);
++		wr32(hw, TXGBE_PSR_VLAN_SWC, 0);
++		wr32(hw, TXGBE_PSR_VLAN_SWC_VM_L, 0);
++		wr32(hw, TXGBE_PSR_VLAN_SWC_VM_H, 0);
++	}
++
++	return 0;
++}
++
+ /**
+  *  txgbe_get_wwn_prefix - Get alternative WWNN/WWPN prefix from the EEPROM
+  *  @hw: pointer to hardware structure
+@@ -1707,6 +1784,310 @@ int txgbe_check_flash_load(struct txgbe_hw *hw, u32 check_bit)
+ 	return err;
  }
  
- static void txgbe_setup_psrtype(struct txgbe_adapter *adapter)
-@@ -2760,6 +3557,8 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	u16 eeprom_verh = 0, eeprom_verl = 0, offset = 0;
- 	u16 eeprom_cfg_blkh = 0, eeprom_cfg_blkl = 0;
- 	u16 build = 0, major = 0, patch = 0;
-+	u16 ctl = 0;
-+	char *info_string, *i_s_var;
- 	u8 part_str[TXGBE_PBANUM_LENGTH];
- 	u32 etrack_id = 0;
- 
-@@ -2786,6 +3585,13 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	pci_enable_pcie_error_reporting(pdev);
- 	pci_set_master(pdev);
- 
-+	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
-+	if (((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_128B) &&
-+	    ((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_256B))
-+		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-+						   PCI_EXP_DEVCTL_READRQ,
-+						   PCI_EXP_DEVCTL_READRQ_256B);
++/* The txgbe_ptype_lookup is used to convert from the 8-bit ptype in the
++ * hardware to a bit-field that can be used by SW to more easily determine the
++ * packet type.
++ *
++ * Macros are used to shorten the table lines and make this table human
++ * readable.
++ *
++ * We store the PTYPE in the top byte of the bit field - this is just so that
++ * we can check that the table doesn't have a row missing, as the index into
++ * the table should be the PTYPE.
++ *
++ * Typical work flow:
++ *
++ * IF NOT txgbe_ptype_lookup[ptype].known
++ * THEN
++ *      Packet is unknown
++ * ELSE IF txgbe_ptype_lookup[ptype].mac == TXGBE_DEC_PTYPE_MAC_IP
++ *      Use the rest of the fields to look at the tunnels, inner protocols, etc
++ * ELSE
++ *      Use the enum txgbe_l2_ptypes to decode the packet type
++ * ENDIF
++ */
 +
- 	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
- 					 sizeof(struct txgbe_adapter),
- 					 TXGBE_MAX_TX_QUEUES,
-@@ -2985,6 +3791,23 @@ static int txgbe_probe(struct pci_dev *pdev,
- 		   netdev->dev_addr[2], netdev->dev_addr[3],
- 		   netdev->dev_addr[4], netdev->dev_addr[5]);
++/* macro to make the table lines short */
++#define TXGBE_PTT(ptype, mac, ip, etype, eip, proto, layer)\
++	{       ptype, \
++		1, \
++		/* mac     */ TXGBE_DEC_PTYPE_MAC_##mac, \
++		/* ip      */ TXGBE_DEC_PTYPE_IP_##ip, \
++		/* etype   */ TXGBE_DEC_PTYPE_ETYPE_##etype, \
++		/* eip     */ TXGBE_DEC_PTYPE_IP_##eip, \
++		/* proto   */ TXGBE_DEC_PTYPE_PROT_##proto, \
++		/* layer   */ TXGBE_DEC_PTYPE_LAYER_##layer }
++
++#define TXGBE_UKN(ptype) \
++		{ ptype, 0, 0, 0, 0, 0, 0, 0 }
++
++/* Lookup table mapping the HW PTYPE to the bit field for decoding */
++struct txgbe_dptype txgbe_ptype_lookup[256] = {
++	TXGBE_UKN(0x00),
++	TXGBE_UKN(0x01),
++	TXGBE_UKN(0x02),
++	TXGBE_UKN(0x03),
++	TXGBE_UKN(0x04),
++	TXGBE_UKN(0x05),
++	TXGBE_UKN(0x06),
++	TXGBE_UKN(0x07),
++	TXGBE_UKN(0x08),
++	TXGBE_UKN(0x09),
++	TXGBE_UKN(0x0A),
++	TXGBE_UKN(0x0B),
++	TXGBE_UKN(0x0C),
++	TXGBE_UKN(0x0D),
++	TXGBE_UKN(0x0E),
++	TXGBE_UKN(0x0F),
++
++	/* L2: mac */
++	TXGBE_UKN(0x10),
++	TXGBE_PTT(0x11, L2, NONE, NONE, NONE, NONE, PAY2),
++	TXGBE_PTT(0x12, L2, NONE, NONE, NONE, TS,   PAY2),
++	TXGBE_PTT(0x13, L2, NONE, NONE, NONE, NONE, PAY2),
++	TXGBE_PTT(0x14, L2, NONE, NONE, NONE, NONE, PAY2),
++	TXGBE_PTT(0x15, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x16, L2, NONE, NONE, NONE, NONE, PAY2),
++	TXGBE_PTT(0x17, L2, NONE, NONE, NONE, NONE, NONE),
++
++	/* L2: ethertype filter */
++	TXGBE_PTT(0x18, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x19, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1A, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1B, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1C, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1D, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1E, L2, NONE, NONE, NONE, NONE, NONE),
++	TXGBE_PTT(0x1F, L2, NONE, NONE, NONE, NONE, NONE),
++
++	/* L3: ip non-tunnel */
++	TXGBE_UKN(0x20),
++	TXGBE_PTT(0x21, IP, FGV4, NONE, NONE, NONE, PAY3),
++	TXGBE_PTT(0x22, IP, IPV4, NONE, NONE, NONE, PAY3),
++	TXGBE_PTT(0x23, IP, IPV4, NONE, NONE, UDP,  PAY4),
++	TXGBE_PTT(0x24, IP, IPV4, NONE, NONE, TCP,  PAY4),
++	TXGBE_PTT(0x25, IP, IPV4, NONE, NONE, SCTP, PAY4),
++	TXGBE_UKN(0x26),
++	TXGBE_UKN(0x27),
++	TXGBE_UKN(0x28),
++	TXGBE_PTT(0x29, IP, FGV6, NONE, NONE, NONE, PAY3),
++	TXGBE_PTT(0x2A, IP, IPV6, NONE, NONE, NONE, PAY3),
++	TXGBE_PTT(0x2B, IP, IPV6, NONE, NONE, UDP,  PAY3),
++	TXGBE_PTT(0x2C, IP, IPV6, NONE, NONE, TCP,  PAY4),
++	TXGBE_PTT(0x2D, IP, IPV6, NONE, NONE, SCTP, PAY4),
++	TXGBE_UKN(0x2E),
++	TXGBE_UKN(0x2F),
++
++	TXGBE_UKN(0x40),
++	TXGBE_UKN(0x41),
++	TXGBE_UKN(0x42),
++	TXGBE_UKN(0x43),
++	TXGBE_UKN(0x44),
++	TXGBE_UKN(0x45),
++	TXGBE_UKN(0x46),
++	TXGBE_UKN(0x47),
++	TXGBE_UKN(0x48),
++	TXGBE_UKN(0x49),
++	TXGBE_UKN(0x4A),
++	TXGBE_UKN(0x4B),
++	TXGBE_UKN(0x4C),
++	TXGBE_UKN(0x4D),
++	TXGBE_UKN(0x4E),
++	TXGBE_UKN(0x4F),
++	TXGBE_UKN(0x50),
++	TXGBE_UKN(0x51),
++	TXGBE_UKN(0x52),
++	TXGBE_UKN(0x53),
++	TXGBE_UKN(0x54),
++	TXGBE_UKN(0x55),
++	TXGBE_UKN(0x56),
++	TXGBE_UKN(0x57),
++	TXGBE_UKN(0x58),
++	TXGBE_UKN(0x59),
++	TXGBE_UKN(0x5A),
++	TXGBE_UKN(0x5B),
++	TXGBE_UKN(0x5C),
++	TXGBE_UKN(0x5D),
++	TXGBE_UKN(0x5E),
++	TXGBE_UKN(0x5F),
++	TXGBE_UKN(0x60),
++	TXGBE_UKN(0x61),
++	TXGBE_UKN(0x62),
++	TXGBE_UKN(0x63),
++	TXGBE_UKN(0x64),
++	TXGBE_UKN(0x65),
++	TXGBE_UKN(0x66),
++	TXGBE_UKN(0x67),
++	TXGBE_UKN(0x68),
++	TXGBE_UKN(0x69),
++	TXGBE_UKN(0x6A),
++	TXGBE_UKN(0x6B),
++	TXGBE_UKN(0x6C),
++	TXGBE_UKN(0x6D),
++	TXGBE_UKN(0x6E),
++	TXGBE_UKN(0x6F),
++	TXGBE_UKN(0x70),
++	TXGBE_UKN(0x71),
++	TXGBE_UKN(0x72),
++	TXGBE_UKN(0x73),
++	TXGBE_UKN(0x74),
++	TXGBE_UKN(0x75),
++	TXGBE_UKN(0x76),
++	TXGBE_UKN(0x77),
++	TXGBE_UKN(0x78),
++	TXGBE_UKN(0x79),
++	TXGBE_UKN(0x7A),
++	TXGBE_UKN(0x7B),
++	TXGBE_UKN(0x7C),
++	TXGBE_UKN(0x7D),
++	TXGBE_UKN(0x7E),
++	TXGBE_UKN(0x7F),
++
++	/* IPv4 --> IPv4/IPv6 */
++	TXGBE_UKN(0x80),
++	TXGBE_PTT(0x81, IP, IPV4, IPIP, FGV4, NONE, PAY3),
++	TXGBE_PTT(0x82, IP, IPV4, IPIP, IPV4, NONE, PAY3),
++	TXGBE_PTT(0x83, IP, IPV4, IPIP, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0x84, IP, IPV4, IPIP, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0x85, IP, IPV4, IPIP, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0x86),
++	TXGBE_UKN(0x87),
++	TXGBE_UKN(0x88),
++	TXGBE_PTT(0x89, IP, IPV4, IPIP, FGV6, NONE, PAY3),
++	TXGBE_PTT(0x8A, IP, IPV4, IPIP, IPV6, NONE, PAY3),
++	TXGBE_PTT(0x8B, IP, IPV4, IPIP, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0x8C, IP, IPV4, IPIP, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0x8D, IP, IPV4, IPIP, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0x8E),
++	TXGBE_UKN(0x8F),
++
++	/* IPv4 --> GRE/NAT --> NONE/IPv4/IPv6 */
++	TXGBE_PTT(0x90, IP, IPV4, IG, NONE, NONE, PAY3),
++	TXGBE_PTT(0x91, IP, IPV4, IG, FGV4, NONE, PAY3),
++	TXGBE_PTT(0x92, IP, IPV4, IG, IPV4, NONE, PAY3),
++	TXGBE_PTT(0x93, IP, IPV4, IG, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0x94, IP, IPV4, IG, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0x95, IP, IPV4, IG, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0x96),
++	TXGBE_UKN(0x97),
++	TXGBE_UKN(0x98),
++	TXGBE_PTT(0x99, IP, IPV4, IG, FGV6, NONE, PAY3),
++	TXGBE_PTT(0x9A, IP, IPV4, IG, IPV6, NONE, PAY3),
++	TXGBE_PTT(0x9B, IP, IPV4, IG, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0x9C, IP, IPV4, IG, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0x9D, IP, IPV4, IG, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0x9E),
++	TXGBE_UKN(0x9F),
++
++	/* IPv4 --> GRE/NAT --> MAC --> NONE/IPv4/IPv6 */
++	TXGBE_PTT(0xA0, IP, IPV4, IGM, NONE, NONE, PAY3),
++	TXGBE_PTT(0xA1, IP, IPV4, IGM, FGV4, NONE, PAY3),
++	TXGBE_PTT(0xA2, IP, IPV4, IGM, IPV4, NONE, PAY3),
++	TXGBE_PTT(0xA3, IP, IPV4, IGM, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xA4, IP, IPV4, IGM, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xA5, IP, IPV4, IGM, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xA6),
++	TXGBE_UKN(0xA7),
++	TXGBE_UKN(0xA8),
++	TXGBE_PTT(0xA9, IP, IPV4, IGM, FGV6, NONE, PAY3),
++	TXGBE_PTT(0xAA, IP, IPV4, IGM, IPV6, NONE, PAY3),
++	TXGBE_PTT(0xAB, IP, IPV4, IGM, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xAC, IP, IPV4, IGM, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xAD, IP, IPV4, IGM, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xAE),
++	TXGBE_UKN(0xAF),
++
++	/* IPv4 --> GRE/NAT --> MAC+VLAN --> NONE/IPv4/IPv6 */
++	TXGBE_PTT(0xB0, IP, IPV4, IGMV, NONE, NONE, PAY3),
++	TXGBE_PTT(0xB1, IP, IPV4, IGMV, FGV4, NONE, PAY3),
++	TXGBE_PTT(0xB2, IP, IPV4, IGMV, IPV4, NONE, PAY3),
++	TXGBE_PTT(0xB3, IP, IPV4, IGMV, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xB4, IP, IPV4, IGMV, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xB5, IP, IPV4, IGMV, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xB6),
++	TXGBE_UKN(0xB7),
++	TXGBE_UKN(0xB8),
++	TXGBE_PTT(0xB9, IP, IPV4, IGMV, FGV6, NONE, PAY3),
++	TXGBE_PTT(0xBA, IP, IPV4, IGMV, IPV6, NONE, PAY3),
++	TXGBE_PTT(0xBB, IP, IPV4, IGMV, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xBC, IP, IPV4, IGMV, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xBD, IP, IPV4, IGMV, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xBE),
++	TXGBE_UKN(0xBF),
++
++	/* IPv6 --> IPv4/IPv6 */
++	TXGBE_UKN(0xC0),
++	TXGBE_PTT(0xC1, IP, IPV6, IPIP, FGV4, NONE, PAY3),
++	TXGBE_PTT(0xC2, IP, IPV6, IPIP, IPV4, NONE, PAY3),
++	TXGBE_PTT(0xC3, IP, IPV6, IPIP, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xC4, IP, IPV6, IPIP, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xC5, IP, IPV6, IPIP, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xC6),
++	TXGBE_UKN(0xC7),
++	TXGBE_UKN(0xC8),
++	TXGBE_PTT(0xC9, IP, IPV6, IPIP, FGV6, NONE, PAY3),
++	TXGBE_PTT(0xCA, IP, IPV6, IPIP, IPV6, NONE, PAY3),
++	TXGBE_PTT(0xCB, IP, IPV6, IPIP, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xCC, IP, IPV6, IPIP, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xCD, IP, IPV6, IPIP, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xCE),
++	TXGBE_UKN(0xCF),
++
++	/* IPv6 --> GRE/NAT -> NONE/IPv4/IPv6 */
++	TXGBE_PTT(0xD0, IP, IPV6, IG,   NONE, NONE, PAY3),
++	TXGBE_PTT(0xD1, IP, IPV6, IG,   FGV4, NONE, PAY3),
++	TXGBE_PTT(0xD2, IP, IPV6, IG,   IPV4, NONE, PAY3),
++	TXGBE_PTT(0xD3, IP, IPV6, IG,   IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xD4, IP, IPV6, IG,   IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xD5, IP, IPV6, IG,   IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xD6),
++	TXGBE_UKN(0xD7),
++	TXGBE_UKN(0xD8),
++	TXGBE_PTT(0xD9, IP, IPV6, IG,   FGV6, NONE, PAY3),
++	TXGBE_PTT(0xDA, IP, IPV6, IG,   IPV6, NONE, PAY3),
++	TXGBE_PTT(0xDB, IP, IPV6, IG,   IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xDC, IP, IPV6, IG,   IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xDD, IP, IPV6, IG,   IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xDE),
++	TXGBE_UKN(0xDF),
++
++	/* IPv6 --> GRE/NAT -> MAC -> NONE/IPv4/IPv6 */
++	TXGBE_PTT(0xE0, IP, IPV6, IGM,  NONE, NONE, PAY3),
++	TXGBE_PTT(0xE1, IP, IPV6, IGM,  FGV4, NONE, PAY3),
++	TXGBE_PTT(0xE2, IP, IPV6, IGM,  IPV4, NONE, PAY3),
++	TXGBE_PTT(0xE3, IP, IPV6, IGM,  IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xE4, IP, IPV6, IGM,  IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xE5, IP, IPV6, IGM,  IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xE6),
++	TXGBE_UKN(0xE7),
++	TXGBE_UKN(0xE8),
++	TXGBE_PTT(0xE9, IP, IPV6, IGM,  FGV6, NONE, PAY3),
++	TXGBE_PTT(0xEA, IP, IPV6, IGM,  IPV6, NONE, PAY3),
++	TXGBE_PTT(0xEB, IP, IPV6, IGM,  IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xEC, IP, IPV6, IGM,  IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xED, IP, IPV6, IGM,  IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xEE),
++	TXGBE_UKN(0xEF),
++
++	/* IPv6 --> GRE/NAT -> MAC--> NONE/IPv */
++	TXGBE_PTT(0xF0, IP, IPV6, IGMV, NONE, NONE, PAY3),
++	TXGBE_PTT(0xF1, IP, IPV6, IGMV, FGV4, NONE, PAY3),
++	TXGBE_PTT(0xF2, IP, IPV6, IGMV, IPV4, NONE, PAY3),
++	TXGBE_PTT(0xF3, IP, IPV6, IGMV, IPV4, UDP,  PAY4),
++	TXGBE_PTT(0xF4, IP, IPV6, IGMV, IPV4, TCP,  PAY4),
++	TXGBE_PTT(0xF5, IP, IPV6, IGMV, IPV4, SCTP, PAY4),
++	TXGBE_UKN(0xF6),
++	TXGBE_UKN(0xF7),
++	TXGBE_UKN(0xF8),
++	TXGBE_PTT(0xF9, IP, IPV6, IGMV, FGV6, NONE, PAY3),
++	TXGBE_PTT(0xFA, IP, IPV6, IGMV, IPV6, NONE, PAY3),
++	TXGBE_PTT(0xFB, IP, IPV6, IGMV, IPV6, UDP,  PAY4),
++	TXGBE_PTT(0xFC, IP, IPV6, IGMV, IPV6, TCP,  PAY4),
++	TXGBE_PTT(0xFD, IP, IPV6, IGMV, IPV6, SCTP, PAY4),
++	TXGBE_UKN(0xFE),
++	TXGBE_UKN(0xFF),
++};
++
+ void txgbe_init_mac_link_ops(struct txgbe_hw *hw)
+ {
+ 	struct txgbe_mac_info *mac = &hw->mac;
+@@ -1799,7 +2180,7 @@ s32 txgbe_init_ops(struct txgbe_hw *hw)
+ 	mac->ops.get_wwn_prefix = txgbe_get_wwn_prefix;
+ 	mac->ops.setup_rxpba = txgbe_set_rxpba;
  
-+#define INFO_STRING_LEN 255
-+	info_string = kzalloc(INFO_STRING_LEN, GFP_KERNEL);
-+	if (!info_string) {
-+		netif_err(adapter, probe, netdev,
-+			  "allocation for info string failed\n");
-+		goto no_info_string;
+-	/* RAR, Multicast */
++	/* RAR, Multicast, VLAN */
+ 	mac->ops.set_rar = txgbe_set_rar;
+ 	mac->ops.clear_rar = txgbe_clear_rar;
+ 	mac->ops.init_rx_addrs = txgbe_init_rx_addrs;
+@@ -1808,6 +2189,8 @@ s32 txgbe_init_ops(struct txgbe_hw *hw)
+ 	mac->ops.enable_rx = txgbe_enable_rx;
+ 	mac->ops.disable_rx = txgbe_disable_rx;
+ 	mac->ops.set_vmdq_san_mac = txgbe_set_vmdq_san_mac;
++	mac->ops.set_vfta = txgbe_set_vfta;
++	mac->ops.clear_vfta = txgbe_clear_vfta;
+ 	mac->ops.init_uta_tables = txgbe_init_uta_tables;
+ 
+ 	/* Link */
+@@ -1815,6 +2198,7 @@ s32 txgbe_init_ops(struct txgbe_hw *hw)
+ 	mac->ops.check_link = txgbe_check_mac_link;
+ 
+ 	mac->mcft_size          = TXGBE_SP_MC_TBL_SIZE;
++	mac->vft_size           = TXGBE_SP_VFT_TBL_SIZE;
+ 	mac->num_rar_entries    = TXGBE_SP_RAR_ENTRIES;
+ 	mac->rx_pb_size         = TXGBE_SP_RX_PB_SIZE;
+ 	mac->max_rx_queues      = TXGBE_SP_MAX_RX_QUEUES;
+@@ -3168,6 +3552,11 @@ s32 txgbe_start_hw(struct txgbe_hw *hw)
+ 	/* Set the media type */
+ 	hw->phy.media_type = TCALL(hw, mac.ops.get_media_type);
+ 
++	/* Clear the VLAN filter table */
++	TCALL(hw, mac.ops.clear_vfta);
++
++	TXGBE_WRITE_FLUSH(hw);
++
+ 	/* Clear the rate limiters */
+ 	for (i = 0; i < hw->mac.max_tx_queues; i++) {
+ 		wr32(hw, TXGBE_TDM_RP_IDX, i);
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
+index 7377788fdaa2..9c3ab32ae608 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
+@@ -16,6 +16,67 @@
+ #define SPI_H_DAT_REG_ADDR           0x10108  /* SPI Data register address */
+ #define SPI_H_STA_REG_ADDR           0x1010c  /* SPI Status register address */
+ 
++/**
++ * Packet Type decoding
++ **/
++/* txgbe_dptype.mac: outer mac */
++enum txgbe_dec_ptype_mac {
++	TXGBE_DEC_PTYPE_MAC_IP = 0,
++	TXGBE_DEC_PTYPE_MAC_L2 = 2,
++};
++
++/* txgbe_dptype.[e]ip: outer&encaped ip */
++#define TXGBE_DEC_PTYPE_IP_FRAG (0x4)
++enum txgbe_dec_ptype_ip {
++	TXGBE_DEC_PTYPE_IP_NONE = 0,
++	TXGBE_DEC_PTYPE_IP_IPV4 = 1,
++	TXGBE_DEC_PTYPE_IP_IPV6 = 2,
++	TXGBE_DEC_PTYPE_IP_FGV4 =
++		(TXGBE_DEC_PTYPE_IP_FRAG | TXGBE_DEC_PTYPE_IP_IPV4),
++	TXGBE_DEC_PTYPE_IP_FGV6 =
++		(TXGBE_DEC_PTYPE_IP_FRAG | TXGBE_DEC_PTYPE_IP_IPV6),
++};
++
++/* txgbe_dptype.etype: encaped type */
++enum txgbe_dec_ptype_etype {
++	TXGBE_DEC_PTYPE_ETYPE_NONE = 0,
++	TXGBE_DEC_PTYPE_ETYPE_IPIP = 1, /* IP+IP */
++	TXGBE_DEC_PTYPE_ETYPE_IG = 2, /* IP+GRE */
++	TXGBE_DEC_PTYPE_ETYPE_IGM = 3, /* IP+GRE+MAC */
++	TXGBE_DEC_PTYPE_ETYPE_IGMV = 4, /* IP+GRE+MAC+VLAN */
++};
++
++/* txgbe_dptype.proto: payload proto */
++enum txgbe_dec_ptype_prot {
++	TXGBE_DEC_PTYPE_PROT_NONE = 0,
++	TXGBE_DEC_PTYPE_PROT_UDP = 1,
++	TXGBE_DEC_PTYPE_PROT_TCP = 2,
++	TXGBE_DEC_PTYPE_PROT_SCTP = 3,
++	TXGBE_DEC_PTYPE_PROT_ICMP = 4,
++	TXGBE_DEC_PTYPE_PROT_TS = 5, /* time sync */
++};
++
++/* txgbe_dptype.layer: payload layer */
++enum txgbe_dec_ptype_layer {
++	TXGBE_DEC_PTYPE_LAYER_NONE = 0,
++	TXGBE_DEC_PTYPE_LAYER_PAY2 = 1,
++	TXGBE_DEC_PTYPE_LAYER_PAY3 = 2,
++	TXGBE_DEC_PTYPE_LAYER_PAY4 = 3,
++};
++
++struct txgbe_dptype {
++	u32 ptype:8;
++	u32 known:1;
++	u32 mac:2; /* outer mac */
++	u32 ip:3; /* outer ip*/
++	u32 etype:3; /* encaped type */
++	u32 eip:3; /* encaped ip */
++	u32 prot:4; /* payload proto */
++	u32 layer:3; /* payload layer */
++};
++
++extern struct txgbe_dptype txgbe_ptype_lookup[256];
++
+ u16 txgbe_get_pcie_msix_count(struct txgbe_hw *hw);
+ s32 txgbe_init_hw(struct txgbe_hw *hw);
+ s32 txgbe_start_hw(struct txgbe_hw *hw);
+@@ -46,6 +107,9 @@ s32 txgbe_get_san_mac_addr(struct txgbe_hw *hw, u8 *san_mac_addr);
+ s32 txgbe_set_vmdq_san_mac(struct txgbe_hw *hw, u32 vmdq);
+ s32 txgbe_clear_vmdq(struct txgbe_hw *hw, u32 rar, u32 vmdq);
+ s32 txgbe_init_uta_tables(struct txgbe_hw *hw);
++s32 txgbe_set_vfta(struct txgbe_hw *hw, u32 vlan,
++		   u32 vind, bool vlan_on);
++s32 txgbe_clear_vfta(struct txgbe_hw *hw);
+ 
+ s32 txgbe_get_wwn_prefix(struct txgbe_hw *hw, u16 *wwnn_prefix,
+ 			 u16 *wwpn_prefix);
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+index e7ab9c2c093d..ca7e99e7da97 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -7,6 +7,9 @@
+ #include <linux/netdevice.h>
+ #include <linux/string.h>
+ #include <linux/aer.h>
++#include <net/checksum.h>
++#include <net/ip6_checksum.h>
++#include <net/vxlan.h>
+ #include <linux/etherdevice.h>
+ 
+ #include "txgbe.h"
+@@ -46,6 +49,17 @@ static void txgbe_clean_tx_ring(struct txgbe_ring *tx_ring);
+ static void txgbe_napi_enable_all(struct txgbe_adapter *adapter);
+ static void txgbe_napi_disable_all(struct txgbe_adapter *adapter);
+ 
++static inline struct txgbe_dptype txgbe_decode_ptype(const u8 ptype)
++{
++	return txgbe_ptype_lookup[ptype];
++}
++
++static inline struct txgbe_dptype
++decode_rx_desc_ptype(const union txgbe_rx_desc *rx_desc)
++{
++	return txgbe_decode_ptype(TXGBE_RXD_PKTTYPE(rx_desc));
++}
++
+ static void txgbe_check_minimum_link(struct txgbe_adapter *adapter)
+ {
+ 	struct txgbe_hw *hw = &adapter->hw;
+@@ -329,6 +343,63 @@ static bool txgbe_clean_tx_irq(struct txgbe_q_vector *q_vector,
+ 	return !!budget;
+ }
+ 
++/**
++ * txgbe_rx_checksum - indicate in skb if hw indicated a good cksum
++ * @ring: structure containing ring specific data
++ * @rx_desc: current Rx descriptor being processed
++ * @skb: skb currently being received and modified
++ **/
++static inline void txgbe_rx_checksum(struct txgbe_ring *ring,
++				     union txgbe_rx_desc *rx_desc,
++				     struct sk_buff *skb)
++{
++	struct txgbe_dptype dptype = decode_rx_desc_ptype(rx_desc);
++
++	skb->ip_summed = CHECKSUM_NONE;
++
++	skb_checksum_none_assert(skb);
++
++	/* Rx csum disabled */
++	if (!(ring->netdev->features & NETIF_F_RXCSUM))
++		return;
++
++	/* if IPv4 header checksum error */
++	if ((txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_IPCS) &&
++	     txgbe_test_staterr(rx_desc, TXGBE_RXD_ERR_IPE)) ||
++	    (txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_OUTERIPCS) &&
++	     txgbe_test_staterr(rx_desc, TXGBE_RXD_ERR_OUTERIPER))) {
++		ring->rx_stats.csum_err++;
++		return;
 +	}
-+	i_s_var = info_string;
-+	i_s_var += sprintf(info_string, "Enabled Features: ");
-+	i_s_var += sprintf(i_s_var, "RxQ: %d TxQ: %d ",
-+			   adapter->num_rx_queues, adapter->num_tx_queues);
 +
-+	WARN_ON(i_s_var > (info_string + INFO_STRING_LEN));
-+	/* end features printing */
-+	netif_info(adapter, probe, netdev, "%s\n", info_string);
-+	kfree(info_string);
-+no_info_string:
- 	/* firmware requires blank driver version */
- 	TCALL(hw, mac.ops.set_fw_drv_ver, 0xFF, 0xFF, 0xFF, 0xFF);
++	/* L4 checksum offload flag must set for the below code to work */
++	if (!txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_L4CS))
++		return;
++
++	/*likely incorrect csum if IPv6 Dest Header found */
++	if (dptype.prot != TXGBE_DEC_PTYPE_PROT_SCTP && TXGBE_RXD_IPV6EX(rx_desc))
++		return;
++
++	/* if L4 checksum error */
++	if (txgbe_test_staterr(rx_desc, TXGBE_RXD_ERR_TCPE)) {
++		ring->rx_stats.csum_err++;
++		return;
++	}
++	/* If there is an outer header present that might contain a checksum
++	 * we need to bump the checksum level by 1 to reflect the fact that
++	 * we are indicating we validated the inner checksum.
++	 */
++	if (dptype.etype >= TXGBE_DEC_PTYPE_ETYPE_IG) {
++		skb->csum_level = 1;
++		/* FIXME :does skb->csum_level skb->encapsulation can both set ? */
++		skb->encapsulation = 1;
++	}
++
++	/* It must be a TCP or UDP or SCTP packet with a valid checksum */
++	skb->ip_summed = CHECKSUM_UNNECESSARY;
++	ring->rx_stats.csum_good_cnt++;
++}
++
+ static bool txgbe_alloc_mapped_page(struct txgbe_ring *rx_ring,
+ 				    struct txgbe_rx_buffer *bi)
+ {
+@@ -424,6 +495,51 @@ void txgbe_alloc_rx_buffers(struct txgbe_ring *rx_ring, u16 cleaned_count)
+ 	}
+ }
  
++static void txgbe_set_rsc_gso_size(struct txgbe_ring __maybe_unused *ring,
++				   struct sk_buff *skb)
++{
++	u16 hdr_len = eth_get_headlen(skb->dev, skb->data, skb_headlen(skb));
++
++	/* set gso_size to avoid messing up TCP MSS */
++	skb_shinfo(skb)->gso_size = DIV_ROUND_UP((skb->len - hdr_len),
++						 TXGBE_CB(skb)->append_cnt);
++	skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
++}
++
++static void txgbe_update_rsc_stats(struct txgbe_ring *rx_ring,
++				   struct sk_buff *skb)
++{
++	/* if append_cnt is 0 then frame is not RSC */
++	if (!TXGBE_CB(skb)->append_cnt)
++		return;
++
++	rx_ring->rx_stats.rsc_count += TXGBE_CB(skb)->append_cnt;
++	rx_ring->rx_stats.rsc_flush++;
++
++	txgbe_set_rsc_gso_size(rx_ring, skb);
++
++	/* gso_size is computed using append_cnt so always clear it last */
++	TXGBE_CB(skb)->append_cnt = 0;
++}
++
++static void txgbe_rx_vlan(struct txgbe_ring *ring,
++			  union txgbe_rx_desc *rx_desc,
++			  struct sk_buff *skb)
++{
++	u16 ethertype;
++	u8 idx = 0;
++
++	if ((ring->netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
++	    txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_VP)) {
++		idx = (le16_to_cpu(rx_desc->wb.lower.lo_dword.hs_rss.pkt_info) &
++		       TXGBE_RXD_TPID_MASK) >> TXGBE_RXD_TPID_SHIFT;
++		ethertype = ring->q_vector->adapter->hw.tpid[idx];
++		__vlan_hwaccel_put_tag(skb,
++				       htons(ethertype),
++				       le16_to_cpu(rx_desc->wb.upper.vlan));
++	}
++}
++
+ /**
+  * txgbe_process_skb_fields - Populate skb header fields from Rx descriptor
+  * @rx_ring: rx descriptor ring packet is being transacted on
+@@ -431,12 +547,18 @@ void txgbe_alloc_rx_buffers(struct txgbe_ring *rx_ring, u16 cleaned_count)
+  * @skb: pointer to current skb being populated
+  *
+  * This function checks the ring, descriptor, and packet information in
+- * order to populate fields within the skb.
++ * order to populate the checksum, VLAN, protocol, and
++ * other fields within the skb.
+  **/
+ static void txgbe_process_skb_fields(struct txgbe_ring *rx_ring,
+ 				     union txgbe_rx_desc *rx_desc,
+ 				     struct sk_buff *skb)
+ {
++	txgbe_update_rsc_stats(rx_ring, skb);
++	txgbe_rx_checksum(rx_ring, rx_desc, skb);
++
++	txgbe_rx_vlan(rx_ring, rx_desc, skb);
++
+ 	skb_record_rx_queue(skb, rx_ring->queue_index);
+ 
+ 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+@@ -471,6 +593,24 @@ static bool txgbe_is_non_eop(struct txgbe_ring *rx_ring,
+ 
+ 	prefetch(TXGBE_RX_DESC(rx_ring, ntc));
+ 
++	/* update RSC append count if present */
++	if (ring_is_rsc_enabled(rx_ring)) {
++		__le32 rsc_enabled = rx_desc->wb.lower.lo_dword.data &
++				     cpu_to_le32(TXGBE_RXD_RSCCNT_MASK);
++
++		if (unlikely(rsc_enabled)) {
++			u32 rsc_cnt = le32_to_cpu(rsc_enabled);
++
++			rsc_cnt >>= TXGBE_RXD_RSCCNT_SHIFT;
++			TXGBE_CB(skb)->append_cnt += rsc_cnt - 1;
++
++			/* update ntc based on RSC value */
++			ntc = le32_to_cpu(rx_desc->wb.upper.status_error);
++			ntc &= TXGBE_RXD_NEXTP_MASK;
++			ntc >>= TXGBE_RXD_NEXTP_SHIFT;
++		}
++	}
++
+ 	/* if we are the last buffer then there is nothing else to do */
+ 	if (likely(txgbe_test_staterr(rx_desc, TXGBE_RXD_STAT_EOP)))
+ 		return false;
+@@ -833,6 +973,7 @@ static int txgbe_clean_rx_irq(struct txgbe_q_vector *q_vector,
+ 		/* probably a little skewed due to removing CRC */
+ 		total_rx_bytes += skb->len;
+ 
++		/* populate checksum, VLAN, and protocol */
+ 		txgbe_process_skb_fields(rx_ring, rx_desc, skb);
+ 
+ 		txgbe_rx_skb(q_vector, skb);
+@@ -1641,6 +1782,39 @@ static void txgbe_configure_srrctl(struct txgbe_adapter *adapter,
+ 	wr32(hw, TXGBE_PX_RR_CFG(reg_idx), srrctl);
+ }
+ 
++/**
++ * txgbe_configure_rscctl - enable RSC for the indicated ring
++ * @adapter:    address of board private structure
++ * @ring: structure containing ring specific data
++ **/
++void txgbe_configure_rscctl(struct txgbe_adapter *adapter,
++			    struct txgbe_ring *ring)
++{
++	struct txgbe_hw *hw = &adapter->hw;
++	u8 reg_idx = ring->reg_idx;
++	u32 rscctrl;
++
++	if (!ring_is_rsc_enabled(ring))
++		return;
++
++	rscctrl = rd32(hw, TXGBE_PX_RR_CFG(reg_idx));
++	rscctrl |= TXGBE_PX_RR_CFG_RSC;
++	/* we must limit the number of descriptors so that the
++	 * total size of max desc * buf_len is not greater
++	 * than 65536
++	 */
++#if (MAX_SKB_FRAGS >= 16)
++	rscctrl |= TXGBE_PX_RR_CFG_MAX_RSCBUF_16;
++#elif (MAX_SKB_FRAGS >= 8)
++	rscctrl |= TXGBE_PX_RR_CFG_MAX_RSCBUF_8;
++#elif (MAX_SKB_FRAGS >= 4)
++	rscctrl |= TXGBE_PX_RR_CFG_MAX_RSCBUF_4;
++#else
++	rscctrl |= TXGBE_PX_RR_CFG_MAX_RSCBUF_1;
++#endif
++	wr32(hw, TXGBE_PX_RR_CFG(reg_idx), rscctrl);
++}
++
+ static void txgbe_rx_desc_queue_enable(struct txgbe_adapter *adapter,
+ 				       struct txgbe_ring *ring)
+ {
+@@ -1723,6 +1897,8 @@ void txgbe_configure_rx_ring(struct txgbe_adapter *adapter,
+ 	ring->next_to_alloc = 0;
+ 
+ 	txgbe_configure_srrctl(adapter, ring);
++	/* In ESX, RSCCTL configuration is done by on demand */
++	txgbe_configure_rscctl(adapter, ring);
+ 
+ 	/* enable receive descriptor ring */
+ 	wr32m(hw, TXGBE_PX_RR_CFG(reg_idx),
+@@ -1753,7 +1929,9 @@ static void txgbe_set_rx_buffer_len(struct txgbe_adapter *adapter)
+ 	struct net_device *netdev = adapter->netdev;
+ 	u32 max_frame = netdev->mtu + ETH_HLEN + ETH_FCS_LEN;
+ 	struct txgbe_hw *hw = &adapter->hw;
++	struct txgbe_ring *rx_ring;
+ 	u32 mhadd;
++	int i;
+ 
+ 	/* adjust max frame to be at least the size of a standard frame */
+ 	if (max_frame < (ETH_FRAME_LEN + ETH_FCS_LEN))
+@@ -1762,6 +1940,15 @@ static void txgbe_set_rx_buffer_len(struct txgbe_adapter *adapter)
+ 	mhadd = rd32(hw, TXGBE_PSR_MAX_SZ);
+ 	if (max_frame != mhadd)
+ 		wr32(hw, TXGBE_PSR_MAX_SZ, max_frame);
++
++	for (i = 0; i < adapter->num_rx_queues; i++) {
++		rx_ring = adapter->rx_ring[i];
++
++		if (adapter->flags2 & TXGBE_FLAG2_RSC_ENABLED)
++			set_ring_rsc_enabled(rx_ring);
++		else
++			clear_ring_rsc_enabled(rx_ring);
++	}
+ }
+ 
+ /**
+@@ -1788,7 +1975,8 @@ static void txgbe_configure_rx(struct txgbe_adapter *adapter)
+ 	/* RSC Setup */
+ 	psrctl = rd32m(hw, TXGBE_PSR_CTL, ~TXGBE_PSR_CTL_RSC_DIS);
+ 	psrctl |= TXGBE_PSR_CTL_RSC_ACK; /* Disable RSC for ACK packets */
+-	psrctl |= TXGBE_PSR_CTL_RSC_DIS;
++	if (!(adapter->flags2 & TXGBE_FLAG2_RSC_ENABLED))
++		psrctl |= TXGBE_PSR_CTL_RSC_DIS;
+ 	wr32(hw, TXGBE_PSR_CTL, psrctl);
+ 
+ 	/* set_rx_buffer_len must be called before ring initialization */
+@@ -1807,6 +1995,103 @@ static void txgbe_configure_rx(struct txgbe_adapter *adapter)
+ 	TCALL(hw, mac.ops.enable_rx_dma, rxctrl);
+ }
+ 
++static int txgbe_vlan_rx_add_vid(struct net_device *netdev,
++				 __be16 proto, u16 vid)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++	struct txgbe_hw *hw = &adapter->hw;
++
++	/* add VID to filter table */
++	if (hw->mac.ops.set_vfta)
++		TCALL(hw, mac.ops.set_vfta, vid, 0, true);
++
++	set_bit(vid, adapter->active_vlans);
++
++	return 0;
++}
++
++static int txgbe_vlan_rx_kill_vid(struct net_device *netdev,
++				  __be16 proto, u16 vid)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++	struct txgbe_hw *hw = &adapter->hw;
++
++	/* remove VID from filter table */
++	if (hw->mac.ops.set_vfta)
++		TCALL(hw, mac.ops.set_vfta, vid, 0, false);
++
++	clear_bit(vid, adapter->active_vlans);
++
++	return 0;
++}
++
++/**
++ * txgbe_vlan_strip_disable - helper to disable vlan tag stripping
++ * @adapter: driver data
++ */
++void txgbe_vlan_strip_disable(struct txgbe_adapter *adapter)
++{
++	struct txgbe_hw *hw = &adapter->hw;
++	int i, j;
++
++	for (i = 0; i < adapter->num_rx_queues; i++) {
++		struct txgbe_ring *ring = adapter->rx_ring[i];
++
++		if (ring->accel)
++			continue;
++		j = ring->reg_idx;
++		wr32m(hw, TXGBE_PX_RR_CFG(j),
++		      TXGBE_PX_RR_CFG_VLAN, 0);
++	}
++}
++
++/**
++ * txgbe_vlan_strip_enable - helper to enable vlan tag stripping
++ * @adapter: driver data
++ */
++void txgbe_vlan_strip_enable(struct txgbe_adapter *adapter)
++{
++	struct txgbe_hw *hw = &adapter->hw;
++	int i, j;
++
++	for (i = 0; i < adapter->num_rx_queues; i++) {
++		struct txgbe_ring *ring = adapter->rx_ring[i];
++
++		if (ring->accel)
++			continue;
++		j = ring->reg_idx;
++		wr32m(hw, TXGBE_PX_RR_CFG(j),
++		      TXGBE_PX_RR_CFG_VLAN, TXGBE_PX_RR_CFG_VLAN);
++	}
++}
++
++void txgbe_vlan_mode(struct net_device *netdev, u32 features)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++	bool enable;
++
++	enable = !!(features & (NETIF_F_HW_VLAN_CTAG_RX));
++
++	if (enable)
++		/* enable VLAN tag insert/strip */
++		txgbe_vlan_strip_enable(adapter);
++	else
++		/* disable VLAN tag insert/strip */
++		txgbe_vlan_strip_disable(adapter);
++}
++
++static void txgbe_restore_vlan(struct txgbe_adapter *adapter)
++{
++	struct net_device *netdev = adapter->netdev;
++	u16 vid;
++
++	txgbe_vlan_rx_add_vid(adapter->netdev, htons(ETH_P_8021Q), 0);
++	txgbe_vlan_mode(netdev, netdev->features);
++
++	for_each_set_bit(vid, adapter->active_vlans, VLAN_N_VID)
++		txgbe_vlan_rx_add_vid(netdev, htons(ETH_P_8021Q), vid);
++}
++
+ static u8 *txgbe_addr_list_itr(struct txgbe_hw __maybe_unused *hw,
+ 			       u8 **mc_addr_ptr, u32 *vmdq)
+ {
+@@ -2112,6 +2397,11 @@ void txgbe_set_rx_mode(struct net_device *netdev)
+ 	wr32(hw, TXGBE_PSR_VLAN_CTL, vlnctrl);
+ 	wr32(hw, TXGBE_PSR_CTL, fctrl);
+ 	wr32(hw, TXGBE_PSR_VM_L2CTL(0), vmolr);
++
++	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
++		txgbe_vlan_strip_enable(adapter);
++	else
++		txgbe_vlan_strip_disable(adapter);
+ }
+ 
+ static void txgbe_napi_enable_all(struct txgbe_adapter *adapter)
+@@ -2136,6 +2426,20 @@ static void txgbe_napi_disable_all(struct txgbe_adapter *adapter)
+ 	}
+ }
+ 
++void txgbe_clear_vxlan_port(struct txgbe_adapter *adapter)
++{
++	if (!(adapter->flags & TXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE))
++		return;
++	wr32(&adapter->hw, TXGBE_CFG_VXLAN, 0);
++}
++
++#define TXGBE_GSO_PARTIAL_FEATURES (NETIF_F_GSO_GRE | \
++				    NETIF_F_GSO_GRE_CSUM | \
++				    NETIF_F_GSO_IPXIP4 | \
++				    NETIF_F_GSO_IPXIP6 | \
++				    NETIF_F_GSO_UDP_TUNNEL | \
++				    NETIF_F_GSO_UDP_TUNNEL_CSUM)
++
+ static void txgbe_configure_pb(struct txgbe_adapter *adapter)
+ {
+ 	struct txgbe_hw *hw = &adapter->hw;
+@@ -2184,6 +2488,7 @@ static void txgbe_configure(struct txgbe_adapter *adapter)
+ 	txgbe_configure_port(adapter);
+ 
+ 	txgbe_set_rx_mode(adapter->netdev);
++	txgbe_restore_vlan(adapter);
+ 
+ 	TCALL(hw, mac.ops.disable_sec_rx_path);
+ 
+@@ -2630,6 +2935,9 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
+ 	adapter->rx_itr_setting = 1;
+ 	adapter->tx_itr_setting = 1;
+ 
++	adapter->flags |= TXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE;
++	adapter->flags2 |= TXGBE_FLAG2_RSC_CAPABLE;
++
+ 	adapter->max_q_vectors = TXGBE_MAX_MSIX_Q_VECTORS_SAPPHIRE;
+ 
+ 	/* set default ring sizes */
+@@ -2915,6 +3223,32 @@ static void txgbe_free_all_rx_resources(struct txgbe_adapter *adapter)
+ 		txgbe_free_rx_resources(adapter->rx_ring[i]);
+ }
+ 
++/**
++ * txgbe_change_mtu - Change the Maximum Transfer Unit
++ * @netdev: network interface device structure
++ * @new_mtu: new value for maximum frame size
++ *
++ * Returns 0 on success, negative on failure
++ **/
++static int txgbe_change_mtu(struct net_device *netdev, int new_mtu)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++
++	if (new_mtu < 68 || new_mtu > 9414)
++		return -EINVAL;
++
++	netif_info(adapter, probe, netdev,
++		   "changing MTU from %d to %d\n", netdev->mtu, new_mtu);
++
++	/* must set new MTU before calling down or up */
++	netdev->mtu = new_mtu;
++
++	if (netif_running(netdev))
++		txgbe_reinit_locked(adapter);
++
++	return 0;
++}
++
+ /**
+  * txgbe_open - Called when a network interface is made active
+  * @netdev: network interface device structure
+@@ -2965,6 +3299,9 @@ int txgbe_open(struct net_device *netdev)
+ 
+ 	txgbe_up_complete(adapter);
+ 
++	txgbe_clear_vxlan_port(adapter);
++	udp_tunnel_get_rx_info(netdev);
++
+ 	return 0;
+ 
+ err_free_irq:
+@@ -3521,12 +3858,120 @@ static int txgbe_del_sanmac_netdev(struct net_device *dev)
+ 	return err;
+ }
+ 
++void txgbe_do_reset(struct net_device *netdev)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++
++	if (netif_running(netdev))
++		txgbe_reinit_locked(adapter);
++	else
++		txgbe_reset(adapter);
++}
++
++static netdev_features_t txgbe_fix_features(struct net_device *netdev,
++					    netdev_features_t features)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++
++	/* If Rx checksum is disabled, then RSC/LRO should also be disabled */
++	if (!(features & NETIF_F_RXCSUM))
++		features &= ~NETIF_F_LRO;
++
++	/* Turn off LRO if not RSC capable */
++	if (!(adapter->flags2 & TXGBE_FLAG2_RSC_CAPABLE))
++		features &= ~NETIF_F_LRO;
++
++	return features;
++}
++
++static int txgbe_set_features(struct net_device *netdev,
++			      netdev_features_t features)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++	bool need_reset = false;
++
++	/* Make sure RSC matches LRO, reset if change */
++	if (!(features & NETIF_F_LRO)) {
++		if (adapter->flags2 & TXGBE_FLAG2_RSC_ENABLED)
++			need_reset = true;
++		adapter->flags2 &= ~TXGBE_FLAG2_RSC_ENABLED;
++	} else if ((adapter->flags2 & TXGBE_FLAG2_RSC_CAPABLE) &&
++		   !(adapter->flags2 & TXGBE_FLAG2_RSC_ENABLED)) {
++		if (adapter->rx_itr_setting == 1 ||
++		    adapter->rx_itr_setting > TXGBE_MIN_RSC_ITR) {
++			adapter->flags2 |= TXGBE_FLAG2_RSC_ENABLED;
++			need_reset = true;
++		} else if ((netdev->features ^ features) & NETIF_F_LRO) {
++			netif_info(adapter, probe, netdev,
++				   "rx-usecs set too low, disabling RSC\n");
++		}
++	}
++
++	if (features & NETIF_F_HW_VLAN_CTAG_RX)
++		txgbe_vlan_strip_enable(adapter);
++	else
++		txgbe_vlan_strip_disable(adapter);
++
++	if (!(adapter->flags & TXGBE_FLAG_VXLAN_OFFLOAD_CAPABLE &&
++	      features & NETIF_F_RXCSUM))
++		txgbe_clear_vxlan_port(adapter);
++
++	if (need_reset)
++		txgbe_do_reset(netdev);
++
++	return 0;
++}
++
++#define TXGBE_MAX_TUNNEL_HDR_LEN 80
++static netdev_features_t
++txgbe_features_check(struct sk_buff *skb, struct net_device *dev,
++		     netdev_features_t features)
++{
++	u16 vlan_depth = skb->mac_len;
++	__be16 type = skb->protocol;
++	struct vlan_hdr *vh;
++	u32 vlan_num = 0;
++
++	if (skb_vlan_tag_present(skb))
++		vlan_num++;
++
++	if (vlan_depth)
++		vlan_depth -= VLAN_HLEN;
++	else
++		vlan_depth = ETH_HLEN;
++
++	while (type == htons(ETH_P_8021Q) || type == htons(ETH_P_8021AD)) {
++		vlan_num++;
++		vh = (struct vlan_hdr *)(skb->data + vlan_depth);
++		type = vh->h_vlan_encapsulated_proto;
++		vlan_depth += VLAN_HLEN;
++	}
++
++	if (vlan_num > 2)
++		features &= ~(NETIF_F_HW_VLAN_CTAG_TX |
++			    NETIF_F_HW_VLAN_STAG_TX);
++
++	if (skb->encapsulation) {
++		if (unlikely(skb_inner_mac_header(skb) -
++			     skb_transport_header(skb) >
++			     TXGBE_MAX_TUNNEL_HDR_LEN))
++			return features & ~NETIF_F_CSUM_MASK;
++	}
++	return features;
++}
++
+ static const struct net_device_ops txgbe_netdev_ops = {
+ 	.ndo_open               = txgbe_open,
+ 	.ndo_stop               = txgbe_close,
+ 	.ndo_start_xmit         = txgbe_xmit_frame,
+ 	.ndo_set_rx_mode        = txgbe_set_rx_mode,
+ 	.ndo_validate_addr      = eth_validate_addr,
++	.ndo_change_mtu		= txgbe_change_mtu,
++	.ndo_vlan_rx_add_vid    = txgbe_vlan_rx_add_vid,
++	.ndo_vlan_rx_kill_vid   = txgbe_vlan_rx_kill_vid,
++	.ndo_features_check     = txgbe_features_check,
++	.ndo_set_features       = txgbe_set_features,
++	.ndo_fix_features       = txgbe_fix_features,
+ };
+ 
+ void txgbe_assign_netdev_ops(struct net_device *dev)
+@@ -3651,17 +4096,46 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 		goto err_free_mac_table;
+ 	}
+ 
+-	netdev->features = NETIF_F_SG;
++	netdev->features = NETIF_F_SG |
++			   NETIF_F_LRO |
++			   NETIF_F_RXCSUM |
++			   NETIF_F_HW_CSUM |
++			   NETIF_F_SCTP_CRC;
++
++	netdev->gso_partial_features = TXGBE_GSO_PARTIAL_FEATURES;
++	netdev->features |= NETIF_F_GSO_PARTIAL |
++			    TXGBE_GSO_PARTIAL_FEATURES;
+ 
+ 	/* copy netdev features into list of user selectable features */
+ 	netdev->hw_features |= netdev->features |
++			       NETIF_F_HW_VLAN_CTAG_FILTER |
++			       NETIF_F_HW_VLAN_CTAG_RX |
++			       NETIF_F_HW_VLAN_CTAG_TX |
+ 			       NETIF_F_RXALL;
+ 
++	netdev->hw_features |= NETIF_F_NTUPLE;
++
+ 	netdev->features |= NETIF_F_HIGHDMA;
+ 
++	netdev->vlan_features |= netdev->features;
++	netdev->hw_enc_features |= netdev->vlan_features;
++	netdev->mpls_features |= NETIF_F_HW_CSUM;
++
++	/* set this bit last since it cannot be part of vlan_features */
++	netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
++			    NETIF_F_HW_VLAN_CTAG_RX |
++			    NETIF_F_HW_VLAN_CTAG_TX;
++
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 	netdev->priv_flags |= IFF_SUPP_NOFCS;
+ 
++	/* give us the option of enabling RSC/LRO later */
++	if (adapter->flags2 & TXGBE_FLAG2_RSC_CAPABLE) {
++		netdev->hw_features |= NETIF_F_LRO;
++		netdev->features |= NETIF_F_LRO;
++		adapter->flags2 |= TXGBE_FLAG2_RSC_ENABLED;
++	}
++
+ 	netdev->min_mtu = ETH_MIN_MTU;
+ 	netdev->max_mtu = TXGBE_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
+ 
+@@ -3802,6 +4276,10 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 	i_s_var += sprintf(info_string, "Enabled Features: ");
+ 	i_s_var += sprintf(i_s_var, "RxQ: %d TxQ: %d ",
+ 			   adapter->num_rx_queues, adapter->num_tx_queues);
++	if (adapter->flags2 & TXGBE_FLAG2_RSC_ENABLED)
++		i_s_var += sprintf(i_s_var, "RSC ");
++	if (adapter->flags & TXGBE_FLAG_VXLAN_OFFLOAD_ENABLE)
++		i_s_var += sprintf(i_s_var, "vxlan_rx ");
+ 
+ 	WARN_ON(i_s_var > (info_string + INFO_STRING_LEN));
+ 	/* end features printing */
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index a2a38fc842e8..5b823cd988ca 100644
+index 5b823cd988ca..19446bf54c2f 100644
 --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -955,6 +955,19 @@ enum {
- #define TXGBE_PCIDEVCTRL2_4_8s          0xd
+@@ -562,6 +562,9 @@ enum {
+ #define TXGBE_PSR_MC_TBL(_i)    (0x15200  + ((_i) * 4))
+ #define TXGBE_PSR_UC_TBL(_i)    (0x15400 + ((_i) * 4))
+ 
++/* vlan tbl */
++#define TXGBE_PSR_VLAN_TBL(_i)  (0x16000 + ((_i) * 4))
++
+ /* mac switcher */
+ #define TXGBE_PSR_MAC_SWC_AD_L  0x16200
+ #define TXGBE_PSR_MAC_SWC_AD_H  0x16204
+@@ -574,6 +577,17 @@ enum {
+ #define TXGBE_PSR_MAC_SWC_AD_H_AV       0x80000000U
+ #define TXGBE_CLEAR_VMDQ_ALL            0xFFFFFFFFU
+ 
++/* vlan switch */
++#define TXGBE_PSR_VLAN_SWC      0x16220
++#define TXGBE_PSR_VLAN_SWC_VM_L 0x16224
++#define TXGBE_PSR_VLAN_SWC_VM_H 0x16228
++#define TXGBE_PSR_VLAN_SWC_IDX  0x16230         /* 64 vlan entries */
++/* VLAN pool filtering masks */
++#define TXGBE_PSR_VLAN_SWC_VIEN         0x80000000U  /* filter is valid */
++#define TXGBE_PSR_VLAN_SWC_ENTRIES      64
++#define TXGBE_PSR_VLAN_SWC_VLANID_MASK  0x00000FFFU
++#define TXGBE_ETHERNET_IEEE_VLAN_TYPE   0x8100  /* 802.1q protocol */
++
+ /* Management */
+ #define TXGBE_PSR_MNG_FIT_CTL           0x15820
+ /* Management Bit Fields and Masks */
+@@ -956,11 +970,44 @@ enum {
  #define TXGBE_PCIDEVCTRL2_17_34s        0xe
  
-+/******************* Receive Descriptor bit definitions **********************/
-+#define TXGBE_RXD_STAT_DD               0x00000001U /* Done */
-+#define TXGBE_RXD_STAT_EOP              0x00000002U /* End of Packet */
+ /******************* Receive Descriptor bit definitions **********************/
++#define TXGBE_RXD_NEXTP_MASK            0x000FFFF0U /* Next Descriptor Index */
++#define TXGBE_RXD_NEXTP_SHIFT           0x00000004U
++#define TXGBE_RXD_STAT_MASK             0x000fffffU /* Stat/NEXTP: bit 0-19 */
+ #define TXGBE_RXD_STAT_DD               0x00000001U /* Done */
+ #define TXGBE_RXD_STAT_EOP              0x00000002U /* End of Packet */
++#define TXGBE_RXD_STAT_VP               0x00000020U /* IEEE VLAN Pkt */
++#define TXGBE_RXD_STAT_UDPCS            0x00000040U /* UDP xsum calculated */
++#define TXGBE_RXD_STAT_L4CS             0x00000080U /* L4 xsum calculated */
++#define TXGBE_RXD_STAT_IPCS             0x00000100U /* IP xsum calculated */
++#define TXGBE_RXD_STAT_PIF              0x00000200U /* passed in-exact filter */
++#define TXGBE_RXD_STAT_OUTERIPCS        0x00000400U /* Cloud IP xsum calculated*/
++#define TXGBE_RXD_STAT_VEXT             0x00000800U /* 1st VLAN found */
++#define TXGBE_RXD_STAT_LLINT            0x00002000U /* Pkt caused Low Latency Int */
++#define TXGBE_RXD_STAT_SECP             0x00008000U /* Security Processing */
++#define TXGBE_RXD_STAT_LB               0x00010000U /* Loopback Status */
+ 
+ #define TXGBE_RXD_ERR_MASK              0xfff00000U /* RDESC.ERRORS mask */
++#define TXGBE_RXD_ERR_OUTERIPER         0x04000000U /* CRC IP Header error */
++#define TXGBE_RXD_ERR_SECERR_MASK       0x18000000U
+ #define TXGBE_RXD_ERR_RXE               0x20000000U /* Any MAC Error */
++#define TXGBE_RXD_ERR_TCPE              0x40000000U /* TCP/UDP Checksum Error */
++#define TXGBE_RXD_ERR_IPE               0x80000000U /* IP Checksum Error */
 +
-+#define TXGBE_RXD_ERR_MASK              0xfff00000U /* RDESC.ERRORS mask */
-+#define TXGBE_RXD_ERR_RXE               0x20000000U /* Any MAC Error */
++#define TXGBE_RXD_RSSTYPE_MASK          0x0000000FU
++#define TXGBE_RXD_TPID_MASK             0x000001C0U
++#define TXGBE_RXD_TPID_SHIFT            6
++#define TXGBE_RXD_HDRBUFLEN_MASK        0x00007FE0U
++#define TXGBE_RXD_RSCCNT_MASK           0x001E0000U
++#define TXGBE_RXD_RSCCNT_SHIFT          17
++#define TXGBE_RXD_HDRBUFLEN_SHIFT       5
++#define TXGBE_RXD_SPLITHEADER_EN        0x00001000U
++#define TXGBE_RXD_SPH                   0x8000
 +
-+/* Masks to determine if packets should be dropped due to frame errors */
-+#define TXGBE_RXD_ERR_FRAME_ERR_MASK    TXGBE_RXD_ERR_RXE
++#define TXGBE_RXD_PKTTYPE(_rxd) \
++	((le32_to_cpu((_rxd)->wb.lower.lo_dword.data) >> 9) & 0xFF)
 +
-+/*********************** Transmit Descriptor Config Masks ****************/
-+#define TXGBE_TXD_STAT_DD               0x00000001U /* Descriptor Done */
-+
- /* Transmit Descriptor */
- union txgbe_tx_desc {
- 	struct {
++#define TXGBE_RXD_IPV6EX(_rxd) \
++	((le32_to_cpu((_rxd)->wb.lower.lo_dword.data) >> 6) & 0x1)
+ 
+ /* Masks to determine if packets should be dropped due to frame errors */
+ #define TXGBE_RXD_ERR_FRAME_ERR_MASK    TXGBE_RXD_ERR_RXE
+@@ -1299,7 +1346,7 @@ struct txgbe_mac_operations {
+ 	s32 (*setup_rxpba)(struct txgbe_hw *hw, int num_pb, u32 headroom,
+ 			   int strategy);
+ 
+-	/* RAR, Multicast */
++	/* RAR, Multicast, VLAN */
+ 	s32 (*set_rar)(struct txgbe_hw *hw, u32 index, u8 *addr, u64 pools,
+ 		       u32 enable_addr);
+ 	s32 (*clear_rar)(struct txgbe_hw *hw, u32 index);
+@@ -1311,6 +1358,8 @@ struct txgbe_mac_operations {
+ 	s32 (*update_mc_addr_list)(struct txgbe_hw *hw, u8 *mc_addr_list,
+ 				   u32 mc_addr_count,
+ 				   txgbe_mc_addr_itr func, bool clear);
++	s32 (*clear_vfta)(struct txgbe_hw *hw);
++	s32 (*set_vfta)(struct txgbe_hw *hw, u32 vlan, u32 vind, bool vlan_on);
+ 	s32 (*init_uta_tables)(struct txgbe_hw *hw);
+ 
+ 	/* Manageability interface */
+@@ -1348,9 +1397,12 @@ struct txgbe_mac_info {
+ 	/* prefix for World Wide Port Name (WWPN) */
+ 	u16 wwpn_prefix;
+ #define TXGBE_MAX_MTA                   128
++#define TXGBE_MAX_VFTA_ENTRIES          128
+ 	u32 mta_shadow[TXGBE_MAX_MTA];
+ 	s32 mc_filter_type;
+ 	u32 mcft_size;
++	u32 vft_shadow[TXGBE_MAX_VFTA_ENTRIES];
++	u32 vft_size;
+ 	u32 num_rar_entries;
+ 	u32 rx_pb_size;
+ 	u32 max_tx_queues;
 -- 
 2.27.0
 
