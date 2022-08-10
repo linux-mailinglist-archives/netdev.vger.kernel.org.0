@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ED1058E7A3
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C2458E7AB
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbiHJHO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 03:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
+        id S231489AbiHJHPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 03:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiHJHOy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:14:54 -0400
+        with ESMTP id S231135AbiHJHO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:14:59 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0689681B37
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:14:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9455347B93
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:14:55 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oLfvY-0003Ro-CO
-        for netdev@vger.kernel.org; Wed, 10 Aug 2022 09:14:52 +0200
+        id 1oLfvZ-0003SI-UM
+        for netdev@vger.kernel.org; Wed, 10 Aug 2022 09:14:53 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 9F486C655C
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:14:51 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 2A58AC6566
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:14:52 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id EFCECC654E;
-        Wed, 10 Aug 2022 07:14:50 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 72DEFC6554;
+        Wed, 10 Aug 2022 07:14:51 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 59dd56a1;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 85c29b46;
         Wed, 10 Aug 2022 07:14:50 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Fedor Pchelkin <pchelkin@ispras.ru>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 1/4] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
-Date:   Wed, 10 Aug 2022 09:14:45 +0200
-Message-Id: <20220810071448.1627857-2-mkl@pengutronix.de>
+Subject: [PATCH net 2/4] can: j1939: j1939_session_destroy(): fix memory leak of skbs
+Date:   Wed, 10 Aug 2022 09:14:46 +0200
+Message-Id: <20220810071448.1627857-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220810071448.1627857-1-mkl@pengutronix.de>
 References: <20220810071448.1627857-1-mkl@pengutronix.de>
@@ -62,43 +62,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Fedor Pchelkin <pchelkin@ispras.ru>
 
-We should warn user-space that it is doing something wrong when trying
-to activate sessions with identical parameters but WARN_ON_ONCE macro
-can not be used here as it serves a different purpose.
+We need to drop skb references taken in j1939_session_skb_queue() when
+destroying a session in j1939_session_destroy(). Otherwise those skbs
+would be lost.
 
-So it would be good to replace it with netdev_warn_once() message.
+Link to Syzkaller info and repro: https://forge.ispras.ru/issues/11743.
 
 Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
+V1: https://lore.kernel.org/all/20220708175949.539064-1-pchelkin@ispras.ru
+
 Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Suggested-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
 Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/all/20220729143655.1108297-1-pchelkin@ispras.ru
-[mkl: fix indention]
+Link: https://lore.kernel.org/all/20220805150216.66313-1-pchelkin@ispras.ru
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/j1939/socket.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/can/j1939/transport.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index f5ecfdcf57b2..b670ba03a675 100644
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -178,7 +178,10 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
- 	if (!first)
- 		return;
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index 307ee1174a6e..d7d86c944d76 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -260,6 +260,8 @@ static void __j1939_session_drop(struct j1939_session *session)
  
--	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-+	if (j1939_session_activate(first)) {
-+		netdev_warn_once(first->priv->ndev,
-+				 "%s: 0x%p: Identical session is already activated.\n",
-+				 __func__, first);
- 		first->err = -EBUSY;
- 		goto activate_next;
- 	} else {
-
-base-commit: b8c3bf0ed2edf2deaedba5f0bf0bb54c76dee71d
+ static void j1939_session_destroy(struct j1939_session *session)
+ {
++	struct sk_buff *skb;
++
+ 	if (session->transmission) {
+ 		if (session->err)
+ 			j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
+@@ -274,7 +276,11 @@ static void j1939_session_destroy(struct j1939_session *session)
+ 	WARN_ON_ONCE(!list_empty(&session->sk_session_queue_entry));
+ 	WARN_ON_ONCE(!list_empty(&session->active_session_list_entry));
+ 
+-	skb_queue_purge(&session->skb_queue);
++	while ((skb = skb_dequeue(&session->skb_queue)) != NULL) {
++		/* drop ref taken in j1939_session_skb_queue() */
++		skb_unref(skb);
++		kfree_skb(skb);
++	}
+ 	__j1939_session_drop(session);
+ 	j1939_priv_put(session->priv);
+ 	kfree(session);
 -- 
 2.35.1
 
