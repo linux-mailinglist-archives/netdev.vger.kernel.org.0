@@ -2,85 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9BF58F2F8
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E147358F33E
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbiHJTVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 15:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
+        id S233239AbiHJTf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 15:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232432AbiHJTVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:21:16 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63B748CBA;
-        Wed, 10 Aug 2022 12:21:14 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id r4so20324874edi.8;
-        Wed, 10 Aug 2022 12:21:14 -0700 (PDT)
+        with ESMTP id S231786AbiHJTfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:35:24 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A4E5E30B
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:35:24 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id b133so14597574pfb.6
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:35:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=BSqQtUZHWm76ykyTRlwSAwmh3XXyXStiQkwFJXhLppE=;
-        b=jOw7xTmkTnvXJ2kQUwrE5rbCXRYb/UkNW6xGjBCIkMYTmsO8dVXPHCMURbwGj5OltB
-         0pf9Q1yVucLaCeZYffq28SZMwsW01XF8j1ML9q50DOFQ5KnLuHqbgnP55TYL1jhgwozp
-         MOtYOyxo7Fks2RAFa1eEIDKGGxdo/oSzVBxIxQ7C3dmQSuLXHNFEVL0vN8ujDUuTopxo
-         522MFcsOosyvAhBW3LNGc6g+F0zTfYXGoSP98pjKnHeG1TON30qrOOGs2aPISs8ZQgjy
-         sqRNJnLeOWPGe9mTjpTgQewG8UnHdutzk90yLAJltkHr80LPC/s2b8zJklrZ0aXuztRx
-         VpwQ==
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc;
+        bh=6Mc3gKxwEhpxdHcItH8dFoEyMQ24jgfep9WWzG4wE7A=;
+        b=iwNgGojXj4wRRvNnA+Fa34PJiTs3uOBt3jJmPBo4vIz6WoR2ecowtxguNvjxMN5Hck
+         s27daNV3IBrDfPvQt6/CMMELbAG/klvOZFApcJxQSMyNUpFrimLZ77otysCF1En31PG3
+         IvaAdq2t+9ixJuHGm/NZXNYv9iul6is46XVZS0NCgQ3vaaEx2n0McuPpXRqUOAktidLu
+         laes+vFXadYt5Spmn/WOGZDpap6EHNH0FfOcJgf9Rom3qoJCodXK2FYz2+jLd7aTGvLV
+         o+GCVSRFxQw+qkjF41m67slVGovGFWYN3SYDQTzfXgXhItpAqSI+Gg8qUF6Q4MwZYWEc
+         He2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=BSqQtUZHWm76ykyTRlwSAwmh3XXyXStiQkwFJXhLppE=;
-        b=nXL+UpytREBikLfNYYSpT6sFF0XdI58sfjG3M5CQ1+JV77jALAYWC7gZhgUkqjM0i8
-         hrF1TVtSzTwaO7gN+jKWXeVjPH/W24N3ipr6YX4JXmP2VcOsn0L/nVsmNw97qvzXpC2l
-         a7ss6kPdSuBZinLon22E3bCUMufpfUsPTBe95rZwVPUiccCdmiooWd90DBMRofqqXMjA
-         jXsFVcOqsXBasoe4IXKaRDPiL7v8OacGEBoHKzusdnHqNUF7ye6rzGiYierpSezEho9+
-         6xC45hFtCzmYpaCNDBSa2pteC7kUzCuF2ZW1VZ/U7rvMBXLy/MnNBxPcKn9x9lOUfXxB
-         JbDg==
-X-Gm-Message-State: ACgBeo1HtvmN6htwE/WZ/gpMByqga+xRO3CKmJvhhNcfDkulUP5WcNdl
-        /9gg55CNVR5mfWRUxLIsdxM=
-X-Google-Smtp-Source: AA6agR4w4OP9YGraNhkyMdA48eVX9G03W1PWciB7CUSlarmfqI/Vb6PN5g2c4LzVh17++zmM1AO4ww==
-X-Received: by 2002:a05:6402:11cb:b0:43c:c7a3:ff86 with SMTP id j11-20020a05640211cb00b0043cc7a3ff86mr28505037edw.383.1660159273299;
-        Wed, 10 Aug 2022 12:21:13 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id i20-20020a0564020f1400b0043cfda1368fsm8060044eda.82.2022.08.10.12.21.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 12:21:12 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next] docs: net: add an explanation of VF (and
- other) Representors
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     ecree@xilinx.com, netdev@vger.kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-net-drivers@amd.com,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Shannon Nelson <snelson@pensando.io>,
-        Simon Horman <simon.horman@corigine.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-References: <20220805165850.50160-1-ecree@xilinx.com>
- <20220805184359.5c55ca0d@kernel.org>
- <71af8654-ca69-c492-7e12-ed7ff455a2f1@gmail.com>
- <20220808204135.040a4516@kernel.org>
- <572c50b0-2f10-50d5-76fc-dfa409350dbe@gmail.com>
- <20220810105811.6423f188@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <cccb1511-3200-d5aa-8872-804f0d7f43a8@gmail.com>
-Date:   Wed, 10 Aug 2022 20:21:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc;
+        bh=6Mc3gKxwEhpxdHcItH8dFoEyMQ24jgfep9WWzG4wE7A=;
+        b=sUJkaqMN0tDFsG4kfVirTT0hEGque1NMhSuzDTwHN2ylJgdFJk8f5CN03mRU7e5TeM
+         v3RCPatyuGnGpATCzjQDv7IT2Lt8Srmdsp1KCClRv5pnTQ1JoSb5phauJBRnGRjK5plP
+         T1ug4qw2bY2ge1y6G0Uyh/lQaqE5fcWOncvEjpS9iLvW0BfAyBVSw5vplTrXi2jSEowc
+         oYMBGI2A1MhQKiYiQrJipn1eAm1jxXeIi4DtH9YuaWcOp4bc8FV1btYTncTqCFlHTYqP
+         FzFoNob2ef5pHbZsOdl9rMI9iIWX/jE3BNLdZnna4D6vok0N3uj9JWh35qc9YlZLG9Zc
+         xAOw==
+X-Gm-Message-State: ACgBeo0oxpOLdhsTQ95GkYcSXVzK3KyEzSNzBFFr6/uHynS2Rp6qqKXT
+        PSB0QmbmzgA60fqHmwboSn8=
+X-Google-Smtp-Source: AA6agR5aCkNsZ/IMRyS/3v/jXysxMgvWg8XFADrqU7rUIyd8dLy8Lp4BKjFASNLZ36saBAI0YM+8TQ==
+X-Received: by 2002:a65:490e:0:b0:41c:5b91:e845 with SMTP id p14-20020a65490e000000b0041c5b91e845mr23787783pgs.436.1660160123589;
+        Wed, 10 Aug 2022 12:35:23 -0700 (PDT)
+Received: from [192.168.254.16] ([50.39.168.145])
+        by smtp.gmail.com with ESMTPSA id e11-20020a17090301cb00b0016db6bd77f4sm13605681plh.117.2022.08.10.12.35.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 12:35:22 -0700 (PDT)
+Message-ID: <fe56af9da1bcca86ab8750bcadea4da7bfc768e4.camel@gmail.com>
+Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
+From:   James Prestwood <prestwoj@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Date:   Wed, 10 Aug 2022 12:35:22 -0700
+In-Reply-To: <9ec77cf1ffaa29aedd57c29ac77b525d0e700acf.camel@sipsolutions.net>
+References: <20220804174307.448527-1-prestwoj@gmail.com>
+         <20220804174307.448527-2-prestwoj@gmail.com>
+         <20220804114342.71d2cff0@kernel.org>
+         <b6b11b492622b75e50712385947e1ba6103b8e44.camel@gmail.com>
+         <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
+         <0fc27b144ca3adb4ff6b3057f2654040392ef2d8.camel@sipsolutions.net>
+         <d585f719af13d7a7194e7cb734c5a7446954bf01.camel@gmail.com>
+         <9ec77cf1ffaa29aedd57c29ac77b525d0e700acf.camel@sipsolutions.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-In-Reply-To: <20220810105811.6423f188@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -89,42 +78,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/08/2022 18:58, Jakub Kicinski wrote:
-> On Wed, 10 Aug 2022 17:02:33 +0100 Edward Cree wrote:
->> On 09/08/2022 04:41, Jakub Kicinski wrote:
->>> I'd use "host PF", somehow that makes most sense to me.  
->>
->> Not sure about that, I've seen "host" used as antonym of "SoC", so
->>  if the device is configured with the SoC as the admin this could
->>  confuse people.
+Hi Johannes,
+
+On Wed, 2022-08-10 at 19:17 +0200, Johannes Berg wrote:
+> On Wed, 2022-08-10 at 09:26 -0700, James Prestwood wrote:
+> > 
+> > Ok, so this is how I originally did it in those old patches:
+> > 
+> > https://lore.kernel.org/linux-wireless/20190913195908.7871-2-prestwoj@gmail.com/
+> > 
+> > i.e. remove_interface, change the mac, add_interface. 
 > 
-> In the literal definition of the word "host" it is the entity which
-> "owns the place".
+> Hah, I didn't even remember that ... sorry.
 
-Sure, but as an application of that, people talk about e.g. "host"
- and "device" ends of a bus, DMA transfer, etc.  As a result of which
- "host" has come to mean "computer; server; the big rack-mounted box
- you plug cards into".
-A connotation which is unfortunate once a single device can live on
- two separate PCIe hierarchies, connected to two computers each with
- its own hostname, and the one which owns the device is the cluster
- of embedded CPUs inside the card, rather than the big metal box.
+No worries, it was a long time ago.
 
->> I think whatever term we settle on, this document might need to
->>  have a 'Definitions' section to make it clear :S
 > 
-> Ack, to perhaps clarify my concern further, I've seen the term
-> "management PF" refer to a PF which is not a netdev PF, it only
-> performs management functions.
+> > But before I revive those I want to make sure a flag can be
+> > advertised
+> > to userspace e.g. NL80211_EXT_FEATURE_LIVE_ADDRESS_CHANGE. (or
+> > POWERED). Since this was the reason the patches got dropped in the
+> > first place.
+> > 
+> 
+> Well it seems that my objection then was basically that you have a
+> feature flag in nl80211, but it affects an RT netlink operation ...
+> which is a bit strange.
+> 
+> Thinking about that now, maybe it's not _that_ bad? Especially given
+> that "live" can mean different things (as discussed here), and for
+> wireless that doesn't necessarily mean IFF_UP, but rather something
+> like
+> "IFF_UP + not active".
+> 
+> Jakub, what do you think?
+> 
+> 
+> (I'll also note you also have error handling problems in your patch,
+> so
+> if/when you revive, please take a look at handling errors from add
+> and
+> remove interface. Also indentation, and a comment on station/p2p-
+> client
+> might be good, and the scanning check is wrong, can check scan_sdata
+> regardless of the iftype.)
 
-Yeah, I saw that interpretation as soon as you queried it.  I agree
- we probably can't use "management PF".
+Yep, I'll get that fixed up for v2.
 
-> So a perfect term would describe the privilege
-> not the function (as the primary function of such PF should still
-> networking).
+Thanks,
+James
+> 
+> johannes
 
-I'm probably gonna get shot for suggesting this, but how about
- "master PF"?
 
--ed
