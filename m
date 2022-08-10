@@ -2,110 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D70A58EF7C
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43BA658EF77
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbiHJPiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 11:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
+        id S231506AbiHJPfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 11:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiHJPiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:38:04 -0400
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 1388C28E02;
-        Wed, 10 Aug 2022 08:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=dwLcVSKssd
-        J7Q7x71NIOI0DB3SuG4iOBFHZ/ZegSBCM=; b=Sh0mUqCpfjv4X2jqzgwnx+9cjK
-        HJc+bMuzYf3WfJxDn/pF+FYJWgQIo8ijm5L0Ke4kz6RQ8zU/25OW4CJGw+zIXUuQ
-        9stvW10V7lCcpJ+R27zxxIIo6Xa7SYi8PGEbCeEcGsYZusCY0iwXCeaL7ujTxHuo
-        JIsfnCVDr5M9BL/WY=
-Received: from localhost.localdomain (unknown [202.120.224.54])
-        by app1 (Coremail) with SMTP id XAUFCgDX3oKa0PNigiMfAw--.39779S4;
-        Wed, 10 Aug 2022 23:37:29 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        =?UTF-8?q?=E2=80=9CDavid=20S=20=2E=20Miller=20?= 
-        <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] net/sunrpc: fix potential memory leaks in rpc_sysfs_xprt_state_change()
-Date:   Wed, 10 Aug 2022 23:29:13 +0800
-Message-Id: <20220810152909.25149-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231264AbiHJPfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:35:16 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0579B639D;
+        Wed, 10 Aug 2022 08:35:13 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 810665C2C0;
+        Wed, 10 Aug 2022 15:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1660145712; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=phOPmviTrSVc6Big96eHWPdI379M+oLowb8bvheVGbk=;
+        b=vSpntsQOQb7xiH283KdJV4ICFJAnKibgpEsUzpyvzMg9yKRTkJOc0RotVWc+2f/8ScxThn
+        Wb0ZlORQrZU4hf2Dl9uxGJQiLwvQ14MECuQjYwHtMDM8lr2M3y1KL5ptvlPjCBvdXVsc6N
+        C8nS1J/17jgzCASRdtPjWpC/BizWc90=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1660145712;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=phOPmviTrSVc6Big96eHWPdI379M+oLowb8bvheVGbk=;
+        b=tIhRSNwZTHtQ7eWJ2iK6vAbvSyWZW937veYhvnORwW6g+nKtDWys0huEb+5vzXm6wIRFZu
+        FcoolSUJmbuYdcDg==
+Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 279E32C1CD;
+        Wed, 10 Aug 2022 15:35:12 +0000 (UTC)
+Date:   Wed, 10 Aug 2022 17:35:10 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tim Harvey <tharvey@gateworks.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev <netdev@vger.kernel.org>, u-boot <u-boot@lists.denx.de>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>
+Subject: Re: ethernet<n> dt aliases implications in U-Boot and Linux
+Message-ID: <20220810153510.GS17705@kitsune.suse.cz>
+References: <53f91ad4-a0d1-e223-a173-d2f59524e286@seco.com>
+ <20220809213146.m6a3kfex673pjtgq@pali>
+ <b1b33912-8898-f42d-5f30-0ca050fccf9a@seco.com>
+ <20220809214207.bd4o7yzloi4npzf7@pali>
+ <2083d6d6-eecf-d651-6f4f-87769cd3d60d@seco.com>
+ <20220809224535.ymzzt6a4v756liwj@pali>
+ <CAJ+vNU2xBthJHoD_-tPysycXZMchnXoMUBndLg4XCPrHOvgsDA@mail.gmail.com>
+ <YvMF1JW3RzRbOhlx@lunn.ch>
+ <20220810071603.GR17705@kitsune.suse.cz>
+ <YvPMJLSuG3CBC//n@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XAUFCgDX3oKa0PNigiMfAw--.39779S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Gw1DWFy3XFy3AFW8JrykuFg_yoW8JrW8pF
-        W3G347uFykKrW7Xa17Ca10ga45ZFZ8GF15JrZ5C3W3Awn8Xa45Gr109ay29F1xCrWFk34S
-        qF4vgF4rZFWDCa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Cr0_Gr
-        1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6ryrMxAIw28IcxkI7VAKI4
-        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
-        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
-        v20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20E
-        Y4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5ku4UUUUU
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiAg4OEFKp2quTOAAAsz
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvPMJLSuG3CBC//n@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The issue happens on some error handling paths. When the function
-fails to grab the object `xprt`, it simply returns 0, forgetting to
-decrease the reference count of another object `xps`, which is
-increased by rpc_sysfs_xprt_kobj_get_xprt_switch(), causing refcount
-leaks. Also, the function forgets to check whether `xps` is valid
-before using it, which may result in NULL-dereferencing issues.
+On Wed, Aug 10, 2022 at 05:17:56PM +0200, Andrew Lunn wrote:
+> > > I guess you are new to the netdev list :-)
+> > > 
+> > > This is one of those FAQ sort of things, discussed every
+> > > year. Anything like this is always NACKed. I don't see why this time
+> > > should be any different.
+> > > 
+> > > DSA is somewhat special because it is very old. It comes from before
+> > > the times of DT. Its DT binding was proposed relatively earl in DT
+> > > times, and would be rejected in modern days. But the rules of ABI mean
+> > > the label property will be valid forever. But i very much doubt it
+> > > will spread to interfaces in general.
+> > 
+> > And if this is a FAQ maybe you can point to a summary (perhaps in
+> > previous mail discusssion) that explains how to provide stable interface
+> > names for Ethernet devices on a DT based platform?
+> 
+> As far so the kernel is concerned, interface names are unstable. They
+> have never been truly stable, but they have got more unstable in the
+> past decade with multiple busses being probed in parallel, which did
+> not happen before so much.
+> 
+> > On x86 there is a name derived from the device location in the bus
+> > topology
+> 
+> This is nothing to do with x86. That is userspace, e.g. systemd,
+> renaming the interfaces. This applies for any architecture for which
+> systemd runs on.
+> 
+> > which may be somewhat stable but it is not clear that it
+> > cannot change, and there is an optional BIOS provided table that can
+> > asssign meaningful names to the interfaces.
+> 
+> I doubt the kernel is looking at ACPI tables. It is user space which
+> does that.
+> 
+> The kernel provides udev with a bunch of information about the
+> interface, its bus location, MAC address, etc. Userspace can then
+> decide what it wants to call it, and what its alternative names are,
+> etc.
+> 
+> Also, this is not just a network interface name problem. Any device
+> with a number/letter in it is unstable. I2C bus devices: i2c0,
+> i2c1... SPI bus deviceS: spi0, spi1...,
 
-Fix it by adding proper error handling code when either `xprt` or
-`xps` is NULL.
+Thees do have numbered aliases in the DT. I don't know if the kernel
+uses them for anything.
 
-Fixes: 5b7eb78486cd ("SUNRPC: take a xprt offline using sysfs")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
----
- net/sunrpc/sysfs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+> Block devices, sda, sdb, sdc,
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index a3a2f8aeb80e..d1a15c6d3fd9 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -291,8 +291,10 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 	int offline = 0, online = 0, remove = 0;
- 	struct rpc_xprt_switch *xps = rpc_sysfs_xprt_kobj_get_xprt_switch(kobj);
- 
--	if (!xprt)
--		return 0;
-+	if (!xprt || !xps) {
-+		count = 0;
-+		goto out_put;
-+	}
- 
- 	if (!strncmp(buf, "offline", 7))
- 		offline = 1;
--- 
-2.25.1
+These too, at least mmc.
 
+Thanks
+
+Michal
