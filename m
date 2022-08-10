@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0E758E6CC
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 07:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A5658E79F
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiHJFsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 01:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S231465AbiHJHI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 03:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiHJFsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 01:48:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738226050C;
-        Tue,  9 Aug 2022 22:48:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AC5EB81AAE;
-        Wed, 10 Aug 2022 05:48:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48300C433D6;
-        Wed, 10 Aug 2022 05:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660110484;
-        bh=Uy/xg+Q+v6debLuTK6XZQeKR8bU1zlFobRALW89Y8dQ=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=WjfuVuR9cXDq2tMSzKzbCgihGo4seMRSQI5QvsYU5sdNUL31TLqvsClfEix9aae5j
-         xxvF1vbPxNfp+5CahJrrHAIGSBWE8CMWGvY9YaYLvKUAAlmh3QUrhBeOELSkTK4pN0
-         brj7glAP8Ggq2siaW55EoFLESUcioJM7G1tT6g9OtQS4a1JXDWn0LSLoITOHVIczFy
-         I9pv3InxeexzLCIiJ14/pEmVm8Jbc00Bo1yok0wT+faIWeKY8KLOrFzuw21VZZuNIv
-         gFH+elIIsEycfM6wUFgyzz0SdxU0+I1Ao0f4ugN6X8rPE4MYe8xAr47+GOjahAkGMr
-         eBg3TzHlBtlKw==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230119AbiHJHI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:08:57 -0400
+X-Greylist: delayed 746 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 00:08:55 PDT
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2986796A0;
+        Wed, 10 Aug 2022 00:08:55 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 27A6tsd3588953
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 10 Aug 2022 07:55:56 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:961:910a:a293:6d6e:8bbf:c204])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 27A6tlsr604953
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 10 Aug 2022 08:55:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1660114549; bh=jreNYZmBDW3E+iK6TgCwzCr9t13dtx1ddnlZG0dgdC8=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=iQ08mWYQIEtRxjLzdutxpMyanUUgfpzkWKbR81TWZnCNiVdSycBOgYrOxDgh/LIJp
+         AqEj6Q3NNxVRXjhdu+Cm099gPinGDml9MILsZtMJnRUJxCk3xC/ie2JF+xsqMSnnKP
+         yJtrhf0ogIe1wnnXbKE5WmA418PpzNhcRKT473w0=
+Received: (nullmailer pid 478119 invoked by uid 1000);
+        Wed, 10 Aug 2022 06:55:42 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
+Organization: m
+References: <20220810014521.9383-1-slark_xiao@163.com>
+Date:   Wed, 10 Aug 2022 08:55:42 +0200
+In-Reply-To: <20220810014521.9383-1-slark_xiao@163.com> (Slark Xiao's message
+        of "Wed, 10 Aug 2022 09:45:21 +0800")
+Message-ID: <8735e4mvtd.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [1/6] wifi: brcmfmac: fix continuous 802.1x tx pending timeout
- error
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220722115632.620681-2-alvin@pqrs.dk>
-References: <20220722115632.620681-2-alvin@pqrs.dk>
-To:     =?utf-8?q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        =?utf-8?q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166011047689.24475.5790257380580454361.kvalo@kernel.org>
-Date:   Wed, 10 Aug 2022 05:48:01 +0000 (UTC)
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.6 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alvin Šipraga <alvin@pqrs.dk> wrote:
+Slark Xiao <slark_xiao@163.com> writes:
 
-> From: Wright Feng <wright.feng@cypress.com>
-> 
-> The race condition in brcmf_msgbuf_txflow and brcmf_msgbuf_delete_flowring
-> makes tx_msghdr writing after brcmf_msgbuf_remove_flowring. Host
-> driver should delete flowring after txflow complete and all txstatus back,
-> or pend_8021x_cnt will never be zero and cause every connection 950
-> milliseconds(MAX_WAIT_FOR_8021X_TX) delay.
-> 
-> Signed-off-by: Wright Feng <wright.feng@cypress.com>
-> Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
-> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> There are 2 models for MV32 serials. MV32-W-A is designed
+> based on Qualcomm SDX62 chip, and MV32-W-B is designed based
+> on Qualcomm SDX65 chip. So we use 2 different PID to separate it.
+>
+> Test evidence as below:
+> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D03 Dev#=3D  3 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D1e2d ProdID=3D00f3 Rev=3D05.04
+> S:  Manufacturer=3DCinterion
+> S:  Product=3DCinterion PID 0x00F3 USB Mobile Broadband
+> S:  SerialNumber=3Dd7b4be8d
+> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
+r=3Dqmi_wwan
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
+r=3Doption
 
-5 patches applied to wireless-next.git, thanks.
+The patch looks nice, but I have a couple of questions since you're one
+of the first pushing one of these SDX6x modems.
 
-0fa24196e425 wifi: brcmfmac: fix continuous 802.1x tx pending timeout error
-09be7546a602 wifi: brcmfmac: fix scheduling while atomic issue when deleting flowring
-aa666b68e73f wifi: brcmfmac: fix invalid address access when enabling SCAN log level
-5606aeaad01e wifi: brcmfmac: Fix to add brcmf_clear_assoc_ies when rmmod
-2eee3db784a0 wifi: brcmfmac: Fix to add skb free for TIM update info when tx is completed
+Is that protocol pattern fixed on this generation of Qualcomm chips?  It
+looks like an extension of what they started with the SDX55 generation,
+where the DIAG port was identified by ff/ff/30 across multiple vendors.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220722115632.620681-2-alvin@pqrs.dk/
+Specifically wrt this driver and patch, I wonder if we can/should match
+on ff/ff/50 instead of interface number here?  I note that the interface
+numbers are allocated sequentionally. Probably in the order these
+function are enabled by the firmware? If so, are we sure this is static?
+Or could we risk config variants where the RMNET/QMI function have a
+different interface number for the same PIDs?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+And another possibility you might consider.  Assuming that ff/ff/50
+uniquely identifies RMNET/QMI functions regardless of PID, would you
+consider a VID+class match to catch all of them?  This would not only
+support both the PIDs of this patch in one go, but also any future PIDs
+without the need for further driver patches.
 
+
+Bj=C3=B8rn
