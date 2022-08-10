@@ -2,107 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5900F58EAA5
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 262F758EAB2
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbiHJKrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 06:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
+        id S229448AbiHJKuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 06:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiHJKrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 06:47:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2475585FAF
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660128433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9Ud5THdRZx+DzHutMKaoYIXEZbuC6w4neUVkJCUZaOE=;
-        b=P+cos2TuIcC+eLN9yR4D9C7AEYuf+WyJYj3eukrS2JN4xSOxTENm2+HCkXc9DCbZgbT2lx
-        bkUq8Vab1b2MpzTQp62hRZ8zihYdZ9gULroAhtjWBoAR1XZhyumto/EcUbsA159j2D23cv
-        9/7NXlJ8NzzkEUyTgW7XLuJM8Vrzmes=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-57-mjzFZjSqO9akRKnJYx1XSA-1; Wed, 10 Aug 2022 06:47:13 -0400
-X-MC-Unique: mjzFZjSqO9akRKnJYx1XSA-1
-Received: by mail-wm1-f69.google.com with SMTP id i65-20020a1c3b44000000b003a537031613so923236wma.2
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:47:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=9Ud5THdRZx+DzHutMKaoYIXEZbuC6w4neUVkJCUZaOE=;
-        b=iwvE9xI9uxyBs7AtRW8ovi4T8sYbfrC6JPN+HHgipd3LIYkvEpwQBqGNbkLzcsV7C8
-         AREqou93R0la8RQf544hKR6DZmvK7FhuITQuXm8n2c71cf1PIutLTpORVuuSXJ2Rt+f2
-         7agYYpSsS7ccgjCzHA3YL4yzWNkwge6IBo5ud0EIr7aSLkWn4TkluIhUwoFZr6ecjOAi
-         /WyaJNrGyXGyxBN6+L52ahZeeRn9ZcKAiIVLZdgoQtZZNio2UYzf8eswmej6AwDkMFzh
-         Be0U92qD/t+9KNBCasqMbIcMGv2futy7meNywrx+NzYnsaJ6VTUgSAI9W+J8h1RvdNGS
-         F8sA==
-X-Gm-Message-State: ACgBeo2kmR93cpuEg7jblxZPYbacnY1ZxQwuKffFm16Son9ZQG5IUN2k
-        Jja7LO0tjuXCYg+xBkKnF7r2npR0925psJ5ZuuFCBdCrSeX5qlPKAeRF3HhF5CbMe2Q4lqSQRXI
-        3M0vlfjdP+GsBF7hN
-X-Received: by 2002:a05:600c:1c28:b0:3a5:3e18:3e with SMTP id j40-20020a05600c1c2800b003a53e18003emr1926994wms.203.1660128421602;
-        Wed, 10 Aug 2022 03:47:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR62z423Q+I+006MlzeOahUfxefXQfCzkJwgUC6gw8/s7Y3h0/dCRmZjcUjU/NrOUYHczCYeHw==
-X-Received: by 2002:a05:600c:1c28:b0:3a5:3e18:3e with SMTP id j40-20020a05600c1c2800b003a53e18003emr1926981wms.203.1660128421342;
-        Wed, 10 Aug 2022 03:47:01 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id i1-20020a5d4381000000b0021e9396b135sm15686904wrq.37.2022.08.10.03.47.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 03:47:00 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-In-Reply-To: <xhsmhwnbhb9ok.mognet@vschneid.remote.csb>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
- <xhsmhedxvdikz.mognet@vschneid.remote.csb>
- <df8b684d-ede6-7412-423d-51d57365e065@gmail.com>
- <xhsmh35e5d9b4.mognet@vschneid.remote.csb>
- <12fd25f9-96fb-d0e0-14ec-3f08c01a5a4b@gmail.com>
- <xhsmhzggdbmv6.mognet@vschneid.remote.csb>
- <69829c71-d51c-b25f-2d74-5fdd231ed9e4@gmail.com>
- <xhsmhwnbhb9ok.mognet@vschneid.remote.csb>
-Date:   Wed, 10 Aug 2022 11:46:59 +0100
-Message-ID: <xhsmhtu6kbckc.mognet@vschneid.remote.csb>
+        with ESMTP id S231579AbiHJKue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 06:50:34 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A6431A
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660128634; x=1691664634;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=i5jZZLZ8OyAR5dJ845mRABW2OmbViiN//JtehAJtGPU=;
+  b=cd2yDkz7AVVG/MS6w6aLnJtpHD2h4SG7e+YzkuazLzs3lpN1uR6zFsr2
+   OeddbgfAhJMJa8t4Sxbp/XLqNtV1dixJ9t/eNoL/Fbwt3JehR9lHqKoeP
+   97PUnpgSq1EBshiFg6xAq5pD9Hw6oceRhgwbnt2EJSsVikZG92cUNQdAZ
+   cFTiCyU2EyvadH8C7vgN1xIxzOMWdXT3eP1bAwQRw/ynv0dvVYW9mWOb1
+   0cTBaYTMm7uqTXbU4XPAqJxBrcY66b8LU91KoZ4sqTISbALC+CZwG55VX
+   fAaLceNs8EmgXImBqiN6n1ZwYCKGPhTygwQFoBz518OyckPdXa/mgNyB2
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="317001115"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="317001115"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 03:50:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="731457219"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 10 Aug 2022 03:50:31 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27AAoUhM030800;
+        Wed, 10 Aug 2022 11:50:30 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv7 PATCH net-next 16/36] treewide: use replace features '0' by netdev_empty_features
+Date:   Wed, 10 Aug 2022 12:48:41 +0200
+Message-Id: <20220810104841.1306583-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220810030624.34711-17-shenjian15@huawei.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-17-shenjian15@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/08/22 18:36, Valentin Schneider wrote:
-> On 09/08/22 17:04, Tariq Toukan wrote:
->> LGTM.
->> How do you suggest to proceed?
->> You want to formalize it? Or should I take it from here?
->>
->
-> I need to have a think (feel free to ponder and share your thoughts as
-> well) - I'm happy to push something if I get a brain-wave, but don't let
-> that hold you back either.
+From: Jian Shen <shenjian15@huawei.com>
+Date: Wed, 10 Aug 2022 11:06:04 +0800
 
-This is the form that I hate the least, what do you think?
+> For the prototype of netdev_features_t will be changed from
+> u64 to bitmap, so it's unable to assignment with 0 directly.
+> Replace it with netdev_empty_features.
 
+Hmm, why not just netdev_features_zero() instead?
+There's a couple places where empty netdev_features are needed, but
+they're not probably worth a separate and rather pointless empty
+variable, you could create one on the stack there.
+
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> ---
+>  drivers/hsi/clients/ssi_protocol.c             | 2 +-
+>  drivers/net/caif/caif_serial.c                 | 2 +-
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c   | 2 +-
+>  drivers/net/ethernet/broadcom/b44.c            | 2 +-
+>  drivers/net/ethernet/broadcom/tg3.c            | 2 +-
+>  drivers/net/ethernet/dnet.c                    | 2 +-
+>  drivers/net/ethernet/ec_bhf.c                  | 2 +-
+>  drivers/net/ethernet/emulex/benet/be_main.c    | 2 +-
+>  drivers/net/ethernet/ethoc.c                   | 2 +-
+>  drivers/net/ethernet/huawei/hinic/hinic_main.c | 5 +++--
+>  drivers/net/ethernet/ibm/ibmvnic.c             | 6 +++---
+>  drivers/net/ethernet/intel/iavf/iavf_main.c    | 9 +++++----
+>  drivers/net/ethernet/microsoft/mana/mana_en.c  | 2 +-
+>  drivers/net/ethernet/sfc/ef10.c                | 2 +-
+>  drivers/net/tap.c                              | 2 +-
+>  drivers/net/tun.c                              | 2 +-
+>  drivers/net/usb/cdc-phonet.c                   | 3 ++-
+>  drivers/net/usb/lan78xx.c                      | 2 +-
+>  drivers/s390/net/qeth_core_main.c              | 2 +-
+>  drivers/usb/gadget/function/f_phonet.c         | 3 ++-
+>  net/dccp/ipv4.c                                | 2 +-
+>  net/dccp/ipv6.c                                | 2 +-
+>  net/ethtool/features.c                         | 2 +-
+>  net/ethtool/ioctl.c                            | 6 ++++--
+>  net/ipv4/af_inet.c                             | 2 +-
+>  net/ipv4/tcp.c                                 | 2 +-
+>  net/ipv4/tcp_ipv4.c                            | 2 +-
+>  net/ipv6/af_inet6.c                            | 2 +-
+>  net/ipv6/inet6_connection_sock.c               | 2 +-
+>  net/ipv6/tcp_ipv6.c                            | 2 +-
+>  net/openvswitch/datapath.c                     | 2 +-
+>  31 files changed, 44 insertions(+), 38 deletions(-)
+
+[...]
+
+> -- 
+> 2.33.0
+
+Thanks,
+Olek
