@@ -2,226 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B89558F343
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5319658F35A
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232178AbiHJTic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 15:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
+        id S231633AbiHJTzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 15:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiHJTib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:38:31 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4145F79ECF
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:38:30 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z20so18481872edb.9
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:38:30 -0700 (PDT)
+        with ESMTP id S230239AbiHJTy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:54:59 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DED78C460
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:54:58 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z2so20486542edc.1
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:54:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=dbxd6xCfQPO+sV9sJG6xEK8lCuC4pf3lC0GjkJBMtp0=;
-        b=Bdvee1JDvmzZ7qC/WRmIP8wcf1/KN4PwGqmJ1MqG2Gn/++9RBxoBcUwNCh+kMzFzXV
-         T/13h5DDLQU4jr8URNlY/BVF+tw7wKMwwJ3gFucim6zt970yuo63AvfINmHnZEosejkK
-         b/L4w6dD3GHp2ssw337PUtaO4rAYRg8MOP+IpzFKzo8hBci2aMaSA2AgwBUuoJuzVXz6
-         aYCasQjYniFhSl0iNl3Os3Goh63WphKdgTTZkKg6Suk89A0hrZ3EMkmZwew/FoKy8Mty
-         vhA7BW2UgAhoT4Lo3ykxBt2tZQW8jWFvt9Doa8P5rMaG8DxChNmU6vgZUQeQj6xtM9zZ
-         L/Ew==
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=Sjs1Wb5wykw96COcUKAT3pNmcBuygh7DFR9ieVBr2xA=;
+        b=UIbw4f9qBDcJQsqLSDUK2LzEVsfDfeuF08EdFUKHU9Wa48UFIERfii8/VYa0EG9hl8
+         VatUTEhRnWFYpOE85w0DHAIIIHEo7iMRIWE0AxKIbZi7325bXl5+31EMzDIx8v8bdJYf
+         VHnxGtGWUgMKlhYxE1Q563wrt0FSqiyRxxSOrg3BX9wJtrRShM7mNm/dNOA0A2YAOWON
+         1hYLueANKZHWN+kDdUEPRHnRilD4S+24YK3pz1Xy4d9uCM0v2F1n9gcPXFTHQYAsFJ8O
+         bIVI1AA4dSvFujJXWHrtyINg3wxy569wO56RT5PEOTA8ZKOrRf7Lm7wAIjEPUY9Ym0GM
+         EcQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=dbxd6xCfQPO+sV9sJG6xEK8lCuC4pf3lC0GjkJBMtp0=;
-        b=8CNqibxwBE3DqhzA50pgxhAnBbMRo026p7+7G1ZZBd68AlzG70ToITwF1eT9K06bY3
-         WDhd5FXhMKNPxSbWVd3r9MXkXIpQWzQlwmb64f1eSd/9Ey0NTao99G0YyHR/cyE6+gqK
-         euIx+KLg9PMD62Y5Ws2gpaB+j//tDPCrW/JAPsAfYAOu5F2WYUj/zIYjwePAoQOV+EEr
-         sNsh/YGwMPvzCaZ06/tCrpYf1HWzX9U4MiFIpVH5lcbrLmmg/44QCT2QSuoFW+s8g0QY
-         axYWJZ6OzYCZeLcMH644gOKEc3/xLtocz0dyfzWo23pKKruTRXt5UqyoOqYs0QXt7snd
-         6Xog==
-X-Gm-Message-State: ACgBeo0NL6D5TrGsSuGZ5Ph/mBdUNHphpr5+4n/fVVBaI62vUo59Ivjo
-        vidkc3RR3c/8NBDSVbVDznYbJe9PZnY=
-X-Google-Smtp-Source: AA6agR5nTMExnwM7rKa8OBVOZUOW0RdQaOUJDKazbxKSLxJcHP6thIV2b2tfVbhDw0pDukt6fv2V2g==
-X-Received: by 2002:aa7:da93:0:b0:43d:1d9d:1e5 with SMTP id q19-20020aa7da93000000b0043d1d9d01e5mr28464422eds.55.1660160308624;
-        Wed, 10 Aug 2022 12:38:28 -0700 (PDT)
-Received: from skbuf ([188.27.185.133])
-        by smtp.gmail.com with ESMTPSA id ec33-20020a0564020d6100b004418c7d633bsm2784077edb.18.2022.08.10.12.38.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 12:38:27 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 22:38:25 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] net: dsa: mv88e6060: report max mtu 1536
-Message-ID: <20220810193825.vq7rdgwx7xua5amj@skbuf>
-References: <20220810082745.1466895-1-saproj@gmail.com>
- <20220810100818.greurtz6csgnfggv@skbuf>
- <CABikg9zb7z8p7tE0H+fpmB_NSK3YVS-Sy4sqWbihziFdPBoL+Q@mail.gmail.com>
- <20220810133531.wia2oznylkjrgje2@skbuf>
- <CABikg9yVpQaU_cf+iuPn5EV0Hn9ydwigdmZrrdStq7y-y+=YsQ@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Sjs1Wb5wykw96COcUKAT3pNmcBuygh7DFR9ieVBr2xA=;
+        b=u0MsGqkozY3BZ24oqXO9fxGrCTMailQIXsqLlk2pedHmb9wb54ZI9XDSIrfPyFhn5y
+         S01V+A0OUc6lpY8pPD0TgbYCVBmgWzZjfybn0Mqhv3OtIIvK8BaJCBTcaB1ddrQvqv5I
+         XhYJIHwN+oLQb/nn9QEkc1KueVemz7XkrPcETIp+AtxnRe8j/Dy2nXrv4CBAX3kicWYd
+         zmS3bu0eBedQIFmTywq++D6mrav6MRBF3lMQX5RSbHf37dwvoYkqgBgiGiyt4EtLEdMz
+         L1EeFCl7u5w2YAvCHZDU6vpRjzsKqnAVEfMVEB/UCcYeWXaEME+i+Rj5PtKhaiDS+1j3
+         dQzw==
+X-Gm-Message-State: ACgBeo18xDvtVVkjmQhGGEBtpaQa9eSv8uE5o96dUFgoq/5us2S4CrR9
+        wmLnJM9ugDhtlLYSI3gIIjA=
+X-Google-Smtp-Source: AA6agR56jsyPeDMOL69d+a0ilz3wgalvIc+oXHLhWT7dD+79siLRvw4OjZb7Gj+fWdTydlIGE6HeVw==
+X-Received: by 2002:aa7:dc17:0:b0:441:e5fc:7f91 with SMTP id b23-20020aa7dc17000000b00441e5fc7f91mr7322820edu.301.1660161296554;
+        Wed, 10 Aug 2022 12:54:56 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:73fb:200:4036:270f:5f94:a9f5? (dynamic-2a01-0c22-73fb-0200-4036-270f-5f94-a9f5.c22.pool.telefonica.de. [2a01:c22:73fb:200:4036:270f:5f94:a9f5])
+        by smtp.googlemail.com with ESMTPSA id o11-20020aa7d3cb000000b004417eeff836sm2825239edr.53.2022.08.10.12.54.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 12:54:55 -0700 (PDT)
+Message-ID: <910fdffd-53b5-8b9a-1ba5-496ddddb9230@gmail.com>
+Date:   Wed, 10 Aug 2022 21:54:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABikg9yVpQaU_cf+iuPn5EV0Hn9ydwigdmZrrdStq7y-y+=YsQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     wei.fang@nxp.com, andrew@lunn.ch, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     xiaoning.wang@nxp.com
+References: <20220810173733.795897-1-wei.fang@nxp.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] net: phy: realtek: add support for
+ RTL8821F(D)(I)-VD-CG
+In-Reply-To: <20220810173733.795897-1-wei.fang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 06:56:25PM +0300, Sergei Antonov wrote:
-> > reg = <16> for switch@0? Something is wrong, probably switch@0.
+On 10.08.2022 19:37, wei.fang@nxp.com wrote:
+> From: Clark Wang <xiaoning.wang@nxp.com>
 > 
-> Thanks for noticing it.
-> In my case the device addresses are:
->   PHY Registers - 0x10-0x14
->   Switch Core Registers - 0x18-0x1D
->   Switch Global Registers - 0x1F
-> I renamed switch@0 to switch@10 and made reg hexadecimal for clarity:
-> "reg = <0x10>". It works, see below for more information on testing.
-> Should I leave it like so?
-
-Should be fine like that. I think Marvell switches tend to have this
-habit of occupying multiple PHY addresses, and our DT bindings want to
-see the first one.
-
-> > The bug seems to have been introduced by commit 0abfd494deef ("net: dsa:
-> > use dedicated CPU port"), because, although before we'd be uselessly
-> > programming the port VLAN for a disabled port, now in doing so, we
-> > dereference a NULL pointer.
+> RTL8821F(D)(I)-VD-CG is the pin-to-pin upgrade chip from
+> RTL8821F(D)(I)-CG.
 > 
-> The suggested fix with dsa_is_unused_port() works. I tested it on the
-> 'netdev/net.git' repo, see below. Should I submit it as a patch
-> (Fixes: 0abfd494deef)?
 
-Yes. See the section that talks about "git log -1 --pretty=fixes" in
-process/submitting-patches.rst for how the Fixes tag should actually
-look like.
+Don't you mean 8211 instead of 8821 here?
 
-I thought about whether dsa_is_unused_port() is sufficient, since
-theoretically dsa_is_dsa_port() is also a possibility which isn't
-covered by the check. But I rechecked and it appears that the Marvell
-6060 doesn't support cascade ports, so we should be fine with just that.
-
-> So I tested "dsa_is_unused_port()" and "switch@10" fixes with
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-> What I did after system boot-up:
+> Add new PHY ID for this chip.
+> It does not support RTL8211F_PHYCR2 anymore, so remove the w/r operation
+> of this register.
 > 
-> ~ # dmesg | grep mv88
-> [    7.187296] mv88e6060 92000090.mdio--1-mii:10: switch Marvell 88E6060 (B0) detected
-> [    8.325712] mv88e6060 92000090.mdio--1-mii:10: switch Marvell 88E6060 (B0) detected
-> [    9.190299] mv88e6060 92000090.mdio--1-mii:10 lan2 (uninitialized): PHY [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+> Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
+> ---
+>  drivers/net/phy/realtek.c | 48 +++++++++++++++++++++++++++++----------
+>  1 file changed, 36 insertions(+), 12 deletions(-)
 > 
-> ~ # ip a
-> 1: lo: <LOOPBACK> mtu 65536 qdisc noop qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 2: eth0: <BROADCAST,MULTICAST> mtu 1504 qdisc noop qlen 1000
->     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index a5671ab896b3..bfde22dc85f5 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -70,6 +70,7 @@
+>  #define RTLGEN_SPEED_MASK			0x0630
+>  
+>  #define RTL_GENERIC_PHYID			0x001cc800
+> +#define RTL_8211FVD_PHYID			0x001cc878
+>  
+>  MODULE_DESCRIPTION("Realtek PHY driver");
+>  MODULE_AUTHOR("Johnson Leung");
+> @@ -80,6 +81,11 @@ struct rtl821x_priv {
+>  	u16 phycr2;
+>  };
+>  
+> +static bool is_rtl8211fvd(u32 phy_id)
 
-The DSA master is super odd for starting with an all-zero MAC address.
-What driver handles this part? Normally, drivers are expected to work
-with a MAC address provided by the firmware (of_get_mac_address or
-other, perhaps proprietary, means) and fall back to eth_random_addr()
-if that is missing.
+Better add a has_phycr2 to struct rtl821x_priv. Then you have:
 
-> 3: lan2@eth0: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop qlen 1000
->     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+if (priv->has_phycr2)
+	do_something_with(priv->phycr2);
 
-Here DSA inherits the MAC address of the master. It does this by default
-in dsa_slave_create() -> eth_hw_addr_inherit(). If the OF node for the
-DSA port has its own MAC address, that will have priority over the MAC
-address of the master.
+> +{
+> +	return phy_id == RTL_8211FVD_PHYID;
+> +}
+> +
+>  static int rtl821x_read_page(struct phy_device *phydev)
+>  {
+>  	return __phy_read(phydev, RTL821x_PAGE_SELECT);
+> @@ -94,6 +100,7 @@ static int rtl821x_probe(struct phy_device *phydev)
+>  {
+>  	struct device *dev = &phydev->mdio.dev;
+>  	struct rtl821x_priv *priv;
+> +	u32 phy_id = phydev->drv->phy_id;
+>  	int ret;
+>  
+>  	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> @@ -108,13 +115,15 @@ static int rtl821x_probe(struct phy_device *phydev)
+>  	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
+>  		priv->phycr1 |= RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF;
+>  
+> -	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
+> -	if (ret < 0)
+> -		return ret;
+> +	if (!is_rtl8211fvd(phy_id)) {
+> +		ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
+> +		if (ret < 0)
+> +			return ret;
+>  
+> -	priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
+> -	if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
+> -		priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
+> +		priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
+> +		if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
+> +			priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
+> +	}
+>  
+>  	phydev->priv = priv;
+>  
+> @@ -333,6 +342,7 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+>  {
+>  	struct rtl821x_priv *priv = phydev->priv;
+>  	struct device *dev = &phydev->mdio.dev;
+> +	u32 phy_id = phydev->drv->phy_id;
+>  	u16 val_txdly, val_rxdly;
+>  	int ret;
+>  
+> @@ -400,12 +410,14 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+>  			val_rxdly ? "enabled" : "disabled");
+>  	}
+>  
+> -	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+> -			       RTL8211F_CLKOUT_EN, priv->phycr2);
+> -	if (ret < 0) {
+> -		dev_err(dev, "clkout configuration failed: %pe\n",
+> -			ERR_PTR(ret));
+> -		return ret;
+> +	if (!is_rtl8211fvd(phy_id)) {
+> +		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+> +				       RTL8211F_CLKOUT_EN, priv->phycr2);
+> +		if (ret < 0) {
+> +			dev_err(dev, "clkout configuration failed: %pe\n",
+> +				ERR_PTR(ret));
+> +			return ret;
+> +		}
+>  	}
+>  
+>  	return genphy_soft_reset(phydev);
+> @@ -923,6 +935,18 @@ static struct phy_driver realtek_drvs[] = {
+>  		.resume		= rtl821x_resume,
+>  		.read_page	= rtl821x_read_page,
+>  		.write_page	= rtl821x_write_page,
+> +	}, {
+> +		PHY_ID_MATCH_EXACT(RTL_8211FVD_PHYID),
+> +		.name		= "RTL8211F-VD Gigabit Ethernet",
+> +		.probe		= rtl821x_probe,
+> +		.config_init	= &rtl8211f_config_init,
+> +		.read_status	= rtlgen_read_status,
+> +		.config_intr	= &rtl8211f_config_intr,
+> +		.handle_interrupt = rtl8211f_handle_interrupt,
+> +		.suspend	= genphy_suspend,
+> +		.resume		= rtl821x_resume,
+> +		.read_page	= rtl821x_read_page,
+> +		.write_page	= rtl821x_write_page,
+>  	}, {
+>  		.name		= "Generic FE-GE Realtek PHY",
+>  		.match_phy_device = rtlgen_match_phy_device,
 
-> ~ # ip link set dev eth0 address 00:90:e8:00:10:03 up
-
-This shouldn't be necessary, neither assigning a MAC address nor putting
-the master up, see Documentation/networking/dsa/configuration.rst, the
-master comes up automatically.
-
-> ~ # ip a add 192.168.127.254/24 dev lan2
-> 
-> ~ # ip link set dev lan2 address 00:90:e8:00:10:03 up
-> [   56.383801] DSA: failed to set STP state 3 (-95)
-
-errno 95 is EOPNOTSUPP, we shouldn't warn here, I'll submit a patch for
-that.
-
-> [   56.385491] mv88e6060 92000090.mdio--1-mii:10 lan2: configuring for phy/gmii link mode
-> [   58.694319] mv88e6060 92000090.mdio--1-mii:10 lan2: Link is Up - 100Mbps/Full - flow control off
-
-The link was negotiated without flow control, so you can't test flow
-control under these conditions. This depends upon what the internal PHY
-of the mv88e6060 is advertising, and what the link partner is advertising.
-What is advertised is a subset of what is supported (and resolved by
-linkmode_resolve_pause).
-
-I'm a bit uncertain as to what happens when the 6060 driver doesn't
-validate the phylink supported mask at all (it doesn't populate the
-mac_capabilities structure and it doesn't implement ds->ops->phylink_validate)
-but I think what happens is that whatever the PHY supports isn't further
-reduced in any way by the MAC side of things.
-
-> [   58.699244] IPv6: ADDRCONF(NETDEV_CHANGE): lan2: link becomes ready
-> 
-> ~ # ip a
-> 1: lo: <LOOPBACK> mtu 65536 qdisc noop qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1504 qdisc pfifo_fast qlen 1000
->     link/ether 00:90:e8:00:10:03 brd ff:ff:ff:ff:ff:ff
->     inet6 fe80::290:e8ff:fe00:1003/64 scope link
->        valid_lft forever preferred_lft forever
-> 3: lan2@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue qlen 1000
->     link/ether 00:90:e8:00:10:03 brd ff:ff:ff:ff:ff:ff
->     inet 192.168.127.254/24 scope global lan2
->        valid_lft forever preferred_lft forever
->     inet6 fe80::290:e8ff:fe00:1003/64 scope link
->        valid_lft forever preferred_lft forever
-> 
-> Ping, ssh, scp work.
-> 
-> Is it correct for eth0 and lan2@eth0 to have the same MAC?
-
-It is not wrong, it's a configuration that many deployed DSA systems use.
-
-> I could not make it work with different MACs.
-
-That is a problem, and I believe it's a problem with the DSA master driver.
-See, the reason it should work is this. Switch ports don't really have a
-MAC address, since they forward everything and not really terminate anything.
-The MAC address of a switch port is a software construct which means
-that software L3 termination interfaces (of which we have one per port)
-should accept packets with some known MAC DA, and drop the rest, and
-everything should be fine.
-
-There are multiple kinds of DSA tags, but 6060 uses a trailer, and this
-will not shift the 'real' MAC DA of packets compared to where the DSA
-master expects to see them. So if the MAC address of the DSA master is A,
-the MAC address of lan2 is B, and you ping lan2 from the outside world,
-the DSA master will see packets with a MAC DA of B.
-
-So the DSA master sees packets with a MAC DA different from its own
-dev->dev_addr (A) and thinks it's within its right to drop them. Except
-that it isn't, because we do the following to prevent it:
-
-(1) in case the DSA master supports IFF_UNICAST_FLT, we call dev_uc_add()
-    from dsa_slave_set_mac_address() and from dsa_slave_open(), and this
-    informs it of our address B.
-(2) in case it doesn't support IFF_UNICAST_FLT, we just call
-    dsa_master_set_promiscuity() and that should keep it promiscuous and
-    it should accept packets regardless of MAC DA (that's the definition).
-
-So you should run some tcpdump and ethtool -S on the DSA master and see
-whether it receives any packets or it drops them. It's possible that
-tcpdump makes packets be accepted, since it puts the interface in
-promiscuous mode.
-
-> I don't know how to test flow control. Ping, ssh, scp work even with
-> mv88e6060_setup_addr() code removed. Of course, if MAC SA plays some
-> role in other scenarios, let it be :).
-
-I think it's best to leave alone things you don't really care about.
-The address in mv88e6060_setup_addr() should have nothing to do with
-what you really seem to want to know, just with flow control.
+And by the way, net-next is closed currently.
