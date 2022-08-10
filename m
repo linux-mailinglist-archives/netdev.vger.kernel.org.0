@@ -2,117 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1693A58EEAE
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 16:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D72558EEC5
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 16:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232718AbiHJOpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 10:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
+        id S232731AbiHJOun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 10:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232895AbiHJOpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 10:45:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BB349B75
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:45:45 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oLmxq-00028X-Ew; Wed, 10 Aug 2022 16:45:42 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oLmxn-002vUa-6G; Wed, 10 Aug 2022 16:45:41 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oLmxo-00AnsB-Mj; Wed, 10 Aug 2022 16:45:40 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH] can: rx-offload: Break loop on queue full
-Date:   Wed, 10 Aug 2022 16:45:36 +0200
-Message-Id: <20220810144536.389237-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S231675AbiHJOum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 10:50:42 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA615E306
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:50:38 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id e13so19355387edj.12
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 07:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=r4FpLYfUs7tX4DLeiy0sj/1t8j21OoA6g793iTCGiF8=;
+        b=MuyQbiTUTET9fzrBqJrVL6Ql0nSXUtWfMkTeV0mBDzSdpEipm6LSkDAk2TRRbHhcFY
+         wVXtGIvSLp1zX+ayyhX9X9Vs+G2gYlKwvu7a0380tbAKcuP1OMT0qzWuHj78nZ6s+5MV
+         t7/FErcC+guIKzh+XsumAfNKFOBs5o98HzCcm86P6Pb7sPlqjHuwEAFyORUJ/mWGU2Q4
+         tMlLXdYAJp+1RoMLB7y3vb09dzb4EQ8j1WhNkiMxxY35xsjpbBAxJEJn1GI8y/2KAxrJ
+         1lmT/LXOZ1+yOgsNG4F02V5uDcBUPxy4GJFG4mXV4sXABfGskmeZY1ccjVG3XET/SiJP
+         TJLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=r4FpLYfUs7tX4DLeiy0sj/1t8j21OoA6g793iTCGiF8=;
+        b=cDvs8eZda7RqkgNYtTDPREMBrfgVTin6oc4EjT6+SHYlKRPdfWHyeFAboZaYtOYRkU
+         gPz4S/9JwaaK+p7+0HjlOAwPrG3xmcpUOf2xwOzSNArHANLks61Sdrg9XIxd9oaYWGLn
+         UeBiOLthl6RB+TNylxCwyKyZCvewMPVrHqLXHi+pj3sHaDi0/9MPPS9AbxDThNFr31hn
+         D8GX/4SmfOvQMDDOuzMj+bRimgHKcItFZz7PG32JEZrlypa05nrFMOMkR2ErjYM+YlUT
+         Cg8ThJoazlD6IvbgTwvPYoxNBqDZslS4XjWWzFHbzZD5oy5NyA4jUJW1wodAm+XVWCK/
+         0fPA==
+X-Gm-Message-State: ACgBeo3aPOtOBCYvg93uvN5d97b+tuFUsZbbJ2ZQyeMH2cQ0/mOcUH4v
+        WNiWg3rT+k4HiHLXWUogVlR5Dw==
+X-Google-Smtp-Source: AA6agR56aM67PHK/+ONTl8BroEWue4HRkKqPBqbKMvQMV90VH3pqrryFs0RWIE536XgLpzL4WCoa1A==
+X-Received: by 2002:a05:6402:43c4:b0:43b:c5eb:c9dd with SMTP id p4-20020a05640243c400b0043bc5ebc9ddmr26620352edc.402.1660143036615;
+        Wed, 10 Aug 2022 07:50:36 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id x7-20020a170906440700b00730cc173c6asm2369268ejo.43.2022.08.10.07.50.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 07:50:36 -0700 (PDT)
+Message-ID: <49f933c3-7430-a133-9add-ed76c395023b@blackwall.org>
+Date:   Wed, 10 Aug 2022 17:50:34 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH RFC net-next 0/3] net: vlan: fix bridge binding behavior
+ and add selftests
+Content-Language: en-US
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Cc:     netdev@vger.kernel.org, aroulin@nvidia.com, sbrivio@redhat.com,
+        roopa@nvidia.com, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+References: <cover.1660100506.git.sevinj.aghayeva@gmail.com>
+ <94ec6182-0804-7a0e-dcba-42655ff19884@blackwall.org>
+ <CAMWRUK45nbZS3PeSLR1X=Ko6oavrjKj2AWeh2F1wckMPrz_dEg@mail.gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <CAMWRUK45nbZS3PeSLR1X=Ko6oavrjKj2AWeh2F1wckMPrz_dEg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1982; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=Cn04GZTinb3PN++vuBq/xD3wJWb9dO28EXwq06xJYPM=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi88SMnBsnvOfBX9QR1MhCX82hZIFPz2XNtmDorvRp dxQd+yCJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYvPEjAAKCRDB/BR4rcrsCQlhB/ 4haeId7TOd3cTFuUcjcNgW48p6P7AGuZP85k/cxmvNKpeuNZ9TxSJkrVaUIj7iqFB1nzZZotRLOyGx FxOSN2mnhmsc4YV/pDIDI1ErPNYBHFznFRG8+IbTXwbWZF9QyBe8NlgzKo/9iEkytdrhFt+V7I8eVh +9sKrLCa6tj8hqltweWn8XP19JtBt/0sy0ue+qi6Gc7DjsySBH4yZUXVMOv9JVk2Ypcf36qtLT7zlY jayTSi0EoaMcm82KChpxhDkcraFqoP6n59c+5Jp6yiYNlJ3od2BD+vZZUSW0BTQehLpfALoDO69Jm6 wwwSfJV1WzjuU50lSYD0I8yhprqhGP
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following happend on an i.MX25 using flexcan with many packets on
-the bus:
+On 10/08/2022 17:42, Sevinj Aghayeva wrote:
+> 
+> 
+> On Wed, Aug 10, 2022 at 4:54 AM Nikolay Aleksandrov <razor@blackwall.org <mailto:razor@blackwall.org>> wrote:
+> 
+>     On 10/08/2022 06:11, Sevinj Aghayeva wrote:
+>     > When bridge binding is enabled for a vlan interface, it is expected
+>     > that the link state of the vlan interface will track the subset of the
+>     > ports that are also members of the corresponding vlan, rather than
+>     > that of all ports.
+>     >
+>     > Currently, this feature works as expected when a vlan interface is
+>     > created with bridge binding enabled:
+>     >
+>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
+>     >         bridge_binding on
+>     >
+>     > However, the feature does not work when a vlan interface is created
+>     > with bridge binding disabled, and then enabled later:
+>     >
+>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
+>     >         bridge_binding off
+>     >   ip link set vlan10 type vlan bridge_binding on
+>     >
+>     > After these two commands, the link state of the vlan interface
+>     > continues to track that of all ports, which is inconsistent and
+>     > confusing to users. This series fixes this bug and introduces two
+>     > tests for the valid behavior.
+>     >
+>     > Sevinj Aghayeva (3):
+>     >   net: core: export call_netdevice_notifiers_info
+>     >   net: 8021q: fix bridge binding behavior for vlan interfaces
+>     >   selftests: net: tests for bridge binding behavior
+>     >
+>     >  include/linux/netdevice.h                     |   2 +
+>     >  net/8021q/vlan.h                              |   2 +-
+>     >  net/8021q/vlan_dev.c                          |  25 ++-
+>     >  net/core/dev.c                                |   7 +-
+>     >  tools/testing/selftests/net/Makefile          |   1 +
+>     >  .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
+>     >  6 files changed, 172 insertions(+), 8 deletions(-)
+>     >  create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
+>     >
+> 
+>     Hi,
+>     NETDEV_CHANGE event is already propagated when the vlan changes flags,
+> 
+> 
+> I'm not sure if NETDEV_CHANGE is actually propagated when the vlan changes flags. The two functions in the bridge module that handle NETDEV_CHANGE are br_vlan_port_event  and br_vlan_bridge_event. I've installed probes for both, and when I'm changing flags using "sudo ip link set vlan10 type vlan bridge_binding on", I don't see any of those functions getting called, although I do see vlan_dev_change_flags getting called. I think there may be a bug in core/dev.c:__dev_notify_flags.
 
-The rx-offload queue reached a length more than skb_queue_len_max. So in
-can_rx_offload_offload_one() the drop variable was set to true which
-made the call to .mailbox_read() (here: flexcan_mailbox_read()) just
-return ERR_PTR(-ENOBUFS) (plus some irrelevant hardware interaction) and
-so can_rx_offload_offload_one() returned ERR_PTR(-ENOBUFS), too.
+are both vlan and bridge interfaces up?
+what exactly are you probing for?
 
-Now can_rx_offload_irq_offload_fifo() looks as follows:
+I can see the NETDEV_CHANGE event go through when changing the loose binding.
 
-	while (1) {
-		skb = can_rx_offload_offload_one(offload, 0);
-		if (IS_ERR(skb))
-			continue;
-		...
-	}
 
-As the i.MX25 is a single core CPU while the rx-offload processing is
-active there is no thread to process packets from the offload queue and
-so it doesn't get shorter.
 
-The result is a tight loop: can_rx_offload_offload_one() does nothing
-relevant and returns an error code and so
-can_rx_offload_irq_offload_fifo() calls can_rx_offload_offload_one()
-again.
-
-To break that loop don't continue calling can_rx_offload_offload_one()
-after it reported an error.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
-
-this patch just implements the obvious change to break the loop. I'm not
-100% certain that there is no corner case where the break is wrong. The
-problem exists at least since v5.6, didn't go back further to check.
-
-This fixes a hard hang on said i.MX25.
-
-Best regards
-Uwe
-
- drivers/net/can/dev/rx-offload.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/dev/rx-offload.c b/drivers/net/can/dev/rx-offload.c
-index a32a01c172d4..d5d33692bb6a 100644
---- a/drivers/net/can/dev/rx-offload.c
-+++ b/drivers/net/can/dev/rx-offload.c
-@@ -207,7 +207,7 @@ int can_rx_offload_irq_offload_fifo(struct can_rx_offload *offload)
- 	while (1) {
- 		skb = can_rx_offload_offload_one(offload, 0);
- 		if (IS_ERR(skb))
--			continue;
-+			break;
- 		if (!skb)
- 			break;
- 
--- 
-2.36.1
 
