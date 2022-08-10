@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF9958EBD4
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8A258EBEE
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229482AbiHJMPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 08:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
+        id S230418AbiHJMZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 08:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiHJMPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:15:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297C55A2C0
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:15:36 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M2pj11lvxzjXmy;
-        Wed, 10 Aug 2022 20:12:21 +0800 (CST)
+        with ESMTP id S230506AbiHJMZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:25:42 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52BB5D0F7
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:25:40 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M2pyj4GFhzGpLT;
+        Wed, 10 Aug 2022 20:24:13 +0800 (CST)
 Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
  (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
- 2022 20:15:33 +0800
-Subject: Re: [RFCv7 PATCH net-next 03/36] net: replace multiple feature bits
- with DECLARE_NETDEV_FEATURE_SET
+ 2022 20:25:38 +0800
+Subject: Re: [RFCv7 PATCH net-next 16/36] treewide: use replace features '0'
+ by netdev_empty_features
 To:     Alexander Lobakin <alexandr.lobakin@intel.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
         <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
         <linuxarm@openeuler.org>
 References: <20220810030624.34711-1-shenjian15@huawei.com>
- <20220810030624.34711-4-shenjian15@huawei.com>
- <20220810103743.1306052-1-alexandr.lobakin@intel.com>
+ <20220810030624.34711-17-shenjian15@huawei.com>
+ <20220810104841.1306583-1-alexandr.lobakin@intel.com>
 From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <9186b4cd-cc0c-8848-9fdb-8a538c085bbe@huawei.com>
-Date:   Wed, 10 Aug 2022 20:15:32 +0800
+Message-ID: <7b6eb064-a649-8a26-8eff-2ad2b2457c22@huawei.com>
+Date:   Wed, 10 Aug 2022 20:25:38 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
  Thunderbird/52.5.2
 MIME-Version: 1.0
-In-Reply-To: <20220810103743.1306052-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <20220810104841.1306583-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
  dggpeml500022.china.huawei.com (7.185.36.66)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
@@ -55,346 +55,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-åœ¨ 2022/8/10 18:37, Alexander Lobakin å†™é“:
+ÔÚ 2022/8/10 18:48, Alexander Lobakin Ð´µÀ:
 > From: Jian Shen <shenjian15@huawei.com>
-> Date: Wed, 10 Aug 2022 11:05:51 +0800
+> Date: Wed, 10 Aug 2022 11:06:04 +0800
 >
->> There are many netdev_features bits group used in drivers, replace them
->> with DECLARE_NETDEV_FEATURE_SET, prepare to remove all the NETIF_F_XXX
->> macroes.
->>
+>> For the prototype of netdev_features_t will be changed from
+>> u64 to bitmap, so it's unable to assignment with 0 directly.
+>> Replace it with netdev_empty_features.
+> Hmm, why not just netdev_features_zero() instead?
+> There's a couple places where empty netdev_features are needed, but
+> they're not probably worth a separate and rather pointless empty
+> variable, you could create one on the stack there.
+As replied before, the new netdev_features_t supports being
+assigned directly, so use netdev_emtpy_features looks
+more simple.
+
 >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
 >> ---
->>   arch/um/drivers/vector_transports.c           |  49 +++++--
->>   drivers/infiniband/ulp/ipoib/ipoib.h          |   1 +
->>   drivers/infiniband/ulp/ipoib/ipoib_main.c     |   8 +-
->>   drivers/net/amt.c                             |  16 ++-
->>   drivers/net/bareudp.c                         |  21 ++-
->>   drivers/net/bonding/bond_main.c               |  48 +++++--
->>   drivers/net/dsa/xrs700x/xrs700x.c             |  15 +-
->>   drivers/net/dummy.c                           |  11 +-
->>   drivers/net/ethernet/3com/typhoon.c           |  18 ++-
->>   drivers/net/ethernet/aeroflex/greth.c         |   9 +-
->>   drivers/net/ethernet/alteon/acenic.c          |  10 +-
->>   drivers/net/ethernet/amazon/ena/ena_netdev.c  |  13 +-
->>   drivers/net/ethernet/amd/xgbe/xgbe-main.c     |  59 ++++----
->>   .../net/ethernet/apm/xgene/xgene_enet_main.c  |  12 +-
->>   .../net/ethernet/aquantia/atlantic/aq_nic.c   |  14 +-
->>   drivers/net/ethernet/asix/ax88796c_main.c     |  21 ++-
->>   drivers/net/ethernet/atheros/alx/main.c       |  15 +-
->>   drivers/net/ethernet/atheros/atl1c/atl1c.h    |   1 +
->>   .../net/ethernet/atheros/atl1c/atl1c_main.c   |  14 +-
->>   drivers/net/ethernet/atheros/atl1e/atl1e.h    |   1 +
->>   .../net/ethernet/atheros/atl1e/atl1e_main.c   |  10 +-
->>   drivers/net/ethernet/atheros/atlx/atl1.c      |  22 ++-
->>   drivers/net/ethernet/broadcom/bcmsysport.c    |  24 +++-
->>   drivers/net/ethernet/broadcom/bgmac.c         |   9 +-
->>   drivers/net/ethernet/broadcom/bnx2.c          |  14 +-
->>   .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  |  83 ++++++++---
->>   drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  54 +++++--
->>   .../net/ethernet/broadcom/genet/bcmgenet.c    |  10 +-
->>   drivers/net/ethernet/brocade/bna/bnad.c       |  39 +++--
->>   drivers/net/ethernet/calxeda/xgmac.c          |  15 +-
->>   .../net/ethernet/cavium/liquidio/lio_main.c   |  42 ++++--
->>   .../ethernet/cavium/liquidio/lio_vf_main.c    |  40 ++++--
->>   .../ethernet/cavium/liquidio/octeon_network.h |   4 +-
->>   .../net/ethernet/cavium/thunder/nicvf_main.c  |  27 +++-
->>   drivers/net/ethernet/chelsio/cxgb/cxgb2.c     |  19 ++-
->>   .../net/ethernet/chelsio/cxgb3/cxgb3_main.c   |  29 +++-
->>   .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  68 ++++++---
->>   .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |  39 ++++-
->>   drivers/net/ethernet/cirrus/ep93xx_eth.c      |   7 +-
->>   drivers/net/ethernet/cisco/enic/enic_main.c   |  19 ++-
->>   drivers/net/ethernet/cortina/gemini.c         |  22 ++-
->>   drivers/net/ethernet/emulex/benet/be_main.c   |  47 ++++--
->>   drivers/net/ethernet/faraday/ftgmac100.c      |  13 +-
->>   .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  14 +-
->>   .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  17 ++-
->>   .../ethernet/freescale/dpaa2/dpaa2-switch.c   |  10 +-
->>   .../ethernet/freescale/dpaa2/dpaa2-switch.h   |   1 +
->>   .../net/ethernet/freescale/enetc/enetc_pf.c   |  42 ++++--
->>   .../net/ethernet/freescale/enetc/enetc_vf.c   |  40 ++++--
->>   drivers/net/ethernet/freescale/fec_main.c     |  11 +-
->>   drivers/net/ethernet/freescale/gianfar.c      |  18 ++-
->>   .../ethernet/fungible/funeth/funeth_main.c    |  48 +++++--
->>   drivers/net/ethernet/google/gve/gve_main.c    |  21 +--
->>   drivers/net/ethernet/hisilicon/hns/hns_enet.c |  51 +++++--
->>   .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  40 ++++--
->>   .../net/ethernet/huawei/hinic/hinic_main.c    |  37 +++--
->>   drivers/net/ethernet/ibm/ehea/ehea_main.c     |  34 +++--
->>   drivers/net/ethernet/ibm/emac/core.c          |   7 +-
->>   drivers/net/ethernet/ibm/ibmveth.c            |  11 +-
->>   drivers/net/ethernet/ibm/ibmvnic.c            |   8 +-
->>   drivers/net/ethernet/intel/e1000/e1000.h      |   1 +
->>   drivers/net/ethernet/intel/e1000/e1000_main.c |  33 +++--
->>   drivers/net/ethernet/intel/e1000e/netdev.c    |  46 ++++--
->>   .../net/ethernet/intel/fm10k/fm10k_netdev.c   |  37 +++--
->>   drivers/net/ethernet/intel/i40e/i40e_main.c   |  75 +++++-----
->>   drivers/net/ethernet/intel/iavf/iavf.h        |   1 +
->>   drivers/net/ethernet/intel/iavf/iavf_main.c   |  43 +++---
->>   drivers/net/ethernet/intel/ice/ice.h          |   1 +
->>   drivers/net/ethernet/intel/ice/ice_main.c     |  64 ++++++---
->>   drivers/net/ethernet/intel/igb/igb_main.c     |  74 ++++++----
->>   drivers/net/ethernet/intel/igbvf/netdev.c     |  76 ++++++----
->>   drivers/net/ethernet/intel/igc/igc_mac.c      |   1 +
->>   drivers/net/ethernet/intel/igc/igc_main.c     |  77 ++++++----
->>   drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  15 +-
->>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 134 +++++++++++-------
->>   drivers/net/ethernet/intel/ixgbevf/ipsec.c    |  15 +-
->>   drivers/net/ethernet/intel/ixgbevf/ixgbevf.h  |   1 +
->>   .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  87 +++++++-----
->>   drivers/net/ethernet/jme.c                    |  34 +++--
->>   drivers/net/ethernet/marvell/mv643xx_eth.c    |   9 +-
->>   drivers/net/ethernet/marvell/mvneta.c         |  12 +-
->>   .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  19 ++-
->>   .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  17 ++-
->>   .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  17 ++-
->>   drivers/net/ethernet/marvell/skge.c           |   9 +-
->>   drivers/net/ethernet/marvell/sky2.c           |  19 ++-
->>   drivers/net/ethernet/mellanox/mlx4/en_main.c  |   1 +
->>   .../net/ethernet/mellanox/mlx4/en_netdev.c    |  75 ++++++----
->>   .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |  20 +--
->>   .../net/ethernet/mellanox/mlxsw/spectrum.c    |  16 ++-
->>   drivers/net/ethernet/micrel/ksz884x.c         |   9 +-
->>   drivers/net/ethernet/microchip/lan743x_main.c |   9 +-
->>   drivers/net/ethernet/microsoft/mana/mana_en.c |  15 +-
->>   drivers/net/ethernet/mscc/ocelot_net.c        |  14 +-
->>   .../net/ethernet/myricom/myri10ge/myri10ge.c  |  11 +-
->>   drivers/net/ethernet/neterion/s2io.c          |  24 +++-
->>   drivers/net/ethernet/nvidia/forcedeth.c       |  10 +-
->>   .../ethernet/oki-semi/pch_gbe/pch_gbe_main.c  |  10 +-
->>   drivers/net/ethernet/pasemi/pasemi_mac.c      |  11 +-
->>   .../net/ethernet/pensando/ionic/ionic_lif.c   |  23 +--
->>   .../ethernet/qlogic/netxen/netxen_nic_main.c  |  11 +-
->>   drivers/net/ethernet/qlogic/qede/qede_main.c  |  50 +++++--
->>   .../net/ethernet/qlogic/qlcnic/qlcnic_hw.c    |  29 ++--
->>   .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  34 +++--
->>   drivers/net/ethernet/qualcomm/emac/emac.c     |  23 ++-
->>   .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |  12 +-
->>   drivers/net/ethernet/realtek/8139cp.c         |  23 ++-
->>   drivers/net/ethernet/realtek/8139too.c        |   8 +-
->>   drivers/net/ethernet/realtek/r8169_main.c     |  18 ++-
->>   .../net/ethernet/samsung/sxgbe/sxgbe_main.c   |  15 +-
->>   drivers/net/ethernet/sfc/ef10.c               |  11 +-
->>   drivers/net/ethernet/sfc/ef100_netdev.c       |   9 +-
->>   drivers/net/ethernet/sfc/ef100_nic.c          |  15 +-
->>   drivers/net/ethernet/sfc/efx.c                |  21 ++-
->>   drivers/net/ethernet/sfc/falcon/efx.c         |  10 +-
->>   drivers/net/ethernet/sfc/falcon/net_driver.h  |   1 +
->>   drivers/net/ethernet/sfc/net_driver.h         |   1 +
->>   drivers/net/ethernet/sfc/siena/efx.c          |  22 ++-
->>   drivers/net/ethernet/sgi/ioc3-eth.c           |  13 +-
->>   drivers/net/ethernet/silan/sc92031.c          |  11 +-
->>   drivers/net/ethernet/socionext/netsec.c       |  11 +-
->>   .../net/ethernet/stmicro/stmmac/stmmac_main.c |  11 +-
->>   drivers/net/ethernet/sun/ldmvsw.c             |   7 +-
->>   drivers/net/ethernet/sun/niu.c                |   9 +-
->>   drivers/net/ethernet/sun/sungem.c             |   9 +-
->>   drivers/net/ethernet/sun/sunvnet.c            |  10 +-
->>   drivers/net/ethernet/tehuti/tehuti.c          |  25 +++-
->>   drivers/net/ethernet/tehuti/tehuti.h          |   1 +
->>   drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  13 +-
->>   drivers/net/ethernet/ti/cpsw_new.c            |  11 +-
->>   drivers/net/ethernet/via/via-velocity.c       |  19 ++-
->>   drivers/net/geneve.c                          |  20 ++-
->>   drivers/net/hyperv/netvsc_drv.c               |  11 +-
->>   drivers/net/ifb.c                             |  20 ++-
->>   drivers/net/ipvlan/ipvlan_main.c              |  58 ++++++--
->>   drivers/net/ipvlan/ipvtap.c                   |  12 +-
->>   drivers/net/loopback.c                        |  25 ++--
->>   drivers/net/macsec.c                          |  22 ++-
->>   drivers/net/macvlan.c                         |  56 ++++++--
->>   drivers/net/macvtap.c                         |  12 +-
->>   drivers/net/net_failover.c                    |  23 +++
->>   drivers/net/netdevsim/ipsec.c                 |  13 +-
->>   drivers/net/netdevsim/netdev.c                |  14 +-
->>   drivers/net/netdevsim/netdevsim.h             |   1 +
->>   drivers/net/nlmon.c                           |  11 +-
->>   drivers/net/tap.c                             |  18 ++-
->>   drivers/net/team/team.c                       |  31 +++-
->>   drivers/net/thunderbolt.c                     |  11 +-
->>   drivers/net/tun.c                             |  28 +++-
->>   drivers/net/usb/aqc111.c                      |  38 ++++-
->>   drivers/net/usb/aqc111.h                      |  14 --
->>   drivers/net/usb/ax88179_178a.c                |  11 +-
->>   drivers/net/usb/lan78xx.c                     |   8 +-
->>   drivers/net/usb/r8152.c                       |  53 +++++--
->>   drivers/net/usb/smsc75xx.c                    |  10 +-
->>   drivers/net/veth.c                            |  27 ++--
->>   drivers/net/vmxnet3/vmxnet3_drv.c             |  36 +++--
->>   drivers/net/vmxnet3/vmxnet3_ethtool.c         |  35 +++--
->>   drivers/net/vmxnet3/vmxnet3_int.h             |   1 +
->>   drivers/net/vrf.c                             |  12 +-
->>   drivers/net/vsockmon.c                        |  11 +-
->>   drivers/net/vxlan/vxlan_core.c                |  20 ++-
->>   drivers/net/wireguard/device.c                |  20 ++-
->>   drivers/net/wireless/ath/wil6210/netdev.c     |  14 +-
->>   drivers/net/xen-netback/interface.c           |  14 +-
->>   drivers/net/xen-netfront.c                    |  20 ++-
->>   drivers/s390/net/qeth_l3_main.c               |  13 +-
->>   drivers/staging/qlge/qlge_main.c              |  21 +--
->>   include/net/bonding.h                         |   5 +-
->>   include/net/net_failover.h                    |   8 +-
->>   net/8021q/vlan_dev.c                          |  15 +-
->>   net/batman-adv/soft-interface.c               |   9 +-
->>   net/bridge/br_device.c                        |  25 +++-
->>   net/ethtool/ioctl.c                           |  17 ++-
->>   net/hsr/hsr_device.c                          |  13 +-
->>   net/ipv4/ip_gre.c                             |  19 +--
->>   net/ipv4/ipip.c                               |  19 ++-
->>   net/ipv6/ip6_gre.c                            |  15 +-
->>   net/ipv6/ip6_tunnel.c                         |  19 ++-
->>   net/ipv6/sit.c                                |  18 ++-
->>   net/mac80211/ieee80211_i.h                    |  13 +-
->>   net/mac80211/main.c                           |  24 ++++
->>   net/openvswitch/vport-internal_dev.c          |  13 +-
->>   net/xfrm/xfrm_interface.c                     |  16 ++-
->>   184 files changed, 2923 insertions(+), 1139 deletions(-)
-> [...]
->
->> +static DECLARE_NETDEV_FEATURE_SET(bond_mpls_feature_set,
->> +				  NETIF_F_HW_CSUM_BIT,
->> +				  NETIF_F_SG_BIT);
->> +
->> +static netdev_features_t bond_vlan_features __ro_after_init;
->> +static netdev_features_t bond_enc_features __ro_after_init;
->> +static netdev_features_t bond_mpls_features __ro_after_init;
->>   /*-------------------------- Forward declarations ---------------------------*/
-> Nit: any reason to not leave an empty space in between the
-> declarations and that comment line?
-ok, will fix it.
-
->>   
->>   static int bond_init(struct net_device *bond_dev);
->> @@ -1421,16 +1441,11 @@ static netdev_features_t bond_fix_features(struct net_device *dev,
->>   	return features;
->>   }
-> [...]
->
->>   /**
->>    * struct gmac_queue_page - page buffer per-page info
->> @@ -2610,6 +2618,12 @@ static struct platform_driver gemini_ethernet_driver = {
->>   	.remove = gemini_ethernet_remove,
->>   };
->>   
->> +static void __init gmac_netdev_features_init(void)
->> +{
->> +	netdev_features_set_array(&gmac_offload_feature_set,
->> +				  &gmac_offload_features);
->> +}
-> I'd say it's not worth it to create a new function for a one-liner.
-ok,Â  willÂ  move it into gemini_ethernet_module_init().
-
->> +
->>   static int __init gemini_ethernet_module_init(void)
->>   {
->>   	int ret;
->> @@ -2624,6 +2638,8 @@ static int __init gemini_ethernet_module_init(void)
->>   		return ret;
->>   	}
->>   
->> +	gmac_netdev_features_init();
->> +
->>   	return 0;
->>   }
->>   module_init(gemini_ethernet_module_init);
-> [...]
->
->> @@ -120,16 +144,12 @@ static void enetc_vf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
->>   	ndev->watchdog_timeo = 5 * HZ;
->>   	ndev->max_mtu = ENETC_MAX_MTU;
->>   
->> -	ndev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
->> -			    NETIF_F_HW_VLAN_CTAG_TX |
->> -			    NETIF_F_HW_VLAN_CTAG_RX |
->> -			    NETIF_F_HW_CSUM | NETIF_F_TSO | NETIF_F_TSO6;
->> -	ndev->features = NETIF_F_HIGHDMA | NETIF_F_SG | NETIF_F_RXCSUM |
->> -			 NETIF_F_HW_VLAN_CTAG_TX |
->> -			 NETIF_F_HW_VLAN_CTAG_RX |
->> -			 NETIF_F_HW_CSUM | NETIF_F_TSO | NETIF_F_TSO6;
->> -	ndev->vlan_features = NETIF_F_SG | NETIF_F_HW_CSUM |
->> -			      NETIF_F_TSO | NETIF_F_TSO6;
->> +	netdev_hw_features_zero(ndev);
->> +	netdev_hw_features_set_array(ndev, &enetc_vf_hw_feature_set);
-> Hmm, I see that pattern
->
-> netdev*_features_zero();
-> netdev*_features_set_array();
->
-> pretty often, maybe create a couple static inlines like
-> 'netdev*_features_from_array'? And use it for initializing
-> shared/exported netdev_features as well? Otherwise, sooner or later,
-> but someone will forget to zero the features before setting them and
-> will get a garbage and some hard-to-track bugs %)
-Make sense, this also trouble me too. I will add it.
-BTW, I want to add a netdev*_features_from_bit too, for there
-are many places use "xxx_features = NET_IF_F_XXX".
-
-
->> +	netdev_active_features_zero(ndev);
->> +	netdev_active_features_set_array(ndev, &enetc_vf_feature_set);
->> +	netdev_vlan_features_zero(ndev);
->> +	netdev_vlan_features_set_array(ndev, &enetc_vf_vlan_feature_set);
->>   
->>   	if (si->num_rss)
->>   		ndev->hw_features |= NETIF_F_RXHASH;
->> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
->> index e8e2aa1e7f01..49850ee91d4e 100644
->> --- a/drivers/net/ethernet/freescale/fec_main.c
->> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> [...]
->
->> +static DECLARE_NETDEV_FEATURE_SET(fun_vlan_feature_set,
->> +				  NETIF_F_SG_BIT,
->> +				  NETIF_F_HW_CSUM_BIT,
->> +				  NETIF_F_HIGHDMA_BIT);
->> +
->>   static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
->>   {
->> +	netdev_features_t gso_encap_flags = netdev_empty_features;
->> +	netdev_features_t tso_flags = netdev_empty_features;
-> Same here as I mentioned previously, direct assignments wouldn't
-> work here later for bitmaps. So it's rather bitmap_copy(), i.e.
-> netdev_features_copy(), or am I missing something?
-netdev_features_t will be converted from u64 to structure below:
-
-	typedef struct {
-
-		DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
-
-	} netdev_features_t;
-
-So directly assignement is ok
-
->>   	struct fun_dev *fdev = &ed->fdev;
->> +	netdev_features_t vlan_feat;
->>   	struct net_device *netdev;
->>   	struct funeth_priv *fp;
->>   	unsigned int ntx, nrx;
-> [...]
->
->> @@ -1265,6 +1266,13 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
->>   			  dev->net->dev_addr);
->>   }
->>   
->> +DECLARE_NETDEV_FEATURE_SET(ax88179_feature_set,
-> static?
-> You can use sparse to detect such places (`make C=1`).
-Right, I will check it.
-
->> +			   NETIF_F_SG_BIT,
->> +			   NETIF_F_IP_CSUM_BIT,
->> +			   NETIF_F_IPV6_CSUM_BIT,
->> +			   NETIF_F_RXCSUM_BIT,
->> +			   NETIF_F_TSO_BIT);
+>>   drivers/hsi/clients/ssi_protocol.c             | 2 +-
+>>   drivers/net/caif/caif_serial.c                 | 2 +-
+>>   drivers/net/ethernet/amazon/ena/ena_netdev.c   | 2 +-
+>>   drivers/net/ethernet/broadcom/b44.c            | 2 +-
+>>   drivers/net/ethernet/broadcom/tg3.c            | 2 +-
+>>   drivers/net/ethernet/dnet.c                    | 2 +-
+>>   drivers/net/ethernet/ec_bhf.c                  | 2 +-
+>>   drivers/net/ethernet/emulex/benet/be_main.c    | 2 +-
+>>   drivers/net/ethernet/ethoc.c                   | 2 +-
+>>   drivers/net/ethernet/huawei/hinic/hinic_main.c | 5 +++--
+>>   drivers/net/ethernet/ibm/ibmvnic.c             | 6 +++---
+>>   drivers/net/ethernet/intel/iavf/iavf_main.c    | 9 +++++----
+>>   drivers/net/ethernet/microsoft/mana/mana_en.c  | 2 +-
+>>   drivers/net/ethernet/sfc/ef10.c                | 2 +-
+>>   drivers/net/tap.c                              | 2 +-
+>>   drivers/net/tun.c                              | 2 +-
+>>   drivers/net/usb/cdc-phonet.c                   | 3 ++-
+>>   drivers/net/usb/lan78xx.c                      | 2 +-
+>>   drivers/s390/net/qeth_core_main.c              | 2 +-
+>>   drivers/usb/gadget/function/f_phonet.c         | 3 ++-
+>>   net/dccp/ipv4.c                                | 2 +-
+>>   net/dccp/ipv6.c                                | 2 +-
+>>   net/ethtool/features.c                         | 2 +-
+>>   net/ethtool/ioctl.c                            | 6 ++++--
+>>   net/ipv4/af_inet.c                             | 2 +-
+>>   net/ipv4/tcp.c                                 | 2 +-
+>>   net/ipv4/tcp_ipv4.c                            | 2 +-
+>>   net/ipv6/af_inet6.c                            | 2 +-
+>>   net/ipv6/inet6_connection_sock.c               | 2 +-
+>>   net/ipv6/tcp_ipv6.c                            | 2 +-
+>>   net/openvswitch/datapath.c                     | 2 +-
+>>   31 files changed, 44 insertions(+), 38 deletions(-)
 > [...]
 >
 >> -- 
 >> 2.33.0
 > Thanks,
 > Olek
->
 > .
-
+>
 Thanks,
 Jian
