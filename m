@@ -2,108 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8FF58E9ED
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 11:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D85C158EA02
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 11:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232204AbiHJJn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 05:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
+        id S231239AbiHJJqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 05:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiHJJn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:43:57 -0400
-X-Greylist: delayed 733 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Aug 2022 02:43:54 PDT
-Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D6375005F;
-        Wed, 10 Aug 2022 02:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=2VIQQ
-        95gk95C9WT9eCAq0QCaLRckhjSmiqdbBAKp79Q=; b=gj87QYmU3HkOFsQhtIVIE
-        X9Jk7mdtV5neLx6LqoFnqCtD8uBNBY+9aQXrZYJ+LAygHdu9xp+P4ODH+uN6O8OK
-        LVflaBwXtcF6hKv4MWiwxYSWSLN4D47Zub6pIYnKTbmvcDnDWFZKakJvxvgPJJc/
-        fzI0cYnyvFbJA4ojwTGBkQ=
-Received: from slark_xiao$163.com ( [112.97.48.210] ) by
- ajax-webmail-wmsvr114 (Coremail) ; Wed, 10 Aug 2022 17:41:22 +0800 (CST)
-X-Originating-IP: [112.97.48.210]
-Date:   Wed, 10 Aug 2022 17:41:22 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re:Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion
- MV32
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
-References: <20220810014521.9383-1-slark_xiao@163.com>
- <8735e4mvtd.fsf@miraculix.mork.no>
- <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S232265AbiHJJqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:46:00 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA68D20BCD
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 02:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660124757; x=1691660757;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cSZd9BJbm1lNmN1qaqPLVMyi3/Nu3SGj86nne8+8gzQ=;
+  b=is3u8i/XUAfEu/HmBXXBcNZTEvca+i/7tClzqmfCMoBUq8qTFmBoXgag
+   7K6ojXWhCRBCyumz4TVDcr9cJKv5eGskME2rARb9cdJ+qinQw5dlIUSJt
+   1cH58QmbeBo+tKN3IKich0TDtZvEUN5MWBIdr9B9Oz/0SSoVkJhBI2tuz
+   Ecr6b7KBP4hfbVBob5QCSheBHZou7WjsWaRaecR6ZZPsIqcGrT55ChLu8
+   AgLRrp9VT6kIMoZXn2U+5CafK3cnP83Um9fpXE8+vEtR3eAeyk89501wE
+   8V8m0hE0qCdiSdq1yV0fchomYAQZDv3yCQ11F/cecSPg4IfQ7fLvqVr3z
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="274096951"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="274096951"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 02:45:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="581171135"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga006.jf.intel.com with ESMTP; 10 Aug 2022 02:45:54 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27A9jrX4010766;
+        Wed, 10 Aug 2022 10:45:53 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv7 PATCH net-next 01/36] net: introduce operation helpers for netdev features
+Date:   Wed, 10 Aug 2022 11:43:58 +0200
+Message-Id: <20220810094358.1303843-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220810030624.34711-2-shenjian15@huawei.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-2-shenjian15@huawei.com>
 MIME-Version: 1.0
-Message-ID: <61ca0e63.3207.18287214d7a.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: csGowAD3L9NCffNioYosAA--.32997W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDRpZZFaEKSJ5BQABsO
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKCkF0IDIwMjItMDgtMTAgMTc6Mjg6NTEsICJTbGFyayBYaWFvIiA8c2xhcmtfeGlhb0AxNjMu
-Y29tPiB3cm90ZToKPkF0IDIwMjItMDgtMTAgMTQ6NTU6NDIsICJCasO4cm4gTW9yayIgPGJqb3Ju
-QG1vcmsubm8+IHdyb3RlOgo+PlNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4gd3JpdGVz
-Ogo+Pgo+Pj4gVGhlcmUgYXJlIDIgbW9kZWxzIGZvciBNVjMyIHNlcmlhbHMuIE1WMzItVy1BIGlz
-IGRlc2lnbmVkCj4+PiBiYXNlZCBvbiBRdWFsY29tbSBTRFg2MiBjaGlwLCBhbmQgTVYzMi1XLUIg
-aXMgZGVzaWduZWQgYmFzZWQKPj4+IG9uIFF1YWxjb21tIFNEWDY1IGNoaXAuIFNvIHdlIHVzZSAy
-IGRpZmZlcmVudCBQSUQgdG8gc2VwYXJhdGUgaXQuCj4+Pgo+Pj4gVGVzdCBldmlkZW5jZSBhcyBi
-ZWxvdzoKPj4+IFQ6ICBCdXM9MDMgTGV2PTAxIFBybnQ9MDEgUG9ydD0wMiBDbnQ9MDMgRGV2Iz0g
-IDMgU3BkPTQ4MCBNeENoPSAwCj4+PiBEOiAgVmVyPSAyLjEwIENscz1lZihtaXNjICkgU3ViPTAy
-IFByb3Q9MDEgTXhQUz02NCAjQ2Zncz0gIDEKPj4+IFA6ICBWZW5kb3I9MWUyZCBQcm9kSUQ9MDBm
-MyBSZXY9MDUuMDQKPj4+IFM6ICBNYW51ZmFjdHVyZXI9Q2ludGVyaW9uCj4+PiBTOiAgUHJvZHVj
-dD1DaW50ZXJpb24gUElEIDB4MDBGMyBVU0IgTW9iaWxlIEJyb2FkYmFuZAo+Pj4gUzogIFNlcmlh
-bE51bWJlcj1kN2I0YmU4ZAo+Pj4gQzogICNJZnM9IDQgQ2ZnIz0gMSBBdHI9YTAgTXhQd3I9NTAw
-bUEKPj4+IEk6ICBJZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFBy
-b3Q9NTAgRHJpdmVyPXFtaV93d2FuCj4+PiBJOiAgSWYjPTB4MSBBbHQ9IDAgI0VQcz0gMyBDbHM9
-ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTQwIERyaXZlcj1vcHRpb24KPj4+IEk6ICBJZiM9MHgyIEFs
-dD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9NDAgRHJpdmVyPW9wdGlvbgo+
-Pj4gSTogIElmIz0weDMgQWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJvdD0z
-MCBEcml2ZXI9b3B0aW9uCj4+Cj4+VGhlIHBhdGNoIGxvb2tzIG5pY2UsIGJ1dCBJIGhhdmUgYSBj
-b3VwbGUgb2YgcXVlc3Rpb25zIHNpbmNlIHlvdSdyZSBvbmUKPj5vZiB0aGUgZmlyc3QgcHVzaGlu
-ZyBvbmUgb2YgdGhlc2UgU0RYNnggbW9kZW1zLgo+Pgo+PklzIHRoYXQgcHJvdG9jb2wgcGF0dGVy
-biBmaXhlZCBvbiB0aGlzIGdlbmVyYXRpb24gb2YgUXVhbGNvbW0gY2hpcHM/ICBJdAo+Pmxvb2tz
-IGxpa2UgYW4gZXh0ZW5zaW9uIG9mIHdoYXQgdGhleSBzdGFydGVkIHdpdGggdGhlIFNEWDU1IGdl
-bmVyYXRpb24sCj4+d2hlcmUgdGhlIERJQUcgcG9ydCB3YXMgaWRlbnRpZmllZCBieSBmZi9mZi8z
-MCBhY3Jvc3MgbXVsdGlwbGUgdmVuZG9ycy4KPj4KPiBTZWVtcyB5ZXMuIEkgY2hlY2tlZCBzb21l
-IGRpZmZlcmVudCB1c2JfY29tcG9zaXRpb25zIGFuZCBmb3VuZCB0aGF0Cj4gZGlhZyBwb3J0IGlz
-IHVzaW5nIHByb3RvY29sICczMCcgYWx3YXlzLgo+Cj4+U3BlY2lmaWNhbGx5IHdydCB0aGlzIGRy
-aXZlciBhbmQgcGF0Y2gsIEkgd29uZGVyIGlmIHdlIGNhbi9zaG91bGQgbWF0Y2gKPj5vbiBmZi9m
-Zi81MCBpbnN0ZWFkIG9mIGludGVyZmFjZSBudW1iZXIgaGVyZT8gIEkgbm90ZSB0aGF0IHRoZSBp
-bnRlcmZhY2UKPgo+SSBjaGVja2VkIGFsbCBvdXIgZWRpdGVkIHVzYl9jb21wb3NpdGlvbnMgYW5k
-IGFsbCBRQyBkZWZhdWx0IHVzYiAKPmNvbXBvc2l0aW9ucyg5MDI1LCA5MGRiLCA5MDY3LDkwZDUs
-OTA4NCw5MDkxLDkwYWQsOTBiOCw5MGU1KSwgCj5mZi9mZi81MCBpcyBybW5ldCB1c2VkIG9ubHku
-IAo+Cj4+bnVtYmVycyBhcmUgYWxsb2NhdGVkIHNlcXVlbnRpb25hbGx5LiBQcm9iYWJseSBpbiB0
-aGUgb3JkZXIgdGhlc2UKPj5mdW5jdGlvbiBhcmUgZW5hYmxlZCBieSB0aGUgZmlybXdhcmU/IElm
-IHNvLCBhcmUgd2Ugc3VyZSB0aGlzIGlzIHN0YXRpYz8KPgo+VGhpcyBuZWVkcyBtb3JlIHRpbWUg
-dG8gY29uZmlybS4gSSB3aWxsIGtlZXAgeW91IHVwZGF0ZWQuCj4KPj5PciBjb3VsZCB3ZSByaXNr
-IGNvbmZpZyB2YXJpYW50cyB3aGVyZSB0aGUgUk1ORVQvUU1JIGZ1bmN0aW9uIGhhdmUgYQo+PmRp
-ZmZlcmVudCBpbnRlcmZhY2UgbnVtYmVyIGZvciB0aGUgc2FtZSBQSURzPwo+Pgo+PkFuZCBhbm90
-aGVyIHBvc3NpYmlsaXR5IHlvdSBtaWdodCBjb25zaWRlci4gIEFzc3VtaW5nIHRoYXQgZmYvZmYv
-NTAKPj51bmlxdWVseSBpZGVudGlmaWVzIFJNTkVUL1FNSSBmdW5jdGlvbnMgcmVnYXJkbGVzcyBv
-ZiBQSUQsIHdvdWxkIHlvdQo+PmNvbnNpZGVyIGEgVklEK2NsYXNzIG1hdGNoIHRvIGNhdGNoIGFs
-bCBvZiB0aGVtPyAgVGhpcyB3b3VsZCBub3Qgb25seQo+PnN1cHBvcnQgYm90aCB0aGUgUElEcyBv
-ZiB0aGlzIHBhdGNoIGluIG9uZSBnbywgYnV0IGFsc28gYW55IGZ1dHVyZSBQSURzCj4+d2l0aG91
-dCB0aGUgbmVlZCBmb3IgZnVydGhlciBkcml2ZXIgcGF0Y2hlcy4KPj4KPj4KPj5CasO4cm4KPgo+
-SSBoYXZlIGEgY29uY2VybiwgaWYgQ2ludGVyaW9uIG9yIG90aGVyIFZlbmRvcnMsIGxpa2UgUXVl
-Y3RlbCwgdXNlIG90aGVyIAo+Y2hpcCAoc3VjaCBhcyBpbnRlbCwgbWVkaWF0ZWNrIGFuZCBzbyBv
-biksIHRoaXMgbWV0aG9kcyBtYXkgd29uJ3Qgd29yaywKCk15IGJhZC4gUU1JX1dXQU4gZHJpdmVy
-IGlzIGRlc2lnbmVkIGZvciBRdWFsY29tbSBiYXNlZCBjaGlwcyBvbmx5LArCoHJpZ2h0PyAKCj5i
-ZWNhdXNlICB0aGV5IHNoYXJlIGEgc2FtZSBWSUQuIEFsc28gdGhpcyBtYXkgYmUgY2hhbmdlZCBv
-bmNlIFF1YWxjb21tIAo+dXBkYXRlIHRoZSBwcm90b2NvbCBwYXR0ZXJucyBmb3IgZnV0dXJlIGNo
-aXAuCgoK
+From: Jian Shen <shenjian15@huawei.com>
+Date: Wed, 10 Aug 2022 11:05:49 +0800
+
+> Introduce a set of bitmap operation helpers for netdev features,
+> then we can use them to replace the logical operation with them.
+> 
+> The implementation of these helpers are based on the old prototype
+> of netdev_features_t is still u64. These helpers will be rewritten
+> on the last patch, when the prototype changes.
+> 
+> To avoid interdependencies between netdev_features_helper.h and
+> netdevice.h, put the helpers for testing feature in the netdevice.h,
+> and move advandced helpers like netdev_get_wanted_features() and
+> netdev_intersect_features() to netdev_features_helper.h.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> ---
+>  include/linux/netdev_features.h        |  11 +
+>  include/linux/netdev_features_helper.h | 707 +++++++++++++++++++++++++
+
+'netdev_feature_helpers.h' fits more I guess, doesn't it? It
+contains several helpers, not only one.
+And BTW, do you think it's worth to create a new file rather than
+put everything just in netdev_features.h?
+
+>  include/linux/netdevice.h              |  45 +-
+>  net/8021q/vlan_dev.c                   |   1 +
+>  net/core/dev.c                         |   1 +
+>  5 files changed, 747 insertions(+), 18 deletions(-)
+>  create mode 100644 include/linux/netdev_features_helper.h
+> 
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 7c2d77d75a88..9d434b4e6e6e 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -11,6 +11,17 @@
+>  
+>  typedef u64 netdev_features_t;
+>  
+> +struct netdev_feature_set {
+> +	unsigned int cnt;
+> +	unsigned short feature_bits[];
+> +};
+> +
+> +#define DECLARE_NETDEV_FEATURE_SET(name, features...)			\
+> +	const struct netdev_feature_set name = {			\
+> +		.cnt = sizeof((unsigned short[]){ features }) / sizeof(unsigned short),	\
+> +		.feature_bits = { features },				\
+> +	}
+> +
+>  enum {
+>  	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
+>  	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+> diff --git a/include/linux/netdev_features_helper.h b/include/linux/netdev_features_helper.h
+> new file mode 100644
+> index 000000000000..5423927d139b
+> --- /dev/null
+> +++ b/include/linux/netdev_features_helper.h
+> @@ -0,0 +1,707 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * Network device features helpers.
+> + */
+> +#ifndef _LINUX_NETDEV_FEATURES_HELPER_H
+> +#define _LINUX_NETDEV_FEATURES_HELPER_H
+> +
+> +#include <linux/netdevice.h>
+> +
+> +static inline void netdev_features_zero(netdev_features_t *dst)
+> +{
+> +	*dst = 0;
+> +}
+> +
+> +/* active_feature prefer to netdev->features */
+> +#define netdev_active_features_zero(ndev) \
+> +		netdev_features_zero(&ndev->features)
+
+netdev_features_t sometimes is being placed and used on the stack.
+I think it's better to pass just `netdev_features_t *` to those
+helpers, this way you wouldn't also need to create a new helper
+for each net_device::*_features.
+
+> +
+> +#define netdev_hw_features_zero(ndev) \
+> +		netdev_features_zero(&ndev->hw_features)
+> +
+> +#define netdev_wanted_features_zero(ndev) \
+
+[...]
+
+> +#define netdev_gso_partial_features_and(ndev, __features) \
+> +		netdev_features_and(ndev->gso_partial_features, __features)
+> +
+> +/* helpers for netdev features '&=' operation */
+> +static inline void
+> +netdev_features_mask(netdev_features_t *dst,
+> +			   const netdev_features_t features)
+> +{
+> +	*dst = netdev_features_and(*dst, features);
+
+A small proposal: if you look at bitmap_and() for example, it
+returns 1 if the resulting bitmap is non-empty and 0 if it is. What
+about doing the same here? It would probably help to do reduce
+boilerplating in the drivers where we only want to know if there's
+anything left after masking.
+Same for xor, toggle etc.
+
+> +}
+> +
+> +static inline void
+> +netdev_active_features_mask(struct net_device *ndev,
+> +			    const netdev_features_t features)
+> +{
+> +	ndev->features = netdev_active_features_and(ndev, features);
+> +}
+
+[...]
+
+> +/* helpers for netdev features 'set bit array' operation */
+> +static inline void
+> +netdev_features_set_array(const struct netdev_feature_set *set,
+> +			  netdev_features_t *dst)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < set->cnt; i++)
+
+Nit: kernel is C11 now, you can do just `for (u32 i = 0; i ...`.
+(and yeah, it's better to use unsigned types when you don't plan
+to store negative values there).
+
+> +		netdev_feature_add(set->feature_bits[i], dst);
+> +}
+
+[...]
+
+> -- 
+> 2.33.0
+
+Thanks,
+Olek
