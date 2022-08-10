@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C2958F019
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 18:10:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FBE758F016
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 18:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233358AbiHJQKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 12:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
+        id S233337AbiHJQKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 12:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbiHJQKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 12:10:08 -0400
+        with ESMTP id S232372AbiHJQKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 12:10:07 -0400
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E312D7A527;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5047C745;
         Wed, 10 Aug 2022 09:10:06 -0700 (PDT)
 Received: from dev010.ch-qa.sw.ru ([172.29.1.15])
         by relay.virtuozzo.com with esmtp (Exim 4.95)
         (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1oLoF9-00F6Pf-It;
-        Wed, 10 Aug 2022 18:08:38 +0200
+        id 1oLoFB-00F6Pf-I0;
+        Wed, 10 Aug 2022 18:08:40 +0200
 From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+Cc:     "Denis V. Lunev" <den@openvz.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -31,19 +31,18 @@ Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
         Yajun Deng <yajun.deng@linux.dev>,
         Roopa Prabhu <roopa@nvidia.com>,
         Christian Brauner <brauner@kernel.org>,
-        linux-kernel@vger.kernel.org, "Denis V . Lunev" <den@openvz.org>,
+        linux-kernel@vger.kernel.org,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
         Konstantin Khorenko <khorenko@virtuozzo.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>,
         kernel@openvz.org, devel@openvz.org
-Subject: [PATCH v2 0/2] neighbour: fix possible DoS due to net iface start/stop loop
-Date:   Wed, 10 Aug 2022 19:08:38 +0300
-Message-Id: <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
+Subject: [PATCH v2 1/2] neigh: fix possible DoS due to net iface start/stop loop
+Date:   Wed, 10 Aug 2022 19:08:39 +0300
+Message-Id: <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+In-Reply-To: <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
 References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -55,93 +54,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear friends,
+From: "Denis V. Lunev" <den@openvz.org>
 
-Recently one of OpenVZ users reported that they have issues with network
-availability of some containers. It was discovered that the reason is absence
-of ARP replies from the Host Node on the requests about container IPs.
+Normal processing of ARP request (usually this is Ethernet broadcast
+packet) coming to the host is looking like the following:
+* the packet comes to arp_process() call and is passed through routing
+  procedure
+* the request is put into the queue using pneigh_enqueue() if
+  corresponding ARP record is not local (common case for container
+  records on the host)
+* the request is processed by timer (within 80 jiffies by default) and
+  ARP reply is sent from the same arp_process() using
+  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
+  pneigh_enqueue())
 
-Of course, we started from tcpdump analysis and noticed that ARP requests
-successfuly comes to the problematic node external interface. So, something
-was wrong from the kernel side.
+And here the problem comes. Linux kernel calls pneigh_queue_purge()
+which destroys the whole queue of ARP requests on ANY network interface
+start/stop event through __neigh_ifdown().
 
-I've played a lot with arping and perf in attempts to understand what's
-happening. And the key observation was that we experiencing issues only
-with ARP requests with broadcast source ip (skb->pkt_type == PACKET_BROADCAST).
-But for packets skb->pkt_type == PACKET_HOST everything works flawlessly.
+This is actually not a problem within the original world as network
+interface start/stop was accessible to the host 'root' only, which
+could do more destructive things. But the world is changed and there
+are Linux containers available. Here container 'root' has an access
+to this API and could be considered as untrusted user in the hosting
+(container's) world.
 
-Let me show a small piece of code:
+Thus there is an attack vector to other containers on node when
+container's root will endlessly start/stop interfaces. We have observed
+similar situation on a real production node when docker container was
+doing such activity and thus other containers on the node become not
+accessible.
 
-static int arp_process(struct sock *sk, struct sk_buff *skb)
-...
-				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
-				    skb->pkt_type == PACKET_HOST ||
-				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) { // reply instantly
-					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
-						     sip, dev, tip, sha,
-						     dev->dev_addr, sha,
-						     reply_dst);
-				} else {
-					pneigh_enqueue(&arp_tbl,                     // reply with delay
-						       in_dev->arp_parms, skb);
-					goto out_free_dst;
-				}
-
-The problem was that for PACKET_BROADCAST packets we delaying replies and use pneigh_enqueue() function.
-For some reason, queued packets were lost almost all the time! The reason for such behaviour is pneigh_queue_purge()
-function which cleanups all the queue, and this function called everytime once some network device in the system
-gets link down.
-
-neigh_ifdown -> pneigh_queue_purge
-
-Now imagine that we have a node with 500+ containers with microservices. And some of that microservices are buggy
-and always restarting... in this case, pneigh_queue_purge function will be called very frequently.
-
-This problem is reproducible only with so-called "host routed" setup. The classical scheme bridge + veth
-is not affected.
-
-Minimal reproducer
-
-Suppose that we have a network 172.29.1.1/16 brd 172.29.255.255
-and we have free-to-use IP, let it be 172.29.128.3
-
-1. Network configuration. I showing the minimal configuration, it makes no sense
-as we have both veth devices stay at the same net namespace, but for demonstation and simplicity sake it's okay.
-
-ip l a veth31427 type veth peer name veth314271
-ip l s veth31427 up
-ip l s veth314271 up
-
-# setup static arp entry and publish it
-arp -Ds -i br0 172.29.128.3 veth31427 pub
-# setup static route for this address
-route add 172.29.128.3/32 dev veth31427
-
-2. "attacker" side (kubernetes pod with buggy microservice :) )
-
-unshare -n
-ip l a type veth
-ip l s veth0 up
-ip l s veth1 up
-for i in {1..100000}; do ip link set veth0 down; sleep 0.01; ip link set veth0 up; done
-
-This will totaly block ARP replies for 172.29.128.3 address. Just try
-# arping -I eth0 172.29.128.3 -c 4
-
-Our proposal is simple:
-1. Let's cleanup queue partially. Remove only skb's that related to the net namespace
-of the adapter which link is down.
-
-2. Let's account proxy_queue limit properly per-device. Current limitation looks
-not fully correct because we comparing per-device configurable limit with the
-"global" qlen of proxy_queue.
-
-Thanks,
-Alex
+The patch proposed doing very simple thing. It drops only packets from
+the same namespace in the pneigh_queue_purge() where network interface
+state change is detected. This is enough to prevent the problem for the
+whole node preserving original semantics of the code.
 
 v2:
-	- only ("neigh: fix possible DoS due to net iface start/stop") is changed
-		do del_timer_sync() if queue is empty after pneigh_queue_purge()
+	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
 
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
@@ -154,27 +104,71 @@ Cc: Roopa Prabhu <roopa@nvidia.com>
 Cc: Christian Brauner <brauner@kernel.org>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
-Cc: Denis V. Lunev <den@openvz.org>
 Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Cc: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
 Cc: kernel@openvz.org
 Cc: devel@openvz.org
+Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+---
+ net/core/neighbour.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-Alexander Mikhalitsyn (1):
-  neighbour: make proxy_queue.qlen limit per-device
-
-Denis V. Lunev (1):
-  neigh: fix possible DoS due to net iface start/stop loop
-
- include/net/neighbour.h |  1 +
- net/core/neighbour.c    | 46 +++++++++++++++++++++++++++++++++--------
- 2 files changed, 38 insertions(+), 9 deletions(-)
-
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 54625287ee5b..19d99d1eff53 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -307,14 +307,23 @@ static int neigh_del_timer(struct neighbour *n)
+ 	return 0;
+ }
+ 
+-static void pneigh_queue_purge(struct sk_buff_head *list)
++static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ {
++	unsigned long flags;
+ 	struct sk_buff *skb;
+ 
+-	while ((skb = skb_dequeue(list)) != NULL) {
+-		dev_put(skb->dev);
+-		kfree_skb(skb);
++	spin_lock_irqsave(&list->lock, flags);
++	skb = skb_peek(list);
++	while (skb != NULL) {
++		struct sk_buff *skb_next = skb_peek_next(skb, list);
++		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
++			__skb_unlink(skb, list);
++			dev_put(skb->dev);
++			kfree_skb(skb);
++		}
++		skb = skb_next;
+ 	}
++	spin_unlock_irqrestore(&list->lock, flags);
+ }
+ 
+ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+@@ -385,9 +394,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+ 	write_lock_bh(&tbl->lock);
+ 	neigh_flush_dev(tbl, dev, skip_perm);
+ 	pneigh_ifdown_and_unlock(tbl, dev);
+-
+-	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
++	if (skb_queue_empty_lockless(&tbl->proxy_queue))
++		del_timer_sync(&tbl->proxy_timer);
+ 	return 0;
+ }
+ 
+@@ -1787,7 +1796,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+ 	cancel_delayed_work_sync(&tbl->managed_work);
+ 	cancel_delayed_work_sync(&tbl->gc_work);
+ 	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue);
++	pneigh_queue_purge(&tbl->proxy_queue, NULL);
+ 	neigh_ifdown(tbl, NULL);
+ 	if (atomic_read(&tbl->entries))
+ 		pr_crit("neighbour leakage\n");
 -- 
 2.36.1
 
