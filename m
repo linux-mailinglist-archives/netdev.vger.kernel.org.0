@@ -2,131 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 584F158F279
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 20:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAEA58F2A9
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiHJSkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 14:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45220 "EHLO
+        id S230359AbiHJTAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 15:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232286AbiHJSkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 14:40:09 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4946C120
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 11:40:07 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id x21so20230072edd.3
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 11:40:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=QZ9ZtsjJrzcjOd1SrD7hyJb5wcKu+C0MspNQVOUI6/8=;
-        b=H8yWkOw/qqfc7+DPEAHYXQdAFTfmYPDc3ErBFbBJ6VB0skyzBygmXX/09Rfua9fc2b
-         QHJR2OgaA7JnbIm0MGuugEwB3KYbE1d2OxQdRiErYxxveSqVGu0Dm6hfrB6XHVe2JG38
-         VxowCNGP9CfBtX1tKcaKN3kHV50PyzrGtHymmAb3v6OiRgd1IPCDJubbAp1zbDq7sPyw
-         uoSaRcl74/Jcg5OkDb3gPAOrjwAeprdX5f94y1LQh2JjzhaOV7Hmi2y0BDU/zdE09eRh
-         QIjItQv5t5zqKcdBuAYBz6Ning4oaGyQwxvRxFdfI+zQNySCbaVMSwujtr78jwxRgrHl
-         Izxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QZ9ZtsjJrzcjOd1SrD7hyJb5wcKu+C0MspNQVOUI6/8=;
-        b=sfMM9J+gn5L2TTHcFwZIK64iPNVTTJcXs1fKPhS89/5gCljC80kZbpjhlswy1l9ba4
-         6SZhG4DHfuHdbr9yzrnrWO3eu0btY7Q3WzJiby9ePVfvoXFXl2Cis+ZS5q59LV/Ye0g+
-         3cXboi4IHSnQkJ3HRIEhBaHm3hwJzjjcDrtc8BnyniVbqQoCpcHNZFuCX2YIpDdxAmOc
-         qrHTeGO9zS9X7yoIKBThgAcFeFudkbdugCjDzoH9iPlQc1/3VyiEJPRQLQ6Hwubch/WA
-         78QktXedNY415pzEORmDC5MKI0H+wSFfZKAKhCCkC6Q/jhaoyGBEcqjV2xlSGqMy6+/a
-         8trw==
-X-Gm-Message-State: ACgBeo00hJGMs2I1tbahW1d7tNPll46NG2lBhStoxGP8QU+R0TverZbw
-        0U20oDQ4OvgeEyJS7tJfxm8=
-X-Google-Smtp-Source: AA6agR6+fNx59rO0opcRaIrSz8b9O+DbaOpNlRxKDuTD7DYInHK36Izo0EAQQejIonqU1e0aKKaaQg==
-X-Received: by 2002:a05:6402:34c6:b0:43d:8cea:76c0 with SMTP id w6-20020a05640234c600b0043d8cea76c0mr28271487edc.268.1660156805786;
-        Wed, 10 Aug 2022 11:40:05 -0700 (PDT)
-Received: from [192.168.2.114] (p5b3dd6ec.dip0.t-ipconnect.de. [91.61.214.236])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b00721d8e5bf0bsm2594850ejo.6.2022.08.10.11.40.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 11:40:05 -0700 (PDT)
-Message-ID: <47c884e9-e5ea-16a2-38e5-7b7f61e77e80@gmail.com>
-Date:   Wed, 10 Aug 2022 20:40:03 +0200
+        with ESMTP id S230095AbiHJTAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:00:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D190D4;
+        Wed, 10 Aug 2022 12:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5F5EB81B5E;
+        Wed, 10 Aug 2022 19:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E676C433D6;
+        Wed, 10 Aug 2022 19:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660158015;
+        bh=k0Q5bajyKIBZrWFSLzKBSZvdrKWfsZKmcC5siRp1c0w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TV3qfwUGXag23WG4dxqwR9udyhw8A5M8Y1hupIx/CWwxuecwpuPF/1AezMKvZw/xI
+         H57skQhMgF69xUG1dx2E8Cg87BLdchlBuHJrl+k3LczP/CRdql2jE3HJb7mXD46NRE
+         DbB6l1R9iYbgLLuxcM3Bk8TuhppRdRNTz3zrq2hwoq0ZRqyK4Ft2PiQZgPhcF93kMw
+         RKKvwKpFbwX2n21YoPEH4CgCX9qWWWZmRX5kM8nv++ZcjsMPHf0J2p5/6cGsX74deG
+         VFXUGwz1p9TqSR36GYRVRWWk7Twi5HZck0sM2nVnvnbaLx2ibPHPifPjbftsZ5yQwz
+         Ym66wL35EiJNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 59FD6C43143;
+        Wed, 10 Aug 2022 19:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: Question: Ethernet Phy issues on Colibri IMX8X (imx8qxp) - kernel
- 5.19
-Content-Language: en-US
-To:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "qiangqing.zhang@nxp.com" <qiangqing.zhang@nxp.com>
-Cc:     "philipp.rossak@formulastudent.de" <philipp.rossak@formulastudent.de>,
-        "guoniu.zhou@nxp.com" <guoniu.zhou@nxp.com>,
-        "aisheng.dong@nxp.com" <aisheng.dong@nxp.com>,
-        "abel.vesa@nxp.com" <abel.vesa@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-References: <90d979b7-7457-34b0-5142-fe288c4206d8@gmail.com>
- <7d541e1dfa1e93abf901f96c60be54b01c78371c.camel@toradex.com>
-From:   Philipp Rossak <embed3d@gmail.com>
-In-Reply-To: <7d541e1dfa1e93abf901f96c60be54b01c78371c.camel@toradex.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next 00/15] bpf: Introduce selectable memcg for bpf map 
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166015801536.14189.14692203185396182235.git-patchwork-notify@kernel.org>
+Date:   Wed, 10 Aug 2022 19:00:15 +0000
+References: <20220810151840.16394-1-laoar.shao@gmail.com>
+In-Reply-To: <20220810151840.16394-1-laoar.shao@gmail.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+Hello:
 
-thanks!
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-With the removed line it is working now!
+On Wed, 10 Aug 2022 15:18:25 +0000 you wrote:
+> On our production environment, we may load, run and pin bpf programs and
+> maps in containers. For example, some of our networking bpf programs and
+> maps are loaded and pinned by a process running in a container on our
+> k8s environment. In this container, there're also running some other
+> user applications which watch the networking configurations from remote
+> servers and update them on this local host, log the error events, monitor
+> the traffic, and do some other stuffs. Sometimes we may need to update
+> these user applications to a new release, and in this update process we
+> will destroy the old container and then start a new genration. In order not
+> to interrupt the bpf programs in the update process, we will pin the bpf
+> programs and maps in bpffs. That is the background and use case on our
+> production environment.
+> 
+> [...]
 
-I hope there will be a mainlined solution soon.
+Here is the summary with links:
+  - [bpf-next,01/15] bpf: Remove unneeded memset in queue_stack_map creation
+    https://git.kernel.org/bpf/bpf-next/c/083818156d1e
+  - [bpf-next,02/15] bpf: Use bpf_map_area_free instread of kvfree
+    https://git.kernel.org/bpf/bpf-next/c/8f58ee54c2ea
+  - [bpf-next,03/15] bpf: Make __GFP_NOWARN consistent in bpf map creation
+    https://git.kernel.org/bpf/bpf-next/c/992c9e13f593
+  - [bpf-next,04/15] bpf: Use bpf_map_area_alloc consistently on bpf map creation
+    https://git.kernel.org/bpf/bpf-next/c/73cf09a36bf7
+  - [bpf-next,05/15] bpf: Fix incorrect mem_cgroup_put
+    (no matching commit)
+  - [bpf-next,06/15] bpf: Define bpf_map_{get,put}_memcg for !CONFIG_MEMCG_KMEM
+    (no matching commit)
+  - [bpf-next,07/15] bpf: Call bpf_map_init_from_attr() immediately after map creation
+    (no matching commit)
+  - [bpf-next,08/15] bpf: Save memcg in bpf_map_init_from_attr()
+    (no matching commit)
+  - [bpf-next,09/15] bpf: Use scoped-based charge in bpf_map_area_alloc
+    (no matching commit)
+  - [bpf-next,10/15] bpf: Introduce new helpers bpf_ringbuf_pages_{alloc,free}
+    (no matching commit)
+  - [bpf-next,11/15] bpf: Use bpf_map_kzalloc in arraymap
+    (no matching commit)
+  - [bpf-next,12/15] bpf: Use bpf_map_kvcalloc in bpf_local_storage
+    (no matching commit)
+  - [bpf-next,13/15] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
+    (no matching commit)
+  - [bpf-next,14/15] bpf: Add return value for bpf_map_init_from_attr
+    (no matching commit)
+  - [bpf-next,15/15] bpf: Introduce selectable memcg for bpf map
+    (no matching commit)
 
-Cheers
-Philipp
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-On 10.08.22 10:05, Marcel Ziswiler wrote:
-> Sali Philipp
-> 
-> On Wed, 2022-08-10 at 00:55 +0200, Philipp Rossak wrote:
->> Hi,
->>
->> I currently have a project with a Toradex Colibri IMX8X SOM board whith
->> an onboard Micrel KSZ8041NL Ethernet PHY.
->>
->> The hardware is described in the devictree properly so I expected that
->> the onboard Ethernet with the phy is working.
->>
->> Currently I'm not able to get the link up.
->>
->> I already compared it to the BSP kernel, but I didn't found anything
->> helpful. The BSP kernel is working.
->>
->> Do you know if there is something in the kernel missing and got it running?
-> 
-> Yes, you may just revert the following commit babfaa9556d7 ("clk: imx: scu: add more scu clocks")
-> 
-> Alternatively, just commenting out the following single line also helps:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/clk/imx/clk-imx8qxp.c?h=v5.19#n172
-> 
-> I just found this out about two weeks ago before I went to vacation and since have to find out with NXP what
-> exactly the idea of this clocking/SCFW stuff is related to our hardware.
-> 
-> @NXP: If any of you guys could shed some light that would be much appreciated. Thanks!
-> 
->> Thanks,
->> Philipp
-> 
-> Cheers
-> 
-> Marcel
+
