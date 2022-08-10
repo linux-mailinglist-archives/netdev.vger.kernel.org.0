@@ -2,110 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD36E58E5DC
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 05:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1AC58E602
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 06:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiHJD51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Aug 2022 23:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
+        id S229460AbiHJEHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 00:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230513AbiHJD4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Aug 2022 23:56:51 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FED8183A4;
-        Tue,  9 Aug 2022 20:56:50 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id 130so12542181pfv.13;
-        Tue, 09 Aug 2022 20:56:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=VbViPiMfYEo8YsJHLIxFOe8vL6Rq5IJv4yeCTON2bn0=;
-        b=LtJYBCDz/z/nZlg9Q8qpy/FIKNCW9+23OttzYV+4ke6lubt5u2GZBh20KXuC+CP80N
-         Gh7ypSCDjn/auZxIhN6O10SgZzd9GOqMwtvPq6R6FEqatQtD10E2EAp9qINvVuaqtKg4
-         7ECwfa2CX4+prA9JCMELKwUxQKyj5Ahsbg2+kpMccJ7+szHL/7d1wCjhWVyjEAoaxLUF
-         BJguzAfNUkfQ6XlQ0rd+FWG7UD8tGwYV4okJVlFWveAmrznTN8ssIBQ0qpty0qKYTWsU
-         N9uvWBtvjXfVLR2imZgLbmIDruGO7EDIdjRiS5MKMdZ1nIep2lMaK2I01chasUQtY6Zy
-         9YDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=VbViPiMfYEo8YsJHLIxFOe8vL6Rq5IJv4yeCTON2bn0=;
-        b=z2L7Srq26hbk58ZsYyEoaX+1slSz0RbreXA7bJQsy9DivVhI8j+Mj7BW7RFLe+qmAa
-         UdFwNhqluW/bzOUK0sBdP0WH6rUqwJTJ/ib4gRIrepojKILk/KaFsx7YSda0y7xBAcms
-         OohTeV2RqyNknG3ZEFIPBlfKR9oMlhLP8+J4keUacYZ+JejJB638wo09XXYezSdyer0x
-         J9538BtLm533AeJykj6S4M241Ed3iIJ4l2t0+iIuANvDndi7ZVRKxC2s6e1vS0S95pVC
-         Kz0wGsHwPwm6+Dfj2JAff5UKGnzzLPqMbsMk9vJLHxs39HxScZJVSVvvuIEdQW0KFDeL
-         V0AA==
-X-Gm-Message-State: ACgBeo23SX84AxQhpvwT2/I1Gic0bxv8tuGu5obx4JelpzjzdXpaDJ9P
-        6SIq7aBqglS/WGdOGRqhEbQ=
-X-Google-Smtp-Source: AA6agR6VL0M0iJuauiW+AZPM/GFw2xXN2YCUH62y8MdtjS/5TiTtLlywRoRggvK46EYXbV9QfEWPJw==
-X-Received: by 2002:a63:f545:0:b0:41d:f8cd:8a2a with SMTP id e5-20020a63f545000000b0041df8cd8a2amr779448pgk.572.1660103809743;
-        Tue, 09 Aug 2022 20:56:49 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a67-20020a624d46000000b0052d8405bcd2sm675741pfb.163.2022.08.09.20.56.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 20:56:49 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 11:56:44 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net v2 1/2] selftests: include bonding tests into the
- kselftest infra
-Message-ID: <YvMsfHf1HebcoQNp@Laptop-X1>
-References: <cover.1660098382.git.jtoppins@redhat.com>
- <d7902978499da81c6fa8bc530d16e2f71f84c0f1.1660098382.git.jtoppins@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d7902978499da81c6fa8bc530d16e2f71f84c0f1.1660098382.git.jtoppins@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231220AbiHJEHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 00:07:14 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10E4C74DF5;
+        Tue,  9 Aug 2022 21:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=oPlghozXfHqS+pVztD
+        9oUcgPWH9ApTg6zFBiMO/W9Ug=; b=Le20Q/qfcmT6qEKRlxq/vgt14WFpX2DSjV
+        fWhh4+NUoKDtMa8y3UuC0xEpENjiZTJOWeqQsYBPql8EPx5cBBbCc3ddMSE16Skg
+        feJs7sYBXbbJa8i6YKqF61SWXWS76ebGYcH+ObVs7WZHlfNY6uBiz+mmlbxO7kRX
+        bFdw81QVU=
+Received: from user-virtual-machine.localdomain (unknown [39.79.223.215])
+        by smtp3 (Coremail) with SMTP id G9xpCgCXsoxeLvNipShNUw--.49160S4;
+        Wed, 10 Aug 2022 12:06:10 +0800 (CST)
+From:   Jialiang Wang <wangjialiang0806@163.com>
+To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, wangjialiang0806@163.com,
+        niejianglei2021@163.com
+Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] nfp: fix use-after-free in area_cache_get()
+Date:   Wed, 10 Aug 2022 12:04:45 +0800
+Message-Id: <20220810040445.46015-1-wangjialiang0806@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: G9xpCgCXsoxeLvNipShNUw--.49160S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxuF43JFW3tF17WrWrCryfJFb_yoWrJw1kpF
+        yUJ3yrCrW8WrsrWw4DJFW8Z3sY939xta43u3WrAw4F9a4a9r47JF1xKr45Xr1UKFW8tFyf
+        uryYvr9xJFs8Zw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UG1v-UUUUU=
+X-Originating-IP: [39.79.223.215]
+X-CM-SenderInfo: pzdqwy5ldoxtdqjqmiqw6rljoofrz/1tbivxNZzlWB00EtvAAAss
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 10:33:21PM -0400, Jonathan Toppins wrote:
-> +++ b/tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh
-> @@ -0,0 +1,82 @@
-> +#!/bin/sh
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +# Regression Test:
-> +#   Verify LACPDUs get transmitted after setting the MAC address of
-> +#   the bond.
-> +#
-> +# https://bugzilla.redhat.com/show_bug.cgi?id=2020773
-> +#
-> +#       +---------+
-> +#       | fab-br0 |
-> +#       +---------+
-> +#            |
-> +#       +---------+
-> +#       |  fbond  |
-> +#       +---------+
-> +#        |       |
-> +#    +------+ +------+
-> +#    |veth1 | |veth2 |
-> +#    +------+ +------+
-> +#
-> +# We use veths instead of physical interfaces
-> +
-> +set -e
-> +#set -x
+area_cache_get() is used to distribute cache->area and set cache->id,
+ and if cache->id is not 0 and cache->area->kref refcount is 0, it will
+ release the cache->area by nfp_cpp_area_release(). area_cache_get()
+ set cache->id before cpp->op->area_init() and nfp_cpp_area_acquire().
 
-nit： maybe remove this debug comment when you post a new version?
+But if area_init() or nfp_cpp_area_acquire() fails, the cache->id is
+ is already set but the refcount is not increased as expected. At this
+ time, calling the nfp_cpp_area_release() will cause use-after-free.
 
-Others looks good to me.
+To avoid the use-after-free, set cache->id after area_init() and
+ nfp_cpp_area_acquire() complete successfully.
 
-Thanks
-Hangbin
+Note: This vulnerability is triggerable by providing emulated device
+ equipped with specified configuration.
+
+ BUG: KASAN: use-after-free in nfp6000_area_init (/home/user/Kernel/v5.19
+/x86_64/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+  Write of size 4 at addr ffff888005b7f4a0 by task swapper/0/1
+
+ Call Trace:
+  <TASK>
+ nfp6000_area_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:884)
+
+ Allocated by task 1:
+ nfp_cpp_area_alloc_with_name (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:303)
+ nfp_cpp_area_cache_add (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:802)
+ nfp6000_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp6000_pcie.c:1230)
+ nfp_cpp_from_operations (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:1215)
+ nfp_pci_probe (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfp_main.c:744)
+
+ Freed by task 1:
+ kfree (/home/user/Kernel/v5.19/x86_64/src/mm/slub.c:4562)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:873)
+ nfp_cpp_read (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cppcore.c:924 /home/user/Kernel/v5.19/x86_64
+/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:973)
+ nfp_cpp_readl (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cpplib.c:48)
+
+Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
+---
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+index 34c0d2ddf9ef..a83b8ee49062 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+@@ -873,10 +873,6 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		cache->addr = 0;
+ 	}
+ 
+-	/* Adjust the start address to be cache size aligned */
+-	cache->id = id;
+-	cache->addr = addr & ~(u64)(cache->size - 1);
+-
+ 	/* Re-init to the new ID and address */
+ 	if (cpp->op->area_init) {
+ 		err = cpp->op->area_init(cache->area,
+@@ -894,6 +890,10 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		return NULL;
+ 	}
+ 
++	/* Adjust the start address to be cache size aligned */
++	cache->id = id;
++	cache->addr = addr & ~(u64)(cache->size - 1);
++
+ exit:
+ 	/* Adjust offset */
+ 	*offset = addr - cache->addr;
+-- 
+2.17.1
+
