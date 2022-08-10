@@ -2,124 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17BE258EADF
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 13:01:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDF458EB0A
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 13:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229780AbiHJLBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 07:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
+        id S231339AbiHJLLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 07:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231658AbiHJLBX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 07:01:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCDA6BD6F;
-        Wed, 10 Aug 2022 04:01:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 985E3B81B5B;
-        Wed, 10 Aug 2022 11:01:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EE0CC433D6;
-        Wed, 10 Aug 2022 11:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660129279;
-        bh=6x6su5oHn4WjBSWBtUvgxfhKdMjczpssjP15rky0Ucc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KMY2BViRwxO+LS6lTNRSgjQQ0lxdAhWdIrWx87oKITfqA8c3unrpEe7yDrvdit6aP
-         LAJh1oADLa4m6DCanxivY6NzKxMsGIuHST3i3MzzmjjgMVlog/k0ZPOuyoDeIpgEXx
-         UZ8VIDuSks9qlXahIc5IeJ5OVKApkhOtMLYZl/glbvW2lmz4Q7fkrhkSzpM5OdrLs1
-         vOKs3vJGcttXSz343CpoH1x0KvOn8EnpiFTNHcpw5q4kgTWmAzyFstxLwmo0z9ctHY
-         DkBAqyv5xIbwGRFXuxNQ2reCX6YRtl9sY824SJ4PaxHM3m8ht49/FEZms4NYXFEnvJ
-         Xg4XqbbvEYd+w==
-Date:   Wed, 10 Aug 2022 12:01:10 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tim Harvey <tharvey@gateworks.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Andrew Davis <afd@ti.com>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 4/5] dt-bindings: Drop Robert Jones
-Message-ID: <YvOP9qr2CR9n1FCe@google.com>
-References: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
- <20220809162752.10186-5-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S231916AbiHJLLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 07:11:13 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7AA31DDF
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 04:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660129872; x=1691665872;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qTPo1j+3cLEjBYFm6umYzIBNjP7KM5sGVcckJbVq9GI=;
+  b=Y/YXp/WpSo20gsRdGaCl08PPmJbAGmlLWbnJ+eoXvx8byb1VPN9/Q6+j
+   mWLv+3H3I76Ml0N/vuN16ZtSCtxU/Q2VyEp47IbU0MXzP8e3E1/gGS1IT
+   giIrLiiw80KS5orJhP9bDqsrJY4D01GV2pb1OIO47XL/S0d5U92oCB4LD
+   /iIys2/m2DbdcsFG6eJMSo8qLUSVgpmplO8c5mgtYoUCwT1AmeERdbDdY
+   ueHK4U/QTsBi87JQAtH4HoCUHyklVAdZtF2XYsC0AYacULI2XvTK0qxAP
+   QdfC7mAh7nzDmzOeKlEZPNS9OXEMo3W8cJlnQsCnSfqtyt+89bNDVhyMk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="377348227"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="377348227"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 04:11:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="781200238"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga005.jf.intel.com with ESMTP; 10 Aug 2022 04:11:09 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27ABB7ZT004526;
+        Wed, 10 Aug 2022 12:11:08 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv7 PATCH net-next 23/36] net: adjust the build check for net_gso_ok()
+Date:   Wed, 10 Aug 2022 13:09:17 +0200
+Message-Id: <20220810110917.1307697-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220810030624.34711-24-shenjian15@huawei.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-24-shenjian15@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220809162752.10186-5-krzysztof.kozlowski@linaro.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 09 Aug 2022, Krzysztof Kozlowski wrote:
+From: Jian Shen <shenjian15@huawei.com>
+Date: Wed, 10 Aug 2022 11:06:11 +0800
 
-> Emails to Robert Jones bounce ("550 5.2.1 The email account that you
-> tried to reach is disabled").
+> Introduce macro GSO_INDEX(x) to replace the NETIF_F_XXX
+> feature shift check, for all the macroes NETIF_F_XXX will
+> be remove later.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
 > ---
+>  include/linux/netdevice.h | 40 ++++++++++++++++++++-------------------
+>  1 file changed, 21 insertions(+), 19 deletions(-)
 > 
-> For maintainers entry see:
-> https://lore.kernel.org/all/20220808111113.71890-1-krzysztof.kozlowski@linaro.org/
-> ---
->  Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml | 2 +-
->  Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml    | 1 -
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 1bd5dcbc884d..b01af2a3838d 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -4886,28 +4886,30 @@ netdev_features_t netif_skb_features(struct sk_buff *skb);
+>  
+>  static inline bool net_gso_ok(netdev_features_t features, int gso_type)
+>  {
+> +#define GSO_INDEX(x)	((1ULL << (x)) >> NETIF_F_GSO_SHIFT)
 
-Any reason to submit these as one patch?
+What if we get a new GSO offload which's corresponding bit will be
+higher than 64?
+You could instead do
 
->  2 files changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml b/Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml
-> index 479e7065d4eb..0203b83b8587 100644
-> --- a/Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml
-> +++ b/Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: Freescale FXOS8700 Inertial Measurement Unit
->  
->  maintainers:
-> -  - Robert Jones <rjones@gateworks.com>
-> +  - Jonathan Cameron <jic23@kernel.org>
->  
->  description: |
->    Accelerometer and magnetometer combo device with an i2c and SPI interface.
-> diff --git a/Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml b/Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml
-> index 5a1e8d21f7a0..5e0fe3ebe1d2 100644
-> --- a/Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/gateworks-gsc.yaml
-> @@ -19,7 +19,6 @@ description: |
->  
->  maintainers:
->    - Tim Harvey <tharvey@gateworks.com>
-> -  - Robert Jones <rjones@gateworks.com>
->  
->  properties:
->    $nodename:
+#define __SKB_GSO_FLAG(x)	(1ULL << (x))
 
--- 
-Lee Jones [李琼斯]
+enum {
+	SKB_GSO_TCPV4_BIT	= 0,
+	SKB_GSO_DODGY_BIT	= 1,
+	...,
+};
+enum {
+	SKB_GSO_TCPV4		= __SKB_GSO_FLAG(TCPV4),
+	SKB_GSO_DODGY		= __SKB_GSO_FLAG(DODGY),
+	...,
+};
+
+and then just
+
+#define ASSERT_GSO_TYPE(fl, feat)	\
+	static_assert((fl) == (feat) - NETIF_F_GSO_SHIFT)
+
+	...
+	ASSERT_GSO_TYPE(SKB_GSO_TCPV4_BIT, NETIF_F_TSO_BIT);
+	ASSERT_GSO_TYPE(SKB_GSO_DODGY, NETIF_F_GSO_ROBUST_BIT);
+	...
+
+> +
+>  	netdev_features_t feature = (netdev_features_t)gso_type << NETIF_F_GSO_SHIFT;
+>  
+>  	/* check flags correspondence */
+> -	BUILD_BUG_ON(SKB_GSO_TCPV4   != (NETIF_F_TSO >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_DODGY   != (NETIF_F_GSO_ROBUST >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_TCP_ECN != (NETIF_F_TSO_ECN >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_TCP_FIXEDID != (NETIF_F_TSO_MANGLEID >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_TCPV6   != (NETIF_F_TSO6 >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_FCOE    != (NETIF_F_FSO >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_GRE     != (NETIF_F_GSO_GRE >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_GRE_CSUM != (NETIF_F_GSO_GRE_CSUM >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_IPXIP4  != (NETIF_F_GSO_IPXIP4 >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_IPXIP6  != (NETIF_F_GSO_IPXIP6 >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL != (NETIF_F_GSO_UDP_TUNNEL >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL_CSUM != (NETIF_F_GSO_UDP_TUNNEL_CSUM >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_PARTIAL != (NETIF_F_GSO_PARTIAL >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_TUNNEL_REMCSUM != (NETIF_F_GSO_TUNNEL_REMCSUM >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_SCTP    != (NETIF_F_GSO_SCTP >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_ESP != (NETIF_F_GSO_ESP >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_UDP != (NETIF_F_GSO_UDP >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_UDP_L4 != (NETIF_F_GSO_UDP_L4 >> NETIF_F_GSO_SHIFT));
+> -	BUILD_BUG_ON(SKB_GSO_FRAGLIST != (NETIF_F_GSO_FRAGLIST >> NETIF_F_GSO_SHIFT));
+> +	BUILD_BUG_ON(SKB_GSO_TCPV4   != GSO_INDEX(NETIF_F_TSO_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_DODGY   != GSO_INDEX(NETIF_F_GSO_ROBUST_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_TCP_ECN != GSO_INDEX(NETIF_F_TSO_ECN_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_TCP_FIXEDID != GSO_INDEX(NETIF_F_TSO_MANGLEID_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_TCPV6   != GSO_INDEX(NETIF_F_TSO6_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_FCOE    != GSO_INDEX(NETIF_F_FSO_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_GRE     != GSO_INDEX(NETIF_F_GSO_GRE_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_GRE_CSUM != GSO_INDEX(NETIF_F_GSO_GRE_CSUM_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_IPXIP4  != GSO_INDEX(NETIF_F_GSO_IPXIP4_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_IPXIP6  != GSO_INDEX(NETIF_F_GSO_IPXIP6_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL != GSO_INDEX(NETIF_F_GSO_UDP_TUNNEL_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL_CSUM != GSO_INDEX(NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_PARTIAL != GSO_INDEX(NETIF_F_GSO_PARTIAL_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_TUNNEL_REMCSUM != GSO_INDEX(NETIF_F_GSO_TUNNEL_REMCSUM_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_SCTP    != GSO_INDEX(NETIF_F_GSO_SCTP_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_ESP != GSO_INDEX(NETIF_F_GSO_ESP_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_UDP != GSO_INDEX(NETIF_F_GSO_UDP_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_UDP_L4 != GSO_INDEX(NETIF_F_GSO_UDP_L4_BIT));
+> +	BUILD_BUG_ON(SKB_GSO_FRAGLIST != GSO_INDEX(NETIF_F_GSO_FRAGLIST_BIT));
+>  
+>  	return (features & feature) == feature;
+>  }
+> -- 
+> 2.33.0
+
+Thanks,
+Olek
