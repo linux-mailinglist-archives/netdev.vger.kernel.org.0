@@ -2,54 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3350B58E7BD
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5874A58E7D6
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:25:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230428AbiHJHTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 03:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
+        id S230447AbiHJHZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 03:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiHJHTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:19:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AA884EC9
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:19:32 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oLfzz-0004PJ-Jn; Wed, 10 Aug 2022 09:19:27 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6EEB8C65A9;
-        Wed, 10 Aug 2022 07:19:26 +0000 (UTC)
-Date:   Wed, 10 Aug 2022 09:19:24 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Sebastian =?utf-8?B?V8O8cmw=?= <sebastian.wuerl@ororatech.com>
-Subject: Re: [PATCH net 4/4] can: mcp251x: Fix race condition on receive
- interrupt
-Message-ID: <20220810071924.z3fbou2wbg6s7jjl@pengutronix.de>
-References: <20220809075317.1549323-1-mkl@pengutronix.de>
- <20220809075317.1549323-5-mkl@pengutronix.de>
- <20220809115016.1db564b3@kernel.org>
+        with ESMTP id S230390AbiHJHZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:25:19 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAFF17A96
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:25:17 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id j8so26108658ejx.9
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=AvFHvhStEGcte1GswRD29xQS2qzDGouW34aT4oYXVtw=;
+        b=gBT5HiIvUlJlvuRC+Gg2Tcvrz6p3n+HzgCEYiYCetQc1aA+kSjmqp140mdbPQ1TNaW
+         MsM4gr8cYbhblzrQuTwpeWoBBTiFJFuPvcJDudCQzuwVpCk2dGtzqyxf8oPCCaWjSH6b
+         Dq6/9UgA2IN/5mEfqKIbpajfc/oEgHgYJiX1KDLC6f0x0WAGLCRUknSrBE/T90iHv3+E
+         /BYqJlTtikpqXb+oDgxU8odFkLCCyx5yT9xIcXylcG69q+yG5J0zKacPNGXlVyz21Ia5
+         T8TC7czfoZbxF5E8bbDWSmP3eFTTH89T1VSPrnOP1Ow8Rg8dbwn7pugCTEQb+WVp7yk4
+         DTzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=AvFHvhStEGcte1GswRD29xQS2qzDGouW34aT4oYXVtw=;
+        b=GZNW1SbvgNreVASBOs05cpAni7W6EPpT1Z9MACYGaVGTf6gs5VRWSyWrLFqis/u9yk
+         PYM1plEyB0VDl21Wc32dL48xequDr6R8wbUTs7uNzKIX9xoZaynh4/SkJnK744udKF/D
+         36C5pVk0v+Z0EAm+JehnTp1CvUL0gOgK+XMugMPh/fiILODQQMeXsmdyrIFfhfTvtctc
+         pdDFZZjLZGA9qDhlQPbtfmhLC6T3803bkHR5qVCleX2NK0bH/tfEzxwqVrY9kC5l32BT
+         W7aGS+rCEtX0mZQz/LHGqzpII+RgyymBpeNUq68PzXZ2F+NNRymWvTqsRuGjNDOkllIV
+         MGSQ==
+X-Gm-Message-State: ACgBeo3kvC0UylRx5DceqJCf1fKWXUO9pQFgDPieKAspxZt2728qU3a/
+        hIJ5T+fpXybB3zNhg7PleFk=
+X-Google-Smtp-Source: AA6agR58HUcfSElRo8naRwvvRLzmdJYflBRDhu4PDGK7jSdL2cU83KQYnDLqy+/524yvjSsQQmERBg==
+X-Received: by 2002:a17:907:7243:b0:733:2c:14cf with SMTP id ds3-20020a170907724300b00733002c14cfmr2607521ejc.485.1660116315687;
+        Wed, 10 Aug 2022 00:25:15 -0700 (PDT)
+Received: from [192.168.2.114] (p5b3dd6ec.dip0.t-ipconnect.de. [91.61.214.236])
+        by smtp.gmail.com with ESMTPSA id c16-20020aa7df10000000b0043cf2e0ce1csm7213181edy.48.2022.08.10.00.25.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 00:25:15 -0700 (PDT)
+Message-ID: <48b9ecb8-5685-4ffe-b543-637f711be70e@gmail.com>
+Date:   Wed, 10 Aug 2022 09:20:17 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5m3gw4gol5kj2loq"
-Content-Disposition: inline
-In-Reply-To: <20220809115016.1db564b3@kernel.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: Question: Ethernet Phy issues on Colibri IMX8X (imx8qxp) - kernel
+ 5.19
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        netdev@vger.kernel.org, qiangqing.zhang@nxp.com,
+        philipp.rossak@formulastudent.de
+References: <90d979b7-7457-34b0-5142-fe288c4206d8@gmail.com>
+ <YvMHp0K65a/L0pa4@lunn.ch>
+From:   Philipp Rossak <embed3d@gmail.com>
+In-Reply-To: <YvMHp0K65a/L0pa4@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -57,54 +78,45 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---5m3gw4gol5kj2loq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 09.08.2022 11:50:16, Jakub Kicinski wrote:
-> On Tue,  9 Aug 2022 09:53:17 +0200 Marc Kleine-Budde wrote:
-> > @@ -1082,6 +1079,18 @@ static irqreturn_t mcp251x_can_ist(int irq, void=
- *dev_id)
-> >  			if (mcp251x_is_2510(spi))
-> >  				mcp251x_write_bits(spi, CANINTF,
-> >  						   CANINTF_RX0IF, 0x00);
-> > +
-> > +			/* check if buffer 1 is already known to be full, no need to re-rea=
-d */
-> > +			if (!(intf & CANINTF_RX1IF)) {
-> > +				u8 intf1, eflag1;
-> > +			=09
->=20
-> This line is full of trailing whitespace, could you add a fix on top to
-> remove it and resend?
+On 10.08.22 03:19, Andrew Lunn wrote:
+> On Wed, Aug 10, 2022 at 12:55:58AM +0200, Philipp Rossak wrote:
+>> Hi,
+>>
+>> I currently have a project with a Toradex Colibri IMX8X SOM board whith an
+>> onboard Micrel KSZ8041NL Ethernet PHY.
+>>
+>> The hardware is described in the devictree properly so I expected that the
+>> onboard Ethernet with the phy is working.
+>>
+>> Currently I'm not able to get the link up.
+>>
+>> I already compared it to the BSP kernel, but I didn't found anything
+>> helpful. The BSP kernel is working.
+>>
+>> Do you know if there is something in the kernel missing and got it running?
+> 
+> dmesg output might be useful.
+> 
+> Do you have the micrel driver either built in, or in your initramfs
+> image?
+> 
+> 	Andrew
 
-Doh! It was me moving both variables there to reduce their scope and
-somehow the whitespace slipped in. Here's an updated PR:
+Hi Andrew,
 
-https://lore.kernel.org/all/20220810071448.1627857-1-mkl@pengutronix.de/
+the driver is built in.
 
-Marc
+In [1] you find the dmesg log from the 5.19 kernel. I also added the 
+DEBUG built flag for the relevant phy and network drivers.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+As reference the bsp kernel 5.4.129 kernel [3] works without issues as 
+you can see in [2].
 
---5m3gw4gol5kj2loq
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks,
+Philipp
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLzW/kACgkQrX5LkNig
-012WzQf7BfVypr61XIbVCgZtPBv2yuXfOP/35jLumTUFabf5R8wg8f/ixjfwyh0Y
-M3DPSe3gEsdEcb34yewWngMUnSiIMhJk3sCreb0auXXnuQ7rbNMWpn0VsSrX0jFf
-4qlM9jYfxZG2tsCh/XnVpJ1ssj9i+Slob5UEodYcxn8IhaKv6L+cXR15huGkR47b
-NxoMJIJFVqdoDkxy3quLqcdT5f9eoPonSUFAyh1M8aV570sHVJh8MnnpM6eMbnmf
-mRgLSJ9Z1v2me5dIENyaCgFL04vW5LABlAx0Q8lpsw2uOWX3BGhrUcZKLIg2Fsjk
-G48kWPz+sBqR5IBQawfvUOsf/0cqWw==
-=NS4m
------END PGP SIGNATURE-----
-
---5m3gw4gol5kj2loq--
+[1] https://pastebin.com/g4XKw5yY
+[2] https://pastebin.com/5t8iAAEu
+[3] 
+https://git.toradex.com/cgit/linux-toradex.git/tree/?h=toradex_5.4-2.3.x-imx
