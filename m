@@ -2,50 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B36058F1A7
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 19:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F36A58F1B0
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 19:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbiHJRgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 13:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
+        id S232278AbiHJRmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 13:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiHJRgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 13:36:03 -0400
+        with ESMTP id S230006AbiHJRmM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 13:42:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3888261118
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 10:36:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B28832FE;
+        Wed, 10 Aug 2022 10:42:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C912861388
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 17:36:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 185B9C433D6;
-        Wed, 10 Aug 2022 17:36:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70D87613F8;
+        Wed, 10 Aug 2022 17:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED0CC433C1;
+        Wed, 10 Aug 2022 17:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660152962;
-        bh=s9cndrWyn+mnyHvQxMbSvQvSdKyqc57LuKFNEQHA2hA=;
+        s=k20201202; t=1660153330;
+        bh=UKjX/HIVJYtoMT63FsvLicnyqSItCHIDZerhD09rc9M=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qOjQi5A5GW6d7WiAIEtZNdty0V98RJi+Sp8F8FNMOq79NLNNeGmDuTQu+rnXQq+sN
-         V1ZxQbs5+787TfcvlcZrOuQy6p8NC9/EGSoz9G+sTYVNF6TEzrpliuKn9vu+AuZiQL
-         7HKGzcp27oI7ppw1LWH1oLwUGb7gu+Ewlb0Vmi/kHYTqwPFogJDqcX9WTj/mMVrNmh
-         kTcurhzoGoR9jOkvuCB6t4r4filpDszyTtr5F4euDHKBumVokinUza901BAxlRsAA4
-         Ng72cNXUKkZ6yEc7KRe3uE82uvVI0SIuUPPm8OGdK+LV0ugZf6em8Fdn0nic/BjXHo
-         qUeREF5S05h8g==
-Date:   Wed, 10 Aug 2022 10:36:01 -0700
+        b=aJ/Lpebw9EYhgUQMsaCG/pinULvjGLYsSR2sJ6EmdW/T1+ahDniIsoUEUnpD8Kmk7
+         GZgP0nAaNL/tU/4zYp8briPMQFCzmdWICG2Vl8xvRTM/nJxhfQhcwR6M20KBPp224q
+         F6+2PVMpNe7+BSby/uvyjsRKoOiIhr9KA4xDNt0IdpbryQdOVfgX8jQ0hjPscztsBV
+         VKPD/2Jvm5o5sriEWGATbng/zaSO44nIuqtL/X+ZtNVQvXKGaKJ0w5VoG6JFiA/a/R
+         Tcc9OZthEkIRD8B0hMTJDMyZc5xou6GBpi101OmxfYF7HtZstCrBoJcEYOke5rU/se
+         77aaHvUOJuWYA==
+Date:   Wed, 10 Aug 2022 10:42:09 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     James Prestwood <prestwoj@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [RFC 1/1] net: move IFF_LIVE_ADDR_CHANGE to public flag
-Message-ID: <20220810103601.0dccbc63@kernel.org>
-In-Reply-To: <9ec77cf1ffaa29aedd57c29ac77b525d0e700acf.camel@sipsolutions.net>
-References: <20220804174307.448527-1-prestwoj@gmail.com>
-        <20220804174307.448527-2-prestwoj@gmail.com>
-        <20220804114342.71d2cff0@kernel.org>
-        <b6b11b492622b75e50712385947e1ba6103b8e44.camel@gmail.com>
-        <f03b4330c7e9d131d9ad198900a3370de4508304.camel@gmail.com>
-        <0fc27b144ca3adb4ff6b3057f2654040392ef2d8.camel@sipsolutions.net>
-        <d585f719af13d7a7194e7cb734c5a7446954bf01.camel@gmail.com>
-        <9ec77cf1ffaa29aedd57c29ac77b525d0e700acf.camel@sipsolutions.net>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     Valentin Schneider <vschneid@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH 2/2] net/mlx5e: Leverage sched_numa_hop_mask()
+Message-ID: <20220810104209.36961cc1@kernel.org>
+In-Reply-To: <8448dade-a64a-0b6b-1ed0-dd164917eedf@gmail.com>
+References: <xhsmhtu6kbckc.mognet@vschneid.remote.csb>
+        <20220810105119.2684079-1-vschneid@redhat.com>
+        <20220810105119.2684079-2-vschneid@redhat.com>
+        <8448dade-a64a-0b6b-1ed0-dd164917eedf@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,14 +64,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Aug 2022 19:17:19 +0200 Johannes Berg wrote:
-> Thinking about that now, maybe it's not _that_ bad? Especially given
-> that "live" can mean different things (as discussed here), and for
-> wireless that doesn't necessarily mean IFF_UP, but rather something like
-> "IFF_UP + not active".
+On Wed, 10 Aug 2022 15:57:33 +0300 Tariq Toukan wrote:
+> > +		for_each_cpu(cpu, mask) {
+> > +			cpus[i] = cpu;
+> > +			if (++i == ncomp_eqs)
+> > +				goto spread_done;
+> > +		}
+> > +	}
+> > +spread_done:
+> > +	rcu_read_unlock();
+> >   	ret = mlx5_irqs_request_vectors(dev, cpus, ncomp_eqs, table->comp_irqs);
+> >   	kfree(cpus);
+> >   	if (ret < 0)  
 > 
-> Jakub, what do you think?
+> This logic is typical. Other drivers would also want to use it.
+> It must be introduced as a service/API function, if not by the sched 
+> topology, then at least by the networking subsystem.
+> Jakub, WDYT?
 
-Agreed, even tho the concept of a live address change seems generic 
-the implications and definition of "live" are very area specific.
-Let's handwave that nl80211 is a subordinate API of RT netlink :)
+Agreed, no preference where the helper would live tho.
