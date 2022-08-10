@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F20358EC34
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF51658EC39
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:44:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbiHJMmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 08:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S232037AbiHJMoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 08:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiHJMmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:42:47 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FB675FD5;
-        Wed, 10 Aug 2022 05:42:46 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id j7so17646728wrh.3;
-        Wed, 10 Aug 2022 05:42:46 -0700 (PDT)
+        with ESMTP id S229501AbiHJMoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:44:01 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CD584EDB
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:44:01 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id x5so3355932qtv.9
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:44:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=DUrhPqHeoVNO899nTZKgNQgtiwDSI706ohCzG3KW7J4=;
-        b=WcGD1ArzO/1Mu8mRXXtb7iLruifPyA2zuNn4sSc4YipG1vcXuX84r68dX+p3YQB5UM
-         Jm3fUrPFY3lrQtBtABdY0If1ZVj+4D0zqh4hrxEhftcqLDCr99Scjk8TsVSjtyXoIdyn
-         lNnJSfF508yGSQ33wlS1cRTDjtzDCWQptKE0+Uu26a6YP9U/GUenIWW5rlhgs8nzSu6x
-         TgoPgl6B+67NTeHALJwoSZEkHzIdt5cuhxUWfKPwDaAQoATIvF2y0FSr6voi7tv6GO7v
-         5kW7rdYrDUKb6Sv4uhmXKbYBh3lcsBzBQ5iq4pV580poX9SDzd7KOWTqxti+5MQnc/a2
-         to8w==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=AvF0ld53YIJm/pBBN06AYvHNPuB0U4czPfcumd2gMLE=;
+        b=aT4O114xLtGoLzyVGwX920yaHd8DL8uhrCm1IcIu2kv6sKrJINLi5Y1SEa7phS31cp
+         Mp1bo6C1NmwDSd/5dQNdkkf3b+iE0/C2GQsorOFA2VA4J0V7infA6q8ES28OfaS10PBI
+         beT8T+6WQ+2GM+xhSTpUuhI2NLvx5jedpZsakoVjFjosOzZlnwBS17/QRCJxqxkWzCdl
+         z3YLZjdFOhkjVBewsA97xopv1dtUzW7HHruTwiN9TzHHM58IQRV4NwZ5TTYHshbk72va
+         3VNA5kZ59I/NdGQQaKU+c9s2eYkhNo5osKCrveDTlITT56LuulO5e9dRJX30yJUV6o7R
+         Kevw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=DUrhPqHeoVNO899nTZKgNQgtiwDSI706ohCzG3KW7J4=;
-        b=k2gCUsmWx7gbyxvo2otYWZHMzUF5EbUvUxv3uEfs5msaosUeTFbNTKmkFpm+pKWk1x
-         B2hvMhs9e2UrVoE5WWQwMvbFooKiY/GCUXZekO4xTKOW98jKFU1N5OgAANIcEVjU29G7
-         yarhApnQUiij+ZDVFiQf+j5izdO2s4BKLUr4K3XWCp96KUGn4ikF6XP+BFETMcJKrD25
-         nDvVGI2SfvFEGY8cyLav2HIt+7IuDFjd1bgFALu+1M3U1ZTR3R0tHD7vuH/hdyeaqFUE
-         yxIPuInunTACXyTiomh2DLcQlsp0UAFh/Mu4xY+LQ9ooG+T/dcQxQcbtr+U71Rkb2Wor
-         pnpA==
-X-Gm-Message-State: ACgBeo2xoYolRkAOg8c1jXcQJszbw5HjnvaS+Wf9zvlDqFIFQQZGxD8Z
-        6RDBuLm7fvowRxrLc7FTx+A=
-X-Google-Smtp-Source: AA6agR5/sXHQ9somcqgQY/iBMbsMybLfGD6aTOS9DvG0KEX0mubvMDopVJXy1zBIiJZgS0mD5yVmpg==
-X-Received: by 2002:a05:6000:1051:b0:221:6d46:4f0f with SMTP id c17-20020a056000105100b002216d464f0fmr14642822wrx.163.1660135364637;
-        Wed, 10 Aug 2022 05:42:44 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id a18-20020a05600c069200b003a32490c95dsm2177927wmn.35.2022.08.10.05.42.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 05:42:44 -0700 (PDT)
-Message-ID: <db20e6fe-4368-15ec-65c5-ead28fc7981b@gmail.com>
-Date:   Wed, 10 Aug 2022 15:42:41 +0300
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=AvF0ld53YIJm/pBBN06AYvHNPuB0U4czPfcumd2gMLE=;
+        b=2veZrZ8NAtMWSmWc/rlIOwVfkSPmSgXP9KHYKDOOzXPfCupqfrgokR3iskCpnfm/ck
+         BK2IUR5HNE9xnOq81skNeJDpDuia98v2s2C9GDfHOnRrCwqROBEwsKgnhp7EI0NDLjI7
+         BjqMe71nKT7EGb4CdBeVVEkG62ol6dO+Cd0HcHZIiUQgDPxWlW5FiuHlsy7vHhAkeVNs
+         D0pg9qpy77kb1xC1fcTQjo259xrqLtaOegahjavG/83MN0YkMBd+JGxw2oY7rfmUVr6W
+         vZP3YR4lX2zWTxndHfvXs7NzWt6E05CvIU0hGRjcMjSi2zYI55C6EAvN5jPo4Gi1azxc
+         y4sw==
+X-Gm-Message-State: ACgBeo2lbanEgHLYm526y+s8RuZ+9zPWwU3vR7KmKnou7QNRPdA6Yg8h
+        /pEziArtB/Q9J33ChNJYeqedThFx2Ua59qVDIpJG1g==
+X-Google-Smtp-Source: AA6agR5r9ZcarTd+JxlgKjeNemprNXlpaQlz44ZI2m2BtbWl8maVPUO1tfGSLyzHsa05f3LaNVlOdbY4+TmYHuX6tEs=
+X-Received: by 2002:a05:622a:1984:b0:342:ea3d:696e with SMTP id
+ u4-20020a05622a198400b00342ea3d696emr17244054qtc.7.1660135440294; Wed, 10 Aug
+ 2022 05:44:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] sched/topology: Introduce sched_numa_hop_mask()
-Content-Language: en-US
-To:     Valentin Schneider <vschneid@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <xhsmhtu6kbckc.mognet@vschneid.remote.csb>
- <20220810105119.2684079-1-vschneid@redhat.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220810105119.2684079-1-vschneid@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
+In-Reply-To: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 10 Aug 2022 08:43:44 -0400
+Message-ID: <CADVnQym47_uqqKWkGnu7hA+vhHjvURMmTdd0Xx6z8m_mspwFJw@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: adjust rcvbuff according copied rate of user space
+To:     Yonglong Li <liyonglong@chinatelecom.cn>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        ycheng@google.com, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,86 +67,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 10, 2022 at 3:49 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+>
+> every time data is copied to user space tcp_rcv_space_adjust is called.
+> current It adjust rcvbuff by the length of data copied to user space.
+> If the interval of user space copy data from socket is not stable, the
+> length of data copied to user space will not exactly show the speed of
+> copying data from rcvbuff.
+> so in tcp_rcv_space_adjust it is more reasonable to adjust rcvbuff by
+> copied rate (length of copied data/interval)instead of copied data len
+>
+> I tested this patch in simulation environment by Mininet:
+> with 80~120ms RTT / 1% loss link, 100 runs
+> of (netperf -t TCP_STREAM -l 5), and got an average throughput
+> of 17715 Kbit instead of 17703 Kbit.
+> with 80~120ms RTT without loss link, 100 runs of (netperf -t
+> TCP_STREAM -l 5), and got an average throughput of 18272 Kbit
+> instead of 18248 Kbit.
 
+So with 1% emulated loss that's a 0.06% throughput improvement and
+without emulated loss that's a 0.13% improvement. That sounds like it
+may well be statistical noise, particularly given that we would expect
+the steady-state impact of this change to be negligible.
 
-On 8/10/2022 1:51 PM, Valentin Schneider wrote:
-> Tariq has pointed out that drivers allocating IRQ vectors would benefit
-> from having smarter NUMA-awareness - cpumask_local_spread() only knows
-> about the local node and everything outside is in the same bucket.
-> 
-> sched_domains_numa_masks is pretty much what we want to hand out (a cpumask
-> of CPUs reachable within a given distance budget), introduce
-> sched_numa_hop_mask() to export those cpumasks. Add in an iteration helper
-> to iterate over CPUs at an incremental distance from a given node.
-> 
-> Link: http://lore.kernel.org/r/20220728191203.4055-1-tariqt@nvidia.com
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
-> ---
->   include/linux/topology.h | 12 ++++++++++++
->   kernel/sched/topology.c  | 28 ++++++++++++++++++++++++++++
->   2 files changed, 40 insertions(+)
-> 
-> diff --git a/include/linux/topology.h b/include/linux/topology.h
-> index 4564faafd0e1..d66e3cf40823 100644
-> --- a/include/linux/topology.h
-> +++ b/include/linux/topology.h
-> @@ -245,5 +245,17 @@ static inline const struct cpumask *cpu_cpu_mask(int cpu)
->   	return cpumask_of_node(cpu_to_node(cpu));
->   }
->   
-> +#ifdef CONFIG_NUMA
-> +extern const struct cpumask *sched_numa_hop_mask(int node, int hops);
-> +#else
-> +static inline const struct cpumask *sched_numa_hop_mask(int node, int hops)
-> +{
-> +	return -ENOTSUPP;
+IMHO these results do not justify the added complexity and state.
 
-missing ERR_PTR()
-
-> +}
-> +#endif	/* CONFIG_NUMA */
-> +
-> +#define for_each_numa_hop_mask(node, hops, mask)			\
-> +	for (mask = sched_numa_hop_mask(node, hops); !IS_ERR_OR_NULL(mask); \
-> +	     mask = sched_numa_hop_mask(node, ++hops))
->   
->   #endif /* _LINUX_TOPOLOGY_H */
-> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-> index 8739c2a5a54e..f0236a0ae65c 100644
-> --- a/kernel/sched/topology.c
-> +++ b/kernel/sched/topology.c
-> @@ -2067,6 +2067,34 @@ int sched_numa_find_closest(const struct cpumask *cpus, int cpu)
->   	return found;
->   }
->   
-> +/**
-> + * sched_numa_hop_mask() - Get the cpumask of CPUs at most @hops hops away.
-> + * @node: The node to count hops from.
-> + * @hops: Include CPUs up to that many hops away. 0 means local node.
-> + *
-> + * Requires rcu_lock to be held. Returned cpumask is only valid within that
-> + * read-side section, copy it if required beyond that.
-> + *
-> + * Note that not all hops are equal in size; see sched_init_numa() for how
-> + * distances and masks are handled.
-> + *
-> + * Also note that this is a reflection of sched_domains_numa_masks, which may change
-> + * during the lifetime of the system (offline nodes are taken out of the masks).
-> + */
-> +const struct cpumask *sched_numa_hop_mask(int node, int hops)
-> +{
-> +	struct cpumask ***masks = rcu_dereference(sched_domains_numa_masks);
-> +
-> +	if (node >= nr_node_ids || hops >= sched_domains_numa_levels)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	if (!masks)
-> +		return NULL;
-> +
-> +	return masks[hops][node];
-> +}
-> +EXPORT_SYMBOL_GPL(sched_numa_hop_mask);
-> +
->   #endif /* CONFIG_NUMA */
->   
->   static int __sdt_alloc(const struct cpumask *cpu_map)
+best regards,
+neal
