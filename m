@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 103F058EFBB
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3FE58EFC7
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232290AbiHJPw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 11:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
+        id S232626AbiHJPw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 11:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiHJPv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:51:56 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7F65A889;
-        Wed, 10 Aug 2022 08:51:48 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id z16so18166031wrh.12;
-        Wed, 10 Aug 2022 08:51:48 -0700 (PDT)
+        with ESMTP id S232597AbiHJPwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:52:09 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AF85C9E7;
+        Wed, 10 Aug 2022 08:51:49 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id i128-20020a1c3b86000000b003a536d58f73so1212098wma.4;
+        Wed, 10 Aug 2022 08:51:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=h9HHmdtmbDaBgAkYhJr0MaG2LsaIMYK3/tGmura3Q/c=;
-        b=RkQDnrNrgozMvW1slfCx3exnfLZSPNL0SE3J0CmXcn4NPQmzKH1nUhVoCi4rJ/bGhQ
-         qWkiTJzALDavZu1xxA3ht8UtZU4n6tL4iHm1Zx/Em0r6K4Qe5KsTNb1lHxoLPs9CxUrL
-         ZNGihmk1LOvOohQDQ1AY3Ulw8RiLhtDxqyohg/rvq0SO7NQvrO7saW7gPAaH7++iBvJP
-         Jl1azWCXpOvZRwom0TDdfqiZB33KjKODuKkdpzGyNypg8/uceMD9cO1ihA+jI9r5ZcC3
-         TYYoAUSpD/Fkw5BOO1iG7WSOK8lPFUPa6a5TlPYgWBB6P/+e3jyrNxZORTfBjtmz0zUS
-         rYzg==
+        bh=itYGv2JZK8WBFRrJm44D9H1rA7HcrDCnR5GlKfK0jhs=;
+        b=g4eoVr1fu36ewbAmfG/t6UJBFOF1oHPXDiKrqdGSPIInTe4GhXxac8aY/xl6qj4Ry6
+         hjJIrOjXgd6Yh8flP1MMruBaz19LaJGjliJaVdqyUgKhS5Iv3yZ5EXnaluD0BcKphXnA
+         a5VMobfClu6mDyYL8AgAxvtUKvP55/JPpMBJHMu3wEu4WaWTzPCZhMYmHWz8b0MVDXhx
+         GJ1Mj+/b/tEIWLH+pz8xBbXVEHEgTx42XMs5iv3QJxf8DSyr0HdmFD+Q1l3bx4FME1BL
+         RC5BlkaAdauVJCjSBnJ19eyaQPimR9ZGZKGI4e8RTaSx6XcGE3jjRf3+QIMjbpvGpNmL
+         Nr8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=h9HHmdtmbDaBgAkYhJr0MaG2LsaIMYK3/tGmura3Q/c=;
-        b=0LfNvTPH2qZ+KX9ACd8KRmyHu9J1ET1iWSsVtX1cN61HxUyjR9FbT5JSOkpa1bPx2S
-         sxCPDRDRDlQ4GGmJlrsXs+rbQTmjkqNDx40vzRJWxxt0+U1d5ZM3anwNdN73QdW3vQXR
-         /nJS+y5M90Vw9bgkkLhL4T/KqOHvHrdlyqg/3x7l12O73dJ8mJj7w2TvLQOxOv3HFb5K
-         mQ9Han2qcLIC39zUZP5yuMvUvYRJANsZvKT3kfmR5PcV3EIPERASNER8bR9jDJtcGqEf
-         agid8xSFJHCyTZeQnYhEH32LOiEaSRrS0AJzxMspbVInrC3luObq0+0wJDnVV4NwXkLJ
-         HjZQ==
-X-Gm-Message-State: ACgBeo0BANQt2Qbz9Ye2kVCVr/kJlX1xk75O+ccuY2UjekERRsrqBDKA
-        ig4nRVo23PzU0PDWahba4+LyHuL69N8=
-X-Google-Smtp-Source: AA6agR6ZNn9gZ3GD3qgxjdOVbL8JXumKhuxwUdsZoAGuCONXxJ2F64wM4uAcQJPM/4Jm+GN1m/z5nQ==
-X-Received: by 2002:a5d:634d:0:b0:220:5ff7:3969 with SMTP id b13-20020a5d634d000000b002205ff73969mr16857681wrw.709.1660146706405;
-        Wed, 10 Aug 2022 08:51:46 -0700 (PDT)
+        bh=itYGv2JZK8WBFRrJm44D9H1rA7HcrDCnR5GlKfK0jhs=;
+        b=SAstj7p49yuUTPY70/jB0k7C8YHoEWu1Mg2ea6ACYeDa3nXmArMRkeNQEuA3k4rGKV
+         MdyCAXyDk+xVpkzYYMc5Ou1YnRpQH54kjkXVqcJMyvYwsYkEs4NdLE0hTl+qjLlft1Fw
+         pJ4BkeKnDnuBUsFgCKgN83Pd/+PsTK03GtVlSdpg/zkxGsGliZvxslRUdbMv1y04rM1q
+         G/M7qhOLLQvkIbLO7aykmsjWWQ0fkggkWaqUDil61VK03B2+jrIQOe23VQ+9kzC1qkmC
+         dWqEX1eGkFtAc/JBAJdFZNo/7JiAQM+kTamNbOnRL3xdtT5LJxTPFs545uiy/0i9fqGM
+         /kpA==
+X-Gm-Message-State: ACgBeo2QsgzYzYGh799JV0RxiVAuM3yZwpDvLmSeiDlv9wDsTt3aMybs
+        l8v/dMgQ22BolbXvyXHzgdW/+1gX/1U=
+X-Google-Smtp-Source: AA6agR5tWoJNmIKULSv6qED4kYicFbD6aj95a2kTMgyfbOltADMEJMZMCY4KEhAPbmXEqnmelWqLpA==
+X-Received: by 2002:a05:600c:6009:b0:3a5:b069:5d34 with SMTP id az9-20020a05600c600900b003a5b0695d34mr2478342wmb.115.1660146707842;
+        Wed, 10 Aug 2022 08:51:47 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.126.24.threembb.co.uk. [188.28.126.24])
-        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b003a342933727sm3004519wmb.3.2022.08.10.08.51.44
+        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b003a342933727sm3004519wmb.3.2022.08.10.08.51.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 08:51:46 -0700 (PDT)
+        Wed, 10 Aug 2022 08:51:47 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Jens Axboe <axboe@kernel.dk>,
@@ -58,9 +58,9 @@ Cc:     Jens Axboe <axboe@kernel.dk>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next io_uring 07/11] net/tcp: optimise tcp ubuf refcounting
-Date:   Wed, 10 Aug 2022 16:49:15 +0100
-Message-Id: <9a42187cdc9ce034fd23179c7b31d7cc6a54bd45.1660124059.git.asml.silence@gmail.com>
+Subject: [RFC net-next io_uring 08/11] net: let callers provide ->msg_ubuf refs
+Date:   Wed, 10 Aug 2022 16:49:16 +0100
+Message-Id: <526fe4cb9cda287bedfc92b3888b48a4f3b0250b.1660124059.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1660124059.git.asml.silence@gmail.com>
 References: <cover.1660124059.git.asml.silence@gmail.com>
@@ -76,69 +76,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add UARGFL_CALLER_PINNED letting protocols know that the caller holds a
-reference to the ubuf_info and so it doesn't need additional refcounting
-for purposes of keeping it alive. With that TCP can save a refcount
-put/get pair per send when used with ->msg_ubuf.
+Some msg_ubuf providers like io_uring can keep elaborated ubuf_info
+reference batching and caching, so it will be of benefit to let the
+network layer to optionally steal some of the cached refs.
+
+Add UARGFL_GIFT_REF, if set the caller has at least one extra reference
+that it can gift away. If the network decides to take the ref it should
+clear the flag.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 7 +++++++
- net/ipv4/tcp.c         | 9 ++++++---
- 2 files changed, 13 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h | 14 ++++++++++++++
+ net/ipv4/ip_output.c   |  1 +
+ net/ipv6/ip6_output.c  |  1 +
+ 3 files changed, 16 insertions(+)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 2b2e0020030b..45fe7f0648d0 100644
+index 45fe7f0648d0..972ec676e222 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -522,6 +522,13 @@ enum {
- #define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
- 				 SKBFL_DONT_ORPHAN | SKBFL_MANAGED_FRAG_REFS)
- 
-+enum {
-+	/* The caller holds a reference during the submission so the ubuf won't
-+	 * be freed until we return.
-+	 */
-+	UARGFL_CALLER_PINNED = BIT(0),
-+};
+@@ -527,6 +527,11 @@ enum {
+ 	 * be freed until we return.
+ 	 */
+ 	UARGFL_CALLER_PINNED = BIT(0),
 +
++	/* The caller can gift one ubuf reference. The flag should be cleared
++	 * when the reference is taken.
++	 */
++	UARGFL_GIFT_REF = BIT(1),
+ };
+ 
  /*
-  * The callback notifies userspace to release buffers when skb DMA is done in
-  * lower device, the skb last reference should be 0 when calling this.
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 3152da8f4763..4925107de57d 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1229,7 +1229,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+@@ -1709,6 +1714,15 @@ static inline void net_zcopy_put(struct ubuf_info *uarg)
+ 		uarg->callback(NULL, uarg, true);
+ }
  
- 		if (msg->msg_ubuf) {
- 			uarg = msg->msg_ubuf;
--			net_zcopy_get(uarg);
-+			if (!(uarg->flags & UARGFL_CALLER_PINNED))
-+				net_zcopy_get(uarg);
- 			zc = sk->sk_route_caps & NETIF_F_SG;
++static inline bool net_zcopy_get_gift_ref(struct ubuf_info *uarg)
++{
++	bool has_ref;
++
++	has_ref = uarg->flags & UARGFL_GIFT_REF;
++	uarg->flags &= ~UARGFL_GIFT_REF;
++	return has_ref;
++}
++
+ static inline void net_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
+ {
+ 	if (uarg) {
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 546897a4b4fa..9d42b6dd6b78 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1032,6 +1032,7 @@ static int __ip_append_data(struct sock *sk,
+ 				paged = true;
+ 				zc = true;
+ 				uarg = msg->msg_ubuf;
++				extra_uref = net_zcopy_get_gift_ref(uarg);
+ 			}
  		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
- 			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
-@@ -1455,7 +1456,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 		tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
- 	}
- out_nopush:
--	net_zcopy_put(uarg);
-+	if (uarg && !(uarg->flags & UARGFL_CALLER_PINNED))
-+		net_zcopy_put(uarg);
- 	return copied + copied_syn;
- 
- do_error:
-@@ -1464,7 +1466,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (copied + copied_syn)
- 		goto out;
- out_err:
--	net_zcopy_put_abort(uarg, true);
-+	if (uarg && !(uarg->flags & UARGFL_CALLER_PINNED))
-+		net_zcopy_put_abort(uarg, true);
- 	err = sk_stream_error(sk, flags, err);
- 	/* make sure we wake any epoll edge trigger waiter */
- 	if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
+ 			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 6d4f01a0cf6e..8d8a8bbdb8df 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1557,6 +1557,7 @@ static int __ip6_append_data(struct sock *sk,
+ 				paged = true;
+ 				zc = true;
+ 				uarg = msg->msg_ubuf;
++				extra_uref = net_zcopy_get_gift_ref(uarg);
+ 			}
+ 		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
+ 			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
 -- 
 2.37.0
 
