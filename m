@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B114C58E8C9
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 10:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9970858E8C8
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 10:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231325AbiHJIau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 04:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
+        id S231186AbiHJIas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 04:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbiHJIaX (ORCPT
+        with ESMTP id S231417AbiHJIaX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 04:30:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4597C1A9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458A11A8;
         Wed, 10 Aug 2022 01:30:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC6BEB81B03;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA66FB81B11;
         Wed, 10 Aug 2022 08:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A3AB2C4347C;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C185C433C1;
         Wed, 10 Aug 2022 08:30:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660120215;
-        bh=4RrSsBfv7ayDTLxTSBiRUJ4f8Usaw38lQUW65fP4Nko=;
+        bh=5MyKZGu54z+B2Bggh4Iqs/zOi00lCYIgWA3QaHn9uTA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kfo8SiV2ppZzRaosBgRbHcmBVTwDdMaSPxDjnJdNwflipgV9JuPbRGkSBiyRpXeRj
-         0iBXrWdHF54Nh8mSKr+t3f5zyABjJcvWBRCA89SIQHh6dBNusxK9CnC54XQeZDv1x2
-         CWMq8NiiZAJAhS818g+YXsDDOkeErYxqQeyDPrwycdRCaZjL/bMSs/JOo7gRGULLAt
-         KGfzS/nPGsMNp6O3QEgNpcoyYcRS7Vc5Tu7UG70Y5XUAvb9eDiin2TkNUyHEV3OVGu
-         eMH6vxhV3iLIN0Scf7Qlgh5ZvpG9j8ZSapdzo+IkN6hDpXTbdzjJKNIPRhnDR4Dcgl
-         llqM9jrzYFViA==
+        b=hb9R6jljzlgmxRMgdPa9BULAA9Nmo+CbhCWVAs1qkCYxtoi3zS1mdSM3AR7w9NndW
+         MfQqohicq+QJTm71pGleUXQDxZP+enaJnBFXu/M5R4/hExCrSCqHm27azmMLZjXgV+
+         9933hxAPXDJ/7oAuxIPrHY00qjx0BBmNaLwXbQkaLvymOEsldNaOhc3Fc+pYjw0dGz
+         fU0rrixc/3izXAUF/iwrNuv8vYNS+D9CtMB6C7QN650ENktgzFzgQK/KC7B1aeHfN0
+         tTsunnBRj/qTaqCI1qF+ASgIAmyx/XRMOxMGI86UdrA6qvp/4E4aEPVtgAonzK+xlG
+         qKrg0MlGNcaYQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 763EAC43145;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 613EDC43143;
         Wed, 10 Aug 2022 08:30:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
+Subject: Re: [PATCH net 1/4] can: j1939: j1939_sk_queue_activate_next_locked():
+ replace WARN_ON_ONCE with netdev_warn_once()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166012021547.17355.4774407132678777587.git-patchwork-notify@kernel.org>
+Message-Id: <166012021539.17355.18233144959835378708.git-patchwork-notify@kernel.org>
 Date:   Wed, 10 Aug 2022 08:30:15 +0000
-References: <20220808113504.128907-1-joalonsof@gmail.com>
-In-Reply-To: <20220808113504.128907-1-joalonsof@gmail.com>
-To:     Jose Alonso <joalonsof@gmail.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        ronald.wahl@raritan.com, kuba@kernel.org
+References: <20220810071448.1627857-2-mkl@pengutronix.de>
+In-Reply-To: <20220810071448.1627857-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        pchelkin@ispras.ru, khoroshilov@ispras.ru, o.rempel@pengutronix.de
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,25 +60,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-On Mon,  8 Aug 2022 08:35:04 -0300 you wrote:
-> This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
+On Wed, 10 Aug 2022 09:14:45 +0200 you wrote:
+> From: Fedor Pchelkin <pchelkin@ispras.ru>
 > 
-> The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
-> versions that have no issues.
+> We should warn user-space that it is doing something wrong when trying
+> to activate sessions with identical parameters but WARN_ON_ONCE macro
+> can not be used here as it serves a different purpose.
 > 
-> The FLAG_SEND_ZLP is not safe to use in this context.
-> See:
-> https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
-> The original problem needs another way to solve.
+> So it would be good to replace it with netdev_warn_once() message.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-    https://git.kernel.org/netdev/net/c/6fd2c17fb6e0
+  - [net,1/4] can: j1939: j1939_sk_queue_activate_next_locked(): replace WARN_ON_ONCE with netdev_warn_once()
+    https://git.kernel.org/netdev/net/c/8ef49f7f8244
+  - [net,2/4] can: j1939: j1939_session_destroy(): fix memory leak of skbs
+    https://git.kernel.org/netdev/net/c/8c21c54a53ab
+  - [net,3/4] can: ems_usb: fix clang's -Wunaligned-access warning
+    https://git.kernel.org/netdev/net/c/a4cb6e62ea4d
+  - [net,4/4] can: mcp251x: Fix race condition on receive interrupt
+    https://git.kernel.org/netdev/net/c/d80d60b0db6f
 
 You are awesome, thank you!
 -- 
