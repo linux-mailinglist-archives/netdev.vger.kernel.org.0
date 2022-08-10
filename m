@@ -2,250 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7500C58EA51
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4145C58EA73
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231480AbiHJKLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 06:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46658 "EHLO
+        id S230224AbiHJK2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 06:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiHJKLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 06:11:33 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F37B6FA02;
-        Wed, 10 Aug 2022 03:11:31 -0700 (PDT)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M2lyN2W4vz67xMg;
-        Wed, 10 Aug 2022 18:08:44 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 10 Aug 2022 12:11:28 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 10 Aug
- 2022 11:11:28 +0100
-Date:   Wed, 10 Aug 2022 11:11:27 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Tim Harvey" <tharvey@gateworks.com>, Lee Jones <lee@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Andrew Davis <afd@ti.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-fbdev@vger.kernel.org>, <linux-leds@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH v2 5/5] dt-bindings: Drop Dan Murphy and Ricardo
- Rivera-Matos
-Message-ID: <20220810111127.00003b83@huawei.com>
-In-Reply-To: <20220809162752.10186-6-krzysztof.kozlowski@linaro.org>
-References: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
-        <20220809162752.10186-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S229476AbiHJK2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 06:28:54 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE937822C
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:28:52 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id k26so26905385ejx.5
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=Z4TBiHYZa5cQdOCeu843UgGsBkLEynXkB3CX7pAAB9A=;
+        b=V1m6l0b5YriI1FTgHLiyoa5hiCu5qML/yv8tjy+eNeZ4uovOnkFlnqIHbSJT7ZK1ue
+         ETiHZz4FsUBri7iZ5MgTwXaLMmRZDCft+Wk8Ht4B78BQpWG9UFkJaxSd1gcIHE4LzkXo
+         GXS4ZmBsWlc57EiBFY5IsqeKp3fUts9QB3Npk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=Z4TBiHYZa5cQdOCeu843UgGsBkLEynXkB3CX7pAAB9A=;
+        b=6t18NZFkMFJVK6cwKTuy+Oc+pn+S5396yyeBb6GowC70lQOD3CkxgTA64Aygz70kco
+         ErkFo1+BBACrvovXCLebmEBcaQplGb4r/W+zCFDUQ6cHcXK2hnFMazAPF0w/3/bWvfad
+         GA25xgbo52ku/C641Kll+FJtWMaD4fZQr9lmGJe59A14p5prgdRJ0CeOdeSX2wD+H3mX
+         Y56Hox4PIt8e2blNKvj1GHUq2g/9xR1yz+DvuUMt06HAhEYpEyydinltaNRW6jvTZ1Jd
+         NhmTjPf0LI8Uaceb4H/KrDiXoIXitxu0s9UyFcQuyJpQI1gHiCisFfI1mYRmhD12hVwU
+         vDjQ==
+X-Gm-Message-State: ACgBeo1D69cwAy2HC87Q/j/+GFw9tOpEibmdVnNoVwlW015pGLyR68Rp
+        kgstRsTBUAowBByeuixPxofx3qOMbyXigQ==
+X-Google-Smtp-Source: AA6agR5T3ev7EsAH4p/lOtkqWiMgrQGUOrdpKe00VXpisEPsmcxBD+ghODZSYTiq03UyFLWlIqu6uw==
+X-Received: by 2002:a17:906:8477:b0:730:a658:b286 with SMTP id hx23-20020a170906847700b00730a658b286mr20077065ejc.646.1660127330588;
+        Wed, 10 Aug 2022 03:28:50 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id x24-20020a170906149800b00705cdfec71esm2169894ejc.7.2022.08.10.03.28.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 03:28:49 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, van fantasy <g1042620637@gmail.com>
+Subject: [PATCH net] l2tp: Serialize access to sk_user_data with sock lock
+Date:   Wed, 10 Aug 2022 12:28:48 +0200
+Message-Id: <20220810102848.282778-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml500001.china.huawei.com (7.191.163.213) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  9 Aug 2022 19:27:52 +0300
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+sk->sk_user_data has multiple users, which are not compatible with each
+other. To synchronize the users, any check-if-unused-and-set access to the
+pointer has to happen with sock lock held.
 
-> Emails to Dan Murphy and Ricardo Rivera-Matos bounce ("550 Invalid
-> recipient").  Andrew Davis agreed to take over the bindings.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Add Andrew Davis instead.
-> 2. Not adding accumulated ack due to change above.
-> ---
->  Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml    | 2 +-
->  .../devicetree/bindings/leds/leds-class-multicolor.yaml        | 2 +-
->  Documentation/devicetree/bindings/leds/leds-lp50xx.yaml        | 2 +-
->  Documentation/devicetree/bindings/net/ti,dp83822.yaml          | 2 +-
->  Documentation/devicetree/bindings/net/ti,dp83867.yaml          | 2 +-
->  Documentation/devicetree/bindings/net/ti,dp83869.yaml          | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq2515x.yaml    | 3 +--
->  Documentation/devicetree/bindings/power/supply/bq256xx.yaml    | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq25980.yaml    | 3 +--
->  Documentation/devicetree/bindings/sound/tas2562.yaml           | 2 +-
->  Documentation/devicetree/bindings/sound/tlv320adcx140.yaml     | 2 +-
->  11 files changed, 11 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-> index 9f5e96439c01..2e6abc9d746a 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads124s08.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: Texas Instruments' ads124s08 and ads124s06 ADC chip
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
-For this one.
+l2tp currently fails to grab the lock when modifying the underlying tunnel
+socket. Fix it by adding appropriate locking.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+We don't to grab the lock when l2tp clears sk_user_data, because it happens
+only in sk->sk_destruct, when the sock is going away.
 
->  
->  properties:
->    compatible:
-> diff --git a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-> index 12693483231f..31840e33dcf5 100644
-> --- a/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-> +++ b/Documentation/devicetree/bindings/leds/leds-class-multicolor.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: Common properties for the multicolor LED class.
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    Bindings for multi color LEDs show how to describe current outputs of
-> diff --git a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-> index e0b658f07973..63da380748bf 100644
-> --- a/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-> +++ b/Documentation/devicetree/bindings/leds/leds-lp50xx.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: LED driver for LP50XX RGB LED from Texas Instruments.
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The LP50XX is multi-channel, I2C RGB LED Drivers that can group RGB LEDs into
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83822.yaml b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-> index 75e8712e903a..f2489a9c852f 100644
-> --- a/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83822.yaml
-> @@ -8,7 +8,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
->  title: TI DP83822 ethernet PHY
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The DP83822 is a low-power, single-port, 10/100 Mbps Ethernet PHY. It
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> index 76ff08a477ba..b8c0e4b5b494 100644
-> --- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-> @@ -11,7 +11,7 @@ allOf:
->    - $ref: "ethernet-controller.yaml#"
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The DP83867 device is a robust, low power, fully featured Physical Layer
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-> index 1b780dce61ab..b04ff0014a59 100644
-> --- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-> @@ -11,7 +11,7 @@ allOf:
->    - $ref: "ethernet-phy.yaml#"
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The DP83869HM device is a robust, fully-featured Gigabit (PHY) transceiver
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-> index 27db38577822..1a1b240034ef 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq2515x.yaml
-> @@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: TI bq2515x 500-mA Linear charger family
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The BQ2515x family is a highly integrated battery charge management IC that
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-> index 91abe5733c41..82f382a7ffb3 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq256xx.yaml
-> @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: TI bq256xx Switch Mode Buck Charger
->  
->  maintainers:
-> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The bq256xx devices are a family of highly-integrated battery charge
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq25980.yaml b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-> index 4883527ab5c7..b687b8bcd705 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq25980.yaml
-> @@ -8,8 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: TI BQ25980 Flash Charger
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> -  - Ricardo Rivera-Matos <r-rivera-matos@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The BQ25980, BQ25975, and BQ25960 are a series of flash chargers intended
-> diff --git a/Documentation/devicetree/bindings/sound/tas2562.yaml b/Documentation/devicetree/bindings/sound/tas2562.yaml
-> index 5f7dd5d6cbca..30f6b029ac08 100644
-> --- a/Documentation/devicetree/bindings/sound/tas2562.yaml
-> +++ b/Documentation/devicetree/bindings/sound/tas2562.yaml
-> @@ -8,7 +8,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
->  title: Texas Instruments TAS2562 Smart PA
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The TAS2562 is a mono, digital input Class-D audio amplifier optimized for
-> diff --git a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-> index bc2fb1a80ed7..ee698614862e 100644
-> --- a/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-> +++ b/Documentation/devicetree/bindings/sound/tlv320adcx140.yaml
-> @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  title: Texas Instruments TLV320ADCX140 Quad Channel Analog-to-Digital Converter
->  
->  maintainers:
-> -  - Dan Murphy <dmurphy@ti.com>
-> +  - Andrew Davis <afd@ti.com>
->  
->  description: |
->    The TLV320ADCX140 are multichannel (4-ch analog recording or 8-ch digital
+Fixes: fd558d186df2 ("l2tp: Split pppol2tp patch into separate l2tp and ppp parts")
+Reported-by: van fantasy <g1042620637@gmail.com>
+Tested-by: van fantasy <g1042620637@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ net/l2tp/l2tp_core.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7499c51b1850..9f5f86bfc395 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1469,16 +1469,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock = sockfd_lookup(tunnel->fd, &ret);
+ 		if (!sock)
+ 			goto err;
+-
+-		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
+-		if (ret < 0)
+-			goto err_sock;
+ 	}
+ 
++	sk = sock->sk;
++	lock_sock(sk);
++
++	ret = l2tp_validate_socket(sk, net, tunnel->encap);
++	if (ret < 0)
++		goto err_sock;
++
+ 	tunnel->l2tp_net = net;
+ 	pn = l2tp_pernet(net);
+ 
+-	sk = sock->sk;
+ 	sock_hold(sk);
+ 	tunnel->sock = sk;
+ 
+@@ -1504,7 +1506,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 
+ 		setup_udp_tunnel_sock(net, sock, &udp_cfg);
+ 	} else {
+-		sk->sk_user_data = tunnel;
++		rcu_assign_sk_user_data(sk, tunnel);
+ 	}
+ 
+ 	tunnel->old_sk_destruct = sk->sk_destruct;
+@@ -1518,6 +1520,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 	if (tunnel->fd >= 0)
+ 		sockfd_put(sock);
+ 
++	release_sock(sk);
+ 	return 0;
+ 
+ err_sock:
+@@ -1525,6 +1528,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock_release(sock);
+ 	else
+ 		sockfd_put(sock);
++
++	release_sock(sk);
+ err:
+ 	return ret;
+ }
+-- 
+2.35.3
 
