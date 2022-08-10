@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C06A458E951
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 11:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCBB58E9A7
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 11:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231966AbiHJJLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 05:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
+        id S232111AbiHJJbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 05:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbiHJJLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:11:52 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C4C86C1F;
-        Wed, 10 Aug 2022 02:11:50 -0700 (PDT)
-Received: from mail-ej1-f42.google.com ([209.85.218.42]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MYvTy-1nqmns3uuO-00UqaB; Wed, 10 Aug 2022 11:11:48 +0200
-Received: by mail-ej1-f42.google.com with SMTP id dc19so26493172ejb.12;
-        Wed, 10 Aug 2022 02:11:48 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0K7XE9U1+ayLNTMZ+rWY2o0cgH32BBrwkLPxNuKT9D0wtqzp1Y
-        n31gAi+T1YQLUkd+xGdxOUSQEwis8N17Udj3Aok=
-X-Google-Smtp-Source: AA6agR54UqR5KkP1nrlq8rv8pS4O149IPA0hIzpCIiH6gOpPCAZBchAVTdP8Kkuc+/cGpEwZbfM+QiK1g5NDj4jquFo=
-X-Received: by 2002:a17:907:1c9d:b0:732:f9da:aa51 with SMTP id
- nb29-20020a1709071c9d00b00732f9daaa51mr4259542ejc.654.1660122708604; Wed, 10
- Aug 2022 02:11:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220426175436.417283-1-kuba@kernel.org> <20220426175436.417283-4-kuba@kernel.org>
- <8576aef3-37e4-8bae-bab5-08f82a78efd3@kernel.org>
-In-Reply-To: <8576aef3-37e4-8bae-bab5-08f82a78efd3@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 10 Aug 2022 11:11:32 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a01yfeg-3QO=MeDG7JzXEsTGxK+vMpFJ83SGwPto4AOxw@mail.gmail.com>
-Message-ID: <CAK8P3a01yfeg-3QO=MeDG7JzXEsTGxK+vMpFJ83SGwPto4AOxw@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/6] net: atm: remove support for ZeitNet ZN122x
- ATM devices
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        with ESMTP id S231405AbiHJJbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 05:31:44 -0400
+Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD55C6B17E;
+        Wed, 10 Aug 2022 02:31:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=FryoR
+        m8qpMRZLvSSer5jc0v+pkFjWZPVOxn3ZzDbYKI=; b=Qcaadhu4KilUZ30mBk9f3
+        W61jbN0r328GpeBmJSMSCCr1FN1bYaqFSDlSqRrcdM5Et47JDwHwu+E84UzRWxzt
+        Rmlvt0mSzaf0+azEknTGQUWo6g1Wa4orS8WsUbfmyXB+qDr01O+ySKPyU6GKSsR5
+        WGAieDadViqaLLRspsG1FQ=
+Received: from slark_xiao$163.com ( [112.97.48.210] ) by
+ ajax-webmail-wmsvr114 (Coremail) ; Wed, 10 Aug 2022 17:28:51 +0800 (CST)
+X-Originating-IP: [112.97.48.210]
+Date:   Wed, 10 Aug 2022 17:28:51 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, netdev@vger.kernel.org,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, arnd@arndb.de
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:rlUgDwpljBmsDj7uc4yIqEt8ujtjVlTjLMlUVcO8f62yaAWqhvB
- lnCrKsjSyntNhQb0W24QUt1r2KnnqauWOV84fmhaghq52TqU57+6sM0G/I/dsQNo5M0AVZe
- /HB87cS6eKmTO0MmgwXCP/fARwVBQXIH/48IBn3ZGNZY1a9/cNb01G2OiPH/3htn+7B56X4
- N0+IKA9Il5VAZixSXCRwg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BBInhWANcsA=:euyLimCkXAysWjFlrG45rZ
- qlHxapK4ff35SwnRiLpsZl2PtvakRa3UJRZr7LyNKzIZI2Giojio604vVG3RbRm9BUOg7ZmEN
- c61P3HBZGzqb66+Dd4cqq9sV5gxKMqoHAdpifFrU8101RS4p+0WifOMxNrQyBGB4WcmRxLtmG
- nFbmkhyTA8RD73dOPVj3/+bPO5zrAP9J0CNg8x1nNVeq/XvrwI9r/SyjXJJtnIbBxf+FjLDxC
- TGW1t57hUZkQvnSpkvjhYXPp8Xd/rStzk+Qk00qMx3b/t4IBgwID5k8Ui5rIjVUV89YUufP7u
- w+d8MxM3wBUSeejSIyD+5yPgf+mZf2fkS0mY5GmPNK/E/p0fPNs2F8xoJuNOy2xTo04MWGFPy
- QAXD0K38v0e0mkJuQaKSd2BPgyevqapaIZ1o0S07qwtHlJQwjqtgxmNtTZ47JWF7rc0aZvS+u
- J7teQ1q5EqQOjXW5uGojjCma+y3UfcEySNArtWWA7SPmlq5CA134J1sD2jG9Sy795r3I6Img0
- LbzQOJ4r0MBrMBLLFmfPySDbjwxDYzheIUf6jySdESHSRX/SYeGJDSwBq7wJvKIefjEmh+15K
- sFS2h0HhAQBOK72/+aPeS8GRWrhOOvqLdrOc+nEV/klCIoIiF4TK1I0PyYFeLuaUrnWmgnGpJ
- 19KubxrLhxYnrf0yy10ushkVRDLI99gojAPTOcZMbGbnUGIfxhsOL+M9NwLjnthnNE6u2FA+/
- 8vGLZZnXwoVeDH6e4P10sR/ljvo1XiTfEVg5TA==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <8735e4mvtd.fsf@miraculix.mork.no>
+References: <20220810014521.9383-1-slark_xiao@163.com>
+ <8735e4mvtd.fsf@miraculix.mork.no>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <e7fdcfc.30e7.1828715d7af.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: csGowACHv9JTevNihIgsAA--.29964W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDQJZZFaEKSJRGQABsi
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 9:36 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 26. 04. 22, 19:54, Jakub Kicinski wrote:
-> > This driver received nothing but automated fixes in the last 15 years.
-> > Since it's using virt_to_bus it's unlikely to be used on any modern
-> > platform.
-> ...
-> >   delete mode 100644 include/uapi/linux/atm_zatm.h
->
-> This unfortunately breaks linux-atm:
-> zntune.c:18:10: fatal error: linux/atm_zatm.h: No such file or directory
->
-> The source does also:
-> ioctl(s,ZATM_SETPOOL,&sioc)
-> ioctl(s,zero ? ZATM_GETPOOLZ : ZATM_GETPOOL,&sioc)
-> etc.
->
-> So we should likely revert the below:
-
-I suppose there is no chance of also getting the linux-atm package updated
-to not include those source files, right? The last release I found on
-sourceforge
-is 12 years old, but maybe I was looking in the wrong place.
-
-          Arnd
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDgtMTAgMTQ6NTU6NDIsICJCasO4cm4gTW9yayIgPGJq
+b3JuQG1vcmsubm8+IHdyb3RlOgo+U2xhcmsgWGlhbyA8c2xhcmtfeGlhb0AxNjMuY29tPiB3cml0
+ZXM6Cj4KPj4gVGhlcmUgYXJlIDIgbW9kZWxzIGZvciBNVjMyIHNlcmlhbHMuIE1WMzItVy1BIGlz
+IGRlc2lnbmVkCj4+IGJhc2VkIG9uIFF1YWxjb21tIFNEWDYyIGNoaXAsIGFuZCBNVjMyLVctQiBp
+cyBkZXNpZ25lZCBiYXNlZAo+PiBvbiBRdWFsY29tbSBTRFg2NSBjaGlwLiBTbyB3ZSB1c2UgMiBk
+aWZmZXJlbnQgUElEIHRvIHNlcGFyYXRlIGl0Lgo+Pgo+PiBUZXN0IGV2aWRlbmNlIGFzIGJlbG93
+Ogo+PiBUOiAgQnVzPTAzIExldj0wMSBQcm50PTAxIFBvcnQ9MDIgQ250PTAzIERldiM9ICAzIFNw
+ZD00ODAgTXhDaD0gMAo+PiBEOiAgVmVyPSAyLjEwIENscz1lZihtaXNjICkgU3ViPTAyIFByb3Q9
+MDEgTXhQUz02NCAjQ2Zncz0gIDEKPj4gUDogIFZlbmRvcj0xZTJkIFByb2RJRD0wMGYzIFJldj0w
+NS4wNAo+PiBTOiAgTWFudWZhY3R1cmVyPUNpbnRlcmlvbgo+PiBTOiAgUHJvZHVjdD1DaW50ZXJp
+b24gUElEIDB4MDBGMyBVU0IgTW9iaWxlIEJyb2FkYmFuZAo+PiBTOiAgU2VyaWFsTnVtYmVyPWQ3
+YjRiZThkCj4+IEM6ICAjSWZzPSA0IENmZyM9IDEgQXRyPWEwIE14UHdyPTUwMG1BCj4+IEk6ICBJ
+ZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9NTAgRHJpdmVy
+PXFtaV93d2FuCj4+IEk6ICBJZiM9MHgxIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3Vi
+PWZmIFByb3Q9NDAgRHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYjPTB4MiBBbHQ9IDAgI0VQcz0gMyBD
+bHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTQwIERyaXZlcj1vcHRpb24KPj4gSTogIElmIz0weDMg
+QWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJvdD0zMCBEcml2ZXI9b3B0aW9u
+Cj4KPlRoZSBwYXRjaCBsb29rcyBuaWNlLCBidXQgSSBoYXZlIGEgY291cGxlIG9mIHF1ZXN0aW9u
+cyBzaW5jZSB5b3UncmUgb25lCj5vZiB0aGUgZmlyc3QgcHVzaGluZyBvbmUgb2YgdGhlc2UgU0RY
+NnggbW9kZW1zLgo+Cj5JcyB0aGF0IHByb3RvY29sIHBhdHRlcm4gZml4ZWQgb24gdGhpcyBnZW5l
+cmF0aW9uIG9mIFF1YWxjb21tIGNoaXBzPyAgSXQKPmxvb2tzIGxpa2UgYW4gZXh0ZW5zaW9uIG9m
+IHdoYXQgdGhleSBzdGFydGVkIHdpdGggdGhlIFNEWDU1IGdlbmVyYXRpb24sCj53aGVyZSB0aGUg
+RElBRyBwb3J0IHdhcyBpZGVudGlmaWVkIGJ5IGZmL2ZmLzMwIGFjcm9zcyBtdWx0aXBsZSB2ZW5k
+b3JzLgo+CiBTZWVtcyB5ZXMuIEkgY2hlY2tlZCBzb21lIGRpZmZlcmVudCB1c2JfY29tcG9zaXRp
+b25zIGFuZCBmb3VuZCB0aGF0CiBkaWFnIHBvcnQgaXMgdXNpbmcgcHJvdG9jb2wgJzMwJyBhbHdh
+eXMuCgo+U3BlY2lmaWNhbGx5IHdydCB0aGlzIGRyaXZlciBhbmQgcGF0Y2gsIEkgd29uZGVyIGlm
+IHdlIGNhbi9zaG91bGQgbWF0Y2gKPm9uIGZmL2ZmLzUwIGluc3RlYWQgb2YgaW50ZXJmYWNlIG51
+bWJlciBoZXJlPyAgSSBub3RlIHRoYXQgdGhlIGludGVyZmFjZQoKSSBjaGVja2VkIGFsbCBvdXIg
+ZWRpdGVkIHVzYl9jb21wb3NpdGlvbnMgYW5kIGFsbCBRQyBkZWZhdWx0IHVzYiAKY29tcG9zaXRp
+b25zKDkwMjUsIDkwZGIsIDkwNjcsOTBkNSw5MDg0LDkwOTEsOTBhZCw5MGI4LDkwZTUpLCAKZmYv
+ZmYvNTAgaXMgcm1uZXQgdXNlZCBvbmx5LiAKCj5udW1iZXJzIGFyZSBhbGxvY2F0ZWQgc2VxdWVu
+dGlvbmFsbHkuIFByb2JhYmx5IGluIHRoZSBvcmRlciB0aGVzZQo+ZnVuY3Rpb24gYXJlIGVuYWJs
+ZWQgYnkgdGhlIGZpcm13YXJlPyBJZiBzbywgYXJlIHdlIHN1cmUgdGhpcyBpcyBzdGF0aWM/CgpU
+aGlzIG5lZWRzIG1vcmUgdGltZSB0byBjb25maXJtLiBJIHdpbGwga2VlcCB5b3UgdXBkYXRlZC4K
+Cj5PciBjb3VsZCB3ZSByaXNrIGNvbmZpZyB2YXJpYW50cyB3aGVyZSB0aGUgUk1ORVQvUU1JIGZ1
+bmN0aW9uIGhhdmUgYQo+ZGlmZmVyZW50IGludGVyZmFjZSBudW1iZXIgZm9yIHRoZSBzYW1lIFBJ
+RHM/Cj4KPkFuZCBhbm90aGVyIHBvc3NpYmlsaXR5IHlvdSBtaWdodCBjb25zaWRlci4gIEFzc3Vt
+aW5nIHRoYXQgZmYvZmYvNTAKPnVuaXF1ZWx5IGlkZW50aWZpZXMgUk1ORVQvUU1JIGZ1bmN0aW9u
+cyByZWdhcmRsZXNzIG9mIFBJRCwgd291bGQgeW91Cj5jb25zaWRlciBhIFZJRCtjbGFzcyBtYXRj
+aCB0byBjYXRjaCBhbGwgb2YgdGhlbT8gIFRoaXMgd291bGQgbm90IG9ubHkKPnN1cHBvcnQgYm90
+aCB0aGUgUElEcyBvZiB0aGlzIHBhdGNoIGluIG9uZSBnbywgYnV0IGFsc28gYW55IGZ1dHVyZSBQ
+SURzCj53aXRob3V0IHRoZSBuZWVkIGZvciBmdXJ0aGVyIGRyaXZlciBwYXRjaGVzLgo+Cj4KPkJq
+w7hybgoKSSBoYXZlIGEgY29uY2VybiwgaWYgQ2ludGVyaW9uIG9yIG90aGVyIFZlbmRvcnMsIGxp
+a2UgUXVlY3RlbCwgdXNlIG90aGVyIApjaGlwIChzdWNoIGFzIGludGVsLCBtZWRpYXRlY2sgYW5k
+IHNvIG9uKSwgdGhpcyBtZXRob2RzIG1heSB3b24ndCB3b3JrLApiZWNhdXNlICB0aGV5IHNoYXJl
+IGEgc2FtZSBWSUQuIEFsc28gdGhpcyBtYXkgYmUgY2hhbmdlZCBvbmNlIFF1YWxjb21tIAp1cGRh
+dGUgdGhlIHByb3RvY29sIHBhdHRlcm5zIGZvciBmdXR1cmUgY2hpcC4=
