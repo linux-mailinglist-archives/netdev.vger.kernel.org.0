@@ -2,132 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7297D58EAB6
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 12:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3533158EAD8
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 13:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiHJKvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 06:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52014 "EHLO
+        id S231682AbiHJLAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 07:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiHJKvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 06:51:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D225E089
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660128701;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+QKswYb/p0TG7A62JGLMqklr1fmwHxQqVazk8yHSBgY=;
-        b=Uhr2TQZ53Up2F3qnTgWFd6yJ2s5x5SSFjTCmjK9sDuleIFRX6rWspuIqZMvVzv0DqidRUL
-        dE0lHpVUTopdCYOyu0dSmOqG8u9OTSpEbMt+xHtl4FSsXohEjmktFGBjg4zFzjnHOxlwSh
-        Krks5Hhp91wlAvclJ1dUKx33P4EelKw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-245-1PZwv9H6Nt-K4z6NRCTJig-1; Wed, 10 Aug 2022 06:51:40 -0400
-X-MC-Unique: 1PZwv9H6Nt-K4z6NRCTJig-1
-Received: by mail-wm1-f71.google.com with SMTP id n1-20020a7bcbc1000000b003a4e8c818f5so458039wmi.6
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 03:51:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=+QKswYb/p0TG7A62JGLMqklr1fmwHxQqVazk8yHSBgY=;
-        b=y3kKOG6UMlkFUMxQWckeZwFeqqzH4XRRI52X7KJlSAFCpTjgTKQevPREd7MRX6QZQJ
-         BAahX1Dh9BTdEs/1fysm9HDiiBQGfP/QxzSuP+AjegaKXVqYKPJgQB6SEhsC8XXbJ1sC
-         XwANfI/qQPaiiiGBcHiOEgHx6PyCeiU2CRbpDGc39CchkLw2W0Mi80rXDTwkUA6GVmlV
-         ZOYBFnw6WrGOOl0AAoVJOAW50ru+tQC5dyYuqthT7xVC/8+ae2CIoHq7nKZNpEz1G9Re
-         8hRAE0gvG7C1y/9Zw4nUv1N6RDqNUC8Goafk7uITgNa7P9gjBxYysNvCLfC5AgUDfnHJ
-         8qdw==
-X-Gm-Message-State: ACgBeo2GZYXNw2oscusnBXoNm0O3X6gKVHeXTTvbcgY/v4q67eUjCWxH
-        Ac02XCjgwwvs0eX9P3Zm0myQkYMmR9nJmzs/uazaNPeuANia7TkJOIjqvTp9zzTJaUMlqcnsIaF
-        SYU49NZWWnz0DEbUdcdmrlWEXGOShCDo7axknl7aDbX0qm+JzCtUANQ7U3MFS/wa8+g0L
-X-Received: by 2002:a05:6000:1a88:b0:222:ca4d:f0d2 with SMTP id f8-20020a0560001a8800b00222ca4df0d2mr9771179wry.610.1660128698827;
-        Wed, 10 Aug 2022 03:51:38 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6s8knuL4j1oq3Fzd8so/k3D+RKPKqXDCFBb2MFvV+e9VEEggyzQfUdfbVef77LJNUZXnar9w==
-X-Received: by 2002:a05:6000:1a88:b0:222:ca4d:f0d2 with SMTP id f8-20020a0560001a8800b00222ca4df0d2mr9771155wry.610.1660128698644;
-        Wed, 10 Aug 2022 03:51:38 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b0021e491fd250sm16138637wrv.89.2022.08.10.03.51.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 03:51:38 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH 2/2] net/mlx5e: Leverage sched_numa_hop_mask()
-Date:   Wed, 10 Aug 2022 11:51:19 +0100
-Message-Id: <20220810105119.2684079-2-vschneid@redhat.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220810105119.2684079-1-vschneid@redhat.com>
-References: <xhsmhtu6kbckc.mognet@vschneid.remote.csb>
- <20220810105119.2684079-1-vschneid@redhat.com>
+        with ESMTP id S231745AbiHJLAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 07:00:30 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D852167C2
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 04:00:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660129225; x=1691665225;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wE5jdbVQDsSfAL8EjrFbwM/BDn5/PkL6c600zUNW6R4=;
+  b=ml1t73CUzkLn4MS0Nj1wDoSy3ej550pmbWztAnf0ilEFwtlKbTSb95k3
+   xk9VPhorLi0UlPxrylHOVHL39ttdOM4JuaVPktK7wleL1t1B/YGW+hJ3x
+   v9eDHw0JBieHDmFUB0OUeGLeTVKGVCVlkwlrd4Cu6xNbdQlOfbQ8R8f7I
+   SzHi2TvAcyLgPOlbOcSTqp2kaZOknz09FVZHqPmAF3R5Y8GuNS6ZAnQJK
+   86C9Woj4QfP2reaC63TT9KVUFi0W4S5IEGt/BMk+fssm/RigFLp5QizHM
+   DO/qHFGNk/eb5v0U642cB6EF1OKTkI8ZLvnUwutMJjCfhIq35QmF8uyuI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="274108187"
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="274108187"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 04:00:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,227,1654585200"; 
+   d="scan'208";a="638070398"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 10 Aug 2022 04:00:22 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27AB0LrY001104;
+        Wed, 10 Aug 2022 12:00:21 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: [RFCv7 PATCH net-next 17/36] treewide: adjust features initialization
+Date:   Wed, 10 Aug 2022 12:58:31 +0200
+Message-Id: <20220810105831.1307150-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220810030624.34711-18-shenjian15@huawei.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-18-shenjian15@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Valentin Schneider <vschneid@redhat.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+From: Jian Shen <shenjian15@huawei.com>
+Date: Wed, 10 Aug 2022 11:06:05 +0800
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 229728c80233..2eb4ffd96a95 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -809,9 +809,12 @@ static void comp_irqs_release(struct mlx5_core_dev *dev)
- static int comp_irqs_request(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_eq_table *table = dev->priv.eq_table;
-+	const struct cpumask *mask;
- 	int ncomp_eqs = table->num_comp_eqs;
-+	int hops = 0;
- 	u16 *cpus;
- 	int ret;
-+	int cpu;
- 	int i;
- 
- 	ncomp_eqs = table->num_comp_eqs;
-@@ -830,8 +833,17 @@ static int comp_irqs_request(struct mlx5_core_dev *dev)
- 		ret = -ENOMEM;
- 		goto free_irqs;
- 	}
--	for (i = 0; i < ncomp_eqs; i++)
--		cpus[i] = cpumask_local_spread(i, dev->priv.numa_node);
-+
-+	rcu_read_lock();
-+	for_each_numa_hop_mask(dev->priv.numa_node, hops, mask) {
-+		for_each_cpu(cpu, mask) {
-+			cpus[i] = cpu;
-+			if (++i == ncomp_eqs)
-+				goto spread_done;
-+		}
-+	}
-+spread_done:
-+	rcu_read_unlock();
- 	ret = mlx5_irqs_request_vectors(dev, cpus, ncomp_eqs, table->comp_irqs);
- 	kfree(cpus);
- 	if (ret < 0)
--- 
-2.31.1
+> There are many direclty single bit assignment to netdev features.
+> Adjust these expressions, so can use netdev features helpers later.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> ---
+>  arch/um/drivers/vector_kern.c                       | 5 ++++-
+>  drivers/firewire/net.c                              | 4 +++-
+>  drivers/infiniband/hw/hfi1/vnic_main.c              | 4 +++-
+>  drivers/misc/sgi-xp/xpnet.c                         | 3 ++-
+>  drivers/net/can/dev/dev.c                           | 4 +++-
+>  drivers/net/ethernet/alacritech/slicoss.c           | 4 +++-
+>  drivers/net/ethernet/amd/xgbe/xgbe-drv.c            | 4 +++-
+>  drivers/net/ethernet/aquantia/atlantic/aq_nic.c     | 3 ++-
+>  drivers/net/ethernet/atheros/atlx/atl2.c            | 4 +++-
+>  drivers/net/ethernet/cadence/macb_main.c            | 4 +++-
+>  drivers/net/ethernet/davicom/dm9000.c               | 4 +++-
+>  drivers/net/ethernet/engleder/tsnep_main.c          | 4 +++-
+>  drivers/net/ethernet/ibm/ibmveth.c                  | 3 ++-
+>  drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 4 +++-
+>  drivers/net/ethernet/mellanox/mlx4/en_netdev.c      | 3 ++-
+>  drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 +++-
+>  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++++--
+>  drivers/net/ethernet/netronome/nfp/nfp_net_repr.c   | 3 ++-
+>  drivers/net/ethernet/ni/nixge.c                     | 4 +++-
+>  drivers/net/ethernet/renesas/sh_eth.c               | 6 ++++--
+>  drivers/net/ethernet/sun/sunhme.c                   | 7 +++++--
+>  drivers/net/ethernet/toshiba/ps3_gelic_net.c        | 6 ++++--
+>  drivers/net/ethernet/toshiba/spider_net.c           | 3 ++-
+>  drivers/net/ethernet/tundra/tsi108_eth.c            | 3 ++-
+>  drivers/net/ethernet/xilinx/ll_temac_main.c         | 4 +++-
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c   | 4 +++-
+>  drivers/net/hamradio/bpqether.c                     | 4 +++-
+>  drivers/net/hyperv/netvsc_drv.c                     | 3 ++-
+>  drivers/net/ipa/ipa_modem.c                         | 4 +++-
+>  drivers/net/ntb_netdev.c                            | 4 +++-
+>  drivers/net/rionet.c                                | 4 +++-
+>  drivers/net/tap.c                                   | 2 +-
+>  drivers/net/thunderbolt.c                           | 3 ++-
+>  drivers/net/usb/smsc95xx.c                          | 4 +++-
+>  drivers/net/virtio_net.c                            | 4 +++-
+>  drivers/net/wireless/ath/ath10k/mac.c               | 7 +++++--
+>  drivers/net/wireless/ath/ath11k/mac.c               | 4 +++-
+>  drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c   | 4 +++-
+>  drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c   | 4 +++-
+>  drivers/net/wireless/mediatek/mt76/mt7615/init.c    | 4 +++-
+>  drivers/net/wireless/mediatek/mt76/mt7915/init.c    | 4 +++-
+>  drivers/net/wireless/mediatek/mt76/mt7921/init.c    | 4 +++-
+>  drivers/net/wwan/t7xx/t7xx_netdev.c                 | 4 +++-
+>  drivers/s390/net/qeth_core_main.c                   | 7 +++++--
+>  include/net/udp.h                                   | 4 +++-
+>  net/phonet/pep-gprs.c                               | 4 +++-
+>  46 files changed, 138 insertions(+), 52 deletions(-)
+> 
+> diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
+> index 1d59522a50d8..d797758850e1 100644
+> --- a/arch/um/drivers/vector_kern.c
+> +++ b/arch/um/drivers/vector_kern.c
+> @@ -1628,7 +1628,10 @@ static void vector_eth_configure(
+>  		.bpf			= NULL
+>  	});
+>  
+> -	dev->features = dev->hw_features = (NETIF_F_SG | NETIF_F_FRAGLIST);
+> +	netdev_active_features_zero(dev);
+> +	dev->features |= NETIF_F_SG;
+> +	dev->features |= NETIF_F_FRAGLIST;
+> +	dev->features = dev->hw_features;
 
+I think a new helper can be useful there and in a couple other
+places, which would set or clear an array of bits taking them as
+varargs:
+
+#define __netdev_features_set_set(feat, uniq, ...) ({	\
+	DECLARE_NETDEV_FEATURE_SET(uniq, __VA_ARGS__);	\
+	netdev_features_set_array(feat, &(uniq));	\
+})
+#define netdev_features_set_set(feat, ...)		\
+	__smth(feat, __UNIQUE_ID(feat_set), __VA_ARGS__)
+
+(name is a placeholder)
+
+so that you can do
+
+	netdev_active_features_zero(dev);
+	netdev_features_set_set(dev->features, NETIF_F_SG, NETIF_F_FRAGLIST);
+
+in one take. I think it looks elegant, doesn't it?
+
+>  	INIT_WORK(&vp->reset_tx, vector_reset_tx);
+>  
+>  	timer_setup(&vp->tl, vector_timer_expire, 0);
+
+[...]
+
+> -- 
+> 2.33.0
+
+Thanks,
+Olek
