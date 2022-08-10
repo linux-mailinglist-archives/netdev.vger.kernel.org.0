@@ -2,177 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D83458F006
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 18:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C2958F019
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 18:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233185AbiHJQES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 12:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
+        id S233358AbiHJQKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 12:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233304AbiHJQD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 12:03:56 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FAA6582C;
-        Wed, 10 Aug 2022 09:03:53 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id qn6so16718317ejc.11;
-        Wed, 10 Aug 2022 09:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=AOVR+FZiSzTKEgE6QjcPCLhOAklIanQVpyFR+Tk5+Ik=;
-        b=IEnFjBXSdoKMopYXDcDI4lVjhzlB6jUuBmYf1RtMJNog/YTNe3lI0/QEy4faFrfaIu
-         prT1UYqaeoc7hPPDqrTXsJLE05czMC5d790YC1+TyBsogiLVkqIMxOcXC9AEOmTKE5xC
-         vMjo3bBe6x4DWPPzfZnUwu0xsdMYHF+RPwGEeA2WM1ni+J5EkxG7vJYCYc3AuHXGELMR
-         XLF+3yRmfyHKgiOHPaPIHakoSGaqi58UvzWOb1fl+y4ZeNv/8hAult4BeXIsOVGmVCx5
-         1Irgjolf/rPj953oAkYtf+2sz4bT0qU3s+tBotncsn9VqY4N0b/EcaLU+J2kXXBB1NKX
-         egug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=AOVR+FZiSzTKEgE6QjcPCLhOAklIanQVpyFR+Tk5+Ik=;
-        b=2XoDFswM/kVwxjfvyKFExs75E1GfwgwRa3CJN7WRr645wIIYg8lRJDVODkODC+MYS8
-         FoFZFLK6QpxdXSGsuE/kr+Gak/0fF0ukclqKThNuPSTwKi5WdT1bGk+GfxKF25u7mwAf
-         +lK40+PtI/v06D8QqjEM6qyVneXC4yZ20a7JJZy0mKPQ/BjmWbu6yP5P2MaXzxAgPKo+
-         T7SmYNl3jBZ+U7HDtvpafrIqUre2LAGbeQEtaR+S4UVzfm+9X4h0mtvxA7CtIn4i/btI
-         xgHvvnrZLKC+G9vpoPm8AIOtSZpcDK4ZBOC/xN/fur1GB7mNALltpyCCXyK++vBQ1V/h
-         P8zw==
-X-Gm-Message-State: ACgBeo1K5xehTKu1rX6bXZI0qdoWZrXzSuyjNck4HrvQ8M7A2idR1bOg
-        ybSPoS/7fk0VdhLF5ZQNIrY=
-X-Google-Smtp-Source: AA6agR64XA+40H/MjnCQFOVB+71sI7xUxFta5WUhOvUuRQ6/A3czn2HWx4U3FOa3gGghDLXb2p2qkw==
-X-Received: by 2002:a17:907:a063:b0:730:750b:bb62 with SMTP id ia3-20020a170907a06300b00730750bbb62mr20899007ejc.612.1660147432187;
-        Wed, 10 Aug 2022 09:03:52 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id et13-20020a056402378d00b0043ba24a26casm7677455edb.23.2022.08.10.09.02.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 09:03:21 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next] docs: net: add an explanation of VF (and
- other) Representors
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     ecree@xilinx.com, netdev@vger.kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-net-drivers@amd.com,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Shannon Nelson <snelson@pensando.io>,
-        Simon Horman <simon.horman@corigine.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-References: <20220805165850.50160-1-ecree@xilinx.com>
- <20220805184359.5c55ca0d@kernel.org>
- <71af8654-ca69-c492-7e12-ed7ff455a2f1@gmail.com>
- <20220808204135.040a4516@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <572c50b0-2f10-50d5-76fc-dfa409350dbe@gmail.com>
-Date:   Wed, 10 Aug 2022 17:02:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S232852AbiHJQKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 12:10:08 -0400
+Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E312D7A527;
+        Wed, 10 Aug 2022 09:10:06 -0700 (PDT)
+Received: from dev010.ch-qa.sw.ru ([172.29.1.15])
+        by relay.virtuozzo.com with esmtp (Exim 4.95)
+        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
+        id 1oLoF9-00F6Pf-It;
+        Wed, 10 Aug 2022 18:08:38 +0200
+From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Christian Brauner <brauner@kernel.org>,
+        linux-kernel@vger.kernel.org, "Denis V . Lunev" <den@openvz.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>,
+        kernel@openvz.org, devel@openvz.org
+Subject: [PATCH v2 0/2] neighbour: fix possible DoS due to net iface start/stop loop
+Date:   Wed, 10 Aug 2022 19:08:38 +0300
+Message-Id: <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
-In-Reply-To: <20220808204135.040a4516@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/08/2022 04:41, Jakub Kicinski wrote:
->>> AFAIK there's no "management PF" in the Linux model.  
->>
->> Maybe a bad word choice.  I'm referring to whichever PF (which likely
->>  also has an ordinary netdevice) has administrative rights over the NIC /
->>  internal switch at a firmware level.  Other names I've seen tossed
->>  around include "primary PF", "admin PF".
-> 
-> I believe someone (mellanox?) used the term eswitch manager.
-> I'd use "host PF", somehow that makes most sense to me.
+Dear friends,
 
-Not sure about that, I've seen "host" used as antonym of "SoC", so
- if the device is configured with the SoC as the admin this could
- confuse people.
-I think whatever term we settle on, this document might need to
- have a 'Definitions' section to make it clear :S
+Recently one of OpenVZ users reported that they have issues with network
+availability of some containers. It was discovered that the reason is absence
+of ARP replies from the Host Node on the requests about container IPs.
 
->>> What is "the PCIe controller" here? I presume you've seen the
->>> devlink-port doc.  
->>
->> Yes, that's where I got this terminology from.
->> "the" PCIe controller here is the one on which the mgmt PF lives.  For
->>  instance you might have a NIC where you run OVS on a SoC inside the
->>  chip, that has its own PCIe controller including a PF it uses to drive
->>  the hardware v-switch (so it can offload OVS rules), in addition to
->>  the PCIe controller that exposes PFs & VFs to the host you plug it
->>  into through the physical PCIe socket / edge connector.
->> In that case this bullet would refer to any additional PFs the SoC has
->>  besides the management one...
-> 
-> IMO the model where there's a overall controller for the entire device
-> is also a mellanox limitation, due to lack of support for nested
-> switches
-Instead of "the PCIe controller" I should probably say "the local PCIe
- controller", since that's the wording the devlink-port doc uses.
+Of course, we started from tcpdump analysis and noticed that ARP requests
+successfuly comes to the problematic node external interface. So, something
+was wrong from the kernel side.
 
-> Say I pay for a bare metal instance in my favorite public could. 
-> Why would the forwarding between VFs I spawn be controlled by the cloud
-> provider and not me?!
-> 
-> But perhaps Netronome was the only vendor capable of nested switching.
+I've played a lot with arping and perf in attempts to understand what's
+happening. And the key observation was that we experiencing issues only
+with ARP requests with broadcast source ip (skb->pkt_type == PACKET_BROADCAST).
+But for packets skb->pkt_type == PACKET_HOST everything works flawlessly.
 
-Quite possibly.  Current EF100 NICs can't do nested switching either.
+Let me show a small piece of code:
 
->>>> + - PFs and VFs with other personalities, including network block devices (such
->>>> +   as a vDPA virtio-blk PF backed by remote/distributed storage).  
->>>
->>> IDK how you can configure block forwarding (which is DMAs of command
->>> + data blocks, not packets AFAIU) with the networking concepts..
->>> I've not used the storage functions tho, so I could be wrong.  
->>
->> Maybe I'm way off the beam here, but my understanding is that this
->>  sort of thing involves a block interface between the host and the
->>  NIC, but then something internal to the NIC converts those
->>  operations into network operations (e.g. RDMA traffic or Ceph TCP
->>  packets), which then go out on the network to access the actual
->>  data.  In that case the back-end has to have network connectivity,
->>  and the obvious™ way to do that is give it a v-port on the v-switch
->>  just like anyone else.
-> 
-> I see. I don't think this covers all implementations. 
+static int arp_process(struct sock *sk, struct sk_buff *skb)
+...
+				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
+				    skb->pkt_type == PACKET_HOST ||
+				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) { // reply instantly
+					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
+						     sip, dev, tip, sha,
+						     dev->dev_addr, sha,
+						     reply_dst);
+				} else {
+					pneigh_enqueue(&arp_tbl,                     // reply with delay
+						       in_dev->arp_parms, skb);
+					goto out_free_dst;
+				}
 
-Right, I should probably make it more clear that this isn't the only
- way it could be done.
-I'm merely trying to make clear that things that don't look like
- netdevices might still have a v-port and hence need a repr.
+The problem was that for PACKET_BROADCAST packets we delaying replies and use pneigh_enqueue() function.
+For some reason, queued packets were lost almost all the time! The reason for such behaviour is pneigh_queue_purge()
+function which cleanups all the queue, and this function called everytime once some network device in the system
+gets link down.
 
-> "TX queue attached to" made me think of a netdev Tx queue with a qdisc
-> rather than just a HW queue. No better ideas tho.
+neigh_ifdown -> pneigh_queue_purge
 
-Would adding the word "hardware" before "TX queue" help?  Have to
- admit the netdev-queue interpretation hadn't occurred to me.
+Now imagine that we have a node with 500+ containers with microservices. And some of that microservices are buggy
+and always restarting... in this case, pneigh_queue_purge function will be called very frequently.
 
->> (And it looks like the core uses `c<N>` for my `if<N>` that you were
->>  so horrified by.  Devlink-port documentation doesn't make it super
->>  clear whether controller 0 is "the controller that's in charge" or
->>  "the controller from which we're viewing things", though I think in
->>  practice it comes to the same thing.)
-> 
-> I think we had a bit. Perhaps @external? The controller which doesn't
-> have @external == true should be the local one IIRC. And by extension
-> presumably in charge.
+This problem is reproducible only with so-called "host routed" setup. The classical scheme bridge + veth
+is not affected.
 
-Yes, and that should work fine per se.  It's just not reflected in the
- phys_port_name string in any way, so legacy userland that relies on
- that won't have that piece of info (but it never did) and probably
- assumes that c0 is local.
+Minimal reproducer
 
--ed
+Suppose that we have a network 172.29.1.1/16 brd 172.29.255.255
+and we have free-to-use IP, let it be 172.29.128.3
+
+1. Network configuration. I showing the minimal configuration, it makes no sense
+as we have both veth devices stay at the same net namespace, but for demonstation and simplicity sake it's okay.
+
+ip l a veth31427 type veth peer name veth314271
+ip l s veth31427 up
+ip l s veth314271 up
+
+# setup static arp entry and publish it
+arp -Ds -i br0 172.29.128.3 veth31427 pub
+# setup static route for this address
+route add 172.29.128.3/32 dev veth31427
+
+2. "attacker" side (kubernetes pod with buggy microservice :) )
+
+unshare -n
+ip l a type veth
+ip l s veth0 up
+ip l s veth1 up
+for i in {1..100000}; do ip link set veth0 down; sleep 0.01; ip link set veth0 up; done
+
+This will totaly block ARP replies for 172.29.128.3 address. Just try
+# arping -I eth0 172.29.128.3 -c 4
+
+Our proposal is simple:
+1. Let's cleanup queue partially. Remove only skb's that related to the net namespace
+of the adapter which link is down.
+
+2. Let's account proxy_queue limit properly per-device. Current limitation looks
+not fully correct because we comparing per-device configurable limit with the
+"global" qlen of proxy_queue.
+
+Thanks,
+Alex
+
+v2:
+	- only ("neigh: fix possible DoS due to net iface start/stop") is changed
+		do del_timer_sync() if queue is empty after pneigh_queue_purge()
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Yajun Deng <yajun.deng@linux.dev>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Denis V. Lunev <den@openvz.org>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
+Cc: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Cc: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
+Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Cc: kernel@openvz.org
+Cc: devel@openvz.org
+Signed-off-by: Denis V. Lunev <den@openvz.org>
+Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+
+Alexander Mikhalitsyn (1):
+  neighbour: make proxy_queue.qlen limit per-device
+
+Denis V. Lunev (1):
+  neigh: fix possible DoS due to net iface start/stop loop
+
+ include/net/neighbour.h |  1 +
+ net/core/neighbour.c    | 46 +++++++++++++++++++++++++++++++++--------
+ 2 files changed, 38 insertions(+), 9 deletions(-)
+
+-- 
+2.36.1
+
