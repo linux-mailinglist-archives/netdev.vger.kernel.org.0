@@ -2,142 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC6458E7E4
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5057E58E7EB
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiHJHg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 03:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        id S230317AbiHJHha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 03:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiHJHg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:36:28 -0400
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCB06A4B8;
-        Wed, 10 Aug 2022 00:36:27 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id a11so7356695wmq.3;
-        Wed, 10 Aug 2022 00:36:27 -0700 (PDT)
+        with ESMTP id S229649AbiHJHh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:37:29 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD046AA0D;
+        Wed, 10 Aug 2022 00:37:28 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id r22so11233911pgm.5;
+        Wed, 10 Aug 2022 00:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-language:content-transfer-encoding:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=9zO6VsxpNwvBhILnEVUXUDk4PHjbIaeGm/Tf8gWbKd8=;
+        b=g6y821k0rHBOsVO5buJzSkN4BcpKTz5ZYVLFCkB0r9v8DQbJqvahWuCALGRrLowAnb
+         qtVOWFTpZdc5T25pBIpvBL5oZqCpP3g56PF0XE/xfqe4YZYzUf61PnlljpHylKRYZrQp
+         mdFfqDAYPFTVq+7ehyyoEcPyfBPsrIbi0roDyZFH9im+tTmWxCWkzsKYI66lV3nJtSiY
+         2X8GnrdSExy0I9sSXHHxHLllp1o1Yd4LA7pAmRFC8AWFiuwhG8LYefyiDUjv340lgWCg
+         G6TdDqtQhq1cEq4qrsic/HX78K2FBVq7SmDOLorjy67Ymqsq3MOzT68xzZDaR3/x8y7R
+         U/lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=content-language:content-transfer-encoding:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
          :x-gm-message-state:from:to:cc;
-        bh=eJBkzOrmLOIDc79l2XYc3mJAo9MM8wnZ1YSqg5TWx9o=;
-        b=oIOQ0bKPExWnUNtP3lcpXyP7kn2UFnNx7cr5Pw8obZCPvWs/kh3gEQVarasX78LBMa
-         wHf53uiERT/niEl36koz3VcV5qUcvx16Oli/QjF73YQGhmPFVBo2teB0Uah1MAhiwE/H
-         j6Mti1zZefsOOiBJS0mM00dCez0/+Kc7uXb00iM+MvbKaC7HNjNSwZzVpXFDYCYQfGQG
-         774BzLZYwtSj61VktpdADx+GJv6sW9j2pjzRl+Ggu8Z2g0dLoAIwQ3hFRizxZ8mu/mF5
-         pihzhahUZahuCjs6uidpyJWjMfXJEd35JgkhJkKctCopOlzGtKjUoQ+cNctJ5fw8USH/
-         foGA==
-X-Gm-Message-State: ACgBeo3HoQ6z8DRMjPsHfmT0xrIwJt0LAuAfs/cnA7Y6fFsgBbbm423F
-        Xo34wy+bx2UPIKT8LGaHRNo=
-X-Google-Smtp-Source: AA6agR6ylREFulxvOxgaDyFkAmvie2x1L33dS/ekhMOxj4MO3YvHtCuJRDWsjpmkPh/ogLm0hwQn7w==
-X-Received: by 2002:a05:600c:1d0b:b0:3a5:5035:28a8 with SMTP id l11-20020a05600c1d0b00b003a5503528a8mr1474658wms.114.1660116986315;
-        Wed, 10 Aug 2022 00:36:26 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b0021e491fd250sm15691631wrv.89.2022.08.10.00.36.25
+        bh=9zO6VsxpNwvBhILnEVUXUDk4PHjbIaeGm/Tf8gWbKd8=;
+        b=iA2ycRPnBuSSrEt8AU3ef/SrLgmHE88dBA2E17jeeRuKvJ0MS0ZEbAm8qXwENa0e0W
+         WCUUtEACFl+Tpm3Qr0/isrW30lyqYoGnGN1oE+i/zioVlayRb8hvPqequHs//KhyWZ+E
+         FouXs99gBUjNGtgFmG0kpmhieIC+FqXoyx7CyyLbIV4+YiQfsiIGmGoWR48Tsj1CBneN
+         32A6dVklwjqFthWaOGk6451lKyOgKPAq8WiimUCu4HgVFi03UtJCUDqtIrHDu98maoeW
+         JDQCPkpzBUHiTd+9/sUxli927RN0rZoHzFjlpMHDd2ha3zhRR0la/brMp1MPrTCxxLKD
+         fQpA==
+X-Gm-Message-State: ACgBeo23wS2pmInxAYsZS8+Uz2686xWS+xzOtUkBtE/CCuZd4CIJiCiV
+        PVW43KPnPar3ihXL/VGjWVPOjcWogGqocU2ZFbw=
+X-Google-Smtp-Source: AA6agR6ctfWGjpGGhS6GTB10hZ9CoTx07BOOKP6nz7E4kB0Iv6T3ovEzi0b9J0wxqEeBuDjzTxFvjg==
+X-Received: by 2002:a05:6a00:2308:b0:52f:8ae9:9465 with SMTP id h8-20020a056a00230800b0052f8ae99465mr8872860pfh.77.1660117047772;
+        Wed, 10 Aug 2022 00:37:27 -0700 (PDT)
+Received: from [0.0.0.0] ([123.253.225.53])
+        by smtp.gmail.com with ESMTPSA id l16-20020a17090a3f1000b001f56405ab36sm865509pjc.23.2022.08.10.00.37.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Aug 2022 00:36:25 -0700 (PDT)
-Message-ID: <8576aef3-37e4-8bae-bab5-08f82a78efd3@kernel.org>
-Date:   Wed, 10 Aug 2022 09:36:24 +0200
+        Wed, 10 Aug 2022 00:37:27 -0700 (PDT)
+Subject: Re: [PATCH] igc: Remove _I_PHY_ID check for i225 devices
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220809133502.37387-1-meljbao@gmail.com>
+ <b39c9fa3-1b7c-c7b1-c3dd-bf5ceb035dc8@intel.com>
+From:   Linjun Bao <meljbao@gmail.com>
+Message-ID: <d1a03e34-56af-efd7-9e2e-61a2bad0ef2a@gmail.com>
+Date:   Wed, 10 Aug 2022 15:37:24 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH net-next 3/6] net: atm: remove support for ZeitNet ZN122x
- ATM devices
+In-Reply-To: <b39c9fa3-1b7c-c7b1-c3dd-bf5ceb035dc8@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, arnd@arndb.de
-References: <20220426175436.417283-1-kuba@kernel.org>
- <20220426175436.417283-4-kuba@kernel.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220426175436.417283-4-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26. 04. 22, 19:54, Jakub Kicinski wrote:
-> This driver received nothing but automated fixes in the last 15 years.
-> Since it's using virt_to_bus it's unlikely to be used on any modern
-> platform.
-...
->   delete mode 100644 include/uapi/linux/atm_zatm.h
 
-This unfortunately breaks linux-atm:
-zntune.c:18:10: fatal error: linux/atm_zatm.h: No such file or directory
+On 2022/8/10 上午1:32, Tony Nguyen wrote:
+> On 8/9/2022 6:35 AM, Linjun Bao wrote:
+>> Source commit 7c496de538ee ("igc: Remove _I_PHY_ID checking"),
+>> remove _I_PHY_ID check for i225 device, since i225 devices only
+>> have one PHY vendor.
+>
+> What are you trying to do with this patch? You're referencing the original commit so you know it's committed, but it's not clear to me why you are re-sending it.
+>
+I'm new here, please correct me if I am doing things in the wrong way.
 
-The source does also:
-ioctl(s,ZATM_SETPOOL,&sioc)
-ioctl(s,zero ? ZATM_GETPOOLZ : ZATM_GETPOOL,&sioc)
-etc.
 
-So we should likely revert the below:
+Yes this commit was committed to mainline about one year ago. But this commit has not been included into kernel 5.4 yet, and I encountered the probe failure when using alderlake-s with Ethernet adapter i225-LM. Since I could not directly apply the patch 7c496de538ee to kernel 5.4, so I generated this patch for kernel 5.4 usage.
 
-> --- a/include/uapi/linux/atm_zatm.h
-> +++ /dev/null
-> @@ -1,47 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> -/* atm_zatm.h - Driver-specific declarations of the ZATM driver (for use by
-> -		driver-specific utilities) */
-> -
-> -/* Written 1995-1999 by Werner Almesberger, EPFL LRC/ICA */
-> -
-> -
-> -#ifndef LINUX_ATM_ZATM_H
-> -#define LINUX_ATM_ZATM_H
-> -
-> -/*
-> - * Note: non-kernel programs including this file must also include
-> - * sys/types.h for struct timeval
-> - */
-> -
-> -#include <linux/atmapi.h>
-> -#include <linux/atmioc.h>
-> -
-> -#define ZATM_GETPOOL	_IOW('a',ATMIOC_SARPRV+1,struct atmif_sioc)
-> -						/* get pool statistics */
-> -#define ZATM_GETPOOLZ	_IOW('a',ATMIOC_SARPRV+2,struct atmif_sioc)
-> -						/* get statistics and zero */
-> -#define ZATM_SETPOOL	_IOW('a',ATMIOC_SARPRV+3,struct atmif_sioc)
-> -						/* set pool parameters */
-> -
-> -struct zatm_pool_info {
-> -	int ref_count;			/* free buffer pool usage counters */
-> -	int low_water,high_water;	/* refill parameters */
-> -	int rqa_count,rqu_count;	/* queue condition counters */
-> -	int offset,next_off;		/* alignment optimizations: offset */
-> -	int next_cnt,next_thres;	/* repetition counter and threshold */
-> -};
-> -
-> -struct zatm_pool_req {
-> -	int pool_num;			/* pool number */
-> -	struct zatm_pool_info info;	/* actual information */
-> -};
-> -
-> -#define ZATM_OAM_POOL		0	/* free buffer pool for OAM cells */
-> -#define ZATM_AAL0_POOL		1	/* free buffer pool for AAL0 cells */
-> -#define ZATM_AAL5_POOL_BASE	2	/* first AAL5 free buffer pool */
-> -#define ZATM_LAST_POOL	ZATM_AAL5_POOL_BASE+10 /* max. 64 kB */
-> -
-> -#define ZATM_TIMER_HISTORY_SIZE	16	/* number of timer adjustments to
-> -					   record; must be 2^n */
-> -
-> -#endif
 
-thanks,
--- 
-js
-suse labs
+Looks like sending a duplicated patch is not expected. Would you please advise what is the proper action when encountering such case? I would like this fix to be implemented into LTS kernel 5.4, I also wrote a ticket on https://bugzilla.kernel.org/show_bug.cgi?id=216261, but no response.
 
+
+Regards
+
+Joseph
+
+
+> Thanks,
+> Tony
+>
+>> Signed-off-by: Linjun Bao <meljbao@gmail.com>
+>> ---
+>>   drivers/net/ethernet/intel/igc/igc_base.c | 10 +---------
+>>   drivers/net/ethernet/intel/igc/igc_main.c |  3 +--
+>>   drivers/net/ethernet/intel/igc/igc_phy.c  |  6 ++----
+>>   3 files changed, 4 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/igc/igc_base.c b/drivers/net/ethernet/intel/igc/igc_base.c
+>> index db289bcce21d..d66429eb14a5 100644
+>> --- a/drivers/net/ethernet/intel/igc/igc_base.c
+>> +++ b/drivers/net/ethernet/intel/igc/igc_base.c
+>> @@ -187,15 +187,7 @@ static s32 igc_init_phy_params_base(struct igc_hw *hw)
+>>         igc_check_for_copper_link(hw);
+>>   -    /* Verify phy id and set remaining function pointers */
+>> -    switch (phy->id) {
+>> -    case I225_I_PHY_ID:
+>> -        phy->type    = igc_phy_i225;
+>> -        break;
+>> -    default:
+>> -        ret_val = -IGC_ERR_PHY;
+>> -        goto out;
+>> -    }
+>> +    phy->type = igc_phy_i225;
+>>     out:
+>>       return ret_val;
+>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+>> index 9ba05d9aa8e0..b8297a63a7fd 100644
+>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>> @@ -2884,8 +2884,7 @@ bool igc_has_link(struct igc_adapter *adapter)
+>>           break;
+>>       }
+>>   -    if (hw->mac.type == igc_i225 &&
+>> -        hw->phy.id == I225_I_PHY_ID) {
+>> +    if (hw->mac.type == igc_i225) {
+>>           if (!netif_carrier_ok(adapter->netdev)) {
+>>               adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
+>>           } else if (!(adapter->flags & IGC_FLAG_NEED_LINK_UPDATE)) {
+>> diff --git a/drivers/net/ethernet/intel/igc/igc_phy.c b/drivers/net/ethernet/intel/igc/igc_phy.c
+>> index 6156c76d765f..1be112ce6774 100644
+>> --- a/drivers/net/ethernet/intel/igc/igc_phy.c
+>> +++ b/drivers/net/ethernet/intel/igc/igc_phy.c
+>> @@ -235,8 +235,7 @@ static s32 igc_phy_setup_autoneg(struct igc_hw *hw)
+>>               return ret_val;
+>>       }
+>>   -    if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
+>> -        hw->phy.id == I225_I_PHY_ID) {
+>> +    if (phy->autoneg_mask & ADVERTISE_2500_FULL) {
+>>           /* Read the MULTI GBT AN Control Register - reg 7.32 */
+>>           ret_val = phy->ops.read_reg(hw, (STANDARD_AN_REG_MASK <<
+>>                           MMD_DEVADDR_SHIFT) |
+>> @@ -376,8 +375,7 @@ static s32 igc_phy_setup_autoneg(struct igc_hw *hw)
+>>           ret_val = phy->ops.write_reg(hw, PHY_1000T_CTRL,
+>>                            mii_1000t_ctrl_reg);
+>>   -    if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
+>> -        hw->phy.id == I225_I_PHY_ID)
+>> +    if (phy->autoneg_mask & ADVERTISE_2500_FULL)
+>>           ret_val = phy->ops.write_reg(hw,
+>>                            (STANDARD_AN_REG_MASK <<
+>>                            MMD_DEVADDR_SHIFT) |
