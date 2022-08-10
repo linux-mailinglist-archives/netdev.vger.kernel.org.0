@@ -2,57 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DAEA58F2A9
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 393F858F2B8
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 21:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbiHJTAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 15:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        id S232051AbiHJTGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 15:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiHJTAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:00:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D190D4;
-        Wed, 10 Aug 2022 12:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5F5EB81B5E;
-        Wed, 10 Aug 2022 19:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E676C433D6;
-        Wed, 10 Aug 2022 19:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660158015;
-        bh=k0Q5bajyKIBZrWFSLzKBSZvdrKWfsZKmcC5siRp1c0w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TV3qfwUGXag23WG4dxqwR9udyhw8A5M8Y1hupIx/CWwxuecwpuPF/1AezMKvZw/xI
-         H57skQhMgF69xUG1dx2E8Cg87BLdchlBuHJrl+k3LczP/CRdql2jE3HJb7mXD46NRE
-         DbB6l1R9iYbgLLuxcM3Bk8TuhppRdRNTz3zrq2hwoq0ZRqyK4Ft2PiQZgPhcF93kMw
-         RKKvwKpFbwX2n21YoPEH4CgCX9qWWWZmRX5kM8nv++ZcjsMPHf0J2p5/6cGsX74deG
-         VFXUGwz1p9TqSR36GYRVRWWk7Twi5HZck0sM2nVnvnbaLx2ibPHPifPjbftsZ5yQwz
-         Ym66wL35EiJNA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 59FD6C43143;
-        Wed, 10 Aug 2022 19:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230467AbiHJTG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 15:06:28 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECF91056A;
+        Wed, 10 Aug 2022 12:06:27 -0700 (PDT)
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oLr28-000D8B-Vy; Wed, 10 Aug 2022 21:06:25 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2022-08-10
+Date:   Wed, 10 Aug 2022 21:06:24 +0200
+Message-Id: <20220810190624.10748-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next 00/15] bpf: Introduce selectable memcg for bpf map 
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166015801536.14189.14692203185396182235.git-patchwork-notify@kernel.org>
-Date:   Wed, 10 Aug 2022 19:00:15 +0000
-References: <20220810151840.16394-1-laoar.shao@gmail.com>
-In-Reply-To: <20220810151840.16394-1-laoar.shao@gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26623/Wed Aug 10 09:55:07 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,62 +41,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+The following pull-request contains BPF updates for your *net* tree.
 
-On Wed, 10 Aug 2022 15:18:25 +0000 you wrote:
-> On our production environment, we may load, run and pin bpf programs and
-> maps in containers. For example, some of our networking bpf programs and
-> maps are loaded and pinned by a process running in a container on our
-> k8s environment. In this container, there're also running some other
-> user applications which watch the networking configurations from remote
-> servers and update them on this local host, log the error events, monitor
-> the traffic, and do some other stuffs. Sometimes we may need to update
-> these user applications to a new release, and in this update process we
-> will destroy the old container and then start a new genration. In order not
-> to interrupt the bpf programs in the update process, we will pin the bpf
-> programs and maps in bpffs. That is the background and use case on our
-> production environment.
-> 
-> [...]
+We've added 23 non-merge commits during the last 7 day(s) which contain
+a total of 19 files changed, 424 insertions(+), 35 deletions(-).
 
-Here is the summary with links:
-  - [bpf-next,01/15] bpf: Remove unneeded memset in queue_stack_map creation
-    https://git.kernel.org/bpf/bpf-next/c/083818156d1e
-  - [bpf-next,02/15] bpf: Use bpf_map_area_free instread of kvfree
-    https://git.kernel.org/bpf/bpf-next/c/8f58ee54c2ea
-  - [bpf-next,03/15] bpf: Make __GFP_NOWARN consistent in bpf map creation
-    https://git.kernel.org/bpf/bpf-next/c/992c9e13f593
-  - [bpf-next,04/15] bpf: Use bpf_map_area_alloc consistently on bpf map creation
-    https://git.kernel.org/bpf/bpf-next/c/73cf09a36bf7
-  - [bpf-next,05/15] bpf: Fix incorrect mem_cgroup_put
-    (no matching commit)
-  - [bpf-next,06/15] bpf: Define bpf_map_{get,put}_memcg for !CONFIG_MEMCG_KMEM
-    (no matching commit)
-  - [bpf-next,07/15] bpf: Call bpf_map_init_from_attr() immediately after map creation
-    (no matching commit)
-  - [bpf-next,08/15] bpf: Save memcg in bpf_map_init_from_attr()
-    (no matching commit)
-  - [bpf-next,09/15] bpf: Use scoped-based charge in bpf_map_area_alloc
-    (no matching commit)
-  - [bpf-next,10/15] bpf: Introduce new helpers bpf_ringbuf_pages_{alloc,free}
-    (no matching commit)
-  - [bpf-next,11/15] bpf: Use bpf_map_kzalloc in arraymap
-    (no matching commit)
-  - [bpf-next,12/15] bpf: Use bpf_map_kvcalloc in bpf_local_storage
-    (no matching commit)
-  - [bpf-next,13/15] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
-    (no matching commit)
-  - [bpf-next,14/15] bpf: Add return value for bpf_map_init_from_attr
-    (no matching commit)
-  - [bpf-next,15/15] bpf: Introduce selectable memcg for bpf map
-    (no matching commit)
+The main changes are:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1) Several fixes for BPF map iterator such as UAFs along with selftests, from Hou Tao.
 
+2) Fix BPF syscall program's {copy,strncpy}_from_bpfptr() to not fault, from Jinghao Jia.
 
+3) Reject BPF syscall programs calling BPF_PROG_RUN, from Alexei Starovoitov and YiFei Zhu.
+
+4) Fix attach_btf_obj_id info to pick proper target BTF, from Stanislav Fomichev.
+
+5) BPF design Q/A doc update to clarify what is not stable ABI, from Paul E. McKenney.
+
+6) Fix BPF map's prealloc_lru_pop to not reinitialize, from Kumar Kartikeya Dwivedi.
+
+7) Fix bpf_trampoline_put to avoid leaking ftrace hash, from Jiri Olsa.
+
+8) Fix arm64 JIT to address sparse errors around BPF trampoline, from Xu Kuohai.
+
+9) Fix arm64 JIT to use kvcalloc instead of kcalloc for internal program address
+   offset buffer, from Aijun Sun.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Hao Luo, Jean-Philippe Brucker, kernel test robot, Martin KaFai Lau, Mat 
+Martineau, Song Liu, YiFei Zhu, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 4ae97cae07e15d41e5c0ebabba64c6eefdeb0bbe:
+
+  nfp: ethtool: fix the display error of `ethtool -m DEVNAME` (2022-08-03 19:20:54 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to e7c677bdd03d54e9a1bafcaf1faf5c573a506bba:
+
+  Merge branch 'fixes for bpf map iterator' (2022-08-10 10:12:49 -0700)
+
+----------------------------------------------------------------
+Aijun Sun (1):
+      bpf, arm64: Allocate program buffer using kvcalloc instead of kcalloc
+
+Alexei Starovoitov (3):
+      Merge branch 'Don't reinit map value in prealloc_lru_pop'
+      bpf: Disallow bpf programs call prog_run command.
+      Merge branch 'fixes for bpf map iterator'
+
+Hou Tao (9):
+      bpf: Acquire map uref in .init_seq_private for array map iterator
+      bpf: Acquire map uref in .init_seq_private for hash map iterator
+      bpf: Acquire map uref in .init_seq_private for sock local storage map iterator
+      bpf: Acquire map uref in .init_seq_private for sock{map,hash} iterator
+      bpf: Check the validity of max_rdwr_access for sock local storage map iterator
+      bpf: Only allow sleepable program for resched-able iterator
+      selftests/bpf: Add tests for reading a dangling map iter fd
+      selftests/bpf: Add write tests for sk local storage map iterator
+      selftests/bpf: Ensure sleepable program is rejected by hash map iter
+
+Jinghao Jia (1):
+      BPF: Fix potential bad pointer dereference in bpf_sys_bpf()
+
+Jiri Olsa (2):
+      bpf: Cleanup ftrace hash in bpf_trampoline_put
+      mptcp, btf: Add struct mptcp_sock definition when CONFIG_MPTCP is disabled
+
+Kumar Kartikeya Dwivedi (3):
+      bpf: Allow calling bpf_prog_test kfuncs in tracing programs
+      bpf: Don't reinit map value in prealloc_lru_pop
+      selftests/bpf: Add test for prealloc_lru_pop bug
+
+Paul E. McKenney (3):
+      bpf: Update bpf_design_QA.rst to clarify that kprobes is not ABI
+      bpf: Update bpf_design_QA.rst to clarify that attaching to functions is not ABI
+      bpf: Update bpf_design_QA.rst to clarify that BTF_ID does not ABIify a function
+
+Stanislav Fomichev (2):
+      bpf: Use proper target btf when exporting attach_btf_obj_id
+      selftests/bpf: Excercise bpf_obj_get_info_by_fd for bpf2bpf
+
+Xu Kuohai (1):
+      bpf, arm64: Fix bpf trampoline instruction endianness
+
+ Documentation/bpf/bpf_design_QA.rst                |  25 +++++
+ arch/arm64/net/bpf_jit_comp.c                      |  16 +--
+ include/linux/bpfptr.h                             |   8 +-
+ include/net/mptcp.h                                |   4 +
+ kernel/bpf/arraymap.c                              |   6 ++
+ kernel/bpf/bpf_iter.c                              |  11 +-
+ kernel/bpf/hashtab.c                               |   8 +-
+ kernel/bpf/syscall.c                               |  27 +++--
+ kernel/bpf/trampoline.c                            |   5 +-
+ net/bpf/test_run.c                                 |   1 +
+ net/core/bpf_sk_storage.c                          |  12 ++-
+ net/core/sock_map.c                                |  20 +++-
+ tools/lib/bpf/skel_internal.h                      |   4 +-
+ tools/testing/selftests/bpf/prog_tests/bpf_iter.c  | 116 ++++++++++++++++++++-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |  95 +++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/lru_bug.c   |  21 ++++
+ .../selftests/bpf/progs/bpf_iter_bpf_hash_map.c    |   9 ++
+ .../bpf/progs/bpf_iter_bpf_sk_storage_map.c        |  22 +++-
+ tools/testing/selftests/bpf/progs/lru_bug.c        |  49 +++++++++
+ 19 files changed, 424 insertions(+), 35 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lru_bug.c
+ create mode 100644 tools/testing/selftests/bpf/progs/lru_bug.c
