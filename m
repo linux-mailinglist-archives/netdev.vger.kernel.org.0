@@ -2,168 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2A358E7D5
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C017B58E7DD
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 09:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbiHJHZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 03:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51352 "EHLO
+        id S231340AbiHJHd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 03:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiHJHZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:25:15 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1A4C63B9
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 00:25:11 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:53488.305847795
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-110.80.1.46 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id A517528008F;
-        Wed, 10 Aug 2022 15:25:04 +0800 (CST)
-X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 59137238c5604953b3822515e00a2da9 for ycheng@google.com;
-        Wed, 10 Aug 2022 15:25:07 CST
-X-Transaction-ID: 59137238c5604953b3822515e00a2da9
-X-Real-From: liyonglong@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liyonglong@chinatelecom.cn
-Subject: Re: [PATCH] tcp: adjust rcvbuff according copied rate of user space
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        Yuchung Cheng <ycheng@google.com>
-References: <1660034866-1844-1-git-send-email-liyonglong@chinatelecom.cn>
- <CADVnQykvc1oXP=jLeimcRuZRHoN+q7S9VPFky7otYdbEedom7w@mail.gmail.com>
-From:   Yonglong Li <liyonglong@chinatelecom.cn>
-Message-ID: <85cad11e-7007-1066-d586-ab2c5ca2d731@chinatelecom.cn>
-Date:   Wed, 10 Aug 2022 15:24:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <CADVnQykvc1oXP=jLeimcRuZRHoN+q7S9VPFky7otYdbEedom7w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231292AbiHJHd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 03:33:29 -0400
+Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F89ABC96;
+        Wed, 10 Aug 2022 00:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=qsZhGhdT3szRsO2o56
+        6UgdEf7Sy1RjMSfP+2fWpjBWw=; b=oPAt8EjXtTCQPYZYEqB/Jb2Kz2VD330Hku
+        iPUWvWwDJu6KWB63F6OD/l/vcvI0PtkNXZYKqFgnm1qwJPuuuNlBD3WBpcRzJj5E
+        qXom89mEmGGRjGR5CeEtu+vIWK+R6HWNXDp9dOALkjRMxbd+qv8eGmawx4v1ggNE
+        myKUksZRU=
+Received: from user-virtual-machine.localdomain (unknown [39.79.223.215])
+        by smtp5 (Coremail) with SMTP id HdxpCgBHNCLxXvNi4RODTw--.11815S4;
+        Wed, 10 Aug 2022 15:32:55 +0800 (CST)
+From:   Jialiang Wang <wangjialiang0806@163.com>
+To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, niejianglei2021@163.com,
+        wangjialiang0806@163.com
+Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] nfp: fix use-after-free in area_cache_get()
+Date:   Wed, 10 Aug 2022 15:30:57 +0800
+Message-Id: <20220810073057.4032-1-wangjialiang0806@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: HdxpCgBHNCLxXvNi4RODTw--.11815S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxuF43JFW3tF17WrWrCryfJFb_yoW5KryUpF
+        yUJ3yrCrW8WrsrWw4DJFW8Z3sYgwsxt3W3u3WrAw4F9a4a9r47JF1xKr45Xr1UKFW8tFyS
+        9ryjvr9xJFs8Zw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UJR67UUUUU=
+X-Originating-IP: [39.79.223.215]
+X-CM-SenderInfo: pzdqwy5ldoxtdqjqmiqw6rljoofrz/xtbCdQdZzmBbEsLOVwAAsX
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+area_cache_get() is used to distribute cache->area and set cache->id,
+ and if cache->id is not 0 and cache->area->kref refcount is 0, it will
+ release the cache->area by nfp_cpp_area_release(). area_cache_get()
+ set cache->id before cpp->op->area_init() and nfp_cpp_area_acquire().
 
+But if area_init() or nfp_cpp_area_acquire() fails, the cache->id is
+ is already set but the refcount is not increased as expected. At this
+ time, calling the nfp_cpp_area_release() will cause use-after-free.
 
-On 8/10/2022 5:28 AM, Neal Cardwell wrote:
-> On Tue, Aug 9, 2022 at 4:48 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
->>
->> it is more reasonable to adjust rcvbuff by copied rate instead
->> of copied buff len.
->>
->> Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
->> ---
-> 
-> Thanks for sending out the patch. My sense is that this would need a
-> more detailed commit description describing the algorithm change, the
-> motivation for the change, and justifying the added complexity and
-> state by showing some meaningful performance test results that
-> demonstrate some improvement.
-Hi Neal,
+To avoid the use-after-free, set cache->id after area_init() and
+ nfp_cpp_area_acquire() complete successfully.
 
-Thanks for your feedback. will add more detail in next version.
+Note: This vulnerability is triggerable by providing emulated device
+ equipped with specified configuration.
 
-> 
->>  include/linux/tcp.h  |  1 +
->>  net/ipv4/tcp_input.c | 16 +++++++++++++---
->>  2 files changed, 14 insertions(+), 3 deletions(-)
->>
->> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
->> index a9fbe22..18e091c 100644
->> --- a/include/linux/tcp.h
->> +++ b/include/linux/tcp.h
->> @@ -410,6 +410,7 @@ struct tcp_sock {
->>                 u32     space;
->>                 u32     seq;
->>                 u64     time;
->> +               u32     prior_rate;
->>         } rcvq_space;
->>
->>  /* TCP-specific MTU probe information. */
->> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
->> index ab5f0ea..2bdf2a5 100644
->> --- a/net/ipv4/tcp_input.c
->> +++ b/net/ipv4/tcp_input.c
->> @@ -544,6 +544,7 @@ static void tcp_init_buffer_space(struct sock *sk)
->>         tcp_mstamp_refresh(tp);
->>         tp->rcvq_space.time = tp->tcp_mstamp;
->>         tp->rcvq_space.seq = tp->copied_seq;
->> +       tp->rcvq_space.prior_rate = 0;
->>
->>         maxwin = tcp_full_space(sk);
->>
->> @@ -701,6 +702,7 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
->>  void tcp_rcv_space_adjust(struct sock *sk)
->>  {
->>         struct tcp_sock *tp = tcp_sk(sk);
->> +       u64 pre_copied_rate, copied_rate;
->>         u32 copied;
->>         int time;
->>
->> @@ -713,7 +715,14 @@ void tcp_rcv_space_adjust(struct sock *sk)
->>
->>         /* Number of bytes copied to user in last RTT */
->>         copied = tp->copied_seq - tp->rcvq_space.seq;
->> -       if (copied <= tp->rcvq_space.space)
->> +       copied_rate = copied * USEC_PER_SEC;
->> +       do_div(copied_rate, time);
->> +       pre_copied_rate = tp->rcvq_space.prior_rate;
->> +       if (!tp->rcvq_space.prior_rate) {
->> +               pre_copied_rate = tp->rcvq_space.space * USEC_PER_SEC;
->> +               do_div(pre_copied_rate, time);
->> +       }
->> +       if (copied_rate <= pre_copied_rate || !pre_copied_rate)
->>                 goto new_measure;
->>
->>         /* A bit of theory :
->> @@ -736,8 +745,8 @@ void tcp_rcv_space_adjust(struct sock *sk)
->>                 rcvwin = ((u64)copied << 1) + 16 * tp->advmss;
->>
->>                 /* Accommodate for sender rate increase (eg. slow start) */
->> -               grow = rcvwin * (copied - tp->rcvq_space.space);
->> -               do_div(grow, tp->rcvq_space.space);
->> +               grow = rcvwin * (copied_rate - pre_copied_rate);
->> +               do_div(grow, pre_copied_rate);
->>                 rcvwin += (grow << 1);
->>
->>                 rcvmem = SKB_TRUESIZE(tp->advmss + MAX_TCP_HEADER);
->> @@ -755,6 +764,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
->>                 }
->>         }
->>         tp->rcvq_space.space = copied;
->> +       tp->rcvq_space.prior_rate = pre_copied_rate;
-> 
-> Shouldn't that line be:
-> 
->    tp->rcvq_space.prior_rate = copied_rate;
-> 
-> Otherwise, AFAICT the patch could preserve forever in
-> tp->rcvq_space.prior_rate the very first rate that was computed, since
-> the top of the patch does:
-> 
->  +       pre_copied_rate = tp->rcvq_space.prior_rate;
-> 
-> and the bottom of the patch does:
-> 
->  +       tp->rcvq_space.prior_rate = pre_copied_rate;
-> 
-sorry. I get a mistake...
+ BUG: KASAN: use-after-free in nfp6000_area_init (/home/user/Kernel/v5.19
+/x86_64/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+  Write of size 4 at addr ffff888005b7f4a0 by task swapper/0/1
 
-> best regards,
-> neal
-> 
+ Call Trace:
+  <TASK>
+ nfp6000_area_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c:760)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:884)
 
+ Allocated by task 1:
+ nfp_cpp_area_alloc_with_name (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:303)
+ nfp_cpp_area_cache_add (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:802)
+ nfp6000_init (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp6000_pcie.c:1230)
+ nfp_cpp_from_operations (/home/user/Kernel/v5.19/x86_64/src/drivers/net
+/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:1215)
+ nfp_pci_probe (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfp_main.c:744)
+
+ Freed by task 1:
+ kfree (/home/user/Kernel/v5.19/x86_64/src/mm/slub.c:4562)
+ area_cache_get.constprop.8 (/home/user/Kernel/v5.19/x86_64/src/drivers
+/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:873)
+ nfp_cpp_read (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cppcore.c:924 /home/user/Kernel/v5.19/x86_64
+/src/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c:973)
+ nfp_cpp_readl (/home/user/Kernel/v5.19/x86_64/src/drivers/net/ethernet
+/netronome/nfp/nfpcore/nfp_cpplib.c:48)
+
+Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
+---
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+index 34c0d2ddf9ef..a8286d0032d1 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
+@@ -874,7 +874,6 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 	}
+ 
+ 	/* Adjust the start address to be cache size aligned */
+-	cache->id = id;
+ 	cache->addr = addr & ~(u64)(cache->size - 1);
+ 
+ 	/* Re-init to the new ID and address */
+@@ -894,6 +893,8 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
+ 		return NULL;
+ 	}
+ 
++	cache->id = id;
++
+ exit:
+ 	/* Adjust offset */
+ 	*offset = addr - cache->addr;
 -- 
-Li YongLong
+2.17.1
+
