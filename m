@@ -2,51 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4507258EC41
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE33A58EC5C
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbiHJMuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 08:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
+        id S232284AbiHJMyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 08:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiHJMuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105BB642D8
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:50:17 -0700 (PDT)
+        with ESMTP id S229611AbiHJMyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:54:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A096483F3D;
+        Wed, 10 Aug 2022 05:54:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EA2C61387
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 12:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F3CAC4314F;
-        Wed, 10 Aug 2022 12:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660135815;
-        bh=Gu5fA9REZewuf950WUzI0Ph77+bYtPLjEfX1hqCTgBI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OEJyPas5XLI12IClyteHBB2RovGzDWaAmqP7wsM4pjKYQgoqKDIz3lwqnvFnIFEjz
-         b87KsiTFI4NNuGHygSpA9gfROiQ4nOpkN83KpwlsBlu2NLRLSFSND0WkJOH5BU9nGi
-         yXx+GpPmbKHn0NMc2EnAwfWGS+MZlPq5Qe5JIIhvpPVkhFYdZxIPABoj78KKZTs472
-         Nrq2nFwHxFoyXbm8vERhGcM4QQmWweg7jH47HJG0SMGb2VsIUcVDIOz7esQO6xbOvu
-         HdbAqOKqAqAj9z1zQZv4KAVKpfbCxBnj7oyaoJzK8wixs9A6JxymDo7inuDJTdePzr
-         FVuOCKefhLfVw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7680DC43145;
-        Wed, 10 Aug 2022 12:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5330DB81C67;
+        Wed, 10 Aug 2022 12:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F2DC433D6;
+        Wed, 10 Aug 2022 12:54:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660136077;
+        bh=uPLuF+DDW04LT9gSOZbFu31bMHZHY7AuwxnDEymETPY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UNkY0zZ/dvbVjljh7EO1ErSs2YeEMilfLO5c7AcIqM6C1wcyaDC45s2CAW4+v+5bm
+         aSZTtEljP0xweM/nDWXYsXgAGq/7xNaMyvKwesvewAHqmg1qJ58a7fWwmZ2C2n+tlo
+         KD8eRKVStYwt20VObVfv4seCARLA42wybbg5rK9E=
+Date:   Wed, 10 Aug 2022 14:54:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Evan Green <evgreen@chromium.org>, linux-efi@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, mikelley@microsoft.com,
+        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
+        john.ogness@linutronix.de, Kees Cook <keescook@chromium.org>,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+Subject: Re: [PATCH v2 03/13] firmware: google: Test spinlock on panic path
+ to avoid lockups
+Message-ID: <YvOqimNnybaCDDBm@kroah.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-4-gpiccoli@igalia.com>
+ <CAE=gft71vH+P3iAFXC0bLu0M2x2V4uJGWc82Xa+246ECuUdT-w@mail.gmail.com>
+ <019ae735-3d69-cb4e-c003-b83cc8cd76f8@igalia.com>
+ <YvErMyM8FNjeDeiW@kroah.com>
+ <55a074a0-ca3a-8afc-4336-e40cff757394@igalia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] devlink: Fix use-after-free after a failed reload
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166013581548.3703.13885430900913328520.git-patchwork-notify@kernel.org>
-Date:   Wed, 10 Aug 2022 12:50:15 +0000
-References: <20220809113506.751730-1-idosch@nvidia.com>
-In-Reply-To: <20220809113506.751730-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, jiri@nvidia.com,
-        mlxsw@nvidia.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55a074a0-ca3a-8afc-4336-e40cff757394@igalia.com>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,30 +77,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Tue,  9 Aug 2022 14:35:06 +0300 you wrote:
-> After a failed devlink reload, devlink parameters are still registered,
-> which means user space can set and get their values. In the case of the
-> mlxsw "acl_region_rehash_interval" parameter, these operations will
-> trigger a use-after-free [1].
+On Mon, Aug 08, 2022 at 12:37:46PM -0300, Guilherme G. Piccoli wrote:
+> Let me clarify / ask something: this series, for example, is composed as
+> a bunch of patches "centered" around the same idea, panic notifiers
+> improvements/fixes. But its patches belong to completely different
+> subsystems, like EFI/misc, architectures (alpha, parisc, arm), core
+> kernel code, etc.
 > 
-> Fix this by rejecting set and get operations while in the failed state.
-> Return the "-EOPNOTSUPP" error code which does not abort the parameters
-> dump, but instead causes it to skip over the problematic parameter.
-> 
-> [...]
+> What is the best way of getting this merged?
+> (a) Re-send individual patches with the respective Review/ACK tags to
+> the proper subsystem, or;
 
-Here is the summary with links:
-  - [net] devlink: Fix use-after-free after a failed reload
-    https://git.kernel.org/netdev/net/c/6b4db2e528f6
+Yes.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> (b) Wait until the whole series is ACKed/Reviewed, and a single
+> maintainer (like you or Andrew, for example) would pick the whole series
+> and apply at once, even if it spans across multiple parts of the kernel?
 
+No, only do this after a kernel release cycle happens and there are
+straggler patches that did not get picked up by the relevant subsystem
+maintainers.
 
+thanks,
+
+greg k-h
