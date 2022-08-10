@@ -2,72 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F62C58EF5E
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0D758EF5D
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 17:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233233AbiHJPX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 11:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        id S233084AbiHJPX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 11:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233306AbiHJPXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:23:06 -0400
-Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2C0868BA;
-        Wed, 10 Aug 2022 08:22:15 -0700 (PDT)
-Received: by mail-vs1-xe33.google.com with SMTP id v128so15464076vsb.10;
-        Wed, 10 Aug 2022 08:22:15 -0700 (PDT)
+        with ESMTP id S233296AbiHJPXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 11:23:04 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3505578BED;
+        Wed, 10 Aug 2022 08:22:13 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id r17so21656474lfm.11;
+        Wed, 10 Aug 2022 08:22:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=7vVjYn0qbQXlEf1XUPeTDG40okHOT4p3e3w8q34NKiM=;
-        b=IHMVtxVYWinUl/RK/Fe3qGTB+k+2KIiWZPfmvetTD9XGTOPvddVQrwTnd9pJmpRFSO
-         yjMh2XWdaDnH1dNFMf3/1t9+8irlDnZVY+w1Hf+QToVT5nIXMxDW16S7As7zTfIn1MUw
-         B2+KcUNgEwZYaRm4UPkjCWexdMOSFnmB3wczD0zFyd4o0tNQhRTQAgd7q1vILtC+xVsN
-         zMeK7//rrHEL37hEB5ewIO8OKz19Duwn3Etbr8J2Ud+wjIayD7y5wh/TzWHY/8513VuI
-         fY/uXLi+Sa9rb70ayY1HI5inZofQZfwIZqxawIHIeZEctUlFB2SCatLwy3u49q+q91gl
-         y/pw==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=vyAa9/lSJHOKkyJlHJTvIPQn51upSW+mtKHWf2N+2CM=;
+        b=d9XfBPRuiR7Yl2Yrp0abjirhXp/wMnDKYKvxjBPdUET2S+fUf2sSsxKUVOrn9oOHoc
+         ohOiWAAfQ72+B8uXLGosK1MImKLzfraF/YUnekLjAPsPcDlbhgnosnkgagc9jNAK6xU5
+         JyxLOfQHOVL9sNlfenfAdWbO4aJoKP4YiOdem75xMQLWbBP/1FATuiIKVVtIwelQbV4/
+         08xFjo/vkWnwsHNv5wGirmCFVh3nQybdT59sXcPr/Nbc0q2/VOaaznMvZzhu2XBXjDp0
+         CwplX5vk4ZBrusRvg3rFA3MyjBOkkxGIbhwuXok7y0wFaH3Sz3hTREu3Q0RinZkj3zhJ
+         mY2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=7vVjYn0qbQXlEf1XUPeTDG40okHOT4p3e3w8q34NKiM=;
-        b=MIiBoK//b/BCnQbZlPKZgko0OczIeZnn6+KwhLBpUXVqFfxCcWW7ckj+Lhp+KW7X/a
-         KqQl1isrmWrsZtkGC9gMMPtLgHjp10oP6qKnTcDyJaboNzNPu5H9qc/P9FZ7TCPATi+3
-         WQcHzrjW5cHR0l8Smj3fCykRrXTTNGcsm50Zoa5bYneY9yXGMI/pbH5nm/+wgemYZp1c
-         fyaTLb4RO6LIHIaQvz/xdePeXRzWdyCDTC7DuC2QbE4jm0Umt/oZAcB4SA4K024FykJs
-         r8xbKpB0Xn1fO1ODptlHpMKmkWjZCFUQaRvt4g9s0y8crUiAvAs39Ntb2SyAYCAd3sam
-         gWsw==
-X-Gm-Message-State: ACgBeo02fjOxGkwAO4deuUKcmVSc+dOp8DCW3dbarW8T2Cxdk2xoLPRZ
-        3v7l6UdY+hggq5kBPlXBjd+AL4NUCFjeXSzGsTc=
-X-Google-Smtp-Source: AA6agR4u7ldJovC+p7bFao3Dfs+soL+j9/e3rCwR+E2Llr7X3CaGbM8Eyr7fIFVj0cDY/ciKEsNSQVn07An5tF7Tmrc=
-X-Received: by 2002:a05:6102:3ec1:b0:358:70a1:3c28 with SMTP id
- n1-20020a0561023ec100b0035870a13c28mr10990885vsv.11.1660144933775; Wed, 10
- Aug 2022 08:22:13 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=vyAa9/lSJHOKkyJlHJTvIPQn51upSW+mtKHWf2N+2CM=;
+        b=j4n5wdEtOZfxEXrnZHjv+SqZSP9buRij6RBX47SH5pU+M+lVx9ifmdhBlPsM8BOf9E
+         NXv4hOn67VY6Tk3OL3tlvAhZyr1Y0jNRo4cQTSD0P3C5mHa+2F/luveAQxqApWAS06r3
+         KmIjYdAts68EaHFGrEQ2rKJkAjp3aWgfA6xkUPx4fZaAb+nKlEg1fn0dNWASm+WZDZH2
+         9lGGjw9NgfoFhY9nJ+2dIxk+KPDVQ6ak+0sn/n9l3W4A+Ye0uSYTpv+xQ6dtah63yh1L
+         8thvqlygdjCNAm2ie9S8cdTPXRDRaaaY9DYYH2uvaYXqKs9l0d6jtAieA70BfFuP4rN3
+         sbLQ==
+X-Gm-Message-State: ACgBeo3j/HRVcxaEbROBb0HsemuXkgmzTLC3B+Kwlhh3BGbU9Up7pq0b
+        K2AgMJEFC5A9mLUu8lvdZHHkVaB6199jCuEy6ls=
+X-Google-Smtp-Source: AA6agR5Z+YOUUXgHcHiLSRw4wQklvVgHYd1TmqtH+7G+MSYKD2u+Kf9lYZtk9Ui9lMm+s62foX3k3iIt7zoSGDuqwJY=
+X-Received: by 2002:ac2:43a1:0:b0:48a:fa18:60c4 with SMTP id
+ t1-20020ac243a1000000b0048afa1860c4mr9114476lfl.27.1660144929301; Wed, 10 Aug
+ 2022 08:22:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220810151322.16163-1-laoar.shao@gmail.com>
-In-Reply-To: <20220810151322.16163-1-laoar.shao@gmail.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Wed, 10 Aug 2022 23:21:33 +0800
-Message-ID: <CALOAHbDwNRAn3kZ_H51NFbTXL4rZpVLNaCJoM8J0nB17wgrfTg@mail.gmail.com>
-Subject: Re: [PATCH 00/15] bpf: Introduce selectable memcg for bpf map
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
+References: <cover.1660100506.git.sevinj.aghayeva@gmail.com>
+ <94ec6182-0804-7a0e-dcba-42655ff19884@blackwall.org> <CAMWRUK45nbZS3PeSLR1X=Ko6oavrjKj2AWeh2F1wckMPrz_dEg@mail.gmail.com>
+ <49f933c3-7430-a133-9add-ed76c395023b@blackwall.org> <CAMWRUK4J6Dp7Cff=pN9iw6OwDN8g61dd4S=OVKQ75vBch-PxXQ@mail.gmail.com>
+ <74b69521-0d40-5e2f-4d1b-76e9697d7471@blackwall.org>
+In-Reply-To: <74b69521-0d40-5e2f-4d1b-76e9697d7471@blackwall.org>
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Date:   Wed, 10 Aug 2022 11:21:58 -0400
+Message-ID: <CAMWRUK4WvrkBDViq0s5Rdc8bziJf7=js4ta6B0kAcAcfV4rLiQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 0/3] net: vlan: fix bridge binding behavior
+ and add selftests
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, aroulin@nvidia.com, sbrivio@redhat.com,
+        roopa@nvidia.com, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -78,134 +74,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 11:13 PM Yafang Shao <laoar.shao@gmail.com> wrote:
+On Wed, Aug 10, 2022 at 11:10 AM Nikolay Aleksandrov
+<razor@blackwall.org> wrote:
 >
-> On our production environment, we may load, run and pin bpf programs and
-> maps in containers. For example, some of our networking bpf programs and
-> maps are loaded and pinned by a process running in a container on our
-> k8s environment. In this container, there're also running some other
-> user applications which watch the networking configurations from remote
-> servers and update them on this local host, log the error events, monitor
-> the traffic, and do some other stuffs. Sometimes we may need to update
-> these user applications to a new release, and in this update process we
-> will destroy the old container and then start a new genration. In order not
-> to interrupt the bpf programs in the update process, we will pin the bpf
-> programs and maps in bpffs. That is the background and use case on our
-> production environment.
+> On 10/08/2022 18:00, Sevinj Aghayeva wrote:
+> > On Wed, Aug 10, 2022 at 10:50 AM Nikolay Aleksandrov
+> > <razor@blackwall.org> wrote:
+> >>
+> >> On 10/08/2022 17:42, Sevinj Aghayeva wrote:
+> >>>
+> >>>
+> >>> On Wed, Aug 10, 2022 at 4:54 AM Nikolay Aleksandrov <razor@blackwall.=
+org <mailto:razor@blackwall.org>> wrote:
+> >>>
+> >>>     On 10/08/2022 06:11, Sevinj Aghayeva wrote:
+> >>>     > When bridge binding is enabled for a vlan interface, it is expe=
+cted
+> >>>     > that the link state of the vlan interface will track the subset=
+ of the
+> >>>     > ports that are also members of the corresponding vlan, rather t=
+han
+> >>>     > that of all ports.
+> >>>     >
+> >>>     > Currently, this feature works as expected when a vlan interface=
+ is
+> >>>     > created with bridge binding enabled:
+> >>>     >
+> >>>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.=
+1q \
+> >>>     >         bridge_binding on
+> >>>     >
+> >>>     > However, the feature does not work when a vlan interface is cre=
+ated
+> >>>     > with bridge binding disabled, and then enabled later:
+> >>>     >
+> >>>     >   ip link add link br name vlan10 type vlan id 10 protocol 802.=
+1q \
+> >>>     >         bridge_binding off
+> >>>     >   ip link set vlan10 type vlan bridge_binding on
+> >>>     >
+> >>>     > After these two commands, the link state of the vlan interface
+> >>>     > continues to track that of all ports, which is inconsistent and
+> >>>     > confusing to users. This series fixes this bug and introduces t=
+wo
+> >>>     > tests for the valid behavior.
+> >>>     >
+> >>>     > Sevinj Aghayeva (3):
+> >>>     >   net: core: export call_netdevice_notifiers_info
+> >>>     >   net: 8021q: fix bridge binding behavior for vlan interfaces
+> >>>     >   selftests: net: tests for bridge binding behavior
+> >>>     >
+> >>>     >  include/linux/netdevice.h                     |   2 +
+> >>>     >  net/8021q/vlan.h                              |   2 +-
+> >>>     >  net/8021q/vlan_dev.c                          |  25 ++-
+> >>>     >  net/core/dev.c                                |   7 +-
+> >>>     >  tools/testing/selftests/net/Makefile          |   1 +
+> >>>     >  .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++=
+++++++++
+> >>>     >  6 files changed, 172 insertions(+), 8 deletions(-)
+> >>>     >  create mode 100755 tools/testing/selftests/net/bridge_vlan_bin=
+ding_test.sh
+> >>>     >
+> >>>
+> >>>     Hi,
+> >>>     NETDEV_CHANGE event is already propagated when the vlan changes f=
+lags,
+> >>>
+> >>>
+> >>> I'm not sure if NETDEV_CHANGE is actually propagated when the vlan ch=
+anges flags. The two functions in the bridge module that handle NETDEV_CHAN=
+GE are br_vlan_port_event  and br_vlan_bridge_event. I've installed probes =
+for both, and when I'm changing flags using "sudo ip link set vlan10 type v=
+lan bridge_binding on", I don't see any of those functions getting called, =
+although I do see vlan_dev_change_flags getting called. I think there may b=
+e a bug in core/dev.c:__dev_notify_flags.
+> >>
+> >> are both vlan and bridge interfaces up?
+> >> what exactly are you probing for?
+> >
+> >
+> > I first run the attached pre.sh script that sets up the environment
+> > and creates a vlan interface with bridge binding off. I then start
+> > recording with perf, and here's the list of probes:
+> >
+> > $ sudo ./k/linux/tools/perf/perf probe -l
+> >   probe:br_vlan_bridge_event (on br_vlan_bridge_event in bridge with ev=
+ent dev)
+> >   probe:br_vlan_port_event (on br_vlan_port_event in bridge with event)
+> >   probe:br_vlan_set_vlan_dev_state (on br_vlan_set_vlan_dev_state in
+> > bridge with br vlan_dev)
+> >   probe:register_vlan_dev (on register_vlan_dev in 8021q with dev)
+> >   probe:vlan_changelink (on vlan_changelink in 8021q with dev)
+> >   probe:vlan_dev_change_flags (on vlan_dev_change_flags in 8021q with d=
+ev)
+> >   probe:vlan_dev_fix_features (on vlan_dev_fix_features in 8021q with d=
+ev)
+> >   probe:vlan_dev_init  (on vlan_dev_init in 8021q with dev)
+> >   probe:vlan_dev_ioctl (on vlan_dev_ioctl in 8021q with dev)
+> >   probe:vlan_dev_open  (on vlan_dev_open in 8021q with dev)
+> >   probe:vlan_dev_stop  (on vlan_dev_stop in 8021q with dev)
+> >   probe:vlan_dev_uninit (on vlan_dev_uninit in 8021q with dev)
+> >   probe:vlan_newlink   (on vlan_newlink in 8021q with dev)
+> >
+> > I then run the following command to turn the bridge binding flag on:
+> >
+> > $ sudo ip link set vlan10 type vlan bridge_binding on
+> >
+> > Then I stop the recording and print out the events, and I see this. I
+> > don't see br_vlan_port_event or br_vlan_bridge_event getting called.
+> >
+> >               ip  5933 [003]  2204.722470:
+> > probe:vlan_changelink: (ffffffffc1042b50) dev=3D"vlan10"
+> >               ip  5933 [003]  2204.722476:
+> > probe:vlan_dev_change_flags: (ffffffffc1042600) dev=3D"vlan10"
+> >
+> > Am I doing something wrong?
+> >
+> > Thanks
+> >
+> >
 >
-> After switching to memcg-based bpf memory accounting to limit the bpf
-> memory, some unexpected issues jumped out at us.
-> 1. The memory usage is not consistent between the first generation and
-> new generations.
-> 2. After the first generation is destroyed, the bpf memory can't be
-> limited if the bpf maps are not preallocated, because they will be
-> reparented.
+> You can't expect to see br_vlan_bridge_event() called because the notific=
+ation
+> target device is vlan10 and not the bridge. See br_device_event():
+> ...
+>         if (netif_is_bridge_master(dev)) {
+>                 err =3D br_vlan_bridge_event(dev, event, ptr);
+>                 if (err)
+>                         return notifier_from_errno(err);
+> ...
 >
-> This patchset tries to resolve these issues by introducing an
-> independent memcg to limit the bpf memory.
 >
-> In the bpf map creation, we can assign a specific memcg instead of using
-> the current memcg.  That makes it flexible in containized environment.
-> For example, if we want to limit the pinned bpf maps, we can use below
-> hierarchy,
+> Try probing for br_device_event(), you'll see it gets called every time y=
+ou change the flag.
 >
->     Shared resources              Private resources
->
->      bpf-memcg                      k8s-memcg
->      /        \                     /
-> bpf-bar-memcg bpf-foo-memcg   srv-foo-memcg
->                   |               /        \
->                (charged)     (not charged) (charged)
->                   |           /              \
->                   |          /                \
->           bpf-foo-{progs, maps}              srv-foo
->
-> srv-foo loads and pins bpf-foo-{progs, maps}, but they are charged to an
-> independent memcg (bpf-foo-memcg) instead of srv-foo's memcg
-> (srv-foo-memcg).
->
-> Pls. note that there may be no process in bpf-foo-memcg, that means it
-> can be rmdir-ed by root user currently. Meanwhile we don't forcefully
-> destroy a memcg if it doesn't have any residents. So this hierarchy is
-> acceptible.
->
-> In order to make the memcg of bpf maps seletectable, this patchset
-> introduces some memory allocation wrappers to allocate map related
-> memory. In these wrappers, it will get the memcg from the map and then
-> charge the allocated pages or objs.
->
-> Currenly it only supports for bpf map, and we can extend it to bpf prog
-> as well. It only supports for cgroup2 now, but we can make an additional
-> change in cgroup_get_from_fd() to support it for cgroup1.
->
-> The observebility can also be supported in the next step, for example,
-> showing the bpf map's memcg by 'bpftool map show' or even showing which
-> maps are charged to a specific memcg by 'bpftool cgroup show'.
-> Furthermore, we may also show an accurate memory size of a bpf map
-> instead of an estimated memory size in 'bpftool map show' in the future.
->
-> RFC->v1:
-> - get rid of bpf_map container wrapper (Alexei)
-> - add the new field into the end of struct (Alexei)
-> - get rid of BPF_F_SELECTABLE_MEMCG (Alexei)
-> - save memcg in bpf_map_init_from_attr
-> - introduce bpf_ringbuf_pages_{alloc,free} and keep them inside
->   kernel/bpf/ringbuf.c  (Andrii)
->
-> Yafang Shao (15):
->   bpf: Remove unneeded memset in queue_stack_map creation
->   bpf: Use bpf_map_area_free instread of kvfree
->   bpf: Make __GFP_NOWARN consistent in bpf map creation
->   bpf: Use bpf_map_area_alloc consistently on bpf map creation
->   bpf: Fix incorrect mem_cgroup_put
->   bpf: Define bpf_map_{get,put}_memcg for !CONFIG_MEMCG_KMEM
->   bpf: Call bpf_map_init_from_attr() immediately after map creation
->   bpf: Save memcg in bpf_map_init_from_attr()
->   bpf: Use scoped-based charge in bpf_map_area_alloc
->   bpf: Introduce new helpers bpf_ringbuf_pages_{alloc,free}
->   bpf: Use bpf_map_kzalloc in arraymap
->   bpf: Use bpf_map_kvcalloc in bpf_local_storage
->   mm, memcg: Add new helper get_obj_cgroup_from_cgroup
->   bpf: Add return value for bpf_map_init_from_attr
->   bpf: Introduce selectable memcg for bpf map
->
->  include/linux/bpf.h            |  43 ++++++++++++-
->  include/linux/memcontrol.h     |  11 ++++
->  include/uapi/linux/bpf.h       |   1 +
->  kernel/bpf/arraymap.c          |  34 ++++++-----
->  kernel/bpf/bloom_filter.c      |  11 +++-
->  kernel/bpf/bpf_local_storage.c |  17 ++++--
->  kernel/bpf/bpf_struct_ops.c    |  19 +++---
->  kernel/bpf/cpumap.c            |  17 ++++--
->  kernel/bpf/devmap.c            |  30 ++++++----
->  kernel/bpf/hashtab.c           |  26 ++++----
->  kernel/bpf/local_storage.c     |  12 ++--
->  kernel/bpf/lpm_trie.c          |  12 +++-
->  kernel/bpf/offload.c           |  12 ++--
->  kernel/bpf/queue_stack_maps.c  |  13 ++--
->  kernel/bpf/reuseport_array.c   |  11 +++-
->  kernel/bpf/ringbuf.c           | 104 ++++++++++++++++++++++----------
->  kernel/bpf/stackmap.c          |  13 ++--
->  kernel/bpf/syscall.c           | 133 ++++++++++++++++++++++++++++-------------
->  mm/memcontrol.c                |  41 +++++++++++++
->  net/core/sock_map.c            |  30 ++++++----
->  net/xdp/xskmap.c               |  12 +++-
->  tools/include/uapi/linux/bpf.h |   1 +
->  tools/lib/bpf/bpf.c            |   3 +-
->  tools/lib/bpf/bpf.h            |   3 +-
->  tools/lib/bpf/gen_loader.c     |   2 +-
->  tools/lib/bpf/libbpf.c         |   2 +
->  tools/lib/bpf/skel_internal.h  |   2 +-
->  27 files changed, 436 insertions(+), 179 deletions(-)
->
-> --
-> 1.8.3.1
->
+You're right, I did see br_device_event() getting called. Thanks!
 
-Ah, this series is incomplete.
-Pls see the update one.
-https://lore.kernel.org/bpf/20220810151840.16394-1-laoar.shao@gmail.com/T/#t
+--=20
 
---
-Regards
-Yafang
+Sevinj.Aghayeva
