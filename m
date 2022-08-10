@@ -2,95 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF51658EC39
-	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:44:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C053558EC42
+	for <lists+netdev@lfdr.de>; Wed, 10 Aug 2022 14:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232037AbiHJMoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 08:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
+        id S232149AbiHJMuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 08:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiHJMoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:44:01 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CD584EDB
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:44:01 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id x5so3355932qtv.9
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 05:44:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=AvF0ld53YIJm/pBBN06AYvHNPuB0U4czPfcumd2gMLE=;
-        b=aT4O114xLtGoLzyVGwX920yaHd8DL8uhrCm1IcIu2kv6sKrJINLi5Y1SEa7phS31cp
-         Mp1bo6C1NmwDSd/5dQNdkkf3b+iE0/C2GQsorOFA2VA4J0V7infA6q8ES28OfaS10PBI
-         beT8T+6WQ+2GM+xhSTpUuhI2NLvx5jedpZsakoVjFjosOzZlnwBS17/QRCJxqxkWzCdl
-         z3YLZjdFOhkjVBewsA97xopv1dtUzW7HHruTwiN9TzHHM58IQRV4NwZ5TTYHshbk72va
-         3VNA5kZ59I/NdGQQaKU+c9s2eYkhNo5osKCrveDTlITT56LuulO5e9dRJX30yJUV6o7R
-         Kevw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=AvF0ld53YIJm/pBBN06AYvHNPuB0U4czPfcumd2gMLE=;
-        b=2veZrZ8NAtMWSmWc/rlIOwVfkSPmSgXP9KHYKDOOzXPfCupqfrgokR3iskCpnfm/ck
-         BK2IUR5HNE9xnOq81skNeJDpDuia98v2s2C9GDfHOnRrCwqROBEwsKgnhp7EI0NDLjI7
-         BjqMe71nKT7EGb4CdBeVVEkG62ol6dO+Cd0HcHZIiUQgDPxWlW5FiuHlsy7vHhAkeVNs
-         D0pg9qpy77kb1xC1fcTQjo259xrqLtaOegahjavG/83MN0YkMBd+JGxw2oY7rfmUVr6W
-         vZP3YR4lX2zWTxndHfvXs7NzWt6E05CvIU0hGRjcMjSi2zYI55C6EAvN5jPo4Gi1azxc
-         y4sw==
-X-Gm-Message-State: ACgBeo2lbanEgHLYm526y+s8RuZ+9zPWwU3vR7KmKnou7QNRPdA6Yg8h
-        /pEziArtB/Q9J33ChNJYeqedThFx2Ua59qVDIpJG1g==
-X-Google-Smtp-Source: AA6agR5r9ZcarTd+JxlgKjeNemprNXlpaQlz44ZI2m2BtbWl8maVPUO1tfGSLyzHsa05f3LaNVlOdbY4+TmYHuX6tEs=
-X-Received: by 2002:a05:622a:1984:b0:342:ea3d:696e with SMTP id
- u4-20020a05622a198400b00342ea3d696emr17244054qtc.7.1660135440294; Wed, 10 Aug
- 2022 05:44:00 -0700 (PDT)
+        with ESMTP id S232119AbiHJMuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 08:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E122D642D0;
+        Wed, 10 Aug 2022 05:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7908961380;
+        Wed, 10 Aug 2022 12:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 976DDC4314B;
+        Wed, 10 Aug 2022 12:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660135815;
+        bh=d9ItW5YEKhh32HxGw9G+EcZWqf0bptbe+f2x0eDlw3E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EeMbGNOp41C70lmMCCSpagzfQifhNMPeOZ1yDrUm7pEXrECyog1J/Ac9gxhA4w1kT
+         xY8IqTrpnQ2QvS86qivH4//ARbMJjoMkefGVFX28OWSPLcJy9cRvp6pPLiYytrO0C3
+         zON7pP7FfjJjT/PREzmLcp3nObYZcARYJFjFLK0pkbrPUGQJOr9RB0j86JoQEYcYtD
+         dx5crLl311FNlL5XDgv2U1b7qfPA9gvy7NUftMtlS5OwfAxiP3o6XmnqQjq6UdPhR6
+         yRbSuDSVUEGiUZMa3Qz9iDoxAAz1YQAc14q5NzZkwgOxcnT6J3PlYOkAYboZMb7lvJ
+         kEmFBIx8/RZdA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64E9FC43143;
+        Wed, 10 Aug 2022 12:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
-In-Reply-To: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 10 Aug 2022 08:43:44 -0400
-Message-ID: <CADVnQym47_uqqKWkGnu7hA+vhHjvURMmTdd0Xx6z8m_mspwFJw@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: adjust rcvbuff according copied rate of user space
-To:     Yonglong Li <liyonglong@chinatelecom.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        ycheng@google.com, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net:bonding:support balance-alb interface with vlan to
+ bridge
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166013581540.3703.5149069391225440733.git-patchwork-notify@kernel.org>
+Date:   Wed, 10 Aug 2022 12:50:15 +0000
+References: <20220809062103.31213-1-sunshouxin@chinatelecom.cn>
+In-Reply-To: <20220809062103.31213-1-sunshouxin@chinatelecom.cn>
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
+Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, razor@blackwall.org,
+        huyd12@chinatelecom.cn
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 3:49 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
->
-> every time data is copied to user space tcp_rcv_space_adjust is called.
-> current It adjust rcvbuff by the length of data copied to user space.
-> If the interval of user space copy data from socket is not stable, the
-> length of data copied to user space will not exactly show the speed of
-> copying data from rcvbuff.
-> so in tcp_rcv_space_adjust it is more reasonable to adjust rcvbuff by
-> copied rate (length of copied data/interval)instead of copied data len
->
-> I tested this patch in simulation environment by Mininet:
-> with 80~120ms RTT / 1% loss link, 100 runs
-> of (netperf -t TCP_STREAM -l 5), and got an average throughput
-> of 17715 Kbit instead of 17703 Kbit.
-> with 80~120ms RTT without loss link, 100 runs of (netperf -t
-> TCP_STREAM -l 5), and got an average throughput of 18272 Kbit
-> instead of 18248 Kbit.
+Hello:
 
-So with 1% emulated loss that's a 0.06% throughput improvement and
-without emulated loss that's a 0.13% improvement. That sounds like it
-may well be statistical noise, particularly given that we would expect
-the steady-state impact of this change to be negligible.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-IMHO these results do not justify the added complexity and state.
+On Mon,  8 Aug 2022 23:21:03 -0700 you wrote:
+> In my test, balance-alb bonding with two slaves eth0 and eth1,
+> and then Bond0.150 is created with vlan id attached bond0.
+> After adding bond0.150 into one linux bridge, I noted that Bond0,
+> bond0.150 and  bridge were assigned to the same MAC as eth0.
+> Once bond0.150 receives a packet whose dest IP is bridge's
+> and dest MAC is eth1's, the linux bridge will not match
+> eth1's MAC entry in FDB, and not handle it as expected.
+> The patch fix the issue, and diagram as below:
+> 
+> [...]
 
-best regards,
-neal
+Here is the summary with links:
+  - [v2] net:bonding:support balance-alb interface with vlan to bridge
+    https://git.kernel.org/netdev/net/c/d5410ac7b0ba
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
