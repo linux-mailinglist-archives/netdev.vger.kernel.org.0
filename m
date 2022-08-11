@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C46195903BA
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3A55903F4
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238052AbiHKQYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41342 "EHLO
+        id S238098AbiHKQZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237860AbiHKQXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:23:46 -0400
+        with ESMTP id S238003AbiHKQYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:24:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1ED1144E;
-        Thu, 11 Aug 2022 09:05:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D871A833;
+        Thu, 11 Aug 2022 09:05:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19F8CB82123;
-        Thu, 11 Aug 2022 16:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC07C433C1;
-        Thu, 11 Aug 2022 16:05:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D4BCB821AD;
+        Thu, 11 Aug 2022 16:05:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C798EC433D6;
+        Thu, 11 Aug 2022 16:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233916;
-        bh=oxr8ZUJO9aysC9EUSeeMWhFCCQ44WU/CjI3XHIhaM7A=;
+        s=k20201202; t=1660233944;
+        bh=y2IrkiMugo1Km5Q7lyHBt53yMDZvh7y5Xn/R7V2EW3o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iNrNLNsdlYfHkwUiSFXOEvhgtvPEsY7AkFRX0e1bfEEhEpT2xMLfNzDAcP3mZn8iP
-         w5VBu7Af/6ddPrdoH80G0Ng0whR6tCS6DKHcQ1HPmJPO+SdbXCQSYwv+4SsydpcY5E
-         vjgRscwNuiDYgKJCMoZNnaJmm/rpGPDaeLxILKdONfsCzJNwE98d4OjO5LE/lcyNNF
-         JhMYw7rqJWBYubZG9kR86JDO/Qn/BmFDoWD+5CPn9n+ldF7dTZh/dtWt38COIPkio9
-         susVvD/JFS51fy/NJYaTVgzC/A7+ic5P2mmQcyM0gQuaoAz+KVkYHGGGkzwG2HYg5T
-         WyiIRJGPxSwBw==
+        b=SgKO+TLpXvawc8P6w/uLWu6WX8GKBQQ6ZEnw0D+Uwm/dpHBRCaw096lOQosXdomKG
+         bZ7n5f3yuVgehTI/X+nmkbxE3mKCJfpE2kBsBeIVh+M0Jp77+l4kDECoX+b0rbY648
+         ZAtu6tqvVgKRTTKgCjuH9iZbmi75wb62lvn9v15E0j06ASkRmWXQfgpSRUkMMSvo7H
+         VZn6MRv2VZl0KfsvhBz/sZMo5c9cy2RpUeErzh6zEUVOwMuNhCkbBqnCAA5pqhq1j1
+         gBMwak0Pap+BRl4bwhra4ei/NOU51FQ0/9waW1KG6fp6Tnr+JLxctRdr9CINPqbYE/
+         XcTgxT+VsInFw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/46] net/mlx5: Add HW definitions of vport debug counters
-Date:   Thu, 11 Aug 2022 12:03:37 -0400
-Message-Id: <20220811160421.1539956-13-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        danieller@nvidia.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 15/46] selftests: mlxsw: resource_scale: Allow skipping a test
+Date:   Thu, 11 Aug 2022 12:03:39 -0400
+Message-Id: <20220811160421.1539956-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -57,90 +59,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 3e94e61bd44d90070dcda53b647fdc826097ef26 ]
+[ Upstream commit 8cad339db339a39cb82b1188e4be4070a433abac ]
 
-total_q_under_processor_handle - number of queues in error state due to an
-async error or errored command.
+The scale tests are currently testing two things: that some number of
+instances of a given resource can actually be created; and that when an
+attempt is made to create more than the supported amount, the failures are
+noted and handled gracefully.
 
-send_queue_priority_update_flow - number of QP/SQ priority/SL update
-events.
+Sometimes the scale test depends on more than one resource. In particular,
+a following patch will add a RIF counter scale test, which depends on the
+number of RIF counters that can be bound, and also on the number of RIFs
+that can be created.
 
-cq_overrun - number of times CQ entered an error state due to an
-overflow.
+When the test is limited by the auxiliary resource and not by the primary
+one, there's no point trying to run the overflow test, because it would be
+testing exhaustion of the wrong resource.
 
-async_eq_overrun -number of time an EQ mapped to async events was
-overrun.
+To support this use case, when the $test_get_target yields 0, skip the test
+instead.
 
-comp_eq_overrun - number of time an EQ mapped to completion events was
-overrun.
-
-quota_exceeded_command - number of commands issued and failed due to quota
-exceeded.
-
-invalid_command - number of commands issued and failed dues to any reason
-other than quota exceeded.
-
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Michael Guralnik <michaelgur@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ .../selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh | 5 +++++
+ .../selftests/drivers/net/mlxsw/spectrum/resource_scale.sh   | 4 ++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 6ca97729b54a..4276677ecdb5 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1282,7 +1282,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 
- 	u8         reserved_at_120[0xa];
- 	u8         log_max_ra_req_dc[0x6];
--	u8         reserved_at_130[0xa];
-+	u8         reserved_at_130[0x9];
-+	u8         vnic_env_cq_overrun[0x1];
- 	u8         log_max_ra_res_dc[0x6];
- 
- 	u8         reserved_at_140[0x6];
-@@ -1472,7 +1473,11 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         nic_receive_steering_discard[0x1];
- 	u8         receive_discard_vport_down[0x1];
- 	u8         transmit_discard_vport_down[0x1];
--	u8         reserved_at_343[0x5];
-+	u8         eq_overrun_count[0x1];
-+	u8         reserved_at_344[0x1];
-+	u8         invalid_command_count[0x1];
-+	u8         quota_exceeded_count[0x1];
-+	u8         reserved_at_347[0x1];
- 	u8         log_max_flow_counter_bulk[0x8];
- 	u8         max_flow_counter_15_0[0x10];
- 
-@@ -3128,11 +3133,21 @@ struct mlx5_ifc_vnic_diagnostic_statistics_bits {
- 
- 	u8         transmit_discard_vport_down[0x40];
- 
--	u8         reserved_at_140[0xa0];
-+	u8         async_eq_overrun[0x20];
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+index d7cf33a3f18d..ce2b4074ea77 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+@@ -38,6 +38,11 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 	for should_fail in 0 1; do
+ 		RET=0
+ 		target=$(${current_test}_get_target "$should_fail")
++		if ((target == 0)); then
++			log_test_skip "'$current_test' should_fail=$should_fail test"
++			continue
++		fi
 +
-+	u8         comp_eq_overrun[0x20];
-+
-+	u8         reserved_at_180[0x20];
-+
-+	u8         invalid_command[0x20];
-+
-+	u8         quota_exceeded_command[0x20];
- 
- 	u8         internal_rq_out_of_buffer[0x20];
- 
--	u8         reserved_at_200[0xe00];
-+	u8         cq_overrun[0x20];
-+
-+	u8         reserved_at_220[0xde0];
- };
- 
- struct mlx5_ifc_traffic_counter_bits {
+ 		${current_test}_setup_prepare
+ 		setup_wait $num_netifs
+ 		${current_test}_test "$target" "$should_fail"
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+index 43f662401bc3..23438d527f6f 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+@@ -40,6 +40,10 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 		for should_fail in 0 1; do
+ 			RET=0
+ 			target=$(${current_test}_get_target "$should_fail")
++			if ((target == 0)); then
++				log_test_skip "'$current_test' [$profile] should_fail=$should_fail test"
++				continue
++			fi
+ 			${current_test}_setup_prepare
+ 			setup_wait $num_netifs
+ 			${current_test}_test "$target" "$should_fail"
 -- 
 2.35.1
 
