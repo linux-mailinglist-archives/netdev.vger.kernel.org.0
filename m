@@ -2,93 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BFC59056F
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 19:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB2F590594
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 19:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235151AbiHKRMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 13:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S234936AbiHKRQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 13:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235934AbiHKRLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 13:11:55 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C25E4B0E1;
-        Thu, 11 Aug 2022 09:48:57 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 09:48:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660236536;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9LRo2B5nHj7qM/j+ODxu8goN8T5MUtYCM7InUsCq2KI=;
-        b=QrHjuwkWBAVOoNWWQtFUTtWsJO8fBsXjFDLsF1uNes86BAdWeJERAv5peXjCSGyRAeQi3G
-        dZbC6j7ZYIV2X1KigwRp3M/GL/o6e9ZXBMy6oHZs20yvbM9tkVJcPH4eWlbuFKNqDuqqoE
-        z643F+KyM7TrQ1iWqYEa7uVhv0UPS9Y=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, shakeelb@google.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
-Message-ID: <YvUy5IA+XJp7ylIC@P9FQF9L96D.corp.robot.car>
-References: <20220810151840.16394-1-laoar.shao@gmail.com>
- <20220810151840.16394-6-laoar.shao@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810151840.16394-6-laoar.shao@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234807AbiHKRPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 13:15:49 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772E5B4F
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 10:04:27 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id x18-20020a056a000bd200b0052e70ff090dso7813952pfu.18
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 10:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=D+ellfACBxAmbVQUNMDunXA6++33PEZVxJ5ftj+OAEc=;
+        b=KRwyGcXdb2B5+MNWvIcRW1YKMnY6/vyw4So9PKlNZVgbvFnv/hPle8s4fJHpt41ZOT
+         7YxS2/eh8wo6j1M3mW7R9IipjfNW1hB1SNkpaJVJzGTJxXjON82hQd1v0+KZwgVqX8Fc
+         Ge23df493AdZJoin3OzGix6N3zZ6lt0gjQK8Puy95nSZSiR7CzGm660RAMjYrmXJzjEQ
+         p93yH2SKxK1nAyoYfNRKOY7NoaCzY2arASDYvhBvzTeJNW7fob6qWyjG8ZDMLbWko8jy
+         ASRwN3dr4R46N7oBQGDlZK1q64N9fgsTGj7EjHs8kABI0/TNw1i6scKkstaBZhdhJmVW
+         sI3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=D+ellfACBxAmbVQUNMDunXA6++33PEZVxJ5ftj+OAEc=;
+        b=sqi4yU0r5KM7fZC8s8L2mkfgQZEzB/oxoJbmAQiVpSeiDSZxQAaH4fA1QT4r8Ykasc
+         1ISnGmI8VIAznC8EBQbxfXHqHRIFIDfn6SRRtruGvxMHlzL5hBlz4woxcmopGl9X9nTb
+         cg8fdH9yHF75w9FOT4kOR8Ggs4hsUk3QrNhC4sMGazUHP5PoPEKWfIK5wJ7MRfgCyEAF
+         5CKYdGBOzxSa348zKHRWVoS3NX93qDjirKQGdATq46KXHvL8CuZGRj91pZ5Dy23vIWr6
+         o/az1ggoFqmw/xMI93S51rn+tSbMNqVnnJk07wE5HDhLqGY4uu7FnNdLRhLyA/ETV9c9
+         iY7w==
+X-Gm-Message-State: ACgBeo29e38/xnc+dWlzhziqkE//4SRmFvKjnR8jEGnzhNz6eJHNn2qg
+        vwZVNjSs6StKn9J4yenztm2OFTo=
+X-Google-Smtp-Source: AA6agR5YgtCBONtNsSNwyiYb1GJCUPkTZVKNty3MYo1gnxy04/uuot/dXTJg4pGiZ37NTCJY5sDrfgw=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:ce90:b0:16e:f7c3:c478 with SMTP id
+ f16-20020a170902ce9000b0016ef7c3c478mr151924plg.82.1660237467007; Thu, 11 Aug
+ 2022 10:04:27 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 10:04:25 -0700
+In-Reply-To: <20220810190724.2692127-1-kafai@fb.com>
+Message-Id: <YvU2md/W4YSlnkBH@google.com>
+Mime-Version: 1.0
+References: <20220810190724.2692127-1-kafai@fb.com>
+Subject: Re: [PATCH v3 bpf-next 00/15] bpf: net: Remove duplicated code from bpf_setsockopt()
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
-> The memcg may be the root_mem_cgroup, in which case we shouldn't put it.
-> So a new helper bpf_map_put_memcg() is introduced to pair with
-> bpf_map_get_memcg().
-> 
-> Fixes: 4201d9ab3e42 ("bpf: reparent bpf maps on memcg offlining")
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  kernel/bpf/syscall.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 83c7136..51ab8b1 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -441,6 +441,14 @@ static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
->  	return root_mem_cgroup;
->  }
->  
-> +static void bpf_map_put_memcg(struct mem_cgroup *memcg)
-> +{
-> +	if (mem_cgroup_is_root(memcg))
-> +		return;
-> +
-> +	mem_cgroup_put(memcg);
-> +}
+On 08/10, Martin KaFai Lau wrote:
+> The code in bpf_setsockopt() is mostly a copy-and-paste from
+> the sock_setsockopt(), do_tcp_setsockopt(), do_ipv6_setsockopt(),
+> and do_ip_setsockopt().  As the allowed optnames in bpf_setsockopt()
+> grows, so are the duplicated code.  The code between the copies
+> also slowly drifted.
 
-+1 to what Shakeel said. mem_cgroup_put(root_mem_cgroup) is totally valid.
-So this change does absolutely nothing.
+> This set is an effort to clean this up and reuse the existing
+> {sock,do_tcp,do_ipv6,do_ip}_setsockopt() as much as possible.
 
-The fixes tag assumes there is a bug in the existing code. If so, please,
-describe the problem and how to reproduce it.
+> After the clean up, this set also adds a few allowed optnames
+> that we need to the bpf_setsockopt().
 
-Also, if it's not related to the rest of the patchset, please, send it
-separately.
+> The initial attempt was to clean up both bpf_setsockopt() and
+> bpf_getsockopt() together.  However, the patch set was getting
+> too long.  It is beneficial to leave the bpf_getsockopt()
+> out for another patch set.  Thus, this set is focusing
+> on the bpf_setsockopt().
 
-Thanks!
+> v3:
+> - s/in_bpf/has_current_bpf_ctx/ (Andrii)
+> - Add comments to has_current_bpf_ctx() and sockopt_lock_sock()
+>    (Stanislav)
+> - Use vmlinux.h in selftest and add defines to bpf_tracing_net.h
+>    (Stanislav)
+> - Use bpf_getsockopt(SO_MARK) in selftest (Stanislav)
+> - Use BPF_CORE_READ_BITFIELD in selftest (Yonghong)
+
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+
+(I didn't go super deep on the selftest)
