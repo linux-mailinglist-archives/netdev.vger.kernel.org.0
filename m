@@ -2,107 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B50BB58FEB0
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E068B58FEEC
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbiHKPB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
+        id S235573AbiHKPNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234066AbiHKPB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:01:57 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D489F2496C
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 08:01:55 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso5663557pjo.1
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 08:01:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc;
-        bh=b+I9NMlIRung0ufXGv5JJYJHMEd2asoQjtUh3VvCjOo=;
-        b=RsXRGLyz3v67s4s/1e5ATDfo68S4Xk2SHhr+boOlz0EVUz3dvqm2+eR8LsCBwDEIYq
-         Ye03Xq23h47OacFO07cDrnOoDp5KTFsXRiKah1kp61l5ZbF89KFcUq1gi2bQLCXNu2NV
-         3J/SoGeLJYo8/JLXLaRAeNOin/PFr2ft+RMz9qH9a9tb7UZ9d+mtHj/dRJhTW4RYxsD0
-         K9sGe902y0wKU06SYRDZASP6mUQpGvr7tOmYLosL0ket9E4CfOWoYRUoiqgHkvqBTgue
-         40Ad8dfW2rbHvBhGvVDfs7ju2/4FRWJvJkIL6zF0EOrLBgevb+YNDq7vef5TDOi+aKTz
-         UTrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=b+I9NMlIRung0ufXGv5JJYJHMEd2asoQjtUh3VvCjOo=;
-        b=gSOgM/MxCXh2A5VrwpxBpD036fDkoYki7jGcn6CVxqzYvAWyoDWErkvuwe+yu0h98m
-         6WldOoPzeW8M1sDkBicwb4DDBvMRM9WPZDjoxDSL7NsvVklrgxseUIYctnIGf2zzHLCW
-         ActQlsMBihNhw4739+ieeatOHD2ZomtPNJZs3YpxJRWPxwCEJtqPM51cNI4ZIjbrGdYL
-         GRGQ6SVdFnyFVxAPvQlShxvuqR+c0Sg1yRmJBJEoUxs/osBVhdAketkZOGtSzrzUaeYk
-         MjUAUqcNBaPJVs+W/5tUeals2/Nox9E14mfFhMkI9uagojSnPc2xNmwBGllfCwuBGqQS
-         J5eQ==
-X-Gm-Message-State: ACgBeo10j94/Vej2QxIFrN9tZRaWpAKMqYO5z/wmi1IQEGXQERqDHsBJ
-        hq/rDNDmQ8t+hJvK1+EO3d1FnX/hMu7agQ==
-X-Google-Smtp-Source: AA6agR64EfyJdGX5MHuLzxCea37dFu9L83/U4i7RWaogx7X22t58SWaQilMkRBxdvbHOFHBPNxpExQ==
-X-Received: by 2002:a17:902:e885:b0:16f:8f52:c93a with SMTP id w5-20020a170902e88500b0016f8f52c93amr29076787plg.140.1660230115342;
-        Thu, 11 Aug 2022 08:01:55 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id v3-20020a654603000000b0041a6c2436c7sm11739042pgq.82.2022.08.11.08.01.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 08:01:55 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 08:01:52 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
-        vadfed@fb.com, johannes@sipsolutions.net, jiri@resnulli.us,
-        dsahern@kernel.org, fw@strlen.de, linux-doc@vger.kernel.org
-Subject: Re: [RFC net-next 0/4] ynl: YAML netlink protocol descriptions
-Message-ID: <20220811080152.2dbd82c2@hermes.local>
-In-Reply-To: <20220810214701.46565016@kernel.org>
-References: <20220811022304.583300-1-kuba@kernel.org>
-        <20220810211534.0e529a06@hermes.local>
-        <20220810214701.46565016@kernel.org>
+        with ESMTP id S230133AbiHKPNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:13:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2C08E9A3
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 08:13:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBC2EB82123
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 15:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4776FC433C1;
+        Thu, 11 Aug 2022 15:13:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660230792;
+        bh=eBigUrgZcJfFvNKu0t9Pdqc6p0jDKxmTYIzOj7ggNEI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=krHJONQUHEXqMZd49PY3EtlYCU2HoQeCZfvkySKzae5TCJ1frmMn10q0Cv9Aj7ZQo
+         4VWPzVavmOWRqqoAO2GVO1UOlaVO1euyoz3Jfi7gjsUKUfgPYjv9O8GSGYU2zLvzJ8
+         BbrbfGNqcC8Bvv5zG+KXw7sSLrmDdOlmXHWRv9tDJROZnkxXKG25yiivFSvVZFz4AF
+         akN73UpP1cWoqqMGMjdnXy54zmswKRG7jeghPdLCEbc+vdGm2z2L00FuD3fVwJz9M7
+         /wkznLpX3aISP2xk28JjBXs3mlsD4D/Wze9Hbya6b6QOke0Aqohu8hE7ZsKYG4WyFc
+         DD7bOP1hhqo4w==
+Date:   Thu, 11 Aug 2022 08:13:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     "shenjian (K)" <shenjian15@huawei.com>, davem@davemloft.net,
+        andrew@lunn.ch, ecree.xilinx@gmail.com, hkallweit1@gmail.com,
+        saeed@kernel.org, leon@kernel.org, netdev@vger.kernel.org,
+        linuxarm@openeuler.org
+Subject: Re: [RFCv7 PATCH net-next 36/36] net: redefine the prototype of
+ netdev_features_t
+Message-ID: <20220811081311.0f549b39@kernel.org>
+In-Reply-To: <20220811130757.9904-1-alexandr.lobakin@intel.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com>
+        <20220810030624.34711-37-shenjian15@huawei.com>
+        <20220810113547.1308711-1-alexandr.lobakin@intel.com>
+        <3df89822-7dec-c01e-0df9-15b8e6f7d4e5@huawei.com>
+        <20220811130757.9904-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Aug 2022 21:47:01 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, 11 Aug 2022 15:07:57 +0200 Alexander Lobakin wrote:
 
-> On Wed, 10 Aug 2022 21:15:34 -0700 Stephen Hemminger wrote:
-> > Would rather this be part of iproute2 rather than requiring it
-> > to be maintained separately and part of the kernel tree.  
-> 
-> I don't understand what you're trying to say. What is "this", 
-> what is "separate" from what?
+> > Yes, Jakub also mentioned this.
+> >=20
+> > But there are many existed features interfaces(e.g. ndo_fix_features,
+> > ndo_features_check), use netdev_features_t as return value. Then we
+> > have to change their prototype. =20
+>=20
+> We have to do 12k lines of changes already :D
+> You know, 16 bytes is probably fine to return directly and it will
+> be enough for up to 128 features (+64 more comparing to the
+> mainline). OTOH, using pointers removes that "what if/when", so
+> it's more flexible in that term. So that's why I asked for other
+> folks' opinions -- 2 PoVs doesn't seem enough here.
 
-I am saying that ynl could live as a standalone project or as
-part of the iproute2 tools collection.
+=46rom a quick grep it seems like the and() is mostly used in some form
+of:
 
-> 
-> Did I fall victim of the "if the cover letter is too long nobody
-> actually reads it" problem? Or am I simply too tired to parse?
-> 
-> iproute2 is welcome to use the protocol descriptions like any other
-> user space, but I'm intending to codegen kernel code based on the YAML:
+	features =3D and(features, mask);
 
-Ok, that makes sense then. I was hoping that user configuration
-of network devices could be done with YAML. But probably that is
-best left networkd, netplan, and others.
-
-
-> >> On the kernel side the YAML spec can be used to generate:
-> >>  - the C uAPI header
-> >>  - documentation of the protocol as a ReST file
-> >>  - policy tables for input attribute validation
-> >>  - operation tables  
-> 
-> So how can it not be in the kernel tree?
-
-As code generator then sure.
+and we already have netdev_features_clear() which modifies its first
+argument. I'd also have and() update its first arg rather than return
+the result as a value. It will require changing the prototype of
+ndo_features_check() :( But yeah, I reckon we shouldn't be putting of
+refactoring, best if we make all the changes at once than have to
+revisit this once the flags grow again and return by value starts to
+be a problem.
